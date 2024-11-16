@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<625f763d82aeca846224a67d9580f1b7>>
+ * @generated SignedSource<<5630ca490d52be748f6de41e007d4dd4>>
  * @flow strict
  */
 
@@ -66,6 +66,7 @@ export type ReactNativeFeatureFlags = {
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
   enableFabricRendererExclusively: Getter<boolean>,
+  enableFixForViewCommandRace: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
@@ -248,6 +249,10 @@ export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('ena
  * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
  */
 export const enableFabricRendererExclusively: Getter<boolean> = createNativeFlagGetter('enableFabricRendererExclusively', false);
+/**
+ * Synchronise the view command dispatching with mounting of new transaction
+ */
+export const enableFixForViewCommandRace: Getter<boolean> = createNativeFlagGetter('enableFixForViewCommandRace', false);
 /**
  * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
  */

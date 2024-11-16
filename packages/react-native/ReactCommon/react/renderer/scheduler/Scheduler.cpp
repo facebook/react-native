@@ -316,7 +316,19 @@ void Scheduler::uiManagerDidDispatchCommand(
 
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
-    delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+    if (ReactNativeFeatureFlags::enableFixForViewCommandRace()) {
+      runtimeScheduler_->scheduleRenderingUpdate(
+          shadowNode->getSurfaceId(),
+          [delegate = delegate_,
+           shadowView = std::move(shadowView),
+           commandName,
+           args]() {
+            delegate->schedulerDidDispatchCommand(
+                shadowView, commandName, args);
+          });
+    } else {
+      delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+    }
   }
 }
 

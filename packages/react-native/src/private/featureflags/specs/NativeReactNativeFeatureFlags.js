@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a1cbc6a91551de0008c070adb5d805fd>>
+ * @generated SignedSource<<5fb648131bb9739c6d47de4ad59bdd6f>>
  * @flow strict
  */
 
@@ -39,6 +39,7 @@ export interface Spec extends TurboModule {
   +enableFabricLogs?: () => boolean;
   +enableFabricRenderer?: () => boolean;
   +enableFabricRendererExclusively?: () => boolean;
+  +enableFixForViewCommandRace?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
