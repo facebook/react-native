@@ -248,9 +248,12 @@ function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
   console.log(JSON.stringify(testSuiteResult));
 }
 
+global.$$RunTests$$ = () => {
+  executeTests();
+};
+
 export function registerTest(setUpTest: () => void) {
   runWithGuard(() => {
     setUpTest();
-    executeTests();
   });
 }
