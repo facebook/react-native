@@ -23,6 +23,7 @@ import type {
   NativeModuleObjectTypeAnnotation,
   NativeModuleTypeAliasTypeAnnotation,
   Nullable,
+  NumberLiteralTypeAnnotation,
   ReservedTypeAnnotation,
   StringLiteralTypeAnnotation,
   StringLiteralUnionTypeAnnotation,
@@ -63,6 +64,7 @@ export type StructTypeAnnotation =
   | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NumberLiteralTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation

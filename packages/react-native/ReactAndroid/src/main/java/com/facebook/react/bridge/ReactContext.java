@@ -63,6 +63,8 @@ public abstract class ReactContext extends ContextWrapper {
   private @Nullable JSExceptionHandler mExceptionHandlerWrapper;
   private @Nullable WeakReference<Activity> mCurrentActivity;
 
+  // NOTE: When converted to Kotlin, this field should be made internal due to
+  // visibility restriction on InteropModuleRegistry otherwise it will be exposed to the public API.
   protected @Nullable InteropModuleRegistry mInteropModuleRegistry;
   private boolean mIsInitialized = false;
 

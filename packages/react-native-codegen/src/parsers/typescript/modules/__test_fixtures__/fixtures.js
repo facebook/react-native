@@ -113,6 +113,7 @@ import * as TurboModuleRegistry from '../TurboModuleRegistry';
 export interface Spec extends TurboModule {
   readonly passBool?: (arg: boolean) => void;
   readonly passNumber: (arg: number) => void;
+  readonly passNumberLiteral: (arg: 4) => void;
   readonly passString: (arg: string) => void;
   readonly passStringish: (arg: Stringish) => void;
   readonly passStringLiteral: (arg: 'A String Literal') => void;
@@ -865,6 +866,7 @@ export enum Quality {
 }
 
 export enum Resolution {
+  Corrupted = -1,
   Low = 720,
   High = 1080,
 }

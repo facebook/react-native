@@ -13,7 +13,7 @@ import android.view.Gravity
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 
-public class ReactUnimplementedView(context: Context) : LinearLayout(context) {
+internal class ReactUnimplementedView(context: Context) : LinearLayout(context) {
 
   private val textView: AppCompatTextView
 
@@ -31,7 +31,7 @@ public class ReactUnimplementedView(context: Context) : LinearLayout(context) {
     addView(textView)
   }
 
-  public fun setName(name: String) {
+  internal fun setName(name: String) {
     textView.setText("'$name' is not Fabric compatible yet.")
   }
 }

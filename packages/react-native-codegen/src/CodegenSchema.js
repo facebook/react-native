@@ -37,6 +37,11 @@ export type Int32TypeAnnotation = $ReadOnly<{
   type: 'Int32TypeAnnotation',
 }>;
 
+export type NumberLiteralTypeAnnotation = $ReadOnly<{
+  type: 'NumberLiteralTypeAnnotation',
+  value: number,
+}>;
+
 export type StringTypeAnnotation = $ReadOnly<{
   type: 'StringTypeAnnotation',
 }>;
@@ -304,12 +309,10 @@ export type NativeModuleNumberTypeAnnotation = $ReadOnly<{
   type: 'NumberTypeAnnotation',
 }>;
 
-export type NativeModuleEnumMembers = $ReadOnlyArray<
-  $ReadOnly<{
-    name: string,
-    value: string | number,
-  }>,
->;
+export type NativeModuleEnumMember = {
+  name: string,
+  value: string | number,
+};
 
 export type NativeModuleEnumMemberType =
   | 'NumberTypeAnnotation'
@@ -325,7 +328,7 @@ export type NativeModuleEnumDeclarationWithMembers = {
   name: string,
   type: 'EnumDeclarationWithMembers',
   memberType: NativeModuleEnumMemberType,
-  members: NativeModuleEnumMembers,
+  members: $ReadOnlyArray<NativeModuleEnumMember>,
 };
 
 export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{
@@ -366,6 +369,7 @@ type NativeModuleEventEmitterBaseTypeAnnotation =
   | FloatTypeAnnotation
   | Int32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NumberLiteralTypeAnnotation
   | StringTypeAnnotation
   | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
@@ -385,6 +389,7 @@ export type NativeModuleBaseTypeAnnotation =
   | StringLiteralTypeAnnotation
   | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NumberLiteralTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation

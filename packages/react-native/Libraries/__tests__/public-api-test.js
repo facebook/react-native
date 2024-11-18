@@ -29,6 +29,8 @@ const IGNORE_PATTERNS = [
   // Non source files
   'Libraries/Renderer/implementations/**',
   'Libraries/Renderer/shims/**',
+  // ReactNativePrivateInterface
+  'Libraries/ReactPrivate/**',
 ];
 
 const sourceFiles = [

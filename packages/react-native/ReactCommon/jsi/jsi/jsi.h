@@ -288,7 +288,7 @@ class JSI_EXPORT Runtime {
   // rvalue arguments/methods would also reduce the number of clones.
 
   struct PointerValue {
-    virtual void invalidate() = 0;
+    virtual void invalidate() noexcept = 0;
 
    protected:
     virtual ~PointerValue() = default;
@@ -399,6 +399,9 @@ class JSI_EXPORT Runtime {
       const jsi::Object& obj,
       size_t amount) = 0;
 
+  virtual std::u16string utf16(const String& str);
+  virtual std::u16string utf16(const PropNameID& sym);
+
   // These exist so derived classes can access the private parts of
   // Value, Symbol, String, and Object, which are all friends of Runtime.
   template <typename T>
@@ -415,7 +418,7 @@ class JSI_EXPORT Runtime {
 // Base class for pointer-storing types.
 class JSI_EXPORT Pointer {
  protected:
-  explicit Pointer(Pointer&& other) : ptr_(other.ptr_) {
+  explicit Pointer(Pointer&& other) noexcept : ptr_(other.ptr_) {
     other.ptr_ = nullptr;
   }
 
@@ -425,7 +428,7 @@ class JSI_EXPORT Pointer {
     }
   }
 
-  Pointer& operator=(Pointer&& other);
+  Pointer& operator=(Pointer&& other) noexcept;
 
   friend class Runtime;
   friend class Value;
@@ -499,6 +502,11 @@ class JSI_EXPORT PropNameID : public Pointer {
   /// Copies the data in a PropNameID as utf8 into a C++ string.
   std::string utf8(Runtime& runtime) const {
     return runtime.utf8(*this);
+  }
+
+  /// Copies the data in a PropNameID as utf16 into a C++ string.
+  std::u16string utf16(Runtime& runtime) const {
+    return runtime.utf16(*this);
   }
 
   static bool compare(
@@ -649,6 +657,11 @@ class JSI_EXPORT String : public Pointer {
   /// Copies the data in a JS string as utf8 into a C++ string.
   std::string utf8(Runtime& runtime) const {
     return runtime.utf8(*this);
+  }
+
+  /// Copies the data in a JS string as utf16 into a C++ string.
+  std::u16string utf16(Runtime& runtime) const {
+    return runtime.utf16(*this);
   }
 
   friend class Runtime;
@@ -1108,7 +1121,7 @@ class JSI_EXPORT Function : public Object {
 class JSI_EXPORT Value {
  public:
   /// Default ctor creates an \c undefined JS value.
-  Value() : Value(UndefinedKind) {}
+  Value() noexcept : Value(UndefinedKind) {}
 
   /// Creates a \c null JS value.
   /* implicit */ Value(std::nullptr_t) : kind_(NullKind) {}
@@ -1149,7 +1162,7 @@ class JSI_EXPORT Value {
         "Value cannot be constructed directly from const char*");
   }
 
-  Value(Value&& value);
+  Value(Value&& other) noexcept;
 
   /// Copies a Symbol lvalue into a new JS value.
   Value(Runtime& runtime, const Symbol& sym) : Value(SymbolKind) {
@@ -1204,7 +1217,7 @@ class JSI_EXPORT Value {
   /// https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
   static bool strictEquals(Runtime& runtime, const Value& a, const Value& b);
 
-  Value& operator=(Value&& other) {
+  Value& operator=(Value&& other) noexcept {
     this->~Value();
     new (this) Value(std::move(other));
     return *this;

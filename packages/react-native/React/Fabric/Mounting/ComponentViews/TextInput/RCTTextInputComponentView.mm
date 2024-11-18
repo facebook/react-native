@@ -114,6 +114,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     const auto &props = static_cast<const TextInputProps &>(*_props);
     if (props.autoFocus) {
       [_backedTextInputView becomeFirstResponder];
+      [self scrollCursorIntoView];
     }
     _didMoveToWindow = YES;
     [self initializeReturnKeyType];
@@ -126,6 +127,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   if (![self isDescendantOfView:scrollView.scrollView] || !_backedTextInputView.isFirstResponder) {
     // View is outside scroll view or it's not a first responder.
+    scrollView.firstResponderViewOutsideScrollView = _backedTextInputView;
     return;
   }
 
@@ -271,6 +273,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   if (newTextInputProps.inputAccessoryViewID != oldTextInputProps.inputAccessoryViewID) {
     _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
+  }
+
+  if (newTextInputProps.inputAccessoryViewButtonLabel != oldTextInputProps.inputAccessoryViewButtonLabel) {
+    _backedTextInputView.inputAccessoryViewButtonLabel =
+        RCTNSStringFromString(newTextInputProps.inputAccessoryViewButtonLabel);
   }
   [super updateProps:props oldProps:oldProps];
 
@@ -489,6 +496,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     [_backedTextInputView selectAll:nil];
     [self textInputDidChangeSelection];
   }
+
+  [self scrollCursorIntoView];
 }
 
 - (void)blur
@@ -580,22 +589,25 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
   UIKeyboardType keyboardType = _backedTextInputView.keyboardType;
   UIReturnKeyType returnKeyType = _backedTextInputView.returnKeyType;
+  NSString *inputAccessoryViewButtonLabel = _backedTextInputView.inputAccessoryViewButtonLabel;
 
   BOOL containsKeyType = [returnKeyTypesSet containsObject:@(returnKeyType)];
+  BOOL containsInputAccessoryViewButtonLabel = inputAccessoryViewButtonLabel != nil;
 
   // These keyboard types (all are number pads) don't have a "returnKey" button by default,
   // so we create an `inputAccessoryView` with this button for them.
   BOOL shouldHaveInputAccessoryView =
       (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
-      containsKeyType;
+      (containsKeyType || containsInputAccessoryViewButtonLabel);
 
   if ((_backedTextInputView.inputAccessoryView != nil) == shouldHaveInputAccessoryView) {
     return;
   }
 
   if (shouldHaveInputAccessoryView) {
-    NSString *buttonLabel = [self returnKeyTypeToString:returnKeyType];
+    NSString *buttonLabel = inputAccessoryViewButtonLabel != nil ? inputAccessoryViewButtonLabel
+                                                                 : [self returnKeyTypeToString:returnKeyType];
 
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
@@ -717,6 +729,16 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     NSUInteger samplePoint = offsetStart == 0 ? 0 : offsetStart - 1;
     _backedTextInputView.typingAttributes = [_backedTextInputView.attributedText attributesAtIndex:samplePoint
                                                                                     effectiveRange:NULL];
+  }
+}
+
+- (void)scrollCursorIntoView
+{
+  UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
+  if (selectedRange.empty) {
+    NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                          toPosition:selectedRange.start];
+    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
   }
 }
 

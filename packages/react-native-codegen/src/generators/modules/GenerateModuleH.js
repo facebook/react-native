@@ -16,7 +16,7 @@ import type {
 import type {
   NativeModuleAliasMap,
   NativeModuleEnumMap,
-  NativeModuleEnumMembers,
+  NativeModuleEnumMember,
   NativeModuleEnumMemberType,
   NativeModuleEventEmitterShape,
   NativeModuleFunctionTypeAnnotation,
@@ -178,6 +178,8 @@ function translatePrimitiveJSTypeToCpp(
     case 'StringLiteralUnionTypeAnnotation':
       return wrapOptional('jsi::String', isRequired);
     case 'NumberTypeAnnotation':
+      return wrapOptional('double', isRequired);
+    case 'NumberLiteralTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'DoubleTypeAnnotation':
       return wrapOptional('double', isRequired);
@@ -407,7 +409,7 @@ struct Bridging<${enumName}> {
 function generateEnum(
   hasteModuleName: string,
   origEnumName: string,
-  members: NativeModuleEnumMembers,
+  members: $ReadOnlyArray<NativeModuleEnumMember>,
   memberType: NativeModuleEnumMemberType,
 ): string {
   const enumName = getEnumName(hasteModuleName, origEnumName);

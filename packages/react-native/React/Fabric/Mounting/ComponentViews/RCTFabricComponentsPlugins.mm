@@ -38,7 +38,7 @@ Class<RCTComponentViewProtocol> RCTFabricComponentsProvider(const char *name) {
     auto classFunc = p->second;
     return classFunc();
   }
-  return RCTThirdPartyFabricComponentsProvider(name);
+  return nullptr;
 }
 
 #endif // RN_DISABLE_OSS_PLUGIN_HEADER

@@ -57,6 +57,14 @@ public class ReactModalHostManager :
     view.statusBarTranslucent = statusBarTranslucent
   }
 
+  @ReactProp(name = "navigationBarTranslucent")
+  public override fun setNavigationBarTranslucent(
+      view: ReactModalHostView,
+      navigationBarTranslucent: Boolean
+  ) {
+    view.navigationBarTranslucent = navigationBarTranslucent
+  }
+
   @ReactProp(name = "hardwareAccelerated")
   public override fun setHardwareAccelerated(
       view: ReactModalHostView,

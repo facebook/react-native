@@ -38,19 +38,3 @@ void RCTSetDispatchW3CPointerEvents(BOOL value)
 {
   RCTDispatchW3CPointerEvents = value;
 }
-
-/*
- * Memory Pressure Unloading Level for experimentation only.
- * Default is 15, which is TRIM_MEMORY_RUNNING_CRITICAL.
- */
-static int RCTMemoryPressureUnloadLevel = 15;
-
-int RCTGetMemoryPressureUnloadLevel(void)
-{
-  return RCTMemoryPressureUnloadLevel;
-}
-
-void RCTSetMemoryPressureUnloadLevel(int value)
-{
-  RCTMemoryPressureUnloadLevel = value;
-}

@@ -114,9 +114,6 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 - (instancetype)initWithToolbox:(SchedulerToolbox)toolbox
 {
   if (self = [super init]) {
-    auto reactNativeConfig =
-        toolbox.contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
-
     _delegateProxy = std::make_unique<SchedulerDelegateProxy>((__bridge void *)self);
 
     if (ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS()) {

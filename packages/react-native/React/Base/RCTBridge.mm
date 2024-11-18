@@ -207,7 +207,7 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
   void onReload(const PageReloadRequest &request) override
   {
     RCTAssertMainQueue();
-    [bridge_ reload];
+    RCTTriggerReloadCommandListeners(@"Reloading due to PageReloadRequest from DevTools.");
   }
 
   void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) override

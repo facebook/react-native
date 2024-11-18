@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ccd819b28912eb4fa52ef76026777ee0>>
+ * @generated SignedSource<<d449062ad46ab216a04e927da659b1e2>>
  */
 
 /**
@@ -41,8 +41,6 @@ class NativeReactNativeFeatureFlags
 
   bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
 
-  bool batchRenderingUpdatesInEventLoop(jsi::Runtime& runtime);
-
   bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
 
   bool disableEventLoopOnBridgeless(jsi::Runtime& runtime);
@@ -69,6 +67,8 @@ class NativeReactNativeFeatureFlags
 
   bool enableFabricRendererExclusively(jsi::Runtime& runtime);
 
+  bool enableFixForViewCommandRace(jsi::Runtime& runtime);
+
   bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
@@ -82,8 +82,6 @@ class NativeReactNativeFeatureFlags
   bool enableLineHeightCenteringOnIOS(jsi::Runtime& runtime);
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
-
-  bool enableMicrotasks(jsi::Runtime& runtime);
 
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
@@ -105,8 +103,6 @@ class NativeReactNativeFeatureFlags
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
 
-  bool forceBatchingMountItemsOnAndroid(jsi::Runtime& runtime);
-
   bool fuseboxEnabledDebug(jsi::Runtime& runtime);
 
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
@@ -126,8 +122,6 @@ class NativeReactNativeFeatureFlags
   bool useFabricInterop(jsi::Runtime& runtime);
 
   bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
-
-  bool useModernRuntimeScheduler(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
 

@@ -22,13 +22,13 @@ private class Settings {
 
 @DoNotStripAny
 @ReactModule(name = NativeReactDevToolsRuntimeSettingsModuleSpec.NAME)
-public class ReactDevToolsRuntimeSettingsModule(reactContext: ReactApplicationContext?) :
+internal class ReactDevToolsRuntimeSettingsModule(reactContext: ReactApplicationContext?) :
     NativeReactDevToolsRuntimeSettingsModuleSpec(reactContext) {
 
-  public companion object {
+  companion object {
     // static to persist across Turbo Module reloads
     private val settings = Settings()
-    public const val NAME: String = NativeReactDevToolsRuntimeSettingsModuleSpec.NAME
+    const val NAME: String = NativeReactDevToolsRuntimeSettingsModuleSpec.NAME
   }
 
   override fun setReloadAndProfileConfig(map: ReadableMap) {

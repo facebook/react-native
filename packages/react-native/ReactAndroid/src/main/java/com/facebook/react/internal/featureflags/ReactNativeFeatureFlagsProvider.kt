@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<275bb47e7d5cba690f132b67907e9406>>
+ * @generated SignedSource<<ac319036a931ca2758a8a7e983232156>>
  */
 
 /**
@@ -53,6 +53,8 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFabricRendererExclusively(): Boolean
 
+  @DoNotStrip public fun enableFixForViewCommandRace(): Boolean
+
   @DoNotStrip public fun enableGranularShadowTreeStateReconciliation(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
@@ -86,8 +88,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean
-
-  @DoNotStrip public fun forceBatchingMountItemsOnAndroid(): Boolean
 
   @DoNotStrip public fun fuseboxEnabledDebug(): Boolean
 

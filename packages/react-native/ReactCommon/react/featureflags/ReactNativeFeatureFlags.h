@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<364a2e54be6041010e89cbe5655d9055>>
+ * @generated SignedSource<<6d729ae284fb247805d187b90c603e06>>
  */
 
 /**
@@ -115,6 +115,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFabricRendererExclusively();
 
   /**
+   * Synchronise the view command dispatching with mounting of new transaction
+   */
+  RN_EXPORT static bool enableFixForViewCommandRace();
+
+  /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
   RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
@@ -198,11 +203,6 @@ class ReactNativeFeatureFlags {
    * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
    */
   RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-
-  /**
-   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
-   */
-  RN_EXPORT static bool forceBatchingMountItemsOnAndroid();
 
   /**
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.

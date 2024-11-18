@@ -10,7 +10,6 @@
 #include <cfloat>
 #include <cmath>
 #include <cstring>
-#include <string>
 
 #include <yoga/Yoga.h>
 
@@ -540,7 +539,7 @@ static float computeFlexBasisForChildren(
     const uint32_t generationCount) {
   float totalOuterFlexBasis = 0.0f;
   YGNodeRef singleFlexChild = nullptr;
-  const auto& children = node->getLayoutChildren();
+  auto children = node->getLayoutChildren();
   SizingMode sizingModeMainDim =
       isRow(mainAxis) ? widthSizingMode : heightSizingMode;
   // If there is only one child with flexGrow + flexShrink it means we can set
@@ -693,13 +692,6 @@ static float distributeFreeSpaceSecondPass(
       }
     }
 
-    yoga::assertFatalWithNode(
-        currentLineChild,
-        yoga::isDefined(updatedMainSize),
-        ("updatedMainSize is undefined. mainAxisOwnerSize: " +
-         std::to_string(mainAxisOwnerSize))
-            .c_str());
-
     deltaFreeSpace += updatedMainSize - childFlexBasis;
 
     const float marginMain = currentLineChild->style().computeMarginForAxis(
@@ -749,7 +741,7 @@ static float distributeFreeSpaceSecondPass(
           marginCross;
       const bool isLoosePercentageMeasurement =
           currentLineChild->getProcessedDimension(dimension(crossAxis))
-                  .unit() == Unit::Percent &&
+              .isPercent() &&
           sizingModeCrossDim != SizingMode::StretchFit;
       childCrossSizingMode =
           yoga::isUndefined(childCrossSize) || isLoosePercentageMeasurement
@@ -793,20 +785,6 @@ static float distributeFreeSpaceSecondPass(
     const bool isLayoutPass = performLayout && !requiresStretchLayout;
     // Recursively call the layout algorithm for this child with the updated
     // main size.
-
-    yoga::assertFatalWithNode(
-        currentLineChild,
-        yoga::isUndefined(childMainSize)
-            ? childMainSizingMode == SizingMode::MaxContent
-            : true,
-        "childMainSize is undefined so childMainSizingMode must be MaxContent");
-    yoga::assertFatalWithNode(
-        currentLineChild,
-        yoga::isUndefined(childCrossSize)
-            ? childCrossSizingMode == SizingMode::MaxContent
-            : true,
-        "childCrossSize is undefined so childCrossSizingMode must be MaxContent");
-
     calculateLayoutInternal(
         currentLineChild,
         childWidth,

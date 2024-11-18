@@ -19,6 +19,7 @@ public object ImageResizeMode {
   private const val RESIZE_MODE_STRETCH = "stretch"
   private const val RESIZE_MODE_CENTER = "center"
   private const val RESIZE_MODE_REPEAT = "repeat"
+  private const val RESIZE_MODE_NONE = "none"
 
   /** Converts JS resize modes into `ScalingUtils.ScaleType`. See `ImageResizeMode.js`. */
   @JvmStatic
@@ -30,6 +31,7 @@ public object ImageResizeMode {
       RESIZE_MODE_CENTER -> return ScalingUtils.ScaleType.CENTER_INSIDE
       // Handled via a combination of ScaleType and TileMode
       RESIZE_MODE_REPEAT -> return ScaleTypeStartInside.INSTANCE
+      RESIZE_MODE_NONE -> return ScaleTypeStartInside.INSTANCE
     }
 
     if (resizeModeValue != null) {
@@ -45,7 +47,8 @@ public object ImageResizeMode {
     if (RESIZE_MODE_CONTAIN == resizeModeValue ||
         RESIZE_MODE_COVER == resizeModeValue ||
         RESIZE_MODE_STRETCH == resizeModeValue ||
-        RESIZE_MODE_CENTER == resizeModeValue) {
+        RESIZE_MODE_CENTER == resizeModeValue ||
+        RESIZE_MODE_NONE == resizeModeValue) {
       return TileMode.CLAMP
     }
     if (RESIZE_MODE_REPEAT == resizeModeValue) {

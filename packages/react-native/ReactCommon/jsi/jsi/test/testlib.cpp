@@ -1576,6 +1576,65 @@ TEST_P(JSITest, UTF8ExceptionTest) {
   }
 }
 
+TEST_P(JSITest, UTF16Test) {
+  // This Runtime Decorator is used to test the conversion from UTF-8 to UTF-16
+  // in the default utf16 method for runtimes that do not provide their own
+  // utf16 implementation.
+  class UTF16RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    UTF16RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    std::string utf8(const String&) override {
+      return utf8Str;
+    }
+
+    std::u16string utf16(const String& str) override {
+      return Runtime::utf16(str);
+    }
+
+    std::string utf8Str;
+  };
+
+  UTF16RD rd = UTF16RD(rt);
+  String str = String::createFromUtf8(rd, "placeholder");
+
+  rd.utf8Str = "foobar";
+  EXPECT_EQ(str.utf16(rd), u"foobar");
+
+  rd.utf8Str = "你好";
+  EXPECT_EQ(str.utf16(rd), u"你好");
+
+  rd.utf8Str = "👍";
+  EXPECT_EQ(str.utf16(rd), u"👍");
+
+  rd.utf8Str = "foobar👍你好";
+  EXPECT_EQ(str.utf16(rd), u"foobar👍你好");
+
+  // String ended before second byte of the encoding
+  rd.utf8Str = "\xcf";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD");
+
+  // Third byte should follow the pattern of 0b10xxxxxx
+  rd.utf8Str = "\xef\x8f\x29";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD\u0029");
+
+  // U+2200 should be encoded in 3 bytes as 0xE2 0x88 0x80, not 4 bytes
+  rd.utf8Str = "\xf0\x82\x88\x80";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD");
+
+  // Unicode Max Value is U+10FFFF, U+11FFFF is invalid
+  rd.utf8Str = "\xf4\x9f\xbf\xbf";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD");
+
+  // Missing the third byte of the 3-byte encoding, followed by 'z'
+  rd.utf8Str = "\xe1\xa0\x7a";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD\u007A");
+
+  // First byte is neither ASCII nor a valid continuation byte
+  rd.utf8Str = "\xea\x7a";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD\u007A");
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,

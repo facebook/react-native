@@ -33,6 +33,12 @@ TextInputProps::TextInputProps(
           "inputAccessoryViewID",
           sourceProps.inputAccessoryViewID,
           {})),
+      inputAccessoryViewButtonLabel(convertRawProp(
+          context,
+          rawProps,
+          "inputAccessoryViewButtonLabel",
+          sourceProps.inputAccessoryViewButtonLabel,
+          {})),
       onKeyPressSync(convertRawProp(
           context,
           rawProps,

@@ -92,7 +92,6 @@ Pod::Spec.new do |s|
     "react/renderer/components/view/platform/cxx",
     "react/renderer/imagemanager/platform/ios"
   ])
-  add_dependency(s, "ReactCodegen", :additional_framework_paths => ["build/generated/ios"])
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

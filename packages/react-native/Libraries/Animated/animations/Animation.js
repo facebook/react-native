@@ -165,11 +165,7 @@ export default class Animation {
     const callback = this.#onEnd;
     if (callback != null) {
       this.#onEnd = null;
-      if (ReactNativeFeatureFlags.scheduleAnimatedEndCallbackInMicrotask()) {
-        queueMicrotask(() => callback(result));
-      } else {
-        callback(result);
-      }
+      queueMicrotask(() => callback(result));
     }
   }
 }

@@ -228,6 +228,7 @@ android {
             "-DHERMES_IS_ANDROID=True",
             "-DANDROID_STL=c++_shared",
             "-DANDROID_PIE=True",
+            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
             "-DIMPORT_HERMESC=${File(hermesBuildDir, "ImportHermesc.cmake").toString()}",
             "-DJSI_DIR=${jsiDir}",
             "-DHERMES_SLOW_DEBUG=False",
@@ -235,10 +236,7 @@ android {
             "-DHERMES_RELEASE_VERSION=for RN ${version}",
             // We intentionally build Hermes with Intl support only. This is to simplify
             // the build setup and to avoid overcomplicating the build-type matrix.
-            "-DHERMES_ENABLE_INTL=True",
-            // Due to https://github.com/android/ndk/issues/1693 we're losing Android
-            // specific compilation flags. This can be removed once we moved to NDK 25/26
-            "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON")
+            "-DHERMES_ENABLE_INTL=True")
 
         targets("libhermes")
       }
@@ -262,11 +260,6 @@ android {
           // This has the (unlucky) side effect of letting AGP call the build
           // tasks `configureCMakeRelease` while is actually building the debug flavor.
           arguments("-DCMAKE_BUILD_TYPE=Release")
-          // Adding -O3 to handle the issue here:
-          // https://github.com/android/ndk/issues/1740#issuecomment-1198438260
-          // The old NDK toolchain is not passing -O3 correctly for release CMake builds. This is
-          // fixed in NDK 25 and can be removed once we're there.
-          cppFlags("-O3")
         }
       }
     }
@@ -328,6 +321,11 @@ afterEvaluate {
   }
   tasks.getByName("preBuild").dependsOn(buildHermesC)
   tasks.getByName("preBuild").dependsOn(prepareHeadersForPrefab)
+}
+
+tasks.withType<JavaCompile>().configureEach {
+  options.compilerArgs.add("-Xlint:deprecation,unchecked")
+  options.compilerArgs.add("-Werror")
 }
 
 /* Publishing Configuration */

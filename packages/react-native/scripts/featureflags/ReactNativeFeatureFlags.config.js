@@ -63,23 +63,12 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    batchRenderingUpdatesInEventLoop: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
-        purpose: 'release',
-      },
-      // We're preparing to clean up this feature flag.
-      skipNativeAPI: true,
-    },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-07-22',
         description:
           'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     disableEventLoopOnBridgeless: {
@@ -182,6 +171,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    enableFixForViewCommandRace: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-14',
+        description:
+          'Synchronise the view command dispatching with mounting of new transaction',
+        purpose: 'experimentation',
+      },
+    },
     enableGranularShadowTreeStateReconciliation: {
       defaultValue: false,
       metadata: {
@@ -240,16 +238,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
         purpose: 'release',
       },
-    },
-    enableMicrotasks: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
-        purpose: 'release',
-      },
-      // We're preparing to clean up this feature flag.
-      skipNativeAPI: true,
     },
     enableNewBackgroundAndBorderDrawables: {
       defaultValue: false,
@@ -340,15 +328,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    forceBatchingMountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-04-10',
-        description:
-          'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
-        purpose: 'experimentation',
-      },
-    },
     fuseboxEnabledDebug: {
       defaultValue: true,
       metadata: {
@@ -366,12 +345,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     initEagerTurboModulesOnNativeModulesQueueAndroid: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-07-11',
         description:
           'Construct modules that requires eager init on the dedicate native modules thread',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     lazyAnimationCallbacks: {
@@ -425,23 +403,12 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useImmediateExecutorInAndroidBridgeless: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-06-06',
         description:
           'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
-        purpose: 'experimentation',
-      },
-    },
-    useModernRuntimeScheduler: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
         purpose: 'release',
       },
-      // We're preparing to clean up this feature flag.
-      skipNativeAPI: true,
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
@@ -519,6 +486,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    disableInteractionManager: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-06',
+        description:
+          'Disables InteractionManager and replaces its scheduler with `setImmediate`.',
+        purpose: 'experimentation',
+      },
+    },
     enableAccessToHostTreeInFabric: {
       defaultValue: false,
       metadata: {
@@ -528,12 +504,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     enableAnimatedAllowlist: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-10',
         description:
           'Enables Animated to skip non-allowlisted props and styles.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     enableAnimatedClearImmediateFix: {
@@ -546,12 +521,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     enableAnimatedPropsMemo: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-11',
         description:
           'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     enableOptimisedVirtualizedCells: {
@@ -569,15 +543,6 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Function used to enable / disabled Layout Animations in React Native.',
         purpose: 'release',
-      },
-    },
-    scheduleAnimatedEndCallbackInMicrotask: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-27',
-        description:
-          'Changes the completion callback supplied via `Animation#start` to be scheduled in a microtask instead of synchronously executed.',
-        purpose: 'experimentation',
       },
     },
     shouldSkipStateUpdatesForLoopingAnimations: {
@@ -625,12 +590,11 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useInsertionEffectsForAnimations: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
-        dateAdded: '2024-09-12',
         description:
           'Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.',
-        purpose: 'experimentation',
+        purpose: 'release',
       },
     },
     useRefsForTextInputState: {

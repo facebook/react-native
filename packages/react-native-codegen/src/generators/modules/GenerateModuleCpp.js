@@ -186,6 +186,8 @@ function serializeArg(
       return wrap(val => `${val}.asNumber()`);
     case 'Int32TypeAnnotation':
       return wrap(val => `${val}.asNumber()`);
+    case 'NumberLiteralTypeAnnotation':
+      return wrap(val => `${val}.asNumber()`);
     case 'ArrayTypeAnnotation':
       return wrap(val => `${val}.asObject(rt).asArray(rt)`);
     case 'FunctionTypeAnnotation':

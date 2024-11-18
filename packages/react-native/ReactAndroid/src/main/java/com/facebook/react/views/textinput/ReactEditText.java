@@ -408,6 +408,10 @@ public class ReactEditText extends AppCompatEditText {
       return;
     }
 
+    maybeSetSelection(start, end);
+  }
+
+  private void maybeSetSelection(int start, int end) {
     if (start != ReactConstants.UNSET && end != ReactConstants.UNSET) {
       // clamp selection values for safety
       start = clampToTextLength(start);
@@ -534,7 +538,8 @@ public class ReactEditText extends AppCompatEditText {
       int selectionStart = getSelectionStart();
       int selectionEnd = getSelectionEnd();
       setInputType(mStagedInputType);
-      setSelection(selectionStart, selectionEnd);
+      // Restore the selection
+      maybeSetSelection(selectionStart, selectionEnd);
     }
   }
 
@@ -1071,7 +1076,7 @@ public class ReactEditText extends AppCompatEditText {
     super.setTextIsSelectable(true);
 
     // Restore the selection since `setTextIsSelectable` changed it.
-    setSelection(selectionStart, selectionEnd);
+    maybeSetSelection(selectionStart, selectionEnd);
 
     if (mContainsImages) {
       Spanned text = getText();

@@ -69,6 +69,9 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
                  jsEngineProvider:(RCTHostJSEngineProvider)jsEngineProvider
                     launchOptions:(nullable NSDictionary *)launchOptions __deprecated;
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 @property (nonatomic, weak, nullable) id<RCTHostRuntimeDelegate> runtimeDelegate;
 
 @property (nonatomic, readonly) RCTSurfacePresenter *surfacePresenter;

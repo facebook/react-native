@@ -495,7 +495,8 @@ void FabricMountingManager::executeMount(
         ? allocatedViewsIterator->second
         : defaultAllocatedViews;
     if (allocatedViewsIterator == allocatedViewRegistry_.end()) {
-      LOG(ERROR) << "Executing commit after surface was stopped!";
+      LOG(ERROR) << "Executing commit after surface " << surfaceId
+                 << " was stopped!";
     }
 
     for (const auto& mutation : mutations) {
@@ -529,7 +530,7 @@ void FabricMountingManager::executeMount(
           (maintainMutationOrder ? cppCommonMountItems : cppDeleteMountItems)
               .push_back(CppMountItem::DeleteMountItem(oldChildShadowView));
           if (allocatedViewTags.erase(oldChildShadowView.tag) != 1) {
-            LOG(ERROR) << "Emitting delete for unallocated view. "
+            LOG(ERROR) << "Emitting delete for unallocated view "
                        << oldChildShadowView.tag;
           }
           break;
@@ -537,7 +538,7 @@ void FabricMountingManager::executeMount(
         case ShadowViewMutation::Update: {
           if (!isVirtual) {
             if (!allocatedViewTags.contains(newChildShadowView.tag)) {
-              LOG(FATAL) << "Emitting update for unallocated view. "
+              LOG(ERROR) << "Emitting update for unallocated view "
                          << newChildShadowView.tag;
             }
 
@@ -605,7 +606,7 @@ void FabricMountingManager::executeMount(
             bool shouldCreateView =
                 !allocatedViewTags.contains(newChildShadowView.tag);
             if (shouldCreateView) {
-              LOG(ERROR) << "Emitting insert for unallocated view. "
+              LOG(ERROR) << "Emitting insert for unallocated view "
                          << newChildShadowView.tag;
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdatePropsMountItems)
