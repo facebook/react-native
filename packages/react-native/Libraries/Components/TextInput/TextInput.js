@@ -260,6 +260,8 @@ export type enterKeyHintType =
 type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
+  disableKeyboardShortcuts?: ?boolean,
+
   /**
    * When the clear button should appear on the right side of the text view.
    * This property is supported only for single-line TextInput component.
@@ -1290,6 +1292,7 @@ function InternalTextInput(props: Props): React.Node {
     selectionColor,
     selectionHandleColor,
     cursorColor,
+    disableKeyboardShortcuts,
     ...otherProps
   } = props;
 
@@ -1597,6 +1600,8 @@ function InternalTextInput(props: Props): React.Node {
           flattenedStyle.paddingVertical == null &&
           flattenedStyle.paddingTop == null));
 
+    console.debug('[dev] disableKeyboardShortcuts 2', disableKeyboardShortcuts);
+
     textInput = (
       <RCTTextInputView
         // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
@@ -1625,6 +1630,7 @@ function InternalTextInput(props: Props): React.Node {
           _style,
         )}
         text={text}
+        disableKeyboardShortcuts={disableKeyboardShortcuts}
       />
     );
   } else if (Platform.OS === 'android') {
@@ -1813,12 +1819,15 @@ const ExportedForwardRef: component(
     inputMode,
     showSoftInputOnFocus,
     keyboardType,
+    disableKeyboardShortcuts,
     ...restProps
   },
   forwardedRef: ReactRefSetter<TextInputInstance>,
 ) {
+  console.debug('[dev] disableKeyboardShortcuts', disableKeyboardShortcuts);
   return (
     <InternalTextInput
+      disableKeyboardShortcuts={disableKeyboardShortcuts}
       allowFontScaling={allowFontScaling}
       rejectResponderTermination={rejectResponderTermination}
       underlineColorAndroid={underlineColorAndroid}

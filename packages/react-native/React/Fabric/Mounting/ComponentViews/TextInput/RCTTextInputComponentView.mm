@@ -251,6 +251,9 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   // because they are being checked on-demand.
 
   // Other props:
+  NSLog(@"newTextInputProps.placeholder: '%@'", RCTNSStringFromString(newTextInputProps.placeholder));
+  NSLog(@"oldTextInputProps.placeholder: '%@'", RCTNSStringFromString(oldTextInputProps.placeholder));
+  
   if (newTextInputProps.placeholder != oldTextInputProps.placeholder) {
     _backedTextInputView.placeholder = RCTNSStringFromString(newTextInputProps.placeholder);
   }
@@ -279,6 +282,14 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _backedTextInputView.inputAccessoryViewButtonLabel =
         RCTNSStringFromString(newTextInputProps.inputAccessoryViewButtonLabel);
   }
+  
+  NSLog(@"newTextInputProps.disableKeyboardShortcuts: '%d'", newTextInputProps.disableKeyboardShortcuts);
+  NSLog(@"oldTextInputProps.disableKeyboardShortcuts: '%d'", oldTextInputProps.disableKeyboardShortcuts);
+  
+  if (newTextInputProps.disableKeyboardShortcuts != oldTextInputProps.disableKeyboardShortcuts) {
+    _backedTextInputView.disableKeyboardShortcuts = newTextInputProps.disableKeyboardShortcuts;
+  }
+  
   [super updateProps:props oldProps:oldProps];
 
   [self setDefaultInputAccessoryView];

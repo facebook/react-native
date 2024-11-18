@@ -1,3 +1,5 @@
+ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+
 require_relative '../react-native/scripts/react_native_pods'
 
 source 'https://cdn.cocoapods.org/'
@@ -35,7 +37,7 @@ end
 def pods(target_name, options = {})
   project 'RNTesterPods.xcodeproj'
 
-  fabric_enabled = true
+  fabric_enabled = false
 
   # Hermes is now enabled by default.
   # The following line will only disable Hermes if the USE_HERMES envvar is SET to a value other than 1 (e.g. USE_HERMES=0).
@@ -49,6 +51,7 @@ def pods(target_name, options = {})
     app_path: "#{Dir.pwd}",
     config_file_dir: "#{Dir.pwd}/node_modules",
     production: false, #deprecated
+    :new_arch_enabled => false # Disable the New Architecture
   )
   pod 'ReactCommon-Samples', :path => "#{@prefix_path}/ReactCommon/react/nativemodule/samples"
 

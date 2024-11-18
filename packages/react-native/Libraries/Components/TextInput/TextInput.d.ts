@@ -136,6 +136,8 @@ export interface DocumentSelectionState extends EventEmitter {
  * @see https://reactnative.dev/docs/textinput#props
  */
 export interface TextInputIOSProps {
+  disableKeyboardShortcuts?: boolean | undefined;
+
   /**
    * enum('never', 'while-editing', 'unless-editing', 'always')
    * When the clear button should appear on the right side of the text view

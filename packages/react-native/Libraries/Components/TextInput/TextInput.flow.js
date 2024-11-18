@@ -216,6 +216,8 @@ export type enterKeyHintType =
 type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
+  disableKeyboardShortcuts?: ?boolean,
+
   /**
    * When the clear button should appear on the right side of the text view.
    * This property is supported only for single-line TextInput component.

@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *inputAccessoryViewButtonLabel;
 @property (nonatomic, assign) UIKeyboardType keyboardType;
 @property (nonatomic, assign) BOOL showSoftInputOnFocus;
+@property (nonatomic, assign) BOOL disableKeyboardShortcuts;
 
 /**
  Sets selection intext input if both start and end are within range of the text input.

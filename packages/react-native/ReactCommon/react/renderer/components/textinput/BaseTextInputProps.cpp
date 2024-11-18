@@ -126,7 +126,13 @@ BaseTextInputProps::BaseTextInputProps(
           rawProps,
           "multiline",
           sourceProps.multiline,
-          {false})) {}
+          {false})),
+      disableKeyboardShortcuts(convertRawProp(
+          context,
+          rawProps,
+          "disableKeyboardShortcuts",
+          sourceProps.disableKeyboardShortcuts,
+          {})) {}
 
 void BaseTextInputProps::setProp(
     const PropsParserContext& context,
@@ -208,6 +214,7 @@ void BaseTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(readOnly);
     RAW_SET_PROP_SWITCH_CASE_BASIC(submitBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(multiline);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(disableKeyboardShortcuts);
   }
 }
 
