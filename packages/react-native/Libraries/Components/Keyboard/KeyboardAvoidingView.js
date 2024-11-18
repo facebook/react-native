@@ -33,7 +33,7 @@ type Props = $ReadOnly<{|
   /**
    * Specify how to react to the presence of the keyboard.
    */
-  behavior?: ?('height' | 'position' | 'padding'),
+  behavior?: ?('height' | 'position' | 'padding' | 'nothing'),
 
   /**
    * Style of the content container when `behavior` is 'position'.
@@ -84,6 +84,10 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       return 0;
     }
 
+    if (this.props.behavior === 'nothing') {
+      //Do not adjust the layout
+      return 0;
+    }
     // On iOS when Prefer Cross-Fade Transitions is enabled, the keyboard position
     // & height is reported differently (0 instead of Y position value matching height of frame)
     if (
@@ -268,6 +272,17 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
             ref={this.viewRef}
             style={StyleSheet.compose(style, {paddingBottom: bottomHeight})}
             onLayout={this._onLayout}
+            {...props}>
+            {children}
+          </View>
+        );
+
+      case 'nothing':
+        return (
+          <View
+            ref={this.viewRef}
+            onLayout={this._onLayout}
+            style={StyleSheet.compose(style, {paddingBottom: 0})}
             {...props}>
             {children}
           </View>
