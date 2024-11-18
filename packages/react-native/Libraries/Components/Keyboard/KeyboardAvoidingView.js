@@ -32,6 +32,8 @@ type Props = $ReadOnly<{|
 
   /**
    * Specify how to react to the presence of the keyboard.
+   * 'nothing' allows the the keyboard to cover the screen.
+   * although its bad UI it give more control to the developer
    */
   behavior?: ?('height' | 'position' | 'padding' | 'nothing'),
 
