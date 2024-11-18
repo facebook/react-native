@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5630ca490d52be748f6de41e007d4dd4>>
+ * @generated SignedSource<<8334fdc6d34d4a090eb8be73f92ccd0f>>
  * @flow strict
  */
 
@@ -52,7 +52,6 @@ export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
-  allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   disableEventLoopOnBridgeless: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
@@ -193,10 +192,6 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  * Common flag for testing (without native implementation). Do NOT modify.
  */
 export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
-/**
- * Adds support for recursively processing commits that mount synchronously (Android only).
- */
-export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean> = createNativeFlagGetter('allowRecursiveCommitsWithSynchronousMountOnAndroid', false);
 /**
  * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
  */

@@ -54,15 +54,6 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
-    allowRecursiveCommitsWithSynchronousMountOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-05-30',
-        description:
-          'Adds support for recursively processing commits that mount synchronously (Android only).',
-        purpose: 'experimentation',
-      },
-    },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
       defaultValue: true,
       metadata: {

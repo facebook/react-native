@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd3529c1455508333a45a5852c3213c6>>
+ * @generated SignedSource<<fb8747b040cd9c29e9ca0a7c1647ad91>>
  */
 
 /**
@@ -25,7 +25,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
-  private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var disableEventLoopOnBridgelessCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
@@ -78,16 +77,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.commonTestFlag()
       accessedFeatureFlags.add("commonTestFlag")
       commonTestFlagCache = cached
-    }
-    return cached
-  }
-
-  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean {
-    var cached = allowRecursiveCommitsWithSynchronousMountOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.allowRecursiveCommitsWithSynchronousMountOnAndroid()
-      accessedFeatureFlags.add("allowRecursiveCommitsWithSynchronousMountOnAndroid")
-      allowRecursiveCommitsWithSynchronousMountOnAndroidCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f4f263578308798dcf7561918f58e0cc>>
+ * @generated SignedSource<<3d25d7b8ee194721c39fb5eb5eda87d4>>
  */
 
 /**
@@ -24,8 +24,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   // but that is more expensive than just duplicating the defaults here.
 
   override fun commonTestFlag(): Boolean = false
-
-  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
   override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = true
 
