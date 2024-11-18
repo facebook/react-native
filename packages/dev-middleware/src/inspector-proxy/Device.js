@@ -133,6 +133,7 @@ export default class Device {
     projectRoot: string,
     eventReporter: ?EventReporter,
     createMessageMiddleware: ?CreateCustomMessageHandlerFn,
+    serverBaseUrl?: URL,
   ) {
     this.#dangerouslyConstruct(
       id,
