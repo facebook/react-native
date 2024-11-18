@@ -71,6 +71,17 @@ type DebuggerConnection = {
 
 const REACT_NATIVE_RELOADABLE_PAGE_ID = '-1';
 
+export type DeviceOptions = $ReadOnly<{
+  id: string,
+  name: string,
+  app: string,
+  socket: WS,
+  projectRoot: string,
+  eventReporter: ?EventReporter,
+  createMessageMiddleware: ?CreateCustomMessageHandlerFn,
+  serverRelativeBaseUrl: URL,
+}>;
+
 /**
  * Device class represents single device connection to Inspector Proxy. Each device
  * can have multiple inspectable pages.
@@ -125,41 +136,29 @@ export default class Device {
 
   #connectedPageIds: Set<string> = new Set();
 
-  constructor(
-    id: string,
-    name: string,
-    app: string,
-    socket: WS,
-    projectRoot: string,
-    eventReporter: ?EventReporter,
-    createMessageMiddleware: ?CreateCustomMessageHandlerFn,
-    serverBaseUrl?: URL,
-  ) {
-    this.#dangerouslyConstruct(
-      id,
-      name,
-      app,
-      socket,
-      projectRoot,
-      eventReporter,
-      createMessageMiddleware,
-    );
+  // A base HTTP(S) URL to the server, relative to this server.
+  #serverRelativeBaseUrl: URL;
+
+  constructor(deviceOptions: DeviceOptions) {
+    this.#dangerouslyConstruct(deviceOptions);
   }
 
-  #dangerouslyConstruct(
-    id: string,
-    name: string,
-    app: string,
-    socket: WS,
-    projectRoot: string,
-    eventReporter: ?EventReporter,
-    createMessageMiddleware: ?CreateCustomMessageHandlerFn,
-  ) {
+  #dangerouslyConstruct({
+    id,
+    name,
+    app,
+    socket,
+    projectRoot,
+    eventReporter,
+    createMessageMiddleware,
+    serverRelativeBaseUrl,
+  }: DeviceOptions) {
     this.#id = id;
     this.#name = name;
     this.#app = app;
     this.#deviceSocket = socket;
     this.#projectRoot = projectRoot;
+    this.#serverRelativeBaseUrl = serverRelativeBaseUrl;
     this.#deviceEventReporter = eventReporter
       ? new DeviceEventReporter(eventReporter, {
           deviceId: id,
@@ -239,23 +238,15 @@ export default class Device {
    * This hack attempts to allow users to reload the app, either as result of a
    * crash, or manually reloading, without having to restart the debugger.
    */
-  dangerouslyRecreateDevice(
-    id: string,
-    name: string,
-    app: string,
-    socket: WS,
-    projectRoot: string,
-    eventReporter: ?EventReporter,
-    createMessageMiddleware: ?CreateCustomMessageHandlerFn,
-  ) {
+  dangerouslyRecreateDevice(deviceOptions: DeviceOptions) {
     invariant(
-      id === this.#id,
+      deviceOptions.id === this.#id,
       'dangerouslyRecreateDevice() can only be used for the same device ID',
     );
 
     const oldDebugger = this.#debuggerConnection;
 
-    if (this.#app !== app || this.#name !== name) {
+    if (this.#app !== deviceOptions.app || this.#name !== deviceOptions.name) {
       this.#deviceSocket.close();
       this.#terminateDebuggerConnection();
     }
@@ -270,15 +261,7 @@ export default class Device {
       });
     }
 
-    this.#dangerouslyConstruct(
-      id,
-      name,
-      app,
-      socket,
-      projectRoot,
-      eventReporter,
-      createMessageMiddleware,
-    );
+    this.#dangerouslyConstruct(deviceOptions);
   }
 
   getName(): string {
@@ -692,25 +675,29 @@ export default class Device {
     ) {
       const params = payload.params;
       if ('sourceMapURL' in params) {
-        for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
-          if (params.sourceMapURL.includes(hostToRewrite)) {
-            payload.params.sourceMapURL = params.sourceMapURL.replace(
-              hostToRewrite,
-              'localhost',
-            );
-            debuggerInfo.originalSourceURLAddress = hostToRewrite;
-          }
-        }
-
         const sourceMapURL = this.#tryParseHTTPURL(params.sourceMapURL);
         if (sourceMapURL) {
+          const serverRelativeUrl = new URL(sourceMapURL.href);
+
+          for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
+            if (params.sourceMapURL.includes(hostToRewrite)) {
+              payload.params.sourceMapURL = params.sourceMapURL.replace(
+                hostToRewrite,
+                'localhost',
+              );
+              debuggerInfo.originalSourceURLAddress = hostToRewrite;
+              serverRelativeUrl.host = this.#serverRelativeBaseUrl.host;
+              serverRelativeUrl.protocol = this.#serverRelativeBaseUrl.protocol;
+            }
+          }
+
           // Some debug clients do not support fetching HTTP URLs. If the
           // message headed to the debug client identifies the source map with
           // an HTTP URL, fetch the content here and convert the content to a
           // Data URL (which is more widely supported) before passing the
           // message to the debug client.
           try {
-            const sourceMap = await this.#fetchText(sourceMapURL);
+            const sourceMap = await this.#fetchText(serverRelativeUrl);
             payload.params.sourceMapURL =
               'data:application/json;charset=utf-8;base64,' +
               Buffer.from(sourceMap).toString('base64');
@@ -722,10 +709,23 @@ export default class Device {
         }
       }
       if ('url' in params) {
-        for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
-          if (params.url.includes(hostToRewrite)) {
-            payload.params.url = params.url.replace(hostToRewrite, 'localhost');
-            debuggerInfo.originalSourceURLAddress = hostToRewrite;
+        const originalParamsUrl = params.url;
+        let serverRelativeUrl = originalParamsUrl;
+        const parsedUrl = this.#tryParseHTTPURL(originalParamsUrl);
+        if (parsedUrl) {
+          for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
+            if (parsedUrl.hostname === hostToRewrite) {
+              // URL is device-relative and points to the host - rewrite it to
+              // use localhost.
+              parsedUrl.hostname = 'localhost';
+              payload.params.url = parsedUrl.href;
+              debuggerInfo.originalSourceURLAddress = hostToRewrite;
+
+              // Determine the server-relative URL.
+              parsedUrl.host = this.#serverRelativeBaseUrl.host;
+              parsedUrl.protocol = this.#serverRelativeBaseUrl.protocol;
+              serverRelativeUrl = parsedUrl.href;
+            }
           }
         }
 
@@ -738,9 +738,13 @@ export default class Device {
           debuggerInfo.prependedFilePrefix = true;
         }
 
-        // $FlowFixMe[prop-missing]
-        if (params.scriptId != null) {
-          this.#scriptIdToSourcePathMapping.set(params.scriptId, params.url);
+        if ('scriptId' in params && params.scriptId != null) {
+          // Set a server-relative URL to locally fetch source by script ID
+          // on Debugger.getScriptSource.
+          this.#scriptIdToSourcePathMapping.set(
+            params.scriptId,
+            serverRelativeUrl,
+          );
         }
       }
     }
@@ -907,6 +911,7 @@ export default class Device {
     if (pathToSource != null) {
       const httpURL = this.#tryParseHTTPURL(pathToSource);
       if (httpURL) {
+        // URL is server-relatve, so we should be able to fetch it from here.
         this.#fetchText(httpURL).then(
           text => sendSuccessResponse(text),
           err =>
