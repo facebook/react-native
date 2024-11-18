@@ -143,6 +143,7 @@ class CodegenUtils
             'React-debug': [],
             'React-utils': [],
             'React-featureflags': [],
+            'React-RCTAppDelegate': [],
           }
         }
 
