@@ -109,6 +109,7 @@ public class com/facebook/react/ReactActivityDelegate {
 	protected fun composeLaunchOptions ()Landroid/os/Bundle;
 	protected fun createRootView ()Lcom/facebook/react/ReactRootView;
 	protected fun getContext ()Landroid/content/Context;
+	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	protected fun getLaunchOptions ()Landroid/os/Bundle;
 	public fun getMainComponentName ()Ljava/lang/String;
 	protected fun getPlainActivity ()Landroid/app/Activity;
@@ -147,6 +148,8 @@ public class com/facebook/react/ReactDelegate {
 	public fun <init> (Landroid/app/Activity;Lcom/facebook/react/ReactNativeHost;Ljava/lang/String;Landroid/os/Bundle;)V
 	public fun <init> (Landroid/app/Activity;Lcom/facebook/react/ReactNativeHost;Ljava/lang/String;Landroid/os/Bundle;Z)V
 	protected fun createRootView ()Lcom/facebook/react/ReactRootView;
+	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	public fun getReactHost ()Lcom/facebook/react/ReactHost;
 	public fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
 	public fun getReactRootView ()Lcom/facebook/react/ReactRootView;
 	protected fun isFabricEnabled ()Z
