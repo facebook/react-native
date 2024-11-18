@@ -216,6 +216,8 @@ export type enterKeyHintType =
 type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
+  disableKeyboardShortcuts?: ?boolean,
+
   /**
    * If `true`, disabled the native keyboard shortcuts.
    * @platform ios

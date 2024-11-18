@@ -260,6 +260,8 @@ export type enterKeyHintType =
 type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
+  disableKeyboardShortcuts?: ?boolean,
+
   /**
    * If `true`, disabled the native keyboard shortcuts.
    * @platform ios
@@ -1290,6 +1292,7 @@ function InternalTextInput(props: Props): React.Node {
     selectionColor,
     selectionHandleColor,
     cursorColor,
+    disableKeyboardShortcuts,
     ...otherProps
   } = props;
 
@@ -1597,12 +1600,16 @@ function InternalTextInput(props: Props): React.Node {
           flattenedStyle.paddingVertical == null &&
           flattenedStyle.paddingTop == null));
 
+    console.debug('[dev] disableKeyboardShortcuts 2', disableKeyboardShortcuts);
+    console.debug('[dev] props.multiline', props.multiline);
+
     textInput = (
       <RCTTextInputView
         // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
         ref={ref}
         {...otherProps}
         {...eventHandlers}
+        disableKeyboardShortcuts={disableKeyboardShortcuts}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}
@@ -1813,11 +1820,13 @@ const ExportedForwardRef: component(
     inputMode,
     showSoftInputOnFocus,
     keyboardType,
+    disableKeyboardShortcuts,
     ...restProps
   },
   forwardedRef: ReactRefSetter<TextInputInstance>,
 ) {
   console.debug('[dev] restProps', restProps);
+  console.debug('[dev] disableKeyboardShortcuts', disableKeyboardShortcuts);
 
   return (
     <InternalTextInput
@@ -1853,6 +1862,7 @@ const ExportedForwardRef: component(
               autoCompleteWebToTextContentTypeMap[autoComplete]
             : textContentType
       }
+      disableKeyboardShortcuts={disableKeyboardShortcuts}
       {...restProps}
       forwardedRef={forwardedRef}
     />

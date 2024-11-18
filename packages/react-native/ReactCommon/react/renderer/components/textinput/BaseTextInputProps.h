@@ -71,6 +71,7 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
   SubmitBehavior submitBehavior{SubmitBehavior::Default};
 
   bool multiline{false};
+  bool disableKeyboardShortcuts{};
 
   SubmitBehavior getNonDefaultSubmitBehavior() const;
 };

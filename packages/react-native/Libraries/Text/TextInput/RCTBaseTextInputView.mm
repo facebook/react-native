@@ -350,12 +350,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 - (UIKeyboardType)keyboardType
 {
+  NSLog(@"setKeyboardType called with value: %ld", self.backedTextInputView.keyboardType);
   return self.backedTextInputView.keyboardType;
 }
 
 - (void)setKeyboardType:(UIKeyboardType)keyboardType
 {
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
+  NSLog(@"setKeyboardType called with value: %ld", keyboardType);
   if (textInputView.keyboardType != keyboardType) {
     textInputView.keyboardType = keyboardType;
     // Without the call to reloadInputViews, the keyboard will not change until the textview field (the first responder)
@@ -637,6 +639,18 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
     [self.backedTextInputView reactFocusIfNeeded];
   }
 
+  NSLog(@"backedTextInputView: %@", self.backedTextInputView);
+
+  // Apply keyboard shortcuts setting when view becomes active
+    if (_disableKeyboardShortcuts && self.backedTextInputView.isFirstResponder) {
+        UITextInputAssistantItem *inputAssistantItem = self.backedTextInputView.inputAssistantItem;
+        if (inputAssistantItem) {
+            inputAssistantItem.leadingBarButtonGroups = @[];
+            inputAssistantItem.trailingBarButtonGroups = @[];
+        }
+        [self.backedTextInputView reloadInputViews];
+    }
+
   _didMoveToWindow = YES;
 }
 
@@ -799,6 +813,24 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   *firstRange = NSMakeRange(firstMismatch, lastMismatch - firstMismatch);
   *secondRange = NSMakeRange(firstMismatch, ii - firstMismatch);
   return YES;
+}
+
+- (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts {
+    _disableKeyboardShortcuts = disableKeyboardShortcuts;
+    NSLog(@"setDisableKeyboardShortcuts called with value: %d", disableKeyboardShortcuts);
+    
+    id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
+    NSLog(@"backedTextInputView: %@", backedTextInputView);
+    
+    
+        if (disableKeyboardShortcuts) {
+            UITextInputAssistantItem *inputAssistantItem = backedTextInputView.inputAssistantItem;
+            if (inputAssistantItem) {
+                inputAssistantItem.leadingBarButtonGroups = @[];
+                inputAssistantItem.trailingBarButtonGroups = @[];
+            }
+        }
+    
 }
 
 @end

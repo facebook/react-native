@@ -136,6 +136,8 @@ export interface DocumentSelectionState extends EventEmitter {
  * @see https://reactnative.dev/docs/textinput#props
  */
 export interface TextInputIOSProps {
+  disableKeyboardShortcuts?: boolean | undefined;
+
   /**
    * If `true`, disabled the native keyboard shortcuts.
    * @platform ios
