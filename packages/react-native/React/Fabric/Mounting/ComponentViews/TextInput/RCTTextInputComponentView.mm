@@ -114,6 +114,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     const auto &props = static_cast<const TextInputProps &>(*_props);
     if (props.autoFocus) {
       [_backedTextInputView becomeFirstResponder];
+      [self scrollCursorIntoView];
     }
     _didMoveToWindow = YES;
     [self initializeReturnKeyType];
@@ -495,6 +496,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     [_backedTextInputView selectAll:nil];
     [self textInputDidChangeSelection];
   }
+
+  [self scrollCursorIntoView];
 }
 
 - (void)blur
@@ -726,6 +729,16 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     NSUInteger samplePoint = offsetStart == 0 ? 0 : offsetStart - 1;
     _backedTextInputView.typingAttributes = [_backedTextInputView.attributedText attributesAtIndex:samplePoint
                                                                                     effectiveRange:NULL];
+  }
+}
+
+- (void)scrollCursorIntoView
+{
+  UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
+  if (selectedRange.empty) {
+    NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                          toPosition:selectedRange.start];
+    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
   }
 }
 

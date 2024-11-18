@@ -28,6 +28,7 @@ const {
   Switch,
   Text,
   View,
+  TextInput,
 } = require('react-native');
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
@@ -262,6 +263,31 @@ class AutogrowingTextInputExample extends React.Component<
     );
   }
 }
+
+const TextInputWithFocusButton = () => {
+  const inputToFocusRef = React.useRef<React.ElementRef<
+    typeof TextInput,
+  > | null>(null);
+  return (
+    <View>
+      <ExampleTextInput
+        ref={inputToFocusRef}
+        placeholder="height increases with content"
+        defaultValue="React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about - learn once, write anywhere. Facebook uses React Native in multiple production apps and will continue investing in React Native."
+        multiline={true}
+        enablesReturnKeyAutomatically={true}
+        returnKeyType="go"
+        style={[styles.multiline, styles.multilineExpandable]}
+      />
+      <Button
+        title="Focus"
+        onPress={() => {
+          inputToFocusRef.current?.focus();
+        }}
+      />
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   multiline: {
@@ -893,6 +919,12 @@ const textInputExamples: Array<RNTesterModuleExample> = [
           </WithLabel>
         </View>
       );
+    },
+  },
+  {
+    title: 'Auto scroll cursor into view when focusing',
+    render: function (): React.Node {
+      return <TextInputWithFocusButton />;
     },
   },
   {
