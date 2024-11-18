@@ -30,15 +30,10 @@ function parseRNTesterCommandResult(
 ): {logs: string, testResult: TestSuiteResult} {
   const stdout = result.stdout.toString();
 
-  const outputArray = stdout.trim().split('\n');
-
-  // Remove AppRegistry logs at the end
-  while (
-    outputArray.length > 0 &&
-    outputArray[outputArray.length - 1].startsWith('Running "')
-  ) {
-    outputArray.pop();
-  }
+  const outputArray = stdout
+    .trim()
+    .split('\n')
+    .filter(log => !log.startsWith('Running "')); // remove AppRegistry logs.
 
   // The last line should be the test output in JSON format
   const testResultJSON = outputArray.pop();
