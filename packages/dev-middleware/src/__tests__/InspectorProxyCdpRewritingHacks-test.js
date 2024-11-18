@@ -295,6 +295,42 @@ describe.each(['HTTP', 'HTTPS'])(
             debugger_.close();
           }
         });
+
+        describe('Network.loadNetworkResource', () => {
+          test('should respond with an error without forwarding to the client', async () => {
+            const {device, debugger_} = await createAndConnectTarget(
+              serverRef,
+              autoCleanup.signal,
+              {
+                app: 'bar-app',
+                id: 'page1',
+                title: 'bar-title',
+                vm: 'bar-vm',
+              },
+            );
+            try {
+              const response = await debugger_.sendAndGetResponse({
+                id: 1,
+                method: 'Network.loadNetworkResource',
+                params: {
+                  url: 'http://example.com',
+                },
+              });
+              expect(response.result).toEqual(
+                expect.objectContaining({
+                  error: {
+                    code: -32601,
+                    message:
+                      '[inspector-proxy]: Page lacks nativeSourceCodeFetching capability.',
+                  },
+                }),
+              );
+            } finally {
+              device.close();
+              debugger_.close();
+            }
+          });
+        });
       },
     );
 
@@ -571,6 +607,33 @@ describe.each(['HTTP', 'HTTPS'])(
             };
             await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
 
+            expect(device.wrappedEventParsed).toBeCalledWith({
+              pageId: 'page1',
+              wrappedEvent: message,
+            });
+          } finally {
+            device.close();
+            debugger_.close();
+          }
+        });
+      });
+
+      describe('Network.loadNetworkResource', () => {
+        test('should forward event directly to client (does not rewrite url host)', async () => {
+          const {device, debugger_} = await createAndConnectTarget(
+            serverRef,
+            autoCleanup.signal,
+            pageDescription,
+          );
+          try {
+            const message = {
+              id: 1,
+              method: 'Network.loadNetworkResource',
+              params: {
+                url: `${protocol.toLowerCase()}://10.0.2.2:${serverRef.port}`,
+              },
+            };
+            await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
             expect(device.wrappedEventParsed).toBeCalledWith({
               pageId: 'page1',
               wrappedEvent: message,

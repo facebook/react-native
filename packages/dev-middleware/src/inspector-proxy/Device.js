@@ -799,6 +799,31 @@ export default class Device {
         // Sends response to debugger via side-effect
         this.#processDebuggerGetScriptSource(req, socket);
         return null;
+      case 'Network.loadNetworkResource':
+        // If we're rewriting URLs (to frontend-relative), we don't want to
+        // pass these URLs to the device, since it may try to fetch, return a
+        // CDP *result* (not error) with a network failure, and CDT
+        // will *not* then fall back to fetching locally.
+        //
+        // Instead, take the absence of a nativeSourceCodeFetching
+        // capability as a signal to never pass a loadNetworkResource request
+        // to the device. By returning a CDP error, the frontend should fetch.
+        const result = {
+          error: {
+            code: -32601, // Method not found
+            message:
+              '[inspector-proxy]: Page lacks nativeSourceCodeFetching capability.',
+          },
+        };
+        const response = {id: req.id, result};
+        socket.send(JSON.stringify(response));
+        const pageId = this.#debuggerConnection?.pageId ?? null;
+        this.#deviceEventReporter?.logResponse(response, 'proxy', {
+          pageId,
+          frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+          prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
+        });
+        return null;
       default:
         return req;
     }
