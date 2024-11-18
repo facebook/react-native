@@ -10,8 +10,9 @@
  */
 
 import type {JSONSerializable} from '../inspector-proxy/types';
+import type {RequestOptions} from 'undici';
 
-import {Agent} from 'undici';
+import {Agent, request} from 'undici';
 
 declare var globalThis: $FlowFixMe;
 
@@ -19,15 +20,22 @@ declare var globalThis: $FlowFixMe;
  * A version of `fetch` that is usable with the HTTPS server created in
  * ServerUtils (which uses a self-signed certificate).
  */
-export async function fetchLocal(
+export async function requestLocal(
   url: string,
-  options?: Partial<Parameters<typeof fetch>[1] & {dispatcher?: mixed}>,
-): ReturnType<typeof fetch> {
-  return await fetch(url, {
+  options?: RequestOptions,
+): Promise<{
+  statusCode: number,
+  headers: Headers,
+  bodyBuffer: Buffer,
+}> {
+  const {
+    statusCode,
+    headers: rawHeaders,
+    body,
+  } = await request(url, {
     ...options,
-    // Node's native `fetch` comes from undici and supports the same options,
-    // including `dispatcher` which we use to make it accept self-signed
-    // certificates.
+
+    // Use undici's `dispatcher` to make it accept self-signed certificates.
     dispatcher:
       options?.dispatcher ??
       new Agent({
@@ -36,14 +44,22 @@ export async function fetchLocal(
         },
       }),
   });
+  return {
+    statusCode,
+    bodyBuffer: await body.read(),
+    headers: new Headers(rawHeaders),
+  };
 }
 
 export async function fetchJson<T: JSONSerializable>(url: string): Promise<T> {
-  const response = await fetchLocal(url);
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status} ${response.statusText}`);
+  const response = await requestLocal(url);
+  if (response.statusCode !== 200) {
+    throw new Error(`HTTP ${response.statusCode}`);
   }
-  return response.json();
+  if (!response.headers.get('Content-Type')?.startsWith('application/json')) {
+    throw new Error('Expected Content-Type: application/json');
+  }
+  return JSON.parse(response.bodyBuffer.toString());
 }
 
 /**
