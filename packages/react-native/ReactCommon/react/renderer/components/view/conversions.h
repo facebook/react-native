@@ -619,7 +619,7 @@ inline void fromRawValue(
         transformMatrix.matrix[i++] = number;
       }
       transformMatrix.operations.push_back(TransformOperation{
-        TransformOperationType::Arbitrary, Zero, Zero, Zero});
+          TransformOperationType::Arbitrary, Zero, Zero, Zero});
     } else if (operation == "perspective") {
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Perspective,
