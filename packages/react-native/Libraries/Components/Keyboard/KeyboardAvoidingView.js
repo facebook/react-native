@@ -158,6 +158,11 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       return;
     }
 
+    if(this.props.behavior === 'nothing') {
+      this._setBottom(0);
+      return;
+    }
+
     if (
       Platform.OS === 'ios' &&
       this._windowWidth !== this._keyboardEvent.endCoordinates.width
