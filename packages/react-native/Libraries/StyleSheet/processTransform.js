@@ -148,6 +148,12 @@ function _validateTransforms(transform: Array<Object>): void {
     );
     const key = keys[0];
     const value = transformation[key];
+    if (key === 'matrix' && transform.length > 1) {
+      console.error(
+        'You must only specify exactly one matrix per transform object. Passed transform: ' +
+          stringifySafe(transform),
+      );
+    }
     _validateTransform(key, value, transformation);
   });
 }

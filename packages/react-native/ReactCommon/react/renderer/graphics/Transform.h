@@ -50,8 +50,6 @@ struct TransformOperation {
   ValueUnit x;
   ValueUnit y;
   ValueUnit z;
-  std::array<Float, 16> matrix{
-      {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}};
   bool operator==(const TransformOperation& other) const = default;
 };
 

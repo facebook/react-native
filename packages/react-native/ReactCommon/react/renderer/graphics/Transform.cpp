@@ -200,7 +200,7 @@ Transform Transform::FromTransformOperation(
   if (transformOperation.type == TransformOperationType::Arbitrary) {
     auto arbitraryTransform = Transform{};
     arbitraryTransform.operations.push_back(transformOperation);
-    arbitraryTransform.matrix = transformOperation.matrix;
+    arbitraryTransform.matrix = transform.matrix;
     return arbitraryTransform;
   }
 
