@@ -167,6 +167,8 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
     NSArray<NSString *> *fontNames = [UIFont fontNamesForFamilyName:fontProperties.family];
 
     if (fontNames.count == 0) {
+      // Gracefully handle being given a font name rather than font family, for
+      // example: "Helvetica Light Oblique" rather than just "Helvetica".
       font = [UIFont fontWithName:fontProperties.family size:effectiveFontSize];
       if (font) {
         fontNames = [UIFont fontNamesForFamilyName:font.familyName];
