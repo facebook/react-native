@@ -123,12 +123,14 @@
   return self.disableKeyboardShortcuts;
 }
 
-BOOL isFirstRender = YES;
-NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
-NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
+
 
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
+  static BOOL isFirstRender = YES;
+  static NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
+  static NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
+  
     // Log the call to this method
   NSLog(@"RCTUITextField setDisableKeyboardShortcuts called with value: %d", disableKeyboardShortcuts);
   NSLog(@"RCTBaseTextInputView isFirstRender: %d", isFirstRender);;
@@ -139,10 +141,10 @@ NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
     // Capture initial values of leading and trailing button groups
     initialValueLeadingBarButtonGroups = self.inputAssistantItem.leadingBarButtonGroups;
     initialValueTrailingBarButtonGroups = self.inputAssistantItem.trailingBarButtonGroups;
+    
+    NSLog(@"Initial Leading Bar Button Groups: %@", initialValueLeadingBarButtonGroups);
+    NSLog(@"Initial Trailing Bar Button Groups: %@", initialValueTrailingBarButtonGroups);
   }
-  
-  NSLog(@"Initial Leading Bar Button Groups: %@", initialValueLeadingBarButtonGroups);
-  NSLog(@"Initial Trailing Bar Button Groups: %@", initialValueTrailingBarButtonGroups);
 
   if (disableKeyboardShortcuts) {
     self.inputAssistantItem.leadingBarButtonGroups = @[];
