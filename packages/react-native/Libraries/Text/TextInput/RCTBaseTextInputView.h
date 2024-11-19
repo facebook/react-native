@@ -56,7 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isFirstRender;
 @property (nonatomic, strong) NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
 @property (nonatomic, strong) NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
-@property (nonatomic, assign) BOOL disableKeyboardShortcuts;
 
 /**
  Sets selection intext input if both start and end are within range of the text input.
