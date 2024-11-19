@@ -58,6 +58,9 @@ const buildConfig /*: BuildConfig */ = {
       emitTypeScriptDefs: true,
       target: 'node',
     },
+    'react-native-codegen': {
+      target: 'node',
+    },
   },
 };
 

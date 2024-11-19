@@ -24,15 +24,7 @@ const glob = require('glob');
 const os = require('os');
 const path = require('path');
 
-const REACT_NATIVE_REPOSITORY_ROOT = path.join(
-  __dirname,
-  '..',
-  '..',
-  '..',
-  '..',
-);
 const REACT_NATIVE_PACKAGE_ROOT_FOLDER = path.join(__dirname, '..', '..');
-const CODEGEN_REPO_PATH = `${REACT_NATIVE_REPOSITORY_ROOT}/packages/react-native-codegen`;
 const RNCORE_CONFIGS = {
   ios: path.join(REACT_NATIVE_PACKAGE_ROOT_FOLDER, 'ReactCommon'),
   android: path.join(
@@ -371,28 +363,6 @@ function findProjectRootLibraries(pkgJson, projectRoot) {
   }
 
   return extractLibrariesFromJSON(pkgJson, projectRoot);
-}
-
-// CodeGen
-function buildCodegenIfNeeded() {
-  if (!fs.existsSync(CODEGEN_REPO_PATH)) {
-    return;
-  }
-  // Assuming we are working in the react-native repo. We might need to build the codegen.
-  // This will become unnecessary once we start using Babel Register for the codegen package.
-  const libPath = path.join(CODEGEN_REPO_PATH, 'lib');
-  if (fs.existsSync(libPath) && fs.readdirSync(libPath).length > 0) {
-    return;
-  }
-  codegenLog('Building react-native-codegen package.', true);
-  execSync('yarn install', {
-    cwd: CODEGEN_REPO_PATH,
-    stdio: 'inherit',
-  });
-  execSync('yarn build', {
-    cwd: CODEGEN_REPO_PATH,
-    stdio: 'inherit',
-  });
 }
 
 function readOutputDirFromPkgJson(pkgJson, platform) {
@@ -826,7 +796,6 @@ function cleanupEmptyFilesAndFolders(filepath) {
 
 function generateRNCoreComponentsIOS(projectRoot /*: string */) /*: void*/ {
   const ios = 'ios';
-  buildCodegenIfNeeded();
   const pkgJson = readPkgJsonInDirectory(projectRoot);
   const rncoreLib = findProjectRootLibraries(pkgJson, projectRoot).filter(
     library => library.config.name === 'rncore',
@@ -842,7 +811,6 @@ function generateRNCoreComponentsIOS(projectRoot /*: string */) /*: void*/ {
 
 function generateFBReactNativeSpecIOS(projectRoot /*: string */) /*: void*/ {
   const ios = 'ios';
-  buildCodegenIfNeeded();
   const pkgJson = readPkgJsonInDirectory(projectRoot);
   const fbReactNativeSpecLib = findProjectRootLibraries(
     pkgJson,
@@ -890,8 +858,6 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
     }
 
     const pkgJson = readPkgJsonInDirectory(projectRoot);
-
-    buildCodegenIfNeeded();
 
     const libraries = findCodegenEnabledLibraries(pkgJson, projectRoot);
 

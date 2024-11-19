@@ -15,6 +15,12 @@ const {cheap: traverseCheap} = require('@babel/traverse').default;
 const {basename} = require('path');
 
 try {
+  // Register Babel to allow modules to be loaded from source. Will throw if we
+  // are not inside the React Native monorepo.
+  // TODO(dmitryrykun): Remove this once we've reduced codegen to a single
+  // entry point.
+  require('../../scripts/build/babel-register').registerForMonorepo();
+
   FlowParser =
     require('@react-native/codegen/src/parsers/flow/parser').FlowParser;
   TypeScriptParser =

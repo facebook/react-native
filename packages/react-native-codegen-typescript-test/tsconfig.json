@@ -4,7 +4,7 @@
       "es6"
     ],
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "node16",
     "target": "es5",
     "declaration": false,
     "sourceMap": false,

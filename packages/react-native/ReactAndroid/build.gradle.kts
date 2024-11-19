@@ -409,18 +409,6 @@ val prepareKotlinBuildScriptModel by
       // We create it here so we can let it depend on preBuild inside the android{}
     }
 
-// As ReactAndroid builds from source, the codegen needs to be built before it can be invoked.
-// This is not the case for users of React Native, as we ship a compiled version of the codegen.
-val buildCodegenCLI by
-    tasks.registering(BuildCodegenCLITask::class) {
-      codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
-      bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath").toString())
-      onlyIf {
-        // For build from source scenario, we don't need to build the codegen at all.
-        rootProject.name != "react-native-build-from-source"
-      }
-    }
-
 /**
  * Finds the path of the installed npm package with the given name using Node's module resolution
  * algorithm, which searches "node_modules" directories up to the file system root. This handles
@@ -568,7 +556,6 @@ android {
   tasks
       .getByName("preBuild")
       .dependsOn(
-          buildCodegenCLI,
           "generateCodegenArtifactsFromSchema",
           prepareBoost,
           prepareDoubleConversion,
@@ -579,7 +566,6 @@ android {
           prepareGtest,
           prepareJSC,
           preparePrefab)
-  tasks.getByName("generateCodegenSchemaFromJavaScript").dependsOn(buildCodegenCLI)
   prepareKotlinBuildScriptModel.dependsOn("preBuild")
   prepareKotlinBuildScriptModel.dependsOn(
       ":packages:react-native:ReactAndroid:hermes-engine:preBuild")
@@ -686,15 +672,6 @@ react {
 // module to apply the plugin to, so it's codegenDir and reactNativeDir won't be evaluated.
 if (rootProject.name == "react-native-build-from-source") {
   rootProject.extensions.getByType(PrivateReactExtension::class.java).apply {
-    // We try to guess where codegen lives. Generally is inside
-    // node_modules/@react-native/codegen. If the file is not existing, we
-    // fallback to ../react-native-codegen (used for hello-world app).
-    codegenDir =
-        if (file("$rootDir/../@react-native/codegen").exists()) {
-          file("$rootDir/../@react-native/codegen")
-        } else {
-          file("$rootDir/../react-native-codegen")
-        }
     reactNativeDir = file("$rootDir")
   }
 }
