@@ -215,17 +215,19 @@ class Expect {
     }
   }
 
-  toThrow(error: mixed): void {
-    if (error != null) {
-      throw new Error('toThrow() implementation does not accept arguments.');
+  toThrow(expected?: string): void {
+    if (expected != null && typeof expected !== 'string') {
+      throw new Error(
+        'toThrow() implementation only accepts strings as arguments.',
+      );
     }
 
     let pass = false;
     try {
       // $FlowExpectedError[not-a-function]
       this.#received();
-    } catch {
-      pass = true;
+    } catch (error) {
+      pass = expected != null ? error.message === expected : true;
     }
     if (!this.#isExpectedResult(pass)) {
       throw new Error(
