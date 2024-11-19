@@ -32,7 +32,7 @@ class ImageProps final : public ViewProps {
 #pragma mark - Props
 
   ImageSources sources{};
-  ImageSources defaultSources{};
+  ImageSource defaultSource{};
   ImageResizeMode resizeMode{ImageResizeMode::Stretch};
   Float blurRadius{};
   EdgeInsets capInsets{};
