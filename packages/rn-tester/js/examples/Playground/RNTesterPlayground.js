@@ -24,9 +24,30 @@ function Playground() {
 
       <TextInput
         style={styles.input}
-        placeholder="test"
-        // disableKeyboardShortcuts
-        disableKeyboardShortcuts={false}
+        placeholder="Single line - default"
+        placeholderTextColor="black"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Single line - disableKeyboardShortcuts"
+        disableKeyboardShortcuts
+        placeholderTextColor="black"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Multiline - default"
+        multiline
+        placeholderTextColor="black"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Multiline - disableKeyboardShortcuts"
+        multiline
+        disableKeyboardShortcuts
+        placeholderTextColor="black"
       />
     </View>
   );
@@ -39,6 +60,8 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 40,
+    marginTop: 16,
+    paddingLeft: 8,
     borderColor: 'gray',
     borderWidth: 1,
   },
