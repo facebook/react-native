@@ -123,6 +123,8 @@
   return self.disableKeyboardShortcuts;
 }
 
+
+
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
   static BOOL isFirstRender = YES;
