@@ -35,6 +35,15 @@ ImageProps::ImageProps(
                     "defaultSource",
                     sourceProps.defaultSource,
                     {})),
+      loadingIndicatorSource(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.loadingIndicatorSource
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "loadingIndicatorSource",
+                    sourceProps.loadingIndicatorSource,
+                    {})),
       resizeMode(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.resizeMode
@@ -79,6 +88,60 @@ ImageProps::ImageProps(
                     rawProps,
                     "internal_analyticTag",
                     sourceProps.internal_analyticTag,
+                    {})),
+      resizeMethod(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.internal_analyticTag
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "resizeMethod",
+                    sourceProps.internal_analyticTag,
+                    {})),
+      resizeMultiplier(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.resizeMultiplier
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "resizeMultiplier",
+                    sourceProps.resizeMultiplier,
+                    {})),
+      shouldNotify(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.shouldNotify
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "shouldNotify",
+                    sourceProps.shouldNotify,
+                    {})),
+      overlayColor(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.overlayColor
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "overlayColor",
+                    sourceProps.overlayColor,
+                    {})),
+      fadeDuration(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.fadeDuration
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "fadeDuration",
+                    sourceProps.fadeDuration,
+                    {})),
+      progressiveRenderingEnabled(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.progressiveRenderingEnabled
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "progressiveRenderingEnabled",
+                    sourceProps.progressiveRenderingEnabled,
                     {})) {}
 
 void ImageProps::setProp(
@@ -96,11 +159,18 @@ void ImageProps::setProp(
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE(sources, "source");
     RAW_SET_PROP_SWITCH_CASE(defaultSource, "defaultSource");
+    RAW_SET_PROP_SWITCH_CASE(loadingIndicatorSource, "loadingIndicatorSource");
     RAW_SET_PROP_SWITCH_CASE_BASIC(resizeMode);
     RAW_SET_PROP_SWITCH_CASE_BASIC(blurRadius);
     RAW_SET_PROP_SWITCH_CASE_BASIC(capInsets);
     RAW_SET_PROP_SWITCH_CASE_BASIC(tintColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(internal_analyticTag);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(resizeMethod);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(resizeMultiplier);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shouldNotify);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(overlayColor);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(fadeDuration);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(progressiveRenderingEnabled);
   }
 }
 
