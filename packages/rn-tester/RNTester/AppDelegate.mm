@@ -151,8 +151,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 - (BOOL)bridgelessEnabled
 {
-  BOOL bridgelessEnabled = [super bridgelessEnabled];
-  NSLog(@"Bridgeless enabled: %d", bridgelessEnabled);
   return [super bridgelessEnabled];
 }
 

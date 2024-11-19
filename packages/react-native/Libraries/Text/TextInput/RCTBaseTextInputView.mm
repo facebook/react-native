@@ -819,27 +819,19 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   static BOOL isFirstRender = YES;
   static NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
   static NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
-  
-  // Log the call to this method
-  NSLog(@"RCTBaseTextInputView setDisableKeyboardShortcuts called with value: %d", disableKeyboardShortcuts);
-  NSLog(@"RCTBaseTextInputView isFirstRender: %d", isFirstRender);
-  
+
   // Initialize the initial values only once
   if (isFirstRender) {
     isFirstRender = NO;
     // Capture initial values of leading and trailing button groups
     initialValueLeadingBarButtonGroups = self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups;
     initialValueTrailingBarButtonGroups = self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups;
-    
-    // Optionally, log the initial values for verification
-    NSLog(@"Initial Leading Bar Button Groups: %@", initialValueLeadingBarButtonGroups);
-    NSLog(@"Initial Trailing Bar Button Groups: %@", initialValueTrailingBarButtonGroups);
   }
 
   if (disableKeyboardShortcuts) {
     self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = @[];
     self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = @[];
-  }else {
+  } else {
     // Restore the initial values
     self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = initialValueLeadingBarButtonGroups;
     self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = initialValueTrailingBarButtonGroups;

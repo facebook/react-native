@@ -137,20 +137,13 @@ static UIColor *defaultPlaceholderColor(void)
   static BOOL isFirstRender = YES;
   static NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
   static NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
-  
-    // Log the call to this method
-  NSLog(@"RCTUITextField setDisableKeyboardShortcuts called with value: %d", disableKeyboardShortcuts);
-  NSLog(@"RCTBaseTextInputView isFirstRender: %d", isFirstRender);;
-  
+
   // Initialize the initial values only once
   if (isFirstRender) {
     isFirstRender = NO;
     // Capture initial values of leading and trailing button groups
     initialValueLeadingBarButtonGroups = self.inputAssistantItem.leadingBarButtonGroups;
     initialValueTrailingBarButtonGroups = self.inputAssistantItem.trailingBarButtonGroups;
-    
-    NSLog(@"Initial Leading Bar Button Groups: %@", initialValueLeadingBarButtonGroups);
-    NSLog(@"Initial Trailing Bar Button Groups: %@", initialValueTrailingBarButtonGroups);
   }
 
   if (disableKeyboardShortcuts) {
