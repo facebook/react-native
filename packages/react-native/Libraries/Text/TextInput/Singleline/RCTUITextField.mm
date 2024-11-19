@@ -115,16 +115,6 @@
   self.attributedText = originalText;
 }
 
-- (BOOL)disableKeyboardShortcuts
-{
-  // Log the call to this method
-  NSLog(@"RCTUITextField setDisableKeyboardShortcuts called with value: %d", self.disableKeyboardShortcuts);
-
-  return self.disableKeyboardShortcuts;
-}
-
-
-
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
   static BOOL isFirstRender = YES;
