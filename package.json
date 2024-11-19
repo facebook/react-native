@@ -48,7 +48,6 @@
     "@babel/preset-flow": "^7.24.7",
     "@definitelytyped/dtslint": "^0.0.127",
     "@jest/create-cache-key-function": "^29.6.3",
-    "@pkgjs/parseargs": "^0.11.0",
     "@react-native/metro-babel-transformer": "0.77.0-main",
     "@react-native/metro-config": "0.77.0-main",
     "@tsconfig/node18": "1.0.1",
