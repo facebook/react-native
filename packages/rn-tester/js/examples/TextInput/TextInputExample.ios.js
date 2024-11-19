@@ -289,6 +289,73 @@ const TextInputWithFocusButton = () => {
   );
 };
 
+function KeyboardShortcutsExample() {
+  return (
+    <View>
+      <Text
+        style={{
+          marginBottom: 4,
+        }}>
+        Single line:
+      </Text>
+
+      <ExampleTextInput
+        style={{
+          marginBottom: 4,
+        }}
+        placeholder="Default"
+      />
+
+      <ExampleTextInput
+        style={{
+          marginBottom: 4,
+        }}
+        placeholder="Disable keyboard shortcuts"
+        disableKeyboardShortcuts
+      />
+
+      <ExampleTextInput
+        style={{
+          marginBottom: 4,
+        }}
+        placeholder="Hidden keyboard with suggestions"
+        showSoftInputOnFocus={false}
+      />
+
+      <ExampleTextInput
+        style={{
+          marginBottom: 4,
+        }}
+        placeholder="Hidden keyboard without suggestions"
+        disableKeyboardShortcuts
+        autoCorrect={false}
+        spellCheck={false}
+        showSoftInputOnFocus={false}
+      />
+
+      <Text
+        style={{
+          marginBottom: 4,
+        }}>
+        Multiline:
+      </Text>
+
+      <ExampleTextInput
+        style={styles.multiline}
+        multiline
+        placeholder="default"
+      />
+
+      <ExampleTextInput
+        style={styles.multiline}
+        multiline
+        placeholder="Disable keyboard shortcuts"
+        disableKeyboardShortcuts
+      />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   multiline: {
     height: 50,
@@ -967,6 +1034,12 @@ const textInputExamples: Array<RNTesterModuleExample> = [
           })}
         </View>
       );
+    },
+  },
+  {
+    title: 'Keyboard shortcuts',
+    render: function (): React.Node {
+      return <KeyboardShortcutsExample />;
     },
   },
 ];
