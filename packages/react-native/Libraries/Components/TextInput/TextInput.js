@@ -1602,12 +1602,6 @@ function InternalTextInput(props: Props): React.Node {
           flattenedStyle.paddingVertical == null &&
           flattenedStyle.paddingTop == null));
 
-    // TODO: Remove this once the new color props are fully rolled out
-    console.debug(
-      '[dev] disableKeyboardShortcuts',
-      otherProps.disableKeyboardShortcuts,
-    );
-
     textInput = (
       <RCTTextInputView
         // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
