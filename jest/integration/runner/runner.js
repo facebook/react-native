@@ -92,8 +92,8 @@ module.exports = async function runTest(
   const setupModulePath = path.resolve(__dirname, '../runtime/setup.js');
 
   const entrypointContents = entrypointTemplate({
-    testPath: `.${path.sep}${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
-    setupModulePath: `.${path.sep}${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
+    testPath: `${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
+    setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
   });
 
   const entrypointPath = path.join(
