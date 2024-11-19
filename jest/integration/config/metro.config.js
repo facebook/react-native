@@ -23,18 +23,27 @@ const config = {
     update: () => {},
   },
   resolver: {
-    blockList: null,
-    sourceExts: [...rnTesterConfig.resolver.sourceExts, 'fb.js'],
+    blockList: /\/RendererProxy\.fb\.js$/, // Disable dependency injection for the renderer
+    disableHierarchicalLookup: !!process.env.JS_DIR,
+    sourceExts: ['fb.js', ...rnTesterConfig.resolver.sourceExts],
     nodeModulesPaths: process.env.JS_DIR
       ? [path.join(process.env.JS_DIR, 'public', 'node_modules')]
       : [],
+    hasteImplModulePath: path.resolve(__dirname, 'hasteImpl.js'),
   },
   transformer: {
     // We need to wrap the default transformer so we can run it from source
     // using babel-register.
     babelTransformerPath: path.resolve(__dirname, 'metro-babel-transformer.js'),
   },
-  watchFolders: process.env.JS_DIR ? [process.env.JS_DIR] : [],
+  watchFolders: process.env.JS_DIR
+    ? [
+        path.join(process.env.JS_DIR, 'RKJSModules', 'vendor', 'react'),
+        path.join(process.env.JS_DIR, 'tools', 'metro'),
+        path.join(process.env.JS_DIR, 'node_modules'),
+        path.join(process.env.JS_DIR, 'public', 'node_modules'),
+      ]
+    : [],
 };
 
 module.exports = mergeConfig(rnTesterConfig, config);
