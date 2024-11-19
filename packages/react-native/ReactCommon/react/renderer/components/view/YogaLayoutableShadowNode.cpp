@@ -300,13 +300,13 @@ void YogaLayoutableShadowNode::replaceChild(
     // Both children are layoutable, replace the old one with the new one
     react_native_assert(layoutableNewChild->yogaNode_.getOwner() == nullptr);
     layoutableNewChild->yogaNode_.setOwner(&yogaNode_);
-    *oldChildIter = layoutableNewChild;
     yogaNode_.replaceChild(&layoutableNewChild->yogaNode_, oldChildIndex);
+    *oldChildIter = layoutableNewChild;
   } else {
     // Layoutable child replaced with non layoutable child. Remove the previous
     // child from the layoutable children list.
-    yogaLayoutableChildren_.erase(oldChildIter);
     yogaNode_.removeChild(oldChildIndex);
+    yogaLayoutableChildren_.erase(oldChildIter);
   }
 
   ensureYogaChildrenLookFine();
