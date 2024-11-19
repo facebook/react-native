@@ -213,8 +213,9 @@ const RawValue* RawProps::at(
 /*
  * Returns a ref to the underlying jsi value of the prop. Only accessible if mode is JSI.
  */
-jsi::Value& RawProps::jsiValueAt(std::string name) const noexcept {
-  return jsiValues_.at(name);
+jsi::Value RawProps::EXPERIMENTAL_jsiValueAt(const char* name) const noexcept {
+  jsi::Value value = value_.getObject(*runtime_).getProperty(*runtime_, name);
+  return value;
 }
 
 } // namespace facebook::react

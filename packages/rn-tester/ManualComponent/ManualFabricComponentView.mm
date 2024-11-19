@@ -19,6 +19,7 @@
 #import <React/RCTViewComponentView.h>
 #import <jsi/jsi.h>
 
+using namespace facebook;
 using namespace facebook::react;
 
 
@@ -26,9 +27,18 @@ using namespace facebook::react;
 class CustomViewProps final : public ViewProps {
 public:
   CustomViewProps() = default; // Not sure if delete is allowed?
-  CustomViewProps(const PropsParserContext& context, const CustomViewProps &sourceProps, const RawProps &rawProps): ViewProps(context, sourceProps, rawProps), nativeProp(rawProps.isEmpty() ? facebook::jsi::Value() : std::move(rawProps.jsiValueAt("nativeProp"))) {}
+  CustomViewProps(const PropsParserContext& context, const CustomViewProps &sourceProps, const RawProps &rawProps): ViewProps(context, sourceProps, rawProps) {
+    if (rawProps.isEmpty()) {
+      return;
+    }
+    
+    jsi::Runtime& runtime = rawProps.EXPERIMENTAL_getRuntime();
+    jsi::Value nativePropValue = rawProps.EXPERIMENTAL_jsiValueAt("nativeProp");
+    jsi::String nativePropString = nativePropValue.getString(runtime);
+    nativeProp = nativePropString.utf8(runtime);
+  }
   
-  facebook::jsi::Value nativeProp;
+  std::string nativeProp;
 };
 
 class CustomViewState {
@@ -60,6 +70,13 @@ using CustomViewComponentDescriptor = ConcreteComponentDescriptor<ComponentShado
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
   return concreteComponentDescriptorProvider<CustomViewComponentDescriptor>();
+}
+
+- (void)updateProps:(const facebook::react::Props::Shared &)props oldProps:(const facebook::react::Props::Shared &)oldProps {
+  const auto &newViewProps = *std::static_pointer_cast<CustomViewProps const>(props);
+  NSLog(@"NativeProp value: %s", newViewProps.nativeProp.c_str());
+  
+  [super updateProps:props oldProps:oldProps];
 }
 
 @end

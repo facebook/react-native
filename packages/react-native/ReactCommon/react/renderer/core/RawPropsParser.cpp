@@ -140,9 +140,6 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
         auto value = object.getProperty(runtime, nameValue);
         rawProps.values_.push_back(
             RawValue(jsi::dynamicFromValue(runtime, value)));
-        
-        auto value2 = object.getProperty(runtime, nameValue);
-        rawProps.jsiValues_.try_emplace(name, std::move(value2));
 
         valueIndex++;
       }

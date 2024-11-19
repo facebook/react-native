@@ -94,7 +94,11 @@ class RawProps final {
    */
   const RawValue* at(const char* name, const char* prefix, const char* suffix) const noexcept;
   
-  jsi::Value& jsiValueAt(std::string name) const noexcept;
+  jsi::Value EXPERIMENTAL_jsiValueAt(const char* name) const noexcept;
+  
+  jsi::Runtime& EXPERIMENTAL_getRuntime() const {
+    return *runtime_;
+  }
 
  private:
   friend class RawPropsParser;
@@ -126,7 +130,6 @@ class RawProps final {
    */
   mutable std::vector<RawPropsValueIndex> keyIndexToValueIndex_;
   mutable std::vector<RawValue> values_;
-  mutable std::unordered_map<std::string, jsi::Value> jsiValues_;
 
   bool ignoreYogaStyleProps_{false};
 };
