@@ -336,9 +336,8 @@ public object BackgroundStyleApplicator {
       }
     }
 
-    view.background =
-        ensureCompositeBackgroundDrawable(view)
-            .withNewShadows(outerShadows = outerShadows, innerShadows = innerShadows)
+    view.background = ensureCompositeBackgroundDrawable(view).withNewOuterShadow(outerShadows)
+    view.background = ensureCompositeBackgroundDrawable(view).withNewInnerShadow(innerShadows)
   }
 
   @JvmStatic
