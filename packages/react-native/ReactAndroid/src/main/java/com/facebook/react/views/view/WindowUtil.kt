@@ -7,10 +7,14 @@
 
 package com.facebook.react.views.view
 
+import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Build
 import android.view.Window
 import android.view.WindowManager
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 @Suppress("DEPRECATION")
 public fun Window.setStatusBarTranslucency(isTranslucent: Boolean) {
@@ -60,4 +64,42 @@ private fun Window.statusBarShow() {
   }
   addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
   clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+}
+
+@Suppress("DEPRECATION")
+public fun Window.setSystemBarsTranslucency(isTranslucent: Boolean) {
+  WindowCompat.setDecorFitsSystemWindows(this, !isTranslucent)
+
+  if (isTranslucent) {
+    val isDarkMode =
+        context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+            Configuration.UI_MODE_NIGHT_YES
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      isStatusBarContrastEnforced = false
+      isNavigationBarContrastEnforced = true
+    }
+
+    statusBarColor = Color.TRANSPARENT
+    navigationBarColor =
+        when {
+          Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> Color.TRANSPARENT
+          Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && !isDarkMode ->
+              Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+          else -> Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+        }
+
+    WindowInsetsControllerCompat(this, this.decorView).run {
+      isAppearanceLightNavigationBars = !isDarkMode
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      attributes.layoutInDisplayCutoutMode =
+          when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ->
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+            else -> WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+          }
+    }
+  }
 }

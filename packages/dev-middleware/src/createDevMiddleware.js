@@ -28,11 +28,8 @@ type Options = $ReadOnly<{
   projectRoot: string,
 
   /**
-   * The base URL to the dev server, as addressible from the local developer
-   * machine. This is used in responses which return URLs to other endpoints,
-   * e.g. the debugger frontend and inspector proxy targets.
-   *
-   * Example: `'http://localhost:8081'`.
+   * The base URL to the dev server, as reachable from the machine on which
+   * dev-middleware is hosted. Typically `http://localhost:${metroPort}`.
    */
   serverBaseUrl: string,
 

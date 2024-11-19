@@ -258,7 +258,7 @@ std::u16string Runtime::utf16(const String& str) {
   return convertUTF8ToUTF16(utf8Str);
 }
 
-Pointer& Pointer::operator=(Pointer&& other) {
+Pointer& Pointer::operator=(Pointer&& other) noexcept {
   if (ptr_) {
     ptr_->invalidate();
   }
@@ -333,7 +333,7 @@ Function Object::asFunction(Runtime& runtime) && {
   return std::move(*this).getFunction(runtime);
 }
 
-Value::Value(Value&& other) : Value(other.kind_) {
+Value::Value(Value&& other) noexcept : Value(other.kind_) {
   if (kind_ == BooleanKind) {
     data_.boolean = other.data_.boolean;
   } else if (kind_ == NumberKind) {

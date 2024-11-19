@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f2175cbbe38a66b9aa5c3f0feaa07462>>
+ * @generated SignedSource<<cfa6f544c0bcb190836329d8f597efc6>>
  */
 
 /**
@@ -28,10 +28,6 @@ std::unique_ptr<ReactNativeFeatureFlagsAccessor> accessor_;
 
 bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
-}
-
-bool ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid() {
-  return getAccessor().allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid() {
@@ -84,6 +80,10 @@ bool ReactNativeFeatureFlags::enableFabricRenderer() {
 
 bool ReactNativeFeatureFlags::enableFabricRendererExclusively() {
   return getAccessor().enableFabricRendererExclusively();
+}
+
+bool ReactNativeFeatureFlags::enableFixForViewCommandRace() {
+  return getAccessor().enableFixForViewCommandRace();
 }
 
 bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
@@ -144,10 +144,6 @@ bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact()
 
 bool ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid() {
   return getAccessor().fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-}
-
-bool ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid() {
-  return getAccessor().forceBatchingMountItemsOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::fuseboxEnabledDebug() {

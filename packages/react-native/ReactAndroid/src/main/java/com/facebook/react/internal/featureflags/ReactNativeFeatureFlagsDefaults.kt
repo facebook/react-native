@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<09dd6fb517b7b965c5cc554a075e5590>>
+ * @generated SignedSource<<3d25d7b8ee194721c39fb5eb5eda87d4>>
  */
 
 /**
@@ -25,9 +25,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun commonTestFlag(): Boolean = false
 
-  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
-
-  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
+  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = true
 
   override fun disableEventLoopOnBridgeless(): Boolean = false
 
@@ -52,6 +50,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableFabricRenderer(): Boolean = false
 
   override fun enableFabricRendererExclusively(): Boolean = false
+
+  override fun enableFixForViewCommandRace(): Boolean = false
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
@@ -83,13 +83,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
 
-  override fun forceBatchingMountItemsOnAndroid(): Boolean = false
-
   override fun fuseboxEnabledDebug(): Boolean = true
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
-  override fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean = false
+  override fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean = true
 
   override fun lazyAnimationCallbacks(): Boolean = false
 
@@ -103,7 +101,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useFabricInterop(): Boolean = false
 
-  override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
+  override fun useImmediateExecutorInAndroidBridgeless(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 

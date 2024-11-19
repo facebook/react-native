@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b7f79cb934f8bf2519439339fc7562d3>>
+ * @generated SignedSource<<124e8e4892062fa63a9a70ae0c53653d>>
  */
 
 /**
@@ -33,12 +33,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
-
-  /**
-   * Adds support for recursively processing commits that mount synchronously (Android only).
-   */
-  @JvmStatic
-  public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = accessor.allowRecursiveCommitsWithSynchronousMountOnAndroid()
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
@@ -117,6 +111,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricRendererExclusively(): Boolean = accessor.enableFabricRendererExclusively()
+
+  /**
+   * Synchronise the view command dispatching with mounting of new transaction
+   */
+  @JvmStatic
+  public fun enableFixForViewCommandRace(): Boolean = accessor.enableFixForViewCommandRace()
 
   /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
@@ -207,12 +207,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = accessor.fixMountingCoordinatorReportedPendingTransactionsOnAndroid()
-
-  /**
-   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
-   */
-  @JvmStatic
-  public fun forceBatchingMountItemsOnAndroid(): Boolean = accessor.forceBatchingMountItemsOnAndroid()
 
   /**
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.

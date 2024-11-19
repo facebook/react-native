@@ -12,6 +12,7 @@ exports[`public API should not change unintentionally Libraries/ActionSheetIOS/A
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
       +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
+      +disabledButtonTintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
       +disabledButtonIndices?: Array<number>,
     |},
@@ -707,7 +708,7 @@ declare export default typeof AnimatedScrollView;
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedSectionList.js 1`] = `
 "declare export default AnimatedComponentType<
   React.ElementConfig<typeof SectionList>,
-  React.ElementRef<typeof SectionList>,
+  SectionList<SectionBase<any>>,
 >;
 "
 `;
@@ -2042,7 +2043,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 export type DecelerationRateType = \\"fast\\" | \\"normal\\" | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
 type PublicScrollViewInstance = $ReadOnly<{|
-  ...$Exact<TScrollViewNativeComponentInstance>,
+  ...HostInstance,
   ...ScrollViewImperativeMethods,
 |}>;
 type InnerViewInstance = React.ElementRef<View>;
@@ -2169,7 +2170,7 @@ declare class ScrollView extends React.Component<Props, State> {
   getScrollableNode: () => ?number;
   getInnerViewNode: () => ?number;
   getInnerViewRef: () => InnerViewInstance | null;
-  getNativeScrollRef: () => TScrollViewNativeComponentInstance | null;
+  getNativeScrollRef: () => HostInstance | null;
   scrollTo: (
     options?:
       | {
@@ -2184,9 +2185,6 @@ declare class ScrollView extends React.Component<Props, State> {
   ) => void;
   scrollToEnd: (options?: ?{ animated?: boolean, ... }) => void;
   flashScrollIndicators: () => void;
-  _subscribeToOnScroll: (
-    callback: ({ x: number, y: number }) => void
-  ) => EventSubscription;
   scrollResponderScrollNativeHandleToKeyboard: (
     nodeHandle: number | HostInstance,
     additionalOffset?: number,
@@ -2224,10 +2222,7 @@ declare class ScrollView extends React.Component<Props, State> {
   _handleLayout: $FlowFixMe;
   _handleContentOnLayout: $FlowFixMe;
   _innerView: RefForwarder<InnerViewInstance, InnerViewInstance>;
-  _scrollView: RefForwarder<
-    TScrollViewNativeImperativeHandle,
-    PublicScrollViewInstance | null,
-  >;
+  _scrollView: RefForwarder<HostInstance, PublicScrollViewInstance | null>;
   scrollResponderKeyboardWillShow: (e: KeyboardEvent) => void;
   scrollResponderKeyboardWillHide: (e: KeyboardEvent) => void;
   scrollResponderKeyboardDidShow: (e: KeyboardEvent) => void;
@@ -2968,6 +2963,7 @@ type IOSProps = $ReadOnly<{|
     | $ReadOnlyArray<DataDetectorTypesType>,
   enablesReturnKeyAutomatically?: ?boolean,
   inputAccessoryViewID?: ?string,
+  inputAccessoryViewButtonLabel?: ?string,
   keyboardAppearance?: ?(\\"default\\" | \\"light\\" | \\"dark\\"),
   passwordRules?: ?PasswordRules,
   rejectResponderTermination?: ?boolean,
@@ -3320,6 +3316,7 @@ type IOSProps = $ReadOnly<{|
     | $ReadOnlyArray<DataDetectorTypesType>,
   enablesReturnKeyAutomatically?: ?boolean,
   inputAccessoryViewID?: ?string,
+  inputAccessoryViewButtonLabel?: ?string,
   keyboardAppearance?: ?(\\"default\\" | \\"light\\" | \\"dark\\"),
   passwordRules?: ?PasswordRules,
   rejectResponderTermination?: ?boolean,
@@ -4869,7 +4866,7 @@ export type ImageProps = $ReadOnly<{|
     | \\"strict-origin-when-cross-origin\\"
     | \\"unsafe-url\\"
   ),
-  resizeMode?: ?(\\"cover\\" | \\"contain\\" | \\"stretch\\" | \\"repeat\\" | \\"center\\"),
+  resizeMode?: ?ImageResizeMode,
   testID?: ?string,
   tintColor?: ColorValue,
   src?: ?string,
@@ -4892,7 +4889,8 @@ exports[`public API should not change unintentionally Libraries/Image/ImageResiz
   | \\"contain\\"
   | \\"cover\\"
   | \\"repeat\\"
-  | \\"stretch\\";
+  | \\"stretch\\"
+  | \\"none\\";
 "
 `;
 
@@ -4989,10 +4987,9 @@ export type { ImageProps } from \\"./ImageProps\\";
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/ImageUtils.js 1`] = `
-"type ResizeMode = \\"cover\\" | \\"contain\\" | \\"stretch\\" | \\"repeat\\" | \\"center\\";
-declare export function convertObjectFitToResizeMode(
+"declare export function convertObjectFitToResizeMode(
   objectFit: ?string
-): ?ResizeMode;
+): ?ImageResizeMode;
 "
 `;
 
@@ -5341,7 +5338,41 @@ declare const InteractionManager: {
   addListener: $FlowFixMe,
   setDeadline(deadline: number): void,
 };
-declare module.exports: InteractionManager;
+declare module.exports: typeof InteractionManager;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Interaction/InteractionManagerStub.js 1`] = `
+"export type Handle = number;
+type Task =
+  | {
+      name: string,
+      run: () => void,
+    }
+  | {
+      name: string,
+      gen: () => Promise<void>,
+    }
+  | (() => void);
+declare const InteractionManagerStub: {
+  Events: {
+    interactionStart: \\"interactionStart\\",
+    interactionComplete: \\"interactionComplete\\",
+  },
+  runAfterInteractions(task: ?Task): {
+    then: <U>(
+      onFulfill?: ?(void) => ?(Promise<U> | U),
+      onReject?: ?(error: mixed) => ?(Promise<U> | U)
+    ) => Promise<U>,
+    cancel: () => void,
+    ...
+  },
+  createInteractionHandle(): Handle,
+  clearInteractionHandle(handle: Handle): void,
+  addListener(): EventSubscription,
+  setDeadline(deadline: number): void,
+};
+declare module.exports: InteractionManagerStub;
 "
 `;
 
@@ -6411,6 +6442,7 @@ export type Props = $ReadOnly<{|
   ),
   transparent?: ?boolean,
   statusBarTranslucent?: ?boolean,
+  navigationBarTranslucent?: ?boolean,
   hardwareAccelerated?: ?boolean,
   visible?: ?boolean,
   onRequestClose?: ?DirectEventHandler<null>,
@@ -7202,7 +7234,7 @@ exports[`public API should not change unintentionally Libraries/Pressability/Pre
 exports[`public API should not change unintentionally Libraries/Pressability/usePressability.js 1`] = `
 "declare export default function usePressability(
   config: ?PressabilityConfig
-): ?EventHandlers;
+): null | EventHandlers;
 "
 `;
 
@@ -7352,7 +7384,6 @@ type AppParameters = {
   initialProps: $ReadOnly<{ [string]: mixed, ... }>,
   rootTag: RootTag,
   fabric?: boolean,
-  concurrentRoot?: boolean,
 };
 export type Runnable = (
   appParameters: AppParameters,
@@ -7522,14 +7553,6 @@ declare export default typeof NativeUIManager;
 exports[`public API should not change unintentionally Libraries/ReactNative/PaperUIManager.js 1`] = `
 "declare const UIManagerJS: UIManagerJSInterface;
 declare module.exports: UIManagerJS;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/ReactNative/ReactFabricInternals.js 1`] = `
-"declare const createReactNativeComponentClass: $FlowFixMe;
-declare module.exports: {
-  createReactNativeComponentClass: createReactNativeComponentClass,
-};
 "
 `;
 
@@ -7720,7 +7743,6 @@ exports[`public API should not change unintentionally Libraries/ReactNative/rend
   isLogBox?: boolean,
   debugName?: string,
   displayMode?: ?DisplayModeType,
-  useConcurrentRoot?: boolean,
   useOffscreen?: boolean
 ): void;
 "
@@ -7731,37 +7753,6 @@ exports[`public API should not change unintentionally Libraries/ReactNative/requ
   uiViewClassName: string
 ) => HostComponent<T>;
 declare export default typeof requireNativeComponent;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/ReactPrivate/ReactNativePrivateInterface.js 1`] = `
-"declare module.exports: {
-  get BatchedBridge(): BatchedBridge,
-  get ExceptionsManager(): ExceptionsManager,
-  get Platform(): Platform,
-  get RCTEventEmitter(): RCTEventEmitter,
-  get ReactNativeViewConfigRegistry(): ReactNativeViewConfigRegistry,
-  get TextInputState(): TextInputState,
-  get UIManager(): UIManager,
-  get deepDiffer(): deepDiffer,
-  get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
-    { ... } | Array<mixed>,
-  >,
-  get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp>,
-  get ReactFiberErrorDialog(): ReactFiberErrorDialog,
-  get legacySendAccessibilityEvent(): legacySendAccessibilityEvent,
-  get RawEventEmitter(): RawEventEmitter,
-  get CustomEvent(): CustomEvent,
-  get createAttributePayload(): createAttributePayload,
-  get diffAttributePayloads(): diffAttributePayloads,
-  get createPublicInstance(): createPublicInstance,
-  get createPublicTextInstance(): createPublicTextInstance,
-  get getNativeTagFromPublicInstance(): getNativeTagFromPublicInstance,
-  get getNodeFromPublicInstance(): getNodeFromPublicInstance,
-  get getInternalInstanceHandleFromPublicInstance(): getInternalInstanceHandleFromPublicInstance,
-};
 "
 `;
 
@@ -8261,8 +8252,8 @@ export type ____TextStyle_Internal = $ReadOnly<{
 }>;
 export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
-  resizeMode?: \\"contain\\" | \\"cover\\" | \\"stretch\\" | \\"center\\" | \\"repeat\\",
-  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\",
+  resizeMode?: ImageResizeMode,
+  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
@@ -8272,8 +8263,8 @@ export type ____ImageStyle_Internal = $ReadOnly<{
 }>;
 export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   ...$Exact<____TextStyle_Internal>,
-  resizeMode?: \\"contain\\" | \\"cover\\" | \\"stretch\\" | \\"center\\" | \\"repeat\\",
-  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\",
+  resizeMode?: ImageResizeMode,
+  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
@@ -8909,10 +8900,6 @@ type TBackHandler = {|
     eventName: BackPressEventName,
     handler: () => ?boolean
   ) => { remove: () => void, ... },
-  +removeEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean
-  ) => void,
 |};
 declare module.exports: TBackHandler;
 "

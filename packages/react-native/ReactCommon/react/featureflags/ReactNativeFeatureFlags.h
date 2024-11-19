@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e81b275213e8668a8cd22cd40eea70af>>
+ * @generated SignedSource<<0c0217362f582ac635d5f46347e65252>>
  */
 
 /**
@@ -43,11 +43,6 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
-
-  /**
-   * Adds support for recursively processing commits that mount synchronously (Android only).
-   */
-  RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
@@ -113,6 +108,11 @@ class ReactNativeFeatureFlags {
    * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
    */
   RN_EXPORT static bool enableFabricRendererExclusively();
+
+  /**
+   * Synchronise the view command dispatching with mounting of new transaction
+   */
+  RN_EXPORT static bool enableFixForViewCommandRace();
 
   /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
@@ -188,11 +188,6 @@ class ReactNativeFeatureFlags {
    * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
    */
   RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-
-  /**
-   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
-   */
-  RN_EXPORT static bool forceBatchingMountItemsOnAndroid();
 
   /**
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.

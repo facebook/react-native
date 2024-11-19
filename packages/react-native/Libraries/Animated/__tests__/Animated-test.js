@@ -121,10 +121,12 @@ describe('Animated', () => {
 
       await unmount(root);
 
+      expect(callback).not.toBeCalled();
+      await jest.runOnlyPendingTimersAsync();
       expect(callback).toBeCalledWith({finished: false});
     });
 
-    it('triggers callback when spring is at rest', () => {
+    it('triggers callback when spring is at rest', async () => {
       const anim = new Animated.Value(0);
       const callback = jest.fn();
       Animated.spring(anim, {
@@ -132,7 +134,10 @@ describe('Animated', () => {
         velocity: 0,
         useNativeDriver: false,
       }).start(callback);
-      expect(callback).toBeCalled();
+
+      expect(callback).not.toBeCalled();
+      await jest.runOnlyPendingTimersAsync();
+      expect(callback).toBeCalledWith({finished: true});
     });
 
     it('send toValue when a critically damped spring stops', () => {

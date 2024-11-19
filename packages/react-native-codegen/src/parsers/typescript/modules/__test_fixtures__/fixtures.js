@@ -866,6 +866,7 @@ export enum Quality {
 }
 
 export enum Resolution {
+  Corrupted = -1,
   Low = 720,
   High = 1080,
 }

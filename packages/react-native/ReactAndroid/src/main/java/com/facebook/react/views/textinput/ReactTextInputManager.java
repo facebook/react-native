@@ -1302,8 +1302,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 0, // can't get content width
                 0, // can't get content height
                 mReactEditText.getWidth(),
-                mReactEditText.getHeight(),
-                false);
+                mReactEditText.getHeight());
 
         mEventDispatcher.dispatchEvent(event);
 

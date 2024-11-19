@@ -1,0 +1,75 @@
+name: Test Libraries on Nightlies
+
+on:
+  workflow_call:
+
+jobs:
+  test-library-on-nightly-android:
+    name: "[Android] ${{ matrix.library }}"
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      matrix:
+        library: [
+          "react-native-async-storage",
+          "react-native-blob-util",
+          "@react-native-clipboard/clipboard",
+          "@react-native-community/datetimepicker",
+          "react-native-gesture-handler",
+          "react-native-image-picker",
+          "react-native-linear-gradient",
+          "@react-native-masked-view/masked-view",
+          "react-native-maps",
+          "@react-native-community/netinfo",
+          "react-native-reanimated",
+          "react-native-svg",
+          "react-native-video",
+          "react-native-webview",
+          "react-native-mmkv",
+          "react-native-screens",
+          "react-native-pager-view",
+          "@react-native-community/slider"
+        ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Test ${{ inputs.library-name }}
+        uses: ./.github/actions/test-library-on-nightly
+        with:
+          library-npm-package: ${{ matrix.library }}
+          platform: android
+
+  test-library-on-nightly-ios:
+    name: "[iOS] ${{ matrix.library }}"
+    runs-on: macos-13-large
+    continue-on-error: true
+    strategy:
+      matrix:
+        library: [
+          "react-native-async-storage",
+          "react-native-blob-util",
+          "@react-native-clipboard/clipboard",
+          "@react-native-community/datetimepicker",
+          "react-native-gesture-handler",
+          "react-native-image-picker",
+          "react-native-linear-gradient",
+          "@react-native-masked-view/masked-view",
+          "react-native-maps",
+          "@react-native-community/netinfo",
+          "react-native-reanimated",
+          "react-native-svg",
+          "react-native-video",
+          "react-native-webview",
+          "react-native-mmkv",
+          "react-native-screens",
+          "react-native-pager-view",
+          "@react-native-community/slider"
+        ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Test ${{ inputs.library-name }}
+        uses: ./.github/actions/test-library-on-nightly
+        with:
+          library-npm-package: ${{ matrix.library }}
+          platform: ios

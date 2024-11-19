@@ -29,8 +29,7 @@ FlexLine calculateFlexLine(
   float totalFlexGrowFactors = 0.0f;
   float totalFlexShrinkScaledFactors = 0.0f;
   size_t numberOfAutoMargins = 0;
-  size_t endOfLineIndex = iterator.index();
-  size_t firstElementInLineIndex = iterator.index();
+  yoga::Node* firstElementInLine = nullptr;
 
   float sizeConsumedIncludingMinConstraint = 0;
   const Direction direction = node->resolveDirection(ownerDirection);
@@ -40,17 +39,17 @@ FlexLine calculateFlexLine(
   const float gap =
       node->style().computeGapForAxis(mainAxis, availableInnerMainDim);
 
+  const auto childrenEnd = node->getLayoutChildren().end();
   // Add items to the current line until it's full or we run out of items.
-  for (; iterator != node->getLayoutChildren().end();
-       iterator++, endOfLineIndex = iterator.index()) {
+  for (; iterator != childrenEnd; iterator++) {
     auto child = *iterator;
     if (child->style().display() == Display::None ||
         child->style().positionType() == PositionType::Absolute) {
-      if (firstElementInLineIndex == endOfLineIndex) {
-        // We haven't found the first contributing element in the line yet.
-        firstElementInLineIndex++;
-      }
       continue;
+    }
+
+    if (firstElementInLine == nullptr) {
+      firstElementInLine = child;
     }
 
     if (child->style().flexStartMarginIsAuto(mainAxis, ownerDirection)) {
@@ -60,13 +59,11 @@ FlexLine calculateFlexLine(
       numberOfAutoMargins++;
     }
 
-    const bool isFirstElementInLine =
-        (endOfLineIndex - firstElementInLineIndex) == 0;
-
     child->setLineIndex(lineCount);
     const float childMarginMainAxis =
         child->style().computeMarginForAxis(mainAxis, availableInnerWidth);
-    const float childLeadingGapMainAxis = isFirstElementInLine ? 0.0f : gap;
+    const float childLeadingGapMainAxis =
+        child == firstElementInLine ? 0.0f : gap;
     const float flexBasisWithMinAndMaxConstraints =
         boundAxisWithinMinAndMax(
             child,
@@ -117,7 +114,6 @@ FlexLine calculateFlexLine(
   return FlexLine{
       .itemsInFlow = std::move(itemsInFlow),
       .sizeConsumed = sizeConsumed,
-      .endOfLineIndex = endOfLineIndex,
       .numberOfAutoMargins = numberOfAutoMargins,
       .layout = FlexLineRunningLayout{
           totalFlexGrowFactors,

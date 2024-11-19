@@ -386,6 +386,9 @@ void RuntimeScheduler_Modern::executeTask(
     }
   } catch (jsi::JSError& error) {
     onTaskError_(runtime, error);
+  } catch (std::exception& ex) {
+    jsi::JSError error(runtime, std::string("Non-js exception: ") + ex.what());
+    onTaskError_(runtime, error);
   }
 }
 
@@ -419,6 +422,10 @@ void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
         break;
       }
     } catch (jsi::JSError& error) {
+      onTaskError_(runtime, error);
+    } catch (std::exception& ex) {
+      jsi::JSError error(
+          runtime, std::string("Non-js exception: ") + ex.what());
       onTaskError_(runtime, error);
     }
     retries++;

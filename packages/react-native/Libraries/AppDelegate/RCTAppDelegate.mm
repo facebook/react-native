@@ -19,6 +19,7 @@
 #import <react/renderer/graphics/ColorComponents.h>
 #import "RCTAppDelegate+Protected.h"
 #import "RCTAppSetupUtils.h"
+#import "RCTDependencyProvider.h"
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
@@ -228,14 +229,14 @@ using namespace facebook::react;
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
-  return RCTAppSetupDefaultModuleFromClass(moduleClass);
+  return RCTAppSetupDefaultModuleFromClass(moduleClass, self.dependencyProvider);
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
-  return @{};
+  return self.dependencyProvider ? self.dependencyProvider.thirdPartyFabricComponents : @{};
 }
 
 - (RCTRootViewFactory *)createRCTRootViewFactory

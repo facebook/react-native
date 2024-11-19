@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2964ff45378547dd40a9b0df440f8869>>
+ * @generated SignedSource<<0f27ce54a52c9fbefa1a8b55a291d07e>>
  */
 
 /**
@@ -31,12 +31,8 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
-    return false;
-  }
-
   bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
-    return false;
+    return true;
   }
 
   bool disableEventLoopOnBridgeless() override {
@@ -84,6 +80,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableFabricRendererExclusively() override {
+    return false;
+  }
+
+  bool enableFixForViewCommandRace() override {
     return false;
   }
 
@@ -147,10 +147,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool forceBatchingMountItemsOnAndroid() override {
-    return false;
-  }
-
   bool fuseboxEnabledDebug() override {
     return true;
   }
@@ -160,7 +156,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool initEagerTurboModulesOnNativeModulesQueueAndroid() override {
-    return false;
+    return true;
   }
 
   bool lazyAnimationCallbacks() override {
@@ -188,7 +184,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useImmediateExecutorInAndroidBridgeless() override {
-    return false;
+    return true;
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {

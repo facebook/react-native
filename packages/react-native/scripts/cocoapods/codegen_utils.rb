@@ -121,7 +121,8 @@ class CodegenUtils
           'source_files' => "**/*.{h,mm,cpp}",
           'pod_target_xcconfig' => {
             "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
-            "FRAMEWORK_SEARCH_PATHS" => framework_search_paths
+            "FRAMEWORK_SEARCH_PATHS" => framework_search_paths,
+            "OTHER_CPLUSPLUSFLAGS" => "$(inherited) #{folly_compiler_flags} #{boost_compiler_flags}",
           },
           'dependencies': {
             "React-jsiexecutor": [],
@@ -142,6 +143,7 @@ class CodegenUtils
             'React-debug': [],
             'React-utils': [],
             'React-featureflags': [],
+            'React-RCTAppDelegate': [],
           }
         }
 

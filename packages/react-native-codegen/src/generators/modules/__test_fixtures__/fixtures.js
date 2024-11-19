@@ -1717,6 +1717,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
 
 const CXX_ONLY_NATIVE_MODULES: SchemaType = {
   modules: {
+    // $FlowFixMe[incompatible-type]
     NativeSampleTurboModule: {
       type: 'NativeModule',
       aliasMap: {

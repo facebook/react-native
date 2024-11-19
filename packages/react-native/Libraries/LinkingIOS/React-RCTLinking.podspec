@@ -50,7 +50,7 @@ Pod::Spec.new do |s|
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
 
-  add_dependency(s, "ReactCodegen", :additional_framework_paths => ["build/generated/ios"])
+  add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple", :additional_framework_paths => ["build/generated/ios"])
 end

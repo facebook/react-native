@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e45e15376ce8426cb5d4ddbfe599066>>
+ * @generated SignedSource<<7e933dbc3a9b39a024de073288397430>>
  */
 
 /**
@@ -26,7 +26,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual ~ReactNativeFeatureFlagsProvider() = default;
 
   virtual bool commonTestFlag() = 0;
-  virtual bool allowRecursiveCommitsWithSynchronousMountOnAndroid() = 0;
   virtual bool completeReactInstanceCreationOnBgThreadOnAndroid() = 0;
   virtual bool disableEventLoopOnBridgeless() = 0;
   virtual bool disableMountItemReorderingAndroid() = 0;
@@ -40,6 +39,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableFabricLogs() = 0;
   virtual bool enableFabricRenderer() = 0;
   virtual bool enableFabricRendererExclusively() = 0;
+  virtual bool enableFixForViewCommandRace() = 0;
   virtual bool enableGranularShadowTreeStateReconciliation() = 0;
   virtual bool enableIOSViewClipToPaddingBox() = 0;
   virtual bool enableLayoutAnimationsOnAndroid() = 0;
@@ -55,7 +55,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool excludeYogaFromRawProps() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() = 0;
-  virtual bool forceBatchingMountItemsOnAndroid() = 0;
   virtual bool fuseboxEnabledDebug() = 0;
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool initEagerTurboModulesOnNativeModulesQueueAndroid() = 0;

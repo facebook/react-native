@@ -288,7 +288,7 @@ class JSI_EXPORT Runtime {
   // rvalue arguments/methods would also reduce the number of clones.
 
   struct PointerValue {
-    virtual void invalidate() = 0;
+    virtual void invalidate() noexcept = 0;
 
    protected:
     virtual ~PointerValue() = default;
@@ -418,7 +418,7 @@ class JSI_EXPORT Runtime {
 // Base class for pointer-storing types.
 class JSI_EXPORT Pointer {
  protected:
-  explicit Pointer(Pointer&& other) : ptr_(other.ptr_) {
+  explicit Pointer(Pointer&& other) noexcept : ptr_(other.ptr_) {
     other.ptr_ = nullptr;
   }
 
@@ -428,7 +428,7 @@ class JSI_EXPORT Pointer {
     }
   }
 
-  Pointer& operator=(Pointer&& other);
+  Pointer& operator=(Pointer&& other) noexcept;
 
   friend class Runtime;
   friend class Value;
@@ -1121,7 +1121,7 @@ class JSI_EXPORT Function : public Object {
 class JSI_EXPORT Value {
  public:
   /// Default ctor creates an \c undefined JS value.
-  Value() : Value(UndefinedKind) {}
+  Value() noexcept : Value(UndefinedKind) {}
 
   /// Creates a \c null JS value.
   /* implicit */ Value(std::nullptr_t) : kind_(NullKind) {}
@@ -1162,7 +1162,7 @@ class JSI_EXPORT Value {
         "Value cannot be constructed directly from const char*");
   }
 
-  Value(Value&& value);
+  Value(Value&& other) noexcept;
 
   /// Copies a Symbol lvalue into a new JS value.
   Value(Runtime& runtime, const Symbol& sym) : Value(SymbolKind) {
@@ -1217,7 +1217,7 @@ class JSI_EXPORT Value {
   /// https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
   static bool strictEquals(Runtime& runtime, const Value& a, const Value& b);
 
-  Value& operator=(Value&& other) {
+  Value& operator=(Value&& other) noexcept {
     this->~Value();
     new (this) Value(std::move(other));
     return *this;

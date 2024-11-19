@@ -36,5 +36,5 @@ public interface ReadableArray {
 
   public fun size(): Int
 
-  public fun toArrayList(): ArrayList<Any>
+  public fun toArrayList(): ArrayList<Any?>
 }
