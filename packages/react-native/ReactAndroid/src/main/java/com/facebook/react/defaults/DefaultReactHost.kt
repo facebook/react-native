@@ -61,7 +61,6 @@ public object DefaultReactHost {
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
-      jsBundleLoader: JSBundleLoader? = null,
   ): ReactHost =
       getDefaultReactHost(
           context,
@@ -71,8 +70,7 @@ public object DefaultReactHost {
           jsBundleFilePath,
           isHermesEnabled,
           useDevSupport,
-          cxxReactPackageProviders,
-          jsBundleLoader) {
+          cxxReactPackageProviders) {
             throw it
           }
 
@@ -107,22 +105,20 @@ public object DefaultReactHost {
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
-      jsBundleLoader: JSBundleLoader? = null,
       exceptionHandler: (Exception) -> Unit = { throw it },
   ): ReactHost {
     if (reactHost == null) {
 
       val bundleLoader =
-          jsBundleLoader
-              ?: if (jsBundleFilePath != null) {
-                if (jsBundleFilePath.startsWith("assets://")) {
-                  JSBundleLoader.createAssetLoader(context, jsBundleFilePath, true)
-                } else {
-                  JSBundleLoader.createFileLoader(jsBundleFilePath)
-                }
-              } else {
-                JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
-              }
+          if (jsBundleFilePath != null) {
+            if (jsBundleFilePath.startsWith("assets://")) {
+              JSBundleLoader.createAssetLoader(context, jsBundleFilePath, true)
+            } else {
+              JSBundleLoader.createFileLoader(jsBundleFilePath)
+            }
+          } else {
+            JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+          }
       val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
       val defaultTmmDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       cxxReactPackageProviders.forEach { defaultTmmDelegateBuilder.addCxxReactPackage(it) }
