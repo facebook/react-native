@@ -53,6 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) UIKeyboardType keyboardType;
 @property (nonatomic, assign) BOOL showSoftInputOnFocus;
 
+@property (nonatomic, assign) BOOL isFirstRender;
+@property (nonatomic, strong) NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
+@property (nonatomic, strong) NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
 @property (nonatomic, assign) BOOL disableKeyboardShortcuts;
 
 /**

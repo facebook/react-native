@@ -65,6 +65,9 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
     [self initializeReturnKeyType];
+    _isFirstRender = YES;
+    _initialValueLeadingBarButtonGroups = nil;
+    _initialValueTrailingBarButtonGroups = nil;
   }
 
   return self;
@@ -816,25 +819,21 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
-  static BOOL isFirstRender = YES;
-  static NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
-  static NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
-
   // Initialize the initial values only once
-  if (isFirstRender) {
-    isFirstRender = NO;
+  if (_isFirstRender) {
+    _isFirstRender = NO;
     // Capture initial values of leading and trailing button groups
-    initialValueLeadingBarButtonGroups = self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups;
-    initialValueTrailingBarButtonGroups = self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups;
+    _initialValueLeadingBarButtonGroups = self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups;
+    _initialValueTrailingBarButtonGroups = self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups;
   }
 
   if (disableKeyboardShortcuts) {
     self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = @[];
     self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = @[];
-  } else {
+  }else {
     // Restore the initial values
-    self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = initialValueLeadingBarButtonGroups;
-    self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = initialValueTrailingBarButtonGroups;
+    self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = _initialValueLeadingBarButtonGroups;
+    self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = _initialValueTrailingBarButtonGroups;
   }
 }
 

@@ -52,6 +52,9 @@ static UIColor *defaultPlaceholderColor(void)
     self.textContainer.lineFragmentPadding = 0;
     self.scrollsToTop = NO;
     self.scrollEnabled = YES;
+    _isFirstRender = YES;
+    _initialValueLeadingBarButtonGroups = nil;
+    _initialValueTrailingBarButtonGroups = nil;
   }
 
   return self;
@@ -134,16 +137,12 @@ static UIColor *defaultPlaceholderColor(void)
 
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
-  static BOOL isFirstRender = YES;
-  static NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
-  static NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
-
   // Initialize the initial values only once
-  if (isFirstRender) {
-    isFirstRender = NO;
+  if (_isFirstRender) {
+    _isFirstRender = NO;
     // Capture initial values of leading and trailing button groups
-    initialValueLeadingBarButtonGroups = self.inputAssistantItem.leadingBarButtonGroups;
-    initialValueTrailingBarButtonGroups = self.inputAssistantItem.trailingBarButtonGroups;
+    _initialValueLeadingBarButtonGroups = self.inputAssistantItem.leadingBarButtonGroups;
+    _initialValueTrailingBarButtonGroups = self.inputAssistantItem.trailingBarButtonGroups;
   }
 
   if (disableKeyboardShortcuts) {
@@ -151,8 +150,8 @@ static UIColor *defaultPlaceholderColor(void)
     self.inputAssistantItem.trailingBarButtonGroups = @[];
   } else {
     // Restore the initial values
-    self.inputAssistantItem.leadingBarButtonGroups = initialValueLeadingBarButtonGroups;
-    self.inputAssistantItem.trailingBarButtonGroups = initialValueTrailingBarButtonGroups;
+    self.inputAssistantItem.leadingBarButtonGroups = _initialValueLeadingBarButtonGroups;
+    self.inputAssistantItem.trailingBarButtonGroups = _initialValueTrailingBarButtonGroups;
   }
 }
 
