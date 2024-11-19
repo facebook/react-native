@@ -210,4 +210,11 @@ const RawValue* RawProps::at(
   return parser_->at(*this, RawPropsKey{prefix, name, suffix});
 }
 
+/*
+ * Returns a ref to the underlying jsi value of the prop. Only accessible if mode is JSI.
+ */
+jsi::Value& RawProps::jsiValueAt(std::string name) const noexcept {
+  return jsiValues_.at(name);
+}
+
 } // namespace facebook::react

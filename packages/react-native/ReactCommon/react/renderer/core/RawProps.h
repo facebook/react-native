@@ -92,8 +92,9 @@ class RawProps final {
    * Returns a const unowning pointer to `RawValue` of a prop with a given name.
    * Returns `nullptr` if a prop with the given name does not exist.
    */
-  const RawValue* at(const char* name, const char* prefix, const char* suffix)
-      const noexcept;
+  const RawValue* at(const char* name, const char* prefix, const char* suffix) const noexcept;
+  
+  jsi::Value& jsiValueAt(std::string name) const noexcept;
 
  private:
   friend class RawPropsParser;
@@ -125,6 +126,7 @@ class RawProps final {
    */
   mutable std::vector<RawPropsValueIndex> keyIndexToValueIndex_;
   mutable std::vector<RawValue> values_;
+  mutable std::unordered_map<std::string, jsi::Value> jsiValues_;
 
   bool ignoreYogaStyleProps_{false};
 };

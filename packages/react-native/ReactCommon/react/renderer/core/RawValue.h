@@ -71,6 +71,22 @@ class RawValue {
   explicit RawValue(folly::dynamic&& dynamic) noexcept
       : dynamic_(std::move(dynamic)) {}
 
+// TODO: These changes aren't really used right now.
+  explicit RawValue(jsi::Runtime& runtime, jsi::Value& value) : runtime_(&runtime), value_(std::move(value)) {}
+  
+private:
+  jsi::Runtime* runtime_{};
+  jsi::Value value_;
+  
+public:
+  jsi::Value& UNSAFE_getJsiValue() {
+    // TODO: assert
+    return value_;
+  }
+  jsi::Runtime& UNSAFE_getRuntime() {
+    return *runtime_;
+  }
+
  private:
   friend class RawProps;
   friend class RawPropsParser;

@@ -249,12 +249,14 @@ jsi::Value UIManagerBinding::get(
               return jsi::Value::undefined();
             }
 
+            // valueFromShadowNode creates a jsi::Value using jsi::Object and attaching the ShadowNode as native state
             return valueFromShadowNode(
                 runtime,
                 uiManager->createNode(
                     tagFromValue(arguments[0]),
                     stringFromValue(runtime, arguments[1]),
                     surfaceIdFromValue(runtime, arguments[2]),
+                    // TODO: create an alternative createNode here that directly takes the JSI argument?
                     RawProps(runtime, arguments[3]),
                     std::move(instanceHandle)),
                 true);

@@ -180,8 +180,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
   std::unique_lock lock(_mutex);
 
   auto componentDescriptorProvider = [componentViewClass componentDescriptorProvider];
-  _componentViewClasses[componentDescriptorProvider.handle] =
-      [self _componentViewClassDescriptorFromClass:componentViewClass];
+  _componentViewClasses[componentDescriptorProvider.handle] = [self _componentViewClassDescriptorFromClass:componentViewClass];
   [self _addDescriptorToProviderRegistry:componentDescriptorProvider];
 
   auto supplementalComponentDescriptorProviders = [componentViewClass supplementalComponentDescriptorProviders];

@@ -6,7 +6,7 @@ import type { ViewProps } from 'react-native/Libraries/Components/View/ViewPropT
 import type {PartialViewConfig} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 
 import React from 'react';
-import {View} from 'react-native';
+import {Button, View} from 'react-native';
 import * as NativeComponentRegistry from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
 // It seems like thats not how we add components to the JS view registry
@@ -34,14 +34,19 @@ const CustomView: HostComponent<NativeProps> =
   );
 
 function RNTesterApp() {
+  const [state, setState] = React.useState(0);
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'lightblue'}}>
-      <CustomView style={{
-        width: 200,
-        height: 200,
-        backgroundColor: 'red',
-      }} />
+      <CustomView
+        nativeProp={state.toString()}
+        style={{
+          width: 200,
+          height: 200,
+          backgroundColor: 'red',
+        }}
+      />
+      <Button title="Increment" onPress={() => setState(state + 1)} />
     </View>
   );
 }
