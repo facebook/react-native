@@ -468,6 +468,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    disableInteractionManagerInBatchinator: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-18',
+        description:
+          'Skips InteractionManager in `Batchinator` and invokes callbacks synchronously.',
+        purpose: 'experimentation',
+      },
+    },
     enableAccessToHostTreeInFabric: {
       defaultValue: false,
       metadata: {
