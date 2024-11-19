@@ -32,6 +32,7 @@ public:
       return;
     }
     
+    // Here we could convert now from anything, potentially host objects or jsi::Objects with NativeState
     jsi::Runtime& runtime = rawProps.EXPERIMENTAL_getRuntime();
     jsi::Value nativePropValue = rawProps.EXPERIMENTAL_jsiValueAt("nativeProp");
     jsi::String nativePropString = nativePropValue.getString(runtime);
