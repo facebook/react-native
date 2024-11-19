@@ -215,6 +215,15 @@ class Expect {
     }
   }
 
+  toBeNull(): void {
+    const pass = this.#received == null;
+    if (!this.#isExpectedResult(pass)) {
+      throw new Error(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be null`,
+      );
+    }
+  }
+
   toThrow(expected?: string): void {
     if (expected != null && typeof expected !== 'string') {
       throw new Error(
