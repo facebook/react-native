@@ -72,9 +72,8 @@ export interface StatusBarProps
 export class StatusBar extends React.Component<StatusBarProps> {
   /**
    * The current height of the status bar on the device.
-   * @platform android
    */
-  static currentHeight?: number | undefined;
+  static currentHeight: number | null;
 
   /**
    * Show or hide the status bar
