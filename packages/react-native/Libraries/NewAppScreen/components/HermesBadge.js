@@ -17,13 +17,24 @@ import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
 import React from 'react';
 
-const HermesBadge = (): Node => {
+type HermesBadgeProps = {
+  badgeTopMargin?: number,
+};
+const HermesBadge = ({badgeTopMargin = 8}: HermesBadgeProps): Node => {
   const isDarkMode = useColorScheme() === 'dark';
+
+  const badgeStyle = {
+    position: 'absolute',
+    right: 12,
+    top: badgeTopMargin,
+  };
+
   const version =
     global.HermesInternal?.getRuntimeProperties?.()['OSS Release Version'] ??
     '';
+
   return global.HermesInternal ? (
-    <View style={styles.badge}>
+    <View style={badgeStyle}>
       <Text
         style={[
           styles.badgeText,
@@ -38,11 +49,6 @@ const HermesBadge = (): Node => {
 };
 
 const styles = StyleSheet.create({
-  badge: {
-    position: 'absolute',
-    top: 8,
-    right: 12,
-  },
   badgeText: {
     fontSize: 14,
     fontWeight: '600',

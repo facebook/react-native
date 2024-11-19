@@ -18,7 +18,10 @@ import Colors from './Colors';
 import HermesBadge from './HermesBadge';
 import React from 'react';
 
-const Header = (): Node => {
+type HeaderProps = {
+  badgeTopMargin?: number,
+};
+const Header = ({badgeTopMargin}: HeaderProps): Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <ImageBackground
@@ -32,7 +35,7 @@ const Header = (): Node => {
         },
       ]}
       imageStyle={styles.logo}>
-      <HermesBadge />
+      <HermesBadge badgeTopMargin={badgeTopMargin} />
       <Text
         style={[
           styles.text,
