@@ -260,6 +260,9 @@ export type enterKeyHintType =
 type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
+  /**
+   * If true, the keyboard shortcuts (undo/redo and copy buttons) are disabled. The default value is false.
+   */
   disableKeyboardShortcuts?: ?boolean,
 
   /**
@@ -1292,7 +1295,6 @@ function InternalTextInput(props: Props): React.Node {
     selectionColor,
     selectionHandleColor,
     cursorColor,
-    disableKeyboardShortcuts,
     ...otherProps
   } = props;
 
@@ -1600,7 +1602,11 @@ function InternalTextInput(props: Props): React.Node {
           flattenedStyle.paddingVertical == null &&
           flattenedStyle.paddingTop == null));
 
-    console.debug('[dev] disableKeyboardShortcuts 2', disableKeyboardShortcuts);
+    // TODO: Remove this once the new color props are fully rolled out
+    console.debug(
+      '[dev] disableKeyboardShortcuts',
+      otherProps.disableKeyboardShortcuts,
+    );
 
     textInput = (
       <RCTTextInputView
@@ -1630,7 +1636,6 @@ function InternalTextInput(props: Props): React.Node {
           _style,
         )}
         text={text}
-        disableKeyboardShortcuts={disableKeyboardShortcuts}
       />
     );
   } else if (Platform.OS === 'android') {
@@ -1819,15 +1824,12 @@ const ExportedForwardRef: component(
     inputMode,
     showSoftInputOnFocus,
     keyboardType,
-    disableKeyboardShortcuts,
     ...restProps
   },
   forwardedRef: ReactRefSetter<TextInputInstance>,
 ) {
-  console.debug('[dev] disableKeyboardShortcuts', disableKeyboardShortcuts);
   return (
     <InternalTextInput
-      disableKeyboardShortcuts={disableKeyboardShortcuts}
       allowFontScaling={allowFontScaling}
       rejectResponderTermination={rejectResponderTermination}
       underlineColorAndroid={underlineColorAndroid}
