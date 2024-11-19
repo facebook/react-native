@@ -12,6 +12,7 @@
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {CreateCustomMessageHandlerFn} from './CustomMessageHandler';
+import type {DeviceOptions} from './Device';
 import type {
   JsonPagesListResponse,
   JsonVersionResponse,
@@ -227,27 +228,22 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
         const oldDevice = this.#devices.get(deviceId);
         let newDevice;
+        const deviceOptions: DeviceOptions = {
+          id: deviceId,
+          name: deviceName,
+          app: appName,
+          socket,
+          projectRoot: this.#projectRoot,
+          eventReporter: this.#eventReporter,
+          createMessageMiddleware: this.#customMessageHandler,
+          serverRelativeBaseUrl: this.#serverBaseUrl,
+        };
+
         if (oldDevice) {
-          oldDevice.dangerouslyRecreateDevice(
-            deviceId,
-            deviceName,
-            appName,
-            socket,
-            this.#projectRoot,
-            this.#eventReporter,
-            this.#customMessageHandler,
-          );
+          oldDevice.dangerouslyRecreateDevice(deviceOptions);
           newDevice = oldDevice;
         } else {
-          newDevice = new Device(
-            deviceId,
-            deviceName,
-            appName,
-            socket,
-            this.#projectRoot,
-            this.#eventReporter,
-            this.#customMessageHandler,
-          );
+          newDevice = new Device(deviceOptions);
         }
 
         this.#devices.set(deviceId, newDevice);
