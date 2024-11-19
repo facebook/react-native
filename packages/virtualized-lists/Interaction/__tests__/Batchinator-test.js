@@ -10,10 +10,6 @@
 
 'use strict';
 
-function expectToBeCalledOnce(fn) {
-  expect(fn.mock.calls.length).toBe(1);
-}
-
 describe('Batchinator', () => {
   const Batchinator = require('../Batchinator');
 
@@ -22,7 +18,7 @@ describe('Batchinator', () => {
     const batcher = new Batchinator(callback, 10000);
     batcher.schedule();
     jest.runAllTimers();
-    expectToBeCalledOnce(callback);
+    expect(callback).toHaveBeenCalledTimes(1);
   });
 
   it('batches up tasks', () => {
@@ -32,20 +28,20 @@ describe('Batchinator', () => {
     batcher.schedule();
     batcher.schedule();
     batcher.schedule();
-    expect(callback).not.toBeCalled();
+    expect(callback).not.toHaveBeenCalled();
     jest.runAllTimers();
-    expectToBeCalledOnce(callback);
+    expect(callback).toHaveBeenCalledTimes(1);
   });
 
-  it('flushes on dispose', () => {
+  it('does nothing after dispose', () => {
     const callback = jest.fn();
     const batcher = new Batchinator(callback, 10000);
     batcher.schedule();
     batcher.schedule();
     batcher.dispose();
-    expectToBeCalledOnce(callback);
+    expect(callback).not.toHaveBeenCalled();
     jest.runAllTimers();
-    expectToBeCalledOnce(callback);
+    expect(callback).not.toHaveBeenCalled();
   });
 
   it('should call tasks scheduled by the callback', () => {
@@ -69,10 +65,10 @@ describe('Batchinator', () => {
     batcher.schedule();
     batcher.schedule();
     jest.runAllTimers();
-    expectToBeCalledOnce(callback);
+    expect(callback).toHaveBeenCalledTimes(1);
     jest.runAllTimers();
-    expectToBeCalledOnce(callback);
+    expect(callback).toHaveBeenCalledTimes(1);
     batcher.dispose();
-    expectToBeCalledOnce(callback);
+    expect(callback).toHaveBeenCalledTimes(1);
   });
 });

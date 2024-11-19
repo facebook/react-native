@@ -687,7 +687,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     if (this._isNestedWithSameOrientation()) {
       this.context.unregisterAsNestedChild({ref: this});
     }
-    this._updateCellsToRenderBatcher.dispose({abort: true});
+    this._updateCellsToRenderBatcher.dispose();
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.dispose();
     });
@@ -1762,7 +1762,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       this._hiPriInProgress = true;
       // Don't worry about interactions when scrolling quickly; focus on filling content as fast
       // as possible.
-      this._updateCellsToRenderBatcher.dispose({abort: true});
+      this._updateCellsToRenderBatcher.dispose();
       this._updateCellsToRender();
       return;
     } else {
