@@ -24,5 +24,9 @@ export default function getBaseUrlFromRequest(
   // https://github.com/nodejs/node/issues/41863#issuecomment-1030709186
   const scheme = req.socket.encrypted === true ? 'https' : 'http';
   const url = `${scheme}://${req.headers.host}`;
-  return URL.canParse(url) ? new URL(url) : null;
+  try {
+    return new URL(url);
+  } catch {
+    return null;
+  }
 }
