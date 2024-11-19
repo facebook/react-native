@@ -54,15 +54,6 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
-    allowRecursiveCommitsWithSynchronousMountOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-05-30',
-        description:
-          'Adds support for recursively processing commits that mount synchronously (Android only).',
-        purpose: 'experimentation',
-      },
-    },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
       defaultValue: true,
       metadata: {
@@ -474,6 +465,15 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-11-06',
         description:
           'Disables InteractionManager and replaces its scheduler with `setImmediate`.',
+        purpose: 'experimentation',
+      },
+    },
+    disableInteractionManagerInBatchinator: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-18',
+        description:
+          'Skips InteractionManager in `Batchinator` and invokes callbacks synchronously.',
         purpose: 'experimentation',
       },
     },

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9c1572172189f9f9ded86a9fdb1cb021>>
+ * @generated SignedSource<<17da000ed077668a52a4dacba88162b0>>
  */
 
 /**
@@ -42,12 +42,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool commonTestFlag() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("commonTestFlag");
-    return method(javaProvider_);
-  }
-
-  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("allowRecursiveCommitsWithSynchronousMountOnAndroid");
     return method(javaProvider_);
   }
 
@@ -330,11 +324,6 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::completeReactInstanceCreationOnBgThreadOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
@@ -594,9 +583,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
-      makeNativeMethod(
-        "allowRecursiveCommitsWithSynchronousMountOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid),
       makeNativeMethod(
         "completeReactInstanceCreationOnBgThreadOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::completeReactInstanceCreationOnBgThreadOnAndroid),

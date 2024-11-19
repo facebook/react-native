@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<efa3dd4c855d6b737a0620279a176f7a>>
+ * @generated SignedSource<<bc9b07f2b54079d3ebb4cfd536b079bc>>
  */
 
 /**
@@ -33,7 +33,6 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
-  bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool completeReactInstanceCreationOnBgThreadOnAndroid();
   bool disableEventLoopOnBridgeless();
   bool disableMountItemReorderingAndroid();
@@ -90,10 +89,9 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 46> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
-  std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
   std::atomic<std::optional<bool>> disableEventLoopOnBridgeless_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;

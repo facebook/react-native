@@ -180,7 +180,7 @@ void InspectorPackagerConnection::Impl::didFailWithError(
   if (webSocket_) {
     abort(posixCode, "WebSocket exception", error);
   }
-  if (!closed_ && posixCode != ECONNREFUSED) {
+  if (!closed_) {
     reconnect();
   }
 }
@@ -249,6 +249,10 @@ void InspectorPackagerConnection::Impl::reconnect() {
         if (strongSelf && !strongSelf->closed_) {
           strongSelf->reconnectPending_ = false;
           strongSelf->connect();
+
+          if (!strongSelf->isConnected()) {
+            strongSelf->reconnect();
+          }
         }
       },
       RECONNECT_DELAY);

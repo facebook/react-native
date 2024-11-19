@@ -102,6 +102,22 @@ const THIRD_PARTY_COMPONENTS_MM_TEMPLATE_PATH = path.join(
   'RCTThirdPartyComponentsProviderMM.template',
 );
 
+const APP_DEPENDENCY_PROVIDER_H_TEMPLATE_PATH = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'scripts',
+  'codegen',
+  'templates',
+  'RCTAppDependencyProviderH.template',
+);
+
+const APP_DEPENDENCY_PROVIDER_MM_TEMPLATE_PATH = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'scripts',
+  'codegen',
+  'templates',
+  'RCTAppDependencyProviderMM.template',
+);
+
 const codegenLog = (text, info = false) => {
   // ANSI escape codes for colors and formatting
   const reset = '\x1b[0m';
@@ -628,6 +644,27 @@ function generateCustomURLHandlers(libraries, outputDir) {
   );
 }
 
+function generateAppDependencyProvider(outputDir) {
+  fs.mkdirSync(outputDir, {recursive: true});
+  codegenLog('Generating RCTAppDependencyProvider');
+
+  const templateH = fs.readFileSync(
+    APP_DEPENDENCY_PROVIDER_H_TEMPLATE_PATH,
+    'utf8',
+  );
+  const finalPathH = path.join(outputDir, 'RCTAppDependencyProvider.h');
+  fs.writeFileSync(finalPathH, templateH);
+  codegenLog(`Generated artifact: ${finalPathH}`);
+
+  const templateMM = fs.readFileSync(
+    APP_DEPENDENCY_PROVIDER_MM_TEMPLATE_PATH,
+    'utf8',
+  );
+  const finalPathMM = path.join(outputDir, 'RCTAppDependencyProvider.mm');
+  fs.writeFileSync(finalPathMM, templateMM);
+  codegenLog(`Generated artifact: ${finalPathMM}`);
+}
+
 function generateRCTThirdPartyComponents(libraries, outputDir) {
   fs.mkdirSync(outputDir, {recursive: true});
   // Generate Header File
@@ -886,6 +923,7 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
 
       generateRCTThirdPartyComponents(libraries, outputPath);
       generateCustomURLHandlers(libraries, outputPath);
+      generateAppDependencyProvider(outputPath);
 
       cleanupEmptyFilesAndFolders(outputPath);
     }

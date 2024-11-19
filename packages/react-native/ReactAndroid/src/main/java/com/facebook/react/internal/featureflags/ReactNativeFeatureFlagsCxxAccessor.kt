@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fb943b9c4c43ac8214a8f368076cbd62>>
+ * @generated SignedSource<<28da40176c64703dcab4bc0d1af078a8>>
  */
 
 /**
@@ -21,7 +21,6 @@ package com.facebook.react.internal.featureflags
 
 public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
-  private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var disableEventLoopOnBridgelessCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
@@ -73,15 +72,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.commonTestFlag()
       commonTestFlagCache = cached
-    }
-    return cached
-  }
-
-  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean {
-    var cached = allowRecursiveCommitsWithSynchronousMountOnAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.allowRecursiveCommitsWithSynchronousMountOnAndroid()
-      allowRecursiveCommitsWithSynchronousMountOnAndroidCache = cached
     }
     return cached
   }

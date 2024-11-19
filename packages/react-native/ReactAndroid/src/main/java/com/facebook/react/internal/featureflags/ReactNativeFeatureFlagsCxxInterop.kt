@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3980c51f97745c20e0fd510f595477dc>>
+ * @generated SignedSource<<e53c4f66b6261f983ad1502adc31f1dc>>
  */
 
 /**
@@ -29,8 +29,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   }
 
   @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
 

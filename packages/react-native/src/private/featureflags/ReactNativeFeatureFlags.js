@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5630ca490d52be748f6de41e007d4dd4>>
+ * @generated SignedSource<<d7715d63338e96f5842026458a3b69c8>>
  * @flow strict
  */
 
@@ -31,6 +31,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
+  disableInteractionManagerInBatchinator: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   enableAnimatedAllowlist: Getter<boolean>,
   enableAnimatedClearImmediateFix: Getter<boolean>,
@@ -52,7 +53,6 @@ export type ReactNativeFeatureFlags = {
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
-  allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   disableEventLoopOnBridgeless: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
@@ -119,6 +119,11 @@ export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGe
  * Disables InteractionManager and replaces its scheduler with `setImmediate`.
  */
 export const disableInteractionManager: Getter<boolean> = createJavaScriptFlagGetter('disableInteractionManager', false);
+
+/**
+ * Skips InteractionManager in `Batchinator` and invokes callbacks synchronously.
+ */
+export const disableInteractionManagerInBatchinator: Getter<boolean> = createJavaScriptFlagGetter('disableInteractionManagerInBatchinator', false);
 
 /**
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
@@ -193,10 +198,6 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  * Common flag for testing (without native implementation). Do NOT modify.
  */
 export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
-/**
- * Adds support for recursively processing commits that mount synchronously (Android only).
- */
-export const allowRecursiveCommitsWithSynchronousMountOnAndroid: Getter<boolean> = createNativeFlagGetter('allowRecursiveCommitsWithSynchronousMountOnAndroid', false);
 /**
  * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
  */
