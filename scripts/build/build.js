@@ -17,7 +17,6 @@ const {
   getTypeScriptCompilerOptions,
 } = require('./config');
 const babel = require('@babel/core');
-const {parseArgs} = require('@pkgjs/parseargs');
 const chalk = require('chalk');
 const translate = require('flow-api-translator');
 const {accessSync, constants, promises: fs, readFileSync} = require('fs');
@@ -26,6 +25,7 @@ const micromatch = require('micromatch');
 const path = require('path');
 const prettier = require('prettier');
 const ts = require('typescript');
+const {parseArgs} = require('util');
 
 const SRC_DIR = 'src';
 const BUILD_DIR = 'dist';
