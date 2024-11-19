@@ -132,7 +132,7 @@ BaseTextInputProps::BaseTextInputProps(
           rawProps,
           "disableKeyboardShortcuts",
           sourceProps.disableKeyboardShortcuts,
-          {})) {}
+          {false})) {}
 
 void BaseTextInputProps::setProp(
     const PropsParserContext& context,
