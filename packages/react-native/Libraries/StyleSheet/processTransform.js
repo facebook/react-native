@@ -150,7 +150,7 @@ function _validateTransforms(transform: Array<Object>): void {
     const value = transformation[key];
     if (key === 'matrix' && transform.length > 1) {
       console.error(
-        'You must only specify exactly one matrix per transform object. Passed transform: ' +
+        'When using a matrix transform, you must specify exactly one transform object. Passed transform: ' +
           stringifySafe(transform),
       );
     }
