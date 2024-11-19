@@ -7,6 +7,8 @@
 
 package com.facebook.react.common;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Interface for handling a surface in React Native. In mobile platform a surface can be any
  * container that holds some {@link View}. For example, a Dialog can be a surface to wrap content
@@ -14,6 +16,7 @@ package com.facebook.react.common;
  * requires custom logic to show/hide. NativeModules requires a surface will delegate interactions
  * with the surface to a SurfaceDelegate.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface SurfaceDelegate {
   /**
    * Create the React content view that uses the appKey as the React application name

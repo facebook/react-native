@@ -7,11 +7,15 @@
 
 package com.facebook.react.common;
 
+import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Factory to create a {@link SurfaceDelegate}. The moduleName is needed to help the factory decide
  * which surface to return {@link SurfaceDelegate} that the given module should use to interact
  * with.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface SurfaceDelegateFactory {
   /**
    * Create a {@link SurfaceDelegate} instance which is used to interact with a surface of platform
@@ -20,5 +24,6 @@ public interface SurfaceDelegateFactory {
    * @param moduleName the module name that will be using the surface
    * @return {@link SurfaceDelegate} instance
    */
+  @Nullable
   SurfaceDelegate createSurfaceDelegate(String moduleName);
 }
