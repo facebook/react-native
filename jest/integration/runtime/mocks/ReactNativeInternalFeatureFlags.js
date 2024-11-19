@@ -9,4 +9,6 @@
  * @oncall react_native
  */
 
-// Left intentionally empty. All flags are assumed to be false.
+module.exports = {
+  enableFabricCompleteRootInCommitPhase: true,
+};
