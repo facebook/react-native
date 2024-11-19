@@ -132,6 +132,45 @@ static UIColor *defaultPlaceholderColor(void)
   [self _invalidatePlaceholderVisibility];
 }
 
+- (BOOL)disableKeyboardShortcuts
+{
+  // Log the call to this method
+  NSLog(@"RCTUITextField setDisableKeyboardShortcuts called with value: %d", self.disableKeyboardShortcuts);
+
+  return self.disableKeyboardShortcuts;
+}
+
+- (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
+{
+  static BOOL isFirstRender = YES;
+  static NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
+  static NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
+  
+    // Log the call to this method
+  NSLog(@"RCTUITextField setDisableKeyboardShortcuts called with value: %d", disableKeyboardShortcuts);
+  NSLog(@"RCTBaseTextInputView isFirstRender: %d", isFirstRender);;
+  
+  // Initialize the initial values only once
+  if (isFirstRender) {
+    isFirstRender = NO;
+    // Capture initial values of leading and trailing button groups
+    initialValueLeadingBarButtonGroups = self.inputAssistantItem.leadingBarButtonGroups;
+    initialValueTrailingBarButtonGroups = self.inputAssistantItem.trailingBarButtonGroups;
+    
+    NSLog(@"Initial Leading Bar Button Groups: %@", initialValueLeadingBarButtonGroups);
+    NSLog(@"Initial Trailing Bar Button Groups: %@", initialValueTrailingBarButtonGroups);
+  }
+
+  if (disableKeyboardShortcuts) {
+    self.inputAssistantItem.leadingBarButtonGroups = @[];
+    self.inputAssistantItem.trailingBarButtonGroups = @[];
+  } else {
+    // Restore the initial values
+    self.inputAssistantItem.leadingBarButtonGroups = initialValueLeadingBarButtonGroups;
+    self.inputAssistantItem.trailingBarButtonGroups = initialValueTrailingBarButtonGroups;
+  }
+}
+
 #pragma mark - Overrides
 
 - (void)setFont:(UIFont *)font
