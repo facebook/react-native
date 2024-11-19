@@ -37,6 +37,23 @@ function Playground() {
 
       <TextInput
         style={styles.input}
+        placeholder="Single line - No keyboard with suggestions"
+        placeholderTextColor="black"
+        showSoftInputOnFocus={false}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Single line - No keyboard without suggestions"
+        disableKeyboardShortcuts
+        placeholderTextColor="black"
+        autoCorrect={false}
+        spellCheck={false}
+        showSoftInputOnFocus={false}
+      />
+
+      <TextInput
+        style={styles.input}
         placeholder="Multiline - default"
         multiline
         placeholderTextColor="black"
