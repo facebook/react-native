@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString *inputAccessoryViewButtonLabel;
 @property (nonatomic, assign) UIKeyboardType keyboardType;
 @property (nonatomic, assign) BOOL showSoftInputOnFocus;
+
 @property (nonatomic, assign) BOOL disableKeyboardShortcuts;
 
 /**
