@@ -398,6 +398,25 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   self.backedTextInputView.inputAccessoryViewButtonLabel = inputAccessoryViewButtonLabel;
 }
 
+- (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
+{
+  // Initialize the initial values only once
+  if (_initialValueLeadingBarButtonGroups == nil) {
+    // Capture initial values of leading and trailing button groups
+    _initialValueLeadingBarButtonGroups = self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups;
+    _initialValueTrailingBarButtonGroups = self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups;
+  }
+
+  if (disableKeyboardShortcuts) {
+    self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = @[];
+    self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = @[];
+  }else {
+    // Restore the initial values
+    self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = _initialValueLeadingBarButtonGroups;
+    self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = _initialValueTrailingBarButtonGroups;
+  }
+}
+
 #pragma mark - RCTBackedTextInputDelegate
 
 - (BOOL)textInputShouldBeginEditing
@@ -816,25 +835,6 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
   *firstRange = NSMakeRange(firstMismatch, lastMismatch - firstMismatch);
   *secondRange = NSMakeRange(firstMismatch, ii - firstMismatch);
   return YES;
-}
-
-- (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
-{
-  // Initialize the initial values only once
-  if (_initialValueLeadingBarButtonGroups == nil) {
-    // Capture initial values of leading and trailing button groups
-    _initialValueLeadingBarButtonGroups = self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups;
-    _initialValueTrailingBarButtonGroups = self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups;
-  }
-
-  if (disableKeyboardShortcuts) {
-    self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = @[];
-    self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = @[];
-  }else {
-    // Restore the initial values
-    self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = _initialValueLeadingBarButtonGroups;
-    self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = _initialValueTrailingBarButtonGroups;
-  }
 }
 
 @end
