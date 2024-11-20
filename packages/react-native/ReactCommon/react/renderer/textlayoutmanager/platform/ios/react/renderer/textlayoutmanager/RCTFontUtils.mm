@@ -168,7 +168,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
       font = [UIFont fontWithName:fontProperties.family size:effectiveFontSize];
       if (font) {
         fontNames = [UIFont fontNamesForFamilyName:font.familyName];
-        fontWeight = fontWeight ?: weightOfFont(font);
+        fontWeight = fontWeight ?: RCTGetFontWeight(font);
       } else {
         // Failback to system font.
         font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
@@ -185,7 +185,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
           continue;
         }
 
-        CGFloat testWeight = weightOfFont(fontMatch);
+        CGFloat testWeight = RCTGetFontWeight(fontMatch);
         if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
           font = fontMatch;
           closestWeight = testWeight;

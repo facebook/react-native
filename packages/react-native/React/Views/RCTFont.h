@@ -20,7 +20,7 @@ typedef CGFloat RCTFontWeight;
  */
 RCT_EXTERN void RCTSetDefaultFontHandler(RCTFontHandler handler);
 RCT_EXTERN BOOL RCTHasFontHandlerSet(void);
-RCT_EXTERN RCTFontWeight weightOfFont(UIFont *font);
+RCT_EXTERN RCTFontWeight RCTGetFontWeight(UIFont *font);
 
 @interface RCTFont : NSObject
 
