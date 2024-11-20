@@ -14,8 +14,6 @@ import type {RequestOptions} from 'undici';
 
 import {Agent, request} from 'undici';
 
-declare var globalThis: $FlowFixMe;
-
 /**
  * A version of `fetch` that is usable with the HTTPS server created in
  * ServerUtils (which uses a self-signed certificate).
@@ -66,27 +64,26 @@ export async function fetchJson<T: JSONSerializable>(url: string): Promise<T> {
  * Change the global fetch dispatcher to allow self-signed certificates.
  * This runs with Jest's `beforeAll` and `afterAll`, and restores the original dispatcher.
  */
-export function withFetchSelfSignedCertsForAllTests() {
-  const fetchOriginal = globalThis.fetch;
+export function withFetchSelfSignedCertsForAllTests(
+  fetchSpy: JestMockFn<Parameters<typeof fetch>, ReturnType<typeof fetch>>,
+  fetchOriginal: typeof fetch,
+) {
   const selfSignedCertDispatcher = new Agent({
     connect: {
       rejectUnauthorized: false,
     },
   });
 
-  let fetchSpy;
-
   beforeAll(() => {
     // For some reason, setting the `selfSignedCertDispatcher` with `setGlobalDispatcher` doesn't work.
     // Instead of using `setGlobalDispatcher`, we'll use a spy to intercept the fetch calls and add the dispatcher.
-    fetchSpy = jest
-      .spyOn(globalThis, 'fetch')
-      .mockImplementation((url, options) =>
-        fetchOriginal(url, {
-          ...options,
-          dispatcher: options?.dispatcher ?? selfSignedCertDispatcher,
-        }),
-      );
+    fetchSpy.mockImplementation((url, options) =>
+      fetchOriginal(url, {
+        ...options,
+        // $FlowFixMe[prop-missing]: dispatcher
+        dispatcher: options?.dispatcher ?? selfSignedCertDispatcher,
+      }),
+    );
   });
 
   afterAll(() => {

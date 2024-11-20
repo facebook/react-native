@@ -126,7 +126,13 @@ export async function createAndConnectTarget(
   }>,
   signal: AbortSignal,
   page: PageFromDevice,
-  deviceId: ?string = null,
+  {
+    deviceId = null,
+    host = null,
+  }: $ReadOnly<{
+    deviceId?: ?string,
+    host?: ?string,
+  }> = {},
 ): Promise<{device: DeviceMock, debugger_: DebuggerMock}> {
   let device;
   let debugger_;
@@ -136,6 +142,7 @@ export async function createAndConnectTarget(
         deviceId ?? 'device' + Date.now()
       }&name=foo&app=bar`,
       signal,
+      host,
     );
     device.getPages.mockImplementation(() => [page]);
 

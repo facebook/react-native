@@ -40,7 +40,7 @@ const PAGES_POLLING_INTERVAL = 1000;
 // Replace hosts appearing in the `url` and `sourceMapURL` fields of
 // `Debugger.scriptParsed`, and back again in messages from the debugger,
 // to account for device/debugger/proxy running on different networks.
-const REWRITE_HOSTS_TO_LOCALHOST: Array<string> = [
+const REWRITE_HOSTS_TO_LOCALHOST: $ReadOnlySet<string> = new Set([
   // A device may retrieve a bundle through 127.0.0.1 via a (SSH) tunnel, but
   // the (remote) Metro server may be on a host without an IPv4 loopback, so
   // 127.0.0.1 may not be addressible locally for (e.g., for source map
@@ -51,7 +51,7 @@ const REWRITE_HOSTS_TO_LOCALHOST: Array<string> = [
   // standard localhost alias.
   '10.0.2.2',
   '10.0.3.2',
-];
+]);
 
 // Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDeviceLegacy method for
 // more details.
@@ -79,6 +79,7 @@ export type DeviceOptions = $ReadOnly<{
   projectRoot: string,
   eventReporter: ?EventReporter,
   createMessageMiddleware: ?CreateCustomMessageHandlerFn,
+  deviceRelativeBaseUrl: URL,
   serverRelativeBaseUrl: URL,
 }>;
 
@@ -136,6 +137,10 @@ export default class Device {
 
   #connectedPageIds: Set<string> = new Set();
 
+  // A base HTTP(S) URL to this server, reachable from the device. Derived from
+  // the http request that created the connection.
+  #deviceRelativeBaseUrl: URL;
+
   // A base HTTP(S) URL to the server, relative to this server.
   #serverRelativeBaseUrl: URL;
 
@@ -152,6 +157,7 @@ export default class Device {
     eventReporter,
     createMessageMiddleware,
     serverRelativeBaseUrl,
+    deviceRelativeBaseUrl,
   }: DeviceOptions) {
     this.#id = id;
     this.#name = name;
@@ -159,6 +165,7 @@ export default class Device {
     this.#deviceSocket = socket;
     this.#projectRoot = projectRoot;
     this.#serverRelativeBaseUrl = serverRelativeBaseUrl;
+    this.#deviceRelativeBaseUrl = deviceRelativeBaseUrl;
     this.#deviceEventReporter = eventReporter
       ? new DeviceEventReporter(eventReporter, {
           deviceId: id,
@@ -676,19 +683,33 @@ export default class Device {
       const params = payload.params;
       if ('sourceMapURL' in params) {
         const sourceMapURL = this.#tryParseHTTPURL(params.sourceMapURL);
+
         if (sourceMapURL) {
+          // This URL will be used to fetch from the server, and will be
+          // mutated if necessary from device-relative to server-relative.
+          // This is not exposed to the debugger.
           const serverRelativeUrl = new URL(sourceMapURL.href);
 
-          for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
-            if (params.sourceMapURL.includes(hostToRewrite)) {
-              payload.params.sourceMapURL = params.sourceMapURL.replace(
-                hostToRewrite,
-                'localhost',
-              );
-              debuggerInfo.originalSourceURLAddress = hostToRewrite;
-              serverRelativeUrl.host = this.#serverRelativeBaseUrl.host;
-              serverRelativeUrl.protocol = this.#serverRelativeBaseUrl.protocol;
-            }
+          // Rewrite device-relative URLs to localhost-relative URLs for the
+          // debugger.
+          // TODO: Fix the assumption that localhost:[same port] is correct.
+          if (
+            // sourceMapURL is a device-relative url to the server.
+            // May or may not be reachable from the frontend.
+            sourceMapURL.origin === this.#deviceRelativeBaseUrl.origin &&
+            // For a specific set of IPs (eg 10.0.2.2) it's relatively safe to
+            // assume the frontend can reach the server on localhost.
+            // TODO: Fix the assumption that localhost:[same port] is correct
+            // and remove this check.
+            REWRITE_HOSTS_TO_LOCALHOST.has(this.#deviceRelativeBaseUrl.hostname)
+          ) {
+            const debuggerRelativeURL = new URL(sourceMapURL.href);
+            debuggerRelativeURL.hostname = 'localhost';
+            serverRelativeUrl.host = this.#serverRelativeBaseUrl.host;
+            serverRelativeUrl.protocol = this.#serverRelativeBaseUrl.protocol;
+            debuggerInfo.originalSourceURLAddress =
+              this.#deviceRelativeBaseUrl.hostname;
+            payload.params.sourceMapURL = debuggerRelativeURL.href;
           }
 
           // Some debug clients do not support fetching HTTP URLs. If the
@@ -712,21 +733,30 @@ export default class Device {
         const originalParamsUrl = params.url;
         let serverRelativeUrl = originalParamsUrl;
         const parsedUrl = this.#tryParseHTTPURL(originalParamsUrl);
-        if (parsedUrl) {
-          for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
-            if (parsedUrl.hostname === hostToRewrite) {
-              // URL is device-relative and points to the host - rewrite it to
-              // use localhost.
-              parsedUrl.hostname = 'localhost';
-              payload.params.url = parsedUrl.href;
-              debuggerInfo.originalSourceURLAddress = hostToRewrite;
+        // Rewrite device-relative URLs pointing to the server so that they're
+        // reachable from the frontend.
+        if (
+          parsedUrl &&
+          // url is a device-relative url to the server.
+          // May or may not be reachable from the frontend.
+          parsedUrl.origin === this.#deviceRelativeBaseUrl.origin &&
+          // For a specific set of IPs (eg 10.0.2.2) it's relatively safe to
+          // assume the frontend can reach the server on localhost.
+          // TODO: Fix the assumption that localhost:[same port] is correct and
+          // remove this check.
+          REWRITE_HOSTS_TO_LOCALHOST.has(this.#deviceRelativeBaseUrl.hostname)
+        ) {
+          // URL is device-relative and points to the host - rewrite it to
+          // use localhost.
+          parsedUrl.hostname = 'localhost';
+          payload.params.url = parsedUrl.href;
+          debuggerInfo.originalSourceURLAddress =
+            this.#deviceRelativeBaseUrl.hostname;
 
-              // Determine the server-relative URL.
-              parsedUrl.host = this.#serverRelativeBaseUrl.host;
-              parsedUrl.protocol = this.#serverRelativeBaseUrl.protocol;
-              serverRelativeUrl = parsedUrl.href;
-            }
-          }
+          // Determine the server-relative URL.
+          parsedUrl.host = this.#serverRelativeBaseUrl.host;
+          parsedUrl.protocol = this.#serverRelativeBaseUrl.protocol;
+          serverRelativeUrl = parsedUrl.href;
         }
 
         // Chrome doesn't download source maps if URL param is not a valid

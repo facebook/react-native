@@ -33,12 +33,18 @@ jest.useRealTimers();
 
 jest.setTimeout(10000);
 
+const fetchOriginal = fetch;
+const fetchSpy: JestMockFn<
+  Parameters<typeof fetch>,
+  ReturnType<typeof fetch>,
+> = jest.spyOn(globalThis, 'fetch');
+
 describe.each(['HTTP', 'HTTPS'])(
   'inspector proxy CDP rewriting hacks over %s',
   protocol => {
     // Inspector proxy tests are using a self-signed certificate for HTTPS tests.
     if (protocol === 'HTTPS') {
-      withFetchSelfSignedCertsForAllTests();
+      withFetchSelfSignedCertsForAllTests(fetchSpy, fetchOriginal);
     }
 
     const serverRef = withServerForEachTest({
@@ -46,6 +52,7 @@ describe.each(['HTTP', 'HTTPS'])(
       projectRoot: __dirname,
       secure: protocol === 'HTTPS',
     });
+
     const autoCleanup = withAbortSignalForEachTest();
     afterEach(() => {
       jest.clearAllMocks();
@@ -188,6 +195,96 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
+    test("does not rewrite urls in Debugger.scriptParsed that don't match the device connection host", async () => {
+      serverRef.app.use('/source-map', serveStaticJson({version: 3}));
+      const {device, debugger_} = await createAndConnectTarget(
+        serverRef,
+        autoCleanup.signal,
+        {
+          app: 'bar-app',
+          id: 'page1',
+          title: 'bar-title',
+          vm: 'bar-vm',
+        },
+        {
+          host: '192.168.0.123:' + serverRef.port,
+        },
+      );
+      try {
+        let fetchCalledWithURL;
+        fetchSpy.mockImplementationOnce(async url => {
+          fetchCalledWithURL = url instanceof URL ? url : null;
+          throw new Error('Unreachable');
+        });
+        const sourceMapURL = `${protocol.toLowerCase()}://127.0.0.1:${
+          serverRef.port
+        }/source-map`;
+        const scriptParsedMessage = await sendFromTargetToDebugger(
+          device,
+          debugger_,
+          'page1',
+          {
+            method: 'Debugger.scriptParsed',
+            params: {
+              sourceMapURL,
+            },
+          },
+        );
+        expect(fetchCalledWithURL?.href).toEqual(sourceMapURL);
+        expect(scriptParsedMessage.params.sourceMapURL).toEqual(
+          `${protocol.toLowerCase()}://127.0.0.1:${serverRef.port}/source-map`,
+        );
+      } finally {
+        device.close();
+        debugger_.close();
+      }
+    });
+
+    test('does not rewrite urls in Debugger.scriptParsed that match the device connection host but are not allowlisted for rewriting', async () => {
+      serverRef.app.use('/source-map', serveStaticJson({version: 3}));
+      const {device, debugger_} = await createAndConnectTarget(
+        serverRef,
+        autoCleanup.signal,
+        {
+          app: 'bar-app',
+          id: 'page1',
+          title: 'bar-title',
+          vm: 'bar-vm',
+        },
+        {
+          host: '192.168.0.123:' + serverRef.port,
+        },
+      );
+      try {
+        let fetchCalledWithURL;
+        fetchSpy.mockImplementationOnce(url => {
+          fetchCalledWithURL = url instanceof URL ? url : null;
+          throw new Error('Unreachable');
+        });
+        const sourceMapURL = `${protocol.toLowerCase()}://192.168.0.123:${
+          serverRef.port
+        }/source-map`;
+        const scriptParsedMessage = await sendFromTargetToDebugger(
+          device,
+          debugger_,
+          'page1',
+          {
+            method: 'Debugger.scriptParsed',
+            params: {
+              sourceMapURL,
+            },
+          },
+        );
+        expect(fetchCalledWithURL?.href).toEqual(sourceMapURL);
+        expect(scriptParsedMessage.params.sourceMapURL).toEqual(
+          `${protocol.toLowerCase()}://192.168.0.123:${serverRef.port}/source-map`,
+        );
+      } finally {
+        device.close();
+        debugger_.close();
+      }
+    });
+
     describe.each(['10.0.2.2', '10.0.3.2', '127.0.0.1'])(
       '%s aliasing to and from localhost',
       sourceHost => {
@@ -201,6 +298,9 @@ describe.each(['HTTP', 'HTTPS'])(
               id: 'page1',
               title: 'bar-title',
               vm: 'bar-vm',
+            },
+            {
+              host: sourceHost + ':' + serverRef.port,
             },
           );
           try {
@@ -235,6 +335,9 @@ describe.each(['HTTP', 'HTTPS'])(
               id: 'page1',
               title: 'bar-title',
               vm: 'bar-vm',
+            },
+            {
+              host: sourceHost + ':' + serverRef.port,
             },
           );
           try {
@@ -284,11 +387,11 @@ describe.each(['HTTP', 'HTTPS'])(
                 method: 'Debugger.setBreakpointByUrl',
                 params: {
                   lineNumber: 1,
-                  urlRegex: 'localhost:1000|localhost:2000',
+                  urlRegex: `localhost:${serverRef.port}|example.com:2000`,
                 },
               });
             expect(setBreakpointByUrlRegexMessage.params.urlRegex).toEqual(
-              `${sourceHost}:1000|${sourceHost}:2000`,
+              `${sourceHost}:${serverRef.port}|example.com:2000`,
             );
           } finally {
             device.close();
@@ -306,6 +409,9 @@ describe.each(['HTTP', 'HTTPS'])(
                 id: 'page1',
                 title: 'bar-title',
                 vm: 'bar-vm',
+              },
+              {
+                host: sourceHost + ':' + serverRef.port,
               },
             );
             try {
@@ -343,6 +449,9 @@ describe.each(['HTTP', 'HTTPS'])(
           id: 'page1',
           title: 'bar-title',
           vm: 'bar-vm',
+        },
+        {
+          host: '127.0.0.1:' + serverRef.port,
         },
       );
       try {
