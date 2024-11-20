@@ -226,7 +226,11 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const deviceName = query.name || 'Unknown';
         const appName = query.app || 'Unknown';
 
+        const deviceRelativeBaseUrl =
+          getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
+
         const oldDevice = this.#devices.get(deviceId);
+
         let newDevice;
         const deviceOptions: DeviceOptions = {
           id: deviceId,
@@ -236,6 +240,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           projectRoot: this.#projectRoot,
           eventReporter: this.#eventReporter,
           createMessageMiddleware: this.#customMessageHandler,
+          deviceRelativeBaseUrl,
           serverRelativeBaseUrl: this.#serverBaseUrl,
         };
 
@@ -249,7 +254,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         this.#devices.set(deviceId, newDevice);
 
         debug(
-          `Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}`,
+          `Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}, via=${deviceRelativeBaseUrl.origin}`,
         );
 
         socket.on('close', () => {
