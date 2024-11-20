@@ -23,6 +23,7 @@ import os from 'os';
 import path from 'path';
 
 const BUILD_OUTPUT_PATH = path.resolve(__dirname, '..', 'build');
+const PRINT_FANTOM_OUTPUT: false = false;
 
 function parseRNTesterCommandResult(
   commandArgs: $ReadOnlyArray<string>,
@@ -132,6 +133,21 @@ module.exports = async function runTest(
     throw new Error(
       [
         'Failed to run test in RN tester binary. Full output:',
+        'buck2 ' + rnTesterCommandArgs.join(' '),
+        'stdout:',
+        rnTesterCommandResult.stdout,
+        'stderr:',
+        rnTesterCommandResult.stderr,
+        'error:',
+        rnTesterCommandResult.error,
+      ].join('\n'),
+    );
+  }
+
+  if (PRINT_FANTOM_OUTPUT) {
+    console.log(
+      [
+        'RN tester binary. Full output:',
         'buck2 ' + rnTesterCommandArgs.join(' '),
         'stdout:',
         rnTesterCommandResult.stdout,
