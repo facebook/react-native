@@ -11,8 +11,7 @@
 
 #import <CoreText/CoreText.h>
 
-typedef CGFloat RCTFontWeight;
-static RCTFontWeight weightOfFont(UIFont *font)
+RCTFontWeight weightOfFont(UIFont *font)
 {
   static NSArray<NSString *> *weightSuffixes;
   static NSArray<NSNumber *> *fontWeights;

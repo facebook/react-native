@@ -7,67 +7,13 @@
 
 #import "RCTFontUtils.h"
 #import <CoreText/CoreText.h>
+#import <React/RCTFont.h>
 
 #import <algorithm>
 #import <cmath>
 #import <limits>
 #import <map>
 #import <mutex>
-
-static UIFontWeight weightOfFont(UIFont *font)
-{
-  static NSArray<NSString *> *weightSuffixes;
-  static NSArray<NSNumber *> *fontWeights;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // We use two arrays instead of one map because
-    // the order is important for suffix matching.
-    weightSuffixes = @[
-      @"normal",
-      @"ultralight",
-      @"thin",
-      @"light",
-      @"regular",
-      @"medium",
-      @"semibold",
-      @"demibold",
-      @"extrabold",
-      @"ultrabold",
-      @"bold",
-      @"heavy",
-      @"black"
-    ];
-    fontWeights = @[
-      @(UIFontWeightRegular),
-      @(UIFontWeightUltraLight),
-      @(UIFontWeightThin),
-      @(UIFontWeightLight),
-      @(UIFontWeightRegular),
-      @(UIFontWeightMedium),
-      @(UIFontWeightSemibold),
-      @(UIFontWeightSemibold),
-      @(UIFontWeightHeavy),
-      @(UIFontWeightHeavy),
-      @(UIFontWeightBold),
-      @(UIFontWeightHeavy),
-      @(UIFontWeightBlack)
-    ];
-  });
-
-  NSString *fontName = font.fontName;
-  NSInteger i = 0;
-  for (NSString *suffix in weightSuffixes) {
-    // CFStringFind is much faster than any variant of rangeOfString: because it does not use a locale.
-    auto options = kCFCompareCaseInsensitive | kCFCompareAnchored | kCFCompareBackwards;
-    if (CFStringFind((CFStringRef)fontName, (CFStringRef)suffix, options).location != kCFNotFound) {
-      return fontWeights[i].doubleValue;
-    }
-    i++;
-  }
-
-  auto traits = (__bridge_transfer NSDictionary *)CTFontCopyTraits((CTFontRef)font);
-  return [traits[UIFontWeightTrait] doubleValue];
-}
 
 static RCTFontProperties RCTDefaultFontProperties()
 {
