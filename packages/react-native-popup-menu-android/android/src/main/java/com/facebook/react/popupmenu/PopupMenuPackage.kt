@@ -32,7 +32,7 @@ public class PopupMenuPackage() : BaseReactPackage(), ViewManagerOnDemandReactPa
     return viewManagersMap.values.toList()
   }
 
-  override fun getViewManagerNames(context: ReactApplicationContext): Collection<String> {
+  override fun getViewManagerNames(reactContext: ReactApplicationContext): Collection<String> {
     return viewManagersMap.keys
   }
 
