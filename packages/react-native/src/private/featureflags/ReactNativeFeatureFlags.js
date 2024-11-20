@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<36e8036fd1f45794c37a6fa22cde9b05>>
+ * @generated SignedSource<<83b5798ee1c7a28fffbf110e19641d69>>
  * @flow strict
  */
 
@@ -36,7 +36,6 @@ export type ReactNativeFeatureFlagsJsOnly = {
   enableAnimatedAllowlist: Getter<boolean>,
   enableAnimatedClearImmediateFix: Getter<boolean>,
   enableAnimatedPropsMemo: Getter<boolean>,
-  enableOptimisedVirtualizedCells: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
@@ -142,11 +141,6 @@ export const enableAnimatedClearImmediateFix: Getter<boolean> = createJavaScript
  * Enables Animated to analyze props to minimize invalidating `AnimatedProps`.
  */
 export const enableAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedPropsMemo', true);
-
-/**
- * Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option
- */
-export const enableOptimisedVirtualizedCells: Getter<boolean> = createJavaScriptFlagGetter('enableOptimisedVirtualizedCells', false);
 
 /**
  * Function used to enable / disabled Layout Animations in React Native.
