@@ -14,6 +14,61 @@
 #import <map>
 #import <mutex>
 
+static UIFontWeight weightOfFont(UIFont *font)
+{
+  static NSArray<NSString *> *weightSuffixes;
+  static NSArray<NSNumber *> *fontWeights;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    // We use two arrays instead of one map because
+    // the order is important for suffix matching.
+    weightSuffixes = @[
+      @"normal",
+      @"ultralight",
+      @"thin",
+      @"light",
+      @"regular",
+      @"medium",
+      @"semibold",
+      @"demibold",
+      @"extrabold",
+      @"ultrabold",
+      @"bold",
+      @"heavy",
+      @"black"
+    ];
+    fontWeights = @[
+      @(UIFontWeightRegular),
+      @(UIFontWeightUltraLight),
+      @(UIFontWeightThin),
+      @(UIFontWeightLight),
+      @(UIFontWeightRegular),
+      @(UIFontWeightMedium),
+      @(UIFontWeightSemibold),
+      @(UIFontWeightSemibold),
+      @(UIFontWeightHeavy),
+      @(UIFontWeightHeavy),
+      @(UIFontWeightBold),
+      @(UIFontWeightHeavy),
+      @(UIFontWeightBlack)
+    ];
+  });
+
+  NSString *fontName = font.fontName;
+  NSInteger i = 0;
+  for (NSString *suffix in weightSuffixes) {
+    // CFStringFind is much faster than any variant of rangeOfString: because it does not use a locale.
+    auto options = kCFCompareCaseInsensitive | kCFCompareAnchored | kCFCompareBackwards;
+    if (CFStringFind((CFStringRef)fontName, (CFStringRef)suffix, options).location != kCFNotFound) {
+      return fontWeights[i].doubleValue;
+    }
+    i++;
+  }
+
+  auto traits = (__bridge_transfer NSDictionary *)CTFontCopyTraits((CTFontRef)font);
+  return [traits[UIFontWeightTrait] doubleValue];
+}
+
 static RCTFontProperties RCTDefaultFontProperties()
 {
   static RCTFontProperties defaultFontProperties;
@@ -43,12 +98,6 @@ static RCTFontProperties RCTResolveFontProperties(
   fontProperties.variant =
       fontProperties.variant != RCTFontVariantUndefined ? fontProperties.variant : baseFontProperties.variant;
   return fontProperties;
-}
-
-static UIFontWeight RCTGetFontWeight(UIFont *font)
-{
-  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  return [traits[UIFontWeightTrait] doubleValue];
 }
 
 static RCTFontStyle RCTGetFontStyle(UIFont *font)
@@ -165,6 +214,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
     font = RCTDefaultFontWithFontProperties(fontProperties);
   } else {
     NSArray<NSString *> *fontNames = [UIFont fontNamesForFamilyName:fontProperties.family];
+    UIFontWeight fontWeight = fontProperties.weight;
 
     if (fontNames.count == 0) {
       // Gracefully handle being given a font name rather than font family, for
@@ -172,6 +222,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
       font = [UIFont fontWithName:fontProperties.family size:effectiveFontSize];
       if (font) {
         fontNames = [UIFont fontNamesForFamilyName:font.familyName];
+        fontWeight = fontWeight ?: weightOfFont(font);
       } else {
         // Failback to system font.
         font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
@@ -188,8 +239,8 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
           continue;
         }
 
-        CGFloat testWeight = RCTGetFontWeight(fontMatch);
-        if (ABS(testWeight - fontProperties.weight) < ABS(closestWeight - fontProperties.weight)) {
+        CGFloat testWeight = weightOfFont(fontMatch);
+        if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
           font = fontMatch;
           closestWeight = testWeight;
         }
