@@ -29,9 +29,9 @@ void MutationObserverManager::observe(
   if (observerIt == observers.end()) {
     auto observer = MutationObserver{mutationObserverId};
     observer.observe(shadowNode, observeSubtree);
-    observers.insert({mutationObserverId, std::move(observer)});
+    observers.emplace(mutationObserverId, std::move(observer));
   } else {
-    auto observer = observerIt->second;
+    auto& observer = observerIt->second;
     observer.observe(shadowNode, observeSubtree);
   }
 }
