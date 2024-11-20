@@ -33,11 +33,18 @@ class ImageProps final : public ViewProps {
 
   ImageSources sources{};
   ImageSource defaultSource{};
+  ImageSource loadingIndicatorSource{};
   ImageResizeMode resizeMode{ImageResizeMode::Stretch};
   Float blurRadius{};
   EdgeInsets capInsets{};
   SharedColor tintColor{};
   std::string internal_analyticTag{};
+  std::string resizeMethod{};
+  Float resizeMultiplier{};
+  bool shouldNotify{};
+  SharedColor overlayColor{};
+  Float fadeDuration{};
+  bool progressiveRenderingEnabled{};
 };
 
 } // namespace facebook::react
