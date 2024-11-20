@@ -105,7 +105,9 @@ export function setColorScheme(colorScheme: ?ColorSchemeName): void {
   const {NativeAppearance} = state;
   if (NativeAppearance != null) {
     NativeAppearance.setColorScheme(colorScheme ?? 'unspecified');
-    state.appearance = {colorScheme};
+    state.appearance = {
+      colorScheme: toColorScheme(NativeAppearance.getColorScheme()),
+    };
   }
 }
 
