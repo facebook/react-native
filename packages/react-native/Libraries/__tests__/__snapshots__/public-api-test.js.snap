@@ -6903,49 +6903,6 @@ exports[`public API should not change unintentionally Libraries/Network/fetch.js
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/Colors.js 1`] = `
-"declare export default {
-  primary: \\"#1292B4\\",
-  white: \\"#FFF\\",
-  lighter: \\"#F3F3F3\\",
-  light: \\"#DAE1E7\\",
-  dark: \\"#444\\",
-  darker: \\"#222\\",
-  black: \\"#000\\",
-};
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/DebugInstructions.js 1`] = `
-"declare const DebugInstructions: () => Node;
-declare export default typeof DebugInstructions;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/Header.js 1`] = `
-"declare const Header: () => Node;
-declare export default typeof Header;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/HermesBadge.js 1`] = `
-"declare const HermesBadge: () => Node;
-declare export default typeof HermesBadge;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/LearnMoreLinks.js 1`] = `
-"declare const LinkList: () => Node;
-declare export default typeof LinkList;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/ReloadInstructions.js 1`] = `
-"declare const ReloadInstructions: () => Node;
-declare export default typeof ReloadInstructions;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/NewAppScreen/index.js 1`] = `
 "export {
   Colors,
