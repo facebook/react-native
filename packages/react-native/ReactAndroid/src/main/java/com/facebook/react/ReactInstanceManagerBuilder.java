@@ -339,7 +339,7 @@ public class ReactInstanceManagerBuilder {
     // We use the name of the device and the app for debugging & metrics
     //noinspection ConstantConditions
     String appName = mApplication.getPackageName();
-    String deviceName = AndroidInfoHelpers.INSTANCE.getFriendlyDeviceName();
+    String deviceName = AndroidInfoHelpers.getFriendlyDeviceName();
 
     return new ReactInstanceManager(
         mApplication,
