@@ -562,7 +562,8 @@ public class ReactHostImpl implements ReactHost {
    * @param reason describing why ReactHost is being destroyed (e.g. memory pressure)
    * @param ex exception that caused the trigger to destroy ReactHost (or null) This exception will
    *     be used to log properly the cause of destroy operation.
-   * @param onDestroyFinished callback that will be called when React Native gets destroyed.
+   * @param onDestroyFinished callback that will be called when React Native gets destroyed, the
+   *     callback will run on a background thread.
    * @return A task that completes when React Native gets destroyed.
    */
   @NonNull
