@@ -6,8 +6,8 @@
  */
 
 #import "RCTAppDependencyProvider.h"
-#import "RCTModulesConformingToProtocolsProvider.h"
-#import "RCTThirdPartyComponentsProvider.h"
+#import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
+#import <ReactCodegen/RCTThirdPartyComponentsProvider.h>
 
 @implementation RCTAppDependencyProvider {
   NSArray<NSString *> * _URLRequestHandlerClassNames;

@@ -118,6 +118,14 @@ const APP_DEPENDENCY_PROVIDER_MM_TEMPLATE_PATH = path.join(
   'RCTAppDependencyProviderMM.template',
 );
 
+const APP_DEPENDENCY_PROVIDER_PODSPEC_TEMPLATE_PATH = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'scripts',
+  'codegen',
+  'templates',
+  'ReactAppDependencyProvider.podspec.template',
+);
+
 const codegenLog = (text, info = false) => {
   // ANSI escape codes for colors and formatting
   const reset = '\x1b[0m';
@@ -663,6 +671,18 @@ function generateAppDependencyProvider(outputDir) {
   const finalPathMM = path.join(outputDir, 'RCTAppDependencyProvider.mm');
   fs.writeFileSync(finalPathMM, templateMM);
   codegenLog(`Generated artifact: ${finalPathMM}`);
+
+  // Generate the podspec file
+  const templatePodspec = fs
+    .readFileSync(APP_DEPENDENCY_PROVIDER_PODSPEC_TEMPLATE_PATH, 'utf8')
+    .replace(/{react-native-version}/, packageJson.version)
+    .replace(/{react-native-licence}/, packageJson.license);
+  const finalPathPodspec = path.join(
+    outputDir,
+    'ReactAppDependencyProvider.podspec',
+  );
+  fs.writeFileSync(finalPathPodspec, templatePodspec);
+  codegenLog(`Generated podspec: ${finalPathPodspec}`);
 }
 
 function generateRCTThirdPartyComponents(libraries, outputDir) {
