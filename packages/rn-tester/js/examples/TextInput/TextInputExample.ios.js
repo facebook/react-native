@@ -995,6 +995,12 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     },
   },
   {
+    title: 'Keyboard shortcuts',
+    render: function (): React.Node {
+      return <KeyboardShortcutsExample />;
+    },
+  },
+  {
     title: 'Line Break Mode',
     render: function (): React.Node {
       const lineBreakMode = [
@@ -1034,12 +1040,6 @@ const textInputExamples: Array<RNTesterModuleExample> = [
           })}
         </View>
       );
-    },
-  },
-  {
-    title: 'Keyboard shortcuts',
-    render: function (): React.Node {
-      return <KeyboardShortcutsExample />;
     },
   },
 ];
