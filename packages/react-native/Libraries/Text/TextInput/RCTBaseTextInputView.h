@@ -53,10 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) UIKeyboardType keyboardType;
 @property (nonatomic, assign) BOOL showSoftInputOnFocus;
 
-@property (nonatomic, assign) BOOL isFirstRender;
-@property (nonatomic, strong) NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
-@property (nonatomic, strong) NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
-
 /**
  Sets selection intext input if both start and end are within range of the text input.
  **/

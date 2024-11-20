@@ -30,6 +30,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   BOOL _hasInputAccessoryView;
   NSString *_Nullable _predictedText;
   BOOL _didMoveToWindow;
+  NSArray<UIBarButtonItemGroup *> *_initialValueLeadingBarButtonGroups;
+  NSArray<UIBarButtonItemGroup *> *_initialValueTrailingBarButtonGroups;
 }
 
 - (void)reactUpdateResponderOffsetForScrollView:(RCTScrollView *)scrollView
@@ -65,7 +67,6 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
     [self initializeReturnKeyType];
-    _isFirstRender = YES;
     _initialValueLeadingBarButtonGroups = nil;
     _initialValueTrailingBarButtonGroups = nil;
   }
@@ -820,8 +821,7 @@ static BOOL findMismatch(NSString *first, NSString *second, NSRange *firstRange,
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
   // Initialize the initial values only once
-  if (_isFirstRender) {
-    _isFirstRender = NO;
+  if (_initialValueLeadingBarButtonGroups == nil) {
     // Capture initial values of leading and trailing button groups
     _initialValueLeadingBarButtonGroups = self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups;
     _initialValueTrailingBarButtonGroups = self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups;
