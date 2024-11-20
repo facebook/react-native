@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ce07f8091a19d5b479350f7a3b05067b>>
+ * @generated SignedSource<<36e8036fd1f45794c37a6fa22cde9b05>>
  * @flow strict
  */
 
@@ -42,7 +42,6 @@ export type ReactNativeFeatureFlagsJsOnly = {
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
-  shouldUseSetNativePropsInNativeAnimationsInFabric: Getter<boolean>,
   useInsertionEffectsForAnimations: Getter<boolean>,
   useRefsForTextInputState: Getter<boolean>,
 };
@@ -173,11 +172,6 @@ export const shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean> = cre
  * Enables use of setNativeProps in JS driven animations.
  */
 export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScriptFlagGetter('shouldUseSetNativePropsInFabric', true);
-
-/**
- * Enables use of setNativeProps in Native driven animations in Fabric.
- */
-export const shouldUseSetNativePropsInNativeAnimationsInFabric: Getter<boolean> = createJavaScriptFlagGetter('shouldUseSetNativePropsInNativeAnimationsInFabric', false);
 
 /**
  * Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.
