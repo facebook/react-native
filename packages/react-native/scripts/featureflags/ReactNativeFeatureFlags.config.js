@@ -554,15 +554,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    shouldUseSetNativePropsInNativeAnimationsInFabric: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-03-05',
-        description:
-          'Enables use of setNativeProps in Native driven animations in Fabric.',
-        purpose: 'experimentation',
-      },
-    },
     useInsertionEffectsForAnimations: {
       defaultValue: true,
       metadata: {
