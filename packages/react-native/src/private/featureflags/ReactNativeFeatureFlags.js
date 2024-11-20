@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d7715d63338e96f5842026458a3b69c8>>
+ * @generated SignedSource<<ce07f8091a19d5b479350f7a3b05067b>>
  * @flow strict
  */
 
@@ -87,7 +87,6 @@ export type ReactNativeFeatureFlags = {
   initEagerTurboModulesOnNativeModulesQueueAndroid: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
   loadVectorDrawablesOnImages: Getter<boolean>,
-  setAndroidLayoutDirection: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
@@ -334,10 +333,6 @@ export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('l
  * Adds support for loading vector drawable assets in the Image component (only on Android)
  */
 export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGetter('loadVectorDrawablesOnImages', false);
-/**
- * Propagate layout direction to Android views.
- */
-export const setAndroidLayoutDirection: Getter<boolean> = createNativeFlagGetter('setAndroidLayoutDirection', true);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<895944e81ecdf7f1df63bfa9ebe52b13>>
+ * @generated SignedSource<<b42cf9d00bd5b0d01f3d14b633771201>>
  */
 
 /**
@@ -106,8 +106,6 @@ class NativeReactNativeFeatureFlags
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
 
   bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
-
-  bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 

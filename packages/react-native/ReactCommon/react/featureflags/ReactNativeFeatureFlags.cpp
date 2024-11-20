@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cfa6f544c0bcb190836329d8f597efc6>>
+ * @generated SignedSource<<90e3ea3abb6f13c711aec3754ab03126>>
  */
 
 /**
@@ -164,10 +164,6 @@ bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
 
 bool ReactNativeFeatureFlags::loadVectorDrawablesOnImages() {
   return getAccessor().loadVectorDrawablesOnImages();
-}
-
-bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {
-  return getAccessor().setAndroidLayoutDirection();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {

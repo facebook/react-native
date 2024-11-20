@@ -37,8 +37,6 @@ import com.facebook.react.animated.NativeAnimatedModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
-import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -139,13 +137,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     ViewCompat.setAccessibilityDelegate(this, new ReactScrollViewAccessibilityDelegate());
 
     mScroller = getOverScrollerFromParent();
-    mReactScrollViewScrollState =
-        new ReactScrollViewScrollState(
-            // TODO: The ScrollView content may be laid out in a different direction than the
-            // instance if the `direction` style is set on the ScrollView or above it.
-            I18nUtil.getInstance().isRTL(context)
-                ? ViewCompat.LAYOUT_DIRECTION_RTL
-                : ViewCompat.LAYOUT_DIRECTION_LTR);
+    mReactScrollViewScrollState = new ReactScrollViewScrollState();
 
     setOnHierarchyChangeListener(this);
     setClipChildren(false);
@@ -1088,13 +1080,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     int firstOffset = 0;
     int lastOffset = maximumOffset;
     int width = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
-    int layoutDirection =
-        ReactNativeFeatureFlags.setAndroidLayoutDirection()
-            ? getLayoutDirection()
-            : mReactScrollViewScrollState.getLayoutDirection();
 
     // offsets are from the right edge in RTL layouts
-    if (layoutDirection == LAYOUT_DIRECTION_RTL) {
+    if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
       targetOffset = maximumOffset - targetOffset;
       velocityX = -velocityX;
     }
@@ -1184,7 +1172,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // if scrolling after the last snap offset and snapping to the
     // end of the list is disabled, then we allow free scrolling
     int currentOffset = getScrollX();
-    if (layoutDirection == LAYOUT_DIRECTION_RTL) {
+    if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
       currentOffset = maximumOffset - currentOffset;
     }
     if (!mSnapToEnd && targetOffset >= lastOffset) {
@@ -1224,7 +1212,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // Make sure the new offset isn't out of bounds
     targetOffset = Math.min(Math.max(0, targetOffset), maximumOffset);
 
-    if (layoutDirection == LAYOUT_DIRECTION_RTL) {
+    if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
       targetOffset = maximumOffset - targetOffset;
       velocityX = -velocityX;
     }
@@ -1423,11 +1411,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     // does not shift layout. If `maintainVisibleContentPosition` is enabled, we try to adjust
     // position so that the viewport keeps the same insets to previously visible views. TODO: MVCP
     // does not work in RTL.
-    int layoutDirection =
-        ReactNativeFeatureFlags.setAndroidLayoutDirection()
-            ? v.getLayoutDirection()
-            : mReactScrollViewScrollState.getLayoutDirection();
-    if (layoutDirection == LAYOUT_DIRECTION_RTL) {
+    if (v.getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
       adjustPositionForContentChangeRTL(left, right, oldLeft, oldRight);
     } else if (mMaintainVisibleContentPositionHelper != null) {
       mMaintainVisibleContentPositionHelper.updateScrollPosition();

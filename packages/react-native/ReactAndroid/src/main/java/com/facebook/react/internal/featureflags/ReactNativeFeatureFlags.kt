@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<124e8e4892062fa63a9a70ae0c53653d>>
+ * @generated SignedSource<<b1ad8179cf22c2e97f623435bf152aab>>
  */
 
 /**
@@ -237,12 +237,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun loadVectorDrawablesOnImages(): Boolean = accessor.loadVectorDrawablesOnImages()
-
-  /**
-   * Propagate layout direction to Android views.
-   */
-  @JvmStatic
-  public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

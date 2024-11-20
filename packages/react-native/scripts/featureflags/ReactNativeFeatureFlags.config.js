@@ -343,14 +343,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    setAndroidLayoutDirection: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-05-17',
-        description: 'Propagate layout direction to Android views.',
-        purpose: 'experimentation',
-      },
-    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {
