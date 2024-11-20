@@ -19,6 +19,7 @@
 #include <jsinspector-modern/HostTarget.h>
 #include <jsireact/JSIExecutor.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #include <react/utils/jsi-utils.h>
 #include <iostream>
@@ -92,6 +93,7 @@ ReactInstance::ReactInstance(
         jsi::Runtime& jsiRuntime = runtime->getRuntime();
         SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
         try {
+          ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
           callback(jsiRuntime);
 
           // If we have first-class support for microtasks,
