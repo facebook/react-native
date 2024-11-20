@@ -7028,11 +7028,10 @@ public abstract interface class com/facebook/react/views/scroll/ReactScrollViewH
 }
 
 public final class com/facebook/react/views/scroll/ReactScrollViewHelper$ReactScrollViewScrollState {
-	public fun <init> (I)V
+	public fun <init> ()V
 	public final fun getDecelerationRate ()F
 	public final fun getFinalAnimatedPositionScroll ()Landroid/graphics/Point;
 	public final fun getLastStateUpdateScroll ()Landroid/graphics/Point;
-	public final fun getLayoutDirection ()I
 	public final fun getScrollAwayPaddingTop ()I
 	public final fun isCanceled ()Z
 	public final fun isFinished ()Z

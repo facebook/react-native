@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0c0217362f582ac635d5f46347e65252>>
+ * @generated SignedSource<<4544b1e206765808859ef84c2e6333a9>>
  */
 
 /**
@@ -213,11 +213,6 @@ class ReactNativeFeatureFlags {
    * Adds support for loading vector drawable assets in the Image component (only on Android)
    */
   RN_EXPORT static bool loadVectorDrawablesOnImages();
-
-  /**
-   * Propagate layout direction to Android views.
-   */
-  RN_EXPORT static bool setAndroidLayoutDirection();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

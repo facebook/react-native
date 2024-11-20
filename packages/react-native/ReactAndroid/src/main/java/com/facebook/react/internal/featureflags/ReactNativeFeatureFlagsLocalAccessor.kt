@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fb8747b040cd9c29e9ca0a7c1647ad91>>
+ * @generated SignedSource<<4bb5173b9ba1d3e620f3a7d613b27ac7>>
  */
 
 /**
@@ -59,7 +59,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var initEagerTurboModulesOnNativeModulesQueueAndroidCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
-  private var setAndroidLayoutDirectionCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
@@ -417,16 +416,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.loadVectorDrawablesOnImages()
       accessedFeatureFlags.add("loadVectorDrawablesOnImages")
       loadVectorDrawablesOnImagesCache = cached
-    }
-    return cached
-  }
-
-  override fun setAndroidLayoutDirection(): Boolean {
-    var cached = setAndroidLayoutDirectionCache
-    if (cached == null) {
-      cached = currentProvider.setAndroidLayoutDirection()
-      accessedFeatureFlags.add("setAndroidLayoutDirection")
-      setAndroidLayoutDirectionCache = cached
     }
     return cached
   }
