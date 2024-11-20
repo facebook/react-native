@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import deepEqual from 'deep-equal';
 import nullthrows from 'nullthrows';
 
 export type TestCaseResult = {
@@ -185,6 +186,15 @@ class Expect {
   get not(): this {
     this.#isNot = !this.#isNot;
     return this;
+  }
+
+  toEqual(expected: mixed): void {
+    const pass = deepEqual(this.#received, expected, {strict: true});
+    if (!this.#isExpectedResult(pass)) {
+      throw new Error(
+        `Expected${this.#maybeNotLabel()} to equal ${String(expected)} but received ${String(this.#received)}.`,
+      );
+    }
   }
 
   toBe(expected: mixed): void {
