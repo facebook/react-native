@@ -15,6 +15,8 @@
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
+  NSArray<UIBarButtonItemGroup *> *_initialValueLeadingBarButtonGroups;
+  NSArray<UIBarButtonItemGroup *> *_initialValueTrailingBarButtonGroups;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -27,7 +29,6 @@
 
     _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
     _scrollEnabled = YES;
-    _isFirstRender = YES;
     _initialValueLeadingBarButtonGroups = nil;
     _initialValueTrailingBarButtonGroups = nil;
   }
@@ -121,8 +122,7 @@
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
   // Initialize the initial values only once
-  if (_isFirstRender) {
-    _isFirstRender = NO;
+  if (_initialValueLeadingBarButtonGroups == nil) {
     // Capture initial values of leading and trailing button groups
     _initialValueLeadingBarButtonGroups = self.inputAssistantItem.leadingBarButtonGroups;
     _initialValueTrailingBarButtonGroups = self.inputAssistantItem.trailingBarButtonGroups;

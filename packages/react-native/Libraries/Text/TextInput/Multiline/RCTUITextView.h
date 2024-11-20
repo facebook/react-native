@@ -39,9 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewButtonLabel;
 
-@property (nonatomic, assign) BOOL isFirstRender;
-@property (nonatomic, strong) NSArray<UIBarButtonItemGroup *> *initialValueLeadingBarButtonGroups;
-@property (nonatomic, strong) NSArray<UIBarButtonItemGroup *> *initialValueTrailingBarButtonGroups;
 @property (nonatomic, assign) BOOL disableKeyboardShortcuts;
 
 @end

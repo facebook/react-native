@@ -18,6 +18,8 @@
   UITextView *_detachedTextView;
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
   NSDictionary<NSAttributedStringKey, id> *_defaultTextAttributes;
+  NSArray<UIBarButtonItemGroup *> *_initialValueLeadingBarButtonGroups;
+  NSArray<UIBarButtonItemGroup *> *_initialValueTrailingBarButtonGroups;
 }
 
 static UIFont *defaultPlaceholderFont(void)
@@ -52,7 +54,6 @@ static UIColor *defaultPlaceholderColor(void)
     self.textContainer.lineFragmentPadding = 0;
     self.scrollsToTop = NO;
     self.scrollEnabled = YES;
-    _isFirstRender = YES;
     _initialValueLeadingBarButtonGroups = nil;
     _initialValueTrailingBarButtonGroups = nil;
   }
@@ -138,8 +139,7 @@ static UIColor *defaultPlaceholderColor(void)
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
   // Initialize the initial values only once
-  if (_isFirstRender) {
-    _isFirstRender = NO;
+  if (_initialValueLeadingBarButtonGroups == nil) {
     // Capture initial values of leading and trailing button groups
     _initialValueLeadingBarButtonGroups = self.inputAssistantItem.leadingBarButtonGroups;
     _initialValueTrailingBarButtonGroups = self.inputAssistantItem.trailingBarButtonGroups;
