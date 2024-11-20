@@ -7,6 +7,7 @@
 
 #import "RCTFontUtils.h"
 #import <CoreText/CoreText.h>
+#import <React/RCTFont.h>
 
 #import <algorithm>
 #import <cmath>
@@ -43,12 +44,6 @@ static RCTFontProperties RCTResolveFontProperties(
   fontProperties.variant =
       fontProperties.variant != RCTFontVariantUndefined ? fontProperties.variant : baseFontProperties.variant;
   return fontProperties;
-}
-
-static UIFontWeight RCTGetFontWeight(UIFont *font)
-{
-  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  return [traits[UIFontWeightTrait] doubleValue];
 }
 
 static RCTFontStyle RCTGetFontStyle(UIFont *font)
@@ -165,6 +160,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
     font = RCTDefaultFontWithFontProperties(fontProperties);
   } else {
     NSArray<NSString *> *fontNames = [UIFont fontNamesForFamilyName:fontProperties.family];
+    UIFontWeight fontWeight = fontProperties.weight;
 
     if (fontNames.count == 0) {
       // Gracefully handle being given a font name rather than font family, for
@@ -172,6 +168,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
       font = [UIFont fontWithName:fontProperties.family size:effectiveFontSize];
       if (font) {
         fontNames = [UIFont fontNamesForFamilyName:font.familyName];
+        fontWeight = fontWeight ?: RCTGetFontWeight(font);
       } else {
         // Failback to system font.
         font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
@@ -189,7 +186,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
         }
 
         CGFloat testWeight = RCTGetFontWeight(fontMatch);
-        if (ABS(testWeight - fontProperties.weight) < ABS(closestWeight - fontProperties.weight)) {
+        if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
           font = fontMatch;
           closestWeight = testWeight;
         }
