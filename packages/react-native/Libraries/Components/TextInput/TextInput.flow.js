@@ -218,6 +218,7 @@ type PasswordRules = string;
 type IOSProps = $ReadOnly<{|
   /**
    * If true, the keyboard shortcuts (undo/redo and copy buttons) are disabled. The default value is false.
+   * @platform ios
    */
   disableKeyboardShortcuts?: ?boolean,
 
