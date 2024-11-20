@@ -443,10 +443,15 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)textInputDidChangeSelection
 {
-  [self _updateTypingAttributes];
   if (_comingFromJS) {
     return;
   }
+
+  // T207198334: Setting a new AttributedString (_comingFromJS) will trigger a selection change before the backing
+  // string is updated, so indicies won't point to what we want yet. Only respond to user selection change, and let
+  // `_setAttributedString` handle updating typing attributes if content changes.
+  [self _updateTypingAttributes];
+
   const auto &props = static_cast<const TextInputProps &>(*_props);
   if (props.traits.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     [self textInputDidChange];
@@ -710,7 +715,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 // https://github.com/facebook/react-native/blob/3102a58df38d96f3dacef0530e4dbb399037fcd2/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/text/internal/span/SetSpanOperation.kt#L30
 - (void)_updateTypingAttributes
 {
-  if (_backedTextInputView.attributedText.length > 0) {
+  if (_backedTextInputView.attributedText.length > 0 && _backedTextInputView.selectedTextRange != nil) {
     NSUInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                            toPosition:_backedTextInputView.selectedTextRange.start];
 
