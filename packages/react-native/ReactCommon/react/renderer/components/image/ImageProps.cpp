@@ -26,14 +26,14 @@ ImageProps::ImageProps(
                     "source",
                     sourceProps.sources,
                     {})),
-      defaultSources(
+      defaultSource(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
-              ? sourceProps.defaultSources
+              ? sourceProps.defaultSource
               : convertRawProp(
                     context,
                     rawProps,
                     "defaultSource",
-                    sourceProps.defaultSources,
+                    sourceProps.defaultSource,
                     {})),
       resizeMode(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
@@ -95,7 +95,7 @@ void ImageProps::setProp(
 
   switch (hash) {
     RAW_SET_PROP_SWITCH_CASE(sources, "source");
-    RAW_SET_PROP_SWITCH_CASE(defaultSources, "defaultSource");
+    RAW_SET_PROP_SWITCH_CASE(defaultSource, "defaultSource");
     RAW_SET_PROP_SWITCH_CASE_BASIC(resizeMode);
     RAW_SET_PROP_SWITCH_CASE_BASIC(blurRadius);
     RAW_SET_PROP_SWITCH_CASE_BASIC(capInsets);
