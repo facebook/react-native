@@ -68,19 +68,14 @@ public:
     jsi::Runtime* runtime = getRuntime(rawProps);
     jsi::Value jsiValue = getJsiValue(rawProps).getObject(*runtime).getProperty(*runtime, name);
     
+    // Any prop we don't want to handle will use the dynamicValue path for now:
     if (nameStr != "nativeProp") {
       return new RawValue(jsi::dynamicFromValue(*runtime, jsiValue));
     }
     
-//    delete name;
-//    delete length;
-    
+    // Every unique prop will be a raw jsi value
     return new RawValue(runtime, jsiValue);
   }
-  
-private:
-  // Either store JSI or raw value here, not sure whats best
-//  std::unordered_map<std::string, RawValue> values_;
 };
 
 extern const char CustomViewComponentName[] = "CustomView";

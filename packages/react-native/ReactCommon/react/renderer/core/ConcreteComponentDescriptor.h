@@ -49,7 +49,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
   ConcreteComponentDescriptor(const ComponentDescriptorParameters& parameters)
       : ComponentDescriptor(parameters) {
-        rawPropsParser_.template prepare<ConcreteProps>();
+    rawPropsParser_.template prepare<ConcreteProps>();
   }
 
   ComponentHandle getComponentHandle() const override {
