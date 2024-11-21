@@ -502,15 +502,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableOptimisedVirtualizedCells: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-08-21',
-        description:
-          'Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option',
-        purpose: 'experimentation',
-      },
-    },
     isLayoutAnimationEnabled: {
       defaultValue: true,
       metadata: {
