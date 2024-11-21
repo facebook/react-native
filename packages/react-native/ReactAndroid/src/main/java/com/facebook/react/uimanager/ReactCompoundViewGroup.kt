@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager
 
 /**
  * This interface should be implemented by native ViewGroup subclasses that can represent more than
@@ -13,10 +13,10 @@ package com.facebook.react.uimanager;
  * overlap, and TouchTargetHelper may incorrectly dispatch touch event to a wrong element because it
  * prioritizes children over parents.
  */
-public interface ReactCompoundViewGroup extends ReactCompoundView {
+public interface ReactCompoundViewGroup : ReactCompoundView {
   /**
    * Returns true if react node responsible for the touch event is flattened into this ViewGroup.
    * Use reactTagForTouch() to get its tag.
    */
-  boolean interceptsTouchEvent(float touchX, float touchY);
+  public fun interceptsTouchEvent(touchX: Float, touchY: Float): Boolean
 }
