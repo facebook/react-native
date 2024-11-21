@@ -62,6 +62,43 @@ exports.examples = [
     },
   },
   {
+    title: 'Linear Gradient with corner angle',
+    description: 'Rectangular Linear gradient with corner angle',
+    render(): React.Node {
+      return (
+        <GradientBox
+          style={{
+            experimental_backgroundImage: 'linear-gradient(45deg, red, blue);',
+            height: 300,
+            width: 140,
+          }}
+          testID="linear-gradient-rectangular-with-corner-angle"
+        />
+      );
+    },
+  },
+  {
+    title: 'Multiple linear gradients',
+    render(): React.Node {
+      return (
+        <GradientBox
+          testID="linear-gradient-multiple"
+          style={{
+            experimental_backgroundImage: `
+                  linear-gradient(0deg, white, rgba(238, 64, 53, 0.8), rgba(238, 64, 53, 0) 70%), 
+    linear-gradient(45deg, white, rgba(243, 119, 54, 0.8), rgba(243, 119, 54, 0) 70%), 
+    linear-gradient(90deg, white, rgba(253, 244, 152, 0.8), rgba(253, 244, 152, 0) 70%), 
+    linear-gradient(135deg, white, rgba(123, 192, 67, 0.8), rgba(123, 192, 67, 0) 70%), 
+    linear-gradient(180deg, white, rgba(3, 146, 207, 0.8), rgba(3, 146, 207, 0) 70%);
+
+            `,
+            borderRadius: 16,
+          }}
+        />
+      );
+    },
+  },
+  {
     title: 'Diagonal Gradient',
     description: 'Linear gradient from top-left to bottom-right',
     render(): React.Node {

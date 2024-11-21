@@ -6023,11 +6023,6 @@ public final class com/facebook/react/uimanager/style/CornerRadii {
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/facebook/react/uimanager/style/Gradient {
-	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;Landroid/content/Context;)V
-	public final fun getShader (Landroid/graphics/Rect;)Landroid/graphics/Shader;
-}
-
 public abstract class com/facebook/react/uimanager/style/LogicalEdge : java/lang/Enum {
 	public static final field ALL Lcom/facebook/react/uimanager/style/LogicalEdge;
 	public static final field BLOCK Lcom/facebook/react/uimanager/style/LogicalEdge;
