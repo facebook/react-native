@@ -63,10 +63,4 @@ public class WritableNativeMap : ReadableNativeMap(), WritableMap {
   private external fun mergeNativeMap(source: ReadableNativeMap)
 
   private external fun initHybrid()
-
-  private companion object {
-    init {
-      ReactBridge.staticInit()
-    }
-  }
 }

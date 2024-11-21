@@ -1622,7 +1622,7 @@ public abstract interface class com/facebook/react/bridge/WritableMap : com/face
 	public abstract fun putString (Ljava/lang/String;Ljava/lang/String;)V
 }
 
-public class com/facebook/react/bridge/WritableNativeArray : com/facebook/react/bridge/ReadableNativeArray, com/facebook/react/bridge/WritableArray {
+public final class com/facebook/react/bridge/WritableNativeArray : com/facebook/react/bridge/ReadableNativeArray, com/facebook/react/bridge/WritableArray {
 	public fun <init> ()V
 	public fun pushArray (Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun pushBoolean (Z)V
