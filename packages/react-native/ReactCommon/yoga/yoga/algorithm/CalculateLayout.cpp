@@ -1751,6 +1751,7 @@ static void calculateLayoutImpl(
   if (performLayout && (isNodeFlexWrap || isBaselineLayout(node))) {
     float leadPerLine = 0;
     float currentLead = leadingPaddingAndBorderCross;
+    float extraSpacePerLine = 0;
 
     const float unclampedCrossDim = sizingModeCrossDim == SizingMode::StretchFit
         ? availableInnerCrossDim + paddingAndBorderAxisCross
@@ -1786,7 +1787,8 @@ static void calculateLayoutImpl(
         currentLead += remainingAlignContentDim / 2;
         break;
       case Align::Stretch:
-        leadPerLine = remainingAlignContentDim / static_cast<float>(lineCount);
+        extraSpacePerLine =
+            remainingAlignContentDim / static_cast<float>(lineCount);
         break;
       case Align::SpaceAround:
         currentLead +=
@@ -1856,6 +1858,7 @@ static void calculateLayoutImpl(
       }
       endIterator = iterator;
       currentLead += i != 0 ? crossAxisGap : 0;
+      lineHeight += extraSpacePerLine;
 
       for (iterator = startIterator; iterator != endIterator; iterator++) {
         const auto child = *iterator;
