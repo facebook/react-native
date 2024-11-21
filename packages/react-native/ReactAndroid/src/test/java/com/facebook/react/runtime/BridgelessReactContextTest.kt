@@ -17,6 +17,7 @@ import com.facebook.testutils.shadows.ShadowArguments
 import com.facebook.testutils.shadows.ShadowNativeArray
 import com.facebook.testutils.shadows.ShadowNativeLoader
 import com.facebook.testutils.shadows.ShadowSoLoader
+import com.facebook.testutils.shadows.ShadowWritableNativeArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -40,7 +41,7 @@ import org.robolectric.annotation.Config
             ShadowSoLoader::class,
             ShadowNativeLoader::class,
             ShadowArguments::class,
-            ShadowNativeArray.Writable::class])
+            ShadowWritableNativeArray::class])
 class BridgelessReactContextTest {
   private lateinit var context: Context
   private lateinit var reactHost: ReactHostImpl
