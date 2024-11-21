@@ -391,7 +391,7 @@ describe.each(['HTTP', 'HTTPS'])(
                 },
               });
             expect(setBreakpointByUrlRegexMessage.params.urlRegex).toEqual(
-              `${sourceHost}:${serverRef.port}|example.com:2000`,
+              `${sourceHost.replaceAll('.', '\\.')}:${serverRef.port}|example.com:2000`,
             );
           } finally {
             device.close();
