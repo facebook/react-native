@@ -177,12 +177,9 @@ public open class ReadableNativeMap protected constructor() : NativeMap(), Reada
   }
 
   private companion object {
-    init {
-      ReactBridge.staticInit()
-    }
-
-    private var jniPassCounter: Int = 0
-
-    @JvmStatic public fun getJNIPassCounter(): Int = jniPassCounter
+    @get:JvmStatic
+    @get:JvmName("getJNIPassCounter")
+    public var jniPassCounter: Int = 0
+      private set
   }
 }

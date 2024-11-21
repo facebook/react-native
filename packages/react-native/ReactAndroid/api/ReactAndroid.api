@@ -1482,7 +1482,7 @@ public class com/facebook/react/bridge/ReadableNativeArray : com/facebook/react/
 	public fun getDouble (I)D
 	public fun getDynamic (I)Lcom/facebook/react/bridge/Dynamic;
 	public fun getInt (I)I
-	public static fun getJNIPassCounter ()I
+	public static final fun getJNIPassCounter ()I
 	public fun getLong (I)J
 	public synthetic fun getMap (I)Lcom/facebook/react/bridge/ReadableMap;
 	public fun getMap (I)Lcom/facebook/react/bridge/ReadableNativeMap;
