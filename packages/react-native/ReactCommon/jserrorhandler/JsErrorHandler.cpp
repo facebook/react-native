@@ -232,10 +232,6 @@ void JsErrorHandler::handleError(
 
   if (!ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() &&
       _isRuntimeReady) {
-    if (isFatal) {
-      _hasHandledFatalError = true;
-    }
-
     try {
       handleJSError(runtime, error, isFatal);
       return;
@@ -382,7 +378,7 @@ void JsErrorHandler::handleErrorWithCppPipeline(
     }
   }
 
-  if (*shouldPreventDefault) {
+  if (*shouldPreventDefault || _hasHandledFatalError) {
     return;
   }
 
