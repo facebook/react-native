@@ -80,6 +80,17 @@ describe('#publishTemplate', () => {
 describe('#verifyPublishedTemplate', () => {
   beforeEach(jest.clearAllMocks);
 
+  it("fixes versions prefixed with 'v'", async () => {
+    const dirtyVersion = 'v0.76.0';
+    const cleanVersion = '0.76.0';
+    await verifyPublishedTemplate(dirtyVersion);
+
+    expect(mockGetNpmPackageInfo).toHaveBeenLastCalledWith(
+      '@react-native-community/template',
+      cleanVersion,
+    );
+  });
+
   it("waits on npm updating for version and not 'latest'", async () => {
     const NOT_LATEST = false;
     mockGetNpmPackageInfo
