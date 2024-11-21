@@ -869,36 +869,48 @@ export default class Device {
     debuggerInfo: DebuggerConnection,
   ): CDPRequest<'Debugger.setBreakpointByUrl'> {
     // If we replaced Android emulator's address to localhost we need to change it back.
-    if (debuggerInfo.originalSourceURLAddress != null) {
-      const processedReq = {...req, params: {...req.params}};
-      if (processedReq.params.url != null) {
-        processedReq.params.url = processedReq.params.url.replace(
-          'localhost',
-          debuggerInfo.originalSourceURLAddress,
-        );
+    const {originalSourceURLAddress, prependedFilePrefix} = debuggerInfo;
+    const processedReq = {...req, params: {...req.params}};
+    if (originalSourceURLAddress != null && processedReq.params.url != null) {
+      processedReq.params.url = processedReq.params.url.replace(
+        'localhost',
+        originalSourceURLAddress,
+      );
 
-        if (
-          processedReq.params.url &&
-          processedReq.params.url.startsWith(FILE_PREFIX) &&
-          debuggerInfo.prependedFilePrefix
-        ) {
-          // Remove fake URL prefix if we modified URL in #processMessageFromDeviceLegacy.
-          // $FlowFixMe[incompatible-use]
-          processedReq.params.url = processedReq.params.url.slice(
-            FILE_PREFIX.length,
-          );
-        }
-      }
-      if (processedReq.params.urlRegex != null) {
-        processedReq.params.urlRegex = processedReq.params.urlRegex.replace(
-          /localhost/g,
-          // $FlowFixMe[incompatible-call]
-          debuggerInfo.originalSourceURLAddress,
+      if (
+        processedReq.params.url &&
+        processedReq.params.url.startsWith(FILE_PREFIX) &&
+        prependedFilePrefix
+      ) {
+        // Remove fake URL prefix if we modified URL in #processMessageFromDeviceLegacy.
+        // $FlowFixMe[incompatible-use]
+        processedReq.params.url = processedReq.params.url.slice(
+          FILE_PREFIX.length,
         );
       }
-      return processedReq;
     }
-    return req;
+
+    // Retain special case rewriting of localhost to device-relative IPs
+    // within regex patterns. We don't rewrite the protocol here because
+    // these patterns typically come from CDT reinterpreting the source URL
+    // `file://host/path` into the regex `host/path|file://host/path`. See:
+    //
+    // https://github.com/ChromeDevTools/devtools-frontend/blob/f913cc6d76f2e2639c05b11ba673fc880b5490dd/front_end/core/sdk/DebuggerModel.ts#L505
+    //
+    // This has always been fragile and probably unnecessary - we don't set
+    // `file://` source URLs. It can be removed when we drop support for
+    // legacy targets, if not sooner.
+    if (
+      REWRITE_HOSTS_TO_LOCALHOST.has(this.#deviceRelativeBaseUrl.hostname) &&
+      processedReq.params.urlRegex != null
+    ) {
+      processedReq.params.urlRegex = processedReq.params.urlRegex.replaceAll(
+        'localhost',
+        // regex-escape IPv4
+        this.#deviceRelativeBaseUrl.hostname.replaceAll('.', '\\.'),
+      );
+    }
+    return processedReq;
   }
 
   #processDebuggerGetScriptSource(
