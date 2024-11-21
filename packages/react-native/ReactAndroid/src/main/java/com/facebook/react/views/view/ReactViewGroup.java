@@ -322,7 +322,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   /**
-   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, Float)} instead.
+   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, LengthPercentage)} instead.
    */
   @Deprecated(since = "0.75.0", forRemoval = true)
   public void setBorderRadius(float borderRadius) {
@@ -330,7 +330,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   /**
-   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, Float)} instead.
+   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, LengthPercentage)} instead.
    */
   @Deprecated(since = "0.75.0", forRemoval = true)
   public void setBorderRadius(float borderRadius, int position) {
