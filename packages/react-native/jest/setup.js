@@ -417,4 +417,8 @@ jest
     return jest.requireActual(
       '../Libraries/ReactNative/RendererImplementation',
     );
-  });
+  })
+  .mock('../Libraries/Utilities/useColorScheme', () => ({
+    __esModule: true,
+    default: jest.fn().mockReturnValue('light'),
+  }));
