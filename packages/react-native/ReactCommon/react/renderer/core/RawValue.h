@@ -71,7 +71,7 @@ class RawValue {
   explicit RawValue(folly::dynamic&& dynamic) noexcept
       : dynamic_(std::move(dynamic)) {}
 
-  explicit RawValue(jsi::Runtime& runtime, jsi::Value& value) : runtime_(&runtime), value_(std::move(value)) {}
+  explicit RawValue(jsi::Runtime* runtime, jsi::Value& value) : runtime_(runtime), value_(std::move(value)) {}
   
 private:
   jsi::Runtime* runtime_{};
@@ -80,6 +80,7 @@ private:
 public:
   /**
    * Get the `jsi::Value` if this `RawProps` instance stores a `jsi::Value`, or `jsi::Value::undefined()` otherwise.
+   * This API is used by pure JSI-based React Native Frameworks that skip the `RawPropsParser` route.
    * DO NOT store this `jsi::Value` in memory.
    */
   const jsi::Value& getJsiValue() {
@@ -88,6 +89,7 @@ public:
   
   /**
    * Get the `jsi::Runtime` if this `RawValue` instance stores a `jsi::Value`, or `nullptr` otherwise.
+   * This API is used by pure JSI-based React Native Frameworks that skip the `RawPropsParser` route.
    * DO NOT store this `jsi::Runtime` in memory.
    */
   const jsi::Runtime* getRuntime() {

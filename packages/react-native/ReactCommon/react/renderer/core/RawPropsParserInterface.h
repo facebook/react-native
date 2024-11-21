@@ -26,7 +26,9 @@ public:
   virtual const RawValue* at(const RawProps& rawProps, const RawPropsKey& key) const noexcept = 0;
   
 protected:
+  // Any function that make private data from RawProps accessible to implementing classes:
   const jsi::Value& getJsiValue(const RawProps& rawProps) const noexcept;
+  jsi::Runtime* getRuntime(const RawProps& rawProps) const noexcept;
 };
 
 }

@@ -53,16 +53,28 @@ public:
   void prepare() noexcept {}
   
   void preparse(const RawProps& rawProps) const noexcept override {
-    
   }
   
   void postPrepare() noexcept override {
     
   }
   
+  // This is called on every prop update for _every_ prop
   const RawValue* at(const RawProps& rawProps, const RawPropsKey& key) const noexcept override {
-    throw std::exception();
+    std::string nameStr = static_cast<std::string>(key); // TODO: this uses render() which is a memcpy, optimize for perf
+    const char* name = nameStr.c_str();
+    NSLog(@"Processing prop %s", name);
+    jsi::Runtime* runtime = getRuntime(rawProps);
+    jsi::Value jsiValue = getJsiValue(rawProps).getObject(*runtime).getProperty(*runtime, name);
+//    delete name;
+//    delete length;
+    
+    return new RawValue(runtime, jsiValue);
   }
+  
+private:
+  // Either store JSI or raw value here, not sure whats best
+//  std::unordered_map<std::string, RawValue> values_;
 };
 
 extern const char CustomViewComponentName[] = "CustomView";

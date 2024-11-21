@@ -114,13 +114,13 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
       return;
 
     case RawProps::Mode::JSI: {
-      auto& runtime = *rawProps.runtime_;
+      auto& runtime = *getRuntime(rawProps);
       auto& propsJsiValue = getJsiValue(rawProps);
       if (!propsJsiValue.isObject()) {
         LOG(ERROR) << "Preparse props: rawProps value is not object";
       }
       react_native_assert(propsJsiValue.isObject());
-      auto object = rawProps.value_.asObject(runtime);
+      auto object = propsJsiValue.asObject(runtime);
 
       auto names = object.getPropertyNames(runtime);
       auto count = names.size(runtime);

@@ -14,4 +14,8 @@ const jsi::Value& RawPropsParserInterface::getJsiValue(const RawProps& rawProps)
   return rawProps.value_;
 }
 
+jsi::Runtime* RawPropsParserInterface::getRuntime(const RawProps& rawProps) const noexcept {
+  return rawProps.runtime_;
+}
+
 }
