@@ -83,7 +83,7 @@ public:
    * This API is used by pure JSI-based React Native Frameworks that skip the `RawPropsParser` route.
    * DO NOT store this `jsi::Value` in memory.
    */
-  const jsi::Value& getJsiValue() {
+  const jsi::Value& getJsiValue() const {
     return value_;
   }
   
@@ -92,7 +92,7 @@ public:
    * This API is used by pure JSI-based React Native Frameworks that skip the `RawPropsParser` route.
    * DO NOT store this `jsi::Runtime` in memory.
    */
-  const jsi::Runtime* getRuntime() {
+  jsi::Runtime* getRuntime() const {
     return runtime_;
   }
 

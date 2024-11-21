@@ -26,17 +26,17 @@ using namespace facebook::react;
 // We have to inherit from ViewProps so that we can
 class CustomViewProps final : public ViewProps {
 public:
-  CustomViewProps() = default; // Not sure if delete is allowed?
+  CustomViewProps() = default;
   CustomViewProps(const PropsParserContext& context, const CustomViewProps &sourceProps, const RawProps &rawProps): ViewProps(context, sourceProps, rawProps) {
     if (rawProps.isEmpty()) {
       return;
     }
     
-    // Here we could convert now from anything, potentially host objects or jsi::Objects with NativeState
-    jsi::Runtime& runtime = rawProps.EXPERIMENTAL_getRuntime();
-    jsi::Value nativePropValue = rawProps.EXPERIMENTAL_jsiValueAt("nativeProp");
-    jsi::String nativePropString = nativePropValue.getString(runtime);
-    nativeProp = nativePropString.utf8(runtime);
+    const RawValue* raw = rawProps.at("nativeProp", nullptr, nullptr);
+    jsi::Runtime* runtime = raw->getRuntime();
+    const jsi::Value& nativePropValue = raw->getJsiValue();
+    jsi::String nativePropString = nativePropValue.getString(*runtime);
+    nativeProp = nativePropString.utf8(*runtime);
   }
   
   std::string nativeProp;
@@ -63,9 +63,15 @@ public:
   const RawValue* at(const RawProps& rawProps, const RawPropsKey& key) const noexcept override {
     std::string nameStr = static_cast<std::string>(key); // TODO: this uses render() which is a memcpy, optimize for perf
     const char* name = nameStr.c_str();
+    
     NSLog(@"Processing prop %s", name);
     jsi::Runtime* runtime = getRuntime(rawProps);
     jsi::Value jsiValue = getJsiValue(rawProps).getObject(*runtime).getProperty(*runtime, name);
+    
+    if (nameStr != "nativeProp") {
+      return new RawValue(jsi::dynamicFromValue(*runtime, jsiValue));
+    }
+    
 //    delete name;
 //    delete length;
     
