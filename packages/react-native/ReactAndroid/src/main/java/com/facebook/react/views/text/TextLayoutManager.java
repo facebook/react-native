@@ -707,6 +707,10 @@ public class TextLayoutManager {
       for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
         boolean endsWithNewLine =
             text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+        if (!endsWithNewLine && lineIndex + 1 < layout.getLineCount()) {
+          calculatedWidth = width;
+          break;
+        }
         float lineWidth =
             endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
         if (lineWidth > calculatedWidth) {
