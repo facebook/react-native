@@ -204,7 +204,7 @@ public open class IntentModule(reactContext: ReactApplicationContext) :
 
     if (extras != null) {
       for (i in 0..<extras.size()) {
-        val map = extras.getMap(i)
+        val map = extras.getMap(i) ?: continue
         val name = map.getString("key")
         val type = map.getType(EXTRA_MAP_KEY_FOR_VALUE)
 

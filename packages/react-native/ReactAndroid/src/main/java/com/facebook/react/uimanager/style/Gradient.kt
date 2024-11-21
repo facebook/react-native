@@ -45,7 +45,7 @@ internal class Gradient(gradient: ReadableMap?, context: Context) {
     val positions = FloatArray(size)
 
     for (i in 0 until size) {
-      val colorStop = colorStops.getMap(i)
+      val colorStop = colorStops.getMap(i) ?: continue
       colors[i] =
           if (colorStop.getType("color") == ReadableType.Map) {
             ColorPropConverter.getColor(colorStop.getMap("color"), context)
