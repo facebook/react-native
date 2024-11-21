@@ -21,7 +21,7 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import com.facebook.react.uimanager.PixelUtil.dpToPx
-import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.style.BackgroundImageLayer
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusStyle
@@ -184,10 +184,7 @@ internal class BackgroundDrawable(
     computedBorderInsets = computeBorderInsets()
     computedBorderRadius =
         borderRadius?.resolve(
-            layoutDirection,
-            context,
-            toDIPFromPixel(bounds.width().toFloat()),
-            toDIPFromPixel(bounds.height().toFloat()))
+            layoutDirection, context, bounds.width().pxToDp(), bounds.height().pxToDp())
 
     if (computedBorderRadius?.hasRoundedBorders() == true &&
         computedBorderRadius?.isUniform() == false) {
