@@ -10,7 +10,6 @@ package com.facebook.react.uimanager.annotations;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import androidx.annotation.Nullable;
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -47,7 +46,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RUNTIME)
 @Target(ElementType.METHOD)
-@DeprecatedInNewArchitecture
 public @interface ReactProp {
 
   // Used as a default value for "customType" property as "null" is not allowed. Moreover, when this
