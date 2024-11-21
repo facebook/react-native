@@ -40,6 +40,7 @@ import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
+import com.facebook.react.uimanager.BlendModeHelper;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
@@ -804,16 +805,6 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
-  private boolean needsIsolatedLayer() {
-    for (int i = 0; i < getChildCount(); i++) {
-      if (getChildAt(i).getTag(R.id.mix_blend_mode) != null) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   @VisibleForTesting
   public int getBackgroundColor() {
     @Nullable Integer color = BackgroundStyleApplicator.getBackgroundColor(this);
@@ -856,7 +847,7 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void setOverflowInset(int left, int top, int right, int bottom) {
-    if (needsIsolatedLayer()
+    if (BlendModeHelper.needsIsolatedLayer(this)
         && (mOverflowInset.left != left
             || mOverflowInset.top != top
             || mOverflowInset.right != right
@@ -886,7 +877,7 @@ public class ReactViewGroup extends ViewGroup
   public void draw(Canvas canvas) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
         && ViewUtil.getUIManagerType(this) == UIManagerType.FABRIC
-        && needsIsolatedLayer()) {
+        && BlendModeHelper.needsIsolatedLayer(this)) {
 
       // Check if the view is a stacking context and has children, if it does, do the rendering
       // offscreen and then composite back. This follows the idea of group isolation on blending
@@ -922,7 +913,8 @@ public class ReactViewGroup extends ViewGroup
     }
 
     BlendMode mixBlendMode = null;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && needsIsolatedLayer()) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        && BlendModeHelper.needsIsolatedLayer(this)) {
       mixBlendMode = (BlendMode) child.getTag(R.id.mix_blend_mode);
       if (mixBlendMode != null) {
         Paint p = new Paint();
