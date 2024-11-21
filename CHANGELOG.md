@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.76.3
+
+### Fixed
+
+#### Android specific
+
+- Look for sdkmanager.bat ([6460d2b3e7](https://github.com/facebook/react-native/commit/6460d2b3e74c3a6e4075e9f12304c16427c3b1b2) by [@blakef](https://github.com/blakef))
+- Allow downgrading CMake to build hermesc on Windows ([d8b727c6bfc](https://github.com/facebook/react-native/commit/d8b727c6bfc21ba256ea10719f5149113572f4b9) by [@cipolleschi](https://github.com/cipolleschi))
+- CMake Windows path normalization ([9946838bedd](https://github.com/facebook/react-native/commit/9946838beddac549053a3ba3eb3b1b49c22a3fd9) by [@blakef](https://github.com/blakef))
+- Fix build failure on windows in android ([08b83005481](https://github.com/facebook/react-native/commit/08b830054812f4011becbbacdf1525701225df39) by [@FouadMagdy01](https://github.com/FouadMagdy01))
+
 ## v0.76.2
 
 ### Added
