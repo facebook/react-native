@@ -29,7 +29,12 @@
 
 #include <DefaultComponentsRegistry.h>
 #include <DefaultTurboModuleManagerDelegate.h>
+#if __has_include("<autolinking.h>")
+#define AUTOLINKING_AVAILABLE 1
 #include <autolinking.h>
+#else
+#define AUTOLINKING_AVAILABLE 0
+#endif
 #include <fbjni/fbjni.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #include <rncore.h>
@@ -56,8 +61,10 @@ void registerComponents(
   REACT_NATIVE_APP_COMPONENT_REGISTRATION(registry);
 #endif
 
+#if AUTOLINKING_AVAILABLE
   // And we fallback to the components autolinked
   autolinking_registerProviders(registry);
+#endif
 }
 
 std::shared_ptr<TurboModule> cxxModuleProvider(
@@ -71,8 +78,12 @@ std::shared_ptr<TurboModule> cxxModuleProvider(
   //   return std::make_shared<NativeCxxModuleExample>(jsInvoker);
   // }
 
+#if AUTOLINKING_AVAILABLE
   // And we fallback to the CXX module providers autolinked
   return autolinking_cxxModuleProvider(name, jsInvoker);
+#endif
+
+  return nullptr;
 }
 
 std::shared_ptr<TurboModule> javaModuleProvider(
@@ -101,10 +112,12 @@ std::shared_ptr<TurboModule> javaModuleProvider(
     return module;
   }
 
+#if AUTOLINKING_AVAILABLE
   // And we fallback to the module providers autolinked
   if (auto module = autolinking_ModuleProvider(name, params)) {
     return module;
   }
+#endif
 
   return nullptr;
 }
