@@ -290,6 +290,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const query = url.parse(req.url || '', true).query || {};
         const deviceId = query.device;
         const pageId = query.page;
+        const debuggerRelativeBaseUrl =
+          getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
 
         if (deviceId == null || pageId == null) {
           throw new Error('Incorrect URL - must provide device and page IDs');
@@ -303,6 +305,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS);
 
         device.handleDebuggerConnection(socket, pageId, {
+          debuggerRelativeBaseUrl,
           userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
       } catch (e) {

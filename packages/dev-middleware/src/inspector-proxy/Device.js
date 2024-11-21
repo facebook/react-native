@@ -60,13 +60,15 @@ const FILE_PREFIX = 'file://';
 type DebuggerConnection = {
   // Debugger web socket connection
   socket: WS,
-  // If we replaced address (like '10.0.2.2') to localhost we need to store original
-  // address because Chrome uses URL or urlRegex params (instead of scriptId) to set breakpoints.
-  originalSourceURLAddress?: string,
+  // If we replaced a device-relative origin (like 'http://10.0.2.2:8082') with
+  // debugger-relative, we store the original address to reverse the operation
+  // on messages back from the frontend, such as setting breakpoints.
+  originalSourceURLOrigin?: string,
   prependedFilePrefix: boolean,
   pageId: string,
   userAgent: string | null,
   customHandler: ?CustomMessageHandler,
+  debuggerRelativeBaseUrl: URL,
 };
 
 const REACT_NATIVE_RELOADABLE_PAGE_ID = '-1';
@@ -264,6 +266,7 @@ export default class Device {
       oldDebugger.socket.removeAllListeners();
       this.#deviceSocket.close();
       this.handleDebuggerConnection(oldDebugger.socket, oldDebugger.pageId, {
+        debuggerRelativeBaseUrl: oldDebugger.debuggerRelativeBaseUrl,
         userAgent: oldDebugger.userAgent,
       });
     }
@@ -294,7 +297,11 @@ export default class Device {
   handleDebuggerConnection(
     socket: WS,
     pageId: string,
-    metadata: $ReadOnly<{
+    {
+      debuggerRelativeBaseUrl,
+      userAgent,
+    }: $ReadOnly<{
+      debuggerRelativeBaseUrl: URL,
       userAgent: string | null,
     }>,
   ) {
@@ -305,7 +312,8 @@ export default class Device {
 
     if (!page) {
       debug(
-        `Got new debugger connection for page ${pageId} of ${this.#name}, but no such page exists`,
+        `Got new debugger connection via ${debuggerRelativeBaseUrl.href} for ` +
+          `page ${pageId} of ${this.#name}, but no such page exists`,
       );
       socket.close();
       return;
@@ -319,20 +327,24 @@ export default class Device {
 
     this.#deviceEventReporter?.logConnection('debugger', {
       pageId,
-      frontendUserAgent: metadata.userAgent,
+      frontendUserAgent: userAgent,
     });
 
     const debuggerInfo = {
       socket,
       prependedFilePrefix: false,
       pageId,
-      userAgent: metadata.userAgent,
+      userAgent: userAgent,
       customHandler: null,
+      debuggerRelativeBaseUrl,
     };
 
     this.#debuggerConnection = debuggerInfo;
 
-    debug(`Got new debugger connection for page ${pageId} of ${this.#name}`);
+    debug(
+      `Got new debugger connection via ${debuggerRelativeBaseUrl.href} for ` +
+        `page ${pageId} of ${this.#name}`,
+    );
 
     if (this.#debuggerConnection && this.#createCustomMessageHandler) {
       this.#debuggerConnection.customHandler = this.#createCustomMessageHandler(
@@ -386,7 +398,7 @@ export default class Device {
       const debuggerRequest = JSON.parse(message);
       this.#deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
         pageId: this.#debuggerConnection?.pageId ?? null,
-        frontendUserAgent: metadata.userAgent,
+        frontendUserAgent: userAgent,
         prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
           this.#debuggerConnection?.pageId,
         ),
@@ -690,9 +702,8 @@ export default class Device {
           // This is not exposed to the debugger.
           const serverRelativeUrl = new URL(sourceMapURL.href);
 
-          // Rewrite device-relative URLs to localhost-relative URLs for the
-          // debugger.
-          // TODO: Fix the assumption that localhost:[same port] is correct.
+          // Rewrite device-relative URLs to de debugger-relative URLs for the
+          // frontend.
           if (
             // sourceMapURL is a device-relative url to the server.
             // May or may not be reachable from the frontend.
@@ -704,11 +715,14 @@ export default class Device {
             REWRITE_HOSTS_TO_LOCALHOST.has(this.#deviceRelativeBaseUrl.hostname)
           ) {
             const debuggerRelativeURL = new URL(sourceMapURL.href);
-            debuggerRelativeURL.hostname = 'localhost';
+            debuggerRelativeURL.host =
+              debuggerInfo.debuggerRelativeBaseUrl.host;
+            debuggerRelativeURL.protocol =
+              debuggerInfo.debuggerRelativeBaseUrl.protocol;
             serverRelativeUrl.host = this.#serverRelativeBaseUrl.host;
             serverRelativeUrl.protocol = this.#serverRelativeBaseUrl.protocol;
-            debuggerInfo.originalSourceURLAddress =
-              this.#deviceRelativeBaseUrl.hostname;
+            debuggerInfo.originalSourceURLOrigin =
+              this.#deviceRelativeBaseUrl.origin;
             payload.params.sourceMapURL = debuggerRelativeURL.href;
           }
 
@@ -730,9 +744,8 @@ export default class Device {
         }
       }
       if ('url' in params) {
-        const originalParamsUrl = params.url;
-        let serverRelativeUrl = originalParamsUrl;
-        const parsedUrl = this.#tryParseHTTPURL(originalParamsUrl);
+        let serverRelativeUrl = params.url;
+        const parsedUrl = this.#tryParseHTTPURL(params.url);
         // Rewrite device-relative URLs pointing to the server so that they're
         // reachable from the frontend.
         if (
@@ -748,10 +761,11 @@ export default class Device {
         ) {
           // URL is device-relative and points to the host - rewrite it to
           // use localhost.
-          parsedUrl.hostname = 'localhost';
+          parsedUrl.host = debuggerInfo.debuggerRelativeBaseUrl.host;
+          parsedUrl.protocol = debuggerInfo.debuggerRelativeBaseUrl.protocol;
           payload.params.url = parsedUrl.href;
-          debuggerInfo.originalSourceURLAddress =
-            this.#deviceRelativeBaseUrl.hostname;
+          debuggerInfo.originalSourceURLOrigin =
+            this.#deviceRelativeBaseUrl.origin;
 
           // Determine the server-relative URL.
           parsedUrl.host = this.#serverRelativeBaseUrl.host;
@@ -869,12 +883,16 @@ export default class Device {
     debuggerInfo: DebuggerConnection,
   ): CDPRequest<'Debugger.setBreakpointByUrl'> {
     // If we replaced Android emulator's address to localhost we need to change it back.
-    const {originalSourceURLAddress, prependedFilePrefix} = debuggerInfo;
+    const {
+      debuggerRelativeBaseUrl,
+      originalSourceURLOrigin,
+      prependedFilePrefix,
+    } = debuggerInfo;
     const processedReq = {...req, params: {...req.params}};
-    if (originalSourceURLAddress != null && processedReq.params.url != null) {
+    if (originalSourceURLOrigin != null && processedReq.params.url != null) {
       processedReq.params.url = processedReq.params.url.replace(
-        'localhost',
-        originalSourceURLAddress,
+        debuggerRelativeBaseUrl.origin,
+        originalSourceURLOrigin,
       );
 
       if (
@@ -902,6 +920,8 @@ export default class Device {
     // legacy targets, if not sooner.
     if (
       REWRITE_HOSTS_TO_LOCALHOST.has(this.#deviceRelativeBaseUrl.hostname) &&
+      this.#deviceRelativeBaseUrl.port === debuggerRelativeBaseUrl.port &&
+      debuggerRelativeBaseUrl.hostname === 'localhost' &&
       processedReq.params.urlRegex != null
     ) {
       processedReq.params.urlRegex = processedReq.params.urlRegex.replaceAll(
