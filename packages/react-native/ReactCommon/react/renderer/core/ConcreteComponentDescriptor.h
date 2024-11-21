@@ -15,6 +15,7 @@
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
+#include <react/renderer/core/RawPropsParser.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
@@ -182,6 +183,9 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     react_native_assert(
         shadowNode.getComponentHandle() == getComponentHandle());
   }
+  
+  protected:
+    RawPropsParser rawPropsParser_{};
 };
 
 } // namespace facebook::react

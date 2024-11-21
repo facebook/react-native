@@ -16,6 +16,7 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
 #include <react/renderer/core/RawValue.h>
+#include <react/renderer/core/RawPropsParserInterface.h>
 #include <vector>
 
 namespace facebook::react {
@@ -64,7 +65,7 @@ class RawProps final {
    */
   explicit RawProps(folly::dynamic dynamic) noexcept;
 
-  void parse(const RawPropsParser& parser) noexcept;
+  void parse(const RawPropsParserInterface& parser) noexcept;
 
   /*
    * Deprecated. Do not use.
@@ -101,9 +102,10 @@ class RawProps final {
   }
 
  private:
+  friend class RawPropsParserInterface;
   friend class RawPropsParser;
 
-  mutable const RawPropsParser* parser_{nullptr};
+  mutable const RawPropsParserInterface* parser_{nullptr};
 
   /*
    * Source artefacts:

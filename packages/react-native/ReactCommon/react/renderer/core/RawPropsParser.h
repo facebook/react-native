@@ -13,6 +13,7 @@
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsKeyMap.h>
 #include <react/renderer/core/RawPropsPrimitives.h>
+#include <react/renderer/core/RawPropsParserInterface.h>
 #include <react/renderer/core/RawValue.h>
 
 namespace facebook::react {
@@ -21,7 +22,7 @@ namespace facebook::react {
  * Specialized (to a particular type of Props) parser that provides the most
  * efficient access to `RawProps` content.
  */
-class RawPropsParser final {
+class RawPropsParser final : public RawPropsParserInterface {
  public:
   /*
    * Default constructor.

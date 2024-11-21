@@ -11,7 +11,7 @@
 #include <react/renderer/core/InstanceHandle.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
-#include <react/renderer/core/RawPropsParser.h>
+#include <react/renderer/core/RawPropsParserInterface.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/core/StateData.h>
@@ -133,7 +133,6 @@ class ComponentDescriptor {
 
   EventDispatcher::Weak eventDispatcher_;
   std::shared_ptr<const ContextContainer> contextContainer_;
-  RawPropsParser rawPropsParser_{};
   Flavor flavor_;
 
   /*

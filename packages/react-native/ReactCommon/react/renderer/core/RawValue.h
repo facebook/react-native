@@ -71,7 +71,6 @@ class RawValue {
   explicit RawValue(folly::dynamic&& dynamic) noexcept
       : dynamic_(std::move(dynamic)) {}
 
-// TODO: These changes aren't really used right now.
   explicit RawValue(jsi::Runtime& runtime, jsi::Value& value) : runtime_(&runtime), value_(std::move(value)) {}
   
 private:
@@ -79,12 +78,20 @@ private:
   jsi::Value value_;
   
 public:
-  jsi::Value& UNSAFE_getJsiValue() {
-    // TODO: assert
+  /**
+   * Get the `jsi::Value` if this `RawProps` instance stores a `jsi::Value`, or `jsi::Value::undefined()` otherwise.
+   * DO NOT store this `jsi::Value` in memory.
+   */
+  const jsi::Value& getJsiValue() {
     return value_;
   }
-  jsi::Runtime& UNSAFE_getRuntime() {
-    return *runtime_;
+  
+  /**
+   * Get the `jsi::Runtime` if this `RawValue` instance stores a `jsi::Value`, or `nullptr` otherwise.
+   * DO NOT store this `jsi::Runtime` in memory.
+   */
+  const jsi::Runtime* getRuntime() {
+    return runtime_;
   }
 
  private:

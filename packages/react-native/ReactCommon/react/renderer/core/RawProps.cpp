@@ -161,7 +161,7 @@ RawProps& RawProps::operator=(const RawProps& other) noexcept {
   return *this;
 }
 
-void RawProps::parse(const RawPropsParser& parser) noexcept {
+void RawProps::parse(const RawPropsParserInterface& parser) noexcept {
   react_native_assert(parser_ == nullptr && "A parser was already assigned.");
   parser_ = &parser;
   parser.preparse(*this);
