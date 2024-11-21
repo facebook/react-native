@@ -24,8 +24,8 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
-import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PixelUtil.dpToPx
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.style.BorderColors
 import com.facebook.react.uimanager.style.BorderInsets
@@ -703,8 +703,8 @@ internal class BorderDrawable(
         this.borderRadius?.resolve(
             layoutDirection,
             this.context,
-            PixelUtil.toDIPFromPixel(outerClipTempRectForBorderRadius?.width() ?: 0f),
-            PixelUtil.toDIPFromPixel(outerClipTempRectForBorderRadius?.height() ?: 0f),
+            outerClipTempRectForBorderRadius?.width()?.pxToDp() ?: 0f,
+            outerClipTempRectForBorderRadius?.height()?.pxToDp() ?: 0f,
         )
 
     val topLeftRadius = computedBorderRadius?.topLeft?.toPixelFromDIP() ?: CornerRadii(0f, 0f)

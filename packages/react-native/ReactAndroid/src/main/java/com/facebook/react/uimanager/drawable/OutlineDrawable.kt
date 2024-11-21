@@ -18,7 +18,7 @@ import android.graphics.PathEffect
 import android.graphics.PixelFormat
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
-import com.facebook.react.uimanager.PixelUtil.dpToPx
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 import com.facebook.react.uimanager.style.ComputedBorderRadius
 import com.facebook.react.uimanager.style.CornerRadii
@@ -123,7 +123,7 @@ internal class OutlineDrawable(
 
     computedBorderRadius =
         borderRadius?.resolve(
-            layoutDirection, context, bounds.width().dpToPx(), bounds.height().dpToPx())
+            layoutDirection, context, bounds.width().pxToDp(), bounds.height().pxToDp())
 
     updateOutlineRect()
     if (computedBorderRadius != null && computedBorderRadius?.hasRoundedBorders() == true) {
