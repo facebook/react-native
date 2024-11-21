@@ -130,7 +130,7 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
       val outputRange = arrayOfNulls<DoubleArray>(size)
 
       // Match the first pattern into a List, since we don't know its length yet
-      var m = numericPattern.matcher(array.getString(0))
+      var m = numericPattern.matcher(array.getString(0) ?: "")
       val firstOutputRange: MutableList<Double> = ArrayList()
       while (m.find()) {
         firstOutputRange.add(m.group().toDouble())
@@ -143,7 +143,7 @@ public class InterpolationAnimatedNode(config: ReadableMap) : ValueAnimatedNode(
       for (i in 1 until size) {
         val outputArr = DoubleArray(firstOutputRangeArr.size)
         var j = 0
-        m = numericPattern.matcher(array.getString(i))
+        m = numericPattern.matcher(array.getString(i) ?: "")
         while (m.find() && j < firstOutputRangeArr.size) {
           outputArr[j++] = m.group().toDouble()
         }

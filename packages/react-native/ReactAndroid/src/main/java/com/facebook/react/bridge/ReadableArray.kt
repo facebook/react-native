@@ -14,7 +14,7 @@ import java.util.ArrayList
  * to Kotlin.
  */
 public interface ReadableArray {
-  public fun getArray(index: Int): ReadableArray
+  public fun getArray(index: Int): ReadableArray?
 
   public fun getBoolean(index: Int): Boolean
 
@@ -26,9 +26,9 @@ public interface ReadableArray {
 
   public fun getLong(index: Int): Long
 
-  public fun getMap(index: Int): ReadableMap
+  public fun getMap(index: Int): ReadableMap?
 
-  public fun getString(index: Int): String
+  public fun getString(index: Int): String?
 
   public fun getType(index: Int): ReadableType
 
