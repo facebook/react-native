@@ -17,9 +17,8 @@ class RawProps;
 class RawPropsParserInterface {
 public:
   virtual ~RawPropsParserInterface() = default;
-  
-  template <typename PropsT>
-  void prepare() noexcept;
+
+//  virtual void prepare() noexcept = 0;
   
   virtual void preparse(const RawProps& rawProps) const noexcept = 0;
   virtual void postPrepare() noexcept = 0;

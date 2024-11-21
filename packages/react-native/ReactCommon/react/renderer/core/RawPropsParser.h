@@ -54,7 +54,7 @@ class RawPropsParser final : public RawPropsParserInterface {
 
  private:
   friend class ComponentDescriptor;
-  template <class ShadowNodeT>
+  template <class ShadowNodeT, class RawPropsParserT>
   friend class ConcreteComponentDescriptor;
   friend class RawProps;
 

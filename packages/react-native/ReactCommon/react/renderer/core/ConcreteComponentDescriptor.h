@@ -29,7 +29,7 @@ namespace facebook::react {
  * Use your `ShadowNode` type as a template argument and override any methods
  * if necessary.
  */
-template <typename ShadowNodeT>
+template <typename ShadowNodeT, typename RawPropsParserT = RawPropsParser>
 class ConcreteComponentDescriptor : public ComponentDescriptor {
   static_assert(
       std::is_base_of<ShadowNode, ShadowNodeT>::value,
@@ -49,7 +49,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
   ConcreteComponentDescriptor(const ComponentDescriptorParameters& parameters)
       : ComponentDescriptor(parameters) {
-    rawPropsParser_.prepare<ConcreteProps>();
+        rawPropsParser_.template prepare<ConcreteProps>();
   }
 
   ComponentHandle getComponentHandle() const override {
@@ -185,7 +185,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
   
   protected:
-    RawPropsParser rawPropsParser_{};
+    RawPropsParserT rawPropsParser_{};
 };
 
 } // namespace facebook::react

@@ -47,6 +47,24 @@ public:
   CustomViewState() = default;
 };
 
+class JsiPropParser final : public RawPropsParserInterface {
+public:
+  template <typename PropsT>
+  void prepare() noexcept {}
+  
+  void preparse(const RawProps& rawProps) const noexcept override {
+    
+  }
+  
+  void postPrepare() noexcept override {
+    
+  }
+  
+  const RawValue* at(const RawProps& rawProps, const RawPropsKey& key) const noexcept override {
+    throw std::exception();
+  }
+};
+
 extern const char CustomViewComponentName[] = "CustomView";
 using ComponentShadowNode = ConcreteViewShadowNode<
   CustomViewComponentName,
@@ -54,7 +72,7 @@ using ComponentShadowNode = ConcreteViewShadowNode<
   ViewEventEmitter, // default one
   CustomViewState
 >;
-using CustomViewComponentDescriptor = ConcreteComponentDescriptor<ComponentShadowNode>;
+using CustomViewComponentDescriptor = ConcreteComponentDescriptor<ComponentShadowNode, JsiPropParser>;
 
 @interface ManualFabricComponentView : RCTViewComponentView //UIView <RCTComponentViewProtocol>
 
