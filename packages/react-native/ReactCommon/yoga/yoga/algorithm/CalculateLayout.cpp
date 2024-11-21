@@ -1294,10 +1294,6 @@ static void calculateLayoutImpl(
           flexColumnDirection, direction, ownerWidth),
       PhysicalEdge::Bottom);
 
-  // Clean and update all display: contents nodes with a direct path to the
-  // current node as they will not be traversed
-  cleanupContentsNodesRecursively(node);
-
   if (node->hasMeasureFunc()) {
     measureNodeWithMeasureFunc(
         node,
@@ -1310,6 +1306,10 @@ static void calculateLayoutImpl(
         ownerHeight,
         layoutMarkerData,
         reason);
+
+    // Clean and update all display: contents nodes with a direct path to the
+    // current node as they will not be traversed
+    cleanupContentsNodesRecursively(node);
     return;
   }
 
@@ -1324,6 +1324,10 @@ static void calculateLayoutImpl(
         heightSizingMode,
         ownerWidth,
         ownerHeight);
+
+    // Clean and update all display: contents nodes with a direct path to the
+    // current node as they will not be traversed
+    cleanupContentsNodesRecursively(node);
     return;
   }
 
@@ -1339,6 +1343,9 @@ static void calculateLayoutImpl(
           heightSizingMode,
           ownerWidth,
           ownerHeight)) {
+    // Clean and update all display: contents nodes with a direct path to the
+    // current node as they will not be traversed
+    cleanupContentsNodesRecursively(node);
     return;
   }
 
@@ -1347,6 +1354,10 @@ static void calculateLayoutImpl(
   node->cloneChildrenIfNeeded();
   // Reset layout flags, as they could have changed.
   node->setLayoutHadOverflow(false);
+
+  // Clean and update all display: contents nodes with a direct path to the
+  // current node as they will not be traversed
+  cleanupContentsNodesRecursively(node);
 
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
   const FlexDirection mainAxis =
