@@ -7829,8 +7829,6 @@ public class com/facebook/react/views/view/ReactDrawableHelper {
 
 public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGroup, com/facebook/react/touch/ReactHitSlopView, com/facebook/react/touch/ReactInterceptingViewGroup, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/uimanager/ReactPointerEventsView, com/facebook/react/uimanager/ReactZIndexedViewGroup {
 	public fun <init> (Landroid/content/Context;)V
-	public fun addView (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;)V
-	protected fun addViewInLayout (Landroid/view/View;ILandroid/view/ViewGroup$LayoutParams;Z)Z
 	protected fun dispatchDraw (Landroid/graphics/Canvas;)V
 	public fun dispatchGenericMotionEvent (Landroid/view/MotionEvent;)Z
 	public fun dispatchProvideStructure (Landroid/view/ViewStructure;)V
@@ -7853,11 +7851,8 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	protected fun onMeasure (II)V
 	protected fun onSizeChanged (IIII)V
 	public fun onTouchEvent (Landroid/view/MotionEvent;)Z
-	public fun removeView (Landroid/view/View;)V
-	public fun removeViewAt (I)V
-	public fun removeViewInLayout (Landroid/view/View;)V
-	public fun removeViews (II)V
-	public fun removeViewsInLayout (II)V
+	public fun onViewAdded (Landroid/view/View;)V
+	public fun onViewRemoved (Landroid/view/View;)V
 	public fun requestLayout ()V
 	public fun setBackfaceVisibility (Ljava/lang/String;)V
 	public fun setBackfaceVisibilityDependantOpacity ()V
