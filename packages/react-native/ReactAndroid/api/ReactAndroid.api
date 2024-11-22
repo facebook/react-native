@@ -2957,11 +2957,9 @@ public abstract interface annotation class com/facebook/react/module/annotations
 public final class com/facebook/react/module/model/ReactModuleInfo {
 	public static final field Companion Lcom/facebook/react/module/model/ReactModuleInfo$Companion;
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;ZZZZ)V
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;ZZZZZ)V
 	public final fun canOverrideExistingModule ()Z
 	public static final fun classIsTurboModule (Ljava/lang/Class;)Z
 	public final fun className ()Ljava/lang/String;
-	public final fun hasConstants ()Z
 	public final fun isCxxModule ()Z
 	public final fun isTurboModule ()Z
 	public final fun name ()Ljava/lang/String;
