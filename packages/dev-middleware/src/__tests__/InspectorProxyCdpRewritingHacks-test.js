@@ -207,7 +207,7 @@ describe.each(['HTTP', 'HTTPS'])(
           vm: 'bar-vm',
         },
         {
-          host: '192.168.0.123:' + serverRef.port,
+          deviceHostHeader: '192.168.0.123:' + serverRef.port,
         },
       );
       try {
@@ -240,52 +240,7 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
-    test('does not rewrite urls in Debugger.scriptParsed that match the device connection host but are not allowlisted for rewriting', async () => {
-      serverRef.app.use('/source-map', serveStaticJson({version: 3}));
-      const {device, debugger_} = await createAndConnectTarget(
-        serverRef,
-        autoCleanup.signal,
-        {
-          app: 'bar-app',
-          id: 'page1',
-          title: 'bar-title',
-          vm: 'bar-vm',
-        },
-        {
-          host: '192.168.0.123:' + serverRef.port,
-        },
-      );
-      try {
-        let fetchCalledWithURL;
-        fetchSpy.mockImplementationOnce(url => {
-          fetchCalledWithURL = url instanceof URL ? url : null;
-          throw new Error('Unreachable');
-        });
-        const sourceMapURL = `${protocol.toLowerCase()}://192.168.0.123:${
-          serverRef.port
-        }/source-map`;
-        const scriptParsedMessage = await sendFromTargetToDebugger(
-          device,
-          debugger_,
-          'page1',
-          {
-            method: 'Debugger.scriptParsed',
-            params: {
-              sourceMapURL,
-            },
-          },
-        );
-        expect(fetchCalledWithURL?.href).toEqual(sourceMapURL);
-        expect(scriptParsedMessage.params.sourceMapURL).toEqual(
-          `${protocol.toLowerCase()}://192.168.0.123:${serverRef.port}/source-map`,
-        );
-      } finally {
-        device.close();
-        debugger_.close();
-      }
-    });
-
-    describe.each(['10.0.2.2', '10.0.3.2', '127.0.0.1'])(
+    describe.each(['10.0.2.2:8080', '[::1]', 'example.com:2000'])(
       '%s aliasing to and from localhost',
       sourceHost => {
         test('in source map fetching during Debugger.scriptParsed', async () => {
@@ -300,7 +255,7 @@ describe.each(['HTTP', 'HTTPS'])(
               vm: 'bar-vm',
             },
             {
-              host: sourceHost + ':' + serverRef.port,
+              deviceHostHeader: sourceHost,
             },
           );
           try {
@@ -311,9 +266,7 @@ describe.each(['HTTP', 'HTTPS'])(
               {
                 method: 'Debugger.scriptParsed',
                 params: {
-                  sourceMapURL: `${protocol.toLowerCase()}://${sourceHost}:${
-                    serverRef.port
-                  }/source-map`,
+                  sourceMapURL: `${protocol.toLowerCase()}://${sourceHost}/source-map`,
                 },
               },
             );
@@ -337,7 +290,8 @@ describe.each(['HTTP', 'HTTPS'])(
               vm: 'bar-vm',
             },
             {
-              host: sourceHost + ':' + serverRef.port,
+              debuggerHostHeader: 'localhost:' + serverRef.port,
+              deviceHostHeader: sourceHost,
             },
           );
           try {
@@ -348,9 +302,7 @@ describe.each(['HTTP', 'HTTPS'])(
               {
                 method: 'Debugger.scriptParsed',
                 params: {
-                  url: `${protocol.toLowerCase()}://${sourceHost}:${
-                    serverRef.port
-                  }/some/file.js`,
+                  url: `${protocol.toLowerCase()}://${sourceHost}/some/file.js`,
                 },
               },
             );
@@ -376,9 +328,7 @@ describe.each(['HTTP', 'HTTPS'])(
               },
             );
             expect(setBreakpointByUrlMessage.params.url).toEqual(
-              `${protocol.toLowerCase()}://${sourceHost}:${
-                serverRef.port
-              }/some/file.js`,
+              `${protocol.toLowerCase()}://${sourceHost}/some/file.js`,
             );
 
             const setBreakpointByUrlRegexMessage =
@@ -390,9 +340,20 @@ describe.each(['HTTP', 'HTTPS'])(
                   urlRegex: `localhost:${serverRef.port}|example.com:2000`,
                 },
               });
-            expect(setBreakpointByUrlRegexMessage.params.urlRegex).toEqual(
-              `${sourceHost.replaceAll('.', '\\.')}:${serverRef.port}|example.com:2000`,
-            );
+
+            // urlRegex rewriting is restricted to specific Android IPs that
+            // are well-known to route to the host. In this case we only
+            // replace hostname - longstanding behaviour.
+            if (sourceHost === '10.0.2.2:8080') {
+              expect(setBreakpointByUrlRegexMessage.params.urlRegex).toEqual(
+                `10\\.0\\.2\\.2:${serverRef.port}|example.com:2000`,
+              );
+            } else {
+              // Otherwise expect no change.
+              expect(setBreakpointByUrlRegexMessage.params.urlRegex).toEqual(
+                `localhost:${serverRef.port}|example.com:2000`,
+              );
+            }
           } finally {
             device.close();
             debugger_.close();
@@ -411,7 +372,7 @@ describe.each(['HTTP', 'HTTPS'])(
                 vm: 'bar-vm',
               },
               {
-                host: sourceHost + ':' + serverRef.port,
+                deviceHostHeader: sourceHost,
               },
             );
             try {
@@ -451,7 +412,7 @@ describe.each(['HTTP', 'HTTPS'])(
           vm: 'bar-vm',
         },
         {
-          host: '127.0.0.1:' + serverRef.port,
+          deviceHostHeader: '127.0.0.1:' + serverRef.port,
         },
       );
       try {
