@@ -379,11 +379,14 @@ void JsErrorHandler::handleErrorWithCppPipeline(
     }
   }
 
-  if (*shouldPreventDefault || _hasHandledFatalError) {
+  if (*shouldPreventDefault) {
     return;
   }
 
   if (isFatal) {
+    if (_hasHandledFatalError) {
+      return;
+    }
     _hasHandledFatalError = true;
   }
 
