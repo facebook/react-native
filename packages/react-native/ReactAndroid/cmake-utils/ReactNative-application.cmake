@@ -31,12 +31,11 @@ if(CCACHE_FOUND)
 endif(CCACHE_FOUND)
 
 set(BUILD_DIR ${PROJECT_BUILD_DIR})
-if(CMAKE_HOST_WIN32)
-        string(REPLACE "\\" "/" BUILD_DIR ${BUILD_DIR})
-endif()
+file(TO_CMAKE_PATH "${BUILD_DIR}" BUILD_DIR)
+file(TO_CMAKE_PATH "${REACT_ANDROID_DIR}" REACT_ANDROID_DIR)
 
 file(GLOB input_SRC CONFIGURE_DEPENDS
-        *.cpp
+        ${REACT_ANDROID_DIR}/cmake-utils/default-app-setup/*.cpp
         ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})

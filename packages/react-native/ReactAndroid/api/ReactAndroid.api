@@ -3306,7 +3306,6 @@ public final class com/facebook/react/modules/core/TimingModule : com/facebook/f
 	public fun createTimer (DDDZ)V
 	public fun deleteTimer (D)V
 	public fun emitTimeDriftWarning (Ljava/lang/String;)V
-	public fun initialize ()V
 	public fun invalidate ()V
 	public fun setSendIdleEvents (Z)V
 }

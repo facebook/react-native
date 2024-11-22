@@ -67,6 +67,13 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
    */
   BOOL _comingFromJS;
   BOOL _didMoveToWindow;
+
+  /*
+   * Newly initialized default typing attributes contain a no-op NSParagraphStyle and NSShadow. These cause inequality
+   * between the AttributedString backing the input and those generated from state. We store these attributes to make
+   * later comparison insensitive to them.
+   */
+  NSDictionary<NSAttributedStringKey, id> *_originalTypingAttributes;
 }
 
 #pragma mark - UIView overrides
@@ -82,6 +89,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
+    _originalTypingAttributes = [_backedTextInputView.typingAttributes copy];
 
     [self addSubview:_backedTextInputView];
 #if TARGET_OS_IOS // [macOS] [visionOS]
@@ -90,6 +98,20 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 
   return self;
+}
+
+- (void)updateEventEmitter:(const EventEmitter::Shared &)eventEmitter
+{
+  [super updateEventEmitter:eventEmitter];
+
+  NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
+      [_backedTextInputView.defaultTextAttributes mutableCopy];
+
+  RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
+  eventEmitterWrapper.eventEmitter = _eventEmitter;
+  defaultAttributes[RCTAttributedStringEventEmitterKey] = eventEmitterWrapper;
+
+  _backedTextInputView.defaultTextAttributes = defaultAttributes;
 }
 
 - (void)didMoveToWindow
@@ -259,8 +281,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
-    _backedTextInputView.defaultTextAttributes =
+    NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+    defaultAttributes[RCTAttributedStringEventEmitterKey] =
+        _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
+    _backedTextInputView.defaultTextAttributes = defaultAttributes;
   }
 
 #if !TARGET_OS_OSX // [macOS]
@@ -448,6 +473,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)textInputDidChangeSelection
 {
+  [self _updateTypingAttributes];
   if (_comingFromJS) {
     return;
   }
@@ -768,8 +794,25 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
   }
   [self _restoreTextSelection];
+  [self _updateTypingAttributes];
   _lastStringStateWasUpdatedWith = attributedString;
 #endif // [macOS]
+}
+
+// Ensure that newly typed text will inherit any custom attributes. We follow the logic of RN Android, where attributes
+// to the left of the cursor are copied into new text, unless we are at the start of the field, in which case we will
+// copy the attributes from text to the right. This allows consistency between backed input and new AttributedText
+// https://github.com/facebook/react-native/blob/3102a58df38d96f3dacef0530e4dbb399037fcd2/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/text/internal/span/SetSpanOperation.kt#L30
+- (void)_updateTypingAttributes
+{
+  if (_backedTextInputView.attributedText.length > 0) {
+    NSUInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                           toPosition:_backedTextInputView.selectedTextRange.start];
+
+    NSUInteger samplePoint = offsetStart == 0 ? 0 : offsetStart - 1;
+    _backedTextInputView.typingAttributes = [_backedTextInputView.attributedText attributesAtIndex:samplePoint
+                                                                                    effectiveRange:NULL];
+  }
 }
 
 - (void)_setMultiline:(BOOL)multiline
@@ -842,9 +885,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   fontHasBeenUpdatedBySystem;
 
   if (shouldFallbackToBareTextComparison) {
-    return ([newText.string isEqualToString:oldText.string]);
+    return [newText.string isEqualToString:oldText.string];
   } else {
-    return ([newText isEqualToAttributedString:oldText]);
+    return RCTIsAttributedStringEffectivelySame(
+        newText, oldText, _originalTypingAttributes, static_cast<const TextInputProps &>(*_props).textAttributes);
   }
 }
 

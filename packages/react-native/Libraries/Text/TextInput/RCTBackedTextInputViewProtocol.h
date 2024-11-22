@@ -60,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) CGFloat zoomScale;
 @property (nonatomic, assign, readonly) CGPoint contentOffset;
 @property (nonatomic, assign, readonly) UIEdgeInsets contentInset;
+@property (nullable, nonatomic, copy) NSDictionary<NSAttributedStringKey, id> *typingAttributes;
 #if TARGET_OS_OSX // [macOS
 @property (nonatomic, assign) CGFloat pointScaleFactor;
 #endif // macOS]

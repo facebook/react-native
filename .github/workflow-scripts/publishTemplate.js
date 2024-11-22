@@ -68,6 +68,7 @@ module.exports.verifyPublishedTemplate = async (
   latest = false,
   retries = MAX_RETRIES,
 ) => {
+  version = version.replace(/^v/, '');
   log(`🔍 Is ${TEMPLATE_NPM_PKG}@${version} on npm?`);
 
   let count = retries;
@@ -82,11 +83,11 @@ module.exports.verifyPublishedTemplate = async (
         return;
       }
       if (json.version === version) {
-        log(`🎉 ${TEMPLATE_NPM_PKG}@latest → ${version} on npm`);
+        log(`🎉 ${TEMPLATE_NPM_PKG}@latest → ${json.version} on npm`);
         return;
       }
       log(
-        `🐌 ${TEMPLATE_NPM_PKG}@latest → ${pkg.version} on npm and not ${version} as expected, retrying...`,
+        `🐌 ${TEMPLATE_NPM_PKG}@latest → ${json.version} on npm and not ${version} as expected, retrying...`,
       );
     } catch (e) {
       log(`Nope, fetch failed: ${e.message}`);
