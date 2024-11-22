@@ -424,7 +424,7 @@ public class ReactViewGroup extends ViewGroup
                 + mRecycleCount,
             e);
       }
-      if (mAllChildren[i].getParent() == null) {
+      if (isViewClipped(mAllChildren[i])) {
         clippedSoFar++;
       }
     }
@@ -446,12 +446,12 @@ public class ReactViewGroup extends ViewGroup
     // it won't be size and located properly.
     Animation animation = child.getAnimation();
     boolean isAnimating = animation != null && !animation.hasEnded();
-    if (!intersects && child.getParent() != null && !isAnimating) {
+    if (!intersects && !isViewClipped(child) && !isAnimating) {
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
       removeViewInLayout(child);
       needUpdateClippingRecursive = true;
-    } else if (intersects && child.getParent() == null) {
+    } else if (intersects && isViewClipped(child)) {
       addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
@@ -483,7 +483,7 @@ public class ReactViewGroup extends ViewGroup
             subview.getLeft(), subview.getTop(), subview.getRight(), subview.getBottom());
 
     // If it was intersecting before, should be attached to the parent
-    boolean oldIntersects = (subview.getParent() != null);
+    boolean oldIntersects = !isViewClipped(subview);
 
     if (intersects != oldIntersects) {
       int clippedSoFar = 0;
@@ -492,7 +492,7 @@ public class ReactViewGroup extends ViewGroup
           updateSubviewClipStatus(mClippingRect, i, clippedSoFar);
           break;
         }
-        if (mAllChildren[i].getParent() == null) {
+        if (isViewClipped(mAllChildren[i])) {
           clippedSoFar++;
         }
       }
@@ -681,7 +681,7 @@ public class ReactViewGroup extends ViewGroup
     // attach it
     int clippedSoFar = 0;
     for (int i = 0; i < index; i++) {
-      if (childArray[i].getParent() == null) {
+      if (isViewClipped(childArray[i])) {
         clippedSoFar++;
       }
     }
@@ -720,10 +720,10 @@ public class ReactViewGroup extends ViewGroup
     View[] childArray = Assertions.assertNotNull(mAllChildren);
     view.removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
     int index = indexOfChildInAllChildren(view);
-    if (childArray[index].getParent() != null) {
+    if (!isViewClipped(childArray[index])) {
       int clippedSoFar = 0;
       for (int i = 0; i < index; i++) {
-        if (childArray[i].getParent() == null) {
+        if (isViewClipped(childArray[i])) {
           clippedSoFar++;
         }
       }
@@ -740,6 +740,13 @@ public class ReactViewGroup extends ViewGroup
     }
     removeAllViewsInLayout();
     mAllChildrenCount = 0;
+  }
+
+  /**
+   * @return {@code true} if the view has been removed from the ViewGroup.
+   */
+  private boolean isViewClipped(View view) {
+    return view.getParent() == null;
   }
 
   private int indexOfChildInAllChildren(View child) {
