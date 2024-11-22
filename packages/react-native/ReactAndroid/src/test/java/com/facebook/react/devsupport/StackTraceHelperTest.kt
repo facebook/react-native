@@ -83,13 +83,13 @@ class StackTraceHelperTest {
   }
 
   private fun assertStackFrameMap(
-      map: ReadableMap,
+      map: ReadableMap?,
       filename: String,
       methodName: String,
       lineNumber: Int,
       columnNumber: Int
   ) {
-
+    checkNotNull(map)
     assertThat(map.getString("file")).isEqualTo(filename)
     assertThat(map.getString("methodName")).isEqualTo(methodName)
     assertThat(map.getDouble("lineNumber").toInt()).isEqualTo(lineNumber)

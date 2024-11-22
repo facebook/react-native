@@ -34,7 +34,7 @@ public class ColorPropConverter {
   private static final String ATTR_SEGMENT = "attr/";
 
   @Nullable
-  private static Integer getColorInteger(Object value, Context context) {
+  private static Integer getColorInteger(@Nullable Object value, Context context) {
     if (value == null) {
       return null;
     }
@@ -84,7 +84,7 @@ public class ColorPropConverter {
   }
 
   @Nullable
-  public static Color getColorInstance(Object value, Context context) {
+  public static Color getColorInstance(@Nullable Object value, Context context) {
     if (value == null) {
       return null;
     }
@@ -136,7 +136,7 @@ public class ColorPropConverter {
         "ColorValue: the value must be a number or Object.");
   }
 
-  public static Integer getColor(Object value, Context context) {
+  public static Integer getColor(@Nullable Object value, Context context) {
     try {
       if (supportWideGamut()) {
         Color color = getColorInstance(value, context);
@@ -150,7 +150,7 @@ public class ColorPropConverter {
     return getColorInteger(value, context);
   }
 
-  public static Integer getColor(Object value, Context context, int defaultInt) {
+  public static Integer getColor(@Nullable Object value, Context context, int defaultInt) {
     try {
       return getColor(value, context);
     } catch (JSApplicationCausedNativeException e) {

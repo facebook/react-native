@@ -44,16 +44,12 @@ public class DebuggingOverlayManager :
   }
 
   public override fun highlightTraceUpdates(view: DebuggingOverlay, args: ReadableArray?): Unit {
-    if (args == null) {
-      return
-    }
-
-    val providedTraceUpdates = args.getArray(0)
+    val providedTraceUpdates = args?.getArray(0) ?: return
     val formattedTraceUpdates = mutableListOf<TraceUpdate>()
 
     var successfullyParsedPayload = true
     for (i in 0 until providedTraceUpdates.size()) {
-      val traceUpdate = providedTraceUpdates.getMap(i)
+      val traceUpdate = providedTraceUpdates.getMap(i) ?: continue
       val serializedRectangle = traceUpdate.getMap("rectangle")
       if (serializedRectangle == null) {
         ReactSoftExceptionLogger.logSoftException(
@@ -98,17 +94,12 @@ public class DebuggingOverlayManager :
   }
 
   public override fun highlightElements(view: DebuggingOverlay, args: ReadableArray?): Unit {
-    if (args == null) {
-      return
-    }
-
-    val providedElements = args.getArray(0)
+    val providedElements = args?.getArray(0) ?: return
     val elementsRectangles = mutableListOf<RectF>()
 
     var successfullyParsedPayload = true
     for (i in 0 until providedElements.size()) {
-      val element = providedElements.getMap(i)
-
+      val element = providedElements.getMap(i) ?: continue
       try {
         val left = element.getDouble("x").toFloat()
         val top = element.getDouble("y").toFloat()
