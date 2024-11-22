@@ -672,18 +672,25 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
  */
 -(void)centerContentIfNeeded
 {
-  if (_scrollView.centerContent &&
-      !CGSizeEqualToSize(self.contentSize, CGSizeZero) &&
-      !CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
-    CGFloat top = 0, left = 0;
-    if (self.contentSize.width < self.bounds.size.width) {
-      left = (self.bounds.size.width - self.contentSize.width) * 0.5f;
-    }
-    if (self.contentSize.height < self.bounds.size.height) {
-      top = (self.bounds.size.height - self.contentSize.height) * 0.5f;
-    }
-    _scrollView.contentInset = UIEdgeInsetsMake(top, left, top, left);
+  if (!_scrollView.centerContent) {
+    return;
   }
+
+  CGSize contentSize = self.contentSize;
+  CGSize boundsSize = self.bounds.size;
+  if (CGSizeEqualToSize(contentSize, CGSizeZero) ||
+      CGSizeEqualToSize(boundsSize, CGSizeZero)) {
+    return;
+  }
+
+  CGFloat top = 0, left = 0;
+  if (contentSize.width < boundsSize.width) {
+    left = (boundsSize.width - contentSize.width) * 0.5f;
+  }
+  if (contentSize.height < boundsSize.height) {
+    top = (boundsSize.height - contentSize.height) * 0.5f;
+  }
+  _scrollView.contentInset = UIEdgeInsetsMake(top, left, top, left);
 }
 
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
