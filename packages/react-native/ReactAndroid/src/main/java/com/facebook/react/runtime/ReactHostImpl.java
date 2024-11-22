@@ -392,8 +392,8 @@ public class ReactHostImpl implements ReactHost {
 
     Activity currentActivity = getCurrentActivity();
 
-    maybeEnableDevSupport(false);
     if (currentActivity == activity) {
+      maybeEnableDevSupport(false);
       moveToHostDestroy(getCurrentReactContext());
     }
   }
