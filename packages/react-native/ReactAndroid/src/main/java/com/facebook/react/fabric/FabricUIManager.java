@@ -625,10 +625,10 @@ public class FabricUIManager
    * @return if theme data is available in the output parameters.
    */
   public boolean getThemeData(int surfaceId, float[] defaultTextInputPadding) {
-    Context context =
-        mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData").getContext();
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    Context context = surfaceMountingManager != null ? surfaceMountingManager.getContext() : null;
     if (context == null) {
-      FLog.w(TAG, "\"themedReactContext\" is null when call \"getThemeData\"");
+      FLog.w(TAG, "Couldn't get context for surfaceId %d in getThemeData", surfaceId);
       return false;
     }
 
