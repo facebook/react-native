@@ -524,83 +524,33 @@ public class ReactViewGroup extends ViewGroup
     return ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC;
   }
 
-  private void handleAddView(View view) {
+  @Override
+  public void onViewAdded(View child) {
     UiThreadUtil.assertOnUiThread();
 
     if (!customDrawOrderDisabled()) {
-      getDrawingOrderHelper().handleAddView(view);
+      getDrawingOrderHelper().handleAddView(child);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
+    super.onViewAdded(child);
   }
 
-  private void handleRemoveView(@Nullable View view) {
+  @Override
+  public void onViewRemoved(View child) {
     UiThreadUtil.assertOnUiThread();
 
     if (!customDrawOrderDisabled()) {
-      if (indexOfChild(view) == -1) {
+      if (indexOfChild(child) == -1) {
         return;
       }
-      getDrawingOrderHelper().handleRemoveView(view);
+      getDrawingOrderHelper().handleRemoveView(child);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
-  }
-
-  private void handleRemoveViews(int start, int count) {
-    int endIndex = start + count;
-    for (int index = start; index < endIndex; index++) {
-      if (index < getChildCount()) {
-        handleRemoveView(getChildAt(index));
-      }
-    }
-  }
-
-  @Override
-  public void addView(View child, int index, @Nullable ViewGroup.LayoutParams params) {
-    // This will get called for every overload of addView so there is not need to override every
-    // method.
-    handleAddView(child);
-    super.addView(child, index, params);
-  }
-
-  @Override
-  protected boolean addViewInLayout(
-      View child, int index, LayoutParams params, boolean preventRequestLayout) {
-    handleAddView(child);
-    return super.addViewInLayout(child, index, params, preventRequestLayout);
-  }
-
-  @Override
-  public void removeView(@Nullable View view) {
-    handleRemoveView(view);
-    super.removeView(view);
-  }
-
-  @Override
-  public void removeViewAt(int index) {
-    handleRemoveView(getChildAt(index));
-    super.removeViewAt(index);
-  }
-
-  @Override
-  public void removeViewInLayout(View view) {
-    handleRemoveView(view);
-    super.removeViewInLayout(view);
-  }
-
-  @Override
-  public void removeViewsInLayout(int start, int count) {
-    handleRemoveViews(start, count);
-    super.removeViewsInLayout(start, count);
-  }
-
-  @Override
-  public void removeViews(int start, int count) {
-    handleRemoveViews(start, count);
-    super.removeViews(start, count);
+    super.onViewRemoved(child);
   }
 
   @Override
