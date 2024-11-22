@@ -17,7 +17,6 @@ import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -54,7 +53,6 @@ import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
-import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
@@ -131,13 +129,11 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable Rect mClippingRect;
   private @Nullable Rect mHitSlopRect;
   private Overflow mOverflow;
-  private PointerEvents mPointerEvents;
+  private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
-  private @Nullable CSSBackgroundDrawable mCSSBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing;
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
-  private @Nullable Path mPath;
   private float mBackfaceOpacity;
   private String mBackfaceVisibility;
 
@@ -168,11 +164,9 @@ public class ReactViewGroup extends ViewGroup
     mOverflow = Overflow.VISIBLE;
     mPointerEvents = PointerEvents.AUTO;
     mChildrenLayoutChangeListener = null;
-    mCSSBackgroundDrawable = null;
     mOnInterceptTouchEventListener = null;
     mNeedsOffscreenAlphaCompositing = false;
     mDrawingOrderHelper = null;
-    mPath = null;
     mBackfaceOpacity = 1.f;
     mBackfaceVisibility = "visible";
   }
@@ -266,7 +260,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @Override
-  public boolean onTouchEvent(MotionEvent ev) {
+  public boolean onTouchEvent(MotionEvent event) {
     // We do not accept the touch event if this view is not supposed to receive it.
     if (!PointerEvents.canBeTouchTarget(mPointerEvents)) {
       return false;
@@ -506,11 +500,6 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @Override
-  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    return super.getChildVisibleRect(child, r, offset);
-  }
-
-  @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
     if (mRemoveClippedSubviews) {
@@ -685,18 +674,18 @@ public class ReactViewGroup extends ViewGroup
   /*package*/ void addViewWithSubviewClippingEnabled(
       final View child, int index, ViewGroup.LayoutParams params) {
     Assertions.assertCondition(mRemoveClippedSubviews);
-    Assertions.assertNotNull(mClippingRect);
-    Assertions.assertNotNull(mAllChildren);
+    Rect clippingRect = Assertions.assertNotNull(mClippingRect);
+    View[] childArray = Assertions.assertNotNull(mAllChildren);
     addInArray(child, index);
     // we add view as "clipped" and then run {@link #updateSubviewClipStatus} to conditionally
     // attach it
     int clippedSoFar = 0;
     for (int i = 0; i < index; i++) {
-      if (mAllChildren[i].getParent() == null) {
+      if (childArray[i].getParent() == null) {
         clippedSoFar++;
       }
     }
-    updateSubviewClipStatus(mClippingRect, index, clippedSoFar);
+    updateSubviewClipStatus(clippingRect, index, clippedSoFar);
     child.addOnLayoutChangeListener(mChildrenLayoutChangeListener);
 
     if (child instanceof ReactClippingProhibitedView) {
@@ -728,13 +717,13 @@ public class ReactViewGroup extends ViewGroup
 
     Assertions.assertCondition(mRemoveClippedSubviews);
     Assertions.assertNotNull(mClippingRect);
-    Assertions.assertNotNull(mAllChildren);
+    View[] childArray = Assertions.assertNotNull(mAllChildren);
     view.removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
     int index = indexOfChildInAllChildren(view);
-    if (mAllChildren[index].getParent() != null) {
+    if (childArray[index].getParent() != null) {
       int clippedSoFar = 0;
       for (int i = 0; i < index; i++) {
-        if (mAllChildren[i].getParent() == null) {
+        if (childArray[i].getParent() == null) {
           clippedSoFar++;
         }
       }
@@ -745,9 +734,9 @@ public class ReactViewGroup extends ViewGroup
 
   /*package*/ void removeAllViewsWithSubviewClippingEnabled() {
     Assertions.assertCondition(mRemoveClippedSubviews);
-    Assertions.assertNotNull(mAllChildren);
+    View[] childArray = Assertions.assertNotNull(mAllChildren);
     for (int i = 0; i < mAllChildrenCount; i++) {
-      mAllChildren[i].removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
+      childArray[i].removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
     }
     removeAllViewsInLayout();
     mAllChildrenCount = 0;
@@ -755,9 +744,9 @@ public class ReactViewGroup extends ViewGroup
 
   private int indexOfChildInAllChildren(View child) {
     final int count = mAllChildrenCount;
-    final View[] children = Assertions.assertNotNull(mAllChildren);
+    final View[] childArray = Assertions.assertNotNull(mAllChildren);
     for (int i = 0; i < count; i++) {
-      if (children[i] == child) {
+      if (childArray[i] == child) {
         return i;
       }
     }
@@ -765,26 +754,26 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private void addInArray(View child, int index) {
-    View[] children = Assertions.assertNotNull(mAllChildren);
+    View[] childArray = Assertions.assertNotNull(mAllChildren);
     final int count = mAllChildrenCount;
-    final int size = children.length;
+    final int size = childArray.length;
     if (index == count) {
       if (size == count) {
         mAllChildren = new View[size + ARRAY_CAPACITY_INCREMENT];
-        System.arraycopy(children, 0, mAllChildren, 0, size);
-        children = mAllChildren;
+        System.arraycopy(childArray, 0, mAllChildren, 0, size);
+        childArray = mAllChildren;
       }
-      children[mAllChildrenCount++] = child;
+      childArray[mAllChildrenCount++] = child;
     } else if (index < count) {
       if (size == count) {
         mAllChildren = new View[size + ARRAY_CAPACITY_INCREMENT];
-        System.arraycopy(children, 0, mAllChildren, 0, index);
-        System.arraycopy(children, index, mAllChildren, index + 1, count - index);
-        children = mAllChildren;
+        System.arraycopy(childArray, 0, mAllChildren, 0, index);
+        System.arraycopy(childArray, index, mAllChildren, index + 1, count - index);
+        childArray = mAllChildren;
       } else {
-        System.arraycopy(children, index, children, index + 1, count - index);
+        System.arraycopy(childArray, index, childArray, index + 1, count - index);
       }
-      children[index] = child;
+      childArray[index] = child;
       mAllChildrenCount++;
     } else {
       throw new IndexOutOfBoundsException("index=" + index + " count=" + count);
@@ -792,13 +781,13 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private void removeFromArray(int index) {
-    final View[] children = Assertions.assertNotNull(mAllChildren);
+    final View[] childArray = Assertions.assertNotNull(mAllChildren);
     final int count = mAllChildrenCount;
     if (index == count - 1) {
-      children[--mAllChildrenCount] = null;
+      childArray[--mAllChildrenCount] = null;
     } else if (index >= 0 && index < count) {
-      System.arraycopy(children, index + 1, children, index, count - index - 1);
-      children[--mAllChildrenCount] = null;
+      System.arraycopy(childArray, index + 1, childArray, index, count - index - 1);
+      childArray[--mAllChildrenCount] = null;
     } else {
       throw new IndexOutOfBoundsException();
     }
