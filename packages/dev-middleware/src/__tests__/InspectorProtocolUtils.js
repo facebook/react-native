@@ -127,11 +127,13 @@ export async function createAndConnectTarget(
   signal: AbortSignal,
   page: PageFromDevice,
   {
+    debuggerHostHeader = null,
     deviceId = null,
-    host = null,
+    deviceHostHeader = null,
   }: $ReadOnly<{
+    debuggerHostHeader?: ?string,
     deviceId?: ?string,
-    host?: ?string,
+    deviceHostHeader?: ?string,
   }> = {},
 ): Promise<{device: DeviceMock, debugger_: DebuggerMock}> {
   let device;
@@ -142,7 +144,7 @@ export async function createAndConnectTarget(
         deviceId ?? 'device' + Date.now()
       }&name=foo&app=bar`,
       signal,
-      host,
+      deviceHostHeader,
     );
     device.getPages.mockImplementation(() => [page]);
 
@@ -157,7 +159,11 @@ export async function createAndConnectTarget(
     const [{webSocketDebuggerUrl}] = pageList;
     expect(webSocketDebuggerUrl).toBeDefined();
 
-    debugger_ = await createDebuggerMock(webSocketDebuggerUrl, signal);
+    debugger_ = await createDebuggerMock(
+      webSocketDebuggerUrl,
+      signal,
+      debuggerHostHeader,
+    );
     await until(() => expect(device.connect).toBeCalled());
   } catch (e) {
     device?.close();
