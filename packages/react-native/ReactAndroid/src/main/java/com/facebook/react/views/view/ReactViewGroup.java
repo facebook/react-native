@@ -15,7 +15,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -34,7 +33,6 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -74,7 +72,6 @@ public class ReactViewGroup extends ViewGroup
         ReactOverflowViewWithInset {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
-  private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
   private final Rect mOverflowInset = new Rect();
 
@@ -812,12 +809,6 @@ public class ReactViewGroup extends ViewGroup
     }
 
     return false;
-  }
-
-  @VisibleForTesting
-  public int getBackgroundColor() {
-    @Nullable Integer color = BackgroundStyleApplicator.getBackgroundColor(this);
-    return color == null ? DEFAULT_BACKGROUND_COLOR : color;
   }
 
   @Override
