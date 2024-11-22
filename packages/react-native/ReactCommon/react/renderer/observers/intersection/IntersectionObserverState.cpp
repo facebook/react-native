@@ -22,9 +22,10 @@ IntersectionObserverState IntersectionObserverState::NotIntersecting() {
 }
 
 IntersectionObserverState IntersectionObserverState::Intersecting(
-    Float threshold) {
-  return IntersectionObserverState(
-      IntersectionObserverStateType::Intersecting, threshold);
+    Float threshold,
+    Float rootThreshold) {
+  return {
+      IntersectionObserverStateType::Intersecting, threshold, rootThreshold};
 }
 
 IntersectionObserverState::IntersectionObserverState(
@@ -33,8 +34,9 @@ IntersectionObserverState::IntersectionObserverState(
 
 IntersectionObserverState::IntersectionObserverState(
     IntersectionObserverStateType state,
-    Float threshold)
-    : state_(state), threshold_(threshold) {}
+    Float threshold,
+    Float rootThreshold)
+    : state_(state), threshold_(threshold), rootThreshold_(rootThreshold) {}
 
 bool IntersectionObserverState::isIntersecting() const {
   return state_ == IntersectionObserverStateType::Intersecting;
@@ -50,7 +52,8 @@ bool IntersectionObserverState::operator==(
     return true;
   }
 
-  return threshold_ == other.threshold_;
+  return threshold_ == other.threshold_ &&
+      rootThreshold_ == other.rootThreshold_;
 }
 
 bool IntersectionObserverState::operator!=(
