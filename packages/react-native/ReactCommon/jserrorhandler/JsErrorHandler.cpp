@@ -327,7 +327,8 @@ void JsErrorHandler::handleErrorWithCppPipeline(
   auto id = nextExceptionId();
 
   ParsedError parsedError = {
-      .message = _isRuntimeReady ? message : ("EarlyJsError: " + message),
+      .message =
+          _isRuntimeReady ? message : ("[runtime not ready]: " + message),
       .originalMessage = originalMessage,
       .name = name,
       .componentStack = componentStack,
