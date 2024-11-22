@@ -134,6 +134,7 @@ public class ReactEditText extends AppCompatEditText {
   private boolean mContextMenuHidden = false;
   private boolean mDidAttachToWindow = false;
   private boolean mSelectTextOnFocus = false;
+  private boolean hasSelectedTextOnFocus = false;
   private @Nullable String mPlaceholder = null;
   private Overflow mOverflow = Overflow.VISIBLE;
 
@@ -250,11 +251,11 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     onContentSizeChange();
-    if (mSelectTextOnFocus && isFocused()) {
+    if (mSelectTextOnFocus && isFocused() && !hasSelectedTextOnFocus) {
       // Explicitly call this method to select text when layout is drawn
       selectAll();
       // Prevent text on being selected for next layout pass
-      mSelectTextOnFocus = false;
+      hasSelectedTextOnFocus = true;
     }
   }
 
@@ -630,6 +631,7 @@ public class ReactEditText extends AppCompatEditText {
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
     requestFocusInternal();
+    hasSelectedTextOnFocus = true;
   }
 
   /* package */ void clearFocusFromJS() {
