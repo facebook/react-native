@@ -159,6 +159,13 @@
   return !shouldDisableScrollInteraction;
 }
 
+- (void)setContentOffset:(CGPoint)contentOffset
+{
+  super.contentOffset = CGPointMake(
+      RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
+      RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
+}
+
 - (void)setFrame:(CGRect)frame
 {
   // Preserving and revalidating `contentOffset`.
