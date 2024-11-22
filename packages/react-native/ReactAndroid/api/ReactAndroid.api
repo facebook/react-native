@@ -3595,24 +3595,23 @@ public final class com/facebook/react/modules/statusbar/StatusBarModule : com/fa
 public final class com/facebook/react/modules/statusbar/StatusBarModule$Companion {
 }
 
-public class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
+public final class com/facebook/react/modules/systeminfo/AndroidInfoHelpers {
 	public static final field DEVICE_LOCALHOST Ljava/lang/String;
 	public static final field EMULATOR_LOCALHOST Ljava/lang/String;
 	public static final field GENYMOTION_LOCALHOST Ljava/lang/String;
+	public static final field INSTANCE Lcom/facebook/react/modules/systeminfo/AndroidInfoHelpers;
 	public static final field METRO_HOST_PROP_NAME Ljava/lang/String;
-	public fun <init> ()V
-	public static fun getAdbReverseTcpCommand (Landroid/content/Context;)Ljava/lang/String;
-	public static fun getAdbReverseTcpCommand (Ljava/lang/Integer;)Ljava/lang/String;
-	public static fun getFriendlyDeviceName ()Ljava/lang/String;
-	public static fun getInspectorHostMetadata (Landroid/content/Context;)Ljava/util/Map;
-	public static fun getServerHost (Landroid/content/Context;)Ljava/lang/String;
-	public static fun getServerHost (Ljava/lang/Integer;)Ljava/lang/String;
+	public static final fun getAdbReverseTcpCommand (I)Ljava/lang/String;
+	public static final fun getAdbReverseTcpCommand (Landroid/content/Context;)Ljava/lang/String;
+	public static final fun getFriendlyDeviceName ()Ljava/lang/String;
+	public static final fun getInspectorHostMetadata (Landroid/content/Context;)Ljava/util/Map;
+	public static final fun getServerHost (I)Ljava/lang/String;
+	public static final fun getServerHost (Landroid/content/Context;)Ljava/lang/String;
 }
 
-public class com/facebook/react/modules/systeminfo/AndroidInfoModule : com/facebook/fbreact/specs/NativePlatformConstantsAndroidSpec, com/facebook/react/turbomodule/core/interfaces/TurboModule {
+public final class com/facebook/react/modules/systeminfo/AndroidInfoModule : com/facebook/fbreact/specs/NativePlatformConstantsAndroidSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun getAndroidID ()Ljava/lang/String;
-	public fun getTypedExportedConstants ()Ljava/util/Map;
 	public fun invalidate ()V
 }
 
