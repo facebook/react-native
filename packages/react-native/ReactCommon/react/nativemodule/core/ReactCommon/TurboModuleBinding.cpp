@@ -141,10 +141,9 @@ void TurboModuleBinding::install(
 }
 
 TurboModuleBinding::~TurboModuleBinding() {
+  LongLivedObjectCollection::get(runtime_).clear();
   if (longLivedObjectCollection_) {
     longLivedObjectCollection_->clear();
-  } else {
-    LongLivedObjectCollection::get(runtime_).clear();
   }
 }
 
