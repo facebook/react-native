@@ -75,6 +75,32 @@ export default class IntersectionObserverEntry {
   }
 
   /**
+   * Returns the ratio of the `intersectionRect` to the `boundingRootRect`.
+   */
+  get rn_intersectionRootRatio(): number {
+    const intersectionRect = this.intersectionRect;
+
+    const rootRect = this._nativeEntry.rootRect;
+    const boundingRootRect = new DOMRectReadOnly(
+      rootRect[0],
+      rootRect[1],
+      rootRect[2],
+      rootRect[3],
+    );
+
+    if (boundingRootRect.width === 0 || boundingRootRect.height === 0) {
+      return 0;
+    }
+
+    const ratio =
+      (intersectionRect.width * intersectionRect.height) /
+      (boundingRootRect.width * boundingRootRect.height);
+
+    // Prevent rounding errors from making this value greater than 1.
+    return Math.min(ratio, 1);
+  }
+
+  /**
    * Returns a `DOMRectReadOnly` representing the target's visible area.
    */
   get intersectionRect(): DOMRectReadOnly {

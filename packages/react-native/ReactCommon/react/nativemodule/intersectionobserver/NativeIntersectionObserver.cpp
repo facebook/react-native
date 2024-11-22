@@ -32,10 +32,15 @@ void NativeIntersectionObserver::observe(
   auto shadowNode =
       shadowNodeFromValue(runtime, std::move(options.targetShadowNode));
   auto thresholds = options.thresholds;
+  auto rootThresholds = options.rootThresholds;
   auto& uiManager = getUIManagerFromRuntime(runtime);
 
   intersectionObserverManager_.observe(
-      intersectionObserverId, shadowNode, thresholds, uiManager);
+      intersectionObserverId,
+      shadowNode,
+      thresholds,
+      rootThresholds,
+      uiManager);
 }
 
 void NativeIntersectionObserver::unobserve(

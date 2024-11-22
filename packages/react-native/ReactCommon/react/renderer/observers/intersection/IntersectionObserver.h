@@ -35,7 +35,8 @@ class IntersectionObserver {
   IntersectionObserver(
       IntersectionObserverObserverId intersectionObserverId,
       ShadowNode::Shared targetShadowNode,
-      std::vector<Float> thresholds);
+      std::vector<Float> thresholds,
+      std::optional<std::vector<Float>> rootThresholds = std::nullopt);
 
   // Partially equivalent to
   // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
@@ -59,13 +60,12 @@ class IntersectionObserver {
   }
 
  private:
-  Float getHighestThresholdCrossed(Float intersectionRatio);
-
   std::optional<IntersectionObserverEntry> setIntersectingState(
       const Rect& rootBoundingRect,
       const Rect& targetBoundingRect,
       const Rect& intersectionRect,
       Float threshold,
+      Float rootThreshold,
       double time);
 
   std::optional<IntersectionObserverEntry> setNotIntersectingState(
@@ -76,6 +76,7 @@ class IntersectionObserver {
   IntersectionObserverObserverId intersectionObserverId_;
   ShadowNode::Shared targetShadowNode_;
   std::vector<Float> thresholds_;
+  std::optional<std::vector<Float>> rootThresholds_;
   mutable IntersectionObserverState state_ =
       IntersectionObserverState::Initial();
 };
