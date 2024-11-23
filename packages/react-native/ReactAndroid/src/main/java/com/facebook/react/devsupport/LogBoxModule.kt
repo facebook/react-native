@@ -25,7 +25,7 @@ public class LogBoxModule(
 
   override fun show() {
     UiThreadUtil.runOnUiThread {
-      if (!surfaceDelegate.isContentViewReady) {
+      if (!surfaceDelegate.isContentViewReady()) {
         /**
          * LogBoxModule can be rendered in different surface. By default, it will use LogBoxDialog
          * to wrap the content of logs. In other platform (for example VR), a surfaceDelegate can be

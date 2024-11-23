@@ -119,7 +119,7 @@ public class ReactScrollView extends ScrollView
   private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
   private @Nullable StateWrapper mStateWrapper = null;
   private final ReactScrollViewScrollState mReactScrollViewScrollState =
-      new ReactScrollViewScrollState(ViewCompat.LAYOUT_DIRECTION_LTR);
+      new ReactScrollViewScrollState();
   private final ValueAnimator DEFAULT_FLING_ANIMATOR = ObjectAnimator.ofInt(this, "scrollY", 0, 0);
   private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private long mLastScrollDispatchTime = 0;

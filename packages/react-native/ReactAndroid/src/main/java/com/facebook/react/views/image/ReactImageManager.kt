@@ -124,8 +124,7 @@ public constructor(
     }
   }
 
-  // In JS this is Image.props.defaultSource
-  @ReactProp(name = "defaultSrc")
+  @ReactProp(name = "defaultSource", customType = "ImageSource")
   public fun setDefaultSource(view: ReactImageView, source: String?) {
     view.setDefaultSource(source)
   }

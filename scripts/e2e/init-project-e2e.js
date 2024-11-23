@@ -21,12 +21,12 @@ const {
   VERDACCIO_STORAGE_PATH,
   setupVerdaccio,
 } = require('./utils/verdaccio');
-const {parseArgs} = require('@pkgjs/parseargs');
 const chalk = require('chalk');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const {popd, pushd} = require('shelljs');
+const {parseArgs} = require('util');
 
 const config = {
   options: {

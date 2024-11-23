@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<def34bae6aeac9fbb98d2e3a89ffde32>>
+ * @generated SignedSource<<aeb742608efce797a86b73e243a62d0c>>
  */
 
 /**
@@ -47,11 +47,6 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
   // This flag is configured with `skipNativeAPI: true`.
   // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
   return false;
-}
-
-bool NativeReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid(
@@ -117,6 +112,11 @@ bool NativeReactNativeFeatureFlags::enableFabricRenderer(
 bool NativeReactNativeFeatureFlags::enableFabricRendererExclusively(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFabricRendererExclusively();
+}
+
+bool NativeReactNativeFeatureFlags::enableFixForViewCommandRace(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableFixForViewCommandRace();
 }
 
 bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
@@ -217,11 +217,6 @@ bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(
 bool NativeReactNativeFeatureFlags::loadVectorDrawablesOnImages(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
-}
-
-bool NativeReactNativeFeatureFlags::setAndroidLayoutDirection(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::setAndroidLayoutDirection();
 }
 
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(

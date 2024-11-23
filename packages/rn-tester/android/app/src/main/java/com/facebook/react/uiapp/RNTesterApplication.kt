@@ -76,16 +76,16 @@ internal class RNTesterApplication : Application(), ReactApplication {
                               ReactModuleInfo(
                                   SampleTurboModule.NAME,
                                   "SampleTurboModule",
-                                  _canOverrideExistingModule = false,
-                                  _needsEagerInit = false,
+                                  canOverrideExistingModule = false,
+                                  needsEagerInit = false,
                                   isCxxModule = false,
                                   isTurboModule = true),
                           SampleLegacyModule.NAME to
                               ReactModuleInfo(
                                   SampleLegacyModule.NAME,
                                   "SampleLegacyModule",
-                                  _canOverrideExistingModule = false,
-                                  _needsEagerInit = false,
+                                  canOverrideExistingModule = false,
+                                  needsEagerInit = false,
                                   isCxxModule = false,
                                   isTurboModule = false))
                     } else {

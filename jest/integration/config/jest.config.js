@@ -18,6 +18,7 @@ module.exports = {
     '<rootDir>/packages/react-native',
     '<rootDir>/jest/integration/runtime',
   ],
+  moduleFileExtensions: [...baseConfig.moduleFileExtensions, 'cpp', 'h'],
   // This allows running Meta-internal tests with the `-test.fb.js` suffix.
   testRegex: '/__tests__/.*-itest(\\.fb)?\\.js$',
   testPathIgnorePatterns: baseConfig.testPathIgnorePatterns,

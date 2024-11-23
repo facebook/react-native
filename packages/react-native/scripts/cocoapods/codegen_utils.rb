@@ -119,6 +119,7 @@ class CodegenUtils
           'header_mappings_dir' => './',
           'platforms' => min_supported_versions,
           'source_files' => "**/*.{h,mm,cpp}",
+          'exclude_files' => "RCTAppDependencyProvider.{h,mm}", # these files are generated in the same codegen path but needs to belong to a different pod
           'pod_target_xcconfig' => {
             "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
             "FRAMEWORK_SEARCH_PATHS" => framework_search_paths,
@@ -143,6 +144,7 @@ class CodegenUtils
             'React-debug': [],
             'React-utils': [],
             'React-featureflags': [],
+            'React-RCTAppDelegate': [],
           }
         }
 

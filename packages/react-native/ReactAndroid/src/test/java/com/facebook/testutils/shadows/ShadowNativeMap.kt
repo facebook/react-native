@@ -7,6 +7,7 @@
 
 package com.facebook.testutils.shadows
 
+import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.NativeMap
 import com.facebook.react.bridge.ReadableNativeMap
 import com.facebook.react.bridge.WritableNativeMap
@@ -15,15 +16,25 @@ import org.robolectric.shadow.api.Shadow
 
 // Mockito can't mock native methods, so shadow the entire class instead
 @Implements(NativeMap::class)
-public open class ShadowNativeMap {
-  public var contents: Map<String, Any?> = HashMap()
+open class ShadowNativeMap {
+  var backingMap: JavaOnlyMap = JavaOnlyMap()
 
-  @Implements(ReadableNativeMap::class) public class Readable : ShadowNativeMap() {}
+  @Deprecated(
+      "Use ShadowReadableNativeMap",
+      ReplaceWith(
+          "ShadowReadableNativeMap", "com.facebook.testutils.shadows.ShadowReadableNativeMap"))
+  @Implements(ReadableNativeMap::class)
+  public class Readable : ShadowNativeMap() {}
 
-  @Implements(WritableNativeMap::class) public class Writable : ShadowNativeMap() {}
+  @Deprecated(
+      "Use ShadowWritableNativeMap",
+      ReplaceWith(
+          "ShadowWritableNativeMap", "com.facebook.testutils.shadows.ShadowWritableNativeMap"))
+  @Implements(WritableNativeMap::class)
+  public class Writable : ShadowNativeMap() {}
 
-  public companion object {
-    public fun getContents(map: NativeMap): Map<String, Any?> =
-        (Shadow.extract(map) as ShadowNativeMap).contents
+  companion object {
+    fun getContents(map: NativeMap): Map<String, Any?> =
+        (Shadow.extract(map) as ShadowNativeMap).backingMap.toHashMap()
   }
 }

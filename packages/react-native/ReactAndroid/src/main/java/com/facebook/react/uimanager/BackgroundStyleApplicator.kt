@@ -13,6 +13,7 @@ import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
 import android.os.Build
 import android.view.View
 import android.widget.ImageView
@@ -106,12 +107,13 @@ public object BackgroundStyleApplicator {
     composite.borderInsets = composite.borderInsets ?: BorderInsets()
     composite.borderInsets?.setBorderWidth(edge, width)
     if (Build.VERSION.SDK_INT >= MIN_INSET_BOX_SHADOW_SDK_VERSION) {
-      composite.borderInsets = composite.borderInsets ?: BorderInsets()
-      composite.borderInsets?.setBorderWidth(edge, width)
-
-      for (shadow in composite.innerShadows) {
-        (shadow as InsetBoxShadowDrawable).borderInsets = composite.borderInsets
-        shadow.invalidateSelf()
+      val innerShadows = composite.innerShadows
+      if (innerShadows != null) {
+        for (i in 0 until innerShadows.numberOfLayers) {
+          val shadow = innerShadows.getDrawable(i)
+          (shadow as InsetBoxShadowDrawable).borderInsets = composite.borderInsets
+          shadow.invalidateSelf()
+        }
       }
     }
   }
@@ -172,17 +174,29 @@ public object BackgroundStyleApplicator {
     }
 
     if (Build.VERSION.SDK_INT >= MIN_OUTSET_BOX_SHADOW_SDK_VERSION) {
-      for (shadow in compositeBackgroundDrawable.outerShadows) {
-        if (shadow is OutsetBoxShadowDrawable) {
-          shadow.borderRadius = compositeBackgroundDrawable.borderRadius
+      val outerShadows = compositeBackgroundDrawable.outerShadows
+      if (outerShadows != null) {
+        for (i in 0 until outerShadows.numberOfLayers) {
+          val shadow = outerShadows.getDrawable(i)
+          if (shadow is OutsetBoxShadowDrawable) {
+            shadow.borderRadius = shadow.borderRadius ?: BorderRadiusStyle()
+            shadow.borderRadius?.set(corner, radius)
+            shadow.invalidateSelf()
+          }
         }
       }
     }
 
     if (Build.VERSION.SDK_INT >= MIN_INSET_BOX_SHADOW_SDK_VERSION) {
-      for (shadow in compositeBackgroundDrawable.innerShadows) {
-        if (shadow is InsetBoxShadowDrawable) {
-          shadow.borderRadius = compositeBackgroundDrawable.borderRadius
+      val innerShadows = compositeBackgroundDrawable.innerShadows
+      if (innerShadows != null) {
+        for (i in 0 until innerShadows.numberOfLayers) {
+          val shadow = innerShadows.getDrawable(i)
+          if (shadow is InsetBoxShadowDrawable) {
+            shadow.borderRadius = shadow.borderRadius ?: BorderRadiusStyle()
+            shadow.borderRadius?.set(corner, radius)
+            shadow.invalidateSelf()
+          }
         }
       }
     }
@@ -277,14 +291,14 @@ public object BackgroundStyleApplicator {
       return
     }
 
-    val outerShadows = mutableListOf<OutsetBoxShadowDrawable>()
-    val innerShadows = mutableListOf<InsetBoxShadowDrawable>()
+    var innerShadows: LayerDrawable? = null
+    var outerShadows: LayerDrawable? = null
 
     val compositeBackgroundDrawable = ensureCompositeBackgroundDrawable(view)
     val borderInsets = compositeBackgroundDrawable.borderInsets
     val borderRadius = compositeBackgroundDrawable.borderRadius
 
-    for (boxShadow in shadows) {
+    for (boxShadow in shadows.asReversed()) {
       val offsetX = boxShadow.offsetX
       val offsetY = boxShadow.offsetY
       val color = boxShadow.color ?: Color.BLACK
@@ -293,7 +307,10 @@ public object BackgroundStyleApplicator {
       val inset = boxShadow.inset ?: false
 
       if (inset && Build.VERSION.SDK_INT >= MIN_INSET_BOX_SHADOW_SDK_VERSION) {
-        innerShadows.add(
+        if (innerShadows == null) {
+          innerShadows = LayerDrawable(emptyArray())
+        }
+        innerShadows.addLayer(
             InsetBoxShadowDrawable(
                 context = view.context,
                 borderRadius = borderRadius,
@@ -304,7 +321,10 @@ public object BackgroundStyleApplicator {
                 blurRadius = blurRadius,
                 spread = spreadDistance))
       } else if (!inset && Build.VERSION.SDK_INT >= MIN_OUTSET_BOX_SHADOW_SDK_VERSION) {
-        outerShadows.add(
+        if (outerShadows == null) {
+          outerShadows = LayerDrawable(emptyArray())
+        }
+        outerShadows.addLayer(
             OutsetBoxShadowDrawable(
                 context = view.context,
                 borderRadius = borderRadius,
@@ -316,9 +336,8 @@ public object BackgroundStyleApplicator {
       }
     }
 
-    view.background =
-        ensureCompositeBackgroundDrawable(view)
-            .withNewShadows(outerShadows = outerShadows, innerShadows = innerShadows)
+    view.background = ensureCompositeBackgroundDrawable(view).withNewOuterShadow(outerShadows)
+    view.background = ensureCompositeBackgroundDrawable(view).withNewInnerShadow(innerShadows)
   }
 
   @JvmStatic

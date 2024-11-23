@@ -20,6 +20,7 @@ import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
 import com.facebook.react.runtime.hermes.HermesInstance
+import java.lang.Exception
 
 /**
  * A utility class that allows you to simplify the setup of a [ReactHost] for new apps in Open
@@ -60,21 +61,64 @@ public object DefaultReactHost {
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
-      jsBundleLoader: JSBundleLoader? = null,
+  ): ReactHost =
+      getDefaultReactHost(
+          context,
+          packageList,
+          jsMainModulePath,
+          jsBundleAssetPath,
+          jsBundleFilePath,
+          isHermesEnabled,
+          useDevSupport,
+          cxxReactPackageProviders) {
+            throw it
+          }
+
+  /**
+   * Util function to create a default [ReactHost] to be used in your application. This method is
+   * used by the New App template.
+   *
+   * @param context the Android [Context] to use for creating the [ReactHost]
+   * @param packageList the list of [ReactPackage]s to use for creating the [ReactHost]
+   * @param jsMainModulePath the path to your app's main module on Metro. Usually `index` or
+   *   `index.<platform>`
+   * @param jsBundleAssetPath the path to the JS bundle relative to the assets directory. Will be
+   *   composed in a `asset://...` URL
+   * @param isHermesEnabled whether to use Hermes as the JS engine, default to true.
+   * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
+   * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
+   *   modules)
+   * @param jsBundleLoader a [JSBundleLoader] to use for creating the [ReactHost]
+   * @param exceptionHandler Callback that can be used by React Native host applications to react to
+   *   exceptions thrown by the internals of React Native.
+   *
+   * TODO(T186951312): Should this be @UnstableReactNativeAPI?
+   */
+  @OptIn(UnstableReactNativeAPI::class)
+  @JvmStatic
+  public fun getDefaultReactHost(
+      context: Context,
+      packageList: List<ReactPackage>,
+      jsMainModulePath: String = "index",
+      jsBundleAssetPath: String = "index",
+      jsBundleFilePath: String? = null,
+      isHermesEnabled: Boolean = true,
+      useDevSupport: Boolean = ReactBuildConfig.DEBUG,
+      cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
+      exceptionHandler: (Exception) -> Unit = { throw it },
   ): ReactHost {
     if (reactHost == null) {
 
       val bundleLoader =
-          jsBundleLoader
-              ?: if (jsBundleFilePath != null) {
-                if (jsBundleFilePath.startsWith("assets://")) {
-                  JSBundleLoader.createAssetLoader(context, jsBundleFilePath, true)
-                } else {
-                  JSBundleLoader.createFileLoader(jsBundleFilePath)
-                }
-              } else {
-                JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
-              }
+          if (jsBundleFilePath != null) {
+            if (jsBundleFilePath.startsWith("assets://")) {
+              JSBundleLoader.createAssetLoader(context, jsBundleFilePath, true)
+            } else {
+              JSBundleLoader.createFileLoader(jsBundleFilePath)
+            }
+          } else {
+            JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+          }
       val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
       val defaultTmmDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       cxxReactPackageProviders.forEach { defaultTmmDelegateBuilder.addCxxReactPackage(it) }
@@ -84,7 +128,8 @@ public object DefaultReactHost {
               jsBundleLoader = bundleLoader,
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
-              turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder)
+              turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder,
+              exceptionHandler = exceptionHandler)
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)
       // TODO: T164788699 find alternative of accessing ReactHostImpl for initialising reactHost

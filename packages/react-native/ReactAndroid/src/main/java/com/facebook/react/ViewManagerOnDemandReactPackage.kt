@@ -5,24 +5,24 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react;
+package com.facebook.react
 
-import androidx.annotation.Nullable;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
-import java.util.Collection;
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.uimanager.ViewManager
 
 public interface ViewManagerOnDemandReactPackage {
   /**
    * Provides a list of names of ViewManagers with which these modules can be accessed from JS.
    * Typically, this is ViewManager.getName().
    */
-  Collection<String> getViewManagerNames(ReactApplicationContext reactContext);
+  public fun getViewManagerNames(reactContext: ReactApplicationContext): Collection<String>
 
   /**
    * Creates and returns a ViewManager with a specific name {@param viewManagerName}. It's up to an
    * implementing package how to interpret the name.
    */
-  @Nullable
-  ViewManager createViewManager(ReactApplicationContext reactContext, String viewManagerName);
+  public fun createViewManager(
+      reactContext: ReactApplicationContext,
+      viewManagerName: String
+  ): ViewManager<in Nothing, in Nothing>?
 }

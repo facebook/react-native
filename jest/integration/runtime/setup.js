@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import deepEqual from 'deep-equal';
 import nullthrows from 'nullthrows';
 
 export type TestCaseResult = {
@@ -114,6 +115,64 @@ global.it.skip =
       globalModifiers.pop();
     };
 
+global.jest = {
+  fn: createMockFunction,
+};
+
+const MOCK_FN_TAG = Symbol('mock function');
+
+function createMockFunction<TArgs: $ReadOnlyArray<mixed>, TReturn>(
+  initialImplementation?: (...TArgs) => TReturn,
+): JestMockFn<TArgs, TReturn> {
+  let implementation: ?(...TArgs) => TReturn = initialImplementation;
+
+  const mock: JestMockFn<TArgs, TReturn>['mock'] = {
+    calls: [],
+    // $FlowExpectedError[incompatible-type]
+    lastCall: undefined,
+    instances: [],
+    contexts: [],
+    results: [],
+  };
+
+  const mockFunction = function (this: mixed, ...args: TArgs): TReturn {
+    let result: JestMockFn<TArgs, TReturn>['mock']['results'][number] = {
+      isThrow: false,
+      // $FlowExpectedError[incompatible-type]
+      value: undefined,
+    };
+
+    if (implementation != null) {
+      try {
+        result.value = implementation.apply(this, args);
+      } catch (error) {
+        result.isThrow = true;
+        result.value = error;
+      }
+    }
+
+    mock.calls.push(args);
+    mock.lastCall = args;
+    // $FlowExpectedError[incompatible-call]
+    mock.instances.push(new.target ? this : undefined);
+    mock.contexts.push(this);
+    mock.results.push(result);
+
+    if (result.isThrow) {
+      throw result.value;
+    }
+
+    return result.value;
+  };
+
+  mockFunction.mock = mock;
+  // $FlowExpectedError[invalid-computed-prop]
+  mockFunction[MOCK_FN_TAG] = true;
+
+  // $FlowExpectedError[prop-missing]
+  return mockFunction;
+}
+
 // flowlint unsafe-getters-setters:off
 
 class Expect {
@@ -127,6 +186,15 @@ class Expect {
   get not(): this {
     this.#isNot = !this.#isNot;
     return this;
+  }
+
+  toEqual(expected: mixed): void {
+    const pass = deepEqual(this.#received, expected, {strict: true});
+    if (!this.#isExpectedResult(pass)) {
+      throw new Error(
+        `Expected${this.#maybeNotLabel()} to equal ${String(expected)} but received ${String(this.#received)}.`,
+      );
+    }
   }
 
   toBe(expected: mixed): void {
@@ -152,26 +220,57 @@ class Expect {
       Math.abs(expected - Number(this.#received)) < Math.pow(10, -precision);
     if (!this.#isExpectedResult(pass)) {
       throw new Error(
-        `expected ${String(this.#received)}${this.#maybeNotLabel()} to be close to ${expected}`,
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be close to ${expected}`,
       );
     }
   }
 
-  toThrow(error: mixed): void {
-    if (error != null) {
-      throw new Error('toThrow() implementation does not accept arguments.');
+  toBeNull(): void {
+    const pass = this.#received == null;
+    if (!this.#isExpectedResult(pass)) {
+      throw new Error(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be null`,
+      );
+    }
+  }
+
+  toThrow(expected?: string): void {
+    if (expected != null && typeof expected !== 'string') {
+      throw new Error(
+        'toThrow() implementation only accepts strings as arguments.',
+      );
     }
 
     let pass = false;
     try {
       // $FlowExpectedError[not-a-function]
       this.#received();
-    } catch {
-      pass = true;
+    } catch (error) {
+      pass = expected != null ? error.message === expected : true;
     }
     if (!this.#isExpectedResult(pass)) {
       throw new Error(
-        `expected ${String(this.#received)}${this.#maybeNotLabel()} to throw`,
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to throw`,
+      );
+    }
+  }
+
+  toHaveBeenCalled(): void {
+    const mock = this.#requireMock();
+    const pass = mock.calls.length > 0;
+    if (!this.#isExpectedResult(pass)) {
+      throw new Error(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called, but it was${this.#isNot ? '' : "n't"}`,
+      );
+    }
+  }
+
+  toHaveBeenCalledTimes(times: number): void {
+    const mock = this.#requireMock();
+    const pass = mock.calls.length === times;
+    if (!this.#isExpectedResult(pass)) {
+      throw new Error(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called ${times} times, but it was called ${mock.calls.length} times`,
       );
     }
   }
@@ -182,6 +281,18 @@ class Expect {
 
   #maybeNotLabel(): string {
     return this.#isNot ? ' not' : '';
+  }
+
+  #requireMock(): JestMockFn<$ReadOnlyArray<mixed>, mixed>['mock'] {
+    // $FlowExpectedError[incompatible-use]
+    if (!this.#received?.[MOCK_FN_TAG]) {
+      throw new Error(
+        `Expected ${String(this.#received)} to be a mock function, but it wasn't`,
+      );
+    }
+
+    // $FlowExpectedError[incompatible-use]
+    return this.#received.mock;
   }
 }
 
@@ -248,9 +359,12 @@ function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
   console.log(JSON.stringify(testSuiteResult));
 }
 
+global.$$RunTests$$ = () => {
+  executeTests();
+};
+
 export function registerTest(setUpTest: () => void) {
   runWithGuard(() => {
     setUpTest();
-    executeTests();
   });
 }

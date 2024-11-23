@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-const {PACKAGES_DIR, RN_INTEGRATION_TESTS_RUNNER_DIR} = require('./build');
+const {PACKAGES_DIR, RN_INTEGRATION_TESTS_RUNNER_DIR} = require('../consts');
 
 let isRegisteredForMonorepo = false;
 

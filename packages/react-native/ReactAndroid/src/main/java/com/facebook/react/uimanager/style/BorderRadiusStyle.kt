@@ -107,11 +107,11 @@ public data class BorderRadiusStyle(
       width: Float,
       height: Float,
   ): ComputedBorderRadius {
-    val zeroRadii: CornerRadii = CornerRadii(0f, 0f)
+    val zeroRadii = CornerRadii(0f, 0f)
 
     return when (layoutDirection) {
       LayoutDirection.LTR ->
-          ComputedBorderRadius(
+          ensureNoOverlap(
               topLeft =
                   (startStart ?: topStart ?: topLeft ?: uniform)?.resolve(width, height)
                       ?: zeroRadii,
@@ -123,10 +123,12 @@ public data class BorderRadiusStyle(
               bottomRight =
                   (endEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height)
                       ?: zeroRadii,
+              width = width,
+              height = height,
           )
       LayoutDirection.RTL ->
           if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
-            ComputedBorderRadius(
+            ensureNoOverlap(
                 topLeft =
                     (endStart ?: topEnd ?: topRight ?: uniform)?.resolve(width, height)
                         ?: zeroRadii,
@@ -139,9 +141,11 @@ public data class BorderRadiusStyle(
                 bottomRight =
                     (startEnd ?: bottomEnd ?: bottomLeft ?: uniform)?.resolve(width, height)
                         ?: zeroRadii,
+                width = width,
+                height = height,
             )
           } else {
-            ComputedBorderRadius(
+            ensureNoOverlap(
                 topLeft =
                     (endStart ?: topEnd ?: topLeft ?: uniform)?.resolve(width, height) ?: zeroRadii,
                 topRight =
@@ -153,9 +157,54 @@ public data class BorderRadiusStyle(
                 bottomRight =
                     (startEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height)
                         ?: zeroRadii,
+                width = width,
+                height = height,
             )
           }
       else -> throw IllegalArgumentException("Expected?.resolved layout direction")
     }
+  }
+
+  /**
+   * "Corner curves must not overlap: When the sum of any two adjacent border radii exceeds the size
+   * of the border box, UAs must proportionally reduce the used values of all border radii until
+   * none of them overlap." Source: https://www.w3.org/TR/css-backgrounds-3/#corner-overlap
+   */
+  private fun ensureNoOverlap(
+      topLeft: CornerRadii,
+      topRight: CornerRadii,
+      bottomLeft: CornerRadii,
+      bottomRight: CornerRadii,
+      width: Float,
+      height: Float
+  ): ComputedBorderRadius {
+    val leftInset = topLeft.horizontal + bottomLeft.horizontal
+    val topInset = topLeft.vertical + topRight.vertical
+    val rightInset = topRight.horizontal + bottomRight.horizontal
+    val bottomInset = bottomLeft.vertical + bottomRight.vertical
+
+    val leftInsetScale = if (leftInset > 0) minOf(1.0f, height / leftInset) else 0f
+    val topInsetScale = if (topInset > 0) minOf(1.0f, width / topInset) else 0f
+    val rightInsetScale = if (rightInset > 0) minOf(1.0f, height / rightInset) else 0f
+    val bottomInsetScale = if (bottomInset > 0) minOf(1.0f, width / bottomInset) else 0f
+
+    return ComputedBorderRadius(
+        topLeft =
+            CornerRadii(
+                topLeft.horizontal * minOf(topInsetScale, leftInsetScale),
+                topLeft.vertical * minOf(topInsetScale, leftInsetScale)),
+        topRight =
+            CornerRadii(
+                topRight.horizontal * minOf(topInsetScale, rightInsetScale),
+                topRight.vertical * minOf(topInsetScale, rightInsetScale)),
+        bottomLeft =
+            CornerRadii(
+                bottomLeft.horizontal * minOf(bottomInsetScale, leftInsetScale),
+                bottomLeft.vertical * minOf(bottomInsetScale, leftInsetScale)),
+        bottomRight =
+            CornerRadii(
+                bottomRight.horizontal * minOf(bottomInsetScale, rightInsetScale),
+                bottomRight.vertical * minOf(bottomInsetScale, rightInsetScale)),
+    )
   }
 }

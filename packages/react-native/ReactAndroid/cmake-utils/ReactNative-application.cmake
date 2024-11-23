@@ -31,9 +31,8 @@ if(CCACHE_FOUND)
 endif(CCACHE_FOUND)
 
 set(BUILD_DIR ${PROJECT_BUILD_DIR})
-if(CMAKE_HOST_WIN32)
-        string(REPLACE "\\" "/" BUILD_DIR ${BUILD_DIR})
-endif()
+file(TO_CMAKE_PATH "${BUILD_DIR}" BUILD_DIR)
+file(TO_CMAKE_PATH "${REACT_ANDROID_DIR}" REACT_ANDROID_DIR)
 
 if (PROJECT_ROOT_DIR)
 # This empty `if` is just to silence a CMake warning and make sure the `PROJECT_ROOT_DIR`

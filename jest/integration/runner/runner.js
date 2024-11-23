@@ -24,21 +24,19 @@ import path from 'path';
 
 const BUILD_OUTPUT_PATH = path.resolve(__dirname, '..', 'build');
 
+const ENABLE_OPTIMIZED_MODE: false = false;
+const PRINT_FANTOM_OUTPUT: false = false;
+
 function parseRNTesterCommandResult(
   commandArgs: $ReadOnlyArray<string>,
   result: ReturnType<typeof spawnSync>,
 ): {logs: string, testResult: TestSuiteResult} {
   const stdout = result.stdout.toString();
 
-  const outputArray = stdout.trim().split('\n');
-
-  // Remove AppRegistry logs at the end
-  while (
-    outputArray.length > 0 &&
-    outputArray[outputArray.length - 1].startsWith('Running "')
-  ) {
-    outputArray.pop();
-  }
+  const outputArray = stdout
+    .trim()
+    .split('\n')
+    .filter(log => !log.startsWith('Running "')); // remove AppRegistry logs.
 
   // The last line should be the test output in JSON format
   const testResultJSON = outputArray.pop();
@@ -63,15 +61,17 @@ function parseRNTesterCommandResult(
 }
 
 function getBuckModeForPlatform() {
+  const mode = ENABLE_OPTIMIZED_MODE ? 'opt' : 'dev';
+
   switch (os.platform()) {
     case 'linux':
-      return '@//arvr/mode/linux/dev';
+      return `@//arvr/mode/linux/${mode}`;
     case 'darwin':
       return os.arch() === 'arm64'
-        ? '@//arvr/mode/mac-arm/dev'
-        : '@//arvr/mode/mac/dev';
+        ? `@//arvr/mode/mac-arm/${mode}`
+        : `@//arvr/mode/mac/${mode}`;
     case 'win32':
-      return '@//arvr/mode/win/dev';
+      return `@//arvr/mode/win/${mode}`;
     default:
       throw new Error(`Unsupported platform: ${os.platform()}`);
   }
@@ -79,6 +79,55 @@ function getBuckModeForPlatform() {
 
 function getShortHash(contents: string): string {
   return crypto.createHash('md5').update(contents).digest('hex').slice(0, 8);
+}
+
+function generateBytecodeBundle({
+  sourcePath,
+  bytecodePath,
+}: {
+  sourcePath: string,
+  bytecodePath: string,
+}): void {
+  const hermesCompilerCommandArgs = [
+    'run',
+    getBuckModeForPlatform(),
+    '//xplat/hermes/tools/hermesc:hermesc',
+    '--',
+    '-emit-binary',
+    '-O',
+    '-max-diagnostic-width',
+    '80',
+    '-out',
+    bytecodePath,
+    sourcePath,
+  ];
+
+  const hermesCompilerCommandResult = spawnSync(
+    'buck2',
+    hermesCompilerCommandArgs,
+    {
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+      },
+    },
+  );
+
+  if (hermesCompilerCommandResult.status !== 0) {
+    throw new Error(
+      [
+        'Failed to run Hermes compiler. Full output:',
+        'buck2 ' + hermesCompilerCommandArgs.join(' '),
+        'stdout:',
+        hermesCompilerCommandResult.stdout,
+        'stderr:',
+        hermesCompilerCommandResult.stderr,
+        'error:',
+        hermesCompilerCommandResult.error,
+      ].join('\n'),
+    );
+  }
 }
 
 module.exports = async function runTest(
@@ -90,6 +139,8 @@ module.exports = async function runTest(
 ): mixed {
   const startTime = Date.now();
 
+  const isOptimizedMode = ENABLE_OPTIMIZED_MODE;
+
   const metroConfig = await Metro.loadConfig({
     config: path.resolve(__dirname, '..', 'config', 'metro.config.js'),
   });
@@ -97,8 +148,8 @@ module.exports = async function runTest(
   const setupModulePath = path.resolve(__dirname, '../runtime/setup.js');
 
   const entrypointContents = entrypointTemplate({
-    testPath: `.${path.sep}${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
-    setupModulePath: `.${path.sep}${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
+    testPath: `${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
+    setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
   });
 
   const entrypointPath = path.join(
@@ -106,24 +157,34 @@ module.exports = async function runTest(
     `${getShortHash(entrypointContents)}-${path.basename(testPath)}`,
   );
   const testBundlePath = entrypointPath + '.bundle';
+  const testJSBundlePath = testBundlePath + '.js';
+  const testBytecodeBundlePath = testJSBundlePath + '.hbc';
 
   fs.mkdirSync(path.dirname(entrypointPath), {recursive: true});
   fs.writeFileSync(entrypointPath, entrypointContents, 'utf8');
 
   await Metro.runBuild(metroConfig, {
     entry: entrypointPath,
-    out: testBundlePath,
+    out: testJSBundlePath,
     platform: 'android',
-    minify: false,
-    dev: true,
+    minify: isOptimizedMode,
+    dev: !isOptimizedMode,
   });
+
+  if (isOptimizedMode) {
+    generateBytecodeBundle({
+      sourcePath: testJSBundlePath,
+      bytecodePath: testBytecodeBundlePath,
+    });
+  }
 
   const rnTesterCommandArgs = [
     'run',
     getBuckModeForPlatform(),
     '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
     '--',
-    `--bundlePath=${testBundlePath}`,
+    '--bundlePath',
+    testBundlePath,
   ];
   const rnTesterCommandResult = spawnSync('buck2', rnTesterCommandArgs, {
     encoding: 'utf8',
@@ -137,6 +198,21 @@ module.exports = async function runTest(
     throw new Error(
       [
         'Failed to run test in RN tester binary. Full output:',
+        'buck2 ' + rnTesterCommandArgs.join(' '),
+        'stdout:',
+        rnTesterCommandResult.stdout,
+        'stderr:',
+        rnTesterCommandResult.stderr,
+        'error:',
+        rnTesterCommandResult.error,
+      ].join('\n'),
+    );
+  }
+
+  if (PRINT_FANTOM_OUTPUT) {
+    console.log(
+      [
+        'RN tester binary. Full output:',
         'buck2 ' + rnTesterCommandArgs.join(' '),
         'stdout:',
         rnTesterCommandResult.stdout,

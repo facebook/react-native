@@ -15,9 +15,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -34,7 +32,6 @@ import com.facebook.react.R;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -54,7 +51,6 @@ import com.facebook.react.uimanager.ReactZIndexedViewGroup;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
-import com.facebook.react.uimanager.drawable.CSSBackgroundDrawable;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
@@ -74,7 +70,6 @@ public class ReactViewGroup extends ViewGroup
         ReactOverflowViewWithInset {
 
   private static final int ARRAY_CAPACITY_INCREMENT = 12;
-  private static final int DEFAULT_BACKGROUND_COLOR = Color.TRANSPARENT;
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
   private final Rect mOverflowInset = new Rect();
 
@@ -131,13 +126,11 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable Rect mClippingRect;
   private @Nullable Rect mHitSlopRect;
   private Overflow mOverflow;
-  private PointerEvents mPointerEvents;
+  private PointerEvents mPointerEvents = PointerEvents.AUTO;
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
-  private @Nullable CSSBackgroundDrawable mCSSBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
   private boolean mNeedsOffscreenAlphaCompositing;
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
-  private @Nullable Path mPath;
   private float mBackfaceOpacity;
   private String mBackfaceVisibility;
   private boolean mIsTransitioning = false;
@@ -171,11 +164,9 @@ public class ReactViewGroup extends ViewGroup
     mOverflow = Overflow.VISIBLE;
     mPointerEvents = PointerEvents.AUTO;
     mChildrenLayoutChangeListener = null;
-    mCSSBackgroundDrawable = null;
     mOnInterceptTouchEventListener = null;
     mNeedsOffscreenAlphaCompositing = false;
     mDrawingOrderHelper = null;
-    mPath = null;
     mBackfaceOpacity = 1.f;
     mBackfaceVisibility = "visible";
   }
@@ -269,7 +260,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @Override
-  public boolean onTouchEvent(MotionEvent ev) {
+  public boolean onTouchEvent(MotionEvent event) {
     // We do not accept the touch event if this view is not supposed to receive it.
     if (!PointerEvents.canBeTouchTarget(mPointerEvents)) {
       return false;
@@ -325,7 +316,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   /**
-   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, Float)} instead.
+   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, LengthPercentage)} instead.
    */
   @Deprecated(since = "0.75.0", forRemoval = true)
   public void setBorderRadius(float borderRadius) {
@@ -333,7 +324,7 @@ public class ReactViewGroup extends ViewGroup
   }
 
   /**
-   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, Float)} instead.
+   * @deprecated Use {@link #setBorderRadius(BorderRadiusProp, LengthPercentage)} instead.
    */
   @Deprecated(since = "0.75.0", forRemoval = true)
   public void setBorderRadius(float borderRadius, int position) {
@@ -453,7 +444,7 @@ public class ReactViewGroup extends ViewGroup
                 + mRecycleCount,
             e);
       }
-      if (mAllChildren[i].getParent() == null) {
+      if (isViewClipped(mAllChildren[i])) {
         clippedSoFar++;
       }
     }
@@ -475,12 +466,12 @@ public class ReactViewGroup extends ViewGroup
     // it won't be size and located properly.
     Animation animation = child.getAnimation();
     boolean isAnimating = animation != null && !animation.hasEnded();
-    if (!intersects && child.getParent() != null && !isAnimating) {
+    if (!intersects && !isViewClipped(child) && !isAnimating) {
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
       removeViewInLayout(child);
       needUpdateClippingRecursive = true;
-    } else if (intersects && child.getParent() == null) {
+    } else if (intersects && isViewClipped(child)) {
       addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
@@ -512,7 +503,7 @@ public class ReactViewGroup extends ViewGroup
             subview.getLeft(), subview.getTop(), subview.getRight(), subview.getBottom());
 
     // If it was intersecting before, should be attached to the parent
-    boolean oldIntersects = (subview.getParent() != null);
+    boolean oldIntersects = !isViewClipped(subview);
 
     if (intersects != oldIntersects) {
       int clippedSoFar = 0;
@@ -521,16 +512,11 @@ public class ReactViewGroup extends ViewGroup
           updateSubviewClipStatus(mClippingRect, i, clippedSoFar);
           break;
         }
-        if (mAllChildren[i].getParent() == null) {
+        if (isViewClipped(mAllChildren[i])) {
           clippedSoFar++;
         }
       }
     }
-  }
-
-  @Override
-  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
-    return super.getChildVisibleRect(child, r, offset);
   }
 
   @Override
@@ -558,83 +544,38 @@ public class ReactViewGroup extends ViewGroup
     return ViewUtil.getUIManagerType(getId()) == UIManagerType.FABRIC;
   }
 
-  private void handleAddView(View view) {
+  @Override
+  public void onViewAdded(View child) {
     UiThreadUtil.assertOnUiThread();
 
     if (!customDrawOrderDisabled()) {
-      getDrawingOrderHelper().handleAddView(view);
+      getDrawingOrderHelper().handleAddView(child);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
+    super.onViewAdded(child);
   }
 
-  private void handleRemoveView(@Nullable View view) {
+  @Override
+  public void onViewRemoved(View child) {
     UiThreadUtil.assertOnUiThread();
 
     if (!customDrawOrderDisabled()) {
-      if (indexOfChild(view) == -1) {
+      if (indexOfChild(child) == -1) {
         return;
       }
-      getDrawingOrderHelper().handleRemoveView(view);
+      getDrawingOrderHelper().handleRemoveView(child);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
-  }
 
-  private void handleRemoveViews(int start, int count) {
-    int endIndex = start + count;
-    for (int index = start; index < endIndex; index++) {
-      if (index < getChildCount()) {
-        handleRemoveView(getChildAt(index));
-      }
+    if (mIsTransitioning && mChildrenRemovedWhileTransitioning != null) {
+      mChildrenRemovedWhileTransitioning.add(child.getId());
     }
-  }
 
-  @Override
-  public void addView(View child, int index, @Nullable ViewGroup.LayoutParams params) {
-    // This will get called for every overload of addView so there is not need to override every
-    // method.
-    handleAddView(child);
-    super.addView(child, index, params);
-  }
-
-  @Override
-  protected boolean addViewInLayout(
-      View child, int index, LayoutParams params, boolean preventRequestLayout) {
-    handleAddView(child);
-    return super.addViewInLayout(child, index, params, preventRequestLayout);
-  }
-
-  @Override
-  public void removeView(@Nullable View view) {
-    handleRemoveView(view);
-    super.removeView(view);
-  }
-
-  @Override
-  public void removeViewAt(int index) {
-    handleRemoveView(getChildAt(index));
-    super.removeViewAt(index);
-  }
-
-  @Override
-  public void removeViewInLayout(View view) {
-    handleRemoveView(view);
-    super.removeViewInLayout(view);
-  }
-
-  @Override
-  public void removeViewsInLayout(int start, int count) {
-    handleRemoveViews(start, count);
-    super.removeViewsInLayout(start, count);
-  }
-
-  @Override
-  public void removeViews(int start, int count) {
-    handleRemoveViews(start, count);
-    super.removeViews(start, count);
+    super.onViewRemoved(child);
   }
 
   @Override
@@ -708,18 +649,18 @@ public class ReactViewGroup extends ViewGroup
   /*package*/ void addViewWithSubviewClippingEnabled(
       final View child, int index, ViewGroup.LayoutParams params) {
     Assertions.assertCondition(mRemoveClippedSubviews);
-    Assertions.assertNotNull(mClippingRect);
-    Assertions.assertNotNull(mAllChildren);
+    Rect clippingRect = Assertions.assertNotNull(mClippingRect);
+    View[] childArray = Assertions.assertNotNull(mAllChildren);
     addInArray(child, index);
     // we add view as "clipped" and then run {@link #updateSubviewClipStatus} to conditionally
     // attach it
     int clippedSoFar = 0;
     for (int i = 0; i < index; i++) {
-      if (mAllChildren[i].getParent() == null) {
+      if (isViewClipped(childArray[i])) {
         clippedSoFar++;
       }
     }
-    updateSubviewClipStatus(mClippingRect, index, clippedSoFar);
+    updateSubviewClipStatus(clippingRect, index, clippedSoFar);
     child.addOnLayoutChangeListener(mChildrenLayoutChangeListener);
 
     if (child instanceof ReactClippingProhibitedView) {
@@ -750,17 +691,16 @@ public class ReactViewGroup extends ViewGroup
     UiThreadUtil.assertOnUiThread();
     Assertions.assertCondition(mRemoveClippedSubviews);
     Assertions.assertNotNull(mClippingRect);
-    Assertions.assertNotNull(mAllChildren);
     Assertions.assertNotNull(mChildrenRemovedWhileTransitioning);
 
-    handleRemoveView(view);
+    View[] childArray = Assertions.assertNotNull(mAllChildren);
     view.removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
 
     int index = indexOfChildInAllChildren(view);
-    if (view.getParent() != null && !mChildrenRemovedWhileTransitioning.contains(view.getId())) {
+    if (!isViewClipped(childArray[index])) {
       int clippedSoFar = 0;
       for (int i = 0; i < index; i++) {
-        if (mAllChildren[i].getParent() == null || mChildrenRemovedWhileTransitioning.contains(mAllChildren[i].getId())) {
+        if (isViewClipped(childArray[i])) {
           clippedSoFar++;
         }
       }
@@ -772,19 +712,26 @@ public class ReactViewGroup extends ViewGroup
 
   /*package*/ void removeAllViewsWithSubviewClippingEnabled() {
     Assertions.assertCondition(mRemoveClippedSubviews);
-    Assertions.assertNotNull(mAllChildren);
+    View[] childArray = Assertions.assertNotNull(mAllChildren);
     for (int i = 0; i < mAllChildrenCount; i++) {
-      mAllChildren[i].removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
+      childArray[i].removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
     }
     removeAllViewsInLayout();
     mAllChildrenCount = 0;
   }
 
+  /**
+   * @return {@code true} if the view has been removed from the ViewGroup.
+   */
+  private boolean isViewClipped(View view) {
+    return view.getParent() == null || (mChildrenRemovedWhileTransitioning != null && mChildrenRemovedWhileTransitioning.contains(view.getId()));
+  }
+
   private int indexOfChildInAllChildren(View child) {
     final int count = mAllChildrenCount;
-    final View[] children = Assertions.assertNotNull(mAllChildren);
+    final View[] childArray = Assertions.assertNotNull(mAllChildren);
     for (int i = 0; i < count; i++) {
-      if (children[i] == child) {
+      if (childArray[i] == child) {
         return i;
       }
     }
@@ -792,26 +739,26 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private void addInArray(View child, int index) {
-    View[] children = Assertions.assertNotNull(mAllChildren);
+    View[] childArray = Assertions.assertNotNull(mAllChildren);
     final int count = mAllChildrenCount;
-    final int size = children.length;
+    final int size = childArray.length;
     if (index == count) {
       if (size == count) {
         mAllChildren = new View[size + ARRAY_CAPACITY_INCREMENT];
-        System.arraycopy(children, 0, mAllChildren, 0, size);
-        children = mAllChildren;
+        System.arraycopy(childArray, 0, mAllChildren, 0, size);
+        childArray = mAllChildren;
       }
-      children[mAllChildrenCount++] = child;
+      childArray[mAllChildrenCount++] = child;
     } else if (index < count) {
       if (size == count) {
         mAllChildren = new View[size + ARRAY_CAPACITY_INCREMENT];
-        System.arraycopy(children, 0, mAllChildren, 0, index);
-        System.arraycopy(children, index, mAllChildren, index + 1, count - index);
-        children = mAllChildren;
+        System.arraycopy(childArray, 0, mAllChildren, 0, index);
+        System.arraycopy(childArray, index, mAllChildren, index + 1, count - index);
+        childArray = mAllChildren;
       } else {
-        System.arraycopy(children, index, children, index + 1, count - index);
+        System.arraycopy(childArray, index, childArray, index + 1, count - index);
       }
-      children[index] = child;
+      childArray[index] = child;
       mAllChildrenCount++;
     } else {
       throw new IndexOutOfBoundsException("index=" + index + " count=" + count);
@@ -819,13 +766,13 @@ public class ReactViewGroup extends ViewGroup
   }
 
   private void removeFromArray(int index) {
-    final View[] children = Assertions.assertNotNull(mAllChildren);
+    final View[] childArray = Assertions.assertNotNull(mAllChildren);
     final int count = mAllChildrenCount;
     if (index == count - 1) {
-      children[--mAllChildrenCount] = null;
+      childArray[--mAllChildrenCount] = null;
     } else if (index >= 0 && index < count) {
-      System.arraycopy(children, index + 1, children, index, count - index - 1);
-      children[--mAllChildrenCount] = null;
+      System.arraycopy(childArray, index + 1, childArray, index, count - index - 1);
+      childArray[--mAllChildrenCount] = null;
     } else {
       throw new IndexOutOfBoundsException();
     }
@@ -839,12 +786,6 @@ public class ReactViewGroup extends ViewGroup
     }
 
     return false;
-  }
-
-  @VisibleForTesting
-  public int getBackgroundColor() {
-    @Nullable Integer color = BackgroundStyleApplicator.getBackgroundColor(this);
-    return color == null ? DEFAULT_BACKGROUND_COLOR : color;
   }
 
   @Override

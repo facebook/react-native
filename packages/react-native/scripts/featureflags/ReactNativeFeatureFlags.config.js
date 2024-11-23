@@ -54,15 +54,6 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
-    allowRecursiveCommitsWithSynchronousMountOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-05-30',
-        description:
-          'Adds support for recursively processing commits that mount synchronously (Android only).',
-        purpose: 'experimentation',
-      },
-    },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
       defaultValue: true,
       metadata: {
@@ -169,6 +160,15 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.',
         purpose: 'release',
+      },
+    },
+    enableFixForViewCommandRace: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-14',
+        description:
+          'Synchronise the view command dispatching with mounting of new transaction',
+        purpose: 'experimentation',
       },
     },
     enableGranularShadowTreeStateReconciliation: {
@@ -343,14 +343,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    setAndroidLayoutDirection: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-05-17',
-        description: 'Propagate layout direction to Android views.',
-        purpose: 'experimentation',
-      },
-    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {
@@ -468,6 +460,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    disableInteractionManagerInBatchinator: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-18',
+        description:
+          'Skips InteractionManager in `Batchinator` and invokes callbacks synchronously.',
+        purpose: 'experimentation',
+      },
+    },
     enableAccessToHostTreeInFabric: {
       defaultValue: false,
       metadata: {
@@ -499,15 +500,6 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
         purpose: 'release',
-      },
-    },
-    enableOptimisedVirtualizedCells: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-08-21',
-        description:
-          'Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option',
-        purpose: 'experimentation',
       },
     },
     isLayoutAnimationEnabled: {
@@ -550,15 +542,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-03-05',
         description: 'Enables use of setNativeProps in JS driven animations.',
-        purpose: 'experimentation',
-      },
-    },
-    shouldUseSetNativePropsInNativeAnimationsInFabric: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-03-05',
-        description:
-          'Enables use of setNativeProps in Native driven animations in Fabric.',
         purpose: 'experimentation',
       },
     },

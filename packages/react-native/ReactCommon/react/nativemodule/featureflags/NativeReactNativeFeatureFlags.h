@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a31d80cd12e1705dc076068e64d36a01>>
+ * @generated SignedSource<<b42cf9d00bd5b0d01f3d14b633771201>>
  */
 
 /**
@@ -39,8 +39,6 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
 
-  bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
-
   bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
 
   bool disableEventLoopOnBridgeless(jsi::Runtime& runtime);
@@ -66,6 +64,8 @@ class NativeReactNativeFeatureFlags
   bool enableFabricRenderer(jsi::Runtime& runtime);
 
   bool enableFabricRendererExclusively(jsi::Runtime& runtime);
+
+  bool enableFixForViewCommandRace(jsi::Runtime& runtime);
 
   bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
 
@@ -106,8 +106,6 @@ class NativeReactNativeFeatureFlags
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
 
   bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
-
-  bool setAndroidLayoutDirection(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 

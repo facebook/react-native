@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.common;
+package com.facebook.react.common
 
 /**
  * Interface for handling a surface in React Native. In mobile platform a surface can be any
- * container that holds some {@link View}. For example, a Dialog can be a surface to wrap content
- * view object as needed. In VR platform, a surface is provided by Shell panel app sdk, which
- * requires custom logic to show/hide. NativeModules requires a surface will delegate interactions
- * with the surface to a SurfaceDelegate.
+ * container that holds some [View]. For example, a Dialog can be a surface to wrap content view
+ * object as needed. In VR platform, a surface is provided by Shell panel app sdk, which requires
+ * custom logic to show/hide. NativeModules requires a surface will delegate interactions with the
+ * surface to a SurfaceDelegate.
  */
 public interface SurfaceDelegate {
   /**
@@ -20,24 +20,24 @@ public interface SurfaceDelegate {
    *
    * @param appKey
    */
-  void createContentView(String appKey);
+  public fun createContentView(appKey: String): Unit
 
   /**
    * Check if the content view is created and ready to be shown
    *
    * @return true if the content view is ready to be shown
    */
-  boolean isContentViewReady();
+  public fun isContentViewReady(): Boolean
 
   /** Destroy the React content view to avoid memory leak */
-  void destroyContentView();
+  public fun destroyContentView(): Unit
 
   /** Show the surface containing the React content view */
-  void show();
+  public fun show(): Unit
 
   /** Hide the surface containing the React content view */
-  void hide();
+  public fun hide(): Unit
 
   /** Check if the surface is currently showing */
-  boolean isShowing();
+  public fun isShowing(): Boolean
 }
