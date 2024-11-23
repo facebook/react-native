@@ -140,6 +140,9 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable Path mPath;
   private float mBackfaceOpacity;
   private String mBackfaceVisibility;
+  private boolean mIsTransitioning = false;
+  private @Nullable Set<Integer> mChildrenRemovedWhileTransitioning = null;
+
 
   /**
    * Creates a new `ReactViewGroup` instance.
@@ -369,12 +372,14 @@ public class ReactViewGroup extends ViewGroup
         mAllChildren[i] = child;
         child.addOnLayoutChangeListener(mChildrenLayoutChangeListener);
       }
+      mChildrenRemovedWhileTransitioning = new HashSet<>();
       updateClippingRect();
     } else {
       // Add all clipped views back, deallocate additional arrays, remove layoutChangeListener
       Assertions.assertNotNull(mClippingRect);
       Assertions.assertNotNull(mAllChildren);
       Assertions.assertNotNull(mChildrenLayoutChangeListener);
+      Assertions.assertNotNull(mChildrenRemovedWhileTransitioning);
       for (int i = 0; i < mAllChildrenCount; i++) {
         mAllChildren[i].removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
       }
@@ -384,6 +389,7 @@ public class ReactViewGroup extends ViewGroup
       mClippingRect = null;
       mAllChildrenCount = 0;
       mChildrenLayoutChangeListener = null;
+      mChildrenRemovedWhileTransitioning = null;
     }
   }
 
@@ -409,6 +415,23 @@ public class ReactViewGroup extends ViewGroup
     ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
     updateClippingToRect(mClippingRect);
   }
+
+    @Override
+  public void startViewTransition(View view) {
+    super.startViewTransition(view);
+    mIsTransitioning = true;
+  }
+
+  @Override
+  public void endViewTransition(View view) {
+    super.endViewTransition(view);
+    mIsTransitioning = false;
+    if (mChildrenRemovedWhileTransitioning != null) {
+      mChildrenRemovedWhileTransitioning.clear();
+      mChildrenRemovedWhileTransitioning = null;
+    }
+  }
+
 
   private void updateClippingToRect(Rect clippingRect) {
     Assertions.assertNotNull(mAllChildren);
@@ -723,24 +746,28 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
-  /*package*/ void removeViewWithSubviewClippingEnabled(View view, boolean viewRemovedFromParent) {
+  /*package*/ void removeViewWithSubviewClippingEnabled(View view) {
     UiThreadUtil.assertOnUiThread();
-
     Assertions.assertCondition(mRemoveClippedSubviews);
     Assertions.assertNotNull(mClippingRect);
     Assertions.assertNotNull(mAllChildren);
+    Assertions.assertNotNull(mChildrenRemovedWhileTransitioning);
+
+    handleRemoveView(view);
     view.removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
+
     int index = indexOfChildInAllChildren(view);
-    if (!viewRemovedFromParent && mAllChildren[index].getParent() != null) {
+    if (view.getParent() != null && !mChildrenRemovedWhileTransitioning.contains(view.getId())) {
       int clippedSoFar = 0;
       for (int i = 0; i < index; i++) {
-        if (mAllChildren[i].getParent() == null) {
+        if (mAllChildren[i].getParent() == null || mChildrenRemovedWhileTransitioning.contains(mAllChildren[i].getId())) {
           clippedSoFar++;
         }
       }
       removeViewsInLayout(index - clippedSoFar, 1);
     }
     removeFromArray(index);
+
   }
 
   /*package*/ void removeAllViewsWithSubviewClippingEnabled() {
