@@ -421,7 +421,6 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
-
   private void updateClippingToRect(Rect clippingRect) {
     Assertions.assertNotNull(mAllChildren);
     int clippedSoFar = 0;
