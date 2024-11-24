@@ -689,8 +689,8 @@ public class ReactViewGroup extends ViewGroup
     Assertions.assertCondition(mRemoveClippedSubviews);
     Assertions.assertNotNull(mClippingRect);
     Assertions.assertNotNull(mChildrenRemovedWhileTransitioning);
-
     View[] childArray = Assertions.assertNotNull(mAllChildren);
+
     view.removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
 
     int index = indexOfChildInAllChildren(view);
