@@ -377,6 +377,7 @@ public class com/facebook/react/ReactRootView : android/widget/FrameLayout, com/
 	protected fun dispatchJSPointerEvent (Landroid/view/MotionEvent;Z)V
 	protected fun dispatchJSTouchEvent (Landroid/view/MotionEvent;)V
 	public fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
+	protected fun drawChild (Landroid/graphics/Canvas;Landroid/view/View;J)Z
 	protected fun finalize ()V
 	public fun getAppProperties ()Landroid/os/Bundle;
 	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
