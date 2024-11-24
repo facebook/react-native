@@ -136,7 +136,6 @@ public class ReactViewGroup extends ViewGroup
   private boolean mIsTransitioning = false;
   private @Nullable Set<Integer> mChildrenRemovedWhileTransitioning = null;
 
-
   /**
    * Creates a new `ReactViewGroup` instance.
    *
@@ -418,7 +417,6 @@ public class ReactViewGroup extends ViewGroup
     super.endViewTransition(view);
     mIsTransitioning = false;
     if (mChildrenRemovedWhileTransitioning != null) {
-      mChildrenRemovedWhileTransitioning.clear();
       mChildrenRemovedWhileTransitioning = null;
     }
   }
@@ -707,7 +705,6 @@ public class ReactViewGroup extends ViewGroup
       removeViewsInLayout(index - clippedSoFar, 1);
     }
     removeFromArray(index);
-
   }
 
   /*package*/ void removeAllViewsWithSubviewClippingEnabled() {

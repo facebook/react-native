@@ -67,7 +67,6 @@ public abstract class ReactClippingViewManager<T : ReactViewGroup> : ViewGroupMa
     } else {
       parent.removeViewAt(index)
     }
-
   }
 
   override fun removeAllViews(parent: T) {
