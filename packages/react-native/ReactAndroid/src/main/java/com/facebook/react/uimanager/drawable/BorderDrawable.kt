@@ -138,7 +138,7 @@ internal class BorderDrawable(
   @Deprecated("Deprecated in Java")
   override fun getOpacity(): Int {
     val maxBorderAlpha =
-        minOf(
+        maxOf(
             (Color.alpha(multiplyColorAlpha(computedBorderColors.left, borderAlpha))),
             (Color.alpha(multiplyColorAlpha(computedBorderColors.top, borderAlpha))),
             (Color.alpha(multiplyColorAlpha(computedBorderColors.right, borderAlpha))),
