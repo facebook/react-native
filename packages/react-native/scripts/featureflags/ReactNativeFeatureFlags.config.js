@@ -188,6 +188,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    enableImagePrefetchingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-19',
+        description:
+          'When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout',
+        purpose: 'experimentation',
+      },
+    },
     enableLayoutAnimationsOnAndroid: {
       defaultValue: false,
       metadata: {
