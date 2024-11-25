@@ -14,7 +14,7 @@ public class ShadowStyleSpan(
     private val dx: Float,
     private val dy: Float,
     private val radius: Float,
-    private val color: Int
+    public val color: Int
 ) : CharacterStyle(), ReactSpan {
   public override fun updateDrawState(textPaint: TextPaint) {
     textPaint.setShadowLayer(radius, dx, dy, color)
