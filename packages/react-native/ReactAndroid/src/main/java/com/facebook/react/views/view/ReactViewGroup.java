@@ -851,6 +851,7 @@ public class ReactViewGroup extends ViewGroup
 
     BlendMode mixBlendMode = null;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        && ViewUtil.getUIManagerType(this) == UIManagerType.FABRIC
         && BlendModeHelper.needsIsolatedLayer(this)) {
       mixBlendMode = (BlendMode) child.getTag(R.id.mix_blend_mode);
       if (mixBlendMode != null) {
