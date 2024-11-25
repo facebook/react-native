@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<83b5798ee1c7a28fffbf110e19641d69>>
+ * @generated SignedSource<<42e14ee5e2201b2fcbf9fe550e5165a6>>
  * @flow strict
  */
 
@@ -67,6 +67,7 @@ export type ReactNativeFeatureFlags = {
   enableFixForViewCommandRace: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
+  enableImagePrefetchingAndroid: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
@@ -249,6 +250,10 @@ export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = crea
  * iOS Views will clip to their padding box vs border box
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
+/**
+ * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+ */
+export const enableImagePrefetchingAndroid: Getter<boolean> = createNativeFlagGetter('enableImagePrefetchingAndroid', false);
 /**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */
