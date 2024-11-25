@@ -403,8 +403,9 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(outlineOffset);
     RAW_SET_PROP_SWITCH_CASE_BASIC(outlineStyle);
     RAW_SET_PROP_SWITCH_CASE_BASIC(outlineWidth);
-    RAW_SET_PROP_SWITCH_CASE(filter, "filter");
-    RAW_SET_PROP_SWITCH_CASE(boxShadow, "boxShadow");
+    RAW_SET_PROP_SWITCH_CASE_BASIC(filter);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(boxShadow);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(mixBlendMode);
     // events field
     VIEW_EVENT_CASE(PointerEnter);
     VIEW_EVENT_CASE(PointerEnterCapture);
