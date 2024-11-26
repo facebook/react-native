@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<42e14ee5e2201b2fcbf9fe550e5165a6>>
+ * @generated SignedSource<<38ad29621eeb29a9f82735dc187c13d4>>
  * @flow strict
  */
 
@@ -36,6 +36,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   enableAnimatedAllowlist: Getter<boolean>,
   enableAnimatedClearImmediateFix: Getter<boolean>,
   enableAnimatedPropsMemo: Getter<boolean>,
+  fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
@@ -142,6 +143,11 @@ export const enableAnimatedClearImmediateFix: Getter<boolean> = createJavaScript
  * Enables Animated to analyze props to minimize invalidating `AnimatedProps`.
  */
 export const enableAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedPropsMemo', true);
+
+/**
+ * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
+ */
+export const fixVirtualizeListCollapseWindowSize: Getter<boolean> = createJavaScriptFlagGetter('fixVirtualizeListCollapseWindowSize', false);
 
 /**
  * Function used to enable / disabled Layout Animations in React Native.
