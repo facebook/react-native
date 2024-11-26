@@ -43,14 +43,8 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
 
   public open var debugServerHttpProtocol: String
     get() {
-      // Check host setting first. If empty try to detect emulator type and use default
-      // hostname for those
       val tlsFromSettings = preferences.getBoolean(PREFS_DEBUG_SERVER_TLS_KEY, false)
-      if (tlsFromSettings) {
-        return "https"
-      }
-
-      return "http"
+      return if (tlsFromSettings) "https" else "http"
     }
 
   public open var debugServerWsProtocol: String
