@@ -144,8 +144,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 {
   std::lock_guard<std::mutex> lock(_invalidationMutex);
   _valid = false;
-  if (self->_reactInstance) {
-    self->_reactInstance->unregisterFromInspector();
+  if (_reactInstance) {
+    _reactInstance->unregisterFromInspector();
   }
   [_surfacePresenter suspend];
   [_jsThreadManager dispatchToJSThread:^{
@@ -208,6 +208,15 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 
   return nullptr;
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  if ([_appTMMDelegate respondsToSelector:@selector(extraModulesForBridge:)]) {
+    return [_appTMMDelegate extraModulesForBridge:nil];
+  }
+
+  return @[];
 }
 
 #pragma mark - Private

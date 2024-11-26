@@ -199,10 +199,19 @@ class EventNestedObjectPropsNativeComponentViewEventEmitter : public ViewEventEm
       std::string url;
     };
 
+  struct OnChangeLocationArrayOfObjectsValue {
+      std::string str;
+    };
+
+  struct OnChangeLocationArrayOfObjects {
+      OnChangeLocationArrayOfObjectsValue value;
+    };
+
   struct OnChangeLocation {
       OnChangeLocationSource source;
     int x;
     int y;
+    std::vector<OnChangeLocationArrayOfObjects> arrayOfObjects;
     };
 
   struct OnChange {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2dd3e32b571ae171bd5621424116188b>>
+ * @generated SignedSource<<2787d9027695dd14ec6b917a32a1a6de>>
  */
 
 /**
@@ -24,8 +24,6 @@ import com.facebook.proguard.annotations.DoNotStrip
 @DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
-
-  @DoNotStrip public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
 
@@ -53,9 +51,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFabricRendererExclusively(): Boolean
 
+  @DoNotStrip public fun enableFixForViewCommandRace(): Boolean
+
   @DoNotStrip public fun enableGranularShadowTreeStateReconciliation(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
+
+  @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
@@ -92,8 +94,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
 
   @DoNotStrip public fun loadVectorDrawablesOnImages(): Boolean
-
-  @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

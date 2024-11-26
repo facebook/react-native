@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0656ed5b5317e6caf85605bba62d08d1>>
+ * @generated SignedSource<<35811667ac2543e1f64e27bbdb483ec1>>
  */
 
 /**
@@ -29,8 +29,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   }
 
   @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
 
@@ -58,9 +56,13 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableFabricRendererExclusively(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableFixForViewCommandRace(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableGranularShadowTreeStateReconciliation(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableImagePrefetchingAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnAndroid(): Boolean
 
@@ -97,8 +99,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun lazyAnimationCallbacks(): Boolean
 
   @DoNotStrip @JvmStatic public external fun loadVectorDrawablesOnImages(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun setAndroidLayoutDirection(): Boolean
 
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

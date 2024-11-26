@@ -23,8 +23,10 @@ import nullthrows from 'nullthrows';
 
 type ObserverState = {
   thresholds: $ReadOnlyArray<number>,
+  rootThresholds?: ?$ReadOnlyArray<number>,
   intersecting: boolean,
   currentThreshold: ?number,
+  currentRootThreshold: ?number,
 };
 
 type Observation = {
@@ -74,8 +76,10 @@ const NativeIntersectionObserverMock = {
       ...options,
       state: {
         thresholds: options.thresholds,
+        rootThresholds: options.rootThresholds,
         intersecting: false,
         currentThreshold: null,
+        currentRootThreshold: null,
       },
     };
     observations.push(observation);
@@ -141,9 +145,14 @@ const NativeIntersectionObserverMock = {
     if (observation.state.intersecting) {
       observation.state.intersecting = false;
       observation.state.currentThreshold = null;
+      observation.state.currentRootThreshold = null;
     } else {
       observation.state.intersecting = true;
       observation.state.currentThreshold = observation.thresholds[0];
+      observation.state.currentRootThreshold =
+        observation.rootThresholds != null
+          ? observation.rootThresholds[0]
+          : null;
     }
     pendingRecords.push(createRecordFromObservation(observation));
     setImmediate(notifyIntersectionObservers);

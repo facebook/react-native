@@ -49,6 +49,7 @@ const ActionSheetIOS = {
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
       +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
+      +disabledButtonTintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
       +disabledButtonIndices?: Array<number>,
     |},
@@ -64,6 +65,7 @@ const ActionSheetIOS = {
     const {
       tintColor,
       cancelButtonTintColor,
+      disabledButtonTintColor,
       destructiveButtonIndex,
       ...remainingOptions
     } = options;
@@ -77,6 +79,10 @@ const ActionSheetIOS = {
 
     const processedTintColor = processColor(tintColor);
     const processedCancelButtonTintColor = processColor(cancelButtonTintColor);
+    const processedDisabledButtonTintColor = processColor(
+      disabledButtonTintColor,
+    );
+
     invariant(
       processedTintColor == null || typeof processedTintColor === 'number',
       'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions tintColor',
@@ -86,6 +92,11 @@ const ActionSheetIOS = {
         typeof processedCancelButtonTintColor === 'number',
       'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions cancelButtonTintColor',
     );
+    invariant(
+      processedDisabledButtonTintColor == null ||
+        typeof processedDisabledButtonTintColor === 'number',
+      'Unexpected color given for ActionSheetIOS.showActionSheetWithOptions disabledButtonTintColor',
+    );
     RCTActionSheetManager.showActionSheetWithOptions(
       {
         ...remainingOptions,
@@ -93,6 +104,8 @@ const ActionSheetIOS = {
         tintColor: processedTintColor,
         // $FlowFixMe[incompatible-call]
         cancelButtonTintColor: processedCancelButtonTintColor,
+        // $FlowFixMe[incompatible-call]
+        disabledButtonTintColor: processedDisabledButtonTintColor,
         destructiveButtonIndices,
       },
       callback,

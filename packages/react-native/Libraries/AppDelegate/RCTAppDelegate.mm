@@ -19,6 +19,7 @@
 #import <react/renderer/graphics/ColorComponents.h>
 #import "RCTAppDelegate+Protected.h"
 #import "RCTAppSetupUtils.h"
+#import "RCTDependencyProvider.h"
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
@@ -33,14 +34,6 @@
 #import <ReactCommon/RCTJscInstance.h>
 #endif
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
-
-#if __has_include(<ReactCodegen/RCTThirdPartyComponentsProvider.h>)
-#define USE_OSS_CODEGEN 1
-#import <ReactCodegen/RCTThirdPartyComponentsProvider.h>
-#else
-// Meta internal system do not generate the RCTModulesConformingToProtocolsProvider.h file
-#define USE_OSS_CODEGEN 0
-#endif
 
 using namespace facebook::react;
 
@@ -236,18 +229,14 @@ using namespace facebook::react;
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
-  return RCTAppSetupDefaultModuleFromClass(moduleClass);
+  return RCTAppSetupDefaultModuleFromClass(moduleClass, self.dependencyProvider);
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
-#if USE_OSS_CODEGEN
-  return [RCTThirdPartyComponentsProvider thirdPartyFabricComponents];
-#else
-  return @{};
-#endif
+  return self.dependencyProvider ? self.dependencyProvider.thirdPartyFabricComponents : @{};
 }
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
@@ -322,6 +311,10 @@ class RCTAppDelegateBridgelessFeatureFlags : public ReactNativeFeatureFlagsDefau
     return true;
   }
   bool useNativeViewConfigsInBridgelessMode() override
+  {
+    return true;
+  }
+  bool enableFixForViewCommandRace() override
   {
     return true;
   }

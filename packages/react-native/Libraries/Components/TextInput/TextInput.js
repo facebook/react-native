@@ -1539,7 +1539,7 @@ function InternalTextInput(props: Props): React.Node {
 
   // TextInput handles onBlur and onFocus events
   // so omitting onBlur and onFocus pressability handlers here.
-  const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
+  const {onBlur, onFocus, ...eventHandlers} = usePressability(config);
 
   let _accessibilityState;
   if (

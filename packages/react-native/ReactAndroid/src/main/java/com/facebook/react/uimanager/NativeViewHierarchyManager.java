@@ -27,7 +27,6 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
@@ -178,9 +177,7 @@ public class NativeViewHierarchyManager {
     try {
       View viewToUpdate = resolveView(tag);
 
-      if (ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
-        viewToUpdate.setLayoutDirection(LayoutDirectionUtil.toAndroidFromYoga(layoutDirection));
-      }
+      viewToUpdate.setLayoutDirection(LayoutDirectionUtil.toAndroidFromYoga(layoutDirection));
 
       // Even though we have exact dimensions, we still call measure because some platform views
       // (e.g.

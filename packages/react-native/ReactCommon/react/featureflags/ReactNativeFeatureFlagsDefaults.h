@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eb86662c826d52dc1fb97d1bdb95766a>>
+ * @generated SignedSource<<aff3c46b8d2db3bde519e1392569d53d>>
  */
 
 /**
@@ -28,10 +28,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   ReactNativeFeatureFlagsDefaults() = default;
 
   bool commonTestFlag() override {
-    return false;
-  }
-
-  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
     return false;
   }
 
@@ -87,11 +83,19 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableFixForViewCommandRace() override {
+    return false;
+  }
+
   bool enableGranularShadowTreeStateReconciliation() override {
     return false;
   }
 
   bool enableIOSViewClipToPaddingBox() override {
+    return false;
+  }
+
+  bool enableImagePrefetchingAndroid() override {
     return false;
   }
 
@@ -165,10 +169,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool loadVectorDrawablesOnImages() override {
     return false;
-  }
-
-  bool setAndroidLayoutDirection() override {
-    return true;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

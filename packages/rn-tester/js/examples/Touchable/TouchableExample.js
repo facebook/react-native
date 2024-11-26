@@ -8,6 +8,8 @@
  * @flow
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {useEffect, useRef, useState} from 'react';
@@ -799,4 +801,4 @@ exports.examples = [
       return <TouchableDisabled />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

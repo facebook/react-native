@@ -331,25 +331,9 @@ public object ReactScrollViewHelper {
     val scrollPos = scrollState.lastStateUpdateScroll
     val scrollX = scrollPos.x
     val scrollY = scrollPos.y
-    val layoutDirection = scrollState.layoutDirection
-    val fabricScrollX =
-        if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
-          // getScrollX returns offset from left even when layout direction is RTL.
-          // The following line calculates offset from right.
-          val child = scrollView.getChildAt(0)
-          val contentWidth = child?.width ?: 0
-          -(contentWidth - scrollX - scrollView.width)
-        } else {
-          scrollX
-        }
     if (DEBUG_MODE) {
       FLog.i(
-          TAG,
-          "updateFabricScrollState[%d] scrollX %d scrollY %d fabricScrollX %d",
-          scrollView.id,
-          scrollX,
-          scrollY,
-          fabricScrollX)
+          TAG, "updateFabricScrollState[%d] scrollX %d scrollY %d", scrollView.id, scrollX, scrollY)
     }
     val stateWrapper = scrollView.stateWrapper
     if (stateWrapper != null) {
@@ -507,13 +491,7 @@ public object ReactScrollViewHelper {
     }
   }
 
-  public class ReactScrollViewScrollState(
-      /**
-       * Get the layout direction. Can be either scrollView.LAYOUT_DIRECTION_RTL (1) or
-       * scrollView.LAYOUT_DIRECTION_LTR (0). If the value is -1, it means unknown layout.
-       */
-      public val layoutDirection: Int
-  ) {
+  public class ReactScrollViewScrollState() {
 
     /** Get the position after current animation is finished */
     public val finalAnimatedPositionScroll: Point = Point()

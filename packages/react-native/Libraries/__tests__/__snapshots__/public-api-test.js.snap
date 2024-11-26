@@ -12,6 +12,7 @@ exports[`public API should not change unintentionally Libraries/ActionSheetIOS/A
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
       +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
+      +disabledButtonTintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
       +disabledButtonIndices?: Array<number>,
     |},
@@ -5608,12 +5609,7 @@ declare function create(
 declare const Presets: {
   easeInEaseOut: LayoutAnimationConfig,
   linear: LayoutAnimationConfig,
-  spring: {
-    duration: 700,
-    create: { type: \\"linear\\", property: \\"opacity\\" },
-    update: { type: \\"spring\\", springDamping: 0.4 },
-    delete: { type: \\"linear\\", property: \\"opacity\\" },
-  },
+  spring: LayoutAnimationConfig,
 };
 declare const LayoutAnimation: {
   configureNext: configureNext,
@@ -6902,49 +6898,6 @@ exports[`public API should not change unintentionally Libraries/Network/fetch.js
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/Colors.js 1`] = `
-"declare export default {
-  primary: \\"#1292B4\\",
-  white: \\"#FFF\\",
-  lighter: \\"#F3F3F3\\",
-  light: \\"#DAE1E7\\",
-  dark: \\"#444\\",
-  darker: \\"#222\\",
-  black: \\"#000\\",
-};
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/DebugInstructions.js 1`] = `
-"declare const DebugInstructions: () => Node;
-declare export default typeof DebugInstructions;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/Header.js 1`] = `
-"declare const Header: () => Node;
-declare export default typeof Header;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/HermesBadge.js 1`] = `
-"declare const HermesBadge: () => Node;
-declare export default typeof HermesBadge;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/LearnMoreLinks.js 1`] = `
-"declare const LinkList: () => Node;
-declare export default typeof LinkList;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/ReloadInstructions.js 1`] = `
-"declare const ReloadInstructions: () => Node;
-declare export default typeof ReloadInstructions;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/NewAppScreen/index.js 1`] = `
 "export {
   Colors,
@@ -7233,7 +7186,7 @@ exports[`public API should not change unintentionally Libraries/Pressability/Pre
 exports[`public API should not change unintentionally Libraries/Pressability/usePressability.js 1`] = `
 "declare export default function usePressability(
   config: ?PressabilityConfig
-): ?EventHandlers;
+): null | EventHandlers;
 "
 `;
 
@@ -8370,10 +8323,12 @@ declare module.exports: processAspectRatio;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/processBackgroundImage.js 1`] = `
-"type ParsedGradientValue = {
+"type LinearGradientDirection =
+  | { type: \\"angle\\", value: number }
+  | { type: \\"keyword\\", value: string };
+type ParsedGradientValue = {
   type: \\"linearGradient\\",
-  start: { x: number, y: number },
-  end: { x: number, y: number },
+  direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
     color: ProcessedColorValue,
     position: number,

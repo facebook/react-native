@@ -232,10 +232,6 @@ void JsErrorHandler::handleError(
 
   if (!ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() &&
       _isRuntimeReady) {
-    if (isFatal) {
-      _hasHandledFatalError = true;
-    }
-
     try {
       handleJSError(runtime, error, isFatal);
       return;
@@ -331,7 +327,8 @@ void JsErrorHandler::handleErrorWithCppPipeline(
   auto id = nextExceptionId();
 
   ParsedError parsedError = {
-      .message = _isRuntimeReady ? message : ("EarlyJsError: " + message),
+      .message =
+          _isRuntimeReady ? message : ("[runtime not ready]: " + message),
       .originalMessage = originalMessage,
       .name = name,
       .componentStack = componentStack,
@@ -387,6 +384,9 @@ void JsErrorHandler::handleErrorWithCppPipeline(
   }
 
   if (isFatal) {
+    if (_hasHandledFatalError) {
+      return;
+    }
     _hasHandledFatalError = true;
   }
 

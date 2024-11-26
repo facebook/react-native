@@ -14,6 +14,9 @@ import Pressability, {
 } from './Pressability';
 import {useEffect, useRef} from 'react';
 
+declare function usePressability(config: PressabilityConfig): EventHandlers;
+declare function usePressability(config: null | void): null | EventHandlers;
+
 /**
  * Creates a persistent instance of `Pressability` that automatically configures
  * itself and resets. Accepts null `config` to support lazy initialization. Once
@@ -28,7 +31,7 @@ import {useEffect, useRef} from 'react';
  */
 export default function usePressability(
   config: ?PressabilityConfig,
-): ?EventHandlers {
+): null | EventHandlers {
   const pressabilityRef = useRef<?Pressability>(null);
   if (config != null && pressabilityRef.current == null) {
     pressabilityRef.current = new Pressability(config);

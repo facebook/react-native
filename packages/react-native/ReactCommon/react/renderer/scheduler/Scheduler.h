@@ -139,6 +139,8 @@ class Scheduler final : public UIManagerDelegate {
    * Must not be nullptr.
    */
   ContextContainer::Shared contextContainer_;
+
+  RuntimeScheduler* runtimeScheduler_{nullptr};
 };
 
 } // namespace facebook::react

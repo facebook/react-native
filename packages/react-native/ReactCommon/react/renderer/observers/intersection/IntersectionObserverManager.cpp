@@ -19,6 +19,7 @@ void IntersectionObserverManager::observe(
     IntersectionObserverObserverId intersectionObserverId,
     const ShadowNode::Shared& shadowNode,
     std::vector<Float> thresholds,
+    std::optional<std::vector<Float>> rootThresholds,
     const UIManager& uiManager) {
   SystraceSection s("IntersectionObserverManager::observe");
 
@@ -34,7 +35,10 @@ void IntersectionObserverManager::observe(
 
     auto& observers = observersBySurfaceId_[surfaceId];
     observers.emplace_back(IntersectionObserver{
-        intersectionObserverId, shadowNode, std::move(thresholds)});
+        intersectionObserverId,
+        shadowNode,
+        std::move(thresholds),
+        std::move(rootThresholds)});
     observer = &observers.back();
   }
 

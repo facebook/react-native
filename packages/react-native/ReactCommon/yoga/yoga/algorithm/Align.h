@@ -37,8 +37,8 @@ constexpr Align fallbackAlignment(Align align) {
     case Align::Stretch:
       return Align::FlexStart;
 
-    // Fallback to safe center. TODO: This should be aligned to Start
-    // instead of FlexStart (for row-reverse containers)
+    // Fallback to safe center. TODO (T208209388): This should be aligned to
+    // Start instead of FlexStart (for row-reverse containers)
     case Align::SpaceAround:
     case Align::SpaceEvenly:
       return Align::FlexStart;
@@ -59,8 +59,8 @@ constexpr Justify fallbackAlignment(Justify align) {
       // case Justify::Stretch:
       return Justify::FlexStart;
 
-    // Fallback to safe center. TODO: This should be aligned to Start
-    // instead of FlexStart (for row-reverse containers)
+    // Fallback to safe center. TODO (T208209388): This should be aligned to
+    // Start instead of FlexStart (for row-reverse containers)
     case Justify::SpaceAround:
     case Justify::SpaceEvenly:
       return Justify::FlexStart;

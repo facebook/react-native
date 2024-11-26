@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import {fetchLocal} from './FetchUtils';
+import {requestLocal} from './FetchUtils';
 import {withServerForEachTest} from './ServerUtils';
 
 jest.useRealTimers();
@@ -22,11 +22,10 @@ describe('embedder script', () => {
   });
 
   test('is always served', async () => {
-    const resp = await fetchLocal(
+    const resp = await requestLocal(
       serverRef.serverBaseUrl +
         '/debugger-frontend/embedder-static/embedderScript.js',
     );
-    expect(resp.ok).toBeTruthy();
-    expect(resp.status).toBe(200);
+    expect(resp.statusCode).toBe(200);
   });
 });

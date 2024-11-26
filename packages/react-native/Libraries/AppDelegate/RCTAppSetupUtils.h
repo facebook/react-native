@@ -25,12 +25,16 @@
 
 #import <ReactCommon/RCTTurboModuleManager.h>
 
+@protocol RCTDependencyProvider;
+
 // Forward declaration to decrease compilation coupling
 namespace facebook::react {
 class RuntimeScheduler;
 }
 
-RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass);
+RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(
+    Class moduleClass,
+    id<RCTDependencyProvider> dependencyProvider);
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutorFactory(
     RCTBridge *bridge,

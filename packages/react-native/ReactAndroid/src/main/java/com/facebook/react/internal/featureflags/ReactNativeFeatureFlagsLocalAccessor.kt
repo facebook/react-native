@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71dcfc3812f442a35ae2c24621c05605>>
+ * @generated SignedSource<<0121e113410a5b0e14eaf74a3076df2f>>
  */
 
 /**
@@ -25,7 +25,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
-  private var allowRecursiveCommitsWithSynchronousMountOnAndroidCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var disableEventLoopOnBridgelessCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
@@ -39,8 +38,10 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
   private var enableFabricRendererExclusivelyCache: Boolean? = null
+  private var enableFixForViewCommandRaceCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
+  private var enableImagePrefetchingAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
@@ -59,7 +60,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var initEagerTurboModulesOnNativeModulesQueueAndroidCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
-  private var setAndroidLayoutDirectionCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
@@ -77,16 +77,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.commonTestFlag()
       accessedFeatureFlags.add("commonTestFlag")
       commonTestFlagCache = cached
-    }
-    return cached
-  }
-
-  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean {
-    var cached = allowRecursiveCommitsWithSynchronousMountOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.allowRecursiveCommitsWithSynchronousMountOnAndroid()
-      accessedFeatureFlags.add("allowRecursiveCommitsWithSynchronousMountOnAndroid")
-      allowRecursiveCommitsWithSynchronousMountOnAndroidCache = cached
     }
     return cached
   }
@@ -221,6 +211,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableFixForViewCommandRace(): Boolean {
+    var cached = enableFixForViewCommandRaceCache
+    if (cached == null) {
+      cached = currentProvider.enableFixForViewCommandRace()
+      accessedFeatureFlags.add("enableFixForViewCommandRace")
+      enableFixForViewCommandRaceCache = cached
+    }
+    return cached
+  }
+
   override fun enableGranularShadowTreeStateReconciliation(): Boolean {
     var cached = enableGranularShadowTreeStateReconciliationCache
     if (cached == null) {
@@ -237,6 +237,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableIOSViewClipToPaddingBox()
       accessedFeatureFlags.add("enableIOSViewClipToPaddingBox")
       enableIOSViewClipToPaddingBoxCache = cached
+    }
+    return cached
+  }
+
+  override fun enableImagePrefetchingAndroid(): Boolean {
+    var cached = enableImagePrefetchingAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableImagePrefetchingAndroid()
+      accessedFeatureFlags.add("enableImagePrefetchingAndroid")
+      enableImagePrefetchingAndroidCache = cached
     }
     return cached
   }
@@ -417,16 +427,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.loadVectorDrawablesOnImages()
       accessedFeatureFlags.add("loadVectorDrawablesOnImages")
       loadVectorDrawablesOnImagesCache = cached
-    }
-    return cached
-  }
-
-  override fun setAndroidLayoutDirection(): Boolean {
-    var cached = setAndroidLayoutDirectionCache
-    if (cached == null) {
-      cached = currentProvider.setAndroidLayoutDirection()
-      accessedFeatureFlags.add("setAndroidLayoutDirection")
-      setAndroidLayoutDirectionCache = cached
     }
     return cached
   }

@@ -567,9 +567,6 @@ export type ViewProps = $ReadOnly<{|
    * optimization. Set this property to `false` to disable this optimization and
    * ensure that this `View` exists in the native view hierarchy.
    *
-   * @platform android
-   * In Fabric, this prop is used in ios as well.
-   *
    * See https://reactnative.dev/docs/view#collapsable
    */
   collapsable?: ?boolean,

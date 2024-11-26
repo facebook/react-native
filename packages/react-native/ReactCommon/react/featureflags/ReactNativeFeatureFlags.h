@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<079c1e8cd65a004c1b26f1a2517e9042>>
+ * @generated SignedSource<<f741660e4cf2528defe0ab1f61858aab>>
  */
 
 /**
@@ -43,11 +43,6 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
-
-  /**
-   * Adds support for recursively processing commits that mount synchronously (Android only).
-   */
-  RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
@@ -115,6 +110,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFabricRendererExclusively();
 
   /**
+   * Synchronise the view command dispatching with mounting of new transaction
+   */
+  RN_EXPORT static bool enableFixForViewCommandRace();
+
+  /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
   RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
@@ -123,6 +123,11 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
+
+  /**
+   * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+   */
+  RN_EXPORT static bool enableImagePrefetchingAndroid();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -213,11 +218,6 @@ class ReactNativeFeatureFlags {
    * Adds support for loading vector drawable assets in the Image component (only on Android)
    */
   RN_EXPORT static bool loadVectorDrawablesOnImages();
-
-  /**
-   * Propagate layout direction to Android views.
-   */
-  RN_EXPORT static bool setAndroidLayoutDirection();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

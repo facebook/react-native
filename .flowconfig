@@ -44,6 +44,7 @@ packages/react-native/flow/
 
 [options]
 enums=true
+as_const=true
 casting_syntax=both
 
 emoji=true
@@ -72,6 +73,8 @@ suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 suppress_type=$FlowFixMeEmpty
 
+ban_spread_key_props=true
+
 [lints]
 sketchy-null-number=warn
 sketchy-null-mixed=warn
@@ -93,4 +96,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.252.0
+^0.255.0

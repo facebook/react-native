@@ -121,6 +121,12 @@ function reportException(
     const NativeExceptionsManager =
       require('./NativeExceptionsManager').default;
     if (NativeExceptionsManager) {
+      if (isFatal) {
+        if (global.RN$hasHandledFatalException?.()) {
+          return;
+        }
+        global.RN$notifyOfFatalException?.();
+      }
       NativeExceptionsManager.reportException(data);
     }
   }

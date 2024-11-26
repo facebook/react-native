@@ -63,9 +63,7 @@ inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
     case CppMountItem::Type::UpdatePadding:
       return 5; // tag, top, left, bottom, right
     case CppMountItem::Type::UpdateLayout:
-      return ReactNativeFeatureFlags::setAndroidLayoutDirection()
-          ? 8 // tag, parentTag, x, y, w, h, DisplayType, LayoutDirection
-          : 7; // tag, parentTag, x, y, w, h, DisplayType
+      return 8; // tag, parentTag, x, y, w, h, DisplayType, LayoutDirection
     case CppMountItem::Type::UpdateOverflowInset:
       return 5; // tag, left, top, right, bottom
     case CppMountItem::Undefined:
@@ -377,26 +375,15 @@ inline void writeUpdateLayoutMountItem(
   int w = round(scale(frame.size.width, pointScaleFactor));
   int h = round(scale(frame.size.height, pointScaleFactor));
 
-  if (ReactNativeFeatureFlags::setAndroidLayoutDirection()) {
-    buffer.writeIntArray(std::array<int, 8>{
-        mountItem.newChildShadowView.tag,
-        mountItem.parentShadowView.tag,
-        x,
-        y,
-        w,
-        h,
-        toInt(layoutMetrics.displayType),
-        toInt(layoutMetrics.layoutDirection)});
-  } else {
-    buffer.writeIntArray(std::array<int, 7>{
-        mountItem.newChildShadowView.tag,
-        mountItem.parentShadowView.tag,
-        x,
-        y,
-        w,
-        h,
-        toInt(layoutMetrics.displayType)});
-  }
+  buffer.writeIntArray(std::array<int, 8>{
+      mountItem.newChildShadowView.tag,
+      mountItem.parentShadowView.tag,
+      x,
+      y,
+      w,
+      h,
+      toInt(layoutMetrics.displayType),
+      toInt(layoutMetrics.layoutDirection)});
 }
 
 inline void writeUpdateEventEmitterMountItem(

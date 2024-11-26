@@ -25,8 +25,8 @@ public data class BoxShadow(
 ) {
   public companion object {
     @JvmStatic
-    public fun parse(boxShadow: ReadableMap, context: Context): BoxShadow? {
-      if (!(boxShadow.hasKey("offsetX") && boxShadow.hasKey("offsetY"))) {
+    public fun parse(boxShadow: ReadableMap?, context: Context): BoxShadow? {
+      if (boxShadow == null || !(boxShadow.hasKey("offsetX") && boxShadow.hasKey("offsetY"))) {
         return null
       }
 

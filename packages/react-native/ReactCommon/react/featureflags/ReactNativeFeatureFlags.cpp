@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e432522acfd785458553aa09806edb83>>
+ * @generated SignedSource<<ef215623465d45c563030d724287b1c9>>
  */
 
 /**
@@ -28,10 +28,6 @@ std::unique_ptr<ReactNativeFeatureFlagsAccessor> accessor_;
 
 bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
-}
-
-bool ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid() {
-  return getAccessor().allowRecursiveCommitsWithSynchronousMountOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid() {
@@ -86,12 +82,20 @@ bool ReactNativeFeatureFlags::enableFabricRendererExclusively() {
   return getAccessor().enableFabricRendererExclusively();
 }
 
+bool ReactNativeFeatureFlags::enableFixForViewCommandRace() {
+  return getAccessor().enableFixForViewCommandRace();
+}
+
 bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
   return getAccessor().enableGranularShadowTreeStateReconciliation();
 }
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
+}
+
+bool ReactNativeFeatureFlags::enableImagePrefetchingAndroid() {
+  return getAccessor().enableImagePrefetchingAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
@@ -164,10 +168,6 @@ bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
 
 bool ReactNativeFeatureFlags::loadVectorDrawablesOnImages() {
   return getAccessor().loadVectorDrawablesOnImages();
-}
-
-bool ReactNativeFeatureFlags::setAndroidLayoutDirection() {
-  return getAccessor().setAndroidLayoutDirection();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {

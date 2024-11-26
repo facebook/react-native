@@ -741,7 +741,7 @@ static float distributeFreeSpaceSecondPass(
           marginCross;
       const bool isLoosePercentageMeasurement =
           currentLineChild->getProcessedDimension(dimension(crossAxis))
-              .isPercent() &&
+                  .unit() == Unit::Percent &&
           sizingModeCrossDim != SizingMode::StretchFit;
       childCrossSizingMode =
           yoga::isUndefined(childCrossSize) || isLoosePercentageMeasurement
@@ -1294,10 +1294,6 @@ static void calculateLayoutImpl(
           flexColumnDirection, direction, ownerWidth),
       PhysicalEdge::Bottom);
 
-  // Clean and update all display: contents nodes with a direct path to the
-  // current node as they will not be traversed
-  cleanupContentsNodesRecursively(node);
-
   if (node->hasMeasureFunc()) {
     measureNodeWithMeasureFunc(
         node,
@@ -1310,6 +1306,10 @@ static void calculateLayoutImpl(
         ownerHeight,
         layoutMarkerData,
         reason);
+
+    // Clean and update all display: contents nodes with a direct path to the
+    // current node as they will not be traversed
+    cleanupContentsNodesRecursively(node);
     return;
   }
 
@@ -1324,6 +1324,10 @@ static void calculateLayoutImpl(
         heightSizingMode,
         ownerWidth,
         ownerHeight);
+
+    // Clean and update all display: contents nodes with a direct path to the
+    // current node as they will not be traversed
+    cleanupContentsNodesRecursively(node);
     return;
   }
 
@@ -1339,6 +1343,9 @@ static void calculateLayoutImpl(
           heightSizingMode,
           ownerWidth,
           ownerHeight)) {
+    // Clean and update all display: contents nodes with a direct path to the
+    // current node as they will not be traversed
+    cleanupContentsNodesRecursively(node);
     return;
   }
 
@@ -1347,6 +1354,10 @@ static void calculateLayoutImpl(
   node->cloneChildrenIfNeeded();
   // Reset layout flags, as they could have changed.
   node->setLayoutHadOverflow(false);
+
+  // Clean and update all display: contents nodes with a direct path to the
+  // current node as they will not be traversed
+  cleanupContentsNodesRecursively(node);
 
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
   const FlexDirection mainAxis =
@@ -1751,6 +1762,7 @@ static void calculateLayoutImpl(
   if (performLayout && (isNodeFlexWrap || isBaselineLayout(node))) {
     float leadPerLine = 0;
     float currentLead = leadingPaddingAndBorderCross;
+    float extraSpacePerLine = 0;
 
     const float unclampedCrossDim = sizingModeCrossDim == SizingMode::StretchFit
         ? availableInnerCrossDim + paddingAndBorderAxisCross
@@ -1786,7 +1798,8 @@ static void calculateLayoutImpl(
         currentLead += remainingAlignContentDim / 2;
         break;
       case Align::Stretch:
-        leadPerLine = remainingAlignContentDim / static_cast<float>(lineCount);
+        extraSpacePerLine =
+            remainingAlignContentDim / static_cast<float>(lineCount);
         break;
       case Align::SpaceAround:
         currentLead +=
@@ -1856,6 +1869,7 @@ static void calculateLayoutImpl(
       }
       endIterator = iterator;
       currentLead += i != 0 ? crossAxisGap : 0;
+      lineHeight += extraSpacePerLine;
 
       for (iterator = startIterator; iterator != endIterator; iterator++) {
         const auto child = *iterator;

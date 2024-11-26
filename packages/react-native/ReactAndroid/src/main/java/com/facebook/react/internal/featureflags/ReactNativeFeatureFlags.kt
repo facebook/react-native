@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b2f32b87f4e87ad9588add08dcb9b0c6>>
+ * @generated SignedSource<<6d8d8f4b81d7be882b315d0960499dcb>>
  */
 
 /**
@@ -33,12 +33,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
-
-  /**
-   * Adds support for recursively processing commits that mount synchronously (Android only).
-   */
-  @JvmStatic
-  public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = accessor.allowRecursiveCommitsWithSynchronousMountOnAndroid()
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
@@ -119,6 +113,12 @@ public object ReactNativeFeatureFlags {
   public fun enableFabricRendererExclusively(): Boolean = accessor.enableFabricRendererExclusively()
 
   /**
+   * Synchronise the view command dispatching with mounting of new transaction
+   */
+  @JvmStatic
+  public fun enableFixForViewCommandRace(): Boolean = accessor.enableFixForViewCommandRace()
+
+  /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
    */
   @JvmStatic
@@ -129,6 +129,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
+
+  /**
+   * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+   */
+  @JvmStatic
+  public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -237,12 +243,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun loadVectorDrawablesOnImages(): Boolean = accessor.loadVectorDrawablesOnImages()
-
-  /**
-   * Propagate layout direction to Android views.
-   */
-  @JvmStatic
-  public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

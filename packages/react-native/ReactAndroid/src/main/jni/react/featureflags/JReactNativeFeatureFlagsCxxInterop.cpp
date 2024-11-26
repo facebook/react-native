@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<62bd0386265d0fa4bdccab1faf22d25c>>
+ * @generated SignedSource<<902b269e45fcb4970c6f8a86818e1940>>
  */
 
 /**
@@ -42,12 +42,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool commonTestFlag() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("commonTestFlag");
-    return method(javaProvider_);
-  }
-
-  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("allowRecursiveCommitsWithSynchronousMountOnAndroid");
     return method(javaProvider_);
   }
 
@@ -129,6 +123,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool enableFixForViewCommandRace() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFixForViewCommandRace");
+    return method(javaProvider_);
+  }
+
   bool enableGranularShadowTreeStateReconciliation() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableGranularShadowTreeStateReconciliation");
@@ -138,6 +138,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableIOSViewClipToPaddingBox() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableIOSViewClipToPaddingBox");
+    return method(javaProvider_);
+  }
+
+  bool enableImagePrefetchingAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImagePrefetchingAndroid");
     return method(javaProvider_);
   }
 
@@ -249,12 +255,6 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool setAndroidLayoutDirection() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("setAndroidLayoutDirection");
-    return method(javaProvider_);
-  }
-
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("traceTurboModulePromiseRejectionsOnAndroid");
@@ -324,11 +324,6 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::completeReactInstanceCreationOnBgThreadOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
@@ -394,6 +389,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively(
   return ReactNativeFeatureFlags::enableFabricRendererExclusively();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableFixForViewCommandRace(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableFixForViewCommandRace();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconciliation(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
@@ -402,6 +402,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconcilia
 bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
@@ -494,11 +499,6 @@ bool JReactNativeFeatureFlagsCxxInterop::loadVectorDrawablesOnImages(
   return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::setAndroidLayoutDirection();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -584,9 +584,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
       makeNativeMethod(
-        "allowRecursiveCommitsWithSynchronousMountOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid),
-      makeNativeMethod(
         "completeReactInstanceCreationOnBgThreadOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::completeReactInstanceCreationOnBgThreadOnAndroid),
       makeNativeMethod(
@@ -626,11 +623,17 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableFabricRendererExclusively",
         JReactNativeFeatureFlagsCxxInterop::enableFabricRendererExclusively),
       makeNativeMethod(
+        "enableFixForViewCommandRace",
+        JReactNativeFeatureFlagsCxxInterop::enableFixForViewCommandRace),
+      makeNativeMethod(
         "enableGranularShadowTreeStateReconciliation",
         JReactNativeFeatureFlagsCxxInterop::enableGranularShadowTreeStateReconciliation),
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
+      makeNativeMethod(
+        "enableImagePrefetchingAndroid",
+        JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid),
       makeNativeMethod(
         "enableLayoutAnimationsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid),
@@ -685,9 +688,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "loadVectorDrawablesOnImages",
         JReactNativeFeatureFlagsCxxInterop::loadVectorDrawablesOnImages),
-      makeNativeMethod(
-        "setAndroidLayoutDirection",
-        JReactNativeFeatureFlagsCxxInterop::setAndroidLayoutDirection),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),

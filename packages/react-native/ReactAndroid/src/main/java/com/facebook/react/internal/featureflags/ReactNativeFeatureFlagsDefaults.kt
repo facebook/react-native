@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<608eece71b01769be0df8731774f9b0a>>
+ * @generated SignedSource<<9d829c58e49164a0b2b6b66bc0ce088a>>
  */
 
 /**
@@ -24,8 +24,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   // but that is more expensive than just duplicating the defaults here.
 
   override fun commonTestFlag(): Boolean = false
-
-  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
   override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = true
 
@@ -53,9 +51,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFabricRendererExclusively(): Boolean = false
 
+  override fun enableFixForViewCommandRace(): Boolean = false
+
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
+
+  override fun enableImagePrefetchingAndroid(): Boolean = false
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
 
@@ -92,8 +94,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun lazyAnimationCallbacks(): Boolean = false
 
   override fun loadVectorDrawablesOnImages(): Boolean = false
-
-  override fun setAndroidLayoutDirection(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a1cbc6a91551de0008c070adb5d805fd>>
+ * @generated SignedSource<<17c0e677f7b308795e836c558b15d1d1>>
  * @flow strict
  */
 
@@ -25,7 +25,6 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
-  +allowRecursiveCommitsWithSynchronousMountOnAndroid?: () => boolean;
   +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
   +disableEventLoopOnBridgeless?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
@@ -39,8 +38,10 @@ export interface Spec extends TurboModule {
   +enableFabricLogs?: () => boolean;
   +enableFabricRenderer?: () => boolean;
   +enableFabricRendererExclusively?: () => boolean;
+  +enableFixForViewCommandRace?: () => boolean;
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
+  +enableImagePrefetchingAndroid?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
@@ -59,7 +60,6 @@ export interface Spec extends TurboModule {
   +initEagerTurboModulesOnNativeModulesQueueAndroid?: () => boolean;
   +lazyAnimationCallbacks?: () => boolean;
   +loadVectorDrawablesOnImages?: () => boolean;
-  +setAndroidLayoutDirection?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useFabricInterop?: () => boolean;
