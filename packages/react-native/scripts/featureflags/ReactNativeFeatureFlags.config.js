@@ -511,6 +511,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    fixVirtualizeListCollapseWindowSize: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-22',
+        description:
+          'Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements',
+        purpose: 'experimentation',
+      },
+    },
     isLayoutAnimationEnabled: {
       defaultValue: true,
       metadata: {
