@@ -10,6 +10,7 @@
 
 #include <react/renderer/components/image/ImageShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
+#include <react/renderer/imagemanager/ImageRequestParams.h>
 #include "ImageState.h"
 
 namespace facebook::react {
@@ -24,20 +25,30 @@ void ImageShadowNode::setImageManager(const SharedImageManager& imageManager) {
 void ImageShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
-  auto imageSource = getImageSource();
-  const auto& currentState = getStateData();
-  bool hasSameRadius =
-      getConcreteProps().blurRadius == currentState.getBlurRadius();
-  bool hasSameImageSource = currentState.getImageSource() == imageSource;
+  const auto& savedState = getStateData();
+  const auto& oldImageSource = savedState.getImageSource();
+  auto newImageSource = getImageSource();
+  const auto& oldImageRequestParams = savedState.getImageRequestParams();
+  const auto& imageProps = getConcreteProps();
+  const auto& newImageRequestParams = ImageRequestParams(imageProps.blurRadius);
 
-  if (hasSameImageSource && hasSameRadius) {
+  if (oldImageSource == newImageSource &&
+      oldImageRequestParams == newImageRequestParams) {
     return;
   }
 
   auto state = ImageState{
-      imageSource,
-      imageManager_->requestImage(imageSource, getSurfaceId()),
-      getConcreteProps().blurRadius};
+      newImageSource,
+      imageManager_->requestImage(
+          newImageSource,
+          getSurfaceId()
+#ifdef ANDROID
+              ,
+          newImageRequestParams,
+          getTag()
+#endif
+              ),
+      newImageRequestParams};
   setStateData(std::move(state));
 }
 
