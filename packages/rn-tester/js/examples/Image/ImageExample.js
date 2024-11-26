@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ImageProps} from 'react-native/Libraries/Image/ImageProps';
 import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
@@ -1809,4 +1810,4 @@ exports.examples = [
     },
     platform: 'android',
   },
-];
+] as Array<RNTesterModuleExample>;
