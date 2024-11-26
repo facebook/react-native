@@ -7,8 +7,6 @@
  * @format
  */
 
-'use client';
-
 import type * as React from 'react';
 import {Constructor} from '../../../types/private/Utilities';
 import {NativeMethods} from '../../../types/public/ReactNativeTypes';
