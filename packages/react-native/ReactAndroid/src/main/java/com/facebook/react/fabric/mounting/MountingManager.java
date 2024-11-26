@@ -427,6 +427,28 @@ public class MountingManager {
             attachmentsPositions);
   }
 
+  /**
+   * @deprecated THIS PREFETCH METHOD IS EXPERIMENTAL, DO NOT USE IT FOR PRODUCTION CODE. IT WILL
+   *     MOST LIKELY CHANGE OR BE REMOVED IN THE FUTURE.
+   * @param reactContext
+   * @param componentName
+   * @param surfaceId {@link int} surface ID
+   * @param reactTag reactTag that should be set as ID of the view instance
+   * @param params {@link MapBuffer} prefetch request params defined in C++
+   */
+  @AnyThread
+  @Deprecated
+  public void experimental_prefetchResource(
+      ReactContext reactContext,
+      String componentName,
+      int surfaceId,
+      int reactTag,
+      MapBuffer params) {
+    mViewManagerRegistry
+        .get(componentName)
+        .experimental_prefetchResource(reactContext, surfaceId, reactTag, params);
+  }
+
   public void enqueuePendingEvent(
       int surfaceId,
       int reactTag,

@@ -5609,12 +5609,7 @@ declare function create(
 declare const Presets: {
   easeInEaseOut: LayoutAnimationConfig,
   linear: LayoutAnimationConfig,
-  spring: {
-    duration: 700,
-    create: { type: \\"linear\\", property: \\"opacity\\" },
-    update: { type: \\"spring\\", springDamping: 0.4 },
-    delete: { type: \\"linear\\", property: \\"opacity\\" },
-  },
+  spring: LayoutAnimationConfig,
 };
 declare const LayoutAnimation: {
   configureNext: configureNext,

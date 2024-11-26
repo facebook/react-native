@@ -22,6 +22,7 @@ import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.animation.Animation;
 import androidx.annotation.Nullable;
@@ -37,6 +38,7 @@ import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
+import com.facebook.react.uimanager.BlendModeHelper;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
@@ -55,6 +57,8 @@ import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
+import java.util.HashSet;
+import java.util.Set;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -435,6 +439,13 @@ public class ReactViewGroup extends ViewGroup
       try {
         updateSubviewClipStatus(clippingRect, i, clippedSoFar);
       } catch (IndexOutOfBoundsException e) {
+        int realClippedSoFar = 0;
+        Set<View> uniqueViews = new HashSet<>();
+        for (int j = 0; j < i; j++) {
+          realClippedSoFar += isViewClipped(mAllChildren[j]) ? 1 : 0;
+          uniqueViews.add(mAllChildren[j]);
+        }
+
         throw new IllegalStateException(
             "Invalid clipping state. i="
                 + i
@@ -445,7 +456,11 @@ public class ReactViewGroup extends ViewGroup
                 + " allChildrenCount="
                 + mAllChildrenCount
                 + " recycleCount="
-                + mRecycleCount,
+                + mRecycleCount
+                + " realClippedSoFar="
+                + realClippedSoFar
+                + " uniqueViewsCount="
+                + uniqueViews.size(),
             e);
       }
       if (isViewClipped(mAllChildren[i])) {
@@ -476,7 +491,9 @@ public class ReactViewGroup extends ViewGroup
       removeViewInLayout(child);
       needUpdateClippingRecursive = true;
     } else if (intersects && isViewClipped(child)) {
-      addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
+      int adjustedIdx = idx - clippedSoFar;
+      Assertions.assertCondition(adjustedIdx >= 0);
+      addViewInLayout(child, adjustedIdx, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
     } else if (intersects) {
@@ -653,11 +670,12 @@ public class ReactViewGroup extends ViewGroup
   /*package*/ void addViewWithSubviewClippingEnabled(
       final View child, int index, ViewGroup.LayoutParams params) {
     Assertions.assertCondition(mRemoveClippedSubviews);
-    Rect clippingRect = Assertions.assertNotNull(mClippingRect);
-    View[] childArray = Assertions.assertNotNull(mAllChildren);
     addInArray(child, index);
+
     // we add view as "clipped" and then run {@link #updateSubviewClipStatus} to conditionally
     // attach it
+    Rect clippingRect = Assertions.assertNotNull(mClippingRect);
+    View[] childArray = Assertions.assertNotNull(mAllChildren);
     int clippedSoFar = 0;
     for (int i = 0; i < index; i++) {
       if (isViewClipped(childArray[i])) {
@@ -726,7 +744,14 @@ public class ReactViewGroup extends ViewGroup
    * @return {@code true} if the view has been removed from the ViewGroup.
    */
   private boolean isViewClipped(View view) {
-    return view.getParent() == null || (mChildrenRemovedWhileTransitioning != null && mChildrenRemovedWhileTransitioning.contains(view.getId()));
+    ViewParent parent = view.getParent();
+
+    if (parent == null || (mChildrenRemovedWhileTransitioning != null && mChildrenRemovedWhileTransitioning.contains(view.getId()))) {
+      return true;
+    } else {
+      Assertions.assertCondition(parent == this);
+      return false;
+    }
   }
 
   private int indexOfChildInAllChildren(View child) {
@@ -780,16 +805,6 @@ public class ReactViewGroup extends ViewGroup
     }
   }
 
-  private boolean needsIsolatedLayer() {
-    for (int i = 0; i < getChildCount(); i++) {
-      if (getChildAt(i).getTag(R.id.mix_blend_mode) != null) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   @Override
   public @Nullable Rect getHitSlopRect() {
     return mHitSlopRect;
@@ -826,7 +841,7 @@ public class ReactViewGroup extends ViewGroup
 
   @Override
   public void setOverflowInset(int left, int top, int right, int bottom) {
-    if (needsIsolatedLayer()
+    if (BlendModeHelper.needsIsolatedLayer(this)
         && (mOverflowInset.left != left
             || mOverflowInset.top != top
             || mOverflowInset.right != right
@@ -856,7 +871,7 @@ public class ReactViewGroup extends ViewGroup
   public void draw(Canvas canvas) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
         && ViewUtil.getUIManagerType(this) == UIManagerType.FABRIC
-        && needsIsolatedLayer()) {
+        && BlendModeHelper.needsIsolatedLayer(this)) {
 
       // Check if the view is a stacking context and has children, if it does, do the rendering
       // offscreen and then composite back. This follows the idea of group isolation on blending
@@ -892,7 +907,9 @@ public class ReactViewGroup extends ViewGroup
     }
 
     BlendMode mixBlendMode = null;
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && needsIsolatedLayer()) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        && ViewUtil.getUIManagerType(this) == UIManagerType.FABRIC
+        && BlendModeHelper.needsIsolatedLayer(this)) {
       mixBlendMode = (BlendMode) child.getTag(R.id.mix_blend_mode);
       if (mixBlendMode != null) {
         Paint p = new Paint();

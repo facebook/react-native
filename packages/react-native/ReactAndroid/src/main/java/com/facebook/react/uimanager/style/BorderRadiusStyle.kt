@@ -183,10 +183,10 @@ public data class BorderRadiusStyle(
     val rightInset = topRight.horizontal + bottomRight.horizontal
     val bottomInset = bottomLeft.vertical + bottomRight.vertical
 
-    val leftInsetScale = if (leftInset > 0) minOf(1.0f, height / leftInset) else 0f
-    val topInsetScale = if (topInset > 0) minOf(1.0f, width / topInset) else 0f
-    val rightInsetScale = if (rightInset > 0) minOf(1.0f, height / rightInset) else 0f
-    val bottomInsetScale = if (bottomInset > 0) minOf(1.0f, width / bottomInset) else 0f
+    val leftInsetScale = if (leftInset > 0) minOf(1.0f, width / leftInset) else 0f
+    val topInsetScale = if (topInset > 0) minOf(1.0f, height / topInset) else 0f
+    val rightInsetScale = if (rightInset > 0) minOf(1.0f, width / rightInset) else 0f
+    val bottomInsetScale = if (bottomInset > 0) minOf(1.0f, height / bottomInset) else 0f
 
     return ComputedBorderRadius(
         topLeft =
