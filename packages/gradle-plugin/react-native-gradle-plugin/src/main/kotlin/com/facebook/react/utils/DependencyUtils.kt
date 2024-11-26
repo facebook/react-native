@@ -29,39 +29,28 @@ internal object DependencyUtils {
       with(eachProject) {
         if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
           val mavenLocalRepoPath = property(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO) as String
-          mavenRepoFromURI(File(mavenLocalRepoPath).toURI()) { repo ->
-            repo.content { it.excludeGroup("org.webkit") }
-          }
+          mavenRepoFromURI(File(mavenLocalRepoPath).toURI())
         }
         // We add the snapshot for users on nightlies.
-        mavenRepoFromUrl("https://oss.sonatype.org/content/repositories/snapshots/") { repo ->
-          repo.content { it.excludeGroup("org.webkit") }
-        }
+        mavenRepoFromUrl("https://oss.sonatype.org/content/repositories/snapshots/")
         repositories.mavenCentral { repo ->
-          // We don't want to fetch JSC from Maven Central as there are older versions there.
-          repo.content { it.excludeGroup("org.webkit") }
-
           // If the user provided a react.internal.mavenLocalRepo, do not attempt to load
           // anything from Maven Central that is react related.
           if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
             repo.content { it.excludeGroup("com.facebook.react") }
           }
         }
-        // Android JSC is installed from npm
-        mavenRepoFromURI(File(reactNativeDir, "../jsc-android/dist").toURI()) { repo ->
-          repo.content { it.includeGroup("org.webkit") }
-        }
         repositories.google { repo ->
           repo.content {
             // We don't want to fetch JSC or React from Google
-            it.excludeGroup("org.webkit")
+            it.excludeGroup("io.github.react-native-community")
             it.excludeGroup("com.facebook.react")
           }
         }
         mavenRepoFromUrl("https://www.jitpack.io") { repo ->
           repo.content {
             // We don't want to fetch JSC or React from JitPack
-            it.excludeGroup("org.webkit")
+            it.excludeGroup("io.github.react-native-community")
             it.excludeGroup("com.facebook.react")
           }
         }

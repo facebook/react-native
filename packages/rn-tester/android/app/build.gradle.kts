@@ -72,9 +72,9 @@ val enableProguardInReleaseBuilds = true
 
 /**
  * The preferred build flavor of JavaScriptCore (JSC) For example, to use the international variant,
- * you can use: `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
+ * you can use: `def jscFlavor = "io.github.react-native-community:jsc-android-intl:2026004.+"`
  */
-val jscFlavor = "org.webkit:android-jsc:+"
+val jscFlavor = "io.github.react-native-community:jsc-android:2026004.+"
 
 /** This allows to customized the CMake version used for compiling RN Tester. */
 val cmakeVersion =
@@ -84,13 +84,6 @@ val cmakeVersion =
 fun reactNativeArchitectures(): List<String> {
   val value = project.properties["reactNativeArchitectures"]
   return value?.toString()?.split(",") ?: listOf("armeabi-v7a", "x86", "x86_64", "arm64-v8a")
-}
-
-repositories {
-  maven {
-    url = rootProject.file("node_modules/jsc-android/dist").toURI()
-    content { includeGroup("org.webkit") }
-  }
 }
 
 android {
