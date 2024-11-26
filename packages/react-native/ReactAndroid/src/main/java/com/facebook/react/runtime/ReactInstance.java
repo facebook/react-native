@@ -130,9 +130,7 @@ final class ReactInstance {
         mQueueConfiguration.getNativeModulesQueueThread();
 
     ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance());
-    if (useDevSupport) {
-      devSupportManager.startInspector();
-    }
+    devSupportManager.startInspector();
 
     JSTimerExecutor jsTimerExecutor = createJSTimerExecutor();
     mJavaTimerManager =
