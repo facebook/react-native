@@ -327,6 +327,7 @@ export interface NativeModuleBooleanTypeAnnotation {
 
 export type NativeModuleEnumMember = {
   readonly name: string;
+  readonly type: 'EnumDeclarationMemberTypeAnnotation',
   readonly value: string | number;
 };
 

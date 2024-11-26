@@ -162,6 +162,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           memberType: 'NumberTypeAnnotation',
           members: [
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'ONE',
               value: {
                 type: 'NumberLiteralTypeAnnotation',
@@ -169,6 +170,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               },
             },
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'TWO',
               value: {
                 type: 'NumberLiteralTypeAnnotation',
@@ -183,6 +185,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           memberType: 'NumberTypeAnnotation',
           members: [
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'POINT_ZERO',
               value: {
                 type: 'NumberLiteralTypeAnnotation',
@@ -190,6 +193,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               },
             },
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'POINT_ONE',
               value: {
                 type: 'NumberLiteralTypeAnnotation',
@@ -197,6 +201,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               },
             },
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'POINT_TWO',
               value: {
                 type: 'NumberLiteralTypeAnnotation',
@@ -211,6 +216,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           memberType: 'StringTypeAnnotation',
           members: [
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'HELLO',
               value: {
                 type: 'StringLiteralTypeAnnotation',
@@ -218,6 +224,7 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               },
             },
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'GoodBye',
               value: {
                 type: 'StringLiteralTypeAnnotation',
@@ -1946,6 +1953,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           memberType: 'NumberTypeAnnotation',
           members: [
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'IA',
               value: {
                 type: 'NumberLiteralTypeAnnotation',
@@ -1953,6 +1961,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
               },
             },
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'IB',
               value: {
                 type: 'NumberLiteralTypeAnnotation',
@@ -1967,6 +1976,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           memberType: 'NumberTypeAnnotation',
           members: [
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'FA',
               value: {
                 type: 'NumberLiteralTypeAnnotation',
@@ -1974,6 +1984,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
               },
             },
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'FB',
               value: {
                 type: 'NumberLiteralTypeAnnotation',
@@ -1988,6 +1999,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           memberType: 'StringTypeAnnotation',
           members: [
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'NA',
               value: {
                 type: 'StringLiteralTypeAnnotation',
@@ -1995,6 +2007,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
               },
             },
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'NB',
               value: {
                 type: 'StringLiteralTypeAnnotation',
@@ -2009,6 +2022,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           memberType: 'StringTypeAnnotation',
           members: [
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'SA',
               value: {
                 type: 'StringLiteralTypeAnnotation',
@@ -2016,6 +2030,7 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
               },
             },
             {
+              type: 'EnumDeclarationMemberTypeAnnotation',
               name: 'SB',
               value: {
                 type: 'StringLiteralTypeAnnotation',

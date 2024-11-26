@@ -477,6 +477,7 @@ describe('typeEnumResolution', () => {
             memberType: 'StringTypeAnnotation',
             members: [
               {
+                type: 'EnumDeclarationMemberTypeAnnotation',
                 name: 'Hello',
                 value: {
                   type: 'StringLiteralTypeAnnotation',
@@ -484,6 +485,7 @@ describe('typeEnumResolution', () => {
                 },
               },
               {
+                type: 'EnumDeclarationMemberTypeAnnotation',
                 name: 'Goodbye',
                 value: {
                   type: 'StringLiteralTypeAnnotation',
@@ -526,6 +528,7 @@ describe('typeEnumResolution', () => {
             memberType: 'NumberTypeAnnotation',
             members: [
               {
+                type: 'EnumDeclarationMemberTypeAnnotation',
                 name: 'On',
                 value: {
                   type: 'NumberLiteralTypeAnnotation',
@@ -533,6 +536,7 @@ describe('typeEnumResolution', () => {
                 },
               },
               {
+                type: 'EnumDeclarationMemberTypeAnnotation',
                 name: 'Off',
                 value: {
                   type: 'NumberLiteralTypeAnnotation',

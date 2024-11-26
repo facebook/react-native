@@ -310,6 +310,7 @@ export type NativeModuleNumberTypeAnnotation = $ReadOnly<{
 }>;
 
 export type NativeModuleEnumMember = {
+  type: 'EnumDeclarationMemberTypeAnnotation',
   name: string,
   value: StringLiteralTypeAnnotation | NumberLiteralTypeAnnotation,
 };
@@ -431,4 +432,5 @@ export type CompleteTypeAnnotation =
   | NullableTypeAnnotation<NativeModuleTypeAnnotation>
   | EventEmitterTypeAnnotation
   | NativeModuleEnumDeclarationWithMembers
+  | NativeModuleEnumMember
   | UnsafeAnyTypeAnnotation;

@@ -271,10 +271,11 @@ class TypeScriptParser implements Parser {
               value: member.id.name,
             };
 
-      return {
+      return ({
+        type: 'EnumDeclarationMemberTypeAnnotation',
         name: member.id.name,
         value,
-      };
+      }: NativeModuleEnumMember);
     });
   }
 

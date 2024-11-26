@@ -174,6 +174,7 @@ export class MockedParser implements Parser {
     return typeAnnotation.type === 'StringTypeAnnotation'
       ? [
           {
+            type: 'EnumDeclarationMemberTypeAnnotation',
             name: 'Hello',
             value: {
               type: 'StringLiteralTypeAnnotation',
@@ -181,6 +182,7 @@ export class MockedParser implements Parser {
             },
           },
           {
+            type: 'EnumDeclarationMemberTypeAnnotation',
             name: 'Goodbye',
             value: {
               type: 'StringLiteralTypeAnnotation',
@@ -190,6 +192,7 @@ export class MockedParser implements Parser {
         ]
       : [
           {
+            type: 'EnumDeclarationMemberTypeAnnotation',
             name: 'On',
             value: {
               type: 'NumberLiteralTypeAnnotation',
@@ -197,6 +200,7 @@ export class MockedParser implements Parser {
             },
           },
           {
+            type: 'EnumDeclarationMemberTypeAnnotation',
             name: 'Off',
             value: {
               type: 'NumberLiteralTypeAnnotation',
