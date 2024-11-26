@@ -57,8 +57,8 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
     get() {
       // Check host setting first. If empty try to detect emulator type and use default
       // hostname for those
-      val hostFromSettings = preferences.getBoolean(PREFS_DEBUG_SERVER_TLS_KEY, false)
-      if (hostFromSettings) == true) {
+      val tlsFromSettings = preferences.getBoolean(PREFS_DEBUG_SERVER_TLS_KEY, false)
+      if (tlsFromSettings) {
         return "wss"
       }
 
