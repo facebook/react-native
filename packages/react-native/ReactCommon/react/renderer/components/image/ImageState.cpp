@@ -16,9 +16,8 @@ ImageSource ImageState::getImageSource() const {
 const ImageRequest& ImageState::getImageRequest() const {
   return *imageRequest_;
 }
-
-Float ImageState::getBlurRadius() const {
-  return blurRadius_;
+const ImageRequestParams& ImageState::getImageRequestParams() const {
+  return imageRequestParams_;
 }
 
 } // namespace facebook::react
