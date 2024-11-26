@@ -1213,10 +1213,10 @@ static void calculateLayoutImpl(
     const float ownerWidth,
     const float ownerHeight,
     const bool performLayout,
+    const LayoutPassReason reason,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
-    const uint32_t generationCount,
-    const LayoutPassReason reason) {
+    const uint32_t generationCount) {
   yoga::assertFatalWithNode(
       node,
       yoga::isUndefined(availableWidth)
@@ -2268,10 +2268,10 @@ bool calculateLayoutInternal(
         ownerWidth,
         ownerHeight,
         performLayout,
+        reason,
         layoutMarkerData,
         depth,
-        generationCount,
-        reason);
+        generationCount);
 
     layout->lastOwnerDirection = ownerDirection;
     layout->configVersion = node->getConfig()->getVersion();
