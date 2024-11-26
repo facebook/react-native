@@ -139,7 +139,7 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     frontendChannel_(cdp::jsonNotification(
         "ReactNativeApplication.metadataUpdated",
-        hostMetadataToDynamic(hostMetadata_)));
+        createHostMetadataPayload(hostMetadata_)));
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
