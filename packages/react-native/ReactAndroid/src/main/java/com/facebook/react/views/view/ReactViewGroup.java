@@ -622,11 +622,12 @@ public class ReactViewGroup extends ViewGroup
   /*package*/ void addViewWithSubviewClippingEnabled(
       final View child, int index, ViewGroup.LayoutParams params) {
     Assertions.assertCondition(mRemoveClippedSubviews);
-    Rect clippingRect = Assertions.assertNotNull(mClippingRect);
-    View[] childArray = Assertions.assertNotNull(mAllChildren);
     addInArray(child, index);
+
     // we add view as "clipped" and then run {@link #updateSubviewClipStatus} to conditionally
     // attach it
+    Rect clippingRect = Assertions.assertNotNull(mClippingRect);
+    View[] childArray = Assertions.assertNotNull(mAllChildren);
     int clippedSoFar = 0;
     for (int i = 0; i < index; i++) {
       if (isViewClipped(childArray[i])) {
