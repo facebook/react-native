@@ -41,6 +41,30 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
       preferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply()
     }
 
+  public open var debugServerHttpProtocol: String
+    get() {
+      // Check host setting first. If empty try to detect emulator type and use default
+      // hostname for those
+      val hostFromSettings = preferences.getBoolean(PREFS_DEBUG_SERVER_TLS_KEY, false)
+      if (hostFromSettings) == true) {
+        return "https"
+      }
+
+      return "http"
+    }
+
+  public open var debugServerWsProtocol: String
+    get() {
+      // Check host setting first. If empty try to detect emulator type and use default
+      // hostname for those
+      val hostFromSettings = preferences.getBoolean(PREFS_DEBUG_SERVER_TLS_KEY, false)
+      if (hostFromSettings) == true) {
+        return "wss"
+      }
+
+      return "ws"
+    }
+
   public fun setAdditionalOptionForPackager(key: String, value: String) {
     _additionalOptionsForPackager[key] = value
   }
@@ -51,5 +75,6 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
   private companion object {
     private val TAG = PackagerConnectionSettings::class.java.simpleName
     private const val PREFS_DEBUG_SERVER_HOST_KEY = "debug_http_host"
+    private const val PREFS_DEBUG_SERVER_TLS_KEY = "debug_http_tls"
   }
 }

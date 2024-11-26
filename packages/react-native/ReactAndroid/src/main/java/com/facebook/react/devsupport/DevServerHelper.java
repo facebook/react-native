@@ -252,7 +252,8 @@ public class DevServerHelper {
   public String getWebsocketProxyURL() {
     return String.format(
         Locale.US,
-        "ws://%s/debugger-proxy?role=client",
+        "%s://%s/debugger-proxy?role=client",
+        mPackagerConnectionSettings.getDebugServerWsProtocol(),
         mPackagerConnectionSettings.getDebugServerHost());
   }
 
@@ -325,7 +326,8 @@ public class DevServerHelper {
   private String getInspectorDeviceUrl() {
     return String.format(
         Locale.US,
-        "http://%s/inspector/device?name=%s&app=%s&device=%s",
+        "%s://%s/inspector/device?name=%s&app=%s&device=%s",
+        mPackagerConnectionSettings.debugServerHttpProtocol(),
         mPackagerConnectionSettings.getDebugServerHost(),
         Uri.encode(AndroidInfoHelpers.getFriendlyDeviceName()),
         Uri.encode(mPackageName),
@@ -378,16 +380,16 @@ public class DevServerHelper {
     return mSettings.isJSMinifyEnabled();
   }
 
-  private String createBundleURL(String mainModuleID, BundleType type, String host) {
-    return createBundleURL(mainModuleID, type, host, false, true);
+  private String createBundleURL(String mainModuleID, BundleType type, String protocol, String host) {
+    return createBundleURL(mainModuleID, type, protocol, host, false, true);
   }
 
-  private String createSplitBundleURL(String mainModuleID, String host) {
-    return createBundleURL(mainModuleID, BundleType.BUNDLE, host, true, false);
+  private String createSplitBundleURL(String mainModuleID, String protocol, String host) {
+    return createBundleURL(mainModuleID, BundleType.BUNDLE, protocol, host, true, false);
   }
 
   private String createBundleURL(
-      String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
+      String mainModuleID, BundleType type, String protocol, String host, boolean modulesOnly, boolean runModule) {
     boolean dev = getDevMode();
     StringBuilder additionalOptionsBuilder = new StringBuilder();
     for (Map.Entry<String, String> entry :
@@ -399,7 +401,8 @@ public class DevServerHelper {
     }
     return String.format(
             Locale.US,
-            "http://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+            "%s://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+            protocol,
             host,
             mainModuleID,
             type.typeID(),
@@ -414,20 +417,20 @@ public class DevServerHelper {
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {
-    return createBundleURL(mainModuleID, type, mPackagerConnectionSettings.getDebugServerHost());
+    return createBundleURL(mainModuleID, type, mPackagerConnectionSettings.getDebugServerHttpProtocol(), mPackagerConnectionSettings.getDebugServerHost());
   }
 
-  private static String createResourceURL(String host, String resourcePath) {
-    return String.format(Locale.US, "http://%s/%s", host, resourcePath);
+  private static String createResourceURL(String protocol, String host, String resourcePath) {
+    return String.format(Locale.US, "%s://%s/%s", protocol, host, resourcePath);
   }
 
   public String getDevServerBundleURL(final String jsModulePath) {
     return createBundleURL(
-        jsModulePath, BundleType.BUNDLE, mPackagerConnectionSettings.getDebugServerHost());
+        jsModulePath, BundleType.BUNDLE, mPackagerConnectionSettings.getDebugServerHttpProtocol(), mPackagerConnectionSettings.getDebugServerHost());
   }
 
   public String getDevServerSplitBundleURL(String jsModulePath) {
-    return createSplitBundleURL(jsModulePath, mPackagerConnectionSettings.getDebugServerHost());
+    return createSplitBundleURL(jsModulePath, mPackagerConnectionSettings.getDebugServerHttpProtocol(), mPackagerConnectionSettings.getDebugServerHost());
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
@@ -443,7 +446,8 @@ public class DevServerHelper {
   private String createLaunchJSDevtoolsCommandUrl() {
     return String.format(
         Locale.US,
-        "http://%s/launch-js-devtools",
+        "%s://%s/launch-js-devtools",
+        mPackagerConnectionSettings.getDebugServerHttpProtocol(),
         mPackagerConnectionSettings.getDebugServerHost());
   }
 
@@ -490,7 +494,7 @@ public class DevServerHelper {
   public @Nullable File downloadBundleResourceFromUrlSync(
       final String resourcePath, final File outputFile) {
     final String resourceURL =
-        createResourceURL(mPackagerConnectionSettings.getDebugServerHost(), resourcePath);
+        createResourceURL(mPackagerConnectionSettings.getDebugServerHttpProtocol(), mPackagerConnectionSettings.getDebugServerHost(), resourcePath);
     final Request request = new Request.Builder().url(resourceURL).build();
 
     try (Response response = mClient.newCall(request).execute()) {
@@ -520,7 +524,8 @@ public class DevServerHelper {
     String requestUrl =
         String.format(
             Locale.US,
-            "http://%s/open-debugger?device=%s",
+            "%s://%s/open-debugger?device=%s",
+            mPackagerConnectionSettings.getDebugServerHttpProtocol(),
             mPackagerConnectionSettings.getDebugServerHost(),
             Uri.encode(getInspectorDeviceId()));
     Request request =
