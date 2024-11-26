@@ -22,6 +22,7 @@ import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.animation.Animation;
 import androidx.annotation.Nullable;
@@ -56,6 +57,8 @@ import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -409,6 +412,13 @@ public class ReactViewGroup extends ViewGroup
       try {
         updateSubviewClipStatus(clippingRect, i, clippedSoFar);
       } catch (IndexOutOfBoundsException e) {
+        int realClippedSoFar = 0;
+        Set<View> uniqueViews = new HashSet<>();
+        for (int j = 0; j < i; j++) {
+          realClippedSoFar += isViewClipped(mAllChildren[j]) ? 1 : 0;
+          uniqueViews.add(mAllChildren[j]);
+        }
+
         throw new IllegalStateException(
             "Invalid clipping state. i="
                 + i
@@ -419,7 +429,11 @@ public class ReactViewGroup extends ViewGroup
                 + " allChildrenCount="
                 + mAllChildrenCount
                 + " recycleCount="
-                + mRecycleCount,
+                + mRecycleCount
+                + " realClippedSoFar="
+                + realClippedSoFar
+                + " uniqueViewsCount="
+                + uniqueViews.size(),
             e);
       }
       if (isViewClipped(mAllChildren[i])) {
@@ -450,7 +464,9 @@ public class ReactViewGroup extends ViewGroup
       removeViewInLayout(child);
       needUpdateClippingRecursive = true;
     } else if (intersects && isViewClipped(child)) {
-      addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
+      int adjustedIdx = idx - clippedSoFar;
+      Assertions.assertCondition(adjustedIdx >= 0);
+      addViewInLayout(child, adjustedIdx, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
     } else if (intersects) {
@@ -694,7 +710,13 @@ public class ReactViewGroup extends ViewGroup
    * @return {@code true} if the view has been removed from the ViewGroup.
    */
   private boolean isViewClipped(View view) {
-    return view.getParent() == null;
+    ViewParent parent = view.getParent();
+    if (parent == null) {
+      return true;
+    } else {
+      Assertions.assertCondition(parent == this);
+      return false;
+    }
   }
 
   private int indexOfChildInAllChildren(View child) {
