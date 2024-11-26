@@ -2673,7 +2673,7 @@ const UNION_MODULE: SchemaType = {
   },
 };
 
-const STRING_LITERALS = {
+const STRING_LITERALS: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',
