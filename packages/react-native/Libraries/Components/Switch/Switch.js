@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';

@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 import RCTDeviceEventEmitter from './RCTDeviceEventEmitter';
 
 /**

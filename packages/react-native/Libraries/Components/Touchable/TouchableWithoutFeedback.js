@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,

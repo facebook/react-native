@@ -8,6 +8,8 @@
  * @flow
  */
 
+'use client';
+
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 
 import processColor from '../../StyleSheet/processColor';

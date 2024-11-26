@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {UIManagerJSInterface} from '../Types/UIManagerJSInterface';
 
 import {getFabricUIManager} from './FabricUIManager';

@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
 import type {____TextStyle_Internal as TextStyleInternal} from '../../StyleSheet/StyleSheetTypes';
 import type {

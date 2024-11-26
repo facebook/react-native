@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {ProcessedColorValue} from '../StyleSheet/processColor';
 import type {ColorValue} from '../StyleSheet/StyleSheet';
 

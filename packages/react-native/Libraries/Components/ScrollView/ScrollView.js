@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';

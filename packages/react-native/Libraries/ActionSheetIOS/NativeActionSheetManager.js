@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 export * from '../../src/private/specs/modules/NativeActionSheetManager';
 import NativeActionSheetManager from '../../src/private/specs/modules/NativeActionSheetManager';
 export default NativeActionSheetManager;

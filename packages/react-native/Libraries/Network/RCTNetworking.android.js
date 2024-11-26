@@ -8,6 +8,8 @@
  * @flow
  */
 
+'use client';
+
 import type {RequestBody} from './convertRequestBody';
 import type {NativeResponseType} from './XMLHttpRequest';
 

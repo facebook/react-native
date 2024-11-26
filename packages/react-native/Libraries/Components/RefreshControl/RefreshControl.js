@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {ViewProps} from '../View/ViewPropTypes';
 

@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {SectionBase} from '../../Lists/SectionList';
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 

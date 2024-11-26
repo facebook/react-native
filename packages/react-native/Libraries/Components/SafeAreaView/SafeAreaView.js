@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import Platform from '../../Utilities/Platform';

@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
 import type {
   MeasureInWindowOnSuccessCallback,

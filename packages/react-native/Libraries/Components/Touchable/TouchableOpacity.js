@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 

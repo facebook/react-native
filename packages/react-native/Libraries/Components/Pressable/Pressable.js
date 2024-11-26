@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {
   LayoutEvent,
   MouseEvent,

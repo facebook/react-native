@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {TurboModule} from './RCTExport';
 
 import invariant from 'invariant';

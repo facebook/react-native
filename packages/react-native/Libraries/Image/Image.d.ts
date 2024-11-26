@@ -7,6 +7,8 @@
  * @format
  */
 
+'use client';
+
 import * as React from 'react';
 import {Constructor} from '../../types/private/Utilities';
 import {AccessibilityProps} from '../Components/View/ViewAccessibility';

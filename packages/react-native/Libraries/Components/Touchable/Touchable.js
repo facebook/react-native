@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {PressEvent} from '../../Types/CoreEventTypes';

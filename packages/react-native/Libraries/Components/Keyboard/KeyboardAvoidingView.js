@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {DimensionsPayload} from '../../Utilities/NativeDeviceInfo';
 import type {

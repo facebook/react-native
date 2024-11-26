@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 export * from '../../src/private/specs/modules/NativePlatformConstantsIOS';
 import NativePlatformConstantsIOS from '../../src/private/specs/modules/NativePlatformConstantsIOS';
 export default NativePlatformConstantsIOS;

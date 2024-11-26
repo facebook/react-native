@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import NativeDevMenu from '../specs/modules/NativeDevMenu';
 
 /**

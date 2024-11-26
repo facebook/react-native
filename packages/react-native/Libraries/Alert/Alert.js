@@ -8,6 +8,8 @@
  * @flow
  */
 
+'use client';
+
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
 
 import Platform from '../Utilities/Platform';

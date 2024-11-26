@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  */
+'use client';
 
 import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';

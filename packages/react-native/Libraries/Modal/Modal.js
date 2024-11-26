@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';

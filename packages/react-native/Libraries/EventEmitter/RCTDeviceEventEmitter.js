@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {IEventEmitter} from '../vendor/emitter/EventEmitter';
 
 import {beginEvent, endEvent} from '../Performance/Systrace';

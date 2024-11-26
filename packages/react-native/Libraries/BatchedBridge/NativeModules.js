@@ -9,6 +9,7 @@
  */
 
 'use strict';
+'use client';
 
 import type {ExtendedError} from '../Core/ExtendedError';
 

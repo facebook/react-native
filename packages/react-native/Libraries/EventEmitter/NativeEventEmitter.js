@@ -9,6 +9,7 @@
  */
 
 'use strict';
+'use client';
 
 import type {
   EventSubscription,
