@@ -60,9 +60,6 @@ import com.facebook.react.uimanager.style.Overflow;
 import java.util.HashSet;
 import java.util.Set;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
  * initializes most of the storage needed for them.
@@ -140,8 +137,8 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private float mBackfaceOpacity;
   private String mBackfaceVisibility;
-  private boolean mIsTransitioning = false;
-  private @Nullable Set<Integer> mChildrenRemovedWhileTransitioning = null;
+  private boolean mIsTransitioning;
+  private @Nullable Set<Integer> mChildrenRemovedWhileTransitioning;
 
   /**
    * Creates a new `ReactViewGroup` instance.
@@ -175,6 +172,8 @@ public class ReactViewGroup extends ViewGroup
     mDrawingOrderHelper = null;
     mBackfaceOpacity = 1.f;
     mBackfaceVisibility = "visible";
+    mIsTransitioning = false;
+    mChildrenRemovedWhileTransitioning = null;
   }
 
   /* package */ void recycleView() {
@@ -423,7 +422,7 @@ public class ReactViewGroup extends ViewGroup
     mChildrenRemovedWhileTransitioning = null;
   }
 
-  public Set<Integer> ensureChildrenRemovedWhileTransitioning() {
+  private Set<Integer> ensureChildrenRemovedWhileTransitioning() {
     if (mChildrenRemovedWhileTransitioning == null) {
       mChildrenRemovedWhileTransitioning = new HashSet<>();
     }
@@ -709,12 +708,11 @@ public class ReactViewGroup extends ViewGroup
 
   /*package*/ void removeViewWithSubviewClippingEnabled(View view) {
     UiThreadUtil.assertOnUiThread();
+
     Assertions.assertCondition(mRemoveClippedSubviews);
     Assertions.assertNotNull(mClippingRect);
     View[] childArray = Assertions.assertNotNull(mAllChildren);
-
     view.removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
-
     int index = indexOfChildInAllChildren(view);
     if (!isViewClipped(childArray[index])) {
       int clippedSoFar = 0;
