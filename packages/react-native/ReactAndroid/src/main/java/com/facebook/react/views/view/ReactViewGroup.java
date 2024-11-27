@@ -420,9 +420,7 @@ public class ReactViewGroup extends ViewGroup
   public void endViewTransition(View view) {
     super.endViewTransition(view);
     mIsTransitioning = false;
-    if (mChildrenRemovedWhileTransitioning != null) {
-      mChildrenRemovedWhileTransitioning = null;
-    }
+    mChildrenRemovedWhileTransitioning = null;
   }
 
   public Set<Integer> ensureChildrenRemovedWhileTransitioning() {
