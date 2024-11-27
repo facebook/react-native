@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
+import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
@@ -70,9 +71,9 @@ public object DefaultReactHost {
           jsBundleFilePath,
           isHermesEnabled,
           useDevSupport,
-          cxxReactPackageProviders) {
-            throw it
-          }
+          cxxReactPackageProviders,
+          { throw it },
+          null)
 
   /**
    * Util function to create a default [ReactHost] to be used in your application. This method is
@@ -106,6 +107,7 @@ public object DefaultReactHost {
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
       exceptionHandler: (Exception) -> Unit = { throw it },
+      bindingsInstaller: BindingsInstaller? = null,
   ): ReactHost {
     if (reactHost == null) {
 
@@ -128,6 +130,7 @@ public object DefaultReactHost {
               jsBundleLoader = bundleLoader,
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
+              bindingsInstaller = bindingsInstaller,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder,
               exceptionHandler = exceptionHandler)
       val componentFactory = ComponentFactory()
