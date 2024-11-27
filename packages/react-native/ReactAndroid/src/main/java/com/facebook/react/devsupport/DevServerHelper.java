@@ -434,12 +434,13 @@ public class DevServerHelper {
   }
 
   public void isPackagerRunning(final PackagerStatusCallback callback) {
+    String protocol = mPackagerConnectionSettings.getDebugServerHttpProtocol();
     String host = mPackagerConnectionSettings.getDebugServerHost();
     if (host == null) {
       FLog.w(ReactConstants.TAG, "No packager host configured.");
       callback.onPackagerStatusFetched(false);
     } else {
-      mPackagerStatusCheck.run(host, callback);
+      mPackagerStatusCheck.run(protocol, host, callback);
     }
   }
 
