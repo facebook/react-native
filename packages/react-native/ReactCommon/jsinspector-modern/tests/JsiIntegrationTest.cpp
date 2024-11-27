@@ -373,7 +373,8 @@ TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationEnable) {
   this->expectMessageFromPage(JsonEq(R"({
                                           "method": "ReactNativeApplication.metadataUpdated",
                                           "params": {
-                                            "integrationName": "JsiIntegrationTest"
+                                            "integrationName": "JsiIntegrationTest",
+                                            "unstable_isProfilingBuild": false
                                           }
                                         })"));
 
