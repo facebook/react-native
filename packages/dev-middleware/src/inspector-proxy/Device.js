@@ -63,6 +63,7 @@ export type DeviceOptions = $ReadOnly<{
   createMessageMiddleware: ?CreateCustomMessageHandlerFn,
   deviceRelativeBaseUrl: URL,
   serverRelativeBaseUrl: URL,
+  isProfilingBuild: boolean,
 }>;
 
 /**
@@ -140,6 +141,7 @@ export default class Device {
     createMessageMiddleware,
     serverRelativeBaseUrl,
     deviceRelativeBaseUrl,
+    isProfilingBuild,
   }: DeviceOptions) {
     this.#id = id;
     this.#name = name;
@@ -156,6 +158,10 @@ export default class Device {
         })
       : null;
     this.#createCustomMessageHandler = createMessageMiddleware;
+
+    if (isProfilingBuild) {
+      this.#deviceEventReporter?.logProfilingTargetRegistered();
+    }
 
     // $FlowFixMe[incompatible-call]
     this.#deviceSocket.on('message', (message: string) => {
