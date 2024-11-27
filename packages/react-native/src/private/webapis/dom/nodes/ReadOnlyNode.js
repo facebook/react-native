@@ -26,6 +26,8 @@ let ReadOnlyElementClass: Class<ReadOnlyElement>;
 
 export default class ReadOnlyNode {
   constructor(internalInstanceHandle: InternalInstanceHandle) {
+    // This constructor is inlined in `ReactNativeElement` so if you modify
+    // this make sure that their implementation stays in sync.
     setInstanceHandle(this, internalInstanceHandle);
   }
 
@@ -293,7 +295,7 @@ export function getInstanceHandle(node: ReadOnlyNode): InternalInstanceHandle {
   return node[INSTANCE_HANDLE_KEY];
 }
 
-function setInstanceHandle(
+export function setInstanceHandle(
   node: ReadOnlyNode,
   instanceHandle: InternalInstanceHandle,
 ): void {
