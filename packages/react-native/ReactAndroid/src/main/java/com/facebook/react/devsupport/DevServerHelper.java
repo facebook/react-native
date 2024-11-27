@@ -327,7 +327,7 @@ public class DevServerHelper {
     return String.format(
         Locale.US,
         "%s://%s/inspector/device?name=%s&app=%s&device=%s",
-        mPackagerConnectionSettings.debugServerHttpProtocol(),
+        mPackagerConnectionSettings.getDebugServerHttpProtocol(),
         mPackagerConnectionSettings.getDebugServerHost(),
         Uri.encode(AndroidInfoHelpers.getFriendlyDeviceName()),
         Uri.encode(mPackageName),
@@ -481,8 +481,8 @@ public class DevServerHelper {
   public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
     // The host we use when connecting to the JS bundle server from the emulator is not the
     // same as the one needed to connect to the same server from the JavaScript proxy running on the
-    // host itself.
-    return createBundleURL(mainModuleName, BundleType.BUNDLE, getHostForJSProxy());
+    // host itself. Http protocol will always be used because it's pointing to localhost in this case
+    return createBundleURL(mainModuleName, BundleType.BUNDLE, "http", getHostForJSProxy());
   }
 
   /**

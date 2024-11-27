@@ -41,13 +41,13 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
       preferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply()
     }
 
-  public open var debugServerHttpProtocol: String
+  public open val debugServerHttpProtocol: String
     get() {
       val tlsFromSettings = preferences.getBoolean(PREFS_DEBUG_SERVER_TLS_KEY, false)
       return if (tlsFromSettings) "https" else "http"
     }
 
-  public open var debugServerWsProtocol: String
+  public open val debugServerWsProtocol: String
     get() {
       val tlsFromSettings = preferences.getBoolean(PREFS_DEBUG_SERVER_TLS_KEY, false)
       return if (tlsFromSettings) "wss" else "ws"
