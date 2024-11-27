@@ -18,8 +18,9 @@ describe('useColorScheme', () => {
   });
 
   it('should have console.error when not using mock', () => {
-    const useColorSchemeActual =
-      jest.requireActual('../useColorScheme').default;
+    const useColorSchemeActual = jest.requireActual<{
+      default: typeof useColorScheme,
+    }>('../useColorScheme').default;
     const spy = jest.spyOn(console, 'error').mockImplementationOnce(() => {
       // Simulate LogBox console.error() call to throw an error and stop the further execution
       throw new Error('console.error() was called');
