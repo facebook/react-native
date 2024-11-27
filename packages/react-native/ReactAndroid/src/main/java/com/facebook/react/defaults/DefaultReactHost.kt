@@ -43,6 +43,8 @@ public object DefaultReactHost {
    *   `index.<platform>`
    * @param jsBundleAssetPath the path to the JS bundle relative to the assets directory. Will be
    *   composed in a `asset://...` URL
+   * @param jsBundleFilePath the path to the JS bundle on the filesystem. Will be composed in a
+   *   `file://...` URL
    * @param isHermesEnabled whether to use Hermes as the JS engine, default to true.
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
@@ -84,12 +86,15 @@ public object DefaultReactHost {
    *   `index.<platform>`
    * @param jsBundleAssetPath the path to the JS bundle relative to the assets directory. Will be
    *   composed in a `asset://...` URL
+   * @param jsBundleFilePath the path to the JS bundle on the filesystem. Will be composed in a
+   *   `file://...` URL
    * @param isHermesEnabled whether to use Hermes as the JS engine, default to true.
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
    *   modules)
    * @param exceptionHandler Callback that can be used by React Native host applications to react to
    *   exceptions thrown by the internals of React Native.
+   * @param bindingsInstaller that can be used for installing bindings.
    *
    * TODO(T186951312): Should this be @UnstableReactNativeAPI?
    */
