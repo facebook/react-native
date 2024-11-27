@@ -325,11 +325,12 @@ public class DevServerHelper {
   private String getInspectorDeviceUrl() {
     return String.format(
         Locale.US,
-        "http://%s/inspector/device?name=%s&app=%s&device=%s",
+        "http://%s/inspector/device?name=%s&app=%s&device=%s&profiling=%b",
         mPackagerConnectionSettings.getDebugServerHost(),
         Uri.encode(AndroidInfoHelpers.getFriendlyDeviceName()),
         Uri.encode(mPackageName),
-        Uri.encode(getInspectorDeviceId()));
+        Uri.encode(getInspectorDeviceId()),
+        InspectorFlags.getIsProfilingBuild());
   }
 
   public void downloadBundleFromURL(
