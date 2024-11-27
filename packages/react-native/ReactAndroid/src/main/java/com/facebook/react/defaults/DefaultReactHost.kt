@@ -47,7 +47,6 @@ public object DefaultReactHost {
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
    *   modules)
-   * @param jsBundleLoader a [JSBundleLoader] to use for creating the [ReactHost]
    *
    * TODO(T186951312): Should this be @UnstableReactNativeAPI?
    */
@@ -89,7 +88,6 @@ public object DefaultReactHost {
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
    *   modules)
-   * @param jsBundleLoader a [JSBundleLoader] to use for creating the [ReactHost]
    * @param exceptionHandler Callback that can be used by React Native host applications to react to
    *   exceptions thrown by the internals of React Native.
    *
