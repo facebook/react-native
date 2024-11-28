@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<38ad29621eeb29a9f82735dc187c13d4>>
+ * @generated SignedSource<<992ef8d0dc0d1a6d4dc8685fc7b1c74e>>
  * @flow strict
  */
 
@@ -36,6 +36,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   enableAnimatedAllowlist: Getter<boolean>,
   enableAnimatedClearImmediateFix: Getter<boolean>,
   enableAnimatedPropsMemo: Getter<boolean>,
+  enableScrollViewMomentumGapFix: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
@@ -143,6 +144,11 @@ export const enableAnimatedClearImmediateFix: Getter<boolean> = createJavaScript
  * Enables Animated to analyze props to minimize invalidating `AnimatedProps`.
  */
 export const enableAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedPropsMemo', true);
+
+/**
+ * Enables a temporary fix to prevent scroll momentum events from keeping the scroll view in an animated state
+ */
+export const enableScrollViewMomentumGapFix: Getter<boolean> = createJavaScriptFlagGetter('enableScrollViewMomentumGapFix', false);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements

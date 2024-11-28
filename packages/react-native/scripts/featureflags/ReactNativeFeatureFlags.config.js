@@ -511,6 +511,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    enableScrollViewMomentumGapFix: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-25',
+        description:
+          'Enables a temporary fix to prevent scroll momentum events from keeping the scroll view in an animated state',
+        purpose: 'experimentation',
+      },
+    },
     fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
       metadata: {

@@ -32,6 +32,7 @@ import {
   VScrollContentViewNativeComponent,
   VScrollViewNativeComponent,
 } from '../../../src/private/components/VScrollViewNativeComponents';
+import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
@@ -658,6 +659,7 @@ type State = {|
 |};
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
+const IS_ANIMATING_TIME_BETWEEN_MOMENTUM_SCROLLS_MS = 3;
 
 export type ScrollViewComponentStatics = $ReadOnly<{|
   Context: typeof ScrollViewContext,
@@ -1306,6 +1308,17 @@ class ScrollView extends React.Component<Props, State> {
     const isAnimating =
       timeSinceLastMomentumScrollEnd < IS_ANIMATING_TOUCH_START_THRESHOLD_MS ||
       this._lastMomentumScrollEndTime < this._lastMomentumScrollBeginTime;
+    // This is a hack to prevent issues with momentum scroll begin firing directly after momentum scroll end
+    if (ReactNativeFeatureFlags.enableScrollViewMomentumGapFix()) {
+      const timeBetweenMomentumScrolls = Math.abs(
+        this._lastMomentumScrollEndTime - this._lastMomentumScrollBeginTime,
+      );
+      return (
+        isAnimating &&
+        timeBetweenMomentumScrolls >
+          IS_ANIMATING_TIME_BETWEEN_MOMENTUM_SCROLLS_MS
+      );
+    }
     return isAnimating;
   };
 
