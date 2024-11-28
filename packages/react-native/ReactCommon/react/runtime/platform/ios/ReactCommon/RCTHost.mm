@@ -280,7 +280,15 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
 {
-  [_instance callFunctionOnJSModule:moduleName method:method args:args];
+  [self callFunctionOnJSModule:moduleName method:method args:args completion:nil];
+}
+
+- (void)callFunctionOnJSModule:(NSString *)moduleName
+                        method:(NSString *)method
+                          args:(NSArray *)args
+                    completion:(dispatch_block_t)completion
+{
+  [_instance callFunctionOnJSModule:moduleName method:method args:args completion:completion];
 }
 
 #pragma mark - RCTReloadListener
