@@ -121,7 +121,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       [_bridgeModuleDecorator.callableJSModules
           setBridgelessJSModuleMethodInvoker:^(
               NSString *moduleName, NSString *methodName, NSArray *args, dispatch_block_t onComplete) {
-            [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args completion:onComplete];
+            [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
+            if (onComplete) {
+              [weakSelf
+                  callFunctionOnBufferedRuntimeExecutor:[onComplete](facebook::jsi::Runtime &_) { onComplete(); }];
+            }
           }];
     }
     _launchOptions = launchOptions;
@@ -133,20 +137,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
 {
-  [self callFunctionOnJSModule:moduleName method:method args:args completion:nil];
-}
-
-- (void)callFunctionOnJSModule:(NSString *)moduleName
-                        method:(NSString *)method
-                          args:(NSArray *)args
-                    completion:(dispatch_block_t)completion
-{
   if (_valid) {
     _reactInstance->callFunctionOnModule(
         [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ? args : @[]));
-    if (completion) {
-      [self callFunctionOnBufferedRuntimeExecutor:[completion](facebook::jsi::Runtime &_) { completion(); }];
-    }
   }
 }
 

@@ -81,10 +81,6 @@ typedef std::shared_ptr<facebook::react::JSRuntimeFactory> (^RCTHostJSEngineProv
 - (void)start;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
-- (void)callFunctionOnJSModule:(NSString *)moduleName
-                        method:(NSString *)method
-                          args:(NSArray *)args
-                    completion:(nullable dispatch_block_t)completion;
 
 // Renderer API
 
