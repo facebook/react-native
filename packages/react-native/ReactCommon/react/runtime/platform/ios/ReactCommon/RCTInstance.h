@@ -72,7 +72,6 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
                    launchOptions:(nullable NSDictionary *)launchOptions;
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args;
-
 - (void)callFunctionOnBufferedRuntimeExecutor:(std::function<void(facebook::jsi::Runtime &runtime)> &&)executor;
 
 - (void)registerSegmentWithId:(NSNumber *)segmentId path:(NSString *)path;
