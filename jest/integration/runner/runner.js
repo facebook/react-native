@@ -21,6 +21,8 @@ import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import os from 'os';
 import path from 'path';
+// $FlowExpectedError[untyped-import]
+import {SourceMapConsumer} from 'source-map';
 
 const BUILD_OUTPUT_PATH = path.resolve(__dirname, '..', 'build');
 
@@ -130,6 +132,35 @@ function generateBytecodeBundle({
   }
 }
 
+function symbolicateStackTrace(
+  sourceMapPath: string,
+  stackTrace: string,
+): string {
+  const sourceMapData = JSON.parse(fs.readFileSync(sourceMapPath, 'utf8'));
+  const consumer = new SourceMapConsumer(sourceMapData);
+
+  return stackTrace
+    .split('\n')
+    .map(line => {
+      const match = line.match(/at (.*) \((.*):(\d+):(\d+)\)/);
+      if (match) {
+        const functionName = match[1];
+        // const fileName = match[2];
+        const lineNumber = parseInt(match[3], 10);
+        const columnNumber = parseInt(match[4], 10);
+        // Get the original position
+        const originalPosition = consumer.originalPositionFor({
+          line: lineNumber,
+          column: columnNumber,
+        });
+        return `at ${originalPosition.name ?? functionName} (${originalPosition.source}:${originalPosition.line}:${originalPosition.column})`;
+      } else {
+        return line;
+      }
+    })
+    .join('\n');
+}
+
 module.exports = async function runTest(
   globalConfig: {...},
   config: {...},
@@ -163,12 +194,19 @@ module.exports = async function runTest(
   fs.mkdirSync(path.dirname(entrypointPath), {recursive: true});
   fs.writeFileSync(entrypointPath, entrypointContents, 'utf8');
 
+  const sourceMapPath = path.join(
+    path.dirname(testJSBundlePath),
+    path.basename(testJSBundlePath, '.js') + '.map',
+  );
+
   await Metro.runBuild(metroConfig, {
     entry: entrypointPath,
     out: testJSBundlePath,
     platform: 'android',
     minify: isOptimizedMode,
     dev: !isOptimizedMode,
+    sourceMap: true,
+    sourceMapUrl: sourceMapPath,
   });
 
   if (isOptimizedMode) {
@@ -232,7 +270,7 @@ module.exports = async function runTest(
   const testResultError = rnTesterParsedOutput.testResult.error;
   if (testResultError) {
     const error = new Error(testResultError.message);
-    error.stack = testResultError.stack;
+    error.stack = symbolicateStackTrace(sourceMapPath, testResultError.stack);
     throw error;
   }
 
@@ -248,6 +286,9 @@ module.exports = async function runTest(
       failureDetails: [] as Array<string>,
       testFilePath: testPath,
       ...testResult,
+      failureMessages: testResult.failureMessages.map(maybeStackTrace =>
+        symbolicateStackTrace(sourceMapPath, maybeStackTrace),
+      ),
     })) ?? [];
 
   return {
