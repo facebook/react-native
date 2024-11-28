@@ -102,7 +102,6 @@ class HostAgent final {
   const HostTargetMetadata hostMetadata_;
   std::shared_ptr<InstanceAgent> instanceAgent_;
   FuseboxClientType fuseboxClientType_{FuseboxClientType::Unknown};
-  bool fuseboxNoticeLogged_{false};
   bool isPausedInDebuggerOverlayVisible_{false};
 
   /**
