@@ -175,6 +175,38 @@ function createMockFunction<TArgs: $ReadOnlyArray<mixed>, TReturn>(
 
 // flowlint unsafe-getters-setters:off
 
+class ErrorWithCustomBlame extends Error {
+  // Initially 5 to ignore all the frames from Babel helpers to instantiate this
+  // custom error class.
+  #ignoredFrameCount: number = 5;
+  #cachedProcessedStack: ?string;
+
+  blameToPreviousFrame(): this {
+    this.#ignoredFrameCount++;
+    return this;
+  }
+
+  get stack(): string {
+    if (this.#cachedProcessedStack == null) {
+      const originalStack = super.stack;
+
+      if (originalStack == null) {
+        this.#cachedProcessedStack = originalStack;
+      } else {
+        const lines = originalStack.split('\n');
+        lines.splice(1, this.#ignoredFrameCount);
+        this.#cachedProcessedStack = lines.join('\n');
+      }
+    }
+
+    return this.#cachedProcessedStack;
+  }
+
+  set stack(value: string) {
+    // no-op
+  }
+}
+
 class Expect {
   #received: mixed;
   #isNot: boolean = false;
@@ -191,27 +223,27 @@ class Expect {
   toEqual(expected: mixed): void {
     const pass = deepEqual(this.#received, expected, {strict: true});
     if (!this.#isExpectedResult(pass)) {
-      throw new Error(
+      throw new ErrorWithCustomBlame(
         `Expected${this.#maybeNotLabel()} to equal ${String(expected)} but received ${String(this.#received)}.`,
-      );
+      ).blameToPreviousFrame();
     }
   }
 
   toBe(expected: mixed): void {
     const pass = this.#received === expected;
     if (!this.#isExpectedResult(pass)) {
-      throw new Error(
+      throw new ErrorWithCustomBlame(
         `Expected${this.#maybeNotLabel()} ${String(expected)} but received ${String(this.#received)}.`,
-      );
+      ).blameToPreviousFrame();
     }
   }
 
   toBeInstanceOf(expected: Class<mixed>): void {
     const pass = this.#received instanceof expected;
     if (!this.#isExpectedResult(pass)) {
-      throw new Error(
+      throw new ErrorWithCustomBlame(
         `expected ${String(this.#received)}${this.#maybeNotLabel()} to be an instance of ${String(expected)}`,
-      );
+      ).blameToPreviousFrame();
     }
   }
 
@@ -219,26 +251,26 @@ class Expect {
     const pass =
       Math.abs(expected - Number(this.#received)) < Math.pow(10, -precision);
     if (!this.#isExpectedResult(pass)) {
-      throw new Error(
+      throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be close to ${expected}`,
-      );
+      ).blameToPreviousFrame();
     }
   }
 
   toBeNull(): void {
     const pass = this.#received == null;
     if (!this.#isExpectedResult(pass)) {
-      throw new Error(
+      throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be null`,
-      );
+      ).blameToPreviousFrame();
     }
   }
 
   toThrow(expected?: string): void {
     if (expected != null && typeof expected !== 'string') {
-      throw new Error(
+      throw new ErrorWithCustomBlame(
         'toThrow() implementation only accepts strings as arguments.',
-      );
+      ).blameToPreviousFrame();
     }
 
     let pass = false;
@@ -249,9 +281,9 @@ class Expect {
       pass = expected != null ? error.message === expected : true;
     }
     if (!this.#isExpectedResult(pass)) {
-      throw new Error(
+      throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to throw`,
-      );
+      ).blameToPreviousFrame();
     }
   }
 
@@ -259,9 +291,9 @@ class Expect {
     const mock = this.#requireMock();
     const pass = mock.calls.length > 0;
     if (!this.#isExpectedResult(pass)) {
-      throw new Error(
+      throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called, but it was${this.#isNot ? '' : "n't"}`,
-      );
+      ).blameToPreviousFrame();
     }
   }
 
@@ -269,9 +301,9 @@ class Expect {
     const mock = this.#requireMock();
     const pass = mock.calls.length === times;
     if (!this.#isExpectedResult(pass)) {
-      throw new Error(
+      throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called ${times} times, but it was called ${mock.calls.length} times`,
-      );
+      ).blameToPreviousFrame();
     }
   }
 
@@ -286,9 +318,11 @@ class Expect {
   #requireMock(): JestMockFn<$ReadOnlyArray<mixed>, mixed>['mock'] {
     // $FlowExpectedError[incompatible-use]
     if (!this.#received?.[MOCK_FN_TAG]) {
-      throw new Error(
+      throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)} to be a mock function, but it wasn't`,
-      );
+      )
+        .blameToPreviousFrame()
+        .blameToPreviousFrame();
     }
 
     // $FlowExpectedError[incompatible-use]
@@ -346,7 +380,9 @@ function executeTests() {
       result.status = status;
       result.duration = Date.now() - start;
       result.failureMessages =
-        status === 'failed' && error ? [error.message] : [];
+        status === 'failed' && error
+          ? [error.stack ?? error.message ?? String(error)]
+          : [];
     }
   }
 
