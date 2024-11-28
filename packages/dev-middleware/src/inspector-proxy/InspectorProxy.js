@@ -225,6 +225,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const deviceId = query.device || fallbackDeviceId;
         const deviceName = query.name || 'Unknown';
         const appName = query.app || 'Unknown';
+        const isProfilingBuild = query.profiling === 'true';
 
         const deviceRelativeBaseUrl =
           getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
@@ -242,6 +243,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           createMessageMiddleware: this.#customMessageHandler,
           deviceRelativeBaseUrl,
           serverRelativeBaseUrl: this.#serverBaseUrl,
+          isProfilingBuild,
         };
 
         if (oldDevice) {

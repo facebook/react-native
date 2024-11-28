@@ -12,7 +12,6 @@
 import type TerminalReporter from 'metro/src/lib/TerminalReporter';
 
 import chalk from 'chalk';
-import fetch from 'node-fetch';
 
 type PageDescription = $ReadOnly<{
   id: string,

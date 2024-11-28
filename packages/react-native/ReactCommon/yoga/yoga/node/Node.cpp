@@ -245,8 +245,8 @@ void Node::setLayoutHadOverflow(bool hadOverflow) {
   layout_.setHadOverflow(hadOverflow);
 }
 
-void Node::setLayoutDimension(float LengthValue, Dimension dimension) {
-  layout_.setDimension(dimension, LengthValue);
+void Node::setLayoutDimension(float lengthValue, Dimension dimension) {
+  layout_.setDimension(dimension, lengthValue);
 }
 
 // If both left and right are defined, then use left. Otherwise return +left or

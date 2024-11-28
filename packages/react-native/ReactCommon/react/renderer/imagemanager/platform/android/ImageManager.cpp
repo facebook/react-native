@@ -16,9 +16,7 @@ ImageManager::ImageManager(
   // Not implemented.
 }
 
-ImageManager::~ImageManager() {
-  // Not implemented.
-}
+ImageManager::~ImageManager() = default;
 
 ImageRequest ImageManager::requestImage(
     const ImageSource& imageSource,
@@ -30,8 +28,7 @@ ImageRequest ImageManager::requestImage(
     const ImageSource& imageSource,
     SurfaceId /*surfaceId*/,
     const ImageRequestParams& /*imageRequestParams*/,
-    Tag /*tag*/) const {
-  // Not implemented.
+    Tag /* tag */) const {
   return {imageSource, nullptr, {}};
 }
 
