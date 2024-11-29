@@ -33,13 +33,13 @@ export function getBuckModeForPlatform(enableRelease: boolean = false): string {
   }
 }
 
-type Buck2SpawnResult = {
+type SpawnResultWithOriginalCommand = {
   ...ReturnType<typeof spawnSync>,
   originalCommand: string,
   ...
 };
 
-export function runBuck2(args: Array<string>): Buck2SpawnResult {
+export function runBuck2(args: Array<string>): SpawnResultWithOriginalCommand {
   const result = spawnSync('buck2', args, {
     encoding: 'utf8',
     env: {
@@ -52,6 +52,26 @@ export function runBuck2(args: Array<string>): Buck2SpawnResult {
     ...result,
     originalCommand: `buck2 ${args.join(' ')}`,
   };
+}
+
+export function getDebugInfoFromCommandResult(
+  commandResult: SpawnResultWithOriginalCommand,
+): string {
+  const logLines = [
+    `Command ${commandResult.status === 0 ? 'succeeded' : 'failed'}: ${commandResult.originalCommand}`,
+    '',
+    'stdout:',
+    commandResult.stdout,
+    '',
+    'stderr:',
+    commandResult.stderr,
+  ];
+
+  if (commandResult.error) {
+    logLines.push('', 'error:', String(commandResult.error));
+  }
+
+  return logLines.join('\n');
 }
 
 export function getShortHash(contents: string): string {

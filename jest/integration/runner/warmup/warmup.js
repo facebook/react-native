@@ -9,7 +9,11 @@
  * @oncall react_native
  */
 
-import {getBuckModeForPlatform, runBuck2} from '../utils';
+import {
+  getBuckModeForPlatform,
+  getDebugInfoFromCommandResult,
+  runBuck2,
+} from '../utils';
 // $FlowExpectedError[untyped-import]
 import fs from 'fs';
 import Metro from 'metro';
@@ -75,16 +79,7 @@ function warmUpHermesCompiler(): void {
 
   if (buildHermesCompilerCommandResult.status !== 0) {
     throw new Error(
-      [
-        'Failed to build Hermes compiler. Full output:',
-        buildHermesCompilerCommandResult.originalCommand,
-        'stdout:',
-        buildHermesCompilerCommandResult.stdout,
-        'stderr:',
-        buildHermesCompilerCommandResult.stderr,
-        'error:',
-        buildHermesCompilerCommandResult.error,
-      ].join('\n'),
+      getDebugInfoFromCommandResult(buildHermesCompilerCommandResult),
     );
   }
 }
@@ -97,17 +92,6 @@ function warmUpRNTesterCLI(): void {
   ]);
 
   if (buildRNTesterCommandResult.status !== 0) {
-    throw new Error(
-      [
-        'Failed to build RN tester binary. Full output:',
-        buildRNTesterCommandResult.originalCommand,
-        'stdout:',
-        buildRNTesterCommandResult.stdout,
-        'stderr:',
-        buildRNTesterCommandResult.stderr,
-        'error:',
-        buildRNTesterCommandResult.error,
-      ].join('\n'),
-    );
+    throw new Error(getDebugInfoFromCommandResult(buildRNTesterCommandResult));
   }
 }
