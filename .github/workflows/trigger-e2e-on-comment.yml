@@ -17,8 +17,6 @@ jobs:
       # TL;DR: brew is not in the PATH anymore.
       - name: Setup Homebrew
         uses: Homebrew/actions/setup-homebrew@master
-      - name: Install jq
-        run: brew install jq
       - name: Run E2E Tests
         run: |
           # Github does not provide the branch of a PR when a comment on a PR is made
