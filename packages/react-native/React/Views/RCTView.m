@@ -139,6 +139,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _cursor = RCTCursorAuto;
 
     _backgroundColor = super.backgroundColor;
+    self.layer.allowsEdgeAntialiasing = YES;
   }
 
   return self;
@@ -600,6 +601,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
 
   [super layoutSubviews];
 
+  CGFloat scale = [UIScreen mainScreen].scale;
+  self.layer.cornerRadius = round(_borderRadius * scale) / scale;
+  
   if (_removeClippedSubviews) {
     [self updateClippedSubviews];
   }
