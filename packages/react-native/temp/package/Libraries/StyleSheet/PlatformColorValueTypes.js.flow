@@ -1,0 +1,22 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow strict-local
+ */
+
+import type {ProcessedColorValue} from './processColor';
+import type {ColorValue, NativeColorValue} from './StyleSheet';
+
+declare export function PlatformColor(...names: Array<string>): ColorValue;
+
+declare export function normalizeColorObject(
+  color: NativeColorValue,
+): ?ProcessedColorValue;
+
+declare export function processColorObject(
+  color: NativeColorValue,
+): ?NativeColorValue;

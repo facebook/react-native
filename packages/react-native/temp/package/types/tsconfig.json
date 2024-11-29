@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "lib": ["es6"],
+      "noImplicitAny": true,
+      "noImplicitThis": true,
+      "strictFunctionTypes": true,
+      "strictNullChecks": true,
+      "types": [],
+      "jsx": "react",
+      "noEmit": true,
+      "forceConsistentCasingInFileNames": true,
+      "paths": {"react-native": ["."]}
+    }
+  }

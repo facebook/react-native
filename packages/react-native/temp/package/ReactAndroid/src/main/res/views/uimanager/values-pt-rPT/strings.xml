@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: pt_PT -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Ligação</string>
+    <string name="image_description" gender="unknown">Imagem</string>
+    <string name="imagebutton_description" gender="unknown">Botão, Imagem</string>
+    <string name="header_description" gender="unknown">Título</string>
+    <string name="alert_description" gender="unknown">Aviso</string>
+    <string name="combobox_description" gender="unknown">Caixa de combinação</string>
+    <string name="menubar_description" gender="unknown">Barra do menu</string>
+    <string name="menuitem_description" gender="unknown">Item do menu</string>
+    <string name="progressbar_description" gender="unknown">Barra de progresso</string>
+    <string name="radiogroup_description" gender="unknown">Grupo de opções</string>
+    <string name="scrollbar_description" gender="unknown">Barra de deslocamento</string>
+    <string name="spinbutton_description" gender="unknown">Botão giratório</string>
+    <string name="rn_tab_description" gender="unknown">Separador</string>
+    <string name="tablist_description" gender="unknown">Lista de separadores</string>
+    <string name="timer_description" gender="unknown">Temporizador</string>
+    <string name="toolbar_description" gender="unknown">Barra de ferramentas</string>
+    <string name="summary_description" gender="unknown">Resumo</string>
+    <string name="state_busy_description" gender="unknown">ocupado</string>
+    <string name="state_expanded_description" gender="unknown">expandido</string>
+    <string name="state_collapsed_description" gender="unknown">fechado</string>
+    <string name="state_unselected_description" gender="unknown">não selecionado</string>
+    <string name="state_on_description" gender="unknown">ativado</string>
+    <string name="state_off_description" gender="unknown">desativado</string>
+    <string name="state_mixed_description" gender="unknown">misto</string>
+</resources>

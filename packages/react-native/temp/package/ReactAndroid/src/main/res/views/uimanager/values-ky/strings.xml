@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: ky_KG -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Шилтеме</string>
+    <string name="image_description" gender="unknown">Сүрөт</string>
+    <string name="imagebutton_description" gender="unknown">Баскыч, сүрөт</string>
+    <string name="combobox_description" gender="unknown">Айкалыштырылган тизме</string>
+    <string name="menu_description" gender="unknown">Меню</string>
+    <string name="state_on_description" gender="unknown">күйүк</string>
+    <string name="state_off_description" gender="unknown">өчүк</string>
+</resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: ro_RO -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="image_description" gender="unknown">Imagine</string>
+    <string name="imagebutton_description" gender="unknown">Buton, imagine</string>
+    <string name="header_description" gender="unknown">Antet</string>
+    <string name="alert_description" gender="unknown">Alertă</string>
+    <string name="combobox_description" gender="unknown">Casetă combo</string>
+    <string name="menu_description" gender="unknown">Meniu</string>
+    <string name="menubar_description" gender="unknown">Bară meniu</string>
+    <string name="menuitem_description" gender="unknown">Element din meniu</string>
+    <string name="progressbar_description" gender="unknown">Bară de progres</string>
+    <string name="radiogroup_description" gender="unknown">Grup de butoane radio</string>
+    <string name="scrollbar_description" gender="unknown">Bară de derulare</string>
+    <string name="spinbutton_description" gender="unknown">Buton de incrementare</string>
+    <string name="rn_tab_description" gender="unknown">Filă</string>
+    <string name="tablist_description" gender="unknown">Listă file</string>
+    <string name="toolbar_description" gender="unknown">Bară de instrumente</string>
+    <string name="summary_description" gender="unknown">Rezumat</string>
+    <string name="state_busy_description" gender="unknown">ocupat</string>
+    <string name="state_expanded_description" gender="unknown">extins</string>
+    <string name="state_collapsed_description" gender="unknown">restrâns</string>
+    <string name="state_unselected_description" gender="unknown">neselectat</string>
+    <string name="state_on_description" gender="unknown">activat</string>
+    <string name="state_off_description" gender="unknown">dezactivat</string>
+    <string name="state_mixed_description" gender="unknown">combinat</string>
+</resources>

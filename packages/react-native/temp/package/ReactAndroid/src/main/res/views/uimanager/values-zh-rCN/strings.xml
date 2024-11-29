@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: zh_CN -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">链接</string>
+    <string name="image_description" gender="unknown">图片</string>
+    <string name="imagebutton_description" gender="unknown">按钮，图片</string>
+    <string name="header_description" gender="unknown">标题</string>
+    <string name="alert_description" gender="unknown">提醒</string>
+    <string name="combobox_description" gender="unknown">组合框</string>
+    <string name="menu_description" gender="unknown">菜单</string>
+    <string name="menubar_description" gender="unknown">菜单栏</string>
+    <string name="menuitem_description" gender="unknown">菜单项目</string>
+    <string name="progressbar_description" gender="unknown">进度条</string>
+    <string name="radiogroup_description" gender="unknown">单选组</string>
+    <string name="scrollbar_description" gender="unknown">滚动条</string>
+    <string name="spinbutton_description" gender="unknown">旋转按钮</string>
+    <string name="rn_tab_description" gender="unknown">选项卡</string>
+    <string name="tablist_description" gender="unknown">选项卡列表</string>
+    <string name="timer_description" gender="unknown">倒计时</string>
+    <string name="toolbar_description" gender="unknown">工具栏</string>
+    <string name="summary_description" gender="unknown">摘要</string>
+    <string name="state_busy_description" gender="unknown">忙碌中</string>
+    <string name="state_expanded_description" gender="unknown">已展开</string>
+    <string name="state_collapsed_description" gender="unknown">已收起</string>
+    <string name="state_unselected_description" gender="unknown">未选中</string>
+    <string name="state_on_description" gender="unknown">开启</string>
+    <string name="state_off_description" gender="unknown">关闭</string>
+    <string name="state_mixed_description" gender="unknown">混合</string>
+</resources>

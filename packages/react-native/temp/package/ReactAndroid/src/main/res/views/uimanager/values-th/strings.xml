@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: th_TH -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">ลิงก์</string>
+    <string name="image_description" gender="unknown">รูปภาพ</string>
+    <string name="imagebutton_description" gender="unknown">ปุ่ม, รูปภาพ</string>
+    <string name="header_description" gender="unknown">ส่วนหัว</string>
+    <string name="alert_description" gender="unknown">การแจ้งเตือน</string>
+    <string name="combobox_description" gender="unknown">กล่องคอมโบ</string>
+    <string name="menu_description" gender="unknown">เมนู</string>
+    <string name="menubar_description" gender="unknown">แถบเมนู</string>
+    <string name="menuitem_description" gender="unknown">รายการในเมนู</string>
+    <string name="progressbar_description" gender="unknown">แถบความคืบหน้า</string>
+    <string name="radiogroup_description" gender="unknown">กลุ่มปุ่มตัวเลือก</string>
+    <string name="scrollbar_description" gender="unknown">แถบเลื่อน</string>
+    <string name="spinbutton_description" gender="unknown">ปุ่มเพิ่ม/ลด</string>
+    <string name="rn_tab_description" gender="unknown">แท็บ</string>
+    <string name="tablist_description" gender="unknown">รายการแท็บ</string>
+    <string name="timer_description" gender="unknown">ตัวจับเวลา</string>
+    <string name="toolbar_description" gender="unknown">แถบเครื่องมือ</string>
+    <string name="summary_description" gender="unknown">สรุป</string>
+    <string name="state_busy_description" gender="unknown">ไม่ว่าง</string>
+    <string name="state_expanded_description" gender="unknown">ขยายแล้ว</string>
+    <string name="state_collapsed_description" gender="unknown">ยุบแล้ว</string>
+    <string name="state_unselected_description" gender="unknown">ไม่ได้เลือก</string>
+    <string name="state_on_description" gender="unknown">เปิดอยู่</string>
+    <string name="state_off_description" gender="unknown">ปิดอยู่</string>
+    <string name="state_mixed_description" gender="unknown">ผสมกัน</string>
+</resources>
