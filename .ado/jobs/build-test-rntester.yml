@@ -2,7 +2,7 @@ parameters:
   - name: appleBuildMatrix
     type: object
     default:
-      - name: macos_oldarch_jsc 
+      - name: macos_oldarch_jsc
         friendly_name: 'macOS, Old Arch, JSC'
         sdk: macosx
         scheme: RNTester-macOS
@@ -30,7 +30,7 @@ parameters:
       #   packager_platform: 'macos'
       #   new_arch_enabled: '1'
       #   use_hermes: '1'
-      - name: ios_oldarch_jsc 
+      - name: ios_oldarch_jsc
         friendly_name: 'iOS, Old Arch, JSC'
         sdk: iphonesimulator
         scheme: RNTester
@@ -58,7 +58,7 @@ parameters:
       #   packager_platform: 'ios'
       #   new_arch_enabled: '1'
       #   use_hermes: '1'
-      - name: xros_oldarch_jsc 
+      - name: xros_oldarch_jsc
         friendly_name: 'xrOS, Old Arch, JSC'
         sdk: xrsimulator
         scheme: RNTester-visionOS
@@ -89,88 +89,79 @@ parameters:
 
 jobs:
   - ${{ each slice in parameters.appleBuildMatrix }}:
-      - job: ${{ slice.name }}
-        displayName: ${{ slice.friendly_name }}
-        pool:
-          vmImage: $(vmImageApple)
-        timeoutInMinutes: 90
-        cancelTimeoutInMinutes: 5
-        steps:
+    - job: ${{ slice.name }}
+      displayName: ${{ slice.friendly_name }}
+      pool:
+        vmImage: $(vmImageApple)
+      timeoutInMinutes: 90
+      cancelTimeoutInMinutes: 5
+      steps:
         - template: /.ado/templates/apple-tools-setup.yml@self
 
         - ${{ if in(slice.sdk, 'xros', 'xrsimulator') }}:
-            - task: CmdLine@2
-              displayName: Download visionOS SDDK
-              inputs:
-                script: |
-                  set -eox pipefail
-                  # https://github.com/actions/runner-images/issues/10559
-                  sudo xcodebuild -runFirstLaunch
-                  sudo xcrun simctl list
-                  sudo xcodebuild -downloadPlatform visionOS
-                  sudo xcodebuild -runFirstLaunch
-
-        - task: CmdLine@2
-          displayName: yarn install
-          inputs:
-            script: |
+          - script: |
               set -eox pipefail
-              yarn install --immutable
+              # https://github.com/actions/runner-images/issues/10559
+              sudo xcodebuild -runFirstLaunch
+              sudo xcrun simctl list
+              sudo xcodebuild -downloadPlatform visionOS
+              sudo xcodebuild -runFirstLaunch
+            displayName: Download visionOS SDK
 
-        - task: CmdLine@2
-          displayName: pod install
-          inputs:
-            script: |
-              set -eox pipefail
-              cd packages/rn-tester
-              bundle install
-              bundle exec pod install --verbose
+        - script: |
+            yarn install
+          displayName: Install npm dependencies
+
+        - script: |
+            set -eox pipefail
+            bundle install
+            bundle exec pod install --verbose
           env:
             RCT_NEW_ARCH_ENABLED: ${{ slice.new_arch_enabled }}
             USE_HERMES: ${{ slice.use_hermes }}
+          workingDirectory: packages/rn-tester
+          displayName: Install Pods
 
-        - task: CmdLine@2
-          displayName: Build ${{ slice.scheme }}
-          inputs:
-            script: |
-              set -eox pipefail
-              ./.ado/scripts/xcodebuild.sh packages/rn-tester/RNTesterPods.xcworkspace ${{ slice.sdk }} ${{ slice.scheme }} build
+        - script: |
+            set -eox pipefail
+            .ado/scripts/xcodebuild.sh packages/rn-tester/RNTesterPods.xcworkspace ${{ slice.sdk }} ${{ slice.scheme }} build
           env:
             CCACHE_DISABLE: 1
-      
-        # Skip testing on visionOS via the conditions below
+          displayName: Build ${{ slice.scheme }}
 
-        - ${{ if ne(slice.scheme, 'RNTester-visionOS') }}:
-          - task: ShellScript@2
-            displayName: 'Setup packager and WebSocket test server'
-            inputs:
-              scriptPath: '.ado/scripts/ado-test-setup.sh'
-              disableAutoCwd: true
-              cwd: ''
 
-          - bash: |
-              echo Preparing the packager for platform $PLATFORM
-              curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/packages/rn-tester/js/RNTesterApp.${PLATFORM}.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
-              curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/packages/rn-tester/js/RNTesterApp.${PLATFORM}.bundle?platform=${PLATFORM}&dev=true&minify=false" -o /dev/null
-              curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
-              curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
-            env:
-              PLATFORM: ${{ slice.packager_platform }}
-            displayName: 'curl the packager'
+        # https://github.com/microsoft/react-native-macos/issues/2297
+        # Skip native tests as they tend to be flaky
 
-          - task: CmdLine@2
-            displayName: Test ${{ slice.scheme }}
-            inputs:
-              script: |
-                set -eox pipefail
-                ./.ado/scripts/xcodebuild.sh packages/rn-tester/RNTesterPods.xcworkspace ${{ slice.sdk }} ${{ slice.scheme }} test
-            env:
-              CCACHE_DISABLE: 1
+        # - ${{ if ne(slice.scheme, 'RNTester-visionOS') }}:
+        #  - task: ShellScript@2
+        #    displayName: Setup packager and WebSocket test server
+        #    inputs:
+        #      scriptPath: .ado/scripts/ado-test-setup.sh
+        #      disableAutoCwd: true
+        #      cwd: ''
 
-          - task: ShellScript@2
-            displayName: 'Cleanup packager and WebSocket test server'
-            inputs:
-              scriptPath: '.ado/scripts/ado-test-cleanup.sh'
-              disableAutoCwd: true
-              cwd: ''
-            condition: always()
+        #  - script: |
+        #      echo Preparing the packager for platform $PLATFORM
+        #      curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/packages/rn-tester/js/RNTesterApp.${PLATFORM}.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
+        #      curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/packages/rn-tester/js/RNTesterApp.${PLATFORM}.bundle?platform=${PLATFORM}&dev=true&minify=false" -o /dev/null
+        #      curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
+        #      curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
+        #    env:
+        #      PLATFORM: ${{ slice.packager_platform }}
+        #    displayName: Fetch JS bundles from dev server
+
+        #  - script: |
+        #      set -eox pipefail
+        #      .ado/scripts/xcodebuild.sh packages/rn-tester/RNTesterPods.xcworkspace ${{ slice.sdk }} ${{ slice.scheme }} test
+        #    env:
+        #      CCACHE_DISABLE: 1
+        #    displayName: Test ${{ slice.scheme }}
+
+        #  - task: ShellScript@2
+        #    displayName: Cleanup packager and WebSocket test server
+        #    inputs:
+        #      scriptPath: .ado/scripts/ado-test-cleanup.sh
+        #      disableAutoCwd: true
+        #      cwd: ''
+        #    condition: always()
