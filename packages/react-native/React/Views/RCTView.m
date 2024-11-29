@@ -137,7 +137,6 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
     _borderStyle = RCTBorderStyleSolid;
     _hitTestEdgeInsets = UIEdgeInsetsZero;
     _cursor = RCTCursorAuto;
-    self.layer.allowsEdgeAntialiasing = YES;
 
     _backgroundColor = super.backgroundColor;
   }
@@ -600,8 +599,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : unused)
   // to updateClippedSubviews manually after loading
 
   [super layoutSubviews];
-  CGFloat scale = [UIScreen mainScreen].scale;
-  self.layer.cornerRadius = round(_borderRadius * scale) / scale;
 
   if (_removeClippedSubviews) {
     [self updateClippedSubviews];
