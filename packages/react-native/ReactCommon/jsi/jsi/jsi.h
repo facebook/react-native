@@ -45,12 +45,10 @@ class JSI_EXPORT Buffer {
 class JSI_EXPORT StringBuffer : public Buffer {
  public:
   StringBuffer(std::string s) : s_(std::move(s)) {}
-  size_t size() const override {
-    return s_.size();
-  }
-  const uint8_t* data() const override {
-    return reinterpret_cast<const uint8_t*>(s_.data());
-  }
+  virtual ~StringBuffer() override;
+
+  size_t size() const override;
+  const uint8_t* data() const override;
 
  private:
   std::string s_;
