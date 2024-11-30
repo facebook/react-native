@@ -1553,7 +1553,8 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       onEndReached &&
       this.state.cellsAroundViewport.last === getItemCount(data) - 1 &&
       isWithinEndThreshold &&
-      this._listMetrics.getContentLength() !== this._sentEndForContentLength
+      this._listMetrics.getContentLength() !== this._sentEndForContentLength &&
+      getItemCount(data) > 0
     ) {
       this._sentEndForContentLength = this._listMetrics.getContentLength();
       onEndReached({distanceFromEnd});
