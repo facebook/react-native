@@ -897,6 +897,12 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
 
   [self _forceDispatchNextScrollEvent];
 
+  // Notify of momentum scroll begin before setting content offset or events can fire out of order and scrollview gets
+  // stuck in "animating" state
+  if (animated && _eventEmitter) {
+    static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollBegin([self _scrollViewMetrics]);
+  }
+
   [_scrollView setContentOffset:offset animated:animated];
 
   if (!animated) {
