@@ -28,6 +28,19 @@ export interface RefreshControlPropsIOS extends ViewProps {
    * Title color.
    */
   titleColor?: ColorValue | undefined;
+
+  /**
+   * Title font family.
+   */
+  titleFontFamily?: string | undefined;
+  /**
+   * Title font size.
+   */
+  titleFontSize?: number | undefined;
+  /**
+   * Title title font weight.
+   */
+  titleFontWeight?: string | undefined;
 }
 
 export interface RefreshControlPropsAndroid extends ViewProps {
