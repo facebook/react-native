@@ -113,7 +113,7 @@ export function createCompositeKeyForProps(
     const key = keys[ii];
     const value = props[key];
 
-    if (allowlist == null || Object.hasOwn(allowlist, key)) {
+    if (allowlist == null || allowlist.hasOwnProperty(key)) {
       let compositeKeyComponent;
       if (key === 'style') {
         // $FlowFixMe[incompatible-call] - `style` is a valid argument.
@@ -205,7 +205,7 @@ function createCompositeKeyForObject(
   for (let ii = 0, length = keys.length; ii < length; ii++) {
     const key = keys[ii];
 
-    if (allowlist == null || Object.hasOwn(allowlist, key)) {
+    if (allowlist == null || allowlist.hasOwnProperty(key)) {
       const value = object[key];
 
       let compositeKeyComponent;
@@ -250,7 +250,7 @@ export function areCompositeKeysEqual(
   }
   for (let ii = 0; ii < length; ii++) {
     const key = keys[ii];
-    if (!Object.hasOwn(next, key)) {
+    if (!next.hasOwnProperty(key)) {
       return false;
     }
     const prevComponent = prev[key];
@@ -336,7 +336,7 @@ function areCompositeKeyComponentsEqual(
     for (let ii = 0; ii < length; ii++) {
       const key = keys[ii];
       if (
-        !Object.hasOwn(nullthrows(next), key) ||
+        !nullthrows(next).hasOwnProperty(key) ||
         !areCompositeKeyComponentsEqual(prev[key], next[key])
       ) {
         return false;

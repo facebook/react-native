@@ -35,7 +35,7 @@ function createAnimatedStyle(
     const key = keys[ii];
     const value = inputStyle[key];
 
-    if (allowlist == null || Object.hasOwn(allowlist, key)) {
+    if (allowlist == null || allowlist.hasOwnProperty(key)) {
       let node;
       if (value != null && key === 'transform') {
         node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()

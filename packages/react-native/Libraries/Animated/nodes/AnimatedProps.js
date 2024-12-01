@@ -37,7 +37,7 @@ function createAnimatedProps(
     const key = keys[ii];
     const value = inputProps[key];
 
-    if (allowlist == null || Object.hasOwn(allowlist, key)) {
+    if (allowlist == null || allowlist.hasOwnProperty(key)) {
       let node;
       if (key === 'style') {
         node = AnimatedStyle.from(value, allowlist?.style);

@@ -106,17 +106,17 @@ export function allowTransformProp(prop: string): void {
 }
 
 export function isSupportedColorStyleProp(prop: string): boolean {
-  return Object.hasOwn(SUPPORTED_COLOR_STYLES, prop);
+  return SUPPORTED_COLOR_STYLES.hasOwnProperty(prop);
 }
 
 export function isSupportedInterpolationParam(param: string): boolean {
-  return Object.hasOwn(SUPPORTED_INTERPOLATION_PARAMS, param);
+  return SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(param);
 }
 
 export function isSupportedStyleProp(prop: string): boolean {
-  return Object.hasOwn(SUPPORTED_STYLES, prop);
+  return SUPPORTED_STYLES.hasOwnProperty(prop);
 }
 
 export function isSupportedTransformProp(prop: string): boolean {
-  return Object.hasOwn(SUPPORTED_TRANSFORMS, prop);
+  return SUPPORTED_TRANSFORMS.hasOwnProperty(prop);
 }
