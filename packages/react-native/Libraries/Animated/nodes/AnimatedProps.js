@@ -37,7 +37,7 @@ function createAnimatedProps(
     const key = keys[ii];
     const value = inputProps[key];
 
-    if (allowlist == null || allowlist.hasOwnProperty(key)) {
+    if (allowlist == null || hasOwn(allowlist, key)) {
       let node;
       if (key === 'style') {
         node = AnimatedStyle.from(value, allowlist?.style);
@@ -271,3 +271,11 @@ export default class AnimatedProps extends AnimatedNode {
     };
   }
 }
+
+// Supported versions of JSC do not implement the newer Object.hasOwn. Remove
+// this shim when they do.
+// $FlowIgnore[method-unbinding]
+const _hasOwnProp = Object.prototype.hasOwnProperty;
+const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
+  // $FlowIgnore[method-unbinding]
+  Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));
