@@ -9,6 +9,7 @@
 
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 
 #include <glog/logging.h>
 

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <variant>
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
@@ -54,41 +55,59 @@ class RawValue {
   /*
    * Constructors.
    */
-  RawValue() noexcept : dynamic_(nullptr) {}
+  RawValue() noexcept : value_(folly::dynamic(nullptr)) {}
 
-  RawValue(RawValue&& other) noexcept : dynamic_(std::move(other.dynamic_)) {}
+  RawValue(RawValue&& other) noexcept : value_(std::move(other.value_)) {}
 
   RawValue& operator=(RawValue&& other) noexcept {
     if (this != &other) {
-      dynamic_ = std::move(other.dynamic_);
+      value_ = std::move(other.value_);
     }
     return *this;
   }
 
-  RawValue(jsi::Runtime& runtime, const jsi::Value& value) noexcept
-      : runtime_(&runtime), value_(jsi::Value(runtime, value)) {}
+  explicit RawValue(jsi::Runtime& runtime, const jsi::Value& value) noexcept
+      : value_(std::make_pair(&runtime, jsi::Value(runtime, value))) {}
 
-  explicit RawValue(const folly::dynamic& dynamic) noexcept
-      : dynamic_(dynamic) {}
+  explicit RawValue(jsi::Runtime& runtime, jsi::Value&& value) noexcept
+      : value_(std::make_pair(&runtime, std::move(value))) {}
+
+  explicit RawValue(const folly::dynamic& dynamic) noexcept : value_(dynamic) {}
 
   explicit RawValue(folly::dynamic&& dynamic) noexcept
-      : dynamic_(std::move(dynamic)) {}
+      : value_(std::move(dynamic)) {}
 
  private:
   friend class RawProps;
   friend class RawPropsParser;
   friend class UIManagerBinding;
 
+  // TODO: had to make headers public. Feel that this shouldn't be necessary
+ public:
   /*
    * Copy constructor and copy assignment operator would be private and only for
    * internal use, but it's needed for user-code that does `auto val =
    * (butter::map<std::string, RawValue>)rawVal;`
    */
-  RawValue(const RawValue& other) noexcept : dynamic_(other.dynamic_) {}
+  RawValue(const RawValue& other) noexcept {
+    if (std::holds_alternative<folly::dynamic>(other.value_)) {
+      folly::dynamic dynamic = std::get<folly::dynamic>(other.value_);
+      value_ = dynamic;
+    } else {
+      const auto& [runtime, value] = std::get<JsiPair>(other.value_);
+      value_ = std::make_pair(runtime, jsi::Value(*runtime, value));
+    }
+  }
 
   RawValue& operator=(const RawValue& other) noexcept {
     if (this != &other) {
-      dynamic_ = other.dynamic_;
+      if (std::holds_alternative<folly::dynamic>(other.value_)) {
+        folly::dynamic dynamic = std::get<folly::dynamic>(other.value_);
+        value_ = dynamic;
+      } else {
+        const auto& [runtime, value] = std::get<JsiPair>(other.value_);
+        value_ = std::make_pair(runtime, jsi::Value(*runtime, value));
+      }
     }
     return *this;
   }
@@ -99,14 +118,17 @@ class RawValue {
    */
   template <typename T>
   explicit operator T() const {
-    if (runtime_ != nullptr) { // Case 1: value is stored as `jsi::Value`:
-      return jsi::dynamicFromValue(*runtime_, value_).get<T>();
+    if (std::holds_alternative<folly::dynamic>(value_)) {
+      folly::dynamic dynamic = std::get<folly::dynamic>(value_);
+      return castValue(dynamic, (T*)nullptr);
+    } else {
+      const auto& [runtime, value] = std::get<JsiPair>(value_);
+      return castValue(value, runtime, (T*)nullptr);
     }
-    return castValue(dynamic_, (T*)nullptr);
   }
 
   inline explicit operator folly::dynamic() const noexcept {
-    return dynamic_;
+    return std::get<folly::dynamic>(value_);
   }
 
   /*
@@ -114,26 +136,41 @@ class RawValue {
    */
   template <typename T>
   bool hasType() const noexcept {
-    return checkValueType(dynamic_, (T*)nullptr);
+    if (std::holds_alternative<folly::dynamic>(value_)) {
+      folly::dynamic dynamic = std::get<folly::dynamic>(value_);
+      return checkValueType(dynamic, (T*)nullptr);
+    } else {
+      const auto& [runtime, value] = std::get<JsiPair>(value_);
+      return checkValueType(value, runtime, (T*)nullptr);
+    }
   }
 
   /*
    * Checks if the stored value is *not* `null`.
    */
   bool hasValue() const noexcept {
-    return !dynamic_.isNull();
+    if (std::holds_alternative<folly::dynamic>(value_)) {
+      folly::dynamic dynamic = std::get<folly::dynamic>(value_);
+      return !dynamic.isNull();
+    } else {
+      return true; // jsi::Value cannot be null in this context
+    }
   }
 
  private:
-  // Case 1: prop is represented as `jsi::Value`.
-  jsi::Runtime* runtime_{};
-  jsi::Value value_;
-
-  // Case 2: prop is represented as `folly::dynamic`.
-  folly::dynamic dynamic_;
+  using JsiPair = std::pair<jsi::Runtime*, jsi::Value>;
+  using ValueVariant = std::variant<folly::dynamic, JsiPair>;
+  ValueVariant value_;
 
   static bool checkValueType(
       const folly::dynamic& /*dynamic*/,
+      RawValue* /*type*/) noexcept {
+    return true;
+  }
+
+  static bool checkValueType(
+      const jsi::Value& /*value*/,
+      jsi::Runtime* /*runtime*/,
       RawValue* /*type*/) noexcept {
     return true;
   }
@@ -324,6 +361,13 @@ class RawValue {
       const folly::dynamic& dynamic,
       RawValue* /*type*/) noexcept {
     return RawValue(dynamic);
+  }
+
+  static RawValue castValue(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      RawValue* /*type*/) noexcept {
+    return RawValue(*runtime, value);
   }
 
   static bool castValue(const folly::dynamic& dynamic, bool* /*type*/) {

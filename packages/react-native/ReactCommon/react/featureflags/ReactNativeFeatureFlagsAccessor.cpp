@@ -804,7 +804,7 @@ bool ReactNativeFeatureFlagsAccessor::useOptimizedEventBatchingOnAndroid() {
 }
 
 bool ReactNativeFeatureFlagsAccessor::useRawPropsJsiValue() {
-  auto flagValue = useRawPropsJsiValue_.load();
+  auto flagValue = std::optional<bool>(true); //useRawPropsJsiValue_.load();
 
   if (!flagValue.has_value()) {
     // This block is not exclusive but it is not necessary.
