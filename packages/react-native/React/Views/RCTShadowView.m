@@ -63,6 +63,9 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
 #define RCT_SET_YGVALUE(ygvalue, setter, ...)      \
   switch (ygvalue.unit) {                          \
     case YGUnitAuto:                               \
+    case YGUnitMaxContent:                         \
+    case YGUnitFitContent:                         \
+    case YGUnitStretch:                            \
     case YGUnitUndefined:                          \
       setter(__VA_ARGS__, YGUndefined);            \
       break;                                       \
@@ -87,6 +90,10 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
       break;                                       \
     case YGUnitPercent:                            \
       setter##Percent(__VA_ARGS__, ygvalue.value); \
+      break;                                       \
+    case YGUnitMaxContent:                         \
+    case YGUnitFitContent:                         \
+    case YGUnitStretch:                            \
       break;                                       \
   }
 

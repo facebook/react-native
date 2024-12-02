@@ -245,6 +245,12 @@ const char* YGUnitToString(const YGUnit value) {
       return "percent";
     case YGUnitAuto:
       return "auto";
+    case YGUnitMaxContent:
+      return "max-content";
+    case YGUnitFitContent:
+      return "fit-content";
+    case YGUnitStretch:
+      return "stretch";
   }
   return "unknown";
 }
