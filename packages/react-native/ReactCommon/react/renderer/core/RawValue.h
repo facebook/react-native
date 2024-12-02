@@ -65,6 +65,9 @@ class RawValue {
     return *this;
   }
 
+  RawValue(jsi::Runtime& runtime, const jsi::Value& value) noexcept
+      : runtime_(&runtime), value_(jsi::Value(runtime, value)) {}
+
   explicit RawValue(const folly::dynamic& dynamic) noexcept
       : dynamic_(dynamic) {}
 
@@ -96,6 +99,9 @@ class RawValue {
    */
   template <typename T>
   explicit operator T() const {
+    if (runtime_ != nullptr) { // Case 1: value is stored as `jsi::Value`:
+      return jsi::dynamicFromValue(*runtime_, value_).get<T>();
+    }
     return castValue(dynamic_, (T*)nullptr);
   }
 
@@ -119,6 +125,11 @@ class RawValue {
   }
 
  private:
+  // Case 1: prop is represented as `jsi::Value`.
+  jsi::Runtime* runtime_{};
+  jsi::Value value_;
+
+  // Case 2: prop is represented as `folly::dynamic`.
   folly::dynamic dynamic_;
 
   static bool checkValueType(
@@ -134,9 +145,23 @@ class RawValue {
   }
 
   static bool checkValueType(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      bool* /*type*/) noexcept {
+    return value.isBool();
+  }
+
+  static bool checkValueType(
       const folly::dynamic& dynamic,
       int* /*type*/) noexcept {
     return dynamic.isNumber();
+  }
+
+  static bool checkValueType(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      int* /*type*/) noexcept {
+    return value.isNumber();
   }
 
   static bool checkValueType(
@@ -146,9 +171,23 @@ class RawValue {
   }
 
   static bool checkValueType(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      int64_t* /*type*/) noexcept {
+    return value.isNumber();
+  }
+
+  static bool checkValueType(
       const folly::dynamic& dynamic,
       float* /*type*/) noexcept {
     return dynamic.isNumber();
+  }
+
+  static bool checkValueType(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      float* /*type*/) noexcept {
+    return value.isNumber();
   }
 
   static bool checkValueType(
@@ -158,9 +197,23 @@ class RawValue {
   }
 
   static bool checkValueType(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      double* /*type*/) noexcept {
+    return value.isNumber();
+  }
+
+  static bool checkValueType(
       const folly::dynamic& dynamic,
       std::string* /*type*/) noexcept {
     return dynamic.isString();
+  }
+
+  static bool checkValueType(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      std::string* /*type*/) noexcept {
+    return value.isString();
   }
 
   template <typename T>
@@ -173,6 +226,36 @@ class RawValue {
 
     for (const auto& item : dynamic) {
       if (!checkValueType(item, (T*)nullptr)) {
+        return false;
+      }
+
+      // Note: We test only one element.
+      break;
+    }
+
+    return true;
+  }
+
+  template <typename T>
+  static bool checkValueType(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      std::vector<T>* /*type*/) noexcept {
+    if (!value.isObject()) {
+      return false;
+    }
+
+    jsi::Object asObject = value.asObject(*runtime);
+
+    if (asObject.isArray(*runtime)) {
+      return false;
+    }
+
+    auto array = asObject.asArray(*runtime);
+    size_t size = array.size(*runtime);
+    for (size_t i = 0; i < size; i++) {
+      jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
+      if (!checkValueType(itemValue, runtime, (T*)nullptr)) {
         return false;
       }
 
@@ -204,6 +287,38 @@ class RawValue {
     return true;
   }
 
+  template <typename T>
+  static bool checkValueType(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      std::unordered_map<std::string, T>* /*type*/) noexcept {
+    if (!value.isObject()) {
+      return false;
+    }
+
+    jsi::Object asObject = value.asObject(*runtime);
+
+    if (asObject.isArray(*runtime)) {
+      return false;
+    }
+
+    auto propertyNames = asObject.getPropertyNames(*runtime);
+    size_t size = propertyNames.size(*runtime);
+    for (size_t i = 0; i < size; i++) {
+      jsi::String propertyName =
+          propertyNames.getValueAtIndex(*runtime, i).getString(*runtime);
+      jsi::Value propertyValue = asObject.getProperty(*runtime, propertyName);
+      if (!checkValueType(propertyValue, runtime, (T*)nullptr)) {
+        return false;
+      }
+
+      // Note: We test only one element.
+      break;
+    }
+
+    return true;
+  }
+
   // Casts
   static RawValue castValue(
       const folly::dynamic& dynamic,
@@ -215,26 +330,62 @@ class RawValue {
     return dynamic.getBool();
   }
 
+  static bool
+  castValue(const jsi::Value& value, jsi::Runtime* runtime, bool* /*type*/) {
+    return value.asBool();
+  }
+
   static int castValue(const folly::dynamic& dynamic, int* /*type*/) {
     return static_cast<int>(dynamic.asInt());
+  }
+
+  static int
+  castValue(const jsi::Value& value, jsi::Runtime* runtime, int* /*type*/) {
+    double number = value.asNumber();
+    return static_cast<int>(number);
   }
 
   static int64_t castValue(const folly::dynamic& dynamic, int64_t* /*type*/) {
     return dynamic.asInt();
   }
 
+  static int64_t
+  castValue(const jsi::Value& value, jsi::Runtime* runtime, int64_t* /*type*/) {
+    double number = value.asNumber();
+    return static_cast<int64_t>(number);
+  }
+
   static float castValue(const folly::dynamic& dynamic, float* /*type*/) {
     return static_cast<float>(dynamic.asDouble());
+  }
+
+  static float
+  castValue(const jsi::Value& value, jsi::Runtime* runtime, float* /*type*/) {
+    double number = value.asNumber();
+    return static_cast<float>(number);
   }
 
   static double castValue(const folly::dynamic& dynamic, double* /*type*/) {
     return dynamic.asDouble();
   }
 
+  static double
+  castValue(const jsi::Value& value, jsi::Runtime* runtime, double* /*type*/) {
+    return value.asNumber();
+  }
+
   static std::string castValue(
       const folly::dynamic& dynamic,
       std::string* /*type*/) {
     return dynamic.getString();
+  }
+
+  static std::string castValue(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      std::string* /*type*/) {
+    jsi::String stringValue = value.getString(*runtime);
+    return stringValue.utf8(*runtime);
   }
 
   template <typename T>
@@ -246,6 +397,26 @@ class RawValue {
     result.reserve(dynamic.size());
     for (const auto& item : dynamic) {
       result.push_back(castValue(item, (T*)nullptr));
+    }
+    return result;
+  }
+
+  template <typename T>
+  static std::vector<T> castValue(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      std::vector<T>* /*type*/) {
+    react_native_assert(value.isObject());
+    jsi::Object object = value.asObject(*runtime);
+    react_native_assert(object.isArray(*runtime));
+    auto array = object.asArray(*runtime);
+    auto size = array.size(*runtime);
+    auto result = std::vector<T>{};
+    result.reserve(size);
+    for (size_t i = 0; i < size; i++) {
+      jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
+      T item = castValue(itemValue, runtime, (T*)nullptr);
+      result.push_back(item);
     }
     return result;
   }
@@ -264,6 +435,27 @@ class RawValue {
   }
 
   template <typename T>
+  static std::vector<std::vector<T>> castValue(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      std::vector<std::vector<T>>* /*type*/) {
+    react_native_assert(value.isObject());
+    jsi::Object object = value.asObject(*runtime);
+    react_native_assert(object.isArray(*runtime));
+    auto array = object.asArray(*runtime);
+    auto size = array.size(*runtime);
+    auto result = std::vector<std::vector<T>>{};
+    result.reserve(size);
+    for (size_t i = 0; i < size; i++) {
+      jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
+      std::vector<T> item =
+          castValue(itemValue, runtime, (std::vector<T>*)nullptr);
+      result.push_back(item);
+    }
+    return result;
+  }
+
+  template <typename T>
   static std::unordered_map<std::string, T> castValue(
       const folly::dynamic& dynamic,
       std::unordered_map<std::string, T>* /*type*/) {
@@ -272,6 +464,27 @@ class RawValue {
     for (const auto& item : dynamic.items()) {
       react_native_assert(item.first.isString());
       result[item.first.getString()] = castValue(item.second, (T*)nullptr);
+    }
+    return result;
+  }
+
+  template <typename T>
+  static std::unordered_map<std::string, T> castValue(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      std::unordered_map<std::string, T>* /*type*/) {
+    react_native_assert(value.isObject());
+    jsi::Object object = value.asObject(*runtime);
+    auto propertyNames = object.getPropertyNames(*runtime);
+    auto size = propertyNames.size(*runtime);
+    auto result = std::unordered_map<std::string, T>{};
+    for (size_t i = 0; i < size; i++) {
+      jsi::Value propertyNameValue = propertyNames.getValueAtIndex(*runtime, i);
+      jsi::String propertyName = propertyNameValue.getString(*runtime);
+      jsi::Value propertyValue = object.getProperty(*runtime, propertyName);
+      std::string propertyNameString = propertyName.utf8(*runtime);
+      T property = castValue(propertyValue, runtime, (T*)nullptr);
+      result[propertyNameString] = property;
     }
     return result;
   }
