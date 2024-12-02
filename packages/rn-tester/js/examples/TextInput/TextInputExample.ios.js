@@ -27,8 +27,8 @@ const {
   StyleSheet,
   Switch,
   Text,
-  View,
   TextInput,
+  View,
 } = require('react-native');
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
