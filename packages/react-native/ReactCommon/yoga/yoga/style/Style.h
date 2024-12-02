@@ -30,6 +30,7 @@
 #include <yoga/enums/Wrap.h>
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/StyleLength.h>
+#include <yoga/style/StyleSizeLength.h>
 #include <yoga/style/StyleValuePool.h>
 
 namespace facebook::yoga {
@@ -37,6 +38,7 @@ namespace facebook::yoga {
 class YG_EXPORT Style {
  public:
   using Length = StyleLength;
+  using SizeLength = StyleSizeLength;
 
   static constexpr float DefaultFlexGrow = 0.0f;
   static constexpr float DefaultFlexShrink = 0.0f;
@@ -133,10 +135,10 @@ class YG_EXPORT Style {
     pool_.store(flexShrink_, value);
   }
 
-  Style::Length flexBasis() const {
-    return pool_.getLength(flexBasis_);
+  Style::SizeLength flexBasis() const {
+    return pool_.getSize(flexBasis_);
   }
-  void setFlexBasis(Style::Length value) {
+  void setFlexBasis(Style::SizeLength value) {
     pool_.store(flexBasis_, value);
   }
 
@@ -175,17 +177,17 @@ class YG_EXPORT Style {
     pool_.store(gap_[yoga::to_underlying(gutter)], value);
   }
 
-  Style::Length dimension(Dimension axis) const {
-    return pool_.getLength(dimensions_[yoga::to_underlying(axis)]);
+  Style::SizeLength dimension(Dimension axis) const {
+    return pool_.getSize(dimensions_[yoga::to_underlying(axis)]);
   }
-  void setDimension(Dimension axis, Style::Length value) {
+  void setDimension(Dimension axis, Style::SizeLength value) {
     pool_.store(dimensions_[yoga::to_underlying(axis)], value);
   }
 
-  Style::Length minDimension(Dimension axis) const {
-    return pool_.getLength(minDimensions_[yoga::to_underlying(axis)]);
+  Style::SizeLength minDimension(Dimension axis) const {
+    return pool_.getSize(minDimensions_[yoga::to_underlying(axis)]);
   }
-  void setMinDimension(Dimension axis, Style::Length value) {
+  void setMinDimension(Dimension axis, Style::SizeLength value) {
     pool_.store(minDimensions_[yoga::to_underlying(axis)], value);
   }
 
@@ -207,10 +209,10 @@ class YG_EXPORT Style {
                                                : FloatOptional{0.0});
   }
 
-  Style::Length maxDimension(Dimension axis) const {
-    return pool_.getLength(maxDimensions_[yoga::to_underlying(axis)]);
+  Style::SizeLength maxDimension(Dimension axis) const {
+    return pool_.getSize(maxDimensions_[yoga::to_underlying(axis)]);
   }
-  void setMaxDimension(Dimension axis, Style::Length value) {
+  void setMaxDimension(Dimension axis, Style::SizeLength value) {
     pool_.store(maxDimensions_[yoga::to_underlying(axis)], value);
   }
 
