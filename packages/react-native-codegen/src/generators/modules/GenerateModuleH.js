@@ -406,6 +406,14 @@ struct Bridging<${enumName}> {
 };`;
 };
 
+function getMemberValueAppearance(member: NativeModuleEnumMember['value']) {
+  if (member.type === 'StringLiteralTypeAnnotation') {
+    return `"${member.value}"`;
+  } else {
+    return member.value;
+  }
+}
+
 function generateEnum(
   hasteModuleName: string,
   origEnumName: string,
@@ -416,9 +424,6 @@ function generateEnum(
 
   const nativeEnumMemberType: NativeEnumMemberValueType =
     memberType === 'StringTypeAnnotation' ? 'std::string' : 'int32_t';
-
-  const getMemberValueAppearance = (value: string | number) =>
-    memberType === 'StringTypeAnnotation' ? `"${value}"` : `${value}`;
 
   const fromCases =
     members
