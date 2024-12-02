@@ -151,6 +151,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   BOOL shouldBePresented = !_isPresented && _shouldPresent && self.window;
   if (shouldBePresented) {
+    self.viewController.presentationController.delegate = self;
+
     _isPresented = YES;
     [self presentViewController:self.viewController
                        animated:_shouldAnimatePresentation
@@ -294,6 +296,16 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     return [self _topMostViewControllerFrom:topController];
   }
   return topController;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidAttemptToDismiss:(UIPresentationController *)controller
+{
+  auto eventEmitter = [self modalEventEmitter];
+  if (eventEmitter) {
+    eventEmitter->onRequestClose({});
+  }
 }
 
 @end
