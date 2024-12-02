@@ -124,9 +124,27 @@ describe('TypeScript Module Parser', () => {
 
       expect(parser).not.toThrow();
       expect(parser().enumMap.MyEnum.members).toEqual([
-        {name: 'ZERO', value: 0},
-        {name: 'POSITIVE', value: 1},
-        {name: 'NEGATIVE', value: -1},
+        {
+          name: 'ZERO',
+          value: {
+            type: 'NumberLiteralTypeAnnotation',
+            value: 0,
+          },
+        },
+        {
+          name: 'POSITIVE',
+          value: {
+            type: 'NumberLiteralTypeAnnotation',
+            value: 1,
+          },
+        },
+        {
+          name: 'NEGATIVE',
+          value: {
+            type: 'NumberLiteralTypeAnnotation',
+            value: -1,
+          },
+        },
       ]);
     });
 
@@ -147,8 +165,20 @@ describe('TypeScript Module Parser', () => {
 
       expect(parser).not.toThrow();
       expect(parser().enumMap.MyEnum.members).toEqual([
-        {name: 'ZERO', value: 0},
-        {name: 'POSITIVE', value: 1},
+        {
+          name: 'ZERO',
+          value: {
+            type: 'NumberLiteralTypeAnnotation',
+            value: 0,
+          },
+        },
+        {
+          name: 'POSITIVE',
+          value: {
+            type: 'NumberLiteralTypeAnnotation',
+            value: 1,
+          },
+        },
       ]);
     });
 
