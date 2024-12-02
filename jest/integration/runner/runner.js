@@ -15,6 +15,7 @@ import entrypointTemplate from './entrypoint-template';
 import {
   getBuckModeForPlatform,
   getDebugInfoFromCommandResult,
+  getFantomTestConfig,
   getShortHash,
   runBuck2,
   symbolicateStackTrace,
@@ -28,7 +29,6 @@ import path from 'path';
 
 const BUILD_OUTPUT_PATH = path.resolve(__dirname, '..', 'build');
 
-const ENABLE_OPTIMIZED_MODE: false = false;
 const PRINT_FANTOM_OUTPUT: false = false;
 
 function parseRNTesterCommandResult(result: ReturnType<typeof runBuck2>): {
@@ -95,7 +95,9 @@ module.exports = async function runTest(
 ): mixed {
   const startTime = Date.now();
 
-  const isOptimizedMode = ENABLE_OPTIMIZED_MODE;
+  const testConfig = getFantomTestConfig(testPath);
+
+  const isOptimizedMode = testConfig.mode === 'opt';
 
   const metroConfig = await Metro.loadConfig({
     config: path.resolve(__dirname, '..', 'config', 'metro.config.js'),
