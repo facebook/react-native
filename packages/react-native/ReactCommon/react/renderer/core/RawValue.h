@@ -153,7 +153,8 @@ class RawValue {
       folly::dynamic dynamic = std::get<folly::dynamic>(value_);
       return !dynamic.isNull();
     } else {
-      return true; // jsi::Value cannot be null in this context
+      const auto& [runtime, value] = std::get<JsiPair>(value_);
+      return !value.isNull() && !value.isUndefined();
     }
   }
 
@@ -284,7 +285,7 @@ class RawValue {
 
     jsi::Object asObject = value.asObject(*runtime);
 
-    if (asObject.isArray(*runtime)) {
+    if (!asObject.isArray(*runtime)) {
       return false;
     }
 
