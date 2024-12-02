@@ -307,6 +307,48 @@ class Expect {
     }
   }
 
+  toBeGreaterThanOrEqual(expected: number): void {
+    if (typeof this.#received !== 'number') {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be a number but it was a ${typeof this.#received}`,
+      ).blameToPreviousFrame();
+    }
+
+    if (typeof expected !== 'number') {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(expected)} to be a number but it was a ${typeof expected}`,
+      ).blameToPreviousFrame();
+    }
+
+    const pass = this.#received >= expected;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be greater than or equal to ${expected}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toBeLessThanOrEqual(expected: number): void {
+    if (typeof this.#received !== 'number') {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be a number but it was a ${typeof this.#received}`,
+      ).blameToPreviousFrame();
+    }
+
+    if (typeof expected !== 'number') {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(expected)} to be a number but it was a ${typeof expected}`,
+      ).blameToPreviousFrame();
+    }
+
+    const pass = this.#received <= expected;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be less than or equal to ${expected}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   #isExpectedResult(pass: boolean): boolean {
     return this.#isNot ? !pass : pass;
   }
