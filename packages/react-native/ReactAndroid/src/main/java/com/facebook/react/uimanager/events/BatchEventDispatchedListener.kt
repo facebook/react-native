@@ -7,7 +7,7 @@
 
 package com.facebook.react.uimanager.events
 
-public interface BatchEventDispatchedListener {
+public fun interface BatchEventDispatchedListener {
 
   /** Called after a batch of low priority events has been dispatched. */
   public fun onBatchEventDispatched()
