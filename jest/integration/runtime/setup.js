@@ -194,7 +194,10 @@ class ErrorWithCustomBlame extends Error {
         this.#cachedProcessedStack = originalStack;
       } else {
         const lines = originalStack.split('\n');
-        lines.splice(1, this.#ignoredFrameCount);
+        const index = lines.findIndex(line =>
+          /at (.*) \((.*):(\d+):(\d+)\)/.test(line),
+        );
+        lines.splice(index > -1 ? index : 1, this.#ignoredFrameCount);
         this.#cachedProcessedStack = lines.join('\n');
       }
     }
