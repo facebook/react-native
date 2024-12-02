@@ -137,7 +137,6 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private float mBackfaceOpacity;
   private String mBackfaceVisibility;
-  private boolean mIsTransitioning;
   private @Nullable Set<Integer> mChildrenRemovedWhileTransitioning;
 
   /**
@@ -172,7 +171,6 @@ public class ReactViewGroup extends ViewGroup
     mDrawingOrderHelper = null;
     mBackfaceOpacity = 1.f;
     mBackfaceVisibility = "visible";
-    mIsTransitioning = false;
     mChildrenRemovedWhileTransitioning = null;
   }
 
@@ -410,17 +408,10 @@ public class ReactViewGroup extends ViewGroup
   }
 
   @Override
-  public void startViewTransition(View view) {
-    super.startViewTransition(view);
-    mIsTransitioning = true;
-  }
-
-  @Override
   public void endViewTransition(View view) {
     super.endViewTransition(view);
-    mIsTransitioning = false;
     if (mChildrenRemovedWhileTransitioning != null) {
-      mChildrenRemovedWhileTransitioning.clear();
+      mChildrenRemovedWhileTransitioning.remove(view.getId());
     }
   }
 
@@ -429,6 +420,10 @@ public class ReactViewGroup extends ViewGroup
       mChildrenRemovedWhileTransitioning = new HashSet<>();
     }
     return mChildrenRemovedWhileTransitioning;
+  }
+
+  private boolean isChildRemovedWhileTransitioning(View child) {
+    return mChildrenRemovedWhileTransitioning != null && mChildrenRemovedWhileTransitioning.contains(child.getId());
   }
 
   private void updateClippingToRect(Rect clippingRect) {
@@ -591,7 +586,8 @@ public class ReactViewGroup extends ViewGroup
       setChildrenDrawingOrderEnabled(false);
     }
 
-    if (mIsTransitioning) {
+    // The parent might not be null in case the child is transitioning.
+    if (child.getParent() != null) {
       ensureChildrenRemovedWhileTransitioning().add(child.getId());
     }
 
@@ -744,7 +740,7 @@ public class ReactViewGroup extends ViewGroup
   private boolean isViewClipped(View view) {
     ViewParent parent = view.getParent();
 
-    if (parent == null || (mChildrenRemovedWhileTransitioning != null && mChildrenRemovedWhileTransitioning.contains(view.getId()))) {
+    if (parent == null || isChildRemovedWhileTransitioning(view)) {
       return true;
     } else {
       Assertions.assertCondition(parent == this);
