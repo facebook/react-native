@@ -25,4 +25,5 @@ module.exports = {
   transformIgnorePatterns: ['.*'],
   testRunner: './jest/integration/runner/index.js',
   watchPathIgnorePatterns: ['<rootDir>/jest/integration/build/'],
+  globalSetup: './jest/integration/runner/warmup/index.js',
 };
