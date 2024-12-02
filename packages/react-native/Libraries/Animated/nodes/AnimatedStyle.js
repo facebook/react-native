@@ -35,7 +35,7 @@ function createAnimatedStyle(
     const key = keys[ii];
     const value = inputStyle[key];
 
-    if (allowlist == null || Object.hasOwn(allowlist, key)) {
+    if (allowlist == null || hasOwn(allowlist, key)) {
       let node;
       if (value != null && key === 'transform') {
         node = ReactNativeFeatureFlags.shouldUseAnimatedObjectForTransform()
@@ -241,3 +241,11 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     };
   }
 }
+
+// Supported versions of JSC do not implement the newer Object.hasOwn. Remove
+// this shim when they do.
+// $FlowIgnore[method-unbinding]
+const _hasOwnProp = Object.prototype.hasOwnProperty;
+const hasOwn: (obj: $ReadOnly<{...}>, prop: string) => boolean =
+  // $FlowIgnore[method-unbinding]
+  Object.hasOwn ?? ((obj, prop) => _hasOwnProp.call(obj, prop));
