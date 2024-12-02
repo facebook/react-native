@@ -14,6 +14,7 @@ import type {TestSuiteResult} from '../runtime/setup';
 import entrypointTemplate from './entrypoint-template';
 import {
   getBuckModeForPlatform,
+  getDebugInfoFromCommandResult,
   getShortHash,
   runBuck2,
   symbolicateStackTrace,
@@ -49,14 +50,8 @@ function parseRNTesterCommandResult(result: ReturnType<typeof runBuck2>): {
     testResult = JSON.parse(nullthrows(testResultJSON));
   } catch (error) {
     throw new Error(
-      [
-        'Failed to parse test results from RN tester binary result. Full output:',
-        result.originalCommand,
-        'stdout:',
-        stdout,
-        'stderr:',
-        result.stderr.toString(),
-      ].join('\n'),
+      'Failed to parse test results from RN tester binary result.\n' +
+        getDebugInfoFromCommandResult(result),
     );
   }
 
@@ -87,18 +82,7 @@ function generateBytecodeBundle({
   ]);
 
   if (hermesCompilerCommandResult.status !== 0) {
-    throw new Error(
-      [
-        'Failed to run Hermes compiler. Full output:',
-        hermesCompilerCommandResult.originalCommand,
-        'stdout:',
-        hermesCompilerCommandResult.stdout,
-        'stderr:',
-        hermesCompilerCommandResult.stderr,
-        'error:',
-        hermesCompilerCommandResult.error,
-      ].join('\n'),
-    );
+    throw new Error(getDebugInfoFromCommandResult(hermesCompilerCommandResult));
   }
 }
 
@@ -168,33 +152,11 @@ module.exports = async function runTest(
   ]);
 
   if (rnTesterCommandResult.status !== 0) {
-    throw new Error(
-      [
-        'Failed to run test in RN tester binary. Full output:',
-        rnTesterCommandResult.originalCommand,
-        'stdout:',
-        rnTesterCommandResult.stdout,
-        'stderr:',
-        rnTesterCommandResult.stderr,
-        'error:',
-        rnTesterCommandResult.error,
-      ].join('\n'),
-    );
+    throw new Error(getDebugInfoFromCommandResult(rnTesterCommandResult));
   }
 
   if (PRINT_FANTOM_OUTPUT) {
-    console.log(
-      [
-        'RN tester binary. Full output:',
-        rnTesterCommandResult.originalCommand,
-        'stdout:',
-        rnTesterCommandResult.stdout,
-        'stderr:',
-        rnTesterCommandResult.stderr,
-        'error:',
-        rnTesterCommandResult.error,
-      ].join('\n'),
-    );
+    console.log(getDebugInfoFromCommandResult(rnTesterCommandResult));
   }
 
   const rnTesterParsedOutput = parseRNTesterCommandResult(
