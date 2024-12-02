@@ -57,62 +57,48 @@ ReactInstance::ReactInstance(
       timerManager_(std::move(timerManager)),
       jsErrorHandler_(std::make_shared<JsErrorHandler>(std::move(onJsError))),
       parentInspectorTarget_(parentInspectorTarget) {
-  RuntimeExecutor runtimeExecutor = [weakRuntime = std::weak_ptr(runtime_),
-                                     weakTimerManager =
-                                         std::weak_ptr(timerManager_),
-                                     weakJsThread =
-                                         std::weak_ptr(jsMessageQueueThread_),
-                                     jsErrorHandler =
-                                         jsErrorHandler_](auto callback) {
-    if (weakRuntime.expired()) {
-      return;
-    }
-
-    /**
-     * If a fatal error was caught while executing the main bundle, assume the
-     * js runtime is invalid. And stop executing any more js.
-     */
-    if (!jsErrorHandler->isRuntimeReady() &&
-        jsErrorHandler->hasHandledFatalError()) {
-      LOG(INFO)
-          << "RuntimeExecutor: Detected fatal error. Dropping work on non-js thread."
-          << std::endl;
-      return;
-    }
-
-    if (auto jsThread = weakJsThread.lock()) {
-      jsThread->runOnQueue([jsErrorHandler,
-                            weakRuntime,
-                            weakTimerManager,
-                            callback = std::move(callback)]() {
-        auto runtime = weakRuntime.lock();
-        if (!runtime) {
+  RuntimeExecutor runtimeExecutor =
+      [weakRuntime = std::weak_ptr(runtime_),
+       weakTimerManager = std::weak_ptr(timerManager_),
+       weakJsThread = std::weak_ptr(jsMessageQueueThread_),
+       jsErrorHandler = jsErrorHandler_](auto callback) {
+        if (weakRuntime.expired()) {
           return;
         }
 
-        jsi::Runtime& jsiRuntime = runtime->getRuntime();
-        SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
-        try {
-          ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
-          callback(jsiRuntime);
-
-          // If we have first-class support for microtasks,
-          // they would've been called as part of the previous callback.
-          if (ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
-            if (auto timerManager = weakTimerManager.lock()) {
-              timerManager->callReactNativeMicrotasks(jsiRuntime);
+        if (auto jsThread = weakJsThread.lock()) {
+          jsThread->runOnQueue([jsErrorHandler,
+                                weakRuntime,
+                                weakTimerManager,
+                                callback = std::move(callback)]() {
+            auto runtime = weakRuntime.lock();
+            if (!runtime) {
+              return;
             }
-          }
-        } catch (jsi::JSError& originalError) {
-          jsErrorHandler->handleError(jsiRuntime, originalError, true);
-        } catch (std::exception& ex) {
-          jsi::JSError error(
-              jsiRuntime, std::string("Non-js exception: ") + ex.what());
-          jsErrorHandler->handleError(jsiRuntime, error, true);
+
+            jsi::Runtime& jsiRuntime = runtime->getRuntime();
+            SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
+            try {
+              ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
+              callback(jsiRuntime);
+
+              // If we have first-class support for microtasks,
+              // they would've been called as part of the previous callback.
+              if (ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
+                if (auto timerManager = weakTimerManager.lock()) {
+                  timerManager->callReactNativeMicrotasks(jsiRuntime);
+                }
+              }
+            } catch (jsi::JSError& originalError) {
+              jsErrorHandler->handleError(jsiRuntime, originalError, true);
+            } catch (std::exception& ex) {
+              jsi::JSError error(
+                  jsiRuntime, std::string("Non-js exception: ") + ex.what());
+              jsErrorHandler->handleError(jsiRuntime, error, true);
+            }
+          });
         }
-      });
-    }
-  };
+      };
 
   if (parentInspectorTarget_) {
     auto executor = parentInspectorTarget_->executorFromThis();
