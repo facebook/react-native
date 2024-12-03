@@ -41,10 +41,12 @@ export type FeatureFlagMetadata =
        */
       dateAdded: string,
       description: string,
+      expectedReleaseValue: boolean,
     }>
   | $ReadOnly<{
       purpose: 'operational' | 'release',
       description: string,
+      expectedReleaseValue: boolean,
     }>;
 
 export type GeneratorConfig = $ReadOnly<{
