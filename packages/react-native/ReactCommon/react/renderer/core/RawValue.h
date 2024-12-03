@@ -569,7 +569,7 @@ class RawValue {
 
       std::string propertyNameString = propertyName.utf8(*runtime);
       T property = castValue(propertyValue, runtime, (T*)nullptr);
-      result[propertyNameString] = property;
+      result.emplace(propertyNameString, std::move(property));
     }
     return result;
   }
