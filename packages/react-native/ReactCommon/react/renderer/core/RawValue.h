@@ -82,11 +82,6 @@ class RawValue {
   friend class RawPropsParser;
   friend class UIManagerBinding;
 
-  /*
-   * Copy constructor and copy assignment operator would be private and only for
-   * internal use, but it's needed for user-code that does `auto val =
-   * (butter::map<std::string, RawValue>)rawVal;`
-   */
   RawValue(const RawValue& other) noexcept {
     if (std::holds_alternative<folly::dynamic>(other.value_)) {
       folly::dynamic dynamic = std::get<folly::dynamic>(other.value_);
