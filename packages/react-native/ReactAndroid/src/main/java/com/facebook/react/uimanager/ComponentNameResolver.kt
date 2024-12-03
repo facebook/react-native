@@ -10,7 +10,7 @@ package com.facebook.react.uimanager
 import com.facebook.proguard.annotations.DoNotStripAny
 
 @DoNotStripAny
-public interface ComponentNameResolver {
+internal interface ComponentNameResolver {
   /* returns a list of all the component names that are registered in React Native. */
   public val componentNames: Array<String>?
 }
