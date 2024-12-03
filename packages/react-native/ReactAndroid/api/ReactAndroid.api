@@ -2612,6 +2612,7 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
+	public fun experimental_prefetchResource (Ljava/lang/String;IILcom/facebook/react/common/mapbuffer/ReadableMapBuffer;)V
 	public fun getColor (I[Ljava/lang/String;)I
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getInspectorDataForInstance (ILandroid/view/View;)Lcom/facebook/react/bridge/ReadableMap;

@@ -7,16 +7,18 @@
 
 #include "ImageManager.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
+#include "ImageFetcher.h"
+
 namespace facebook::react {
 
-ImageManager::ImageManager(
-    const ContextContainer::Shared& /*contextContainer*/) {
-  // Silence unused-private-field warning.
-  (void)self_;
-  // Not implemented.
-}
+ImageManager::ImageManager(const ContextContainer::Shared& contextContainer)
+    : self_(new ImageFetcher(contextContainer)) {}
 
-ImageManager::~ImageManager() = default;
+ImageManager::~ImageManager() {
+  // @lint-ignore CLANGTIDY cppcoreguidelines-no-malloc
+  free(self_);
+}
 
 ImageRequest ImageManager::requestImage(
     const ImageSource& imageSource,
@@ -26,10 +28,16 @@ ImageRequest ImageManager::requestImage(
 
 ImageRequest ImageManager::requestImage(
     const ImageSource& imageSource,
-    SurfaceId /*surfaceId*/,
-    const ImageRequestParams& /*imageRequestParams*/,
-    Tag /* tag */) const {
-  return {imageSource, nullptr, {}};
+    SurfaceId surfaceId,
+    const ImageRequestParams& imageRequestParams,
+    Tag tag) const {
+  if (ReactNativeFeatureFlags::enableImagePrefetchingAndroid()) {
+    // @lint-ignore CLANGTIDY cppcoreguidelines-pro-type-cstyle-cast
+    return ((ImageFetcher*)self_)
+        ->requestImage(imageSource, imageRequestParams, surfaceId, tag);
+  } else {
+    return {imageSource, nullptr, {}};
+  }
 }
 
 } // namespace facebook::react

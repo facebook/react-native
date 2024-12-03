@@ -32,9 +32,11 @@ target_include_directories(react_render_imagemanager
 
 target_link_libraries(react_render_imagemanager
         folly_runtime
+        mapbufferjni
         react_debug
         react_render_core
         react_render_debug
         react_render_graphics
         react_render_mounting
+        reactnativejni
         yoga)
