@@ -68,7 +68,8 @@ constructor(
     }
   }
 
-  public override fun isEdgeToEdge(): Boolean = BuildConfig.IS_EDGE_TO_EDGE_ENABLED
+  public override fun isEdgeToEdge(): Boolean =
+    BuildConfig.IS_EDGE_TO_EDGE_ENABLED
 
   /** Stub */
   public override fun addListener(eventName: String): Unit = Unit
