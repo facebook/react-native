@@ -487,7 +487,7 @@ class RawValue {
     react_native_assert(object.isArray(*runtime));
     auto array = object.asArray(*runtime);
     auto size = array.size(*runtime);
-    auto result = std::vector<std::vector<T>>{};
+    std::vector<std::vector<T>> result;
     result.reserve(size);
     for (size_t i = 0; i < size; i++) {
       jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
