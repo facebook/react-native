@@ -118,7 +118,7 @@ class RawValue {
       return castValue(dynamic, (T*)nullptr);
     } else {
       const auto& [runtime, value] = std::get<JsiValuePair>(value_);
-      return castValue(value, runtime, (T*)nullptr);
+      return castValue(runtime, value, (T*)nullptr);
     }
   }
 
@@ -136,7 +136,7 @@ class RawValue {
       return checkValueType(dynamic, (T*)nullptr);
     } else {
       const auto& [runtime, value] = std::get<JsiValuePair>(value_);
-      return checkValueType(value, runtime, (T*)nullptr);
+      return checkValueType(runtime, value, (T*)nullptr);
     }
   }
 
@@ -172,8 +172,8 @@ class RawValue {
   }
 
   static bool checkValueType(
-      const jsi::Value& /*value*/,
       jsi::Runtime* /*runtime*/,
+      const jsi::Value& /*value*/,
       RawValue* /*type*/) noexcept {
     return true;
   }
@@ -185,8 +185,8 @@ class RawValue {
   }
 
   static bool checkValueType(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       bool* /*type*/) noexcept {
     return value.isBool();
   }
@@ -198,8 +198,8 @@ class RawValue {
   }
 
   static bool checkValueType(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       int* /*type*/) noexcept {
     return value.isNumber();
   }
@@ -211,8 +211,8 @@ class RawValue {
   }
 
   static bool checkValueType(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       int64_t* /*type*/) noexcept {
     return value.isNumber();
   }
@@ -224,8 +224,8 @@ class RawValue {
   }
 
   static bool checkValueType(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       float* /*type*/) noexcept {
     return value.isNumber();
   }
@@ -237,8 +237,8 @@ class RawValue {
   }
 
   static bool checkValueType(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       double* /*type*/) noexcept {
     return value.isNumber();
   }
@@ -250,8 +250,8 @@ class RawValue {
   }
 
   static bool checkValueType(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       std::string* /*type*/) noexcept {
     return value.isString();
   }
@@ -263,8 +263,8 @@ class RawValue {
   }
 
   static bool checkValueType(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       JsiValuePair* /*type*/) noexcept {
     return true;
   }
@@ -291,8 +291,8 @@ class RawValue {
 
   template <typename T>
   static bool checkValueType(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       std::vector<T>* /*type*/) noexcept {
     if (!value.isObject()) {
       return false;
@@ -308,7 +308,7 @@ class RawValue {
     size_t size = array.size(*runtime);
     for (size_t i = 0; i < size; i++) {
       jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
-      if (!checkValueType(itemValue, runtime, (T*)nullptr)) {
+      if (!checkValueType(runtime, itemValue, (T*)nullptr)) {
         return false;
       }
 
@@ -342,8 +342,8 @@ class RawValue {
 
   template <typename T>
   static bool checkValueType(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       std::unordered_map<std::string, T>* /*type*/) noexcept {
     if (!value.isObject()) {
       return false;
@@ -357,7 +357,7 @@ class RawValue {
       jsi::String propertyName =
           propertyNames.getValueAtIndex(*runtime, i).getString(*runtime);
       jsi::Value propertyValue = asObject.getProperty(*runtime, propertyName);
-      if (!checkValueType(propertyValue, runtime, (T*)nullptr)) {
+      if (!checkValueType(runtime, propertyValue, (T*)nullptr)) {
         return false;
       }
 
@@ -376,8 +376,8 @@ class RawValue {
   }
 
   static RawValue castValue(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       RawValue* /*type*/) noexcept {
     return RawValue(*runtime, value);
   }
@@ -387,7 +387,7 @@ class RawValue {
   }
 
   static bool
-  castValue(const jsi::Value& value, jsi::Runtime* runtime, bool* /*type*/) {
+  castValue(jsi::Runtime* runtime, const jsi::Value& value, bool* /*type*/) {
     return value.asBool();
   }
 
@@ -396,7 +396,7 @@ class RawValue {
   }
 
   static int
-  castValue(const jsi::Value& value, jsi::Runtime* runtime, int* /*type*/) {
+  castValue(jsi::Runtime* runtime, const jsi::Value& value, int* /*type*/) {
     double number = value.asNumber();
     return static_cast<int>(number);
   }
@@ -406,7 +406,7 @@ class RawValue {
   }
 
   static int64_t
-  castValue(const jsi::Value& value, jsi::Runtime* runtime, int64_t* /*type*/) {
+  castValue(jsi::Runtime* runtime, const jsi::Value& value, int64_t* /*type*/) {
     double number = value.asNumber();
     return static_cast<int64_t>(number);
   }
@@ -416,7 +416,7 @@ class RawValue {
   }
 
   static float
-  castValue(const jsi::Value& value, jsi::Runtime* runtime, float* /*type*/) {
+  castValue(jsi::Runtime* runtime, const jsi::Value& value, float* /*type*/) {
     double number = value.asNumber();
     return static_cast<float>(number);
   }
@@ -426,7 +426,7 @@ class RawValue {
   }
 
   static double
-  castValue(const jsi::Value& value, jsi::Runtime* runtime, double* /*type*/) {
+  castValue(jsi::Runtime* runtime, const jsi::Value& value, double* /*type*/) {
     return value.asNumber();
   }
 
@@ -437,8 +437,8 @@ class RawValue {
   }
 
   static std::string castValue(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       std::string* /*type*/) {
     jsi::String stringValue = value.asString(*runtime);
     return stringValue.utf8(*runtime);
@@ -451,8 +451,8 @@ class RawValue {
   }
 
   static JsiValuePair castValue(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       JsiValuePair* /*type*/) {
     jsi::Value valueCopy = jsi::Value(*runtime, value);
     return std::make_pair(runtime, std::move(valueCopy));
@@ -473,8 +473,8 @@ class RawValue {
 
   template <typename T>
   static std::vector<T> castValue(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       std::vector<T>* /*type*/) {
     react_native_assert(value.isObject());
     jsi::Object object = value.getObject(*runtime);
@@ -485,7 +485,7 @@ class RawValue {
     result.reserve(size);
     for (size_t i = 0; i < size; i++) {
       jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
-      T item = castValue(itemValue, runtime, (T*)nullptr);
+      T item = castValue(runtime, itemValue, (T*)nullptr);
       result.push_back(std::move(item));
     }
     return result;
@@ -506,8 +506,8 @@ class RawValue {
 
   template <typename T>
   static std::vector<std::vector<T>> castValue(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       std::vector<std::vector<T>>* /*type*/) {
     react_native_assert(value.isObject());
     jsi::Object object = value.getObject(*runtime);
@@ -540,8 +540,8 @@ class RawValue {
 
   template <typename T>
   static std::unordered_map<std::string, T> castValue(
-      const jsi::Value& value,
       jsi::Runtime* runtime,
+      const jsi::Value& value,
       std::unordered_map<std::string, T>* /*type*/) {
     react_native_assert(value.isObject());
     jsi::Object object = value.getObject(*runtime);
@@ -559,7 +559,7 @@ class RawValue {
       }
 
       std::string propertyNameString = propertyName.utf8(*runtime);
-      T property = castValue(propertyValue, runtime, (T*)nullptr);
+      T property = castValue(runtime, propertyValue, (T*)nullptr);
       result.emplace(propertyNameString, std::move(property));
     }
     return result;
