@@ -82,7 +82,6 @@ class RawValue {
   friend class RawPropsParser;
   friend class UIManagerBinding;
 
-  // TODO: had to make headers public. Feel that this shouldn't be necessary
  public:
   /*
    * Copy constructor and copy assignment operator would be private and only for
@@ -112,7 +111,6 @@ class RawValue {
     return *this;
   }
 
- public:
   /*
    * Casts the value to a specified type.
    */
