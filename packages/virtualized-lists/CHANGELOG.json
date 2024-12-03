@@ -2,6 +2,21 @@
   "name": "@react-native-mac/virtualized-lists",
   "entries": [
     {
+      "date": "Tue, 03 Dec 2024 23:38:40 GMT",
+      "version": "0.76.3",
+      "tag": "@react-native-mac/virtualized-lists_v0.76.3",
+      "comments": {
+        "patch": [
+          {
+            "author": "sanajmi@microsoft.com",
+            "package": "@react-native-mac/virtualized-lists",
+            "commit": "acc82e5591a2cb8a0d0531379c999cd03f1748f7",
+            "comment": "Applying package update to 0.76.2 ***NO_CI***"
+          }
+        ]
+      }
+    },
+    {
       "date": "Tue, 29 Oct 2024 22:18:55 GMT",
       "version": "0.76.0",
       "tag": "@react-native-mac/virtualized-lists_v0.76.0",

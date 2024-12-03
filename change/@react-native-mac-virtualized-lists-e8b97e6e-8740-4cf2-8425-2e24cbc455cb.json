@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "Applying package update to 0.76.2 ***NO_CI***",
-  "packageName": "@react-native-mac/virtualized-lists",
-  "email": "sanajmi@microsoft.com",
-  "dependentChangeType": "patch"
-}
