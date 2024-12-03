@@ -459,7 +459,7 @@ class RawValue {
     for (size_t i = 0; i < size; i++) {
       jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
       T item = castValue(itemValue, runtime, (T*)nullptr);
-      result.push_back(item);
+      result.push_back(std::move(item));
     }
     return result;
   }
@@ -493,7 +493,7 @@ class RawValue {
       jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
       std::vector<T> item =
           castValue(itemValue, runtime, (std::vector<T>*)nullptr);
-      result.push_back(item);
+      result.push_back(std::move(item));
     }
     return result;
   }
