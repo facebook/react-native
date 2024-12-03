@@ -558,8 +558,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations1[0].oldChildShadowView.tag, childG->getTag());
   EXPECT_EQ(mutations1[1].type, ShadowViewMutation::Update);
   EXPECT_EQ(mutations1[1].oldChildShadowView.tag, reparentedViewA->getTag());
-  // This is incorrect! ChildH does not exist yet at this point
-  EXPECT_EQ(mutations1[1].parentShadowView.tag, childH->getTag());
+  EXPECT_EQ(mutations1[1].parentShadowView.tag, childG->getTag());
   EXPECT_EQ(mutations1[2].type, ShadowViewMutation::Remove);
   EXPECT_EQ(mutations1[2].oldChildShadowView.tag, reparentedViewA->getTag());
   EXPECT_EQ(mutations1[3].type, ShadowViewMutation::Create);

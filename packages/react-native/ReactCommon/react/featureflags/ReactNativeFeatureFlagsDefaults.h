@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aff3c46b8d2db3bde519e1392569d53d>>
+ * @generated SignedSource<<ee899be30798eb6d386b44bc6bc027ea>>
  */
 
 /**
@@ -141,6 +141,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool excludeYogaFromRawProps() override {
     return false;
+  }
+
+  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() override {
+    return true;
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6d8d8f4b81d7be882b315d0960499dcb>>
+ * @generated SignedSource<<4a219bb47b1b9d988a164bca19eb4fa9>>
  */
 
 /**
@@ -201,6 +201,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun excludeYogaFromRawProps(): Boolean = accessor.excludeYogaFromRawProps()
+
+  /**
+   * Fixes a bug in Differentiator where parent views may be referenced before they're created
+   */
+  @JvmStatic
+  public fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = accessor.fixDifferentiatorEmittingUpdatesWithWrongParentTag()
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

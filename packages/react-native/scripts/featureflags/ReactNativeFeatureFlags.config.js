@@ -292,6 +292,14 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    fixDifferentiatorEmittingUpdatesWithWrongParentTag: {
+      defaultValue: true,
+      metadata: {
+        description:
+          "Fixes a bug in Differentiator where parent views may be referenced before they're created",
+        purpose: 'release',
+      },
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
