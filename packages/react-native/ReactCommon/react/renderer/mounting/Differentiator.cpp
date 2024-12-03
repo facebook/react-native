@@ -50,6 +50,33 @@ bool ShadowViewNodePair::operator!=(const ShadowViewNodePair& rhs) const {
   return !(*this == rhs);
 }
 
+#ifdef DEBUG_LOGS_DIFFER
+static std::ostream& operator<<(
+    std::ostream& out,
+    const ShadowViewNodePair& pair) {
+  out << pair.shadowNode->getTag();
+  if (!pair.isConcreteView) {
+    out << '\'';
+  }
+  if (pair.flattened) {
+    out << '*';
+  }
+  return out;
+}
+
+static std::ostream& operator<<(
+    std::ostream& out,
+    std::vector<ShadowViewNodePair*> vec) {
+  for (int i = 0; i < vec.size(); i++) {
+    if (i > 0) {
+      out << ", ";
+    }
+    out << *vec[i];
+  }
+  return out;
+}
+#endif
+
 /*
  * Extremely simple and naive implementation of a map.
  * The map is simple but it's optimized for particular constraints that we have
@@ -181,6 +208,21 @@ class TinyMap final {
   size_t numErased_{0};
   size_t erasedAtFront_{0};
 };
+
+#ifdef DEBUG_LOGS_DIFFER
+template <typename KeyT, typename ValueT>
+static std::ostream& operator<<(std::ostream& out, TinyMap<KeyT, ValueT>& map) {
+  auto it = map.begin();
+  if (it != map.end()) {
+    out << *it->second;
+    ++it;
+  }
+  for (; it != map.end(); ++it) {
+    out << ", " << *it->second;
+  }
+  return out;
+}
+#endif
 
 /*
  * Sorting comparator for `reorderInPlaceIfNeeded`.
@@ -432,11 +474,10 @@ static void updateMatchedPairSubtrees(
   // We are either flattening or unflattening this node.
   if (oldPair.flattened != newPair.flattened) {
     DEBUG_LOGS({
-      LOG(ERROR)
-          << "Differ: flattening or unflattening in updateMatchedPairSubtrees: ["
-          << oldPair.shadowView.tag << "] [" << newPair.shadowView.tag << "] "
-          << oldPair.flattened << " " << newPair.flattened << " with parent: ["
-          << parentShadowView.tag << "]";
+      LOG(ERROR) << "Differ: "
+                 << (newPair.flattened ? "flattening" : "unflattening")
+                 << " in updateMatchedPairSubtrees: " << oldPair << " and "
+                 << newPair << " with parent [" << parentShadowView.tag << "]";
     });
 
     // Flattening
@@ -639,42 +680,17 @@ static void calculateShadowViewMutationsFlattener(
     const ShadowView& parentShadowViewForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes) {
-  DEBUG_LOGS({
-    LOG(ERROR) << "Differ Flattener 1: "
-               << (reparentMode == ReparentMode::Unflatten ? "Unflattening"
-                                                           : "Flattening")
-               << " [" << node.shadowView.tag << "]";
-  });
-
   // Step 1: iterate through entire tree
   std::vector<ShadowViewNodePair*> treeChildren =
       sliceChildShadowNodeViewPairsFromViewNodePair(node, scope);
 
   DEBUG_LOGS({
-    LOG(ERROR) << "Differ Flattener 1.4: "
+    LOG(ERROR) << "Differ Flattener: "
                << (reparentMode == ReparentMode::Unflatten ? "Unflattening"
                                                            : "Flattening")
                << " [" << node.shadowView.tag << "]";
-    LOG(ERROR) << "Differ Flattener Entry: Child Pairs: ";
-    std::string strTreeChildPairs;
-    for (size_t k = 0; k < treeChildren.size(); k++) {
-      strTreeChildPairs.append(std::to_string(treeChildren[k]->shadowView.tag));
-      strTreeChildPairs.append(treeChildren[k]->isConcreteView ? "" : "'");
-      strTreeChildPairs.append(treeChildren[k]->flattened ? "*" : "");
-      strTreeChildPairs.append(", ");
-    }
-    std::string strListChildPairs;
-    for (auto& unvisitedNode : unvisitedOtherNodes) {
-      strListChildPairs.append(
-          std::to_string(unvisitedNode.second->shadowView.tag));
-      strListChildPairs.append(unvisitedNode.second->isConcreteView ? "" : "'");
-      strListChildPairs.append(unvisitedNode.second->flattened ? "*" : "");
-      strListChildPairs.append(", ");
-    }
-    LOG(ERROR) << "Differ Flattener Entry: Tree Child Pairs: "
-               << strTreeChildPairs;
-    LOG(ERROR) << "Differ Flattener Entry: List Child Pairs: "
-               << strListChildPairs;
+    LOG(ERROR) << "> Tree Child Pairs: " << treeChildren;
+    LOG(ERROR) << "> List Child Pairs: " << unvisitedOtherNodes;
   });
 
   // Views in other tree that are visited by sub-flattening or
@@ -1093,26 +1109,8 @@ static void calculateShadowViewMutations(
   DEBUG_LOGS({
     LOG(ERROR) << "Differ Entry: Child Pairs of node: [" << parentShadowView.tag
                << "]";
-    std::string strOldChildPairs;
-    for (size_t oldIndex = 0; oldIndex < oldChildPairs.size(); oldIndex++) {
-      strOldChildPairs.append(
-          std::to_string(oldChildPairs[oldIndex]->shadowView.tag));
-      strOldChildPairs.append(
-          oldChildPairs[oldIndex]->isConcreteView ? "" : "'");
-      strOldChildPairs.append(oldChildPairs[oldIndex]->flattened ? "*" : "");
-      strOldChildPairs.append(", ");
-    }
-    std::string strNewChildPairs;
-    for (size_t newIndex = 0; newIndex < newChildPairs.size(); newIndex++) {
-      strNewChildPairs.append(
-          std::to_string(newChildPairs[newIndex]->shadowView.tag));
-      strNewChildPairs.append(
-          newChildPairs[newIndex]->isConcreteView ? "" : "'");
-      strNewChildPairs.append(newChildPairs[newIndex]->flattened ? "*" : "");
-      strNewChildPairs.append(", ");
-    }
-    LOG(ERROR) << "Differ Entry: Old Child Pairs: " << strOldChildPairs;
-    LOG(ERROR) << "Differ Entry: New Child Pairs: " << strNewChildPairs;
+    LOG(ERROR) << "> Old Child Pairs: " << oldChildPairs;
+    LOG(ERROR) << "> New Child Pairs: " << newChildPairs;
   });
 
   // Stage 1: Collecting `Update` mutations
@@ -1141,14 +1139,9 @@ static void calculateShadowViewMutations(
     }
 
     DEBUG_LOGS({
-      LOG(ERROR) << "Differ Branch 1.2: Same tags, update and recurse: ["
-                 << oldChildPair.shadowView.tag << "]"
-                 << (oldChildPair.flattened ? " (flattened)" : "")
-                 << (oldChildPair.isConcreteView ? " (concrete)" : "") << "["
-                 << newChildPair.shadowView.tag << "]"
-                 << (newChildPair.flattened ? " (flattened)" : "")
-                 << (newChildPair.isConcreteView ? " (concrete)" : "")
-                 << " with parent: [" << parentShadowView.tag << "]";
+      LOG(ERROR) << "Differ Branch 1.2: Same tags, update and recurse: "
+                 << oldChildPair << " and " << newChildPair << " with parent: ["
+                 << parentShadowView.tag << "]";
     });
 
     if (newChildPair.isConcreteView &&
@@ -1189,9 +1182,8 @@ static void calculateShadowViewMutations(
       const auto& oldChildPair = *oldChildPairs[index];
 
       DEBUG_LOGS({
-        LOG(ERROR) << "Differ Branch 2: Deleting Tag/Tree: ["
-                   << oldChildPair.shadowView.tag << "]" << " with parent: ["
-                   << parentShadowView.tag << "]";
+        LOG(ERROR) << "Differ Branch 2: Deleting Tag/Tree: " << oldChildPair
+                   << " with parent: [" << parentShadowView.tag << "]";
       });
 
       if (!oldChildPair.isConcreteView) {
@@ -1224,9 +1216,8 @@ static void calculateShadowViewMutations(
       const auto& newChildPair = *newChildPairs[index];
 
       DEBUG_LOGS({
-        LOG(ERROR) << "Differ Branch 3: Creating Tag/Tree: ["
-                   << newChildPair.shadowView.tag << "]" << " with parent: ["
-                   << parentShadowView.tag << "]";
+        LOG(ERROR) << "Differ Branch 3: Creating Tag/Tree: " << newChildPair
+                   << " with parent: [" << parentShadowView.tag << "]";
       });
 
       if (!newChildPair.isConcreteView) {
@@ -1281,14 +1272,9 @@ static void calculateShadowViewMutations(
 
         if (newTag == oldTag) {
           DEBUG_LOGS({
-            LOG(ERROR) << "Differ Branch 5: Matched Tags at indices: "
-                       << oldIndex << " " << newIndex << ": ["
-                       << oldChildPair.shadowView.tag << "]"
-                       << (oldChildPair.flattened ? "(flattened)" : "")
-                       << (oldChildPair.isConcreteView ? "(concrete)" : "")
-                       << " [" << newChildPair.shadowView.tag << "]"
-                       << (newChildPair.flattened ? "(flattened)" : "")
-                       << (newChildPair.isConcreteView ? "(concrete)" : "")
+            LOG(ERROR) << "Differ Branch 4: Matched Tags at indices: "
+                       << oldIndex << " and " << newIndex << ": "
+                       << oldChildPair << " and " << newChildPair
                        << " with parent: [" << parentShadowView.tag << "]";
           });
 
@@ -1330,6 +1316,13 @@ static void calculateShadowViewMutations(
         if (insertedIt != newInsertedPairs.end()) {
           const auto& newChildPair = *insertedIt->second;
 
+          DEBUG_LOGS({
+            LOG(ERROR) << "Differ Branch 5: Founded reordered tags at indices: "
+                       << oldIndex << ": " << oldChildPair << " and "
+                       << newChildPair << " with parent: ["
+                       << parentShadowView.tag << "]";
+          });
+
           updateMatchedPair(
               mutationContainer,
               true,
@@ -1369,13 +1362,10 @@ static void calculateShadowViewMutations(
 
           DEBUG_LOGS({
             LOG(ERROR)
-                << "Differ Branch 9: Removing tag that was not reinserted: "
-                << oldIndex << ": [" << oldChildPair.shadowView.tag << "]"
-                << (oldChildPair.flattened ? " (flattened)" : "")
-                << (oldChildPair.isConcreteView ? " (concrete)" : "")
-                << " with parent: [" << parentShadowView.tag << "] "
-                << "node is in other tree? "
-                << (oldChildPair.inOtherTree() ? "yes" : "no");
+                << "Differ Branch 6: Removing tag that was not re-inserted: "
+                << oldChildPair << " with parent: [" << parentShadowView.tag
+                << "], which is " << (oldChildPair.inOtherTree() ? "" : "not ")
+                << "in other tree";
           });
 
           // Edge case: node is not found in `newRemainingPairs`, due to
@@ -1422,11 +1412,8 @@ static void calculateShadowViewMutations(
       auto& newChildPair = *newChildPairs[newIndex];
       DEBUG_LOGS({
         LOG(ERROR)
-            << "Differ Branch 10: Inserting tag/tree that was not (yet?) removed from hierarchy: "
-            << newIndex << "/" << newSize << ": ["
-            << newChildPair.shadowView.tag << "]"
-            << (newChildPair.flattened ? " (flattened)" : "")
-            << (newChildPair.isConcreteView ? " (concrete)" : "")
+            << "Differ Branch 7: Inserting tag/tree that was not (yet?) removed from hierarchy: "
+            << newChildPair << " @ " << newIndex << "/" << newSize
             << " with parent: [" << parentShadowView.tag << "]";
       });
       if (newChildPair.isConcreteView) {
@@ -1462,10 +1449,8 @@ static void calculateShadowViewMutations(
 
       DEBUG_LOGS({
         LOG(ERROR)
-            << "Differ Branch 11: Deleting tag/tree that was not in new hierarchy: "
-            << "[" << oldChildPair.shadowView.tag << "]"
-            << (oldChildPair.flattened ? "(flattened)" : "")
-            << (oldChildPair.isConcreteView ? "(concrete)" : "")
+            << "Differ Branch 8: Deleting tag/tree that was not in new hierarchy: "
+            << oldChildPair
             << (oldChildPair.inOtherTree() ? "(in other tree)" : "")
             << " with parent: [" << parentShadowView.tag << "] ##"
             << std::hash<ShadowView>{}(oldChildPair.shadowView);
@@ -1504,10 +1489,8 @@ static void calculateShadowViewMutations(
 
       DEBUG_LOGS({
         LOG(ERROR)
-            << "Differ Branch 12: Inserting tag/tree that was not in old hierarchy: "
-            << "[" << newChildPair.shadowView.tag << "]"
-            << (newChildPair.flattened ? "(flattened)" : "")
-            << (newChildPair.isConcreteView ? "(concrete)" : "")
+            << "Differ Branch 9: Inserting tag/tree that was not in old hierarchy: "
+            << newChildPair
             << (newChildPair.inOtherTree() ? "(in other tree)" : "")
             << " with parent: [" << parentShadowView.tag << "]";
       });
@@ -1598,6 +1581,40 @@ ShadowViewMutation::List calculateShadowViewMutations(
       sliceChildShadowNodeViewPairs(
           ShadowViewNodePair{.shadowNode = &newRootShadowNode},
           viewNodePairScope));
+
+  DEBUG_LOGS({
+    LOG(ERROR) << "Differ Completed: " << mutations.size() << " mutations";
+    for (size_t i = 0; i < mutations.size(); i++) {
+      auto& mutation = mutations[i];
+      switch (mutation.type) {
+        case ShadowViewMutation::Type::Create:
+          LOG(ERROR) << "[" << i << "] CREATE "
+                     << mutation.newChildShadowView.tag;
+          break;
+        case ShadowViewMutation::Type::Delete:
+          LOG(ERROR) << "[" << i << "] DELETE "
+                     << mutation.oldChildShadowView.tag;
+          break;
+        case ShadowViewMutation::Type::Insert:
+          LOG(ERROR) << "[" << i << "] INSERT "
+                     << mutation.newChildShadowView.tag << " INTO "
+                     << mutation.parentShadowView.tag << " @ "
+                     << mutation.index;
+          break;
+        case ShadowViewMutation::Type::Remove:
+          LOG(ERROR) << "[" << i << "] REMOVE "
+                     << mutation.oldChildShadowView.tag << " FROM "
+                     << mutation.parentShadowView.tag << " @ "
+                     << mutation.index;
+          break;
+        case ShadowViewMutation::Type::Update:
+          LOG(ERROR) << "[" << i << "] UPDATE "
+                     << mutation.newChildShadowView.tag << " IN "
+                     << mutation.parentShadowView.tag;
+          break;
+      }
+    }
+  });
 
   return mutations;
 }
