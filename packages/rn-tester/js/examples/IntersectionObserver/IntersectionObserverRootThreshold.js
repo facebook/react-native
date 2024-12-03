@@ -24,7 +24,7 @@ import {Button, ScrollView, StyleSheet, Text, View} from 'react-native';
 export const name = 'IntersectionObserver Root Threshold';
 export const title = name;
 export const description =
-  'Examples of setting threshold and rn_rootThreshold. Views will change background color if they meet their threshold.';
+  'Examples of setting threshold and rnRootThreshold. Views will change background color if they meet their threshold.';
 
 export function render(): React.Node {
   return <IntersectionObserverRootThreshold />;
@@ -112,10 +112,10 @@ function ListItem(props: {
         entries.forEach(entry => {
           setIntersectionRatio(entry.intersectionRatio);
           // $FlowFixMe[prop-missing] - React Native specific entry property
-          setIntersectionRootRatio(entry.rn_intersectionRootRatio);
+          setIntersectionRootRatio(entry.rnRootIntersectionRatio);
         });
       },
-      {threshold: props.threshold, rn_rootThreshold: props.rootThreshold},
+      {threshold: props.threshold, rnRootThreshold: props.rootThreshold},
     );
 
     // $FlowFixMe[incompatible-call]
@@ -138,7 +138,7 @@ function ListItem(props: {
       ]}
       ref={itemRef}>
       <Text style={styles.description}>{props.description}</Text>
-      <Text>rn_rootThreshold: {props.rootThreshold}</Text>
+      <Text>rnRootThreshold: {props.rootThreshold}</Text>
       <Text>threshold: {props.threshold}</Text>
 
       <IntersectionRatioIndicator
