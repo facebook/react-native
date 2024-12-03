@@ -221,6 +221,13 @@ Pod::Spec.new do |s|
 
   end
 
+  s.subspec "consistency" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/consistency/**/*.{m,mm,cpp,h}"
+    ss.header_dir           = "react/renderer/consistency"
+  end
+
   s.subspec "uimanager" do |ss|
     ss.subspec "consistency" do |sss|
       sss.dependency             folly_dep_name, folly_version

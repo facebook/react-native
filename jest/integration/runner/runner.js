@@ -12,27 +12,29 @@
 import type {TestSuiteResult} from '../runtime/setup';
 
 import entrypointTemplate from './entrypoint-template';
-import {spawnSync} from 'child_process';
-import crypto from 'crypto';
+import {
+  getBuckModeForPlatform,
+  getDebugInfoFromCommandResult,
+  getFantomTestConfig,
+  getShortHash,
+  runBuck2,
+  symbolicateStackTrace,
+} from './utils';
 import fs from 'fs';
 // $FlowExpectedError[untyped-import]
 import {formatResultsErrors} from 'jest-message-util';
 import Metro from 'metro';
 import nullthrows from 'nullthrows';
-import os from 'os';
 import path from 'path';
-// $FlowExpectedError[untyped-import]
-import {SourceMapConsumer} from 'source-map';
 
 const BUILD_OUTPUT_PATH = path.resolve(__dirname, '..', 'build');
 
-const ENABLE_OPTIMIZED_MODE: false = false;
 const PRINT_FANTOM_OUTPUT: false = false;
 
-function parseRNTesterCommandResult(
-  commandArgs: $ReadOnlyArray<string>,
-  result: ReturnType<typeof spawnSync>,
-): {logs: string, testResult: TestSuiteResult} {
+function parseRNTesterCommandResult(result: ReturnType<typeof runBuck2>): {
+  logs: string,
+  testResult: TestSuiteResult,
+} {
   const stdout = result.stdout.toString();
 
   const outputArray = stdout
@@ -48,51 +50,26 @@ function parseRNTesterCommandResult(
     testResult = JSON.parse(nullthrows(testResultJSON));
   } catch (error) {
     throw new Error(
-      [
-        'Failed to parse test results from RN tester binary result. Full output:',
-        'buck2 ' + commandArgs.join(' '),
-        'stdout:',
-        stdout,
-        'stderr:',
-        result.stderr.toString(),
-      ].join('\n'),
+      'Failed to parse test results from RN tester binary result.\n' +
+        getDebugInfoFromCommandResult(result),
     );
   }
 
   return {logs: outputArray.join('\n'), testResult};
 }
 
-function getBuckModeForPlatform() {
-  const mode = ENABLE_OPTIMIZED_MODE ? 'opt' : 'dev';
-
-  switch (os.platform()) {
-    case 'linux':
-      return `@//arvr/mode/linux/${mode}`;
-    case 'darwin':
-      return os.arch() === 'arm64'
-        ? `@//arvr/mode/mac-arm/${mode}`
-        : `@//arvr/mode/mac/${mode}`;
-    case 'win32':
-      return `@//arvr/mode/win/${mode}`;
-    default:
-      throw new Error(`Unsupported platform: ${os.platform()}`);
-  }
-}
-
-function getShortHash(contents: string): string {
-  return crypto.createHash('md5').update(contents).digest('hex').slice(0, 8);
-}
-
 function generateBytecodeBundle({
   sourcePath,
   bytecodePath,
+  isOptimizedMode,
 }: {
   sourcePath: string,
   bytecodePath: string,
+  isOptimizedMode: boolean,
 }): void {
-  const hermesCompilerCommandArgs = [
+  const hermesCompilerCommandResult = runBuck2([
     'run',
-    getBuckModeForPlatform(),
+    getBuckModeForPlatform(isOptimizedMode),
     '//xplat/hermes/tools/hermesc:hermesc',
     '--',
     '-emit-binary',
@@ -102,63 +79,11 @@ function generateBytecodeBundle({
     '-out',
     bytecodePath,
     sourcePath,
-  ];
-
-  const hermesCompilerCommandResult = spawnSync(
-    'buck2',
-    hermesCompilerCommandArgs,
-    {
-      encoding: 'utf8',
-      env: {
-        ...process.env,
-        PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
-      },
-    },
-  );
+  ]);
 
   if (hermesCompilerCommandResult.status !== 0) {
-    throw new Error(
-      [
-        'Failed to run Hermes compiler. Full output:',
-        'buck2 ' + hermesCompilerCommandArgs.join(' '),
-        'stdout:',
-        hermesCompilerCommandResult.stdout,
-        'stderr:',
-        hermesCompilerCommandResult.stderr,
-        'error:',
-        hermesCompilerCommandResult.error,
-      ].join('\n'),
-    );
+    throw new Error(getDebugInfoFromCommandResult(hermesCompilerCommandResult));
   }
-}
-
-function symbolicateStackTrace(
-  sourceMapPath: string,
-  stackTrace: string,
-): string {
-  const sourceMapData = JSON.parse(fs.readFileSync(sourceMapPath, 'utf8'));
-  const consumer = new SourceMapConsumer(sourceMapData);
-
-  return stackTrace
-    .split('\n')
-    .map(line => {
-      const match = line.match(/at (.*) \((.*):(\d+):(\d+)\)/);
-      if (match) {
-        const functionName = match[1];
-        // const fileName = match[2];
-        const lineNumber = parseInt(match[3], 10);
-        const columnNumber = parseInt(match[4], 10);
-        // Get the original position
-        const originalPosition = consumer.originalPositionFor({
-          line: lineNumber,
-          column: columnNumber,
-        });
-        return `at ${originalPosition.name ?? functionName} (${originalPosition.source}:${originalPosition.line}:${originalPosition.column})`;
-      } else {
-        return line;
-      }
-    })
-    .join('\n');
 }
 
 module.exports = async function runTest(
@@ -170,7 +95,9 @@ module.exports = async function runTest(
 ): mixed {
   const startTime = Date.now();
 
-  const isOptimizedMode = ENABLE_OPTIMIZED_MODE;
+  const testConfig = getFantomTestConfig(testPath);
+
+  const isOptimizedMode = testConfig.mode === 'opt';
 
   const metroConfig = await Metro.loadConfig({
     config: path.resolve(__dirname, '..', 'config', 'metro.config.js'),
@@ -213,57 +140,28 @@ module.exports = async function runTest(
     generateBytecodeBundle({
       sourcePath: testJSBundlePath,
       bytecodePath: testBytecodeBundlePath,
+      isOptimizedMode,
     });
   }
 
-  const rnTesterCommandArgs = [
+  const rnTesterCommandResult = runBuck2([
     'run',
-    getBuckModeForPlatform(),
+    getBuckModeForPlatform(isOptimizedMode),
     '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
     '--',
     '--bundlePath',
     testBundlePath,
-  ];
-  const rnTesterCommandResult = spawnSync('buck2', rnTesterCommandArgs, {
-    encoding: 'utf8',
-    env: {
-      ...process.env,
-      PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
-    },
-  });
+  ]);
 
   if (rnTesterCommandResult.status !== 0) {
-    throw new Error(
-      [
-        'Failed to run test in RN tester binary. Full output:',
-        'buck2 ' + rnTesterCommandArgs.join(' '),
-        'stdout:',
-        rnTesterCommandResult.stdout,
-        'stderr:',
-        rnTesterCommandResult.stderr,
-        'error:',
-        rnTesterCommandResult.error,
-      ].join('\n'),
-    );
+    throw new Error(getDebugInfoFromCommandResult(rnTesterCommandResult));
   }
 
   if (PRINT_FANTOM_OUTPUT) {
-    console.log(
-      [
-        'RN tester binary. Full output:',
-        'buck2 ' + rnTesterCommandArgs.join(' '),
-        'stdout:',
-        rnTesterCommandResult.stdout,
-        'stderr:',
-        rnTesterCommandResult.stderr,
-        'error:',
-        rnTesterCommandResult.error,
-      ].join('\n'),
-    );
+    console.log(getDebugInfoFromCommandResult(rnTesterCommandResult));
   }
 
   const rnTesterParsedOutput = parseRNTesterCommandResult(
-    rnTesterCommandArgs,
     rnTesterCommandResult,
   );
 

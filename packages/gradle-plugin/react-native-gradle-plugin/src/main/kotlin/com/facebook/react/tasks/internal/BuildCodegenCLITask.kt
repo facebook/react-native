@@ -39,7 +39,7 @@ abstract class BuildCodegenCLITask : Exec() {
       }
 
   override fun exec() {
-    val logfile = "${project.layout.buildDirectory}/build-cli.log"
+    val logfile = "${project.layout.buildDirectory.getAsFile().get()}/build-cli.log"
     File(logfile).apply {
       parentFile.mkdirs()
       if (exists()) {

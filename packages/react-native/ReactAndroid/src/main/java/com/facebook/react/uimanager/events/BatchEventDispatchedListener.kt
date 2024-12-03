@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager.events;
+package com.facebook.react.uimanager.events
 
-public interface BatchEventDispatchedListener {
+public fun interface BatchEventDispatchedListener {
 
   /** Called after a batch of low priority events has been dispatched. */
-  void onBatchEventDispatched();
+  public fun onBatchEventDispatched()
 }

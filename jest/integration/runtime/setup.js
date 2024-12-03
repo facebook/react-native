@@ -194,7 +194,10 @@ class ErrorWithCustomBlame extends Error {
         this.#cachedProcessedStack = originalStack;
       } else {
         const lines = originalStack.split('\n');
-        lines.splice(1, this.#ignoredFrameCount);
+        const index = lines.findIndex(line =>
+          /at (.*) \((.*):(\d+):(\d+)\)/.test(line),
+        );
+        lines.splice(index > -1 ? index : 1, this.#ignoredFrameCount);
         this.#cachedProcessedStack = lines.join('\n');
       }
     }
@@ -303,6 +306,48 @@ class Expect {
     if (!this.#isExpectedResult(pass)) {
       throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called ${times} times, but it was called ${mock.calls.length} times`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toBeGreaterThanOrEqual(expected: number): void {
+    if (typeof this.#received !== 'number') {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be a number but it was a ${typeof this.#received}`,
+      ).blameToPreviousFrame();
+    }
+
+    if (typeof expected !== 'number') {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(expected)} to be a number but it was a ${typeof expected}`,
+      ).blameToPreviousFrame();
+    }
+
+    const pass = this.#received >= expected;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be greater than or equal to ${expected}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toBeLessThanOrEqual(expected: number): void {
+    if (typeof this.#received !== 'number') {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be a number but it was a ${typeof this.#received}`,
+      ).blameToPreviousFrame();
+    }
+
+    if (typeof expected !== 'number') {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(expected)} to be a number but it was a ${typeof expected}`,
+      ).blameToPreviousFrame();
+    }
+
+    const pass = this.#received <= expected;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be less than or equal to ${expected}`,
       ).blameToPreviousFrame();
     }
   }

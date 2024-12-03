@@ -121,8 +121,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       [_bridgeModuleDecorator.callableJSModules
           setBridgelessJSModuleMethodInvoker:^(
               NSString *moduleName, NSString *methodName, NSArray *args, dispatch_block_t onComplete) {
-            // TODO: Make RCTInstance call onComplete
             [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
+            if (onComplete) {
+              [weakSelf
+                  callFunctionOnBufferedRuntimeExecutor:[onComplete](facebook::jsi::Runtime &_) { onComplete(); }];
+            }
           }];
     }
     _launchOptions = launchOptions;

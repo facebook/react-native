@@ -125,15 +125,6 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
-  } else if (req.method == "FuseboxClient.setClientMetadata") {
-    fuseboxClientType_ = FuseboxClientType::Fusebox;
-
-    if (sessionState_.isLogDomainEnabled) {
-      sendFuseboxNotice();
-    }
-
-    shouldSendOKResponse = true;
-    isFinishedHandlingRequest = true;
   } else if (req.method == "ReactNativeApplication.enable") {
     sessionState_.isReactNativeApplicationDomainEnabled = true;
     fuseboxClientType_ = FuseboxClientType::Fusebox;
@@ -192,16 +183,11 @@ HostAgent::~HostAgent() {
 }
 
 void HostAgent::sendFuseboxNotice() {
-  if (fuseboxNoticeLogged_) {
-    return;
-  }
-
   static constexpr auto kFuseboxNotice =
       ANSI_COLOR_BG_YELLOW "Welcome to " ANSI_WEIGHT_BOLD
                            "React Native DevTools" ANSI_WEIGHT_RESET ""sv;
 
   sendInfoLogEntry(kFuseboxNotice);
-  fuseboxNoticeLogged_ = true;
 }
 
 void HostAgent::sendNonFuseboxNotice() {
