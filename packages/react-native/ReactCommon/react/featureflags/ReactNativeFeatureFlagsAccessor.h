@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3d98085a73dfc51541342dbb42ed89ab>>
+ * @generated SignedSource<<eb44aabe7e352481267aa9a6bf035ff1>>
  */
 
 /**
@@ -61,6 +61,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableUIConsistency();
   bool enableViewRecycling();
   bool excludeYogaFromRawProps();
+  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
   bool fuseboxEnabledDebug();
@@ -89,7 +90,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 46> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
@@ -120,6 +121,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> excludeYogaFromRawProps_;
+  std::atomic<std::optional<bool>> fixDifferentiatorEmittingUpdatesWithWrongParentTag_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixMountingCoordinatorReportedPendingTransactionsOnAndroid_;
   std::atomic<std::optional<bool>> fuseboxEnabledDebug_;

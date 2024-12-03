@@ -403,6 +403,7 @@ static void calculateShadowViewMutationsFlattener(
     const ShadowView& parentShadowView,
     TinyMap<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
     const ShadowViewNodePair& node,
+    const ShadowView& parentShadowViewForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes = nullptr,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes = nullptr);
 
@@ -450,7 +451,8 @@ static void updateMatchedPairSubtrees(
           mutationContainer,
           parentShadowView,
           newRemainingPairs,
-          oldPair);
+          oldPair,
+          oldPair.shadowView);
     }
     // Unflattening
     else {
@@ -480,7 +482,8 @@ static void updateMatchedPairSubtrees(
           mutationContainer,
           parentShadowView,
           unvisitedOldChildPairs,
-          newPair);
+          newPair,
+          parentShadowView);
 
       // If old nodes were not visited, we know that we can delete
       // them now. They will be removed from the hierarchy by the
@@ -621,6 +624,10 @@ static void updateMatchedPair(
  *    performed in the subtree. If it *is* in the map, it means the node is not
  *    in the Tree, and should be Deleted/Created  **after this function is
  *    called**, by the caller.
+ *
+ * @param parentShadowView shadowView under which nodes should be mounted
+ * @param parentShadowViewForUpdate current parent in which node is mounted,
+ *    used for update mutations
  */
 static void calculateShadowViewMutationsFlattener(
     ViewNodePairScope& scope,
@@ -629,6 +636,7 @@ static void calculateShadowViewMutationsFlattener(
     const ShadowView& parentShadowView,
     TinyMap<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
     const ShadowViewNodePair& node,
+    const ShadowView& parentShadowViewForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes) {
   DEBUG_LOGS({
@@ -838,11 +846,18 @@ static void calculateShadowViewMutationsFlattener(
       // ShadowNode.
       if (newTreeNodePair.shadowView != oldTreeNodePair.shadowView &&
           newTreeNodePair.isConcreteView && oldTreeNodePair.isConcreteView) {
+        // We execute updates before creates, so pass the current parent in when
+        // unflattening.
+        // TODO: whenever we insert, we already update the relevant properties,
+        // so this update is redundant. We should remove this.
         mutationContainer.updateMutations.push_back(
             ShadowViewMutation::UpdateMutation(
                 oldTreeNodePair.shadowView,
                 newTreeNodePair.shadowView,
-                node.shadowView));
+                ReactNativeFeatureFlags::
+                        fixDifferentiatorEmittingUpdatesWithWrongParentTag()
+                    ? parentShadowViewForUpdate
+                    : node.shadowView));
       }
 
       // Update children if appropriate.
@@ -877,6 +892,9 @@ static void calculateShadowViewMutationsFlattener(
                    : newTreeNodePair.shadowView),
               unvisitedOtherNodes,
               treeChildPair,
+              (reparentMode == ReparentMode::Flatten
+                   ? oldTreeNodePair.shadowView
+                   : parentShadowView),
               subVisitedNewMap,
               subVisitedOldMap);
         } else {
@@ -918,6 +936,9 @@ static void calculateShadowViewMutationsFlattener(
                      : newTreeNodePair.shadowView),
                 unvisitedRecursiveChildPairs,
                 oldTreeNodePair,
+                (reparentMode == ReparentMode::Flatten
+                     ? oldTreeNodePair.shadowView
+                     : parentShadowView),
                 subVisitedNewMap,
                 subVisitedOldMap);
           }
@@ -933,6 +954,9 @@ static void calculateShadowViewMutationsFlattener(
                      : newTreeNodePair.shadowView),
                 unvisitedRecursiveChildPairs,
                 newTreeNodePair,
+                (reparentMode == ReparentMode::Flatten
+                     ? oldTreeNodePair.shadowView
+                     : parentShadowView),
                 subVisitedNewMap,
                 subVisitedOldMap);
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6b4909879b76908792d89e3f24c1453a>>
+ * @generated SignedSource<<9541abe6da92d991557ca6d2f1e36a9a>>
  */
 
 /**
@@ -94,6 +94,8 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecycling(jsi::Runtime& runtime);
 
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
+
+  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
