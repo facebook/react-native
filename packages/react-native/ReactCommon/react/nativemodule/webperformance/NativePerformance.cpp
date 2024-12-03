@@ -144,35 +144,6 @@ std::tuple<double, double> NativePerformance::measureWithResult(
   return std::tuple{entry.startTime, entry.duration};
 }
 
-void NativePerformance::mark(
-    jsi::Runtime& rt,
-    std::string name,
-    double startTime) {
-  auto [trackName, eventName] = parseTrackName(name);
-  ReactPerfLogger::mark(eventName, startTime, trackName);
-
-  PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
-}
-
-void NativePerformance::measure(
-    jsi::Runtime& rt,
-    std::string name,
-    double startTime,
-    double endTime,
-    std::optional<double> duration,
-    std::optional<std::string> startMark,
-    std::optional<std::string> endMark) {
-  auto [trackName, eventName] = parseTrackName(name);
-
-  // TODO T190600850 support startMark/endMark
-  if (!startMark && !endMark) {
-    ReactPerfLogger::measure(eventName, startTime, endTime, trackName);
-  }
-
-  PerformanceEntryReporter::getInstance()->reportMeasure(
-      eventName, startTime, endTime, duration, startMark, endMark);
-}
-
 void NativePerformance::clearMarks(
     jsi::Runtime& /*rt*/,
     std::optional<std::string> entryName) {
