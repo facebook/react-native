@@ -484,8 +484,8 @@ class RawValue {
     react_native_assert(value.isObject());
     jsi::Object object = value.asObject(*runtime);
     react_native_assert(object.isArray(*runtime));
-    auto array = object.asArray(*runtime);
-    auto size = array.size(*runtime);
+    jsi::Array array = object.asArray(*runtime);
+    size_t size = array.size(*runtime);
     std::vector<T> result;
     result.reserve(size);
     for (size_t i = 0; i < size; i++) {
