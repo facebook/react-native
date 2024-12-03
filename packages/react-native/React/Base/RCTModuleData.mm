@@ -468,7 +468,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 - (dispatch_queue_t)methodQueue
 {
   if (_bridge.valid) {
-    RCTAssert(_methodQueue != nullptr, @"Module %@ has no methodQueue (instance: %@)", self, self.instance);
+    id instance = self.instance;
+    RCTAssert(_methodQueue != nullptr, @"Module %@ has no methodQueue (instance: %@)", self, instance);
   }
   return _methodQueue;
 }
