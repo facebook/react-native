@@ -303,13 +303,13 @@ class RawValue {
       return false;
     }
 
-    jsi::Object asObject = value.asObject(*runtime);
+    jsi::Object asObject = value.getObject(*runtime);
 
     if (!asObject.isArray(*runtime)) {
       return false;
     }
 
-    auto array = asObject.asArray(*runtime);
+    jsi::Array array = asObject.getArray(*runtime);
     size_t size = array.size(*runtime);
     for (size_t i = 0; i < size; i++) {
       jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
@@ -354,11 +354,7 @@ class RawValue {
       return false;
     }
 
-    jsi::Object asObject = value.asObject(*runtime);
-
-    if (asObject.isArray(*runtime)) {
-      return false;
-    }
+    jsi::Object asObject = value.getObject(*runtime);
 
     auto propertyNames = asObject.getPropertyNames(*runtime);
     size_t size = propertyNames.size(*runtime);
@@ -449,7 +445,7 @@ class RawValue {
       const jsi::Value& value,
       jsi::Runtime* runtime,
       std::string* /*type*/) {
-    jsi::String stringValue = value.getString(*runtime);
+    jsi::String stringValue = value.asString(*runtime);
     return stringValue.utf8(*runtime);
   }
 
@@ -554,7 +550,7 @@ class RawValue {
       std::unordered_map<std::string, T>* /*type*/) {
     react_native_assert(value.isObject());
     jsi::Object object = value.asObject(*runtime);
-    jsi::array propertyNames = object.getPropertyNames(*runtime);
+    jsi::Array propertyNames = object.getPropertyNames(*runtime);
     size_t size = propertyNames.size(*runtime);
     std::unordered_map<std::string, T> result;
     for (size_t i = 0; i < size; i++) {
