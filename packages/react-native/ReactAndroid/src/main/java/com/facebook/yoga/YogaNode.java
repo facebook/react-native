@@ -124,6 +124,12 @@ public abstract class YogaNode implements YogaProps {
 
   public abstract void setFlexBasisAuto();
 
+  public abstract void setFlexBasisMaxContent();
+
+  public abstract void setFlexBasisFitContent();
+
+  public abstract void setFlexBasisStretch();
+
   public abstract YogaValue getMargin(YogaEdge edge);
 
   public abstract void setMargin(YogaEdge edge, float margin);
@@ -158,6 +164,12 @@ public abstract class YogaNode implements YogaProps {
 
   public abstract void setWidthAuto();
 
+  public abstract void setWidthMaxContent();
+
+  public abstract void setWidthFitContent();
+
+  public abstract void setWidthStretch();
+
   public abstract YogaValue getHeight();
 
   public abstract void setHeight(float height);
@@ -166,11 +178,23 @@ public abstract class YogaNode implements YogaProps {
 
   public abstract void setHeightAuto();
 
+  public abstract void setHeightMaxContent();
+
+  public abstract void setHeightFitContent();
+
+  public abstract void setHeightStretch();
+
   public abstract YogaValue getMinWidth();
 
   public abstract void setMinWidth(float minWidth);
 
   public abstract void setMinWidthPercent(float percent);
+
+  public abstract void setMinWidthMaxContent();
+
+  public abstract void setMinWidthFitContent();
+
+  public abstract void setMinWidthStretch();
 
   public abstract YogaValue getMinHeight();
 
@@ -178,17 +202,35 @@ public abstract class YogaNode implements YogaProps {
 
   public abstract void setMinHeightPercent(float percent);
 
+  public abstract void setMinHeightMaxContent();
+
+  public abstract void setMinHeightFitContent();
+
+  public abstract void setMinHeightStretch();
+
   public abstract YogaValue getMaxWidth();
 
   public abstract void setMaxWidth(float maxWidth);
 
   public abstract void setMaxWidthPercent(float percent);
 
+  public abstract void setMaxWidthMaxContent();
+
+  public abstract void setMaxWidthFitContent();
+
+  public abstract void setMaxWidthStretch();
+
   public abstract YogaValue getMaxHeight();
 
   public abstract void setMaxHeight(float maxheight);
 
   public abstract void setMaxHeightPercent(float percent);
+
+  public abstract void setMaxHeightMaxContent();
+
+  public abstract void setMaxHeightFitContent();
+
+  public abstract void setMaxHeightStretch();
 
   public abstract float getAspectRatio();
 
