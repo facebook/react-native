@@ -482,9 +482,9 @@ class RawValue {
       jsi::Runtime* runtime,
       std::vector<T>* /*type*/) {
     react_native_assert(value.isObject());
-    jsi::Object object = value.asObject(*runtime);
+    jsi::Object object = value.getObject(*runtime);
     react_native_assert(object.isArray(*runtime));
-    jsi::Array array = object.asArray(*runtime);
+    jsi::Array array = object.getArray(*runtime);
     size_t size = array.size(*runtime);
     std::vector<T> result;
     result.reserve(size);
@@ -515,9 +515,9 @@ class RawValue {
       jsi::Runtime* runtime,
       std::vector<std::vector<T>>* /*type*/) {
     react_native_assert(value.isObject());
-    jsi::Object object = value.asObject(*runtime);
+    jsi::Object object = value.getObject(*runtime);
     react_native_assert(object.isArray(*runtime));
-    jsi::Array array = object.asArray(*runtime);
+    jsi::Array array = object.getArray(*runtime);
     size_t size = array.size(*runtime);
     std::vector<std::vector<T>> result;
     result.reserve(size);
@@ -549,7 +549,7 @@ class RawValue {
       jsi::Runtime* runtime,
       std::unordered_map<std::string, T>* /*type*/) {
     react_native_assert(value.isObject());
-    jsi::Object object = value.asObject(*runtime);
+    jsi::Object object = value.getObject(*runtime);
     jsi::Array propertyNames = object.getPropertyNames(*runtime);
     size_t size = propertyNames.size(*runtime);
     std::unordered_map<std::string, T> result;
