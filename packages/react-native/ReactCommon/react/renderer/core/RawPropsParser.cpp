@@ -143,7 +143,7 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
         } else {
           rawValue = RawValue(jsi::dynamicFromValue(runtime, value));
         }
-        rawProps.values_.push_back(rawValue);
+        rawProps.values_.push_back(std::move(rawValue));
         valueIndex++;
       }
 

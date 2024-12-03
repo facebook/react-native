@@ -82,7 +82,6 @@ class RawValue {
   friend class RawPropsParser;
   friend class UIManagerBinding;
 
- public:
   /*
    * Copy constructor and copy assignment operator would be private and only for
    * internal use, but it's needed for user-code that does `auto val =
@@ -111,6 +110,7 @@ class RawValue {
     return *this;
   }
 
+ public:
   /*
    * Casts the value to a specified type.
    */
