@@ -122,7 +122,7 @@ public class ReactActivityDelegate {
         () -> {
           String mainComponentName = getMainComponentName();
           final Bundle launchOptions = composeLaunchOptions();
-          if (mActivity != null && isEdgeToEdgeEnabled()) {
+          if (mActivity != null && BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
             WindowUtilKt.enableEdgeToEdge(mActivity.getWindow());
           }
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
@@ -252,10 +252,6 @@ public class ReactActivityDelegate {
 
   protected ReactActivity getReactActivity() {
     return ((ReactActivity) getContext());
-  }
-
-  protected boolean isEdgeToEdgeEnabled() {
-    return getReactHost().isEdgeToEdgeEnabled();
   }
 
   /**

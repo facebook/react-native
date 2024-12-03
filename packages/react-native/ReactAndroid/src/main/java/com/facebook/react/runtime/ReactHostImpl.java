@@ -26,6 +26,7 @@ import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.BuildConfig;
 import com.facebook.react.MemoryPressureRouter;
 import com.facebook.react.ReactHost;
 import com.facebook.react.ReactInstanceEventListener;
@@ -117,7 +118,6 @@ public class ReactHostImpl implements ReactHost {
   private final Set<ReactSurfaceImpl> mAttachedSurfaces = new HashSet<>();
   private final MemoryPressureRouter mMemoryPressureRouter;
   private final boolean mAllowPackagerServerAccess;
-  private final boolean mIsEdgeToEdgeEnabled;
   private final boolean mUseDevSupport;
 
   // todo: T192399917 This no longer needs to store the react instance
@@ -152,7 +152,6 @@ public class ReactHostImpl implements ReactHost {
       ReactHostDelegate delegate,
       ComponentFactory componentFactory,
       boolean allowPackagerServerAccess,
-      boolean isEdgeToEdgeEnabled,
       boolean useDevSupport) {
     this(
         context,
@@ -161,7 +160,6 @@ public class ReactHostImpl implements ReactHost {
         Executors.newSingleThreadExecutor(),
         Task.UI_THREAD_EXECUTOR,
         allowPackagerServerAccess,
-        isEdgeToEdgeEnabled,
         useDevSupport);
   }
 
@@ -172,7 +170,6 @@ public class ReactHostImpl implements ReactHost {
       Executor bgExecutor,
       Executor uiExecutor,
       boolean allowPackagerServerAccess,
-      boolean isEdgeToEdgeEnabled,
       boolean useDevSupport) {
     this(
         context,
@@ -181,7 +178,6 @@ public class ReactHostImpl implements ReactHost {
         bgExecutor,
         uiExecutor,
         allowPackagerServerAccess,
-        isEdgeToEdgeEnabled,
         useDevSupport,
         null);
   }
@@ -193,7 +189,6 @@ public class ReactHostImpl implements ReactHost {
       Executor bgExecutor,
       Executor uiExecutor,
       boolean allowPackagerServerAccess,
-      boolean isEdgeToEdgeEnabled,
       boolean useDevSupport,
       @Nullable DevSupportManagerFactory devSupportManagerFactory) {
     mContext = context;
@@ -203,7 +198,6 @@ public class ReactHostImpl implements ReactHost {
     mUIExecutor = uiExecutor;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mAllowPackagerServerAccess = allowPackagerServerAccess;
-    mIsEdgeToEdgeEnabled = isEdgeToEdgeEnabled;
     mUseDevSupport = useDevSupport;
     if (devSupportManagerFactory == null) {
       devSupportManagerFactory = new DefaultDevSupportManagerFactory();
@@ -447,11 +441,6 @@ public class ReactHostImpl implements ReactHost {
 
   /* package */ boolean isInstanceInitialized() {
     return mReactInstance != null;
-  }
-
-  @Override
-  public boolean isEdgeToEdgeEnabled() {
-    return mIsEdgeToEdgeEnabled;
   }
 
   @ThreadConfined(UI)
@@ -836,7 +825,7 @@ public class ReactHostImpl implements ReactHost {
   @ThreadConfined(UI)
   @Override
   public void onConfigurationChanged(Context updatedContext) {
-    if (isEdgeToEdgeEnabled()) {
+    if (BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
       UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
