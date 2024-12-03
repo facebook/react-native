@@ -135,7 +135,7 @@ class RawValue {
    * Checks if the stored value has specified type.
    */
   template <typename T>
-  bool hasType() const noexcept {
+  bool hasType() const {
     if (std::holds_alternative<folly::dynamic>(value_)) {
       folly::dynamic dynamic = std::get<folly::dynamic>(value_);
       return checkValueType(dynamic, (T*)nullptr);
@@ -148,7 +148,7 @@ class RawValue {
   /*
    * Checks if the stored value is *not* `null`.
    */
-  bool hasValue() const noexcept {
+  bool hasValue() const {
     if (std::holds_alternative<folly::dynamic>(value_)) {
       folly::dynamic dynamic = std::get<folly::dynamic>(value_);
       return !dynamic.isNull();
