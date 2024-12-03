@@ -8,6 +8,5 @@ steps:
     inputs:
       script: |
         brew bundle --file .ado/Brewfile
-        cat .ado/Brewfile.lock.json
 
   - template: /.ado/templates/apple-xcode-select.yml@self

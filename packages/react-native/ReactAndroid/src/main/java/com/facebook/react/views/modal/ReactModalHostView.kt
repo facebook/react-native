@@ -296,7 +296,14 @@ public class ReactModalHostView(context: ThemedReactContext) :
      * changed. This has the pleasant side-effect of us not having to preface all Modals with "top:
      * statusBarHeight", since that margin will be included in the FrameLayout.
      */
-    get() = FrameLayout(context).apply { addView(dialogRootViewGroup) }
+    get() =
+        FrameLayout(context).apply {
+          addView(dialogRootViewGroup)
+          if (!statusBarTranslucent) {
+            // this is needed to prevent content hiding behind systems bars < API 30
+            this.fitsSystemWindows = true
+          }
+        }
 
   /**
    * updateProperties will update the properties that do not require us to recreate the dialog
