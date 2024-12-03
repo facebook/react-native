@@ -448,6 +448,7 @@ class RawValue {
       const folly::dynamic& dynamic,
       JsiValuePair* /*type*/) {
     react_native_assert(false);
+    return {};
   }
 
   static JsiValuePair castValue(
