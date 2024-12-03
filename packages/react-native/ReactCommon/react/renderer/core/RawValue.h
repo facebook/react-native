@@ -463,7 +463,8 @@ class RawValue {
       const jsi::Value& value,
       jsi::Runtime* runtime,
       JsiValuePair* /*type*/) {
-    return std::make_pair(runtime, value);
+    jsi::Value valueCopy = jsi::Value(*runtime, value);
+    return std::make_pair(runtime, std::move(valueCopy));
   }
 
   template <typename T>
