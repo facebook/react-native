@@ -527,6 +527,12 @@ class RawValue {
       jsi::Value propertyNameValue = propertyNames.getValueAtIndex(*runtime, i);
       jsi::String propertyName = propertyNameValue.getString(*runtime);
       jsi::Value propertyValue = object.getProperty(*runtime, propertyName);
+      if (propertyValue.isUndefined()) {
+        // Skip undefined values to mimic JSIDynamic::dynamicFromValue behavior.
+        // Null values are allowed in the map.
+        continue;
+      }
+
       std::string propertyNameString = propertyName.utf8(*runtime);
       T property = castValue(propertyValue, runtime, (T*)nullptr);
       result[propertyNameString] = property;
