@@ -40,7 +40,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 #if !TARGET_OS_OSX // [macOS]
   RCTUIView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
 #else // [macOS
-  RCTPlatformView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
+  RCTUITextView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
 #endif // macOS]
   NSUInteger _mostRecentEventCount;
   NSAttributedString *_lastStringStateWasUpdatedWith;
@@ -806,9 +806,13 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 - (void)_updateTypingAttributes
 {
   if (_backedTextInputView.attributedText.length > 0) {
+#if !TARGET_OS_OSX // [macOS]
     NSUInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                            toPosition:_backedTextInputView.selectedTextRange.start];
-
+#else // [macOS
+    NSUInteger offsetStart = [_backedTextInputView selectedTextRange].location;
+#endif // macOS]
+    
     NSUInteger samplePoint = offsetStart == 0 ? 0 : offsetStart - 1;
     _backedTextInputView.typingAttributes = [_backedTextInputView.attributedText attributesAtIndex:samplePoint
                                                                                     effectiveRange:NULL];
