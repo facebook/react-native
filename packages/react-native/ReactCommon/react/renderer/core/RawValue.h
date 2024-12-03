@@ -111,6 +111,8 @@ class RawValue {
   }
 
  public:
+  using JsiValuePair = std::pair<jsi::Runtime*, jsi::Value>;
+
   /*
    * Casts the value to a specified type.
    */
@@ -156,8 +158,15 @@ class RawValue {
     }
   }
 
+  /**
+   * In case this RawValue was constructed from a jsi::Value
+   * this method will return the jsi::Runtime and jsi::Value pair.
+   */
+  const JsiValuePair& experimental_getJsiValuePair() const {
+    return std::get<JsiValuePair>(value_);
+  }
+
  private:
-  using JsiValuePair = std::pair<jsi::Runtime*, jsi::Value>;
   using ValueVariant = std::variant<folly::dynamic, JsiValuePair>;
   ValueVariant value_;
 
@@ -250,6 +259,19 @@ class RawValue {
       jsi::Runtime* runtime,
       std::string* /*type*/) noexcept {
     return value.isString();
+  }
+
+  static bool checkValueType(
+      const folly::dynamic& dynamic,
+      JsiValuePair* /*type*/) noexcept {
+    return false;
+  }
+
+  static bool checkValueType(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      JsiValuePair* /*type*/) noexcept {
+    return true;
   }
 
   template <typename T>
@@ -431,6 +453,19 @@ class RawValue {
     return stringValue.utf8(*runtime);
   }
 
+  static JsiValuePair castValue(
+      const folly::dynamic& dynamic,
+      JsiValuePair* /*type*/) {
+    react_native_assert(false);
+  }
+
+  static JsiValuePair castValue(
+      const jsi::Value& value,
+      jsi::Runtime* runtime,
+      JsiValuePair* /*type*/) {
+    return std::make_pair(runtime, value);
+  }
+
   template <typename T>
   static std::vector<T> castValue(
       const folly::dynamic& dynamic,
@@ -454,7 +489,7 @@ class RawValue {
     react_native_assert(object.isArray(*runtime));
     auto array = object.asArray(*runtime);
     auto size = array.size(*runtime);
-   std::vector<T> result;
+    std::vector<T> result;
     result.reserve(size);
     for (size_t i = 0; i < size; i++) {
       jsi::Value itemValue = array.getValueAtIndex(*runtime, i);
@@ -520,7 +555,7 @@ class RawValue {
     jsi::Object object = value.asObject(*runtime);
     auto propertyNames = object.getPropertyNames(*runtime);
     auto size = propertyNames.size(*runtime);
-   std::unordered_map<std::string, T> result;
+    std::unordered_map<std::string, T> result;
     for (size_t i = 0; i < size; i++) {
       jsi::Value propertyNameValue = propertyNames.getValueAtIndex(*runtime, i);
       jsi::String propertyName = propertyNameValue.getString(*runtime);
