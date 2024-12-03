@@ -265,12 +265,12 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     defaultAttributes[RCTAttributedStringEventEmitterKey] =
         _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
 
-      NSMutableParagraphStyle *paragraphStyle = defaultAttributes[NSParagraphStyleAttributeName];
-
       if (!newTextInputProps.multiline) {
+          NSMutableParagraphStyle *paragraphStyle = defaultAttributes[NSParagraphStyleAttributeName];
           paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
           defaultAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
       }
+
     _backedTextInputView.defaultTextAttributes = defaultAttributes;
   }
 
