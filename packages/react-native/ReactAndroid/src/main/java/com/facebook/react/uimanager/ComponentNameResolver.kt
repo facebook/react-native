@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager
 
-import com.facebook.proguard.annotations.DoNotStripAny;
+import com.facebook.proguard.annotations.DoNotStripAny
 
 @DoNotStripAny
 public interface ComponentNameResolver {
-
   /* returns a list of all the component names that are registered in React Native. */
-  String[] getComponentNames();
+  public val componentNames: Array<String>?
 }
