@@ -4095,10 +4095,6 @@ public abstract class com/facebook/react/uimanager/BaseViewManagerDelegate : com
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/uimanager/ComponentNameResolver {
-	public abstract fun getComponentNames ()[Ljava/lang/String;
-}
-
 public final class com/facebook/react/uimanager/DisplayMetricsHolder {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/DisplayMetricsHolder;
 	public static final fun getDisplayMetricsWritableMap (D)Lcom/facebook/react/bridge/WritableMap;
