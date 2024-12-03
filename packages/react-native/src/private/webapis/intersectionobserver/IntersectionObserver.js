@@ -33,10 +33,10 @@ type IntersectionObserverInit = {
    * If set, it will either be a singular ratio value between 0-1 (inclusive)
    * or an array of such ratios.
    *
-   * Note: If `rn_rootThreshold` is set, and `threshold` is not set,
+   * Note: If `rnRootThreshold` is set, and `threshold` is not set,
    * `threshold` will not default to [0] (as per spec)
    */
-  rn_rootThreshold?: number | $ReadOnlyArray<number>,
+  rnRootThreshold?: number | $ReadOnlyArray<number>,
 };
 
 /**
@@ -57,7 +57,7 @@ type IntersectionObserverInit = {
  *
  * This implementation only supports the `threshold` option at the moment
  * (`root` and `rootMargin` are not supported) and provides a React Native specific
- * option `rn_rootThreshold`.
+ * option `rnRootThreshold`.
  *
  */
 export default class IntersectionObserver {
@@ -99,7 +99,7 @@ export default class IntersectionObserver {
 
     this._callback = callback;
 
-    this._rootThresholds = normalizeRootThreshold(options?.rn_rootThreshold);
+    this._rootThresholds = normalizeRootThreshold(options?.rnRootThreshold);
     this._thresholds = normalizeThreshold(
       options?.threshold,
       this._rootThresholds != null, // only provide default if no rootThreshold
@@ -136,9 +136,9 @@ export default class IntersectionObserver {
    * threshold is a ratio of intersection area to bounding box area of an
    * observed target.
    * Notifications for a target are generated when any of the thresholds specified
-   * in `rn_rootThreshold` or `threshold` are crossed for that target.
+   * in `rnRootThreshold` or `threshold` are crossed for that target.
    *
-   * If no value was passed to the constructor, and no `rn_rootThreshold`
+   * If no value was passed to the constructor, and no `rnRootThreshold`
    * is set, `0` is used.
    */
   get thresholds(): $ReadOnlyArray<number> {
@@ -150,9 +150,9 @@ export default class IntersectionObserver {
    * threshold is a ratio of intersection area to bounding box area of the specified
    * root view, which defaults to the viewport.
    * Notifications for a target are generated when any of the thresholds specified
-   * in `rn_rootThreshold` or `threshold` are crossed for that target.
+   * in `rnRootThreshold` or `threshold` are crossed for that target.
    */
-  get rootThresholds(): $ReadOnlyArray<number> | null {
+  get rnRootThresholds(): $ReadOnlyArray<number> | null {
     return this._rootThresholds;
   }
 
@@ -293,7 +293,7 @@ function normalizeThreshold(
 }
 
 /**
- * Converts the user defined `rn_rootThreshold` value into an array of sorted valid
+ * Converts the user defined `rnRootThreshold` value into an array of sorted valid
  * threshold options for `IntersectionObserver` (double ∈ [0, 1]).
  *
  * If invalid array or null, returns null.
@@ -310,13 +310,13 @@ function normalizeRootThreshold(
 ): null | $ReadOnlyArray<number> {
   if (Array.isArray(rootThreshold)) {
     const normalizedArr = rootThreshold
-      .map(rt => normalizeThresholdValue(rt, 'rn_rootThreshold'))
+      .map(rt => normalizeThresholdValue(rt, 'rnRootThreshold'))
       .filter((rt): rt is number => rt != null)
       .sort();
     return normalizedArr.length === 0 ? null : normalizedArr;
   }
 
-  const normalized = normalizeThresholdValue(rootThreshold, 'rn_rootThreshold');
+  const normalized = normalizeThresholdValue(rootThreshold, 'rnRootThreshold');
   return normalized == null ? null : [normalized];
 }
 
