@@ -520,7 +520,7 @@ class RawValue {
     jsi::Object object = value.asObject(*runtime);
     auto propertyNames = object.getPropertyNames(*runtime);
     auto size = propertyNames.size(*runtime);
-    auto result = std::unordered_map<std::string, T>{};
+   std::unordered_map<std::string, T> result;
     for (size_t i = 0; i < size; i++) {
       jsi::Value propertyNameValue = propertyNames.getValueAtIndex(*runtime, i);
       jsi::String propertyName = propertyNameValue.getString(*runtime);
