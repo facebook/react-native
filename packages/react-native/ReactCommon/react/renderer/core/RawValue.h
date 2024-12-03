@@ -92,7 +92,7 @@ class RawValue {
       folly::dynamic dynamic = std::get<folly::dynamic>(other.value_);
       value_ = dynamic;
     } else {
-      const auto& [runtime, value] = std::get<JsiPair>(other.value_);
+      const auto& [runtime, value] = std::get<JsiValuePair>(other.value_);
       value_ = std::make_pair(runtime, jsi::Value(*runtime, value));
     }
   }
@@ -103,7 +103,7 @@ class RawValue {
         folly::dynamic dynamic = std::get<folly::dynamic>(other.value_);
         value_ = dynamic;
       } else {
-        const auto& [runtime, value] = std::get<JsiPair>(other.value_);
+        const auto& [runtime, value] = std::get<JsiValuePair>(other.value_);
         value_ = std::make_pair(runtime, jsi::Value(*runtime, value));
       }
     }
@@ -120,7 +120,7 @@ class RawValue {
       folly::dynamic dynamic = std::get<folly::dynamic>(value_);
       return castValue(dynamic, (T*)nullptr);
     } else {
-      const auto& [runtime, value] = std::get<JsiPair>(value_);
+      const auto& [runtime, value] = std::get<JsiValuePair>(value_);
       return castValue(value, runtime, (T*)nullptr);
     }
   }
@@ -138,7 +138,7 @@ class RawValue {
       folly::dynamic dynamic = std::get<folly::dynamic>(value_);
       return checkValueType(dynamic, (T*)nullptr);
     } else {
-      const auto& [runtime, value] = std::get<JsiPair>(value_);
+      const auto& [runtime, value] = std::get<JsiValuePair>(value_);
       return checkValueType(value, runtime, (T*)nullptr);
     }
   }
@@ -151,14 +151,14 @@ class RawValue {
       folly::dynamic dynamic = std::get<folly::dynamic>(value_);
       return !dynamic.isNull();
     } else {
-      const auto& [runtime, value] = std::get<JsiPair>(value_);
+      const auto& [runtime, value] = std::get<JsiValuePair>(value_);
       return !value.isNull() && !value.isUndefined();
     }
   }
 
  private:
-  using JsiPair = std::pair<jsi::Runtime*, jsi::Value>;
-  using ValueVariant = std::variant<folly::dynamic, JsiPair>;
+  using JsiValuePair = std::pair<jsi::Runtime*, jsi::Value>;
+  using ValueVariant = std::variant<folly::dynamic, JsiValuePair>;
   ValueVariant value_;
 
   static bool checkValueType(
