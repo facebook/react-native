@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f741660e4cf2528defe0ab1f61858aab>>
+ * @generated SignedSource<<e628af8109a1d8bb6425515d824852a3>>
  */
 
 /**
@@ -183,6 +183,11 @@ class ReactNativeFeatureFlags {
    * When enabled, rawProps in Props will not include Yoga specific props.
    */
   RN_EXPORT static bool excludeYogaFromRawProps();
+
+  /**
+   * Fixes a bug in Differentiator where parent views may be referenced before they're created
+   */
+  RN_EXPORT static bool fixDifferentiatorEmittingUpdatesWithWrongParentTag();
 
   /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<902b269e45fcb4970c6f8a86818e1940>>
+ * @generated SignedSource<<640630d7a40b53f7d507569aa6409f69>>
  */
 
 /**
@@ -210,6 +210,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool excludeYogaFromRawProps() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("excludeYogaFromRawProps");
+    return method(javaProvider_);
+  }
+
+  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixDifferentiatorEmittingUpdatesWithWrongParentTag");
     return method(javaProvider_);
   }
 
@@ -464,6 +470,11 @@ bool JReactNativeFeatureFlagsCxxInterop::excludeYogaFromRawProps(
   return ReactNativeFeatureFlags::excludeYogaFromRawProps();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::fixDifferentiatorEmittingUpdatesWithWrongParentTag(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -667,6 +678,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "excludeYogaFromRawProps",
         JReactNativeFeatureFlagsCxxInterop::excludeYogaFromRawProps),
+      makeNativeMethod(
+        "fixDifferentiatorEmittingUpdatesWithWrongParentTag",
+        JReactNativeFeatureFlagsCxxInterop::fixDifferentiatorEmittingUpdatesWithWrongParentTag),
       makeNativeMethod(
         "fixMappingOfEventPrioritiesBetweenFabricAndReact",
         JReactNativeFeatureFlagsCxxInterop::fixMappingOfEventPrioritiesBetweenFabricAndReact),
