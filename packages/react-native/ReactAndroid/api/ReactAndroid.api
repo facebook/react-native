@@ -4106,22 +4106,6 @@ public final class com/facebook/react/uimanager/DisplayMetricsHolder {
 	public static final fun setWindowDisplayMetrics (Landroid/util/DisplayMetrics;)V
 }
 
-public class com/facebook/react/uimanager/FabricViewStateManager {
-	public fun <init> ()V
-	public fun getStateData ()Lcom/facebook/react/bridge/ReadableMap;
-	public fun hasStateWrapper ()Z
-	public fun setState (Lcom/facebook/react/uimanager/FabricViewStateManager$StateUpdateCallback;)V
-	public fun setStateWrapper (Lcom/facebook/react/uimanager/StateWrapper;)V
-}
-
-public abstract interface class com/facebook/react/uimanager/FabricViewStateManager$HasFabricViewStateManager {
-	public abstract fun getFabricViewStateManager ()Lcom/facebook/react/uimanager/FabricViewStateManager;
-}
-
-public abstract interface class com/facebook/react/uimanager/FabricViewStateManager$StateUpdateCallback {
-	public abstract fun getStateUpdate ()Lcom/facebook/react/bridge/WritableMap;
-}
-
 public final class com/facebook/react/uimanager/FloatUtil {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/FloatUtil;
 	public static final fun floatsEqual (FF)Z
