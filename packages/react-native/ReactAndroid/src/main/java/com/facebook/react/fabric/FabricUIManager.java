@@ -878,6 +878,16 @@ public class FabricUIManager
     }
   }
 
+  /**
+   * This method initiates preloading of an image specified by ImageSource. It can later be consumed
+   * by an ImageView.
+   */
+  public void experimental_prefetchResource(
+      String componentName, int surfaceId, int reactTag, ReadableMapBuffer params) {
+    mMountingManager.experimental_prefetchResource(
+        mReactApplicationContext, componentName, surfaceId, reactTag, params);
+  }
+
   public void setBinding(FabricUIManagerBinding binding) {
     mBinding = binding;
   }
@@ -960,7 +970,6 @@ public class FabricUIManager
    * @param reactTag
    * @param eventName
    * @param canCoalesceEvent
-   * @param customCoalesceKey
    * @param params
    * @param eventCategory
    */
