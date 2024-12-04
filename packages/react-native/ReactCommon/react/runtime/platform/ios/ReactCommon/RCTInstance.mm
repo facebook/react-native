@@ -476,7 +476,11 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   auto script = std::make_unique<NSDataBigString>(source.data);
   const auto *url = deriveSourceURL(source.url).UTF8String;
   _reactInstance->loadScript(std::move(script), url);
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
+  [self callFunctionOnBufferedRuntimeExecutor:[](facebook::jsi::Runtime &_) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
+    });
+  }];
 }
 
 - (void)_handleJSError:(const JsErrorHandler::ParsedError &)error withRuntime:(jsi::Runtime &)runtime
