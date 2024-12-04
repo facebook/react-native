@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
   },
   focusedUncontrolled: {
     margin: -2,
+    color: 'blue',
   },
   screenshotArea: {
     position: 'absolute',
