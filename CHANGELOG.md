@@ -2,14 +2,11 @@
 
 ## v0.77.0-rc.1
 
-### Changed
-
-- Drop node-fetch in favor of Node's built-in fetch from undici in `react-native/community-cli-plugin` ([881d8a720f](https://github.com/facebook/react-native/commit/881d8a720fb24241d7b2127273ca6116833bf176) by [@jbroma](https://github.com/jbroma))
-
 ### Fixed
 
 - Replace Object.hasOwn usages to fix Animated on JSC ([e996b3f346](https://github.com/facebook/react-native/commit/e996b3f346462a394012a722ce19990cdf9c3d9a) by [@robhogan](https://github.com/robhogan))
 - Remove non compliant `filename*` attribute in a FormData `content-disposition` header ([f791fb9e66](https://github.com/facebook/react-native/commit/f791fb9e660fe15bccf55029045c48f4bbcbc5cb) by [@foyarash](https://github.com/foyarash))
+- Fix "punycode is deprecated" warning by replacing `node-fetch` with native `fetch` ([881d8a720f](https://github.com/facebook/react-native/commit/881d8a720fb24241d7b2127273ca6116833bf176) by [@jbroma](https://github.com/jbroma))
 
 #### Android specific
 
