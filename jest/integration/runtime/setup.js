@@ -10,7 +10,14 @@
  */
 
 import deepEqual from 'deep-equal';
+import {diff} from 'jest-diff';
 import nullthrows from 'nullthrows';
+import {format, plugins} from 'pretty-format';
+
+export type SnapshotConfig = {
+  updateSnapshot: 'all' | 'new' | 'none',
+  initialData: {[key: string]: string},
+};
 
 export type TestCaseResult = {
   ancestorTitles: Array<string>,
@@ -33,6 +40,12 @@ export type TestSuiteResult =
         stack: string,
       },
     };
+
+const COMPARISON_EQUALS_STRING = 'Compared values have no visual difference.';
+
+let snapshotConfig: SnapshotConfig;
+let currentTestFullName: string = '';
+let currentTestSnapshotCallCount: number = 0;
 
 const tests: Array<{
   title: string,
@@ -352,6 +365,39 @@ class Expect {
     }
   }
 
+  toMatchSnapshot(expected?: string): void {
+    if (this.#isNot) {
+      throw new ErrorWithCustomBlame(
+        'Snapshot matchers cannot be used with not.',
+      ).blameToPreviousFrame();
+    }
+
+    currentTestSnapshotCallCount++;
+    const currentSnapshotKey = `${currentTestFullName}${
+      expected != null ? `: ${expected}` : ''
+    } ${currentTestSnapshotCallCount}`;
+
+    if (snapshotConfig.initialData[currentSnapshotKey] == null) {
+      throw new ErrorWithCustomBlame(
+        `Expected to have snapshot \`${currentSnapshotKey}\` but it was not found.`,
+      ).blameToPreviousFrame();
+    }
+
+    const currentSnapshot =
+      snapshotConfig.initialData[currentSnapshotKey].trim();
+
+    const receivedValue = format(this.#received, {
+      plugins: [plugins.ReactElement],
+    });
+    const result =
+      diff(currentSnapshot, receivedValue) ?? 'Failed to compare outputs';
+    if (result !== COMPARISON_EQUALS_STRING) {
+      throw new ErrorWithCustomBlame(
+        `Expected to match snapshot.\n${result}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   #isExpectedResult(pass: boolean): boolean {
     return this.#isNot ? !pass : pass;
   }
@@ -406,7 +452,9 @@ function executeTests() {
       numPassingAsserts: 0,
     };
 
+    currentTestFullName = result.fullName;
     test.result = result;
+    currentTestSnapshotCallCount = 0;
 
     if (!test.isSkipped && (!hasFocusedTests || test.isFocused)) {
       let status;
@@ -444,7 +492,9 @@ global.$$RunTests$$ = () => {
   executeTests();
 };
 
-export function registerTest(setUpTest: () => void) {
+export function registerTest(setUpTest: () => void, config: SnapshotConfig) {
+  snapshotConfig = config;
+
   runWithGuard(() => {
     setUpTest();
   });
