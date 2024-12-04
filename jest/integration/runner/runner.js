@@ -13,6 +13,10 @@ import type {TestSuiteResult} from '../runtime/setup';
 
 import entrypointTemplate from './entrypoint-template';
 import {
+  getInitialSnapshotData,
+  updateSnapshotsAndGetJestSnapshotResult,
+} from './snapshotUtils';
+import {
   getBuckModeForPlatform,
   getDebugInfoFromCommandResult,
   getFantomTestConfig,
@@ -23,6 +27,7 @@ import {
 import fs from 'fs';
 // $FlowExpectedError[untyped-import]
 import {formatResultsErrors} from 'jest-message-util';
+import {SnapshotState, buildSnapshotResolver} from 'jest-snapshot';
 import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
@@ -87,12 +92,29 @@ function generateBytecodeBundle({
 }
 
 module.exports = async function runTest(
-  globalConfig: {...},
-  config: {...},
+  globalConfig: {
+    updateSnapshot: 'all' | 'new' | 'none',
+    ...
+  },
+  config: {
+    rootDir: string,
+    prettierPath: string,
+    snapshotFormat: {...},
+    ...
+  },
   environment: {...},
   runtime: {...},
   testPath: string,
 ): mixed {
+  const snapshotResolver = await buildSnapshotResolver(config);
+  const snapshotPath = snapshotResolver.resolveSnapshotPath(testPath);
+  const snapshotState = new SnapshotState(snapshotPath, {
+    updateSnapshot: globalConfig.updateSnapshot,
+    snapshotFormat: config.snapshotFormat,
+    prettierPath: config.prettierPath,
+    rootDir: config.rootDir,
+  });
+
   const startTime = Date.now();
 
   const testConfig = getFantomTestConfig(testPath);
@@ -108,6 +130,10 @@ module.exports = async function runTest(
   const entrypointContents = entrypointTemplate({
     testPath: `${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
     setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
+    snapshotConfig: {
+      updateSnapshot: snapshotState._updateSnapshot,
+      initialData: snapshotState._initialData,
+    },
   });
 
   const entrypointPath = path.join(
@@ -189,6 +215,15 @@ module.exports = async function runTest(
       ),
     })) ?? [];
 
+  const snapshotResults = nullthrows(
+    rnTesterParsedOutput.testResult.testResults,
+  ).map(testResult => testResult.snapshotResults);
+
+  const snapshotResult = updateSnapshotsAndGetJestSnapshotResult(
+    snapshotState,
+    snapshotResults,
+  );
+
   return {
     testFilePath: testPath,
     failureMessage: formatResultsErrors(
@@ -206,15 +241,7 @@ module.exports = async function runTest(
       runtime: endTime - startTime,
       slow: false,
     },
-    snapshot: {
-      added: 0,
-      fileDeleted: false,
-      matched: 0,
-      unchecked: 0,
-      uncheckedKeys: [],
-      unmatched: 0,
-      updated: 0,
-    },
+    snapshot: snapshotResult,
     numTotalTests: testResults.length,
     numPassingTests: testResults.filter(test => test.status === 'passed')
       .length,

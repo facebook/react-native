@@ -12,6 +12,23 @@
 import deepEqual from 'deep-equal';
 import {diff} from 'jest-diff';
 import nullthrows from 'nullthrows';
+import {format, plugins} from 'pretty-format';
+
+export type SnapshotConfig = {
+  updateSnapshot: 'all' | 'new' | 'none',
+  initialData: {[key: string]: string},
+};
+
+export type TestSnapshotResults = {
+  [key: string]:
+    | {
+        pass: true,
+      }
+    | {
+        pass: false,
+        value: string,
+      },
+};
 
 export type TestCaseResult = {
   ancestorTitles: Array<string>,
@@ -21,6 +38,7 @@ export type TestCaseResult = {
   duration: number,
   failureMessages: Array<string>,
   numPassingAsserts: number,
+  snapshotResults: TestSnapshotResults,
   // location: string,
 };
 
@@ -34,6 +52,17 @@ export type TestSuiteResult =
         stack: string,
       },
     };
+
+type SnapshotState = {
+  name: string,
+  snapshotResults: TestSnapshotResults,
+};
+
+const COMPARISON_EQUALS_STRING = 'Compared values have no visual difference.';
+
+let snapshotConfig: SnapshotConfig;
+let currentTestSnapshotCallCount: number = 0;
+let currentSnapshotState: SnapshotState;
 
 const tests: Array<{
   title: string,
@@ -174,8 +203,26 @@ function createMockFunction<TArgs: $ReadOnlyArray<mixed>, TReturn>(
   return mockFunction;
 }
 
-// flowlint unsafe-getters-setters:off
+class SnapshotError extends Error {
+  #snapshotName: string;
+  #snapshotValue: string;
 
+  constructor(message: string, snapshotName: string, snapshotValue: string) {
+    super(message);
+    this.#snapshotName = snapshotName;
+    this.#snapshotValue = snapshotValue;
+  }
+
+  getSnapshotName(): string {
+    return this.#snapshotName;
+  }
+
+  getSnapshotValue(): string {
+    return this.#snapshotValue;
+  }
+}
+
+// flowlint unsafe-getters-setters:off
 class ErrorWithCustomBlame extends Error {
   // Initially 5 to ignore all the frames from Babel helpers to instantiate this
   // custom error class.
@@ -359,6 +406,58 @@ class Expect {
     }
   }
 
+  toMatchSnapshot(expected?: string): void {
+    if (this.#isNot) {
+      throw new ErrorWithCustomBlame(
+        'Snapshot matchers cannot be used with not.',
+      ).blameToPreviousFrame();
+    }
+
+    currentTestSnapshotCallCount++;
+    const currentSnapshotKey = `${currentSnapshotState.name}${
+      expected != null ? `: ${expected}` : ''
+    } ${currentTestSnapshotCallCount}`;
+
+    const receivedValue = format(this.#received, {
+      plugins: [plugins.ReactElement],
+    });
+
+    if (snapshotConfig.initialData[currentSnapshotKey] == null) {
+      currentSnapshotState.snapshotResults[currentSnapshotKey] = {
+        pass: false,
+        value: receivedValue,
+      };
+
+      if (snapshotConfig.updateSnapshot === 'none') {
+        throw new ErrorWithCustomBlame(
+          `Expected to have snapshot \`${currentSnapshotKey}\` but it was not found.`,
+        ).blameToPreviousFrame();
+      }
+
+      return;
+    }
+
+    const currentSnapshot = snapshotConfig.initialData[currentSnapshotKey];
+
+    const result =
+      diff(currentSnapshot, receivedValue) ?? 'Failed to compare outputs';
+    if (result !== COMPARISON_EQUALS_STRING) {
+      currentSnapshotState.snapshotResults[currentSnapshotKey] = {
+        pass: false,
+        value: receivedValue,
+      };
+
+      if (snapshotConfig.updateSnapshot !== 'all') {
+        throw new ErrorWithCustomBlame(
+          `Expected to match snapshot.\n${result}`,
+        ).blameToPreviousFrame();
+      }
+      return;
+    }
+
+    currentSnapshotState.snapshotResults[currentSnapshotKey] = {pass: true};
+  }
+
   #isExpectedResult(pass: boolean): boolean {
     return this.#isNot ? !pass : pass;
   }
@@ -411,9 +510,15 @@ function executeTests() {
       duration: 0,
       failureMessages: [],
       numPassingAsserts: 0,
+      snapshotResults: {},
     };
 
+    currentSnapshotState = {
+      name: result.fullName,
+      snapshotResults: {},
+    };
     test.result = result;
+    currentTestSnapshotCallCount = 0;
 
     if (!test.isSkipped && (!hasFocusedTests || test.isFocused)) {
       let status;
@@ -435,6 +540,8 @@ function executeTests() {
         status === 'failed' && error
           ? [error.stack ?? error.message ?? String(error)]
           : [];
+
+      result.snapshotResults = currentSnapshotState.snapshotResults;
     }
   }
 
@@ -451,7 +558,9 @@ global.$$RunTests$$ = () => {
   executeTests();
 };
 
-export function registerTest(setUpTest: () => void) {
+export function registerTest(setUpTest: () => void, config: SnapshotConfig) {
+  snapshotConfig = config;
+
   runWithGuard(() => {
     setUpTest();
   });
