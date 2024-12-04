@@ -316,7 +316,7 @@ function findNotLinkedLibraries(projectRoot) {
         notLinkedPlatforms.push(platform);
       }
     });
-    notLinkedLibraries[name] = notLinkedPlatforms
+    notLinkedLibraries[name] = notLinkedPlatforms;
   });
   return notLinkedLibraries;
 }
@@ -736,14 +736,18 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
         platform,
       );
 
-      const schemaInfos = generateSchemaInfos(libraries.filter(library => {
-        const unlinkedPlatforms = notLinkedLibraries[library.libraryName];
-        if (unlinkedPlatforms && unlinkedPlatforms.includes(platform)) {
-          console.log(`[Codegen - ${library.libraryName}] Skipping Codegen on ${platform}`);
-          return false;
-        }
-        return true;
-      }));
+      const schemaInfos = generateSchemaInfos(
+        libraries.filter(library => {
+          const unlinkedPlatforms = notLinkedLibraries[library.libraryName];
+          if (unlinkedPlatforms && unlinkedPlatforms.includes(platform)) {
+            console.log(
+              `[Codegen - ${library.libraryName}] Skipping Codegen on ${platform}`,
+            );
+            return false;
+          }
+          return true;
+        }),
+      );
 
       generateNativeCode(
         outputPath,
