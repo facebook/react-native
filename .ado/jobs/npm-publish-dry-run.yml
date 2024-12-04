@@ -13,6 +13,4 @@ jobs:
       submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
       persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-    - template: /.ado/templates/apple-steps-publish.yml@self
-      parameters:
-        build_type: 'dry-run'
+    - template: /.ado/templates/npm-publish.yml@self

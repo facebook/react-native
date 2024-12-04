@@ -1,6 +1,6 @@
 {
   "name": "@react-native/codegen",
-  "version": "0.76.4",
+  "version": "0.76.3",
   "description": "Code generation tools for React Native",
   "license": "MIT",
   "repository": {
@@ -37,9 +37,6 @@
     "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.1",
     "yargs": "^17.6.2"
-  },
-  "beachball": {
-    "shouldPublish": false
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "defaultBase": "main",
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  },
+  "release": {
+    "changelog": {
+      "projectChangelogs": false,
+      "workspaceChangelog": false
+    },
+    "projects": ["packages/*"],
+    "projectsRelationship": "fixed",
+    "versionPlans": true,
+    "version": {
+      "generatorOptions": {
+        "currentVersionResolver": "disk",
+        "currentVersionResolverMetadata": {
+          "tag": "latest"
+        },
+        "skipLockFileUpdate": true
+      }
+    }
+  }
+}

@@ -174,4 +174,8 @@ vendor/
 .ado/Brewfile.lock.json
 .ado/verdaccio/htpasswd
 .ado/verdaccio/storage/.verdaccio-db.json
+
+# Nx
+.nx/cache
+.nx/workspace-data
 # macOS]

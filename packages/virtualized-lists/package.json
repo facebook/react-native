@@ -8,11 +8,6 @@
     "url": "git+https://github.com/microsoft/react-native-macos.git",
     "directory": "packages/virtualized-lists"
   },
-  "scripts": {
-    "change": "beachball change",
-    "check": "beachball check",
-    "beachball:publish": "beachball publish"
-  },
   "homepage": "https://github.com/facebook/react-native/tree/HEAD/packages/virtualized-lists#readme",
   "keywords": [
     "lists",
@@ -29,7 +24,6 @@
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "beachball": "^2.30.1",
     "react-test-renderer": "18.3.1"
   },
   "peerDependencies": {
@@ -41,8 +35,5 @@
     "@types/react": {
       "optional": true
     }
-  },
-  "beachball": {
-    "shouldPublish": true
   }
 }

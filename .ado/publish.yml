@@ -19,9 +19,6 @@ variables:
   - group: InfoSec-SecurityResults
   - name: tags
     value: production,externalfacing
-  # Remember to update this in previous stable branches when creating a new stable branch
-  - name : latestStableBranch
-    value: '0.76-stable'
 
 resources:
   repositories:
@@ -76,46 +73,7 @@ extends:
                submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
                persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-             # Setup the repo to be ready for release. This includes:
-             # - Autogenerating the next version number
-             # - Calling the approprate scripts that upstream React Native uses to prepare a release
-             # - Skipping the actual `git tag`, `git push`, and `npm publish steps as we do that here instead
-
-             - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
-               - template: .ado/templates/apple-steps-publish.yml@self
-                 parameters:
-                   build_type: nightly
-             - ${{ elseif endsWith(variables['Build.SourceBranchName'], '-stable') }}:
-               - template: .ado/templates/apple-steps-publish.yml@self
-                 parameters:
-                   build_type: release
-             - ${{ else }}:
-               - task: CmdLine@2
-                 displayName: Unknown branch, skipping publish
-                 inputs:
-                   script: |
-                     echo "Skipping publish for branch $(Build.SourceBranchName)"
-                     exit 1
-
-             # Set the NPM dist-tag and do the actual NPM publish
-         
-             - bash: echo "##vso[task.setvariable variable=npmDistTag]latest"
-               displayName: Set dist-tag to latest
-               condition: eq(variables['Build.SourceBranchName'], variables.latestStableBranch)
-
-             - bash: echo "##vso[task.setvariable variable=npmDistTag]canary"
-               displayName: Set dist-tag to canary
-               condition: eq(variables['Build.SourceBranchName'], 'main')
-
-             - bash: echo "##vso[task.setvariable variable=npmDistTag]v${{variables['Build.SourceBranchName']}}"
-               displayName: Set dist-tag to v0.x-stable
-               condition: and(ne(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.SourceBranchName'], variables.latestStableBranch))
-
-             - task: CmdLine@2
-               displayName: Actual NPM Publish
-               inputs:
-                 script: |
-                   npm publish ./packages/react-native --tag $(npmDistTag) --registry https://registry.npmjs.org/ --//registry.npmjs.org/:_authToken=$(npmAuthToken)
+             - template: /.ado/templates/npm-publish.yml@self
 
              # Set the git tag and push the version update back to Github
 
