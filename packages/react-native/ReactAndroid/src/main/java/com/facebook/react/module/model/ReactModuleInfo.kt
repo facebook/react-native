@@ -21,6 +21,24 @@ public class ReactModuleInfo(
     public val isCxxModule: Boolean,
     public val isTurboModule: Boolean
 ) {
+
+  @Deprecated(
+      "This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)]",
+      replaceWith =
+          ReplaceWith(
+              expression =
+                  "ReactModuleInfo(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule)"),
+      level = DeprecationLevel.WARNING)
+  public constructor(
+      name: String,
+      className: String,
+      canOverrideExistingModule: Boolean,
+      needsEagerInit: Boolean,
+      @Suppress("UNUSED_PARAMETER") hasConstants: Boolean,
+      isCxxModule: Boolean,
+      isTurboModule: Boolean
+  ) : this(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule)
+
   public companion object {
     /**
      * Checks if the passed class is a TurboModule. Useful to populate the parameter [isTurboModule]
