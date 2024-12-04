@@ -10,6 +10,7 @@
  */
 
 import deepEqual from 'deep-equal';
+import {diff} from 'jest-diff';
 import nullthrows from 'nullthrows';
 
 export type TestCaseResult = {
@@ -227,7 +228,13 @@ class Expect {
     const pass = deepEqual(this.#received, expected, {strict: true});
     if (!this.#isExpectedResult(pass)) {
       throw new ErrorWithCustomBlame(
-        `Expected${this.#maybeNotLabel()} to equal ${String(expected)} but received ${String(this.#received)}.`,
+        `Expected${this.#maybeNotLabel()} to equal:\n${
+          diff(expected, this.#received, {
+            contextLines: 1,
+            expand: false,
+            omitAnnotationLines: true,
+          }) ?? 'Failed to compare outputs'
+        }`,
       ).blameToPreviousFrame();
     }
   }
