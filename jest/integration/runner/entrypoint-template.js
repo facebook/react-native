@@ -9,12 +9,16 @@
  * @oncall react_native
  */
 
+import type {SnapshotConfig} from '../runtime/setup';
+
 module.exports = function entrypointTemplate({
   testPath,
   setupModulePath,
+  snapshotConfig,
 }: {
   testPath: string,
   setupModulePath: string,
+  snapshotConfig: SnapshotConfig,
 }): string {
   return `/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -30,6 +34,6 @@ module.exports = function entrypointTemplate({
 
 import {registerTest} from '${setupModulePath}';
 
-registerTest(() => require('${testPath}'));
+registerTest(() => require('${testPath}'), ${JSON.stringify(snapshotConfig)});
 `;
 };
