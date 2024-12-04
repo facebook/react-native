@@ -138,6 +138,7 @@ public class ReactViewGroup extends ViewGroup
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private float mBackfaceOpacity;
   private String mBackfaceVisibility;
+  private @Nullable Set<Integer> mChildrenRemovedWhileTransitioning;
 
   /**
    * Creates a new `ReactViewGroup` instance.
@@ -172,6 +173,7 @@ public class ReactViewGroup extends ViewGroup
     mDrawingOrderHelper = null;
     mBackfaceOpacity = 1.f;
     mBackfaceVisibility = "visible";
+    mChildrenRemovedWhileTransitioning = null;
   }
 
   /* package */ void recycleView() {
@@ -354,6 +356,7 @@ public class ReactViewGroup extends ViewGroup
       return;
     }
     mRemoveClippedSubviews = removeClippedSubviews;
+    mChildrenRemovedWhileTransitioning = null;
     if (removeClippedSubviews) {
       mClippingRect = new Rect();
       ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
@@ -406,6 +409,26 @@ public class ReactViewGroup extends ViewGroup
 
     ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
     updateClippingToRect(mClippingRect);
+  }
+
+  @Override
+  public void endViewTransition(View view) {
+    super.endViewTransition(view);
+    if (mChildrenRemovedWhileTransitioning != null) {
+      mChildrenRemovedWhileTransitioning.remove(view.getId());
+    }
+  }
+
+  private void trackChildViewTransition(int childId) {
+    if (mChildrenRemovedWhileTransitioning == null) {
+      mChildrenRemovedWhileTransitioning = new HashSet<>();
+    }
+    mChildrenRemovedWhileTransitioning.add(childId);
+  }
+
+  private boolean isChildRemovedWhileTransitioning(View child) {
+    return mChildrenRemovedWhileTransitioning != null
+        && mChildrenRemovedWhileTransitioning.contains(child.getId());
   }
 
   private void updateClippingToRect(Rect clippingRect) {
@@ -573,6 +596,12 @@ public class ReactViewGroup extends ViewGroup
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
+
+    // The parent might not be null in case the child is transitioning.
+    if (child.getParent() != null) {
+      trackChildViewTransition(child.getId());
+    }
+
     super.onViewRemoved(child);
   }
 
@@ -745,6 +774,7 @@ public class ReactViewGroup extends ViewGroup
       return (boolean) tag;
     }
     ViewParent parent = view.getParent();
+    boolean transitioning = isChildRemovedWhileTransitioning(view);
     if (index != null) {
       ReactSoftExceptionLogger.logSoftException(
           "ReactViewGroup.isViewClipped",
@@ -754,10 +784,12 @@ public class ReactViewGroup extends ViewGroup
                   + " parentNull="
                   + (parent == null)
                   + " parentThis="
-                  + (parent == this)));
+                  + (parent == this)
+                  + " transitioning="
+                  + transitioning));
     }
-    // fallback - parent *should* be null if the view was removed
-    if (parent == null) {
+    // fallback - should be transitioning or have no parent if the view was removed
+    if (parent == null || transitioning) {
       return true;
     } else {
       Assertions.assertCondition(parent == this);

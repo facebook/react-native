@@ -7772,6 +7772,7 @@ public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGro
 	protected fun dispatchSetPressed (Z)V
 	public fun draw (Landroid/graphics/Canvas;)V
 	protected fun drawChild (Landroid/graphics/Canvas;Landroid/view/View;J)Z
+	public fun endViewTransition (Landroid/view/View;)V
 	protected fun getChildDrawingOrder (II)I
 	public fun getClippingRect (Landroid/graphics/Rect;)V
 	public fun getHitSlopRect ()Landroid/graphics/Rect;
