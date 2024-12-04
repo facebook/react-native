@@ -209,6 +209,11 @@ export interface TextProps
    * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
    */
   minimumFontScale?: number | undefined;
+
+  /**
+   * Controls how touch events are handled. Similar to `View`'s `pointerEvents`.
+   */
+  pointerEvents?: ViewStyle['pointerEvents'] | undefined;
 }
 
 /**
