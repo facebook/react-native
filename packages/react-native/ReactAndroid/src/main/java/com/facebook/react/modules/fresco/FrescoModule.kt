@@ -167,7 +167,7 @@ constructor(
       // make sure to forward cookies for any requests via the okHttpClient
       // so that image requests to endpoints that use cookies still work
       val container = OkHttpCompat.getCookieJarContainer(client)
-      val handler = ForwardingCookieHandler(context)
+      val handler = ForwardingCookieHandler()
       container.setCookieJar(JavaNetCookieJar(handler))
       return newBuilder(context.applicationContext, client)
           .setNetworkFetcher(ReactOkHttpNetworkFetcher(client))

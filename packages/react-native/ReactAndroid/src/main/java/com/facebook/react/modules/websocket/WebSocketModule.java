@@ -46,14 +46,12 @@ public final class WebSocketModule extends NativeWebSocketModuleSpec {
 
   private final Map<Integer, WebSocket> mWebSocketConnections = new ConcurrentHashMap<>();
   private final Map<Integer, ContentHandler> mContentHandlers = new ConcurrentHashMap<>();
-
-  private ForwardingCookieHandler mCookieHandler;
+  private final ForwardingCookieHandler mCookieHandler = new ForwardingCookieHandler();
 
   private static @Nullable CustomClientBuilder customClientBuilder = null;
 
   public WebSocketModule(ReactApplicationContext context) {
     super(context);
-    mCookieHandler = new ForwardingCookieHandler(context);
   }
 
   public static void setCustomClientBuilder(CustomClientBuilder ccb) {

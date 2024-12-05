@@ -3424,11 +3424,12 @@ public abstract interface class com/facebook/react/modules/network/CustomClientB
 	public abstract fun apply (Lokhttp3/OkHttpClient$Builder;)V
 }
 
-public class com/facebook/react/modules/network/ForwardingCookieHandler : java/net/CookieHandler {
+public final class com/facebook/react/modules/network/ForwardingCookieHandler : java/net/CookieHandler {
+	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun addCookies (Ljava/lang/String;Ljava/util/List;)V
-	public fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
-	public fun destroy ()V
+	public final fun addCookies (Ljava/lang/String;Ljava/util/List;)V
+	public final fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
+	public final fun destroy ()V
 	public fun get (Ljava/net/URI;Ljava/util/Map;)Ljava/util/Map;
 	public fun put (Ljava/net/URI;Ljava/util/Map;)V
 }
