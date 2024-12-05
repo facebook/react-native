@@ -7,9 +7,9 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
-import './setUpFeatureFlags';
 import '../../../../../../Libraries/Core/InitializeCore.js';
 
 import {NativeText} from '../../../../../../Libraries/Text/TextNativeComponent';

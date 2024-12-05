@@ -104,10 +104,16 @@ module.exports = async function runTest(
   });
 
   const setupModulePath = path.resolve(__dirname, '../runtime/setup.js');
+  const featureFlagsModulePath = path.resolve(
+    __dirname,
+    '../../../packages/react-native/src/private/featureflags/ReactNativeFeatureFlags.js',
+  );
 
   const entrypointContents = entrypointTemplate({
     testPath: `${path.relative(BUILD_OUTPUT_PATH, testPath)}`,
     setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
+    featureFlagsModulePath: `${path.relative(BUILD_OUTPUT_PATH, featureFlagsModulePath)}`,
+    featureFlags: testConfig.flags.jsOnly,
   });
 
   const entrypointPath = path.join(
@@ -151,6 +157,8 @@ module.exports = async function runTest(
     '--',
     '--bundlePath',
     testBundlePath,
+    '--featureFlags',
+    JSON.stringify(testConfig.flags.common),
   ]);
 
   if (rnTesterCommandResult.status !== 0) {
