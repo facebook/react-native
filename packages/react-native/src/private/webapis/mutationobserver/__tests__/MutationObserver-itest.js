@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 import type MutationObserverType from '../MutationObserver';
@@ -18,7 +19,6 @@ import ReactNativeElement from '../../dom/nodes/ReactNativeElement';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 
-import './setUpFeatureFlags';
 import '../../../../../Libraries/Core/InitializeCore.js';
 
 declare const MutationObserver: Class<MutationObserverType>;
