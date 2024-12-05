@@ -1780,7 +1780,7 @@ static void calculateLayoutImpl(
                                     crossAxis,
                                     direction,
                                     unclampedCrossDim,
-                                    ownerHeight,
+                                    crossAxisOwnerSize,
                                     ownerWidth) -
         paddingAndBorderAxisCross;
 
