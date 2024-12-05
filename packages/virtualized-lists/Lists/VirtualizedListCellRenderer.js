@@ -40,6 +40,7 @@ export type Props<ItemT> = {
   ) => void,
   prevCellKey: ?string,
   renderItem?: ?RenderItemType<ItemT>,
+  isStickyHeader?: boolean,
   ...
 };
 
@@ -118,6 +119,10 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
   }
 
   _onLayout = (nativeEvent: LayoutEvent): void => {
+    const {isStickyHeader} = this.props;
+    if (isStickyHeader) {
+      return;
+    }
     this.props.onCellLayout?.(
       nativeEvent,
       this.props.cellKey,

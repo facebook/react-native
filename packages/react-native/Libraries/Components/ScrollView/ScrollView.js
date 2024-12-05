@@ -1668,7 +1668,11 @@ class ScrollView extends React.Component<Props, State> {
               nextHeaderLayoutY={this._headerLayoutYs.get(
                 this._getKeyForIndex(nextIndex, children),
               )}
-              onLayout={event => this._onStickyHeaderLayout(index, event, key)}
+              onLayout={event => {
+                this._onStickyHeaderLayout(index, event, key);
+                const {onCellLayout, cellKey, index: cellIndex} = child.props;
+                onCellLayout?.(event, cellKey, cellIndex);
+              }}
               scrollAnimatedValue={this._scrollAnimatedValue}
               inverted={this.props.invertStickyHeaders}
               hiddenOnScroll={this.props.stickyHeaderHiddenOnScroll}
