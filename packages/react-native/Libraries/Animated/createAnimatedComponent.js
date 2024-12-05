@@ -29,6 +29,10 @@ import {useMemo} from 'react';
 type Nullable = void | null;
 type Primitive = string | number | boolean | symbol | void;
 type Builtin = (...$ReadOnlyArray<empty>) => mixed | Date | Error | RegExp;
+export type AnimatedProps<Props: {...}> = {
+  // eslint-disable-next-line no-unused-vars
+  +[_K]: any,
+};
 
 export type WithAnimatedValue<+T> = T extends Builtin | Nullable
   ? T

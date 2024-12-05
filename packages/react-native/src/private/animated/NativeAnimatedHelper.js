@@ -150,7 +150,7 @@ const API = {
       }
     : (tag, saveValueCallback) => {
         NativeOperations.getValue(tag, saveValueCallback);
-      }) as $NonMaybeType<typeof NativeAnimatedModule>['getValue'],
+      }),
 
   setWaitingForIdentifier(id: string): void {
     if (shouldSignalBatch) {
@@ -237,7 +237,7 @@ const API = {
         if (Platform.OS === 'android' || shouldSignalBatch) {
           NativeAnimatedModule?.finishOperationBatch?.();
         }
-      }) as () => void,
+      }),
 
   createAnimatedNode(tag: number, config: AnimatedNodeConfig): void {
     NativeOperations.createAnimatedNode(tag, config);
@@ -279,7 +279,7 @@ const API = {
           config,
           endCallback,
         );
-      }) as $NonMaybeType<typeof NativeAnimatedModule>['startAnimatingNode'],
+      }),
 
   stopAnimation(animationId: number) {
     NativeOperations.stopAnimation(animationId);
