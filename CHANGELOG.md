@@ -1,5 +1,12 @@
 # Changelog
 
+[General] [Added] - Add `useRawPropsJsiValue` feature flag to represent props internally as `jsi::Value`s instead of converting them to `folly::dynamic`
+
+[General] [Added] - Added `RawValue(Runtime*, jsi::Value&)` constructor to make a `RawValue` from a `jsi::Value`.
+
+[General] [Added] - Added `RawValue#getJsiValuePair()` to retrieve the `jsi::Value` when opting into `useRawPropsJsiValue`
+
+
 ## v0.77.0-rc.1
 
 ### Fixed
