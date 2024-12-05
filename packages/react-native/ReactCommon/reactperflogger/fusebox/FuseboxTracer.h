@@ -22,6 +22,9 @@ struct BufferEvent {
   std::string track;
 };
 
+/**
+ * @deprecated
+ */
 class FuseboxTracer {
  public:
   FuseboxTracer(const FuseboxTracer&) = delete;
