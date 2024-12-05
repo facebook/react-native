@@ -197,4 +197,6 @@ export default class AnimatedNode {
   toJSON(): mixed {
     return this.__getValue();
   }
+
+  __debugID: ?string = undefined;
 }

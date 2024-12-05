@@ -424,6 +424,7 @@ export type AnimationConfig = $ReadOnly<{
   onComplete?: ?EndCallback,
   iterations?: number,
   isLooping?: boolean,
+  debugID?: ?string,
   ...
 }>;
 declare export default class Animation {
@@ -431,6 +432,7 @@ declare export default class Animation {
   __isInteraction: boolean;
   __isLooping: ?boolean;
   __iterations: number;
+  __debugID: ?string;
   constructor(config: AnimationConfig): void;
   start(
     fromValue: number,
@@ -959,6 +961,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   __getPlatformConfig(): ?PlatformConfig;
   __setPlatformConfig(platformConfig: ?PlatformConfig): void;
   toJSON(): mixed;
+  __debugID: ?string;
 }
 "
 `;
@@ -1107,6 +1110,7 @@ declare export default class AnimatedTransform extends AnimatedWithChildren {
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedValue.js 1`] = `
 "export type AnimatedValueConfig = $ReadOnly<{
   useNativeDriver: boolean,
+  debugID?: string,
 }>;
 declare export function flushValue(rootNode: AnimatedNode): void;
 declare export default class AnimatedValue extends AnimatedWithChildren {
