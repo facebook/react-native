@@ -15,12 +15,10 @@
 namespace facebook::react {
 
 /**
- * An internal interface for logging performance events to configured React
- * Native performance tools, such as Perfetto or React Native DevTools.
- *
- * Approximates https://w3c.github.io/user-timing/.
+ * An internal interface for logging performance events to Perfetto, when
+ * configured.
  */
-class ReactPerfLogger {
+class ReactPerfettoLogger {
  public:
   static void mark(
       const std::string_view& eventName,
@@ -32,8 +30,6 @@ class ReactPerfLogger {
       double startTime,
       double endTime,
       const std::optional<std::string_view>& trackName);
-
-  static double performanceNow();
 };
 
 } // namespace facebook::react
