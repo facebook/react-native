@@ -12,12 +12,12 @@ steps:
     displayName: Verify release config
 
   - script: |
-      yarn nx release --dry-run
+      yarn nx release --dry-run --verbose
     displayName: Version and publish packages (dry run)
     condition: and(succeeded(), ne(variables['publish_react_native_macos'], '1'))
 
   - script: |
-      yarn nx release --yes
+      yarn nx release --yes --verbose
     env:
       GITHUB_TOKEN: $(githubAuthToken)
       NODE_AUTH_TOKEN: $(npmAuthToken)
