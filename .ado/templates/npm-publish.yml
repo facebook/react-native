@@ -14,7 +14,7 @@ steps:
   - script: |
       yarn nx release --dry-run
     displayName: Version and publish packages (dry run)
-    condition: ${{ ne(variables['publish_react_native_macos'], '1') }}
+    condition: and(succeeded(), ne(variables['publish_react_native_macos'], '1'))
 
   - script: |
       yarn nx release --yes
@@ -22,4 +22,4 @@ steps:
       GITHUB_TOKEN: $(githubAuthToken)
       NODE_AUTH_TOKEN: $(npmAuthToken)
     displayName: Version and publish packages
-    condition: ${{ eq(variables['publish_react_native_macos'], '1') }}
+    condition: and(succeeded(), eq(variables['publish_react_native_macos'], '1'))
