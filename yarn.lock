@@ -1051,7 +1051,7 @@
     core-js-compat "^3.37.1"
     semver "^6.3.1"
 
-"@babel/preset-flow@^7.13.13", "@babel/preset-flow@^7.20.0", "@babel/preset-flow@^7.24.7":
+"@babel/preset-flow@^7.13.13", "@babel/preset-flow@^7.24.7":
   version "7.24.7"
   resolved "https://registry.yarnpkg.com/@babel/preset-flow/-/preset-flow-7.24.7.tgz#eef5cb8e05e97a448fc50c16826f5612fe512c06"
   integrity sha512-NL3Lo0NorCU607zU3NwRyJbpaB6E3t0xtd3LfAQKDfkeX4/ggcDXvkmkW42QWT5owUeW/jAe4hn+2qvkV1IbfQ==
