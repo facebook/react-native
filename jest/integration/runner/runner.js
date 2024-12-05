@@ -12,10 +12,10 @@
 import type {TestSuiteResult} from '../runtime/setup';
 
 import entrypointTemplate from './entrypoint-template';
+import getFantomTestConfig from './getFantomTestConfig';
 import {
   getBuckModeForPlatform,
   getDebugInfoFromCommandResult,
-  getFantomTestConfig,
   getShortHash,
   runBuck2,
   symbolicateStackTrace,
