@@ -424,7 +424,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-12-02',
         description:
-        'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
+          'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
         purpose: 'experimentation',
       },
     },
