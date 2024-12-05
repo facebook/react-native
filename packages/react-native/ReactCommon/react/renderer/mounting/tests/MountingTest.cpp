@@ -558,7 +558,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations1[0].oldChildShadowView.tag, childG->getTag());
   EXPECT_EQ(mutations1[1].type, ShadowViewMutation::Update);
   EXPECT_EQ(mutations1[1].oldChildShadowView.tag, reparentedViewA->getTag());
-  EXPECT_EQ(mutations1[1].parentShadowView.tag, childG->getTag());
+  EXPECT_EQ(mutations1[1].parentTag, childG->getTag());
   EXPECT_EQ(mutations1[2].type, ShadowViewMutation::Remove);
   EXPECT_EQ(mutations1[2].oldChildShadowView.tag, reparentedViewA->getTag());
   EXPECT_EQ(mutations1[3].type, ShadowViewMutation::Create);
@@ -573,7 +573,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations2.size(), 5);
   EXPECT_EQ(mutations2[0].type, ShadowViewMutation::Update);
   EXPECT_EQ(mutations2[0].oldChildShadowView.tag, childG->getTag());
-  EXPECT_EQ(mutations2[0].parentShadowView.tag, emptyRootNode->getTag());
+  EXPECT_EQ(mutations2[0].parentTag, emptyRootNode->getTag());
   EXPECT_EQ(mutations2[1].type, ShadowViewMutation::Remove);
   EXPECT_EQ(mutations2[1].oldChildShadowView.tag, reparentedViewA->getTag());
   EXPECT_EQ(mutations2[2].type, ShadowViewMutation::Remove);
@@ -593,7 +593,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations3.size(), 15);
   EXPECT_EQ(mutations3[0].type, ShadowViewMutation::Update);
   EXPECT_EQ(mutations3[0].oldChildShadowView.tag, childG->getTag());
-  EXPECT_EQ(mutations3[0].parentShadowView.tag, emptyRootNode->getTag());
+  EXPECT_EQ(mutations3[0].parentTag, emptyRootNode->getTag());
   EXPECT_EQ(mutations3[1].type, ShadowViewMutation::Remove);
   EXPECT_EQ(mutations3[1].oldChildShadowView.tag, reparentedViewA->getTag());
   EXPECT_EQ(mutations3[2].type, ShadowViewMutation::Create);

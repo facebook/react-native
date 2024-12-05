@@ -16,16 +16,16 @@ CppMountItem CppMountItem::DeleteMountItem(const ShadowView& shadowView) {
   return {CppMountItem::Type::Delete, {}, shadowView, {}, -1};
 }
 CppMountItem CppMountItem::InsertMountItem(
-    const ShadowView& parentView,
+    Tag parentTag,
     const ShadowView& shadowView,
     int index) {
-  return {CppMountItem::Type::Insert, parentView, {}, shadowView, index};
+  return {CppMountItem::Type::Insert, parentTag, {}, shadowView, index};
 }
 CppMountItem CppMountItem::RemoveMountItem(
-    const ShadowView& parentView,
+    Tag parentTag,
     const ShadowView& shadowView,
     int index) {
-  return {CppMountItem::Type::Remove, parentView, shadowView, {}, index};
+  return {CppMountItem::Type::Remove, parentTag, shadowView, {}, index};
 }
 CppMountItem CppMountItem::UpdatePropsMountItem(
     const ShadowView& oldShadowView,
@@ -38,20 +38,20 @@ CppMountItem CppMountItem::UpdateStateMountItem(const ShadowView& shadowView) {
 }
 CppMountItem CppMountItem::UpdateLayoutMountItem(
     const ShadowView& shadowView,
-    const ShadowView& parentView) {
-  return {CppMountItem::Type::UpdateLayout, parentView, {}, shadowView, -1};
+    Tag parentTag) {
+  return {CppMountItem::Type::UpdateLayout, parentTag, {}, shadowView, -1};
 }
 CppMountItem CppMountItem::UpdateEventEmitterMountItem(
     const ShadowView& shadowView) {
-  return {CppMountItem::Type::UpdateEventEmitter, {}, {}, shadowView, -1};
+  return {CppMountItem::Type::UpdateEventEmitter, -1, {}, shadowView, -1};
 }
 CppMountItem CppMountItem::UpdatePaddingMountItem(
     const ShadowView& shadowView) {
-  return {CppMountItem::Type::UpdatePadding, {}, {}, shadowView, -1};
+  return {CppMountItem::Type::UpdatePadding, -1, {}, shadowView, -1};
 }
 CppMountItem CppMountItem::UpdateOverflowInsetMountItem(
     const ShadowView& shadowView) {
-  return {CppMountItem::Type::UpdateOverflowInset, {}, {}, shadowView, -1};
+  return {CppMountItem::Type::UpdateOverflowInset, -1, {}, shadowView, -1};
 }
 
 } // namespace facebook::react
