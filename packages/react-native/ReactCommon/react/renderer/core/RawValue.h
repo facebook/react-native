@@ -106,8 +106,6 @@ class RawValue {
   }
 
  public:
-  using JsiValuePair = std::pair<jsi::Runtime*, jsi::Value>;
-
   /*
    * Casts the value to a specified type.
    */
@@ -153,18 +151,12 @@ class RawValue {
     }
   }
 
-  /**
-   * In case this RawValue was constructed from a jsi::Value
-   * this method will return the jsi::Runtime and jsi::Value pair.
-   */
-  const JsiValuePair& getJsiValuePair() const {
-    react_native_assert(std::holds_alternative<JsiValuePair>(value_));
-    return std::get<JsiValuePair>(value_);
-  }
-
  private:
+  using JsiValuePair = std::pair<jsi::Runtime*, jsi::Value>;
   using ValueVariant = std::variant<folly::dynamic, JsiValuePair>;
   ValueVariant value_;
+
+  using JsiValueReturnType = std::pair<jsi::Runtime*, const jsi::Value&>;
 
   static bool checkValueType(
       const folly::dynamic& /*dynamic*/,
@@ -259,14 +251,14 @@ class RawValue {
 
   static bool checkValueType(
       const folly::dynamic& dynamic,
-      JsiValuePair* /*type*/) noexcept {
+      JsiValueReturnType* /*type*/) noexcept {
     return false;
   }
 
   static bool checkValueType(
       jsi::Runtime* runtime,
       const jsi::Value& value,
-      JsiValuePair* /*type*/) noexcept {
+      JsiValueReturnType* /*type*/) noexcept {
     return true;
   }
 
@@ -445,19 +437,19 @@ class RawValue {
     return stringValue.utf8(*runtime);
   }
 
-  static JsiValuePair castValue(
+  static JsiValueReturnType castValue(
       const folly::dynamic& dynamic,
-      JsiValuePair* /*type*/) {
+      JsiValueReturnType* /*type*/) {
     react_native_assert(false);
-    return {};
+    throw new std::runtime_error(
+        "Cannot cast dynamic to a jsi::Value type. Please use the 'useRawPropsJsiValue' feature flag to enable jsi::Value support for RawValues.");
   }
 
-  static JsiValuePair castValue(
+  static JsiValueReturnType castValue(
       jsi::Runtime* runtime,
       const jsi::Value& value,
-      JsiValuePair* /*type*/) {
-    jsi::Value valueCopy = jsi::Value(*runtime, value);
-    return std::make_pair(runtime, std::move(valueCopy));
+      JsiValueReturnType* /*type*/) {
+    return JsiValueReturnType(runtime, value);
   }
 
   template <typename T>
