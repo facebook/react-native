@@ -39,7 +39,7 @@ void ImageShadowNode::updateStateIfNeeded() {
       imageProps.resizeMethod,
       // TODO: should we resizeMultiplier * imageSource.scale ?
       imageProps.resizeMultiplier,
-      imageProps.shouldNotify,
+      imageProps.shouldNotifyLoadEvents,
       imageProps.overlayColor,
       imageProps.tintColor,
       imageProps.fadeDuration,
