@@ -158,6 +158,7 @@ class RawValue {
    * this method will return the jsi::Runtime and jsi::Value pair.
    */
   const JsiValuePair& experimental_getJsiValuePair() const {
+    react_native_assert(std::holds_alternative<JsiValuePair>(value_));
     return std::get<JsiValuePair>(value_);
   }
 
