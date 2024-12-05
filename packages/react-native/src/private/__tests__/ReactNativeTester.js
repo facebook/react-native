@@ -65,7 +65,7 @@ class Root {
  *
  * React must run inside of event loop to ensure scheduling environment is closer to production.
  */
-export function runTask(task: () => void) {
+export function runTask(task: () => void | Promise<void>) {
   nativeRuntimeScheduler.unstable_scheduleCallback(
     schedulerPriorityImmediate,
     task,
