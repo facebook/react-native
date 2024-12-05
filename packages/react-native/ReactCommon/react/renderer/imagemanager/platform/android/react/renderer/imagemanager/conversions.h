@@ -69,7 +69,8 @@ inline void serializeImageRequestParams(
   builder.putDouble(
       IS_KEY_RESIZE_MULTIPLIER, imageRequestParams.resizeMultiplier);
   builder.putBool(
-      IS_KEY_SHOULD_NOTIFY_LOAD_EVENTS, imageRequestParams.shouldNotify);
+      IS_KEY_SHOULD_NOTIFY_LOAD_EVENTS,
+      imageRequestParams.shouldNotifyLoadEvents);
   if (isColorMeaningful(imageRequestParams.overlayColor)) {
     builder.putInt(
         IS_KEY_OVERLAY_COLOR, toAndroidRepr(imageRequestParams.overlayColor));
