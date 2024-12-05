@@ -139,7 +139,7 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
         auto value = object.getProperty(runtime, nameValue);
         RawValue rawValue;
         if (ReactNativeFeatureFlags::useRawPropsJsiValue()) {
-          rawValue = RawValue(runtime, value);
+          rawValue = RawValue(runtime, std::move(value));
         } else {
           rawValue = RawValue(jsi::dynamicFromValue(runtime, value));
         }
