@@ -1,6 +1,6 @@
 parameters:
   # If this is a new stable branch, change `publishTag` to `latest` when going stable
-  publishTag: 'next'
+  publishTag: 'latest'
 
 steps:
   - script: |
@@ -17,10 +17,7 @@ steps:
     condition: ${{ ne(variables['publish_react_native_macos'], '1') }}
 
   - script: |
-      # TODO: Before we can change the line below to `yarn nx release --yes` on
-      # `main`, we must first set up the pipeline for nightly builds. Stable
-      # branches should be fine.
-      yarn nx release --dry-run
+      yarn nx release --yes
     env:
       GITHUB_TOKEN: $(githubAuthToken)
       NODE_AUTH_TOKEN: $(npmAuthToken)
