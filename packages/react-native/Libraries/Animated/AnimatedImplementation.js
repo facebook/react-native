@@ -87,6 +87,16 @@ const diffClamp = function (
   return new AnimatedDiffClamp(a, min, max);
 };
 
+function createMicrotaskEnqueuingCallback(
+  callback: ?EndCallback,
+): ?EndCallback {
+  return callback == null
+    ? callback
+    : result => {
+        queueMicrotask(() => callback(result));
+      };
+}
+
 const _combineCallbacks = function (
   callback: ?EndCallback,
   config: $ReadOnly<{...AnimationConfig, ...}>,
@@ -160,7 +170,9 @@ const spring = function (
     configuration: SpringAnimationConfig,
     callback?: ?EndCallback,
   ): void {
-    callback = _combineCallbacks(callback, configuration);
+    callback = createMicrotaskEnqueuingCallback(
+      _combineCallbacks(callback, configuration),
+    );
     const singleValue: any = animatedValue;
     const singleConfig: any = configuration;
     singleValue.stopTracking();
@@ -213,7 +225,9 @@ const timing = function (
     configuration: TimingAnimationConfig,
     callback?: ?EndCallback,
   ): void {
-    callback = _combineCallbacks(callback, configuration);
+    callback = createMicrotaskEnqueuingCallback(
+      _combineCallbacks(callback, configuration),
+    );
     const singleValue: any = animatedValue;
     const singleConfig: any = configuration;
     singleValue.stopTracking();
@@ -267,7 +281,9 @@ const decay = function (
     configuration: DecayAnimationConfig,
     callback?: ?EndCallback,
   ): void {
-    callback = _combineCallbacks(callback, configuration);
+    callback = createMicrotaskEnqueuingCallback(
+      _combineCallbacks(callback, configuration),
+    );
     const singleValue: any = animatedValue;
     const singleConfig: any = configuration;
     singleValue.stopTracking();
@@ -306,6 +322,8 @@ const sequence = function (
   let current = 0;
   return {
     start: function (callback?: ?EndCallback, isLooping?: boolean) {
+      callback = createMicrotaskEnqueuingCallback(callback);
+
       const onComplete = function (result: EndResult) {
         if (!result.finished) {
           callback && callback(result);
@@ -374,6 +392,8 @@ const parallel = function (
 
   const result = {
     start: function (callback?: ?EndCallback, isLooping?: boolean) {
+      callback = createMicrotaskEnqueuingCallback(callback);
+
       if (doneCount === animations.length) {
         callback && callback({finished: true});
         return;
@@ -467,6 +487,8 @@ const loop = function (
   let iterationsSoFar = 0;
   return {
     start: function (callback?: ?EndCallback) {
+      callback = createMicrotaskEnqueuingCallback(callback);
+
       const restart = function (result: EndResult = {finished: true}): void {
         if (
           isFinished ||

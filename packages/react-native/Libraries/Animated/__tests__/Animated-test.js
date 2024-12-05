@@ -238,7 +238,10 @@ describe('Animated', () => {
   describe('Animated Sequence', () => {
     it('works with an empty sequence', () => {
       const cb = jest.fn();
+
       Animated.sequence([]).start(cb);
+      jest.runAllTimers();
+
       expect(cb).toBeCalledWith({finished: true});
     });
 
@@ -259,11 +262,14 @@ describe('Animated', () => {
       expect(cb).not.toBeCalled();
 
       anim1.start.mock.calls[0][0]({finished: true});
+      jest.runAllTimers();
 
       expect(anim2.start).toBeCalled();
       expect(cb).not.toBeCalled();
 
       anim2.start.mock.calls[0][0]({finished: true});
+      jest.runAllTimers();
+
       expect(cb).toBeCalledWith({finished: true});
     });
 
@@ -275,6 +281,7 @@ describe('Animated', () => {
       Animated.sequence([anim1, anim2]).start(cb);
 
       anim1.start.mock.calls[0][0]({finished: false});
+      jest.runAllTimers();
 
       expect(anim1.start).toBeCalled();
       expect(anim2.start).not.toBeCalled();
@@ -295,6 +302,7 @@ describe('Animated', () => {
       expect(cb).not.toBeCalled();
 
       anim1.start.mock.calls[0][0]({finished: false});
+      jest.runAllTimers();
 
       expect(cb).toBeCalledWith({finished: false});
     });
@@ -332,6 +340,7 @@ describe('Animated', () => {
       seq.start(cb);
       anim1.start.mock.calls[0][0]({finished: true});
       anim2.start.mock.calls[0][0]({finished: true});
+      jest.runAllTimers();
 
       // sequence should be finished
       expect(cb).toBeCalledWith({finished: true});
@@ -457,14 +466,20 @@ describe('Animated', () => {
       expect(cb).not.toBeCalled();
 
       animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      jest.runAllTimers();
+
       expect(animation.reset).toHaveBeenCalledTimes(2);
       expect(cb).not.toBeCalled();
 
       animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+      jest.runAllTimers();
+
       expect(animation.reset).toHaveBeenCalledTimes(3);
       expect(cb).not.toBeCalled();
 
       animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+      jest.runAllTimers();
+
       expect(animation.reset).toHaveBeenCalledTimes(3);
       expect(cb).toBeCalledWith({finished: true});
     });
@@ -487,6 +502,8 @@ describe('Animated', () => {
       expect(cb).not.toBeCalled();
 
       animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      jest.runAllTimers();
+
       expect(cb).toBeCalledWith({finished: true});
     });
 
@@ -503,6 +520,7 @@ describe('Animated', () => {
       expect(animation.start).not.toBeCalled();
 
       loop.start(cb);
+      jest.runAllTimers();
 
       expect(animation.start).not.toBeCalled();
       expect(cb).toBeCalledWith({finished: true});
@@ -522,10 +540,14 @@ describe('Animated', () => {
       expect(cb).not.toBeCalled();
 
       animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+      jest.runAllTimers();
+
       expect(animation.reset).toHaveBeenCalledTimes(2);
       expect(cb).not.toBeCalled();
 
       animation.start.mock.calls[0][0]({finished: false}); // Interrupt loop
+      jest.runAllTimers();
+
       expect(animation.reset).toHaveBeenCalledTimes(2);
       expect(cb).toBeCalledWith({finished: false});
     });
@@ -548,6 +570,8 @@ describe('Animated', () => {
       expect(animation.stop).toBeCalled();
 
       animation.start.mock.calls[0][0]({finished: false}); // Interrupt loop
+      jest.runAllTimers();
+
       expect(animation.reset).toHaveBeenCalledTimes(1);
       expect(cb).toBeCalledWith({finished: false});
     });
@@ -596,10 +620,12 @@ describe('Animated', () => {
     expect(anim1.start).toHaveBeenCalledTimes(1);
 
     anim1.start.mock.calls[0][0]({finished: true});
+    jest.runAllTimers();
 
     expect(anim2.start).toHaveBeenCalledTimes(1);
 
     anim2.start.mock.calls[0][0]({finished: true});
+    jest.runAllTimers();
 
     // after anim2 is finished, the sequence is finished,
     // hence the loop iteration is finished, so the next iteration starts
@@ -609,7 +635,10 @@ describe('Animated', () => {
   describe('Animated Parallel', () => {
     it('works with an empty parallel', () => {
       const cb = jest.fn();
+
       Animated.parallel([]).start(cb);
+      jest.runAllTimers();
+
       expect(cb).toBeCalledWith({finished: true});
     });
 
@@ -619,7 +648,9 @@ describe('Animated', () => {
       Animated.parallel([null, anim1]).start(cb);
 
       expect(anim1.start).toBeCalled();
+
       anim1.start.mock.calls[0][0]({finished: true});
+      jest.runAllTimers();
 
       expect(cb).toBeCalledWith({finished: true});
     });
@@ -641,9 +672,13 @@ describe('Animated', () => {
       expect(cb).not.toBeCalled();
 
       anim1.start.mock.calls[0][0]({finished: true});
+      jest.runAllTimers();
+
       expect(cb).not.toBeCalled();
 
       anim2.start.mock.calls[0][0]({finished: true});
+      jest.runAllTimers();
+
       expect(cb).toBeCalledWith({finished: true});
     });
 
@@ -661,9 +696,13 @@ describe('Animated', () => {
       expect(cb).not.toBeCalled();
 
       anim1.start.mock.calls[0][0]({finished: false});
+      jest.runAllTimers();
+
       expect(cb).not.toBeCalled();
 
       anim2.start.mock.calls[0][0]({finished: false});
+      jest.runAllTimers();
+
       expect(cb).toBeCalledWith({finished: false});
     });
 
@@ -700,11 +739,16 @@ describe('Animated', () => {
     it('should call anim after delay in sequence', () => {
       const anim = {start: jest.fn(), stop: jest.fn()};
       const cb = jest.fn();
+
       Animated.sequence([Animated.delay(1000), anim]).start(cb);
-      jest.runAllTimers();
+      jest.advanceTimersByTime(1000);
+
       expect(anim.start.mock.calls.length).toBe(1);
       expect(cb).not.toBeCalled();
+
       anim.start.mock.calls[0][0]({finished: true});
+      jest.runAllTimers();
+
       expect(cb).toBeCalledWith({finished: true});
     });
     it('should run stagger to end', () => {
