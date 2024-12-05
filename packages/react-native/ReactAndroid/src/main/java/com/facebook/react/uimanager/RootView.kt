@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager
 
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.MotionEvent
+import android.view.View
 
 /** Interface for the root native view of a React native application. */
 public interface RootView {
@@ -17,21 +17,20 @@ public interface RootView {
    * Called when a child starts a native gesture (e.g. a scroll in a ScrollView). Should be called
    * from the child's onTouchIntercepted implementation.
    */
-  void onChildStartedNativeGesture(View childView, MotionEvent ev);
+  public fun onChildStartedNativeGesture(childView: View?, ev: MotionEvent)
 
-  /**
-   * @deprecated
-   */
-  @Deprecated
-  default void onChildStartedNativeGesture(MotionEvent ev) {
-    onChildStartedNativeGesture(null, ev);
+  @Deprecated(
+      message = "Use onChildStartedNativeGesture with a childView parameter.",
+      replaceWith = ReplaceWith("onChildStartedNativeGesture"))
+  public fun onChildStartedNativeGesture(ev: MotionEvent) {
+    onChildStartedNativeGesture(null, ev)
   }
 
   /**
    * Called when a child ends a native gesture. Should be called from the child's onTouchIntercepted
    * implementation.
    */
-  void onChildEndedNativeGesture(View childView, MotionEvent ev);
+  public fun onChildEndedNativeGesture(childView: View, ev: MotionEvent)
 
-  void handleException(Throwable t);
+  public fun handleException(t: Throwable)
 }

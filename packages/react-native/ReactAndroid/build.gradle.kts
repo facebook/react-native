@@ -591,7 +591,8 @@ android {
             "src/main/res/shell",
             "src/main/res/views/alert",
             "src/main/res/views/modal",
-            "src/main/res/views/uimanager"))
+            "src/main/res/views/uimanager",
+            "src/main/res/views/view"))
     java.exclude("com/facebook/react/processing")
     java.exclude("com/facebook/react/module/processing")
   }

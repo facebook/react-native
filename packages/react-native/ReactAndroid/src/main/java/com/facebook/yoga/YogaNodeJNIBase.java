@@ -373,6 +373,18 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeStyleSetFlexBasisAutoJNI(mNativePointer);
   }
 
+  public void setFlexBasisMaxContent() {
+    YogaNative.jni_YGNodeStyleSetFlexBasisMaxContentJNI(mNativePointer);
+  }
+
+  public void setFlexBasisFitContent() {
+    YogaNative.jni_YGNodeStyleSetFlexBasisFitContentJNI(mNativePointer);
+  }
+
+  public void setFlexBasisStretch() {
+    YogaNative.jni_YGNodeStyleSetFlexBasisStretchJNI(mNativePointer);
+  }
+
   public YogaValue getMargin(YogaEdge edge) {
     return valueFromLong(YogaNative.jni_YGNodeStyleGetMarginJNI(mNativePointer, edge.intValue()));
   }
@@ -441,6 +453,18 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeStyleSetWidthAutoJNI(mNativePointer);
   }
 
+  public void setWidthMaxContent() {
+    YogaNative.jni_YGNodeStyleSetWidthMaxContentJNI(mNativePointer);
+  }
+
+  public void setWidthFitContent() {
+    YogaNative.jni_YGNodeStyleSetWidthFitContentJNI(mNativePointer);
+  }
+
+  public void setWidthStretch() {
+    YogaNative.jni_YGNodeStyleSetWidthStretchJNI(mNativePointer);
+  }
+
   public YogaValue getHeight() {
     return valueFromLong(YogaNative.jni_YGNodeStyleGetHeightJNI(mNativePointer));
   }
@@ -457,6 +481,18 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeStyleSetHeightAutoJNI(mNativePointer);
   }
 
+  public void setHeightMaxContent() {
+    YogaNative.jni_YGNodeStyleSetHeightMaxContentJNI(mNativePointer);
+  }
+
+  public void setHeightFitContent() {
+    YogaNative.jni_YGNodeStyleSetHeightFitContentJNI(mNativePointer);
+  }
+
+  public void setHeightStretch() {
+    YogaNative.jni_YGNodeStyleSetHeightStretchJNI(mNativePointer);
+  }
+
   public YogaValue getMinWidth() {
     return valueFromLong(YogaNative.jni_YGNodeStyleGetMinWidthJNI(mNativePointer));
   }
@@ -467,6 +503,18 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   public void setMinWidthPercent(float percent) {
     YogaNative.jni_YGNodeStyleSetMinWidthPercentJNI(mNativePointer, percent);
+  }
+
+  public void setMinWidthMaxContent() {
+    YogaNative.jni_YGNodeStyleSetMinWidthMaxContentJNI(mNativePointer);
+  }
+
+  public void setMinWidthFitContent() {
+    YogaNative.jni_YGNodeStyleSetMinWidthFitContentJNI(mNativePointer);
+  }
+
+  public void setMinWidthStretch() {
+    YogaNative.jni_YGNodeStyleSetMinWidthStretchJNI(mNativePointer);
   }
 
   public YogaValue getMinHeight() {
@@ -481,6 +529,18 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeStyleSetMinHeightPercentJNI(mNativePointer, percent);
   }
 
+  public void setMinHeightMaxContent() {
+    YogaNative.jni_YGNodeStyleSetMinHeightMaxContentJNI(mNativePointer);
+  }
+
+  public void setMinHeightFitContent() {
+    YogaNative.jni_YGNodeStyleSetMinHeightFitContentJNI(mNativePointer);
+  }
+
+  public void setMinHeightStretch() {
+    YogaNative.jni_YGNodeStyleSetMinHeightStretchJNI(mNativePointer);
+  }
+
   public YogaValue getMaxWidth() {
     return valueFromLong(YogaNative.jni_YGNodeStyleGetMaxWidthJNI(mNativePointer));
   }
@@ -493,6 +553,18 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
     YogaNative.jni_YGNodeStyleSetMaxWidthPercentJNI(mNativePointer, percent);
   }
 
+  public void setMaxWidthMaxContent() {
+    YogaNative.jni_YGNodeStyleSetMaxWidthMaxContentJNI(mNativePointer);
+  }
+
+  public void setMaxWidthFitContent() {
+    YogaNative.jni_YGNodeStyleSetMaxWidthFitContentJNI(mNativePointer);
+  }
+
+  public void setMaxWidthStretch() {
+    YogaNative.jni_YGNodeStyleSetMaxWidthStretchJNI(mNativePointer);
+  }
+
   public YogaValue getMaxHeight() {
     return valueFromLong(YogaNative.jni_YGNodeStyleGetMaxHeightJNI(mNativePointer));
   }
@@ -503,6 +575,18 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   public void setMaxHeightPercent(float percent) {
     YogaNative.jni_YGNodeStyleSetMaxHeightPercentJNI(mNativePointer, percent);
+  }
+
+  public void setMaxHeightMaxContent() {
+    YogaNative.jni_YGNodeStyleSetMaxHeightMaxContentJNI(mNativePointer);
+  }
+
+  public void setMaxHeightFitContent() {
+    YogaNative.jni_YGNodeStyleSetMaxHeightFitContentJNI(mNativePointer);
+  }
+
+  public void setMaxHeightStretch() {
+    YogaNative.jni_YGNodeStyleSetMaxHeightStretchJNI(mNativePointer);
   }
 
   public float getAspectRatio() {

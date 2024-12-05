@@ -8,9 +8,14 @@
  * @format
  */
 
+import type {
+  FantomRenderedOutput,
+  RenderOutputConfig,
+} from './FantomRenderedOutput';
 import type {MixedElement} from 'react';
 
 import ReactFabric from '../../../Libraries/Renderer/shims/ReactFabric';
+import getFantomRenderedOutput from './FantomRenderedOutput';
 
 let globalSurfaceIdCounter = 1;
 
@@ -46,6 +51,10 @@ class Root {
     // TODO: check for leaks.
     global.$$JSTesterModuleName$$.stopSurface(this.#surfaceId);
     global.$$JSTesterModuleName$$.flushMessageQueue();
+  }
+
+  getRenderedOutput(config: RenderOutputConfig = {}): FantomRenderedOutput {
+    return getFantomRenderedOutput(this.#surfaceId, config);
   }
 
   // TODO: add an API to check if all surfaces were deallocated when tests are finished.

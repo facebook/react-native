@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fb1595956cb38d9dfdf14cb28351f2b1>>
+ * @generated SignedSource<<2409869111055ff0b32c1f40c10042d7>>
  */
 
 /**
@@ -30,7 +30,8 @@ bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
 }
 
-bool ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid() {
+bool ReactNativeFeatureFlags::
+    completeReactInstanceCreationOnBgThreadOnAndroid() {
   return getAccessor().completeReactInstanceCreationOnBgThreadOnAndroid();
 }
 
@@ -66,7 +67,8 @@ bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
   return getAccessor().enableEagerRootViewAttachment();
 }
 
-bool ReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid() {
+bool ReactNativeFeatureFlags::
+    enableEventEmitterRetentionDuringGesturesOnAndroid() {
   return getAccessor().enableEventEmitterRetentionDuringGesturesOnAndroid();
 }
 
@@ -114,7 +116,8 @@ bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {
   return getAccessor().enableNewBackgroundAndBorderDrawables();
 }
 
-bool ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid() {
+bool ReactNativeFeatureFlags::
+    enablePreciseSchedulingForPremountItemsOnAndroid() {
   return getAccessor().enablePreciseSchedulingForPremountItemsOnAndroid();
 }
 
@@ -142,12 +145,20 @@ bool ReactNativeFeatureFlags::excludeYogaFromRawProps() {
   return getAccessor().excludeYogaFromRawProps();
 }
 
-bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
+bool ReactNativeFeatureFlags::
+    fixDifferentiatorEmittingUpdatesWithWrongParentTag() {
+  return getAccessor().fixDifferentiatorEmittingUpdatesWithWrongParentTag();
+}
+
+bool ReactNativeFeatureFlags::
+    fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   return getAccessor().fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
-bool ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid() {
-  return getAccessor().fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
+bool ReactNativeFeatureFlags::
+    fixMountingCoordinatorReportedPendingTransactionsOnAndroid() {
+  return getAccessor()
+      .fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::fuseboxEnabledDebug() {
@@ -158,7 +169,8 @@ bool ReactNativeFeatureFlags::fuseboxEnabledRelease() {
   return getAccessor().fuseboxEnabledRelease();
 }
 
-bool ReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid() {
+bool ReactNativeFeatureFlags::
+    initEagerTurboModulesOnNativeModulesQueueAndroid() {
   return getAccessor().initEagerTurboModulesOnNativeModulesQueueAndroid();
 }
 

@@ -185,22 +185,19 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (Class)getModuleClassFromName:(const char *)name
 {
-  if ([_appTMMDelegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-    return [_appTMMDelegate getModuleClassFromName:name];
-  }
-
-  return nil;
+  return [_appTMMDelegate getModuleClassFromName:name];
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
-  if ([_appTMMDelegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    id<RCTTurboModule> module = [_appTMMDelegate getModuleInstanceFromClass:moduleClass];
-    [self _attachBridgelessAPIsToModule:module];
-    return module;
+  id<RCTTurboModule> module = [_appTMMDelegate getModuleInstanceFromClass:moduleClass];
+
+  if (!module) {
+    module = [moduleClass new];
   }
 
-  return nil;
+  [self _attachBridgelessAPIsToModule:module];
+  return module;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
