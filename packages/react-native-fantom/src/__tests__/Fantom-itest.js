@@ -14,7 +14,7 @@ import {createRoot, runTask} from '..';
 import * as React from 'react';
 import {Text, View} from 'react-native';
 
-describe('ReactNativeTester', () => {
+describe('Fantom', () => {
   describe('runTask', () => {
     it('should run a task synchronously', () => {
       const task = jest.fn();
