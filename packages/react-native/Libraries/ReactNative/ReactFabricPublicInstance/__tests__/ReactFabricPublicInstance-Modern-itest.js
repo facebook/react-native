@@ -7,9 +7,9 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
-import './setUpFeatureFlags';
 import setUpReactFabricPublicInstanceFantomTests from './setUpReactFabricPublicInstanceFantomTests';
 
 setUpReactFabricPublicInstanceFantomTests({isModern: true});

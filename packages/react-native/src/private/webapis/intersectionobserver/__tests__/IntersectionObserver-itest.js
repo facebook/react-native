@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 /* eslint-disable lint/sort-imports */
@@ -19,7 +20,6 @@ import ReactNativeElement from '../../dom/nodes/ReactNativeElement';
 import IntersectionObserverEntry from '../IntersectionObserverEntry';
 import * as React from 'react';
 
-import './setUpFeatureFlags';
 import '../../../../../Libraries/Core/InitializeCore.js';
 
 import ScrollView from '../../../../../Libraries/Components/ScrollView/ScrollView';
