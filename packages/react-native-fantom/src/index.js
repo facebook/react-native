@@ -11,10 +11,10 @@
 import type {
   FantomRenderedOutput,
   RenderOutputConfig,
-} from './FantomRenderedOutput';
+} from './getFantomRenderedOutput';
 import type {MixedElement} from 'react';
 
-import getFantomRenderedOutput from './FantomRenderedOutput';
+import getFantomRenderedOutput from './getFantomRenderedOutput';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 
 let globalSurfaceIdCounter = 1;
