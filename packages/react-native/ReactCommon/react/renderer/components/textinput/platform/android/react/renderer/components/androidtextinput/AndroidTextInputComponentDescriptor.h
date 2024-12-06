@@ -80,12 +80,9 @@ class AndroidTextInputComponentDescriptor final
     auto& textInputShadowNode =
         static_cast<AndroidTextInputShadowNode&>(shadowNode);
 
-    // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
+    // `TextInputShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.
     textInputShadowNode.setTextLayoutManager(textLayoutManager_);
-
-    textInputShadowNode.setContextContainer(
-        const_cast<ContextContainer*>(getContextContainer().get()));
 
     int surfaceId = textInputShadowNode.getSurfaceId();
     if (surfaceIdToThemePaddingMap_.find(surfaceId) !=
