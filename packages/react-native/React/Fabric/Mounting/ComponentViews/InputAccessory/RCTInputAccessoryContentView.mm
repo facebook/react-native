@@ -53,9 +53,4 @@
   [self layoutIfNeeded];
 }
 
-- (BOOL)canBecomeFirstResponder
-{
-  return true;
-}
-
 @end
