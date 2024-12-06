@@ -10,7 +10,7 @@
  * @fantom_flags commonTestFlag:true jsOnlyTestFlag:true
  */
 
-import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
 describe('FantomFeatureFlags', () => {
   it('allows overridding common feature flags', () => {

@@ -11,16 +11,16 @@
  */
 
 import '../../../Core/InitializeCore.js';
-import * as ReactNativeTester from '../../../../src/private/__tests__/ReactNativeTester';
 import TextInput from '../TextInput';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {useEffect, useLayoutEffect, useRef} from 'react';
 
 describe('TextInput', () => {
   it('creates view before dispatching view command from ref function', () => {
-    const root = ReactNativeTester.createRoot();
+    const root = Fantom.createRoot();
 
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       root.render(
         <TextInput
           ref={node => {
@@ -42,7 +42,7 @@ describe('TextInput', () => {
   });
 
   it('creates view before dispatching view command from useLayoutEffect', () => {
-    const root = ReactNativeTester.createRoot();
+    const root = Fantom.createRoot();
 
     function Component() {
       const textInputRef = useRef<null | React.ElementRef<typeof TextInput>>(
@@ -55,7 +55,7 @@ describe('TextInput', () => {
 
       return <TextInput ref={textInputRef} />;
     }
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       root.render(<Component />);
     });
 
@@ -69,7 +69,7 @@ describe('TextInput', () => {
   });
 
   it('creates view before dispatching view command from useEffect', () => {
-    const root = ReactNativeTester.createRoot();
+    const root = Fantom.createRoot();
 
     function Component() {
       const textInputRef = useRef<null | React.ElementRef<typeof TextInput>>(
@@ -82,7 +82,7 @@ describe('TextInput', () => {
 
       return <TextInput ref={textInputRef} />;
     }
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       root.render(<Component />);
     });
 
