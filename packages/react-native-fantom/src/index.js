@@ -14,8 +14,8 @@ import type {
 } from './FantomRenderedOutput';
 import type {MixedElement} from 'react';
 
-import ReactFabric from '../../../Libraries/Renderer/shims/ReactFabric';
 import getFantomRenderedOutput from './FantomRenderedOutput';
+import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 
 let globalSurfaceIdCounter = 1;
 

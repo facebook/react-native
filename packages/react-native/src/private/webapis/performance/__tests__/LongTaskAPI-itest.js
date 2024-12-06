@@ -12,9 +12,9 @@
 
 import type {PerformanceObserverCallbackOptions} from '../PerformanceObserver';
 
-import * as ReactNativeTester from '../../../__tests__/ReactNativeTester';
 import setUpPerformanceObserver from '../../../setup/setUpPerformanceObserver';
 import {PerformanceLongTaskTiming} from '../LongTasks';
+import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 
 import '../../../../../Libraries/Core/InitializeCore.js';
@@ -45,13 +45,13 @@ describe('LongTask API', () => {
     const observer = new PerformanceObserver(callback);
     observer.observe({entryTypes: ['longtask']});
 
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       // Short task.
     });
 
     expect(callback).not.toHaveBeenCalled();
 
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       // Slightly longer task, but still not long.
       sleep(40);
     });
@@ -68,7 +68,7 @@ describe('LongTask API', () => {
     const beforeTaskStartTime = performance.now();
     let afterTaskStartTime;
 
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       afterTaskStartTime = performance.now();
       // Long task.
       sleep(51);
@@ -114,7 +114,7 @@ describe('LongTask API', () => {
 
       const shouldYield = global.nativeRuntimeScheduler.unstable_shouldYield;
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         sleep(40);
         shouldYield();
         sleep(40);
@@ -136,7 +136,7 @@ describe('LongTask API', () => {
       const beforeTaskStartTime = performance.now();
       let afterTaskStartTime;
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         afterTaskStartTime = performance.now();
         sleep(40);
         shouldYield();

@@ -11,11 +11,11 @@
 
 import '../../../Core/InitializeCore.js';
 
-import * as ReactNativeTester from '../../../../src/private/__tests__/ReactNativeTester';
 import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import TextInputState from '../../../Components/TextInput/TextInputState';
 import View from '../../../Components/View/View';
 import ReactFabricHostComponent from '../ReactFabricHostComponent';
+import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 
@@ -25,8 +25,8 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
     it('should provide instances of the right class as refs in host components', () => {
       let node;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -43,11 +43,11 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
     describe('blur', () => {
       test('blur() invokes TextInputState', () => {
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
         let maybeNode;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               ref={node => {
@@ -64,7 +64,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
         // We don't support view commands in Fantom yet, so we have to mock this.
         TextInputState.blurTextInput = blurTextInput;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           node.blur();
         });
 
@@ -75,11 +75,11 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
     describe('focus', () => {
       test('focus() invokes TextInputState', () => {
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
         let maybeNode;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               ref={node => {
@@ -96,7 +96,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
         // We don't support view commands in Fantom yet, so we have to mock this.
         TextInputState.focusTextInput = focusTextInput;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           node.focus();
         });
 
@@ -107,11 +107,11 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
     describe('measure', () => {
       it('component.measure(...) invokes callback', () => {
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
         let maybeNode;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
@@ -132,11 +132,11 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
       });
 
       it('unmounted.measure(...) does nothing', () => {
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
         let maybeNode;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
@@ -149,7 +149,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
         const node = nullthrows(maybeNode);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<></>);
         });
 
@@ -162,11 +162,11 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
     describe('measureInWindow', () => {
       it('component.measureInWindow(...) invokes callback', () => {
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
         let maybeNode;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
@@ -187,11 +187,11 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
       });
 
       it('unmounted.measureInWindow(...) does nothing', () => {
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
         let maybeNode;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
@@ -204,7 +204,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
         const node = nullthrows(maybeNode);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<></>);
         });
 
@@ -217,12 +217,12 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
 
     describe('measureLayout', () => {
       it('component.measureLayout(component, ...) invokes callback', () => {
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
         let maybeParentNode;
         let maybeChildNode;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
@@ -250,12 +250,12 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
       });
 
       it('unmounted.measureLayout(component, ...) does nothing', () => {
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
         let maybeParentNode;
         let maybeChildNode;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
@@ -275,7 +275,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
         const parentNode = nullthrows(maybeParentNode);
         const childNode = nullthrows(maybeChildNode);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View style={{width: 100, height: 100, left: 10, top: 10}} />,
           );
@@ -288,12 +288,12 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
       });
 
       it('component.measureLayout(unmounted, ...) does nothing', () => {
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
         let maybeParentNode;
         let maybeChildNode;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
@@ -313,7 +313,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
         const parentNode = nullthrows(maybeParentNode);
         const childNode = nullthrows(maybeChildNode);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View style={{width: 100, height: 100, left: 10, top: 10}} />,
           );
@@ -326,12 +326,12 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
       });
 
       it('unmounted.measureLayout(unmounted, ...) does nothing', () => {
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
         let maybeParentNode;
         let maybeChildNode;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100, left: 10, top: 10}}
@@ -351,7 +351,7 @@ export default function setUpTests({isModern}: {isModern: boolean}) {
         const parentNode = nullthrows(maybeParentNode);
         const childNode = nullthrows(maybeChildNode);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<></>);
         });
 

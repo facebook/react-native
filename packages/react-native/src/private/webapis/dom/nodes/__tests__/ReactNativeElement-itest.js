@@ -12,7 +12,6 @@
 
 import '../../../../../../Libraries/Core/InitializeCore.js';
 
-import * as ReactNativeTester from '../../../../__tests__/ReactNativeTester';
 import ScrollView from '../../../../../../Libraries/Components/ScrollView/ScrollView';
 import View from '../../../../../../Libraries/Components/View/View';
 import {
@@ -23,6 +22,7 @@ import HTMLCollection from '../../oldstylecollections/HTMLCollection';
 import NodeList from '../../oldstylecollections/NodeList';
 import ReactNativeElement from '../ReactNativeElement';
 import ReadOnlyNode from '../ReadOnlyNode';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {
@@ -41,8 +41,8 @@ describe('ReactNativeElement', () => {
   it('should be used to create public instances when the `enableAccessToHostTreeInFabric` feature flag is enabled', () => {
     let node;
 
-    const root = ReactNativeTester.createRoot();
-    ReactNativeTester.runTask(() => {
+    const root = Fantom.createRoot();
+    Fantom.runTask(() => {
       root.render(
         <View
           ref={receivedNode => {
@@ -64,8 +64,8 @@ describe('ReactNativeElement', () => {
         let lastChildNodeC;
 
         // Initial render with 3 children
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -114,8 +114,8 @@ describe('ReactNativeElement', () => {
         let lastChildNodeC;
 
         // Initial render with 3 children
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -164,8 +164,8 @@ describe('ReactNativeElement', () => {
         let lastChildNodeC;
 
         // Initial render with 3 children
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -209,7 +209,7 @@ describe('ReactNativeElement', () => {
         expect(parentNode.hasChildNodes()).toBe(true);
 
         // Remove one of the children
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View key="parent">
               <View key="childA" />
@@ -227,7 +227,7 @@ describe('ReactNativeElement', () => {
         expect(parentNode.hasChildNodes()).toBe(true);
 
         // Unmount node
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<></>);
         });
 
@@ -247,8 +247,8 @@ describe('ReactNativeElement', () => {
         let lastChildNodeC;
 
         // Initial render with 3 children
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -320,7 +320,7 @@ describe('ReactNativeElement', () => {
         expect(childNodeC.getRootNode()).toBe(parentNode);
 
         // Remove one of the children
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View key="parent">
               <View key="childA" />
@@ -368,7 +368,7 @@ describe('ReactNativeElement', () => {
         expect(childNodeC.getRootNode()).toBe(childNodeC);
 
         // Unmount node
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<></>);
         });
 
@@ -423,8 +423,8 @@ describe('ReactNativeElement', () => {
         let lastChildNodeBB;
 
         // Initial render with 2 children
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -514,7 +514,7 @@ describe('ReactNativeElement', () => {
         expect(childNodeBB.contains(childNodeAA)).toBe(false);
 
         // Remove one of the children
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View key="parent">
               <View key="childA" />
@@ -550,8 +550,8 @@ describe('ReactNativeElement', () => {
         let lastAltParentNode;
 
         // Similar structure in a different tree
-        const root2 = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root2 = Fantom.createRoot();
+        Fantom.runTask(() => {
           root2.render(
             <View
               key="altParent"
@@ -598,8 +598,8 @@ describe('ReactNativeElement', () => {
         let lastChildElementC;
 
         // Initial render with 3 children
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -643,7 +643,7 @@ describe('ReactNativeElement', () => {
         expect(parentElement.childElementCount).toBe(3);
 
         // Remove one of the children
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View key="parent">
               <View key="childA" />
@@ -661,7 +661,7 @@ describe('ReactNativeElement', () => {
         expect(parentElement.childElementCount).toBe(2);
 
         // Unmount node
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<></>);
         });
 
@@ -681,8 +681,8 @@ describe('ReactNativeElement', () => {
         let lastChildElementC;
 
         // Initial render with 3 children
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -737,7 +737,7 @@ describe('ReactNativeElement', () => {
         expect(childElementC.nextElementSibling).toBe(null);
 
         // Remove one of the children
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View key="parent">
               <View key="childA" />
@@ -768,7 +768,7 @@ describe('ReactNativeElement', () => {
         expect(childElementC.nextElementSibling).toBe(null);
 
         // Unmount node
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<></>);
         });
 
@@ -803,8 +803,8 @@ describe('ReactNativeElement', () => {
         let lastParentNode;
         let lastChildNodeA;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -830,7 +830,7 @@ describe('ReactNativeElement', () => {
         expect(childNodeA.textContent).toBe('world!');
 
         let lastChildNodeB;
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View key="parent">
               <NativeText>Hello </NativeText>
@@ -865,9 +865,9 @@ describe('ReactNativeElement', () => {
       it('returns a DOMRect with its size and position, or an empty DOMRect when disconnected', () => {
         let lastElement;
 
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -894,7 +894,7 @@ describe('ReactNativeElement', () => {
         expect(boundingClientRect.width).toBe(50);
         expect(boundingClientRect.height).toBe(101);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<View key="otherParent" />);
         });
 
@@ -911,8 +911,8 @@ describe('ReactNativeElement', () => {
       it('return the scroll position on each axis', () => {
         let lastElement;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <ScrollView
               key="parent"
@@ -929,7 +929,7 @@ describe('ReactNativeElement', () => {
         expect(element.scrollLeft).toBeCloseTo(5.1);
         expect(element.scrollTop).toBeCloseTo(10.2);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<View key="otherParent" />);
         });
 
@@ -942,8 +942,8 @@ describe('ReactNativeElement', () => {
       it('return the scroll size on each axis', () => {
         let lastElement;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <ScrollView
               key="parent"
@@ -961,7 +961,7 @@ describe('ReactNativeElement', () => {
         expect(element.scrollWidth).toBe(200);
         expect(element.scrollHeight).toBe(1500);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<View key="otherParent" />);
         });
 
@@ -974,8 +974,8 @@ describe('ReactNativeElement', () => {
       it('return the inner size of the node', () => {
         let lastElement;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -995,7 +995,7 @@ describe('ReactNativeElement', () => {
         expect(element.clientWidth).toBe(200);
         expect(element.clientHeight).toBe(250);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<View key="otherParent" />);
         });
 
@@ -1008,8 +1008,8 @@ describe('ReactNativeElement', () => {
       it('return the border size of the node', () => {
         let lastElement;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -1029,7 +1029,7 @@ describe('ReactNativeElement', () => {
         expect(element.clientLeft).toBe(200);
         expect(element.clientTop).toBe(250);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<View key="otherParent" />);
         });
 
@@ -1042,8 +1042,8 @@ describe('ReactNativeElement', () => {
       it('returns the current `id` prop from the node', () => {
         let lastElement;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -1063,8 +1063,8 @@ describe('ReactNativeElement', () => {
       it('returns the current `nativeID` prop from the node', () => {
         let lastElement;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -1086,8 +1086,8 @@ describe('ReactNativeElement', () => {
       it('returns the normalized tag name for the node', () => {
         let lastElement;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               ref={element => {
@@ -1109,8 +1109,8 @@ describe('ReactNativeElement', () => {
       it('return the rounded width and height, or 0 when disconnected', () => {
         let lastElement;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -1133,7 +1133,7 @@ describe('ReactNativeElement', () => {
         expect(element.offsetWidth).toBe(50);
         expect(element.offsetHeight).toBe(101);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<View key="otherParent" />);
         });
 
@@ -1147,9 +1147,9 @@ describe('ReactNativeElement', () => {
         let lastParentElement;
         let lastElement;
 
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               key="parent"
@@ -1174,7 +1174,7 @@ describe('ReactNativeElement', () => {
         expect(element.offsetLeft).toBe(5);
         expect(element.offsetParent).toBe(parentElement);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View key="parent" style={{display: 'none'}}>
               <View key="child" style={{marginTop: 10.6, marginLeft: 5.1}} />
@@ -1186,7 +1186,7 @@ describe('ReactNativeElement', () => {
         expect(element.offsetLeft).toBe(0);
         expect(element.offsetParent).toBe(null);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(<View key="parent" />);
         });
 

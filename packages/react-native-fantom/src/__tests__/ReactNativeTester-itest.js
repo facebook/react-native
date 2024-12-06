@@ -9,8 +9,8 @@
  * @oncall react_native
  */
 
-import '../../../Libraries/Core/InitializeCore';
-import * as ReactNativeTester from './ReactNativeTester';
+import 'react-native/Libraries/Core/InitializeCore';
+import * as ReactNativeTester from '..';
 
 describe('ReactNativeTester', () => {
   describe('runTask', () => {

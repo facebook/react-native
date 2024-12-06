@@ -10,8 +10,8 @@
  */
 
 import '../../Core/InitializeCore.js';
-import * as ReactNativeTester from '../../../src/private/__tests__/ReactNativeTester';
 import View from '../../Components/View/View';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Suspense, startTransition} from 'react';
 
@@ -110,9 +110,9 @@ function Fallback() {
 describe('Suspense', () => {
   it('shows fallback if data is not available', () => {
     cache.clear();
-    const root = ReactNativeTester.createRoot();
+    const root = Fantom.createRoot();
 
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       root.render(
         <Suspense fallback={<Fallback />}>
           <GreenSquare />
@@ -128,7 +128,7 @@ describe('Suspense', () => {
     );
 
     expect(resolveFunction).not.toBeNull();
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       resolveFunction?.();
       resolveFunction = null;
     });
@@ -140,7 +140,7 @@ describe('Suspense', () => {
       'create view type: `View` nativeId: `square with data: green`',
     );
 
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       root.render(
         <Suspense fallback={<Fallback />}>
           <RedSquare />
@@ -156,7 +156,7 @@ describe('Suspense', () => {
     );
 
     expect(resolveFunction).not.toBeNull();
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       resolveFunction?.();
       resolveFunction = null;
     });
@@ -168,7 +168,7 @@ describe('Suspense', () => {
       'create view type: `View` nativeId: `square with data: red`',
     );
 
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       root.render(
         <Suspense fallback={<Fallback />}>
           <GreenSquare />
@@ -194,7 +194,7 @@ describe('Suspense', () => {
     cache.clear();
     cache.set(SquareId.Green, {color: 'green'});
 
-    const root = ReactNativeTester.createRoot();
+    const root = Fantom.createRoot();
 
     function App(props: {color: 'red' | 'green'}) {
       return (
@@ -204,7 +204,7 @@ describe('Suspense', () => {
       );
     }
 
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       root.render(<App color="green" />);
     });
 
@@ -216,7 +216,7 @@ describe('Suspense', () => {
     );
 
     expect(resolveFunction).toBeNull();
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       startTransition(() => {
         root.render(<App color="red" />);
       });
@@ -228,7 +228,7 @@ describe('Suspense', () => {
     expect(mountingLogs.length).toBe(0);
 
     expect(resolveFunction).not.toBeNull();
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       resolveFunction?.();
       resolveFunction = null;
     });
