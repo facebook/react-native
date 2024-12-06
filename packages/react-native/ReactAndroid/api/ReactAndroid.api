@@ -3621,6 +3621,8 @@ public final class com/facebook/react/modules/toast/ToastModule$Companion {
 }
 
 public final class com/facebook/react/modules/websocket/WebSocketModule : com/facebook/fbreact/specs/NativeWebSocketModuleSpec {
+	public static final field Companion Lcom/facebook/react/modules/websocket/WebSocketModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun addListener (Ljava/lang/String;)V
 	public fun close (DLjava/lang/String;D)V
@@ -3630,9 +3632,13 @@ public final class com/facebook/react/modules/websocket/WebSocketModule : com/fa
 	public fun removeListeners (D)V
 	public fun send (Ljava/lang/String;D)V
 	public fun sendBinary (Ljava/lang/String;D)V
-	public fun sendBinary (Lokio/ByteString;I)V
-	public fun setContentHandler (ILcom/facebook/react/modules/websocket/WebSocketModule$ContentHandler;)V
-	public static fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
+	public final fun sendBinary (Lokio/ByteString;I)V
+	public final fun setContentHandler (ILcom/facebook/react/modules/websocket/WebSocketModule$ContentHandler;)V
+	public static final fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
+}
+
+public final class com/facebook/react/modules/websocket/WebSocketModule$Companion {
+	public final fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
 }
 
 public abstract interface class com/facebook/react/modules/websocket/WebSocketModule$ContentHandler {
