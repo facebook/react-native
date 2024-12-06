@@ -170,7 +170,7 @@ export default class Animation {
     const callback = this.#onEnd;
     if (callback != null) {
       this.#onEnd = null;
-      queueMicrotask(() => callback(result));
+      callback(result);
     }
   }
 }
