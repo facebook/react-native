@@ -27,6 +27,7 @@ const {spawn} = require('node:child_process');
 const os = require('os');
 const path = require('path');
 const {cp, exec} = require('shelljs');
+const chalk = require('chalk');
 
 /*::
 type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
@@ -367,6 +368,26 @@ async function prepareArtifacts(
       };
 }
 
+function timeBlock(label, block) {
+  const start = new Date().getTime();
+  console.info(`\n⏲️ ${chalk.bold.green(label)}:\n`);
+  let end = null;
+  let failed = false;
+  try {
+    block();
+  } catch (e) {
+    failed = true;
+    end = new Date().getTime();
+    throw e;
+  } finally {
+    let delta = new Date().getTime() - start;
+    if (failed) {
+      delta = end - start;
+    }
+    console.info(`🏁 ${chalk.bold.blue(label)} → ${(delta / 1000).toFixed(0)}s to ${failed ? chalk.red('fail') : chalk.green('succeed')}.`);
+  }
+}
+
 module.exports = {
   checkPackagerRunning,
   maybeLaunchAndroidEmulator,
@@ -375,4 +396,5 @@ module.exports = {
   setupCircleCIArtifacts,
   setupGHAArtifacts,
   prepareArtifacts,
+  timeBlock,
 };
