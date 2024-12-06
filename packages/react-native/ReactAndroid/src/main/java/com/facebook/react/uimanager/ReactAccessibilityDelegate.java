@@ -76,6 +76,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());
     sActionIdMap.put("expand", AccessibilityActionCompat.ACTION_EXPAND.getId());
     sActionIdMap.put("collapse", AccessibilityActionCompat.ACTION_COLLAPSE.getId());
+    sActionIdMap.put("accessibilityFocus", AccessibilityActionCompat.ACTION_ACCESSIBILITY_FOCUS.getId());
   }
 
   private final View mView;
@@ -601,6 +602,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       final AccessibilityRole accessibilityRole =
           (AccessibilityRole) host.getTag(R.id.accessibility_role);
       final ReadableMap accessibilityValue = (ReadableMap) host.getTag(R.id.accessibility_value);
+
       if (accessibilityRole == AccessibilityRole.ADJUSTABLE
           && (action == AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId()
               || action == AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId())) {
@@ -609,6 +611,13 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         }
         return super.performAccessibilityAction(host, action, args);
       }
+
+      // When checking the accessibility focus action, we don't want to intercept the native event
+      // otherwise it would intercept the change of focus
+      if (action == AccessibilityActionCompat.ACTION_ACCESSIBILITY_FOCUS.getId()) {
+        return super.performAccessibilityAction(host, action, args);
+      }
+
       return true;
     }
     return super.performAccessibilityAction(host, action, args);
