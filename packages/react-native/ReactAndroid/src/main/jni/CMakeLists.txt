@@ -43,7 +43,9 @@ endfunction()
 # Third-party prefabs
 find_package(hermes-engine REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
+find_package(jsc-android REQUIRED CONFIG)
 add_library(fbjni ALIAS fbjni::fbjni)
+add_library(jsc ALIAS jsc-android::jsc)
 
 # Third-party downloaded targets
 add_react_third_party_ndk_subdir(glog)
@@ -52,7 +54,6 @@ add_react_third_party_ndk_subdir(double-conversion)
 add_react_third_party_ndk_subdir(fast_float)
 add_react_third_party_ndk_subdir(fmt)
 add_react_third_party_ndk_subdir(folly)
-add_react_third_party_ndk_subdir(jsc)
 add_react_third_party_ndk_subdir(googletest)
 
 # Common targets
