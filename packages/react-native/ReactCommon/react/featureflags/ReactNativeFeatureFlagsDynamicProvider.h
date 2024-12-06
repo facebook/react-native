@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a3ad884be5b18b3cfad650941abfa751>>
+ * @generated SignedSource<<5b91c17d725f3a6a140e9fd4a9849707>>
  */
 
 /**
@@ -160,15 +160,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableFabricRenderer();
-  }
-
-  bool enableFabricRendererExclusively() override {
-    auto value = values_["enableFabricRendererExclusively"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableFabricRendererExclusively();
   }
 
   bool enableFixForViewCommandRace() override {

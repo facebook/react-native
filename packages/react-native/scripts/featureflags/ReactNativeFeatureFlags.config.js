@@ -154,14 +154,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableFabricRendererExclusively: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.',
-        purpose: 'release',
-      },
-    },
     enableFixForViewCommandRace: {
       defaultValue: false,
       metadata: {
