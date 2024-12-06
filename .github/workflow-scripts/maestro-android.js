@@ -55,7 +55,9 @@ async function main() {
       stdio: 'ignore',
       detached: true,
     });
+    metroProcess.unref();
     console.info(`- Metro PID: ${metroProcess.pid}`);
+
   }
 
   console.info('Wait For Metro to Start');
@@ -75,6 +77,16 @@ async function main() {
   console.info(`Start testing ${MAESTRO_FLOW}`);
   let error = null;
   try {
+
+    // Idea to reduce flakiness:
+    // 1. read the MAESTRO_FLOW variable and check if it is a file or a folde
+    // 2. If it is a file, just run it with retry
+    // 3. If it is a folder, for each file
+    //     I. run test in the files with retry
+    //     II. if the file fails, after retries, collect the failure and continue to the next file
+    //     III. if the file passes, continue to the next file
+    // 4. If no test failed, return success
+    // 5. If any of the tests failed, report failure with the list of files that failed.
     childProcess.execSync(
       `MAESTRO_DRIVER_STARTUP_TIMEOUT=120000 $HOME/.maestro/bin/maestro test ${MAESTRO_FLOW} --format junit -e APP_ID=${APP_ID} --debug-output /tmp/MaestroLogs`,
       {stdio: 'inherit'},
@@ -88,15 +100,17 @@ async function main() {
     if (IS_DEBUG && metroProcess != null) {
       const pid = metroProcess.pid;
       console.info(`Kill Metro. PID: ${pid}`);
-      process.kill(-pid);
+      process.kill(pid);
       console.info(`Metro Killed`);
-      process.exit();
     }
   }
 
   if (error) {
     throw error;
   }
+
+  // We need this otherwise the process will hung forever.
+  process.exit(0);
 }
 
 function sleep(ms) {
