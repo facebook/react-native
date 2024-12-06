@@ -14,7 +14,7 @@
 import type IntersectionObserverType from '../IntersectionObserver';
 
 import DOMRectReadOnly from '../../dom/geometry/DOMRectReadOnly';
-import * as ReactNativeTester from '../../../__tests__/ReactNativeTester';
+import * as Fantom from '@react-native/fantom';
 import setUpIntersectionObserver from '../../../setup/setUpIntersectionObserver';
 import ReactNativeElement from '../../dom/nodes/ReactNativeElement';
 import IntersectionObserverEntry from '../IntersectionObserverEntry';
@@ -94,8 +94,8 @@ describe('IntersectionObserver', () => {
     it('should throw if `root` is provided', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -340,8 +340,8 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             style={{width: 100, height: 100}}
@@ -356,7 +356,7 @@ describe('IntersectionObserver', () => {
 
       const intersectionObserverCallback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(intersectionObserverCallback, {
           threshold: [1, 0.5, 0],
         });
@@ -398,8 +398,8 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             style={{width: 100, height: 100}}
@@ -414,7 +414,7 @@ describe('IntersectionObserver', () => {
       const intersectionObserverCallback = jest.fn();
 
       // Let observer to run
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(intersectionObserverCallback, {
           threshold: [0, 0.5, 1],
         });
@@ -432,7 +432,7 @@ describe('IntersectionObserver', () => {
       expect(reportedObserver).toBe(observer);
 
       // Observe the same node and let observer run again
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer.observe(node);
       });
 
@@ -443,8 +443,8 @@ describe('IntersectionObserver', () => {
     it('should ignore disconnected targets', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             style={{width: 100, height: 100}}
@@ -457,7 +457,7 @@ describe('IntersectionObserver', () => {
 
       const node = ensureReactNativeElement(maybeNode);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(<></>);
       });
 
@@ -465,7 +465,7 @@ describe('IntersectionObserver', () => {
 
       const intersectionObserverCallback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         const observer = new IntersectionObserver(intersectionObserverCallback);
         observer.observe(node);
       });
@@ -477,8 +477,8 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 200}}>
             <View
@@ -495,7 +495,7 @@ describe('IntersectionObserver', () => {
 
       const intersectionObserverCallback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(intersectionObserverCallback, {
           threshold: [0],
           rnRootThreshold: [0.5],
@@ -539,8 +539,8 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 25}}>
             <View
@@ -557,7 +557,7 @@ describe('IntersectionObserver', () => {
 
       const intersectionObserverCallback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(intersectionObserverCallback, {
           threshold: [1],
         });
@@ -600,8 +600,8 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 25}}>
             <View
@@ -618,7 +618,7 @@ describe('IntersectionObserver', () => {
 
       const intersectionObserverCallback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(intersectionObserverCallback, {
           threshold: [],
         });
@@ -661,8 +661,8 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             style={{width: 100, height: 100}}
@@ -679,7 +679,7 @@ describe('IntersectionObserver', () => {
 
       const intersectionObserverCallback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(intersectionObserverCallback);
         observer.observe(node);
       });
@@ -716,7 +716,7 @@ describe('IntersectionObserver', () => {
 
       // Move the view out of the viewport
       // Using position absolute as there isn't support ScrollView scrolls
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View
             style={{position: 'absolute', top: 2000, width: 100, height: 100}}
@@ -762,8 +762,8 @@ describe('IntersectionObserver', () => {
       let observer1: IntersectionObserver;
       let observer2: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 100}}>
             <View
@@ -787,7 +787,7 @@ describe('IntersectionObserver', () => {
       const intersectionObserverCallback1 = jest.fn();
       const intersectionObserverCallback2 = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer1 = new IntersectionObserver(intersectionObserverCallback1, {
           threshold: [0],
         });
@@ -872,8 +872,8 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{width: 100, height: 100}}
@@ -888,7 +888,7 @@ describe('IntersectionObserver', () => {
 
         const intersectionObserverCallback = jest.fn();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           observer = new IntersectionObserver(intersectionObserverCallback, {
             rnRootThreshold: [1, 0.5, 0],
           });
@@ -932,8 +932,8 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <ScrollView contentOffset={{x: 0, y: 25}}>
               <View
@@ -950,7 +950,7 @@ describe('IntersectionObserver', () => {
 
         const intersectionObserverCallback = jest.fn();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           observer = new IntersectionObserver(intersectionObserverCallback, {
             rnRootThreshold: [0.5],
           });
@@ -993,8 +993,8 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <ScrollView contentOffset={{x: 0, y: 200}}>
               <View
@@ -1011,7 +1011,7 @@ describe('IntersectionObserver', () => {
 
         const intersectionObserverCallback = jest.fn();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           observer = new IntersectionObserver(intersectionObserverCallback, {
             rnRootThreshold: [0.5],
           });
@@ -1054,8 +1054,8 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{
@@ -1077,7 +1077,7 @@ describe('IntersectionObserver', () => {
 
         const intersectionObserverCallback = jest.fn();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           observer = new IntersectionObserver(intersectionObserverCallback, {
             rnRootThreshold: [1],
           });
@@ -1115,7 +1115,7 @@ describe('IntersectionObserver', () => {
 
         // Move the view out of the viewport
         // Using position absolute as we don't support changes in scroll position yet
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View
               style={{position: 'absolute', top: 0, width: 1000, height: 1000}}
@@ -1174,8 +1174,8 @@ describe('IntersectionObserver', () => {
     it('should ignore the call if `target` was not observed (not fail)', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -1188,7 +1188,7 @@ describe('IntersectionObserver', () => {
       const node = ensureReactNativeElement(maybeNode);
       const callback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         const observer = new IntersectionObserver(callback);
         observer.unobserve(node);
       });
@@ -1200,9 +1200,9 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
+      const root = Fantom.createRoot();
       // View is not intersecting with ScrollView
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 100}}>
             <View
@@ -1219,7 +1219,7 @@ describe('IntersectionObserver', () => {
 
       const callback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(callback, {threshold: 1});
         observer.observe(node);
       });
@@ -1230,12 +1230,12 @@ describe('IntersectionObserver', () => {
       expect(entries.length).toBe(1);
       expect(entries[0].isIntersecting).toBe(false);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer.unobserve(node);
       });
 
       // Update View such that it is intersecting
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <ScrollView>
             <View
@@ -1256,8 +1256,8 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -1271,20 +1271,20 @@ describe('IntersectionObserver', () => {
 
       const callback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(callback);
         observer.observe(node);
       });
 
       expect(callback).toHaveBeenCalledTimes(1);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(<></>);
       });
 
       expect(node.isConnected).toBe(false);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer.unobserve(node);
       });
 
@@ -1296,8 +1296,8 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -1309,12 +1309,12 @@ describe('IntersectionObserver', () => {
 
       const node = ensureReactNativeElement(maybeNode);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(<></>);
       });
       expect(node.isConnected).toBe(false);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(() => {});
         observer.observe(node);
         // TODO what happens if this throws an exception?
@@ -1327,8 +1327,8 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -1342,7 +1342,7 @@ describe('IntersectionObserver', () => {
 
       const intersectionObserverCallback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(intersectionObserverCallback);
         observer.observe(node);
         observer.unobserve(node);
@@ -1355,9 +1355,9 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
+      const root = Fantom.createRoot();
       // View is not intersecting with ScrollView
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 100}}>
             <View
@@ -1374,7 +1374,7 @@ describe('IntersectionObserver', () => {
 
       const callback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(callback, {threshold: 1});
         observer.observe(node);
       });
@@ -1385,12 +1385,12 @@ describe('IntersectionObserver', () => {
       expect(entries.length).toBe(1);
       expect(entries[0].isIntersecting).toBe(false);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer.unobserve(node);
       });
 
       // Update View such that it is intersecting
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <ScrollView>
             <View
@@ -1413,8 +1413,8 @@ describe('IntersectionObserver', () => {
       let maybeNode2;
       let observer: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <>
             <View
@@ -1437,7 +1437,7 @@ describe('IntersectionObserver', () => {
 
       const intersectionObserverCallback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer = new IntersectionObserver(intersectionObserverCallback, {
           threshold: 0,
         });
@@ -1448,11 +1448,11 @@ describe('IntersectionObserver', () => {
 
       expect(intersectionObserverCallback).toHaveBeenCalledTimes(1);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer.unobserve(node1);
       });
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <>
             <View
@@ -1484,8 +1484,8 @@ describe('IntersectionObserver', () => {
       let observer1: IntersectionObserver;
       let observer2: IntersectionObserver;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -1497,7 +1497,7 @@ describe('IntersectionObserver', () => {
 
       const node = ensureReactNativeElement(maybeNode);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         observer1 = new IntersectionObserver(() => {});
         observer2 = new IntersectionObserver(() => {});
 
@@ -1517,7 +1517,7 @@ describe('IntersectionObserver', () => {
     it('should do nothing if no targets are observed (not fail)', () => {
       const callback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         const observer = new IntersectionObserver(callback);
         observer.disconnect();
       });
@@ -1529,8 +1529,8 @@ describe('IntersectionObserver', () => {
       let maybeNode1;
       let maybeNode2;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <>
             <View
@@ -1553,7 +1553,7 @@ describe('IntersectionObserver', () => {
 
       const callback = jest.fn();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         const observer = new IntersectionObserver(callback);
 
         observer.observe(node1);

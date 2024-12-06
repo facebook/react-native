@@ -16,6 +16,7 @@ module.exports = {
   rootDir: path.resolve(__dirname, '../../..'),
   roots: [
     '<rootDir>/packages/react-native',
+    '<rootDir>/packages/react-native-fantom',
     '<rootDir>/jest/integration/runtime',
   ],
   moduleFileExtensions: [...baseConfig.moduleFileExtensions, 'cpp', 'h'],

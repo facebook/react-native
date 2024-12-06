@@ -13,10 +13,10 @@
 import '../../../../../../Libraries/Core/InitializeCore.js';
 
 import {NativeText} from '../../../../../../Libraries/Text/TextNativeComponent';
-import * as ReactNativeTester from '../../../../../../src/private/__tests__/ReactNativeTester';
 import ReactNativeElement from '../ReactNativeElement';
 import ReadOnlyNode from '../ReadOnlyNode';
 import ReadOnlyText from '../ReadOnlyText';
+import * as Fantom from '@react-native/fantom';
 import invariant from 'invariant';
 import * as React from 'react';
 
@@ -54,9 +54,9 @@ describe('ReadOnlyText', () => {
   it('should be used to create public text instances when the `enableAccessToHostTreeInFabric` feature flag is enabled', () => {
     let lastParentNode;
 
-    const root = ReactNativeTester.createRoot();
+    const root = Fantom.createRoot();
 
-    ReactNativeTester.runTask(() => {
+    Fantom.runTask(() => {
       root.render(
         <NativeText
           ref={node => {
@@ -78,9 +78,9 @@ describe('ReadOnlyText', () => {
       it('returns "#text"', () => {
         let lastParentNode;
 
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <NativeText
               ref={node => {
@@ -102,9 +102,9 @@ describe('ReadOnlyText', () => {
       it('returns ReadOnlyNode.TEXT_NODE', () => {
         let lastParentNode;
 
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <NativeText
               ref={node => {
@@ -126,9 +126,9 @@ describe('ReadOnlyText', () => {
       it('returns the string data contained in the node', () => {
         let lastParentNode;
 
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <NativeText
               ref={node => {
@@ -152,9 +152,9 @@ describe('ReadOnlyText', () => {
         let lastParentElement;
         let lastChildElementA;
 
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <NativeText
               key="parent"
@@ -199,7 +199,7 @@ describe('ReadOnlyText', () => {
         expect(parentElement.childNodes[2]).toBe(childTextB);
 
         // Change contents of the second text only
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <NativeText
               key="parent"
@@ -236,9 +236,9 @@ describe('ReadOnlyText', () => {
       it('returns the string data and its length, respectively', () => {
         let lastParentNode;
 
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <NativeText
               ref={node => {
@@ -264,9 +264,9 @@ describe('ReadOnlyText', () => {
         let lastChildElementB;
         let lastChildElementC;
 
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <NativeText
               key="parent"
@@ -354,9 +354,9 @@ describe('ReadOnlyText', () => {
       it('returns a slice of the text content', () => {
         let lastParentElement;
 
-        const root = ReactNativeTester.createRoot();
+        const root = Fantom.createRoot();
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <NativeText
               key="parent"
