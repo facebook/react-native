@@ -159,12 +159,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (getReloadAppAction(context).equals(action)) {
-              if (intent.getBooleanExtra(DevServerHelper.RELOAD_APP_EXTRA_JS_PROXY, false)) {
-                mDevSettings.setRemoteJSDebugEnabled(true);
-                mDevServerHelper.launchJSDevtools();
-              } else {
-                mDevSettings.setRemoteJSDebugEnabled(false);
-              }
               handleReloadJS();
             }
           }
@@ -360,15 +354,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           }
         });
 
-    if (mDevSettings.isRemoteJSDebugEnabled()) {
-      // [Deprecated in React Native 0.73] Remote JS debugging. Handle reload
-      // via external JS executor. This capability will be removed in a future
-      // release.
-      mDevSettings.setRemoteJSDebugEnabled(false);
-      handleReloadJS();
-    }
-
-    if (mDevSettings.isDeviceDebugEnabled() && !mDevSettings.isRemoteJSDebugEnabled()) {
+    if (mDevSettings.isDeviceDebugEnabled()) {
       // On-device JS debugging (CDP). Render action to open debugger frontend.
       boolean isConnected = mIsPackagerConnected;
       String debuggerItemString =
@@ -621,12 +607,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     }
 
     return mDevServerHelper.getSourceUrl(Assertions.assertNotNull(mJSAppBundleName));
-  }
-
-  @Override
-  public String getJSBundleURLForRemoteDebugging() {
-    return mDevServerHelper.getJSBundleURLForRemoteDebugging(
-        Assertions.assertNotNull(mJSAppBundleName));
   }
 
   @Override
@@ -980,21 +960,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
           mDevSettings.setHotModuleReplacementEnabled(isHotModuleReplacementEnabled);
           handleReloadJS();
         });
-  }
-
-  @Override
-  public void setRemoteJSDebugEnabled(final boolean isRemoteJSDebugEnabled) {
-    if (!mIsDevSupportEnabled) {
-      return;
-    }
-
-    if (mDevSettings.isRemoteJSDebugEnabled() != isRemoteJSDebugEnabled) {
-      UiThreadUtil.runOnUiThread(
-          () -> {
-            mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
-            handleReloadJS();
-          });
-    }
   }
 
   @Override
