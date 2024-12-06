@@ -106,7 +106,7 @@ module.exports = async function runTest(
   const setupModulePath = path.resolve(__dirname, '../runtime/setup.js');
   const featureFlagsModulePath = path.resolve(
     __dirname,
-    '../../../packages/react-native/src/private/featureflags/ReactNativeFeatureFlags.js',
+    '../../react-native/src/private/featureflags/ReactNativeFeatureFlags.js',
   );
 
   const entrypointContents = entrypointTemplate({
