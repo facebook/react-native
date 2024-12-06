@@ -15,21 +15,25 @@ export type FeatureFlagDefinitions = $ReadOnly<{
   jsOnly: JsOnlyFeatureFlagList,
 }>;
 
+export type CommonFeatureFlagConfig = $ReadOnly<{
+  defaultValue: FeatureFlagValue,
+  metadata: FeatureFlagMetadata,
+  // Indicates if this API should only be defined in JavaScript, only to
+  // preserve backwards compatibility with existing native code temporarily.
+  skipNativeAPI?: true,
+}>;
+
 export type CommonFeatureFlagList = $ReadOnly<{
-  [flagName: string]: $ReadOnly<{
-    defaultValue: FeatureFlagValue,
-    metadata: FeatureFlagMetadata,
-    // Indicates if this API should only be defined in JavaScript, only to
-    // preserve backwards compatibility with existing native code temporarily.
-    skipNativeAPI?: true,
-  }>,
+  [flagName: string]: CommonFeatureFlagConfig,
+}>;
+
+export type JsOnlyFeatureFlagConfig = $ReadOnly<{
+  defaultValue: FeatureFlagValue,
+  metadata: FeatureFlagMetadata,
 }>;
 
 export type JsOnlyFeatureFlagList = $ReadOnly<{
-  [flagName: string]: $ReadOnly<{
-    defaultValue: FeatureFlagValue,
-    metadata: FeatureFlagMetadata,
-  }>,
+  [flagName: string]: JsOnlyFeatureFlagConfig,
 }>;
 
 export type FeatureFlagMetadata =

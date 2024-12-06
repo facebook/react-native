@@ -18,3 +18,6 @@ file(GLOB react_featureflags_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_featureflags OBJECT ${react_featureflags_SRC})
 
 target_include_directories(react_featureflags PUBLIC ${REACT_COMMON_DIR})
+
+target_link_libraries(react_featureflags
+        folly_runtime)
