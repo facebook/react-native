@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4055a9b5e34ff6740a99d4e08853fe7d>>
+ * @generated SignedSource<<ee4c101a64f98180d70278390e5f2ca0>>
  */
 
 /**
@@ -107,11 +107,6 @@ bool NativeReactNativeFeatureFlags::enableFabricLogs(
 bool NativeReactNativeFeatureFlags::enableFabricRenderer(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFabricRenderer();
-}
-
-bool NativeReactNativeFeatureFlags::enableFabricRendererExclusively(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableFabricRendererExclusively();
 }
 
 bool NativeReactNativeFeatureFlags::enableFixForViewCommandRace(
