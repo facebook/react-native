@@ -7,6 +7,7 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags enableFixForViewCommandRace:true
  */
 
 import '../../../Core/InitializeCore.js';
