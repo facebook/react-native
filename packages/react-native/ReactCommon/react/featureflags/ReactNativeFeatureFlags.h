@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e628af8109a1d8bb6425515d824852a3>>
+ * @generated SignedSource<<1787c33b11b94ad1d1584bee70d2fe27>>
  */
 
 /**
@@ -258,6 +258,11 @@ class ReactNativeFeatureFlags {
    * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
    */
   RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
+
+  /**
+   * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
+   */
+  RN_EXPORT static bool useRawPropsJsiValue();
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

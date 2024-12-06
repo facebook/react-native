@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<640630d7a40b53f7d507569aa6409f69>>
+ * @generated SignedSource<<405a3f9a4f596eefb76672b63d18ee4e>>
  */
 
 /**
@@ -303,6 +303,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool useRawPropsJsiValue() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRawPropsJsiValue");
+    return method(javaProvider_);
+  }
+
   bool useRuntimeShadowNodeReferenceUpdate() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRuntimeShadowNodeReferenceUpdate");
@@ -545,6 +551,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useOptimizedEventBatchingOnAndroid(
   return ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useRawPropsJsiValue();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate();
@@ -723,6 +734,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useOptimizedEventBatchingOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::useOptimizedEventBatchingOnAndroid),
+      makeNativeMethod(
+        "useRawPropsJsiValue",
+        JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue),
       makeNativeMethod(
         "useRuntimeShadowNodeReferenceUpdate",
         JReactNativeFeatureFlagsCxxInterop::useRuntimeShadowNodeReferenceUpdate),

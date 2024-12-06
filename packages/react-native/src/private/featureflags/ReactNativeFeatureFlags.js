@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ceb682684f8c9df33a3f432033ab266a>>
+ * @generated SignedSource<<59f86fd2cbfb7dd44ec9b7d4f9805ba0>>
  * @flow strict
  */
 
@@ -95,6 +95,7 @@ export type ReactNativeFeatureFlags = {
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useOptimisedViewPreallocationOnAndroid: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
+  useRawPropsJsiValue: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
@@ -365,6 +366,10 @@ export const useOptimisedViewPreallocationOnAndroid: Getter<boolean> = createNat
  * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
  */
 export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeFlagGetter('useOptimizedEventBatchingOnAndroid', false);
+/**
+ * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
+ */
+export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useRawPropsJsiValue', false);
 /**
  * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
  */

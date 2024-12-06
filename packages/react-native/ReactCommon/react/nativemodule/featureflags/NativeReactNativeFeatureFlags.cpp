@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4055a9b5e34ff6740a99d4e08853fe7d>>
+ * @generated SignedSource<<c0b7e6cfe17915c38cb3346845cdaf7d>>
  */
 
 /**
@@ -262,6 +262,11 @@ bool NativeReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid(
 bool NativeReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::useRawPropsJsiValue(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useRawPropsJsiValue();
 }
 
 bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate(
