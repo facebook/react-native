@@ -66,8 +66,8 @@ inline static bool operator!=(
 }
 
 struct AccessibilityState {
+  std::optional<bool> selected{std::nullopt};
   bool disabled{false};
-  bool selected{false};
   bool busy{false};
   std::optional<bool> expanded{std::nullopt};
   enum { Unchecked, Checked, Mixed, None } checked{None};
