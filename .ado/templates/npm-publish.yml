@@ -12,11 +12,13 @@ steps:
     displayName: Verify release config
 
   - script: |
+      echo Target branch: $(System.PullRequest.TargetBranch)
       yarn nx release --dry-run --verbose
     displayName: Version and publish packages (dry run)
     condition: and(succeeded(), ne(variables['publish_react_native_macos'], '1'))
 
   - script: |
+      git switch $(Build.SourceBranchName)
       yarn nx release --yes --verbose
     env:
       GITHUB_TOKEN: $(githubAuthToken)
