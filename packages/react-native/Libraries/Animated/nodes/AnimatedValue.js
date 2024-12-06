@@ -22,6 +22,7 @@ import AnimatedWithChildren from './AnimatedWithChildren';
 
 export type AnimatedValueConfig = $ReadOnly<{
   useNativeDriver: boolean,
+  debugID?: string,
 }>;
 
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
@@ -97,8 +98,13 @@ export default class AnimatedValue extends AnimatedWithChildren {
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
-    if (config && config.useNativeDriver) {
-      this.__makeNative();
+    if (config) {
+      if (config.useNativeDriver) {
+        this.__makeNative();
+      }
+      if (__DEV__) {
+        this.__debugID = config.debugID;
+      }
     }
   }
 
@@ -298,6 +304,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
       type: 'value',
       value: this._value,
       offset: this._offset,
+      debugID: __DEV__ ? this.__debugID : undefined,
     };
   }
 }
