@@ -13,6 +13,7 @@
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
@@ -21,8 +22,8 @@ import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
 export type AnimatedValueConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
-  debugID?: string,
 }>;
 
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
@@ -91,20 +92,15 @@ export default class AnimatedValue extends AnimatedWithChildren {
   _tracking: ?AnimatedTracking;
 
   constructor(value: number, config?: ?AnimatedValueConfig) {
-    super();
+    super(config);
     if (typeof value !== 'number') {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
     }
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;
-    if (config) {
-      if (config.useNativeDriver) {
-        this.__makeNative();
-      }
-      if (__DEV__) {
-        this.__debugID = config.debugID;
-      }
+    if (config && config.useNativeDriver) {
+      this.__makeNative();
     }
   }
 
@@ -304,7 +300,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
       type: 'value',
       value: this._value,
       offset: this._offset,
-      debugID: __DEV__ ? this.__debugID : undefined,
+      debugID: this.__getDebugID(),
     };
   }
 }

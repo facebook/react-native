@@ -173,4 +173,11 @@ export default class Animation {
       callback(result);
     }
   }
+
+  __getDebugID(): ?string {
+    if (__DEV__) {
+      return this.__debugID;
+    }
+    return undefined;
+  }
 }
