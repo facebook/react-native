@@ -14,7 +14,7 @@ namespace facebook::react {
 ShadowViewMutation ShadowViewMutation::CreateMutation(ShadowView shadowView) {
   return {
       /* .type = */ Create,
-      /* .parentShadowView = */ {},
+      /* .parentTag = */ -1,
       /* .oldChildShadowView = */ {},
       /* .newChildShadowView = */ std::move(shadowView),
       /* .index = */ -1,
@@ -24,7 +24,7 @@ ShadowViewMutation ShadowViewMutation::CreateMutation(ShadowView shadowView) {
 ShadowViewMutation ShadowViewMutation::DeleteMutation(ShadowView shadowView) {
   return {
       /* .type = */ Delete,
-      /* .parentShadowView = */ {},
+      /* .parentTag = */ -1,
       /* .oldChildShadowView = */ std::move(shadowView),
       /* .newChildShadowView = */ {},
       /* .index = */ -1,
@@ -32,12 +32,12 @@ ShadowViewMutation ShadowViewMutation::DeleteMutation(ShadowView shadowView) {
 }
 
 ShadowViewMutation ShadowViewMutation::InsertMutation(
-    ShadowView parentShadowView,
+    Tag parentTag,
     ShadowView childShadowView,
     int index) {
   return {
       /* .type = */ Insert,
-      /* .parentShadowView = */ std::move(parentShadowView),
+      /* .parentTag = */ parentTag,
       /* .oldChildShadowView = */ {},
       /* .newChildShadowView = */ std::move(childShadowView),
       /* .index = */ index,
@@ -45,12 +45,12 @@ ShadowViewMutation ShadowViewMutation::InsertMutation(
 }
 
 ShadowViewMutation ShadowViewMutation::RemoveMutation(
-    ShadowView parentShadowView,
+    Tag parentTag,
     ShadowView childShadowView,
     int index) {
   return {
       /* .type = */ Remove,
-      /* .parentShadowView = */ std::move(parentShadowView),
+      /* .parentTag = */ parentTag,
       /* .oldChildShadowView = */ std::move(childShadowView),
       /* .newChildShadowView = */ {},
       /* .index = */ index,
@@ -60,10 +60,10 @@ ShadowViewMutation ShadowViewMutation::RemoveMutation(
 ShadowViewMutation ShadowViewMutation::UpdateMutation(
     ShadowView oldChildShadowView,
     ShadowView newChildShadowView,
-    ShadowView parentShadowView) {
+    Tag parentTag) {
   return {
       /* .type = */ Update,
-      /* .parentShadowView = */ std::move(parentShadowView),
+      /* .parentTag = */ parentTag,
       /* .oldChildShadowView = */ std::move(oldChildShadowView),
       /* .newChildShadowView = */ std::move(newChildShadowView),
       /* .index = */ -1,
@@ -88,12 +88,12 @@ bool ShadowViewMutation::mutatedViewIsVirtual() const {
 
 ShadowViewMutation::ShadowViewMutation(
     Type type,
-    ShadowView parentShadowView,
+    Tag parentTag,
     ShadowView oldChildShadowView,
     ShadowView newChildShadowView,
     int index)
     : type(type),
-      parentShadowView(std::move(parentShadowView)),
+      parentTag(parentTag),
       oldChildShadowView(std::move(oldChildShadowView)),
       newChildShadowView(std::move(newChildShadowView)),
       index(index) {}
@@ -131,10 +131,10 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
                                              mutation.newChildShadowView,
                                              options)}
           : DebugStringConvertibleObject{},
-      mutation.parentShadowView.componentHandle != 0
+      mutation.parentTag != -1
           ? DebugStringConvertibleObject{"parent",
                                          getDebugDescription(
-                                             mutation.parentShadowView,
+                                             mutation.parentTag,
                                              options)}
           : DebugStringConvertibleObject{},
       mutation.index != -1
