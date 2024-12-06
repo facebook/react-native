@@ -259,9 +259,12 @@ NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
 
   if (!isnan(textAttributes.lineHeight)) {
     CGFloat lineHeight = textAttributes.lineHeight * RCTEffectiveFontSizeMultiplierFromTextAttributes(textAttributes);
-    paragraphStyle.minimumLineHeight = lineHeight;
-    paragraphStyle.maximumLineHeight = lineHeight;
-    isParagraphStyleUsed = YES;
+    UIFont *font = RCTEffectiveFontFromTextAttributes(textAttributes);
+    if (lineHeight > font.lineHeight) {
+      paragraphStyle.minimumLineHeight = lineHeight;
+      paragraphStyle.maximumLineHeight = lineHeight;
+      isParagraphStyleUsed = YES;
+    }
   }
 
   if (isParagraphStyleUsed) {
