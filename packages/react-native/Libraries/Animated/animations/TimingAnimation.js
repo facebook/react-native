@@ -99,7 +99,7 @@ export default class TimingAnimation extends Animation {
       toValue: this._toValue,
       iterations: this.__iterations,
       platformConfig: this._platformConfig,
-      debugID: __DEV__ ? this.__debugID : undefined,
+      debugID: this.__getDebugID(),
     };
   }
 

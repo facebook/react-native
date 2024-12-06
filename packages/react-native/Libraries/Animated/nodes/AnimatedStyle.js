@@ -9,6 +9,7 @@
  */
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import {validateStyles} from '../../../src/private/animated/NativeAnimatedValidation';
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
@@ -112,8 +113,9 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     nodes: $ReadOnlyArray<AnimatedNode>,
     style: {[string]: mixed},
     inputStyle: any,
+    config?: ?AnimatedNodeConfig,
   ) {
-    super();
+    super(config);
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
     this.#style = style;
@@ -238,6 +240,7 @@ export default class AnimatedStyle extends AnimatedWithChildren {
     return {
       type: 'style',
       style: styleConfig,
+      debugID: this.__getDebugID(),
     };
   }
 }
