@@ -17,14 +17,13 @@ module.exports = {
   roots: [
     '<rootDir>/packages/react-native',
     '<rootDir>/packages/react-native-fantom',
-    '<rootDir>/jest/integration/runtime',
   ],
   moduleFileExtensions: [...baseConfig.moduleFileExtensions, 'cpp', 'h'],
   // This allows running Meta-internal tests with the `-test.fb.js` suffix.
   testRegex: '/__tests__/.*-itest(\\.fb)?\\.js$',
   testPathIgnorePatterns: baseConfig.testPathIgnorePatterns,
   transformIgnorePatterns: ['.*'],
-  testRunner: './jest/integration/runner/index.js',
-  watchPathIgnorePatterns: ['<rootDir>/jest/integration/build/'],
-  globalSetup: './jest/integration/runner/warmup/index.js',
+  testRunner: '<rootDir>/packages/react-native-fantom/runner/index.js',
+  watchPathIgnorePatterns: ['<rootDir>/packages/react-native-fantom/build/'],
+  globalSetup: '<rootDir>/packages/react-native-fantom/runner/warmup/index.js',
 };
