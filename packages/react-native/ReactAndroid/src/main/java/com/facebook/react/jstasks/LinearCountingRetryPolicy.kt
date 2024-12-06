@@ -12,11 +12,11 @@ public class LinearCountingRetryPolicy(
     private val delayBetweenAttemptsInMs: Int
 ) : HeadlessJsTaskRetryPolicy {
 
-  override public fun canRetry(): Boolean = retryAttempts > 0
+  public override fun canRetry(): Boolean = retryAttempts > 0
 
-  override public fun getDelay(): Int = delayBetweenAttemptsInMs
+  override val delay: Int = delayBetweenAttemptsInMs
 
-  override public fun update(): HeadlessJsTaskRetryPolicy {
+  public override fun update(): HeadlessJsTaskRetryPolicy {
     val remainingRetryAttempts = retryAttempts - 1
 
     return if (remainingRetryAttempts > 0) {
@@ -26,6 +26,6 @@ public class LinearCountingRetryPolicy(
     }
   }
 
-  override public fun copy(): HeadlessJsTaskRetryPolicy =
+  public override fun copy(): HeadlessJsTaskRetryPolicy =
       LinearCountingRetryPolicy(retryAttempts, delayBetweenAttemptsInMs)
 }
