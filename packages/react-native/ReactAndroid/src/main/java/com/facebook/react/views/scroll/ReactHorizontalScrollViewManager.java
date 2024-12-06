@@ -226,7 +226,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
       throw new RetryableMountingLayerException(
           "scrollToEnd called on HorizontalScrollView without child");
     }
-    int right = child.getWidth() + scrollView.getPaddingRight();
+    int right = child.getWidth() - scrollView.getWidth() + scrollView.getPaddingRight();
     scrollView.abortAnimation();
     if (data.mAnimated) {
       scrollView.reactSmoothScrollTo(right, scrollView.getScrollY());
