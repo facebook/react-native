@@ -1366,6 +1366,9 @@ export class ImageTest extends React.Component {
     const promise2: Promise<any> = Image.getSizeWithHeaders(uri, headers).then(
       ({width, height}) => console.log(width, height),
     );
+    Image.getSizeWithHeaders(uri, new Headers(headers)).then(
+      ({width, height}) => console.log(width, height),
+    );
     Image.getSizeWithHeaders(uri, headers, (width, height) =>
       console.log(width, height),
     );
@@ -1408,6 +1411,19 @@ export class ImageTest extends React.Component {
             uri: 'https://seeklogo.com/images/T/typescript-logo-B29A3F462D-seeklogo.com.png',
           }}
           resizeMode={resizeMode}
+        />
+
+        <Image
+          source={{
+            uri: 'https://seeklogo.com/images/T/typescript-logo-B29A3F462D-seeklogo.com.png',
+            headers: new Headers({Authorization: 'Bearer test'}),
+          }}
+        />
+        <Image
+          source={{
+            uri: 'https://seeklogo.com/images/T/typescript-logo-B29A3F462D-seeklogo.com.png',
+            headers: {Authorization: 'Bearer test'},
+          }}
         />
       </View>
     );
