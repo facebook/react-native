@@ -67,6 +67,7 @@ Size AndroidProgressBarMeasurementsManager::measure(
 
   std::scoped_lock lock(mutex_);
   cachedMeasurement_ = measurement;
+  hasBeenMeasured_ = true;
   return measurement;
 }
 
