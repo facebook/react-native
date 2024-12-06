@@ -12,10 +12,10 @@
 
 import type MutationObserverType from '../MutationObserver';
 
-import * as ReactNativeTester from '../../../__tests__/ReactNativeTester';
 import View from '../../../../../Libraries/Components/View/View';
 import setUpMutationObserver from '../../../setup/setUpMutationObserver';
 import ReactNativeElement from '../../dom/nodes/ReactNativeElement';
+import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 
@@ -84,8 +84,8 @@ describe('MutationObserver', () => {
     it('should throw if the `childList` option is not provided', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -127,8 +127,8 @@ describe('MutationObserver', () => {
     it('should throw if the `attributes` option is provided', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -151,8 +151,8 @@ describe('MutationObserver', () => {
     it('should throw if the `attributeFilter` option is provided', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -175,8 +175,8 @@ describe('MutationObserver', () => {
     it('should throw if the `attributeOldValue` option is provided', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -200,8 +200,8 @@ describe('MutationObserver', () => {
     it('should throw if the `characterData` option is provided', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -224,8 +224,8 @@ describe('MutationObserver', () => {
     it('should throw if the `characterDataOldValue` option is provided', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             ref={receivedNode => {
@@ -248,8 +248,8 @@ describe('MutationObserver', () => {
     it('should ignore calls to observe disconnected targets', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             key="node1"
@@ -262,7 +262,7 @@ describe('MutationObserver', () => {
 
       const node = ensureReactNativeElement(maybeNode);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(<></>);
       });
 
@@ -279,8 +279,8 @@ describe('MutationObserver', () => {
     it('should report direct children added to and removed from an observed node (childList: true, subtree: false) ', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             key="node1"
@@ -305,7 +305,7 @@ describe('MutationObserver', () => {
 
       let maybeChildNode1, maybeChildNode2;
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View
@@ -347,7 +347,7 @@ describe('MutationObserver', () => {
 
       expect(firstCall[1]).toBe(observer);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-2" />
@@ -377,8 +377,8 @@ describe('MutationObserver', () => {
     it('should NOT report changes in transitive children when `subtree` is not set to true', () => {
       let maybeObservedNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             key="node1"
@@ -399,7 +399,7 @@ describe('MutationObserver', () => {
       // Does not report anything initially
       expect(observerCallback).not.toHaveBeenCalled();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-1">
@@ -411,7 +411,7 @@ describe('MutationObserver', () => {
 
       expect(observerCallback).not.toHaveBeenCalled();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-1" />
@@ -425,8 +425,8 @@ describe('MutationObserver', () => {
     it('should report changes in transitive children when `subtree` is set to true', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             key="node1"
@@ -449,7 +449,7 @@ describe('MutationObserver', () => {
 
       let maybeNode111;
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-1">
@@ -473,7 +473,7 @@ describe('MutationObserver', () => {
       expect([...firstRecords[0].addedNodes]).toEqual([node111]);
       expect([...firstRecords[0].removedNodes]).toEqual([]);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-1" />
@@ -493,8 +493,8 @@ describe('MutationObserver', () => {
     it('should report changes in different parts of the subtree as separate entries (subtree = true)', () => {
       let maybeNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             key="node1"
@@ -518,7 +518,7 @@ describe('MutationObserver', () => {
 
       let maybeNode111, maybeNode121;
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-1">
@@ -553,7 +553,7 @@ describe('MutationObserver', () => {
       expect([...firstRecords[1].addedNodes]).toEqual([node121]);
       expect([...firstRecords[1].removedNodes]).toEqual([]);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-1" />
@@ -579,8 +579,8 @@ describe('MutationObserver', () => {
         let maybeNode1;
         let maybeNode2;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <>
               <View
@@ -617,7 +617,7 @@ describe('MutationObserver', () => {
         let maybeChildNode11;
         let maybeChildNode21;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <>
               <View key="node1">
@@ -659,7 +659,7 @@ describe('MutationObserver', () => {
         expect([...observer2Records1[0].addedNodes]).toEqual([childNode21]);
         expect([...observer2Records1[0].removedNodes]).toEqual([]);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <>
               <View key="node1" />
@@ -689,8 +689,8 @@ describe('MutationObserver', () => {
         let maybeNode1;
         let maybeNode2;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="node1"
@@ -724,7 +724,7 @@ describe('MutationObserver', () => {
 
         let maybeChildNode111;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View key="node1">
               <View key="node1-1">
@@ -756,7 +756,7 @@ describe('MutationObserver', () => {
         expect([...observer2Records1[0].addedNodes]).toEqual([childNode111]);
         expect([...observer2Records1[0].removedNodes]).toEqual([]);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <>
               <View key="node1">
@@ -789,8 +789,8 @@ describe('MutationObserver', () => {
         let maybeNode1;
         let maybeNode2;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <>
               <View
@@ -823,7 +823,7 @@ describe('MutationObserver', () => {
         let maybeChildNode11;
         let maybeChildNode21;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <>
               <View key="node1">
@@ -859,7 +859,7 @@ describe('MutationObserver', () => {
         expect([...records[1].addedNodes]).toEqual([childNode21]);
         expect([...records[1].removedNodes]).toEqual([]);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <>
               <View key="node1" />
@@ -883,8 +883,8 @@ describe('MutationObserver', () => {
         let maybeNode1;
         let maybeNode11;
 
-        const root = ReactNativeTester.createRoot();
-        ReactNativeTester.runTask(() => {
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
           root.render(
             <View
               key="node1"
@@ -914,7 +914,7 @@ describe('MutationObserver', () => {
 
         let maybeChildNode111;
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View key="node1">
               <View key="node1-1">
@@ -939,7 +939,7 @@ describe('MutationObserver', () => {
         expect([...records[0].addedNodes]).toEqual([childNode111]);
         expect([...records[0].removedNodes]).toEqual([]);
 
-        ReactNativeTester.runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View key="node1">
               <View key="node1-1" />
@@ -962,8 +962,8 @@ describe('MutationObserver', () => {
     it('should stop observing targets', () => {
       let maybeObservedNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             key="node1"
@@ -983,7 +983,7 @@ describe('MutationObserver', () => {
       // Does not report anything initially
       expect(observerCallback).not.toHaveBeenCalled();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-1" />
@@ -996,7 +996,7 @@ describe('MutationObserver', () => {
 
       observer.disconnect();
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <View key="node1">
             <View key="node1-2" />
@@ -1010,8 +1010,8 @@ describe('MutationObserver', () => {
     it('should correctly unobserve targets that are disconnected after observing', () => {
       let maybeObservedNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             key="node1"
@@ -1028,7 +1028,7 @@ describe('MutationObserver', () => {
       const observer = new MutationObserver(observerCallback);
       observer.observe(observedNode, {childList: true});
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(<></>);
       });
 
@@ -1042,8 +1042,8 @@ describe('MutationObserver', () => {
     it('should correctly unobserve targets that are disconnected before observing', () => {
       let maybeObservedNode;
 
-      const root = ReactNativeTester.createRoot();
-      ReactNativeTester.runTask(() => {
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
         root.render(
           <View
             key="node1"
@@ -1056,7 +1056,7 @@ describe('MutationObserver', () => {
 
       const observedNode = nullthrows(maybeObservedNode);
 
-      ReactNativeTester.runTask(() => {
+      Fantom.runTask(() => {
         root.render(<></>);
       });
 
