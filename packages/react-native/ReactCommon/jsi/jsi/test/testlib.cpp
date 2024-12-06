@@ -1698,6 +1698,31 @@ TEST_P(JSITest, ObjectSetPrototype) {
   EXPECT_EQ(getPrototypeRes.getProperty(rd, "someProperty").getNumber(), 123);
 }
 
+TEST_P(JSITest, ObjectCreateWithPrototype) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Object.create(prototype)
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    Object createObjectWithPrototype(const Value& prototype) override {
+      return Runtime::createObjectWithPrototype(prototype);
+    }
+  };
+
+  RD rd = RD(rt);
+  Object prototypeObj(rd);
+  prototypeObj.setProperty(rd, "someProperty", 123);
+  Value prototype(rd, prototypeObj);
+
+  Object child = Object::create(rd, prototype);
+  EXPECT_EQ(child.getProperty(rd, "someProperty").getNumber(), 123);
+
+  // Tests null value as prototype
+  child = Object::create(rd, Value::null());
+  EXPECT_TRUE(child.getPrototype(rd).isNull());
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,

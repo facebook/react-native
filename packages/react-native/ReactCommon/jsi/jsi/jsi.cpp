@@ -288,6 +288,13 @@ Value Runtime::getPrototypeOf(const Object& object) {
   return setPrototypeOfFn.call(*this, object);
 }
 
+Object Runtime::createObjectWithPrototype(const Value& prototype) {
+  auto createFn = global()
+                      .getPropertyAsObject(*this, "Object")
+                      .getPropertyAsFunction(*this, "create");
+  return createFn.call(*this, prototype).asObject(*this);
+}
+
 Pointer& Pointer::operator=(Pointer&& other) noexcept {
   if (ptr_) {
     ptr_->invalidate();
