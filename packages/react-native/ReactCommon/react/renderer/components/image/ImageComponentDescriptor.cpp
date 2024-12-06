@@ -8,23 +8,6 @@
 #include "ImageComponentDescriptor.h"
 #include <react/renderer/imagemanager/ImageManager.h>
 
-namespace {
-
-std::shared_ptr<facebook::react::ImageManager> getImageManager(
-    std::shared_ptr<const facebook::react::ContextContainer>&
-        contextContainer) {
-  if (auto imageManager =
-          contextContainer
-              ->find<std::shared_ptr<facebook::react::ImageManager>>(
-                  facebook::react::ImageManagerKey);
-      imageManager.has_value()) {
-    return imageManager.value();
-  }
-  return std::make_shared<facebook::react::ImageManager>(contextContainer);
-}
-
-} // namespace
-
 namespace facebook::react {
 
 extern const char ImageManagerKey[] = "ImageManager";
@@ -32,7 +15,8 @@ extern const char ImageManagerKey[] = "ImageManager";
 ImageComponentDescriptor::ImageComponentDescriptor(
     const ComponentDescriptorParameters& parameters)
     : ConcreteComponentDescriptor(parameters),
-      imageManager_(getImageManager(contextContainer_)){};
+      imageManager_(
+          getManagerByName<ImageManager>(contextContainer_, ImageManagerKey)){};
 
 void ImageComponentDescriptor::adopt(ShadowNode& shadowNode) const {
   ConcreteComponentDescriptor::adopt(shadowNode);
