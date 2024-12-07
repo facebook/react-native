@@ -11,21 +11,13 @@
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderCurve.h>
 #import <React/RCTBorderStyle.h>
+#import <React/RCTColorSpace.h>
 #import <React/RCTCursor.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLog.h>
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
 #import <yoga/Yoga.h>
-
-typedef NS_ENUM(NSInteger, RCTColorSpace) {
-  RCTColorSpaceSRGB,
-  RCTColorSpaceDisplayP3,
-};
-
-// Change the default color space
-RCTColorSpace RCTGetDefaultColorSpace(void);
-RCT_EXTERN void RCTSetDefaultColorSpace(RCTColorSpace colorSpace);
 
 /**
  * This class provides a collection of conversion functions for mapping
