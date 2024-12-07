@@ -50,6 +50,9 @@ static inline std::chrono::milliseconds timeoutForSchedulerPriority(
       return std::chrono::seconds(10);
     case SchedulerPriority::IdlePriority:
       return std::chrono::minutes(5);
+    default:
+      react_native_assert(false && "Unsupported SchedulerPriority value");
+      return std::chrono::seconds(5);
   }
 }
 
