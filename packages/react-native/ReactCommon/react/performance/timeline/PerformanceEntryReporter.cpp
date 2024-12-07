@@ -8,6 +8,7 @@
 #include "PerformanceEntryReporter.h"
 
 #include <cxxreact/JSExecutor.h>
+#include <jsinspector-modern/PerformanceTracer.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 
 namespace facebook::react {
@@ -128,16 +129,18 @@ void PerformanceEntryReporter::clearEntries(
 PerformanceEntry PerformanceEntryReporter::reportMark(
     const std::string& name,
     const std::optional<DOMHighResTimeStamp>& startTime) {
+  auto startTimeVal = startTime ? *startTime : getCurrentTimeStamp();
   const auto entry = PerformanceEntry{
       .name = name,
       .entryType = PerformanceEntryType::MARK,
-      .startTime = startTime ? *startTime : getCurrentTimeStamp()};
+      .startTime = startTimeVal};
 
   {
     std::unique_lock lock(buffersMutex_);
     markBuffer_.add(entry);
   }
 
+  // TODO(T198982317): Log `performance.mark()` events to jsinspector_modern
   observerRegistry_->queuePerformanceEntry(entry);
   return entry;
 }
@@ -148,7 +151,9 @@ PerformanceEntry PerformanceEntryReporter::reportMeasure(
     DOMHighResTimeStamp endTime,
     const std::optional<DOMHighResTimeStamp>& duration,
     const std::optional<std::string>& startMark,
-    const std::optional<std::string>& endMark) {
+    const std::optional<std::string>& endMark,
+    const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
+        trackMetadata) {
   DOMHighResTimeStamp startTimeVal =
       startMark ? getMarkTime(*startMark) : startTime;
   DOMHighResTimeStamp endTimeVal = endMark ? getMarkTime(*endMark) : endTime;
@@ -172,6 +177,9 @@ PerformanceEntry PerformanceEntryReporter::reportMeasure(
     std::unique_lock lock(buffersMutex_);
     measureBuffer_.add(entry);
   }
+
+  jsinspector_modern::PerformanceTracer::getInstance().addEvent(
+      name, startTimeVal, endTimeVal, trackMetadata);
 
   observerRegistry_->queuePerformanceEntry(entry);
   return entry;
@@ -217,6 +225,7 @@ void PerformanceEntryReporter::reportEvent(
     eventBuffer_.add(entry);
   }
 
+  // TODO(T198982346): Log interaction events to jsinspector_modern
   observerRegistry_->queuePerformanceEntry(entry);
 }
 

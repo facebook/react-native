@@ -11,7 +11,9 @@
 
 #include <folly/Conv.h>
 #include <jsinspector-modern/ReactCdp.h>
-#include <reactperflogger/ReactPerfLogger.h>
+#include <react/timing/primitives.h>
+
+#include <chrono>
 
 namespace facebook::react {
 
@@ -25,7 +27,7 @@ std::string JSExecutor::getSyntheticBundlePath(
 }
 
 double JSExecutor::performanceNow() {
-  return ReactPerfLogger::performanceNow();
+  return chronoToDOMHighResTimeStamp(std::chrono::steady_clock::now());
 }
 
 jsinspector_modern::RuntimeTargetDelegate&

@@ -19,5 +19,6 @@ add_library(react_performance_timeline OBJECT ${react_performance_timeline_SRC})
 
 target_include_directories(react_performance_timeline PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_performance_timeline
+        jsinspector_tracing
         react_timing
         react_cxxreact)

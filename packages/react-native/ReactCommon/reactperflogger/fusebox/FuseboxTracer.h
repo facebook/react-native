@@ -22,6 +22,10 @@ struct BufferEvent {
   std::string track;
 };
 
+/**
+ * @deprecated Replaced by jsinspector_modern::PerformanceTracer and will be
+ * removed when we delete FuseboxPerfettoDataSource.
+ */
 class FuseboxTracer {
  public:
   FuseboxTracer(const FuseboxTracer&) = delete;
