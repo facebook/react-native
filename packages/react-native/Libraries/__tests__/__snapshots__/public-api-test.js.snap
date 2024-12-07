@@ -6669,7 +6669,7 @@ declare export default typeof NativeNetworkingIOS;
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/RCTNetworking.js.flow 1`] = `
-"type RCTNetworkingEventDefinitions = $ReadOnly<{
+"export type RCTNetworkingEventDefinitions = $ReadOnly<{
   didSendNetworkData: [[number, number, number]],
   didReceiveNetworkResponse: [[number, number, ?{ [string]: string }, ?string]],
   didReceiveNetworkData: [[number, string]],
