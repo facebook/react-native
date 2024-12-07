@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aff3c46b8d2db3bde519e1392569d53d>>
+ * @generated SignedSource<<af7b3b7c623faa40c5537c0488bd5377>>
  */
 
 /**
@@ -79,10 +79,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableFabricRendererExclusively() override {
-    return false;
-  }
-
   bool enableFixForViewCommandRace() override {
     return false;
   }
@@ -141,6 +137,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool excludeYogaFromRawProps() override {
     return false;
+  }
+
+  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() override {
+    return true;
   }
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact() override {

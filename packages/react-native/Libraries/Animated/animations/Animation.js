@@ -26,6 +26,7 @@ export type AnimationConfig = $ReadOnly<{
   onComplete?: ?EndCallback,
   iterations?: number,
   isLooping?: boolean,
+  debugID?: ?string,
   ...
 }>;
 
@@ -43,6 +44,7 @@ export default class Animation {
   __isInteraction: boolean;
   __isLooping: ?boolean;
   __iterations: number;
+  __debugID: ?string;
 
   constructor(config: AnimationConfig) {
     this.#useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
@@ -51,6 +53,9 @@ export default class Animation {
     this.__isInteraction = config.isInteraction ?? !this.#useNativeDriver;
     this.__isLooping = config.isLooping;
     this.__iterations = config.iterations ?? 1;
+    if (__DEV__) {
+      this.__debugID = config.debugID;
+    }
   }
 
   start(
@@ -165,7 +170,14 @@ export default class Animation {
     const callback = this.#onEnd;
     if (callback != null) {
       this.#onEnd = null;
-      queueMicrotask(() => callback(result));
+      callback(result);
     }
+  }
+
+  __getDebugID(): ?string {
+    if (__DEV__) {
+      return this.__debugID;
+    }
+    return undefined;
   }
 }

@@ -424,6 +424,7 @@ export type AnimationConfig = $ReadOnly<{
   onComplete?: ?EndCallback,
   iterations?: number,
   isLooping?: boolean,
+  debugID?: ?string,
   ...
 }>;
 declare export default class Animation {
@@ -431,6 +432,7 @@ declare export default class Animation {
   __isInteraction: boolean;
   __isLooping: ?boolean;
   __iterations: number;
+  __debugID: ?string;
   constructor(config: AnimationConfig): void;
   start(
     fromValue: number,
@@ -447,6 +449,7 @@ declare export default class Animation {
   __findAnimatedPropsNodes(node: AnimatedNode): Array<AnimatedProps>;
   __startAnimationIfNative(animatedValue: AnimatedValue): boolean;
   __notifyAnimationEnd(result: EndResult): void;
+  __getDebugID(): ?string;
 }
 "
 `;
@@ -770,7 +773,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 "declare export default class AnimatedAddition extends AnimatedWithChildren {
   _a: AnimatedNode;
   _b: AnimatedNode;
-  constructor(a: AnimatedNode | number, b: AnimatedNode | number): void;
+  constructor(
+    a: AnimatedNode | number,
+    b: AnimatedNode | number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): number;
   interpolate<OutputT: number | string>(
@@ -785,6 +792,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedColor.js 1`] = `
 "export type AnimatedColorConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 type ColorListenerCallback = (value: ColorValue) => mixed;
@@ -835,7 +843,12 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   _max: number;
   _value: number;
   _lastValue: number;
-  constructor(a: AnimatedNode, min: number, max: number): void;
+  constructor(
+    a: AnimatedNode,
+    min: number,
+    max: number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   interpolate<OutputT: number | string>(
     config: InterpolationConfigType<OutputT>
@@ -853,7 +866,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   _a: AnimatedNode;
   _b: AnimatedNode;
   _warnedAboutDivideByZero: boolean;
-  constructor(a: AnimatedNode | number, b: AnimatedNode | number): void;
+  constructor(
+    a: AnimatedNode | number,
+    b: AnimatedNode | number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): number;
   interpolate<OutputT: number | string>(
@@ -869,6 +886,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedInterpolation.js 1`] = `
 "type ExtrapolateType = \\"extend\\" | \\"identity\\" | \\"clamp\\";
 export type InterpolationConfigType<OutputT: number | string> = $ReadOnly<{
+  ...AnimatedNodeConfig,
   inputRange: $ReadOnlyArray<number>,
   outputRange: $ReadOnlyArray<OutputT>,
   easing?: (input: number) => number,
@@ -903,7 +921,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 "declare export default class AnimatedModulo extends AnimatedWithChildren {
   _a: AnimatedNode;
   _modulus: number;
-  constructor(a: AnimatedNode, modulus: number): void;
+  constructor(
+    a: AnimatedNode,
+    modulus: number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): number;
   interpolate<OutputT: number | string>(
@@ -922,7 +944,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 {
   _a: AnimatedNode;
   _b: AnimatedNode;
-  constructor(a: AnimatedNode | number, b: AnimatedNode | number): void;
+  constructor(
+    a: AnimatedNode | number,
+    b: AnimatedNode | number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): number;
   interpolate<OutputT: number | string>(
@@ -936,8 +962,17 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedNode.js 1`] = `
-"declare export default class AnimatedNode {
+"export type AnimatedNodeConfig = $ReadOnly<{
+  debugID?: string,
+}>;
+declare export default class AnimatedNode {
   _platformConfig: ?PlatformConfig;
+  constructor(
+    config?: ?$ReadOnly<{
+      ...AnimatedNodeConfig,
+      ...
+    }>
+  ): void;
   __attach(): void;
   __detach(): void;
   __getValue(): any;
@@ -959,6 +994,8 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   __getPlatformConfig(): ?PlatformConfig;
   __setPlatformConfig(platformConfig: ?PlatformConfig): void;
   toJSON(): mixed;
+  __debugID: ?string;
+  __getDebugID(): ?string;
 }
 "
 `;
@@ -970,7 +1007,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 declare export default class AnimatedObject extends AnimatedWithChildren {
   _value: mixed;
   static from(value: mixed): ?AnimatedObject;
-  constructor(nodes: $ReadOnlyArray<AnimatedNode>, value: mixed): void;
+  constructor(
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    value: mixed,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __getValue(): any;
   __getValueWithStaticObject(staticObject: mixed): any;
   __getAnimatedValue(): any;
@@ -991,7 +1032,8 @@ declare export default class AnimatedProps extends AnimatedNode {
   constructor(
     inputProps: { [string]: mixed },
     callback: () => void,
-    allowlist?: ?AnimatedPropsAllowlist
+    allowlist?: ?AnimatedPropsAllowlist,
+    config?: ?AnimatedNodeConfig
   ): void;
   __getValue(): Object;
   __getValueWithStaticProps(staticProps: Object): Object;
@@ -1020,7 +1062,8 @@ declare export default class AnimatedStyle extends AnimatedWithChildren {
     nodeKeys: $ReadOnlyArray<string>,
     nodes: $ReadOnlyArray<AnimatedNode>,
     style: { [string]: mixed },
-    inputStyle: any
+    inputStyle: any,
+    config?: ?AnimatedNodeConfig
   ): void;
   __getValue(): Object | Array<Object>;
   __getValueWithStaticStyle(staticStyle: Object): Object | Array<Object>;
@@ -1037,7 +1080,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 "declare export default class AnimatedSubtraction extends AnimatedWithChildren {
   _a: AnimatedNode;
   _b: AnimatedNode;
-  constructor(a: AnimatedNode | number, b: AnimatedNode | number): void;
+  constructor(
+    a: AnimatedNode | number,
+    b: AnimatedNode | number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): number;
   interpolate<OutputT: number | string>(
@@ -1063,7 +1110,8 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
     parent: AnimatedNode,
     animationClass: any,
     animationConfig: Object,
-    callback?: ?EndCallback
+    callback?: ?EndCallback,
+    config?: ?AnimatedNodeConfig
   ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): Object;
@@ -1089,7 +1137,8 @@ declare export default class AnimatedTransform extends AnimatedWithChildren {
   static from(transforms: $ReadOnlyArray<Transform<>>): ?AnimatedTransform;
   constructor(
     nodes: $ReadOnlyArray<AnimatedNode>,
-    transforms: $ReadOnlyArray<Transform<>>
+    transforms: $ReadOnlyArray<Transform<>>,
+    config?: ?AnimatedNodeConfig
   ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): $ReadOnlyArray<Transform<any>>;
@@ -1106,6 +1155,7 @@ declare export default class AnimatedTransform extends AnimatedWithChildren {
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedValue.js 1`] = `
 "export type AnimatedValueConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 declare export function flushValue(rootNode: AnimatedNode): void;
@@ -1139,6 +1189,7 @@ declare export default class AnimatedValue extends AnimatedWithChildren {
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedValueXY.js 1`] = `
 "export type AnimatedValueXYConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 type ValueXYListenerCallback = (value: { x: number, y: number, ... }) => mixed;

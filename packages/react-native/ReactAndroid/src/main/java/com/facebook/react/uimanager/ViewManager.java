@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.touch.JSResponderHandler;
@@ -491,22 +492,24 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   }
 
   /**
-   * @deprecated THIS PREFETCH METHOD IS EXPERIMENTAL, DO NOT USE IT FOR PRODUCTION CODE, MOST
-   *     LIKELY IT WILL CHANGE OR BE REMOVED IN THE FUTURE.
-   *     <p>Subclasses can override this method to implement custom resource prefetching for the
-   *     ViewManager.
+   * THIS PREFETCH METHOD IS EXPERIMENTAL, DO NOT USE IT FOR PRODUCTION CODE, MOST LIKELY IT WILL
+   * CHANGE OR BE REMOVED IN THE FUTURE.
+   *
+   * <p>Subclasses can override this method to implement custom resource prefetching for the
+   * ViewManager.
+   *
    * @param reactContext {@link com.facebook.react.bridge.ReactContext} used for the view.
    * @param surfaceId {@link int} surface ID
    * @param reactTag reactTag that should be set as ID of the view instance
    * @param params {@link MapBuffer} prefetch request params defined in C++
    */
-  @Deprecated
+  @UnstableReactNativeAPI
   public void experimental_prefetchResource(
       ReactContext reactContext, int surfaceId, int reactTag, MapBuffer params) {
     return;
   }
 
-  @Deprecated
+  @UnstableReactNativeAPI
   protected boolean experimental_isPrefetchingEnabled() {
     return ReactNativeFeatureFlags.enableImagePrefetchingAndroid();
   }

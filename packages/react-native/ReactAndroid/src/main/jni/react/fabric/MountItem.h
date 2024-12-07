@@ -24,15 +24,11 @@ struct CppMountItem final {
 
   static CppMountItem DeleteMountItem(const ShadowView& shadowView);
 
-  static CppMountItem InsertMountItem(
-      const ShadowView& parentView,
-      const ShadowView& shadowView,
-      int index);
+  static CppMountItem
+  InsertMountItem(Tag parentTag, const ShadowView& shadowView, int index);
 
-  static CppMountItem RemoveMountItem(
-      const ShadowView& parentView,
-      const ShadowView& shadowView,
-      int index);
+  static CppMountItem
+  RemoveMountItem(Tag parentTag, const ShadowView& shadowView, int index);
 
   static CppMountItem UpdatePropsMountItem(
       const ShadowView& oldShadowView,
@@ -42,7 +38,7 @@ struct CppMountItem final {
 
   static CppMountItem UpdateLayoutMountItem(
       const ShadowView& shadowView,
-      const ShadowView& parentView);
+      Tag parentTag);
 
   static CppMountItem UpdateEventEmitterMountItem(const ShadowView& shadowView);
 
@@ -71,7 +67,7 @@ struct CppMountItem final {
 #pragma mark - Fields
 
   Type type = {Create};
-  ShadowView parentShadowView = {};
+  Tag parentTag = -1;
   ShadowView oldChildShadowView = {};
   ShadowView newChildShadowView = {};
   int index = {};

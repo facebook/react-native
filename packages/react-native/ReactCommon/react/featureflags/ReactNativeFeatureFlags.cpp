@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ef215623465d45c563030d724287b1c9>>
+ * @generated SignedSource<<88103b9e29549d8bc3971f254a3529b6>>
  */
 
 /**
@@ -78,10 +78,6 @@ bool ReactNativeFeatureFlags::enableFabricRenderer() {
   return getAccessor().enableFabricRenderer();
 }
 
-bool ReactNativeFeatureFlags::enableFabricRendererExclusively() {
-  return getAccessor().enableFabricRendererExclusively();
-}
-
 bool ReactNativeFeatureFlags::enableFixForViewCommandRace() {
   return getAccessor().enableFixForViewCommandRace();
 }
@@ -140,6 +136,10 @@ bool ReactNativeFeatureFlags::enableViewRecycling() {
 
 bool ReactNativeFeatureFlags::excludeYogaFromRawProps() {
   return getAccessor().excludeYogaFromRawProps();
+}
+
+bool ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag() {
+  return getAccessor().fixDifferentiatorEmittingUpdatesWithWrongParentTag();
 }
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {

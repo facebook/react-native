@@ -31,6 +31,7 @@
     "test-typescript-offline": "dtslint --localTs node_modules/typescript/lib  packages/react-native/types",
     "test-typescript": "dtslint packages/react-native/types",
     "test": "jest",
+    "fantom": "JS_DIR='..' yarn jest --config packages/react-native-fantom/config/jest.config.js",
     "trigger-react-native-release": "node ./scripts/releases-local/trigger-react-native-release.js",
     "update-lock": "npx yarn-deduplicate"
   },
@@ -83,6 +84,7 @@
     "hermes-transform": "0.25.1",
     "inquirer": "^7.1.0",
     "jest": "^29.6.3",
+    "jest-diff": "^29.7.0",
     "jest-junit": "^10.0.0",
     "jscodeshift": "^0.14.0",
     "metro-babel-register": "^0.81.0",

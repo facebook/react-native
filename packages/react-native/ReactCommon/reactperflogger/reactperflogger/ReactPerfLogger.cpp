@@ -14,15 +14,33 @@
 #endif
 #include <chrono>
 
+#ifdef WITH_PERFETTO
 #include "ReactPerfetto.h"
+#endif
 
 namespace facebook::react {
+
+#ifdef WITH_PERFETTO
+namespace {
+
+const std::string PERFETTO_DEFAULT_TRACK_NAME = "# Web Performance";
+const std::string PERFETTO_TRACK_NAME_PREFIX = "# Web Performance: ";
+
+std::string toPerfettoTrackName(
+    const std::optional<std::string_view>& trackName) {
+  return trackName.has_value()
+      ? PERFETTO_TRACK_NAME_PREFIX + std::string(trackName.value())
+      : PERFETTO_DEFAULT_TRACK_NAME;
+}
+
+} // namespace
+#endif
 
 /* static */ void ReactPerfLogger::measure(
     const std::string_view& eventName,
     double startTime,
     double endTime,
-    const std::string_view& trackName) {
+    const std::optional<std::string_view>& trackName) {
 #ifdef HAS_FUSEBOX
   FuseboxTracer::getFuseboxTracer().addEvent(
       eventName, (uint64_t)startTime, (uint64_t)endTime, trackName);
@@ -30,7 +48,7 @@ namespace facebook::react {
 
 #ifdef WITH_PERFETTO
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
-    auto track = getPerfettoWebPerfTrackAsync(std::string(trackName));
+    auto track = getPerfettoWebPerfTrackAsync(toPerfettoTrackName(trackName));
     TRACE_EVENT_BEGIN(
         "react-native",
         perfetto::DynamicString(eventName.data(), eventName.size()),
@@ -45,7 +63,7 @@ namespace facebook::react {
 /* static */ void ReactPerfLogger::mark(
     const std::string_view& eventName,
     double startTime,
-    const std::string_view& trackName) {
+    const std::optional<std::string_view>& trackName) {
   // TODO(T203046480) Support mark in FuseboxTracer
 
 #ifdef WITH_PERFETTO
@@ -53,7 +71,7 @@ namespace facebook::react {
     TRACE_EVENT_INSTANT(
         "react-native",
         perfetto::DynamicString(eventName.data(), eventName.size()),
-        getPerfettoWebPerfTrackSync(std::string(trackName)),
+        getPerfettoWebPerfTrackSync(toPerfettoTrackName(trackName)),
         performanceNowToPerfettoTraceTime(startTime));
   }
 #endif
@@ -62,4 +80,5 @@ namespace facebook::react {
 /* static */ double ReactPerfLogger::performanceNow() {
   return chronoToDOMHighResTimeStamp(std::chrono::steady_clock::now());
 }
+
 } // namespace facebook::react

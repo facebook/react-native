@@ -18,6 +18,12 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when` as whenever
 import org.robolectric.RobolectricTestRunner
 
+/**
+ * Returns Mockito.any() as nullable type to avoid java.lang.IllegalStateException when null is
+ * returned.
+ */
+private fun <T> nonNullAny(type: Class<T>): T = any(type)
+
 /** Tests for {@link NetworkingModule}. */
 @RunWith(RobolectricTestRunner::class)
 class ReactCookieJarContainerTest {
@@ -33,7 +39,7 @@ class ReactCookieJarContainerTest {
   fun testEmptyCookies() {
     val jarContainer: ReactCookieJarContainer = mock(ReactCookieJarContainer::class.java)
     val cookies: List<Cookie> = emptyList()
-    whenever(jarContainer.loadForRequest(any(HttpUrl::class.java))).thenReturn(cookies)
+    whenever(jarContainer.loadForRequest(nonNullAny(HttpUrl::class.java))).thenReturn(cookies)
     assertThat(jarContainer.loadForRequest(httpUrl).size).isEqualTo(0)
   }
 

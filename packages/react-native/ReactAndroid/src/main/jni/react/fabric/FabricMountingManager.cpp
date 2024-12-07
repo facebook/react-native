@@ -320,18 +320,14 @@ inline void writeInsertMountItem(
     InstructionBuffer& buffer,
     const CppMountItem& mountItem) {
   buffer.writeIntArray(std::array<int, 3>{
-      mountItem.newChildShadowView.tag,
-      mountItem.parentShadowView.tag,
-      mountItem.index});
+      mountItem.newChildShadowView.tag, mountItem.parentTag, mountItem.index});
 }
 
 inline void writeRemoveMountItem(
     InstructionBuffer& buffer,
     const CppMountItem& mountItem) {
   buffer.writeIntArray(std::array<int, 3>{
-      mountItem.oldChildShadowView.tag,
-      mountItem.parentShadowView.tag,
-      mountItem.index});
+      mountItem.oldChildShadowView.tag, mountItem.parentTag, mountItem.index});
 }
 
 inline void writeUpdatePropsMountItem(
@@ -377,7 +373,7 @@ inline void writeUpdateLayoutMountItem(
 
   buffer.writeIntArray(std::array<int, 8>{
       mountItem.newChildShadowView.tag,
-      mountItem.parentShadowView.tag,
+      mountItem.parentTag,
       x,
       y,
       w,
@@ -487,7 +483,7 @@ void FabricMountingManager::executeMount(
     }
 
     for (const auto& mutation : mutations) {
-      const auto& parentShadowView = mutation.parentShadowView;
+      auto parentTag = mutation.parentTag;
       const auto& oldChildShadowView = mutation.oldChildShadowView;
       const auto& newChildShadowView = mutation.newChildShadowView;
       auto& mutationType = mutation.type;
@@ -509,7 +505,7 @@ void FabricMountingManager::executeMount(
         case ShadowViewMutation::Remove: {
           if (!isVirtual) {
             cppCommonMountItems.push_back(CppMountItem::RemoveMountItem(
-                parentShadowView, oldChildShadowView, index));
+                parentTag, oldChildShadowView, index));
           }
           break;
         }
@@ -559,7 +555,7 @@ void FabricMountingManager::executeMount(
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdateLayoutMountItems)
                   .push_back(CppMountItem::UpdateLayoutMountItem(
-                      mutation.newChildShadowView, parentShadowView));
+                      mutation.newChildShadowView, parentTag));
             }
 
             // OverflowInset: This is the values indicating boundaries including
@@ -588,7 +584,7 @@ void FabricMountingManager::executeMount(
           if (!isVirtual) {
             // Insert item
             cppCommonMountItems.push_back(CppMountItem::InsertMountItem(
-                parentShadowView, newChildShadowView, index));
+                parentTag, newChildShadowView, index));
 
             bool shouldCreateView =
                 !allocatedViewTags.contains(newChildShadowView.tag);
@@ -625,7 +621,7 @@ void FabricMountingManager::executeMount(
             (maintainMutationOrder ? cppCommonMountItems
                                    : cppUpdateLayoutMountItems)
                 .push_back(CppMountItem::UpdateLayoutMountItem(
-                    newChildShadowView, parentShadowView));
+                    newChildShadowView, parentTag));
 
             // OverflowInset: This is the values indicating boundaries including
             // children of the current view. The layout of current view may not

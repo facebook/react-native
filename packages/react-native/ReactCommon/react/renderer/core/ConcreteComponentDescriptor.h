@@ -184,4 +184,17 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 };
 
+template <typename TManager>
+std::shared_ptr<TManager> getManagerByName(
+    std::shared_ptr<const ContextContainer>& contextContainer,
+    const char name[]) {
+  if (contextContainer) {
+    if (auto manager = contextContainer->find<std::shared_ptr<TManager>>(name);
+        manager.has_value()) {
+      return manager.value();
+    }
+  }
+  return std::make_shared<TManager>(contextContainer);
+}
+
 } // namespace facebook::react

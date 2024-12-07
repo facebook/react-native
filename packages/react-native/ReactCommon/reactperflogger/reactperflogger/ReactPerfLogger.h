@@ -8,26 +8,30 @@
 #pragma once
 
 #include <reactperflogger/ReactPerfettoCategories.h>
+
+#include <optional>
 #include <string>
 
 namespace facebook::react {
 
+/**
+ * An internal interface for logging performance events to configured React
+ * Native performance tools, such as Perfetto or React Native DevTools.
+ *
+ * Approximates https://w3c.github.io/user-timing/.
+ */
 class ReactPerfLogger {
  public:
   static void mark(
       const std::string_view& eventName,
       double startTime,
-      const std::string_view& trackName);
+      const std::optional<std::string_view>& trackName);
 
-  /**
-   * This accepts performance events that should go to internal tracing
-   * frameworks like Perfetto, and should go to DevTools like Fusebox.
-   */
   static void measure(
       const std::string_view& eventName,
       double startTime,
       double endTime,
-      const std::string_view& trackName);
+      const std::optional<std::string_view>& trackName);
 
   static double performanceNow();
 };

@@ -19,6 +19,10 @@ const {startListeningToAnimatedNodeValue, stopListeningToAnimatedNodeValue} =
 
 type ValueListenerCallback = (state: {value: number, ...}) => mixed;
 
+export type AnimatedNodeConfig = $ReadOnly<{
+  debugID?: string,
+}>;
+
 let _uniqueId = 1;
 let _assertNativeAnimatedModule: ?() => void = () => {
   NativeAnimatedHelper.assertNativeAnimatedModule();
@@ -32,6 +36,18 @@ export default class AnimatedNode {
   #updateSubscription: ?EventSubscription = null;
 
   _platformConfig: ?PlatformConfig = undefined;
+
+  constructor(
+    config?: ?$ReadOnly<{
+      ...AnimatedNodeConfig,
+      ...
+    }>,
+  ) {
+    if (__DEV__) {
+      this.__debugID = config?.debugID;
+    }
+  }
+
   __attach(): void {}
   __detach(): void {
     this.removeAllListeners();
@@ -196,5 +212,14 @@ export default class AnimatedNode {
    */
   toJSON(): mixed {
     return this.__getValue();
+  }
+
+  __debugID: ?string = undefined;
+
+  __getDebugID(): ?string {
+    if (__DEV__) {
+      return this.__debugID;
+    }
+    return undefined;
   }
 }

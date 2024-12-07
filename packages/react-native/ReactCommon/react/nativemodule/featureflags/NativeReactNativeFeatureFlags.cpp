@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4808c1455f8e17c42036055dd6a81d7d>>
+ * @generated SignedSource<<ee4c101a64f98180d70278390e5f2ca0>>
  */
 
 /**
@@ -109,11 +109,6 @@ bool NativeReactNativeFeatureFlags::enableFabricRenderer(
   return ReactNativeFeatureFlags::enableFabricRenderer();
 }
 
-bool NativeReactNativeFeatureFlags::enableFabricRendererExclusively(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableFabricRendererExclusively();
-}
-
 bool NativeReactNativeFeatureFlags::enableFixForViewCommandRace(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFixForViewCommandRace();
@@ -187,6 +182,11 @@ bool NativeReactNativeFeatureFlags::enableViewRecycling(
 bool NativeReactNativeFeatureFlags::excludeYogaFromRawProps(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::excludeYogaFromRawProps();
+}
+
+bool NativeReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag();
 }
 
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
