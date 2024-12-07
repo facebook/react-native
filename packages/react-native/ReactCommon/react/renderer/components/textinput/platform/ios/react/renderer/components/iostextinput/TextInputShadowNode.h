@@ -7,14 +7,11 @@
 
 #pragma once
 
-#include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/components/iostextinput/TextInputProps.h>
-#include <react/renderer/components/text/BaseTextShadowNode.h>
+#include <react/renderer/components/textinput/BaseTextInputShadowNode.h>
 #include <react/renderer/components/textinput/TextInputEventEmitter.h>
 #include <react/renderer/components/textinput/TextInputState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
-#include <react/renderer/textlayoutmanager/TextLayoutManager.h>
-#include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
 
@@ -28,8 +25,10 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
                                       TextInputProps,
                                       TextInputEventEmitter,
                                       TextInputState>,
-                                  public BaseTextShadowNode {
+                                  public BaseTextInputShadowNode {
  public:
+  ~TextInputShadowNode() noexcept override = default;
+
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   static ShadowNodeTraits BaseTraits() {
@@ -40,44 +39,26 @@ class TextInputShadowNode final : public ConcreteViewShadowNode<
     return traits;
   }
 
-  /*
-   * Associates a shared `TextLayoutManager` with the node.
-   * `TextInputShadowNode` uses the manager to measure text content
-   * and construct `TextInputState` objects.
-   */
-  void setTextLayoutManager(
-      std::shared_ptr<const TextLayoutManager> textLayoutManager);
+  bool hasMeaningfulState() const override {
+    return getState() &&
+        getState()->getRevision() != State::initialRevisionValue;
+  }
 
-#pragma mark - LayoutableShadowNode
+  const ShadowNode& getShadowNode() const override {
+    return *this;
+  }
+
+  void ensureUnsealed() const override {
+    Sealable::ensureUnsealed();
+  }
 
   Size measureContent(
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override;
+
   void layout(LayoutContext layoutContext) override;
 
   Float baseline(const LayoutContext& layoutContext, Size size) const override;
-
- private:
-  /*
-   * Creates a `State` object if needed.
-   */
-  void updateStateIfNeeded(const LayoutContext& layoutContext);
-
-  /*
-   * Returns a `AttributedString` which represents text content of the node.
-   */
-  AttributedString getAttributedString(
-      const LayoutContext& layoutContext) const;
-
-  /*
-   * Returns an `AttributedStringBox` which represents text content that should
-   * be used for measuring purposes. It might contain actual text value,
-   * placeholder value or some character that represents the size of the font.
-   */
-  AttributedStringBox attributedStringBoxToMeasure(
-      const LayoutContext& layoutContext) const;
-
-  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 };
 
 } // namespace facebook::react
