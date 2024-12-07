@@ -104,7 +104,7 @@ AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
           reactTreeAttributedString);
 
   return (
-      !treeAttributedStringChanged ? state.attributedString
+      !treeAttributedStringChanged ? state.attributedStringBox.getValue()
                                    : reactTreeAttributedString);
 }
 
@@ -137,11 +137,11 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       : getConcreteProps().mostRecentEventCount;
   auto newAttributedString = getMostRecentAttributedString();
 
-  setStateData(AndroidTextInputState{
-      newEventCount,
-      newAttributedString,
+  setStateData(TextInputState{
+      AttributedStringBox(newAttributedString),
       reactTreeAttributedString,
-      getConcreteProps().paragraphAttributes});
+      getConcreteProps().paragraphAttributes,
+      newEventCount});
 }
 
 #pragma mark - LayoutableShadowNode

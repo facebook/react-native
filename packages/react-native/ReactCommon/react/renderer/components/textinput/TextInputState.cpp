@@ -5,47 +5,46 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "AndroidTextInputState.h"
+#include "TextInputState.h"
 
-#include <react/renderer/components/text/conversions.h>
-#include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <react/renderer/mapbuffer/MapBuffer.h>
-#include <react/renderer/mapbuffer/MapBufferBuilder.h>
-
-#include <utility>
+#ifdef ANDROID
+#include <react/renderer/attributedstring/conversions.h>
+#include <react/renderer/components/text/ParagraphState.h>
+#endif
 
 namespace facebook::react {
 
-AndroidTextInputState::AndroidTextInputState(
-    int64_t mostRecentEventCount,
-    AttributedString attributedString,
+TextInputState::TextInputState(
+    AttributedStringBox attributedStringBox,
     AttributedString reactTreeAttributedString,
-    ParagraphAttributes paragraphAttributes)
-    : mostRecentEventCount(mostRecentEventCount),
-      attributedString(std::move(attributedString)),
+    ParagraphAttributes paragraphAttributes,
+    int64_t mostRecentEventCount)
+    : attributedStringBox(std::move(attributedStringBox)),
       reactTreeAttributedString(std::move(reactTreeAttributedString)),
-      paragraphAttributes(std::move(paragraphAttributes)) {}
+      paragraphAttributes(std::move(paragraphAttributes)),
+      mostRecentEventCount(mostRecentEventCount) {}
 
-AndroidTextInputState::AndroidTextInputState(
-    const AndroidTextInputState& previousState,
+#ifdef ANDROID
+TextInputState::TextInputState(
+    const TextInputState& previousState,
     const folly::dynamic& data)
-    : mostRecentEventCount(data.getDefault(
+    : attributedStringBox(previousState.attributedStringBox),
+      reactTreeAttributedString(previousState.reactTreeAttributedString),
+      paragraphAttributes(previousState.paragraphAttributes),
+      mostRecentEventCount(data.getDefault(
                                    "mostRecentEventCount",
                                    previousState.mostRecentEventCount)
                                .getInt()),
       cachedAttributedStringId(data.getDefault(
                                        "opaqueCacheId",
                                        previousState.cachedAttributedStringId)
-                                   .getInt()),
-      attributedString(previousState.attributedString),
-      reactTreeAttributedString(previousState.reactTreeAttributedString),
-      paragraphAttributes(previousState.paragraphAttributes){};
+                                   .getInt()){};
 
-folly::dynamic AndroidTextInputState::getDynamic() const {
-  LOG(FATAL) << "Android TextInput state should only be read using MapBuffer";
+folly::dynamic TextInputState::getDynamic() const {
+  LOG(FATAL) << "TextInputState state should only be read using MapBuffer";
 }
 
-MapBuffer AndroidTextInputState::getMapBuffer() const {
+MapBuffer TextInputState::getMapBuffer() const {
   auto builder = MapBufferBuilder();
   // If we have a `cachedAttributedStringId` we know that we're (1) not trying
   // to set a new string, so we don't need to pass it along; (2) setState was
@@ -58,7 +57,7 @@ MapBuffer AndroidTextInputState::getMapBuffer() const {
         TX_STATE_KEY_MOST_RECENT_EVENT_COUNT,
         static_cast<int32_t>(mostRecentEventCount));
 
-    auto attStringMapBuffer = toMapBuffer(attributedString);
+    auto attStringMapBuffer = toMapBuffer(attributedStringBox.getValue());
     builder.putMapBuffer(TX_STATE_KEY_ATTRIBUTED_STRING, attStringMapBuffer);
     auto paMapBuffer = toMapBuffer(paragraphAttributes);
     builder.putMapBuffer(TX_STATE_KEY_PARAGRAPH_ATTRIBUTES, paMapBuffer);
@@ -67,5 +66,6 @@ MapBuffer AndroidTextInputState::getMapBuffer() const {
   }
   return builder.build();
 }
+#endif
 
 } // namespace facebook::react
