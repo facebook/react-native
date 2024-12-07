@@ -18,9 +18,7 @@
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/imagemanager/primitives.h>
-#include <cinttypes>
 #include <unordered_map>
-#include <vector>
 
 namespace facebook::react {
 
