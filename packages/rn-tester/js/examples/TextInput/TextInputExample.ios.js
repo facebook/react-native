@@ -674,6 +674,27 @@ const textInputExamples: Array<RNTesterModuleExample> = [
               placeholder="Placeholder defines intrinsic size"
             />
           </View>
+          <Text>Singleline TextInput with text styles</Text>
+          <View style={{height: 130}}>
+            <ExampleTextInput
+              style={{
+                position: 'absolute',
+                fontSize: 16,
+                backgroundColor: '#eeeeee',
+                borderColor: '#666666',
+                borderWidth: 5,
+                borderTopWidth: 20,
+                borderRadius: 10,
+                borderBottomRightRadius: 20,
+                padding: 10,
+                paddingTop: 20,
+                lineHeight: 18,
+                height: '100%',
+              }}
+              testID="singleline_textinput_with_text_styling"
+              placeholder="Placeholder defines intrinsic size & text styling"
+            />
+          </View>
           <Text>Multiline TextInput</Text>
           <View style={{height: 130}}>
             <ExampleTextInput
