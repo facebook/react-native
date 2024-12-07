@@ -71,7 +71,7 @@ public final class JSPackagerClient implements ReconnectingWebSocket.MessageCall
 
     Uri.Builder builder = new Uri.Builder();
     builder
-        .scheme("ws")
+        .scheme(settings.getDebugServerWsProtocol())
         .encodedAuthority(settings.getDebugServerHost())
         .appendPath("message")
         .appendQueryParameter("device", AndroidInfoHelpers.getFriendlyDeviceName())
