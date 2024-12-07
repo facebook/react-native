@@ -70,8 +70,7 @@ class AndroidTextInputComponentDescriptor final
     }
 
     return std::make_shared<AndroidTextInputShadowNode::ConcreteState>(
-        std::make_shared<const AndroidTextInputState>(
-            AndroidTextInputState(0, {}, {}, {})),
+        std::make_shared<const TextInputState>(TextInputState({}, {}, {}, 0)),
         family);
   }
 
