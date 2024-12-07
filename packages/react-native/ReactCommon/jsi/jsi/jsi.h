@@ -333,11 +333,17 @@ class JSI_EXPORT Runtime {
   virtual std::shared_ptr<HostObject> getHostObject(const jsi::Object&) = 0;
   virtual HostFunctionType& getHostFunction(const jsi::Function&) = 0;
 
+  // Creates a new Object with the custom prototype
+  virtual Object createObjectWithPrototype(const Value& prototype);
+
   virtual bool hasNativeState(const jsi::Object&) = 0;
   virtual std::shared_ptr<NativeState> getNativeState(const jsi::Object&) = 0;
   virtual void setNativeState(
       const jsi::Object&,
       std::shared_ptr<NativeState> state) = 0;
+
+  virtual void setPrototypeOf(const Object& object, const Value& prototype);
+  virtual Value getPrototypeOf(const Object& object);
 
   virtual Value getProperty(const Object&, const PropNameID& name) = 0;
   virtual Value getProperty(const Object&, const String& name) = 0;
@@ -748,6 +754,11 @@ class JSI_EXPORT Object : public Pointer {
     return runtime.createObject(ho);
   }
 
+  /// Creates a new Object with the custom prototype
+  static Object create(Runtime& runtime, const Value& prototype) {
+    return runtime.createObjectWithPrototype(prototype);
+  }
+
   /// \return whether this and \c obj are the same JSObject or not.
   static bool strictEquals(Runtime& runtime, const Object& a, const Object& b) {
     return runtime.strictEquals(a, b);
@@ -757,6 +768,16 @@ class JSI_EXPORT Object : public Pointer {
   bool instanceOf(Runtime& rt, const Function& ctor) const {
     return rt.instanceOf(*this, ctor);
   }
+
+  /// Sets \p prototype as the prototype of the object. The prototype must be
+  /// either an Object or null. If the prototype was not set successfully, this
+  /// method will throw.
+  void setPrototype(Runtime& runtime, const Value& prototype) const {
+    return runtime.setPrototypeOf(*this, prototype);
+  }
+
+  /// \return the prototype of the object
+  inline Value getPrototype(Runtime& runtime) const;
 
   /// \return the property of the object with the given ascii name.
   /// If the name isn't a property on the object, returns the

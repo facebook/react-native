@@ -248,6 +248,10 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain_.getPropNameIdData(sym, ctx, cb);
   }
 
+  Object createObjectWithPrototype(const Value& prototype) override {
+    return plain_.createObjectWithPrototype(prototype);
+  }
+
   Object createObject() override {
     return plain_.createObject();
   };
@@ -280,6 +284,14 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
 
   void setExternalMemoryPressure(const Object& obj, size_t amt) override {
     plain_.setExternalMemoryPressure(obj, amt);
+  }
+
+  void setPrototypeOf(const Object& object, const Value& prototype) override {
+    plain_.setPrototypeOf(object, prototype);
+  }
+
+  Value getPrototypeOf(const Object& object) override {
+    return plain_.getPrototypeOf(object);
   }
 
   Value getProperty(const Object& o, const PropNameID& name) override {
@@ -729,6 +741,11 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     return RD::createValueFromJsonUtf8(json, length);
   };
 
+  Object createObjectWithPrototype(const Value& prototype) override {
+    Around around{with_};
+    return RD::createObjectWithPrototype(prototype);
+  }
+
   Object createObject() override {
     Around around{with_};
     return RD::createObject();
@@ -759,6 +776,16 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     RD::setNativeState(o, state);
   };
+
+  void setPrototypeOf(const Object& object, const Value& prototype) override {
+    Around around{with_};
+    RD::setPrototypeOf(object, prototype);
+  }
+
+  Value getPrototypeOf(const Object& object) override {
+    Around around{with_};
+    return RD::getPrototypeOf(object);
+  }
 
   Value getProperty(const Object& o, const PropNameID& name) override {
     Around around{with_};
