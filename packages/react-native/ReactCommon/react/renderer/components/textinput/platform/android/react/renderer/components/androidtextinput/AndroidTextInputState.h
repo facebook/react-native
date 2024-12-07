@@ -50,24 +50,11 @@ class AndroidTextInputState final {
    */
   ParagraphAttributes paragraphAttributes{};
 
-  /**
-   * Communicates Android theme padding back to the ShadowNode / Component
-   * Descriptor for layout.
-   */
-  float defaultThemePaddingStart{NAN};
-  float defaultThemePaddingEnd{NAN};
-  float defaultThemePaddingTop{NAN};
-  float defaultThemePaddingBottom{NAN};
-
   AndroidTextInputState(
       int64_t mostRecentEventCount,
       AttributedString attributedString,
       AttributedString reactTreeAttributedString,
-      ParagraphAttributes paragraphAttributes,
-      float defaultThemePaddingStart,
-      float defaultThemePaddingEnd,
-      float defaultThemePaddingTop,
-      float defaultThemePaddingBottom);
+      ParagraphAttributes paragraphAttributes);
 
   AndroidTextInputState() = default;
   AndroidTextInputState(
