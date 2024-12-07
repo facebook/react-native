@@ -146,7 +146,7 @@ inline static CGFloat RCTEffectiveFontSizeMultiplierFromTextAttributes(const Tex
       fontSizeMultiplier = [fontMetrics scaledValueForValue:requestedSize] / requestedSize;
     }
     CGFloat maxFontSizeMultiplier =
-        isnan(textAttributes.maxFontSizeMultiplier) ? 0.0 : textAttributes.maxFontSizeMultiplier;
+        !isnan(textAttributes.maxFontSizeMultiplier) ? textAttributes.maxFontSizeMultiplier : 0.0;
     return maxFontSizeMultiplier >= 1.0 ? fminf(maxFontSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
   } else {
     return 1.0;
