@@ -48,6 +48,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -882,6 +883,7 @@ public class FabricUIManager
    * This method initiates preloading of an image specified by ImageSource. It can later be consumed
    * by an ImageView.
    */
+  @UnstableReactNativeAPI
   public void experimental_prefetchResource(
       String componentName, int surfaceId, int reactTag, ReadableMapBuffer params) {
     mMountingManager.experimental_prefetchResource(

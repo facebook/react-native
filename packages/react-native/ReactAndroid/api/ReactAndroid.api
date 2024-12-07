@@ -2612,7 +2612,6 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun experimental_prefetchResource (Ljava/lang/String;IILcom/facebook/react/common/mapbuffer/ReadableMapBuffer;)V
 	public fun getColor (I[Ljava/lang/String;)I
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getInspectorDataForInstance (ILandroid/view/View;)Lcom/facebook/react/bridge/ReadableMap;
@@ -2756,7 +2755,6 @@ public class com/facebook/react/fabric/mounting/MountingManager {
 	public fun attachRootView (ILandroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
 	public fun clearJSResponder ()V
 	public fun enqueuePendingEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
-	public fun experimental_prefetchResource (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;IILcom/facebook/react/common/mapbuffer/MapBuffer;)V
 	public fun getEventEmitter (II)Lcom/facebook/react/fabric/events/EventEmitterWrapper;
 	public fun getSurfaceManager (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
 	public fun getSurfaceManagerEnforced (ILjava/lang/String;)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
@@ -5258,8 +5256,6 @@ public abstract class com/facebook/react/uimanager/ViewManager : com/facebook/re
 	public fun createView (ILcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/touch/JSResponderHandler;)Landroid/view/View;
 	protected fun createViewInstance (ILcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Landroid/view/View;
 	protected abstract fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	protected fun experimental_isPrefetchingEnabled ()Z
-	public fun experimental_prefetchResource (Lcom/facebook/react/bridge/ReactContext;IILcom/facebook/react/common/mapbuffer/MapBuffer;)V
 	public fun getCommandsMap ()Ljava/util/Map;
 	protected fun getDelegate ()Lcom/facebook/react/uimanager/ViewManagerDelegate;
 	public fun getExportedCustomBubblingEventTypeConstants ()Ljava/util/Map;

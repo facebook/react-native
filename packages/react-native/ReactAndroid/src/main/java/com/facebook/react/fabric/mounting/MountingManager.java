@@ -24,6 +24,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -428,8 +429,9 @@ public class MountingManager {
   }
 
   /**
-   * @deprecated THIS PREFETCH METHOD IS EXPERIMENTAL, DO NOT USE IT FOR PRODUCTION CODE. IT WILL
-   *     MOST LIKELY CHANGE OR BE REMOVED IN THE FUTURE.
+   * THIS PREFETCH METHOD IS EXPERIMENTAL, DO NOT USE IT FOR PRODUCTION CODE. IT WILL MOST LIKELY
+   * CHANGE OR BE REMOVED IN THE FUTURE.
+   *
    * @param reactContext
    * @param componentName
    * @param surfaceId {@link int} surface ID
@@ -437,7 +439,7 @@ public class MountingManager {
    * @param params {@link MapBuffer} prefetch request params defined in C++
    */
   @AnyThread
-  @Deprecated
+  @UnstableReactNativeAPI
   public void experimental_prefetchResource(
       ReactContext reactContext,
       String componentName,
