@@ -395,6 +395,17 @@
 - Solved SVC warnings for RNTester ([fad4a0783b](https://github.com/facebook/react-native/commit/fad4a0783b0a0478c147d9bde2ef9ab082a08297) by [@cipolleschi](https://github.com/cipolleschi))
 - Don't reference PrivacyInfo.xcprivacy twice for new projects ([cadd41b1a2](https://github.com/facebook/react-native/commit/cadd41b1a2e16b1c77a8d3022f4ccbdbd5ea295f) by [@okwasniewski](https://github.com/okwasniewski))
 
+## v0.76.4
+
+### Added
+
+- Sync debugger-frontend to latest 0.76-stable (fix Expo node_modules entry points in Sources panel) ([43fe69c315](https://github.com/facebook/react-native/commit/43fe69c315e68aab96c303c7a6c9b3821a6e25e5) by [@huntie](https://github.com/huntie))
+- Exclude unlinked libs from codegen ([3cedb09a65](https://github.com/facebook/react-native/commit/3cedb09a650adda0b3f24e931c25f27730af19b1) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android specific
+
+- Avoid NPE when touch event is triggered before SurfaceManager is initiated ([b8095f4692](https://github.com/facebook/react-native/commit/b8095f4692610c7f4631b851dc7d8dc9b149a277) by [@CHOIMINSEOK](https://github.com/CHOIMINSEOK))
+
 ## v0.76.3
 
 ### Fixed
