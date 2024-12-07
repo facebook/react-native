@@ -1550,13 +1550,14 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     // and call onEndReached only once for a given content length,
     // and only if onStartReached is not being executed
     if (
+      data?.length > 0 &&
       onEndReached &&
       this.state.cellsAroundViewport.last === getItemCount(data) - 1 &&
       isWithinEndThreshold &&
       this._listMetrics.getContentLength() !== this._sentEndForContentLength
     ) {
       this._sentEndForContentLength = this._listMetrics.getContentLength();
-      onEndReached({distanceFromEnd});
+        onEndReached({distanceFromEnd});
     }
 
     // Next check if the user just scrolled within the start threshold
