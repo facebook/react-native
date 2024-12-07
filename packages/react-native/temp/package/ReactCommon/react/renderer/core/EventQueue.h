@@ -1,0 +1,84 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <memory>
+#include <mutex>
+#include <vector>
+
+#include <jsi/jsi.h>
+#include <react/renderer/core/EventBeat.h>
+#include <react/renderer/core/EventQueueProcessor.h>
+#include <react/renderer/core/RawEvent.h>
+#include <react/renderer/core/StateUpdate.h>
+
+namespace facebook::react {
+
+class RuntimeScheduler;
+
+/*
+ * Event Queue synchronized with given Event Beat and dispatching event
+ * using given Event Pipe.
+ */
+class EventQueue {
+ public:
+  EventQueue(
+      EventQueueProcessor eventProcessor,
+      std::unique_ptr<EventBeat> eventBeat,
+      RuntimeScheduler& runtimeScheduler);
+
+  /*
+   * Enqueues and (probably later) dispatch a given event.
+   * Can be called on any thread.
+   */
+  void enqueueEvent(RawEvent&& rawEvent) const;
+
+  /*
+   * Enqueues and (probably later) dispatches a given event.
+   * Deletes last RawEvent from the queue if it has the same type and target.
+   * Can be called on any thread.
+   */
+  void enqueueUniqueEvent(RawEvent&& rawEvent) const;
+
+  /*
+   * Enqueues and (probably later) dispatch a given state update.
+   * Can be called on any thread.
+   */
+  void enqueueStateUpdate(StateUpdate&& stateUpdate) const;
+
+  /*
+   * Experimental API exposed to support EventEmitter::experimental_flushSync.
+   */
+  void experimental_flushSync() const;
+
+ protected:
+  /*
+   * Called on any enqueue operation.
+   * Override in subclasses to trigger beat `request` and/or beat `induce`.
+   * Default implementation does nothing.
+   */
+  void onEnqueue() const;
+  void onBeat(jsi::Runtime& runtime) const;
+
+  void flushEvents(jsi::Runtime& runtime) const;
+  void flushStateUpdates() const;
+
+  EventQueueProcessor eventProcessor_;
+
+  const std::unique_ptr<EventBeat> eventBeat_;
+  // Thread-safe, protected by `queueMutex_`.
+  mutable std::vector<RawEvent> eventQueue_;
+  mutable std::vector<StateUpdate> stateUpdateQueue_;
+  mutable std::mutex queueMutex_;
+
+  // TODO: T183075253
+  RuntimeScheduler* runtimeScheduler_;
+  mutable std::atomic_bool synchronousAccessRequested_{false};
+};
+
+} // namespace facebook::react

@@ -48,7 +48,6 @@
     "react-native.config.js",
     "React.podspec",
     "React",
-    "!React/Fabric/RCTThirdPartyFabricComponentsProvider.*",
     "ReactAndroid",
     "ReactApple",
     "ReactCommon",
