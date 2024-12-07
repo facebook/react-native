@@ -41,6 +41,7 @@ const backdropColors = ['red', 'blue', undefined];
 function ModalPresentation() {
   const onDismiss = useCallback(() => {
     alert('onDismiss');
+    setProps(prev => ({...prev, visible: false}));
   }, []);
 
   const onShow = useCallback(() => {
@@ -69,12 +70,14 @@ function ModalPresentation() {
     onShow: undefined,
     visible: false,
     backdropColor: undefined,
+    dismissOnSwipeDown: false,
   });
   const presentationStyle = props.presentationStyle;
   const hardwareAccelerated = props.hardwareAccelerated;
   const statusBarTranslucent = props.statusBarTranslucent;
   const navigationBarTranslucent = props.navigationBarTranslucent;
   const backdropColor = props.backdropColor;
+  const dismissOnSwipeDown = props.dismissOnSwipeDown;
   const backgroundColor = useContext(RNTesterThemeContext).BackgroundColor;
 
   const [currentOrientation, setCurrentOrientation] = useState('unknown');
@@ -128,6 +131,17 @@ function ModalPresentation() {
               ...prev,
               hardwareAccelerated: enabled,
             }))
+          }
+        />
+      </View>
+      <View style={styles.inlineBlock}>
+        <RNTesterText style={styles.title}>
+          Dismiss on Swipe Down ⚫️
+        </RNTesterText>
+        <Switch
+          value={dismissOnSwipeDown}
+          onValueChange={enabled =>
+            setProps(prev => ({...prev, dismissOnSwipeDown: enabled}))
           }
         />
       </View>
