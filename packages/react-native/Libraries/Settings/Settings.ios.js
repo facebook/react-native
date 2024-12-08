@@ -8,6 +8,8 @@
  * @flow
  */
 
+'use client';
+
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import NativeSettingsManager from './NativeSettingsManager';
 import invariant from 'invariant';

@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 import Dimensions from './Dimensions';
 import {
   type DisplayMetrics,

@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 

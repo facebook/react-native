@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 
 import Image from '../../Image/Image';

@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {I18nManagerConstants} from './NativeI18nManager';
 
 import NativeI18nManager from './NativeI18nManager';

@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
 import type {AbstractImageAndroid, ImageAndroid} from './ImageTypes.flow';

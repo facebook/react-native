@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 import type {ViewProps} from './ViewPropTypes';
 
 import TextAncestor from '../../Text/TextAncestor';

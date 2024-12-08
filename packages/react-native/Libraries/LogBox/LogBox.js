@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {IgnorePattern, LogData} from './Data/LogBoxData';
 import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
 

@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {____TextStyle_Internal as TextStyleInternal} from '../StyleSheet/StyleSheetTypes';
 import type {PressEvent} from '../Types/CoreEventTypes';

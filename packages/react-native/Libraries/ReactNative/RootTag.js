@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import * as React from 'react';
 
 export opaque type RootTag = number;

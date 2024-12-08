@@ -44,6 +44,15 @@ class Dimensions {
    * @returns {DisplayMetrics? | DisplayMetricsAndroid?} Value for the dimension.
    */
   static get(dim: string): DisplayMetrics | DisplayMetricsAndroid {
+    // Return mock values in the server. Server styling should use declarative values like '100%' or 'flex'.
+    if (typeof window === 'undefined') {
+      return {
+        fontScale: 1,
+        height: 0,
+        scale: 1,
+        width: 0,
+      };
+    }
     // $FlowFixMe[invalid-computed-prop]
     invariant(dimensions[dim], 'No dimension set for key ' + dim);
     return dimensions[dim];
@@ -111,13 +120,16 @@ class Dimensions {
   }
 }
 
-// Subscribe before calling getConstants to make sure we don't miss any updates in between.
-RCTDeviceEventEmitter.addListener(
-  'didUpdateDimensions',
-  (update: DimensionsPayload) => {
-    Dimensions.set(update);
-  },
-);
-Dimensions.set(NativeDeviceInfo.getConstants().Dimensions);
+// Only run this on the client.
+if (typeof window !== 'undefined') {
+  // Subscribe before calling getConstants to make sure we don't miss any updates in between.
+  RCTDeviceEventEmitter.addListener(
+    'didUpdateDimensions',
+    (update: DimensionsPayload) => {
+      Dimensions.set(update);
+    },
+  );
+  Dimensions.set(NativeDeviceInfo.getConstants().Dimensions);
+}
 
 export default Dimensions;

@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {____ViewStyle_Internal} from '../../StyleSheet/StyleSheetTypes';
 import type {AnimatedComponentType} from '../createAnimatedComponent';
 

@@ -16,16 +16,14 @@ import * as React from 'react';
  * Common implementation for a simple stubbed view. Simply applies the view's styles to the inner
  * View component and renders its children.
  */
-class UnimplementedView extends React.Component<$FlowFixMeProps> {
-  render(): React.Node {
-    // Workaround require cycle from requireNativeComponent
-    const View = require('../View/View');
-    return (
-      <View style={[styles.unimplementedView, this.props.style]}>
-        {this.props.children}
-      </View>
-    );
-  }
+function UnimplementedView(props: $FlowFixMeProps): React.Node {
+  // Workaround require cycle from requireNativeComponent
+  const View = require('../View/View');
+  return (
+    <View style={[styles.unimplementedView, props.style]}>
+      {props.children}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 import type {Task} from './TaskQueue';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';

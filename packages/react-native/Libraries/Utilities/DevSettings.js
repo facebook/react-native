@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';

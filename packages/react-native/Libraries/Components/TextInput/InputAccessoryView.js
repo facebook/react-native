@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import SafeAreaView from '../../Components/SafeAreaView/SafeAreaView';
 import StyleSheet, {
   type ColorValue,

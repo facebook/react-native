@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 export * from '../../src/private/specs/modules/NativePlatformConstantsAndroid';
 import NativePlatformConstantsAndroid from '../../src/private/specs/modules/NativePlatformConstantsAndroid';
 export default NativePlatformConstantsAndroid;

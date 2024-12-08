@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 export * from '../../../src/private/specs/modules/NativeDialogManagerAndroid';
 import NativeDialogManagerAndroid from '../../../src/private/specs/modules/NativeDialogManagerAndroid';
 export default NativeDialogManagerAndroid;

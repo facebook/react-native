@@ -9,6 +9,7 @@
  */
 
 'use strict';
+'use client';
 
 import type {IgnorePattern} from '../LogBox/Data/LogBoxData';
 

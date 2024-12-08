@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import logError from '../Utilities/logError';
 import Platform from '../Utilities/Platform';

@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+'use client';
+
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import type {AppearancePreferences, ColorSchemeName} from './NativeAppearance';
 import typeof INativeAppearance from './NativeAppearance';

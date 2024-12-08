@@ -9,6 +9,7 @@
  */
 
 'use strict';
+'use client';
 
 import type {TextStyleProp, ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {PressEvent} from '../Types/CoreEventTypes';

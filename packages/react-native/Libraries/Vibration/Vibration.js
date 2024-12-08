@@ -9,6 +9,8 @@
  * @jsdoc
  */
 
+'use client';
+
 import NativeVibration from './NativeVibration';
 
 const Platform = require('../Utilities/Platform');

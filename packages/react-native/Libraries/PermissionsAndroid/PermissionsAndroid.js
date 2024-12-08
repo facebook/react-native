@@ -8,6 +8,8 @@
  * @flow strict
  */
 
+'use client';
+
 import type {
   PermissionStatus,
   PermissionType,

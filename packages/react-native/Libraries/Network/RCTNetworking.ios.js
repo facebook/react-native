@@ -9,6 +9,7 @@
  */
 
 'use strict';
+'use client';
 
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';

@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 export * from '../../src/private/specs/modules/NativeShareModule';
 import NativeShareModule from '../../src/private/specs/modules/NativeShareModule';
 export default NativeShareModule;

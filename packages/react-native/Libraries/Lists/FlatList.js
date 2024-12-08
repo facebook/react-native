@@ -8,6 +8,8 @@
  * @format
  */
 
+'use client';
+
 import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {

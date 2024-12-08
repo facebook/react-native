@@ -8,6 +8,8 @@
  * @flow strict
  */
 
+'use client';
+
 import NativeClipboard from './NativeClipboard';
 
 /**
