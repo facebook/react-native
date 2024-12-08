@@ -11,6 +11,7 @@
 #include "AndroidTextInputProps.h"
 
 #include <react/renderer/attributedstring/AttributedString.h>
+#include <react/renderer/components/textinput/BaseTextInputShadowNode.h>
 #include <react/renderer/components/textinput/TextInputState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/utils/ContextContainer.h>
@@ -28,8 +29,13 @@ class AndroidTextInputShadowNode final
           AndroidTextInputProps,
           AndroidTextInputEventEmitter,
           TextInputState,
-          /* usesMapBufferForStateData */ true> {
+          /* usesMapBufferForStateData */ true>,
+      public BaseTextInputShadowNode {
  public:
+  ~AndroidTextInputShadowNode() noexcept override = default;
+
+  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
@@ -37,43 +43,26 @@ class AndroidTextInputShadowNode final
     return traits;
   }
 
-  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+  bool hasMeaningfulState() const override {
+    return getState() &&
+        getState()->getRevision() != State::initialRevisionValue;
+  }
 
-  /*
-   * Returns a `AttributedString` which represents text content of the node.
-   */
-  AttributedString getAttributedString() const;
-  AttributedString getPlaceholderAttributedString() const;
+  const ShadowNode& getShadowNode() const override {
+    return *this;
+  }
 
-  /*
-   * Associates a shared TextLayoutManager with the node.
-   * `TextInputShadowNode` uses the manager to measure text content
-   * and construct `TextInputState` objects.
-   */
-  void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
-
-#pragma mark - LayoutableShadowNode
+  void ensureUnsealed() const override {
+    Sealable::ensureUnsealed();
+  }
 
   Size measureContent(
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override;
+
   void layout(LayoutContext layoutContext) override;
 
   Float baseline(const LayoutContext& layoutContext, Size size) const override;
-
- private:
-  /**
-   * Get the most up-to-date attributed string for measurement and State.
-   */
-  AttributedString getMostRecentAttributedString() const;
-
-  /*
-   * Creates a `State` object (with `AttributedText` and
-   * `TextLayoutManager`) if needed.
-   */
-  void updateStateIfNeeded();
-
-  SharedTextLayoutManager textLayoutManager_;
 };
 
 } // namespace facebook::react

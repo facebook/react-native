@@ -7,8 +7,6 @@
 
 #include "TextInputShadowNode.h"
 
-#include <react/renderer/core/LayoutContext.h>
-
 namespace facebook::react {
 
 extern const char TextInputComponentName[] = "TextInput";
