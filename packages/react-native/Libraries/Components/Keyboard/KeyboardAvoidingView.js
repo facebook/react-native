@@ -32,8 +32,10 @@ type Props = $ReadOnly<{|
 
   /**
    * Specify how to react to the presence of the keyboard.
+   * 'nothing' allows the the keyboard to cover the screen.
+   * although its bad UI it give more control to the developer
    */
-  behavior?: ?('height' | 'position' | 'padding'),
+  behavior?: ?('height' | 'position' | 'padding' | 'nothing'),
 
   /**
    * Style of the content container when `behavior` is 'position'.
@@ -84,6 +86,10 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       return 0;
     }
 
+    if (this.props.behavior === 'nothing') {
+      //Do not adjust the layout
+      return 0;
+    }
     // On iOS when Prefer Cross-Fade Transitions is enabled, the keyboard position
     // & height is reported differently (0 instead of Y position value matching height of frame)
     if (
@@ -148,6 +154,11 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   _updateBottomIfNecessary = async () => {
     if (this._keyboardEvent == null) {
+      this._setBottom(0);
+      return;
+    }
+
+    if(this.props.behavior === 'nothing') {
       this._setBottom(0);
       return;
     }
@@ -268,6 +279,17 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
             ref={this.viewRef}
             style={StyleSheet.compose(style, {paddingBottom: bottomHeight})}
             onLayout={this._onLayout}
+            {...props}>
+            {children}
+          </View>
+        );
+
+      case 'nothing':
+        return (
+          <View
+            ref={this.viewRef}
+            onLayout={this._onLayout}
+            style={StyleSheet.compose(style, {paddingBottom: 0})}
             {...props}>
             {children}
           </View>

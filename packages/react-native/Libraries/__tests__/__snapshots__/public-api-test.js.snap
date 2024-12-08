@@ -1734,7 +1734,7 @@ declare module.exports: Keyboard;
 exports[`public API should not change unintentionally Libraries/Components/Keyboard/KeyboardAvoidingView.js 1`] = `
 "type Props = $ReadOnly<{|
   ...ViewProps,
-  behavior?: ?(\\"height\\" | \\"position\\" | \\"padding\\"),
+  behavior?: ?(\\"height\\" | \\"position\\" | \\"padding\\" | \\"nothing\\"),
   contentContainerStyle?: ?ViewStyleProp,
   enabled?: ?boolean,
   keyboardVerticalOffset?: number,
