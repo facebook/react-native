@@ -197,6 +197,10 @@ class BuildConfigurationMock
     def debug?
       return @is_debug
     end
+
+    def type
+        @is_debug ? :debug : :release
+    end
 end
 
 class TargetInstallationResultMock
