@@ -316,7 +316,7 @@ module.exports = {
     'react/no-unknown-property': 0,
     'react/no-unstable-nested-components': 1,
     'react/prop-types': 0,
-    'react/react-in-jsx-scope': 1,
+    'react/react-in-jsx-scope': 0,
     'react/self-closing-comp': 1,
     'react/wrap-multilines': 0,
 
