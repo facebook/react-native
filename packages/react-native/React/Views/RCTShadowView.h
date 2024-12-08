@@ -152,9 +152,9 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
 
 @property (nonatomic, assign) float flex;
 @property (nonatomic, assign) float flexGrow;
-@property (nonatomic, assign) float rowGap;
-@property (nonatomic, assign) float columnGap;
-@property (nonatomic, assign) float gap;
+@property (nonatomic, assign) YGValue rowGap;
+@property (nonatomic, assign) YGValue columnGap;
+@property (nonatomic, assign) YGValue gap;
 @property (nonatomic, assign) float flexShrink;
 @property (nonatomic, assign) YGValue flexBasis;
 
