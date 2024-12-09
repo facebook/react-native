@@ -139,6 +139,15 @@ type NativeProps = $ReadOnly<{|
    * The `identifier` is the unique number for identifying Modal components.
    */
   identifier?: WithDefault<Int32, 0>,
+
+  /**
+   * The `dismissOnSwipeDown` prop determines whether the modal can be dismissed
+   * by swiping down. This is only supported when the `presentationStyle`
+   * is set to `pageSheet` or `formSheet`. Defaults to `false`.
+   *
+   * @platform ios
+   */
+  dismissOnSwipeDown?: ?boolean,
 |}>;
 
 export default (codegenNativeComponent<NativeProps>('ModalHostView', {
