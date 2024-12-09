@@ -179,7 +179,7 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
   }
 
   private void createReactContextAndScheduleTask(final HeadlessJsTaskConfig taskConfig) {
-    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
       final ReactHost reactHost = getReactHost();
       reactHost.addReactInstanceEventListener(
           new ReactInstanceEventListener() {
