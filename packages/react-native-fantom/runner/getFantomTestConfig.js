@@ -20,7 +20,8 @@ type JsOnlyFeatureFlags = (typeof ReactNativeFeatureFlags)['jsOnly'];
 type DocblockPragmas = {[key: string]: string | string[]};
 
 export enum FantomTestConfigMode {
-  Development,
+  DevelopmentWithBytecode,
+  DevelopmentWithSource,
   Optimized,
 }
 
@@ -40,7 +41,8 @@ export type FantomTestConfig = {
   },
 };
 
-const DEFAULT_MODE: FantomTestConfigMode = FantomTestConfigMode.Development;
+const DEFAULT_MODE: FantomTestConfigMode =
+  FantomTestConfigMode.DevelopmentWithSource;
 
 const FANTOM_FLAG_FORMAT = /^(\w+):(\w+)$/;
 
@@ -89,7 +91,10 @@ export default function getFantomTestConfig(
 
     switch (mode) {
       case 'dev':
-        config.mode = FantomTestConfigMode.Development;
+        config.mode = FantomTestConfigMode.DevelopmentWithSource;
+        break;
+      case 'dev-bytecode':
+        config.mode = FantomTestConfigMode.DevelopmentWithBytecode;
         break;
       case 'opt':
         config.mode = FantomTestConfigMode.Optimized;

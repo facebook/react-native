@@ -68,19 +68,21 @@ function generateBytecodeBundle({
   bytecodePath: string,
   isOptimizedMode: boolean,
 }): void {
-  const hermesCompilerCommandResult = runBuck2([
-    'run',
-    getBuckModeForPlatform(isOptimizedMode),
-    '//xplat/hermes/tools/hermesc:hermesc',
-    '--',
-    '-emit-binary',
-    '-O',
-    '-max-diagnostic-width',
-    '80',
-    '-out',
-    bytecodePath,
-    sourcePath,
-  ]);
+  const hermesCompilerCommandResult = runBuck2(
+    [
+      'run',
+      getBuckModeForPlatform(isOptimizedMode),
+      '//xplat/hermes/tools/hermesc:hermesc',
+      '--',
+      '-emit-binary',
+      isOptimizedMode ? '-O' : null,
+      '-max-diagnostic-width',
+      '80',
+      '-out',
+      bytecodePath,
+      sourcePath,
+    ].filter(Boolean),
+  );
 
   if (hermesCompilerCommandResult.status !== 0) {
     throw new Error(getDebugInfoFromCommandResult(hermesCompilerCommandResult));
@@ -97,8 +99,6 @@ module.exports = async function runTest(
   const startTime = Date.now();
 
   const testConfig = getFantomTestConfig(testPath);
-
-  const isOptimizedMode = testConfig.mode === FantomTestConfigMode.Optimized;
 
   const metroConfig = await Metro.loadConfig({
     config: path.resolve(__dirname, '..', 'config', 'metro.config.js'),
@@ -121,8 +121,7 @@ module.exports = async function runTest(
     BUILD_OUTPUT_PATH,
     `${getShortHash(entrypointContents)}-${path.basename(testPath)}`,
   );
-  const testBundlePath = entrypointPath + '.bundle';
-  const testJSBundlePath = testBundlePath + '.js';
+  const testJSBundlePath = entrypointPath + '.bundle.js';
   const testBytecodeBundlePath = testJSBundlePath + '.hbc';
 
   fs.mkdirSync(path.dirname(entrypointPath), {recursive: true});
@@ -137,27 +136,29 @@ module.exports = async function runTest(
     entry: entrypointPath,
     out: testJSBundlePath,
     platform: 'android',
-    minify: isOptimizedMode,
-    dev: !isOptimizedMode,
+    minify: testConfig.mode === FantomTestConfigMode.Optimized,
+    dev: testConfig.mode !== FantomTestConfigMode.Optimized,
     sourceMap: true,
     sourceMapUrl: sourceMapPath,
   });
 
-  if (isOptimizedMode) {
+  if (testConfig.mode !== FantomTestConfigMode.DevelopmentWithSource) {
     generateBytecodeBundle({
       sourcePath: testJSBundlePath,
       bytecodePath: testBytecodeBundlePath,
-      isOptimizedMode,
+      isOptimizedMode: testConfig.mode === FantomTestConfigMode.Optimized,
     });
   }
 
   const rnTesterCommandResult = runBuck2([
     'run',
-    getBuckModeForPlatform(isOptimizedMode),
+    getBuckModeForPlatform(testConfig.mode === FantomTestConfigMode.Optimized),
     '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
     '--',
     '--bundlePath',
-    testBundlePath,
+    testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
+      ? testJSBundlePath
+      : testBytecodeBundlePath,
     '--featureFlags',
     JSON.stringify(testConfig.flags.common),
   ]);
