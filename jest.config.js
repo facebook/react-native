@@ -37,7 +37,6 @@ module.exports = {
     '/node_modules/',
     '<rootDir>/packages/react-native/sdks',
     '<rootDir>/packages/react-native/Libraries/Renderer',
-    '<rootDir>/packages/react-native-test-renderer/src',
     '<rootDir>/packages/react-native/sdks/hermes/',
     ...PODS_LOCATIONS,
   ],
