@@ -811,8 +811,8 @@ public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
   }
 
   @Override
-  public float getGap(YogaGutter gutter) {
-    return YogaNative.jni_YGNodeStyleGetGapJNI(mNativePointer, gutter.intValue());
+  public YogaValue getGap(YogaGutter gutter) {
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetGapJNI(mNativePointer, gutter.intValue()));
   }
 
   @Override
