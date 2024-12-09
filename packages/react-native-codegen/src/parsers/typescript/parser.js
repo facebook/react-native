@@ -250,17 +250,30 @@ class TypeScriptParser implements Parser {
     typeAnnotation: $FlowFixMe,
   ): $ReadOnlyArray<NativeModuleEnumMember> {
     return typeAnnotation.members.map(member => {
-      // Handle negative values
-      if (member.initializer?.operator === '-') {
-        return {
-          name: member.id.name,
-          value: -member.initializer?.argument?.value ?? member.id.name,
-        };
-      }
+      const value =
+        member.initializer?.operator === '-'
+          ? {
+              type: 'NumberLiteralTypeAnnotation',
+              value: -1 * member.initializer?.argument?.value,
+            }
+          : typeof member.initializer?.value === 'number'
+          ? {
+              type: 'NumberLiteralTypeAnnotation',
+              value: member.initializer?.value,
+            }
+          : typeof member.initializer?.value === 'string'
+          ? {
+              type: 'StringLiteralTypeAnnotation',
+              value: member.initializer?.value,
+            }
+          : {
+              type: 'StringLiteralTypeAnnotation',
+              value: member.id.name,
+            };
 
       return {
         name: member.id.name,
-        value: member.initializer?.value ?? member.id.name,
+        value,
       };
     });
   }

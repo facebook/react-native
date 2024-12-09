@@ -197,49 +197,97 @@ TextAttributes TextAttributes::defaultTextAttributes() {
 
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
+  const auto& textAttributes = TextAttributes::defaultTextAttributes();
   return {
       // Color
-      debugStringConvertibleItem("backgroundColor", backgroundColor),
-      debugStringConvertibleItem("foregroundColor", foregroundColor),
-      debugStringConvertibleItem("opacity", opacity),
+      debugStringConvertibleItem(
+          "backgroundColor", backgroundColor, textAttributes.backgroundColor),
+      debugStringConvertibleItem(
+          "foregroundColor", foregroundColor, textAttributes.foregroundColor),
+      debugStringConvertibleItem("opacity", opacity, textAttributes.opacity),
 
       // Font
-      debugStringConvertibleItem("fontFamily", fontFamily),
-      debugStringConvertibleItem("fontSize", fontSize),
-      debugStringConvertibleItem("fontSizeMultiplier", fontSizeMultiplier),
-      debugStringConvertibleItem("fontWeight", fontWeight),
-      debugStringConvertibleItem("fontStyle", fontStyle),
-      debugStringConvertibleItem("fontVariant", fontVariant),
-      debugStringConvertibleItem("allowFontScaling", allowFontScaling),
-      debugStringConvertibleItem("dynamicTypeRamp", dynamicTypeRamp),
-      debugStringConvertibleItem("letterSpacing", letterSpacing),
+      debugStringConvertibleItem(
+          "fontFamily", fontFamily, textAttributes.fontFamily),
+      debugStringConvertibleItem("fontSize", fontSize, textAttributes.fontSize),
+      debugStringConvertibleItem(
+          "fontSizeMultiplier",
+          fontSizeMultiplier,
+          textAttributes.fontSizeMultiplier),
+      debugStringConvertibleItem(
+          "fontWeight", fontWeight, textAttributes.fontWeight),
+      debugStringConvertibleItem(
+          "fontStyle", fontStyle, textAttributes.fontStyle),
+      debugStringConvertibleItem(
+          "fontVariant", fontVariant, textAttributes.fontVariant),
+      debugStringConvertibleItem(
+          "allowFontScaling",
+          allowFontScaling,
+          textAttributes.allowFontScaling),
+      debugStringConvertibleItem(
+          "dynamicTypeRamp", dynamicTypeRamp, textAttributes.dynamicTypeRamp),
+      debugStringConvertibleItem(
+          "letterSpacing", letterSpacing, textAttributes.letterSpacing),
 
       // Paragraph Styles
-      debugStringConvertibleItem("lineHeight", lineHeight),
-      debugStringConvertibleItem("alignment", alignment),
-      debugStringConvertibleItem("baseWritingDirection", baseWritingDirection),
-      debugStringConvertibleItem("lineBreakStrategyIOS", lineBreakStrategy),
-      debugStringConvertibleItem("lineBreakModeIOS", lineBreakMode),
+      debugStringConvertibleItem(
+          "lineHeight", lineHeight, textAttributes.lineHeight),
+      debugStringConvertibleItem(
+          "alignment", alignment, textAttributes.alignment),
+      debugStringConvertibleItem(
+          "baseWritingDirection",
+          baseWritingDirection,
+          textAttributes.baseWritingDirection),
+      debugStringConvertibleItem(
+          "lineBreakStrategyIOS",
+          lineBreakStrategy,
+          textAttributes.lineBreakStrategy),
+      debugStringConvertibleItem(
+          "lineBreakModeIOS", lineBreakMode, textAttributes.lineBreakMode),
 
       // Decoration
-      debugStringConvertibleItem("textDecorationColor", textDecorationColor),
       debugStringConvertibleItem(
-          "textDecorationLineType", textDecorationLineType),
-      debugStringConvertibleItem("textDecorationStyle", textDecorationStyle),
+          "textDecorationColor",
+          textDecorationColor,
+          textAttributes.textDecorationColor),
+      debugStringConvertibleItem(
+          "textDecorationLineType",
+          textDecorationLineType,
+          textAttributes.textDecorationLineType),
+      debugStringConvertibleItem(
+          "textDecorationStyle",
+          textDecorationStyle,
+          textAttributes.textDecorationStyle),
 
       // Shadow
-      debugStringConvertibleItem("textShadowOffset", textShadowOffset),
-      debugStringConvertibleItem("textShadowRadius", textShadowRadius),
-      debugStringConvertibleItem("textShadowColor", textShadowColor),
+      debugStringConvertibleItem(
+          "textShadowOffset",
+          textShadowOffset,
+          textAttributes.textShadowOffset),
+      debugStringConvertibleItem(
+          "textShadowRadius",
+          textShadowRadius,
+          textAttributes.textShadowRadius),
+      debugStringConvertibleItem(
+          "textShadowColor", textShadowColor, textAttributes.textShadowColor),
 
       // Special
-      debugStringConvertibleItem("isHighlighted", isHighlighted),
-      debugStringConvertibleItem("isPressable", isPressable),
-      debugStringConvertibleItem("layoutDirection", layoutDirection),
-      debugStringConvertibleItem("accessibilityRole", accessibilityRole),
-      debugStringConvertibleItem("role", role),
+      debugStringConvertibleItem(
+          "isHighlighted", isHighlighted, textAttributes.isHighlighted),
+      debugStringConvertibleItem(
+          "isPressable", isPressable, textAttributes.isPressable),
+      debugStringConvertibleItem(
+          "layoutDirection", layoutDirection, textAttributes.layoutDirection),
+      debugStringConvertibleItem(
+          "accessibilityRole",
+          accessibilityRole,
+          textAttributes.accessibilityRole),
+      debugStringConvertibleItem("role", role, textAttributes.role),
 
-      debugStringConvertibleItem("textAlignVertical", textAlignVertical),
+      debugStringConvertibleItem(
+          "textAlignVertical",
+          textAlignVertical,
+          textAttributes.textAlignVertical),
   };
 }
 #endif

@@ -178,33 +178,32 @@ public data class BorderRadiusStyle(
       width: Float,
       height: Float
   ): ComputedBorderRadius {
-    val leftInset = topLeft.horizontal + bottomLeft.horizontal
-    val topInset = topLeft.vertical + topRight.vertical
-    val rightInset = topRight.horizontal + bottomRight.horizontal
-    val bottomInset = bottomLeft.vertical + bottomRight.vertical
+    val leftEdgeRadii = topLeft.vertical + bottomLeft.vertical
+    val topEdgeRadii = topLeft.horizontal + topRight.horizontal
+    val rightEdgeRadii = topRight.vertical + bottomRight.vertical
+    val bottomEdgeRadii = bottomLeft.horizontal + bottomRight.horizontal
 
-    val leftInsetScale = if (leftInset > 0) minOf(1.0f, height / leftInset) else 0f
-    val topInsetScale = if (topInset > 0) minOf(1.0f, width / topInset) else 0f
-    val rightInsetScale = if (rightInset > 0) minOf(1.0f, height / rightInset) else 0f
-    val bottomInsetScale = if (bottomInset > 0) minOf(1.0f, width / bottomInset) else 0f
+    val leftEdgeRadiiScale = if (leftEdgeRadii > 0) minOf(height / leftEdgeRadii, 1f) else 0f
+    val topEdgeRadiiScale = if (topEdgeRadii > 0) minOf(width / topEdgeRadii, 1f) else 0f
+    val rightEdgeRadiiScale = if (rightEdgeRadii > 0) minOf(height / rightEdgeRadii, 1f) else 0f
+    val bottomEdgeRadiiScale = if (bottomEdgeRadii > 0) minOf(width / bottomEdgeRadii, 1f) else 0f
 
     return ComputedBorderRadius(
         topLeft =
             CornerRadii(
-                topLeft.horizontal * minOf(topInsetScale, leftInsetScale),
-                topLeft.vertical * minOf(topInsetScale, leftInsetScale)),
+                topLeft.horizontal * minOf(topEdgeRadiiScale, leftEdgeRadiiScale),
+                topLeft.vertical * minOf(topEdgeRadiiScale, leftEdgeRadiiScale)),
         topRight =
             CornerRadii(
-                topRight.horizontal * minOf(topInsetScale, rightInsetScale),
-                topRight.vertical * minOf(topInsetScale, rightInsetScale)),
+                topRight.horizontal * minOf(rightEdgeRadiiScale, topEdgeRadiiScale),
+                topRight.vertical * minOf(rightEdgeRadiiScale, topEdgeRadiiScale)),
         bottomLeft =
             CornerRadii(
-                bottomLeft.horizontal * minOf(bottomInsetScale, leftInsetScale),
-                bottomLeft.vertical * minOf(bottomInsetScale, leftInsetScale)),
+                bottomLeft.horizontal * minOf(bottomEdgeRadiiScale, leftEdgeRadiiScale),
+                bottomLeft.vertical * minOf(bottomEdgeRadiiScale, leftEdgeRadiiScale)),
         bottomRight =
             CornerRadii(
-                bottomRight.horizontal * minOf(bottomInsetScale, rightInsetScale),
-                bottomRight.vertical * minOf(bottomInsetScale, rightInsetScale)),
-    )
+                bottomRight.horizontal * minOf(bottomEdgeRadiiScale, rightEdgeRadiiScale),
+                bottomRight.vertical * minOf(bottomEdgeRadiiScale, rightEdgeRadiiScale)))
   }
 }

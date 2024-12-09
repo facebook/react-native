@@ -157,4 +157,4 @@ vendor/
 .circleci/generated_config.yml
 
 # Jest Integration
-/jest/integration/build/
+/packages/react-native-fantom/build/

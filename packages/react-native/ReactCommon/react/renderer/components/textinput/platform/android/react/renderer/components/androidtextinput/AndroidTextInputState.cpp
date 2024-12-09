@@ -20,19 +20,11 @@ AndroidTextInputState::AndroidTextInputState(
     int64_t mostRecentEventCount,
     AttributedString attributedString,
     AttributedString reactTreeAttributedString,
-    ParagraphAttributes paragraphAttributes,
-    float defaultThemePaddingStart,
-    float defaultThemePaddingEnd,
-    float defaultThemePaddingTop,
-    float defaultThemePaddingBottom)
+    ParagraphAttributes paragraphAttributes)
     : mostRecentEventCount(mostRecentEventCount),
       attributedString(std::move(attributedString)),
       reactTreeAttributedString(std::move(reactTreeAttributedString)),
-      paragraphAttributes(std::move(paragraphAttributes)),
-      defaultThemePaddingStart(defaultThemePaddingStart),
-      defaultThemePaddingEnd(defaultThemePaddingEnd),
-      defaultThemePaddingTop(defaultThemePaddingTop),
-      defaultThemePaddingBottom(defaultThemePaddingBottom) {}
+      paragraphAttributes(std::move(paragraphAttributes)) {}
 
 AndroidTextInputState::AndroidTextInputState(
     const AndroidTextInputState& previousState,
@@ -47,23 +39,7 @@ AndroidTextInputState::AndroidTextInputState(
                                    .getInt()),
       attributedString(previousState.attributedString),
       reactTreeAttributedString(previousState.reactTreeAttributedString),
-      paragraphAttributes(previousState.paragraphAttributes),
-      defaultThemePaddingStart(data.getDefault(
-                                       "themePaddingStart",
-                                       previousState.defaultThemePaddingStart)
-                                   .getDouble()),
-      defaultThemePaddingEnd(data.getDefault(
-                                     "themePaddingEnd",
-                                     previousState.defaultThemePaddingEnd)
-                                 .getDouble()),
-      defaultThemePaddingTop(data.getDefault(
-                                     "themePaddingTop",
-                                     previousState.defaultThemePaddingTop)
-                                 .getDouble()),
-      defaultThemePaddingBottom(data.getDefault(
-                                        "themePaddingBottom",
-                                        previousState.defaultThemePaddingBottom)
-                                    .getDouble()){};
+      paragraphAttributes(previousState.paragraphAttributes){};
 
 folly::dynamic AndroidTextInputState::getDynamic() const {
   LOG(FATAL) << "Android TextInput state should only be read using MapBuffer";

@@ -402,6 +402,34 @@ class JSI_EXPORT Runtime {
   virtual std::u16string utf16(const String& str);
   virtual std::u16string utf16(const PropNameID& sym);
 
+  /// Invokes the provided callback \p cb with the String content in \p str.
+  /// The callback must take in three arguments: bool ascii, const void* data,
+  /// and size_t num, respectively. \p ascii indicates whether the \p data
+  /// passed to the callback should be interpreted as a pointer to a sequence of
+  /// \p num ASCII characters or UTF16 characters. Depending on the internal
+  /// representation of the string, the function may invoke the callback
+  /// multiple times, with a different format on each invocation. The callback
+  /// must not access runtime functionality, as any operation on the runtime may
+  /// invalidate the data pointers.
+  virtual void getStringData(
+      const jsi::String& str,
+      void* ctx,
+      void (*cb)(void* ctx, bool ascii, const void* data, size_t num));
+
+  /// Invokes the provided callback \p cb with the PropNameID content in \p sym.
+  /// The callback must take in three arguments: bool ascii, const void* data,
+  /// and size_t num, respectively. \p ascii indicates whether the \p data
+  /// passed to the callback should be interpreted as a pointer to a sequence of
+  /// \p num ASCII characters or UTF16 characters. Depending on the internal
+  /// representation of the string, the function may invoke the callback
+  /// multiple times, with a different format on each invocation. The callback
+  /// must not access runtime functionality, as any operation on the runtime may
+  /// invalidate the data pointers.
+  virtual void getPropNameIdData(
+      const jsi::PropNameID& sym,
+      void* ctx,
+      void (*cb)(void* ctx, bool ascii, const void* data, size_t num));
+
   // These exist so derived classes can access the private parts of
   // Value, Symbol, String, and Object, which are all friends of Runtime.
   template <typename T>
@@ -507,6 +535,22 @@ class JSI_EXPORT PropNameID : public Pointer {
   /// Copies the data in a PropNameID as utf16 into a C++ string.
   std::u16string utf16(Runtime& runtime) const {
     return runtime.utf16(*this);
+  }
+
+  /// Invokes the user provided callback to process the content in PropNameId.
+  /// The callback must take in three arguments: bool ascii, const void* data,
+  /// and size_t num, respectively. \p ascii indicates whether the \p data
+  /// passed to the callback should be interpreted as a pointer to a sequence of
+  /// \p num ASCII characters or UTF16 characters. The function may invoke the
+  /// callback multiple times, with a different format on each invocation. The
+  /// callback must not access runtime functionality, as any operation on the
+  /// runtime may invalidate the data pointers.
+  template <typename CB>
+  void getPropNameIdData(Runtime& runtime, CB& cb) const {
+    runtime.getPropNameIdData(
+        *this, &cb, [](void* ctx, bool ascii, const void* data, size_t num) {
+          (*((CB*)ctx))(ascii, data, num);
+        });
   }
 
   static bool compare(
@@ -662,6 +706,22 @@ class JSI_EXPORT String : public Pointer {
   /// Copies the data in a JS string as utf16 into a C++ string.
   std::u16string utf16(Runtime& runtime) const {
     return runtime.utf16(*this);
+  }
+
+  /// Invokes the user provided callback to process content in String. The
+  /// callback must take in three arguments: bool ascii, const void* data, and
+  /// size_t num, respectively. \p ascii indicates whether the \p data passed to
+  /// the callback should be interpreted as a pointer to a sequence of \p num
+  /// ASCII characters or UTF16 characters. The function may invoke the callback
+  /// multiple times, with a different format on each invocation. The callback
+  /// must not access runtime functionality, as any operation on the runtime may
+  /// invalidate the data pointers.
+  template <typename CB>
+  void getStringData(Runtime& runtime, CB& cb) const {
+    runtime.getStringData(
+        *this, &cb, [](void* ctx, bool ascii, const void* data, size_t num) {
+          (*((CB*)ctx))(ascii, data, num);
+        });
   }
 
   friend class Runtime;

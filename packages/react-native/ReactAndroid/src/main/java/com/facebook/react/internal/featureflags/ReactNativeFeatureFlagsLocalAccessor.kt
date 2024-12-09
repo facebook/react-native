@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4bb5173b9ba1d3e620f3a7d613b27ac7>>
+ * @generated SignedSource<<afbce922bb8e83bfd3f57179046c5049>>
  */
 
 /**
@@ -37,10 +37,10 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
-  private var enableFabricRendererExclusivelyCache: Boolean? = null
   private var enableFixForViewCommandRaceCache: Boolean? = null
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
+  private var enableImagePrefetchingAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
@@ -52,6 +52,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableUIConsistencyCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
   private var excludeYogaFromRawPropsCache: Boolean? = null
+  private var fixDifferentiatorEmittingUpdatesWithWrongParentTagCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledDebugCache: Boolean? = null
@@ -200,16 +201,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enableFabricRendererExclusively(): Boolean {
-    var cached = enableFabricRendererExclusivelyCache
-    if (cached == null) {
-      cached = currentProvider.enableFabricRendererExclusively()
-      accessedFeatureFlags.add("enableFabricRendererExclusively")
-      enableFabricRendererExclusivelyCache = cached
-    }
-    return cached
-  }
-
   override fun enableFixForViewCommandRace(): Boolean {
     var cached = enableFixForViewCommandRaceCache
     if (cached == null) {
@@ -236,6 +227,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableIOSViewClipToPaddingBox()
       accessedFeatureFlags.add("enableIOSViewClipToPaddingBox")
       enableIOSViewClipToPaddingBoxCache = cached
+    }
+    return cached
+  }
+
+  override fun enableImagePrefetchingAndroid(): Boolean {
+    var cached = enableImagePrefetchingAndroidCache
+    if (cached == null) {
+      cached = currentProvider.enableImagePrefetchingAndroid()
+      accessedFeatureFlags.add("enableImagePrefetchingAndroid")
+      enableImagePrefetchingAndroidCache = cached
     }
     return cached
   }
@@ -346,6 +347,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.excludeYogaFromRawProps()
       accessedFeatureFlags.add("excludeYogaFromRawProps")
       excludeYogaFromRawPropsCache = cached
+    }
+    return cached
+  }
+
+  override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean {
+    var cached = fixDifferentiatorEmittingUpdatesWithWrongParentTagCache
+    if (cached == null) {
+      cached = currentProvider.fixDifferentiatorEmittingUpdatesWithWrongParentTag()
+      accessedFeatureFlags.add("fixDifferentiatorEmittingUpdatesWithWrongParentTag")
+      fixDifferentiatorEmittingUpdatesWithWrongParentTagCache = cached
     }
     return cached
   }

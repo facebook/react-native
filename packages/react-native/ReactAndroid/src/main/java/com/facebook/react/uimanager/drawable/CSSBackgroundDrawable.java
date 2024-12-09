@@ -646,13 +646,13 @@ public class CSSBackgroundDrawable extends Drawable {
       colorTop = colorBlockStart;
     }
 
-    // Clip border ONLY if its color is non transparent
+    // Clip border ONLY if at least one edge is non-transparent
     float pathAdjustment = 0f;
     if (Color.alpha(colorLeft) != 0
-        && Color.alpha(colorTop) != 0
-        && Color.alpha(colorRight) != 0
-        && Color.alpha(colorBottom) != 0
-        && Color.alpha(borderColor) != 0) {
+        || Color.alpha(colorTop) != 0
+        || Color.alpha(colorRight) != 0
+        || Color.alpha(colorBottom) != 0
+        || Color.alpha(borderColor) != 0) {
 
       mInnerClipTempRectForBorderRadius.top += borderWidth.top;
       mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;

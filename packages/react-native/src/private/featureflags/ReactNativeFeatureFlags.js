@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<83b5798ee1c7a28fffbf110e19641d69>>
+ * @generated SignedSource<<67e1f8c80caedcbf7b28a089a2744b9a>>
  * @flow strict
  */
 
@@ -36,6 +36,7 @@ export type ReactNativeFeatureFlagsJsOnly = {
   enableAnimatedAllowlist: Getter<boolean>,
   enableAnimatedClearImmediateFix: Getter<boolean>,
   enableAnimatedPropsMemo: Getter<boolean>,
+  fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
@@ -63,10 +64,10 @@ export type ReactNativeFeatureFlags = {
   enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
-  enableFabricRendererExclusively: Getter<boolean>,
   enableFixForViewCommandRace: Getter<boolean>,
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
+  enableImagePrefetchingAndroid: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
@@ -78,6 +79,7 @@ export type ReactNativeFeatureFlags = {
   enableUIConsistency: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
   excludeYogaFromRawProps: Getter<boolean>,
+  fixDifferentiatorEmittingUpdatesWithWrongParentTag: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
   fuseboxEnabledDebug: Getter<boolean>,
@@ -141,6 +143,11 @@ export const enableAnimatedClearImmediateFix: Getter<boolean> = createJavaScript
  * Enables Animated to analyze props to minimize invalidating `AnimatedProps`.
  */
 export const enableAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedPropsMemo', true);
+
+/**
+ * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
+ */
+export const fixVirtualizeListCollapseWindowSize: Getter<boolean> = createJavaScriptFlagGetter('fixVirtualizeListCollapseWindowSize', false);
 
 /**
  * Function used to enable / disabled Layout Animations in React Native.
@@ -234,10 +241,6 @@ export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableF
  */
 export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('enableFabricRenderer', false);
 /**
- * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
- */
-export const enableFabricRendererExclusively: Getter<boolean> = createNativeFlagGetter('enableFabricRendererExclusively', false);
-/**
  * Synchronise the view command dispatching with mounting of new transaction
  */
 export const enableFixForViewCommandRace: Getter<boolean> = createNativeFlagGetter('enableFixForViewCommandRace', false);
@@ -249,6 +252,10 @@ export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = crea
  * iOS Views will clip to their padding box vs border box
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
+/**
+ * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+ */
+export const enableImagePrefetchingAndroid: Getter<boolean> = createNativeFlagGetter('enableImagePrefetchingAndroid', false);
 /**
  * When enabled, LayoutAnimations API will animate state changes on Android.
  */
@@ -293,6 +300,10 @@ export const enableViewRecycling: Getter<boolean> = createNativeFlagGetter('enab
  * When enabled, rawProps in Props will not include Yoga specific props.
  */
 export const excludeYogaFromRawProps: Getter<boolean> = createNativeFlagGetter('excludeYogaFromRawProps', false);
+/**
+ * Fixes a bug in Differentiator where parent views may be referenced before they're created
+ */
+export const fixDifferentiatorEmittingUpdatesWithWrongParentTag: Getter<boolean> = createNativeFlagGetter('fixDifferentiatorEmittingUpdatesWithWrongParentTag', true);
 /**
  * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
  */
@@ -352,7 +363,7 @@ export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeF
 /**
  * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
  */
-export const useRuntimeShadowNodeReferenceUpdate: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdate', false);
+export const useRuntimeShadowNodeReferenceUpdate: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdate', true);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */

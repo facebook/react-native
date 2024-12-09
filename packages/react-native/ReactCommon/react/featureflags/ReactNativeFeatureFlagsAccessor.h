@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6f11d494553e3f12b2ca326a880746f3>>
+ * @generated SignedSource<<485a7e88ec81935a6c45b1ce5de0cbf2>>
  */
 
 /**
@@ -45,10 +45,10 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableEventEmitterRetentionDuringGesturesOnAndroid();
   bool enableFabricLogs();
   bool enableFabricRenderer();
-  bool enableFabricRendererExclusively();
   bool enableFixForViewCommandRace();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableIOSViewClipToPaddingBox();
+  bool enableImagePrefetchingAndroid();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableLongTaskAPI();
@@ -60,6 +60,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableUIConsistency();
   bool enableViewRecycling();
   bool excludeYogaFromRawProps();
+  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
   bool fuseboxEnabledDebug();
@@ -88,7 +89,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 45> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 46> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
@@ -103,10 +104,10 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableEventEmitterRetentionDuringGesturesOnAndroid_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;
-  std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
   std::atomic<std::optional<bool>> enableFixForViewCommandRace_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
+  std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
@@ -118,6 +119,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> excludeYogaFromRawProps_;
+  std::atomic<std::optional<bool>> fixDifferentiatorEmittingUpdatesWithWrongParentTag_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixMountingCoordinatorReportedPendingTransactionsOnAndroid_;
   std::atomic<std::optional<bool>> fuseboxEnabledDebug_;

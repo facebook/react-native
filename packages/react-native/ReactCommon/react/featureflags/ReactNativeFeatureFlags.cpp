@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<90e3ea3abb6f13c711aec3754ab03126>>
+ * @generated SignedSource<<88103b9e29549d8bc3971f254a3529b6>>
  */
 
 /**
@@ -78,10 +78,6 @@ bool ReactNativeFeatureFlags::enableFabricRenderer() {
   return getAccessor().enableFabricRenderer();
 }
 
-bool ReactNativeFeatureFlags::enableFabricRendererExclusively() {
-  return getAccessor().enableFabricRendererExclusively();
-}
-
 bool ReactNativeFeatureFlags::enableFixForViewCommandRace() {
   return getAccessor().enableFixForViewCommandRace();
 }
@@ -92,6 +88,10 @@ bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
+}
+
+bool ReactNativeFeatureFlags::enableImagePrefetchingAndroid() {
+  return getAccessor().enableImagePrefetchingAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
@@ -136,6 +136,10 @@ bool ReactNativeFeatureFlags::enableViewRecycling() {
 
 bool ReactNativeFeatureFlags::excludeYogaFromRawProps() {
   return getAccessor().excludeYogaFromRawProps();
+}
+
+bool ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag() {
+  return getAccessor().fixDifferentiatorEmittingUpdatesWithWrongParentTag();
 }
 
 bool ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact() {

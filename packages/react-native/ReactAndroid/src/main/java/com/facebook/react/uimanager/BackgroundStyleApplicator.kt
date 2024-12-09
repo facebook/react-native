@@ -298,6 +298,10 @@ public object BackgroundStyleApplicator {
     val borderInsets = compositeBackgroundDrawable.borderInsets
     val borderRadius = compositeBackgroundDrawable.borderRadius
 
+    /**
+     * z-ordering of user-provided shadow-list is opposite direction of LayerDrawable z-ordering
+     * https://drafts.csswg.org/css-backgrounds/#shadow-layers
+     */
     for (boxShadow in shadows.asReversed()) {
       val offsetX = boxShadow.offsetX
       val offsetY = boxShadow.offsetY

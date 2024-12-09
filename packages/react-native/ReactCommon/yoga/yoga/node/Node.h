@@ -259,7 +259,7 @@ class YG_EXPORT Node : public ::YGNode {
       uint32_t computedFlexBasisGeneration);
   void setLayoutMeasuredDimension(float measuredDimension, Dimension dimension);
   void setLayoutHadOverflow(bool hadOverflow);
-  void setLayoutDimension(float LengthValue, Dimension dimension);
+  void setLayoutDimension(float lengthValue, Dimension dimension);
   void setLayoutDirection(Direction direction);
   void setLayoutMargin(float margin, PhysicalEdge edge);
   void setLayoutBorder(float border, PhysicalEdge edge);

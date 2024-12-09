@@ -154,14 +154,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableFabricRendererExclusively: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.',
-        purpose: 'release',
-      },
-    },
     enableFixForViewCommandRace: {
       defaultValue: false,
       metadata: {
@@ -185,6 +177,15 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-08-30',
         description: 'iOS Views will clip to their padding box vs border box',
+        purpose: 'experimentation',
+      },
+    },
+    enableImagePrefetchingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-19',
+        description:
+          'When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout',
         purpose: 'experimentation',
       },
     },
@@ -281,6 +282,14 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'When enabled, rawProps in Props will not include Yoga specific props.',
         purpose: 'experimentation',
+      },
+    },
+    fixDifferentiatorEmittingUpdatesWithWrongParentTag: {
+      defaultValue: true,
+      metadata: {
+        description:
+          "Fixes a bug in Differentiator where parent views may be referenced before they're created",
+        purpose: 'release',
       },
     },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
@@ -403,7 +412,7 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useRuntimeShadowNodeReferenceUpdate: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-06-03',
         description:
@@ -500,6 +509,15 @@ const definitions: FeatureFlagDefinitions = {
         description:
           'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
         purpose: 'release',
+      },
+    },
+    fixVirtualizeListCollapseWindowSize: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-22',
+        description:
+          'Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements',
+        purpose: 'experimentation',
       },
     },
     isLayoutAnimationEnabled: {

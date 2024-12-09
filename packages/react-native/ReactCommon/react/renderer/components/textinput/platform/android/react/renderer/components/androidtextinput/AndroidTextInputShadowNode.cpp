@@ -7,10 +7,7 @@
 
 #include "AndroidTextInputShadowNode.h"
 
-#include <fbjni/fbjni.h>
-#include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/components/text/BaseTextShadowNode.h>
@@ -19,19 +16,9 @@
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 
-#include <utility>
-
-using namespace facebook::jni;
-
 namespace facebook::react {
 
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
-
-void AndroidTextInputShadowNode::setContextContainer(
-    ContextContainer* contextContainer) {
-  ensureUnsealed();
-  contextContainer_ = contextContainer;
-}
 
 AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   // Use BaseTextShadowNode to get attributed string from children
@@ -154,11 +141,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       newEventCount,
       newAttributedString,
       reactTreeAttributedString,
-      getConcreteProps().paragraphAttributes,
-      state.defaultThemePaddingStart,
-      state.defaultThemePaddingEnd,
-      state.defaultThemePaddingTop,
-      state.defaultThemePaddingBottom});
+      getConcreteProps().paragraphAttributes});
 }
 
 #pragma mark - LayoutableShadowNode

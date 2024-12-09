@@ -66,6 +66,7 @@ export default class DecayAnimation extends Animation {
       velocity: this._velocity,
       iterations: this.__iterations,
       platformConfig: this._platformConfig,
+      debugID: this.__getDebugID(),
     };
   }
 

@@ -45,10 +45,8 @@ namespace {
 #endif
 
 NO_DESTROY const std::string TRACK_PREFIX = "Track:";
-NO_DESTROY const std::string DEFAULT_TRACK_NAME = "# Web Performance";
-NO_DESTROY const std::string CUSTOM_TRACK_NAME_PREFIX = "# Web Performance: ";
 
-std::tuple<std::string, std::string_view> parseTrackName(
+std::tuple<std::optional<std::string>, std::string_view> parseTrackName(
     const std::string& name) {
   // Until there's a standard way to pass through track information, parse it
   // manually, e.g., "Track:Foo:Event name"
@@ -58,16 +56,13 @@ std::tuple<std::string, std::string_view> parseTrackName(
   if (name.starts_with(TRACK_PREFIX)) {
     const auto trackNameDelimiter = name.find(':', TRACK_PREFIX.length());
     if (trackNameDelimiter != std::string::npos) {
-      trackName = CUSTOM_TRACK_NAME_PREFIX +
-          name.substr(
-              TRACK_PREFIX.length(),
-              trackNameDelimiter - TRACK_PREFIX.length());
+      trackName = name.substr(
+          TRACK_PREFIX.length(), trackNameDelimiter - TRACK_PREFIX.length());
       eventName = std::string_view(name).substr(trackNameDelimiter + 1);
     }
   }
 
-  auto& trackNameRef = trackName.has_value() ? *trackName : DEFAULT_TRACK_NAME;
-  return std::make_tuple(trackNameRef, eventName);
+  return std::make_tuple(trackName, eventName);
 }
 
 class PerformanceObserverWrapper : public jsi::NativeState {
@@ -147,35 +142,6 @@ std::tuple<double, double> NativePerformance::measureWithResult(
       eventName, entry.startTime, entry.startTime + entry.duration, trackName);
 
   return std::tuple{entry.startTime, entry.duration};
-}
-
-void NativePerformance::mark(
-    jsi::Runtime& rt,
-    std::string name,
-    double startTime) {
-  auto [trackName, eventName] = parseTrackName(name);
-  ReactPerfLogger::mark(eventName, startTime, trackName);
-
-  PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
-}
-
-void NativePerformance::measure(
-    jsi::Runtime& rt,
-    std::string name,
-    double startTime,
-    double endTime,
-    std::optional<double> duration,
-    std::optional<std::string> startMark,
-    std::optional<std::string> endMark) {
-  auto [trackName, eventName] = parseTrackName(name);
-
-  // TODO T190600850 support startMark/endMark
-  if (!startMark && !endMark) {
-    ReactPerfLogger::measure(eventName, startTime, endTime, trackName);
-  }
-
-  PerformanceEntryReporter::getInstance()->reportMeasure(
-      eventName, startTime, endTime, duration, startMark, endMark);
 }
 
 void NativePerformance::clearMarks(
