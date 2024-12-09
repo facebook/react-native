@@ -27,6 +27,8 @@ public class ReactModalHostManager :
     ViewGroupManager<ReactModalHostView>(), ModalHostViewManagerInterface<ReactModalHostView> {
   private val delegate: ViewManagerDelegate<ReactModalHostView> = ModalHostViewManagerDelegate(this)
 
+  private val modalEventManager = ModalEventManager
+
   public override fun getName(): String = REACT_CLASS
 
   protected override fun createViewInstance(reactContext: ThemedReactContext): ReactModalHostView =
@@ -100,10 +102,12 @@ public class ReactModalHostManager :
     val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, view.id)
     if (dispatcher != null) {
       view.onRequestCloseListener = OnRequestCloseListener {
+        modalEventManager.onModalRequestClose(it, view.id)
         dispatcher.dispatchEvent(
             RequestCloseEvent(UIManagerHelper.getSurfaceId(reactContext), view.id))
       }
       view.onShowListener = OnShowListener {
+        modalEventManager.onModalOpen(it, view.id)
         dispatcher.dispatchEvent(ShowEvent(UIManagerHelper.getSurfaceId(reactContext), view.id))
       }
       view.eventDispatcher = dispatcher
@@ -133,6 +137,12 @@ public class ReactModalHostManager :
   }
 
   public override fun getDelegate(): ViewManagerDelegate<ReactModalHostView> = delegate
+
+
+  public override fun invalidate() {
+    super.invalidate()
+    modalEventManager.removeAllListeners()
+  }
 
   public companion object {
     public const val REACT_CLASS: String = "RCTModalHostView"
