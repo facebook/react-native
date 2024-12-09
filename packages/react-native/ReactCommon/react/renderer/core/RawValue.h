@@ -112,7 +112,7 @@ class RawValue {
   template <typename T>
   explicit operator T() const {
     if (std::holds_alternative<folly::dynamic>(value_)) {
-      folly::dynamic dynamic = std::get<folly::dynamic>(value_);
+      auto& dynamic = std::get<folly::dynamic>(value_);
       return castValue(dynamic, (T*)nullptr);
     } else {
       const auto& [runtime, value] = std::get<JsiValuePair>(value_);
