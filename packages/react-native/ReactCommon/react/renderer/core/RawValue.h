@@ -130,7 +130,7 @@ class RawValue {
   template <typename T>
   bool hasType() const {
     if (std::holds_alternative<folly::dynamic>(value_)) {
-      folly::dynamic dynamic = std::get<folly::dynamic>(value_);
+      auto& dynamic = std::get<folly::dynamic>(value_);
       return checkValueType(dynamic, (T*)nullptr);
     } else {
       const auto& [runtime, value] = std::get<JsiValuePair>(value_);
