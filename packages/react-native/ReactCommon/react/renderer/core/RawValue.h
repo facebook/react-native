@@ -454,7 +454,7 @@ class RawValue {
       jsi::Runtime* runtime,
       const jsi::Value& value,
       JsiValueReturnType* /*type*/) {
-    return JsiValueReturnType(runtime, value);
+    return {runtime, value};
   }
 
   template <typename T>
