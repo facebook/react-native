@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<01cf526d22b18b9f43f715a84db8422f>>
+ * @generated SignedSource<<1cd2586e0118ba4a828fd99fdda97187>>
  */
 
 /**
@@ -47,8 +47,7 @@ bool ReactNativeFeatureFlagsAccessor::commonTestFlag() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::
-    completeReactInstanceCreationOnBgThreadOnAndroid() {
+bool ReactNativeFeatureFlagsAccessor::completeReactInstanceCreationOnBgThreadOnAndroid() {
   auto flagValue = completeReactInstanceCreationOnBgThreadOnAndroid_.load();
 
   if (!flagValue.has_value()) {
@@ -59,8 +58,7 @@ bool ReactNativeFeatureFlagsAccessor::
 
     markFlagAsAccessed(1, "completeReactInstanceCreationOnBgThreadOnAndroid");
 
-    flagValue =
-        currentProvider_->completeReactInstanceCreationOnBgThreadOnAndroid();
+    flagValue = currentProvider_->completeReactInstanceCreationOnBgThreadOnAndroid();
     completeReactInstanceCreationOnBgThreadOnAndroid_ = flagValue;
   }
 
@@ -211,8 +209,7 @@ bool ReactNativeFeatureFlagsAccessor::enableEagerRootViewAttachment() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::
-    enableEventEmitterRetentionDuringGesturesOnAndroid() {
+bool ReactNativeFeatureFlagsAccessor::enableEventEmitterRetentionDuringGesturesOnAndroid() {
   auto flagValue = enableEventEmitterRetentionDuringGesturesOnAndroid_.load();
 
   if (!flagValue.has_value()) {
@@ -221,11 +218,9 @@ bool ReactNativeFeatureFlagsAccessor::
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(
-        10, "enableEventEmitterRetentionDuringGesturesOnAndroid");
+    markFlagAsAccessed(10, "enableEventEmitterRetentionDuringGesturesOnAndroid");
 
-    flagValue =
-        currentProvider_->enableEventEmitterRetentionDuringGesturesOnAndroid();
+    flagValue = currentProvider_->enableEventEmitterRetentionDuringGesturesOnAndroid();
     enableEventEmitterRetentionDuringGesturesOnAndroid_ = flagValue;
   }
 
@@ -286,8 +281,7 @@ bool ReactNativeFeatureFlagsAccessor::enableFixForViewCommandRace() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::
-    enableGranularShadowTreeStateReconciliation() {
+bool ReactNativeFeatureFlagsAccessor::enableGranularShadowTreeStateReconciliation() {
   auto flagValue = enableGranularShadowTreeStateReconciliation_.load();
 
   if (!flagValue.has_value()) {
@@ -413,8 +407,7 @@ bool ReactNativeFeatureFlagsAccessor::enableNewBackgroundAndBorderDrawables() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::
-    enablePreciseSchedulingForPremountItemsOnAndroid() {
+bool ReactNativeFeatureFlagsAccessor::enablePreciseSchedulingForPremountItemsOnAndroid() {
   auto flagValue = enablePreciseSchedulingForPremountItemsOnAndroid_.load();
 
   if (!flagValue.has_value()) {
@@ -425,8 +418,7 @@ bool ReactNativeFeatureFlagsAccessor::
 
     markFlagAsAccessed(21, "enablePreciseSchedulingForPremountItemsOnAndroid");
 
-    flagValue =
-        currentProvider_->enablePreciseSchedulingForPremountItemsOnAndroid();
+    flagValue = currentProvider_->enablePreciseSchedulingForPremountItemsOnAndroid();
     enablePreciseSchedulingForPremountItemsOnAndroid_ = flagValue;
   }
 
@@ -541,8 +533,7 @@ bool ReactNativeFeatureFlagsAccessor::excludeYogaFromRawProps() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::
-    fixDifferentiatorEmittingUpdatesWithWrongParentTag() {
+bool ReactNativeFeatureFlagsAccessor::fixDifferentiatorEmittingUpdatesWithWrongParentTag() {
   auto flagValue = fixDifferentiatorEmittingUpdatesWithWrongParentTag_.load();
 
   if (!flagValue.has_value()) {
@@ -551,19 +542,16 @@ bool ReactNativeFeatureFlagsAccessor::
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(
-        28, "fixDifferentiatorEmittingUpdatesWithWrongParentTag");
+    markFlagAsAccessed(28, "fixDifferentiatorEmittingUpdatesWithWrongParentTag");
 
-    flagValue =
-        currentProvider_->fixDifferentiatorEmittingUpdatesWithWrongParentTag();
+    flagValue = currentProvider_->fixDifferentiatorEmittingUpdatesWithWrongParentTag();
     fixDifferentiatorEmittingUpdatesWithWrongParentTag_ = flagValue;
   }
 
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::
-    fixMappingOfEventPrioritiesBetweenFabricAndReact() {
+bool ReactNativeFeatureFlagsAccessor::fixMappingOfEventPrioritiesBetweenFabricAndReact() {
   auto flagValue = fixMappingOfEventPrioritiesBetweenFabricAndReact_.load();
 
   if (!flagValue.has_value()) {
@@ -574,18 +562,15 @@ bool ReactNativeFeatureFlagsAccessor::
 
     markFlagAsAccessed(29, "fixMappingOfEventPrioritiesBetweenFabricAndReact");
 
-    flagValue =
-        currentProvider_->fixMappingOfEventPrioritiesBetweenFabricAndReact();
+    flagValue = currentProvider_->fixMappingOfEventPrioritiesBetweenFabricAndReact();
     fixMappingOfEventPrioritiesBetweenFabricAndReact_ = flagValue;
   }
 
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::
-    fixMountingCoordinatorReportedPendingTransactionsOnAndroid() {
-  auto flagValue =
-      fixMountingCoordinatorReportedPendingTransactionsOnAndroid_.load();
+bool ReactNativeFeatureFlagsAccessor::fixMountingCoordinatorReportedPendingTransactionsOnAndroid() {
+  auto flagValue = fixMountingCoordinatorReportedPendingTransactionsOnAndroid_.load();
 
   if (!flagValue.has_value()) {
     // This block is not exclusive but it is not necessary.
@@ -593,12 +578,9 @@ bool ReactNativeFeatureFlagsAccessor::
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(
-        30, "fixMountingCoordinatorReportedPendingTransactionsOnAndroid");
+    markFlagAsAccessed(30, "fixMountingCoordinatorReportedPendingTransactionsOnAndroid");
 
-    flagValue =
-        currentProvider_
-            ->fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
+    flagValue = currentProvider_->fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
     fixMountingCoordinatorReportedPendingTransactionsOnAndroid_ = flagValue;
   }
 
@@ -641,8 +623,7 @@ bool ReactNativeFeatureFlagsAccessor::fuseboxEnabledRelease() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::
-    initEagerTurboModulesOnNativeModulesQueueAndroid() {
+bool ReactNativeFeatureFlagsAccessor::initEagerTurboModulesOnNativeModulesQueueAndroid() {
   auto flagValue = initEagerTurboModulesOnNativeModulesQueueAndroid_.load();
 
   if (!flagValue.has_value()) {
@@ -653,8 +634,7 @@ bool ReactNativeFeatureFlagsAccessor::
 
     markFlagAsAccessed(33, "initEagerTurboModulesOnNativeModulesQueueAndroid");
 
-    flagValue =
-        currentProvider_->initEagerTurboModulesOnNativeModulesQueueAndroid();
+    flagValue = currentProvider_->initEagerTurboModulesOnNativeModulesQueueAndroid();
     initEagerTurboModulesOnNativeModulesQueueAndroid_ = flagValue;
   }
 
@@ -697,8 +677,7 @@ bool ReactNativeFeatureFlagsAccessor::loadVectorDrawablesOnImages() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::
-    traceTurboModulePromiseRejectionsOnAndroid() {
+bool ReactNativeFeatureFlagsAccessor::traceTurboModulePromiseRejectionsOnAndroid() {
   auto flagValue = traceTurboModulePromiseRejectionsOnAndroid_.load();
 
   if (!flagValue.has_value()) {
@@ -752,8 +731,7 @@ bool ReactNativeFeatureFlagsAccessor::useFabricInterop() {
   return flagValue.value();
 }
 
-bool ReactNativeFeatureFlagsAccessor::
-    useImmediateExecutorInAndroidBridgeless() {
+bool ReactNativeFeatureFlagsAccessor::useImmediateExecutorInAndroidBridgeless() {
   auto flagValue = useImmediateExecutorInAndroidBridgeless_.load();
 
   if (!flagValue.has_value()) {
@@ -834,7 +812,7 @@ bool ReactNativeFeatureFlagsAccessor::useRawPropsJsiValue() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(44, "useRawPropsJsiValue");
+    markFlagAsAccessed(43, "useRawPropsJsiValue");
 
     flagValue = currentProvider_->useRawPropsJsiValue();
     useRawPropsJsiValue_ = flagValue;
@@ -852,7 +830,7 @@ bool ReactNativeFeatureFlagsAccessor::useRuntimeShadowNodeReferenceUpdate() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(43, "useRuntimeShadowNodeReferenceUpdate");
+    markFlagAsAccessed(44, "useRuntimeShadowNodeReferenceUpdate");
 
     flagValue = currentProvider_->useRuntimeShadowNodeReferenceUpdate();
     useRuntimeShadowNodeReferenceUpdate_ = flagValue;
@@ -870,7 +848,7 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModuleInterop() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(44, "useTurboModuleInterop");
+    markFlagAsAccessed(45, "useTurboModuleInterop");
 
     flagValue = currentProvider_->useTurboModuleInterop();
     useTurboModuleInterop_ = flagValue;
@@ -888,7 +866,7 @@ bool ReactNativeFeatureFlagsAccessor::useTurboModules() {
     // be accessing the provider multiple times but the end state of this
     // instance and the returned flag value would be the same.
 
-    markFlagAsAccessed(45, "useTurboModules");
+    markFlagAsAccessed(46, "useTurboModules");
 
     flagValue = currentProvider_->useTurboModules();
     useTurboModules_ = flagValue;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee4c101a64f98180d70278390e5f2ca0>>
+ * @generated SignedSource<<2bc4bcbe92476dd7de97e804a1e20440>>
  */
 
 /**
@@ -37,23 +37,21 @@ NativeReactNativeFeatureFlags::NativeReactNativeFeatureFlags(
     std::shared_ptr<CallInvoker> jsInvoker)
     : NativeReactNativeFeatureFlagsCxxSpec(std::move(jsInvoker)) {}
 
-bool NativeReactNativeFeatureFlags::commonTestFlag(jsi::Runtime& /*runtime*/) {
+bool NativeReactNativeFeatureFlags::commonTestFlag(
+    jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
 bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
     jsi::Runtime& /*runtime*/) {
   // This flag is configured with `skipNativeAPI: true`.
-  // TODO(T204838867): Implement support for optional methods in C++ TM codegen
-  // and remove the method definition altogether.
+  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
   return false;
 }
 
-bool NativeReactNativeFeatureFlags::
-    completeReactInstanceCreationOnBgThreadOnAndroid(
-        jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::
-      completeReactInstanceCreationOnBgThreadOnAndroid();
+bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::disableEventLoopOnBridgeless(
@@ -96,11 +94,9 @@ bool NativeReactNativeFeatureFlags::enableEagerRootViewAttachment(
   return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
 }
 
-bool NativeReactNativeFeatureFlags::
-    enableEventEmitterRetentionDuringGesturesOnAndroid(
-        jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::
-      enableEventEmitterRetentionDuringGesturesOnAndroid();
+bool NativeReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enableFabricLogs(
@@ -153,11 +149,9 @@ bool NativeReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables(
   return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
 }
 
-bool NativeReactNativeFeatureFlags::
-    enablePreciseSchedulingForPremountItemsOnAndroid(
-        jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::
-      enablePreciseSchedulingForPremountItemsOnAndroid();
+bool NativeReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(
@@ -190,25 +184,19 @@ bool NativeReactNativeFeatureFlags::excludeYogaFromRawProps(
   return ReactNativeFeatureFlags::excludeYogaFromRawProps();
 }
 
-bool NativeReactNativeFeatureFlags::
-    fixDifferentiatorEmittingUpdatesWithWrongParentTag(
-        jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::
-      fixDifferentiatorEmittingUpdatesWithWrongParentTag();
+bool NativeReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag();
 }
 
-bool NativeReactNativeFeatureFlags::
-    fixMappingOfEventPrioritiesBetweenFabricAndReact(
-        jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::
-      fixMappingOfEventPrioritiesBetweenFabricAndReact();
+bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
-bool NativeReactNativeFeatureFlags::
-    fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
-        jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::
-      fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
+bool NativeReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::fuseboxEnabledDebug(
@@ -221,11 +209,9 @@ bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
   return ReactNativeFeatureFlags::fuseboxEnabledRelease();
 }
 
-bool NativeReactNativeFeatureFlags::
-    initEagerTurboModulesOnNativeModulesQueueAndroid(
-        jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::
-      initEagerTurboModulesOnNativeModulesQueueAndroid();
+bool NativeReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(
@@ -288,7 +274,8 @@ bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
   return ReactNativeFeatureFlags::useTurboModuleInterop();
 }
 
-bool NativeReactNativeFeatureFlags::useTurboModules(jsi::Runtime& /*runtime*/) {
+bool NativeReactNativeFeatureFlags::useTurboModules(
+    jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useTurboModules();
 }
 
