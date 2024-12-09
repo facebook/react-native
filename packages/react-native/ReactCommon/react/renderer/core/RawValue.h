@@ -143,7 +143,7 @@ class RawValue {
    */
   bool hasValue() const {
     if (std::holds_alternative<folly::dynamic>(value_)) {
-      folly::dynamic dynamic = std::get<folly::dynamic>(value_);
+      auto& dynamic = std::get<folly::dynamic>(value_);
       return !dynamic.isNull();
     } else {
       const auto& [runtime, value] = std::get<JsiValuePair>(value_);
