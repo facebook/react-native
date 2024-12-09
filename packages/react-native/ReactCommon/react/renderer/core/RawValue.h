@@ -95,7 +95,7 @@ class RawValue {
   RawValue& operator=(const RawValue& other) noexcept {
     if (this != &other) {
       if (std::holds_alternative<folly::dynamic>(other.value_)) {
-        folly::dynamic dynamic = std::get<folly::dynamic>(other.value_);
+        auto& dynamic = std::get<folly::dynamic>(other.value_);
         value_ = dynamic;
       } else {
         const auto& [runtime, value] = std::get<JsiValuePair>(other.value_);
