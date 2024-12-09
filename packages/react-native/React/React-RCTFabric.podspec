@@ -85,7 +85,6 @@ Pod::Spec.new do |s|
     "react/renderer/components/textinput/platform/ios",
   ]);
 
-  add_dependency(s, "React-nativeconfig")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-ImageManager")
   add_dependency(s, "React-featureflags")

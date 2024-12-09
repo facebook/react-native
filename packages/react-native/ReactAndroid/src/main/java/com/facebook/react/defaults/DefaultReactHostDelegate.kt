@@ -12,7 +12,6 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostDelegate
@@ -31,8 +30,6 @@ import com.facebook.react.runtime.hermes.HermesInstance
  * @param jsRuntimeFactory Object that holds a native reference to the JS Runtime factory
  * @param bindingsInstaller Object that holds a native C++ references that allow host applications
  *   to install C++ objects into jsi::Runtime during the initialization of React Native
- * @param reactNativeConfig ReactNative Configuration that allows to customize the behavior of
- *   key/value pairs used by the framework to enable/disable experimental capabilities
  * @param exceptionHandler Callback that can be used by React Native host applications to react to
  *   exceptions thrown by the internals of React Native.
  */
@@ -44,12 +41,8 @@ public class DefaultReactHostDelegate(
     override val reactPackages: List<ReactPackage> = emptyList(),
     override val jsRuntimeFactory: JSRuntimeFactory = HermesInstance(),
     override val bindingsInstaller: BindingsInstaller? = null,
-    private val reactNativeConfig: ReactNativeConfig = ReactNativeConfig.DEFAULT_CONFIG,
     private val exceptionHandler: (Exception) -> Unit = { throw it },
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder
 ) : ReactHostDelegate {
-
-  override fun getReactNativeConfig(): ReactNativeConfig = reactNativeConfig
-
   override fun handleInstanceException(error: Exception): Unit = exceptionHandler(error)
 }

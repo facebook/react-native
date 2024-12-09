@@ -13,7 +13,6 @@
 #include <fbjni/fbjni.h>
 #include <jni.h>
 #include <jsi/jsi.h>
-#include <react/config/ReactNativeConfig.h>
 #include <react/runtime/JSRuntimeFactory.h>
 #include <react/runtime/hermes/HermesInstance.h>
 #include "../../jni/JJSRuntimeFactory.h"
@@ -28,16 +27,12 @@ class JHermesInstance
 
   static jni::local_ref<jhybriddata> initHybrid(
       jni::alias_ref<jclass> /* unused */,
-      jni::alias_ref<jobject> reactNativeConfig,
       bool allocInOldGenBeforeTTI);
 
   static void registerNatives();
 
-  JHermesInstance(
-      std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
-      bool allocInOldGenBeforeTTI)
-      : reactNativeConfig_(std::move(reactNativeConfig)),
-        allocInOldGenBeforeTTI_(allocInOldGenBeforeTTI){};
+  JHermesInstance(bool allocInOldGenBeforeTTI)
+      : allocInOldGenBeforeTTI_(allocInOldGenBeforeTTI){};
 
   std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept;
@@ -47,7 +42,6 @@ class JHermesInstance
  private:
   friend HybridBase;
 
-  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
   bool allocInOldGenBeforeTTI_;
 };
 

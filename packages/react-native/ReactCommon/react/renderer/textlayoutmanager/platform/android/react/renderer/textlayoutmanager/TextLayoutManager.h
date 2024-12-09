@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/config/ReactNativeConfig.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/core/LayoutConstraints.h>
