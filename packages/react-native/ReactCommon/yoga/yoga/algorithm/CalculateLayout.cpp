@@ -325,9 +325,23 @@ static void measureNodeWithMeasureFunc(
 
     // Measure the text under the current constraints.
     const YGSize measuredSize = node->measure(
-        innerWidth,
+        isUndefined(innerWidth) ? innerWidth
+                                : boundAxis(
+                                      node,
+                                      FlexDirection::Row,
+                                      direction,
+                                      innerWidth,
+                                      ownerWidth,
+                                      ownerWidth),
         measureMode(widthSizingMode),
-        innerHeight,
+        isUndefined(innerHeight) ? innerHeight
+                                 : boundAxis(
+                                       node,
+                                       FlexDirection::Column,
+                                       direction,
+                                       innerHeight,
+                                       ownerHeight,
+                                       ownerWidth),
         measureMode(heightSizingMode));
 
     layoutMarkerData.measureCallbacks += 1;
