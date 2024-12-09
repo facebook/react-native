@@ -446,7 +446,7 @@ class RawValue {
       const folly::dynamic& dynamic,
       JsiValueReturnType* /*type*/) {
     react_native_assert(false);
-    throw new std::runtime_error(
+    throw std::runtime_error(
         "Cannot cast dynamic to a jsi::Value type. Please use the 'useRawPropsJsiValue' feature flag to enable jsi::Value support for RawValues.");
   }
 
