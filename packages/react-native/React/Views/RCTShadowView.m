@@ -674,19 +674,19 @@ RCTShadowViewMeasure(YGNodeConstRef node, float width, YGMeasureMode widthMode, 
   return YGNodeStyleGetFlexBasis(_yogaNode);
 }
 
-#define RCT_GAP_PROPERTY(setProp, getProp, cssProp, type, gap) \
-  -(void)set##setProp : (type)value                            \
-  {                                                            \
-    YGNodeStyleSet##cssProp(_yogaNode, gap, value);            \
-  }                                                            \
-  -(type)getProp                                               \
-  {                                                            \
-    return YGNodeStyleGet##cssProp(_yogaNode, gap);            \
+#define RCT_GAP_PROPERTY(setProp, getProp, cssProp, gutter)       \
+  -(void)set##setProp : (YGValue)value                            \
+  {                                                               \
+    RCT_SET_YGVALUE(value, YGNodeStyleSetGap, _yogaNode, gutter); \
+  }                                                               \
+  -(YGValue)getProp                                               \
+  {                                                               \
+    return YGNodeStyleGet##cssProp(_yogaNode, gutter);            \
   }
 
-RCT_GAP_PROPERTY(RowGap, rowGap, Gap, float, YGGutterRow);
-RCT_GAP_PROPERTY(ColumnGap, columnGap, Gap, float, YGGutterColumn);
-RCT_GAP_PROPERTY(Gap, gap, Gap, float, YGGutterAll);
+RCT_GAP_PROPERTY(RowGap, rowGap, Gap, YGGutterRow);
+RCT_GAP_PROPERTY(ColumnGap, columnGap, Gap, YGGutterColumn);
+RCT_GAP_PROPERTY(Gap, gap, Gap, YGGutterAll);
 
 #define RCT_STYLE_PROPERTY(setProp, getProp, cssProp, type) \
   -(void)set##setProp : (type)value                         \
