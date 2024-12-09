@@ -141,11 +141,7 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       newEventCount,
       newAttributedString,
       reactTreeAttributedString,
-      getConcreteProps().paragraphAttributes,
-      state.defaultThemePaddingStart,
-      state.defaultThemePaddingEnd,
-      state.defaultThemePaddingTop,
-      state.defaultThemePaddingBottom});
+      getConcreteProps().paragraphAttributes});
 }
 
 #pragma mark - LayoutableShadowNode
