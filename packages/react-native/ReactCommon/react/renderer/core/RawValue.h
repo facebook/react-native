@@ -121,7 +121,12 @@ class RawValue {
   }
 
   inline explicit operator folly::dynamic() const noexcept {
-    return std::get<folly::dynamic>(value_);
+    if (std::holds_alternative<folly::dynamic>(value_)) {
+      return std::get<folly::dynamic>(value_);
+    } else {
+      const auto& [runtime, value] = std::get<JsiValuePair>(value_);
+      return jsi::dynamicFromValue(*runtime, value);
+    }
   }
 
   /*
