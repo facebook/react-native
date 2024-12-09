@@ -11,9 +11,8 @@ internal class NoRetryPolicy private constructor() : HeadlessJsTaskRetryPolicy {
 
   override fun canRetry(): Boolean = false
 
-  override fun getDelay(): Int {
-    throw IllegalStateException("Should not retrieve delay as canRetry is: ${canRetry()}")
-  }
+  override val delay: Int
+    get() = throw IllegalStateException("Should not retrieve delay as canRetry is: ${canRetry()}")
 
   override fun update(): HeadlessJsTaskRetryPolicy {
     throw IllegalStateException("Should not update as canRetry is: ${canRetry()}")

@@ -18,9 +18,8 @@ public interface HeadlessJsTaskEventListener {
   public fun onHeadlessJsTaskStart(taskId: Int)
 
   /**
-   * Called when a JS task finishes (i.e. when {@link
-   * HeadlessJsTaskSupportModule#notifyTaskFinished} is called, or when it times out), on the UI
-   * thread.
+   * Called when a JS task finishes (i.e. when [HeadlessJsTaskSupportModule.notifyTaskFinished] is
+   * called, or when it times out), on the UI thread.
    */
   public fun onHeadlessJsTaskFinish(taskId: Int)
 }
