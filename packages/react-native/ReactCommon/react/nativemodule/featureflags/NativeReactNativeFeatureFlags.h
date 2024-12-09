@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7f993bf54033abc75c79e719489b8127>>
+ * @generated SignedSource<<21e01d73d525a42650c97107fb7ed7ae>>
  */
 
 /**
@@ -122,6 +122,8 @@ class NativeReactNativeFeatureFlags
   bool useOptimisedViewPreallocationOnAndroid(jsi::Runtime& runtime);
 
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
+
+  bool useRawPropsJsiValue(jsi::Runtime& runtime);
 
   bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
 
