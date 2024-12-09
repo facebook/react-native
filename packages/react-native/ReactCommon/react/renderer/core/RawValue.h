@@ -82,7 +82,7 @@ class RawValue {
   friend class RawPropsParser;
   friend class UIManagerBinding;
 
-  RawValue(const RawValue& other) noexcept {
+  RawValue(const RawValue& other) {
     if (std::holds_alternative<folly::dynamic>(other.value_)) {
       auto& dynamic = std::get<folly::dynamic>(other.value_);
       value_ = dynamic;
@@ -92,7 +92,7 @@ class RawValue {
     }
   }
 
-  RawValue& operator=(const RawValue& other) noexcept {
+  RawValue& operator=(const RawValue& other) {
     if (this != &other) {
       if (std::holds_alternative<folly::dynamic>(other.value_)) {
         auto& dynamic = std::get<folly::dynamic>(other.value_);
@@ -120,7 +120,7 @@ class RawValue {
     }
   }
 
-  inline explicit operator folly::dynamic() const noexcept {
+  inline explicit operator folly::dynamic() const {
     if (std::holds_alternative<folly::dynamic>(value_)) {
       return std::get<folly::dynamic>(value_);
     } else {
@@ -342,7 +342,7 @@ class RawValue {
   static bool checkValueType(
       jsi::Runtime* runtime,
       const jsi::Value& value,
-      std::unordered_map<std::string, T>* /*type*/) noexcept {
+      std::unordered_map<std::string, T>* /*type*/) {
     if (!value.isObject()) {
       return false;
     }
