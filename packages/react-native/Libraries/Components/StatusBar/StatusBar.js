@@ -235,7 +235,9 @@ class StatusBar extends React.Component<Props> {
   static currentHeight: ?number =
     Platform.OS === 'android'
       ? NativeStatusBarManagerAndroid.getConstants().HEIGHT
-      : null;
+      : Platform.OS === 'ios'
+        ? NativeStatusBarManagerIOS.getConstants().HEIGHT
+        : null;
 
   // Provide an imperative API as static functions of the component.
   // See the corresponding prop for more detail.
