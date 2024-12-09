@@ -13,6 +13,7 @@ import type {TestSuiteResult} from '../runtime/setup';
 
 import entrypointTemplate from './entrypoint-template';
 import getFantomTestConfig from './getFantomTestConfig';
+import {FantomTestConfigMode} from './getFantomTestConfig';
 import {
   getBuckModeForPlatform,
   getDebugInfoFromCommandResult,
@@ -97,7 +98,7 @@ module.exports = async function runTest(
 
   const testConfig = getFantomTestConfig(testPath);
 
-  const isOptimizedMode = testConfig.mode === 'opt';
+  const isOptimizedMode = testConfig.mode === FantomTestConfigMode.Optimized;
 
   const metroConfig = await Metro.loadConfig({
     config: path.resolve(__dirname, '..', 'config', 'metro.config.js'),
