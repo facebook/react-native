@@ -183,7 +183,7 @@ class RawValue {
   }
 
   static bool checkValueType(
-      jsi::Runtime* runtime,
+      jsi::Runtime* /*runtime*/,
       const jsi::Value& value,
       bool* /*type*/) noexcept {
     return value.isBool();
@@ -196,7 +196,7 @@ class RawValue {
   }
 
   static bool checkValueType(
-      jsi::Runtime* runtime,
+      jsi::Runtime* /*runtime*/,
       const jsi::Value& value,
       int* /*type*/) noexcept {
     return value.isNumber();
@@ -209,7 +209,7 @@ class RawValue {
   }
 
   static bool checkValueType(
-      jsi::Runtime* runtime,
+      jsi::Runtime* /*runtime*/,
       const jsi::Value& value,
       int64_t* /*type*/) noexcept {
     return value.isNumber();
@@ -222,7 +222,7 @@ class RawValue {
   }
 
   static bool checkValueType(
-      jsi::Runtime* runtime,
+      jsi::Runtime* /*runtime*/,
       const jsi::Value& value,
       float* /*type*/) noexcept {
     return value.isNumber();
@@ -235,7 +235,7 @@ class RawValue {
   }
 
   static bool checkValueType(
-      jsi::Runtime* runtime,
+      jsi::Runtime* /*runtime*/,
       const jsi::Value& value,
       double* /*type*/) noexcept {
     return value.isNumber();
@@ -248,21 +248,21 @@ class RawValue {
   }
 
   static bool checkValueType(
-      jsi::Runtime* runtime,
+      jsi::Runtime* /*runtime*/,
       const jsi::Value& value,
       std::string* /*type*/) noexcept {
     return value.isString();
   }
 
   static bool checkValueType(
-      const folly::dynamic& dynamic,
+      const folly::dynamic& /*dynamic*/,
       JsiValueReturnType* /*type*/) noexcept {
     return false;
   }
 
   static bool checkValueType(
-      jsi::Runtime* runtime,
-      const jsi::Value& value,
+      jsi::Runtime* /*runtime*/,
+      const jsi::Value& /*value*/,
       JsiValueReturnType* /*type*/) noexcept {
     return true;
   }
@@ -385,7 +385,7 @@ class RawValue {
   }
 
   static bool
-  castValue(jsi::Runtime* runtime, const jsi::Value& value, bool* /*type*/) {
+  castValue(jsi::Runtime* /*runtime*/, const jsi::Value& value, bool* /*type*/) {
     return value.asBool();
   }
 
@@ -394,7 +394,7 @@ class RawValue {
   }
 
   static int
-  castValue(jsi::Runtime* runtime, const jsi::Value& value, int* /*type*/) {
+  castValue(jsi::Runtime* /*runtime*/, const jsi::Value& value, int* /*type*/) {
     double number = value.asNumber();
     return static_cast<int>(number);
   }
@@ -404,7 +404,7 @@ class RawValue {
   }
 
   static int64_t
-  castValue(jsi::Runtime* runtime, const jsi::Value& value, int64_t* /*type*/) {
+  castValue(jsi::Runtime* /*runtime*/, const jsi::Value& value, int64_t* /*type*/) {
     double number = value.asNumber();
     return static_cast<int64_t>(number);
   }
@@ -414,7 +414,7 @@ class RawValue {
   }
 
   static float
-  castValue(jsi::Runtime* runtime, const jsi::Value& value, float* /*type*/) {
+  castValue(jsi::Runtime* /*runtime*/, const jsi::Value& value, float* /*type*/) {
     double number = value.asNumber();
     return static_cast<float>(number);
   }
@@ -424,7 +424,7 @@ class RawValue {
   }
 
   static double
-  castValue(jsi::Runtime* runtime, const jsi::Value& value, double* /*type*/) {
+  castValue(jsi::Runtime* /*runtime*/, const jsi::Value& value, double* /*type*/) {
     return value.asNumber();
   }
 
@@ -443,7 +443,7 @@ class RawValue {
   }
 
   static JsiValueReturnType castValue(
-      const folly::dynamic& dynamic,
+      const folly::dynamic& /*dynamic*/,
       JsiValueReturnType* /*type*/) {
     react_native_assert(false);
     throw std::runtime_error(
