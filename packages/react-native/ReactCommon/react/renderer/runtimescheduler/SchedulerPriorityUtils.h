@@ -31,9 +31,8 @@ static inline SchedulerPriority fromRawValue(double value) {
       return SchedulerPriority::LowPriority;
     case 5:
       return SchedulerPriority::IdlePriority;
-    default:
-      LOG(FATAL) << "Unknown SchedulerPriority";
   }
+  LOG(FATAL) << "Unknown SchedulerPriority";
   return SchedulerPriority::NormalPriority;
 }
 
@@ -50,9 +49,8 @@ static inline std::chrono::milliseconds timeoutForSchedulerPriority(
       return std::chrono::seconds(10);
     case SchedulerPriority::IdlePriority:
       return std::chrono::minutes(5);
-    default:
-      LOG(FATAL) << "Unknown SchedulerPriority";
   }
+  LOG(FATAL) << "Unknown SchedulerPriority";
   return std::chrono::seconds(5);
 }
 
