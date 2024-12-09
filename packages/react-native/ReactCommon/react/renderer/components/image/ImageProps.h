@@ -41,7 +41,7 @@ class ImageProps final : public ViewProps {
   std::string internal_analyticTag{};
   std::string resizeMethod{};
   Float resizeMultiplier{};
-  bool shouldNotify{};
+  bool shouldNotifyLoadEvents{};
   SharedColor overlayColor{};
   Float fadeDuration{};
   bool progressiveRenderingEnabled{};

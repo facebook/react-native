@@ -29,9 +29,12 @@ bool isLooselyNull(const jsi::Value& value) {
   return value.isNull() || value.isUndefined();
 }
 
-bool isEmptyString(jsi::Runtime& runtime, const jsi::Value& value) {
+bool isEqualTo(
+    jsi::Runtime& runtime,
+    const jsi::Value& value,
+    const std::string& str) {
   return jsi::Value::strictEquals(
-      runtime, value, jsi::String::createFromUtf8(runtime, ""));
+      runtime, value, jsi::String::createFromUtf8(runtime, str));
 }
 
 std::string stringifyToCpp(jsi::Runtime& runtime, const jsi::Value& value) {
@@ -265,7 +268,7 @@ void JsErrorHandler::handleErrorWithCppPipeline(
   }
 
   auto nameValue = errorObj.getProperty(runtime, "name");
-  auto name = (isLooselyNull(nameValue) || isEmptyString(runtime, nameValue))
+  auto name = (isLooselyNull(nameValue) || isEqualTo(runtime, nameValue, ""))
       ? std::nullopt
       : std::optional(stringifyToCpp(runtime, nameValue));
 
@@ -383,14 +386,19 @@ void JsErrorHandler::handleErrorWithCppPipeline(
     return;
   }
 
-  if (isFatal) {
-    if (_hasHandledFatalError) {
-      return;
-    }
-    _hasHandledFatalError = true;
-  }
+  auto errorType = errorObj.getProperty(runtime, "type");
+  auto isWarn = isEqualTo(runtime, errorType, "warn");
 
-  _onJsError(runtime, parsedError);
+  if (isFatal || !isWarn) {
+    if (isFatal) {
+      if (_hasHandledFatalError) {
+        return;
+      }
+      _hasHandledFatalError = true;
+    }
+
+    _onJsError(runtime, parsedError);
+  }
 }
 
 void JsErrorHandler::registerErrorListener(

@@ -44,6 +44,11 @@ void WritableNativeMap::putInt(std::string key, int val) {
   map_.insert(std::move(key), val);
 }
 
+void WritableNativeMap::putLong(std::string key, jlong val) {
+  throwIfConsumed();
+  map_.insert(std::move(key), val);
+}
+
 void WritableNativeMap::putString(std::string key, alias_ref<jstring> val) {
   if (!val) {
     putNull(std::move(key));
@@ -90,6 +95,7 @@ void WritableNativeMap::registerNatives() {
       makeNativeMethod("putBoolean", WritableNativeMap::putBoolean),
       makeNativeMethod("putDouble", WritableNativeMap::putDouble),
       makeNativeMethod("putInt", WritableNativeMap::putInt),
+      makeNativeMethod("putLong", WritableNativeMap::putLong),
       makeNativeMethod("putString", WritableNativeMap::putString),
       makeNativeMethod("putNativeArray", WritableNativeMap::putNativeArray),
       makeNativeMethod("putNativeMap", WritableNativeMap::putNativeMap),

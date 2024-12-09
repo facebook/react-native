@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.jstasks;
+package com.facebook.react.jstasks
 
 /** Listener interface for task lifecycle events. */
 public interface HeadlessJsTaskEventListener {
@@ -15,12 +15,12 @@ public interface HeadlessJsTaskEventListener {
    *
    * @param taskId the unique identifier of this task instance
    */
-  void onHeadlessJsTaskStart(int taskId);
+  public fun onHeadlessJsTaskStart(taskId: Int)
 
   /**
    * Called when a JS task finishes (i.e. when {@link
    * HeadlessJsTaskSupportModule#notifyTaskFinished} is called, or when it times out), on the UI
    * thread.
    */
-  void onHeadlessJsTaskFinish(int taskId);
+  public fun onHeadlessJsTaskFinish(taskId: Int)
 }

@@ -9,8 +9,10 @@
  * @oncall react_native
  */
 
-import * as ReactNativeFeatureFlags from '../../../../src/private/featureflags/ReactNativeFeatureFlags';
+/**
+ * This is just an entrypoint to warm up the Metro cache before the tests run.
+ */
 
-ReactNativeFeatureFlags.override({
-  enableAccessToHostTreeInFabric: () => true,
-});
+import 'react-native/Libraries/Core/InitializeCore.js';
+import '@react-native/fantom/src/__tests__/Fantom-itest';
+import './setup';

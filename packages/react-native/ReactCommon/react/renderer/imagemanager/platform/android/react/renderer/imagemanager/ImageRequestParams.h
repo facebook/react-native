@@ -24,7 +24,7 @@ class ImageRequestParams {
       ImageResizeMode resizeMode,
       std::string resizeMethod,
       Float resizeMultiplier,
-      bool shouldNotify,
+      bool shouldNotifyLoadEvents,
       SharedColor overlayColor,
       SharedColor tintColor,
       Float fadeDuration,
@@ -36,7 +36,7 @@ class ImageRequestParams {
         resizeMode(resizeMode),
         resizeMethod(std::move(resizeMethod)),
         resizeMultiplier(resizeMultiplier),
-        shouldNotify(shouldNotify),
+        shouldNotifyLoadEvents(shouldNotifyLoadEvents),
         overlayColor(overlayColor),
         tintColor(tintColor),
         fadeDuration(fadeDuration),
@@ -49,7 +49,7 @@ class ImageRequestParams {
   ImageResizeMode resizeMode{ImageResizeMode::Stretch};
   std::string resizeMethod{};
   Float resizeMultiplier{};
-  bool shouldNotify{};
+  bool shouldNotifyLoadEvents{};
   SharedColor overlayColor{};
   SharedColor tintColor{};
   Float fadeDuration{};
@@ -64,7 +64,7 @@ class ImageRequestParams {
                this->resizeMode,
                this->resizeMethod,
                this->resizeMultiplier,
-               this->shouldNotify,
+               this->shouldNotifyLoadEvents,
                this->overlayColor,
                this->tintColor,
                this->fadeDuration,
@@ -77,7 +77,7 @@ class ImageRequestParams {
                rhs.resizeMode,
                rhs.resizeMethod,
                rhs.resizeMultiplier,
-               rhs.shouldNotify,
+               rhs.shouldNotifyLoadEvents,
                rhs.overlayColor,
                rhs.tintColor,
                rhs.fadeDuration,

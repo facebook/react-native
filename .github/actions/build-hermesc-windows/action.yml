@@ -43,9 +43,6 @@ runs:
       shell: powershell
       run: |
         if (-not(Test-Path -Path $Env:HERMES_WS_DIR\win64-bin\hermesc.exe)) {
-          choco install --no-progress cmake --version 3.14.7 --allow-downgrade
-          if (-not $?) { throw "Failed to install CMake" }
-
           cd $Env:HERMES_WS_DIR\icu
           # If Invoke-WebRequest shows a progress bar, it will fail with
           #   Win32 internal error "Access is denied" 0x5 occurred [...]

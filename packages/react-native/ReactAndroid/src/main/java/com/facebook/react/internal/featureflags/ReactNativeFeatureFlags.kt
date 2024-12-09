@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7ff4983cb507b99b315b38a614b4fd35>>
+ * @generated SignedSource<<124d445f029ae3e23652f355cbd28765>>
  */
 
 /**
@@ -105,12 +105,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
-
-  /**
-   * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
-   */
-  @JvmStatic
-  public fun enableFabricRendererExclusively(): Boolean = accessor.enableFabricRendererExclusively()
 
   /**
    * Synchronise the view command dispatching with mounting of new transaction

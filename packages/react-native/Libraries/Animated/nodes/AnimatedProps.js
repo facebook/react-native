@@ -9,6 +9,7 @@
  */
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 import type {AnimatedStyleAllowlist} from './AnimatedStyle';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
@@ -84,8 +85,9 @@ export default class AnimatedProps extends AnimatedNode {
     inputProps: {[string]: mixed},
     callback: () => void,
     allowlist?: ?AnimatedPropsAllowlist,
+    config?: ?AnimatedNodeConfig,
   ) {
-    super();
+    super(config);
     const [nodeKeys, nodes, props] = createAnimatedProps(inputProps, allowlist);
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
@@ -268,6 +270,7 @@ export default class AnimatedProps extends AnimatedNode {
     return {
       type: 'props',
       props: propsConfig,
+      debugID: this.__getDebugID(),
     };
   }
 }

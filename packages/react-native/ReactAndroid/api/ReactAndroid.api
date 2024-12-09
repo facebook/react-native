@@ -2612,7 +2612,6 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 	public fun dispatchCommand (IILcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (IILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
 	public fun dispatchCommand (ILjava/lang/String;Lcom/facebook/react/bridge/ReadableArray;)V
-	public fun experimental_prefetchResource (Ljava/lang/String;IILcom/facebook/react/common/mapbuffer/ReadableMapBuffer;)V
 	public fun getColor (I[Ljava/lang/String;)I
 	public fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getInspectorDataForInstance (ILandroid/view/View;)Lcom/facebook/react/bridge/ReadableMap;
@@ -2756,7 +2755,6 @@ public class com/facebook/react/fabric/mounting/MountingManager {
 	public fun attachRootView (ILandroid/view/View;Lcom/facebook/react/uimanager/ThemedReactContext;)V
 	public fun clearJSResponder ()V
 	public fun enqueuePendingEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;I)V
-	public fun experimental_prefetchResource (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;IILcom/facebook/react/common/mapbuffer/MapBuffer;)V
 	public fun getEventEmitter (II)Lcom/facebook/react/fabric/events/EventEmitterWrapper;
 	public fun getSurfaceManager (I)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
 	public fun getSurfaceManagerEnforced (ILjava/lang/String;)Lcom/facebook/react/fabric/mounting/SurfaceMountingManager;
@@ -3424,11 +3422,12 @@ public abstract interface class com/facebook/react/modules/network/CustomClientB
 	public abstract fun apply (Lokhttp3/OkHttpClient$Builder;)V
 }
 
-public class com/facebook/react/modules/network/ForwardingCookieHandler : java/net/CookieHandler {
+public final class com/facebook/react/modules/network/ForwardingCookieHandler : java/net/CookieHandler {
+	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun addCookies (Ljava/lang/String;Ljava/util/List;)V
-	public fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
-	public fun destroy ()V
+	public final fun addCookies (Ljava/lang/String;Ljava/util/List;)V
+	public final fun clearCookies (Lcom/facebook/react/bridge/Callback;)V
+	public final fun destroy ()V
 	public fun get (Ljava/net/URI;Ljava/util/Map;)Ljava/util/Map;
 	public fun put (Ljava/net/URI;Ljava/util/Map;)V
 }
@@ -3508,14 +3507,6 @@ public class com/facebook/react/modules/network/ProgressResponseBody : okhttp3/R
 	public fun contentType ()Lokhttp3/MediaType;
 	public fun source ()Lokio/BufferedSource;
 	public fun totalBytesRead ()J
-}
-
-public class com/facebook/react/modules/network/ReactCookieJarContainer : com/facebook/react/modules/network/CookieJarContainer {
-	public fun <init> ()V
-	public fun loadForRequest (Lokhttp3/HttpUrl;)Ljava/util/List;
-	public fun removeCookieJar ()V
-	public fun saveFromResponse (Lokhttp3/HttpUrl;Ljava/util/List;)V
-	public fun setCookieJar (Lokhttp3/CookieJar;)V
 }
 
 public class com/facebook/react/modules/network/ResponseUtil {
@@ -3628,6 +3619,8 @@ public final class com/facebook/react/modules/toast/ToastModule$Companion {
 }
 
 public final class com/facebook/react/modules/websocket/WebSocketModule : com/facebook/fbreact/specs/NativeWebSocketModuleSpec {
+	public static final field Companion Lcom/facebook/react/modules/websocket/WebSocketModule$Companion;
+	public static final field NAME Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun addListener (Ljava/lang/String;)V
 	public fun close (DLjava/lang/String;D)V
@@ -3637,9 +3630,13 @@ public final class com/facebook/react/modules/websocket/WebSocketModule : com/fa
 	public fun removeListeners (D)V
 	public fun send (Ljava/lang/String;D)V
 	public fun sendBinary (Ljava/lang/String;D)V
-	public fun sendBinary (Lokio/ByteString;I)V
-	public fun setContentHandler (ILcom/facebook/react/modules/websocket/WebSocketModule$ContentHandler;)V
-	public static fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
+	public final fun sendBinary (Lokio/ByteString;I)V
+	public final fun setContentHandler (ILcom/facebook/react/modules/websocket/WebSocketModule$ContentHandler;)V
+	public static final fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
+}
+
+public final class com/facebook/react/modules/websocket/WebSocketModule$Companion {
+	public final fun setCustomClientBuilder (Lcom/facebook/react/modules/network/CustomClientBuilder;)V
 }
 
 public abstract interface class com/facebook/react/modules/websocket/WebSocketModule$ContentHandler {
@@ -5259,8 +5256,6 @@ public abstract class com/facebook/react/uimanager/ViewManager : com/facebook/re
 	public fun createView (ILcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;Lcom/facebook/react/touch/JSResponderHandler;)Landroid/view/View;
 	protected fun createViewInstance (ILcom/facebook/react/uimanager/ThemedReactContext;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Landroid/view/View;
 	protected abstract fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	protected fun experimental_isPrefetchingEnabled ()Z
-	public fun experimental_prefetchResource (Lcom/facebook/react/bridge/ReactContext;IILcom/facebook/react/common/mapbuffer/MapBuffer;)V
 	public fun getCommandsMap ()Ljava/util/Map;
 	protected fun getDelegate ()Lcom/facebook/react/uimanager/ViewManagerDelegate;
 	public fun getExportedCustomBubblingEventTypeConstants ()Ljava/util/Map;

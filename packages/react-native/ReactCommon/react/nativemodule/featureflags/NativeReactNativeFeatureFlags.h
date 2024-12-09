@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a26345fa4ad1c7bb3aa84fac1bef5923>>
+ * @generated SignedSource<<7f993bf54033abc75c79e719489b8127>>
  */
 
 /**
@@ -57,13 +57,12 @@ class NativeReactNativeFeatureFlags
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
-  bool enableEventEmitterRetentionDuringGesturesOnAndroid(jsi::Runtime& runtime);
+  bool enableEventEmitterRetentionDuringGesturesOnAndroid(
+      jsi::Runtime& runtime);
 
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
-
-  bool enableFabricRendererExclusively(jsi::Runtime& runtime);
 
   bool enableFixForViewCommandRace(jsi::Runtime& runtime);
 
@@ -95,11 +94,13 @@ class NativeReactNativeFeatureFlags
 
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
 
-  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(jsi::Runtime& runtime);
+  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(
+      jsi::Runtime& runtime);
 
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
-  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
+  bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
+      jsi::Runtime& runtime);
 
   bool fuseboxEnabledDebug(jsi::Runtime& runtime);
 

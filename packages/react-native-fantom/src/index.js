@@ -11,11 +11,11 @@
 import type {
   FantomRenderedOutput,
   RenderOutputConfig,
-} from './FantomRenderedOutput';
+} from './getFantomRenderedOutput';
 import type {MixedElement} from 'react';
 
-import ReactFabric from '../../../Libraries/Renderer/shims/ReactFabric';
-import getFantomRenderedOutput from './FantomRenderedOutput';
+import getFantomRenderedOutput from './getFantomRenderedOutput';
+import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 
 let globalSurfaceIdCounter = 1;
 
@@ -65,7 +65,7 @@ class Root {
  *
  * React must run inside of event loop to ensure scheduling environment is closer to production.
  */
-export function runTask(task: () => void) {
+export function runTask(task: () => void | Promise<void>) {
   nativeRuntimeScheduler.unstable_scheduleCallback(
     schedulerPriorityImmediate,
     task,

@@ -107,14 +107,14 @@ ImageProps::ImageProps(
                     "resizeMultiplier",
                     sourceProps.resizeMultiplier,
                     {})),
-      shouldNotify(
+      shouldNotifyLoadEvents(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
-              ? sourceProps.shouldNotify
+              ? sourceProps.shouldNotifyLoadEvents
               : convertRawProp(
                     context,
                     rawProps,
-                    "shouldNotify",
-                    sourceProps.shouldNotify,
+                    "shouldNotifyLoadEvents",
+                    sourceProps.shouldNotifyLoadEvents,
                     {})),
       overlayColor(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
@@ -167,7 +167,7 @@ void ImageProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(internal_analyticTag);
     RAW_SET_PROP_SWITCH_CASE_BASIC(resizeMethod);
     RAW_SET_PROP_SWITCH_CASE_BASIC(resizeMultiplier);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(shouldNotify);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(shouldNotifyLoadEvents);
     RAW_SET_PROP_SWITCH_CASE_BASIC(overlayColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(fadeDuration);
     RAW_SET_PROP_SWITCH_CASE_BASIC(progressiveRenderingEnabled);
