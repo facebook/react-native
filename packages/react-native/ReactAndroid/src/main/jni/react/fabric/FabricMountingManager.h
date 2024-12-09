@@ -18,13 +18,11 @@
 namespace facebook::react {
 
 class MountingTransaction;
-class ReactNativeConfig;
 struct ShadowView;
 
 class FabricMountingManager final {
  public:
   FabricMountingManager(
-      std::shared_ptr<const ReactNativeConfig>& config,
       jni::global_ref<JFabricUIManager::javaobject>& javaUIManager);
   FabricMountingManager(const FabricMountingManager&) = delete;
 

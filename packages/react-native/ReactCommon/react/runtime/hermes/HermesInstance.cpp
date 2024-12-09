@@ -120,7 +120,6 @@ class HermesJSRuntime : public JSRuntime {
 };
 
 std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
-    std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
     std::shared_ptr<::hermes::vm::CrashManager> crashManager,
     std::shared_ptr<MessageQueueThread> msgQueueThread,
     bool allocInOldGenBeforeTTI) noexcept {

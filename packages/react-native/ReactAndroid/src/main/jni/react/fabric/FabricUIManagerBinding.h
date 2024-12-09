@@ -32,7 +32,6 @@ class EventBeatManager;
 class FabricMountingManager;
 class Instance;
 class LayoutAnimationDriver;
-class ReactNativeConfig;
 class Scheduler;
 
 class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
@@ -68,8 +67,7 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
       jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
       EventBeatManager* eventBeatManager,
-      ComponentFactory* componentsRegistry,
-      jni::alias_ref<jobject> reactNativeConfig);
+      ComponentFactory* componentsRegistry);
 
   void startSurface(
       jint surfaceId,
@@ -167,7 +165,6 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   float pointScaleFactor_ = 1;
 
-  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
   bool enableFabricLogs_{false};
 };
 
