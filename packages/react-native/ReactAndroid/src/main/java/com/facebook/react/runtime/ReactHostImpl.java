@@ -194,7 +194,7 @@ public class ReactHostImpl implements ReactHost {
     mUIExecutor = uiExecutor;
     mMemoryPressureRouter = new MemoryPressureRouter(context);
     mAllowPackagerServerAccess = allowPackagerServerAccess;
-    mUseDevSupport = useDevSupport || ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE;
+    mUseDevSupport = useDevSupport;
     if (devSupportManagerFactory == null) {
       devSupportManagerFactory = new DefaultDevSupportManagerFactory();
     }
@@ -392,8 +392,8 @@ public class ReactHostImpl implements ReactHost {
 
     Activity currentActivity = getCurrentActivity();
 
-    maybeEnableDevSupport(false);
     if (currentActivity == activity) {
+      maybeEnableDevSupport(false);
       moveToHostDestroy(getCurrentReactContext());
     }
   }
@@ -562,7 +562,8 @@ public class ReactHostImpl implements ReactHost {
    * @param reason describing why ReactHost is being destroyed (e.g. memory pressure)
    * @param ex exception that caused the trigger to destroy ReactHost (or null) This exception will
    *     be used to log properly the cause of destroy operation.
-   * @param onDestroyFinished callback that will be called when React Native gets destroyed.
+   * @param onDestroyFinished callback that will be called when React Native gets destroyed, the
+   *     callback will run on a background thread.
    * @return A task that completes when React Native gets destroyed.
    */
   @NonNull

@@ -48,6 +48,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -445,12 +446,18 @@ public class FabricUIManager
 
   @Override
   public void markActiveTouchForTag(int surfaceId, int reactTag) {
-    mMountingManager.getSurfaceManager(surfaceId).markActiveTouchForTag(reactTag);
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    if (surfaceMountingManager != null) {
+      surfaceMountingManager.markActiveTouchForTag(reactTag);
+    }
   }
 
   @Override
   public void sweepActiveTouchForTag(int surfaceId, int reactTag) {
-    mMountingManager.getSurfaceManager(surfaceId).sweepActiveTouchForTag(reactTag);
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    if (surfaceMountingManager != null) {
+      surfaceMountingManager.sweepActiveTouchForTag(reactTag);
+    }
   }
 
   /**
@@ -625,10 +632,10 @@ public class FabricUIManager
    * @return if theme data is available in the output parameters.
    */
   public boolean getThemeData(int surfaceId, float[] defaultTextInputPadding) {
-    Context context =
-        mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData").getContext();
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    Context context = surfaceMountingManager != null ? surfaceMountingManager.getContext() : null;
     if (context == null) {
-      FLog.w(TAG, "\"themedReactContext\" is null when call \"getThemeData\"");
+      FLog.w(TAG, "Couldn't get context for surfaceId %d in getThemeData", surfaceId);
       return false;
     }
 
@@ -872,6 +879,17 @@ public class FabricUIManager
     }
   }
 
+  /**
+   * This method initiates preloading of an image specified by ImageSource. It can later be consumed
+   * by an ImageView.
+   */
+  @UnstableReactNativeAPI
+  public void experimental_prefetchResource(
+      String componentName, int surfaceId, int reactTag, ReadableMapBuffer params) {
+    mMountingManager.experimental_prefetchResource(
+        mReactApplicationContext, componentName, surfaceId, reactTag, params);
+  }
+
   public void setBinding(FabricUIManagerBinding binding) {
     mBinding = binding;
   }
@@ -954,7 +972,6 @@ public class FabricUIManager
    * @param reactTag
    * @param eventName
    * @param canCoalesceEvent
-   * @param customCoalesceKey
    * @param params
    * @param eventCategory
    */

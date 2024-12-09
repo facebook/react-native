@@ -17,6 +17,7 @@ export type NativeIntersectionObserverEntry = {
   targetInstanceHandle: mixed,
   targetRect: $ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
   rootRect: $ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
+  // TODO(T209328432) - Remove optionality of intersectionRect when native changes are released
   intersectionRect: ?$ReadOnlyArray<number>, // It's actually a tuple with x, y, width and height
   isIntersectingAboveThresholds: boolean,
   time: number,
@@ -26,6 +27,7 @@ export type NativeIntersectionObserverObserveOptions = {
   intersectionObserverId: number,
   targetShadowNode: mixed,
   thresholds: $ReadOnlyArray<number>,
+  rootThresholds?: ?$ReadOnlyArray<number>,
 };
 
 export interface Spec extends TurboModule {

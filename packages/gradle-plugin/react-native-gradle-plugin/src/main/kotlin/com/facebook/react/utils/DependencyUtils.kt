@@ -47,14 +47,11 @@ internal object DependencyUtils {
             repo.content { it.excludeGroup("com.facebook.react") }
           }
         }
-        // Android JSC is installed from npm
-        mavenRepoFromURI(File(reactNativeDir, "../jsc-android/dist").toURI()) { repo ->
-          repo.content { it.includeGroup("org.webkit") }
-        }
         repositories.google { repo ->
           repo.content {
             // We don't want to fetch JSC or React from Google
             it.excludeGroup("org.webkit")
+            it.excludeGroup("io.github.react-native-community")
             it.excludeGroup("com.facebook.react")
           }
         }
@@ -62,6 +59,7 @@ internal object DependencyUtils {
           repo.content {
             // We don't want to fetch JSC or React from JitPack
             it.excludeGroup("org.webkit")
+            it.excludeGroup("io.github.react-native-community")
             it.excludeGroup("com.facebook.react")
           }
         }

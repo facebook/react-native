@@ -42,7 +42,7 @@ import*as e from"../../ui/legacy/legacy.js";import*as t from"../../core/host/hos
                 <p>${d(a.docsDebuggingBasicsDetail)}</p>
               </div>
             </button>
-            <button class="rn-welcome-docsfeed-item" type="button" role="link" @click=${this.#o.bind(this,"https://reactnative.dev/docs/react-devtools")} title=${d(a.docsReactNativeDevTools)}>
+            <button class="rn-welcome-docsfeed-item" type="button" role="link" @click=${this.#o.bind(this,"https://reactnative.dev/docs/react-native-devtools")} title=${d(a.docsReactNativeDevTools)}>
               <div class="rn-welcome-image" style="background-image: url('${c}')"></div>
               <div>
                 <p class="devtools-link">${d(a.docsReactNativeDevTools)}</p>

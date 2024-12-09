@@ -73,13 +73,13 @@ public class JavaOnlyArray : ReadableArray, WritableArray {
 
   override fun getLong(index: Int): Long = (backingList[index] as Number).toLong()
 
-  override fun getString(index: Int): String = backingList[index] as String
+  override fun getString(index: Int): String? = backingList[index] as String?
 
-  override fun getArray(index: Int): ReadableArray = backingList[index] as ReadableArray
+  override fun getArray(index: Int): ReadableArray? = backingList[index] as ReadableArray?
 
   override fun getBoolean(index: Int): Boolean = backingList[index] as Boolean
 
-  override fun getMap(index: Int): ReadableMap = backingList[index] as ReadableMap
+  override fun getMap(index: Int): ReadableMap? = backingList[index] as ReadableMap?
 
   override fun getDynamic(index: Int): Dynamic = DynamicFromArray.create(this, index)
 

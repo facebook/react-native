@@ -149,6 +149,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   BOOL shouldBePresented = !_isPresented && _shouldPresent && self.window;
   if (shouldBePresented) {
+    self.viewController.presentationController.delegate = self;
+
     _isPresented = YES;
     [self presentViewController:self.viewController
                        animated:_shouldAnimatePresentation
@@ -272,6 +274,16 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [childComponentView removeFromSuperview];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidAttemptToDismiss:(UIPresentationController *)controller
+{
+  auto eventEmitter = [self modalEventEmitter];
+  if (eventEmitter) {
+    eventEmitter->onRequestClose({});
+  }
 }
 
 @end

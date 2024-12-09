@@ -154,14 +154,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableFabricRendererExclusively: {
-      defaultValue: false,
-      metadata: {
-        description:
-          'When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.',
-        purpose: 'release',
-      },
-    },
     enableFixForViewCommandRace: {
       defaultValue: false,
       metadata: {
@@ -185,6 +177,15 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-08-30',
         description: 'iOS Views will clip to their padding box vs border box',
+        purpose: 'experimentation',
+      },
+    },
+    enableImagePrefetchingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-19',
+        description:
+          'When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout',
         purpose: 'experimentation',
       },
     },
@@ -283,6 +284,14 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    fixDifferentiatorEmittingUpdatesWithWrongParentTag: {
+      defaultValue: true,
+      metadata: {
+        description:
+          "Fixes a bug in Differentiator where parent views may be referenced before they're created",
+        purpose: 'release',
+      },
+    },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
       metadata: {
@@ -340,14 +349,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-07-12',
         description:
           'Adds support for loading vector drawable assets in the Image component (only on Android)',
-        purpose: 'experimentation',
-      },
-    },
-    setAndroidLayoutDirection: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-05-17',
-        description: 'Propagate layout direction to Android views.',
         purpose: 'experimentation',
       },
     },
@@ -510,12 +511,12 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableOptimisedVirtualizedCells: {
+    fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
       metadata: {
-        dateAdded: '2024-08-21',
+        dateAdded: '2024-11-22',
         description:
-          'Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option',
+          'Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements',
         purpose: 'experimentation',
       },
     },
@@ -559,15 +560,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-03-05',
         description: 'Enables use of setNativeProps in JS driven animations.',
-        purpose: 'experimentation',
-      },
-    },
-    shouldUseSetNativePropsInNativeAnimationsInFabric: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-03-05',
-        description:
-          'Enables use of setNativeProps in Native driven animations in Fabric.',
         purpose: 'experimentation',
       },
     },

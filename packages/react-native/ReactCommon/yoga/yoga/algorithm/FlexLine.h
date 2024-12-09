@@ -66,7 +66,7 @@ FlexLine calculateFlexLine(
     yoga::Node* node,
     Direction ownerDirection,
     float ownerWidth,
-    float mainAxisownerSize,
+    float mainAxisOwnerSize,
     float availableInnerWidth,
     float availableInnerMainDim,
     Node::LayoutableChildren::Iterator& iterator,

@@ -47,6 +47,13 @@ try {
     throw Error(exitCode);
   }
 
+  describe('Test: No JS build artifacts');
+  if (exec(`${YARN_BINARY} run build --check`).code) {
+    echo('Failed, there are build artifacts in this commit.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
   describe('Test: Flow check');
   if (exec(`${YARN_BINARY} run flow-check`).code) {
     echo('Failed to run flow.');

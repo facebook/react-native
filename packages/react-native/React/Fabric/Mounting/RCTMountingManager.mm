@@ -73,9 +73,8 @@ static void RCTPerformMountInstructions(
 
       case ShadowViewMutation::Insert: {
         auto &newChildShadowView = mutation.newChildShadowView;
-        auto &parentShadowView = mutation.parentShadowView;
         auto &newChildViewDescriptor = [registry componentViewDescriptorWithTag:newChildShadowView.tag];
-        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
+        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:mutation.parentTag];
 
         UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
@@ -94,9 +93,8 @@ static void RCTPerformMountInstructions(
 
       case ShadowViewMutation::Remove: {
         auto &oldChildShadowView = mutation.oldChildShadowView;
-        auto &parentShadowView = mutation.parentShadowView;
         auto &oldChildViewDescriptor = [registry componentViewDescriptorWithTag:oldChildShadowView.tag];
-        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
+        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:mutation.parentTag];
         [parentViewDescriptor.view unmountChildComponentView:oldChildViewDescriptor.view index:mutation.index];
         break;
       }

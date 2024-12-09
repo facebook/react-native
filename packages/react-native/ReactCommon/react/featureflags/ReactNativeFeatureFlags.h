@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0c0217362f582ac635d5f46347e65252>>
+ * @generated SignedSource<<9657126869d2fb6edb9074d71c0989ac>>
  */
 
 /**
@@ -105,11 +105,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFabricRenderer();
 
   /**
-   * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
-   */
-  RN_EXPORT static bool enableFabricRendererExclusively();
-
-  /**
    * Synchronise the view command dispatching with mounting of new transaction
    */
   RN_EXPORT static bool enableFixForViewCommandRace();
@@ -123,6 +118,11 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
+
+  /**
+   * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+   */
+  RN_EXPORT static bool enableImagePrefetchingAndroid();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -180,6 +180,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool excludeYogaFromRawProps();
 
   /**
+   * Fixes a bug in Differentiator where parent views may be referenced before they're created
+   */
+  RN_EXPORT static bool fixDifferentiatorEmittingUpdatesWithWrongParentTag();
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -213,11 +218,6 @@ class ReactNativeFeatureFlags {
    * Adds support for loading vector drawable assets in the Image component (only on Android)
    */
   RN_EXPORT static bool loadVectorDrawablesOnImages();
-
-  /**
-   * Propagate layout direction to Android views.
-   */
-  RN_EXPORT static bool setAndroidLayoutDirection();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

@@ -24,9 +24,9 @@
 #import <RNTMyNativeViewComponentView.h>
 #endif
 
-#if __has_include(<ReactCodegen/RCTAppDependencyProvider.h>)
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
 #define USE_OSS_CODEGEN 1
-#import <ReactCodegen/RCTAppDependencyProvider.h>
+#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
 #else
 #define USE_OSS_CODEGEN 0
 #endif
@@ -41,7 +41,7 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   self.moduleName = @"RNTesterApp";
-#if USE_ODD_CODEGEN
+#if USE_OSS_CODEGEN
   self.dependencyProvider = [RCTAppDependencyProvider new];
 #endif
   // You can add your custom initial props in the dictionary below.

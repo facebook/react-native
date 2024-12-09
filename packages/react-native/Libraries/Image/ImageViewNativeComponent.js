@@ -82,6 +82,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         },
         validAttributes: {
           blurRadius: true,
+          defaultSource: {
+            process: require('./resolveAssetSource'),
+          },
           internal_analyticTag: true,
           resizeMethod: true,
           resizeMode: true,
@@ -100,7 +103,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderRadius: true,
           headers: true,
           shouldNotifyLoadEvents: true,
-          defaultSrc: true,
           overlayColor: {
             process: require('../StyleSheet/processColor').default,
           },

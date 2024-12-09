@@ -225,8 +225,13 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const deviceId = query.device || fallbackDeviceId;
         const deviceName = query.name || 'Unknown';
         const appName = query.app || 'Unknown';
+        const isProfilingBuild = query.profiling === 'true';
+
+        const deviceRelativeBaseUrl =
+          getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
 
         const oldDevice = this.#devices.get(deviceId);
+
         let newDevice;
         const deviceOptions: DeviceOptions = {
           id: deviceId,
@@ -236,7 +241,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
           projectRoot: this.#projectRoot,
           eventReporter: this.#eventReporter,
           createMessageMiddleware: this.#customMessageHandler,
+          deviceRelativeBaseUrl,
           serverRelativeBaseUrl: this.#serverBaseUrl,
+          isProfilingBuild,
         };
 
         if (oldDevice) {
@@ -249,7 +256,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         this.#devices.set(deviceId, newDevice);
 
         debug(
-          `Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}`,
+          `Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}, via=${deviceRelativeBaseUrl.origin}`,
         );
 
         socket.on('close', () => {
@@ -285,6 +292,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const query = url.parse(req.url || '', true).query || {};
         const deviceId = query.device;
         const pageId = query.page;
+        const debuggerRelativeBaseUrl =
+          getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
 
         if (deviceId == null || pageId == null) {
           throw new Error('Incorrect URL - must provide device and page IDs');
@@ -298,6 +307,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS);
 
         device.handleDebuggerConnection(socket, pageId, {
+          debuggerRelativeBaseUrl,
           userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
       } catch (e) {

@@ -559,7 +559,7 @@ if (global.nativeLoggingHook) {
     let originalConsoleError = console.error;
     console.reportErrorsAsExceptions = true;
     function stringifySafe(arg) {
-      return inspect(arg, {depth: 10}).replaceAll(/\n\s*/g, ' ');
+      return inspect(arg, {depth: 10}).replace(/\n\s*/g, ' ');
     }
     console.error = function (...args) {
       originalConsoleError.apply(this, args);

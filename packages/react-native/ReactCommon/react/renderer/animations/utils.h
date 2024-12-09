@@ -20,8 +20,7 @@ static inline bool shouldFirstComeBeforeSecondRemovesOnly(
   // come first.
   return (lhs.type == ShadowViewMutation::Type::Remove &&
           lhs.type == rhs.type) &&
-      (lhs.parentShadowView.tag == rhs.parentShadowView.tag) &&
-      (lhs.index > rhs.index);
+      (lhs.parentTag == rhs.parentTag) && (lhs.index > rhs.index);
 }
 
 static inline void handleShouldFirstComeBeforeSecondRemovesOnly(
@@ -31,7 +30,7 @@ static inline void handleShouldFirstComeBeforeSecondRemovesOnly(
   ShadowViewMutation::List finalList;
   for (auto& mutation : list) {
     if (mutation.type == ShadowViewMutation::Type::Remove) {
-      auto key = std::to_string(mutation.parentShadowView.tag);
+      auto key = std::to_string(mutation.parentTag);
       removeMutationsByTag[key].push_back(mutation);
     } else {
       finalList.push_back(mutation);
@@ -104,7 +103,7 @@ static inline bool shouldFirstComeBeforeSecondMutation(
     // Make sure that removes on the same level are sorted - highest indices
     // must come first.
     if (lhs.type == ShadowViewMutation::Type::Remove &&
-        lhs.parentShadowView.tag == rhs.parentShadowView.tag) {
+        lhs.parentTag == rhs.parentTag) {
       if (lhs.index > rhs.index) {
         return true;
       } else {
