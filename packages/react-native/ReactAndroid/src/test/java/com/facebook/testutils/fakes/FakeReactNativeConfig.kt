@@ -10,12 +10,4 @@ package com.facebook.testutils.fakes
 import com.facebook.react.fabric.ReactNativeConfig
 
 /** A fake [ReactNativeConfig] that returns default values for all methods without accessing JNI. */
-class FakeReactNativeConfig : ReactNativeConfig {
-  override fun getBool(param: String): Boolean = false
-
-  override fun getInt64(param: String): Long = 0L
-
-  override fun getString(param: String): String = ""
-
-  override fun getDouble(param: String): Double = 0.0
-}
+class FakeReactNativeConfig : ReactNativeConfig {}
