@@ -1,5 +1,0 @@
-steps:
-  - bash: |
-      sudo xcode-select --switch $(xcode_version)
-    displayName: Use $(xcode_friendly_name)
-    failOnStderr: true

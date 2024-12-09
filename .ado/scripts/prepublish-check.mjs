@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as util from "node:util";
 
-const ADO_PUBLISH_PIPELINE = ".ado/templates/npm-publish.yml";
+const ADO_PUBLISH_PIPELINE = ".ado/templates/npm-publish-steps.yml";
 const NX_CONFIG_FILE = "nx.json";
 
 const NPM_TAG_NEXT = "next";

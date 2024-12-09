@@ -11,4 +11,4 @@ jobs:
       fetchFilter: blob:none # partial clone for faster clones while maintaining history
       persistCredentials: true # set to 'true' to leave the OAuth token in the Git config after the initial fetch
 
-    - template: /.ado/templates/npm-publish.yml@self
+    - template: /.ado/templates/npm-publish-steps.yml@self

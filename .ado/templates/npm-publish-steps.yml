@@ -3,6 +3,8 @@ parameters:
   publishTag: 'latest'
 
 steps:
+  - template: /.ado/templates/configure-git.yml@self
+
   - script: |
       yarn install
     displayName: Install npm dependencies
@@ -19,7 +21,8 @@ steps:
 
   - script: |
       git switch $(Build.SourceBranchName)
-      yarn nx release --yes --verbose
+      yarn nx release --skip-publish --verbose
+      yarn nx release publish --excludeTaskDependencies
     env:
       GITHUB_TOKEN: $(githubAuthToken)
       NODE_AUTH_TOKEN: $(npmAuthToken)
