@@ -101,7 +101,8 @@ struct Transform {
    */
   static Transform FromTransformOperation(
       TransformOperation transformOperation,
-      const Size& size);
+      const Size& size,
+      const Transform& transform = Transform::Identity());
   static TransformOperation DefaultTransformOperation(
       TransformOperationType type);
 
