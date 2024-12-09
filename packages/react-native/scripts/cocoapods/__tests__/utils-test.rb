@@ -185,15 +185,24 @@ class UtilsTests < Test::Unit::TestCase
         react_hermes_name = "React-hermes"
         react_core_name = "React-Core"
         hermes_engine_name = "hermes-engine"
-        react_hermes_debug_config = BuildConfigurationMock.new("Debug")
-        react_hermes_release_config = BuildConfigurationMock.new("Release")
-        react_core_debug_config = BuildConfigurationMock.new("Debug")
-        react_core_release_config = BuildConfigurationMock.new("Release")
-        hermes_engine_debug_config = BuildConfigurationMock.new("Debug")
-        hermes_engine_release_config = BuildConfigurationMock.new("Release")
-        react_hermes_target = TargetMock.new(react_hermes_name, [react_hermes_debug_config, react_hermes_release_config])
-        react_core_target = TargetMock.new(react_core_name, [react_core_debug_config, react_core_release_config])
-        hermes_engine_target = TargetMock.new(hermes_engine_name, [hermes_engine_debug_config, hermes_engine_release_config])
+
+        react_hermes_debug_config = BuildConfigurationMock.new("Debug", {}, is_debug: true)
+        react_hermes_release_config = BuildConfigurationMock.new("Release", {}, is_debug: false)
+        react_hermes_debug_config_rename = BuildConfigurationMock.new("Development", {}, is_debug: true)
+        react_hermes_release_config_rename = BuildConfigurationMock.new("Production", {}, is_debug: false)
+        react_hermes_target = TargetMock.new(react_hermes_name, [react_hermes_debug_config, react_hermes_release_config, react_hermes_debug_config_rename, react_hermes_release_config_rename])
+
+        react_core_debug_config = BuildConfigurationMock.new("Debug", {}, is_debug: true)
+        react_core_release_config = BuildConfigurationMock.new("Release", {}, is_debug: false)
+        react_core_debug_config_rename = BuildConfigurationMock.new("Development", {}, is_debug: true)
+        react_core_release_config_rename = BuildConfigurationMock.new("Production", {}, is_debug: false)
+        react_core_target = TargetMock.new(react_core_name, [react_core_debug_config, react_core_release_config, react_core_debug_config_rename, react_core_release_config_rename])
+
+        hermes_engine_debug_config = BuildConfigurationMock.new("Debug", {}, is_debug: true)
+        hermes_engine_release_config = BuildConfigurationMock.new("Release", {}, is_debug: false)
+        hermes_engine_debug_config_rename = BuildConfigurationMock.new("Development", {}, is_debug: true)
+        hermes_engine_release_config_rename = BuildConfigurationMock.new("Production", {}, is_debug: false)
+        hermes_engine_target = TargetMock.new(hermes_engine_name, [hermes_engine_debug_config, hermes_engine_release_config, hermes_engine_debug_config_rename, hermes_engine_release_config_rename])
 
         installer = InstallerMock.new(
           :pod_target_installation_results => {
@@ -211,10 +220,18 @@ class UtilsTests < Test::Unit::TestCase
         expected_value = "$(inherited) HERMES_ENABLE_DEBUGGER=1"
         assert_equal(expected_value, react_hermes_debug_config.build_settings[build_setting])
         assert_nil(react_hermes_release_config.build_settings[build_setting])
+        assert_equal(expected_value, react_hermes_debug_config_rename.build_settings[build_setting])
+        assert_nil(react_hermes_release_config_rename.build_settings[build_setting])
+
         assert_nil(react_core_debug_config.build_settings[build_setting])
         assert_nil(react_core_release_config.build_settings[build_setting])
+        assert_nil(react_core_debug_config_rename.build_settings[build_setting])
+        assert_nil(react_core_release_config_rename.build_settings[build_setting])
+
         assert_equal(expected_value, hermes_engine_debug_config.build_settings[build_setting])
         assert_nil(hermes_engine_release_config.build_settings[build_setting])
+        assert_equal(expected_value, hermes_engine_debug_config_rename.build_settings[build_setting])
+        assert_nil(hermes_engine_release_config_rename.build_settings[build_setting])
     end
 
     # ================= #
