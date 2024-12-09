@@ -5,6 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// Conflicting okhttp versions
+@file:Suppress("DEPRECATION_ERROR")
+
 package com.facebook.react.modules.fresco
 
 import android.net.Uri
@@ -12,7 +15,6 @@ import com.facebook.imagepipeline.backends.okhttp3.OkHttpNetworkFetcher
 import com.facebook.imagepipeline.producers.NetworkFetcher
 import com.facebook.imagepipeline.producers.ProducerContext
 import java.util.concurrent.ExecutorService
-import okhttp3.Call
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -24,6 +26,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when` as whenever
@@ -53,18 +56,11 @@ class ReactOkHttpNetworkFetcherTest {
 
   @Before
   fun prepareModules() {
-    httpClient = mock(OkHttpClient::class.java)
-    val dispatcher = mock(Dispatcher::class.java)
     val executorService = mock(ExecutorService::class.java)
-
-    whenever(httpClient.dispatcher()).thenReturn(dispatcher)
-    whenever(dispatcher.executorService()).thenReturn(executorService)
-    whenever(httpClient.newCall(anyOrNull(Request::class.java))).thenAnswer {
-      val callMock = mock(Call::class.java)
-      callMock
-    }
-
+    val dispatcher = Dispatcher(executorService)
+    httpClient = spy(OkHttpClient.Builder().dispatcher(dispatcher).build())
     fetcher = ReactOkHttpNetworkFetcher(httpClient)
+
     fetchState = mock(OkHttpNetworkFetcher.OkHttpNetworkFetchState::class.java)
     callback = mock(NetworkFetcher.Callback::class.java)
 
@@ -73,10 +69,9 @@ class ReactOkHttpNetworkFetcherTest {
 
     val producerContext = mock(ProducerContext::class.java)
     imageRequest = mock(ReactNetworkImageRequest::class.java)
-
-    whenever(fetchState.context).thenReturn(producerContext)
-    whenever(producerContext.imageRequest).thenReturn(imageRequest)
     whenever(imageRequest.headers).thenReturn(null)
+    whenever(producerContext.imageRequest).thenReturn(imageRequest)
+    whenever(fetchState.context).thenReturn(producerContext)
 
     requestArgumentCaptor = ArgumentCaptor.forClass(Request::class.java)
   }
