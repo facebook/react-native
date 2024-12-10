@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import type {SnapshotConfig} from './snapshotContext';
+import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 
 import expect from './expect';
 import {createMockFunction} from './mocks';
@@ -24,6 +24,7 @@ export type TestCaseResult = {
   duration: number,
   failureMessages: Array<string>,
   numPassingAsserts: number,
+  snapshotResults: TestSnapshotResults,
   // location: string,
 };
 
@@ -37,6 +38,13 @@ export type TestSuiteResult =
         stack: string,
       },
     };
+
+type SnapshotState = {
+  name: string,
+  snapshotResults: TestSnapshotResults,
+};
+
+let currentSnapshotState: SnapshotState;
 
 const tests: Array<{
   title: string,
@@ -152,6 +160,7 @@ function executeTests() {
       duration: 0,
       failureMessages: [],
       numPassingAsserts: 0,
+      snapshotResults: {},
     };
 
     test.result = result;
@@ -177,6 +186,8 @@ function executeTests() {
         status === 'failed' && error
           ? [error.stack ?? error.message ?? String(error)]
           : [];
+
+      result.snapshotResults = snapshotContext.getSnapshotResults();
     }
   }
 

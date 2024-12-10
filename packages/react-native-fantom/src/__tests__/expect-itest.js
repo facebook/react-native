@@ -517,14 +517,26 @@ describe('expect', () => {
 
   describe('toMatchSnapshot()', () => {
     test('primitive types', () => {
+      expect(undefined).toMatchSnapshot();
       expect(null).toMatchSnapshot();
+      expect(true).toMatchSnapshot();
       expect(1).toMatchSnapshot();
+      expect(BigInt(1)).toMatchSnapshot();
       expect('foo').toMatchSnapshot();
+      expect('foo\nbar').toMatchSnapshot('multiline');
+      expect(Symbol('foo')).toMatchSnapshot();
     });
 
     test('complex types', () => {
       expect({foo: 'bar'}).toMatchSnapshot();
       expect(<span>hello</span>).toMatchSnapshot();
+      expect(function foo() {}).toMatchSnapshot();
+      expect(new Map([['foo', 'bar']])).toMatchSnapshot();
+      expect(new Set([1, 2])).toMatchSnapshot();
+      expect(new Date('2025-01-02')).toMatchSnapshot();
+      expect(new Error()).toMatchSnapshot();
+      expect(new RegExp('asd')).toMatchSnapshot();
+      expect(new Promise(() => {})).toMatchSnapshot();
     });
 
     test('named snapshots', () => {

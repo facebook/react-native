@@ -9,61 +9,100 @@
  * @oncall react_native
  */
 
+import {diff} from 'jest-diff';
+
 export type SnapshotConfig = {
   updateSnapshot: 'all' | 'new' | 'none',
   data: {[key: string]: string},
 };
 
+export type TestSnapshotResults = {
+  [key: string]:
+    | {
+        pass: true,
+      }
+    | {
+        pass: false,
+        value: string,
+      },
+};
+
+const COMPARISON_EQUALS_STRING = 'Compared values have no visual difference.';
+
 let snapshotConfig: ?SnapshotConfig;
 
-// Destructure [err, value] from the return value of getSnapshot
-type SnapshotResponse = [null, string] | [string, void];
-
-class SnapshotState {
-  #callCount: number = 0;
-  #testFullName: string;
-
-  constructor(name: string) {
-    this.#testFullName = name;
-  }
-
-  getSnapshot(label: ?string): SnapshotResponse {
-    const snapshotKey = `${this.#testFullName}${
-      label != null ? `: ${label}` : ''
-    } ${++this.#callCount}`;
-
-    if (snapshotConfig == null) {
-      return [
-        'Snapshot config is not set. Did you forget to call `setupSnapshotConfig`?',
-        undefined,
-      ];
-    }
-
-    if (snapshotConfig.data[snapshotKey] == null) {
-      return [
-        `Expected to have snapshot \`${snapshotKey}\` but it was not found.`,
-        undefined,
-      ];
-    }
-
-    return [null, snapshotConfig.data[snapshotKey]];
-  }
-}
+type SnapshotState = {
+  callCount: number,
+  testFullName: string,
+  snapshotResults: TestSnapshotResults,
+};
 
 class SnapshotContext {
   #snapshotState: ?SnapshotState = null;
 
   setTargetTest(testFullName: string) {
-    this.#snapshotState = new SnapshotState(testFullName);
+    this.#snapshotState = {
+      callCount: 0,
+      testFullName,
+      snapshotResults: {},
+    };
   }
 
-  getSnapshot(label: ?string): SnapshotResponse {
-    return (
-      this.#snapshotState?.getSnapshot(label) ?? [
+  toMatchSnapshot(received: string, label: ?string): void {
+    const snapshotState = this.#snapshotState;
+    if (snapshotState == null) {
+      throw new Error(
         'Snapshot state is not set, call `setTargetTest()` first',
-        undefined,
-      ]
-    );
+      );
+    }
+
+    const snapshotKey = `${snapshotState.testFullName}${
+      label != null ? `: ${label}` : ''
+    } ${++snapshotState.callCount}`;
+
+    if (snapshotConfig == null) {
+      throw new Error(
+        'Snapshot config is not set. Did you forget to call `setupSnapshotConfig`?',
+      );
+    }
+
+    const updateSnapshot = snapshotConfig.updateSnapshot;
+    const snapshot = snapshotConfig.data[snapshotKey];
+
+    if (snapshot == null) {
+      snapshotState.snapshotResults[snapshotKey] = {
+        pass: false,
+        value: received,
+      };
+
+      if (updateSnapshot === 'none') {
+        throw new Error(
+          `Expected to have snapshot \`${snapshotKey}\` but it was not found.`,
+        );
+      }
+
+      return;
+    }
+
+    const result = diff(snapshot, received) ?? 'Failed to compare output';
+    if (result !== COMPARISON_EQUALS_STRING) {
+      snapshotState.snapshotResults[snapshotKey] = {
+        pass: false,
+        value: received,
+      };
+
+      if (updateSnapshot !== 'all') {
+        throw new Error(`Expected to match snapshot.\n${result}`);
+      }
+
+      return;
+    }
+
+    snapshotState.snapshotResults[snapshotKey] = {pass: true};
+  }
+
+  getSnapshotResults(): TestSnapshotResults {
+    return {...this.#snapshotState?.snapshotResults};
   }
 }
 

@@ -15,8 +15,6 @@ import deepEqual from 'deep-equal';
 import {diff} from 'jest-diff';
 import {format, plugins} from 'pretty-format';
 
-const COMPARISON_EQUALS_STRING = 'Compared values have no visual difference.';
-
 class ErrorWithCustomBlame extends Error {
   // Initially 5 to ignore all the frames from Babel helpers to instantiate this
   // custom error class.
@@ -260,20 +258,14 @@ class Expect {
       ).blameToPreviousFrame();
     }
 
-    const [err, currentSnapshot] = snapshotContext.getSnapshot(expected);
-    if (err != null) {
-      throw new ErrorWithCustomBlame(err).blameToPreviousFrame();
-    }
-
     const receivedValue = format(this.#received, {
       plugins: [plugins.ReactElement],
     });
-    const result =
-      diff(currentSnapshot, receivedValue) ?? 'Failed to compare outputs';
-    if (result !== COMPARISON_EQUALS_STRING) {
-      throw new ErrorWithCustomBlame(
-        `Expected to match snapshot.\n${result}`,
-      ).blameToPreviousFrame();
+
+    try {
+      snapshotContext.toMatchSnapshot(receivedValue, expected);
+    } catch (err) {
+      throw new ErrorWithCustomBlame(err.message).blameToPreviousFrame();
     }
   }
 
