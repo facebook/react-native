@@ -1153,19 +1153,21 @@ class UtilsTests < Test::Unit::TestCase
     def test_add_ndebug_flag_to_pods_in_release
         # Arrange
         xcconfig = XCConfigMock.new("Config")
-        default_debug_config = BuildConfigurationMock.new("Debug")
-        default_release_config = BuildConfigurationMock.new("Release")
-        custom_debug_config1 = BuildConfigurationMock.new("CustomDebug")
-        custom_debug_config2 = BuildConfigurationMock.new("Custom")
-        custom_release_config1 = BuildConfigurationMock.new("CustomRelease")
-        custom_release_config2 = BuildConfigurationMock.new("Production")
+        default_debug_config = BuildConfigurationMock.new("Debug", {}, is_debug: true)
+        default_release_config = BuildConfigurationMock.new("Release", {}, is_debug: false)
+        custom_debug_config1 = BuildConfigurationMock.new("CustomDebug", {}, is_debug: true)
+        custom_debug_config2 = BuildConfigurationMock.new("Custom", {}, is_debug: true)
+        custom_release_config1 = BuildConfigurationMock.new("CustomRelease", {}, is_debug: false)
+        custom_release_config2 = BuildConfigurationMock.new("Production", {}, is_debug: false)
+        custom_release_config_3 = BuildConfigurationMock.new("Main", {}, is_debug: false)
 
         installer = prepare_installer_for_cpp_flags(
             [ xcconfig ],
             {
                 "Default" => [ default_debug_config, default_release_config ],
                 "Custom1" => [ custom_debug_config1, custom_release_config1 ],
-                "Custom2" => [ custom_debug_config2, custom_release_config2 ]
+                "Custom2" => [ custom_debug_config2, custom_release_config2 ],
+                "Custom3" => [ custom_release_config_3 ],
             }
         )
         # Act
@@ -1178,6 +1180,7 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal("$(inherited) -DNDEBUG", custom_release_config1.build_settings["OTHER_CPLUSPLUSFLAGS"])
         assert_equal(nil, custom_debug_config2.build_settings["OTHER_CPLUSPLUSFLAGS"])
         assert_equal("$(inherited) -DNDEBUG", custom_release_config2.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) -DNDEBUG", custom_release_config_3.build_settings["OTHER_CPLUSPLUSFLAGS"])
     end
 end
 
@@ -1234,16 +1237,20 @@ def prepare_installer_for_cpp_flags(xcconfigs, build_configs)
     end
 
     pod_target_installation_results_map = {}
+    user_build_configuration_map = {}
     build_configs.each do |name, build_configs|
         pod_target_installation_results_map[name.to_s] = prepare_pod_target_installation_results_mock(
             name.to_s, build_configs
         )
+        build_configs.each do |config|
+            user_build_configuration_map[config.name] = config
+        end
     end
 
     return InstallerMock.new(
         PodsProjectMock.new,
         [
-            AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/")
+            AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/", :user_build_configurations => user_build_configuration_map)
         ],
         :pod_target_installation_results => pod_target_installation_results_map
     )
