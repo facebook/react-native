@@ -1159,7 +1159,7 @@ class UtilsTests < Test::Unit::TestCase
         custom_debug_config2 = BuildConfigurationMock.new("Custom", {}, is_debug: true)
         custom_release_config1 = BuildConfigurationMock.new("CustomRelease", {}, is_debug: false)
         custom_release_config2 = BuildConfigurationMock.new("Production", {}, is_debug: false)
-        custom_release_config_3 = BuildConfigurationMock.new("Main", {}, is_debug: false)
+        custom_release_config3 = BuildConfigurationMock.new("Main", {}, is_debug: false)
 
         installer = prepare_installer_for_cpp_flags(
             [ xcconfig ],
@@ -1167,7 +1167,7 @@ class UtilsTests < Test::Unit::TestCase
                 "Default" => [ default_debug_config, default_release_config ],
                 "Custom1" => [ custom_debug_config1, custom_release_config1 ],
                 "Custom2" => [ custom_debug_config2, custom_release_config2 ],
-                "Custom3" => [ custom_release_config_3 ],
+                "Custom3" => [ custom_release_config3 ],
             }
         )
         # Act
@@ -1180,7 +1180,7 @@ class UtilsTests < Test::Unit::TestCase
         assert_equal("$(inherited) -DNDEBUG", custom_release_config1.build_settings["OTHER_CPLUSPLUSFLAGS"])
         assert_equal(nil, custom_debug_config2.build_settings["OTHER_CPLUSPLUSFLAGS"])
         assert_equal("$(inherited) -DNDEBUG", custom_release_config2.build_settings["OTHER_CPLUSPLUSFLAGS"])
-        assert_equal("$(inherited) -DNDEBUG", custom_release_config_3.build_settings["OTHER_CPLUSPLUSFLAGS"])
+        assert_equal("$(inherited) -DNDEBUG", custom_release_config3.build_settings["OTHER_CPLUSPLUSFLAGS"])
     end
 end
 
