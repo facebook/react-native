@@ -11,6 +11,7 @@
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/view/LayoutConformanceShadowNode.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
@@ -501,15 +502,13 @@ void YogaLayoutableShadowNode::configureYogaTree(
 }
 
 YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
-  if (auto viewShadowNode = dynamic_cast<const ViewShadowNode*>(this)) {
-    const auto& props = viewShadowNode->getConcreteProps();
-    switch (props.experimental_layoutConformance) {
-      case LayoutConformance::Classic:
-        return YGErrataAll;
+  if (auto layoutConformanceNode =
+          dynamic_cast<const LayoutConformanceShadowNode*>(this)) {
+    switch (layoutConformanceNode->getConcreteProps().mode) {
       case LayoutConformance::Strict:
         return YGErrataNone;
-      case LayoutConformance::Undefined:
-        return defaultErrata;
+      case LayoutConformance::Compatibility:
+        return YGErrataAll;
     }
   }
 

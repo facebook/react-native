@@ -410,55 +410,6 @@ class FlexGapExample extends React.Component<$ReadOnly<{|testID?: ?string|}>> {
   }
 }
 
-function LayoutConformanceExample({
-  testID,
-}: $ReadOnly<{testID: ?string}>): React.Node {
-  return (
-    <View
-      style={{flexDirection: 'row', gap: 10}}
-      testID="view-test-layout-conformance">
-      <View>
-        <RNTesterText>Unset</RNTesterText>
-        <LayoutConformanceBox />
-      </View>
-      <View experimental_layoutConformance="classic">
-        <RNTesterText>Classic</RNTesterText>
-        <LayoutConformanceBox />
-      </View>
-      <View experimental_layoutConformance="strict">
-        <RNTesterText>Strict</RNTesterText>
-        <LayoutConformanceBox />
-      </View>
-    </View>
-  );
-}
-
-function LayoutConformanceBox(): React.Node {
-  return (
-    <View
-      style={{
-        backgroundColor: 'blue',
-        width: 60,
-        height: 60,
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}>
-      <View
-        style={{
-          flexDirection: 'row',
-        }}>
-        <View
-          style={{
-            height: 30,
-            backgroundColor: 'red',
-            flexGrow: 1,
-          }}
-        />
-      </View>
-    </View>
-  );
-}
-
 function BoxShadowExample(): React.Node {
   const defaultStyleSize = {width: 75, height: 75};
 
@@ -1354,11 +1305,6 @@ export default ({
           </View>
         );
       },
-    },
-    {
-      title: 'Layout conformance',
-      name: 'layout-conformance',
-      render: LayoutConformanceExample,
     },
     {
       title: 'Box Shadow',

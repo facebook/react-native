@@ -293,8 +293,6 @@ const validAttributesForNonEventProps = {
 
   style: ReactNativeStyleAttributes,
 
-  experimental_layoutConformance: true,
-
   // ReactClippingViewManager @ReactProps
   removeClippedSubviews: true,
 
