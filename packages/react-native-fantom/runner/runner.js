@@ -15,6 +15,10 @@ import entrypointTemplate from './entrypoint-template';
 import getFantomTestConfig from './getFantomTestConfig';
 import {FantomTestConfigMode} from './getFantomTestConfig';
 import {
+  getInitialSnapshotData,
+  updateSnapshotsAndGetJestSnapshotResult,
+} from './snapshotUtils';
+import {
   getBuckModeForPlatform,
   getDebugInfoFromCommandResult,
   getShortHash,
@@ -135,7 +139,7 @@ module.exports = async function runTest(
     featureFlags: testConfig.flags.jsOnly,
     snapshotConfig: {
       updateSnapshot: snapshotState._updateSnapshot,
-      data: snapshotState._initialData,
+      data: getInitialSnapshotData(snapshotState),
     },
   });
 
@@ -221,6 +225,15 @@ module.exports = async function runTest(
       ),
     })) ?? [];
 
+  const snapshotResults = nullthrows(
+    rnTesterParsedOutput.testResult.testResults,
+  ).map(testResult => testResult.snapshotResults);
+
+  const snapshotResult = updateSnapshotsAndGetJestSnapshotResult(
+    snapshotState,
+    snapshotResults,
+  );
+
   return {
     testFilePath: testPath,
     failureMessage: formatResultsErrors(
@@ -238,15 +251,7 @@ module.exports = async function runTest(
       runtime: endTime - startTime,
       slow: false,
     },
-    snapshot: {
-      added: 0,
-      fileDeleted: false,
-      matched: 0,
-      unchecked: 0,
-      uncheckedKeys: [],
-      unmatched: 0,
-      updated: 0,
-    },
+    snapshot: snapshotResult,
     numTotalTests: testResults.length,
     numPassingTests: testResults.filter(test => test.status === 'passed')
       .length,
