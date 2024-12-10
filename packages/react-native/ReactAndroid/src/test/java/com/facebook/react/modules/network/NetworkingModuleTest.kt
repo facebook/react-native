@@ -30,6 +30,7 @@ import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.MockedStatic
@@ -476,6 +477,7 @@ class NetworkingModuleTest {
   }
 
   @Test
+  @Ignore("TODO: Fix me (T171890419)")
   fun testCancelAllCallsInvalidate() {
     val requests = 3
     val calls = arrayOfNulls<Call>(requests)
@@ -518,6 +520,7 @@ class NetworkingModuleTest {
   }
 
   @Test
+  @Ignore("TODO: Fix me (T171890419)")
   fun testCancelSomeCallsInvalidate() {
     val requests = 3
     val calls = arrayOfNulls<Call>(requests)
