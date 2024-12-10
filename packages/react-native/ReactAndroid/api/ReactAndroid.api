@@ -2587,10 +2587,6 @@ public class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint
 
 public final class com/facebook/react/fabric/EmptyReactNativeConfig : com/facebook/react/fabric/ReactNativeConfig {
 	public fun <init> ()V
-	public fun getBool (Ljava/lang/String;)Z
-	public fun getDouble (Ljava/lang/String;)D
-	public fun getInt64 (Ljava/lang/String;)J
-	public fun getString (Ljava/lang/String;)Ljava/lang/String;
 }
 
 public final class com/facebook/react/fabric/FabricSoLoader {
@@ -2663,10 +2659,6 @@ public abstract class com/facebook/react/fabric/GuardedFrameCallback : android/v
 public abstract interface class com/facebook/react/fabric/ReactNativeConfig {
 	public static final field Companion Lcom/facebook/react/fabric/ReactNativeConfig$Companion;
 	public static final field DEFAULT_CONFIG Lcom/facebook/react/fabric/ReactNativeConfig;
-	public abstract fun getBool (Ljava/lang/String;)Z
-	public abstract fun getDouble (Ljava/lang/String;)D
-	public abstract fun getInt64 (Ljava/lang/String;)J
-	public abstract fun getString (Ljava/lang/String;)Ljava/lang/String;
 }
 
 public final class com/facebook/react/fabric/ReactNativeConfig$Companion {
