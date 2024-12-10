@@ -79,7 +79,16 @@ export default class Animation {
 
   stop(): void {
     if (this.#nativeID != null) {
-      NativeAnimatedHelper.API.stopAnimation(this.#nativeID);
+      const nativeID = this.#nativeID;
+      const identifier = `${nativeID}:stopAnimation`;
+      try {
+        // This is only required when singleOpBatching is used, as otherwise
+        // we flush calls immediately when there's no pending queue.
+        NativeAnimatedHelper.API.setWaitingForIdentifier(identifier);
+        NativeAnimatedHelper.API.stopAnimation(nativeID);
+      } finally {
+        NativeAnimatedHelper.API.unsetWaitingForIdentifier(identifier);
+      }
     }
     this.__active = false;
   }
