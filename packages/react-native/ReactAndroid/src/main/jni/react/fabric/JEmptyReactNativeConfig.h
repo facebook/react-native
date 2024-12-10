@@ -22,14 +22,6 @@ class JEmptyReactNativeConfig
 
   static void registerNatives();
 
-  jboolean getBool(const jni::alias_ref<jstring> param);
-
-  jni::local_ref<jstring> getString(const jni::alias_ref<jstring> param);
-
-  jlong getInt64(const jni::alias_ref<jstring> param);
-
-  jdouble getDouble(const jni::alias_ref<jstring> param);
-
  private:
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
   const EmptyReactNativeConfig reactNativeConfig_ = EmptyReactNativeConfig();

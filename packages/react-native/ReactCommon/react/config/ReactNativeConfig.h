@@ -19,11 +19,6 @@ class ReactNativeConfig {
  public:
   ReactNativeConfig() = default;
   virtual ~ReactNativeConfig() = default;
-
-  virtual bool getBool(const std::string& param) const = 0;
-  virtual std::string getString(const std::string& param) const = 0;
-  virtual int64_t getInt64(const std::string& param) const = 0;
-  virtual double getDouble(const std::string& param) const = 0;
 };
 
 /**
@@ -32,11 +27,6 @@ class ReactNativeConfig {
 class EmptyReactNativeConfig : public ReactNativeConfig {
  public:
   EmptyReactNativeConfig() = default;
-
-  bool getBool(const std::string& param) const override;
-  std::string getString(const std::string& param) const override;
-  int64_t getInt64(const std::string& param) const override;
-  double getDouble(const std::string& param) const override;
 };
 
 } // namespace facebook::react

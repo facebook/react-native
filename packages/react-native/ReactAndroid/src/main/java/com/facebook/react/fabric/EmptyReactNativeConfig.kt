@@ -20,14 +20,6 @@ public class EmptyReactNativeConfig : ReactNativeConfig {
 
   private external fun initHybrid(): HybridData
 
-  external override fun getBool(param: String): Boolean
-
-  external override fun getInt64(param: String): Long
-
-  external override fun getString(param: String): String
-
-  external override fun getDouble(param: String): Double
-
   private companion object {
     init {
       FabricSoLoader.staticInit()
