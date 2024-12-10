@@ -763,6 +763,16 @@ function findFilesWithExtension(filePath, extension) {
   const dir = fs.readdirSync(filePath);
   dir.forEach(file => {
     const absolutePath = path.join(filePath, file);
+    // Exclude files provided by react-native
+    if (absolutePath.includes(`${path.sep}react-native${path.sep}`)) {
+      return null;
+    }
+
+    // Skip hidden folders, that starts with `.`
+    if (absolutePath.includes(`${path.sep}.`)) {
+      return null;
+    }
+
     if (
       fs.existsSync(absolutePath) &&
       fs.statSync(absolutePath).isDirectory()
@@ -778,11 +788,6 @@ function findFilesWithExtension(filePath, extension) {
 // Given a filepath, read the file and look for a string that starts with 'Class<RCTComponentViewProtocol> '
 // and ends with 'Cls(void)'. Return the string between the two.
 function findRCTComponentViewProtocolClass(filepath) {
-  // Exclude files provided by react-native
-  if (filepath.includes(`${path.sep}react-native${path.sep}`)) {
-    return null;
-  }
-
   const fileContent = fs.readFileSync(filepath, 'utf8');
   const regex = /Class<RCTComponentViewProtocol> (.*)Cls\(/;
   const match = fileContent.match(regex);
