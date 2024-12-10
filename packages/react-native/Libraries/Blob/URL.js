@@ -107,44 +107,43 @@ export class URL {
   }
 
   get hash(): string {
-    throw new Error('URL.hash is not implemented');
-  }
+    const match = this._url.match(/#(.*)$/);
+    return match ? `#${match[1]}` : '';  }
 
   get host(): string {
-    throw new Error('URL.host is not implemented');
-  }
+    const match = this._url.match(/\/\/([^\/?#:]+)(:\d+)?/);
+    return match ? match[0].replace(/\/\//, '') : '';  }
 
   get hostname(): string {
-    throw new Error('URL.hostname is not implemented');
-  }
+    const match = this.host.match(/^[^:]+/);
+    return match ? match[0] : '';  }
 
   get href(): string {
     return this.toString();
   }
 
   get origin(): string {
-    throw new Error('URL.origin is not implemented');
-  }
+    return `${this.protocol}//${this.host}`;  }
 
   get password(): string {
-    throw new Error('URL.password is not implemented');
-  }
+    const match = this._url.match(/\/\/.*:(.*)@/);
+    return match ? match[1] : '';  }
 
   get pathname(): string {
-    throw new Error('URL.pathname not implemented');
-  }
+    const match = this._url.match(/\/\/[^\/]+(\/[^?#]*)/);
+    return match ? match[1] : '/';  }
 
   get port(): string {
-    throw new Error('URL.port is not implemented');
-  }
+    const match = this.host.match(/:(\d+)/);
+    return match ? match[1] : '';  }
 
   get protocol(): string {
-    throw new Error('URL.protocol is not implemented');
-  }
+    const match = this._url.match(/(^\w+):\/\//);
+    return match ? `${match[1]}:` : '';  }
 
   get search(): string {
-    throw new Error('URL.search is not implemented');
-  }
+    const match = this._url.match(/\?([^#]*)/);
+    return match ? `?${match[1]}` : '';  }
 
   get searchParams(): URLSearchParams {
     if (this._searchParamsInstance == null) {
@@ -168,6 +167,6 @@ export class URL {
   }
 
   get username(): string {
-    throw new Error('URL.username is not implemented');
-  }
+    const match = this._url.match(/\/\/(.*):.*@/);
+    return match ? match[1] : '';  }
 }

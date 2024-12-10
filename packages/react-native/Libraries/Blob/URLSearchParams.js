@@ -24,27 +24,36 @@ export class URLSearchParams {
   }
 
   delete(name: string): void {
-    throw new Error('URLSearchParams.delete is not implemented');
+  this._searchParams = this._searchParams.filter(
+    param => param[0] !== name
+  );
   }
 
-  get(name: string): void {
-    throw new Error('URLSearchParams.get is not implemented');
-  }
+  get(name: string): string | null {
+  const found = this._searchParams.find(param => param[0] === name);
+  return found ? found[1] : null;  }
 
-  getAll(name: string): void {
-    throw new Error('URLSearchParams.getAll is not implemented');
-  }
+  getAll(name: string): Array<string> {
+  return this._searchParams
+    .filter(param => param[0] === name)
+    .map(param => param[1]);
+    }
 
-  has(name: string): void {
-    throw new Error('URLSearchParams.has is not implemented');
+  has(name: string): boolean {
+  return this._searchParams.some(param => param[0] === name);
   }
 
   set(name: string, value: string): void {
-    throw new Error('URLSearchParams.set is not implemented');
+  const index = this._searchParams.findIndex(param => param[0] === name);
+  if (index !== -1) {
+    this._searchParams[index][1] = value;
+  } else {
+    this.append(name, value);
+  }
   }
 
   sort(): void {
-    throw new Error('URLSearchParams.sort is not implemented');
+  this._searchParams.sort((a, b) => a[0].localeCompare(b[0]));
   }
 
   // $FlowFixMe[unsupported-syntax]
