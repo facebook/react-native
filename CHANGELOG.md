@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.77.0-rc.2
+
+### Changed
+
+- Reverts #47503. (~~Callbacks passed to `animation.start(<callback>)` will be scheduled for execution in a microtask. Previously, there were certain scenarios in which the callback could be synchronously executed by `start`.~~) ([8793b7d89b](https://github.com/facebook/react-native/commit/8793b7d89bcafdfcca7ecb953e60882b67ffc807) by [@yungsters](https://github.com/yungsters))
+
+### Fixed
+
+#### Android specific
+
+- Fix crash on HeadlessJsTaskService on old architecture ([4560fc0497](https://github.com/facebook/react-native/commit/4560fc049748a345d5945bc08d43f4b61ca51ff3) by [@cortinico](https://github.com/cortinico))
+- Re-introduce the deprecated constructor on ReactModuleInfo ([734730df75](https://github.com/facebook/react-native/commit/734730df75b3bdddeb5dbe65f4151cc92b988303) by [@cortinico](https://github.com/cortinico))
+
 ## v0.77.0-rc.1
 
 ### Fixed
