@@ -118,6 +118,8 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
         top;
   }
 
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
+
  private:
   /*
    * Creates a `State` object if needed.
@@ -206,8 +208,6 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     }
     return AttributedStringBox{attributedString};
   }
-
-  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 };
 
 } // namespace facebook::react
