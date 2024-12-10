@@ -424,13 +424,6 @@ RCT_CUSTOM_VIEW_PROPERTY(collapsableChildren, BOOL, RCTView)
   // filtered by view configs.
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(experimental_layoutConformance, NSString *, RCTView)
-{
-  // Property is only to be used in the new renderer.
-  // It is necessary to add it here, otherwise it gets
-  // filtered by view configs.
-}
-
 typedef NSArray *FilterArray; // Custom type to make the StaticViewConfigValidator Happy
 RCT_CUSTOM_VIEW_PROPERTY(filter, FilterArray, RCTView)
 {

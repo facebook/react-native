@@ -972,9 +972,4 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
   public void setShouldNotifyPointerMove(boolean value) {
     // Do Nothing: Align with static ViewConfigs
   }
-
-  @ReactProp(name = "experimental_layoutConformance")
-  public void setLayoutConformance(String value) {
-    // Do Nothing: Align with static ViewConfigs
-  }
 }
