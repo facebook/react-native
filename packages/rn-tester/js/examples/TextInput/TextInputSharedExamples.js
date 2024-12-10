@@ -14,7 +14,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterButton from '../../components/RNTesterButton';
-import RNTesterText from "../../components/RNTesterText";
+import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ExampleTextInput from './ExampleTextInput';
 import * as React from 'react';
@@ -590,7 +590,9 @@ class SelectionExample extends React.Component<
           </RNTesterText>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
            * parameters */}
-          <RNTesterText onPress={this.placeAtRandom.bind(this)}>Place at Random</RNTesterText>
+          <RNTesterText onPress={this.placeAtRandom.bind(this)}>
+            Place at Random
+          </RNTesterText>
           <RNTesterText
             testID={`${this.props.testID}-select-all`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
@@ -599,7 +601,9 @@ class SelectionExample extends React.Component<
           </RNTesterText>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
            * parameters */}
-          <RNTesterText onPress={this.selectRandom.bind(this)}>Select Random</RNTesterText>
+          <RNTesterText onPress={this.selectRandom.bind(this)}>
+            Select Random
+          </RNTesterText>
         </View>
       </View>
     );

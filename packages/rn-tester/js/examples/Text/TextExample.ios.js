@@ -12,7 +12,7 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
-import RNTesterText from "../../components/RNTesterText";
+import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
 import TextInlineViewsExample from './TextInlineViewsExample';
 
