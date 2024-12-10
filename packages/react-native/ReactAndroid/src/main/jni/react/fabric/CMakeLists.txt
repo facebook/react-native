@@ -49,7 +49,6 @@ target_link_libraries(
         react_render_uimanager_consistency
         rrc_legacyviewmanagerinterop
         react_utils
-        react_config
         reactnativejni
         rrc_image
         rrc_modal
