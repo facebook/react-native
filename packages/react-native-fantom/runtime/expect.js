@@ -10,8 +10,12 @@
  */
 
 import {ensureMockFunction} from './mocks';
+import {snapshotContext} from './snapshotContext';
 import deepEqual from 'deep-equal';
 import {diff} from 'jest-diff';
+import {format, plugins} from 'pretty-format';
+
+const COMPARISON_EQUALS_STRING = 'Compared values have no visual difference.';
 
 class ErrorWithCustomBlame extends Error {
   // Initially 5 to ignore all the frames from Babel helpers to instantiate this
@@ -245,6 +249,30 @@ class Expect {
     if (!this.#isExpectedResult(pass)) {
       throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be less than or equal to ${expected}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toMatchSnapshot(expected?: string): void {
+    if (this.#isNot) {
+      throw new ErrorWithCustomBlame(
+        'Snapshot matchers cannot be used with not.',
+      ).blameToPreviousFrame();
+    }
+
+    const [err, currentSnapshot] = snapshotContext.getSnapshot(expected);
+    if (err != null) {
+      throw new ErrorWithCustomBlame(err).blameToPreviousFrame();
+    }
+
+    const receivedValue = format(this.#received, {
+      plugins: [plugins.ReactElement],
+    });
+    const result =
+      diff(currentSnapshot, receivedValue) ?? 'Failed to compare outputs';
+    if (result !== COMPARISON_EQUALS_STRING) {
+      throw new ErrorWithCustomBlame(
+        `Expected to match snapshot.\n${result}`,
       ).blameToPreviousFrame();
     }
   }

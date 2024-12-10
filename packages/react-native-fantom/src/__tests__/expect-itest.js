@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+import * as React from 'react';
+
 function ensureError(fn: () => void): void {
   try {
     fn();
@@ -511,5 +513,22 @@ describe('expect', () => {
       // $FlowExpectedError[incompatible-call]
       expect(1).not.toBeGreaterThanOrEqual('string value');
     }).toThrow();
+  });
+
+  describe('toMatchSnapshot()', () => {
+    test('primitive types', () => {
+      expect(null).toMatchSnapshot();
+      expect(1).toMatchSnapshot();
+      expect('foo').toMatchSnapshot();
+    });
+
+    test('complex types', () => {
+      expect({foo: 'bar'}).toMatchSnapshot();
+      expect(<span>hello</span>).toMatchSnapshot();
+    });
+
+    test('named snapshots', () => {
+      expect({a: 'b'}).toMatchSnapshot('named snapshot');
+    });
   });
 });

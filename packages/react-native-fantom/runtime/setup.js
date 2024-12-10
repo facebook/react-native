@@ -9,8 +9,11 @@
  * @oncall react_native
  */
 
+import type {SnapshotConfig} from './snapshotContext';
+
 import expect from './expect';
 import {createMockFunction} from './mocks';
+import {setupSnapshotConfig, snapshotContext} from './snapshotContext';
 import nullthrows from 'nullthrows';
 
 export type TestCaseResult = {
@@ -152,6 +155,7 @@ function executeTests() {
     };
 
     test.result = result;
+    snapshotContext.setTargetTest(result.fullName);
 
     if (!test.isSkipped && (!hasFocusedTests || test.isFocused)) {
       let status;
@@ -189,7 +193,12 @@ global.$$RunTests$$ = () => {
   executeTests();
 };
 
-export function registerTest(setUpTest: () => void) {
+export function registerTest(
+  setUpTest: () => void,
+  snapshotConfig: SnapshotConfig,
+) {
+  setupSnapshotConfig(snapshotConfig);
+
   runWithGuard(() => {
     setUpTest();
   });

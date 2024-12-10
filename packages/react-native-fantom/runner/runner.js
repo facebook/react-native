@@ -24,6 +24,7 @@ import {
 import fs from 'fs';
 // $FlowExpectedError[untyped-import]
 import {formatResultsErrors} from 'jest-message-util';
+import {SnapshotState, buildSnapshotResolver} from 'jest-snapshot';
 import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
@@ -90,12 +91,29 @@ function generateBytecodeBundle({
 }
 
 module.exports = async function runTest(
-  globalConfig: {...},
-  config: {...},
+  globalConfig: {
+    updateSnapshot: 'all' | 'new' | 'none',
+    ...
+  },
+  config: {
+    rootDir: string,
+    prettierPath: string,
+    snapshotFormat: {...},
+    ...
+  },
   environment: {...},
   runtime: {...},
   testPath: string,
 ): mixed {
+  const snapshotResolver = await buildSnapshotResolver(config);
+  const snapshotPath = snapshotResolver.resolveSnapshotPath(testPath);
+  const snapshotState = new SnapshotState(snapshotPath, {
+    updateSnapshot: globalConfig.updateSnapshot,
+    snapshotFormat: config.snapshotFormat,
+    prettierPath: config.prettierPath,
+    rootDir: config.rootDir,
+  });
+
   const startTime = Date.now();
 
   const testConfig = getFantomTestConfig(testPath);
@@ -115,6 +133,10 @@ module.exports = async function runTest(
     setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
     featureFlagsModulePath: `${path.relative(BUILD_OUTPUT_PATH, featureFlagsModulePath)}`,
     featureFlags: testConfig.flags.jsOnly,
+    snapshotConfig: {
+      updateSnapshot: snapshotState._updateSnapshot,
+      data: snapshotState._initialData,
+    },
   });
 
   const entrypointPath = path.join(
