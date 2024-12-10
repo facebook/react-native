@@ -11,6 +11,8 @@
 import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
 import type {____TextStyle_Internal as TextStyleInternal} from '../../StyleSheet/StyleSheetTypes';
 import type {
+  BlurEvent,
+  FocusEvent,
   PressEvent,
   ScrollEvent,
   SyntheticEvent,
@@ -96,15 +98,6 @@ export type ContentSizeChangeEvent = SyntheticEvent<
     |}>,
   |}>,
 >;
-
-type TargetEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-  |}>,
->;
-
-export type BlurEvent = TargetEvent;
-export type FocusEvent = TargetEvent;
 
 type Selection = $ReadOnly<{|
   start: number,
