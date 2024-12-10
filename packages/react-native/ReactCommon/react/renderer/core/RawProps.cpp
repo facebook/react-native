@@ -172,13 +172,38 @@ void RawProps::parse(const RawPropsParser& parser) noexcept {
  * The support for explicit conversion to `folly::dynamic` is deprecated and
  * will be removed as soon Android implementation does not need it.
  */
-RawProps::operator folly::dynamic() const noexcept {
+RawProps::operator folly::dynamic() const {
+  return toDynamic();
+}
+
+/*
+ * Deprecated. Do not use.
+ * The support for explicit conversion to `folly::dynamic` is deprecated and
+ * will be removed as soon Android implementation does not need it.
+ */
+folly::dynamic RawProps::toDynamic(
+    const std::function<bool(const std::string&)>& filterObjectKeys) const {
   switch (mode_) {
     case Mode::Empty:
       return folly::dynamic::object();
-    case Mode::JSI:
-      return jsi::dynamicFromValue(
-          *runtime_, value_, ignoreYogaStyleProps_ ? isYogaStyleProp : nullptr);
+    case Mode::JSI: {
+      const std::function<bool(const std::string&)> propFilterFunction =
+          [&](const std::string& key) {
+            if (ignoreYogaStyleProps_ && isYogaStyleProp(key)) {
+              return false;
+            }
+            if (filterObjectKeys) {
+              return filterObjectKeys(key);
+            }
+            return true;
+          };
+
+      const std::function<bool(const std::string&)> filterFunctionOrNull =
+          ignoreYogaStyleProps_ || filterObjectKeys != nullptr
+          ? propFilterFunction
+          : nullptr;
+      return jsi::dynamicFromValue(*runtime_, value_, filterFunctionOrNull);
+    }
     case Mode::Dynamic:
       return dynamic_;
   }
