@@ -567,6 +567,53 @@ class TextWithCapBaseBox extends React.Component<
 
 const examples = [
   {
+    title: 'iOS System Font Families (iOS only)',
+    name: 'iOSSystemFontFamilies',
+    description:
+      ('Shows system font families including system-ui/ui-sans-serif, ui-serif, ui-monospace, and ui-rounded': string),
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text
+            style={{
+              fontFamily: 'system-ui',
+              fontSize: 32,
+              marginBottom: 20,
+            }}>
+            `fontFamily: system-ui` (same as `ui-sans-serif`)
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'ui-sans-serif',
+              fontSize: 32,
+              marginBottom: 20,
+            }}>
+            `fontFamily: ui-sans-serif` (same as `system-ui`)
+          </Text>
+          <Text
+            style={{fontFamily: 'ui-serif', fontSize: 32, marginBottom: 20}}>
+            `fontFamily: ui-serif`
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'ui-monospace',
+              fontSize: 32,
+              marginBottom: 20,
+            }}>
+            `fontFamily: ui-monospace`
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'ui-rounded',
+              fontSize: 32,
+            }}>
+            `fontFamily: ui-rounded`
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
     title: 'Wrap',
     render: function (): React.Node {
       return (
