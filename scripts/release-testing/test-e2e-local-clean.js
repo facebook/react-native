@@ -30,10 +30,10 @@
  */
 
 const {VERDACCIO_STORAGE_PATH} = require('../e2e/utils/verdaccio');
-const {isPackagerRunning} = require('./utils/testing-utils');
+const {isPackagerRunning, timeBlock} = require('./utils/testing-utils');
 const {exec, exit} = require('shelljs');
 
-console.info('\n** Starting the clean up process **\n');
+console.info('** Starting the clean up process **');
 
 // let's check if Metro is already running, if it is let's kill it and start fresh
 if (isPackagerRunning() === 'running') {
@@ -42,35 +42,43 @@ if (isPackagerRunning() === 'running') {
 }
 
 // Android
-console.info('\n** Cleaning Gradle build artifacts **\n');
-exec('./gradlew clean');
-exec('rm -rf /tmp/maven-local');
-exec('rm -rf /tmp/react-native-tmp');
+timeBlock('Cleaning Gradle build artifacts', () => {
+  exec('./gradlew clean');
+  exec('rm -rf package/react-native/ReactAndroid/build');
+  exec('rm -rf /tmp/maven-local');
+  exec('rm -rf /tmp/react-native-tmp');
+});
 
 // iOS
-console.info('\n** Nuking the derived data folder **\n');
-exec('rm -rf ~/Library/Developer/Xcode/DerivedData');
+timeBlock('Nuking the derived data folder', () => {
+  exec('rm -rf ~/Library/Developer/Xcode/DerivedData');
+});
 
-console.info('\n** Removing the hermes-engine pod cache **\n');
-exec('rm -rf ~/Library/Caches/CocoaPods/Pods/External/hermes-engine');
+timeBlock('Removing the hermes-engine pod cache', () => {
+  exec('rm -rf ~/Library/Caches/CocoaPods/Pods/External/hermes-engine');
+});
 
 // RNTester Pods
-console.info('\n** Removing the RNTester Pods **\n');
-exec('rm -rf packages/rn-tester/Pods');
+timeBlock('Removing the RNTester Pods', () => {
+  exec('rm -rf packages/rn-tester/Pods');
+});
 
 // RNTestProject
-console.info('\n** Removing the RNTestProject folder **\n');
-exec('rm -rf /tmp/RNTestProject');
+timeBlock('Removing the RNTestProject folder', () => {
+  exec('rm -rf /tmp/RNTestProject');
+});
 
-console.info('\n** Removing Verdaccio storage directory **\n');
-exec(`rm -rf ${VERDACCIO_STORAGE_PATH}`);
+timeBlock('Removing Verdaccio storage directory', () => {
+  exec(`rm -rf ${VERDACCIO_STORAGE_PATH}`);
+});
 
 // final clean up
-console.info('\n** Final git level wipe **\n');
-// clean unstaged changes from git
-exec('git checkout -- .');
-// remove all the untracked files
-exec('git clean -fdx');
+timeBlock('Final git level wipe', () => {
+  // clean unstaged changes from git
+  exec('git checkout -- .');
+  // remove all the untracked files
+  exec('git clean -fdx');
+});
 
 console.info(
   '\n** Clean up process completed\nPlease remember to run yarn install if you are planning to test again\n',
