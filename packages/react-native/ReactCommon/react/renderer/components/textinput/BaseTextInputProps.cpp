@@ -211,6 +211,33 @@ void BaseTextInputProps::setProp(
   }
 }
 
+TextAttributes BaseTextInputProps::getEffectiveTextAttributes(
+    Float fontSizeMultiplier) const {
+  auto result = TextAttributes::defaultTextAttributes();
+  result.fontSizeMultiplier = fontSizeMultiplier;
+  result.apply(textAttributes);
+
+  /*
+   * These props are applied to `View`, therefore they must not be a part of
+   * base text attributes.
+   */
+  result.backgroundColor = clearColor();
+  result.opacity = 1;
+
+  return result;
+}
+
+ParagraphAttributes BaseTextInputProps::getEffectiveParagraphAttributes()
+    const {
+  auto result = paragraphAttributes;
+
+  if (!multiline) {
+    result.maximumNumberOfLines = 1;
+  }
+
+  return result;
+}
+
 SubmitBehavior BaseTextInputProps::getNonDefaultSubmitBehavior() const {
   if (submitBehavior == SubmitBehavior::Default) {
     return multiline ? SubmitBehavior::Newline : SubmitBehavior::BlurAndSubmit;
