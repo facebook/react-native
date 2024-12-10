@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`expect toMatchSnapshot() primitive types 1`] = `null`
+
+exports[`expect toMatchSnapshot() primitive types 2`] = `1`
+
+exports[`expect toMatchSnapshot() primitive types 3`] = `"foo"`
+
+exports[`expect toMatchSnapshot() complex types 1`] = `Object {
+  "foo": "bar",
+}`
+
+exports[`expect toMatchSnapshot() complex types 2`] = `<span>
+  hello
+</span>`
+
+exports[`expect toMatchSnapshot() named snapshots: named snapshot 1`] = `Object {
+  "a": "b",
+}`
