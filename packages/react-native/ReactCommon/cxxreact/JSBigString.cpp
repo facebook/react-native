@@ -38,7 +38,7 @@ JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
     const static auto ps = sysconf(_SC_PAGESIZE);
     auto d = lldiv(offset, ps);
 
-    m_mapOff = static_cast<off_t>(d.quot);
+    m_mapOff = static_cast<off_t>(d.quot) * ps;
     m_pageOff = static_cast<off_t>(d.rem);
     m_size = size + m_pageOff;
   } else {
