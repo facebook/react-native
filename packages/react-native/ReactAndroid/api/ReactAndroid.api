@@ -2585,10 +2585,6 @@ public class com/facebook/react/fabric/DevToolsReactPerfLogger$FabricCommitPoint
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/facebook/react/fabric/EmptyReactNativeConfig : com/facebook/react/fabric/ReactNativeConfig {
-	public fun <init> ()V
-}
-
 public final class com/facebook/react/fabric/FabricSoLoader {
 	public static final field INSTANCE Lcom/facebook/react/fabric/FabricSoLoader;
 	public static final fun staticInit ()V
@@ -2645,7 +2641,7 @@ public class com/facebook/react/fabric/FabricUIManager : com/facebook/react/brid
 }
 
 public class com/facebook/react/fabric/FabricUIManagerProviderImpl : com/facebook/react/bridge/UIManagerProvider {
-	public fun <init> (Lcom/facebook/react/fabric/ComponentFactory;Lcom/facebook/react/fabric/ReactNativeConfig;Lcom/facebook/react/uimanager/ViewManagerRegistry;)V
+	public fun <init> (Lcom/facebook/react/fabric/ComponentFactory;Lcom/facebook/react/uimanager/ViewManagerRegistry;)V
 	public fun createUIManager (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/UIManager;
 }
 
@@ -2654,14 +2650,6 @@ public abstract class com/facebook/react/fabric/GuardedFrameCallback : android/v
 	protected fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun doFrame (J)V
 	protected abstract fun doFrameGuarded (J)V
-}
-
-public abstract interface class com/facebook/react/fabric/ReactNativeConfig {
-	public static final field Companion Lcom/facebook/react/fabric/ReactNativeConfig$Companion;
-	public static final field DEFAULT_CONFIG Lcom/facebook/react/fabric/ReactNativeConfig;
-}
-
-public final class com/facebook/react/fabric/ReactNativeConfig$Companion {
 }
 
 public class com/facebook/react/fabric/StateWrapperImpl : com/facebook/jni/HybridClassBase, com/facebook/react/uimanager/StateWrapper {
@@ -3841,7 +3829,7 @@ public abstract class com/facebook/react/runtime/cxxreactpackage/CxxReactPackage
 public final class com/facebook/react/runtime/hermes/HermesInstance : com/facebook/react/runtime/JSRuntimeFactory {
 	public static final field Companion Lcom/facebook/react/runtime/hermes/HermesInstance$Companion;
 	public fun <init> ()V
-	public fun <init> (Lcom/facebook/react/fabric/ReactNativeConfig;Z)V
+	public fun <init> (Z)V
 }
 
 public final class com/facebook/react/runtime/hermes/HermesInstance$Companion {

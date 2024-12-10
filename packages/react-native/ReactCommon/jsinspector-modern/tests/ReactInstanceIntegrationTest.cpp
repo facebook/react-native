@@ -42,8 +42,7 @@ void ReactInstanceIntegrationTest::SetUp() {
 
   auto jsRuntimeFactory = std::make_unique<react::HermesInstance>();
   std::unique_ptr<react::JSRuntime> runtime_ =
-      jsRuntimeFactory->createJSRuntime(
-          nullptr, nullptr, messageQueueThread, false);
+      jsRuntimeFactory->createJSRuntime(nullptr, messageQueueThread, false);
   jsi::Runtime* jsiRuntime = &runtime_->getRuntime();
 
   // Error handler:

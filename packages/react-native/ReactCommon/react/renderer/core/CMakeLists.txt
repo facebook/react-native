@@ -23,7 +23,6 @@ target_link_libraries(react_render_core
         glog
         jsi
         logger
-        react_config
         react_debug
         react_featureflags
         react_render_debug

@@ -71,7 +71,6 @@ add_react_common_subdir(hermes/executor)
 add_react_common_subdir(hermes/inspector-modern)
 add_react_common_subdir(react/renderer/runtimescheduler)
 add_react_common_subdir(react/debug)
-add_react_common_subdir(react/config)
 add_react_common_subdir(react/featureflags)
 add_react_common_subdir(react/performance/timeline)
 add_react_common_subdir(react/renderer/animations)
@@ -168,7 +167,6 @@ add_library(reactnative
           $<TARGET_OBJECTS:mapbufferjni>
           $<TARGET_OBJECTS:react_bridging>
           $<TARGET_OBJECTS:react_codegen_rncore>
-          $<TARGET_OBJECTS:react_config>
           $<TARGET_OBJECTS:react_cxxreact>
           $<TARGET_OBJECTS:react_debug>
           $<TARGET_OBJECTS:react_devsupportjni>
@@ -252,7 +250,6 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:mapbufferjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_bridging,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_codegen_rncore,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_config,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_cxxreact,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_debug,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_devsupportjni,INTERFACE_INCLUDE_DIRECTORIES>

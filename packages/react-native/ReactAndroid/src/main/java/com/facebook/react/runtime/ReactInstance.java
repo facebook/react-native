@@ -275,8 +275,7 @@ final class ReactInstance {
         getRuntimeScheduler(),
         mFabricUIManager,
         eventBeatManager,
-        componentFactory,
-        delegate.getReactNativeConfig());
+        componentFactory);
 
     // Initialize the FabricUIManager
     mFabricUIManager.initialize();
