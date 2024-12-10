@@ -8574,7 +8574,7 @@ export type TextProps = $ReadOnly<{
   style?: ?TextStyleProp,
   testID?: ?string,
   disabled?: ?boolean,
-  selectionColor?: ?string,
+  selectionColor?: ?ColorValue,
   dataDetectorType?: ?(\\"phoneNumber\\" | \\"link\\" | \\"email\\" | \\"none\\" | \\"all\\"),
   textBreakStrategy?: ?(\\"balanced\\" | \\"highQuality\\" | \\"simple\\"),
   adjustsFontSizeToFit?: ?boolean,

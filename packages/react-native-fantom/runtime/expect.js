@@ -10,8 +10,10 @@
  */
 
 import {ensureMockFunction} from './mocks';
+import {snapshotContext} from './snapshotContext';
 import deepEqual from 'deep-equal';
 import {diff} from 'jest-diff';
+import {format, plugins} from 'pretty-format';
 
 class ErrorWithCustomBlame extends Error {
   // Initially 5 to ignore all the frames from Babel helpers to instantiate this
@@ -246,6 +248,24 @@ class Expect {
       throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be less than or equal to ${expected}`,
       ).blameToPreviousFrame();
+    }
+  }
+
+  toMatchSnapshot(expected?: string): void {
+    if (this.#isNot) {
+      throw new ErrorWithCustomBlame(
+        'Snapshot matchers cannot be used with not.',
+      ).blameToPreviousFrame();
+    }
+
+    const receivedValue = format(this.#received, {
+      plugins: [plugins.ReactElement],
+    });
+
+    try {
+      snapshotContext.toMatchSnapshot(receivedValue, expected);
+    } catch (err) {
+      throw new ErrorWithCustomBlame(err.message).blameToPreviousFrame();
     }
   }
 

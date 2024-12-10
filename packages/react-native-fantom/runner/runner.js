@@ -13,6 +13,11 @@ import type {TestSuiteResult} from '../runtime/setup';
 
 import entrypointTemplate from './entrypoint-template';
 import getFantomTestConfig from './getFantomTestConfig';
+import {FantomTestConfigMode} from './getFantomTestConfig';
+import {
+  getInitialSnapshotData,
+  updateSnapshotsAndGetJestSnapshotResult,
+} from './snapshotUtils';
 import {
   getBuckModeForPlatform,
   getDebugInfoFromCommandResult,
@@ -23,6 +28,7 @@ import {
 import fs from 'fs';
 // $FlowExpectedError[untyped-import]
 import {formatResultsErrors} from 'jest-message-util';
+import {SnapshotState, buildSnapshotResolver} from 'jest-snapshot';
 import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
@@ -67,19 +73,21 @@ function generateBytecodeBundle({
   bytecodePath: string,
   isOptimizedMode: boolean,
 }): void {
-  const hermesCompilerCommandResult = runBuck2([
-    'run',
-    getBuckModeForPlatform(isOptimizedMode),
-    '//xplat/hermes/tools/hermesc:hermesc',
-    '--',
-    '-emit-binary',
-    '-O',
-    '-max-diagnostic-width',
-    '80',
-    '-out',
-    bytecodePath,
-    sourcePath,
-  ]);
+  const hermesCompilerCommandResult = runBuck2(
+    [
+      'run',
+      getBuckModeForPlatform(isOptimizedMode),
+      '//xplat/hermes/tools/hermesc:hermesc',
+      '--',
+      '-emit-binary',
+      isOptimizedMode ? '-O' : null,
+      '-max-diagnostic-width',
+      '80',
+      '-out',
+      bytecodePath,
+      sourcePath,
+    ].filter(Boolean),
+  );
 
   if (hermesCompilerCommandResult.status !== 0) {
     throw new Error(getDebugInfoFromCommandResult(hermesCompilerCommandResult));
@@ -87,17 +95,32 @@ function generateBytecodeBundle({
 }
 
 module.exports = async function runTest(
-  globalConfig: {...},
-  config: {...},
+  globalConfig: {
+    updateSnapshot: 'all' | 'new' | 'none',
+    ...
+  },
+  config: {
+    rootDir: string,
+    prettierPath: string,
+    snapshotFormat: {...},
+    ...
+  },
   environment: {...},
   runtime: {...},
   testPath: string,
 ): mixed {
+  const snapshotResolver = await buildSnapshotResolver(config);
+  const snapshotPath = snapshotResolver.resolveSnapshotPath(testPath);
+  const snapshotState = new SnapshotState(snapshotPath, {
+    updateSnapshot: globalConfig.updateSnapshot,
+    snapshotFormat: config.snapshotFormat,
+    prettierPath: config.prettierPath,
+    rootDir: config.rootDir,
+  });
+
   const startTime = Date.now();
 
   const testConfig = getFantomTestConfig(testPath);
-
-  const isOptimizedMode = testConfig.mode === 'opt';
 
   const metroConfig = await Metro.loadConfig({
     config: path.resolve(__dirname, '..', 'config', 'metro.config.js'),
@@ -114,14 +137,17 @@ module.exports = async function runTest(
     setupModulePath: `${path.relative(BUILD_OUTPUT_PATH, setupModulePath)}`,
     featureFlagsModulePath: `${path.relative(BUILD_OUTPUT_PATH, featureFlagsModulePath)}`,
     featureFlags: testConfig.flags.jsOnly,
+    snapshotConfig: {
+      updateSnapshot: snapshotState._updateSnapshot,
+      data: getInitialSnapshotData(snapshotState),
+    },
   });
 
   const entrypointPath = path.join(
     BUILD_OUTPUT_PATH,
     `${getShortHash(entrypointContents)}-${path.basename(testPath)}`,
   );
-  const testBundlePath = entrypointPath + '.bundle';
-  const testJSBundlePath = testBundlePath + '.js';
+  const testJSBundlePath = entrypointPath + '.bundle.js';
   const testBytecodeBundlePath = testJSBundlePath + '.hbc';
 
   fs.mkdirSync(path.dirname(entrypointPath), {recursive: true});
@@ -136,27 +162,29 @@ module.exports = async function runTest(
     entry: entrypointPath,
     out: testJSBundlePath,
     platform: 'android',
-    minify: isOptimizedMode,
-    dev: !isOptimizedMode,
+    minify: testConfig.mode === FantomTestConfigMode.Optimized,
+    dev: testConfig.mode !== FantomTestConfigMode.Optimized,
     sourceMap: true,
     sourceMapUrl: sourceMapPath,
   });
 
-  if (isOptimizedMode) {
+  if (testConfig.mode !== FantomTestConfigMode.DevelopmentWithSource) {
     generateBytecodeBundle({
       sourcePath: testJSBundlePath,
       bytecodePath: testBytecodeBundlePath,
-      isOptimizedMode,
+      isOptimizedMode: testConfig.mode === FantomTestConfigMode.Optimized,
     });
   }
 
   const rnTesterCommandResult = runBuck2([
     'run',
-    getBuckModeForPlatform(isOptimizedMode),
+    getBuckModeForPlatform(testConfig.mode === FantomTestConfigMode.Optimized),
     '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
     '--',
     '--bundlePath',
-    testBundlePath,
+    testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
+      ? testJSBundlePath
+      : testBytecodeBundlePath,
     '--featureFlags',
     JSON.stringify(testConfig.flags.common),
   ]);
@@ -197,6 +225,15 @@ module.exports = async function runTest(
       ),
     })) ?? [];
 
+  const snapshotResults = nullthrows(
+    rnTesterParsedOutput.testResult.testResults,
+  ).map(testResult => testResult.snapshotResults);
+
+  const snapshotResult = updateSnapshotsAndGetJestSnapshotResult(
+    snapshotState,
+    snapshotResults,
+  );
+
   return {
     testFilePath: testPath,
     failureMessage: formatResultsErrors(
@@ -214,15 +251,7 @@ module.exports = async function runTest(
       runtime: endTime - startTime,
       slow: false,
     },
-    snapshot: {
-      added: 0,
-      fileDeleted: false,
-      matched: 0,
-      unchecked: 0,
-      uncheckedKeys: [],
-      unmatched: 0,
-      updated: 0,
-    },
+    snapshot: snapshotResult,
     numTotalTests: testResults.length,
     numPassingTests: testResults.filter(test => test.status === 'passed')
       .length,

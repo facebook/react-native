@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a34ebf62e6e8b641e71f35e464903dba>>
+ * @generated SignedSource<<67e1f8c80caedcbf7b28a089a2744b9a>>
  * @flow strict
  */
 
@@ -368,7 +368,7 @@ export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useR
 /**
  * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
  */
-export const useRuntimeShadowNodeReferenceUpdate: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdate', false);
+export const useRuntimeShadowNodeReferenceUpdate: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdate', true);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */

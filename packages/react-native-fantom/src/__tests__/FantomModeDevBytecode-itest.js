@@ -6,12 +6,12 @@
  *
  * @flow strict-local
  * @format
+ * @oncall react_native
+ * @fantom_mode dev-bytecode
  */
 
-module.exports = {
-  presets: [
-    ['@babel/preset-env', {targets: {node: 'current'}}],
-    '@babel/preset-flow',
-  ],
-  plugins: ['@babel/plugin-transform-react-jsx'],
-};
+describe('"@fantom_mode dev-bytecode" in docblock', () => {
+  it('should use development builds', () => {
+    expect(__DEV__).toBe(true);
+  });
+});

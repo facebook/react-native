@@ -99,7 +99,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler = new ForwardingCookieHandler();
   private final @Nullable String mDefaultUserAgent;
-  private final CookieJarContainer mCookieJarContainer;
+  private final @Nullable CookieJarContainer mCookieJarContainer;
   private final Set<Integer> mRequestIds = new HashSet<>();
   private final List<RequestBodyHandler> mRequestBodyHandlers = new ArrayList<>();
   private final List<UriHandler> mUriHandlers = new ArrayList<>();
@@ -121,7 +121,13 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       client = clientBuilder.build();
     }
     mClient = client;
-    mCookieJarContainer = (CookieJarContainer) client.cookieJar();
+
+    CookieJar cookieJar = client.cookieJar();
+    if (cookieJar instanceof CookieJarContainer) {
+      mCookieJarContainer = (CookieJarContainer) client.cookieJar();
+    } else {
+      mCookieJarContainer = null;
+    }
     mDefaultUserAgent = defaultUserAgent;
   }
 
@@ -183,7 +189,9 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
 
   @Override
   public void initialize() {
-    mCookieJarContainer.setCookieJar(new JavaNetCookieJar(mCookieHandler));
+    if (mCookieJarContainer != null) {
+      mCookieJarContainer.setCookieJar(new JavaNetCookieJar(mCookieHandler));
+    }
   }
 
   @Override
@@ -192,7 +200,9 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
     cancelAllRequests();
 
     mCookieHandler.destroy();
-    mCookieJarContainer.removeCookieJar();
+    if (mCookieJarContainer != null) {
+      mCookieJarContainer.removeCookieJar();
+    }
 
     mRequestBodyHandlers.clear();
     mResponseHandlers.clear();

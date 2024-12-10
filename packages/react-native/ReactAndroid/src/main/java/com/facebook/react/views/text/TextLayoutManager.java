@@ -629,8 +629,8 @@ public class TextLayoutManager {
         && ((maximumNumberOfLines != ReactConstants.UNSET
                 && maximumNumberOfLines != 0
                 && layout.getLineCount() > maximumNumberOfLines)
-            || (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED
-                && layout.getHeight() > height))) {
+            || (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)
+            || (text.length() == 1 && layout.getLineWidth(0) > width))) {
       // TODO: We could probably use a smarter algorithm here. This will require 0(n)
       // measurements based on the number of points the font size needs to be reduced by.
       currentFontSize -= Math.max(1, (int) PixelUtil.toPixelFromDIP(1));
@@ -647,6 +647,9 @@ public class TextLayoutManager {
             text.getSpanEnd(span),
             text.getSpanFlags(span));
         text.removeSpan(span);
+      }
+      if (boring != null) {
+        boring = BoringLayout.isBoring(text, paint);
       }
       layout =
           createLayout(
