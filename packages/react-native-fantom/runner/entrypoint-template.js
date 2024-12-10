@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import type {SnapshotConfig} from '../runtime/snapshotContext';
 import type {FantomTestConfigJsOnlyFeatureFlags} from './getFantomTestConfig';
 
 module.exports = function entrypointTemplate({
@@ -16,11 +17,13 @@ module.exports = function entrypointTemplate({
   setupModulePath,
   featureFlagsModulePath,
   featureFlags,
+  snapshotConfig,
 }: {
   testPath: string,
   setupModulePath: string,
   featureFlagsModulePath: string,
   featureFlags: FantomTestConfigJsOnlyFeatureFlags,
+  snapshotConfig: SnapshotConfig,
 }): string {
   return `/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -47,6 +50,6 @@ ${Object.entries(featureFlags)
     : ''
 }
 
-registerTest(() => require('${testPath}'));
+registerTest(() => require('${testPath}'), ${JSON.stringify(snapshotConfig)});
 `;
 };
