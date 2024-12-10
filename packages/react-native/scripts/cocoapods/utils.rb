@@ -664,7 +664,7 @@ class ReactNativePodsUtils
 
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                is_release = config_name.downcase.include?("release") || config_name.downcase.include?("production")
+                is_release = aggregate_target.user_build_configurations[config_name] == :release
                 unless is_release
                     next
                 end
@@ -678,7 +678,7 @@ class ReactNativePodsUtils
 
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             target_installation_result.native_target.build_configurations.each do |config|
-                is_release = config.name.downcase.include?("release") || config.name.downcase.include?("production")
+                is_release = config.type == :release
                 unless is_release
                     next
                 end

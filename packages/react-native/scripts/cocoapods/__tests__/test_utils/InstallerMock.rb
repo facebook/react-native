@@ -96,13 +96,15 @@ end
 class AggregatedProjectMock
     attr_reader :user_project
     attr_reader :xcconfigs
+    attr_reader :user_build_configurations
 
     @base_path
 
-    def initialize(user_project = UserProjectMock.new, xcconfigs: {}, base_path: "")
+    def initialize(user_project = UserProjectMock.new, xcconfigs: {}, base_path: "", user_build_configurations: {})
         @user_project = user_project
         @xcconfigs = xcconfigs
         @base_path = base_path
+        @user_build_configurations = user_build_configurations
     end
 
     def xcconfig_path(config_name)
@@ -199,7 +201,7 @@ class BuildConfigurationMock
     end
 
     def type
-        @is_debug ? :debug : :release
+        return @is_debug ? :debug : :release
     end
 end
 
