@@ -189,15 +189,16 @@ folly::dynamic RawProps::toDynamic(
     case Mode::JSI: {
       if (ignoreYogaStyleProps_ || filterObjectKeys != nullptr) {
         // We need to filter props
-        return jsi::dynamicFromValue(*runtime_, value_, [&](const std::string& key) {
-          if (ignoreYogaStyleProps_ && isYogaStyleProp(key)) {
-            return false;
-          }
-          if (filterObjectKeys) {
-            return filterObjectKeys(key);
-          }
-          return true;
-        });
+        return jsi::dynamicFromValue(
+            *runtime_, value_, [&](const std::string& key) {
+              if (ignoreYogaStyleProps_ && isYogaStyleProp(key)) {
+                return false;
+              }
+              if (filterObjectKeys) {
+                return filterObjectKeys(key);
+              }
+              return true;
+            });
       } else {
         // We don't need to filter, just include all props by default
         return jsi::dynamicFromValue(*runtime_, value_, nullptr);
