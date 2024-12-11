@@ -254,7 +254,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   surface.surfaceHandler.setDisplayMode(displayMode);
   [self _attachSurface:surface];
 
-  [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
+  __weak RCTFabricSurface *weakSurface = surface;
+  [_instance callFunctionOnBufferedRuntimeExecutor:[weakSurface](facebook::jsi::Runtime &_) { [weakSurface start]; }];
   return surface;
 }
 
