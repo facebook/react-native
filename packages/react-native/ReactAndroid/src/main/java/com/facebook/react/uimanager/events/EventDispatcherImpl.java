@@ -21,6 +21,8 @@ import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,43 +61,43 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListener {
 
   private static final Comparator<Event> EVENT_COMPARATOR =
-      new Comparator<Event>() {
-        @Override
-        public int compare(Event lhs, Event rhs) {
-          if (lhs == null && rhs == null) {
-            return 0;
-          }
-          if (lhs == null) {
-            return -1;
-          }
-          if (rhs == null) {
-            return 1;
-          }
-
-          long diff = lhs.getTimestampMs() - rhs.getTimestampMs();
-          if (diff == 0) {
-            return 0;
-          } else if (diff < 0) {
-            return -1;
-          } else {
-            return 1;
-          }
+    new Comparator<Event>() {
+      @Override
+      public int compare(Event lhs, Event rhs) {
+        if (lhs == null && rhs == null) {
+          return 0;
         }
-      };
+        if (lhs == null) {
+          return -1;
+        }
+        if (rhs == null) {
+          return 1;
+        }
 
-  private final Object mEventsStagingLock = new Object();
-  private final Object mEventsToDispatchLock = new Object();
+        long diff = lhs.getTimestampMs() - rhs.getTimestampMs();
+        if (diff == 0) {
+          return 0;
+        } else if (diff < 0) {
+          return -1;
+        } else {
+          return 1;
+        }
+      }
+    };
+
+  private final Semaphore mEventsStagingSemaphore = new Semaphore(1);
+  private final Semaphore mEventsToDispatchSemaphore = new Semaphore(1);
   private final ReactApplicationContext mReactContext;
   private final LongSparseArray<Integer> mEventCookieToLastEventIdx = new LongSparseArray<>();
   private final Map<String, Short> mEventNameToEventId = MapBuilder.newHashMap();
   private final DispatchEventsRunnable mDispatchEventsRunnable = new DispatchEventsRunnable();
   private final ArrayList<Event> mEventStaging = new ArrayList<>();
   private final CopyOnWriteArrayList<EventDispatcherListener> mListeners =
-      new CopyOnWriteArrayList<>();
+    new CopyOnWriteArrayList<>();
   private final CopyOnWriteArrayList<BatchEventDispatchedListener> mPostEventDispatchListeners =
-      new CopyOnWriteArrayList<>();
+    new CopyOnWriteArrayList<>();
   private final ScheduleDispatchFrameCallback mCurrentFrameCallback =
-      new ScheduleDispatchFrameCallback();
+    new ScheduleDispatchFrameCallback();
   private final AtomicInteger mHasDispatchScheduledCount = new AtomicInteger();
 
   private Event[] mEventsToDispatch = new Event[16];
@@ -118,10 +120,16 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
       listener.onEventDispatch(event);
     }
 
-    synchronized (mEventsStagingLock) {
-      mEventStaging.add(event);
-      Systrace.startAsyncFlow(
+    try {
+      // 尝试获取事件暂存信号量，最多尝试5次，每次间隔200毫秒
+      if (tryAcquireSemaphore(mEventsStagingSemaphore, 5,200)) {
+        mEventStaging.add(event);
+        Systrace.startAsyncFlow(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
+      }
+    } finally {
+      // 释放事件暂存信号量
+      mEventsStagingSemaphore.release();
     }
     maybePostFrameCallbackFromNonUI();
   }
@@ -141,6 +149,21 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
       // touch event dispatch will hit this codepath, and we simply queue them so that they
       // are dispatched once ReactContext creation completes and JS app is running.
     }
+  }
+
+  private boolean tryAcquireSemaphore(Semaphore semaphore, int maxAttempts, int intervalMs) {
+    int attempts = 0;
+    while (attempts < maxAttempts) {
+      try {
+        if (semaphore.tryAcquire(intervalMs, TimeUnit.MILLISECONDS)) {
+          return true;
+        }
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
+      attempts++;
+    }
+    return false;
   }
 
   /** Add a listener to this EventDispatcher. */
@@ -178,12 +201,12 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
 
   public void onCatalystInstanceDestroyed() {
     UiThreadUtil.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            stopFrameCallback();
-          }
-        });
+      new Runnable() {
+        @Override
+        public void run() {
+          stopFrameCallback();
+        }
+      });
   }
 
   private void stopFrameCallback() {
@@ -198,10 +221,10 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
    * frame and another from this frame during the next.
    */
   private void moveStagedEventsToDispatchQueue() {
-    synchronized (mEventsStagingLock) {
-      synchronized (mEventsToDispatchLock) {
+    try {
+      if (tryAcquireSemaphore(mEventsStagingSemaphore, 5, 200) && tryAcquireSemaphore(mEventsToDispatchSemaphore, 5, 200)) {
         for (int i = 0; i < mEventStaging.size(); i++) {
-          Event event = mEventStaging.get(i);
+          com.facebook.react.uimanager.events.Event event = mEventStaging.get(i);
 
           if (!event.canCoalesce()) {
             addEventToEventsToDispatch(event);
@@ -209,18 +232,18 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
           }
 
           long eventCookie =
-              getEventCookie(event.getViewTag(), event.getEventName(), event.getCoalescingKey());
+            getEventCookie(event.getViewTag(), event.getEventName(), event.getCoalescingKey());
 
-          Event eventToAdd = null;
-          Event eventToDispose = null;
+          com.facebook.react.uimanager.events.Event eventToAdd = null;
+          com.facebook.react.uimanager.events.Event eventToDispose = null;
           Integer lastEventIdx = mEventCookieToLastEventIdx.get(eventCookie);
 
           if (lastEventIdx == null) {
             eventToAdd = event;
             mEventCookieToLastEventIdx.put(eventCookie, mEventsToDispatchSize);
           } else {
-            Event lastEvent = mEventsToDispatch[lastEventIdx];
-            Event coalescedEvent = event.coalesce(lastEvent);
+            com.facebook.react.uimanager.events.Event lastEvent = mEventsToDispatch[lastEventIdx];
+            com.facebook.react.uimanager.events.Event coalescedEvent = event.coalesce(lastEvent);
             if (coalescedEvent != lastEvent) {
               eventToAdd = coalescedEvent;
               mEventCookieToLastEventIdx.put(eventCookie, mEventsToDispatchSize);
@@ -238,8 +261,11 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
             eventToDispose.dispose();
           }
         }
+        mEventStaging.clear();
       }
-      mEventStaging.clear();
+    }catch (Exception e){} finally{
+      mEventsToDispatchSemaphore.release();
+      mEventsStagingSemaphore.release();
     }
   }
 
@@ -257,8 +283,8 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
 
   private static long getEventCookie(int viewTag, short eventTypeId, short coalescingKey) {
     return viewTag
-        | (((long) eventTypeId) & 0xffff) << 32
-        | (((long) coalescingKey) & 0xffff) << 48;
+      | (((long) eventTypeId) & 0xffff) << 32
+      | (((long) coalescingKey) & 0xffff) << 48;
   }
 
   public void registerEventEmitter(@UIManagerType int uiManagerType, RCTEventEmitter eventEmitter) {
@@ -266,7 +292,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
   }
 
   public void registerEventEmitter(
-      @UIManagerType int uiManagerType, RCTModernEventEmitter eventEmitter) {
+    @UIManagerType int uiManagerType, RCTModernEventEmitter eventEmitter) {
     mReactEventEmitter.register(uiManagerType, eventEmitter);
   }
 
@@ -295,9 +321,9 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
         if (!mHasDispatchScheduled) {
           mHasDispatchScheduled = true;
           Systrace.startAsyncFlow(
-              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-              "ScheduleDispatchFrameCallback",
-              mHasDispatchScheduledCount.get());
+            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+            "ScheduleDispatchFrameCallback",
+            mHasDispatchScheduledCount.get());
           mReactContext.runOnJSQueueThread(mDispatchEventsRunnable);
         }
       } finally {
@@ -318,7 +344,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
 
     private void post() {
       ReactChoreographer.getInstance()
-          .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, mCurrentFrameCallback);
+        .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, mCurrentFrameCallback);
     }
 
     public void maybePostFromNonUI() {
@@ -331,12 +357,12 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
         maybePost();
       } else {
         mReactContext.runOnUiQueueThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                maybePost();
-              }
-            });
+          new Runnable() {
+            @Override
+            public void run() {
+              maybePost();
+            }
+          });
       }
     }
   }
@@ -348,32 +374,35 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
       Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "DispatchEventsRunnable");
       try {
         Systrace.endAsyncFlow(
-            Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-            "ScheduleDispatchFrameCallback",
-            mHasDispatchScheduledCount.getAndIncrement());
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          "ScheduleDispatchFrameCallback",
+          mHasDispatchScheduledCount.getAndIncrement());
         mHasDispatchScheduled = false;
         Assertions.assertNotNull(mReactEventEmitter);
-        synchronized (mEventsToDispatchLock) {
-          if (mEventsToDispatchSize > 0) {
-            // We avoid allocating an array and iterator, and "sorting" if we don't need to.
-            // This occurs when the size of mEventsToDispatch is zero or one.
-            if (mEventsToDispatchSize > 1) {
-              Arrays.sort(mEventsToDispatch, 0, mEventsToDispatchSize, EVENT_COMPARATOR);
-            }
-            for (int eventIdx = 0; eventIdx < mEventsToDispatchSize; eventIdx++) {
-              Event event = mEventsToDispatch[eventIdx];
-              // Event can be null if it has been coalesced into another event.
-              if (event == null) {
-                continue;
+        if (tryAcquireSemaphore(mEventsToDispatchSemaphore, 5, 200)) {
+          try {
+            if (mEventsToDispatchSize > 0) {
+              // We avoid allocating an array and iterator, and "sorting" if we don't need to.
+              // This occurs when the size of mEventsToDispatch is zero or one.
+              if (mEventsToDispatchSize > 1) {
+                Arrays.sort(mEventsToDispatch, 0, mEventsToDispatchSize, EVENT_COMPARATOR);
               }
-              Systrace.endAsyncFlow(
+              for (int eventIdx = 0; eventIdx < mEventsToDispatchSize; eventIdx++) {
+                com.facebook.react.uimanager.events.Event event = mEventsToDispatch[eventIdx];
+                // Event can be null if it has been coalesced into another event.
+                if (event == null) {
+                  continue;
+                }
+                Systrace.endAsyncFlow(
                   Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
-
-              event.dispatchModern(mReactEventEmitter);
-              event.dispose();
+                event.dispatchModern(mReactEventEmitter);
+                event.dispose();
+              }
+              clearEventsToDispatch();
+              mEventCookieToLastEventIdx.clear();
             }
-            clearEventsToDispatch();
-            mEventCookieToLastEventIdx.clear();
+          } finally {
+            mEventsToDispatchSemaphore.release();
           }
         }
         for (BatchEventDispatchedListener listener : mPostEventDispatchListeners) {
