@@ -322,6 +322,18 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   }
 }
 
+// TODO: replace with registerForTraitChanges once iOS 17.0 is the lowest supported version
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (UITraitCollection.currentTraitCollection.preferredContentSizeCategory != previousTraitCollection.preferredContentSizeCategory) {
+    const auto &newTextInputProps = static_cast<const TextInputProps &>(*_props);
+    _backedTextInputView.defaultTextAttributes =
+        RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+  }
+}
+
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
