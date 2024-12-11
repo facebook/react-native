@@ -16,6 +16,8 @@ import os from 'os';
 // $FlowExpectedError[untyped-import]
 import {SourceMapConsumer} from 'source-map';
 
+const BUCK_ISOLATION_DIR = 'react-native-fantom-buck-out';
+
 export function getBuckModeForPlatform(enableRelease: boolean = false): string {
   const mode = enableRelease ? 'opt' : 'dev';
 
@@ -40,6 +42,16 @@ type SpawnResultWithOriginalCommand = {
 };
 
 export function runBuck2(args: Array<string>): SpawnResultWithOriginalCommand {
+  // If these tests are already running from withing a buck2 process, e.g. when
+  // they are scheduled by a `buck2 test` wrapper, calling `buck2` again would
+  // cause a daemon-level deadlock.
+  // To prevent this - explicitly pass custom `--isolation-dir`. Reuse the same
+  // dir across tests (even running in different jest processes) to properly
+  // employ caching.
+  if (process.env.BUCK2_WRAPPER != null) {
+    args.unshift('--isolation-dir', BUCK_ISOLATION_DIR);
+  }
+
   const result = spawnSync('buck2', args, {
     encoding: 'utf8',
     env: {
