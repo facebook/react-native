@@ -118,6 +118,8 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
         top;
   }
 
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
+
  private:
   /*
    * Creates a `State` object if needed.
@@ -148,21 +150,19 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
   AttributedString getAttributedString(
       const LayoutContext& layoutContext) const {
     const auto& props = BaseShadowNode::getConcreteProps();
-    auto textAttributes =
+    const auto textAttributes =
         props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
-    auto attributedString = AttributedString{};
 
+    AttributedString attributedString;
     attributedString.appendFragment(AttributedString::Fragment{
         .string = props.text,
         .textAttributes = textAttributes,
-        // TODO: Is this really meant to be by value?
         .parentShadowView = ShadowView(*this)});
 
     auto attachments = BaseTextShadowNode::Attachments{};
     BaseTextShadowNode::buildAttributedString(
         textAttributes, *this, attributedString, attachments);
     attributedString.setBaseTextAttributes(textAttributes);
-
     return attributedString;
   }
 
@@ -206,8 +206,6 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     }
     return AttributedStringBox{attributedString};
   }
-
-  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 };
 
 } // namespace facebook::react
