@@ -12,7 +12,6 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
-import com.facebook.react.fabric.ReactNativeConfig
 
 /**
  * [ReactHostDelegate] is an interface that defines parameters required to initialize React Native.
@@ -54,13 +53,4 @@ public interface ReactHostDelegate {
    * the internals of React Native.
    */
   public fun handleInstanceException(error: Exception)
-
-  /**
-   * ReactNative Configuration that allows to customize the behavior of key/value pairs used by the
-   * framework to enable/disable experimental capabilities
-   *
-   * [moduleProvider] is a function that returns the Native Module with the name received as a
-   * parameter.
-   */
-  public fun getReactNativeConfig(): ReactNativeConfig
 }

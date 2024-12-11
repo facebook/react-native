@@ -22,15 +22,11 @@ import com.facebook.systrace.Systrace;
 public class FabricUIManagerProviderImpl implements UIManagerProvider {
 
   private final ComponentFactory mComponentFactory;
-  private final ReactNativeConfig mConfig;
   private final ViewManagerRegistry mViewManagerRegistry;
 
   public FabricUIManagerProviderImpl(
-      ComponentFactory componentFactory,
-      ReactNativeConfig config,
-      ViewManagerRegistry viewManagerRegistry) {
+      ComponentFactory componentFactory, ViewManagerRegistry viewManagerRegistry) {
     mComponentFactory = componentFactory;
-    mConfig = config;
     mViewManagerRegistry = viewManagerRegistry;
   }
 
@@ -56,12 +52,7 @@ public class FabricUIManagerProviderImpl implements UIManagerProvider {
 
     if (runtimeExecutor != null && runtimeScheduler != null) {
       binding.register(
-          runtimeExecutor,
-          runtimeScheduler,
-          fabricUIManager,
-          eventBeatManager,
-          mComponentFactory,
-          mConfig);
+          runtimeExecutor, runtimeScheduler, fabricUIManager, eventBeatManager, mComponentFactory);
     } else {
       throw new IllegalStateException(
           "Unable to register FabricUIManager with CatalystInstance, runtimeExecutor and"

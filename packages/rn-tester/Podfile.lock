@@ -1323,7 +1323,6 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
-  - React-nativeconfig (1000.0.0)
   - React-NativeModulesApple (1000.0.0):
     - glog
     - hermes-engine
@@ -1365,7 +1364,6 @@ PODS:
     - React-featureflags
     - React-graphics
     - React-hermes
-    - React-nativeconfig
     - React-NativeModulesApple
     - React-RCTFabric
     - React-RCTFBReactNativeSpec
@@ -1406,7 +1404,6 @@ PODS:
     - React-ImageManager
     - React-jsi
     - React-jsinspector
-    - React-nativeconfig
     - React-performancetimeline
     - React-RCTImage
     - React-RCTText
@@ -1534,7 +1531,6 @@ PODS:
     - React-jsi
     - React-jsinspector
     - React-jsitracing
-    - React-nativeconfig
     - React-RuntimeCore
     - React-utils
   - React-runtimescheduler (1000.0.0):
@@ -1704,7 +1700,6 @@ DEPENDENCIES:
   - React-logger (from `../react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../react-native/ReactCommon/react/nativemodule/microtasks`)
-  - React-nativeconfig (from `../react-native/ReactCommon`)
   - React-NativeModulesApple (from `../react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../react-native/ReactCommon/reactperflogger`)
   - React-performancetimeline (from `../react-native/ReactCommon/react/performance/timeline`)
@@ -1824,8 +1819,6 @@ EXTERNAL SOURCES:
     :path: "../react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../react-native/ReactCommon/react/nativemodule/microtasks"
-  React-nativeconfig:
-    :path: "../react-native/ReactCommon"
   React-NativeModulesApple:
     :path: "../react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -1904,8 +1897,8 @@ SPEC CHECKSUMS:
   MyNativeView: f8598d5f84e0369e85cc6d3abc18329ab99028a7
   NativeCxxModuleExample: 1c5f59bd3df26a333e6427e3faada3802ab84531
   OCMock: 589f2c84dacb1f5aaf6e4cec1f292551fe748e74
-  OSSLibraryExample: 9e02824c11b3697106c0d236f9d1ffa8f40a7a93
-  RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
+  OSSLibraryExample: fb99bfb6f1033e5ac3cc1e382343e90676cc5a7a
+  RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
   RCTDeprecation: 3808e36294137f9ee5668f4df2e73dc079cd1dcf
   RCTRequired: 1032308769adb73f422e518d0f69363061cc0a69
   RCTTypeSafety: 570b52e5ec63a3d3fcdbaabfd6c866d25b3694fe

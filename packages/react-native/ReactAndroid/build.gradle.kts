@@ -191,7 +191,6 @@ val preparePrefab by
                       Pair("../ReactCommon/callinvoker/", ""),
                       Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                       Pair("../ReactCommon/react/bridging/", "react/bridging/"),
-                      Pair("../ReactCommon/react/config/", "react/config/"),
                       Pair("../ReactCommon/react/nativemodule/core/", ""),
                       Pair("../ReactCommon/react/nativemodule/core/platform/android/", ""),
                       Pair(
@@ -513,6 +512,7 @@ android {
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
     buildConfigField("boolean", "UNSTABLE_ENABLE_FUSEBOX_RELEASE", "false")
+    buildConfigField("boolean", "ENABLE_PERFETTO", "false")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
 

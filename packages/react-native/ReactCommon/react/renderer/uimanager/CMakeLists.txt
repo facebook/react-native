@@ -24,7 +24,6 @@ target_link_libraries(react_render_uimanager
         glog
         folly_runtime
         jsi
-        react_config
         react_cxxreact
         react_debug
         react_featureflags

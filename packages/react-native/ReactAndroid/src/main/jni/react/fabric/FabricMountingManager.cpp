@@ -31,7 +31,6 @@
 namespace facebook::react {
 
 FabricMountingManager::FabricMountingManager(
-    std::shared_ptr<const ReactNativeConfig>& config,
     jni::global_ref<JFabricUIManager::javaobject>& javaUIManager)
     : javaUIManager_(javaUIManager) {}
 

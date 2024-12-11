@@ -568,7 +568,7 @@ Transform BaseViewProps::resolveTransform(
     for (const auto& operation : transform.operations) {
       transformMatrix = transformMatrix *
           Transform::FromTransformOperation(
-                            operation, layoutMetrics.frame.size);
+                            operation, layoutMetrics.frame.size, transform);
     }
   }
 
