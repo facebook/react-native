@@ -512,6 +512,7 @@ android {
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
     buildConfigField("boolean", "UNSTABLE_ENABLE_FUSEBOX_RELEASE", "false")
+    buildConfigField("boolean", "ENABLE_PERFETTO", "false")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
 
