@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<124d445f029ae3e23652f355cbd28765>>
+ * @generated SignedSource<<609b55df15ac72da5a3c14dde18a4814>>
  */
 
 /**
@@ -285,6 +285,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useOptimizedEventBatchingOnAndroid(): Boolean = accessor.useOptimizedEventBatchingOnAndroid()
+
+  /**
+   * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
+   */
+  @JvmStatic
+  public fun useRawPropsJsiValue(): Boolean = accessor.useRawPropsJsiValue()
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
