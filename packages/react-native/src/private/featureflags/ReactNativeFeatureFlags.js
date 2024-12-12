@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0c6bca5d443beff11d70a5cba470607f>>
+ * @generated SignedSource<<b2dbe24b891b3e41ffe50b095806caf8>>
  * @flow strict
  */
 
@@ -158,7 +158,7 @@ export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGet
 /**
  * If the animation is within Animated.loop, we do not send state updates to React.
  */
-export const shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean> = createJavaScriptFlagGetter('shouldSkipStateUpdatesForLoopingAnimations', false);
+export const shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean> = createJavaScriptFlagGetter('shouldSkipStateUpdatesForLoopingAnimations', true);
 
 /**
  * Enables use of AnimatedObject for animating transform values.
