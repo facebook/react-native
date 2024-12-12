@@ -333,11 +333,11 @@ export class Image extends ImageBase {
 
   static getSizeWithHeaders(
     uri: string,
-    headers: {[index: string]: string},
+    headers: {[index: string]: string} | Headers,
   ): Promise<ImageSize>;
   static getSizeWithHeaders(
     uri: string,
-    headers: {[index: string]: string},
+    headers: {[index: string]: string} | Headers,
     success: (width: number, height: number) => void,
     failure?: (error: any) => void,
   ): void;
