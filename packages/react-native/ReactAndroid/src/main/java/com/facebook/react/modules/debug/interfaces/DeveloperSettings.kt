@@ -32,9 +32,6 @@ public interface DeveloperSettings {
   /** Whether Nuclide JS debugging is enabled. */
   public var isDeviceDebugEnabled: Boolean
 
-  /** Whether remote JS debugging is enabled. */
-  public var isRemoteJSDebugEnabled: Boolean
-
   /** Whether Start Sampling Profiler on App Start is enabled. */
   @Deprecated(
       "Legacy sampling profiler is no longer supported - This field will be removed in React Native 0.77")

@@ -28,7 +28,6 @@ public interface DevSupportManager : JSExceptionHandler {
   public val redBoxHandler: RedBoxHandler?
   public val sourceMapUrl: String?
   public val sourceUrl: String?
-  public val jSBundleURLForRemoteDebugging: String?
   public val downloadedJSBundleFile: String?
   public val lastErrorTitle: String?
   public val lastErrorStack: Array<StackFrame>?
@@ -74,8 +73,6 @@ public interface DevSupportManager : JSExceptionHandler {
   public fun isPackagerRunning(callback: PackagerStatusCallback)
 
   public fun setHotModuleReplacementEnabled(isHotModuleReplacementEnabled: Boolean)
-
-  public fun setRemoteJSDebugEnabled(isRemoteJSDebugEnabled: Boolean)
 
   public fun setFpsDebugEnabled(isFpsDebugEnabled: Boolean)
 
