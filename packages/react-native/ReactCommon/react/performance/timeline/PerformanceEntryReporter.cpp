@@ -14,6 +14,7 @@
 namespace facebook::react {
 
 namespace {
+
 std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
   std::vector<PerformanceEntryType> supportedEntryTypes{
       PerformanceEntryType::MARK,
@@ -27,6 +28,11 @@ std::vector<PerformanceEntryType> getSupportedEntryTypesInternal() {
 
   return supportedEntryTypes;
 }
+
+uint64_t timestampToMicroseconds(DOMHighResTimeStamp timestamp) {
+  return static_cast<uint64_t>(timestamp * 1000);
+}
+
 } // namespace
 
 std::shared_ptr<PerformanceEntryReporter>&
@@ -140,7 +146,9 @@ PerformanceEntry PerformanceEntryReporter::reportMark(
     markBuffer_.add(entry);
   }
 
-  // TODO(T198982317): Log `performance.mark()` events to jsinspector_modern
+  jsinspector_modern::PerformanceTracer::getInstance().reportMark(
+      name, timestampToMicroseconds(startTimeVal));
+
   observerRegistry_->queuePerformanceEntry(entry);
   return entry;
 }
@@ -178,8 +186,11 @@ PerformanceEntry PerformanceEntryReporter::reportMeasure(
     measureBuffer_.add(entry);
   }
 
-  jsinspector_modern::PerformanceTracer::getInstance().addEvent(
-      name, startTimeVal, endTimeVal, trackMetadata);
+  jsinspector_modern::PerformanceTracer::getInstance().reportMeasure(
+      name,
+      timestampToMicroseconds(startTimeVal),
+      timestampToMicroseconds(durationVal),
+      trackMetadata);
 
   observerRegistry_->queuePerformanceEntry(entry);
   return entry;
