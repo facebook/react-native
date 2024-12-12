@@ -241,7 +241,7 @@ jobs:
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run yarn
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Setup ruby
         uses: ruby/setup-ruby@v1.170.0
         with:
@@ -312,7 +312,7 @@ jobs:
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run yarn
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
@@ -437,7 +437,7 @@ jobs:
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Install node dependencies
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
@@ -519,7 +519,7 @@ jobs:
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
       - name: Run yarn install
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application
         shell: bash
         run: node ./scripts/e2e/init-project-e2e.js --useHelloWorld --pathToLocalReactNative "$GITHUB_WORKSPACE/build/$(cat build/react-native-package-version)"
