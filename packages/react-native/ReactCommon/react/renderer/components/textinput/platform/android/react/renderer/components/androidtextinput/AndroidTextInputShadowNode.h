@@ -50,7 +50,8 @@ class AndroidTextInputShadowNode final
    * `TextInputShadowNode` uses the manager to measure text content
    * and construct `TextInputState` objects.
    */
-  void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
+  void setTextLayoutManager(
+      std::shared_ptr<const TextLayoutManager> textLayoutManager);
 
 #pragma mark - LayoutableShadowNode
 
@@ -73,7 +74,7 @@ class AndroidTextInputShadowNode final
    */
   void updateStateIfNeeded();
 
-  SharedTextLayoutManager textLayoutManager_;
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 };
 
 } // namespace facebook::react

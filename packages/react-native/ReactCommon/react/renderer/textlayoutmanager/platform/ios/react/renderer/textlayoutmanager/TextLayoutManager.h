@@ -61,7 +61,7 @@ class TextLayoutManager {
   std::shared_ptr<void> getNativeTextLayoutManager() const;
 
  private:
-  std::shared_ptr<void> self_;
+  std::shared_ptr<void> nativeTextLayoutManager_;
   TextMeasureCache textMeasureCache_{};
   LineMeasureCache lineMeasureCache_{};
 };

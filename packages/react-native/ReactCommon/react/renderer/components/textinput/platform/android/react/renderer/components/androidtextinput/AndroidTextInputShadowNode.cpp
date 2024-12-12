@@ -84,7 +84,7 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
 }
 
 void AndroidTextInputShadowNode::setTextLayoutManager(
-    SharedTextLayoutManager textLayoutManager) {
+    std::shared_ptr<const TextLayoutManager> textLayoutManager) {
   ensureUnsealed();
   textLayoutManager_ = std::move(textLayoutManager);
 }
