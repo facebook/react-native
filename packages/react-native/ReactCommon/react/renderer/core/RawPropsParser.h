@@ -29,7 +29,7 @@ class RawPropsParser final {
    * If `useRawPropsJsiValue` is `true`, the parser will use `jsi::Value`
    * directly for RawValues instead of converting them to `folly::dynamic`.
    */
-  RawPropsParser(bool useRawPropsJsiValue = false)
+  RawPropsParser(bool useRawPropsJsiValue = ReactNativeFeatureFlags::useRawPropsJsiValue())
       : useRawPropsJsiValue_(useRawPropsJsiValue) {};
 
   /*
