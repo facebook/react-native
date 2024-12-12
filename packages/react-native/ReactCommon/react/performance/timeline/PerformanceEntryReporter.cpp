@@ -138,6 +138,7 @@ PerformanceEntry PerformanceEntryReporter::reportMark(
     markBuffer_.add(entry);
   }
 
+  // TODO(T198982317): Log `performance.mark()` events to jsinspector_modern
   observerRegistry_->queuePerformanceEntry(entry);
   return entry;
 }
@@ -173,6 +174,7 @@ PerformanceEntry PerformanceEntryReporter::reportMeasure(
     measureBuffer_.add(entry);
   }
 
+  // TODO(T198982317): Log `performance.measure()` events to jsinspector_modern
   observerRegistry_->queuePerformanceEntry(entry);
   return entry;
 }
@@ -217,6 +219,7 @@ void PerformanceEntryReporter::reportEvent(
     eventBuffer_.add(entry);
   }
 
+  // TODO(T198982346): Log interaction events to jsinspector_modern
   observerRegistry_->queuePerformanceEntry(entry);
 }
 

@@ -16,7 +16,7 @@
 #include <jsi/instrumentation.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/performance/timeline/PerformanceObserver.h>
-#include <reactperflogger/ReactPerfLogger.h>
+#include <reactperflogger/ReactPerfettoLogger.h>
 
 #include "NativePerformance.h"
 
@@ -120,7 +120,7 @@ double NativePerformance::markWithResult(
   auto entry =
       PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
 
-  ReactPerfLogger::mark(eventName, entry.startTime, trackName);
+  ReactPerfettoLogger::mark(eventName, entry.startTime, trackName);
 
   return entry.startTime;
 }
@@ -138,7 +138,7 @@ std::tuple<double, double> NativePerformance::measureWithResult(
   auto entry = PerformanceEntryReporter::getInstance()->reportMeasure(
       eventName, startTime, endTime, duration, startMark, endMark);
 
-  ReactPerfLogger::measure(
+  ReactPerfettoLogger::measure(
       eventName, entry.startTime, entry.startTime + entry.duration, trackName);
 
   return std::tuple{entry.startTime, entry.duration};
