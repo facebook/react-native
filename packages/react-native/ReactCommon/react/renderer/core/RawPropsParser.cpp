@@ -8,7 +8,6 @@
 #include "RawPropsParser.h"
 
 #include <react/debug/react_native_assert.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/RawProps.h>
 
 #include <glog/logging.h>
@@ -138,7 +137,7 @@ void RawPropsParser::preparse(const RawProps& rawProps) const noexcept {
 
         auto value = object.getProperty(runtime, nameValue);
         RawValue rawValue;
-        if (ReactNativeFeatureFlags::useRawPropsJsiValue()) {
+        if (useRawPropsJsiValue_) {
           rawValue = RawValue(runtime, std::move(value));
         } else {
           rawValue = RawValue(jsi::dynamicFromValue(runtime, value));
