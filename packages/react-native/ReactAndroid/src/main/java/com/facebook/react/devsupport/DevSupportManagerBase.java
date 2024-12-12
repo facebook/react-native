@@ -63,7 +63,6 @@ import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
-import com.facebook.react.packagerconnection.Responder;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -865,29 +864,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     return mLastErrorType;
   }
 
-  private void handleCaptureHeap(final Responder responder) {
-    if (mCurrentReactContext == null) {
-      return;
-    }
-    JSCHeapCapture heapCapture = mCurrentReactContext.getNativeModule(JSCHeapCapture.class);
-
-    if (heapCapture != null) {
-      heapCapture.captureHeap(
-          mApplicationContext.getCacheDir().getPath(),
-          new JSCHeapCapture.CaptureCallback() {
-            @Override
-            public void onSuccess(File capture) {
-              responder.respond(capture.toString());
-            }
-
-            @Override
-            public void onFailure(JSCHeapCapture.CaptureException error) {
-              responder.error(error.toString());
-            }
-          });
-    }
-  }
-
   private void updateLastErrorInfo(
       @Nullable final String message,
       final StackFrame[] stack,
@@ -1074,11 +1050,6 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             @Override
             public void onPackagerDevMenuCommand() {
               UiThreadUtil.runOnUiThread(() -> showDevOptionsDialog());
-            }
-
-            @Override
-            public void onCaptureHeapCommand(final Responder responder) {
-              UiThreadUtil.runOnUiThread(() -> handleCaptureHeap(responder));
             }
 
             @Override
