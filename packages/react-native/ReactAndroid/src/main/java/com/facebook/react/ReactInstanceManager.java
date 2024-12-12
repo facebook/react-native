@@ -651,7 +651,10 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void onHostPause(@Nullable Activity activity) {
     if (mRequireActivity) {
-      Assertions.assertCondition(mCurrentActivity != null);
+      Assertions.assertCondition(
+          mCurrentActivity != null,
+          "onHostPause called with null activity, expected: "
+              + mCurrentActivity.getClass().getSimpleName());
     }
     if (mCurrentActivity != null) {
       Assertions.assertCondition(
