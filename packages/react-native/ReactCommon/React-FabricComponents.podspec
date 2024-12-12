@@ -136,9 +136,7 @@ Pod::Spec.new do |s|
     ss.subspec "scrollview" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/scrollview/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/scrollview/tests",
-                                 "react/renderer/components/scrollview/platform/android"
+      sss.source_files         = "react/renderer/components/scrollview/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/scrollview"
 
     end
