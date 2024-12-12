@@ -1864,12 +1864,11 @@ declare class KeyboardAvoidingView extends React.Component<Props, State> {
   viewRef: { current: React.ElementRef<typeof View> | null, ... };
   _initialFrameHeight: number;
   _bottom: number;
-  _windowWidth: number;
   constructor(props: Props): void;
   _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics): Promise<number>;
   _onKeyboardChange: $FlowFixMe;
+  _onKeyboardHide: $FlowFixMe;
   _onLayout: $FlowFixMe;
-  _onDimensionsChange: $FlowFixMe;
   _setBottom: $FlowFixMe;
   _updateBottomIfNecessary: $FlowFixMe;
   componentDidUpdate(_: Props, prevState: State): void;
