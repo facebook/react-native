@@ -282,6 +282,14 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain_.setExternalMemoryPressure(obj, amt);
   }
 
+  void setPrototypeOf(const Object& object, const Value& prototype) override {
+    plain_.setPrototypeOf(object, prototype);
+  }
+
+  Value getPrototypeOf(const Object& object) override {
+    return plain_.getPrototypeOf(object);
+  }
+
   Value getProperty(const Object& o, const PropNameID& name) override {
     return plain_.getProperty(o, name);
   };
@@ -759,6 +767,16 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     RD::setNativeState(o, state);
   };
+
+  void setPrototypeOf(const Object& object, const Value& prototype) override {
+    Around around{with_};
+    RD::setPrototypeOf(object, prototype);
+  }
+
+  Value getPrototypeOf(const Object& object) override {
+    Around around{with_};
+    return RD::getPrototypeOf(object);
+  }
 
   Value getProperty(const Object& o, const PropNameID& name) override {
     Around around{with_};
