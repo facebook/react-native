@@ -14,6 +14,7 @@
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
 #include <jsi/instrumentation.h>
+#include <jsinspector-modern/tracing/CdpTracing.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/performance/timeline/PerformanceObserver.h>
 #include <reactperflogger/ReactPerfettoLogger.h>
@@ -135,8 +136,20 @@ std::tuple<double, double> NativePerformance::measureWithResult(
     std::optional<std::string> endMark) {
   auto [trackName, eventName] = parseTrackName(name);
 
+  std::optional<jsinspector_modern::DevToolsTrackEntryPayload> trackMetadata;
+
+  if (trackName.has_value()) {
+    trackMetadata = {.track = trackName.value()};
+  }
+
   auto entry = PerformanceEntryReporter::getInstance()->reportMeasure(
-      eventName, startTime, endTime, duration, startMark, endMark);
+      eventName,
+      startTime,
+      endTime,
+      duration,
+      startMark,
+      endMark,
+      trackMetadata);
 
   ReactPerfettoLogger::measure(
       eventName, entry.startTime, entry.startTime + entry.duration, trackName);
