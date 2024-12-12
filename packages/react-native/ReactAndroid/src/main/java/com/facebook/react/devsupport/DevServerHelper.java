@@ -27,7 +27,6 @@ import com.facebook.react.packagerconnection.NotificationOnlyHandler;
 import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 import com.facebook.react.packagerconnection.ReconnectingWebSocket.ConnectionCallback;
 import com.facebook.react.packagerconnection.RequestHandler;
-import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
 import com.facebook.react.util.RNLog;
 import java.io.File;
@@ -76,7 +75,8 @@ public class DevServerHelper {
 
     void onPackagerDevMenuCommand();
 
-    void onCaptureHeapCommand(final Responder responder);
+    @Deprecated(forRemoval = true)
+    default void onCaptureHeapCommand(final Responder responder) {}
 
     // Allow apps to provide listeners for custom packager commands.
     @Nullable
@@ -153,14 +153,6 @@ public class DevServerHelper {
               @Override
               public void onNotification(@Nullable Object params) {
                 commandListener.onPackagerDevMenuCommand();
-              }
-            });
-        handlers.put(
-            "captureHeap",
-            new RequestOnlyHandler() {
-              @Override
-              public void onRequest(@Nullable Object params, Responder responder) {
-                commandListener.onCaptureHeapCommand(responder);
               }
             });
         Map<String, RequestHandler> customHandlers = commandListener.customCommandHandlers();

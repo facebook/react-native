@@ -4748,18 +4748,6 @@ declare export default typeof EventPolyfill;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/HeapCapture/HeapCapture.js 1`] = `
-"declare const HeapCapture: { captureHeap: (path: string) => void };
-declare module.exports: HeapCapture;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/HeapCapture/NativeJSCHeapCapture.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeJSCHeapCapture\\";
-declare export default typeof NativeJSCHeapCapture;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Image/AssetRegistry.js 1`] = `
 "declare module.exports: $FlowFixMe;
 "
