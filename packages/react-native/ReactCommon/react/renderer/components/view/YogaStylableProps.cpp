@@ -539,6 +539,13 @@ YogaStylableProps::YogaStylableProps(
       sourceProps.yogaStyle.boxSizing(),
       yogaStyle.boxSizing()));
 
+  yogaStyle.setBorderStyle(convertRawProp(
+      context,
+      rawProps,
+      "borderStyle",
+      sourceProps.yogaStyle.borderStyle(),
+      yogaStyle.borderStyle()));
+
   convertRawPropAliases(context, sourceProps, rawProps);
 };
 

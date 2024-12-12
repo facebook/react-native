@@ -75,6 +75,7 @@ public class CSSBackgroundDrawable extends Drawable {
 
   private static @Nullable PathEffect getPathEffect(BorderStyle style, float borderWidth) {
     switch (style) {
+      case NONE:
       case SOLID:
         return null;
 
@@ -1385,6 +1386,12 @@ public class CSSBackgroundDrawable extends Drawable {
   }
 
   public RectF getDirectionAwareBorderInsets() {
+    @Nullable BorderStyle borderStyle = getBorderStyle();
+
+    if (borderStyle == BorderStyle.NONE) {
+      return new RectF(0, 0, 0, 0);
+    }
+
     final float borderWidth = getBorderWidthOrDefaultTo(0, Spacing.ALL);
     final float borderTopWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP);
     final float borderBottomWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.BOTTOM);
