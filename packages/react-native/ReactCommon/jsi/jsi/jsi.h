@@ -333,6 +333,9 @@ class JSI_EXPORT Runtime {
   virtual std::shared_ptr<HostObject> getHostObject(const jsi::Object&) = 0;
   virtual HostFunctionType& getHostFunction(const jsi::Function&) = 0;
 
+  // Creates a new Object with the custom prototype
+  virtual Object createObjectWithPrototype(const Value& prototype);
+
   virtual bool hasNativeState(const jsi::Object&) = 0;
   virtual std::shared_ptr<NativeState> getNativeState(const jsi::Object&) = 0;
   virtual void setNativeState(
@@ -749,6 +752,11 @@ class JSI_EXPORT Object : public Pointer {
       Runtime& runtime,
       std::shared_ptr<HostObject> ho) {
     return runtime.createObject(ho);
+  }
+
+  /// Creates a new Object with the custom prototype
+  static Object create(Runtime& runtime, const Value& prototype) {
+    return runtime.createObjectWithPrototype(prototype);
   }
 
   /// \return whether this and \c obj are the same JSObject or not.
