@@ -5,14 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "ReactPerfLogger.h"
-
-#include <react/timing/primitives.h>
-#if __has_include(<reactperflogger/fusebox/FuseboxTracer.h>)
-#include <reactperflogger/fusebox/FuseboxTracer.h>
-#define HAS_FUSEBOX
-#endif
-#include <chrono>
+#include "ReactPerfettoLogger.h"
 
 #ifdef WITH_PERFETTO
 #include "ReactPerfetto.h"
@@ -36,16 +29,11 @@ std::string toPerfettoTrackName(
 } // namespace
 #endif
 
-/* static */ void ReactPerfLogger::measure(
+/* static */ void ReactPerfettoLogger::measure(
     const std::string_view& eventName,
     double startTime,
     double endTime,
     const std::optional<std::string_view>& trackName) {
-#ifdef HAS_FUSEBOX
-  FuseboxTracer::getFuseboxTracer().addEvent(
-      eventName, (uint64_t)startTime, (uint64_t)endTime, trackName);
-#endif
-
 #ifdef WITH_PERFETTO
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
     auto track = getPerfettoWebPerfTrackAsync(toPerfettoTrackName(trackName));
@@ -60,12 +48,10 @@ std::string toPerfettoTrackName(
 #endif
 }
 
-/* static */ void ReactPerfLogger::mark(
+/* static */ void ReactPerfettoLogger::mark(
     const std::string_view& eventName,
     double startTime,
     const std::optional<std::string_view>& trackName) {
-  // TODO(T203046480) Support mark in FuseboxTracer
-
 #ifdef WITH_PERFETTO
   if (TRACE_EVENT_CATEGORY_ENABLED("react-native")) {
     TRACE_EVENT_INSTANT(
@@ -75,10 +61,6 @@ std::string toPerfettoTrackName(
         performanceNowToPerfettoTraceTime(startTime));
   }
 #endif
-}
-
-/* static */ double ReactPerfLogger::performanceNow() {
-  return chronoToDOMHighResTimeStamp(std::chrono::steady_clock::now());
 }
 
 } // namespace facebook::react
