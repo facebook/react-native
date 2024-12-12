@@ -6953,18 +6953,6 @@ exports[`public API should not change unintentionally Libraries/NewAppScreen/ind
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Performance/NativeJSCSamplingProfiler.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeJSCSamplingProfiler\\";
-declare export default typeof NativeJSCSamplingProfiler;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Performance/SamplingProfiler.js 1`] = `
-"declare const SamplingProfiler: { poke: (token: number) => void };
-declare module.exports: SamplingProfiler;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Performance/Systrace.js 1`] = `
 "type EventName = string | (() => string);
 type EventArgs = ?{ [string]: string };
