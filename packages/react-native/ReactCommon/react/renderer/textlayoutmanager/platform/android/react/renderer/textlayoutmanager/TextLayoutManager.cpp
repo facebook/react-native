@@ -277,18 +277,4 @@ LinesMeasurements TextLayoutManager::measureLines(
   return lineMeasurements;
 }
 
-Float TextLayoutManager::baseline(
-    const AttributedStringBox& attributedStringBox,
-    const ParagraphAttributes& paragraphAttributes,
-    const Size& size) const {
-  auto lines =
-      this->measureLines(attributedStringBox, paragraphAttributes, size);
-
-  if (!lines.empty()) {
-    return lines[0].ascender;
-  } else {
-    return 0;
-  }
-}
-
 } // namespace facebook::react
