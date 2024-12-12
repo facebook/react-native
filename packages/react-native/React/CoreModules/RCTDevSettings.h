@@ -49,7 +49,6 @@
 @property (nonatomic, readonly) BOOL isHotLoadingAvailable;
 @property (nonatomic, readonly) BOOL isRemoteDebuggingAvailable;
 @property (nonatomic, readonly) BOOL isDeviceDebuggingAvailable;
-@property (nonatomic, readonly) BOOL isJSCSamplingProfilerAvailable;
 
 /**
  * Whether the bridge is connected to a remote JS executor.
