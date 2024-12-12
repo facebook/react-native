@@ -538,7 +538,7 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     shouldSkipStateUpdatesForLoopingAnimations: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-07-25',
         description:
