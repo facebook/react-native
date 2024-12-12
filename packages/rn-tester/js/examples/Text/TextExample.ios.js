@@ -12,6 +12,7 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
+import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
 import TextInlineViewsExample from './TextInlineViewsExample';
 
@@ -1350,9 +1351,9 @@ const examples = [
                   return (
                     <View key={code}>
                       <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
-                      <Text lineBreakStrategyIOS={strategy}>
+                      <RNTesterText lineBreakStrategyIOS={strategy}>
                         {textByCode[code]}
-                      </Text>
+                      </RNTesterText>
                     </View>
                   );
                 })}
