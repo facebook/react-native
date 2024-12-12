@@ -21,6 +21,7 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <string>
 
 using namespace facebook::jsi;
 
@@ -302,7 +303,7 @@ void JSIExecutor::handleMemoryPressure(int pressureLevel) {
     TRIM_MEMORY_RUNNING_MODERATE = 5,
     TRIM_MEMORY_UI_HIDDEN = 20,
   };
-  const char* levelName;
+  std::string levelName;
   switch (pressureLevel) {
     case TRIM_MEMORY_BACKGROUND:
       levelName = "TRIM_MEMORY_BACKGROUND";
