@@ -10,6 +10,7 @@
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
+
 import {createRoot, runTask} from '..';
 import * as React from 'react';
 import {Text, View} from 'react-native';
@@ -69,6 +70,32 @@ describe('Fantom', () => {
       });
 
       expect(completed).toBe(true);
+    });
+
+    // TODO: when error handling is fixed, this should verify using `toThrow`
+    it('should throw when running a task inside another task', () => {
+      let lastCallbackExecuted = 0;
+      runTask(() => {
+        lastCallbackExecuted = 1;
+        runTask(() => {
+          lastCallbackExecuted = 2;
+          throw new Error('Recursive runTask should be unreachable');
+        });
+      });
+      expect(lastCallbackExecuted).toBe(1);
+
+      runTask(() => {
+        queueMicrotask(() => {
+          lastCallbackExecuted = 3;
+          runTask(() => {
+            lastCallbackExecuted = 4;
+            throw new Error(
+              'Recursive runTask from micro-task should be unreachable',
+            );
+          });
+        });
+      });
+      expect(lastCallbackExecuted).toBe(3);
     });
   });
 
