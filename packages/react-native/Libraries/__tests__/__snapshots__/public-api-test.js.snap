@@ -6503,6 +6503,7 @@ export type Props = $ReadOnly<{|
   >,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
   backdropColor?: ?string,
+  dismissOnSwipeDown?: ?boolean,
 |}>;
 type State = {
   isRendered: boolean,
