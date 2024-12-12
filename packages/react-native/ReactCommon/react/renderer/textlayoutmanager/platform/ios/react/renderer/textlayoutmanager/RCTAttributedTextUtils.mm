@@ -403,6 +403,7 @@ static NSMutableAttributedString *RCTNSAttributedStringFragmentWithAttributesFro
 {
   auto nsAttributedStringFragment = RCTNSAttributedStringFragmentFromFragment(fragment, placeholderImage);
 
+#if !TARGET_OS_MACCATALYST
   if (fragment.parentShadowView.componentHandle) {
     RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
     eventEmitterWrapper.eventEmitter = fragment.parentShadowView.eventEmitter;
@@ -413,6 +414,7 @@ static NSMutableAttributedString *RCTNSAttributedStringFragmentWithAttributesFro
     [nsAttributedStringFragment addAttributes:additionalTextAttributes
                                         range:NSMakeRange(0, nsAttributedStringFragment.length)];
   }
+#endif
 
   return nsAttributedStringFragment;
 }
