@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
 namespace facebook::react::jsinspector_modern {
@@ -29,8 +30,8 @@ struct TraceEvent {
   TraceEventType type;
   std::string name;
   uint64_t start;
-  uint64_t end;
-  std::string track;
+  uint64_t duration = 0;
+  std::optional<std::string> track;
 };
 
 /**
@@ -55,13 +56,25 @@ class PerformanceTracer {
   bool stopTracingAndCollectEvents(
       const std::function<void(const folly::dynamic& eventsChunk)>&
           resultCallback);
+
   /**
-   * Record a new trace event. If not currently tracing, this is a no-op.
+   * Record a `Performance.mark()` event - a labelled timestamp. If not
+   * currently tracing, this is a no-op.
+   *
+   * See https://w3c.github.io/user-timing/#mark-method.
    */
-  void addEvent(
+  void reportMark(const std::string_view& name, uint64_t start);
+
+  /**
+   * Record a `Performance.measure()` event - a labelled duration. If not
+   * currently tracing, this is a no-op.
+   *
+   * See https://w3c.github.io/user-timing/#measure-method.
+   */
+  void reportMeasure(
       const std::string_view& name,
       uint64_t start,
-      uint64_t end,
+      uint64_t duration,
       const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
 
  private:
@@ -69,6 +82,12 @@ class PerformanceTracer {
   PerformanceTracer(const PerformanceTracer&) = delete;
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
+
+  std::unordered_map<std::string, uint32_t> getCustomTracks(
+      std::vector<TraceEvent>& events);
+  folly::dynamic serializeTraceEvent(
+      TraceEvent& event,
+      std::unordered_map<std::string, uint32_t>& customTrackIdMap) const;
 
   bool tracing_{false};
   std::vector<TraceEvent> buffer_;
