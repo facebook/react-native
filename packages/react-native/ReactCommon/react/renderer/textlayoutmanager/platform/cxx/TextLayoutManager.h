@@ -21,8 +21,6 @@ namespace facebook::react {
 
 class TextLayoutManager;
 
-using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
-
 /*
  * Cross platform facade for Android-specific TextLayoutManager.
  */

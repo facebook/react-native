@@ -15,13 +15,13 @@ namespace facebook::react {
 
 TextLayoutManager::TextLayoutManager(const ContextContainer::Shared &contextContainer)
 {
-  self_ = wrapManagedObject([RCTTextLayoutManager new]);
+  nativeTextLayoutManager_ = wrapManagedObject([RCTTextLayoutManager new]);
 }
 
 std::shared_ptr<void> TextLayoutManager::getNativeTextLayoutManager() const
 {
-  assert(self_ && "Stored NativeTextLayoutManager must not be null.");
-  return self_;
+  assert(nativeTextLayoutManager_ && "Stored NativeTextLayoutManager must not be null.");
+  return nativeTextLayoutManager_;
 }
 
 TextMeasurement TextLayoutManager::measure(
@@ -30,7 +30,7 @@ TextMeasurement TextLayoutManager::measure(
     const TextLayoutContext &layoutContext,
     const LayoutConstraints &layoutConstraints) const
 {
-  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
+  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(nativeTextLayoutManager_);
 
   auto measurement = TextMeasurement{};
 
@@ -92,7 +92,7 @@ LinesMeasurements TextLayoutManager::measureLines(
   react_native_assert(attributedStringBox.getMode() == AttributedStringBox::Mode::Value);
   const auto &attributedString = attributedStringBox.getValue();
 
-  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
+  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(nativeTextLayoutManager_);
 
   auto measurement =
       lineMeasureCache_.get({attributedString, paragraphAttributes, size}, [&](const LineMeasureCacheKey &key) {
