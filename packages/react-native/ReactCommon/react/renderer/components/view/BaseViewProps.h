@@ -108,8 +108,6 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
   bool removeClippedSubviews{false};
 
-  LayoutConformance experimental_layoutConformance{};
-
 #pragma mark - Convenience Methods
 
   CascadedBorderWidths getBorderWidths() const;

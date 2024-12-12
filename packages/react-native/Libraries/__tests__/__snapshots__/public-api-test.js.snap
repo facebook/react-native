@@ -1887,6 +1887,25 @@ declare export default typeof NativeKeyboardObserver;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Components/LayoutConformance/LayoutConformance.js 1`] = `
+"type Props = $ReadOnly<{
+  mode: \\"strict\\" | \\"compatibility\\",
+  children: React.Node,
+}>;
+declare export default component(...Props);
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/LayoutConformance/LayoutConformanceNativeComponent.js 1`] = `
+"type Props = $ReadOnly<{
+  mode: \\"strict\\" | \\"compatibility\\",
+  ...ViewProps,
+}>;
+declare const LayoutConformanceNativeComponent: HostComponent<Props>;
+declare export default typeof LayoutConformanceNativeComponent;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
 "type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, \\"style\\">;
 export type StateCallbackType = $ReadOnly<{|
@@ -4268,7 +4287,6 @@ export type ViewProps = $ReadOnly<{|
   \\"aria-hidden\\"?: ?boolean,
   collapsable?: ?boolean,
   collapsableChildren?: ?boolean,
-  experimental_layoutConformance?: ?(\\"strict\\" | \\"classic\\"),
   id?: string,
   testID?: ?string,
   nativeID?: ?string,
@@ -9603,6 +9621,7 @@ declare module.exports: {
   get Image(): Image,
   get ImageBackground(): ImageBackground,
   get InputAccessoryView(): InputAccessoryView,
+  get experimental_LayoutConformance(): LayoutConformance,
   get KeyboardAvoidingView(): KeyboardAvoidingView,
   get Modal(): Modal,
   get Pressable(): Pressable,
