@@ -2119,7 +2119,7 @@ public class com/facebook/react/devsupport/DevServerHelper {
 
 public abstract interface class com/facebook/react/devsupport/DevServerHelper$PackagerCommandListener {
 	public abstract fun customCommandHandlers ()Ljava/util/Map;
-	public abstract fun onCaptureHeapCommand (Lcom/facebook/react/packagerconnection/Responder;)V
+	public fun onCaptureHeapCommand (Lcom/facebook/react/packagerconnection/Responder;)V
 	public abstract fun onPackagerConnected ()V
 	public abstract fun onPackagerDevMenuCommand ()V
 	public abstract fun onPackagerDisconnected ()V
@@ -2221,24 +2221,6 @@ public class com/facebook/react/devsupport/InspectorPackagerConnection : com/fac
 	public fun closeQuietly ()V
 	public fun connect ()V
 	public fun sendEventToAllConnections (Ljava/lang/String;)V
-}
-
-public class com/facebook/react/devsupport/JSCHeapCapture : com/facebook/fbreact/specs/NativeJSCHeapCaptureSpec {
-	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
-	public fun captureComplete (Ljava/lang/String;Ljava/lang/String;)V
-	public fun captureHeap (Ljava/lang/String;Lcom/facebook/react/devsupport/JSCHeapCapture$CaptureCallback;)V
-}
-
-public abstract interface class com/facebook/react/devsupport/JSCHeapCapture$CaptureCallback {
-	public abstract fun onFailure (Lcom/facebook/react/devsupport/JSCHeapCapture$CaptureException;)V
-	public abstract fun onSuccess (Ljava/io/File;)V
-}
-
-public class com/facebook/react/devsupport/JSCHeapCapture$CaptureException : java/lang/Exception {
-}
-
-public abstract interface class com/facebook/react/devsupport/JSCHeapCapture$HeapCapture : com/facebook/react/bridge/JavaScriptModule {
-	public abstract fun captureHeap (Ljava/lang/String;)V
 }
 
 public class com/facebook/react/devsupport/JSDebuggerWebSocketClient : okhttp3/WebSocketListener {

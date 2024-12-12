@@ -16,7 +16,6 @@ registerModule('Systrace', () => require('../Performance/Systrace'));
 if (!(global.RN$Bridgeless === true)) {
   registerModule('JSTimers', () => require('./Timers/JSTimers'));
 }
-registerModule('HeapCapture', () => require('../HeapCapture/HeapCapture'));
 registerModule('SamplingProfiler', () =>
   require('../Performance/SamplingProfiler'),
 );
