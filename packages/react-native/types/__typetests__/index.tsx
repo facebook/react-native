@@ -121,6 +121,7 @@ import {
   ToastAndroid,
   Touchable,
   LayoutAnimation,
+  experimental_LayoutConformance as LayoutConformance,
 } from 'react-native';
 
 declare module 'react-native' {
@@ -2212,3 +2213,7 @@ const ActionSheetIOSTest = () => {
   // test dismissActionSheet method
   ActionSheetIOS.dismissActionSheet();
 };
+
+<LayoutConformance mode="strict">
+  <View />
+</LayoutConformance>;

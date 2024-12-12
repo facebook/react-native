@@ -1018,22 +1018,21 @@ inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
     LayoutConformance& result) {
-  result = LayoutConformance::Classic;
   react_native_expect(value.hasType<std::string>());
+  result = LayoutConformance::Strict;
   if (!value.hasType<std::string>()) {
     return;
   }
+
   auto stringValue = (std::string)value;
-  if (stringValue == "classic") {
-    result = LayoutConformance::Classic;
-    return;
-  }
   if (stringValue == "strict") {
     result = LayoutConformance::Strict;
-    return;
+  } else if (stringValue == "compatibility") {
+    result = LayoutConformance::Compatibility;
+  } else {
+    LOG(ERROR) << "Unexpected LayoutConformance value:" << stringValue;
+    react_native_expect(false);
   }
-  LOG(ERROR) << "Could not parse LayoutConformance:" << stringValue;
-  react_native_expect(false);
 }
 
 inline void fromRawValue(
@@ -1457,12 +1456,10 @@ inline std::string toString(const yoga::FloatOptional& value) {
 
 inline std::string toString(const LayoutConformance& value) {
   switch (value) {
-    case LayoutConformance::Undefined:
-      return "undefined";
-    case LayoutConformance::Classic:
-      return "classic";
     case LayoutConformance::Strict:
       return "strict";
+    case LayoutConformance::Compatibility:
+      return "compatibility";
   }
 }
 

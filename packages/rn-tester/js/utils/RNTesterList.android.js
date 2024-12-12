@@ -46,6 +46,11 @@ const Components: Array<RNTesterModuleInfo> = [
     module: require('../examples/Image/ImageExample'),
   },
   {
+    key: 'LayoutConformanceExample',
+    module: require('../examples/LayoutConformance/LayoutConformanceExample')
+      .default,
+  },
+  {
     key: 'JSResponderHandlerExample',
     module: require('../examples/JSResponderHandlerExample/JSResponderHandlerExample'),
   },

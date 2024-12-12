@@ -22,6 +22,7 @@
 #include <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #include <react/renderer/components/text/RawTextComponentDescriptor.h>
 #include <react/renderer/components/text/TextComponentDescriptor.h>
+#include <react/renderer/components/view/LayoutConformanceComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 
 namespace facebook::react::CoreComponentsRegistry {
@@ -66,6 +67,8 @@ sharedProviderRegistry() {
                           AndroidDrawerLayoutComponentDescriptor>());
     providerRegistry->add(concreteComponentDescriptorProvider<
                           DebuggingOverlayComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<
+                          LayoutConformanceComponentDescriptor>());
 
     return providerRegistry;
   }();
