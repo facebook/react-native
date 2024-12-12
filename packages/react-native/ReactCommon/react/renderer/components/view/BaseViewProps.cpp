@@ -53,8 +53,9 @@ std::array<float, 3> getTranslateForTransformOrigin(
 BaseViewProps::BaseViewProps(
     const PropsParserContext& context,
     const BaseViewProps& sourceProps,
-    const RawProps& rawProps)
-    : YogaStylableProps(context, sourceProps, rawProps),
+    const RawProps& rawProps,
+    const std::function<bool(const std::string&)>& filterObjectKeys)
+    : YogaStylableProps(context, sourceProps, rawProps, filterObjectKeys),
       AccessibilityProps(context, sourceProps, rawProps),
       opacity(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()

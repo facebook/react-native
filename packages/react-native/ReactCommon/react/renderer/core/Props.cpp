@@ -17,19 +17,21 @@ namespace facebook::react {
 Props::Props(
     const PropsParserContext& context,
     const Props& sourceProps,
-    const RawProps& rawProps) {
-  initialize(context, sourceProps, rawProps);
+    const RawProps& rawProps,
+    const std::function<bool(const std::string&)>& filterObjectKeys) {
+  initialize(context, sourceProps, rawProps, filterObjectKeys);
 }
 
 void Props::initialize(
     const PropsParserContext& context,
     const Props& sourceProps,
-    const RawProps& rawProps) {
+    const RawProps& rawProps,
+    const std::function<bool(const std::string&)>& filterObjectKeys) {
   nativeId = ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
       ? sourceProps.nativeId
       : convertRawProp(context, rawProps, "nativeID", sourceProps.nativeId, {});
 #ifdef ANDROID
-  this->rawProps = (folly::dynamic)rawProps;
+  this->rawProps = rawProps.toDynamic(filterObjectKeys);
 #endif
 }
 
