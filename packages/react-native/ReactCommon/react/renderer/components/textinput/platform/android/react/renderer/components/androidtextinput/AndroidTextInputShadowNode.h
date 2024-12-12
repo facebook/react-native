@@ -30,14 +30,15 @@ class AndroidTextInputShadowNode final
           TextInputState,
           /* usesMapBufferForStateData */ true> {
  public:
+  using ConcreteViewShadowNode::ConcreteViewShadowNode;
+
   static ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
     traits.set(ShadowNodeTraits::Trait::BaselineYogaNode);
     return traits;
   }
-
-  using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   /*
    * Returns a `AttributedString` which represents text content of the node.
