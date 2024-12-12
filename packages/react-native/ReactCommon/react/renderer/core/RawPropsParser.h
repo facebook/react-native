@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
@@ -29,7 +30,8 @@ class RawPropsParser final {
    * If `useRawPropsJsiValue` is `true`, the parser will use `jsi::Value`
    * directly for RawValues instead of converting them to `folly::dynamic`.
    */
-  RawPropsParser(bool useRawPropsJsiValue = ReactNativeFeatureFlags::useRawPropsJsiValue())
+  RawPropsParser(
+      bool useRawPropsJsiValue = ReactNativeFeatureFlags::useRawPropsJsiValue())
       : useRawPropsJsiValue_(useRawPropsJsiValue) {};
 
   /*
