@@ -1051,7 +1051,7 @@
     core-js-compat "^3.37.1"
     semver "^6.3.1"
 
-"@babel/preset-flow@^7.13.13", "@babel/preset-flow@^7.20.0", "@babel/preset-flow@^7.24.7":
+"@babel/preset-flow@^7.13.13", "@babel/preset-flow@^7.24.7":
   version "7.24.7"
   resolved "https://registry.yarnpkg.com/@babel/preset-flow/-/preset-flow-7.24.7.tgz#eef5cb8e05e97a448fc50c16826f5612fe512c06"
   integrity sha512-NL3Lo0NorCU607zU3NwRyJbpaB6E3t0xtd3LfAQKDfkeX4/ggcDXvkmkW42QWT5owUeW/jAe4hn+2qvkV1IbfQ==
@@ -4465,10 +4465,10 @@ flow-api-translator@0.25.1:
     hermes-transform "0.25.1"
     typescript "5.3.2"
 
-flow-bin@^0.255.0:
-  version "0.255.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.255.0.tgz#b6770284a89f3b39ea39ad6222de02136e262445"
-  integrity sha512-UT1kfKTJ5xS6c7sBjiLSuO4SXf4YsatNKm9VCZIeoEY5TRXwg8F17Gu41iqVLAo19/ufqzQVz+/Nj0oWi24kFA==
+flow-bin@^0.256.0:
+  version "0.256.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.256.0.tgz#0cddc3b665b8e9cae34eb5896c8429d0f2961fdf"
+  integrity sha512-ujKn6fRfx9SujbqBLhT/lxFsXRsRDgrot2UuNhw4Z5W3QlVn4teV+7rBhs87FVHSnRvZeFAMKHHYYahWYw5W4w==
 
 flow-enums-runtime@^0.0.6:
   version "0.0.6"

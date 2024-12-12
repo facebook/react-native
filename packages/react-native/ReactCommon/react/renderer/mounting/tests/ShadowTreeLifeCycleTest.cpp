@@ -10,7 +10,6 @@
 #include <glog/logging.h>
 #include <gtest/gtest.h>
 
-#include <react/config/ReactNativeConfig.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewComponentDescriptor.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -183,8 +182,6 @@ static void testShadowNodeTreeLifeCycleExtensiveFlatteningUnflattening(
 
   auto eventDispatcher = EventDispatcher::Shared{};
   auto contextContainer = std::make_shared<ContextContainer>();
-  contextContainer->insert(
-      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
 
   auto componentDescriptorParameters =
       ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};

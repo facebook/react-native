@@ -85,7 +85,6 @@ Pod::Spec.new do |s|
     "react/renderer/components/textinput/platform/ios",
   ]);
 
-  add_dependency(s, "React-nativeconfig")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-ImageManager")
   add_dependency(s, "React-featureflags")
@@ -96,6 +95,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-rendererconsistency")
   add_dependency(s, "React-runtimescheduler")
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"

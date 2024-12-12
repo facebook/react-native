@@ -9,9 +9,9 @@
 
 #include "AndroidTextInputEventEmitter.h"
 #include "AndroidTextInputProps.h"
-#include "AndroidTextInputState.h"
 
 #include <react/renderer/attributedstring/AttributedString.h>
+#include <react/renderer/components/textinput/TextInputState.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/utils/ContextContainer.h>
 
@@ -27,7 +27,7 @@ class AndroidTextInputShadowNode final
           AndroidTextInputComponentName,
           AndroidTextInputProps,
           AndroidTextInputEventEmitter,
-          AndroidTextInputState,
+          TextInputState,
           /* usesMapBufferForStateData */ true> {
  public:
   static ShadowNodeTraits BaseTraits() {
@@ -50,7 +50,8 @@ class AndroidTextInputShadowNode final
    * `TextInputShadowNode` uses the manager to measure text content
    * and construct `TextInputState` objects.
    */
-  void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
+  void setTextLayoutManager(
+      std::shared_ptr<const TextLayoutManager> textLayoutManager);
 
 #pragma mark - LayoutableShadowNode
 
@@ -73,13 +74,7 @@ class AndroidTextInputShadowNode final
    */
   void updateStateIfNeeded();
 
-  SharedTextLayoutManager textLayoutManager_;
-
-  /*
-   * Cached attributed string that represents the content of the subtree started
-   * from the node.
-   */
-  mutable std::optional<AttributedString> cachedAttributedString_{};
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 };
 
 } // namespace facebook::react

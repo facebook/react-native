@@ -128,7 +128,6 @@ def use_react_native! (
   pod 'React-defaultsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/defaults"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
-  pod 'React-nativeconfig', :path => "#{prefix}/ReactCommon"
   pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   pod 'React-RCTFBReactNativeSpec', :path => "#{prefix}/React"
 
@@ -140,6 +139,7 @@ def use_react_native! (
 
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
+  pod 'React-jsinspectortracing', :path => "#{prefix}/ReactCommon/jsinspector-modern/tracing"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"

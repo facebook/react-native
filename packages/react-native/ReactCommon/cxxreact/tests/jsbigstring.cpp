@@ -60,3 +60,22 @@ TEST(JSBigFileString, MapPartTest) {
     EXPECT_EQ(needle[i], bigStr.c_str()[i]);
   }
 }
+
+TEST(JSBigFileString, MapPartAtLargeOffsetTest) {
+  std::string data(8 * 4096, 'X');
+  data += "Hello World!";
+
+  // Sub-string to actually map
+  std::string needle{"or"};
+  off_t offset = data.find(needle);
+
+  // Initialise Big String
+  int fd = tempFileFromString(data);
+  JSBigFileString bigStr{fd, needle.size(), offset};
+
+  // Test
+  EXPECT_EQ(needle.length(), bigStr.size());
+  for (unsigned int i = 0; i < needle.length(); ++i) {
+    EXPECT_EQ(needle[i], bigStr.c_str()[i]);
+  }
+}

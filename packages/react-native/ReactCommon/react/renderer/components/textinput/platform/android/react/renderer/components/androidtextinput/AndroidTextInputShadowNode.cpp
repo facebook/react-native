@@ -84,7 +84,7 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
 }
 
 void AndroidTextInputShadowNode::setTextLayoutManager(
-    SharedTextLayoutManager textLayoutManager) {
+    std::shared_ptr<const TextLayoutManager> textLayoutManager) {
   ensureUnsealed();
   textLayoutManager_ = std::move(textLayoutManager);
 }
@@ -104,7 +104,7 @@ AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
           reactTreeAttributedString);
 
   return (
-      !treeAttributedStringChanged ? state.attributedString
+      !treeAttributedStringChanged ? state.attributedStringBox.getValue()
                                    : reactTreeAttributedString);
 }
 
@@ -137,15 +137,11 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       : getConcreteProps().mostRecentEventCount;
   auto newAttributedString = getMostRecentAttributedString();
 
-  setStateData(AndroidTextInputState{
-      newEventCount,
-      newAttributedString,
+  setStateData(TextInputState{
+      AttributedStringBox(newAttributedString),
       reactTreeAttributedString,
       getConcreteProps().paragraphAttributes,
-      state.defaultThemePaddingStart,
-      state.defaultThemePaddingEnd,
-      state.defaultThemePaddingTop,
-      state.defaultThemePaddingBottom});
+      newEventCount});
 }
 
 #pragma mark - LayoutableShadowNode

@@ -15,7 +15,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <cxxreact/SystraceSection.h>
-#import <react/config/ReactNativeConfig.h>
 #import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>

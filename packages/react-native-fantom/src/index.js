@@ -60,17 +60,31 @@ class Root {
   // TODO: add an API to check if all surfaces were deallocated when tests are finished.
 }
 
+let flushingQueue = false;
+
 /*
  * Runs a task on on the event loop. To be used together with root.render.
  *
  * React must run inside of event loop to ensure scheduling environment is closer to production.
  */
 export function runTask(task: () => void | Promise<void>) {
+  if (flushingQueue) {
+    throw new Error(
+      'Nested runTask calls are not allowed. If you want to schedule a task from inside another task, use scheduleTask instead.',
+    );
+  }
+
   nativeRuntimeScheduler.unstable_scheduleCallback(
     schedulerPriorityImmediate,
     task,
   );
-  global.$$JSTesterModuleName$$.flushMessageQueue();
+
+  try {
+    flushingQueue = true;
+    global.$$JSTesterModuleName$$.flushMessageQueue();
+  } finally {
+    flushingQueue = false;
+  }
 }
 
 // TODO: Add option to define surface props and pass it to startSurface

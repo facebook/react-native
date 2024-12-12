@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <react/config/ReactNativeConfig.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/core/LayoutConstraints.h>
@@ -18,8 +17,6 @@
 namespace facebook::react {
 
 class TextLayoutManager;
-
-using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
 
 /*
  * Cross platform facade for Android-specific TextLayoutManager.
@@ -76,19 +73,12 @@ class TextLayoutManager {
       const ParagraphAttributes& paragraphAttributes,
       const Size& size) const;
 
-  /*
-   * Returns an opaque pointer to platform-specific TextLayoutManager.
-   * Is used on a native views layer to delegate text rendering to the manager.
-   */
-  void* getNativeTextLayoutManager() const;
-
  private:
   TextMeasurement doMeasure(
       const AttributedString& attributedString,
       const ParagraphAttributes& paragraphAttributes,
       const LayoutConstraints& layoutConstraints) const;
 
-  void* self_{};
   ContextContainer::Shared contextContainer_;
   TextMeasureCache textMeasureCache_;
   LineMeasureCache lineMeasureCache_;

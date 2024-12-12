@@ -46,8 +46,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteState = typename ShadowNodeT::ConcreteState;
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
-  ConcreteComponentDescriptor(const ComponentDescriptorParameters& parameters)
-      : ComponentDescriptor(parameters) {
+  explicit ConcreteComponentDescriptor(
+      const ComponentDescriptorParameters& parameters,
+      RawPropsParser&& rawPropsParser = {})
+      : ComponentDescriptor(parameters, std::move(rawPropsParser)) {
     rawPropsParser_.prepare<ConcreteProps>();
   }
 

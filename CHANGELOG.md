@@ -1,4 +1,16 @@
 # Changelog
+## v0.77.0-rc.2
+
+### Changed
+
+- Reverts #47503. (~~Callbacks passed to `animation.start(<callback>)` will be scheduled for execution in a microtask. Previously, there were certain scenarios in which the callback could be synchronously executed by `start`.~~) ([8793b7d89b](https://github.com/facebook/react-native/commit/8793b7d89bcafdfcca7ecb953e60882b67ffc807) by [@yungsters](https://github.com/yungsters))
+
+### Fixed
+
+#### Android specific
+
+- Fix crash on HeadlessJsTaskService on old architecture ([4560fc0497](https://github.com/facebook/react-native/commit/4560fc049748a345d5945bc08d43f4b61ca51ff3) by [@cortinico](https://github.com/cortinico))
+- Re-introduce the deprecated constructor on ReactModuleInfo ([734730df75](https://github.com/facebook/react-native/commit/734730df75b3bdddeb5dbe65f4151cc92b988303) by [@cortinico](https://github.com/cortinico))
 
 ## v0.77.0-rc.1
 
@@ -394,6 +406,16 @@
 - Fixed warnings when validating SVC ([de39a204c3](https://github.com/facebook/react-native/commit/de39a204c3588a3c02dc2e72464174c75b3a6749) by [@cipolleschi](https://github.com/cipolleschi))
 - Solved SVC warnings for RNTester ([fad4a0783b](https://github.com/facebook/react-native/commit/fad4a0783b0a0478c147d9bde2ef9ab082a08297) by [@cipolleschi](https://github.com/cipolleschi))
 - Don't reference PrivacyInfo.xcprivacy twice for new projects ([cadd41b1a2](https://github.com/facebook/react-native/commit/cadd41b1a2e16b1c77a8d3022f4ccbdbd5ea295f) by [@okwasniewski](https://github.com/okwasniewski))
+
+## v0.76.5
+
+### Fixed
+
+- Better support filtering out non linked platforms ([fcbcf80d1c](https://github.com/facebook/react-native/commit/fcbcf80d1c080af42b5277fc8a153059194efb95) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android specific
+
+- Fix crash on HeadlessJsTaskService on old architecture ([4560fc0497](https://github.com/facebook/react-native/commit/4560fc049748a345d5945bc08d43f4b61ca51ff3) by [@cortinico](https://github.com/cortinico))
 
 ## v0.76.4
 

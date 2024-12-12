@@ -20,26 +20,49 @@ import Metro from 'metro';
 import os from 'os';
 import path from 'path';
 
-export default async function warmUp(
-  globalConfig: {...},
-  projectConfig: {...},
+async function tryOrLog(
+  fn: () => void | Promise<void>,
+  message: string,
 ): Promise<void> {
   try {
-    warmUpHermesCompiler();
-    warmUpRNTesterCLI();
-    await warmUpMetro();
+    await fn();
   } catch (e) {
     // Sandcastle fails to parse the test output if we log stuff to stdout/stderr.
     if ((process.env.SANDCASTLE ?? '') !== '') {
       console.error(
         'Global warmup failed. Tests will continue to run but will likely fail. Details:\n',
+        message,
         e,
       );
     }
   }
 }
 
-async function warmUpMetro(): Promise<void> {
+export default async function warmUp(
+  globalConfig: {...},
+  projectConfig: {...},
+): Promise<void> {
+  await tryOrLog(
+    () => warmUpHermesCompiler(false),
+    'Error warming up Hermes compiler (dev)',
+  );
+  await tryOrLog(
+    () => warmUpHermesCompiler(true),
+    'Error warming up Hermes compiler (opt)',
+  );
+  await tryOrLog(
+    () => warmUpRNTesterCLI(false),
+    'Error warming up RN Tester CLI (dev)',
+  );
+  await tryOrLog(
+    () => warmUpRNTesterCLI(true),
+    'Error warming up RN Tester CLI (opt)',
+  );
+  await tryOrLog(() => warmUpMetro(false), 'Error warming up Metro (dev)');
+  await tryOrLog(() => warmUpMetro(true), 'Error warming up Metro (opt)');
+}
+
+async function warmUpMetro(isOptimizedMode: boolean): Promise<void> {
   const metroConfig = await Metro.loadConfig({
     config: path.resolve(__dirname, '..', '..', 'config', 'metro.config.js'),
   });
@@ -61,8 +84,8 @@ async function warmUpMetro(): Promise<void> {
     entry: entrypointPath,
     out: bundlePath,
     platform: 'android',
-    minify: false,
-    dev: true,
+    minify: isOptimizedMode,
+    dev: !isOptimizedMode,
   });
 
   try {
@@ -70,10 +93,10 @@ async function warmUpMetro(): Promise<void> {
   } catch {}
 }
 
-function warmUpHermesCompiler(): void {
+function warmUpHermesCompiler(isOptimizedMode: boolean): void {
   const buildHermesCompilerCommandResult = runBuck2([
     'build',
-    getBuckModeForPlatform(),
+    getBuckModeForPlatform(isOptimizedMode),
     '//xplat/hermes/tools/hermesc:hermesc',
   ]);
 
@@ -84,10 +107,10 @@ function warmUpHermesCompiler(): void {
   }
 }
 
-function warmUpRNTesterCLI(): void {
+function warmUpRNTesterCLI(isOptimizedMode: boolean): void {
   const buildRNTesterCommandResult = runBuck2([
     'build',
-    getBuckModeForPlatform(),
+    getBuckModeForPlatform(isOptimizedMode),
     '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
   ]);
 

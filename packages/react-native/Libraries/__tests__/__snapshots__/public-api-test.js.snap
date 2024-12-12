@@ -6720,15 +6720,7 @@ declare export default typeof NativeNetworkingIOS;
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/RCTNetworking.js.flow 1`] = `
-"type RCTNetworkingEventDefinitions = $ReadOnly<{
-  didSendNetworkData: [[number, number, number]],
-  didReceiveNetworkResponse: [[number, number, ?{ [string]: string }, ?string]],
-  didReceiveNetworkData: [[number, string]],
-  didReceiveNetworkIncrementalData: [[number, string, number, number]],
-  didReceiveNetworkDataProgress: [[number, number, number]],
-  didCompleteNetworkResponse: [[number, string, boolean]],
-}>;
-declare const RCTNetworking: interface {
+"declare const RCTNetworking: interface {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
     eventType: K,
     listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
@@ -6750,6 +6742,18 @@ declare const RCTNetworking: interface {
   clearCookies(callback: (result: boolean) => void): void,
 };
 declare export default typeof RCTNetworking;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Network/RCTNetworkingEventDefinitions.flow.js 1`] = `
+"export type RCTNetworkingEventDefinitions = $ReadOnly<{
+  didSendNetworkData: [[number, number, number]],
+  didReceiveNetworkResponse: [[number, number, ?{ [string]: string }, ?string]],
+  didReceiveNetworkData: [[number, string]],
+  didReceiveNetworkIncrementalData: [[number, string, number, number]],
+  didReceiveNetworkDataProgress: [[number, number, number]],
+  didCompleteNetworkResponse: [[number, string, boolean]],
+}>;
 "
 `;
 
@@ -8574,7 +8578,7 @@ export type TextProps = $ReadOnly<{
   style?: ?TextStyleProp,
   testID?: ?string,
   disabled?: ?boolean,
-  selectionColor?: ?string,
+  selectionColor?: ?ColorValue,
   dataDetectorType?: ?(\\"phoneNumber\\" | \\"link\\" | \\"email\\" | \\"none\\" | \\"all\\"),
   textBreakStrategy?: ?(\\"balanced\\" | \\"highQuality\\" | \\"simple\\"),
   adjustsFontSizeToFit?: ?boolean,

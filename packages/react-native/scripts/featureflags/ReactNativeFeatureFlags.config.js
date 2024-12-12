@@ -411,8 +411,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    useRuntimeShadowNodeReferenceUpdate: {
+    useRawPropsJsiValue: {
       defaultValue: false,
+      metadata: {
+        dateAdded: '2024-12-02',
+        description:
+          'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
+        purpose: 'experimentation',
+      },
+    },
+    useRuntimeShadowNodeReferenceUpdate: {
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-06-03',
         description:
@@ -529,7 +538,7 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     shouldSkipStateUpdatesForLoopingAnimations: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-07-25',
         description:

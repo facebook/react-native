@@ -10,6 +10,8 @@
 
 'use strict';
 
+import RNTesterText from '../../components/RNTesterText';
+
 const React = require('react');
 const {StyleSheet, Text, TouchableHighlight, View} = require('react-native');
 
@@ -79,7 +81,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
     return (
       <View>
         {button}
-        <Text>{this.state.status}</Text>
+        <RNTesterText>{this.state.status}</RNTesterText>
       </View>
     );
   }

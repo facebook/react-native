@@ -92,10 +92,6 @@ TextLayoutManager::TextLayoutManager(
       textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
       lineMeasureCache_(kSimpleThreadSafeCacheSizeCap) {}
 
-void* TextLayoutManager::getNativeTextLayoutManager() const {
-  return self_;
-}
-
 TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
     const ParagraphAttributes& paragraphAttributes,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9af51486d3bb636841647133f0fa1584>>
+ * @generated SignedSource<<b2dbe24b891b3e41ffe50b095806caf8>>
  * @flow strict
  */
 
@@ -26,7 +26,7 @@ import {
   setOverrides,
 } from './ReactNativeFeatureFlagsBase';
 
-export type ReactNativeFeatureFlagsJsOnly = {
+export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
@@ -44,11 +44,11 @@ export type ReactNativeFeatureFlagsJsOnly = {
   shouldUseSetNativePropsInFabric: Getter<boolean>,
   useInsertionEffectsForAnimations: Getter<boolean>,
   useRefsForTextInputState: Getter<boolean>,
-};
+}>;
 
 export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFeatureFlagsJsOnly>;
 
-export type ReactNativeFeatureFlags = {
+export type ReactNativeFeatureFlags = $ReadOnly<{
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
@@ -94,10 +94,11 @@ export type ReactNativeFeatureFlags = {
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useOptimisedViewPreallocationOnAndroid: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
+  useRawPropsJsiValue: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
-}
+}>;
 
 /**
  * JS-only flag for testing. Do NOT modify.
@@ -157,7 +158,7 @@ export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGet
 /**
  * If the animation is within Animated.loop, we do not send state updates to React.
  */
-export const shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean> = createJavaScriptFlagGetter('shouldSkipStateUpdatesForLoopingAnimations', false);
+export const shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean> = createJavaScriptFlagGetter('shouldSkipStateUpdatesForLoopingAnimations', true);
 
 /**
  * Enables use of AnimatedObject for animating transform values.
@@ -361,9 +362,13 @@ export const useOptimisedViewPreallocationOnAndroid: Getter<boolean> = createNat
  */
 export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeFlagGetter('useOptimizedEventBatchingOnAndroid', false);
 /**
+ * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
+ */
+export const useRawPropsJsiValue: Getter<boolean> = createNativeFlagGetter('useRawPropsJsiValue', false);
+/**
  * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
  */
-export const useRuntimeShadowNodeReferenceUpdate: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdate', false);
+export const useRuntimeShadowNodeReferenceUpdate: Getter<boolean> = createNativeFlagGetter('useRuntimeShadowNodeReferenceUpdate', true);
 /**
  * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
  */

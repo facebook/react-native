@@ -31,6 +31,15 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
       const char* propName,
       const RawValue& value);
 
+  SubmitBehavior getNonDefaultSubmitBehavior() const;
+
+  /*
+   * Accessors
+   */
+  TextAttributes getEffectiveTextAttributes(Float fontSizeMultiplier) const;
+
+  ParagraphAttributes getEffectiveParagraphAttributes() const;
+
 #pragma mark - Props
 
   /*
@@ -73,8 +82,6 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
   bool multiline{false};
 
   bool disableKeyboardShortcuts{false};
-
-  SubmitBehavior getNonDefaultSubmitBehavior() const;
 };
 
 } // namespace facebook::react
