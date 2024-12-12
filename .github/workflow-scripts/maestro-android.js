@@ -55,6 +55,7 @@ async function main() {
       stdio: 'ignore',
       detached: true,
     });
+    metroProcess.unref();
     console.info(`- Metro PID: ${metroProcess.pid}`);
   }
 
@@ -88,15 +89,15 @@ async function main() {
     if (IS_DEBUG && metroProcess != null) {
       const pid = metroProcess.pid;
       console.info(`Kill Metro. PID: ${pid}`);
-      process.kill(-pid);
+      process.kill(pid);
       console.info(`Metro Killed`);
-      process.exit();
     }
   }
 
   if (error) {
     throw error;
   }
+  process.exit();
 }
 
 function sleep(ms) {
