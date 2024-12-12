@@ -24,5 +24,5 @@ runs:
         # We're assuming that variations on branches will slightly vary from main,
         # so it's always important to run yarn install --non-interactive after this
         # cache is restored.
-        key: node-modules-v1-${{ hashFiles('package.json') }}
+        key: node-modules-v2-${{ hashFiles('package.json') }}
         enableCrossOsArchive: true
