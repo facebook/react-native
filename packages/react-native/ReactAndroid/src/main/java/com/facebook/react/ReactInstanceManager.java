@@ -46,6 +46,7 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.log.BLog;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -651,6 +652,16 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void onHostPause(@Nullable Activity activity) {
     if (mRequireActivity) {
+      if (mCurrentActivity == null) {
+        String message =
+            "ReactInstanceManager.onHostPause called with null activity, expected:"
+                + mCurrentActivity.getClass().getSimpleName();
+        BLog.e("ReactInstanceManager", message);
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (StackTraceElement element : stackTrace) {
+          BLog.e("ReactInstanceManager", element.toString());
+        }
+      }
       Assertions.assertCondition(mCurrentActivity != null);
     }
     if (mCurrentActivity != null) {
