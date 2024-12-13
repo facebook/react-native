@@ -56,7 +56,7 @@ void StateWrapperImpl::setState(std::shared_ptr<const State> state) {
   state_ = state;
 }
 
-const std::shared_ptr<const State> StateWrapperImpl::getState() const {
+const std::shared_ptr<const State>& StateWrapperImpl::getState() const {
   return state_;
 }
 
