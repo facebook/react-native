@@ -174,13 +174,6 @@ bool YogaLayoutableShadowNode::getIsLayoutClean() const {
 
 #pragma mark - Mutating Methods
 
-void YogaLayoutableShadowNode::enableMeasurement() {
-  ensureUnsealed();
-
-  YGNodeSetMeasureFunc(
-      &yogaNode_, YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector);
-}
-
 void YogaLayoutableShadowNode::appendYogaChild(
     const YogaLayoutableShadowNode::Shared& childNode) {
   // The caller must check this before calling this method.
