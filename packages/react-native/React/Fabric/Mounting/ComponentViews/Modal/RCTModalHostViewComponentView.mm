@@ -104,7 +104,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   BOOL _shouldAnimatePresentation;
   BOOL _shouldPresent;
   BOOL _isPresented;
-  UIView *_modalContentsSnapshot;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -141,7 +140,6 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                      animated:(BOOL)animated
                    completion:(void (^)(void))completion
 {
-  _modalContentsSnapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
   [modalViewController dismissViewControllerAnimated:animated completion:completion];
 }
 
@@ -167,8 +165,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
     _isPresented = NO;
     // To animate dismissal of view controller, snapshot of
     // view hierarchy needs to be added to the UIViewController.
-    UIView *snapshot = _modalContentsSnapshot;
-
+    UIView *snapshot = [self.viewController.view snapshotViewAfterScreenUpdates:NO];
     if (_shouldPresent) {
       [self.viewController.view addSubview:snapshot];
     }
