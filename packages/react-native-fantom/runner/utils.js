@@ -69,14 +69,21 @@ export function runBuck2(args: Array<string>): SpawnResultWithOriginalCommand {
 export function getDebugInfoFromCommandResult(
   commandResult: SpawnResultWithOriginalCommand,
 ): string {
+  const maybeSignal =
+    commandResult.signal != null ? `, signal: ${commandResult.signal}` : '';
+  const resultByStatus =
+    commandResult.status === 0
+      ? 'succeeded'
+      : `failed (status code: ${commandResult.status}${maybeSignal})`;
+
   const logLines = [
-    `Command ${commandResult.status === 0 ? 'succeeded' : 'failed'}: ${commandResult.originalCommand}`,
+    `Command ${resultByStatus}: ${commandResult.originalCommand}`,
     '',
     'stdout:',
-    commandResult.stdout,
+    commandResult.stdout || '(empty)',
     '',
     'stderr:',
-    commandResult.stderr,
+    commandResult.stderr || '(empty)',
   ];
 
   if (commandResult.error) {
