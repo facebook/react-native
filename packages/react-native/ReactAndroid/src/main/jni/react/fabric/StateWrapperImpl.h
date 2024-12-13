@@ -29,7 +29,7 @@ class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
   jni::local_ref<ReadableNativeMap::jhybridobject> getStateDataImpl();
   void updateStateImpl(NativeMap* map);
   void setState(std::shared_ptr<const State> state);
-  const std::shared_ptr<const State>& getState() const;
+  std::shared_ptr<const State> getState() const;
 
  private:
   std::shared_ptr<const State> state_;
