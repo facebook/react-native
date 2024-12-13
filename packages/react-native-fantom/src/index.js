@@ -15,13 +15,21 @@ import type {
 import type {MixedElement} from 'react';
 
 import getFantomRenderedOutput from './getFantomRenderedOutput';
-import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 
 let globalSurfaceIdCounter = 1;
 
 const nativeRuntimeScheduler = global.nativeRuntimeScheduler;
 const schedulerPriorityImmediate =
   nativeRuntimeScheduler.unstable_ImmediatePriority;
+
+let ReactFabric = null;
+function getReactFabric() {
+  if (ReactFabric == null) {
+    ReactFabric =
+      require('react-native/Libraries/Renderer/shims/ReactFabric').default;
+  }
+  return ReactFabric;
+}
 
 class Root {
   #surfaceId: number;
@@ -38,7 +46,7 @@ class Root {
       this.#hasRendered = true;
     }
 
-    ReactFabric.render(element, this.#surfaceId, () => {}, true);
+    getReactFabric().render(element, this.#surfaceId, () => {}, true);
   }
 
   getMountingLogs(): Array<string> {
