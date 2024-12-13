@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
@@ -335,6 +336,11 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     } else {
       view.setMaintainVisibleContentPosition(null);
     }
+  }
+
+  @ReactProp(name = "testID")
+  public void setTestID(ReactScrollView view, @Nullable String testID) {
+    view.setTag(R.id.react_test_id, testID);
   }
 
   @Override
