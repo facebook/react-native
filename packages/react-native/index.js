@@ -28,6 +28,7 @@ import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/KeyboardAvoidingView';
+import typeof LayoutConformance from './Libraries/Components/LayoutConformance/LayoutConformance';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
@@ -134,6 +135,10 @@ module.exports = {
   },
   get InputAccessoryView(): InputAccessoryView {
     return require('./Libraries/Components/TextInput/InputAccessoryView')
+      .default;
+  },
+  get experimental_LayoutConformance(): LayoutConformance {
+    return require('./Libraries/Components/LayoutConformance/LayoutConformance')
       .default;
   },
   get KeyboardAvoidingView(): KeyboardAvoidingView {

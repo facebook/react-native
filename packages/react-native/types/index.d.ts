@@ -84,6 +84,7 @@ export * from '../Libraries/Components/Clipboard/Clipboard';
 export * from '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 export * from '../Libraries/Components/Keyboard/Keyboard';
 export * from '../Libraries/Components/Keyboard/KeyboardAvoidingView';
+export * from '../Libraries/Components/LayoutConformance/LayoutConformance';
 export * from '../Libraries/Components/Pressable/Pressable';
 export * from '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 export * from '../Libraries/Components/RefreshControl/RefreshControl';

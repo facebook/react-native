@@ -146,7 +146,6 @@ class AndroidTextInputComponentDescriptor final
     }
 
     textInputShadowNode.dirtyLayout();
-    textInputShadowNode.enableMeasurement();
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }

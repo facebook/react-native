@@ -74,11 +74,6 @@ class TextLayoutManager {
       const Size& size) const;
 
  private:
-  TextMeasurement doMeasure(
-      const AttributedString& attributedString,
-      const ParagraphAttributes& paragraphAttributes,
-      const LayoutConstraints& layoutConstraints) const;
-
   ContextContainer::Shared contextContainer_;
   TextMeasureCache textMeasureCache_;
   LineMeasureCache lineMeasureCache_;
