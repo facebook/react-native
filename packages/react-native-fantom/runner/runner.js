@@ -187,6 +187,8 @@ module.exports = async function runTest(
       : testBytecodeBundlePath,
     '--featureFlags',
     JSON.stringify(testConfig.flags.common),
+    '--minLogLevel',
+    PRINT_FANTOM_OUTPUT ? 'info' : 'error',
   ]);
 
   if (rnTesterCommandResult.status !== 0) {
