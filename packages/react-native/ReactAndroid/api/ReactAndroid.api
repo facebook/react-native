@@ -6700,6 +6700,7 @@ public class com/facebook/react/views/scroll/ReactHorizontalScrollView : android
 	public fun onChildViewRemoved (Landroid/view/View;Landroid/view/View;)V
 	protected fun onDetachedFromWindow ()V
 	public fun onDraw (Landroid/graphics/Canvas;)V
+	public fun onInitializeAccessibilityNodeInfo (Landroid/view/accessibility/AccessibilityNodeInfo;)V
 	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	protected fun onLayout (ZIIII)V
 	public fun onLayoutChange (Landroid/view/View;IIIIIIII)V
