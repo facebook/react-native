@@ -56,6 +56,10 @@ void StateWrapperImpl::setState(std::shared_ptr<const State> state) {
   state_ = state;
 }
 
+std::shared_ptr<const State> StateWrapperImpl::getState() const {
+  return state_;
+}
+
 void StateWrapperImpl::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", StateWrapperImpl::initHybrid),
