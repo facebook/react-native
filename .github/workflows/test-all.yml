@@ -432,13 +432,13 @@ jobs:
         uses: ./.github/actions/build-android
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
-          run-e2e-tests: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
+          run-e2e-tests: true #${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
 
   test_e2e_android_rntester:
     # Temporarily disable RNTester tests on Android as they are quite flaky and they make CI always red
     # if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
-    if: ${{ contains(github.ref,  'stable') || inputs.run-e2e-tests }}
-    runs-on: ubuntu-latest
+    # if: ${{ contains(github.ref,  'stable') || inputs.run-e2e-tests }}
+    runs-on: 4-core-ubuntu
     needs: [build_android]
     strategy:
       fail-fast: false
@@ -461,6 +461,7 @@ jobs:
         run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
+        timeout-minutes: 120
         with:
           app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/app-${{ matrix.jsengine }}-x86-${{ matrix.flavor }}.apk
           app-id: com.facebook.react.uiapp

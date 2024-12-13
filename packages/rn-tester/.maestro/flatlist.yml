@@ -11,8 +11,8 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     id: "Flatlist"
 - tapOn:
     id: "Basic"
-# - assertVisible:
-#     id: "item_550"
+- assertVisible:
+    id: "item_550"
 # - repeat:
 #     while:
 #       notVisible:

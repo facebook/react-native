@@ -57,10 +57,10 @@ async function main() {
     });
     metroProcess.unref();
     console.info(`- Metro PID: ${metroProcess.pid}`);
-  }
 
-  console.info('Wait For Metro to Start');
-  await sleep(5000);
+    console.info('Wait For Metro to Start');
+    await sleep(5000);
+  }
 
   console.info('Start the app');
   childProcess.execSync(`adb shell monkey -p ${APP_ID} 1`, {stdio: 'ignore'});

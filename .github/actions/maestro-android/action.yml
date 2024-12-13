@@ -35,7 +35,7 @@ runs:
   steps:
     - name: Installing Maestro
       shell: bash
-      run: export MAESTRO_VERSION=1.36.0; curl -Ls "https://get.maestro.mobile.dev" | bash
+      run: export MAESTRO_VERSION=1.39.5; curl -Ls "https://get.maestro.mobile.dev" | bash
     - name: Set up JDK 17
       if: ${{ inputs.install-java == 'true' }}
       uses: actions/setup-java@v4
@@ -61,8 +61,10 @@ runs:
       with:
         api-level: 24
         arch: x86
-        ram-size: '4096M'
+        ram-size: '8192M'
+        heap-size: '2048M'
         disk-size: '10G'
+        cores: '4'
         disable-animations: false
         avd-name: e2e_emulator
         script: node .github/workflow-scripts/maestro-android.js ${{ inputs.app-path }} ${{ inputs.app-id }} ${{ inputs.maestro-flow }} ${{ inputs.flavor }} ${{ inputs.working-directory }}
