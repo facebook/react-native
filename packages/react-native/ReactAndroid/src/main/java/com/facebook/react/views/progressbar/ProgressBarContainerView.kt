@@ -12,6 +12,7 @@ import android.graphics.PorterDuff
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ProgressBar
+import androidx.core.view.ViewCompat
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 
 /**
@@ -26,6 +27,10 @@ internal class ProgressBarContainerView(context: Context) : FrameLayout(context)
   internal var progress = 0.0
 
   private var progressBar: ProgressBar? = null
+
+  init {
+    ViewCompat.setAccessibilityDelegate(this, ProgressBarAccessibilityDelegate())
+  }
 
   internal fun apply() {
     this.progressBar?.let { progressBar ->
