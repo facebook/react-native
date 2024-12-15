@@ -26,6 +26,7 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
+import androidx.core.view.ViewCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.bridge.GuardedRunnable
@@ -386,6 +387,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
     }
   }
 
+  /**
+   * Sets the testID on the DialogRootViewGroup. Since the accessibility delegate
+   * does not work when set on the ReactModalHostView, the testID is forwarded
+   * to the DialogRootViewGroup to set the resource-id.
+   */
+  public fun setDialogRootViewGroupTestId(testId: String?) {
+    dialogRootViewGroup.setTag(R.id.react_test_id, testId)
+  }
+
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
   // visible property
@@ -425,6 +435,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
       if (ReactFeatureFlags.dispatchPointerEvents) {
         jSPointerDispatcher = JSPointerDispatcher(this)
       }
+      ViewCompat.setAccessibilityDelegate(this, ModalHostAccessibilityDelegate())
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
