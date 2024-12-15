@@ -24,9 +24,9 @@ import android.view.Window
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
-import androidx.core.view.ViewCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.bridge.GuardedRunnable
@@ -388,8 +388,8 @@ public class ReactModalHostView(context: ThemedReactContext) :
   }
 
   /**
-   * Sets the testID on the DialogRootViewGroup. Since the accessibility delegate
-   * does not work when set on the ReactModalHostView, the testID is forwarded
+   * Sets the testID on the DialogRootViewGroup. Since the accessibility events
+   * are not triggered on the on the ReactModalHostView, the testID is forwarded
    * to the DialogRootViewGroup to set the resource-id.
    */
   public fun setDialogRootViewGroupTestId(testId: String?) {
@@ -435,7 +435,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
       if (ReactFeatureFlags.dispatchPointerEvents) {
         jSPointerDispatcher = JSPointerDispatcher(this)
       }
-      ViewCompat.setAccessibilityDelegate(this, ModalHostAccessibilityDelegate())
+    }
+
+    override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
+      super.onInitializeAccessibilityNodeInfo(info)
+
+      val testId = getTag(R.id.react_test_id) as String?
+      if (testId != null) {
+        info.viewIdResourceName = testId
+      }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
