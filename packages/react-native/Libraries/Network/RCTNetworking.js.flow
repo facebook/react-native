@@ -12,8 +12,8 @@
 
 import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 import type {RequestBody} from './convertRequestBody';
-import type {NativeResponseType} from './XMLHttpRequest';
 import type {RCTNetworkingEventDefinitions} from './RCTNetworkingEventDefinitions.flow';
+import type {NativeResponseType} from './XMLHttpRequest';
 
 declare const RCTNetworking: interface {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
