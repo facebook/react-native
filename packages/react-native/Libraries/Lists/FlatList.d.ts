@@ -222,7 +222,7 @@ export abstract class FlatListComponent<
   /**
    * Provides a handle to the underlying scroll responder.
    */
-  getScrollResponder: () => JSX.Element | null | undefined;
+  getScrollResponder: () => React.JSX.Element | null | undefined;
 
   /**
    * Provides a reference to the underlying host component
