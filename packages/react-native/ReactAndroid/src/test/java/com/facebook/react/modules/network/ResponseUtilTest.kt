@@ -20,8 +20,11 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.MockedStatic
-import org.mockito.Mockito.*
 import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 
 class ResponseUtilTest {
   private lateinit var reactContext: ReactApplicationContext
@@ -29,7 +32,7 @@ class ResponseUtilTest {
 
   @Before
   fun setUp() {
-    reactContext = mock(ReactApplicationContext::class.java)
+    reactContext = mock()
 
     arguments = mockStatic(Arguments::class.java)
     arguments.`when`<WritableArray>(Arguments::createArray).thenAnswer { JavaOnlyArray() }
@@ -247,6 +250,6 @@ class ResponseUtilTest {
     ResponseUtil.onRequestSuccess(null, 1)
     ResponseUtil.onResponseReceived(null, 1, 200, Arguments.createMap(), "http://example.com")
 
-    verify(reactContext, never()).emitDeviceEvent(anyString(), any())
+    verify(reactContext, never()).emitDeviceEvent(any<String>(), any())
   }
 }
