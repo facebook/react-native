@@ -22,27 +22,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
-import org.mockito.Mockito.any
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.spy
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when` as whenever
+import org.mockito.kotlin.KArgumentCaptor
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-
-/**
- * Returns Mockito.any() as nullable type to avoid java.lang.IllegalStateException when null is
- * returned.
- */
-private fun <T> anyOrNull(type: Class<T>): T = any(type)
-
-/**
- * Returns ArgumentCaptor.capture() as nullable type to avoid java.lang.IllegalStateException when
- * null is returned.
- */
-fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
 
 @RunWith(RobolectricTestRunner::class)
 class ReactOkHttpNetworkFetcherTest {
@@ -52,28 +40,28 @@ class ReactOkHttpNetworkFetcherTest {
   private lateinit var callback: NetworkFetcher.Callback
   private lateinit var imageRequest: ReactNetworkImageRequest
 
-  @Captor private lateinit var requestArgumentCaptor: ArgumentCaptor<Request>
+  private lateinit var requestArgumentCaptor: KArgumentCaptor<Request>
 
   @Before
   fun prepareModules() {
-    val executorService = mock(ExecutorService::class.java)
+    val executorService = mock<ExecutorService>()
     val dispatcher = Dispatcher(executorService)
     httpClient = spy(OkHttpClient.Builder().dispatcher(dispatcher).build())
     fetcher = ReactOkHttpNetworkFetcher(httpClient)
 
-    fetchState = mock(OkHttpNetworkFetcher.OkHttpNetworkFetchState::class.java)
-    callback = mock(NetworkFetcher.Callback::class.java)
+    fetchState = mock()
+    callback = mock()
 
     val mockUri = Uri.parse("https://www.facebook.com")
     whenever(fetchState.uri).thenReturn(mockUri)
 
-    val producerContext = mock(ProducerContext::class.java)
-    imageRequest = mock(ReactNetworkImageRequest::class.java)
+    val producerContext = mock<ProducerContext>()
+    imageRequest = mock()
     whenever(imageRequest.headers).thenReturn(null)
     whenever(producerContext.imageRequest).thenReturn(imageRequest)
     whenever(fetchState.context).thenReturn(producerContext)
 
-    requestArgumentCaptor = ArgumentCaptor.forClass(Request::class.java)
+    requestArgumentCaptor = argumentCaptor()
   }
 
   @Test
@@ -82,14 +70,14 @@ class ReactOkHttpNetworkFetcherTest {
 
     fetcher.fetch(fetchState, callback)
 
-    verify(httpClient, times(1)).newCall(anyOrNull(Request::class.java))
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
-
-    val capturedRequest = requestArgumentCaptor.value
-
-    assertThat(capturedRequest.cacheControl().noStore()).isEqualTo(true)
-    assertThat(capturedRequest.headers()["Cache-Control"]).isEqualTo("no-store")
-    assertThat(capturedRequest.headers().size()).isEqualTo(1)
+    with(requestArgumentCaptor) {
+      verify(httpClient, times(1)).newCall(any())
+      verify(httpClient).newCall(capture())
+      val capturedRequest = firstValue
+      assertThat(capturedRequest.cacheControl().noStore()).isEqualTo(true)
+      assertThat(capturedRequest.headers()["Cache-Control"]).isEqualTo("no-store")
+      assertThat(capturedRequest.headers().size()).isEqualTo(1)
+    }
   }
 
   @Test
@@ -98,15 +86,17 @@ class ReactOkHttpNetworkFetcherTest {
 
     fetcher.fetch(fetchState, callback)
 
-    verify(httpClient, times(1)).newCall(anyOrNull(Request::class.java))
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
+    with(requestArgumentCaptor) {
+      verify(httpClient, times(1)).newCall(any())
+      verify(httpClient).newCall(capture())
 
-    val capturedRequest = requestArgumentCaptor.value
+      val capturedRequest = firstValue
 
-    assertThat(capturedRequest.cacheControl().noCache()).isEqualTo(true)
-    assertThat(capturedRequest.cacheControl().noStore()).isEqualTo(true)
-    assertThat(capturedRequest.headers()["Cache-Control"]).isEqualTo("no-cache, no-store")
-    assertThat(capturedRequest.headers().size()).isEqualTo(1)
+      assertThat(capturedRequest.cacheControl().noCache()).isEqualTo(true)
+      assertThat(capturedRequest.cacheControl().noStore()).isEqualTo(true)
+      assertThat(capturedRequest.headers()["Cache-Control"]).isEqualTo("no-cache, no-store")
+      assertThat(capturedRequest.headers().size()).isEqualTo(1)
+    }
   }
 
   @Test
@@ -115,15 +105,16 @@ class ReactOkHttpNetworkFetcherTest {
 
     fetcher.fetch(fetchState, callback)
 
-    verify(httpClient, times(1)).newCall(anyOrNull(Request::class.java))
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
+    with(requestArgumentCaptor) {
+      verify(httpClient, times(1)).newCall(any())
+      verify(httpClient).newCall(capture())
+      val capturedRequest = firstValue
 
-    val capturedRequest = requestArgumentCaptor.value
-
-    assertThat(capturedRequest.cacheControl().maxStaleSeconds()).isEqualTo(Integer.MAX_VALUE)
-    assertThat(capturedRequest.headers()["Cache-Control"])
-        .isEqualTo("max-stale=${Integer.MAX_VALUE}")
-    assertThat(capturedRequest.headers().size()).isEqualTo(1)
+      assertThat(capturedRequest.cacheControl().maxStaleSeconds()).isEqualTo(Integer.MAX_VALUE)
+      assertThat(capturedRequest.headers()["Cache-Control"])
+          .isEqualTo("max-stale=${Integer.MAX_VALUE}")
+      assertThat(capturedRequest.headers().size()).isEqualTo(1)
+    }
   }
 
   @Test
@@ -132,15 +123,17 @@ class ReactOkHttpNetworkFetcherTest {
 
     fetcher.fetch(fetchState, callback)
 
-    verify(httpClient, times(1)).newCall(anyOrNull(Request::class.java))
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
+    with(requestArgumentCaptor) {
+      verify(httpClient, times(1)).newCall(any())
+      verify(httpClient).newCall(capture())
 
-    val capturedRequest = requestArgumentCaptor.value
+      val capturedRequest = firstValue
 
-    assertThat(capturedRequest.cacheControl().onlyIfCached()).isEqualTo(true)
-    assertThat(capturedRequest.cacheControl().maxStaleSeconds()).isEqualTo(Integer.MAX_VALUE)
-    assertThat(capturedRequest.headers()["Cache-Control"])
-        .isEqualTo("max-stale=${Integer.MAX_VALUE}, only-if-cached")
-    assertThat(capturedRequest.headers().size()).isEqualTo(1)
+      assertThat(capturedRequest.cacheControl().onlyIfCached()).isEqualTo(true)
+      assertThat(capturedRequest.cacheControl().maxStaleSeconds()).isEqualTo(Integer.MAX_VALUE)
+      assertThat(capturedRequest.headers()["Cache-Control"])
+          .isEqualTo("max-stale=${Integer.MAX_VALUE}, only-if-cached")
+      assertThat(capturedRequest.headers().size()).isEqualTo(1)
+    }
   }
 }
