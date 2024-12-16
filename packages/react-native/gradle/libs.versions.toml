@@ -26,6 +26,7 @@ jsr305 = "3.0.2"
 junit = "4.13.2"
 kotlin = "2.0.21"
 mockito = "3.12.4"
+mockito-kotlin = "3.2.0"
 nexus-publish = "1.3.0"
 okhttp = "4.9.2"
 okio = "2.9.0"
@@ -72,6 +73,7 @@ jsc-android = { module = "io.github.react-native-community:jsc-android", version
 junit = {module = "junit:junit", version.ref = "junit" }
 assertj = {module = "org.assertj:assertj-core", version.ref = "assertj" }
 mockito = {module = "org.mockito:mockito-inline", version.ref = "mockito" }
+mockito-kotlin = {module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
 robolectric = {module = "org.robolectric:robolectric", version.ref = "robolectric" }
 thoughtworks = {module = "com.thoughtworks.xstream:xstream", version.ref = "xstream" }
 
