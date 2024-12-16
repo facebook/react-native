@@ -22,6 +22,10 @@ SurfaceHandler::SurfaceHandler(
   parameters_.surfaceId = surfaceId;
 }
 
+SurfaceHandler::SurfaceHandler(SurfaceId surfaceId) noexcept {
+  parameters_.surfaceId = surfaceId;
+}
+
 SurfaceHandler::SurfaceHandler(SurfaceHandler&& other) noexcept {
   operator=(std::move(other));
 }
@@ -81,11 +85,15 @@ void SurfaceHandler::start() const noexcept {
 
   link_.shadowTree = shadowTree.get();
 
-  link_.uiManager->startSurface(
-      std::move(shadowTree),
-      parameters.moduleName,
-      parameters.props,
-      parameters_.displayMode);
+  if (!parameters.moduleName.empty()) {
+    link_.uiManager->startSurface(
+        std::move(shadowTree),
+        parameters.moduleName,
+        parameters.props,
+        parameters_.displayMode);
+  } else {
+    link_.uiManager->startEmptySurface(std::move(shadowTree));
+  }
 
   link_.status = Status::Running;
 
