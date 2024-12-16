@@ -58,7 +58,12 @@ describe('LogBox', () => {
     (console: any).warn = warn;
   });
 
-  it('integrates with React and handles a key error in LogBox', () => {
+  // TODO: migrate this test to react-native-fantom
+  // The test has been disabled because it was actually using the react-test-renderer
+  // and testing the react-test-renderer instead of the real one.
+  // The react test renderer is now deprecated, so there is no value in keeping this test
+  // as it is.
+  it.skip('integrates with React and handles a key error in LogBox', () => {
     const spy = jest.spyOn(LogBoxData, 'addLog');
     installLogBox();
 
@@ -114,7 +119,12 @@ describe('LogBox', () => {
     ]);
   });
 
-  it('integrates with React and handles a fragment warning in LogBox', () => {
+  // TODO: migrate this test to react-native-fantom
+  // The test has been disabled because it was actually using the react-test-renderer
+  // and testing the react-test-renderer instead of the real one.
+  // The react test renderer is now deprecated, so there is no value in keeping this test
+  // as it is.
+  it.skip('integrates with React and handles a fragment warning in LogBox', () => {
     const spy = jest.spyOn(LogBoxData, 'addLog');
     installLogBox();
 
