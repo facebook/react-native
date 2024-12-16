@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import FantomModule from './specs/NativeFantomModule';
 // $FlowExpectedError[untyped-import]
 import micromatch from 'micromatch';
 import * as React from 'react';
@@ -17,12 +18,6 @@ export type RenderOutputConfig = {
   ...FantomRenderedOutputConfig,
   includeRoot?: boolean,
   includeLayoutMetrics?: boolean,
-};
-
-// match RenderFormatOptions.h
-type NativeRenderFormatOptions = {
-  includeRoot: boolean,
-  includeLayoutMetrics: boolean,
 };
 
 type FantomJsonObject = {
@@ -117,14 +112,12 @@ export default function getFantomRenderedOutput(
     includeLayoutMetrics = false,
     ...fantomConfig
   } = config;
-  const nativeConfig: NativeRenderFormatOptions = {
-    includeRoot,
-    includeLayoutMetrics,
-  };
-
   return new FantomRenderedOutput(
     JSON.parse(
-      global.$$JSTesterModuleName$$.getRenderedOutput(surfaceId, nativeConfig),
+      FantomModule.getRenderedOutput(surfaceId, {
+        includeRoot,
+        includeLayoutMetrics,
+      }),
     ),
     fantomConfig,
   );
