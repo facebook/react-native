@@ -36,7 +36,7 @@
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTRootComponentView.h>
 #import <React/RCTTextInputComponentView.h>
-#import <React/RCTUnimplementedViewComponentView.h>
+#import <React/RCTUnimplementedNativeComponentView.h>
 #import <React/RCTViewComponentView.h>
 
 #import <objc/runtime.h>
@@ -75,6 +75,7 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
     componentViewFactory = [RCTComponentViewFactory new];
     [componentViewFactory registerComponentViewClass:[RCTRootComponentView class]];
     [componentViewFactory registerComponentViewClass:[RCTParagraphComponentView class]];
+    [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
 
     componentViewFactory->_providerRegistry.setComponentDescriptorProviderRequest(
         [](ComponentName requestedComponentName) {
@@ -157,18 +158,6 @@ static Class<RCTComponentViewProtocol> RCTComponentViewClassWithName(const char 
         [self _componentViewClassDescriptorFromClass:[RCTLegacyViewManagerInteropComponentView class]];
     return YES;
   }
-
-  // Fallback 4: use <UnimplementedView> if component doesn't exist.
-  auto flavor = std::make_shared<const std::string>(name);
-  auto componentName = ComponentName{flavor->c_str()};
-  auto componentHandle = reinterpret_cast<ComponentHandle>(componentName);
-  auto constructor = [RCTUnimplementedViewComponentView componentDescriptorProvider].constructor;
-
-  [self _addDescriptorToProviderRegistry:ComponentDescriptorProvider{
-                                             componentHandle, componentName, flavor, constructor}];
-
-  _componentViewClasses[componentHandle] =
-      [self _componentViewClassDescriptorFromClass:[RCTUnimplementedViewComponentView class]];
 
   // No matching class exists for `name`.
   return NO;

@@ -28,6 +28,7 @@
 
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
+#import <react/renderer/components/rncore/ComponentDescriptors.h>
 #import <react/renderer/components/text/BaseTextProps.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
@@ -228,8 +229,13 @@ using namespace facebook::react;
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           const EventDispatcher::Weak &eventDispatcher, const ContextContainer::Shared &contextContainer) {
-        return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
+        auto registry = [(RCTComponentViewFactory *)unwrapManagedObject(factory)
             createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
+        auto &mutableRegistry = const_cast<ComponentDescriptorRegistry &>(*registry);
+        const ComponentDescriptorParameters &parametors = {eventDispatcher, contextContainer};
+        mutableRegistry.setFallbackComponentDescriptor(
+            std::make_shared<UnimplementedNativeViewComponentDescriptor>(parametors));
+        return registry;
       };
 
   auto runtimeExecutor = _runtimeExecutor;
