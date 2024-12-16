@@ -724,32 +724,7 @@ public class ReactViewGroup extends ViewGroup
    * @return {@code true} if the view has been removed from the ViewGroup.
    */
   private boolean isViewClipped(View view, @Nullable Integer index) {
-    Object tag = view.getTag(R.id.view_clipped);
-    if (tag != null) {
-      return (boolean) tag;
-    }
-    ViewParent parent = view.getParent();
-    boolean transitioning = isChildRemovedWhileTransitioning(view);
-    if (index != null) {
-      ReactSoftExceptionLogger.logSoftException(
-          "ReactViewGroup.isViewClipped",
-          new ReactNoCrashSoftException(
-              "View missing clipping tag: index="
-                  + index
-                  + " parentNull="
-                  + (parent == null)
-                  + " parentThis="
-                  + (parent == this)
-                  + " transitioning="
-                  + transitioning));
-    }
-    // fallback - should be transitioning or have no parent if the view was removed
-    if (parent == null || transitioning) {
-      return true;
-    } else {
-      Assertions.assertCondition(parent == this);
-      return false;
-    }
+    return view.getParent() == null;
   }
 
   private static void setViewClipped(View view, boolean clipped) {
