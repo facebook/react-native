@@ -137,7 +137,7 @@ public class ReactViewGroup extends ViewGroup
   private boolean mNeedsOffscreenAlphaCompositing;
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private float mBackfaceOpacity;
-  private String mBackfaceVisibility;
+  private boolean mBackfaceVisible;
   private @Nullable Set<Integer> mChildrenRemovedWhileTransitioning;
 
   /**
@@ -172,7 +172,7 @@ public class ReactViewGroup extends ViewGroup
     mNeedsOffscreenAlphaCompositing = false;
     mDrawingOrderHelper = null;
     mBackfaceOpacity = 1.f;
-    mBackfaceVisibility = "visible";
+    mBackfaceVisible = true;
     mChildrenRemovedWhileTransitioning = null;
   }
 
@@ -989,14 +989,12 @@ public class ReactViewGroup extends ViewGroup
   }
 
   public void setBackfaceVisibility(String backfaceVisibility) {
-    mBackfaceVisibility = backfaceVisibility;
+    mBackfaceVisible = "visible".equals(backfaceVisibility);
     setBackfaceVisibilityDependantOpacity();
   }
 
   public void setBackfaceVisibilityDependantOpacity() {
-    boolean isBackfaceVisible = mBackfaceVisibility.equals("visible");
-
-    if (isBackfaceVisible) {
+    if (mBackfaceVisible) {
       setAlpha(mBackfaceOpacity);
       return;
     }
