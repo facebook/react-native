@@ -19,7 +19,7 @@ import {
   updateSnapshotsAndGetJestSnapshotResult,
 } from './snapshotUtils';
 import {
-  getBuckModeForPlatform,
+  getBuckModesForPlatform,
   getDebugInfoFromCommandResult,
   getShortHash,
   runBuck2,
@@ -76,7 +76,7 @@ function generateBytecodeBundle({
   const hermesCompilerCommandResult = runBuck2(
     [
       'run',
-      getBuckModeForPlatform(isOptimizedMode),
+      ...getBuckModesForPlatform(isOptimizedMode),
       '//xplat/hermes/tools/hermesc:hermesc',
       '--',
       '-emit-binary',
@@ -178,7 +178,9 @@ module.exports = async function runTest(
 
   const rnTesterCommandResult = runBuck2([
     'run',
-    getBuckModeForPlatform(testConfig.mode === FantomTestConfigMode.Optimized),
+    ...getBuckModesForPlatform(
+      testConfig.mode === FantomTestConfigMode.Optimized,
+    ),
     '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
     '--',
     '--bundlePath',
