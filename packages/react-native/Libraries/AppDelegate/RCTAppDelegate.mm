@@ -221,12 +221,6 @@ using namespace facebook::react;
   return DefaultTurboModules::getTurboModule(name, jsInvoker);
 }
 
-- (std::shared_ptr<TurboModule>)getTurboModule:(const std::string &)name
-                                    initParams:(const ObjCTurboModule::InitParams &)params
-{
-  return nullptr;
-}
-
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return RCTAppSetupDefaultModuleFromClass(moduleClass, self.dependencyProvider);
