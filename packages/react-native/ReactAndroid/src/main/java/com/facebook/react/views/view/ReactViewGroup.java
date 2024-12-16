@@ -56,6 +56,8 @@ import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
 import com.facebook.react.uimanager.style.LogicalEdge;
 import com.facebook.react.uimanager.style.Overflow;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -723,12 +725,8 @@ public class ReactViewGroup extends ViewGroup
   /**
    * @return {@code true} if the view has been removed from the ViewGroup.
    */
-  private boolean isViewClipped(View view, @Nullable Integer index) {
+  private boolean isViewClipped(View view) {
     return view.getParent() == null;
-  }
-
-  private static void setViewClipped(View view, boolean clipped) {
-    view.setTag(R.id.view_clipped, clipped);
   }
 
   private int indexOfChildInAllChildren(View child) {
