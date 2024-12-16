@@ -16,9 +16,13 @@ namespace facebook::react {
 constexpr const char LayoutConformanceShadowNodeComponentName[] =
     "LayoutConformance";
 
-using LayoutConformanceShadowNode = ConcreteShadowNode<
-    LayoutConformanceShadowNodeComponentName,
-    YogaLayoutableShadowNode,
-    LayoutConformanceProps>;
+class LayoutConformanceShadowNode final
+    : public ConcreteShadowNode<
+          LayoutConformanceShadowNodeComponentName,
+          YogaLayoutableShadowNode,
+          LayoutConformanceProps> {
+ public:
+  using ConcreteShadowNode::ConcreteShadowNode;
+};
 
 } // namespace facebook::react
