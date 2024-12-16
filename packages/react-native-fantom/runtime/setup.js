@@ -39,13 +39,6 @@ export type TestSuiteResult =
       },
     };
 
-type SnapshotState = {
-  name: string,
-  snapshotResults: TestSnapshotResults,
-};
-
-let currentSnapshotState: SnapshotState;
-
 const tests: Array<{
   title: string,
   ancestorTitles: Array<string>,
