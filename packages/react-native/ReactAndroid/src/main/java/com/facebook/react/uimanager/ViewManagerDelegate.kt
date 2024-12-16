@@ -17,7 +17,7 @@ import com.facebook.react.bridge.ReadableArray
  *
  * @param <T> the type of the view supported by this delegate </T>
  */
-public interface ViewManagerDelegate<T : View?> {
+public interface ViewManagerDelegate<T : View> {
 
   /**
    * Sets a property on a view managed by this view manager.
