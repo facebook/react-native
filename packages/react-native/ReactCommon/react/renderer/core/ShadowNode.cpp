@@ -20,6 +20,19 @@
 
 namespace facebook::react {
 
+/*
+ * Runtime shadow node reference updates should only run from one thread at all
+ * times to avoid having more than one shadow tree updating the current fiber
+ * tree simultaneously. This thread_local flag allows enabling the updates for
+ * choses threads.
+ */
+thread_local bool useRuntimeShadowNodeReferenceUpdateOnThread{false}; // NOLINT
+
+/* static */ void ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(
+    bool isEnabled) {
+  useRuntimeShadowNodeReferenceUpdateOnThread = isEnabled;
+}
+
 ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
       std::make_shared<ShadowNode::ListOfShared>();
@@ -308,7 +321,8 @@ void ShadowNode::transferRuntimeShadowNodeReference(
 void ShadowNode::transferRuntimeShadowNodeReference(
     const Shared& destinationShadowNode,
     const ShadowNodeFragment& fragment) const {
-  if (fragment.runtimeShadowNodeReference &&
+  if (useRuntimeShadowNodeReferenceUpdateOnThread &&
+      fragment.runtimeShadowNodeReference &&
       ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate()) {
     transferRuntimeShadowNodeReference(destinationShadowNode);
   }

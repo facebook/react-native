@@ -7,8 +7,6 @@
 
 #include "TextLayoutManager.h"
 
-#include <limits>
-
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
@@ -17,11 +15,11 @@
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #include <react/renderer/telemetry/TransactionTelemetry.h>
 
-using namespace facebook::jni;
-
 namespace facebook::react {
 
-static int countAttachments(const AttributedString& attributedString) {
+namespace {
+
+int countAttachments(const AttributedString& attributedString) {
   int count = 0;
 
   for (const auto& fragment : attributedString.getFragments()) {
@@ -46,7 +44,7 @@ Size measureAndroidComponent(
     jfloatArray attachmentPositions) {
   const jni::global_ref<jobject>& fabricUIManager =
       contextContainer->at<jni::global_ref<jobject>>("FabricUIManager");
-  auto componentNameRef = make_jstring(componentName);
+  auto componentNameRef = jni::make_jstring(componentName);
 
   static auto measure =
       jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
@@ -86,15 +84,78 @@ Size measureAndroidComponent(
   return size;
 }
 
+TextMeasurement doMeasure(
+    const ContextContainer::Shared& contextContainer,
+    const AttributedString& attributedString,
+    const ParagraphAttributes& paragraphAttributes,
+    const LayoutConstraints& layoutConstraints) {
+  const int attachmentCount = countAttachments(attributedString);
+  auto env = jni::Environment::current();
+  auto attachmentPositions = env->NewFloatArray(attachmentCount * 2);
+
+  auto minimumSize = layoutConstraints.minimumSize;
+  auto maximumSize = layoutConstraints.maximumSize;
+
+  // We assume max height will have no effect on measurement, so we override it
+  // with a constant value with no constraints, to enable cache reuse later down
+  // in the stack.
+  // TODO: This is suss, and not at the right layer
+  maximumSize.height = std::numeric_limits<Float>::infinity();
+
+  auto attributedStringMap = toMapBuffer(attributedString);
+  auto paragraphAttributesMap = toMapBuffer(paragraphAttributes);
+
+  auto size = measureAndroidComponent(
+      contextContainer,
+      -1, // TODO: we should pass rootTag in
+      "RCTText",
+      std::move(attributedStringMap),
+      std::move(paragraphAttributesMap),
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height,
+      attachmentPositions);
+
+  jfloat* attachmentData =
+      env->GetFloatArrayElements(attachmentPositions, nullptr);
+
+  auto attachments = TextMeasurement::Attachments{};
+  if (attachmentCount > 0) {
+    int attachmentIndex = 0;
+    for (const auto& fragment : attributedString.getFragments()) {
+      if (fragment.isAttachment()) {
+        float top = attachmentData[attachmentIndex * 2];
+        float left = attachmentData[attachmentIndex * 2 + 1];
+        float width = fragment.parentShadowView.layoutMetrics.frame.size.width;
+        float height =
+            fragment.parentShadowView.layoutMetrics.frame.size.height;
+
+        auto rect = facebook::react::Rect{
+            .origin = {.x = left, .y = top},
+            .size = facebook::react::Size{.width = width, .height = height}};
+        attachments.push_back(
+            TextMeasurement::Attachment{.frame = rect, .isClipped = false});
+        attachmentIndex++;
+      }
+    }
+  }
+
+  // Clean up allocated ref
+  env->ReleaseFloatArrayElements(
+      attachmentPositions, attachmentData, JNI_ABORT);
+  env->DeleteLocalRef(attachmentPositions);
+
+  return TextMeasurement{.size = size, .attachments = attachments};
+}
+
+} // namespace
+
 TextLayoutManager::TextLayoutManager(
     const ContextContainer::Shared& contextContainer)
     : contextContainer_(contextContainer),
       textMeasureCache_(kSimpleThreadSafeCacheSizeCap),
       lineMeasureCache_(kSimpleThreadSafeCacheSizeCap) {}
-
-void* TextLayoutManager::getNativeTextLayoutManager() const {
-  return self_;
-}
 
 TextMeasurement TextLayoutManager::measure(
     const AttributedStringBox& attributedStringBox,
@@ -111,8 +172,11 @@ TextMeasurement TextLayoutManager::measure(
           telemetry->willMeasureText();
         }
 
-        auto measurement =
-            doMeasure(attributedString, paragraphAttributes, layoutConstraints);
+        auto measurement = doMeasure(
+            contextContainer_,
+            attributedString,
+            paragraphAttributes,
+            layoutConstraints);
 
         if (telemetry != nullptr) {
           telemetry->didMeasureText();
@@ -129,7 +193,7 @@ TextMeasurement TextLayoutManager::measureCachedSpannableById(
     int64_t cacheId,
     const ParagraphAttributes& paragraphAttributes,
     const LayoutConstraints& layoutConstraints) const {
-  auto env = Environment::current();
+  auto env = jni::Environment::current();
   auto attachmentPositions = env->NewFloatArray(0);
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
@@ -211,82 +275,6 @@ LinesMeasurements TextLayoutManager::measureLines(
       });
 
   return lineMeasurements;
-}
-
-Float TextLayoutManager::baseline(
-    const AttributedStringBox& attributedStringBox,
-    const ParagraphAttributes& paragraphAttributes,
-    const Size& size) const {
-  auto lines =
-      this->measureLines(attributedStringBox, paragraphAttributes, size);
-
-  if (!lines.empty()) {
-    return lines[0].ascender;
-  } else {
-    return 0;
-  }
-}
-
-TextMeasurement TextLayoutManager::doMeasure(
-    const AttributedString& attributedString,
-    const ParagraphAttributes& paragraphAttributes,
-    const LayoutConstraints& layoutConstraints) const {
-  const int attachmentCount = countAttachments(attributedString);
-  auto env = Environment::current();
-  auto attachmentPositions = env->NewFloatArray(attachmentCount * 2);
-
-  auto minimumSize = layoutConstraints.minimumSize;
-  auto maximumSize = layoutConstraints.maximumSize;
-
-  // We assume max height will have no effect on measurement, so we override it
-  // with a constant value with no constraints, to enable cache reuse later down
-  // in the stack.
-  // TODO: This is suss, and not at the right layer
-  maximumSize.height = std::numeric_limits<Float>::infinity();
-
-  auto attributedStringMap = toMapBuffer(attributedString);
-  auto paragraphAttributesMap = toMapBuffer(paragraphAttributes);
-
-  auto size = measureAndroidComponent(
-      contextContainer_,
-      -1, // TODO: we should pass rootTag in
-      "RCTText",
-      std::move(attributedStringMap),
-      std::move(paragraphAttributesMap),
-      minimumSize.width,
-      maximumSize.width,
-      minimumSize.height,
-      maximumSize.height,
-      attachmentPositions);
-
-  jfloat* attachmentData =
-      env->GetFloatArrayElements(attachmentPositions, nullptr);
-
-  auto attachments = TextMeasurement::Attachments{};
-  if (attachmentCount > 0) {
-    int attachmentIndex = 0;
-    for (const auto& fragment : attributedString.getFragments()) {
-      if (fragment.isAttachment()) {
-        float top = attachmentData[attachmentIndex * 2];
-        float left = attachmentData[attachmentIndex * 2 + 1];
-        float width = fragment.parentShadowView.layoutMetrics.frame.size.width;
-        float height =
-            fragment.parentShadowView.layoutMetrics.frame.size.height;
-
-        auto rect = facebook::react::Rect{
-            {left, top}, facebook::react::Size{width, height}};
-        attachments.push_back(TextMeasurement::Attachment{rect, false});
-        attachmentIndex++;
-      }
-    }
-  }
-
-  // Clean up allocated ref
-  env->ReleaseFloatArrayElements(
-      attachmentPositions, attachmentData, JNI_ABORT);
-  env->DeleteLocalRef(attachmentPositions);
-
-  return TextMeasurement{size, attachments};
 }
 
 } // namespace facebook::react

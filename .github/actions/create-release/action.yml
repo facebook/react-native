@@ -15,7 +15,7 @@ runs:
   using: composite
   steps:
     - name: Yarn install
-      uses: ./.github/actions/yarn-install-with-cache
+      uses: ./.github/actions/yarn-install
     - name: Configure Git
       shell: bash
       run: |

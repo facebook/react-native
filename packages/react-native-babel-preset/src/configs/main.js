@@ -25,7 +25,7 @@ function isTSXSource(fileName) {
 const loose = true;
 
 const defaultPlugins = [
-  [require('babel-plugin-syntax-hermes-parser')],
+  [require('babel-plugin-syntax-hermes-parser'), {parseLangTypes: 'flow'}],
   [require('babel-plugin-transform-flow-enums')],
   [require('@babel/plugin-transform-block-scoping')],
   [require('@babel/plugin-transform-class-properties'), {loose}],

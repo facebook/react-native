@@ -16,6 +16,7 @@ import type {
 } from '../../types/RNTesterTypes';
 import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/TextInput';
 
+import RNTesterText from '../../components/RNTesterText';
 import ExampleTextInput from './ExampleTextInput';
 
 const TextInputSharedExamples = require('./TextInputSharedExamples.js');
@@ -27,8 +28,8 @@ const {
   StyleSheet,
   Switch,
   Text,
-  View,
   TextInput,
+  View,
 } = require('react-native');
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
@@ -36,7 +37,7 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
     return (
       <View style={styles.labelContainer}>
         <View style={styles.label}>
-          <Text>{this.props.label}</Text>
+          <RNTesterText>{this.props.label}</RNTesterText>
         </View>
         {this.props.children}
       </View>
@@ -58,7 +59,9 @@ class TextInputAccessoryViewChangeTextExample extends React.Component<
     const inputAccessoryViewID = 'inputAccessoryView1';
     return (
       <View>
-        <Text>Set InputAccessoryView with ID & reset text:</Text>
+        <RNTesterText>
+          Set InputAccessoryView with ID & reset text:
+        </RNTesterText>
         <ExampleTextInput
           inputAccessoryViewID={inputAccessoryViewID}
           onChangeText={text => this.setState({text})}
@@ -98,7 +101,9 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
     const inputAccessoryViewID = 'inputAccessoryView2';
     return (
       <View>
-        <Text>Set InputAccessoryView with ID & switch keyboard:</Text>
+        <RNTesterText>
+          Set InputAccessoryView with ID & switch keyboard:
+        </RNTesterText>
         {/* $FlowFixMe[incompatible-use] */}
         <ExampleTextInput
           inputAccessoryViewID={inputAccessoryViewID}
@@ -180,7 +185,7 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
           onChangeText={text => this.setState({text})}
           value={this.state.text}
         />
-        <Text>Current text is: {this.state.text}</Text>
+        <RNTesterText>Current text is: {this.state.text}</RNTesterText>
         <View
           style={{
             flex: 1,
@@ -233,19 +238,19 @@ class AutogrowingTextInputExample extends React.Component<
     const {style, multiline, ...props} = this.props;
     return (
       <View>
-        <Text>Full width:</Text>
+        <RNTesterText>Full width:</RNTesterText>
         <Switch
           value={this.state.fullWidth}
           onValueChange={value => this.setState({fullWidth: value})}
         />
 
-        <Text>Multiline:</Text>
+        <RNTesterText>Multiline:</RNTesterText>
         <Switch
           value={this.state.multiline}
           onValueChange={value => this.setState({multiline: value})}
         />
 
-        <Text>TextInput:</Text>
+        <RNTesterText>TextInput:</RNTesterText>
         <ExampleTextInput
           value="prop"
           multiline={this.state.multiline}
@@ -256,9 +261,11 @@ class AutogrowingTextInputExample extends React.Component<
           }
           {...props}
         />
-        <Text>Plain text value representation:</Text>
-        <Text>{this.state.text}</Text>
-        <Text>Content Size: {JSON.stringify(this.state.contentSize)}</Text>
+        <RNTesterText>Plain text value representation:</RNTesterText>
+        <RNTesterText>{this.state.text}</RNTesterText>
+        <RNTesterText>
+          Content Size: {JSON.stringify(this.state.contentSize)}
+        </RNTesterText>
       </View>
     );
   }
@@ -655,7 +662,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     render: function (): React.Node {
       return (
         <View>
-          <Text>Singleline TextInput</Text>
+          <RNTesterText>Singleline TextInput</RNTesterText>
           <View style={{height: 80}}>
             <ExampleTextInput
               style={{
@@ -674,8 +681,8 @@ const textInputExamples: Array<RNTesterModuleExample> = [
               placeholder="Placeholder defines intrinsic size"
             />
           </View>
-          <Text>Multiline TextInput</Text>
-          <View style={{height: 130}}>
+          <RNTesterText>Multiline TextInput</RNTesterText>
+          <View style={{height: 80}}>
             <ExampleTextInput
               style={{
                 position: 'absolute',
@@ -695,6 +702,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
               placeholder="Placeholder defines intrinsic size"
             />
           </View>
+          <RNTesterText>Multiline TextInput with flex</RNTesterText>
           <View>
             <ExampleTextInput
               style={{
@@ -887,7 +895,10 @@ const textInputExamples: Array<RNTesterModuleExample> = [
                 {Object.keys(textByCode).map(code => {
                   return (
                     <View key={code}>
-                      <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
+                      <RNTesterText
+                        style={{
+                          fontWeight: 'bold',
+                        }}>{`[${code}]`}</RNTesterText>
                       <ExampleTextInput
                         multiline
                         lineBreakStrategyIOS={strategy}
@@ -954,7 +965,10 @@ const textInputExamples: Array<RNTesterModuleExample> = [
                 {Object.keys(textByCode).map(code => {
                   return (
                     <View key={code}>
-                      <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
+                      <RNTesterText
+                        style={{
+                          fontWeight: 'bold',
+                        }}>{`[${code}]`}</RNTesterText>
                       <ExampleTextInput
                         lineBreakModeIOS={strategy}
                         defaultValue={textByCode[code]}

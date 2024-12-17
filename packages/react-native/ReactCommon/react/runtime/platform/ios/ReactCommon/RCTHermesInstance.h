@@ -22,21 +22,17 @@ using CrashManagerProvider =
 class RCTHermesInstance : public JSRuntimeFactory {
  public:
   RCTHermesInstance();
+  RCTHermesInstance(CrashManagerProvider crashManagerProvider);
   RCTHermesInstance(
-      std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
-      CrashManagerProvider crashManagerProvider);
-  RCTHermesInstance(
-      std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
       CrashManagerProvider crashManagerProvider,
       bool allocInOldGenBeforeTTI);
 
   std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept override;
 
-  ~RCTHermesInstance(){};
+  ~RCTHermesInstance() override{};
 
  private:
-  std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
   CrashManagerProvider _crashManagerProvider;
   std::unique_ptr<HermesInstance> _hermesInstance;
   bool _allocInOldGenBeforeTTI;

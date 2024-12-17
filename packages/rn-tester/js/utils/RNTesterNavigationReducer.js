@@ -20,7 +20,7 @@ export const RNTesterNavigationActionsType = {
   EXAMPLE_CARD_PRESS: 'EXAMPLE_CARD_PRESS',
   EXAMPLE_OPEN_URL_REQUEST: 'EXAMPLE_OPEN_URL_REQUEST',
   NAVBAR_OPEN_MODULE_PRESS: 'NAVBAR_OPEN_MODULE_PRESS',
-};
+} as const;
 
 const getUpdatedRecentlyUsed = ({
   exampleType,

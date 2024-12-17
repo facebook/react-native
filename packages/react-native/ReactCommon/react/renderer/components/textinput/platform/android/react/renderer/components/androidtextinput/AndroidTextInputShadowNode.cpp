@@ -7,10 +7,7 @@
 
 #include "AndroidTextInputShadowNode.h"
 
-#include <fbjni/fbjni.h>
-#include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/AttributedStringBox.h>
 #include <react/renderer/attributedstring/TextAttributes.h>
 #include <react/renderer/components/text/BaseTextShadowNode.h>
@@ -19,19 +16,9 @@
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/textlayoutmanager/TextLayoutContext.h>
 
-#include <utility>
-
-using namespace facebook::jni;
-
 namespace facebook::react {
 
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
-
-void AndroidTextInputShadowNode::setContextContainer(
-    ContextContainer* contextContainer) {
-  ensureUnsealed();
-  contextContainer_ = contextContainer;
-}
 
 AttributedString AndroidTextInputShadowNode::getAttributedString() const {
   // Use BaseTextShadowNode to get attributed string from children
@@ -97,7 +84,7 @@ AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
 }
 
 void AndroidTextInputShadowNode::setTextLayoutManager(
-    SharedTextLayoutManager textLayoutManager) {
+    std::shared_ptr<const TextLayoutManager> textLayoutManager) {
   ensureUnsealed();
   textLayoutManager_ = std::move(textLayoutManager);
 }
@@ -117,7 +104,7 @@ AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
           reactTreeAttributedString);
 
   return (
-      !treeAttributedStringChanged ? state.attributedString
+      !treeAttributedStringChanged ? state.attributedStringBox.getValue()
                                    : reactTreeAttributedString);
 }
 
@@ -150,15 +137,11 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       : getConcreteProps().mostRecentEventCount;
   auto newAttributedString = getMostRecentAttributedString();
 
-  setStateData(AndroidTextInputState{
-      newEventCount,
-      newAttributedString,
+  setStateData(TextInputState{
+      AttributedStringBox(newAttributedString),
       reactTreeAttributedString,
       getConcreteProps().paragraphAttributes,
-      state.defaultThemePaddingStart,
-      state.defaultThemePaddingEnd,
-      state.defaultThemePaddingTop,
-      state.defaultThemePaddingBottom});
+      newEventCount});
 }
 
 #pragma mark - LayoutableShadowNode

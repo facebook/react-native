@@ -10,27 +10,12 @@
 
 'use strict';
 
-let registerModule;
-if (global.RN$Bridgeless === true && global.RN$registerCallableModule) {
-  registerModule = global.RN$registerCallableModule;
-} else {
-  const BatchedBridge = require('../BatchedBridge/BatchedBridge');
-  registerModule = (
-    moduleName: string,
-    /* $FlowFixMe[missing-local-annot] The type annotation(s) required by
-     * Flow's LTI update could not be added via codemod */
-    factory,
-  ) => BatchedBridge.registerLazyCallableModule(moduleName, factory);
-}
+import registerModule from './registerCallableModule';
 
 registerModule('Systrace', () => require('../Performance/Systrace'));
 if (!(global.RN$Bridgeless === true)) {
   registerModule('JSTimers', () => require('./Timers/JSTimers'));
 }
-registerModule('HeapCapture', () => require('../HeapCapture/HeapCapture'));
-registerModule('SamplingProfiler', () =>
-  require('../Performance/SamplingProfiler'),
-);
 registerModule('RCTLog', () => require('../Utilities/RCTLog'));
 registerModule(
   'RCTDeviceEventEmitter',

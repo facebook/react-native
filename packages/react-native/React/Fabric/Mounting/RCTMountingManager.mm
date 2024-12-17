@@ -15,7 +15,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <cxxreact/SystraceSection.h>
-#import <react/config/ReactNativeConfig.h>
 #import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
@@ -73,9 +72,8 @@ static void RCTPerformMountInstructions(
 
       case ShadowViewMutation::Insert: {
         auto &newChildShadowView = mutation.newChildShadowView;
-        auto &parentShadowView = mutation.parentShadowView;
         auto &newChildViewDescriptor = [registry componentViewDescriptorWithTag:newChildShadowView.tag];
-        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
+        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:mutation.parentTag];
 
         UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
@@ -94,9 +92,8 @@ static void RCTPerformMountInstructions(
 
       case ShadowViewMutation::Remove: {
         auto &oldChildShadowView = mutation.oldChildShadowView;
-        auto &parentShadowView = mutation.parentShadowView;
         auto &oldChildViewDescriptor = [registry componentViewDescriptorWithTag:oldChildShadowView.tag];
-        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
+        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:mutation.parentTag];
         [parentViewDescriptor.view unmountChildComponentView:oldChildViewDescriptor.view index:mutation.index];
         break;
       }

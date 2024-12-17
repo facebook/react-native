@@ -12,7 +12,6 @@
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
-#include "ReactNativeConfigHolder.h"
 
 #include <cxxreact/SystraceSection.h>
 #include <fbjni/fbjni.h>
@@ -425,12 +424,8 @@ void FabricUIManagerBinding::installFabricUIManager(
     jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
     jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
     EventBeatManager* eventBeatManager,
-    ComponentFactory* componentsRegistry,
-    jni::alias_ref<jobject> reactNativeConfig) {
+    ComponentFactory* componentsRegistry) {
   SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
-
-  std::shared_ptr<const ReactNativeConfig> config =
-      std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
 
   enableFabricLogs_ = ReactNativeFeatureFlags::enableFabricLogs();
 
@@ -444,7 +439,7 @@ void FabricUIManagerBinding::installFabricUIManager(
 
   auto globalJavaUiManager = make_global(javaUIManager);
   mountingManager_ =
-      std::make_shared<FabricMountingManager>(config, globalJavaUiManager);
+      std::make_shared<FabricMountingManager>(globalJavaUiManager);
 
   ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
@@ -475,9 +470,6 @@ void FabricUIManagerBinding::installFabricUIManager(
 
   contextContainer->insert("FabricUIManager", globalJavaUiManager);
 
-  // Keep reference to config object and cache some feature flags here
-  reactNativeConfig_ = config;
-
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
   toolbox.componentRegistryFactory = componentsRegistry->buildRegistryFunction;
@@ -506,7 +498,6 @@ void FabricUIManagerBinding::uninstallFabricUIManager() {
   animationDriver_ = nullptr;
   scheduler_ = nullptr;
   mountingManager_ = nullptr;
-  reactNativeConfig_ = nullptr;
 }
 
 std::shared_ptr<FabricMountingManager>
@@ -559,27 +550,24 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
     return;
   }
 
-  if (ReactNativeFeatureFlags::
-          allowRecursiveCommitsWithSynchronousMountOnAndroid()) {
-    std::vector<MountingTransaction> pendingTransactions;
+  std::vector<MountingTransaction> pendingTransactions;
 
-    {
-      // Retain the lock to access the pending transactions but not to execute
-      // the mount operations because that method can call into this method
-      // again.
-      std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
-      pendingTransactions_.swap(pendingTransactions);
-    }
-
-    for (auto& transaction : pendingTransactions) {
-      mountingManager->executeMount(transaction);
-    }
-  } else {
+  {
+    // Retain the lock to access the pending transactions but not to execute
+    // the mount operations because that method can call into this method
+    // again.
+    //
+    // This can be re-entrant when mounting manager triggers state updates
+    // synchronously (this can happen when committing from the UI thread).
+    // This is safe because we're already combining all the transactions for the
+    // same surface ID in a single transaction in the pending transactions list,
+    // so operations won't run out of order.
     std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
-    for (auto& transaction : pendingTransactions_) {
-      mountingManager->executeMount(transaction);
-    }
-    pendingTransactions_.clear();
+    pendingTransactions_.swap(pendingTransactions);
+  }
+
+  for (auto& transaction : pendingTransactions) {
+    mountingManager->executeMount(transaction);
   }
 }
 

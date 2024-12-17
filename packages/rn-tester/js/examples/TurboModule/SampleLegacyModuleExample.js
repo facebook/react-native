@@ -63,7 +63,8 @@ function stringify(obj: mixed): string {
     return value;
   }
 
-  return (JSON.stringify(obj, replacer) || '').replaceAll('"', "'");
+  // Change this to don't use replaceAll
+  return (JSON.stringify(obj, replacer) || '').replace(/"/g, "'");
 }
 
 class SampleLegacyModuleExample extends React.Component<{||}, State> {

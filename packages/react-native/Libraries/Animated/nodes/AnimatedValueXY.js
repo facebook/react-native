@@ -11,12 +11,14 @@
 'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import AnimatedValue from './AnimatedValue';
 import AnimatedWithChildren from './AnimatedWithChildren';
 import invariant from 'invariant';
 
 export type AnimatedValueXYConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 type ValueXYListenerCallback = (value: {x: number, y: number, ...}) => mixed;
@@ -49,7 +51,7 @@ export default class AnimatedValueXY extends AnimatedWithChildren {
     },
     config?: ?AnimatedValueXYConfig,
   ) {
-    super();
+    super(config);
     const value: any = valueIn || {x: 0, y: 0}; // @flowfixme: shouldn't need `: any`
     if (typeof value.x === 'number' && typeof value.y === 'number') {
       this.x = new AnimatedValue(value.x);

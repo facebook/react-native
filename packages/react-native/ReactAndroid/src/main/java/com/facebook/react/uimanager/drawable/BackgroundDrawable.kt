@@ -21,7 +21,7 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import com.facebook.react.uimanager.PixelUtil.dpToPx
-import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.style.BackgroundImageLayer
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusStyle
@@ -42,7 +42,7 @@ internal class BackgroundDrawable(
    * Outline. The smallest amount (found to be 0.8f) is used to shrink outline's path, overlapping
    * them and closing the visible gap.
    */
-  private val gapBetweenPaths = 0.8f
+  private val pathAdjustment = 0.8f
   private var computedBorderInsets: RectF? = null
   private var computedBorderRadius: ComputedBorderRadius? = null
   private var needUpdatePath = true
@@ -56,8 +56,8 @@ internal class BackgroundDrawable(
       }
     }
 
-  private var paddingBoxRect: RectF = RectF()
-  private var paddingBoxRenderPath: Path? = null
+  private var backgroundRect: RectF = RectF()
+  private var backgroundRenderPath: Path? = null
 
   var backgroundImageLayers: List<BackgroundImageLayer>? = null
     set(value) {
@@ -107,33 +107,33 @@ internal class BackgroundDrawable(
     updatePath()
     canvas.save()
 
-    var innerRadiusX = 0f
-    var innerRadiusY = 0f
     // Draws the View without its border first (with background color fill)
     if (backgroundPaint.alpha != 0) {
       if (computedBorderRadius?.isUniform() == true && borderRadius?.hasRoundedBorders() == true) {
-        innerRadiusX =
-            getInnerBorderRadius(
-                computedBorderRadius?.topLeft?.horizontal?.dpToPx(), computedBorderInsets?.left)
-        innerRadiusY =
-            getInnerBorderRadius(
-                computedBorderRadius?.topLeft?.vertical?.dpToPx(), computedBorderInsets?.top)
-        canvas.drawRoundRect(paddingBoxRect, innerRadiusX, innerRadiusY, backgroundPaint)
+        canvas.drawRoundRect(
+            backgroundRect,
+            computedBorderRadius?.topLeft?.horizontal?.dpToPx() ?: 0f,
+            computedBorderRadius?.topLeft?.vertical?.dpToPx() ?: 0f,
+            backgroundPaint)
       } else if (borderRadius?.hasRoundedBorders() != true) {
-        canvas.drawRect(bounds, backgroundPaint)
+        canvas.drawRect(backgroundRect, backgroundPaint)
       } else {
-        canvas.drawPath(checkNotNull(paddingBoxRenderPath), backgroundPaint)
+        canvas.drawPath(checkNotNull(backgroundRenderPath), backgroundPaint)
       }
     }
 
     if (backgroundImageLayers != null && backgroundImageLayers?.isNotEmpty() == true) {
       backgroundPaint.setShader(getBackgroundImageShader())
       if (computedBorderRadius?.isUniform() == true && borderRadius?.hasRoundedBorders() == true) {
-        canvas.drawRoundRect(paddingBoxRect, innerRadiusX, innerRadiusY, backgroundPaint)
+        canvas.drawRoundRect(
+            backgroundRect,
+            computedBorderRadius?.topLeft?.horizontal?.dpToPx() ?: 0f,
+            computedBorderRadius?.topLeft?.vertical?.dpToPx() ?: 0f,
+            backgroundPaint)
       } else if (borderRadius?.hasRoundedBorders() != true) {
-        canvas.drawRect(paddingBoxRect, backgroundPaint)
+        canvas.drawRect(backgroundRect, backgroundPaint)
       } else {
-        canvas.drawPath(checkNotNull(paddingBoxRenderPath), backgroundPaint)
+        canvas.drawPath(checkNotNull(backgroundRenderPath), backgroundPaint)
       }
       backgroundPaint.setShader(null)
     }
@@ -167,92 +167,55 @@ internal class BackgroundDrawable(
     return null
   }
 
-  /**
-   * Here, "inner" refers to the border radius on the inside of the border. So it ends up being the
-   * "outer" border radius inset by the respective width.
-   */
-  private fun getInnerBorderRadius(computedRadius: Float?, borderWidth: Float?): Float {
-    return ((computedRadius ?: 0f) - (borderWidth ?: 0f)).coerceAtLeast(0f)
-  }
-
   private fun updatePath() {
     if (!needUpdatePath) {
       return
     }
     needUpdatePath = false
 
+    backgroundRect.set(bounds)
+
     computedBorderInsets = computeBorderInsets()
     computedBorderRadius =
         borderRadius?.resolve(
-            layoutDirection,
-            context,
-            toDIPFromPixel(bounds.width().toFloat()),
-            toDIPFromPixel(bounds.height().toFloat()))
-
-    if (computedBorderRadius?.hasRoundedBorders() == true &&
-        computedBorderRadius?.isUniform() == false) {
-      paddingBoxRenderPath = paddingBoxRenderPath ?: Path()
-      paddingBoxRenderPath?.reset()
-    }
-
-    // only close gap between border and background if we draw the border, otherwise
-    // we wind up pixelating small pixel-radius curves
-    var pathAdjustment = 0f
-    if (computedBorderInsets != null &&
+            layoutDirection, context, bounds.width().pxToDp(), bounds.height().pxToDp())
+    val hasBorder =
         (computedBorderInsets?.left != 0f ||
             computedBorderInsets?.top != 0f ||
             computedBorderInsets?.right != 0f ||
-            computedBorderInsets?.bottom != 0f)) {
-      pathAdjustment = gapBetweenPaths
+            computedBorderInsets?.bottom != 0f)
+
+    if (computedBorderRadius?.hasRoundedBorders() == true &&
+        computedBorderRadius?.isUniform() == false) {
+      backgroundRenderPath = backgroundRenderPath ?: Path()
+      backgroundRenderPath?.reset()
     }
 
-    // There is a small gap between backgroundDrawable and
-    // borderDrawable. pathAdjustment is used to slightly enlarge the rectangle
-    // (paddingBoxRect), ensuring the border can be
-    // drawn on top without the gap.
-    paddingBoxRect.left = bounds.left + (computedBorderInsets?.left ?: 0f) - pathAdjustment
-    paddingBoxRect.top = bounds.top + (computedBorderInsets?.top ?: 0f) - pathAdjustment
-    paddingBoxRect.right = bounds.right - (computedBorderInsets?.right ?: 0f) + pathAdjustment
-    paddingBoxRect.bottom = bounds.bottom - (computedBorderInsets?.bottom ?: 0f) + pathAdjustment
+    /**
+     * The background bleeds a bit outside of the borderDrawable. pathAdjustment is used to slightly
+     * shrink the rectangle (backgroundRect), ensuring the border can be drawn on top without the
+     * gap.
+     */
+    if (hasBorder && borderRadius?.hasRoundedBorders() == true) {
+      backgroundRect.left += pathAdjustment
+      backgroundRect.top += pathAdjustment
+      backgroundRect.right -= pathAdjustment
+      backgroundRect.bottom -= pathAdjustment
+    }
 
     if (borderRadius?.hasRoundedBorders() == true && computedBorderRadius?.isUniform() != true) {
 
-      val innerTopLeftRadiusX =
-          getInnerBorderRadius(
-              computedBorderRadius?.topLeft?.horizontal?.dpToPx(), computedBorderInsets?.left)
-      val innerTopLeftRadiusY =
-          getInnerBorderRadius(
-              computedBorderRadius?.topLeft?.vertical?.dpToPx(), computedBorderInsets?.top)
-      val innerTopRightRadiusX =
-          getInnerBorderRadius(
-              computedBorderRadius?.topRight?.horizontal?.dpToPx(), computedBorderInsets?.right)
-      val innerTopRightRadiusY =
-          getInnerBorderRadius(
-              computedBorderRadius?.topRight?.vertical?.dpToPx(), computedBorderInsets?.top)
-      val innerBottomRightRadiusX =
-          getInnerBorderRadius(
-              computedBorderRadius?.bottomRight?.horizontal?.dpToPx(), computedBorderInsets?.right)
-      val innerBottomRightRadiusY =
-          getInnerBorderRadius(
-              computedBorderRadius?.bottomRight?.vertical?.dpToPx(), computedBorderInsets?.bottom)
-      val innerBottomLeftRadiusX =
-          getInnerBorderRadius(
-              computedBorderRadius?.bottomLeft?.horizontal?.dpToPx(), computedBorderInsets?.left)
-      val innerBottomLeftRadiusY =
-          getInnerBorderRadius(
-              computedBorderRadius?.bottomLeft?.vertical?.dpToPx(), computedBorderInsets?.bottom)
-
-      paddingBoxRenderPath?.addRoundRect(
-          paddingBoxRect,
+      backgroundRenderPath?.addRoundRect(
+          backgroundRect,
           floatArrayOf(
-              innerTopLeftRadiusX,
-              innerTopLeftRadiusY,
-              innerTopRightRadiusX,
-              innerTopRightRadiusY,
-              innerBottomRightRadiusX,
-              innerBottomRightRadiusY,
-              innerBottomLeftRadiusX,
-              innerBottomLeftRadiusY,
+              computedBorderRadius?.topLeft?.horizontal?.dpToPx() ?: 0f,
+              computedBorderRadius?.topLeft?.vertical?.dpToPx() ?: 0f,
+              computedBorderRadius?.topRight?.horizontal?.dpToPx() ?: 0f,
+              computedBorderRadius?.topRight?.vertical?.dpToPx() ?: 0f,
+              computedBorderRadius?.bottomRight?.horizontal?.dpToPx() ?: 0f,
+              computedBorderRadius?.bottomRight?.vertical?.dpToPx() ?: 0f,
+              computedBorderRadius?.bottomLeft?.horizontal?.dpToPx() ?: 0f,
+              computedBorderRadius?.bottomLeft?.vertical?.dpToPx() ?: 0f,
           ),
           Path.Direction.CW)
     }

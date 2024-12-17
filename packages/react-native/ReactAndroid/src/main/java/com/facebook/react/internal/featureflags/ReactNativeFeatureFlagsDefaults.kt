@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5687586426348fc872f921f9465a0432>>
+ * @generated SignedSource<<ec971cc37d77b48df9aabeba4c57cde0>>
  */
 
 /**
@@ -24,8 +24,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   // but that is more expensive than just duplicating the defaults here.
 
   override fun commonTestFlag(): Boolean = false
-
-  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
 
   override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = true
 
@@ -51,13 +49,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFabricRenderer(): Boolean = false
 
-  override fun enableFabricRendererExclusively(): Boolean = false
-
   override fun enableFixForViewCommandRace(): Boolean = false
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
+
+  override fun enableImagePrefetchingAndroid(): Boolean = false
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
 
@@ -85,6 +83,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun excludeYogaFromRawProps(): Boolean = false
 
+  override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = true
+
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
   override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
@@ -98,8 +98,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun lazyAnimationCallbacks(): Boolean = false
 
   override fun loadVectorDrawablesOnImages(): Boolean = false
-
-  override fun setAndroidLayoutDirection(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
@@ -115,7 +113,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
-  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
+  override fun useRawPropsJsiValue(): Boolean = false
+
+  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = true
 
   override fun useTurboModuleInterop(): Boolean = false
 

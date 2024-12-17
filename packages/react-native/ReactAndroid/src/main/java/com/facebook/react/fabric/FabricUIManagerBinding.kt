@@ -34,7 +34,6 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       uiManager: FabricUIManager,
       eventBeatManager: EventBeatManager,
       componentsRegistry: ComponentFactory,
-      reactNativeConfig: Any
   )
 
   public external fun startSurface(surfaceId: Int, moduleName: String, initialProps: NativeMap)
@@ -93,16 +92,10 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       fabricUIManager: FabricUIManager,
       eventBeatManager: EventBeatManager,
       componentFactory: ComponentFactory,
-      reactNativeConfig: ReactNativeConfig
   ) {
     fabricUIManager.setBinding(this)
     installFabricUIManager(
-        runtimeExecutor,
-        runtimeScheduler,
-        fabricUIManager,
-        eventBeatManager,
-        componentFactory,
-        reactNativeConfig)
+        runtimeExecutor, runtimeScheduler, fabricUIManager, eventBeatManager, componentFactory)
     setPixelDensity(getDisplayMetricDensity())
   }
 

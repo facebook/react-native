@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dd5548e7f12b14ff3bb3cff78419652b>>
+ * @generated SignedSource<<e5a3a51d3f1ee579fdfef334deb0fa90>>
  */
 
 /**
@@ -33,12 +33,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
-
-  /**
-   * Adds support for recursively processing commits that mount synchronously (Android only).
-   */
-  @JvmStatic
-  public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = accessor.allowRecursiveCommitsWithSynchronousMountOnAndroid()
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
@@ -113,12 +107,6 @@ public object ReactNativeFeatureFlags {
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
 
   /**
-   * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
-   */
-  @JvmStatic
-  public fun enableFabricRendererExclusively(): Boolean = accessor.enableFabricRendererExclusively()
-
-  /**
    * Synchronise the view command dispatching with mounting of new transaction
    */
   @JvmStatic
@@ -135,6 +123,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
+
+  /**
+   * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+   */
+  @JvmStatic
+  public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -215,6 +209,12 @@ public object ReactNativeFeatureFlags {
   public fun excludeYogaFromRawProps(): Boolean = accessor.excludeYogaFromRawProps()
 
   /**
+   * Fixes a bug in Differentiator where parent views may be referenced before they're created
+   */
+  @JvmStatic
+  public fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = accessor.fixDifferentiatorEmittingUpdatesWithWrongParentTag()
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   @JvmStatic
@@ -257,12 +257,6 @@ public object ReactNativeFeatureFlags {
   public fun loadVectorDrawablesOnImages(): Boolean = accessor.loadVectorDrawablesOnImages()
 
   /**
-   * Propagate layout direction to Android views.
-   */
-  @JvmStatic
-  public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
-
-  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   @JvmStatic
@@ -303,6 +297,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useOptimizedEventBatchingOnAndroid(): Boolean = accessor.useOptimizedEventBatchingOnAndroid()
+
+  /**
+   * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
+   */
+  @JvmStatic
+  public fun useRawPropsJsiValue(): Boolean = accessor.useRawPropsJsiValue()
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

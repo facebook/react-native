@@ -18,6 +18,8 @@ import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.systrace.Systrace;
@@ -82,6 +84,7 @@ public class ReactActivityDelegate {
    * implement {@code ReactApplication} or you simply have a different mechanism for storing a
    * {@code ReactNativeHost}, e.g. as a static field somewhere.
    */
+  @DeprecatedInNewArchitecture(message = "Use getReactHost()")
   protected ReactNativeHost getReactNativeHost() {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactNativeHost();
   }
@@ -93,7 +96,7 @@ public class ReactActivityDelegate {
    * implement {@code ReactApplication} or you simply have a different mechanism for storing a
    * {@code ReactHost}, e.g. as a static field somewhere.
    */
-  public ReactHost getReactHost() {
+  public @Nullable ReactHost getReactHost() {
     return ((ReactApplication) getPlainActivity().getApplication()).getReactHost();
   }
 
@@ -101,6 +104,7 @@ public class ReactActivityDelegate {
     return mReactDelegate;
   }
 
+  @DeprecatedInNewArchitecture(message = "Use getReactHost()")
   public ReactInstanceManager getReactInstanceManager() {
     return mReactDelegate.getReactInstanceManager();
   }
@@ -235,6 +239,16 @@ public class ReactActivityDelegate {
 
   protected ReactActivity getReactActivity() {
     return ((ReactActivity) getContext());
+  }
+
+  /**
+   * Get the current {@link ReactContext} from ReactHost or ReactInstanceManager
+   *
+   * <p>Do not store a reference to this, if the React instance is reloaded or destroyed, this
+   * context will no longer be valid.
+   */
+  public @Nullable ReactContext getCurrentReactContext() {
+    return mReactDelegate.getCurrentReactContext();
   }
 
   /**

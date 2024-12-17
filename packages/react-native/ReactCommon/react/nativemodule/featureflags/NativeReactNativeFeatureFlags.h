@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d449062ad46ab216a04e927da659b1e2>>
+ * @generated SignedSource<<edc2b606f2ae3274d951355b858b8f3b>>
  */
 
 /**
@@ -39,8 +39,6 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
 
-  bool allowRecursiveCommitsWithSynchronousMountOnAndroid(jsi::Runtime& runtime);
-
   bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
 
   bool disableEventLoopOnBridgeless(jsi::Runtime& runtime);
@@ -65,13 +63,13 @@ class NativeReactNativeFeatureFlags
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
 
-  bool enableFabricRendererExclusively(jsi::Runtime& runtime);
-
   bool enableFixForViewCommandRace(jsi::Runtime& runtime);
 
   bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
+
+  bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
@@ -99,6 +97,8 @@ class NativeReactNativeFeatureFlags
 
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
 
+  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(jsi::Runtime& runtime);
+
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
@@ -113,8 +113,6 @@ class NativeReactNativeFeatureFlags
 
   bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
 
-  bool setAndroidLayoutDirection(jsi::Runtime& runtime);
-
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
@@ -128,6 +126,8 @@ class NativeReactNativeFeatureFlags
   bool useOptimisedViewPreallocationOnAndroid(jsi::Runtime& runtime);
 
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
+
+  bool useRawPropsJsiValue(jsi::Runtime& runtime);
 
   bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
 

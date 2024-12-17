@@ -293,13 +293,8 @@ void YGNodeStyleSetGapPercent(YGNodeRef node, YGGutter gutter, float percent) {
       node, scopedEnum(gutter), StyleLength::percent(percent));
 }
 
-float YGNodeStyleGetGap(const YGNodeConstRef node, const YGGutter gutter) {
-  auto gapLength = resolveRef(node)->style().gap(scopedEnum(gutter));
-  if (gapLength.isUndefined() || gapLength.isAuto()) {
-    return YGUndefined;
-  }
-
-  return static_cast<YGValue>(gapLength).value;
+YGValue YGNodeStyleGetGap(const YGNodeConstRef node, const YGGutter gutter) {
+  return (YGValue)resolveRef(node)->style().gap(scopedEnum(gutter));
 }
 
 void YGNodeStyleSetAspectRatio(const YGNodeRef node, const float aspectRatio) {

@@ -41,7 +41,7 @@ runs:
     - name: Setup node.js
       uses: ./.github/actions/setup-node
     - name: Run yarn
-      uses: ./.github/actions/yarn-install-with-cache
+      uses: ./.github/actions/yarn-install
     - name: Download Hermes
       uses: actions/download-artifact@v4
       with:

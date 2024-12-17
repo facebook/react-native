@@ -16,6 +16,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
+import com.facebook.react.runtime.BindingsInstaller
 import com.facebook.react.runtime.JSCInstance
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
@@ -42,11 +43,12 @@ public object DefaultReactHost {
    *   `index.<platform>`
    * @param jsBundleAssetPath the path to the JS bundle relative to the assets directory. Will be
    *   composed in a `asset://...` URL
+   * @param jsBundleFilePath the path to the JS bundle on the filesystem. Will be composed in a
+   *   `file://...` URL
    * @param isHermesEnabled whether to use Hermes as the JS engine, default to true.
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
    *   modules)
-   * @param jsBundleLoader a [JSBundleLoader] to use for creating the [ReactHost]
    *
    * TODO(T186951312): Should this be @UnstableReactNativeAPI?
    */
@@ -61,7 +63,6 @@ public object DefaultReactHost {
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
-      jsBundleLoader: JSBundleLoader? = null,
   ): ReactHost =
       getDefaultReactHost(
           context,
@@ -72,9 +73,8 @@ public object DefaultReactHost {
           isHermesEnabled,
           useDevSupport,
           cxxReactPackageProviders,
-          jsBundleLoader) {
-            throw it
-          }
+          { throw it },
+          null)
 
   /**
    * Util function to create a default [ReactHost] to be used in your application. This method is
@@ -86,13 +86,15 @@ public object DefaultReactHost {
    *   `index.<platform>`
    * @param jsBundleAssetPath the path to the JS bundle relative to the assets directory. Will be
    *   composed in a `asset://...` URL
+   * @param jsBundleFilePath the path to the JS bundle on the filesystem. Will be composed in a
+   *   `file://...` URL
    * @param isHermesEnabled whether to use Hermes as the JS engine, default to true.
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
    *   modules)
-   * @param jsBundleLoader a [JSBundleLoader] to use for creating the [ReactHost]
    * @param exceptionHandler Callback that can be used by React Native host applications to react to
    *   exceptions thrown by the internals of React Native.
+   * @param bindingsInstaller that can be used for installing bindings.
    *
    * TODO(T186951312): Should this be @UnstableReactNativeAPI?
    */
@@ -107,22 +109,21 @@ public object DefaultReactHost {
       isHermesEnabled: Boolean = true,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
-      jsBundleLoader: JSBundleLoader? = null,
       exceptionHandler: (Exception) -> Unit = { throw it },
+      bindingsInstaller: BindingsInstaller? = null,
   ): ReactHost {
     if (reactHost == null) {
 
       val bundleLoader =
-          jsBundleLoader
-              ?: if (jsBundleFilePath != null) {
-                if (jsBundleFilePath.startsWith("assets://")) {
-                  JSBundleLoader.createAssetLoader(context, jsBundleFilePath, true)
-                } else {
-                  JSBundleLoader.createFileLoader(jsBundleFilePath)
-                }
-              } else {
-                JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
-              }
+          if (jsBundleFilePath != null) {
+            if (jsBundleFilePath.startsWith("assets://")) {
+              JSBundleLoader.createAssetLoader(context, jsBundleFilePath, true)
+            } else {
+              JSBundleLoader.createFileLoader(jsBundleFilePath)
+            }
+          } else {
+            JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
+          }
       val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
       val defaultTmmDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       cxxReactPackageProviders.forEach { defaultTmmDelegateBuilder.addCxxReactPackage(it) }
@@ -132,6 +133,7 @@ public object DefaultReactHost {
               jsBundleLoader = bundleLoader,
               reactPackages = packageList,
               jsRuntimeFactory = jsRuntimeFactory,
+              bindingsInstaller = bindingsInstaller,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder,
               exceptionHandler = exceptionHandler)
       val componentFactory = ComponentFactory()

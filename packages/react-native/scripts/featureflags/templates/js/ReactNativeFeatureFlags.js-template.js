@@ -34,18 +34,18 @@ import {
   setOverrides,
 } from './ReactNativeFeatureFlagsBase';
 
-export type ReactNativeFeatureFlagsJsOnly = {
+export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
 ${Object.entries(definitions.jsOnly)
   .map(
     ([flagName, flagConfig]) =>
       `  ${flagName}: Getter<${typeof flagConfig.defaultValue}>,`,
   )
   .join('\n')}
-};
+}>;
 
 export type ReactNativeFeatureFlagsJsOnlyOverrides = OverridesFor<ReactNativeFeatureFlagsJsOnly>;
 
-export type ReactNativeFeatureFlags = {
+export type ReactNativeFeatureFlags = $ReadOnly<{
   ...ReactNativeFeatureFlagsJsOnly,
 ${Object.entries(definitions.common)
   .map(
@@ -53,7 +53,7 @@ ${Object.entries(definitions.common)
       `  ${flagName}: Getter<${typeof flagConfig.defaultValue}>,`,
   )
   .join('\n')}
-}
+}>;
 
 ${Object.entries(definitions.jsOnly)
   .map(

@@ -800,12 +800,10 @@ public class SurfaceMountingManager {
       throw new IllegalStateException("Unable to find View for tag: " + reactTag);
     }
 
-    if (ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
-      viewToUpdate.setLayoutDirection(
-          layoutDirection == 1
-              ? View.LAYOUT_DIRECTION_LTR
-              : layoutDirection == 2 ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_INHERIT);
-    }
+    viewToUpdate.setLayoutDirection(
+        layoutDirection == 1
+            ? View.LAYOUT_DIRECTION_LTR
+            : layoutDirection == 2 ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_INHERIT);
 
     // Even though we have exact dimensions, we still call measure because some platform views (e.g.
     // Switch) assume that method will always be called before onLayout and onDraw. They use it to

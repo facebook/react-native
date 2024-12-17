@@ -17,6 +17,7 @@
 @protocol RCTComponentViewProtocol;
 @class RCTRootView;
 @class RCTSurfacePresenterBridgeAdapter;
+@protocol RCTDependencyProvider;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -70,6 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *moduleName;
 @property (nonatomic, strong, nullable) NSDictionary *initialProps;
 @property (nonatomic, strong, nonnull) RCTRootViewFactory *rootViewFactory;
+@property (nonatomic, strong) id<RCTDependencyProvider> dependencyProvider;
 
 /// If `automaticallyLoadReactNativeWindow` is set to `true`, the React Native window will be loaded automatically.
 @property (nonatomic, assign) BOOL automaticallyLoadReactNativeWindow;

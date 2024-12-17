@@ -14,23 +14,26 @@ import type {ProcessedColorValue} from './processColor';
 import type {GradientValue} from './StyleSheetTypes';
 
 const processColor = require('./processColor').default;
-const DIRECTION_REGEX =
-  /^to\s+(?:top|bottom|left|right)(?:\s+(?:top|bottom|left|right))?/;
+const DIRECTION_KEYWORD_REGEX =
+  /^to\s+(?:top|bottom|left|right)(?:\s+(?:top|bottom|left|right))?/i;
 const ANGLE_UNIT_REGEX = /^([+-]?\d*\.?\d+)(deg|grad|rad|turn)$/i;
 
-const TO_BOTTOM_START_END_POINTS = {
-  start: {x: 0.5, y: 0},
-  end: {x: 0.5, y: 1},
-};
+type LinearGradientDirection =
+  | {type: 'angle', value: number}
+  | {type: 'keyword', value: string};
 
 type ParsedGradientValue = {
   type: 'linearGradient',
-  start: {x: number, y: number},
-  end: {x: number, y: number},
+  direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
     color: ProcessedColorValue,
     position: number,
   }>,
+};
+
+const DEFAULT_DIRECTION: LinearGradientDirection = {
+  type: 'angle',
+  value: 180,
 };
 
 export default function processBackgroundImage(
@@ -76,37 +79,43 @@ export default function processBackgroundImage(
         }
       }
 
-      let points: {
-        start: ParsedGradientValue['start'],
-        end: ParsedGradientValue['end'],
-      } | null = null;
+      let direction: LinearGradientDirection = DEFAULT_DIRECTION;
+      const bgDirection =
+        bgImage.direction != null ? bgImage.direction.toLowerCase() : null;
 
-      if (typeof bgImage.direction === 'undefined') {
-        points = TO_BOTTOM_START_END_POINTS;
-      } else if (ANGLE_UNIT_REGEX.test(bgImage.direction)) {
-        const angle = parseAngle(bgImage.direction);
-        if (angle != null) {
-          points = calculateStartEndPointsFromAngle(angle);
-        }
-      } else if (DIRECTION_REGEX.test(bgImage.direction)) {
-        const processedPoints = calculateStartEndPointsFromDirection(
-          bgImage.direction,
-        );
-        if (processedPoints != null) {
-          points = processedPoints;
+      if (bgDirection != null) {
+        if (ANGLE_UNIT_REGEX.test(bgDirection)) {
+          const parsedAngle = getAngleInDegrees(bgDirection);
+          if (parsedAngle != null) {
+            direction = {
+              type: 'angle',
+              value: parsedAngle,
+            };
+          } else {
+            // If an angle is invalid, return an empty array and do not apply any gradient. Same as web.
+            return [];
+          }
+        } else if (DIRECTION_KEYWORD_REGEX.test(bgDirection)) {
+          const parsedDirection = getDirectionForKeyword(bgDirection);
+          if (parsedDirection != null) {
+            direction = parsedDirection;
+          } else {
+            // If a direction is invalid, return an empty array and do not apply any gradient. Same as web.
+            return [];
+          }
+        } else {
+          // If a direction is invalid, return an empty array and do not apply any gradient. Same as web.
+          return [];
         }
       }
 
       const fixedColorStops = getFixedColorStops(processedColorStops);
 
-      if (points != null) {
-        result = result.concat({
-          type: 'linearGradient',
-          start: points.start,
-          end: points.end,
-          colorStops: fixedColorStops,
-        });
-      }
+      result = result.concat({
+        type: 'linearGradient',
+        direction,
+        colorStops: fixedColorStops,
+      });
     }
   }
 
@@ -118,30 +127,39 @@ function parseCSSLinearGradient(
 ): $ReadOnlyArray<ParsedGradientValue> {
   const gradients = [];
   let match;
+
+  // matches one or more linear-gradient functions in CSS
   const linearGradientRegex = /linear-gradient\s*\(((?:\([^)]*\)|[^())])*)\)/gi;
 
   while ((match = linearGradientRegex.exec(cssString))) {
     const gradientContent = match[1];
     const parts = gradientContent.split(',');
-    let points = TO_BOTTOM_START_END_POINTS;
+    let direction: LinearGradientDirection = DEFAULT_DIRECTION;
     const trimmedDirection = parts[0].trim().toLowerCase();
+
+    // matches individual color stops in a gradient function
+    // supports various color formats: named colors, hex colors, rgb(a), and hsl(a)
+    // e.g. "red 20%", "blue 50%", "rgba(0, 0, 0, 0.5) 30% 50%"
+    // TODO: does not support color hint syntax yet. It is WIP.
     const colorStopRegex =
       /\s*((?:(?:rgba?|hsla?)\s*\([^)]+\))|#[0-9a-fA-F]+|[a-zA-Z]+)(?:\s+(-?[0-9.]+%?)(?:\s+(-?[0-9.]+%?))?)?\s*/gi;
 
     if (ANGLE_UNIT_REGEX.test(trimmedDirection)) {
-      const angle = parseAngle(trimmedDirection);
-      if (angle != null) {
-        points = calculateStartEndPointsFromAngle(angle);
+      const parsedAngle = getAngleInDegrees(trimmedDirection);
+      if (parsedAngle != null) {
+        direction = {
+          type: 'angle',
+          value: parsedAngle,
+        };
         parts.shift();
       } else {
         // If an angle is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
-    } else if (DIRECTION_REGEX.test(trimmedDirection)) {
-      const parsedPoints =
-        calculateStartEndPointsFromDirection(trimmedDirection);
-      if (parsedPoints != null) {
-        points = parsedPoints;
+    } else if (DIRECTION_KEYWORD_REGEX.test(trimmedDirection)) {
+      const parsedDirection = getDirectionForKeyword(trimmedDirection);
+      if (parsedDirection != null) {
+        direction = parsedDirection;
         parts.shift();
       } else {
         // If a direction is invalid, return an empty array and do not apply any gradient. Same as web.
@@ -198,8 +216,7 @@ function parseCSSLinearGradient(
 
     gradients.push({
       type: 'linearGradient',
-      start: points.start,
-      end: points.end,
+      direction,
       colorStops: fixedColorStops,
     });
   }
@@ -207,83 +224,43 @@ function parseCSSLinearGradient(
   return gradients;
 }
 
-function calculateStartEndPointsFromDirection(direction: string): ?{
-  start: {x: number, y: number},
-  end: {x: number, y: number},
-} {
+function getDirectionForKeyword(direction?: string): ?LinearGradientDirection {
+  if (direction == null) {
+    return null;
+  }
   // Remove extra whitespace
-  const normalizedDirection = direction.replace(/\s+/g, ' ');
+  const normalized = direction.replace(/\s+/g, ' ').toLowerCase();
 
-  switch (normalizedDirection) {
-    case 'to right':
-      return {
-        start: {x: 0, y: 0.5},
-        end: {x: 1, y: 0.5},
-      };
-    case 'to left':
-      return {
-        start: {x: 1, y: 0.5},
-        end: {x: 0, y: 0.5},
-      };
-    case 'to bottom':
-      return TO_BOTTOM_START_END_POINTS;
+  switch (normalized) {
     case 'to top':
-      return {
-        start: {x: 0.5, y: 1},
-        end: {x: 0.5, y: 0},
-      };
-    case 'to bottom right':
-    case 'to right bottom':
-      return {
-        start: {x: 0, y: 0},
-        end: {x: 1, y: 1},
-      };
-    case 'to top left':
-    case 'to left top':
-      return {
-        start: {x: 1, y: 1},
-        end: {x: 0, y: 0},
-      };
-    case 'to bottom left':
-    case 'to left bottom':
-      return {
-        start: {x: 1, y: 0},
-        end: {x: 0, y: 1},
-      };
+      return {type: 'angle', value: 0};
+    case 'to right':
+      return {type: 'angle', value: 90};
+    case 'to bottom':
+      return {type: 'angle', value: 180};
+    case 'to left':
+      return {type: 'angle', value: 270};
     case 'to top right':
     case 'to right top':
-      return {
-        start: {x: 0, y: 1},
-        end: {x: 1, y: 0},
-      };
+      return {type: 'keyword', value: 'to top right'};
+    case 'to bottom right':
+    case 'to right bottom':
+      return {type: 'keyword', value: 'to bottom right'};
+    case 'to top left':
+    case 'to left top':
+      return {type: 'keyword', value: 'to top left'};
+    case 'to bottom left':
+    case 'to left bottom':
+      return {type: 'keyword', value: 'to bottom left'};
     default:
       return null;
   }
 }
 
-function calculateStartEndPointsFromAngle(angleRadians: number): {
-  start: {x: number, y: number},
-  end: {x: number, y: number},
-} {
-  // Normalize angle to be between 0 and 2π
-  let angleRadiansNormalized = angleRadians % (2 * Math.PI);
-  if (angleRadiansNormalized < 0) {
-    angleRadiansNormalized += 2 * Math.PI;
+function getAngleInDegrees(angle?: string): ?number {
+  if (angle == null) {
+    return null;
   }
-
-  const endX = 0.5 + 0.5 * Math.sin(angleRadiansNormalized);
-  const endY = 0.5 - 0.5 * Math.cos(angleRadiansNormalized);
-
-  const startX = 1 - endX;
-  const startY = 1 - endY;
-
-  return {
-    start: {x: startX, y: startY},
-    end: {x: endX, y: endY},
-  };
-}
-
-function parseAngle(angle: string): ?number {
   const match = angle.match(ANGLE_UNIT_REGEX);
   if (!match) {
     return null;
@@ -294,13 +271,13 @@ function parseAngle(angle: string): ?number {
   const numericValue = parseFloat(value);
   switch (unit) {
     case 'deg':
-      return (numericValue * Math.PI) / 180;
-    case 'grad':
-      return (numericValue * Math.PI) / 200;
-    case 'rad':
       return numericValue;
+    case 'grad':
+      return numericValue * 0.9; // 1 grad = 0.9 degrees
+    case 'rad':
+      return (numericValue * 180) / Math.PI;
     case 'turn':
-      return numericValue * 2 * Math.PI;
+      return numericValue * 360; // 1 turn = 360 degrees
     default:
       return null;
   }

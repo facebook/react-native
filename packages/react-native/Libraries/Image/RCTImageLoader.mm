@@ -1227,7 +1227,7 @@ RCT_EXPORT_METHOD(prefetchImage
 
 RCT_EXPORT_METHOD(prefetchImageWithMetadata
                   : (NSString *)uri queryRootName
-                  : (nullable NSString *)queryRootName rootTag
+                  : (NSString *)queryRootName rootTag
                   : (double)rootTag resolve
                   : (RCTPromiseResolveBlock)resolve reject
                   : (RCTPromiseRejectBlock)reject)

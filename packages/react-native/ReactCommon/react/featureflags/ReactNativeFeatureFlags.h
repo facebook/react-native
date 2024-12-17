@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6d729ae284fb247805d187b90c603e06>>
+ * @generated SignedSource<<f21aa384ac58fe3386f15ec79939af34>>
  */
 
 /**
@@ -43,11 +43,6 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
-
-  /**
-   * Adds support for recursively processing commits that mount synchronously (Android only).
-   */
-  RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
 
   /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
@@ -110,11 +105,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFabricRenderer();
 
   /**
-   * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
-   */
-  RN_EXPORT static bool enableFabricRendererExclusively();
-
-  /**
    * Synchronise the view command dispatching with mounting of new transaction
    */
   RN_EXPORT static bool enableFixForViewCommandRace();
@@ -128,6 +118,11 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
+
+  /**
+   * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+   */
+  RN_EXPORT static bool enableImagePrefetchingAndroid();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -195,6 +190,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool excludeYogaFromRawProps();
 
   /**
+   * Fixes a bug in Differentiator where parent views may be referenced before they're created
+   */
+  RN_EXPORT static bool fixDifferentiatorEmittingUpdatesWithWrongParentTag();
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -230,11 +230,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool loadVectorDrawablesOnImages();
 
   /**
-   * Propagate layout direction to Android views.
-   */
-  RN_EXPORT static bool setAndroidLayoutDirection();
-
-  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
@@ -268,6 +263,11 @@ class ReactNativeFeatureFlags {
    * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
    */
   RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
+
+  /**
+   * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
+   */
+  RN_EXPORT static bool useRawPropsJsiValue();
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

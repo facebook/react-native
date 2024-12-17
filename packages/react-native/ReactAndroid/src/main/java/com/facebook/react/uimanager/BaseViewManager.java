@@ -84,6 +84,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.accessibility_actions, null);
     view.setTag(R.id.accessibility_value, null);
     view.setTag(R.id.accessibility_state_expanded, null);
+    view.setTag(R.id.view_clipped, null);
 
     // This indirectly calls (and resets):
     // setTranslationX
