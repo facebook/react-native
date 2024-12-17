@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<01d174fa990b1b9cccd8bea4694fc1b4>>
+ * @generated SignedSource<<386958552a092ac75840bf3202fb0341>>
  * @flow strict
  */
 
@@ -28,6 +28,7 @@ export interface Spec extends TurboModule {
   +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
   +disableEventLoopOnBridgeless?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
+  +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
   +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
   +enableAndroidLineHeightCentering?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
