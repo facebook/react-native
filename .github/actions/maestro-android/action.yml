@@ -61,8 +61,10 @@ runs:
       with:
         api-level: 24
         arch: x86
-        ram-size: '4096M'
+        ram-size: '8192M'
+        heap-sizze: '4096M'
         disk-size: '10G'
+        cores: '4'
         disable-animations: false
         avd-name: e2e_emulator
         script: node .github/workflow-scripts/maestro-android.js ${{ inputs.app-path }} ${{ inputs.app-id }} ${{ inputs.maestro-flow }} ${{ inputs.flavor }} ${{ inputs.working-directory }}
