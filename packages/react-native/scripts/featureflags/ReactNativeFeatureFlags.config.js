@@ -232,6 +232,7 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-09-11',
         description:
           'When enabled, custom line height calculation will be centered from top to bottom.',
+        expectedReleaseValue: true,
         purpose: 'experimentation',
       },
     },
@@ -241,6 +242,7 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-10-11',
         description:
           'When enabled, custom line height calculation will be centered from top to bottom.',
+        expectedReleaseValue: true,
         purpose: 'experimentation',
       },
     },
