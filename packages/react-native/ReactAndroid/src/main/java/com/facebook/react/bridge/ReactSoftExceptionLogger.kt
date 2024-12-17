@@ -18,6 +18,7 @@ public object ReactSoftExceptionLogger {
   public object Categories {
     public const val RVG_IS_VIEW_CLIPPED: String = "ReactViewGroup.isViewClipped"
     public const val RVG_ON_VIEW_REMOVED: String = "ReactViewGroup.onViewRemoved"
+    public const val SOFT_ASSERTIONS: String = "SoftAssertions"
   }
 
   // Use a list instead of a set here because we expect the number of listeners
