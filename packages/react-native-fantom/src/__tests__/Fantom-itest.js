@@ -26,6 +26,7 @@ describe('Fantom', () => {
     });
 
     // TODO: fix error handling and make this pass
+    // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should re-throw errors from the task synchronously', () => {
       expect(() => {
         runTask(() => {
@@ -51,6 +52,7 @@ describe('Fantom', () => {
     });
 
     // TODO: fix error handling and make this pass
+    // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should re-throw errors from microtasks synchronously', () => {
       expect(() => {
         runTask(() => {

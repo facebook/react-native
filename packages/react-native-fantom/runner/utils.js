@@ -18,21 +18,30 @@ import {SourceMapConsumer} from 'source-map';
 
 const BUCK_ISOLATION_DIR = 'react-native-fantom-buck-out';
 
-export function getBuckModeForPlatform(enableRelease: boolean = false): string {
+export function getBuckModesForPlatform(
+  enableRelease: boolean = false,
+): $ReadOnlyArray<string> {
   const mode = enableRelease ? 'opt' : 'dev';
 
+  let osPlatform;
   switch (os.platform()) {
     case 'linux':
-      return `@//arvr/mode/linux/${mode}`;
+      osPlatform = `@//arvr/mode/linux/${mode}`;
+      break;
     case 'darwin':
-      return os.arch() === 'arm64'
-        ? `@//arvr/mode/mac-arm/${mode}`
-        : `@//arvr/mode/mac/${mode}`;
+      osPlatform =
+        os.arch() === 'arm64'
+          ? `@//arvr/mode/mac-arm/${mode}`
+          : `@//arvr/mode/mac/${mode}`;
+      break;
     case 'win32':
-      return `@//arvr/mode/win/${mode}`;
+      osPlatform = `@//arvr/mode/win/${mode}`;
+      break;
     default:
       throw new Error(`Unsupported platform: ${os.platform()}`);
   }
+
+  return ['@//xplat/mode/react-force-cxx-platform', osPlatform];
 }
 
 type SpawnResultWithOriginalCommand = {
@@ -69,14 +78,21 @@ export function runBuck2(args: Array<string>): SpawnResultWithOriginalCommand {
 export function getDebugInfoFromCommandResult(
   commandResult: SpawnResultWithOriginalCommand,
 ): string {
+  const maybeSignal =
+    commandResult.signal != null ? `, signal: ${commandResult.signal}` : '';
+  const resultByStatus =
+    commandResult.status === 0
+      ? 'succeeded'
+      : `failed (status code: ${commandResult.status}${maybeSignal})`;
+
   const logLines = [
-    `Command ${commandResult.status === 0 ? 'succeeded' : 'failed'}: ${commandResult.originalCommand}`,
+    `Command ${resultByStatus}: ${commandResult.originalCommand}`,
     '',
     'stdout:',
-    commandResult.stdout,
+    commandResult.stdout || '(empty)',
     '',
     'stderr:',
-    commandResult.stderr,
+    commandResult.stderr || '(empty)',
   ];
 
   if (commandResult.error) {

@@ -97,7 +97,7 @@ val preparePrefab by
                       // jsiinpsector
                       Pair("../ReactCommon/jsinspector-modern/", "jsinspector-modern/"),
                       // mapbufferjni
-                      Pair("src/main/jni/react/mapbuffer", "react/mapbuffer/"),
+                      Pair("src/main/jni/react/mapbuffer", ""),
                       // turbomodulejsijni
                       Pair("src/main/jni/react/turbomodule", ""),
                       // react_codegen_rncore
@@ -664,6 +664,7 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.assertj)
   testImplementation(libs.mockito)
+  testImplementation(libs.mockito.kotlin)
   testImplementation(libs.robolectric)
   testImplementation(libs.thoughtworks)
 }

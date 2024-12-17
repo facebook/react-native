@@ -49,12 +49,11 @@ bool PerformanceTracer::stopTracingAndCollectEvents(
 
   tracing_ = false;
   if (buffer_.empty()) {
+    customTrackIdMap_.clear();
     return true;
   }
 
   auto traceEvents = folly::dynamic::array();
-  auto savedBuffer = std::move(buffer_);
-  buffer_.clear();
 
   // Register "Main" process
   traceEvents.push_back(folly::dynamic::object(
@@ -69,27 +68,29 @@ bool PerformanceTracer::stopTracingAndCollectEvents(
           "cat", "__metadata")("name", "thread_name")("ph", "M")("pid", PID)(
           "tid", USER_TIMINGS_DEFAULT_TRACK)("ts", 0));
 
-  auto customTrackIdMap = getCustomTracks(savedBuffer);
-  for (const auto& [trackName, trackId] : customTrackIdMap) {
+  for (const auto& [trackName, trackId] : customTrackIdMap_) {
     // Register custom tracks
     traceEvents.push_back(folly::dynamic::object(
         "args", folly::dynamic::object("name", trackName))("cat", "__metadata")(
         "name", "thread_name")("ph", "M")("pid", PID)("tid", trackId)("ts", 0));
   }
 
-  for (auto& event : savedBuffer) {
+  for (auto event : buffer_) {
     // Emit trace events
-    traceEvents.push_back(serializeTraceEvent(event, customTrackIdMap));
+    traceEvents.push_back(serializeTraceEvent(event));
 
     if (traceEvents.size() >= 1000) {
       resultCallback(traceEvents);
       traceEvents = folly::dynamic::array();
     }
   }
+  customTrackIdMap_.clear();
+  buffer_.clear();
 
   if (traceEvents.size() >= 1) {
     resultCallback(traceEvents);
   }
+
   return true;
 }
 
@@ -100,8 +101,15 @@ void PerformanceTracer::reportMark(
   if (!tracing_) {
     return;
   }
-  buffer_.push_back(TraceEvent{
-      .type = TraceEventType::MARK, .name = std::string(name), .start = start});
+
+  TraceEventBase* event = new InstantTraceEvent{
+      std::string(name),
+      std::vector{TraceEventCategory::UserTiming},
+      start,
+      PID, // FIXME: This should be real process ID.
+      USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be real thread ID.
+  };
+  buffer_.push_back(event);
 }
 
 void PerformanceTracer::reportMeasure(
@@ -114,62 +122,85 @@ void PerformanceTracer::reportMeasure(
     return;
   }
 
-  std::optional<std::string> track;
+  uint64_t threadId =
+      USER_TIMINGS_DEFAULT_TRACK; // FIXME: This should be real thread ID.
   if (trackMetadata.has_value()) {
-    track = trackMetadata.value().track;
+    std::string trackName = trackMetadata.value().track;
+
+    if (!customTrackIdMap_.contains(trackName)) {
+      uint64_t trackId =
+          USER_TIMINGS_DEFAULT_TRACK + customTrackIdMap_.size() + 1;
+      threadId = trackId;
+
+      customTrackIdMap_.emplace(trackName, trackId);
+    }
   }
 
-  buffer_.push_back(TraceEvent{
-      .type = TraceEventType::MEASURE,
-      .name = std::string(name),
-      .start = start,
-      .duration = duration,
-      .track = track});
+  TraceEventBase* event = new CompleteTraceEvent{
+      std::string(name),
+      std::vector{TraceEventCategory::UserTiming},
+      start,
+      PID, // FIXME: This should be real process ID.
+      threadId, // FIXME: This should be real thread ID.
+      duration};
+  buffer_.push_back(event);
 }
 
-std::unordered_map<std::string, uint32_t> PerformanceTracer::getCustomTracks(
-    std::vector<TraceEvent>& events) {
-  std::unordered_map<std::string, uint32_t> trackIdMap;
+std::string PerformanceTracer::serializeTraceEventCategories(
+    TraceEventBase* event) const {
+  std::string result;
 
-  uint32_t nextTrack = USER_TIMINGS_DEFAULT_TRACK + 1;
-  for (auto& event : events) {
-    // Custom tracks are only supported by User Timing "measure" events
-    if (event.type != TraceEventType::MEASURE) {
-      continue;
+  for (const auto& category : event->categories) {
+    switch (category) {
+      case TraceEventCategory::UserTiming:
+        result += "blink.user_timing";
+        break;
+      case TraceEventCategory::TimelineEvent:
+        result += "disabled-by-default-devtools.timeline";
+        break;
+
+      default:
+        throw std::runtime_error("Unknown trace event category");
     }
 
-    if (event.track.has_value() && !trackIdMap.contains(event.track.value())) {
-      auto trackId = nextTrack++;
-      trackIdMap[event.track.value()] = trackId;
-    }
+    result += ",";
   }
 
-  return trackIdMap;
+  if (result.length() > 0) {
+    result.pop_back();
+  }
+
+  return result;
 }
 
 folly::dynamic PerformanceTracer::serializeTraceEvent(
-    TraceEvent& event,
-    std::unordered_map<std::string, uint32_t>& customTrackIdMap) const {
+    TraceEventBase* event) const {
   folly::dynamic result = folly::dynamic::object;
 
-  result["args"] = folly::dynamic::object();
-  result["cat"] = "blink.user_timing";
-  result["name"] = event.name;
-  result["pid"] = PID;
-  result["ts"] = event.start;
+  result["name"] = event->name;
+  result["cat"] = serializeTraceEventCategories(event);
+  result["args"] = event->args;
+  result["ts"] = event->timestamp;
+  result["pid"] = event->processId;
+  result["tid"] = event->threadId;
 
-  switch (event.type) {
-    case TraceEventType::MARK:
+  switch (event->type) {
+    case TraceEventType::Instant:
       result["ph"] = "I";
-      result["tid"] = USER_TIMINGS_DEFAULT_TRACK;
+
       break;
-    case TraceEventType::MEASURE:
-      result["dur"] = event.duration;
+
+    case TraceEventType::Complete: {
       result["ph"] = "X";
-      result["tid"] = event.track.has_value()
-          ? customTrackIdMap[event.track.value()]
-          : USER_TIMINGS_DEFAULT_TRACK;
+
+      auto completeEvent = static_cast<CompleteTraceEvent*>(event);
+      result["dur"] = completeEvent->duration;
+
       break;
+    }
+
+    default:
+      throw std::runtime_error("Unknown trace event type");
   }
 
   return result;

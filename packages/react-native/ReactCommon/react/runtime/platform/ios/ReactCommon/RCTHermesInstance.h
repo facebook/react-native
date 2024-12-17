@@ -30,7 +30,7 @@ class RCTHermesInstance : public JSRuntimeFactory {
   std::unique_ptr<JSRuntime> createJSRuntime(
       std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept override;
 
-  ~RCTHermesInstance(){};
+  ~RCTHermesInstance() override{};
 
  private:
   CrashManagerProvider _crashManagerProvider;

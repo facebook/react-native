@@ -15,6 +15,7 @@ import type {
 import type {MixedElement} from 'react';
 
 import getFantomRenderedOutput from './getFantomRenderedOutput';
+import FantomModule from './specs/NativeFantomModule';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 
 let globalSurfaceIdCounter = 1;
@@ -34,7 +35,7 @@ class Root {
 
   render(element: MixedElement) {
     if (!this.#hasRendered) {
-      global.$$JSTesterModuleName$$.startSurface(this.#surfaceId);
+      FantomModule.startSurface(this.#surfaceId);
       this.#hasRendered = true;
     }
 
@@ -42,15 +43,13 @@ class Root {
   }
 
   getMountingLogs(): Array<string> {
-    return global.$$JSTesterModuleName$$.getMountingManagerLogs(
-      this.#surfaceId,
-    );
+    return FantomModule.getMountingManagerLogs(this.#surfaceId);
   }
 
   destroy() {
     // TODO: check for leaks.
-    global.$$JSTesterModuleName$$.stopSurface(this.#surfaceId);
-    global.$$JSTesterModuleName$$.flushMessageQueue();
+    FantomModule.stopSurface(this.#surfaceId);
+    FantomModule.flushMessageQueue();
   }
 
   getRenderedOutput(config: RenderOutputConfig = {}): FantomRenderedOutput {
@@ -58,6 +57,17 @@ class Root {
   }
 
   // TODO: add an API to check if all surfaces were deallocated when tests are finished.
+}
+
+const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
+
+/**
+ * Schedules a task to run on the event loop.
+ * If the work loop is running, it will be executed according to its priority.
+ * Otherwise, it will wait in the queue until the work loop runs.
+ */
+export function scheduleTask(task: () => void | Promise<void>) {
+  nativeRuntimeScheduler.unstable_scheduleCallback(DEFAULT_TASK_PRIORITY, task);
 }
 
 let flushingQueue = false;
@@ -70,18 +80,27 @@ let flushingQueue = false;
 export function runTask(task: () => void | Promise<void>) {
   if (flushingQueue) {
     throw new Error(
-      'Nested runTask calls are not allowed. If you want to schedule a task from inside another task, use scheduleTask instead.',
+      'Nested `runTask` calls are not allowed. If you want to schedule a task from inside another task, use `scheduleTask` instead.',
     );
   }
 
-  nativeRuntimeScheduler.unstable_scheduleCallback(
-    schedulerPriorityImmediate,
-    task,
-  );
+  scheduleTask(task);
+  runWorkLoop();
+}
+
+/**
+ * Runs the event loop until all tasks are executed.
+ */
+export function runWorkLoop(): void {
+  if (flushingQueue) {
+    throw new Error(
+      'Cannot start the work loop because it is already running. If you want to schedule a task from inside another task, use `scheduleTask` instead.',
+    );
+  }
 
   try {
     flushingQueue = true;
-    global.$$JSTesterModuleName$$.flushMessageQueue();
+    FantomModule.flushMessageQueue();
   } finally {
     flushingQueue = false;
   }

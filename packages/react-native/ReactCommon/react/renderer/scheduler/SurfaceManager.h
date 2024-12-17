@@ -37,6 +37,11 @@ class SurfaceManager final {
       const LayoutConstraints& layoutConstraints = {},
       const LayoutContext& layoutContext = {}) const noexcept;
 
+  void startEmptySurface(
+      SurfaceId surfaceId,
+      const LayoutConstraints& layoutConstraints = {},
+      const LayoutContext& layoutContext = {}) const noexcept;
+
   void stopSurface(SurfaceId surfaceId) const noexcept;
 
   Size measureSurface(

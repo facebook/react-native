@@ -303,8 +303,12 @@ NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
     auto textShadowOffset = textAttributes.textShadowOffset.value();
     NSShadow *shadow = [NSShadow new];
     shadow.shadowOffset = CGSize{textShadowOffset.width, textShadowOffset.height};
-    shadow.shadowBlurRadius = textAttributes.textShadowRadius;
-    shadow.shadowColor = RCTUIColorFromSharedColor(textAttributes.textShadowColor);
+    if (!isnan(textAttributes.textShadowRadius)) {
+      shadow.shadowBlurRadius = textAttributes.textShadowRadius;
+    }
+    if (textAttributes.textShadowColor) {
+      shadow.shadowColor = RCTUIColorFromSharedColor(textAttributes.textShadowColor);
+    }
     attributes[NSShadowAttributeName] = shadow;
   }
 

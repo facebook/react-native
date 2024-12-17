@@ -22,16 +22,78 @@ namespace facebook::react::jsinspector_modern {
 // design is copied from earlier FuseboxTracer prototype).
 
 enum class TraceEventType {
-  MARK = 1,
-  MEASURE = 2,
+  Instant,
+  Complete,
 };
 
-struct TraceEvent {
-  TraceEventType type;
+enum class TraceEventCategory {
+  UserTiming,
+  TimelineEvent,
+};
+
+/*
+ * Based on the out-of-date "Trace Event Format" document from Google and our
+ * findings while reverse engineering the contract between Chrome and Chrome
+ * DevTools.
+
+ * https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview?pli=1&tab=t.0#heading=h.yr4qxyxotyw
+*/
+struct TraceEventBase {
   std::string name;
-  uint64_t start;
-  uint64_t duration = 0;
-  std::optional<std::string> track;
+  std::vector<TraceEventCategory> categories;
+  TraceEventType type;
+  uint64_t timestamp;
+  uint64_t processId;
+  uint64_t threadId;
+  folly::dynamic args = folly::dynamic::object();
+};
+
+template <TraceEventType T>
+struct TraceEvent : public TraceEventBase {
+  TraceEvent(
+      std::string name,
+      std::vector<TraceEventCategory> categories,
+      uint64_t timestamp,
+      uint64_t processId,
+      uint64_t threadId)
+      : TraceEventBase{
+            std::move(name),
+            std::move(categories),
+            T,
+            timestamp,
+            processId,
+            threadId} {}
+};
+
+struct CompleteTraceEvent : public TraceEvent<TraceEventType::Complete> {
+  uint64_t duration;
+
+  CompleteTraceEvent(
+      std::string name,
+      std::vector<TraceEventCategory> categories,
+      uint64_t timestamp,
+      uint64_t processId,
+      uint64_t threadId,
+      uint64_t duration)
+      : TraceEvent<
+            TraceEventType::
+                Complete>{std::move(name), std::move(categories), timestamp, processId, threadId},
+        duration(duration) {}
+};
+
+struct InstantTraceEvent : public TraceEvent<TraceEventType::Instant> {
+  InstantTraceEvent(
+      std::string name,
+      std::vector<TraceEventCategory> categories,
+      uint64_t timestamp,
+      uint64_t processId,
+      uint64_t threadId)
+      : TraceEvent<TraceEventType::Instant>{
+            std::move(name),
+            std::move(categories),
+            timestamp,
+            processId,
+            threadId} {}
 };
 
 /**
@@ -83,14 +145,12 @@ class PerformanceTracer {
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
 
-  std::unordered_map<std::string, uint32_t> getCustomTracks(
-      std::vector<TraceEvent>& events);
-  folly::dynamic serializeTraceEvent(
-      TraceEvent& event,
-      std::unordered_map<std::string, uint32_t>& customTrackIdMap) const;
+  std::string serializeTraceEventCategories(TraceEventBase* event) const;
+  folly::dynamic serializeTraceEvent(TraceEventBase* event) const;
 
   bool tracing_{false};
-  std::vector<TraceEvent> buffer_;
+  std::unordered_map<std::string, uint64_t> customTrackIdMap_;
+  std::vector<TraceEventBase*> buffer_;
   std::mutex mutex_;
 };
 

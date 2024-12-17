@@ -1316,8 +1316,7 @@ static void calculateShadowViewMutations(
           DEBUG_LOGS({
             LOG(ERROR) << "Differ Branch 5: Founded reordered tags at indices: "
                        << oldIndex << ": " << oldChildPair << " and "
-                       << newChildPair << " with parent: ["
-                       << parentShadowView.tag << "]";
+                       << newChildPair << " with parent: [" << parentTag << "]";
           });
 
           updateMatchedPair(

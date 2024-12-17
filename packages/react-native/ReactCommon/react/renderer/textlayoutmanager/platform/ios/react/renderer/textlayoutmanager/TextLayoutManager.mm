@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "TextLayoutManager.h"
-#include <react/renderer/telemetry/TransactionTelemetry.h>
-#include <react/utils/ManagedObjectWrapper.h>
-
+#import "TextLayoutManager.h"
 #import "RCTTextLayoutManager.h"
+
+#import <react/renderer/telemetry/TransactionTelemetry.h>
+#import <react/utils/ManagedObjectWrapper.h>
 
 namespace facebook::react {
 
@@ -103,20 +103,6 @@ LinesMeasurements TextLayoutManager::measureLines(
       });
 
   return measurement;
-}
-
-Float TextLayoutManager::baseline(
-    const AttributedStringBox &attributedStringBox,
-    const ParagraphAttributes &paragraphAttributes,
-    const Size &size) const
-{
-  auto lines = this->measureLines(attributedStringBox, paragraphAttributes, size);
-
-  if (!lines.empty()) {
-    return lines[0].ascender;
-  } else {
-    return 0;
-  }
 }
 
 } // namespace facebook::react

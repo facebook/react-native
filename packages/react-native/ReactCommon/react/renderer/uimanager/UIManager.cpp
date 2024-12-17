@@ -242,6 +242,11 @@ void UIManager::startSurface(
   });
 }
 
+void UIManager::startEmptySurface(ShadowTree::Unique&& shadowTree) const {
+  SystraceSection s("UIManager::startEmptySurface");
+  shadowTreeRegistry_.add(std::move(shadowTree));
+}
+
 void UIManager::setSurfaceProps(
     SurfaceId surfaceId,
     const std::string& moduleName,

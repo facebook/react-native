@@ -21,13 +21,17 @@ inputs:
     required: false
     default: "."
     description: The directory from which metro should be started
+  architecture:
+    required: false
+    default: "NewArch"
+    description: The react native architecture to test
 
 runs:
   using: composite
   steps:
     - name: Installing Maestro
       shell: bash
-      run: export MAESTRO_VERSION=1.36.0; curl -Ls "https://get.maestro.mobile.dev" | bash
+      run: export MAESTRO_VERSION=1.39.5; curl -Ls "https://get.maestro.mobile.dev" | bash
     - name: Installing Maestro dependencies
       shell: bash
       run: |
@@ -86,8 +90,6 @@ runs:
           CURR_ATTEMPT=$((CURR_ATTEMPT+1))
           echo "Attempt number $CURR_ATTEMPT"
 
-
-
           echo "Start video record using pid: video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid"
           xcrun simctl io booted recordVideo video_record_$CURR_ATTEMPT.mov & echo $! > video_record_${{ inputs.jsengine }}_$CURR_ATTEMPT.pid
 
@@ -105,7 +107,7 @@ runs:
       if: always()
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}
+        name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}_${{ inputs.architecture }}
         path: |
           video_record_1.mov
           video_record_2.mov
@@ -117,5 +119,5 @@ runs:
       if: failure() && steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
+        name: maestro-logs-${{ inputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.architecture }}
         path: /tmp/MaestroLogs

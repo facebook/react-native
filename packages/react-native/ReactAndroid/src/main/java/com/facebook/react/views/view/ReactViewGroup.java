@@ -137,7 +137,7 @@ public class ReactViewGroup extends ViewGroup
   private boolean mNeedsOffscreenAlphaCompositing;
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private float mBackfaceOpacity;
-  private String mBackfaceVisibility;
+  private boolean mBackfaceVisible;
   private @Nullable Set<Integer> mChildrenRemovedWhileTransitioning;
 
   /**
@@ -172,7 +172,7 @@ public class ReactViewGroup extends ViewGroup
     mNeedsOffscreenAlphaCompositing = false;
     mDrawingOrderHelper = null;
     mBackfaceOpacity = 1.f;
-    mBackfaceVisibility = "visible";
+    mBackfaceVisible = true;
     mChildrenRemovedWhileTransitioning = null;
   }
 
@@ -610,7 +610,7 @@ public class ReactViewGroup extends ViewGroup
       Object tag = child.getTag(R.id.view_clipped);
       if (!expectedTag.equals(tag)) {
         ReactSoftExceptionLogger.logSoftException(
-            "ReactViewGroup.onViewRemoved",
+            ReactSoftExceptionLogger.Categories.RVG_ON_VIEW_REMOVED,
             new ReactNoCrashSoftException(
                 "View clipping tag mismatch: tag=" + tag + " expected=" + expectedTag));
       }
@@ -777,7 +777,7 @@ public class ReactViewGroup extends ViewGroup
     boolean transitioning = isChildRemovedWhileTransitioning(view);
     if (index != null) {
       ReactSoftExceptionLogger.logSoftException(
-          "ReactViewGroup.isViewClipped",
+          ReactSoftExceptionLogger.Categories.RVG_IS_VIEW_CLIPPED,
           new ReactNoCrashSoftException(
               "View missing clipping tag: index="
                   + index
@@ -989,14 +989,12 @@ public class ReactViewGroup extends ViewGroup
   }
 
   public void setBackfaceVisibility(String backfaceVisibility) {
-    mBackfaceVisibility = backfaceVisibility;
+    mBackfaceVisible = "visible".equals(backfaceVisibility);
     setBackfaceVisibilityDependantOpacity();
   }
 
   public void setBackfaceVisibilityDependantOpacity() {
-    boolean isBackfaceVisible = mBackfaceVisibility.equals("visible");
-
-    if (isBackfaceVisible) {
+    if (mBackfaceVisible) {
       setAlpha(mBackfaceOpacity);
       return;
     }

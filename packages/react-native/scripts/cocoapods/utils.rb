@@ -105,6 +105,7 @@ class ReactNativePodsUtils
                     config.build_settings["LD"] = ccache_clang_sh
                     config.build_settings["CXX"] = ccache_clangpp_sh
                     config.build_settings["LDPLUSPLUS"] = ccache_clangpp_sh
+                    config.build_settings["CCACHE_BINARY"] = ccache_path
                 end
 
                 project.save()

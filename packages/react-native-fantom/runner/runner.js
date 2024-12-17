@@ -19,7 +19,7 @@ import {
   updateSnapshotsAndGetJestSnapshotResult,
 } from './snapshotUtils';
 import {
-  getBuckModeForPlatform,
+  getBuckModesForPlatform,
   getDebugInfoFromCommandResult,
   getShortHash,
   runBuck2,
@@ -33,7 +33,11 @@ import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
-const BUILD_OUTPUT_PATH = path.resolve(__dirname, '..', 'build');
+const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build');
+fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
+const BUILD_OUTPUT_PATH = fs.mkdtempSync(
+  path.join(BUILD_OUTPUT_ROOT, `run-${Date.now()}-`),
+);
 
 const PRINT_FANTOM_OUTPUT: false = false;
 
@@ -76,7 +80,7 @@ function generateBytecodeBundle({
   const hermesCompilerCommandResult = runBuck2(
     [
       'run',
-      getBuckModeForPlatform(isOptimizedMode),
+      ...getBuckModesForPlatform(isOptimizedMode),
       '//xplat/hermes/tools/hermesc:hermesc',
       '--',
       '-emit-binary',
@@ -178,7 +182,9 @@ module.exports = async function runTest(
 
   const rnTesterCommandResult = runBuck2([
     'run',
-    getBuckModeForPlatform(testConfig.mode === FantomTestConfigMode.Optimized),
+    ...getBuckModesForPlatform(
+      testConfig.mode === FantomTestConfigMode.Optimized,
+    ),
     '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
     '--',
     '--bundlePath',
@@ -187,6 +193,8 @@ module.exports = async function runTest(
       : testBytecodeBundlePath,
     '--featureFlags',
     JSON.stringify(testConfig.flags.common),
+    '--minLogLevel',
+    PRINT_FANTOM_OUTPUT ? 'info' : 'error',
   ]);
 
   if (rnTesterCommandResult.status !== 0) {
