@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager
 
 /** A task to execute on the UI View for third party libraries. */
-public interface UIBlock {
-  public void execute(NativeViewHierarchyManager nativeViewHierarchyManager);
+public fun interface UIBlock {
+  public fun execute(nativeViewHierarchyManager: NativeViewHierarchyManager?): Unit
 }
