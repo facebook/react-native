@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6be37ce8729f305b92161c7263366c7b>>
+ * @generated SignedSource<<602a276d3608f5ddfe93bb19dd256703>>
  */
 
 /**
@@ -51,6 +51,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableImagePrefetchingAndroid();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
+  bool enableLineHeightCenteringOnIOS();
   bool enableLongTaskAPI();
   bool enableNewBackgroundAndBorderDrawables();
   bool enablePreciseSchedulingForPremountItemsOnAndroid();
@@ -90,7 +91,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 48> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
@@ -111,6 +112,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
+  std::atomic<std::optional<bool>> enableLineHeightCenteringOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableNewBackgroundAndBorderDrawables_;
   std::atomic<std::optional<bool>> enablePreciseSchedulingForPremountItemsOnAndroid_;
