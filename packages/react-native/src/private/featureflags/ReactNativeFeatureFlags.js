@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<879d22c513f9b674d8eac1a83168050f>>
+ * @generated SignedSource<<28e95997f6c1b3b3ffcf140995f31b19>>
  * @flow strict
  */
 
@@ -70,7 +70,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableImagePrefetchingAndroid: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
-  enableLineHeightCenteringOnAndroid: Getter<boolean>,
   enableLineHeightCenteringOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
@@ -267,10 +266,6 @@ export const enableLayoutAnimationsOnAndroid: Getter<boolean> = createNativeFlag
  * When enabled, LayoutAnimations API will animate state changes on iOS.
  */
 export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnIOS', true);
-/**
- * When enabled, custom line height calculation will be centered from top to bottom.
- */
-export const enableLineHeightCenteringOnAndroid: Getter<boolean> = createNativeFlagGetter('enableLineHeightCenteringOnAndroid', false);
 /**
  * When enabled, custom line height calculation will be centered from top to bottom.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e5a3a51d3f1ee579fdfef334deb0fa90>>
+ * @generated SignedSource<<66b588a5565d6754770f80217439e264>>
  */
 
 /**
@@ -141,12 +141,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
-
-  /**
-   * When enabled, custom line height calculation will be centered from top to bottom.
-   */
-  @JvmStatic
-  public fun enableLineHeightCenteringOnAndroid(): Boolean = accessor.enableLineHeightCenteringOnAndroid()
 
   /**
    * When enabled, custom line height calculation will be centered from top to bottom.

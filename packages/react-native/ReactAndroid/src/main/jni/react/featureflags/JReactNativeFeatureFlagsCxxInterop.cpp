@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<76e63ea2c6be0ceb9fb6f5b93f32a9ff>>
+ * @generated SignedSource<<66937421c377ea4574044fd80eaf3562>>
  */
 
 /**
@@ -150,12 +150,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableLayoutAnimationsOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnIOS");
-    return method(javaProvider_);
-  }
-
-  bool enableLineHeightCenteringOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLineHeightCenteringOnAndroid");
     return method(javaProvider_);
   }
 
@@ -432,11 +426,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableLineHeightCenteringOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableLineHeightCenteringOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableLineHeightCenteringOnIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS();
@@ -670,9 +659,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableLayoutAnimationsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS),
-      makeNativeMethod(
-        "enableLineHeightCenteringOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::enableLineHeightCenteringOnAndroid),
       makeNativeMethod(
         "enableLineHeightCenteringOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLineHeightCenteringOnIOS),
