@@ -33,7 +33,11 @@ import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
-const BUILD_OUTPUT_PATH = path.resolve(__dirname, '..', 'build');
+const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build');
+fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
+const BUILD_OUTPUT_PATH = fs.mkdtempSync(
+  path.join(BUILD_OUTPUT_ROOT, `run-${Date.now()}-`),
+);
 
 const PRINT_FANTOM_OUTPUT: false = false;
 
