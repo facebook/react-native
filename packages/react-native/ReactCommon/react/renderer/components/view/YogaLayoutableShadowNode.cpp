@@ -492,8 +492,19 @@ void YogaLayoutableShadowNode::configureYogaTree(
 
     if (doesOwn(child)) {
       auto& mutableChild = const_cast<YogaLayoutableShadowNode&>(child);
+      // Child nodes can dynamically change their RTL direction
+      bool scopedSwapLeftAndRight = swapLeftAndRight;
+      const auto direction = child.yogaNode_.style().direction();
+      if (direction == yoga::Direction::LTR) {
+        scopedSwapLeftAndRight = false;
+      } else if (direction == yoga::Direction::RTL) {
+        scopedSwapLeftAndRight = true;
+      }
       mutableChild.configureYogaTree(
-          pointScaleFactor, child.resolveErrata(errata), swapLeftAndRight);
+          pointScaleFactor,
+          child.resolveErrata(errata),
+          scopedSwapLeftAndRight);
+
     } else {
       cloneChildInPlace(i).configureYogaTree(
           pointScaleFactor, errata, swapLeftAndRight);
