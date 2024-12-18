@@ -8908,11 +8908,6 @@ declare module.exports: TBackHandler;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Utilities/DebugEnvironment.js 1`] = `
-"declare export let isAsyncDebugging: boolean;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Utilities/DevLoadingView.js 1`] = `
 "declare module.exports: {
   showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,

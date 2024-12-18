@@ -17,7 +17,6 @@ export interface Spec extends TurboModule {
   +reloadWithReason?: (reason: string) => void;
   +onFastRefresh?: () => void;
   +setHotLoadingEnabled: (isHotLoadingEnabled: boolean) => void;
-  +setIsDebuggingRemotely: (isDebuggingRemotelyEnabled: boolean) => void;
   +setProfilingEnabled: (isProfilingEnabled: boolean) => void;
   +toggleElementInspector: () => void;
   +addMenuItem: (title: string) => void;
