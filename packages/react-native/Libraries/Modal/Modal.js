@@ -261,7 +261,7 @@ class Modal extends React.Component<Props, State> {
   // Helper function to encapsulate platform specific logic to show or not the Modal.
   _shouldShowModal(): boolean {
     if (Platform.OS === 'ios') {
-      return this.props.visible === true || this.state.isRendered === true;
+      return this.state.isRendered === true;
     }
 
     return this.props.visible === true;
