@@ -530,9 +530,8 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   return NO;
 }
 
-- (ScrollViewEventEmitter::Metrics)_scrollViewMetrics
+- (void)_setScrollViewMetrics:(ScrollViewEventEmitter::Metrics &)metrics
 {
-  auto metrics = ScrollViewEventEmitter::Metrics{};
   metrics.contentSize = RCTSizeFromCGSize(_scrollView.contentSize);
   metrics.contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
   metrics.contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset);
@@ -543,6 +542,12 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
     metrics.contentOffset.x = metrics.contentSize.width - metrics.containerSize.width - metrics.contentOffset.x;
   }
+}
+
+- (ScrollViewEventEmitter::Metrics)_scrollViewMetrics
+{
+  auto metrics = ScrollViewEventEmitter::Metrics{};
+  [self _setScrollViewMetrics:metrics];
 
   return metrics;
 }
@@ -602,6 +607,19 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       targetContentOffset->y = scrollView.contentOffset.y + travel * _endDraggingSensitivityMultiplier;
     }
   }
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  auto metrics = ScrollViewEventEmitter::EndDragMetrics{};
+  [self _setScrollViewMetrics:metrics];
+  metrics.targetContentOffset.x = targetContentOffset->x;
+  metrics.targetContentOffset.y = targetContentOffset->y;
+  metrics.velocity.x = velocity.x;
+  metrics.velocity.y = velocity.y;
+
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag(metrics);
 }
 
 - (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
@@ -671,8 +689,6 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   if (!_eventEmitter) {
     return;
   }
-
-  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag([self _scrollViewMetrics]);
 
   [self _updateStateWithContentOffset];
 
@@ -770,7 +786,10 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     return;
   }
 
-  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag([self _scrollViewMetrics]);
+  auto metrics = ScrollViewEventEmitter::EndDragMetrics{};
+  [self _setScrollViewMetrics:metrics];
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag(metrics);
+
   [self _updateStateWithContentOffset];
 }
 
