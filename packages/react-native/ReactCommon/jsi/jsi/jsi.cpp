@@ -167,6 +167,15 @@ std::u16string convertUTF8ToUTF16(const std::string& utf8) {
 
 Buffer::~Buffer() = default;
 
+StringBuffer::~StringBuffer() = default;
+
+size_t StringBuffer::size() const {
+  return s_.size();
+}
+const uint8_t* StringBuffer::data() const {
+  return reinterpret_cast<const uint8_t*>(s_.data());
+}
+
 MutableBuffer::~MutableBuffer() = default;
 
 PreparedJavaScript::~PreparedJavaScript() = default;
