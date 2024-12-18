@@ -171,6 +171,15 @@ export type Props = $ReadOnly<{|
    * Defaults to `white` if not provided and transparent is `false`. Ignored if `transparent` is `true`.
    */
   backdropColor?: ?string,
+
+  /**
+   * The `dismissOnSwipeDown` prop determines whether the modal can be dismissed
+   * by swiping down. This is only supported when the `presentationStyle`
+   * is set to `pageSheet` or `formSheet`. Defaults to `false`.
+   *
+   * @platform ios
+   */
+  dismissOnSwipeDown?: ?boolean,
 |}>;
 
 function confirmProps(props: Props) {
@@ -324,6 +333,7 @@ class Modal extends React.Component<Props, State> {
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}
+        dismissOnSwipeDown={this.props.dismissOnSwipeDown}
         testID={this.props.testID}>
         <VirtualizedListContextResetter>
           <ScrollView.Context.Provider value={null}>

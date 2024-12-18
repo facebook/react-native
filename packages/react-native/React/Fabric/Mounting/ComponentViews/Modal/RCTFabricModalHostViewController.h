@@ -9,6 +9,7 @@
 
 @protocol RCTFabricModalHostViewControllerDelegate <NSObject>
 - (void)boundsDidChange:(CGRect)newBounds;
+- (void)modalHostViewControllerDidDismiss;
 @end
 
 @interface RCTFabricModalHostViewController : UIViewController

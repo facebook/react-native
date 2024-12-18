@@ -93,6 +93,9 @@ public class ReactModalHostManager :
   @ReactProp(name = "identifier")
   public override fun setIdentifier(view: ReactModalHostView, value: Int): Unit = Unit
 
+  @ReactProp(name = "dismissOnSwipeDown")
+  public override fun setDismissOnSwipeDown(view: ReactModalHostView, value: Boolean): Unit = Unit
+
   protected override fun addEventEmitters(
       reactContext: ThemedReactContext,
       view: ReactModalHostView
