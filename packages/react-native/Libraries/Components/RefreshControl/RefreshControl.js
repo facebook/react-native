@@ -34,6 +34,18 @@ type IOSProps = $ReadOnly<{|
    * The title displayed under the refresh indicator.
    */
   title?: ?string,
+  /**
+   * Title font family.
+   */
+  titleFontFamily?: ?string,
+  /**
+   * Title font size.
+   */
+  titleFontSize?: ?number,
+  /**
+   * Title title font weight.
+   */
+  titleFontWeight?: ?string,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
