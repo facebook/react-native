@@ -431,4 +431,8 @@ export type CompleteTypeAnnotation =
   | NullableTypeAnnotation<NativeModuleTypeAnnotation>
   | EventEmitterTypeAnnotation
   | NativeModuleEnumDeclarationWithMembers
-  | UnsafeAnyTypeAnnotation;
+  | UnsafeAnyTypeAnnotation
+  // Native Module event emitters and methods
+  | ObjectTypeAnnotation<
+      Nullable<NativeModuleFunctionTypeAnnotation> | EventEmitterTypeAnnotation,
+    >;
