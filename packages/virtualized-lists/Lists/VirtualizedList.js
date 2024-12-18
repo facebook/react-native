@@ -1132,6 +1132,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
                 !horizontalOrDefault(this.props.horizontal) &&
               !this._hasWarned.nesting &&
               this.context == null &&
+              scrollContext.scrollEnabled !== false &&
               this.props.scrollEnabled !== false
             ) {
               console.error(
