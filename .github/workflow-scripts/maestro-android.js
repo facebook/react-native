@@ -113,15 +113,15 @@ async function main() {
   console.info(`Start testing ${MAESTRO_FLOW}`);
   let error = null;
   try {
-
     //check if MAESTRO_FLOW is a folder
-    if (fs.existsSync(MAESTRO_FLOW) && fs.lstatSync(MAESTRO_FLOW).isDirectory()) {
+    if (
+      fs.existsSync(MAESTRO_FLOW) &&
+      fs.lstatSync(MAESTRO_FLOW).isDirectory()
+    ) {
       await executeFlowInFolder(MAESTRO_FLOW);
     } else {
       await executeFlowWithRetries(MAESTRO_FLOW, 0);
     }
-
-
   } catch (err) {
     error = err;
   } finally {
