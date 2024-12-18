@@ -24,6 +24,17 @@ export function getImageSourcesFromImageProps(
 ): ?ResolvedAssetSource | $ReadOnlyArray<{uri: string, ...}> {
   let source = resolveAssetSource(imageProps.source);
 
+  if (
+    typeof source === 'object' &&
+    source != null &&
+    source.headers instanceof Headers
+  ) {
+    source = {
+      ...source,
+      headers: Object.fromEntries<string, string>(source.headers.entries()),
+    };
+  }
+
   let sources;
 
   const {crossOrigin, referrerPolicy, src, srcSet, width, height} = imageProps;
