@@ -43,6 +43,9 @@ struct ScrollEndDragEvent : public ScrollEvent {
 
   ScrollEndDragEvent() = default;
 
+  ScrollEndDragEvent(const ScrollEvent& scrollEvent)
+      : ScrollEvent(scrollEvent), targetContentOffset({}), velocity({}) {}
+
   folly::dynamic asDynamic() const;
 
   /*

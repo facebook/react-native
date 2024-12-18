@@ -530,8 +530,9 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   return NO;
 }
 
-- (void)_setScrollViewMetrics:(ScrollViewEventEmitter::Metrics &)metrics
+- (ScrollViewEventEmitter::Metrics)_scrollViewMetrics
 {
+  auto metrics = ScrollViewEventEmitter::Metrics{};
   metrics.contentSize = RCTSizeFromCGSize(_scrollView.contentSize);
   metrics.contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
   metrics.contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset);
@@ -542,13 +543,18 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
     metrics.contentOffset.x = metrics.contentSize.width - metrics.containerSize.width - metrics.contentOffset.x;
   }
+
+  return metrics;
 }
 
-- (ScrollViewEventEmitter::Metrics)_scrollViewMetrics
+- (ScrollViewEventEmitter::EndDragMetrics)_scrollViewMetricsWithVelocity:(CGPoint)velocity
+                                                  andTargetContentOffset:(CGPoint)targetContentOffset
 {
-  auto metrics = ScrollViewEventEmitter::Metrics{};
-  [self _setScrollViewMetrics:metrics];
-
+  ScrollViewEventEmitter::EndDragMetrics metrics = [self _scrollViewMetrics];
+  metrics.targetContentOffset.x = targetContentOffset.x;
+  metrics.targetContentOffset.y = targetContentOffset.y;
+  metrics.velocity.x = velocity.x;
+  metrics.velocity.y = velocity.y;
   return metrics;
 }
 
@@ -612,12 +618,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     return;
   }
 
-  auto metrics = ScrollViewEventEmitter::EndDragMetrics{};
-  [self _setScrollViewMetrics:metrics];
-  metrics.targetContentOffset.x = targetContentOffset->x;
-  metrics.targetContentOffset.y = targetContentOffset->y;
-  metrics.velocity.x = velocity.x;
-  metrics.velocity.y = velocity.y;
+  auto metrics = [self _scrollViewMetricsWithVelocity:velocity andTargetContentOffset:*targetContentOffset];
 
   static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag(metrics);
 }
@@ -786,8 +787,7 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     return;
   }
 
-  auto metrics = ScrollViewEventEmitter::EndDragMetrics{};
-  [self _setScrollViewMetrics:metrics];
+  auto metrics = [self _scrollViewMetricsWithVelocity:{} andTargetContentOffset:{}];
   static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag(metrics);
 
   [self _updateStateWithContentOffset];
