@@ -8,14 +8,15 @@
  * @format
  */
 
-import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
 import type {EventSubscription} from '../EventEmitter/NativeEventEmitter';
+import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
 
+import NativeAnimatedHelper from '../../src/private/animated/NativeAnimatedHelper';
+import {useAnimatedPropsMemo} from '../../src/private/animated/useAnimatedPropsMemo';
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
-import NativeAnimatedHelper from '../../src/private/animated/NativeAnimatedHelper';
 import AnimatedNode from './nodes/AnimatedNode';
 import AnimatedProps from './nodes/AnimatedProps';
 import AnimatedValue from './nodes/AnimatedValue';
@@ -28,7 +29,6 @@ import {
   useReducer,
   useRef,
 } from 'react';
-import {useAnimatedPropsMemo} from '../../src/private/animated/useAnimatedPropsMemo';
 
 type ReducedProps<TProps> = {
   ...TProps,
@@ -73,8 +73,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
-  const useSetNativePropsInNativeAnimationsInFabric =
-    ReactNativeFeatureFlags.shouldUseSetNativePropsInNativeAnimationsInFabric();
 
   const useAnimatedPropsLifecycle =
     ReactNativeFeatureFlags.useInsertionEffectsForAnimations()
@@ -119,12 +117,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           if (isFabricNode) {
             // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
             // Must not be called in Paper.
-            if (useSetNativePropsInNativeAnimationsInFabric) {
-              // $FlowFixMe[incompatible-use]
-              instance.setNativeProps(node.__getAnimatedValue());
-            } else {
-              scheduleUpdate();
-            }
+            scheduleUpdate();
           }
           return;
         }
@@ -201,12 +194,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         }
       };
     },
-    [
-      node,
-      useNativePropsInFabric,
-      useSetNativePropsInNativeAnimationsInFabric,
-      props,
-    ],
+    [node, useNativePropsInFabric, props],
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 

@@ -120,7 +120,10 @@ RCT_EXPORT_MODULE(Appearance)
 RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 {
   UIUserInterfaceStyle userInterfaceStyle = [RCTConvert UIUserInterfaceStyle:style];
-  NSArray<__kindof UIWindow *> *windows = RCTSharedApplication().windows;
+  NSMutableArray<UIWindow *> *windows = [NSMutableArray new];
+  for (UIWindowScene *scene in RCTSharedApplication().connectedScenes) {
+    [windows addObjectsFromArray:scene.windows];
+  }
 
   for (UIWindow *window in windows) {
     window.overrideUserInterfaceStyle = userInterfaceStyle;
@@ -130,7 +133,10 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
   if (!sIsAppearancePreferenceSet) {
-    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
+    __block UITraitCollection *traitCollection = nil;
+    RCTUnsafeExecuteOnMainQueueSync(^{
+      traitCollection = RCTKeyWindow().traitCollection;
+    });
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
   }
   return _currentColorScheme;

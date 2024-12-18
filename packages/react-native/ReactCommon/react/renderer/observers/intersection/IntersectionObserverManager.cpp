@@ -19,6 +19,7 @@ void IntersectionObserverManager::observe(
     IntersectionObserverObserverId intersectionObserverId,
     const ShadowNode::Shared& shadowNode,
     std::vector<Float> thresholds,
+    std::optional<std::vector<Float>> rootThresholds,
     const UIManager& uiManager) {
   SystraceSection s("IntersectionObserverManager::observe");
 
@@ -34,7 +35,10 @@ void IntersectionObserverManager::observe(
 
     auto& observers = observersBySurfaceId_[surfaceId];
     observers.emplace_back(IntersectionObserver{
-        intersectionObserverId, shadowNode, std::move(thresholds)});
+        intersectionObserverId,
+        shadowNode,
+        std::move(thresholds),
+        std::move(rootThresholds)});
     observer = &observers.back();
   }
 
@@ -43,7 +47,7 @@ void IntersectionObserverManager::observe(
   // (like on the Web) and we'd send the initial notification there, but as
   // we don't have it we have to run this check once and manually dispatch.
   auto& shadowTreeRegistry = uiManager.getShadowTreeRegistry();
-  MountingCoordinator::Shared mountingCoordinator = nullptr;
+  std::shared_ptr<const MountingCoordinator> mountingCoordinator = nullptr;
   RootShadowNode::Shared rootShadowNode = nullptr;
   shadowTreeRegistry.visit(surfaceId, [&](const ShadowTree& shadowTree) {
     mountingCoordinator = shadowTree.getMountingCoordinator();

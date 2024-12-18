@@ -17,7 +17,6 @@
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowTreeRevision.h>
 #include <react/renderer/mounting/TelemetryController.h>
-#include "ShadowTreeRevision.h"
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <react/renderer/mounting/stubs/stubs.h>
@@ -34,8 +33,6 @@ namespace facebook::react {
  */
 class MountingCoordinator final {
  public:
-  using Shared = std::shared_ptr<const MountingCoordinator>;
-
   /*
    * The constructor is meant to be used only inside `ShadowTree`, and it's
    * `public` only to enable using with `std::make_shared<>`.

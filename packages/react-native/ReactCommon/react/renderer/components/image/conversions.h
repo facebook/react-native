@@ -148,6 +148,8 @@ inline void fromRawValue(
     result = ImageResizeMode::Center;
   } else if (stringValue == "repeat") {
     result = ImageResizeMode::Repeat;
+  } else if (stringValue == "none") {
+    result = ImageResizeMode::None;
   } else {
     LOG(ERROR) << "Unsupported ImageResizeMode value: " << stringValue;
     react_native_expect(false);
@@ -168,6 +170,8 @@ inline std::string toString(const ImageResizeMode& value) {
       return "center";
     case ImageResizeMode::Repeat:
       return "repeat";
+    case ImageResizeMode::None:
+      return "none";
   }
 }
 

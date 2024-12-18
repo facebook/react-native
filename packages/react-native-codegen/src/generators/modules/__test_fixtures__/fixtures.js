@@ -163,11 +163,17 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'ONE',
-              value: '1',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 1,
+              },
             },
             {
               name: 'TWO',
-              value: '2',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 2,
+              },
             },
           ],
         },
@@ -178,15 +184,24 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'POINT_ZERO',
-              value: '0.0',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 0.0,
+              },
             },
             {
               name: 'POINT_ONE',
-              value: '0.1',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 0.1,
+              },
             },
             {
               name: 'POINT_TWO',
-              value: '0.2',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 0.2,
+              },
             },
           ],
         },
@@ -197,11 +212,17 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'HELLO',
-              value: 'hello',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'hello',
+              },
             },
             {
               name: 'GoodBye',
-              value: 'goodbye',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'goodbye',
+              },
             },
           ],
         },
@@ -453,6 +474,9 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -472,6 +496,9 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -490,7 +517,9 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
             typeAnnotation: {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
-                type: 'StringTypeAnnotation',
+                name: 'StringEnum',
+                type: 'EnumDeclaration',
+                memberType: 'StringTypeAnnotation',
               },
               params: [
                 {
@@ -1365,6 +1394,9 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -1385,6 +1417,9 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -1411,6 +1446,9 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
               type: 'FunctionTypeAnnotation',
               returnTypeAnnotation: {
                 type: 'PromiseTypeAnnotation',
+                elementType: {
+                  type: 'VoidTypeAnnotation',
+                },
               },
               params: [
                 {
@@ -1700,6 +1738,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
 
 const CXX_ONLY_NATIVE_MODULES: SchemaType = {
   modules: {
+    // $FlowFixMe[incompatible-type]
     NativeSampleTurboModule: {
       type: 'NativeModule',
       aliasMap: {
@@ -1908,11 +1947,17 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'IA',
-              value: '23',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 23,
+              },
             },
             {
               name: 'IB',
-              value: '42',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 42,
+              },
             },
           ],
         },
@@ -1923,11 +1968,17 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'FA',
-              value: '1.23',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 1.23,
+              },
             },
             {
               name: 'FB',
-              value: '4.56',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 4.56,
+              },
             },
           ],
         },
@@ -1938,11 +1989,17 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'NA',
-              value: 'NA',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'NA',
+              },
             },
             {
               name: 'NB',
-              value: 'NB',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'NB',
+              },
             },
           ],
         },
@@ -1953,11 +2010,17 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'SA',
-              value: 's---a',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 's---a',
+              },
             },
             {
               name: 'SB',
-              value: 's---b',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 's---b',
+              },
             },
           ],
         },
@@ -2302,6 +2365,23 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
                   },
                 },
                 {
+                  name: 'y-literal',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralUnionTypeAnnotation',
+                    types: [
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'foo',
+                      },
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'bar',
+                      },
+                    ],
+                  },
+                },
+                {
                   name: 'z',
                   optional: false,
                   typeAnnotation: {
@@ -2560,6 +2640,133 @@ const SAMPLE_WITH_UPPERCASE_NAME: SchemaType = {
   },
 };
 
+const UNION_MODULE: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        eventEmitters: [],
+        methods: [
+          {
+            name: 'getUnion',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'UnionTypeAnnotation',
+                memberType: 'ObjectTypeAnnotation',
+              },
+              params: [
+                {
+                  name: 'chooseInt',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseFloat',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'NumberTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseObject',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'ObjectTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseString',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'UnionTypeAnnotation',
+                    memberType: 'StringTypeAnnotation',
+                  },
+                },
+                {
+                  name: 'chooseStringLiteral',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralUnionTypeAnnotation',
+                    types: [
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'foo',
+                      },
+                      {
+                        type: 'StringLiteralTypeAnnotation',
+                        value: 'bar',
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
+const STRING_LITERALS: SchemaType = {
+  modules: {
+    NativeSampleTurboModule: {
+      type: 'NativeModule',
+      aliasMap: {},
+      enumMap: {},
+      spec: {
+        eventEmitters: [
+          {
+            name: 'literalEvent',
+            optional: false,
+            typeAnnotation: {
+              type: 'EventEmitterTypeAnnotation',
+              typeAnnotation: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'A String Literal Event',
+              },
+            },
+          },
+        ],
+        methods: [
+          {
+            name: 'getStringLiteral',
+            optional: false,
+            typeAnnotation: {
+              type: 'FunctionTypeAnnotation',
+              returnTypeAnnotation: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'A String Literal Return',
+              },
+              params: [
+                {
+                  name: 'literalParam',
+                  optional: false,
+                  typeAnnotation: {
+                    type: 'StringLiteralTypeAnnotation',
+                    value: 'A String Literal Param',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+      moduleName: 'SampleTurboModule',
+    },
+  },
+};
+
 module.exports = {
   complex_objects: COMPLEX_OBJECTS,
   two_modules_different_files: TWO_MODULES_DIFFERENT_FILES,
@@ -2570,4 +2777,6 @@ module.exports = {
   real_module_example: REAL_MODULE_EXAMPLE,
   cxx_only_native_modules: CXX_ONLY_NATIVE_MODULES,
   SampleWithUppercaseName: SAMPLE_WITH_UPPERCASE_NAME,
+  union_module: UNION_MODULE,
+  string_literals: STRING_LITERALS,
 };

@@ -25,7 +25,6 @@ import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -609,6 +608,8 @@ public class UIViewOperationQueue {
     return mNativeViewHierarchyManager;
   }
 
+  // NOTE: When converted to Kotlin this method should be `internal` due to
+  // visibility restriction for `NotThreadSafeViewHierarchyUpdateDebugListener`
   public void setViewHierarchyUpdateDebugListener(
       @Nullable NotThreadSafeViewHierarchyUpdateDebugListener listener) {
     mViewHierarchyUpdateDebugListener = listener;
@@ -956,10 +957,8 @@ public class UIViewOperationQueue {
 
   /* package */ void resumeFrameCallback() {
     mIsDispatchUIFrameCallbackEnqueued = true;
-    if (!ReactNativeFeatureFlags.enableFabricRendererExclusively()) {
-      ReactChoreographer.getInstance()
-          .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
-    }
+    ReactChoreographer.getInstance()
+        .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
   }
 
   /* package */ void pauseFrameCallback() {

@@ -8,7 +8,6 @@
 package com.facebook.react.bridge
 
 import com.facebook.infer.annotation.Assertions
-import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
 
 /**
@@ -16,7 +15,11 @@ import com.facebook.proguard.annotations.DoNotStrip
  * to stub out creating this class in a test. TODO(5815532): Check if consumed on read
  */
 @DoNotStrip
-public class WritableNativeMap : ReadableNativeMap(initHybrid()), WritableMap {
+public class WritableNativeMap : ReadableNativeMap(), WritableMap {
+  init {
+    initHybrid()
+  }
+
   external override fun putBoolean(key: String, value: Boolean)
 
   external override fun putDouble(key: String, value: Double)
@@ -59,11 +62,5 @@ public class WritableNativeMap : ReadableNativeMap(initHybrid()), WritableMap {
 
   private external fun mergeNativeMap(source: ReadableNativeMap)
 
-  private companion object {
-    init {
-      ReactBridge.staticInit()
-    }
-
-    @JvmStatic private external fun initHybrid(): HybridData?
-  }
+  private external fun initHybrid()
 }

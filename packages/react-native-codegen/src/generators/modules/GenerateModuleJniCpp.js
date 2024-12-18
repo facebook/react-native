@@ -165,6 +165,10 @@ function translateReturnTypeToKind(
       return 'VoidKind';
     case 'StringTypeAnnotation':
       return 'StringKind';
+    case 'StringLiteralTypeAnnotation':
+      return 'StringKind';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'StringKind';
     case 'BooleanTypeAnnotation':
       return 'BooleanKind';
     case 'EnumDeclaration':
@@ -192,6 +196,8 @@ function translateReturnTypeToKind(
           );
       }
     case 'NumberTypeAnnotation':
+      return 'NumberKind';
+    case 'NumberLiteralTypeAnnotation':
       return 'NumberKind';
     case 'DoubleTypeAnnotation':
       return 'NumberKind';
@@ -244,6 +250,10 @@ function translateParamTypeToJniType(
       }
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
+    case 'StringLiteralTypeAnnotation':
+      return 'Ljava/lang/String;';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
@@ -271,6 +281,8 @@ function translateParamTypeToJniType(
           );
       }
     case 'NumberTypeAnnotation':
+      return !isRequired ? 'Ljava/lang/Double;' : 'D';
+    case 'NumberLiteralTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
       return !isRequired ? 'Ljava/lang/Double;' : 'D';
@@ -320,6 +332,10 @@ function translateReturnTypeToJniType(
       return 'V';
     case 'StringTypeAnnotation':
       return 'Ljava/lang/String;';
+    case 'StringLiteralTypeAnnotation':
+      return 'Ljava/lang/String;';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'Ljava/lang/String;';
     case 'BooleanTypeAnnotation':
       return nullable ? 'Ljava/lang/Boolean;' : 'Z';
     case 'EnumDeclaration':
@@ -347,6 +363,8 @@ function translateReturnTypeToJniType(
           );
       }
     case 'NumberTypeAnnotation':
+      return nullable ? 'Ljava/lang/Double;' : 'D';
+    case 'NumberLiteralTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';
     case 'DoubleTypeAnnotation':
       return nullable ? 'Ljava/lang/Double;' : 'D';

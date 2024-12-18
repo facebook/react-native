@@ -9,6 +9,8 @@ package com.facebook.react.tasks.internal
 
 import com.facebook.react.utils.Os.unixifyPath
 import com.facebook.react.utils.windowsAwareBashCommandLine
+import java.io.File
+import java.io.FileOutputStream
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
 import org.gradle.api.provider.Property
@@ -37,6 +39,15 @@ abstract class BuildCodegenCLITask : Exec() {
       }
 
   override fun exec() {
+    val logfile = "${project.layout.buildDirectory.getAsFile().get()}/build-cli.log"
+    File(logfile).apply {
+      parentFile.mkdirs()
+      if (exists()) {
+        delete()
+      }
+      createNewFile()
+    }
+    standardOutput = FileOutputStream(logfile)
     commandLine(
         windowsAwareBashCommandLine(
             codegenDir.asFile.get().canonicalPath.unixifyPath().plus(BUILD_SCRIPT_PATH),

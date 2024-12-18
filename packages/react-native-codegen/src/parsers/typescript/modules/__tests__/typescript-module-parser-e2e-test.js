@@ -106,6 +106,82 @@ describe('TypeScript Module Parser', () => {
       expect(parser).toThrow(UnnamedFunctionParamParserError);
     });
 
+    it('should properly parse negative enums', () => {
+      const parser = () =>
+        parseModule(`
+          import type {TurboModule} from 'RCTExport';
+          import * as TurboModuleRegistry from 'TurboModuleRegistry';
+          enum MyEnum {
+            ZERO = 0,
+            POSITIVE = 1,
+            NEGATIVE = -1,
+          }
+          export interface Spec extends TurboModule {
+            useArg(arg: MyEnum): void;
+          }
+          export default TurboModuleRegistry.get<Spec>('Foo');
+        `);
+
+      expect(parser).not.toThrow();
+      expect(parser().enumMap.MyEnum.members).toEqual([
+        {
+          name: 'ZERO',
+          value: {
+            type: 'NumberLiteralTypeAnnotation',
+            value: 0,
+          },
+        },
+        {
+          name: 'POSITIVE',
+          value: {
+            type: 'NumberLiteralTypeAnnotation',
+            value: 1,
+          },
+        },
+        {
+          name: 'NEGATIVE',
+          value: {
+            type: 'NumberLiteralTypeAnnotation',
+            value: -1,
+          },
+        },
+      ]);
+    });
+
+    it('should properly parse enums', () => {
+      const parser = () =>
+        parseModule(`
+          import type {TurboModule} from 'RCTExport';
+          import * as TurboModuleRegistry from 'TurboModuleRegistry';
+          enum MyEnum {
+            ZERO = 0,
+            POSITIVE = 1,
+          }
+          export interface Spec extends TurboModule {
+            useArg(arg: MyEnum): void;
+          }
+          export default TurboModuleRegistry.get<Spec>('Foo');
+        `);
+
+      expect(parser).not.toThrow();
+      expect(parser().enumMap.MyEnum.members).toEqual([
+        {
+          name: 'ZERO',
+          value: {
+            type: 'NumberLiteralTypeAnnotation',
+            value: 0,
+          },
+        },
+        {
+          name: 'POSITIVE',
+          value: {
+            type: 'NumberLiteralTypeAnnotation',
+            value: 1,
+          },
+        },
+      ]);
+    });
+
     [
       {nullable: false, optional: false},
       {nullable: false, optional: true},

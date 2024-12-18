@@ -68,8 +68,22 @@ ${Object.entries(definitions.common)
   }
 
   override fun dangerouslyReset() {
-    // We don't need to do anything here because \`ReactNativeFeatureFlags\` will
-    // just create a new instance of this class.
+    // We don't need to do anything else here because \`ReactNativeFeatureFlags\` will just create a
+    // new instance of this class.
+  }
+
+  override fun dangerouslyForceOverride(provider: ReactNativeFeatureFlagsProvider): String? {
+    val accessedFeatureFlags = getAccessedFeatureFlags()
+    currentProvider = provider
+    return accessedFeatureFlags
+  }
+
+  internal fun getAccessedFeatureFlags(): String? {
+    if (accessedFeatureFlags.isEmpty()) {
+      return null
+    }
+
+    return accessedFeatureFlags.joinToString(separator = ", ") { it }
   }
 }
 `);

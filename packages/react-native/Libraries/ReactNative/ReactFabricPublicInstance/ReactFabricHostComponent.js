@@ -9,7 +9,7 @@
  */
 
 import type {
-  HostComponent,
+  HostInstance,
   INativeMethods,
   InternalInstanceHandle,
   MeasureInWindowOnSuccessCallback,
@@ -17,7 +17,6 @@ import type {
   MeasureOnSuccessCallback,
   ViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
-import type {ElementRef} from 'react';
 
 import TextInputState from '../../Components/TextInput/TextInputState';
 import {getNodeFromInternalInstanceHandle} from '../../ReactNative/RendererProxy';
@@ -85,7 +84,7 @@ export default class ReactFabricHostComponent implements INativeMethods {
   }
 
   measureLayout(
-    relativeToNativeNode: number | ElementRef<HostComponent<mixed>>,
+    relativeToNativeNode: number | HostInstance,
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void /* currently unused */,
   ) {

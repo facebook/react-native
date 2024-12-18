@@ -85,7 +85,7 @@ jni::local_ref<jni::JArrayClass<JPage::javaobject>> JInspector::getPages() {
       inspector_->getPages();
   auto array = jni::JArrayClass<JPage::javaobject>::newArray(pages.size());
   for (size_t i = 0; i < pages.size(); i++) {
-    (*array)[i] = JPage::create(pages[i].id, pages[i].title, pages[i].vm);
+    (*array)[i] = JPage::create(pages[i].id, pages[i].description, pages[i].vm);
   }
   return array;
 }

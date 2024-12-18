@@ -41,6 +41,7 @@ export type ReportableEvent =
             appId: string | null,
             deviceId: string | null,
             resolvedTargetDescription: string,
+            resolvedTargetAppId: string,
             prefersFuseboxFrontend: boolean,
           }>
         | ErrorResult<mixed>
@@ -75,6 +76,11 @@ export type ReportableEvent =
             | 'UNMATCHED_REQUEST_ID'
             | 'PROTOCOL_ERROR',
           >,
+    }
+  | {
+      type: 'profiling_target_registered',
+      status: 'success',
+      ...DebuggerSessionIDs,
     }
   | {
       type: 'proxy_error',

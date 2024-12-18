@@ -34,25 +34,15 @@ void ReactInstanceIntegrationTest::SetUp() {
   auto timerManager =
       std::make_shared<react::TimerManager>(std::move(mockRegistry));
 
-  auto onJsError = [](const JsErrorHandler::ParsedError& errorMap) noexcept {
+  auto onJsError = [](jsi::Runtime& /*runtime*/,
+                      const JsErrorHandler::ParsedError& error) noexcept {
     LOG(INFO) << "[jsErrorHandlingFunc called]";
-    LOG(INFO) << "message: " << errorMap.message;
-    LOG(INFO) << "exceptionId: " << std::to_string(errorMap.exceptionId);
-    LOG(INFO) << "isFatal: "
-              << std::to_string(static_cast<int>(errorMap.isFatal));
-    auto frames = errorMap.frames;
-    for (const auto& mapBuffer : frames) {
-      LOG(INFO) << "[Frame]" << std::endl << "\tfile: " << mapBuffer.fileName;
-      LOG(INFO) << "\tmethodName: " << mapBuffer.methodName;
-      LOG(INFO) << "\tlineNumber: " << std::to_string(mapBuffer.lineNumber);
-      LOG(INFO) << "\tcolumn: " << std::to_string(mapBuffer.columnNumber);
-    }
+    LOG(INFO) << error << std::endl;
   };
 
   auto jsRuntimeFactory = std::make_unique<react::HermesInstance>();
   std::unique_ptr<react::JSRuntime> runtime_ =
-      jsRuntimeFactory->createJSRuntime(
-          nullptr, nullptr, messageQueueThread, false);
+      jsRuntimeFactory->createJSRuntime(nullptr, messageQueueThread, false);
   jsi::Runtime* jsiRuntime = &runtime_->getRuntime();
 
   // Error handler:
@@ -91,7 +81,7 @@ void ReactInstanceIntegrationTest::SetUp() {
     // Under modern CDP, the React host is responsible for adding itself as
     // the root target on startup.
     pageId_ = inspector.addPage(
-        "mock-title",
+        "mock-description",
         "mock-vm",
         [hostTargetIfModernCDP](std::unique_ptr<IRemoteConnection> remote)
             -> std::unique_ptr<ILocalConnection> {

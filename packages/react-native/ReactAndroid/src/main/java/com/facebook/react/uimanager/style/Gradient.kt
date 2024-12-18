@@ -8,25 +8,19 @@
 package com.facebook.react.uimanager.style
 
 import android.content.Context
-import android.graphics.LinearGradient
 import android.graphics.Rect
 import android.graphics.Shader
 import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 
-public class Gradient(gradient: ReadableMap?, context: Context) {
+internal class Gradient(gradient: ReadableMap?, context: Context) {
   private enum class GradientType {
     LINEAR_GRADIENT
   }
 
   private val type: GradientType
-  private var startX: Float = 0f
-  private var startY: Float = 0f
-  private var endX: Float = 0f
-  private var endY: Float = 0f
-  private val colors: IntArray
-  private val positions: FloatArray
+  private val linearGradient: LinearGradient
 
   init {
     gradient ?: throw IllegalArgumentException("Gradient cannot be null")
@@ -38,46 +32,36 @@ public class Gradient(gradient: ReadableMap?, context: Context) {
           else -> throw IllegalArgumentException("Unsupported gradient type: $typeString")
         }
 
-    gradient.getMap("start")?.let { start ->
-      startX = start.getDouble("x").toFloat()
-      startY = start.getDouble("y").toFloat()
-    }
-
-    gradient.getMap("end")?.let { end ->
-      endX = end.getDouble("x").toFloat()
-      endY = end.getDouble("y").toFloat()
-    }
+    val directionMap =
+        gradient.getMap("direction")
+            ?: throw IllegalArgumentException("Gradient must have direction")
 
     val colorStops =
         gradient.getArray("colorStops")
             ?: throw IllegalArgumentException("Invalid colorStops array")
 
     val size = colorStops.size()
-    colors = IntArray(size)
-    positions = FloatArray(size)
+    val colors = IntArray(size)
+    val positions = FloatArray(size)
 
     for (i in 0 until size) {
-      val colorStop = colorStops.getMap(i)
-      if (colorStop.getType("color") == ReadableType.Map) {
-        colors[i] = ColorPropConverter.getColor(colorStop.getMap("color"), context)
-      } else {
-        colors[i] = colorStop.getInt("color")
-      }
+      val colorStop = colorStops.getMap(i) ?: continue
+      colors[i] =
+          if (colorStop.getType("color") == ReadableType.Map) {
+            ColorPropConverter.getColor(colorStop.getMap("color"), context)
+          } else {
+            colorStop.getInt("color")
+          }
       positions[i] = colorStop.getDouble("position").toFloat()
     }
+
+    linearGradient = LinearGradient(directionMap, colors, positions)
   }
 
   public fun getShader(bounds: Rect): Shader? {
     return when (type) {
       GradientType.LINEAR_GRADIENT ->
-          LinearGradient(
-              startX * bounds.width(),
-              startY * bounds.height(),
-              endX * bounds.width(),
-              endY * bounds.height(),
-              colors,
-              positions,
-              Shader.TileMode.CLAMP)
+          linearGradient.getShader(bounds.width().toFloat(), bounds.height().toFloat())
     }
   }
 }

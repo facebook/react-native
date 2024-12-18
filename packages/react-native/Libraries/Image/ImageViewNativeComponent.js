@@ -11,6 +11,7 @@
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {
   HostComponent,
+  HostInstance,
   PartialViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
 import type {
@@ -20,7 +21,6 @@ import type {
 } from '../StyleSheet/StyleSheet';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
-import type {ElementRef} from 'react';
 
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
@@ -48,7 +48,7 @@ type Props = $ReadOnly<{
 
 interface NativeCommands {
   +setIsVisible_EXPERIMENTAL: (
-    viewRef: ElementRef<HostComponent<mixed>>,
+    viewRef: HostInstance,
     isVisible: boolean,
     time: number,
   ) => void;
@@ -82,6 +82,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         },
         validAttributes: {
           blurRadius: true,
+          defaultSource: {
+            process: require('./resolveAssetSource'),
+          },
           internal_analyticTag: true,
           resizeMethod: true,
           resizeMode: true,
@@ -100,7 +103,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderRadius: true,
           headers: true,
           shouldNotifyLoadEvents: true,
-          defaultSrc: true,
           overlayColor: {
             process: require('../StyleSheet/processColor').default,
           },

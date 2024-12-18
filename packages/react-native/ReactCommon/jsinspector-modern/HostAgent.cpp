@@ -15,8 +15,6 @@
 
 #include <chrono>
 
-#include <reactperflogger/fusebox/FuseboxTracer.h>
-
 using namespace std::chrono;
 using namespace std::literals::string_view_literals;
 
@@ -36,7 +34,8 @@ HostAgent::HostAgent(
       targetController_(targetController),
       hostMetadata_(std::move(hostMetadata)),
       sessionState_(sessionState),
-      networkIOAgent_(NetworkIOAgent(frontendChannel, executor)) {}
+      networkIOAgent_(NetworkIOAgent(frontendChannel, std::move(executor))),
+      tracingAgent_(TracingAgent(frontendChannel)) {}
 
 void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
   bool shouldSendOKResponse = false;
@@ -126,21 +125,17 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
-  } else if (req.method == "FuseboxClient.setClientMetadata") {
+  } else if (req.method == "ReactNativeApplication.enable") {
+    sessionState_.isReactNativeApplicationDomainEnabled = true;
     fuseboxClientType_ = FuseboxClientType::Fusebox;
 
     if (sessionState_.isLogDomainEnabled) {
       sendFuseboxNotice();
     }
 
-    shouldSendOKResponse = true;
-    isFinishedHandlingRequest = true;
-  } else if (req.method == "ReactNativeApplication.enable") {
-    sessionState_.isReactNativeApplicationDomainEnabled = true;
-
     frontendChannel_(cdp::jsonNotification(
         "ReactNativeApplication.metadataUpdated",
-        hostMetadataToDynamic(hostMetadata_)));
+        createHostMetadataPayload(hostMetadata_)));
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
@@ -149,47 +144,14 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
-  } else if (req.method == "Tracing.start") {
-    // @cdp Tracing.start support is experimental.
-    if (FuseboxTracer::getFuseboxTracer().startTracing()) {
-      shouldSendOKResponse = true;
-    } else {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Tracing session already started"));
-      return;
-    }
-    isFinishedHandlingRequest = true;
-  } else if (req.method == "Tracing.end") {
-    // @cdp Tracing.end support is experimental.
-    bool firstChunk = true;
-    auto id = req.id;
-    bool wasStopped = FuseboxTracer::getFuseboxTracer().stopTracing(
-        [this, firstChunk, id](const folly::dynamic& eventsChunk) {
-          if (firstChunk) {
-            frontendChannel_(cdp::jsonResult(id));
-          }
-          frontendChannel_(cdp::jsonNotification(
-              "Tracing.dataCollected",
-              folly::dynamic::object("value", eventsChunk)));
-        });
-    if (!wasStopped) {
-      frontendChannel_(cdp::jsonError(
-          req.id,
-          cdp::ErrorCode::InternalError,
-          "Tracing session not started"));
-      return;
-    }
-    frontendChannel_(cdp::jsonNotification(
-        "Tracing.tracingComplete",
-        folly::dynamic::object("dataLossOccurred", false)));
-    shouldSendOKResponse = true;
-    isFinishedHandlingRequest = true;
   }
 
   if (!isFinishedHandlingRequest &&
       networkIOAgent_.handleRequest(req, targetController_.getDelegate())) {
+    return;
+  }
+
+  if (!isFinishedHandlingRequest && tracingAgent_.handleRequest(req)) {
     return;
   }
 

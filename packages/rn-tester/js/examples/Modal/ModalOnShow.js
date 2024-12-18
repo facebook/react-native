@@ -10,14 +10,16 @@
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
+import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
+import {useState} from 'react';
 import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 
 function ModalOnShowOnDismiss(): React.Node {
-  const [modalShowComponent, setModalShowComponent] = React.useState(true);
-  const [modalVisible, setModalVisible] = React.useState(false);
-  const [onShowCount, setOnShowCount] = React.useState(0);
-  const [onDismissCount, setOnDismissCount] = React.useState(0);
+  const [modalShowComponent, setModalShowComponent] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [onShowCount, setOnShowCount] = useState(0);
+  const [onDismissCount, setOnDismissCount] = useState(0);
 
   return (
     <View style={styles.container}>
@@ -27,10 +29,10 @@ function ModalOnShowOnDismiss(): React.Node {
           transparent={true}
           visible={modalVisible}
           onShow={() => {
-            setOnShowCount(onShowCount + 1);
+            setOnShowCount(showCount => showCount + 1);
           }}
           onDismiss={() => {
-            setOnDismissCount(onDismissCount + 1);
+            setOnDismissCount(dismissCount => dismissCount + 1);
           }}
           onRequestClose={() => {
             setModalVisible(false);
@@ -63,10 +65,12 @@ function ModalOnShowOnDismiss(): React.Node {
           </View>
         </Modal>
       )}
-      <Text testID="on-show-count">onShow is called {onShowCount} times</Text>
-      <Text testID="on-dismiss-count">
+      <RNTesterText testID="on-show-count">
+        onShow is called {onShowCount} times
+      </RNTesterText>
+      <RNTesterText testID="on-dismiss-count">
         onDismiss is called {onDismissCount} times
-      </Text>
+      </RNTesterText>
       <Pressable
         style={[styles.button, styles.buttonOpen]}
         onPress={() => {
@@ -97,7 +101,6 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',

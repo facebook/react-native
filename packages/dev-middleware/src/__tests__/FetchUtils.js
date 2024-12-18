@@ -10,24 +10,30 @@
  */
 
 import type {JSONSerializable} from '../inspector-proxy/types';
+import type {RequestOptions} from 'undici';
 
-import {Agent} from 'undici';
-
-declare var globalThis: $FlowFixMe;
+import {Agent, request} from 'undici';
 
 /**
  * A version of `fetch` that is usable with the HTTPS server created in
  * ServerUtils (which uses a self-signed certificate).
  */
-export async function fetchLocal(
+export async function requestLocal(
   url: string,
-  options?: Parameters<typeof fetch>[1] & {dispatcher?: mixed},
-): ReturnType<typeof fetch> {
-  return await fetch(url, {
+  options?: RequestOptions,
+): Promise<{
+  statusCode: number,
+  headers: Headers,
+  bodyBuffer: Buffer,
+}> {
+  const {
+    statusCode,
+    headers: rawHeaders,
+    body,
+  } = await request(url, {
     ...options,
-    // Node's native `fetch` comes from undici and supports the same options,
-    // including `dispatcher` which we use to make it accept self-signed
-    // certificates.
+
+    // Use undici's `dispatcher` to make it accept self-signed certificates.
     dispatcher:
       options?.dispatcher ??
       new Agent({
@@ -36,41 +42,48 @@ export async function fetchLocal(
         },
       }),
   });
+  return {
+    statusCode,
+    bodyBuffer: await body.read(),
+    headers: new Headers(rawHeaders),
+  };
 }
 
 export async function fetchJson<T: JSONSerializable>(url: string): Promise<T> {
-  const response = await fetchLocal(url);
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status} ${response.statusText}`);
+  const response = await requestLocal(url);
+  if (response.statusCode !== 200) {
+    throw new Error(`HTTP ${response.statusCode}`);
   }
-  return response.json();
+  if (!response.headers.get('Content-Type')?.startsWith('application/json')) {
+    throw new Error('Expected Content-Type: application/json');
+  }
+  return JSON.parse(response.bodyBuffer.toString());
 }
 
 /**
  * Change the global fetch dispatcher to allow self-signed certificates.
  * This runs with Jest's `beforeAll` and `afterAll`, and restores the original dispatcher.
  */
-export function withFetchSelfSignedCertsForAllTests() {
-  const fetchOriginal = globalThis.fetch;
+export function withFetchSelfSignedCertsForAllTests(
+  fetchSpy: JestMockFn<Parameters<typeof fetch>, ReturnType<typeof fetch>>,
+  fetchOriginal: typeof fetch,
+) {
   const selfSignedCertDispatcher = new Agent({
     connect: {
       rejectUnauthorized: false,
     },
   });
 
-  let fetchSpy;
-
   beforeAll(() => {
     // For some reason, setting the `selfSignedCertDispatcher` with `setGlobalDispatcher` doesn't work.
     // Instead of using `setGlobalDispatcher`, we'll use a spy to intercept the fetch calls and add the dispatcher.
-    fetchSpy = jest
-      .spyOn(globalThis, 'fetch')
-      .mockImplementation((url, options) =>
-        fetchOriginal(url, {
-          ...options,
-          dispatcher: options?.dispatcher ?? selfSignedCertDispatcher,
-        }),
-      );
+    fetchSpy.mockImplementation((url, options) =>
+      fetchOriginal(url, {
+        ...options,
+        // $FlowFixMe[prop-missing]: dispatcher
+        dispatcher: options?.dispatcher ?? selfSignedCertDispatcher,
+      }),
+    );
   });
 
   afterAll(() => {

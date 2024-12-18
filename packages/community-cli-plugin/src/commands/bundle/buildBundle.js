@@ -14,7 +14,6 @@ import type {ConfigT} from 'metro-config';
 import type {RequestOptions} from 'metro/src/shared/types.flow';
 
 import loadMetroConfig from '../../utils/loadMetroConfig';
-import {logger} from '../../utils/logger';
 import parseKeyValueParamArray from '../../utils/parseKeyValueParamArray';
 import saveAssets from './saveAssets';
 import chalk from 'chalk';
@@ -72,13 +71,13 @@ async function buildBundleWithConfig(
   );
 
   if (config.resolver.platforms.indexOf(args.platform) === -1) {
-    logger.error(
-      `Invalid platform ${
+    console.error(
+      `${chalk.red('error')}: Invalid platform ${
         args.platform ? `"${chalk.bold(args.platform)}" ` : ''
       }selected.`,
     );
 
-    logger.info(
+    console.info(
       `Available platforms are: ${config.resolver.platforms
         .map(x => `"${chalk.bold(x)}"`)
         .join(
@@ -123,7 +122,7 @@ async function buildBundleWithConfig(
     // $FlowIgnore[incompatible-call]
     // $FlowIgnore[prop-missing]
     // $FlowIgnore[incompatible-exact]
-    await bundleImpl.save(bundle, args, logger.info);
+    await bundleImpl.save(bundle, args, console.info);
 
     // Save the assets of the bundle
     const outputAssets = await server.getAssets({
@@ -140,7 +139,7 @@ async function buildBundleWithConfig(
       args.assetCatalogDest,
     );
   } finally {
-    server.end();
+    await server.end();
   }
 }
 

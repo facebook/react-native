@@ -10,15 +10,17 @@ package com.facebook.react.views.progressbar
 import android.content.Context
 import android.graphics.PorterDuff
 import android.view.ViewGroup
+import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
 import android.widget.ProgressBar
+import com.facebook.react.R
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 
 /**
  * Controls an enclosing [ProgressBar]. Exists so that the [ProgressBar] can be recreated if the
  * style would change.
  */
-public class ProgressBarContainerView(context: Context) : FrameLayout(context) {
+internal class ProgressBarContainerView(context: Context) : FrameLayout(context) {
 
   internal var color: Int? = null
   internal var indeterminate = true
@@ -26,6 +28,15 @@ public class ProgressBarContainerView(context: Context) : FrameLayout(context) {
   internal var progress = 0.0
 
   private var progressBar: ProgressBar? = null
+
+  override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
+    super.onInitializeAccessibilityNodeInfo(info)
+
+    val testId = getTag(R.id.react_test_id) as String?
+    if (testId != null) {
+      info.viewIdResourceName = testId
+    }
+  }
 
   internal fun apply() {
     this.progressBar?.let { progressBar ->

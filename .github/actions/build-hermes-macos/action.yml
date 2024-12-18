@@ -22,7 +22,7 @@ runs:
     - name: Restore Cached Artifacts
       uses: actions/cache/restore@v4
       with:
-        key: v4-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashFiles('./packages/react-native/sdks/hermes/utils/build-apple-frameworks.sh') }}
+        key: v4-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashFiles('./packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}
         path: |
           /tmp/hermes/osx-bin/${{ inputs.flavor }}
           /tmp/hermes/dSYM/${{ inputs.flavor }}
@@ -47,7 +47,7 @@ runs:
         fi
     - name: Yarn- Install Dependencies
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-      uses: ./.github/actions/yarn-install-with-cache
+      uses: ./.github/actions/yarn-install
     - name: Slice cache macosx
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: actions/download-artifact@v4
@@ -66,6 +66,18 @@ runs:
       with:
         path: ./packages/react-native/sdks/hermes/
         name: slice-iphonesimulator-${{ inputs.flavor }}
+    - name: Slice cache appletvos
+      if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
+      uses: actions/download-artifact@v4
+      with:
+        path: ./packages/react-native/sdks/hermes/
+        name: slice-appletvos-${{ inputs.flavor }}
+    - name: Slice cache appletvsimulator
+      if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
+      uses: actions/download-artifact@v4
+      with:
+        path: ./packages/react-native/sdks/hermes/
+        name: slice-appletvsimulator-${{ inputs.flavor }}
     - name: Slice cache catalyst
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: actions/download-artifact@v4
@@ -93,6 +105,8 @@ runs:
         tar -xzv -f build_catalyst_${{ matrix.flavor }}.tar.gz
         tar -xzv -f build_iphoneos_${{ matrix.flavor }}.tar.gz
         tar -xzv -f build_iphonesimulator_${{ matrix.flavor }}.tar.gz
+        tar -xzv -f build_appletvos_${{ matrix.flavor }}.tar.gz
+        tar -xzv -f build_appletvsimulator_${{ matrix.flavor }}.tar.gz
         tar -xzv -f build_macosx_${{ matrix.flavor }}.tar.gz
         tar -xzv -f build_xros_${{ matrix.flavor }}.tar.gz
         tar -xzv -f build_xrsimulator_${{ matrix.flavor }}.tar.gz
@@ -105,6 +119,8 @@ runs:
         mv build_macosx_${{ inputs.flavor }} build_macosx
         mv build_iphoneos_${{ inputs.flavor }} build_iphoneos
         mv build_iphonesimulator_${{ inputs.flavor }} build_iphonesimulator
+        mv build_appletvos_${{ inputs.flavor }} build_appletvos
+        mv build_appletvsimulator_${{ inputs.flavor }} build_appletvsimulator
         mv build_catalyst_${{ inputs.flavor }} build_catalyst
         mv build_xros_${{ inputs.flavor }} build_xros
         mv build_xrsimulator_${{ inputs.flavor }} build_xrsimulator
@@ -163,6 +179,8 @@ runs:
         mkdir -p "$WORKING_DIR/catalyst"
         mkdir -p "$WORKING_DIR/iphoneos"
         mkdir -p "$WORKING_DIR/iphonesimulator"
+        mkdir -p "$WORKING_DIR/appletvos"
+        mkdir -p "$WORKING_DIR/appletvsimulator"
         mkdir -p "$WORKING_DIR/xros"
         mkdir -p "$WORKING_DIR/xrsimulator"
 
@@ -173,6 +191,8 @@ runs:
         cp -r build_catalyst/$DSYM_FILE_PATH "$WORKING_DIR/catalyst/"
         cp -r build_iphoneos/$DSYM_FILE_PATH "$WORKING_DIR/iphoneos/"
         cp -r build_iphonesimulator/$DSYM_FILE_PATH "$WORKING_DIR/iphonesimulator/"
+        cp -r build_appletvos/$DSYM_FILE_PATH "$WORKING_DIR/appletvos/"
+        cp -r build_appletvsimulator/$DSYM_FILE_PATH "$WORKING_DIR/appletvsimulator/"
         cp -r build_xros/$DSYM_FILE_PATH "$WORKING_DIR/xros/"
         cp -r build_xrsimulator/$DSYM_FILE_PATH "$WORKING_DIR/xrsimulator/"
 
@@ -200,7 +220,7 @@ runs:
       uses: actions/cache/save@v4
       if: ${{ github.ref == 'refs/heads/main' || contains(github.ref, '-stable') }} # To avoid that the cache explode.
       with:
-        key: v4-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashFiles('./packages/react-native/sdks/hermes/utils/build-apple-frameworks.sh') }}
+        key: v4-hermes-artifacts-${{ inputs.flavor }}-${{ inputs.hermes-version }}-${{ inputs.react-native-version }}-${{ hashFiles('./packages/react-native/sdks/hermes-engine/utils/build-apple-framework.sh') }}
         path: |
           /tmp/hermes/osx-bin/${{ inputs.flavor }}
           /tmp/hermes/dSYM/${{ inputs.flavor }}

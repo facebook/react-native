@@ -17,7 +17,7 @@ import type {FeatureFlagDefinitions} from './types';
  *
  * If you modify this file, you need to update all the generated files
  * running the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 // These flags are only used in tests for the feature flags system
@@ -25,13 +25,31 @@ const testDefinitions: FeatureFlagDefinitions = {
   common: {
     commonTestFlag: {
       defaultValue: false,
-      description: 'Common flag for testing. Do NOT modify.',
+      metadata: {
+        description: 'Common flag for testing. Do NOT modify.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+    },
+    commonTestFlagWithoutNativeImplementation: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'Common flag for testing (without native implementation). Do NOT modify.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+      skipNativeAPI: true,
     },
   },
   jsOnly: {
     jsOnlyTestFlag: {
       defaultValue: false,
-      description: 'JS-only flag for testing. Do NOT modify.',
+      metadata: {
+        description: 'JS-only flag for testing. Do NOT modify.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
     },
   },
 };
@@ -39,250 +57,453 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
-    allowRecursiveCommitsWithSynchronousMountOnAndroid: {
-      defaultValue: false,
-      description:
-        'Adds support for recursively processing commits that mount synchronously (Android only).',
-    },
-    batchRenderingUpdatesInEventLoop: {
-      defaultValue: false,
-      description:
-        'When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.',
-    },
     completeReactInstanceCreationOnBgThreadOnAndroid: {
-      defaultValue: false,
-      description:
-        'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
+      defaultValue: true,
+      metadata: {
+        description:
+          'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
-    destroyFabricSurfacesInReactInstanceManager: {
+    disableEventLoopOnBridgeless: {
       defaultValue: false,
-      description:
-        'When enabled, ReactInstanceManager will clean up Fabric surfaces on destroy().',
+      metadata: {
+        description:
+          'The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+    },
+    disableMountItemReorderingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-10-26',
+        description:
+          'Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
+    enableAccumulatedUpdatesInRawPropsAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-12-10',
+        description:
+          'When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableAlignItemsBaselineOnFabricIOS: {
       defaultValue: true,
-      description:
-        'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
+      metadata: {
+        dateAdded: '2024-07-10',
+        description:
+          'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableAndroidLineHeightCentering: {
-      defaultValue: false,
-      description:
-        'When enabled, custom line height calculation will be centered from top to bottom.',
-    },
-    enableAndroidMixBlendModeProp: {
-      defaultValue: false,
-      description: 'Enables mix-blend-mode prop on Android.',
-    },
-    enableBackgroundStyleApplicator: {
       defaultValue: true,
-      description:
-        'Use BackgroundStyleApplicator in place of other background/border drawing code',
+      metadata: {
+        description:
+          'When enabled, custom line height calculation will be centered from top to bottom.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
-    enableCleanTextInputYogaNode: {
+    enableBridgelessArchitecture: {
       defaultValue: false,
-      description: 'Clean yoga node when <TextInput /> does not change.',
+      metadata: {
+        description:
+          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+    },
+    enableCppPropsIteratorSetter: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-09-13',
+        description:
+          'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableDeletionOfUnmountedViews: {
       defaultValue: false,
-      description:
-        'Deletes views that were pre-allocated but never mounted on the screen.',
+      metadata: {
+        dateAdded: '2024-09-13',
+        description:
+          'Deletes views that were pre-allocated but never mounted on the screen.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableEagerRootViewAttachment: {
       defaultValue: false,
-      description:
-        'Feature flag to configure eager attachment of the root view/initialisation of the JS code.',
+      metadata: {
+        dateAdded: '2024-07-28',
+        description:
+          'Feature flag to configure eager attachment of the root view/initialisation of the JS code.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableEventEmitterRetentionDuringGesturesOnAndroid: {
       defaultValue: false,
-      description:
-        'Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)',
+      metadata: {
+        dateAdded: '2024-08-08',
+        description:
+          'Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableFabricLogs: {
       defaultValue: false,
-      description: 'This feature flag enables logs for Fabric.',
+      metadata: {
+        description: 'This feature flag enables logs for Fabric.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
     },
-    enableFabricRendererExclusively: {
+    enableFabricRenderer: {
       defaultValue: false,
-      description:
-        'When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.',
+      metadata: {
+        description: 'Enables the use of the Fabric renderer in the whole app.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+    },
+    enableFixForViewCommandRace: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-14',
+        description:
+          'Synchronise the view command dispatching with mounting of new transaction',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableGranularShadowTreeStateReconciliation: {
       defaultValue: false,
-      description:
-        'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
+      metadata: {
+        dateAdded: '2024-05-01',
+        description:
+          'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableIOSViewClipToPaddingBox: {
       defaultValue: false,
-      description: 'iOS Views will clip to their padding box vs border box',
+      metadata: {
+        dateAdded: '2024-08-30',
+        description: 'iOS Views will clip to their padding box vs border box',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
+    enableImagePrefetchingAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-19',
+        description:
+          'When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
+    enableLayoutAnimationsOnAndroid: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled, LayoutAnimations API will animate state changes on Android.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     enableLayoutAnimationsOnIOS: {
       defaultValue: true,
-      description:
-        'When enabled, LayoutAnimations API will animate state changes on iOS.',
+      metadata: {
+        description:
+          'When enabled, LayoutAnimations API will animate state changes on iOS.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     enableLongTaskAPI: {
       defaultValue: false,
-      description:
-        'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
+      metadata: {
+        description:
+          'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
-    enableMicrotasks: {
+    enableNewBackgroundAndBorderDrawables: {
       defaultValue: false,
-      description:
-        'Enables the use of microtasks in Hermes (scheduling) and RuntimeScheduler (execution).',
+      metadata: {
+        dateAdded: '2024-09-24',
+        description:
+          'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enablePreciseSchedulingForPremountItemsOnAndroid: {
       defaultValue: false,
-      description:
-        'Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).',
+      metadata: {
+        dateAdded: '2024-09-19',
+        description:
+          'Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enablePropsUpdateReconciliationAndroid: {
       defaultValue: false,
-      description:
-        'When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.',
+      metadata: {
+        dateAdded: '2024-07-12',
+        description:
+          'When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableReportEventPaintTime: {
       defaultValue: false,
-      description:
-        'Report paint time inside the Event Timing API implementation (PerformanceObserver).',
+      metadata: {
+        description:
+          'Report paint time inside the Event Timing API implementation (PerformanceObserver).',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     enableSynchronousStateUpdates: {
       defaultValue: false,
-      description:
-        'Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).',
-    },
-    enableTextPreallocationOptimisation: {
-      defaultValue: false,
-      description:
-        'Text preallocation optimisation where unnecessary work is removed.',
+      metadata: {
+        dateAdded: '2024-04-25',
+        description:
+          'Dispatches state updates synchronously in Fabric (e.g.: updates the scroll position in the shadow tree synchronously from the main thread).',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableUIConsistency: {
       defaultValue: false,
-      description:
-        'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
+      metadata: {
+        dateAdded: '2024-04-25',
+        description:
+          'Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableViewRecycling: {
       defaultValue: false,
-      description:
-        'Enables View Recycling. When enabled, individual ViewManagers must still opt-in.',
+      metadata: {
+        dateAdded: '2024-07-31',
+        description:
+          'Enables View Recycling. When enabled, individual ViewManagers must still opt-in.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     excludeYogaFromRawProps: {
       defaultValue: false,
-      description:
-        'When enabled, rawProps in Props will not include Yoga specific props.',
+      metadata: {
+        dateAdded: '2024-07-22',
+        description:
+          'When enabled, rawProps in Props will not include Yoga specific props.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
-    fetchImagesInViewPreallocation: {
-      defaultValue: false,
-      description:
-        'Start image fetching during view preallocation instead of waiting for layout pass',
+    fixDifferentiatorEmittingUpdatesWithWrongParentTag: {
+      defaultValue: true,
+      metadata: {
+        description:
+          "Fixes a bug in Differentiator where parent views may be referenced before they're created",
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     fixMappingOfEventPrioritiesBetweenFabricAndReact: {
       defaultValue: false,
-      description:
-        'Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.',
+      metadata: {
+        dateAdded: '2024-06-18',
+        description:
+          'Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     fixMountingCoordinatorReportedPendingTransactionsOnAndroid: {
       defaultValue: false,
-      description:
-        'Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.',
-    },
-    forceBatchingMountItemsOnAndroid: {
-      defaultValue: false,
-      description:
-        'Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.',
+      metadata: {
+        dateAdded: '2024-08-27',
+        description:
+          'Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     fuseboxEnabledDebug: {
       defaultValue: true,
-      description:
-        'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.',
+      metadata: {
+        description:
+          'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     fuseboxEnabledRelease: {
       defaultValue: false,
-      description:
-        'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.',
+      metadata: {
+        description:
+          'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     initEagerTurboModulesOnNativeModulesQueueAndroid: {
-      defaultValue: false,
-      description:
-        'Construct modules that requires eager init on the dedicate native modules thread',
+      defaultValue: true,
+      metadata: {
+        description:
+          'Construct modules that requires eager init on the dedicate native modules thread',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     lazyAnimationCallbacks: {
       defaultValue: false,
-      description:
-        'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
+      metadata: {
+        dateAdded: '2024-05-01',
+        description:
+          'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     loadVectorDrawablesOnImages: {
       defaultValue: false,
-      description:
-        'Adds support for loading vector drawable assets in the Image component (only on Android)',
-    },
-    removeNestedCallsToDispatchMountItemsOnAndroid: {
-      defaultValue: false,
-      description:
-        'Removes nested calls to MountItemDispatcher.dispatchMountItems on Android, so we do less work per frame on the UI thread.',
-    },
-    setAndroidLayoutDirection: {
-      defaultValue: false,
-      description: 'Propagate layout direction to Android views.',
+      metadata: {
+        dateAdded: '2024-07-12',
+        description:
+          'Adds support for loading vector drawable assets in the Image component (only on Android)',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
-      description:
-        'Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.',
+      metadata: {
+        description:
+          'Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.',
+        expectedReleaseValue: true,
+        purpose: 'operational',
+      },
+    },
+    useAlwaysAvailableJSErrorHandling: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'In Bridgeless mode, use the always available javascript error reporting pipeline.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     useFabricInterop: {
       defaultValue: false,
-      description:
-        'Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.',
+      metadata: {
+        description:
+          'Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     useImmediateExecutorInAndroidBridgeless: {
-      defaultValue: false,
-      description:
-        'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
-    },
-    useModernRuntimeScheduler: {
-      defaultValue: false,
-      description:
-        'When enabled, it uses the modern fork of RuntimeScheduler that allows scheduling tasks with priorities from any thread.',
+      defaultValue: true,
+      metadata: {
+        description:
+          'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
-      description:
-        'When enabled, the native view configs are used in bridgeless mode.',
-    },
-    useNewReactImageViewBackgroundDrawing: {
-      defaultValue: false,
-      description:
-        'Use shared background drawing code for ReactImageView instead of using Fresco to manipulate the bitmap',
+      metadata: {
+        dateAdded: '2024-04-03',
+        description:
+          'When enabled, the native view configs are used in bridgeless mode.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     useOptimisedViewPreallocationOnAndroid: {
       defaultValue: false,
-      description:
-        'Moves more of the work in view preallocation to the main thread to free up JS thread.',
+      metadata: {
+        dateAdded: '2024-07-23',
+        description:
+          'Moves more of the work in view preallocation to the main thread to free up JS thread.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     useOptimizedEventBatchingOnAndroid: {
       defaultValue: false,
-      description:
-        'Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.',
+      metadata: {
+        dateAdded: '2024-08-29',
+        description:
+          'Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
+    useRawPropsJsiValue: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-12-02',
+        description:
+          'Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     useRuntimeShadowNodeReferenceUpdate: {
-      defaultValue: false,
-      description:
-        'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
-    },
-    useRuntimeShadowNodeReferenceUpdateOnLayout: {
-      defaultValue: false,
-      description:
-        'When enabled, cloning shadow nodes during layout will update the reference held by the current JS fiber tree.',
-    },
-    useStateAlignmentMechanism: {
-      defaultValue: false,
-      description:
-        'When enabled, it uses optimised state reconciliation algorithm.',
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2024-06-03',
+        description:
+          'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     useTurboModuleInterop: {
       defaultValue: false,
-      description:
-        'In Bridgeless mode, should legacy NativeModules use the TurboModule system?',
+      metadata: {
+        dateAdded: '2024-07-28',
+        description:
+          'In Bridgeless mode, should legacy NativeModules use the TurboModule system?',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
+    useTurboModules: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'When enabled, NativeModules will be executed by using the TurboModule system',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
   },
 
@@ -291,73 +512,160 @@ const definitions: FeatureFlagDefinitions = {
 
     animatedShouldDebounceQueueFlush: {
       defaultValue: false,
-      description:
-        'Enables an experimental flush-queue debouncing in Animated.js.',
+      metadata: {
+        dateAdded: '2024-02-05',
+        description:
+          'Enables an experimental flush-queue debouncing in Animated.js.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     animatedShouldUseSingleOp: {
       defaultValue: false,
-      description:
-        'Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.',
+      metadata: {
+        dateAdded: '2024-02-05',
+        description:
+          'Enables an experimental mega-operation for Animated.js that replaces many calls to native with a single call into native, to reduce JSI/JNI traffic.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
+    disableInteractionManager: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-06',
+        description:
+          'Disables InteractionManager and replaces its scheduler with `setImmediate`.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
+    disableInteractionManagerInBatchinator: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-11-18',
+        description:
+          'Skips InteractionManager in `Batchinator` and invokes callbacks synchronously.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableAccessToHostTreeInFabric: {
       defaultValue: false,
-      description:
-        'Enables access to the host tree in Fabric using DOM-compatible APIs.',
+      metadata: {
+        description:
+          'Enables access to the host tree in Fabric using DOM-compatible APIs.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     enableAnimatedAllowlist: {
-      defaultValue: false,
-      description: 'Enables Animated to skip non-allowlisted props and styles.',
+      defaultValue: true,
+      metadata: {
+        description:
+          'Enables Animated to skip non-allowlisted props and styles.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     enableAnimatedClearImmediateFix: {
       defaultValue: true,
-      description:
-        'Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.',
+      metadata: {
+        dateAdded: '2024-09-17',
+        description:
+          'Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     enableAnimatedPropsMemo: {
-      defaultValue: false,
-      description:
-        'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
+      defaultValue: true,
+      metadata: {
+        description:
+          'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
-    enableOptimisedVirtualizedCells: {
+    fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
-      description:
-        'Removing unnecessary rerenders Virtualized cells after any rerenders of Virualized list. Works with strict=true option',
+      metadata: {
+        dateAdded: '2024-11-22',
+        description:
+          'Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     isLayoutAnimationEnabled: {
       defaultValue: true,
-      description:
-        'Function used to enable / disabled Layout Animations in React Native.',
+      metadata: {
+        description:
+          'Function used to enable / disabled Layout Animations in React Native.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+    },
+    shouldSkipStateUpdatesForLoopingAnimations: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2024-07-25',
+        description:
+          'If the animation is within Animated.loop, we do not send state updates to React.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     shouldUseAnimatedObjectForTransform: {
       defaultValue: false,
-      description:
-        'Enables use of AnimatedObject for animating transform values.',
+      metadata: {
+        dateAdded: '2024-02-05',
+        description:
+          'Enables use of AnimatedObject for animating transform values.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     shouldUseRemoveClippedSubviewsAsDefaultOnIOS: {
       defaultValue: false,
-      description:
-        'removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android',
+      metadata: {
+        dateAdded: '2024-02-05',
+        description:
+          'removeClippedSubviews prop will be used as the default in FlatList on iOS to match Android',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     shouldUseSetNativePropsInFabric: {
       defaultValue: true,
-      description: 'Enables use of setNativeProps in JS driven animations.',
-    },
-    shouldUseSetNativePropsInNativeAnimationsInFabric: {
-      defaultValue: false,
-      description:
-        'Enables use of setNativeProps in Native driven animations in Fabric.',
+      metadata: {
+        dateAdded: '2024-03-05',
+        description: 'Enables use of setNativeProps in JS driven animations.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
     useInsertionEffectsForAnimations: {
-      defaultValue: false,
-      description:
-        'Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.',
+      defaultValue: true,
+      metadata: {
+        description:
+          'Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
     },
     useRefsForTextInputState: {
       defaultValue: false,
-      description:
-        'Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders',
+      metadata: {
+        dateAdded: '2024-07-08',
+        description:
+          'Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
     },
   },
 };
 
-export default definitions;
+// Keep it as a CommonJS module so we can easily import it from Node.js
+module.exports = definitions;

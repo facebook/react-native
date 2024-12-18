@@ -37,8 +37,23 @@ export type Int32TypeAnnotation = $ReadOnly<{
   type: 'Int32TypeAnnotation',
 }>;
 
+export type NumberLiteralTypeAnnotation = $ReadOnly<{
+  type: 'NumberLiteralTypeAnnotation',
+  value: number,
+}>;
+
 export type StringTypeAnnotation = $ReadOnly<{
   type: 'StringTypeAnnotation',
+}>;
+
+export type StringLiteralTypeAnnotation = $ReadOnly<{
+  type: 'StringLiteralTypeAnnotation',
+  value: string,
+}>;
+
+export type StringLiteralUnionTypeAnnotation = $ReadOnly<{
+  type: 'StringLiteralUnionTypeAnnotation',
+  types: $ReadOnlyArray<StringLiteralTypeAnnotation>,
 }>;
 
 export type StringEnumTypeAnnotation = $ReadOnly<{
@@ -61,7 +76,7 @@ export type MixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
 }>;
 
-type EventEmitterTypeAnnotation = $ReadOnly<{
+export type EventEmitterTypeAnnotation = $ReadOnly<{
   type: 'EventEmitterTypeAnnotation',
   typeAnnotation: NativeModuleEventEmitterTypeAnnotation | $FlowFixMe,
 }>;
@@ -294,12 +309,10 @@ export type NativeModuleNumberTypeAnnotation = $ReadOnly<{
   type: 'NumberTypeAnnotation',
 }>;
 
-export type NativeModuleEnumMembers = $ReadOnlyArray<
-  $ReadOnly<{
-    name: string,
-    value: string | number,
-  }>,
->;
+export type NativeModuleEnumMember = {
+  name: string,
+  value: StringLiteralTypeAnnotation | NumberLiteralTypeAnnotation,
+};
 
 export type NativeModuleEnumMemberType =
   | 'NumberTypeAnnotation'
@@ -315,7 +328,7 @@ export type NativeModuleEnumDeclarationWithMembers = {
   name: string,
   type: 'EnumDeclarationWithMembers',
   memberType: NativeModuleEnumMemberType,
-  members: NativeModuleEnumMembers,
+  members: $ReadOnlyArray<NativeModuleEnumMember>,
 };
 
 export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{
@@ -333,7 +346,7 @@ export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{
 
 export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
-  elementType?: Nullable<NativeModuleBaseTypeAnnotation>,
+  elementType: VoidTypeAnnotation | Nullable<NativeModuleBaseTypeAnnotation>,
 }>;
 
 export type UnionTypeAnnotationMemberType =
@@ -356,7 +369,10 @@ type NativeModuleEventEmitterBaseTypeAnnotation =
   | FloatTypeAnnotation
   | Int32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NumberLiteralTypeAnnotation
   | StringTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
   | VoidTypeAnnotation;
@@ -370,7 +386,10 @@ export type NativeModuleEventEmitterTypeAnnotation =
 
 export type NativeModuleBaseTypeAnnotation =
   | StringTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
+  | NumberLiteralTypeAnnotation
   | Int32TypeAnnotation
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
@@ -410,4 +429,10 @@ export type CompleteTypeAnnotation =
   | NativeModuleTypeAnnotation
   | NativeModuleFunctionTypeAnnotation
   | NullableTypeAnnotation<NativeModuleTypeAnnotation>
-  | UnsafeAnyTypeAnnotation;
+  | EventEmitterTypeAnnotation
+  | NativeModuleEnumDeclarationWithMembers
+  | UnsafeAnyTypeAnnotation
+  // Native Module event emitters and methods
+  | ObjectTypeAnnotation<
+      Nullable<NativeModuleFunctionTypeAnnotation> | EventEmitterTypeAnnotation,
+    >;

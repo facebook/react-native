@@ -24,20 +24,6 @@
 
 using namespace facebook::react;
 
-class StateReconciliationTestFeatureFlags
-    : public ReactNativeFeatureFlagsDefaults {
- public:
-  explicit StateReconciliationTestFeatureFlags(bool useStateAlignmentMechanism)
-      : useStateAlignmentMechanism_(useStateAlignmentMechanism) {}
-
-  bool useStateAlignmentMechanism() override {
-    return useStateAlignmentMechanism_;
-  }
-
- private:
-  bool useStateAlignmentMechanism_;
-};
-
 class DummyShadowTreeDelegate : public ShadowTreeDelegate {
  public:
   RootShadowNode::Unshared shadowTreeWillCommit(
@@ -48,7 +34,7 @@ class DummyShadowTreeDelegate : public ShadowTreeDelegate {
   };
 
   void shadowTreeDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator,
+      std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) const override {};
 };
 
@@ -82,20 +68,10 @@ class StateReconciliationTest : public ::testing::TestWithParam<bool> {
  public:
   StateReconciliationTest() : builder_(simpleComponentBuilder()) {}
 
-  void SetUp() override {
-    ReactNativeFeatureFlags::dangerouslyReset();
-    ReactNativeFeatureFlags::override(
-        std::make_unique<StateReconciliationTestFeatureFlags>(GetParam()));
-  }
-
-  void TearDown() override {
-    ReactNativeFeatureFlags::dangerouslyReset();
-  }
-
   ComponentBuilder builder_;
 };
 
-TEST_P(StateReconciliationTest, testStateReconciliation) {
+TEST_F(StateReconciliationTest, testStateReconciliation) {
   // ==== SETUP ====
 
   /*
@@ -158,15 +134,10 @@ TEST_P(StateReconciliationTest, testStateReconciliation) {
   auto state2 = scrollViewComponentDescriptor.createState(
       scrollViewFamily, std::make_shared<const ScrollViewState>());
 
-  auto newTraits = ShadowNodeTraits();
-  newTraits.set(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
-
   auto rootShadowNodeState2 = initialRootShadowNode->cloneTree(
-      scrollViewFamily,
-      [&](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone({.state = state2, .traits = newTraits});
-      },
-      newTraits);
+      scrollViewFamily, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = state2});
+      });
 
   EXPECT_EQ(
       findDescendantNode(*initialRootShadowNode, scrollViewFamily)->getState(),
@@ -190,11 +161,9 @@ TEST_P(StateReconciliationTest, testStateReconciliation) {
       scrollViewFamily, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeState3 = rootShadowNodeState2->cloneTree(
-      scrollViewFamily,
-      [&](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone({.state = state3, .traits = newTraits});
-      },
-      newTraits);
+      scrollViewFamily, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = state3});
+      });
 
   EXPECT_EQ(
       findDescendantNode(*rootShadowNodeState3, scrollViewFamily)->getState(),
@@ -232,7 +201,7 @@ TEST_P(StateReconciliationTest, testStateReconciliation) {
       state3->getRevision());
 }
 
-TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
+TEST_F(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
   // ==== SETUP ====
   /*
    <Root>
@@ -286,15 +255,10 @@ TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
   auto state2 = scrollViewComponentDescriptor.createState(
       scrollViewFamily, std::make_shared<const ScrollViewState>());
 
-  auto newTraits = ShadowNodeTraits();
-  newTraits.set(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
-
   auto rootShadowNode2 = rootShadowNode1->cloneTree(
-      scrollViewFamily,
-      [&](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone({.state = state2, .traits = newTraits});
-      },
-      newTraits);
+      scrollViewFamily, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = state2});
+      });
 
   EXPECT_EQ(
       findDescendantNode(*rootShadowNode2, scrollViewFamily)->getState(),
@@ -324,11 +288,9 @@ TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
       scrollViewFamily, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeClonedFromStateUpdate = rootShadowNode2->cloneTree(
-      scrollViewFamily,
-      [&](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone({.state = state3, .traits = newTraits});
-      },
-      newTraits);
+      scrollViewFamily, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = state3});
+      });
 
   // ==== State update ====
 
@@ -351,15 +313,9 @@ TEST_P(StateReconciliationTest, testCloneslessStateReconciliationDoesntClone) {
   auto scrollViewShadowNode = findDescendantNode(shadowTree, scrollViewFamily);
 
   EXPECT_EQ(scrollViewShadowNode->getState(), state3);
-
-  if (GetParam()) {
-    // Checking that newlyClonedShadowNode was not cloned unnecessarly by state
-    // progression. This fails with the old algorithm.
-    EXPECT_EQ(scrollViewShadowNode, newlyClonedShadowNode.get());
-  }
 }
 
-TEST_P(StateReconciliationTest, testStateReconciliationScrollViewChildUpdate) {
+TEST_F(StateReconciliationTest, testStateReconciliationScrollViewChildUpdate) {
   // ==== SETUP ====
   /*
    <Root>
@@ -431,15 +387,10 @@ TEST_P(StateReconciliationTest, testStateReconciliationScrollViewChildUpdate) {
   auto state2 = scrollViewComponentDescriptor.createState(
       scrollViewFamily, std::make_shared<const ScrollViewState>());
 
-  auto newTraits = ShadowNodeTraits();
-  newTraits.set(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
-
   auto rootShadowNode2 = initialRootShadowNode->cloneTree(
-      scrollViewFamily,
-      [&](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone({.state = state2, .traits = newTraits});
-      },
-      newTraits);
+      scrollViewFamily, [&](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = state2});
+      });
 
   shadowTree.commit(
       [&](const RootShadowNode& /*oldRootShadowNode*/) {
@@ -464,7 +415,7 @@ TEST_P(StateReconciliationTest, testStateReconciliationScrollViewChildUpdate) {
       newlyClonedViewShadowNode.get());
 }
 
-TEST_P(StateReconciliationTest, testScrollViewWithChildrenDeletion) {
+TEST_F(StateReconciliationTest, testScrollViewWithChildrenDeletion) {
   // ==== SETUP ====
 
   /*
@@ -539,18 +490,13 @@ TEST_P(StateReconciliationTest, testScrollViewWithChildrenDeletion) {
 
   // ==== State update ====
 
-  auto newTraits = ShadowNodeTraits();
-  newTraits.set(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
-
   auto newState = scrollViewComponentDescriptor.createState(
       childBFamily, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeClonedFromStateUpdate = rootNode->cloneTree(
-      childBFamily,
-      [&newState, newTraits](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone({.state = newState, .traits = newTraits});
-      },
-      newTraits);
+      childBFamily, [&newState](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = newState});
+      });
 
   shadowTree.commit(
       [&rootShadowNodeClonedFromStateUpdate](
@@ -578,7 +524,7 @@ TEST_P(StateReconciliationTest, testScrollViewWithChildrenDeletion) {
       newState);
 }
 
-TEST_P(StateReconciliationTest, testScrollViewWithComplexChildrenReorder) {
+TEST_F(StateReconciliationTest, testScrollViewWithComplexChildrenReorder) {
   // ==== SETUP ====
 
   /*
@@ -660,18 +606,13 @@ TEST_P(StateReconciliationTest, testScrollViewWithComplexChildrenReorder) {
 
   // ==== State update ====
 
-  auto newTraits = ShadowNodeTraits();
-  newTraits.set(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
-
   auto newState = scrollViewComponentDescriptor.createState(
       childAFamily, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeClonedFromStateUpdate = rootNode->cloneTree(
-      childAFamily,
-      [&newState, newTraits](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone({.state = newState, .traits = newTraits});
-      },
-      newTraits);
+      childAFamily, [&newState](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = newState});
+      });
 
   shadowTree.commit(
       [&rootShadowNodeClonedFromStateUpdate](
@@ -697,7 +638,7 @@ TEST_P(StateReconciliationTest, testScrollViewWithComplexChildrenReorder) {
   EXPECT_EQ(findDescendantNode(shadowTree, childAFamily)->getState(), newState);
 }
 
-TEST_P(StateReconciliationTest, testScrollViewWithChildrenReorder) {
+TEST_F(StateReconciliationTest, testScrollViewWithChildrenReorder) {
   // ==== SETUP ====
 
   /*
@@ -766,18 +707,13 @@ TEST_P(StateReconciliationTest, testScrollViewWithChildrenReorder) {
 
   // ==== State update ====
 
-  auto newTraits = ShadowNodeTraits();
-  newTraits.set(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
-
   auto newState = scrollViewComponentDescriptor.createState(
       childAFamily, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeClonedFromStateUpdate = rootNode->cloneTree(
-      childAFamily,
-      [&newState, newTraits](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone({.state = newState, .traits = newTraits});
-      },
-      newTraits);
+      childAFamily, [&newState](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = newState});
+      });
 
   shadowTree.commit(
       [&rootShadowNodeClonedFromStateUpdate](
@@ -803,7 +739,7 @@ TEST_P(StateReconciliationTest, testScrollViewWithChildrenReorder) {
   EXPECT_EQ(findDescendantNode(shadowTree, childAFamily)->getState(), newState);
 }
 
-TEST_P(StateReconciliationTest, testScrollViewWithChildrenAddition) {
+TEST_F(StateReconciliationTest, testScrollViewWithChildrenAddition) {
   // ==== SETUP ====
 
   /*
@@ -856,18 +792,13 @@ TEST_P(StateReconciliationTest, testScrollViewWithChildrenAddition) {
 
   // ==== State update ====
 
-  auto newTraits = ShadowNodeTraits();
-  newTraits.set(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
-
   auto newState = scrollViewComponentDescriptor.createState(
       scrollViewFamily, std::make_shared<const ScrollViewState>());
 
   auto rootShadowNodeClonedFromStateUpdate = rootNode->cloneTree(
-      scrollViewFamily,
-      [&newState, newTraits](const ShadowNode& oldShadowNode) {
-        return oldShadowNode.clone({.state = newState, .traits = newTraits});
-      },
-      newTraits);
+      scrollViewFamily, [&newState](const ShadowNode& oldShadowNode) {
+        return oldShadowNode.clone({.state = newState});
+      });
 
   // ==== Tree with new child ====
 
@@ -922,8 +853,3 @@ TEST_P(StateReconciliationTest, testScrollViewWithChildrenAddition) {
       findDescendantNode(shadowTree, childB->getFamily())->getState(),
       newState);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    StateReconciliationTestInstantiation,
-    StateReconciliationTest,
-    testing::Values(false, true));

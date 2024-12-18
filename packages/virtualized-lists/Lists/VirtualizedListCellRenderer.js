@@ -8,7 +8,6 @@
  * @format
  */
 
-import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 import type {CellRendererProps, RenderItemType} from './VirtualizedListProps';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
@@ -69,17 +68,7 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
     props: Props<ItemT>,
     prevState: State<ItemT>,
   ): ?State<ItemT> {
-    if (ReactNativeFeatureFlags.enableOptimisedVirtualizedCells()) {
-      if (props.item !== prevState.separatorProps.leadingItem) {
-        return {
-          separatorProps: {
-            ...prevState.separatorProps,
-            leadingItem: props.item,
-          },
-        };
-      }
-      return null;
-    } else {
+    if (props.item !== prevState.separatorProps.leadingItem) {
       return {
         separatorProps: {
           ...prevState.separatorProps,
@@ -87,6 +76,7 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
         },
       };
     }
+    return null;
   }
 
   // TODO: consider factoring separator stuff out of VirtualizedList into FlatList since it's not

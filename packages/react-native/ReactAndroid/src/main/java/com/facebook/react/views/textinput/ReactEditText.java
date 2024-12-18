@@ -23,6 +23,7 @@ import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.KeyListener;
@@ -49,6 +50,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -56,6 +58,8 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.style.BorderRadiusProp;
 import com.facebook.react.uimanager.style.BorderStyle;
@@ -68,11 +72,13 @@ import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
+import com.facebook.react.views.text.internal.span.LegacyLineHeightSpan;
 import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactSpan;
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
+import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
 import java.util.ArrayList;
@@ -402,6 +408,10 @@ public class ReactEditText extends AppCompatEditText {
       return;
     }
 
+    maybeSetSelection(start, end);
+  }
+
+  private void maybeSetSelection(int start, int end) {
     if (start != ReactConstants.UNSET && end != ReactConstants.UNSET) {
       // clamp selection values for safety
       start = clampToTextLength(start);
@@ -528,7 +538,8 @@ public class ReactEditText extends AppCompatEditText {
       int selectionStart = getSelectionStart();
       int selectionEnd = getSelectionEnd();
       setInputType(mStagedInputType);
-      setSelection(selectionStart, selectionEnd);
+      // Restore the selection
+      maybeSetSelection(selectionStart, selectionEnd);
     }
   }
 
@@ -862,7 +873,13 @@ public class ReactEditText extends AppCompatEditText {
 
     float lineHeight = mTextAttributes.getEffectiveLineHeight();
     if (!Float.isNaN(lineHeight)) {
-      workingText.setSpan(new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
+      if (ReactNativeFeatureFlags.enableAndroidLineHeightCentering()) {
+        workingText.setSpan(
+            new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
+      } else {
+        workingText.setSpan(
+            new LegacyLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
+      }
     }
   }
 
@@ -1049,11 +1066,17 @@ public class ReactEditText extends AppCompatEditText {
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
 
+    int selectionStart = getSelectionStart();
+    int selectionEnd = getSelectionEnd();
+
     // Used to ensure that text is selectable inside of removeClippedSubviews
     // See https://github.com/facebook/react-native/issues/6805 for original
     // fix that was ported to here.
 
     super.setTextIsSelectable(true);
+
+    // Restore the selection since `setTextIsSelectable` changed it.
+    maybeSetSelection(selectionStart, selectionEnd);
 
     if (mContainsImages) {
       Spanned text = getText();
@@ -1251,13 +1274,18 @@ public class ReactEditText extends AppCompatEditText {
     if (!haveText) {
       if (getHint() != null && getHint().length() > 0) {
         sb.append(getHint());
-      } else {
+      } else if (ViewUtil.getUIManagerType(this) != UIManagerType.FABRIC) {
         // Measure something so we have correct height, even if there's no string.
         sb.append("I");
       }
     }
 
     addSpansFromStyleAttributes(sb);
+    sb.setSpan(
+        new ReactTextPaintHolderSpan(new TextPaint(getPaint())),
+        0,
+        sb.length(),
+        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
     TextLayoutManager.setCachedSpannableForTag(getId(), sb);
   }
 

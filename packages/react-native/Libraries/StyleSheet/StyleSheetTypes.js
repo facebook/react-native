@@ -11,6 +11,7 @@
 'use strict';
 
 import type AnimatedNode from '../Animated/nodes/AnimatedNode';
+import type {ImageResizeMode} from './../Image/ImageResizeMode';
 import type {
   ____DangerouslyImpreciseStyle_InternalOverrides,
   ____ImageStyle_InternalOverrides,
@@ -58,7 +59,7 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
    *  'flex' is the default.
    */
-  display?: 'none' | 'flex',
+  display?: 'none' | 'flex' | 'contents',
 
   /** `width` sets the width of this component.
    *
@@ -612,6 +613,19 @@ type ____LayoutStyle_Internal = $ReadOnly<{
    */
   aspectRatio?: number | string,
 
+  /**
+   * Box sizing controls whether certain size properties apply to the node's
+   * content box or border box. The size properties in question include `width`,
+   * `height`, `minWidth`, `minHeight`, `maxWidth`, `maxHeight`, and `flexBasis`.
+   *
+   * e.g: Say a node has 10px of padding and 10px of borders on all
+   * sides and a defined `width` and `height` of 100px and 50px. Then the total
+   * size of the node (content area + padding + border) would be 100px by 50px
+   * under `boxSizing: border-box` and 120px by 70px under
+   * `boxSizing: content-box`.
+   */
+  boxSizing?: 'border-box' | 'content-box',
+
   /** `zIndex` controls which components display on top of others.
    *  Normally, you don't use `zIndex`. Components render according to
    *  their order in the document tree, so later components draw over
@@ -794,7 +808,7 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   cursor?: CursorValue,
   boxShadow?: $ReadOnlyArray<BoxShadowValue> | string,
   filter?: $ReadOnlyArray<FilterFunction> | string,
-  experimental_mixBlendMode?: ____BlendMode_Internal,
+  mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
   isolation?: 'auto' | 'isolate',
 }>;
@@ -928,8 +942,8 @@ export type ____TextStyle_Internal = $ReadOnly<{
 
 export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
-  resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
+  resizeMode?: ImageResizeMode,
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
@@ -941,8 +955,8 @@ export type ____ImageStyle_Internal = $ReadOnly<{
 
 export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   ...$Exact<____TextStyle_Internal>,
-  resizeMode?: 'contain' | 'cover' | 'stretch' | 'center' | 'repeat',
-  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down',
+  resizeMode?: ImageResizeMode,
+  objectFit?: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none',
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;

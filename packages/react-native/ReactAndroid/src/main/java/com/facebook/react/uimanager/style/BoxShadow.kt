@@ -7,8 +7,12 @@
 
 package com.facebook.react.uimanager.style
 
+import android.content.Context
 import androidx.annotation.ColorInt
+import com.facebook.react.bridge.ColorPropConverter
+import com.facebook.react.bridge.JSApplicationCausedNativeException
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
 
 /** Represents all logical properties and shorthands for border radius. */
 public data class BoxShadow(
@@ -21,15 +25,22 @@ public data class BoxShadow(
 ) {
   public companion object {
     @JvmStatic
-    public fun parse(boxShadow: ReadableMap): BoxShadow? {
-      if (!(boxShadow.hasKey("offsetX") && boxShadow.hasKey("offsetY"))) {
+    public fun parse(boxShadow: ReadableMap?, context: Context): BoxShadow? {
+      if (boxShadow == null || !(boxShadow.hasKey("offsetX") && boxShadow.hasKey("offsetY"))) {
         return null
       }
 
       val offsetX = boxShadow.getDouble("offsetX").toFloat()
       val offsetY = boxShadow.getDouble("offsetY").toFloat()
 
-      val color = if (boxShadow.hasKey("color")) boxShadow.getInt("color") else null
+      val color =
+          if (boxShadow.hasKey("color")) {
+            when (val type = boxShadow.getType("color")) {
+              ReadableType.Number -> boxShadow.getInt("color")
+              ReadableType.Map -> ColorPropConverter.getColor(boxShadow.getMap("color"), context)
+              else -> throw JSApplicationCausedNativeException("Unsupported color type ${type}")
+            }
+          } else null
       val blurRadius =
           if (boxShadow.hasKey("blurRadius")) boxShadow.getDouble("blurRadius").toFloat() else null
       val spreadDistance =

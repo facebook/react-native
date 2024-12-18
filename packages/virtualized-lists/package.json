@@ -24,10 +24,10 @@
     "nullthrows": "^1.1.1"
   },
   "devDependencies": {
-    "react-test-renderer": "19.0.0-rc-fb9a90fa48-20240614"
+    "react-test-renderer": "19.0.0"
   },
   "peerDependencies": {
-    "@types/react": "^18.2.6",
+    "@types/react": "^19.0.0",
     "react": "*",
     "react-native": "*"
   },

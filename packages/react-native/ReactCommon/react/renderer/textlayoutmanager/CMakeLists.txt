@@ -24,6 +24,7 @@ add_library(react_render_textlayoutmanager
 
 target_include_directories(react_render_textlayoutmanager
         PUBLIC
+          .
           ${REACT_COMMON_DIR}
           ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
 )

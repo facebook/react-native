@@ -12,6 +12,7 @@
 
 const {name, version: currentVersion} = require('./package.json');
 const chalk = require('chalk');
+const {spawn} = require('child_process');
 const {get} = require('https');
 const semver = require('semver');
 const {URL} = require('url');
@@ -200,6 +201,19 @@ async function main() {
       warnWithDeprecationSchedule();
     }
     warnWhenRunningInit();
+
+    const proc = spawn(
+      'npx',
+      ['@react-native-community/cli', ...process.argv.slice(2)],
+      {
+        stdio: 'inherit',
+      },
+    );
+
+    const code = await new Promise(resolve => {
+      proc.on('exit', resolve);
+    });
+    process.exit(code);
   }
 
   try {

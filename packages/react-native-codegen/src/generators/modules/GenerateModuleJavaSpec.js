@@ -127,10 +127,16 @@ function translateEventEmitterTypeToJavaType(
   eventEmitter: NativeModuleEventEmitterShape,
   imports: Set<string>,
 ): string {
-  switch (eventEmitter.typeAnnotation.typeAnnotation.type) {
+  const type = eventEmitter.typeAnnotation.typeAnnotation.type;
+  switch (type) {
     case 'StringTypeAnnotation':
       return 'String';
+    case 'StringLiteralTypeAnnotation':
+      return 'String';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'String';
     case 'NumberTypeAnnotation':
+    case 'NumberLiteralTypeAnnotation':
     case 'FloatTypeAnnotation':
     case 'DoubleTypeAnnotation':
     case 'Int32TypeAnnotation':
@@ -145,7 +151,16 @@ function translateEventEmitterTypeToJavaType(
     case 'ArrayTypeAnnotation':
       imports.add('com.facebook.react.bridge.ReadableArray');
       return 'ReadableArray';
+    case 'DoubleTypeAnnotation':
+    case 'FloatTypeAnnotation':
+    case 'Int32TypeAnnotation':
+    case 'VoidTypeAnnotation':
+      // TODO: Add support for these types
+      throw new Error(
+        `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
+      );
     default:
+      (type: empty);
       throw new Error(
         `Unsupported eventType for ${eventEmitter.name}. Found: ${eventEmitter.typeAnnotation.typeAnnotation.type}`,
       );
@@ -183,7 +198,13 @@ function translateFunctionParamToJavaType(
       }
     case 'StringTypeAnnotation':
       return wrapOptional('String', isRequired);
+    case 'StringLiteralTypeAnnotation':
+      return wrapOptional('String', isRequired);
+    case 'StringLiteralUnionTypeAnnotation':
+      return wrapOptional('String', isRequired);
     case 'NumberTypeAnnotation':
+      return wrapOptional('double', isRequired);
+    case 'NumberLiteralTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'FloatTypeAnnotation':
       return wrapOptional('double', isRequired);
@@ -273,7 +294,13 @@ function translateFunctionReturnTypeToJavaType(
       return 'void';
     case 'StringTypeAnnotation':
       return wrapOptional('String', isRequired);
+    case 'StringLiteralTypeAnnotation':
+      return wrapOptional('String', isRequired);
+    case 'StringLiteralUnionTypeAnnotation':
+      return wrapOptional('String', isRequired);
     case 'NumberTypeAnnotation':
+      return wrapOptional('double', isRequired);
+    case 'NumberLiteralTypeAnnotation':
       return wrapOptional('double', isRequired);
     case 'FloatTypeAnnotation':
       return wrapOptional('double', isRequired);
@@ -351,6 +378,8 @@ function getFalsyReturnStatementFromReturnType(
       return '';
     case 'NumberTypeAnnotation':
       return nullable ? 'return null;' : 'return 0;';
+    case 'NumberLiteralTypeAnnotation':
+      return nullable ? 'return null;' : 'return 0;';
     case 'FloatTypeAnnotation':
       return nullable ? 'return null;' : 'return 0.0;';
     case 'DoubleTypeAnnotation':
@@ -382,6 +411,10 @@ function getFalsyReturnStatementFromReturnType(
           );
       }
     case 'StringTypeAnnotation':
+      return nullable ? 'return null;' : 'return "";';
+    case 'StringLiteralTypeAnnotation':
+      return nullable ? 'return null;' : 'return "";';
+    case 'StringLiteralUnionTypeAnnotation':
       return nullable ? 'return null;' : 'return "";';
     case 'ObjectTypeAnnotation':
       return 'return null;';

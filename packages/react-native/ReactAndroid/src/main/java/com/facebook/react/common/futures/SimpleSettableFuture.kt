@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException
  * A super simple Future-like class that can safely notify another Thread when a value is ready.
  * Does not support canceling.
  */
-public class SimpleSettableFuture<T> : Future<T?> {
+internal class SimpleSettableFuture<T> : Future<T?> {
 
   private val readyLatch = CountDownLatch(1)
   private var result: T? = null

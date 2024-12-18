@@ -34,7 +34,7 @@ import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
 
-class RNTesterApplication : Application(), ReactApplication {
+internal class RNTesterApplication : Application(), ReactApplication {
   override val reactNativeHost: ReactNativeHost by lazy {
     object : DefaultReactNativeHost(this) {
       public override fun getJSMainModuleName(): String = BuildConfig.JS_MAIN_MODULE_NAME
@@ -76,16 +76,16 @@ class RNTesterApplication : Application(), ReactApplication {
                               ReactModuleInfo(
                                   SampleTurboModule.NAME,
                                   "SampleTurboModule",
-                                  _canOverrideExistingModule = false,
-                                  _needsEagerInit = false,
+                                  canOverrideExistingModule = false,
+                                  needsEagerInit = false,
                                   isCxxModule = false,
                                   isTurboModule = true),
                           SampleLegacyModule.NAME to
                               ReactModuleInfo(
                                   SampleLegacyModule.NAME,
                                   "SampleLegacyModule",
-                                  _canOverrideExistingModule = false,
-                                  _needsEagerInit = false,
+                                  canOverrideExistingModule = false,
+                                  needsEagerInit = false,
                                   isCxxModule = false,
                                   isTurboModule = false))
                     } else {

@@ -249,8 +249,8 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
             val result: WritableMap = Arguments.createMap()
             val imagePipeline: ImagePipeline = this@ImageLoaderModule.imagePipeline
             for (i in 0 until uris.size()) {
-              val uriString: String = uris.getString(i)
-              if (uriString.isNotEmpty()) {
+              val uriString = uris.getString(i)
+              if (!uriString.isNullOrEmpty()) {
                 val uri = Uri.parse(uriString)
                 if (imagePipeline.isInBitmapMemoryCache(uri)) {
                   result.putString(uriString, "memory")

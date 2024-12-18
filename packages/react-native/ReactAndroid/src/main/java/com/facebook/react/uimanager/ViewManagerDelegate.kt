@@ -18,7 +18,24 @@ import com.facebook.react.bridge.ReadableArray
  * @param <T> the type of the view supported by this delegate </T>
  */
 public interface ViewManagerDelegate<T : View?> {
-  public fun setProperty(view: T, propName: String, value: Any?)
 
-  public fun receiveCommand(view: T, commandName: String, args: ReadableArray?)
+  /**
+   * Sets a property on a view managed by this view manager.
+   *
+   * @param view the view to set the property on
+   * @param propName the name of the property to set (NOTE: should be `String` but is kept as
+   *   `String?` to avoid breaking changes)
+   * @param value the value to set the property to
+   */
+  public fun setProperty(view: T, propName: String?, value: Any?)
+
+  /**
+   * Executes a command from JS to the view
+   *
+   * @param view the view to execute the command on
+   * @param commandName the name of the command to execute (NOTE: should be `String` but is kept as
+   *   `String?` to avoid breaking changes)
+   * @param args the arguments to pass to the command
+   */
+  public fun receiveCommand(view: T, commandName: String?, args: ReadableArray?)
 }

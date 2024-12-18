@@ -9,7 +9,6 @@ package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
 import android.view.View;
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Nullsafe;
@@ -94,11 +93,6 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = "decelerationRate")
   public void setDecelerationRate(ReactHorizontalScrollView view, float decelerationRate) {
     view.setDecelerationRate(decelerationRate);
-  }
-
-  @ReactProp(name = "enableSyncOnScroll")
-  public void setEnableSyncOnScroll(ReactHorizontalScrollView view, boolean enableSyncOnScroll) {
-    view.setEnableSyncOnScroll(enableSyncOnScroll);
   }
 
   @ReactProp(name = "disableIntervalMomentum")
@@ -360,15 +354,5 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   @ReactProp(name = "horizontal")
   public void setHorizontal(ReactHorizontalScrollView view, boolean horizontal) {
     // Do Nothing: Align with static ViewConfigs
-  }
-
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public void setBoxShadow(ReactHorizontalScrollView view, @Nullable ReadableArray shadows) {
-    BackgroundStyleApplicator.setBoxShadow(view, shadows);
-  }
-
-  @Override
-  public void setBackgroundColor(ReactHorizontalScrollView view, @ColorInt int backgroundColor) {
-    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
   }
 }

@@ -78,8 +78,14 @@ export type ProgressBarAndroidProps = $ReadOnly<{|
  * },
  * ```
  */
-const ProgressBarAndroid = (
+const ProgressBarAndroidWithForwardedRef: component(
+  ref: React.RefSetter<
+    React.ElementRef<typeof ProgressBarAndroidNativeComponent>,
+  >,
+  ...props: ProgressBarAndroidProps
+) = React.forwardRef(function ProgressBarAndroid(
   {
+    // $FlowFixMe[incompatible-type]
     styleAttr = 'Normal',
     indeterminate = true,
     animating = true,
@@ -88,7 +94,7 @@ const ProgressBarAndroid = (
   forwardedRef: ?React.RefSetter<
     React.ElementRef<typeof ProgressBarAndroidNativeComponent>,
   >,
-) => {
+) {
   return (
     <ProgressBarAndroidNativeComponent
       styleAttr={styleAttr}
@@ -98,12 +104,10 @@ const ProgressBarAndroid = (
       ref={forwardedRef}
     />
   );
-};
-
-const ProgressBarAndroidToExport = React.forwardRef(ProgressBarAndroid);
+});
 
 module.exports =
   /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
    * error found when Flow v0.89 was deployed. To see the error, delete this
    * comment and run Flow. */
-  (ProgressBarAndroidToExport: typeof ProgressBarAndroidNativeComponent);
+  (ProgressBarAndroidWithForwardedRef: typeof ProgressBarAndroidNativeComponent);

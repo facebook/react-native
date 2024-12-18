@@ -21,6 +21,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegate;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -55,7 +57,7 @@ class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
       FLog.e(
           ReactConstants.TAG,
           "Unable to launch redbox because react activity "
-              + "is not available, here is the error that redbox would've displayed: "
+              + "are not available, here is the error that redbox would've displayed: "
               + (message != null ? message : "N/A"));
       return;
     }
@@ -82,9 +84,19 @@ class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
     @Nullable String message = mDevSupportManager.getLastErrorTitle();
     Activity context = mDevSupportManager.getCurrentActivity();
     if (context == null || context.isFinishing()) {
+      final @Nullable ReactContext reactContext = mDevSupportManager.getCurrentReactContext();
+      if (reactContext != null) {
+        /**
+         * If the activity isn't available, try again after the next onHostResume(). onHostResume()
+         * is when the activity gets attached to the react native.
+         */
+        runAfterHostResume(reactContext, this::show);
+        return;
+      }
+
       FLog.e(
           ReactConstants.TAG,
-          "Unable to launch redbox because react activity "
+          "Unable to launch redbox because react activity and react context "
               + "is not available, here is the error that redbox would've displayed: "
               + (message != null ? message : "N/A"));
       return;
@@ -140,11 +152,33 @@ class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
     mDialog.show();
   }
 
+  private static void runAfterHostResume(ReactContext reactContext, Runnable runnable) {
+    reactContext.addLifecycleEventListener(
+        new LifecycleEventListener() {
+          @Override
+          public void onHostResume() {
+            runnable.run();
+            reactContext.removeLifecycleEventListener(this);
+          }
+
+          @Override
+          public void onHostPause() {}
+
+          @Override
+          public void onHostDestroy() {}
+        });
+  }
+
   @Override
   public void hide() {
     // dismiss redbox if exists
     if (mDialog != null) {
-      mDialog.dismiss();
+      try {
+        mDialog.dismiss();
+      } catch (IllegalArgumentException e) {
+        FLog.e(
+            ReactConstants.TAG, "RedBoxDialogSurfaceDelegate: error while dismissing dialog: ", e);
+      }
       destroyContentView();
       mDialog = null;
     }

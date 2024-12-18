@@ -159,26 +159,8 @@
   return !shouldDisableScrollInteraction;
 }
 
-/*
- * Automatically centers the content such that if the content is smaller than the
- * ScrollView, we force it to be centered, but when you zoom or the content otherwise
- * becomes larger than the ScrollView, there is no padding around the content but it
- * can still fill the whole view.
- */
 - (void)setContentOffset:(CGPoint)contentOffset
 {
-  UIView *contentView = [self contentView];
-  if (contentView && _centerContent && !CGSizeEqualToSize(contentView.frame.size, CGSizeZero)) {
-    CGSize subviewSize = contentView.frame.size;
-    CGSize scrollViewSize = self.bounds.size;
-    if (subviewSize.width <= scrollViewSize.width) {
-      contentOffset.x = -(scrollViewSize.width - subviewSize.width) / 2.0;
-    }
-    if (subviewSize.height <= scrollViewSize.height) {
-      contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
-    }
-  }
-
   super.contentOffset = CGPointMake(
       RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
       RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
@@ -338,6 +320,12 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     if (!didFocusExternalTextField && focusEnd > endFrame.origin.y) {
       // Text field active region is below visible area with keyboard - update diff to bring into view
       contentDiff = endFrame.origin.y - focusEnd;
+    } else {
+      UIView *inputAccessoryView = _firstResponderViewOutsideScrollView.inputAccessoryView;
+      if (inputAccessoryView) {
+        // Text input view is within the inputAccessoryView.
+        contentDiff = endFrame.origin.y - beginFrame.origin.y;
+      }
     }
   } else if (endFrame.origin.y <= beginFrame.origin.y) {
     // Keyboard opened for other reason
@@ -427,6 +415,12 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   // Does nothing
 }
 
+- (void)setFrame:(CGRect)frame
+{
+  [super setFrame:frame];
+  [self centerContentIfNeeded];
+}
+
 - (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
 {
   [super insertReactSubview:view atIndex:atIndex];
@@ -444,6 +438,8 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
     RCTApplyTransformationAccordingLayoutDirection(_contentView, self.reactLayoutDirection);
     [_scrollView addSubview:view];
   }
+
+  [self centerContentIfNeeded];
 }
 
 - (void)removeReactSubview:(UIView *)subview
@@ -652,8 +648,44 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   }
 
 RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
-RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
+
+- (void)scrollViewDidZoom:(UIScrollView *)scrollView
+{
+  [self centerContentIfNeeded];
+
+  RCT_SEND_SCROLL_EVENT(onScroll, nil);
+  RCT_FORWARD_SCROLL_EVENT(scrollViewDidZoom : scrollView);
+}
+
+/*
+ * Automatically centers the content such that if the content is smaller than the
+ * ScrollView, we force it to be centered, but when you zoom or the content otherwise
+ * becomes larger than the ScrollView, there is no padding around the content but it
+ * can still fill the whole view.
+ * This implementation is based on https://petersteinberger.com/blog/2013/how-to-center-uiscrollview/.
+ */
+- (void)centerContentIfNeeded
+{
+  if (!_scrollView.centerContent) {
+    return;
+  }
+
+  CGSize contentSize = self.contentSize;
+  CGSize boundsSize = self.bounds.size;
+  if (CGSizeEqualToSize(contentSize, CGSizeZero) || CGSizeEqualToSize(boundsSize, CGSizeZero)) {
+    return;
+  }
+
+  CGFloat top = 0, left = 0;
+  if (contentSize.width < boundsSize.width) {
+    left = (boundsSize.width - contentSize.width) * 0.5f;
+  }
+  if (contentSize.height < boundsSize.height) {
+    top = (boundsSize.height - contentSize.height) * 0.5f;
+  }
+  _scrollView.contentInset = UIEdgeInsetsMake(top, left, top, left);
+}
 
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
 {
@@ -933,6 +965,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   CGSize contentSize = self.contentSize;
   if (!CGSizeEqualToSize(_scrollView.contentSize, contentSize)) {
     _scrollView.contentSize = contentSize;
+    [self centerContentIfNeeded];
   }
 }
 
@@ -1054,6 +1087,23 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollsToTop, scrollsToTop, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsHorizontalScrollIndicator, showsHorizontalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setShowsVerticalScrollIndicator, showsVerticalScrollIndicator, BOOL)
 RCT_SET_AND_PRESERVE_OFFSET(setZoomScale, zoomScale, CGFloat);
+
+- (void)setScrollIndicatorInsets:(UIEdgeInsets)value
+{
+  [_scrollView setScrollIndicatorInsets:value];
+}
+
+- (UIEdgeInsets)scrollIndicatorInsets
+{
+  UIEdgeInsets verticalScrollIndicatorInsets = [_scrollView verticalScrollIndicatorInsets];
+  UIEdgeInsets horizontalScrollIndicatorInsets = [_scrollView horizontalScrollIndicatorInsets];
+
+  return UIEdgeInsetsMake(
+      verticalScrollIndicatorInsets.top,
+      horizontalScrollIndicatorInsets.left,
+      verticalScrollIndicatorInsets.bottom,
+      horizontalScrollIndicatorInsets.right);
+}
 
 - (void)setAutomaticallyAdjustsScrollIndicatorInsets:(BOOL)automaticallyAdjusts API_AVAILABLE(ios(13.0))
 {

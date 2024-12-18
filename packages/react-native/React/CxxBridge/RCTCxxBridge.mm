@@ -371,7 +371,8 @@ struct RCTInstanceCallback : public InstanceCallback {
   // in case if some other tread resets it.
   auto reactInstance = _reactInstance;
   if (reactInstance) {
-    int unloadLevel = RCTGetMemoryPressureUnloadLevel();
+    // Memory Pressure Unloading Level 15 represents TRIM_MEMORY_RUNNING_CRITICAL.
+    int unloadLevel = 15;
     reactInstance->handleMemoryPressure(unloadLevel);
   }
 }

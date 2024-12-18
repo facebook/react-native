@@ -27,13 +27,26 @@ export type AnimatedProps<Props: {...}> = {
       }>)]: any,
 };
 
-export type AnimatedComponentType<
+// We could use a mapped type here to introduce acceptable Animated variants
+// of properties, instead of doing so in the core StyleSheetTypes
+// Inexact Props are not supported, they'll be made exact here.
+export type StrictAnimatedProps<Props: {...}> = $ReadOnly<{
+  ...$Exact<Props>,
+  passthroughAnimatedPropExplicitValues?: ?Props,
+}>;
+
+export type AnimatedComponentType<Props: {...}, +Instance = mixed> = component(
+  ref: React.RefSetter<Instance>,
+  ...AnimatedProps<Props>
+);
+
+export type StrictAnimatedComponentType<
   Props: {...},
   +Instance = mixed,
-> = React.AbstractComponent<AnimatedProps<Props>, Instance>;
+> = component(ref: React.RefSetter<Instance>, ...StrictAnimatedProps<Props>);
 
 export default function createAnimatedComponent<TProps: {...}, TInstance>(
-  Component: React.AbstractComponent<TProps, TInstance>,
+  Component: component(ref: React.RefSetter<TInstance>, ...TProps),
 ): AnimatedComponentType<TProps, TInstance> {
   return unstable_createAnimatedComponentWithAllowlist(Component, null);
 }
@@ -42,42 +55,43 @@ export function unstable_createAnimatedComponentWithAllowlist<
   TProps: {...},
   TInstance,
 >(
-  Component: React.AbstractComponent<TProps, TInstance>,
+  Component: component(ref: React.RefSetter<TInstance>, ...TProps),
   allowlist: ?AnimatedPropsAllowlist,
-): AnimatedComponentType<TProps, TInstance> {
-  const AnimatedComponent = React.forwardRef<AnimatedProps<TProps>, TInstance>(
-    (props, forwardedRef) => {
-      const [reducedProps, callbackRef] = useAnimatedProps<TProps, TInstance>(
-        // $FlowFixMe[incompatible-call]
-        props,
-        allowlist,
-      );
-      const ref = useMergeRefs<TInstance>(callbackRef, forwardedRef);
+): StrictAnimatedComponentType<TProps, TInstance> {
+  const AnimatedComponent = React.forwardRef<
+    StrictAnimatedProps<TProps>,
+    TInstance,
+  >((props, forwardedRef) => {
+    const [reducedProps, callbackRef] = useAnimatedProps<TProps, TInstance>(
+      // $FlowFixMe[incompatible-call]
+      props,
+      allowlist,
+    );
+    const ref = useMergeRefs<TInstance>(callbackRef, forwardedRef);
 
-      // Some components require explicit passthrough values for animation
-      // to work properly. For example, if an animated component is
-      // transformed and Pressable, onPress will not work after transform
-      // without these passthrough values.
-      // $FlowFixMe[prop-missing]
-      const {passthroughAnimatedPropExplicitValues, style} = reducedProps;
-      const passthroughStyle = passthroughAnimatedPropExplicitValues?.style;
-      const mergedStyle = useMemo(
-        () => composeStyles(style, passthroughStyle),
-        [passthroughStyle, style],
-      );
+    // Some components require explicit passthrough values for animation
+    // to work properly. For example, if an animated component is
+    // transformed and Pressable, onPress will not work after transform
+    // without these passthrough values.
+    // $FlowFixMe[prop-missing]
+    const {passthroughAnimatedPropExplicitValues, style} = reducedProps;
+    const passthroughStyle = passthroughAnimatedPropExplicitValues?.style;
+    const mergedStyle = useMemo(
+      () => composeStyles(style, passthroughStyle),
+      [passthroughStyle, style],
+    );
 
-      // NOTE: It is important that `passthroughAnimatedPropExplicitValues` is
-      // spread after `reducedProps` but before `style`.
-      return (
-        <Component
-          {...reducedProps}
-          {...passthroughAnimatedPropExplicitValues}
-          style={mergedStyle}
-          ref={ref}
-        />
-      );
-    },
-  );
+    // NOTE: It is important that `passthroughAnimatedPropExplicitValues` is
+    // spread after `reducedProps` but before `style`.
+    return (
+      <Component
+        {...reducedProps}
+        {...passthroughAnimatedPropExplicitValues}
+        style={mergedStyle}
+        ref={ref}
+      />
+    );
+  });
 
   AnimatedComponent.displayName = `Animated(${
     Component.displayName || 'Anonymous'

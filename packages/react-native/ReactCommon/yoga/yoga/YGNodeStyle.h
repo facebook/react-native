@@ -64,6 +64,9 @@ YG_EXPORT float YGNodeStyleGetFlexShrink(YGNodeConstRef node);
 YG_EXPORT void YGNodeStyleSetFlexBasis(YGNodeRef node, float flexBasis);
 YG_EXPORT void YGNodeStyleSetFlexBasisPercent(YGNodeRef node, float flexBasis);
 YG_EXPORT void YGNodeStyleSetFlexBasisAuto(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetFlexBasisMaxContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetFlexBasisFitContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetFlexBasisStretch(YGNodeRef node);
 YG_EXPORT YGValue YGNodeStyleGetFlexBasis(YGNodeConstRef node);
 
 YG_EXPORT void
@@ -93,32 +96,53 @@ YG_EXPORT void
 YGNodeStyleSetGap(YGNodeRef node, YGGutter gutter, float gapLength);
 YG_EXPORT void
 YGNodeStyleSetGapPercent(YGNodeRef node, YGGutter gutter, float gapLength);
-YG_EXPORT float YGNodeStyleGetGap(YGNodeConstRef node, YGGutter gutter);
+YG_EXPORT YGValue YGNodeStyleGetGap(YGNodeConstRef node, YGGutter gutter);
+
+YG_EXPORT void YGNodeStyleSetBoxSizing(YGNodeRef node, YGBoxSizing boxSizing);
+YG_EXPORT YGBoxSizing YGNodeStyleGetBoxSizing(YGNodeConstRef node);
 
 YG_EXPORT void YGNodeStyleSetWidth(YGNodeRef node, float width);
 YG_EXPORT void YGNodeStyleSetWidthPercent(YGNodeRef node, float width);
 YG_EXPORT void YGNodeStyleSetWidthAuto(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetWidthMaxContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetWidthFitContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetWidthStretch(YGNodeRef node);
 YG_EXPORT YGValue YGNodeStyleGetWidth(YGNodeConstRef node);
 
 YG_EXPORT void YGNodeStyleSetHeight(YGNodeRef node, float height);
 YG_EXPORT void YGNodeStyleSetHeightPercent(YGNodeRef node, float height);
 YG_EXPORT void YGNodeStyleSetHeightAuto(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetHeightMaxContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetHeightFitContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetHeightStretch(YGNodeRef node);
 YG_EXPORT YGValue YGNodeStyleGetHeight(YGNodeConstRef node);
 
 YG_EXPORT void YGNodeStyleSetMinWidth(YGNodeRef node, float minWidth);
 YG_EXPORT void YGNodeStyleSetMinWidthPercent(YGNodeRef node, float minWidth);
+YG_EXPORT void YGNodeStyleSetMinWidthMaxContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetMinWidthFitContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetMinWidthStretch(YGNodeRef node);
 YG_EXPORT YGValue YGNodeStyleGetMinWidth(YGNodeConstRef node);
 
 YG_EXPORT void YGNodeStyleSetMinHeight(YGNodeRef node, float minHeight);
 YG_EXPORT void YGNodeStyleSetMinHeightPercent(YGNodeRef node, float minHeight);
+YG_EXPORT void YGNodeStyleSetMinHeightMaxContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetMinHeightFitContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetMinHeightStretch(YGNodeRef node);
 YG_EXPORT YGValue YGNodeStyleGetMinHeight(YGNodeConstRef node);
 
 YG_EXPORT void YGNodeStyleSetMaxWidth(YGNodeRef node, float maxWidth);
 YG_EXPORT void YGNodeStyleSetMaxWidthPercent(YGNodeRef node, float maxWidth);
+YG_EXPORT void YGNodeStyleSetMaxWidthMaxContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetMaxWidthFitContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetMaxWidthStretch(YGNodeRef node);
 YG_EXPORT YGValue YGNodeStyleGetMaxWidth(YGNodeConstRef node);
 
 YG_EXPORT void YGNodeStyleSetMaxHeight(YGNodeRef node, float maxHeight);
 YG_EXPORT void YGNodeStyleSetMaxHeightPercent(YGNodeRef node, float maxHeight);
+YG_EXPORT void YGNodeStyleSetMaxHeightMaxContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetMaxHeightFitContent(YGNodeRef node);
+YG_EXPORT void YGNodeStyleSetMaxHeightStretch(YGNodeRef node);
 YG_EXPORT YGValue YGNodeStyleGetMaxHeight(YGNodeConstRef node);
 
 YG_EXPORT void YGNodeStyleSetAspectRatio(YGNodeRef node, float aspectRatio);

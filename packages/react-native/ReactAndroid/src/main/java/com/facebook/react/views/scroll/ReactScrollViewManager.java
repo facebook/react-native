@@ -9,7 +9,6 @@ package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
 import android.view.View;
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.Nullsafe;
@@ -166,11 +165,6 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   @ReactProp(name = "scrollPerfTag")
   public void setScrollPerfTag(ReactScrollView view, @Nullable String scrollPerfTag) {
     view.setScrollPerfTag(scrollPerfTag);
-  }
-
-  @ReactProp(name = "enableSyncOnScroll")
-  public void setEnableSyncOnScroll(ReactScrollView view, boolean value) {
-    view.setEnableSyncOnScroll(value);
   }
 
   @ReactProp(name = "pagingEnabled")
@@ -341,16 +335,6 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     } else {
       view.setMaintainVisibleContentPosition(null);
     }
-  }
-
-  @ReactProp(name = ViewProps.BOX_SHADOW, customType = "BoxShadow")
-  public void setBoxShadow(ReactScrollView view, @Nullable ReadableArray shadows) {
-    BackgroundStyleApplicator.setBoxShadow(view, shadows);
-  }
-
-  @Override
-  public void setBackgroundColor(ReactScrollView view, @ColorInt int backgroundColor) {
-    BackgroundStyleApplicator.setBackgroundColor(view, backgroundColor);
   }
 
   @Override

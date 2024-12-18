@@ -22,10 +22,11 @@ type ExceptionDecorator = ExceptionData => ExceptionData;
 let userExceptionDecorator: ?ExceptionDecorator;
 let inUserExceptionDecorator = false;
 
-// This Symbol is used to decorate an ExtendedError with extra data in select usecases.
+// This string is used to decorate an ExtendedError with extra data in select usecases.
 // Note that data passed using this method should be strictly contained,
 // as data that's not serializable/too large may cause issues with passing the error to the native code.
-const decoratedExtraDataKey: symbol = Symbol('decoratedExtraDataKey');
+// TODO(T204185517): We should use a Symbol for this, but jsi through jsc doesn't support it yet.
+const decoratedExtraDataKey = 'RN$ErrorExtraDataKey';
 
 /**
  * Allows the app to add information to the exception report before it is sent
@@ -120,6 +121,12 @@ function reportException(
     const NativeExceptionsManager =
       require('./NativeExceptionsManager').default;
     if (NativeExceptionsManager) {
+      if (isFatal) {
+        if (global.RN$hasHandledFatalException?.()) {
+          return;
+        }
+        global.RN$notifyOfFatalException?.();
+      }
       NativeExceptionsManager.reportException(data);
     }
   }
@@ -140,24 +147,31 @@ let inExceptionHandler = false;
  * Logs exceptions to the (native) console and displays them
  */
 function handleException(e: mixed, isFatal: boolean) {
-  let error: Error;
-  if (e instanceof Error) {
-    error = e;
-  } else {
-    // Workaround for reporting errors caused by `throw 'some string'`
-    // Unfortunately there is no way to figure out the stacktrace in this
-    // case, so if you ended up here trying to trace an error, look for
-    // `throw '<error message>'` somewhere in your codebase.
-    error = new SyntheticError(e);
-  }
-  try {
-    inExceptionHandler = true;
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
-     * parameters */
-    // $FlowFixMe[incompatible-call]
-    reportException(error, isFatal, /*reportToConsole*/ true);
-  } finally {
-    inExceptionHandler = false;
+  // TODO(T196834299): We should really use a c++ turbomodule for this
+  const reportToConsole = true;
+  if (
+    !global.RN$handleException ||
+    !global.RN$handleException(e, isFatal, reportToConsole)
+  ) {
+    let error: Error;
+    if (e instanceof Error) {
+      error = e;
+    } else {
+      // Workaround for reporting errors caused by `throw 'some string'`
+      // Unfortunately there is no way to figure out the stacktrace in this
+      // case, so if you ended up here trying to trace an error, look for
+      // `throw '<error message>'` somewhere in your codebase.
+      error = new SyntheticError(e);
+    }
+    try {
+      inExceptionHandler = true;
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+       * parameters */
+      // $FlowFixMe[incompatible-call]
+      reportException(error, isFatal, reportToConsole);
+    } finally {
+      inExceptionHandler = false;
+    }
   }
 }
 
@@ -169,7 +183,7 @@ function reactConsoleErrorHandler(...args) {
   if (!console.reportErrorsAsExceptions) {
     return;
   }
-  if (inExceptionHandler) {
+  if (inExceptionHandler || global.RN$inExceptionHandler?.()) {
     // The fundamental trick here is that are multiple entry point to logging errors:
     // (see D19743075 for more background)
     //
@@ -223,14 +237,21 @@ function reactConsoleErrorHandler(...args) {
     error.name = 'console.error';
   }
 
-  reportException(
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for this
-     * parameters */
-    // $FlowFixMe[incompatible-call]
-    error,
-    false, // isFatal
-    false, // reportToConsole
-  );
+  const isFatal = false;
+  const reportToConsole = false;
+  if (
+    !global.RN$handleException ||
+    !global.RN$handleException(error, isFatal, reportToConsole)
+  ) {
+    reportException(
+      /* $FlowFixMe[class-object-subtyping] added when improving typing for this
+       * parameters */
+      // $FlowFixMe[incompatible-call]
+      error,
+      isFatal,
+      reportToConsole,
+    );
+  }
 }
 
 /**

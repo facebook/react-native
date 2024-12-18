@@ -30,13 +30,13 @@ abstract class PrepareGlogTask : DefaultTask() {
 
   @TaskAction
   fun taskAction() {
-    project.copy {
-      it.from(glogPath)
-      it.from(project.file("src/main/jni/third-party/glog/"))
-      it.include("glog-${glogVersion.get()}/src/**/*", "CMakeLists.txt", "config.h")
-      it.duplicatesStrategy = DuplicatesStrategy.WARN
-      it.includeEmptyDirs = false
-      it.filesMatching("**/*.h.in") { matchedFile ->
+    project.copy { action ->
+      action.from(glogPath)
+      action.from(project.file("src/main/jni/third-party/glog/"))
+      action.include("glog-${glogVersion.get()}/src/**/*", "CMakeLists.txt", "config.h")
+      action.duplicatesStrategy = DuplicatesStrategy.INCLUDE
+      action.includeEmptyDirs = false
+      action.filesMatching("**/*.h.in") { matchedFile ->
         matchedFile.filter(
             mapOf(
                 "tokens" to
@@ -60,20 +60,20 @@ abstract class PrepareGlogTask : DefaultTask() {
             ReplaceTokens::class.java)
         matchedFile.path = (matchedFile.name.removeSuffix(".in"))
       }
-      it.into(outputDir)
+      action.into(outputDir)
     }
     val exportedDir = File(outputDir.asFile.get(), "exported/glog/").apply { mkdirs() }
-    project.copy {
-      it.from(outputDir)
-      it.include(
+    project.copy { action ->
+      action.from(outputDir)
+      action.include(
           "stl_logging.h",
           "logging.h",
           "raw_logging.h",
           "vlog_is_on.h",
           "**/src/glog/log_severity.h")
-      it.eachFile { file -> file.path = file.name }
-      it.includeEmptyDirs = false
-      it.into(exportedDir)
+      action.eachFile { file -> file.path = file.name }
+      action.includeEmptyDirs = false
+      action.into(exportedDir)
     }
   }
 }

@@ -13,6 +13,12 @@
 
 namespace facebook::react {
 
+ImageResponseObserverCoordinator::ImageResponseObserverCoordinator(
+    SharedFunction<> resumeFunction,
+    SharedFunction<> cancelationFunction)
+    : resumeRequest_(std::move(resumeFunction)),
+      cancelRequest_(std::move(cancelationFunction)) {}
+
 void ImageResponseObserverCoordinator::addObserver(
     const ImageResponseObserver& observer) const {
   mutex_.lock();
@@ -35,6 +41,13 @@ void ImageResponseObserverCoordinator::addObserver(
       observer.didReceiveFailure(ImageLoadError{imageErrorData});
       break;
     }
+    case ImageResponse::Status::Cancelled: {
+      observers_.push_back(&observer);
+      status_ = ImageResponse::Status::Loading;
+      mutex_.unlock();
+      resumeRequest_();
+      break;
+    }
   }
 }
 
@@ -46,6 +59,11 @@ void ImageResponseObserverCoordinator::removeObserver(
   auto position = std::find(observers_.begin(), observers_.end(), &observer);
   if (position != observers_.end()) {
     observers_.erase(position, observers_.end());
+
+    if (observers_.empty() && status_ == ImageResponse::Status::Loading) {
+      status_ = ImageResponse::Status::Cancelled;
+      cancelRequest_();
+    }
   }
 }
 
@@ -55,7 +73,9 @@ void ImageResponseObserverCoordinator::nativeImageResponseProgress(
     int64_t total) const {
   mutex_.lock();
   auto observers = observers_;
-  react_native_assert(status_ == ImageResponse::Status::Loading);
+  react_native_assert(
+      status_ == ImageResponse::Status::Loading ||
+      status_ == ImageResponse::Status::Cancelled);
   mutex_.unlock();
 
   for (auto observer : observers) {
@@ -68,7 +88,9 @@ void ImageResponseObserverCoordinator::nativeImageResponseComplete(
   mutex_.lock();
   imageData_ = imageResponse.getImage();
   imageMetadata_ = imageResponse.getMetadata();
-  react_native_assert(status_ == ImageResponse::Status::Loading);
+  react_native_assert(
+      status_ == ImageResponse::Status::Loading ||
+      status_ == ImageResponse::Status::Cancelled);
   status_ = ImageResponse::Status::Completed;
   auto observers = observers_;
   mutex_.unlock();
@@ -81,7 +103,9 @@ void ImageResponseObserverCoordinator::nativeImageResponseComplete(
 void ImageResponseObserverCoordinator::nativeImageResponseFailed(
     const ImageLoadError& loadError) const {
   mutex_.lock();
-  react_native_assert(status_ == ImageResponse::Status::Loading);
+  react_native_assert(
+      status_ == ImageResponse::Status::Loading ||
+      status_ == ImageResponse::Status::Cancelled);
   status_ = ImageResponse::Status::Failed;
   imageErrorData_ = loadError.getError();
   auto observers = observers_;

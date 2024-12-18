@@ -10,6 +10,7 @@
 
 import type {
   HostComponent,
+  HostInstance,
   InternalInstanceHandle,
   Node,
 } from '../Renderer/shims/ReactNativeTypes';
@@ -34,7 +35,7 @@ export function renderElement({
   useConcurrentRoot: boolean,
 }): void {
   if (useFabric) {
-    require('../Renderer/shims/ReactFabric').render(
+    require('../Renderer/shims/ReactFabric').default.render(
       element,
       rootTag,
       null,
@@ -46,7 +47,7 @@ export function renderElement({
       },
     );
   } else {
-    require('../Renderer/shims/ReactNative').render(
+    require('../Renderer/shims/ReactNative').default.render(
       element,
       rootTag,
       undefined,
@@ -61,8 +62,8 @@ export function renderElement({
 
 export function findHostInstance_DEPRECATED<TElementType: ElementType>(
   componentOrHandle: ?(ElementRef<TElementType> | number),
-): ?ElementRef<HostComponent<mixed>> {
-  return require('../Renderer/shims/ReactNative').findHostInstance_DEPRECATED(
+): ?HostInstance {
+  return require('../Renderer/shims/ReactNative').default.findHostInstance_DEPRECATED(
     componentOrHandle,
   );
 }
@@ -70,26 +71,26 @@ export function findHostInstance_DEPRECATED<TElementType: ElementType>(
 export function findNodeHandle<TElementType: ElementType>(
   componentOrHandle: ?(ElementRef<TElementType> | number),
 ): ?number {
-  return require('../Renderer/shims/ReactNative').findNodeHandle(
+  return require('../Renderer/shims/ReactNative').default.findNodeHandle(
     componentOrHandle,
   );
 }
 
 export function dispatchCommand(
-  handle: ElementRef<HostComponent<mixed>>,
+  handle: HostInstance,
   command: string,
   args: Array<mixed>,
 ): void {
   if (global.RN$Bridgeless === true) {
     // Note: this function has the same implementation in the legacy and new renderer.
     // However, evaluating the old renderer comes with some side effects.
-    return require('../Renderer/shims/ReactFabric').dispatchCommand(
+    return require('../Renderer/shims/ReactFabric').default.dispatchCommand(
       handle,
       command,
       args,
     );
   } else {
-    return require('../Renderer/shims/ReactNative').dispatchCommand(
+    return require('../Renderer/shims/ReactNative').default.dispatchCommand(
       handle,
       command,
       args,
@@ -98,10 +99,10 @@ export function dispatchCommand(
 }
 
 export function sendAccessibilityEvent(
-  handle: ElementRef<HostComponent<mixed>>,
+  handle: HostInstance,
   eventType: string,
 ): void {
-  return require('../Renderer/shims/ReactNative').sendAccessibilityEvent(
+  return require('../Renderer/shims/ReactNative').default.sendAccessibilityEvent(
     handle,
     eventType,
   );
@@ -114,7 +115,7 @@ export function sendAccessibilityEvent(
 export function unmountComponentAtNodeAndRemoveContainer(rootTag: RootTag) {
   // $FlowExpectedError[incompatible-type] rootTag is an opaque type so we can't really cast it as is.
   const rootTagAsNumber: number = rootTag;
-  require('../Renderer/shims/ReactNative').unmountComponentAtNodeAndRemoveContainer(
+  require('../Renderer/shims/ReactNative').default.unmountComponentAtNodeAndRemoveContainer(
     rootTagAsNumber,
   );
 }
@@ -124,7 +125,7 @@ export function unstable_batchedUpdates<T>(
   bookkeeping: T,
 ): void {
   // This doesn't actually do anything when batching updates for a Fabric root.
-  return require('../Renderer/shims/ReactNative').unstable_batchedUpdates(
+  return require('../Renderer/shims/ReactNative').default.unstable_batchedUpdates(
     fn,
     bookkeeping,
   );
@@ -135,10 +136,10 @@ export function isProfilingRenderer(): boolean {
 }
 
 export function isChildPublicInstance(
-  parentInstance: ReactFabricHostComponent | HostComponent<mixed>,
-  childInstance: ReactFabricHostComponent | HostComponent<mixed>,
+  parentInstance: ReactFabricHostComponent | HostComponent<empty>,
+  childInstance: ReactFabricHostComponent | HostComponent<empty>,
 ): boolean {
-  return require('../Renderer/shims/ReactNative').isChildPublicInstance(
+  return require('../Renderer/shims/ReactNative').default.isChildPublicInstance(
     parentInstance,
     childInstance,
   );
@@ -148,7 +149,7 @@ export function getNodeFromInternalInstanceHandle(
   internalInstanceHandle: InternalInstanceHandle,
 ): ?Node {
   // This is only available in Fabric
-  return require('../Renderer/shims/ReactFabric').getNodeFromInternalInstanceHandle(
+  return require('../Renderer/shims/ReactFabric').default.getNodeFromInternalInstanceHandle(
     internalInstanceHandle,
   );
 }
@@ -157,7 +158,7 @@ export function getPublicInstanceFromInternalInstanceHandle(
   internalInstanceHandle: InternalInstanceHandle,
 ): mixed /*PublicInstance | PublicTextInstance | null*/ {
   // This is only available in Fabric
-  return require('../Renderer/shims/ReactFabric').getPublicInstanceFromInternalInstanceHandle(
+  return require('../Renderer/shims/ReactFabric').default.getPublicInstanceFromInternalInstanceHandle(
     internalInstanceHandle,
   );
 }

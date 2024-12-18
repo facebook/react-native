@@ -9,6 +9,7 @@
 
 #include <react/renderer/imagemanager/ImageResponse.h>
 #include <react/renderer/imagemanager/ImageResponseObserver.h>
+#include <react/utils/SharedFunction.h>
 
 #include <mutex>
 #include <vector>
@@ -23,6 +24,10 @@ namespace facebook::react {
  */
 class ImageResponseObserverCoordinator {
  public:
+  ImageResponseObserverCoordinator(
+      SharedFunction<> resumeFunction,
+      SharedFunction<> cancelationFunction);
+
   /*
    * Interested parties may observe the image response.
    * If the current image request status is not equal to `Loading`, the observer
@@ -90,6 +95,16 @@ class ImageResponseObserverCoordinator {
    * Observer and data mutex.
    */
   mutable std::mutex mutex_;
+
+  /*
+   * Function we can call to resume image request.
+   */
+  SharedFunction<> resumeRequest_;
+
+  /*
+   * Function we can call to cancel image request.
+   */
+  SharedFunction<> cancelRequest_;
 };
 
 } // namespace facebook::react

@@ -14,6 +14,8 @@ RCT_EXTERN NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollec
 
 RCT_EXTERN NSString *const RCTWindowFrameDidChangeNotification;
 
+RCT_EXTERN NSString *const RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED;
+
 /**
  * This notification fires when the bridge initializes.
  */
@@ -48,15 +50,3 @@ RCT_EXTERN NSString *const RCTDidInitializeModuleNotification;
  */
 RCT_EXTERN BOOL RCTGetDispatchW3CPointerEvents(void);
 RCT_EXTERN void RCTSetDispatchW3CPointerEvents(BOOL value);
-
-/*
- * Memory Pressure Unloading Level
- */
-RCT_EXTERN int RCTGetMemoryPressureUnloadLevel(void);
-RCT_EXTERN void RCTSetMemoryPressureUnloadLevel(int value);
-
-/*
- * Use native view configs in bridgeless mode
- */
-RCT_EXTERN BOOL RCTGetUseNativeViewConfigsInBridgelessMode(void);
-RCT_EXTERN void RCTSetUseNativeViewConfigsInBridgelessMode(BOOL value);

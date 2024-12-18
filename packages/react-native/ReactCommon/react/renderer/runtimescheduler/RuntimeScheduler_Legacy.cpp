@@ -170,6 +170,9 @@ void RuntimeScheduler_Legacy::callExpiredTasks(jsi::Runtime& runtime) {
     }
   } catch (jsi::JSError& error) {
     onTaskError_(runtime, error);
+  } catch (std::exception& ex) {
+    jsi::JSError error(runtime, std::string("Non-js exception: ") + ex.what());
+    onTaskError_(runtime, error);
   }
 
   currentPriority_ = previousPriority;
@@ -232,6 +235,9 @@ void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) {
       executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
+    onTaskError_(runtime, error);
+  } catch (std::exception& ex) {
+    jsi::JSError error(runtime, std::string("Non-js exception: ") + ex.what());
     onTaskError_(runtime, error);
   }
 

@@ -148,16 +148,6 @@ void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logL
   bridgeProxyLoggingLevel = logLevel;
 }
 
-static BOOL useTurboModuleInteropForAllTurboModules = NO;
-BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void)
-{
-  return useTurboModuleInteropForAllTurboModules;
-}
-void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled)
-{
-  useTurboModuleInteropForAllTurboModules = enabled;
-}
-
 // Turn on TurboModule sync execution of void methods
 static BOOL gTurboModuleEnableSyncVoidMethods = NO;
 BOOL RCTTurboModuleSyncVoidMethodsEnabled(void)
@@ -217,7 +207,7 @@ class RCTBridgeHostTargetDelegate : public facebook::react::jsinspector_modern::
   void onReload(const PageReloadRequest &request) override
   {
     RCTAssertMainQueue();
-    [bridge_ reload];
+    RCTTriggerReloadCommandListeners(@"Reloading due to PageReloadRequest from DevTools.");
   }
 
   void onSetPausedInDebuggerMessage(const OverlaySetPausedInDebuggerMessageRequest &request) override

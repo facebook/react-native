@@ -29,6 +29,10 @@ export interface Spec extends TurboModule {
     onSuccess: (isReduceMotionEnabled: boolean) => void,
     onError: (error: Object) => void,
   ) => void;
+  +getCurrentDarkerSystemColorsState?: (
+    onSuccess: (isDarkerSystemColorsEnabled: boolean) => void,
+    onError: (error: Object) => void,
+  ) => void;
   +getCurrentPrefersCrossFadeTransitionsState?: (
     onSuccess: (prefersCrossFadeTransitions: boolean) => void,
     onError: (error: Object) => void,

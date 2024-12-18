@@ -7,8 +7,7 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.jni.HybridData
-import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStripAny
 
 /**
@@ -18,9 +17,7 @@ import com.facebook.proguard.annotations.DoNotStripAny
  * and are using [Dynamic] as a parameter type.
  */
 @DoNotStripAny
-private class DynamicNative(
-    @Suppress("NoHungarianNotation") @field:DoNotStrip private val mHybridData: HybridData?
-) : Dynamic {
+private class DynamicNative : HybridClassBase(), Dynamic {
 
   override val type: ReadableType
     get() = getTypeNative()

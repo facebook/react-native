@@ -15,12 +15,10 @@
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 #import <cxxreact/SystraceSection.h>
-#import <react/config/ReactNativeConfig.h>
 #import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/LayoutableShadowNode.h>
 #import <react/renderer/core/RawProps.h>
 #import <react/renderer/mounting/TelemetryController.h>
-#import <react/utils/CoreFeatures.h>
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTComponentViewRegistry.h>
@@ -74,9 +72,8 @@ static void RCTPerformMountInstructions(
 
       case ShadowViewMutation::Insert: {
         auto &newChildShadowView = mutation.newChildShadowView;
-        auto &parentShadowView = mutation.parentShadowView;
         auto &newChildViewDescriptor = [registry componentViewDescriptorWithTag:newChildShadowView.tag];
-        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
+        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:mutation.parentTag];
 
         UIView<RCTComponentViewProtocol> *newChildComponentView = newChildViewDescriptor.view;
 
@@ -95,9 +92,8 @@ static void RCTPerformMountInstructions(
 
       case ShadowViewMutation::Remove: {
         auto &oldChildShadowView = mutation.oldChildShadowView;
-        auto &parentShadowView = mutation.parentShadowView;
         auto &oldChildViewDescriptor = [registry componentViewDescriptorWithTag:oldChildShadowView.tag];
-        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:parentShadowView.tag];
+        auto &parentViewDescriptor = [registry componentViewDescriptorWithTag:mutation.parentTag];
         [parentViewDescriptor.view unmountChildComponentView:oldChildViewDescriptor.view index:mutation.index];
         break;
       }
@@ -187,7 +183,7 @@ static void RCTPerformMountInstructions(
                                           componentViewDescriptor:rootViewDescriptor];
 }
 
-- (void)scheduleTransaction:(MountingCoordinator::Shared)mountingCoordinator
+- (void)scheduleTransaction:(std::shared_ptr<const MountingCoordinator>)mountingCoordinator
 {
   if (RCTIsMainQueue()) {
     // Already on the proper thread, so:

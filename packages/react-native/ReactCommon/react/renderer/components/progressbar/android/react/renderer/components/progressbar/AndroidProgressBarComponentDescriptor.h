@@ -36,10 +36,6 @@ class AndroidProgressBarComponentDescriptor final
     // `AndroidProgressBarMeasurementsManager` to provide measurements to Yoga.
     androidProgressBarShadowNode.setAndroidProgressBarMeasurementsManager(
         measurementsManager_);
-
-    // All `AndroidProgressBarShadowNode`s must have leaf Yoga nodes with
-    // properly setup measure function.
-    androidProgressBarShadowNode.enableMeasurement();
   }
 
  private:

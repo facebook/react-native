@@ -165,20 +165,17 @@ class ReactSurfaceTest {
 
   internal class TestSurfaceHandler : SurfaceHandler {
     override var isRunning = false
-    override val moduleName: String = "TestSurfaceHandler"
-    override val surfaceId
-      get() = _surfaceId
-
-    private var _surfaceId = 0
+    override val moduleName = "TestSurfaceHandler"
+    override val surfaceId = 0
 
     var heightMeasureSpec = 0
     var widthMeasureSpec = 0
 
-    override fun start() {
+    fun start() {
       isRunning = true
     }
 
-    override fun stop() {
+    fun stop() {
       isRunning = false
     }
 
@@ -201,10 +198,6 @@ class ReactSurfaceTest {
 
     override fun setProps(props: NativeMap) {
       // no-op
-    }
-
-    override fun setSurfaceId(surfaceId: Int) {
-      _surfaceId = surfaceId
     }
   }
 }

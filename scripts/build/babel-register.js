@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-const {PACKAGES_DIR} = require('./build');
+const {PACKAGES_DIR, RN_INTEGRATION_TESTS_RUNNER_DIR} = require('../consts');
 
 let isRegisteredForMonorepo = false;
 
@@ -30,7 +30,15 @@ function registerForMonorepo() {
     return;
   }
 
-  require('metro-babel-register')([PACKAGES_DIR]);
+  if (process.env.FBSOURCE_ENV === '1') {
+    // $FlowExpectedError[cannot-resolve-module] - Won't resolve in OSS
+    require('@fb-tools/babel-register');
+  } else {
+    require('metro-babel-register')([
+      PACKAGES_DIR,
+      RN_INTEGRATION_TESTS_RUNNER_DIR,
+    ]);
+  }
 
   isRegisteredForMonorepo = true;
 }

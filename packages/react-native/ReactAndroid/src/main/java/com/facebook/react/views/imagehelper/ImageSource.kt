@@ -9,6 +9,7 @@ package com.facebook.react.views.imagehelper
 
 import android.content.Context
 import android.net.Uri
+import com.facebook.react.modules.fresco.ImageCacheControl
 import java.util.Objects
 
 /** Class describing an image source (network URI or resource) and size. */
@@ -19,7 +20,8 @@ constructor(
     /** Get the source of this image, as it was passed to the constructor. */
     public val source: String?,
     width: Double = 0.0,
-    height: Double = 0.0
+    height: Double = 0.0,
+    public val cacheControl: ImageCacheControl = ImageCacheControl.DEFAULT,
 ) {
 
   /** Get the URI for this image - can be either a parsed network URI or a resource URI. */
@@ -45,10 +47,11 @@ constructor(
     return java.lang.Double.compare(that.size, size) == 0 &&
         isResource == that.isResource &&
         uri == that.uri &&
-        source == that.source
+        source == that.source &&
+        cacheControl == that.cacheControl
   }
 
-  override fun hashCode(): Int = Objects.hash(uri, source, size, isResource)
+  override fun hashCode(): Int = Objects.hash(uri, source, size, isResource, cacheControl)
 
   private fun computeUri(context: Context): Uri =
       try {
@@ -70,6 +73,6 @@ constructor(
 
     @JvmStatic
     public fun getTransparentBitmapImageSource(context: Context): ImageSource =
-        ImageSource(context, TRANSPARENT_BITMAP_URI)
+        ImageSource(context, TRANSPARENT_BITMAP_URI, cacheControl = ImageCacheControl.DEFAULT)
   }
 }

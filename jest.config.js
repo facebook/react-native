@@ -11,6 +11,11 @@
 
 const {defaults} = require('jest-config');
 
+const PODS_LOCATIONS = [
+  'packages/rn-tester/Pods',
+  'packages/helloworld/ios/Pods',
+];
+
 module.exports = {
   transform: {
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$':
@@ -32,7 +37,8 @@ module.exports = {
     '/node_modules/',
     '<rootDir>/packages/react-native/sdks',
     '<rootDir>/packages/react-native/Libraries/Renderer',
-    '<rootDir>/packages/react-native-test-renderer/src',
+    '<rootDir>/packages/react-native/sdks/hermes/',
+    ...PODS_LOCATIONS,
   ],
   transformIgnorePatterns: ['node_modules/(?!@react-native/)'],
   haste: {
@@ -40,7 +46,11 @@ module.exports = {
     platforms: ['ios', 'android'],
   },
   moduleFileExtensions: ['fb.js'].concat(defaults.moduleFileExtensions),
-  modulePathIgnorePatterns: ['scripts/.*/__fixtures__/'],
+  modulePathIgnorePatterns: [
+    'scripts/.*/__fixtures__/',
+    '<rootDir>/packages/react-native/sdks/hermes/',
+    ...PODS_LOCATIONS,
+  ],
   unmockedModulePathPatterns: [
     'node_modules/react/',
     'packages/react-native/Libraries/Renderer',

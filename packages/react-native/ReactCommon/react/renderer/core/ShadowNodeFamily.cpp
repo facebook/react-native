@@ -31,7 +31,9 @@ ShadowNodeFamily::ShadowNodeFamily(
       eventEmitter_(std::move(eventEmitter)),
       componentDescriptor_(componentDescriptor),
       componentHandle_(componentDescriptor.getComponentHandle()),
-      componentName_(componentDescriptor.getComponentName()) {}
+      componentName_(componentDescriptor.getComponentName()),
+      isDeletionOfUnmountedViewsEnabled_(
+          ReactNativeFeatureFlags::enableDeletionOfUnmountedViews()) {}
 
 void ShadowNodeFamily::setParent(const ShadowNodeFamily::Shared& parent) const {
   react_native_assert(parent_.lock() == nullptr || parent_.lock() == parent);
@@ -77,8 +79,8 @@ Tag ShadowNodeFamily::getTag() const {
 }
 
 ShadowNodeFamily::~ShadowNodeFamily() {
-  if (ReactNativeFeatureFlags::enableDeletionOfUnmountedViews() &&
-      !hasBeenMounted_ && onUnmountedFamilyDestroyedCallback_ != nullptr) {
+  if (isDeletionOfUnmountedViewsEnabled_ && !hasBeenMounted_ &&
+      onUnmountedFamilyDestroyedCallback_ != nullptr) {
     onUnmountedFamilyDestroyedCallback_(*this);
   }
 }

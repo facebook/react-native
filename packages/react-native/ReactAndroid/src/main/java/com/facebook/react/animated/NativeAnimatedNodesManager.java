@@ -91,7 +91,8 @@ public class NativeAnimatedNodesManager implements EventDispatcherListener {
 
     UIManager uiManager = UIManagerHelper.getUIManager(mReactApplicationContext, uiManagerType);
     if (uiManager != null) {
-      uiManager.<EventDispatcher>getEventDispatcher().addListener(this);
+      EventDispatcher eventDispatcher = (EventDispatcher) uiManager.getEventDispatcher();
+      eventDispatcher.addListener(this);
       if (uiManagerType == UIManagerType.FABRIC) {
         mEventListenerInitializedForFabric = true;
       } else {

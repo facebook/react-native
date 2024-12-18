@@ -18,7 +18,7 @@ import type {
   Message,
 } from './parseLogBoxLog';
 
-import DebuggerSessionObserver from '../../../src/private/fusebox/FuseboxSessionObserver';
+import DebuggerSessionObserver from '../../../src/private/debugging/FuseboxSessionObserver';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
 import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
@@ -82,9 +82,9 @@ let warningFilter: WarningFilter = function (format) {
   return {
     finalFormat: format,
     forceDialogImmediately: false,
-    suppressDialog_LEGACY: true,
+    suppressDialog_LEGACY: false,
     suppressCompletely: false,
-    monitorEvent: 'unknown',
+    monitorEvent: 'warning_unhandled',
     monitorListVersion: 0,
     monitorSampleRate: 1,
   };
@@ -421,7 +421,7 @@ type State = $ReadOnly<{|
   selectedLogIndex: number,
 |}>;
 
-type SubscribedComponent = React.AbstractComponent<
+type SubscribedComponent = React.ComponentType<
   $ReadOnly<{|
     logs: $ReadOnlyArray<LogBoxLog>,
     isDisabled: boolean,
@@ -431,7 +431,7 @@ type SubscribedComponent = React.AbstractComponent<
 
 export function withSubscription(
   WrappedComponent: SubscribedComponent,
-): React.AbstractComponent<{||}> {
+): React.ComponentType<{||}> {
   class LogBoxStateSubscription extends React.Component<Props, State> {
     static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};

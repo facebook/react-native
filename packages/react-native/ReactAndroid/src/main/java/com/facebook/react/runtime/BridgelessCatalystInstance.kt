@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// TODO T207169925: Migrate CatalystInstance to Reacthost and remove the Suppress("DEPRECATION")
+// annotation
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.runtime
 
 import android.content.res.AssetManager
@@ -21,14 +25,15 @@ import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.bridge.RuntimeScheduler
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder
 
 @DoNotStrip
-@DeprecatedInNewArchitecture
+@Deprecated(
+    message =
+        "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
 public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : CatalystInstance {
 
   override fun handleMemoryPressure(level: Int) {
@@ -87,10 +92,12 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
   override fun <T : JavaScriptModule> getJSModule(jsInterface: Class<T>): T? =
       reactHost.currentReactContext?.getJSModule(jsInterface)
 
+  @get:Deprecated("Deprecated in Java")
   override public val javaScriptContextHolder: JavaScriptContextHolder
     get() = reactHost.getJavaScriptContextHolder()!!
 
   @Suppress("INAPPLICABLE_JVM_NAME")
+  @get:Deprecated("Deprecated in Java")
   @get:JvmName("getJSCallInvokerHolder") // This is needed to keep backward compatibility
   override public val jsCallInvokerHolder: CallInvokerHolder
     get() = reactHost.getJSCallInvokerHolder()!!
@@ -145,23 +152,23 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
     throw UnsupportedOperationException("Unimplemented method 'setGlobalVariable'")
   }
 
-  @DeprecatedInNewArchitecture(
+  @Deprecated(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
   override fun setTurboModuleRegistry(turboModuleRegistry: TurboModuleRegistry) {
     throw UnsupportedOperationException("Unimplemented method 'setTurboModuleRegistry'")
   }
 
-  @DeprecatedInNewArchitecture(
+  @Deprecated(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
   override fun setFabricUIManager(fabricUIManager: UIManager) {
     throw UnsupportedOperationException("Unimplemented method 'setFabricUIManager'")
   }
 
-  @DeprecatedInNewArchitecture(
+  @Deprecated(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not encouraged usage.")
+          "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
   override fun getFabricUIManager(): UIManager {
     throw UnsupportedOperationException("Unimplemented method 'getFabricUIManager'")
   }

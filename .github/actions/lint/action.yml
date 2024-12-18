@@ -30,6 +30,9 @@ runs:
     - name: Lint java
       shell: bash
       run: ./scripts/circleci/exec_swallow_error.sh yarn lint-java --check
+    - name: Verify not committing repo after running build
+      shell: bash
+      run: yarn run build --check
     - name: Run flowcheck
       shell: bash
       run: yarn flow-check

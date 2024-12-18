@@ -38,10 +38,10 @@ type Instance = {
   ...
 };
 
-const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
-  Props,
-  Instance,
-> = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
+const ScrollViewStickyHeaderWithForwardedRef: component(
+  ref: React.RefSetter<Instance>,
+  ...props: Props
+) = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
   const {
     inverted,
     scrollViewHeight,
@@ -65,8 +65,8 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
     ref.setNextHeaderY = setNextHeaderLayoutY;
     setIsFabric(isFabricPublicInstance(ref));
   }, []);
-  const ref: (React.ElementRef<typeof Animated.View> | null) => void =
-    // $FlowFixMe[incompatible-type] - Ref is mutated by `callbackRef`.
+  const ref: React.RefSetter<React.ElementRef<typeof Animated.View>> =
+    // $FlowFixMe[prop-missing] - Instance is mutated to have `setNextHeaderY`.
     useMergeRefs<Instance>(callbackRef, forwardedRef);
 
   const offset = useMemo(
@@ -275,12 +275,12 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
       : null;
 
   return (
-    /* $FlowFixMe[prop-missing] passthroughAnimatedPropExplicitValues isn't properly
-       included in the Animated.View flow type. */
     <Animated.View
       collapsable={false}
       nativeID={props.nativeID}
       onLayout={_onLayout}
+      /* $FlowFixMe[prop-missing] passthroughAnimatedPropExplicitValues isn't properly
+         included in the Animated.View flow type. */
       ref={ref}
       style={[
         child.props.style,
@@ -301,7 +301,6 @@ const ScrollViewStickyHeaderWithForwardedRef: React.AbstractComponent<
 const styles = StyleSheet.create({
   header: {
     zIndex: 10,
-    position: 'relative',
   },
   fill: {
     flex: 1,

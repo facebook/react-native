@@ -120,7 +120,6 @@ class HermesJSRuntime : public JSRuntime {
 };
 
 std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
-    std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
     std::shared_ptr<::hermes::vm::CrashManager> crashManager,
     std::shared_ptr<MessageQueueThread> msgQueueThread,
     bool allocInOldGenBeforeTTI) noexcept {
@@ -139,16 +138,13 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
     gcConfig.withAllocInYoung(false).withRevertToYGAtTTI(true);
   }
 
-  int64_t vmExperimentFlags = reactNativeConfig
-      ? reactNativeConfig->getInt64("ios_hermes:vm_experiment_flags")
-      : 0;
-
   ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
       ::hermes::vm::RuntimeConfig::Builder()
           .withGCConfig(gcConfig.build())
           .withEnableSampleProfiling(true)
-          .withMicrotaskQueue(ReactNativeFeatureFlags::enableMicrotasks())
-          .withVMExperimentFlags(vmExperimentFlags);
+          .withMicrotaskQueue(
+              ReactNativeFeatureFlags::enableBridgelessArchitecture() &&
+              !ReactNativeFeatureFlags::disableEventLoopOnBridgeless());
 
   if (crashManager) {
     runtimeConfigBuilder.withCrashMgr(crashManager);

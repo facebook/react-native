@@ -26,6 +26,7 @@ import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
+import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.bridge.GuardedRunnable
 import com.facebook.react.bridge.LifecycleEventListener
@@ -33,6 +34,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.common.ReactConstants
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.uimanager.JSPointerDispatcher
@@ -46,6 +48,7 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.views.common.ContextUtils
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.setStatusBarTranslucency
+import com.facebook.react.views.view.setSystemBarsTranslucency
 import java.util.Objects
 
 /**
@@ -72,6 +75,12 @@ public class ReactModalHostView(context: ThemedReactContext) :
   public var onShowListener: DialogInterface.OnShowListener? = null
   public var onRequestCloseListener: OnRequestCloseListener? = null
   public var statusBarTranslucent: Boolean = false
+    set(value) {
+      field = value
+      createNewDialog = true
+    }
+
+  public var navigationBarTranslucent: Boolean = false
     set(value) {
       field = value
       createNewDialog = true
@@ -110,7 +119,6 @@ public class ReactModalHostView(context: ThemedReactContext) :
   private var createNewDialog = false
 
   init {
-    context.addLifecycleEventListener(this)
     dialogRootViewGroup = DialogRootViewGroup(context)
   }
 
@@ -129,9 +137,14 @@ public class ReactModalHostView(context: ThemedReactContext) :
     dialogRootViewGroup.id = id
   }
 
+  protected override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    (context as ThemedReactContext).addLifecycleEventListener(this)
+  }
+
   protected override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
-    dismiss()
+    onDropInstance()
   }
 
   public override fun addView(child: View?, index: Int) {
@@ -294,7 +307,14 @@ public class ReactModalHostView(context: ThemedReactContext) :
      * changed. This has the pleasant side-effect of us not having to preface all Modals with "top:
      * statusBarHeight", since that margin will be included in the FrameLayout.
      */
-    get() = FrameLayout(context).apply { addView(dialogRootViewGroup) }
+    get() =
+        FrameLayout(context).apply {
+          addView(dialogRootViewGroup)
+          if (!statusBarTranslucent) {
+            // this is needed to prevent content hiding behind systems bars < API 30
+            this.fitsSystemWindows = true
+          }
+        }
 
   /**
    * updateProperties will update the properties that do not require us to recreate the dialog
@@ -306,29 +326,42 @@ public class ReactModalHostView(context: ThemedReactContext) :
     val dialogWindow =
         checkNotNull(dialog.window) { "dialog must have window when we call updateProperties" }
     val currentActivity = getCurrentActivity()
-    if (currentActivity == null || currentActivity.isFinishing) {
+    if (currentActivity == null || currentActivity.isFinishing || currentActivity.isDestroyed) {
       // If the activity has disappeared, then we shouldn't update the window associated to the
       // Dialog.
       return
     }
-    val activityWindow = currentActivity.window
-    if (activityWindow != null) {
-      val activityWindowFlags = activityWindow.attributes.flags
-      if ((activityWindowFlags and WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
-        dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-      } else {
-        dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+    try {
+      val activityWindow = currentActivity.window
+      if (activityWindow != null) {
+        val activityWindowFlags = activityWindow.attributes.flags
+        if ((activityWindowFlags and WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0) {
+          dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        } else {
+          dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        }
       }
-    }
 
-    dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
+      // Navigation bar cannot be translucent without status bar being translucent too
+      dialogWindow.setSystemBarsTranslucency(navigationBarTranslucent)
 
-    if (transparent) {
-      dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-    } else {
-      dialogWindow.setDimAmount(0.5f)
-      dialogWindow.setFlags(
-          WindowManager.LayoutParams.FLAG_DIM_BEHIND, WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+      if (!navigationBarTranslucent) {
+        dialogWindow.setStatusBarTranslucency(statusBarTranslucent)
+      }
+
+      if (transparent) {
+        dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+      } else {
+        dialogWindow.setDimAmount(0.5f)
+        dialogWindow.setFlags(
+            WindowManager.LayoutParams.FLAG_DIM_BEHIND, WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+      }
+    } catch (e: IllegalArgumentException) {
+      // This is to prevent a crash from the following error, without a clear repro steps:
+      // java.lang.IllegalArgumentException: View=DecorView@c94931b[XxxActivity] not attached to
+      // window manager
+      FLog.e(
+          ReactConstants.TAG, "ReactModalHostView: error while setting window flags: ", e.message)
     }
   }
 
@@ -462,7 +495,7 @@ public class ReactModalHostView(context: ThemedReactContext) :
       return super.onHoverEvent(event)
     }
 
-    override fun onChildStartedNativeGesture(childView: View, ev: MotionEvent) {
+    override fun onChildStartedNativeGesture(childView: View?, ev: MotionEvent) {
       eventDispatcher?.let { eventDispatcher ->
         jSTouchDispatcher.onChildStartedNativeGesture(ev, eventDispatcher)
         jSPointerDispatcher?.onChildStartedNativeGesture(childView, ev, eventDispatcher)

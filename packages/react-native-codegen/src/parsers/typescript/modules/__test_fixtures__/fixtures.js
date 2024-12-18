@@ -113,8 +113,10 @@ import * as TurboModuleRegistry from '../TurboModuleRegistry';
 export interface Spec extends TurboModule {
   readonly passBool?: (arg: boolean) => void;
   readonly passNumber: (arg: number) => void;
+  readonly passNumberLiteral: (arg: 4) => void;
   readonly passString: (arg: string) => void;
   readonly passStringish: (arg: Stringish) => void;
+  readonly passStringLiteral: (arg: 'A String Literal') => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
@@ -146,6 +148,7 @@ export type ObjectAlias = {
   label: string;
   truthy: boolean;
 };
+export type PureObjectAlias = ObjectAlias;
 export type ReadOnlyAlias = Readonly<ObjectAlias>;
 
 export interface Spec extends TurboModule {
@@ -155,6 +158,7 @@ export interface Spec extends TurboModule {
   readonly getArray: (a: Array<A>) => {a: B};
   readonly getStringFromAlias: (a: ObjectAlias) => string;
   readonly getStringFromNullableAlias: (a: ObjectAlias | null) => string;
+  readonly getStringFromPureAlias: (a: PureObjectAlias) => string;
   readonly getStringFromReadOnlyAlias: (a: ReadOnlyAlias) => string;
   readonly getStringFromNullableReadOnlyAlias: (a: ReadOnlyAlias | null) => string;
 }
@@ -723,6 +727,33 @@ export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 
 `;
 
+const NATIVE_MODULE_WITH_UNION_RETURN_TYPES = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  readonly getStringUnion: () => 'light' | 'dark';
+  readonly setStringUnion: (strings: 'light' | 'dark') => void;
+
+  readonly getNumberUnion: () => 1 | 2;
+  readonly setNumberUnion: (numbers: 1 | 2) => void;
+
+  readonly getObjectUnion: () => {a: 1} | {b: 2};
+  readonly setObjectUnion: (objects: {a: 1} | {b: 2}) => void;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
 const NATIVE_MODULE_WITH_EVENT_EMITTERS = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -835,6 +866,7 @@ export enum Quality {
 }
 
 export enum Resolution {
+  Corrupted = -1,
   Low = 720,
   High = 1080,
 }
@@ -870,7 +902,7 @@ export type CustomDeviceEvent = {
 export interface Spec extends TurboModule {
   readonly getCallback: () => () => void;
   readonly getMixed: (arg: unknown) => unknown;
-  readonly getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => string;
+  readonly getEnums: (quality: Quality, resolution?: Resolution, stringOptions: StringOptions) => Quality;
   readonly getBinaryTreeNode: (arg: BinaryTreeNode) => BinaryTreeNode;
   readonly getGraphNode: (arg: GraphNode) => GraphNode;
   readonly getMap: (arg: {[a: string]: number | null;}) => {[b: string]: number | null;};
@@ -910,6 +942,7 @@ module.exports = {
   NATIVE_MODULE_WITH_BASIC_PARAM_TYPES,
   NATIVE_MODULE_WITH_CALLBACK,
   NATIVE_MODULE_WITH_UNION,
+  NATIVE_MODULE_WITH_UNION_RETURN_TYPES,
   NATIVE_MODULE_WITH_EVENT_EMITTERS,
   EMPTY_NATIVE_MODULE,
   ANDROID_ONLY_NATIVE_MODULE,

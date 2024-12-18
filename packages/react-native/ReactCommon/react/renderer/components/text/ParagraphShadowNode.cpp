@@ -58,6 +58,7 @@ const Content& ParagraphShadowNode::getContent(
   auto attributedString = AttributedString{};
   auto attachments = Attachments{};
   buildAttributedString(textAttributes, *this, attributedString, attachments);
+  attributedString.setBaseTextAttributes(textAttributes);
 
   content_ = Content{
       attributedString, getConcreteProps().paragraphAttributes, attachments};
