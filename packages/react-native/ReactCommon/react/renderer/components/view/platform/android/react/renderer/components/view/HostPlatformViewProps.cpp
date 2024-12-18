@@ -133,4 +133,25 @@ SharedDebugStringConvertibleList HostPlatformViewProps::getDebugProps() const {
 }
 #endif
 
+#ifdef ANDROID
+
+folly::dynamic HostPlatformViewProps::getDiffProps(
+    const Props* prevProps) const {
+  folly::dynamic result = folly::dynamic::object();
+
+  static const auto defaultProps = HostPlatformViewProps();
+
+  const HostPlatformViewProps* oldProps = prevProps == nullptr
+      ? &defaultProps
+      : static_cast<const HostPlatformViewProps*>(prevProps);
+
+  if (focusable != oldProps->focusable) {
+    result["focusable"] = focusable;
+  }
+
+  return result;
+}
+
+#endif
+
 } // namespace facebook::react
