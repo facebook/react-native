@@ -2157,7 +2157,12 @@ type AndroidProps = $ReadOnly<{|
 |}>;
 type StickyHeaderComponentType = component(
   ref?: React.RefSetter<
-    $ReadOnly<interface { setNextHeaderY: (number) => void }>,
+    $ReadOnly<
+      interface {
+        setNextHeaderY: (number) => void,
+        setPrevHeaderY: (number) => void,
+      },
+    >,
   >,
   ...ScrollViewStickyHeaderProps
 );
@@ -2219,6 +2224,7 @@ declare class ScrollView extends React.Component<Props, State> {
   _scrollAnimatedValueAttachment: ?{ detach: () => void, ... };
   _stickyHeaderRefs: Map<string, React.ElementRef<StickyHeaderComponentType>>;
   _headerLayoutYs: Map<string, number>;
+  _headerLayoutHeights: Map<string, number>;
   _keyboardMetrics: ?KeyboardMetrics;
   _additionalScrollOffset: number;
   _isTouching: boolean;
@@ -2451,6 +2457,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 "export type Props = $ReadOnly<{
   children?: ExactReactElement_DEPRECATED<$FlowFixMe>,
   nextHeaderLayoutY: ?number,
+  prevHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
   scrollAnimatedValue: Animated.Value,
   inverted: ?boolean,
@@ -2460,6 +2467,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 }>;
 type Instance = {
   ...React.ElementRef<typeof Animated.View>,
+  setPrevHeaderY: (number) => void,
   setNextHeaderY: (number) => void,
   ...
 };
