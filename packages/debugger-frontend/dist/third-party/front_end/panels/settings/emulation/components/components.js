@@ -7,10 +7,10 @@ import*as e from"../../../../core/i18n/i18n.js";import*as t from"../../../../cor
           @input=${e=>{const t=e.target.value;this.#v(n,t)}}
           .value=${r}
           placeholder=${a}
-          jslog=${s.textField().track({keydown:!0}).context(t.StringUtilities.toKebabCase(n))}
+          jslog=${s.textField().track({change:!0}).context(t.StringUtilities.toKebabCase(n))}
           />
       </label>
-    `}#k(){const{platform:e,platformVersion:t}=this.#r;return i.html`
+    `}#D(){const{platform:e,platformVersion:t}=this.#r;return i.html`
       <span class="full-row label">${h(d.platformLabel)}</span>
       <div class="full-row brand-row" aria-label=${h(d.platformProperties)} role="group">
         <input
@@ -20,7 +20,7 @@ import*as e from"../../../../core/i18n/i18n.js";import*as t from"../../../../cor
           .value=${e}
           placeholder=${h(d.platformPlaceholder)}
           aria-label=${h(d.platformLabel)}
-          jslog=${s.textField("platform").track({keydown:!0})}
+          jslog=${s.textField("platform").track({change:!0})}
         />
         <input
           class="input-field half-row"
@@ -29,10 +29,10 @@ import*as e from"../../../../core/i18n/i18n.js";import*as t from"../../../../cor
           .value=${t}
           placeholder=${h(d.platformVersion)}
           aria-label=${h(d.platformVersion)}
-          jslog=${s.textField("platform-version").track({keydown:!0})}
+          jslog=${s.textField("platform-version").track({change:!0})}
         />
       </div>
-    `}#y(){const{model:e,mobile:t}=this.#r,a=this.#n?i.html`
+    `}#A(){const{model:e,mobile:t}=this.#r,a=this.#n?i.html`
       <label class="mobile-checkbox-container">
         <input type="checkbox" @input=${e=>{const t=e.target.checked;this.#v("mobile",t)}} .checked=${t}
           jslog=${s.toggle("mobile").track({click:!0})}
@@ -48,11 +48,11 @@ import*as e from"../../../../core/i18n/i18n.js";import*as t from"../../../../cor
           @input=${e=>{const t=e.target.value;this.#v("model",t)}}
           .value=${e}
           placeholder=${h(d.deviceModel)}
-          jslog=${s.textField("model").track({keydown:!0})}
+          jslog=${s.textField("model").track({change:!0})}
         />
         ${a}
       </div>
-    `}#D(){const{brands:e=[{brand:"",version:""}]}=this.#r,t=e.map(((e,t)=>{const{brand:a,version:n}=e,l=()=>{this.#u(t)};return i.html`
+    `}#k(){const{brands:e=[{brand:"",version:""}]}=this.#r,t=e.map(((e,t)=>{const{brand:a,version:n}=e,l=()=>{this.#u(t)};return i.html`
         <div class="full-row brand-row" aria-label=${h(d.brandProperties)} role="group">
           <input
             class="input-field ua-brand-name-input"
@@ -62,7 +62,7 @@ import*as e from"../../../../core/i18n/i18n.js";import*as t from"../../../../cor
             id="ua-brand-${t+1}-input"
             placeholder=${h(d.brandName)}
             aria-label=${h(d.brandNameAriaLabel,{PH1:t+1})}
-            jslog=${s.textField("brand-name").track({keydown:!0})}
+            jslog=${s.textField("brand-name").track({change:!0})}
           />
           <input
             class="input-field"
@@ -71,7 +71,7 @@ import*as e from"../../../../core/i18n/i18n.js";import*as t from"../../../../cor
             .value=${n}
             placeholder=${h(d.significantBrandVersionPlaceholder)}
             aria-label=${h(d.brandVersionAriaLabel,{PH1:t+1})}
-            jslog=${s.textField("brand-version").track({keydown:!0})}
+            jslog=${s.textField("brand-version").track({change:!0})}
           />
           <${r.Icon.Icon.litTagName}
             .data=${{color:"var(--icon-default)",iconName:"bin",width:"16px",height:"16px"}}
@@ -104,7 +104,7 @@ import*as e from"../../../../core/i18n/i18n.js";import*as t from"../../../../cor
         </${r.Icon.Icon.litTagName}>
         ${h(d.addBrand)}
       </div>
-    `}#A(){const{fullVersionList:e=[{brand:"",version:""}]}=this.#r,t=e.map(((e,t)=>{const{brand:a,version:n}=e,l=()=>{this.#p(t)};return i.html`
+    `}#y(){const{fullVersionList:e=[{brand:"",version:""}]}=this.#r,t=e.map(((e,t)=>{const{brand:a,version:n}=e,l=()=>{this.#p(t)};return i.html`
         <div
           class="full-row brand-row"
           aria-label=${h(d.brandProperties)}
@@ -118,7 +118,7 @@ import*as e from"../../../../core/i18n/i18n.js";import*as t from"../../../../cor
             id="fvl-brand-${t+1}-input"
             placeholder=${h(d.brandName)}
             aria-label=${h(d.brandNameAriaLabel,{PH1:t+1})}
-            jslog=${s.textField("brand-name").track({keydown:!0})}
+            jslog=${s.textField("brand-name").track({change:!0})}
           />
           <input
             class="input-field"
@@ -127,7 +127,7 @@ import*as e from"../../../../core/i18n/i18n.js";import*as t from"../../../../cor
             .value=${n}
             placeholder=${h(d.brandVersionPlaceholder)}
             aria-label=${h(d.brandVersionAriaLabel,{PH1:t+1})}
-            jslog=${s.textField("brand-version").track({keydown:!0})}
+            jslog=${s.textField("brand-version").track({change:!0})}
           />
           <${r.Icon.Icon.litTagName}
             .data=${{color:"var(--icon-default)",iconName:"bin",width:"16px",height:"16px"}}
@@ -160,9 +160,9 @@ import*as e from"../../../../core/i18n/i18n.js";import*as t from"../../../../cor
         </${r.Icon.Icon.litTagName}>
         ${h(d.addBrand)}
       </div>
-    `}#l(){const{fullVersion:e,architecture:t}=this.#r,n=this.#D(),l=this.#A(),o=this.#x(h(d.fullBrowserVersion),h(d.fullBrowserVersionPlaceholder),e||"","fullVersion"),c=this.#k(),u=this.#x(h(d.architecture),h(d.architecturePlaceholder),t,"architecture"),p=this.#y(),m=this.#i?i.html`
+    `}#l(){const{fullVersion:e,architecture:t}=this.#r,n=this.#k(),l=this.#y(),o=this.#x(h(d.fullBrowserVersion),h(d.fullBrowserVersionPlaceholder),e||"","fullVersion"),c=this.#D(),u=this.#x(h(d.architecture),h(d.architecturePlaceholder),t,"architecture"),p=this.#A(),m=this.#i?i.html`
       <${a.Button.Button.litTagName}
-        .variant=${"secondary"}
+        .variant=${"outlined"}
         .type=${"submit"}
       >
         ${h(d.update)}

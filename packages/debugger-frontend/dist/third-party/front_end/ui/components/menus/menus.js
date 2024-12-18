@@ -10,7 +10,7 @@ import*as e from"../../../core/platform/platform.js";import*as t from"../helpers
         .getConnectorCustomXPosition=${this.getConnectorCustomXPosition}
         on-render=${t.Directives.nodeRenderedCallback((e=>{this.#s=e}))}
         >
-        <span id="container" role="menu" tabIndex="0" @keydown=${this.#u} jslog=${n.menu()}>
+        <span id="container" role="menu" tabIndex="0" @keydown=${this.#u} jslog=${n.menu().track({resize:!0,keydown:"Escape"})}>
           <slot @click=${this.#h}>
           </slot>
         </span>
