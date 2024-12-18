@@ -1045,7 +1045,6 @@ public abstract interface class com/facebook/react/bridge/NativeModule {
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun initialize ()V
 	public abstract fun invalidate ()V
-	public fun onCatalystInstanceDestroy ()V
 }
 
 public class com/facebook/react/bridge/NativeModuleRegistry {
