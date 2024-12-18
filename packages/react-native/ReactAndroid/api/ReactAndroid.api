@@ -381,6 +381,7 @@ public class com/facebook/react/ReactRootView : android/widget/FrameLayout, com/
 	protected fun finalize ()V
 	public fun getAppProperties ()Landroid/os/Bundle;
 	public fun getCurrentReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	protected fun getEventDispatcher ()Lcom/facebook/react/uimanager/events/EventDispatcher;
 	public fun getHeightMeasureSpec ()I
 	public fun getJSModuleName ()Ljava/lang/String;
 	public fun getReactInstanceManager ()Lcom/facebook/react/ReactInstanceManager;
@@ -3805,9 +3806,6 @@ public final class com/facebook/react/runtime/ReactSurfaceView : com/facebook/re
 	public fun hasActiveReactContext ()Z
 	public fun hasActiveReactInstance ()Z
 	public fun isViewAttachedToReactInstance ()Z
-	public fun onChildEndedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
-	public fun onChildStartedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
-	public fun requestDisallowInterceptTouchEvent (Z)V
 	public fun setIsFabric (Z)V
 }
 
