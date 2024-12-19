@@ -708,6 +708,7 @@ public class ReactViewGroup extends ViewGroup
         }
       }
       removeViewsInLayout(index - clippedSoFar, 1);
+      invalidate();
     }
     removeFromArray(index);
   }
