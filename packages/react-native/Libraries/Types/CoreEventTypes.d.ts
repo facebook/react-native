@@ -243,6 +243,14 @@ export interface TargetedEvent {
   target: number;
 }
 
+export interface NativeFocusEvent extends TargetedEvent {}
+
+export interface NativeBlurEvent extends TargetedEvent {}
+
+export interface FocusEvent extends NativeSyntheticEvent<NativeFocusEvent> {}
+
+export interface BlueEvent extends NativeSyntheticEvent<NativeBlurEvent> {}
+
 export interface PointerEvents {
   onPointerEnter?: ((event: PointerEvent) => void) | undefined;
   onPointerEnterCapture?: ((event: PointerEvent) => void) | undefined;
