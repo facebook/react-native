@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "JSCRuntime.{cpp,h}"
   s.exclude_files          = "**/test/*"
-  s.framework              = "JavaScriptCore"
+  s.weak_framework         = "JavaScriptCore"
 
   s.dependency "React-jsi", version
 

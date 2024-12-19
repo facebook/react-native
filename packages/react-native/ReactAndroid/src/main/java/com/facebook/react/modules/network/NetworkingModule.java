@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativeNetworkingAndroidSpec;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -673,14 +672,7 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
   }
 
   private void cancelRequest(final int requestId) {
-    // We have to use AsyncTask since this might trigger a NetworkOnMainThreadException, this is an
-    // open issue on OkHttp: https://github.com/square/okhttp/issues/869
-    new GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
-      @Override
-      protected void doInBackgroundGuarded(Void... params) {
-        OkHttpCallUtil.cancelTag(mClient, Integer.valueOf(requestId));
-      }
-    }.execute();
+    OkHttpCallUtil.cancelTag(mClient, Integer.valueOf(requestId));
   }
 
   @ReactMethod

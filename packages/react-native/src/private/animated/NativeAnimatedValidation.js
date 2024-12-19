@@ -20,7 +20,7 @@ export function validateInterpolation<OutputT: number | string>(
   config: InterpolationConfigType<OutputT>,
 ): void {
   for (const key in config) {
-    if (!isSupportedInterpolationParam(key)) {
+    if (key !== 'debugID' && !isSupportedInterpolationParam(key)) {
       console.error(
         `Interpolation property '${key}' is not supported by native animated module`,
       );
