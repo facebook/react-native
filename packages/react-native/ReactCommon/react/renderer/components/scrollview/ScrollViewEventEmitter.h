@@ -21,6 +21,7 @@ class ScrollViewEventEmitter : public ViewEventEmitter {
   using ViewEventEmitter::ViewEventEmitter;
 
   using Metrics = ScrollEvent;
+  using EndDragMetrics = ScrollEndDragEvent;
 
   void onScroll(const ScrollEvent& scrollEvent) const;
   void onScrollBeginDrag(const ScrollEvent& scrollEvent) const;
