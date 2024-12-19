@@ -4778,6 +4778,7 @@ exports[`public API should not change unintentionally Libraries/Image/AssetSourc
   +height: ?number,
   +uri: string,
   +scale: number,
+  +headers?: ?{ [string]: string },
 |};
 declare class AssetSourceResolver {
   serverUrl: ?string;
@@ -4956,7 +4957,7 @@ exports[`public API should not change unintentionally Libraries/Image/ImageSourc
   +uri?: ?string;
   +bundle?: ?string;
   +method?: ?string;
-  +headers?: ?{ [string]: string };
+  +headers?: ?{ [string]: string } | ?Headers;
   +body?: ?string;
   +cache?: ?(\\"default\\" | \\"reload\\" | \\"force-cache\\" | \\"only-if-cached\\");
   +width?: ?number;
