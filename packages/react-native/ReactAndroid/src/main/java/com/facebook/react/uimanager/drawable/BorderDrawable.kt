@@ -167,6 +167,10 @@ internal class BorderDrawable(
   }
 
   override fun draw(canvas: Canvas) {
+    if (this.borderStyle == BorderStyle.NONE) {
+      return
+    }
+
     updatePathEffect()
     computedBorderColors = borderColors?.resolve(layoutDirection, context) ?: computedBorderColors
     if (borderRadius?.hasRoundedBorders() == true) {
@@ -570,6 +574,7 @@ internal class BorderDrawable(
 
   private fun getPathEffect(style: BorderStyle, borderWidth: Float): PathEffect? {
     return when (style) {
+      BorderStyle.NONE,
       BorderStyle.SOLID -> null
       BorderStyle.DASHED ->
           DashPathEffect(

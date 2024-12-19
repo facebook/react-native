@@ -16,6 +16,8 @@ import TextLegend from '../../components/TextLegend';
 import TextAdjustsDynamicLayoutExample from './TextAdjustsDynamicLayoutExample';
 import TextInlineViewsExample from './TextInlineViewsExample';
 
+import Platform from 'react-native/Libraries/Utilities/Platform.android';
+
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
 const {
@@ -1145,6 +1147,23 @@ const examples = [
             }}>
             Text with background AND borderWidth
           </Text>
+          {Platform.OS === 'android' ? (
+            <Text
+              // $FlowFixMe[incompatible-type] - Suppressing missing `none` type in `borderStyle` as it's not fully supported yet
+              style={{
+                borderWidth: 1,
+                borderColor: 'red',
+                borderStyle: 'none',
+                borderTopRightRadius: 10,
+                borderTopLeftRadius: 20,
+                borderBottomRightRadius: 20,
+                borderBottomLeftRadius: 10,
+                padding: 10,
+                marginTop: 10,
+              }}>
+              Text with borderWidth, borderRadius but borderStyle set to "none"
+            </Text>
+          ) : null}
         </View>
       );
     },
