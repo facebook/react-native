@@ -25,7 +25,7 @@ class ScrollViewEventEmitter : public ViewEventEmitter {
 
   void onScroll(const ScrollEvent& scrollEvent) const;
   void onScrollBeginDrag(const ScrollEvent& scrollEvent) const;
-  void onScrollEndDrag(const ScrollEndDragEvent& scrollEvent) const;
+  void onScrollEndDrag(const ScrollEvent& scrollEvent) const;
   void onMomentumScrollBegin(const ScrollEvent& scrollEvent) const;
   void onMomentumScrollEnd(const ScrollEvent& scrollEvent) const;
   void onScrollToTop(const ScrollEvent& scrollEvent) const;
