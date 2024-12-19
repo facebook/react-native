@@ -24,6 +24,7 @@ import android.view.Window
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
 import com.facebook.common.logging.FLog
@@ -386,6 +387,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
     }
   }
 
+  /**
+   * Sets the testID on the DialogRootViewGroup. Since the accessibility events are not triggered on
+   * the on the ReactModalHostView, the testID is forwarded to the DialogRootViewGroup to set the
+   * resource-id.
+   */
+  public fun setDialogRootViewGroupTestId(testId: String?) {
+    dialogRootViewGroup.setTag(R.id.react_test_id, testId)
+  }
+
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
   // visible property
@@ -424,6 +434,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
     init {
       if (ReactFeatureFlags.dispatchPointerEvents) {
         jSPointerDispatcher = JSPointerDispatcher(this)
+      }
+    }
+
+    override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
+      super.onInitializeAccessibilityNodeInfo(info)
+
+      val testId = getTag(R.id.react_test_id) as String?
+      if (testId != null) {
+        info.viewIdResourceName = testId
       }
     }
 
