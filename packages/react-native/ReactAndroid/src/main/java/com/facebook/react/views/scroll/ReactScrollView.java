@@ -408,7 +408,7 @@ public class ReactScrollView extends ScrollView
 
       mActivelyScrolling = true;
 
-      if (mOnScrollDispatchHelper.onScrollChanged(x, y)) {
+      if (mOnScrollDispatchHelper.onScrollChanged(x, y, mDragging)) {
         if (mRemoveClippedSubviews) {
           updateClippingRect();
         }
