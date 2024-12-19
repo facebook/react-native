@@ -31,7 +31,7 @@ import java.lang.Exception
  * running in bridgeless mode.
  */
 public object DefaultReactHost {
-  private var reactHost: ReactHost? = null
+  public var reactHost: ReactHost? = null
 
   /**
    * Util function to create a default [ReactHost] to be used in your application. This method is
