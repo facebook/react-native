@@ -68,6 +68,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
    * later comparison insensitive to them.
    */
   NSDictionary<NSAttributedStringKey, id> *_originalTypingAttributes;
+
+  BOOL _hasInputAccessoryView;
 }
 
 #pragma mark - UIView overrides
@@ -615,9 +617,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
       (containsKeyType || containsInputAccessoryViewButtonLabel);
 
-  if ((_backedTextInputView.inputAccessoryView != nil) == shouldHaveInputAccessoryView) {
+  if (_hasInputAccessoryView == shouldHaveInputAccessoryView) {
     return;
   }
+
+  _hasInputAccessoryView = shouldHaveInputAccessoryView;
 
   if (shouldHaveInputAccessoryView) {
     NSString *buttonLabel = inputAccessoryViewButtonLabel != nil ? inputAccessoryViewButtonLabel
