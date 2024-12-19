@@ -39,13 +39,8 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
 #pragma mark - Mutating Methods
 
-  /*
-   * Connects `measureFunc` function of Yoga node with
-   * `LayoutableShadowNode::measure()` method.
-   */
-  void enableMeasurement();
-
   void appendChild(const ShadowNode::Shared& child) override;
+
   void replaceChild(
       const ShadowNode& oldChild,
       const ShadowNode::Shared& newChild,
