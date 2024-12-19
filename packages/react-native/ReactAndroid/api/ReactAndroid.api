@@ -7739,9 +7739,9 @@ public abstract class com/facebook/react/views/view/ReactClippingViewManager : c
 	public fun setRemoveClippedSubviews (Lcom/facebook/react/views/view/ReactViewGroup;Z)V
 }
 
-public class com/facebook/react/views/view/ReactDrawableHelper {
-	public fun <init> ()V
-	public static fun createDrawableFromJSDescription (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;)Landroid/graphics/drawable/Drawable;
+public final class com/facebook/react/views/view/ReactDrawableHelper {
+	public static final field INSTANCE Lcom/facebook/react/views/view/ReactDrawableHelper;
+	public static final fun createDrawableFromJSDescription (Landroid/content/Context;Lcom/facebook/react/bridge/ReadableMap;)Landroid/graphics/drawable/Drawable;
 }
 
 public class com/facebook/react/views/view/ReactViewGroup : android/view/ViewGroup, com/facebook/react/touch/ReactHitSlopView, com/facebook/react/touch/ReactInterceptingViewGroup, com/facebook/react/uimanager/ReactClippingViewGroup, com/facebook/react/uimanager/ReactOverflowViewWithInset, com/facebook/react/uimanager/ReactPointerEventsView, com/facebook/react/uimanager/ReactZIndexedViewGroup {
