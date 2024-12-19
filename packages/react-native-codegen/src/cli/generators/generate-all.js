@@ -60,6 +60,7 @@ RNCodegen.generate(
       'modulesAndroid',
       'modulesCxx',
       'modulesIOS',
+      'modulesMacOS',
     ],
   },
 );
