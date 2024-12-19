@@ -216,37 +216,6 @@ void Scheduler::registerSurface(
   surfaceHandler.setUIManager(uiManager_.get());
 }
 
-InspectorData Scheduler::getInspectorDataForInstance(
-    const EventEmitter& eventEmitter) const noexcept {
-  return executeSynchronouslyOnSameThread_CAN_DEADLOCK<InspectorData>(
-      runtimeExecutor_, [=](jsi::Runtime& runtime) -> InspectorData {
-        auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-        auto value = uiManagerBinding->getInspectorDataForInstance(
-            runtime, eventEmitter);
-
-        // TODO T97216348: avoid transforming jsi into folly::dynamic
-        auto dynamic = jsi::dynamicFromValue(runtime, value);
-        auto source = dynamic["source"];
-
-        InspectorData result = {};
-        result.fileName =
-            source["fileName"].isNull() ? "" : source["fileName"].c_str();
-        result.lineNumber = (int)source["lineNumber"].getDouble();
-        result.columnNumber = (int)source["columnNumber"].getDouble();
-        result.selectedIndex = (int)dynamic["selectedIndex"].getDouble();
-        // TODO T97216348: remove folly::dynamic from InspectorData struct
-        result.props = dynamic["props"];
-        auto hierarchy = dynamic["hierarchy"];
-        for (auto& i : hierarchy) {
-          auto viewHierarchyValue = i["name"];
-          if (!viewHierarchyValue.isNull()) {
-            result.hierarchy.emplace_back(viewHierarchyValue.c_str());
-          }
-        }
-        return result;
-      });
-}
-
 void Scheduler::unregisterSurface(
     const SurfaceHandler& surfaceHandler) const noexcept {
   surfaceHandler.setUIManager(nullptr);
