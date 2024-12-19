@@ -296,15 +296,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       @"password" : UITextContentTypePassword,
       @"newPassword" : UITextContentTypeNewPassword,
       @"oneTimeCode" : UITextContentTypeOneTimeCode,
+      @"dateTime" : UITextContentTypeDateTime,
+      @"flightNumber" : UITextContentTypeFlightNumber,
+      @"shipmentTrackingNumber" : UITextContentTypeShipmentTrackingNumber,
     }];
-
-    if (@available(iOS 15.0, *)) {
-      [mutableContentTypeMap addEntriesFromDictionary:@{
-        @"dateTime" : UITextContentTypeDateTime,
-        @"flightNumber" : UITextContentTypeFlightNumber,
-        @"shipmentTrackingNumber" : UITextContentTypeShipmentTrackingNumber,
-      }];
-    }
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
     if (@available(iOS 17.0, *)) {
