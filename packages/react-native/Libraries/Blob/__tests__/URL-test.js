@@ -41,4 +41,37 @@ describe('URL', function () {
     const k = new URL('en-US/docs', 'https://developer.mozilla.org');
     expect(k.href).toBe('https://developer.mozilla.org/en-US/docs');
   });
+  it("hash",()=>{
+    const l = new URL("https://developer.mozilla.org");
+    // expect(l.hostname).toBe("developer.mozilla.org")
+    const m = new URL('en-US/docs/#end',l);
+    expect(m.href).toBe("https://developer.mozilla.org/en-US/docs/#end")
+    expect(m.hash).toBe("#end")
+  })
+  it("host is a hostname and port",()=>{
+    // The port is not provided
+    const httpPort = "123";
+    const protocol = "https"
+    const hostname = 'developer.mozilla.org'
+    const pathName = '/en-US/docs/Web/API/URL/host'
+    const n = new URL(`${protocol}://${hostname}:${httpPort}${pathName}`);
+    expect(n.hostname).toBe(`${hostname}`)
+    expect(n.origin).toBe(`${protocol}://${hostname}:${httpPort}`)
+    // the 443 is default https
+    const httpPort2 = "443";
+    const r = new URL(`${protocol}://${hostname}:${httpPort2}${pathName}`);
+    expect(r.protocol).toBe(protocol)
+    expect(r.port).toBe("")
+    expect(r.host).toBe("developer.mozilla.org")
+    // the port is other
+    const p = new URL("https://developer.mozilla.org:4097/en-US/docs/Web/API/URL/host");
+    expect(p.host).toBe("developer.mozilla.org:4097")
+    expect(p.pathname).toBe("/en-US/docs/Web/API/URL/host/")
+    const q = new URL("https://developer.mozilla.org:4097/en-US/docs/Web/API/URL/host?q=dad");
+    expect(q.search).toBe("?q=dad")
+    expect(q.href).toBe("https://developer.mozilla.org:4097/en-US/docs/Web/API/URL/host?q=dad")
+    let u = new URL("https://username:password@developer.mozilla.org:443/en-US/docs/Web/API/URL/host")
+    expect(u.host).toBe("developer.mozilla.org")
+    expect(u.password).toBe("password")
+  })
 });
