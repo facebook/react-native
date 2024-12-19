@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a35c5b22c0f20cb50ceaf56a856c9c8f>>
+ * @generated SignedSource<<fb2e049d649b9bf7ef6bd0e26523b4ef>>
  * @flow strict
  */
 
@@ -337,7 +337,7 @@ export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('l
 /**
  * Adds support for loading vector drawable assets in the Image component (only on Android)
  */
-export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGetter('loadVectorDrawablesOnImages', false);
+export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGetter('loadVectorDrawablesOnImages', true);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */
