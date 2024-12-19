@@ -67,9 +67,11 @@ class StyleValuePool {
 
   StyleLength getLength(StyleValueHandle handle) const {
     if (handle.isUndefined()) {
-      return StyleLength::undefined();
+      static const StyleLength undefined = StyleLength::undefined();
+      return undefined;
     } else if (handle.isAuto()) {
-      return StyleLength::ofAuto();
+      static const StyleLength ofAuto = StyleLength::ofAuto();
+      return ofAuto;
     } else {
       assert(
           handle.type() == StyleValueHandle::Type::Point ||
