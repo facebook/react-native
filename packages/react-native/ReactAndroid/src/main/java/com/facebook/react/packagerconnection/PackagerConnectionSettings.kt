@@ -41,6 +41,18 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
       preferences.edit().putString(PREFS_DEBUG_SERVER_HOST_KEY, host).apply()
     }
 
+  public open val debugServerHttpProtocol: String
+    get() {
+      val tlsFromSettings = preferences.getBoolean(PREFS_DEBUG_SERVER_TLS_KEY, false)
+      return if (tlsFromSettings) "https" else "http"
+    }
+
+  public open val debugServerWsProtocol: String
+    get() {
+      val tlsFromSettings = preferences.getBoolean(PREFS_DEBUG_SERVER_TLS_KEY, false)
+      return if (tlsFromSettings) "wss" else "ws"
+    }
+
   public fun setAdditionalOptionForPackager(key: String, value: String) {
     _additionalOptionsForPackager[key] = value
   }
@@ -51,5 +63,6 @@ public open class PackagerConnectionSettings(private val appContext: Context) {
   private companion object {
     private val TAG = PackagerConnectionSettings::class.java.simpleName
     private const val PREFS_DEBUG_SERVER_HOST_KEY = "debug_http_host"
+    private const val PREFS_DEBUG_SERVER_TLS_KEY = "debug_http_tls"
   }
 }
