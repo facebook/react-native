@@ -117,6 +117,13 @@ NS_ASSUME_NONNULL_BEGIN
 /// Return the bundle URL for the main bundle.
 - (NSURL *__nullable)bundleURL;
 
+/**
+ * It creates the RCTRootViewFactory.
+ *
+ * @return: an instance of `RCTRootViewFactory`.
+ */
+- (RCTRootViewFactory *)createRCTRootViewFactory;
+
 @end
 
 NS_ASSUME_NONNULL_END
