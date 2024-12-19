@@ -789,8 +789,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       const key = VirtualizedList._keyExtractor(item, ii, this.props);
 
       this._indicesToKeys.set(ii, key);
+      let isStickyHeader = false;
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
+        isStickyHeader = true;
       }
 
       const shouldListenForLayout =
@@ -811,6 +813,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           onUpdateSeparators={this._onUpdateSeparators}
           onCellFocusCapture={this._onCellFocusCapture}
           onUnmount={this._onCellUnmount}
+          isStickyHeader={isStickyHeader}
           ref={ref => {
             this._cellRefs[key] = ref;
           }}
