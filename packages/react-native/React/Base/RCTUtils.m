@@ -1097,7 +1097,7 @@ RCT_EXTERN BOOL RCTValidateTypeOfViewCommandArgument(
     const NSString *argPos)
 {
   if (![obj isKindOfClass:expectedClass]) {
-    [[maybe_unused]] NSString *kindOfClass = RCTHumanReadableType(obj);
+    NSString *kindOfClass = RCTHumanReadableType(obj);
 
     RCTLogError(
         @"%@ command %@ received %@ argument of type %@, expected %@.",
