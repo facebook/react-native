@@ -31,7 +31,7 @@ import java.lang.Exception
  * running in bridgeless mode.
  */
 public object DefaultReactHost {
-  public var reactHost: ReactHost? = null
+  private var reactHost: ReactHost? = null
 
   /**
    * Util function to create a default [ReactHost] to be used in your application. This method is
@@ -174,5 +174,13 @@ public object DefaultReactHost {
       "You can call getDefaultReactHost only with instances of DefaultReactNativeHost"
     }
     return reactNativeHost.toReactHost(context)
+  }
+
+  /**
+    * Cleanup function for brownfield scenarios where you want to remove the references kept by
+    * reactHost after destroying the RN instance.
+    */
+  internal fun invalidate() {
+      reactHost = null
   }
 }
