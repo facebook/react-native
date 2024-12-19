@@ -44,33 +44,6 @@ std::shared_ptr<Scheduler> FabricUIManagerBinding::getScheduler() {
   return scheduler_;
 }
 
-jni::local_ref<ReadableNativeMap::jhybridobject>
-FabricUIManagerBinding::getInspectorDataForInstance(
-    jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper) {
-  auto scheduler = getScheduler();
-  if (!scheduler) {
-    LOG(ERROR) << "FabricUIManagerBinding::startSurface: scheduler disappeared";
-    return ReadableNativeMap::newObjectCxxArgs(folly::dynamic::object());
-  }
-
-  EventEmitterWrapper* cEventEmitter = cthis(eventEmitterWrapper);
-  InspectorData data =
-      scheduler->getInspectorDataForInstance(*cEventEmitter->eventEmitter);
-
-  folly::dynamic result = folly::dynamic::object;
-  result["fileName"] = data.fileName;
-  result["lineNumber"] = data.lineNumber;
-  result["columnNumber"] = data.columnNumber;
-  result["selectedIndex"] = data.selectedIndex;
-  result["props"] = data.props;
-  auto hierarchy = folly::dynamic::array();
-  for (const auto& hierarchyItem : data.hierarchy) {
-    hierarchy.push_back(hierarchyItem);
-  }
-  result["hierarchy"] = hierarchy;
-  return ReadableNativeMap::newObjectCxxArgs(result);
-}
-
 void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
   pointScaleFactor_ = pointScaleFactor;
 }
@@ -661,9 +634,6 @@ void FabricUIManagerBinding::registerNatives() {
           "installFabricUIManager",
           FabricUIManagerBinding::installFabricUIManager),
       makeNativeMethod("startSurface", FabricUIManagerBinding::startSurface),
-      makeNativeMethod(
-          "getInspectorDataForInstance",
-          FabricUIManagerBinding::getInspectorDataForInstance),
       makeNativeMethod(
           "startSurfaceWithConstraints",
           FabricUIManagerBinding::startSurfaceWithConstraints),
