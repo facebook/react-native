@@ -64,6 +64,7 @@ function validateBaseUrl(url: string) {
 export class URL {
   _url: string;
   _searchParamsInstance: ?URLSearchParams = null;
+  _urlObject: URL;
 
   static createObjectURL(blob: Blob): string {
     if (BLOB_URL_PREFIX === null) {
@@ -76,7 +77,6 @@ export class URL {
     // Do nothing.
   }
 
-  // $FlowFixMe[missing-local-annot]
   constructor(url: string, base: string | URL) {
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {
@@ -104,18 +104,21 @@ export class URL {
       }
       this._url = `${baseUrl}${url}`;
     }
+
+    // Create a URL object for easier parsing (browser-like behavior)
+    this._urlObject = new globalThis.URL(this._url);
   }
 
   get hash(): string {
-    throw new Error('URL.hash is not implemented');
+    return this._urlObject.hash || ''; // Extract the fragment part
   }
 
   get host(): string {
-    throw new Error('URL.host is not implemented');
+    return this._urlObject.host || ''; // Extracts the host and port (if present)
   }
 
   get hostname(): string {
-    throw new Error('URL.hostname is not implemented');
+    return this._urlObject.hostname || ''; // Extracts just the hostname (without port)
   }
 
   get href(): string {
@@ -123,32 +126,33 @@ export class URL {
   }
 
   get origin(): string {
-    throw new Error('URL.origin is not implemented');
+    return this._urlObject.origin || ''; // Extracts the origin (protocol + hostname + port)
   }
 
   get password(): string {
-    throw new Error('URL.password is not implemented');
+    const match = this._urlObject.href.match(/^.*:\/\/(.*):(.*)@/);
+    return match && match[2] ? match[2] : ''; // Extract password from "username:password" part
   }
 
   get pathname(): string {
-    throw new Error('URL.pathname not implemented');
+    return this._urlObject.pathname || ''; // Extracts the pathname (e.g., "/path/to/resource")
   }
 
   get port(): string {
-    throw new Error('URL.port is not implemented');
+    return this._urlObject.port || ''; // Extracts the port part
   }
 
   get protocol(): string {
-    throw new Error('URL.protocol is not implemented');
+    return this._urlObject.protocol || ''; // Extracts the protocol (e.g., "http:" or "https:")
   }
 
   get search(): string {
-    throw new Error('URL.search is not implemented');
+    return this._urlObject.search || ''; // Extracts the query string (e.g., "?id=123")
   }
 
   get searchParams(): URLSearchParams {
     if (this._searchParamsInstance == null) {
-      this._searchParamsInstance = new URLSearchParams();
+      this._searchParamsInstance = new URLSearchParams(this._urlObject.search);
     }
     return this._searchParamsInstance;
   }
@@ -161,13 +165,13 @@ export class URL {
     if (this._searchParamsInstance === null) {
       return this._url;
     }
-    // $FlowFixMe[incompatible-use]
     const instanceString = this._searchParamsInstance.toString();
     const separator = this._url.indexOf('?') > -1 ? '&' : '?';
     return this._url + separator + instanceString;
   }
 
   get username(): string {
-    throw new Error('URL.username is not implemented');
+    const match = this._urlObject.href.match(/^.*:\/\/(.*?)(?::(.*))?@/);
+    return match && match[1] ? match[1] : ''; // Extract username from "username:password" part
   }
 }
