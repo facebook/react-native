@@ -23,15 +23,16 @@ if (
   // $FlowFixMe[unsafe-addition]
   BLOB_URL_PREFIX = constants.BLOB_URI_SCHEME + ':';
   if (typeof constants.BLOB_URI_HOST === 'string') {
-    BLOB_URL_PREFIX += `//${constants.BLOB_URI_HOST}/`;
+    BLOB_URL_PREFIX += //${constants.BLOB_URI_HOST}/;
   }
 }
 
 /*
- * To allow Blobs be accessed via `content://` URIs,
- * you need to register `BlobProvider` as a ContentProvider in your app's `AndroidManifest.xml`:
+ * To allow Blobs be accessed via content:// URIs,
+ * you need to register BlobProvider as a ContentProvider in your app's AndroidManifest.xml:
  *
- * ```xml
+ * 
+xml
  * <manifest>
  *   <application>
  *     <provider
@@ -41,15 +42,18 @@ if (
  *     />
  *   </application>
  * </manifest>
- * ```
- * And then define the `blob_provider_authority` string in `res/values/strings.xml`.
+ *
+
+ * And then define the blob_provider_authority string in res/values/strings.xml.
  * Use a dotted name that's entirely unique to your app:
  *
- * ```xml
+ * 
+xml
  * <resources>
  *   <string name="blob_provider_authority">your.app.package.blobs</string>
  * </resources>
- * ```
+ *
+
  */
 
 export {URLSearchParams} from './URLSearchParams';
@@ -61,22 +65,22 @@ function validateBaseUrl(url: string) {
   );
 }
 
+
 export class URL {
   _url: string;
-  _searchParamsInstance: ?URLSearchParams = null;
+  _parsedUrl: URL | null = null;
 
-  static createObjectURL(blob: Blob): string {
-    if (BLOB_URL_PREFIX === null) {
-      throw new Error('Cannot create URL for blob!');
+  // Utility to parse the URL once and reuse the parsed object
+  _ensureParsed() {
+    if (!this._parsedUrl) {
+      try {
+        this._parsedUrl = new window.URL(this._url);
+      } catch (error) {
+        throw new Error(Invalid URL: ${this._url});
+      }
     }
-    return `${BLOB_URL_PREFIX}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size}`;
   }
 
-  static revokeObjectURL(url: string) {
-    // Do nothing.
-  }
-
-  // $FlowFixMe[missing-local-annot]
   constructor(url: string, base: string | URL) {
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {
@@ -88,7 +92,7 @@ export class URL {
       if (typeof base === 'string') {
         baseUrl = base;
         if (!validateBaseUrl(baseUrl)) {
-          throw new TypeError(`Invalid base URL: ${baseUrl}`);
+          throw new TypeError(Invalid base URL: ${baseUrl});
         }
       } else {
         baseUrl = base.toString();
@@ -97,25 +101,28 @@ export class URL {
         baseUrl = baseUrl.slice(0, baseUrl.length - 1);
       }
       if (!url.startsWith('/')) {
-        url = `/${url}`;
+        url = /${url};
       }
       if (baseUrl.endsWith(url)) {
         url = '';
       }
-      this._url = `${baseUrl}${url}`;
+      this._url = ${baseUrl}${url};
     }
   }
 
   get hash(): string {
-    throw new Error('URL.hash is not implemented');
+    this._ensureParsed();
+    return this._parsedUrl.hash;
   }
 
   get host(): string {
-    throw new Error('URL.host is not implemented');
+    this._ensureParsed();
+    return this._parsedUrl.host;
   }
 
   get hostname(): string {
-    throw new Error('URL.hostname is not implemented');
+    this._ensureParsed();
+    return this._parsedUrl.hostname;
   }
 
   get href(): string {
@@ -123,34 +130,46 @@ export class URL {
   }
 
   get origin(): string {
-    throw new Error('URL.origin is not implemented');
+    this._ensureParsed();
+    return this._parsedUrl.origin;
   }
 
   get password(): string {
-    throw new Error('URL.password is not implemented');
+    this._ensureParsed();
+    return this._parsedUrl.password;
   }
 
   get pathname(): string {
-    throw new Error('URL.pathname not implemented');
+    this._ensureParsed();
+    return this._parsedUrl.pathname;
   }
 
   get port(): string {
-    throw new Error('URL.port is not implemented');
+    this._ensureParsed();
+    return this._parsedUrl.port;
   }
 
   get protocol(): string {
-    throw new Error('URL.protocol is not implemented');
+    this._ensureParsed();
+    return this._parsedUrl.protocol;
   }
 
   get search(): string {
-    throw new Error('URL.search is not implemented');
+    this._ensureParsed();
+    return this._parsedUrl.search;
   }
 
   get searchParams(): URLSearchParams {
-    if (this._searchParamsInstance == null) {
-      this._searchParamsInstance = new URLSearchParams();
+    if (!this._searchParamsInstance) {
+      this._ensureParsed();
+      this._searchParamsInstance = new URLSearchParams(this._parsedUrl.searchParams);
     }
     return this._searchParamsInstance;
+  }
+
+  get username(): string {
+    this._ensureParsed();
+    return this._parsedUrl.username;
   }
 
   toJSON(): string {
@@ -161,13 +180,8 @@ export class URL {
     if (this._searchParamsInstance === null) {
       return this._url;
     }
-    // $FlowFixMe[incompatible-use]
     const instanceString = this._searchParamsInstance.toString();
     const separator = this._url.indexOf('?') > -1 ? '&' : '?';
     return this._url + separator + instanceString;
-  }
-
-  get username(): string {
-    throw new Error('URL.username is not implemented');
   }
 }
