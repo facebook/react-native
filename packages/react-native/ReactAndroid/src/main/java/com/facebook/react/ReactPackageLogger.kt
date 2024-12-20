@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react;
+package com.facebook.react
 
 /** Interface for the bridge to call for TTI start and end markers. */
 public interface ReactPackageLogger {
 
-  void startProcessPackage();
+  public fun startProcessPackage(): Unit
 
-  void endProcessPackage();
+  public fun endProcessPackage(): Unit
 }
