@@ -1,4 +1,26 @@
 # Changelog
+
+## v0.77.0-rc.3
+
+### Changed
+
+#### Android specific
+
+- Gradle to 8.11.1 ([490db92562](https://github.com/facebook/react-native/commit/490db92562df3baf6dc38737778179065f378715) by [@cortinico](https://github.com/cortinico))
+
+### Fixed
+
+- Skip hidden folders when looking for third party components. ([8ab524312a](https://github.com/facebook/react-native/commit/8ab524312ab3bf1192b94ae6e30d296a85baa944) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### Android specific
+
+- Handle removal of in-transition views. ([f402ed17fa](https://github.com/facebook/react-native/commit/f402ed17fa6d75aea24e2ad99a8b8d8ad20840e3) by [@kkafar](https://github.com/kkafar))
+
+#### iOS specific
+
+- Enable hermes debugger by configuration type instead of configuration name ([eda4f185b3](https://github.com/facebook/react-native/commit/eda4f185b381f7569a1029b7697f9a1c8bc6d108) by [@benhandanyan](https://github.com/benhandanyan))
+- Workaround for Mac Catalyst TextInput crash due to serialization attempt of WeakEventEmitter ([e04738b7ec](https://github.com/facebook/react-native/commit/e04738b7ecec9e7da3aab49bb24a6336b9496b94) by [@rozele](https://github.com/rozele))
+
 ## v0.77.0-rc.2
 
 ### Changed

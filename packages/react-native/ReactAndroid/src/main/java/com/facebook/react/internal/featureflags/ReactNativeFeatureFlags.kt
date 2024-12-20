@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<66b588a5565d6754770f80217439e264>>
+ * @generated SignedSource<<9905ea16f20e17fa8a559dfe4c5ea00e>>
  */
 
 /**
@@ -51,6 +51,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
+
+  /**
+   * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
+   */
+  @JvmStatic
+  public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.

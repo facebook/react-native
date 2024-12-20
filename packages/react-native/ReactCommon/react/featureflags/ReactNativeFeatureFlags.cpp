@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e77a78122c627aa948a4add7ab78ca1>>
+ * @generated SignedSource<<9930560897dfbebcbe8ebcf7161aba1c>>
  */
 
 /**
@@ -40,6 +40,10 @@ bool ReactNativeFeatureFlags::disableEventLoopOnBridgeless() {
 
 bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
   return getAccessor().disableMountItemReorderingAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() {
+  return getAccessor().enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {

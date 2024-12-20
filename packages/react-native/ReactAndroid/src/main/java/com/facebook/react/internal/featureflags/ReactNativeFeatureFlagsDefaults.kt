@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a7ada4165745870e8ab8cd46700220ff>>
+ * @generated SignedSource<<c6db3ea7a7cc18c331e08478355ecdd4>>
  */
 
 /**
@@ -30,6 +30,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun disableEventLoopOnBridgeless(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
+
+  override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 

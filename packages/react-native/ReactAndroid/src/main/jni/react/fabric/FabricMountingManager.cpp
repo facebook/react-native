@@ -15,6 +15,7 @@
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
@@ -215,18 +216,26 @@ inline float scale(Float value, Float pointScaleFactor) {
 jni::local_ref<jobject> getProps(
     const ShadowView& oldShadowView,
     const ShadowView& newShadowView) {
-  auto componentName = newShadowView.componentName;
   // We calculate the diffing between the props of the last mounted ShadowTree
   // and the Props of the latest commited ShadowTree). ONLY for <View>
   // components when the "enablePropsUpdateReconciliationAndroid" feature flag
   // is enabled.
+  auto* oldProps = oldShadowView.props.get();
+  auto* newProps = newShadowView.props.get();
   if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() &&
-      strcmp(componentName, "View") == 0) {
-    const Props* oldProps = oldShadowView.props.get();
-    auto diffProps = newShadowView.props->getDiffProps(oldProps);
-    return ReadableNativeMap::newObjectCxxArgs(diffProps);
+      strcmp(newShadowView.componentName, "View") == 0) {
+    return ReadableNativeMap::newObjectCxxArgs(
+        newProps->getDiffProps(oldProps));
   }
-  return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
+  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+    if (oldProps == nullptr) {
+      return ReadableNativeMap::newObjectCxxArgs(newProps->rawProps);
+    } else {
+      return ReadableNativeMap::newObjectCxxArgs(
+          diffDynamicProps(oldProps->rawProps, newProps->rawProps));
+    }
+  }
+  return ReadableNativeMap::newObjectCxxArgs(newProps->rawProps);
 }
 
 struct InstructionBuffer {
@@ -587,13 +596,25 @@ void FabricMountingManager::executeMount(
 
             bool shouldCreateView =
                 !allocatedViewTags.contains(newChildShadowView.tag);
-            if (shouldCreateView) {
-              LOG(ERROR) << "Emitting insert for unallocated view "
-                         << newChildShadowView.tag;
+            if (ReactNativeFeatureFlags::
+                    enableAccumulatedUpdatesInRawPropsAndroid()) {
+              if (shouldCreateView) {
+                LOG(ERROR) << "Emitting insert for unallocated view "
+                           << newChildShadowView.tag;
+              }
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdatePropsMountItems)
                   .push_back(CppMountItem::UpdatePropsMountItem(
                       {}, newChildShadowView));
+            } else {
+              if (shouldCreateView) {
+                LOG(ERROR) << "Emitting insert for unallocated view "
+                           << newChildShadowView.tag;
+                (maintainMutationOrder ? cppCommonMountItems
+                                       : cppUpdatePropsMountItems)
+                    .push_back(CppMountItem::UpdatePropsMountItem(
+                        {}, newChildShadowView));
+              }
             }
 
             // State

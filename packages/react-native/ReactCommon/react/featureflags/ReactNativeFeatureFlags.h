@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a5cfb3ace7bcef61fe504bb0bd955285>>
+ * @generated SignedSource<<0515d917d815dfe5b0b643a0fc55bb74>>
  */
 
 /**
@@ -58,6 +58,11 @@ class ReactNativeFeatureFlags {
    * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
+
+  /**
+   * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
+   */
+  RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.

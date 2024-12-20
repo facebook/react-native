@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<80a0cb8828136619054d3e42bc9d0789>>
+ * @generated SignedSource<<287cfac1efb7e82dbb2851acad9cca83>>
  */
 
 /**
@@ -79,6 +79,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::disableMountItemReorderingAndroid();
+  }
+
+  bool enableAccumulatedUpdatesInRawPropsAndroid() override {
+    auto value = values_["enableAccumulatedUpdatesInRawPropsAndroid"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableAccumulatedUpdatesInRawPropsAndroid();
   }
 
   bool enableAlignItemsBaselineOnFabricIOS() override {

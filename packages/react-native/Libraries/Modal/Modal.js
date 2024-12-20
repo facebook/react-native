@@ -328,6 +328,7 @@ class Modal extends React.Component<Props, State> {
         <VirtualizedListContextResetter>
           <ScrollView.Context.Provider value={null}>
             <View
+              // $FlowFixMe[incompatible-type]
               style={[styles.container, containerStyles]}
               collapsable={false}>
               {innerChildren}
@@ -353,6 +354,7 @@ const styles = StyleSheet.create({
     /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb) This
      * comment suppresses an error found when Flow v0.111 was deployed. To see
      * the error, delete this comment and run Flow. */
+    // $FlowFixMe[incompatible-call]
     [side]: 0,
     top: 0,
     flex: 1,

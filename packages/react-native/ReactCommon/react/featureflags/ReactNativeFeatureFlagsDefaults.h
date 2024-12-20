@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eae74d02f759a5cb067f222e8294ed53>>
+ * @generated SignedSource<<a734c6ded6ca8ccf5ab3ff45531e1f86>>
  */
 
 /**
@@ -40,6 +40,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool disableMountItemReorderingAndroid() override {
+    return false;
+  }
+
+  bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     return false;
   }
 

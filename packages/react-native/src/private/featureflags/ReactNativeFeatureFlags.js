@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28e95997f6c1b3b3ffcf140995f31b19>>
+ * @generated SignedSource<<14515ef1b547b112d7abff6c1a934fef>>
  * @flow strict
  */
 
@@ -55,6 +55,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   disableEventLoopOnBridgeless: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
+  enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableAndroidLineHeightCentering: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -206,6 +207,10 @@ export const disableEventLoopOnBridgeless: Getter<boolean> = createNativeFlagGet
  * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
+/**
+ * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
+ */
+export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
 /**
  * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
  */

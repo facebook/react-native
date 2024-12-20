@@ -16,7 +16,7 @@ using namespace facebook::react;
   `merge_patch` is used for props forwarding on Android to enable Background
   Executor and will be removed once JNI layer is reimplmeneted.
  */
-TEST(DynamicPropsUtilitiesTest, handleNestedObjects) {
+TEST(DynamicPropsUtilitiesTest, mergeDynamicPropsHandlesNestedObjects) {
   dynamic map1 = dynamic::object;
   map1["style"] = dynamic::object("backgroundColor", "red");
 
@@ -36,7 +36,7 @@ TEST(DynamicPropsUtilitiesTest, handleNestedObjects) {
   EXPECT_EQ(result["height"], 100);
 }
 
-TEST(DynamicPropsUtilitiesTest, handleEmptyObject) {
+TEST(DynamicPropsUtilitiesTest, mergeDynamicPropsHandlesEmptyObject) {
   dynamic map1 = dynamic::object;
 
   dynamic map2 = dynamic::object;
@@ -53,7 +53,7 @@ TEST(DynamicPropsUtilitiesTest, handleEmptyObject) {
   EXPECT_EQ(result["height"], 100);
 }
 
-TEST(DynamicPropsUtilitiesTest, handleNullValue) {
+TEST(DynamicPropsUtilitiesTest, mergeDynamicPropsHandleNullValue) {
   dynamic map1 = dynamic::object;
   map1["height"] = 100;
 
@@ -65,7 +65,9 @@ TEST(DynamicPropsUtilitiesTest, handleNullValue) {
   EXPECT_TRUE(result["height"].isNull());
 }
 
-TEST(DynamicPropsUtilitiesTest, testNullValueStrategyIgnore) {
+TEST(
+    DynamicPropsUtilitiesTest,
+    mergeDynamicPropsFollowsNullValueStrategyIgnore) {
   dynamic map1 = dynamic::object;
   map1["height"] = 100;
 
@@ -77,4 +79,93 @@ TEST(DynamicPropsUtilitiesTest, testNullValueStrategyIgnore) {
 
   EXPECT_EQ(result["height"], 101);
   EXPECT_TRUE(result["width"].isNull());
+}
+
+TEST(DynamicPropsUtilitiesTest, diffDynamicPropsReturnsCorrectDiff) {
+  dynamic lhs = dynamic::object;
+  lhs["a"] = 1;
+  lhs["b"] = "2";
+
+  dynamic rhs = dynamic::object;
+  rhs["a"] = 3;
+  rhs["c"] = true;
+
+  auto result = diffDynamicProps(lhs, rhs);
+
+  EXPECT_TRUE(result.isObject());
+  EXPECT_EQ(result.size(), 3);
+  EXPECT_EQ(result["a"], 3);
+  EXPECT_EQ(result["b"], nullptr);
+  EXPECT_EQ(result["c"], true);
+}
+
+TEST(DynamicPropsUtilitiesTest, diffDynamicPropsHandlesInsertions) {
+  dynamic lhs = dynamic::object;
+  lhs["a"] = 1;
+
+  dynamic rhs = dynamic::object;
+  rhs["a"] = 1;
+  rhs["b"] = 2;
+
+  auto result = diffDynamicProps(lhs, rhs);
+
+  EXPECT_TRUE(result.isObject());
+  EXPECT_EQ(result.size(), 1);
+  EXPECT_EQ(result["b"], 2);
+}
+
+TEST(DynamicPropsUtilitiesTest, diffDynamicPropsHandlesUpdates) {
+  dynamic lhs = dynamic::object;
+  lhs["a"] = 1;
+  lhs["b"] = 2;
+
+  dynamic rhs = dynamic::object;
+  rhs["a"] = 3;
+  rhs["b"] = 4;
+
+  auto result = diffDynamicProps(lhs, rhs);
+
+  EXPECT_TRUE(result.isObject());
+  EXPECT_EQ(result.size(), 2);
+  EXPECT_EQ(result["a"], 3);
+  EXPECT_EQ(result["b"], 4);
+}
+
+TEST(DynamicPropsUtilitiesTest, diffDynamicPropsHandlesDeletions) {
+  dynamic lhs = dynamic::object;
+  lhs["a"] = 1;
+  lhs["b"] = 2;
+
+  dynamic rhs = dynamic::object;
+  rhs["a"] = 1;
+
+  auto result = diffDynamicProps(lhs, rhs);
+
+  EXPECT_TRUE(result.isObject());
+  EXPECT_EQ(result.size(), 1);
+  EXPECT_EQ(result["b"], nullptr);
+}
+
+TEST(
+    DynamicPropsUtilitiesTest,
+    diffDynamicPropsReturnsEmptyObjectForNonObjectLHS) {
+  dynamic lhs = dynamic::array;
+  dynamic rhs = dynamic::object;
+
+  auto result = diffDynamicProps(lhs, rhs);
+
+  EXPECT_TRUE(result.isObject());
+  EXPECT_EQ(result.size(), 0);
+}
+
+TEST(
+    DynamicPropsUtilitiesTest,
+    diffDynamicPropsReturnsEmptyObjectForNonObjectRHS) {
+  dynamic lhs = dynamic::object;
+  dynamic rhs = dynamic::array;
+
+  auto result = diffDynamicProps(lhs, rhs);
+
+  EXPECT_TRUE(result.isObject());
+  EXPECT_EQ(result.size(), 0);
 }

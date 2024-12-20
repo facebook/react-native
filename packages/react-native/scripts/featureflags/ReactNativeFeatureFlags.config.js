@@ -85,6 +85,16 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    enableAccumulatedUpdatesInRawPropsAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-12-10',
+        description:
+          'When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
     enableAlignItemsBaselineOnFabricIOS: {
       defaultValue: true,
       metadata: {
