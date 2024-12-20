@@ -16,20 +16,20 @@
 namespace facebook::react {
 
 namespace {
-class ParsedError : public facebook::jni::JavaClass<ParsedError> {
+class ProcessedError : public facebook::jni::JavaClass<ProcessedError> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ParsedError;";
+      "Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ProcessedError;";
 };
 
-class ParsedStackFrameImpl
-    : public facebook::jni::JavaClass<ParsedStackFrameImpl> {
+class ProcessedErrorStackFrameImpl
+    : public facebook::jni::JavaClass<ProcessedErrorStackFrameImpl> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ParsedStackFrameImpl;";
+      "Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ProcessedErrorStackFrameImpl;";
 
-  static facebook::jni::local_ref<ParsedStackFrameImpl> create(
-      const JsErrorHandler::ParsedError::StackFrame& frame) {
+  static facebook::jni::local_ref<ProcessedErrorStackFrameImpl> create(
+      const JsErrorHandler::ProcessedError::StackFrame& frame) {
     return newInstance(
         frame.file ? jni::make_jstring(*frame.file) : nullptr,
         frame.methodName,
@@ -38,18 +38,19 @@ class ParsedStackFrameImpl
   }
 };
 
-class ParsedErrorImpl
-    : public facebook::jni::JavaClass<ParsedErrorImpl, ParsedError> {
+class ProcessedErrorImpl
+    : public facebook::jni::JavaClass<ProcessedErrorImpl, ProcessedError> {
  public:
   static auto constexpr kJavaDescriptor =
-      "Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ParsedErrorImpl;";
+      "Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ProcessedErrorImpl;";
 
-  static facebook::jni::local_ref<ParsedErrorImpl> create(
+  static facebook::jni::local_ref<ProcessedErrorImpl> create(
       jsi::Runtime& runtime,
-      const JsErrorHandler::ParsedError& error) {
-    auto stack = facebook::jni::JArrayList<ParsedStackFrameImpl>::create();
+      const JsErrorHandler::ProcessedError& error) {
+    auto stack =
+        facebook::jni::JArrayList<ProcessedErrorStackFrameImpl>::create();
     for (const auto& frame : error.stack) {
-      stack->add(ParsedStackFrameImpl::create(frame));
+      stack->add(ProcessedErrorStackFrameImpl::create(frame));
     }
 
     auto extraDataDynamic =
@@ -75,12 +76,12 @@ class ParsedErrorImpl
 
 void JReactExceptionManager::reportJsException(
     jsi::Runtime& runtime,
-    const JsErrorHandler::ParsedError& error) {
+    const JsErrorHandler::ProcessedError& error) {
   static const auto method =
-      javaClassStatic()->getMethod<void(jni::alias_ref<ParsedError>)>(
+      javaClassStatic()->getMethod<void(jni::alias_ref<ProcessedError>)>(
           "reportJsException");
   if (self() != nullptr) {
-    method(self(), ParsedErrorImpl::create(runtime, error));
+    method(self(), ProcessedErrorImpl::create(runtime, error));
   }
 }
 

@@ -65,10 +65,10 @@ class StackTraceHelperTest {
   }
 
   @Test
-  fun testConvertParsedError() {
-    val error = getParsedErrorTestData()
+  fun testConvertProcessedError() {
+    val error = getProcessedErrorTestData()
 
-    val data = StackTraceHelper.convertParsedError(error)
+    val data = StackTraceHelper.convertProcessedError(error)
     assertThat(data.getString("message")).isEqualTo("error message")
     assertThat(data.getInt("id")).isEqualTo(123)
     assertThat(data.getBoolean("isFatal")).isEqualTo(true)
@@ -96,9 +96,9 @@ class StackTraceHelperTest {
     assertThat(map.getDouble("column").toInt()).isEqualTo(columnNumber)
   }
 
-  private fun getParsedErrorTestData(): ParsedError {
+  private fun getProcessedErrorTestData(): ProcessedError {
     val frame1 =
-        object : ParsedError.StackFrame {
+        object : ProcessedError.StackFrame {
           override val file = "file1"
           override val methodName = "method1"
           override val lineNumber = 1
@@ -106,7 +106,7 @@ class StackTraceHelperTest {
         }
 
     val frame2 =
-        object : ParsedError.StackFrame {
+        object : ProcessedError.StackFrame {
           override val file = "file2"
           override val methodName = "method2"
           override val lineNumber = 2
@@ -115,7 +115,7 @@ class StackTraceHelperTest {
 
     val frames = listOf(frame1, frame2)
 
-    return object : ParsedError {
+    return object : ProcessedError {
       override val message = "error message"
       override val originalMessage = null
       override val name = null

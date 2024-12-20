@@ -324,8 +324,8 @@ final class ReactInstance {
     }
 
     @Override
-    public void reportJsException(ParsedError error) {
-      JavaOnlyMap data = StackTraceHelper.convertParsedError(error);
+    public void reportJsException(ProcessedError error) {
+      JavaOnlyMap data = StackTraceHelper.convertProcessedError(error);
 
       try {
         NativeExceptionsManagerSpec exceptionsManager =

@@ -2364,7 +2364,7 @@ public class com/facebook/react/devsupport/StackTraceHelper {
 	public static fun convertJsStackTrace (Lcom/facebook/react/bridge/ReadableArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public static fun convertJsStackTrace (Ljava/lang/String;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public static fun convertJsStackTrace (Lorg/json/JSONArray;)[Lcom/facebook/react/devsupport/interfaces/StackFrame;
-	public static fun convertParsedError (Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ParsedError;)Lcom/facebook/react/bridge/JavaOnlyMap;
+	public static fun convertProcessedError (Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ProcessedError;)Lcom/facebook/react/bridge/JavaOnlyMap;
 	public static fun formatFrameSource (Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
 	public static fun formatStackTrace (Ljava/lang/String;[Lcom/facebook/react/devsupport/interfaces/StackFrame;)Ljava/lang/String;
 }
@@ -2816,7 +2816,7 @@ public abstract interface class com/facebook/react/interfaces/TaskInterface {
 	public abstract fun waitForCompletion (JLjava/util/concurrent/TimeUnit;)Z
 }
 
-public abstract interface class com/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ParsedError {
+public abstract interface class com/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ProcessedError {
 	public abstract fun getComponentStack ()Ljava/lang/String;
 	public abstract fun getExtraData ()Lcom/facebook/react/bridge/ReadableMap;
 	public abstract fun getId ()I
@@ -2827,7 +2827,7 @@ public abstract interface class com/facebook/react/interfaces/exceptionmanager/R
 	public abstract fun isFatal ()Z
 }
 
-public abstract interface class com/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ParsedError$StackFrame {
+public abstract interface class com/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler$ProcessedError$StackFrame {
 	public abstract fun getColumn ()Ljava/lang/Integer;
 	public abstract fun getFile ()Ljava/lang/String;
 	public abstract fun getLineNumber ()Ljava/lang/Integer;

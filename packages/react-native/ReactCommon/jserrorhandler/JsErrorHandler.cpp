@@ -124,10 +124,10 @@ jsi::Value getBundleMetadata(jsi::Runtime& runtime, jsi::JSError& error) {
 namespace facebook::react {
 
 template <>
-struct Bridging<JsErrorHandler::ParsedError::StackFrame> {
+struct Bridging<JsErrorHandler::ProcessedError::StackFrame> {
   static jsi::Value toJs(
       jsi::Runtime& runtime,
-      const JsErrorHandler::ParsedError::StackFrame& frame) {
+      const JsErrorHandler::ProcessedError::StackFrame& frame) {
     auto stackFrame = jsi::Object(runtime);
     auto file = bridging::toJs(runtime, frame.file, nullptr);
     auto lineNumber = bridging::toJs(runtime, frame.lineNumber, nullptr);
@@ -142,10 +142,10 @@ struct Bridging<JsErrorHandler::ParsedError::StackFrame> {
 };
 
 template <>
-struct Bridging<JsErrorHandler::ParsedError> {
+struct Bridging<JsErrorHandler::ProcessedError> {
   static jsi::Value toJs(
       jsi::Runtime& runtime,
-      const JsErrorHandler::ParsedError& error) {
+      const JsErrorHandler::ProcessedError& error) {
     auto data = jsi::Object(runtime);
     data.setProperty(runtime, "message", error.message);
     data.setProperty(
@@ -175,7 +175,7 @@ struct Bridging<JsErrorHandler::ParsedError> {
 
 std::ostream& operator<<(
     std::ostream& os,
-    const JsErrorHandler::ParsedError::StackFrame& frame) {
+    const JsErrorHandler::ProcessedError::StackFrame& frame) {
   auto file = frame.file ? quote(*frame.file) : "nil";
   auto methodName = quote(frame.methodName);
   auto lineNumber =
@@ -188,7 +188,7 @@ std::ostream& operator<<(
 }
 std::ostream& operator<<(
     std::ostream& os,
-    const JsErrorHandler::ParsedError& error) {
+    const JsErrorHandler::ProcessedError& error) {
   auto message = quote(error.message);
   auto originalMessage =
       error.originalMessage ? quote(*error.originalMessage) : "nil";
@@ -199,7 +199,7 @@ std::ostream& operator<<(
   auto isFatal = std::to_string(static_cast<int>(error.isFatal));
   auto extraData = "jsi::Object{ <omitted> } ";
 
-  os << "ParsedError {\n"
+  os << "ProcessedError {\n"
      << "  .message = " << message << "\n"
      << "  .originalMessage = " << originalMessage << "\n"
      << "  .name = " << name << "\n"
@@ -329,7 +329,7 @@ void JsErrorHandler::handleErrorWithCppPipeline(
 
   auto id = nextExceptionId();
 
-  ParsedError parsedError = {
+  ProcessedError processedError = {
       .message =
           _isRuntimeReady ? message : ("[runtime not ready]: " + message),
       .originalMessage = originalMessage,
@@ -341,7 +341,7 @@ void JsErrorHandler::handleErrorWithCppPipeline(
       .extraData = std::move(extraData),
   };
 
-  auto data = bridging::toJs(runtime, parsedError).asObject(runtime);
+  auto data = bridging::toJs(runtime, processedError).asObject(runtime);
 
   auto isComponentError =
       isTruthy(runtime, errorObj.getProperty(runtime, "isComponentError"));
@@ -351,7 +351,7 @@ void JsErrorHandler::handleErrorWithCppPipeline(
     auto console = runtime.global().getPropertyAsObject(runtime, "console");
     auto errorFn = console.getPropertyAsFunction(runtime, "error");
     auto finalMessage =
-        jsi::String::createFromUtf8(runtime, parsedError.message);
+        jsi::String::createFromUtf8(runtime, processedError.message);
     errorFn.callWithThis(runtime, console, finalMessage);
   }
 
@@ -397,7 +397,7 @@ void JsErrorHandler::handleErrorWithCppPipeline(
       _hasHandledFatalError = true;
     }
 
-    _onJsError(runtime, parsedError);
+    _onJsError(runtime, processedError);
   }
 }
 
