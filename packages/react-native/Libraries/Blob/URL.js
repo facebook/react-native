@@ -9,29 +9,27 @@
  */
 
 import type Blob from './Blob';
-
 import NativeBlobModule from './NativeBlobModule';
 
 let BLOB_URL_PREFIX = null;
 
+// Initialize BLOB_URL_PREFIX if NativeBlobModule is available and properly configured
 if (
   NativeBlobModule &&
   typeof NativeBlobModule.getConstants().BLOB_URI_SCHEME === 'string'
 ) {
   const constants = NativeBlobModule.getConstants();
-  // $FlowFixMe[incompatible-type] asserted above
-  // $FlowFixMe[unsafe-addition]
   BLOB_URL_PREFIX = constants.BLOB_URI_SCHEME + ':';
   if (typeof constants.BLOB_URI_HOST === 'string') {
-    BLOB_URL_PREFIX += `//${constants.BLOB_URI_HOST}/`;
+    BLOB_URL_PREFIX += //${constants.BLOB_URI_HOST}/;
   }
 }
 
 /*
- * To allow Blobs be accessed via `content://` URIs,
- * you need to register `BlobProvider` as a ContentProvider in your app's `AndroidManifest.xml`:
+ * To allow Blobs be accessed via content:// URIs,
+ * you need to register BlobProvider as a ContentProvider in your app's AndroidManifest.xml:
  *
- * ```xml
+ * xml
  * <manifest>
  *   <application>
  *     <provider
@@ -41,22 +39,23 @@ if (
  *     />
  *   </application>
  * </manifest>
- * ```
- * And then define the `blob_provider_authority` string in `res/values/strings.xml`.
+ * 
+ * And then define the blob_provider_authority string in res/values/strings.xml.
  * Use a dotted name that's entirely unique to your app:
  *
- * ```xml
+ * xml
  * <resources>
  *   <string name="blob_provider_authority">your.app.package.blobs</string>
  * </resources>
- * ```
+ * 
  */
 
 export {URLSearchParams} from './URLSearchParams';
 
-function validateBaseUrl(url: string) {
+// Validate the base URL with a regular expression
+function validateBaseUrl(url: string): boolean {
   // from this MIT-licensed gist: https://gist.github.com/dperini/729294
-  return /^(?:(?:(?:https?|ftp):)?\/\/)(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)*(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/.test(
+  return /^(?:(?:(?:https?|ftp):)?\/\/)(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S)?$/.test(
     url,
   );
 }
@@ -68,17 +67,22 @@ export class URL {
 
   static createObjectURL(blob: Blob): string {
     if (BLOB_URL_PREFIX === null) {
-      throw new Error('Cannot create URL for blob!');
+      throw new Error('Cannot create URL for blob! Ensure NativeBlobModule is properly configured.');
     }
-    return `${BLOB_URL_PREFIX}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size}`;
+    if (!blob || !blob.data || !blob.data.blobId) {
+      throw new Error('Invalid blob data: Missing blobId or data.');
+    }
+    return ${BLOB_URL_PREFIX}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size};
   }
 
   static revokeObjectURL(url: string) {
-    // Do nothing.
+    // Do nothing, no implementation needed for revoking Blob URLs in this case.
   }
 
   constructor(url: string, base: string | URL) {
     let baseUrl = null;
+
+    // Validate URL format and handle base URL correctly
     if (!base || validateBaseUrl(url)) {
       this._url = url;
       if (!this._url.endsWith('/')) {
@@ -88,21 +92,23 @@ export class URL {
       if (typeof base === 'string') {
         baseUrl = base;
         if (!validateBaseUrl(baseUrl)) {
-          throw new TypeError(`Invalid base URL: ${baseUrl}`);
+          throw new TypeError(Invalid base URL: ${baseUrl});
         }
       } else {
         baseUrl = base.toString();
       }
+
+      // Ensure correct URL formatting
       if (baseUrl.endsWith('/')) {
         baseUrl = baseUrl.slice(0, baseUrl.length - 1);
       }
       if (!url.startsWith('/')) {
-        url = `/${url}`;
+        url = /${url};
       }
       if (baseUrl.endsWith(url)) {
         url = '';
       }
-      this._url = `${baseUrl}${url}`;
+      this._url = ${baseUrl}${url};
     }
 
     // Create a URL object for easier parsing (browser-like behavior)
@@ -130,7 +136,7 @@ export class URL {
   }
 
   get password(): string {
-    const match = this._urlObject.href.match(/^.*:\/\/(.*):(.*)@/);
+    const match = this._urlObject.href.match(/^.:\/\/(.):(.*)@/);
     return match && match[2] ? match[2] : ''; // Extract password from "username:password" part
   }
 
@@ -171,7 +177,7 @@ export class URL {
   }
 
   get username(): string {
-    const match = this._urlObject.href.match(/^.*:\/\/(.*?)(?::(.*))?@/);
+    const match = this._urlObject.href.match(/^.:\/\/(.?)(?::(.*))?@/);
     return match && match[1] ? match[1] : ''; // Extract username from "username:password" part
   }
 }

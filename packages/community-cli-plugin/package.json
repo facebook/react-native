@@ -15,7 +15,7 @@
   },
   "license": "MIT",
   "exports": {
-    ".": "./src/index.js",
+    ".": "./dist/index.js",
     "./package.json": "./package.json"
   },
   "files": [
