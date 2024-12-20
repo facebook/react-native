@@ -1151,7 +1151,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 
 - (void)invalidate
 {
-  RCTUnsafeExecuteOnMainQueueSync(^{
+  RCTExecuteOnMainQueue(^{
     if (_didInvalidate) {
       return;
     }
