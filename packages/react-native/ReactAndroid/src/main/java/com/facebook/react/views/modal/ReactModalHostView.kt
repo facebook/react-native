@@ -21,6 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStructure
 import android.view.Window
+import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
@@ -365,6 +366,9 @@ public class ReactModalHostView(context: ThemedReactContext) :
     }
   }
 
+  /**
+   * Updates the system appearance of the dialog to match the activity that it is being displayed on.
+   */
   private fun updateSystemAppearance() {
     val currentActivity = getCurrentActivity() ?: return
     val dialog = checkNotNull(dialog) { "dialog must exist when we call updateProperties" }
@@ -375,14 +379,28 @@ public class ReactModalHostView(context: ThemedReactContext) :
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
       val insetsController: WindowInsetsController = checkNotNull(activityWindow.insetsController)
       val activityAppearance: Int = insetsController.systemBarsAppearance
+      val rootWindowInsets = activityWindow.decorView.rootWindowInsets
 
       val activityLightStatusBars =
           activityAppearance and WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 
       dialogWindow.insetsController?.setSystemBarsAppearance(
           activityLightStatusBars, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+
+      syncSystemBarsVisibility(rootWindowInsets, dialogWindow.insetsController, WindowInsets.Type.statusBars())
+      syncSystemBarsVisibility(rootWindowInsets, dialogWindow.insetsController, WindowInsets.Type.navigationBars())
     } else {
       dialogWindow.decorView.systemUiVisibility = activityWindow.decorView.systemUiVisibility
+    }
+  }
+
+  /**
+   * Syncs the visibility of the system bars based on their visibility in the root window insets.
+   * This ensures consistency between the system bars visibility in the activity and the dialog.
+   */
+  private fun syncSystemBarsVisibility(rootWindowInsets: WindowInsets, dialogWindowInsetsController: WindowInsetsController?, type: Int) {
+    dialogWindowInsetsController?.apply {
+      if (rootWindowInsets.isVisible(type)) show(type) else hide(type)
     }
   }
 
