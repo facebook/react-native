@@ -30,6 +30,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   BOOL _hasInputAccessoryView;
   NSString *_Nullable _predictedText;
   BOOL _didMoveToWindow;
+  NSArray<UIBarButtonItemGroup *> *_initialValueLeadingBarButtonGroups;
+  NSArray<UIBarButtonItemGroup *> *_initialValueTrailingBarButtonGroups;
 }
 
 - (void)reactUpdateResponderOffsetForScrollView:(RCTScrollView *)scrollView
@@ -65,6 +67,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _bridge = bridge;
     _eventDispatcher = bridge.eventDispatcher;
     [self initializeReturnKeyType];
+    _initialValueLeadingBarButtonGroups = nil;
+    _initialValueTrailingBarButtonGroups = nil;
   }
 
   return self;
@@ -392,6 +396,25 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 - (void)setInputAccessoryViewButtonLabel:(NSString *)inputAccessoryViewButtonLabel
 {
   self.backedTextInputView.inputAccessoryViewButtonLabel = inputAccessoryViewButtonLabel;
+}
+
+- (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
+{
+  // Initialize the initial values only once
+  if (_initialValueLeadingBarButtonGroups == nil) {
+    // Capture initial values of leading and trailing button groups
+    _initialValueLeadingBarButtonGroups = self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups;
+    _initialValueTrailingBarButtonGroups = self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups;
+  }
+
+  if (disableKeyboardShortcuts) {
+    self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = @[];
+    self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = @[];
+  }else {
+    // Restore the initial values
+    self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = _initialValueLeadingBarButtonGroups;
+    self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = _initialValueTrailingBarButtonGroups;
+  }
 }
 
 #pragma mark - RCTBackedTextInputDelegate
