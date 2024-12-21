@@ -97,7 +97,7 @@
     "prettier": "2.8.8",
     "prettier-plugin-hermes-parser": "0.25.1",
     "react": "19.0.0",
-    "react-test-renderer": "19.0.0",
+
     "rimraf": "^3.0.2",
     "shelljs": "^0.8.5",
     "signedsource": "^1.0.0",
