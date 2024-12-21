@@ -10,6 +10,7 @@
 #include "CdpTracing.h"
 
 #include <folly/dynamic.h>
+#include <hermes/hermes.h>
 
 #include <functional>
 #include <optional>
@@ -117,7 +118,16 @@ class PerformanceTracer {
 
   folly::dynamic serializeTraceEvent(TraceEvent event) const;
 
+  void populateTraceEventsForHermes(
+      const std::vector<
+          facebook::hermes::sampling_profiler::TraceEventCollectionDataSource>&
+          dataSources);
+  void processSingleHermesDataSource(
+      const facebook::hermes::sampling_profiler::TraceEventCollectionDataSource&
+          dataSource);
+
   bool tracing_{false};
+  uint64_t tracingStartedTimestamp_{};
   std::unordered_map<std::string, uint64_t> customTrackIdMap_;
   std::vector<TraceEvent> buffer_;
   std::mutex mutex_;
