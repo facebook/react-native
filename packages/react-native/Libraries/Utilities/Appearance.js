@@ -26,6 +26,8 @@ let lazyState: ?{
   // Cache the color scheme to reduce the cost of reading it between changes.
   // NOTE: If `NativeAppearance` is null, this will always be null.
   appearance: ?Appearance,
+  // NOTE: If `NativeAppearance` is null, this will always be null.
+  edgeToEdge: ?boolean,
   // NOTE: This is non-nullable to make it easier for `onChangedListener` to
   // return a non-nullable `EventSubscription` value. This is not the common
   // path, so we do not have to over-optimize it.
@@ -47,12 +49,14 @@ function getState(): $NonMaybeType<typeof lazyState> {
     lazyState = {
       NativeAppearance: null,
       appearance: null,
+      edgeToEdge: null,
       eventEmitter,
     };
   } else {
     const state: $NonMaybeType<typeof lazyState> = {
       NativeAppearance,
       appearance: null,
+      edgeToEdge: null,
       eventEmitter,
     };
     new NativeEventEmitter<{
@@ -109,6 +113,21 @@ export function setColorScheme(colorScheme: ?ColorSchemeName): void {
       colorScheme: toColorScheme(NativeAppearance.getColorScheme()),
     };
   }
+}
+
+export function isEdgeToEdge(): boolean {
+  let edgeToEdge = false;
+  const state = getState();
+  const {NativeAppearance} = state;
+  if (NativeAppearance != null) {
+    if (state.edgeToEdge == null) {
+      // Lazily initialize `state.edgeToEdge`. This should only
+      // happen once because we never reassign a null value to it.
+      state.edgeToEdge = NativeAppearance.isEdgeToEdge();
+    }
+    edgeToEdge = state.edgeToEdge;
+  }
+  return edgeToEdge;
 }
 
 /**
