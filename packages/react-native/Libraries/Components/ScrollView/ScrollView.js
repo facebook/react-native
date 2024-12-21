@@ -371,6 +371,12 @@ type StickyHeaderComponentType = component(
   ...ScrollViewStickyHeaderProps
 );
 
+export type StickyHeaderOnLayoutEventContext<T: {...} = {...}> = $ReadOnly<{
+  index: number,
+  key: string,
+  itemProps: T,
+}>;
+
 export type Props = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
@@ -530,6 +536,10 @@ export type Props = $ReadOnly<{|
    * which this ScrollView renders.
    */
   onContentSizeChange?: (contentWidth: number, contentHeight: number) => void,
+  onStickyHeaderLayout?: (
+    event: LayoutEvent,
+    context: StickyHeaderOnLayoutEventContext<{...}>,
+  ) => void,
   onKeyboardDidShow?: (event: KeyboardEvent) => void,
   onKeyboardDidHide?: (event: KeyboardEvent) => void,
   onKeyboardWillShow?: (event: KeyboardEvent) => void,
@@ -1110,11 +1120,19 @@ class ScrollView extends React.Component<Props, State> {
       return;
     }
 
+    this.props.onStickyHeaderLayout &&
+      this.props.onStickyHeaderLayout(event, {
+        key,
+        index,
+        itemProps: childArray[index].props,
+      });
+
     const layoutY = event.nativeEvent.layout.y;
     this._headerLayoutYs.set(key, layoutY);
 
     const indexOfIndex = stickyHeaderIndices.indexOf(index);
     const previousHeaderIndex = stickyHeaderIndices[indexOfIndex - 1];
+
     if (previousHeaderIndex != null) {
       const previousHeader = this._stickyHeaderRefs.get(
         this._getKeyForIndex(previousHeaderIndex, childArray),
