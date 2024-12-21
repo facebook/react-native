@@ -25,8 +25,14 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  [_fileQueue cancelAllOperations];
-  _fileQueue = nil;
+  if (_fileQueue) {
+    for (NSOperation *operation in _fileQueue.operations) {
+      if ([operation isKindOfClass:[NSOperation class]] && !operation.isCancelled && !operation.isFinished) {
+        [operation cancel];
+      }
+    }
+    _fileQueue = nil;
+  }
 }
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
