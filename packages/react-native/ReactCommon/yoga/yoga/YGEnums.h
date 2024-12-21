@@ -142,4 +142,11 @@ YG_ENUM_DECL(
     YGWrapWrap,
     YGWrapWrapReverse)
 
+YG_ENUM_DECL(
+    YGBorderStyle,
+    YGBorderStyleNone,
+    YGBorderStyleSolid,
+    YGBorderStyleDotted,
+    YGBorderStyleDashed)
+
 YG_EXTERN_C_END

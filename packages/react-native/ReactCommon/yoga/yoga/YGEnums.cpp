@@ -266,3 +266,17 @@ const char* YGWrapToString(const YGWrap value) {
   }
   return "unknown";
 }
+
+const char* YGBorderStyleToString(const YGBorderStyle value) {
+  switch (value) {
+    case YGBorderStyleNone:
+      return "none";
+    case YGBorderStyleSolid:
+      return "solid";
+    case YGBorderStyleDotted:
+      return "dotted";
+    case YGBorderStyleDashed:
+      return "dashed";
+  }
+  return "unknown";
+}

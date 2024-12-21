@@ -8,6 +8,7 @@
 package com.facebook.react.uimanager.style
 
 public enum class BorderStyle {
+  NONE,
   SOLID,
   DASHED,
   DOTTED;
@@ -16,6 +17,7 @@ public enum class BorderStyle {
     @JvmStatic
     public fun fromString(borderStyle: String): BorderStyle? {
       return when (borderStyle.lowercase()) {
+        "none" -> NONE
         "solid" -> SOLID
         "dashed" -> DASHED
         "dotted" -> DOTTED
