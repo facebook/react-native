@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.scroll;
+package com.facebook.react.views.scroll
 
 public interface FpsListener {
 
@@ -14,7 +14,7 @@ public interface FpsListener {
    *
    * @param tag
    */
-  void enable(String tag);
+  public fun enable(tag: String)
 
   /**
    * Clients should call this method when they want the listener to stop recording data. The
@@ -24,8 +24,8 @@ public interface FpsListener {
    *
    * @param tag
    */
-  void disable(String tag);
+  public fun disable(tag: String)
 
   /** Reports whether this listener is recording data. */
-  boolean isEnabled();
+  public fun isEnabled(): Boolean
 }
