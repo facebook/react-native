@@ -261,7 +261,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
   }
 
   componentDidMount(): void {
-    if (global.__turboModuleProxy == null) {
+    if (global.nativeModuleProxy == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
       );
