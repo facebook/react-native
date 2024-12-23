@@ -62,7 +62,7 @@ runs:
         api-level: 24
         arch: x86
         ram-size: '8192M'
-        heap-sizze: '4096M'
+        heap-size: '4096M'
         disk-size: '10G'
         cores: '4'
         disable-animations: false
