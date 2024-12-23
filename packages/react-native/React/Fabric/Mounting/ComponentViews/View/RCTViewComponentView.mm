@@ -1140,7 +1140,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
       [result appendString:label];
     }
   }
-  return result == nil ? @"" : result;
+  return result;
 }
 
 - (NSString *)accessibilityLabel
