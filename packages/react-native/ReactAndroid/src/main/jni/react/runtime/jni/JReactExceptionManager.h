@@ -21,7 +21,7 @@ class JReactExceptionManager
 
   void reportJsException(
       jsi::Runtime& runtime,
-      const JsErrorHandler::ParsedError& error);
+      const JsErrorHandler::ProcessedError& error);
 };
 
 } // namespace facebook::react

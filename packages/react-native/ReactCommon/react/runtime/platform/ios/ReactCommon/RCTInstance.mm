@@ -232,7 +232,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
   __weak __typeof(self) weakSelf = self;
-  auto onJsError = [=](jsi::Runtime &runtime, const JsErrorHandler::ParsedError &error) {
+  auto onJsError = [=](jsi::Runtime &runtime, const JsErrorHandler::ProcessedError &error) {
     [weakSelf _handleJSError:error withRuntime:runtime];
   };
 
@@ -477,7 +477,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   });
 }
 
-- (void)_handleJSError:(const JsErrorHandler::ParsedError &)error withRuntime:(jsi::Runtime &)runtime
+- (void)_handleJSError:(const JsErrorHandler::ProcessedError &)error withRuntime:(jsi::Runtime &)runtime
 {
   NSMutableDictionary<NSString *, id> *errorData = [NSMutableDictionary new];
   errorData[@"message"] = @(error.message.c_str());
@@ -492,7 +492,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 
   NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (const JsErrorHandler::ParsedError::StackFrame &frame : error.stack) {
+  for (const JsErrorHandler::ProcessedError::StackFrame &frame : error.stack) {
     NSMutableDictionary<NSString *, id> *stackFrame = [NSMutableDictionary new];
     if (frame.file) {
       stackFrame[@"file"] = @(frame.file->c_str());

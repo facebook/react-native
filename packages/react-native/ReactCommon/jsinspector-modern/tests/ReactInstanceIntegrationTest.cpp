@@ -35,7 +35,7 @@ void ReactInstanceIntegrationTest::SetUp() {
       std::make_shared<react::TimerManager>(std::move(mockRegistry));
 
   auto onJsError = [](jsi::Runtime& /*runtime*/,
-                      const JsErrorHandler::ParsedError& error) noexcept {
+                      const JsErrorHandler::ProcessedError& error) noexcept {
     LOG(INFO) << "[jsErrorHandlingFunc called]";
     LOG(INFO) << error << std::endl;
   };
