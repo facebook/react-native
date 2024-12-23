@@ -164,7 +164,7 @@ async function testRNTesterAndroid(
     exec(`unzip ${downloadPath} -d ${unzipFolder}`);
     let apkPath = path.join(
       unzipFolder,
-      `app-${argv.hermes === true ? 'hermes' : 'jsc'}-${emulatorArch}-release.apk`,
+      `app-${argv.hermes === true ? 'hermes' : 'jsc'}-${emulatorArch}-debug.apk`,
     );
 
     exec(`adb install ${apkPath}`);
