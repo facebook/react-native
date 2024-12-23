@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.77.0-rc.4
+
+### Fixed
+
+#### Android specific
+
+- Restore layout/invalidate during ReactViewClippingManager.removeViewAt() ([e3970a4bb3](https://github.com/facebook/react-native/commit/e3970a4bb3f39ec5652277d78d8c58c89e87dc30) by [@tdn20](https://github.com/tdn20))
+
 ## v0.77.0-rc.3
 
 ### Changed
