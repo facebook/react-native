@@ -10,7 +10,7 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
@@ -280,7 +280,7 @@ void Scheduler::animationTick() const {
 void Scheduler::uiManagerDidFinishTransaction(
     std::shared_ptr<const MountingCoordinator> mountingCoordinator,
     bool mountSynchronously) {
-  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
+  TraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_ != nullptr) {
     // This is no-op on all platforms except for Android where we need to
@@ -312,7 +312,7 @@ void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) {
-  SystraceSection s("Scheduler::uiManagerDispatchCommand");
+  TraceSection s("Scheduler::uiManagerDispatchCommand");
 
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
@@ -335,7 +335,7 @@ void Scheduler::uiManagerDidDispatchCommand(
 void Scheduler::uiManagerDidSendAccessibilityEvent(
     const ShadowNode::Shared& shadowNode,
     const std::string& eventType) {
-  SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
+  TraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
 
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);

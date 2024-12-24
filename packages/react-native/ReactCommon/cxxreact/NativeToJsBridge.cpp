@@ -21,7 +21,7 @@
 #include "ModuleRegistry.h"
 #include "MoveWrapper.h"
 #include "RAMBundleRegistry.h"
-#include "SystraceSection.h"
+#include "TraceSection.h"
 
 #include <memory>
 
@@ -194,7 +194,7 @@ void NativeToJsBridge::callFunction(
 #ifdef WITH_FBSYSTRACE
     FbSystraceAsyncFlow::end(
         TRACE_TAG_REACT_CXX_BRIDGE, "JSCall", systraceCookie);
-    SystraceSection s(
+    TraceSection s(
         "NativeToJsBridge::callFunction", "module", module, "method", method);
 #else
     (void)(systraceCookie);
@@ -229,7 +229,7 @@ void NativeToJsBridge::invokeCallback(
 #ifdef WITH_FBSYSTRACE
         FbSystraceAsyncFlow::end(
             TRACE_TAG_REACT_CXX_BRIDGE, "<callback>", systraceCookie);
-        SystraceSection s("NativeToJsBridge::invokeCallback");
+        TraceSection s("NativeToJsBridge::invokeCallback");
 #else
         (void)(systraceCookie);
 #endif

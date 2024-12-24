@@ -16,7 +16,7 @@
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/TurboModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
-#import <cxxreact/SystraceSection.h>
+#import <cxxreact/TraceSection.h>
 #import <react/bridging/Bridging.h>
 
 #include <glog/logging.h>
@@ -369,7 +369,7 @@ id ObjCTurboModule::performMethodInvocation(
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
     nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block, moduleName, methodNameStr]() -> void {
-      SystraceSection s(
+      TraceSection s(
           "RCTTurboModuleAsyncMethodInvocation",
           "module",
           moduleName,
@@ -429,7 +429,7 @@ void ObjCTurboModule::performVoidMethodInvocation(
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
     nativeMethodCallInvoker_->invokeAsync(methodNameStr, [moduleName, methodNameStr, block]() -> void {
-      SystraceSection s(
+      TraceSection s(
           "RCTTurboModuleAsyncMethodInvocation", "module", moduleName, "method", methodNameStr, "returnType", "void");
       block();
     });

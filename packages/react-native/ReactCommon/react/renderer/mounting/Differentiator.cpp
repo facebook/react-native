@@ -7,7 +7,7 @@
 
 #include "Differentiator.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
@@ -1546,7 +1546,7 @@ static void calculateShadowViewMutations(
 ShadowViewMutation::List calculateShadowViewMutations(
     const ShadowNode& oldRootShadowNode,
     const ShadowNode& newRootShadowNode) {
-  SystraceSection s("calculateShadowViewMutations");
+  TraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.
   react_native_assert(
