@@ -11,6 +11,7 @@
 
 import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 
+import NativeFantom from '../src/specs/NativeFantom';
 import expect from './expect';
 import {createMockFunction} from './mocks';
 import {setupSnapshotConfig, snapshotContext} from './snapshotContext';
@@ -190,7 +191,12 @@ function executeTests() {
 }
 
 function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
-  console.log(JSON.stringify(testSuiteResult));
+  NativeFantom.reportTestSuiteResultsJSON(
+    JSON.stringify({
+      type: 'test-result',
+      ...testSuiteResult,
+    }),
+  );
 }
 
 global.$$RunTests$$ = () => {

@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import {spawnSync} from 'child_process';
+import {spawn, spawnSync} from 'child_process';
 import crypto from 'crypto';
 import fs from 'fs';
 import os from 'os';
@@ -44,24 +44,66 @@ export function getBuckModesForPlatform(
   return ['@//xplat/mode/react-force-cxx-platform', osPlatform];
 }
 
-type SpawnResultWithOriginalCommand = {
-  ...ReturnType<typeof spawnSync>,
+export type AsyncCommandResult = {
   originalCommand: string,
-  ...
+  childProcess: ReturnType<typeof spawn>,
+  done: Promise<AsyncCommandResult>,
+  pid: number,
+  status: ?number,
+  signal: ?string,
+  error: ?Error,
 };
 
-export function runBuck2(args: Array<string>): SpawnResultWithOriginalCommand {
-  // If these tests are already running from withing a buck2 process, e.g. when
-  // they are scheduled by a `buck2 test` wrapper, calling `buck2` again would
-  // cause a daemon-level deadlock.
-  // To prevent this - explicitly pass custom `--isolation-dir`. Reuse the same
-  // dir across tests (even running in different jest processes) to properly
-  // employ caching.
-  if (process.env.BUCK2_WRAPPER != null) {
-    args.unshift('--isolation-dir', BUCK_ISOLATION_DIR);
-  }
+export type SyncCommandResult = {
+  originalCommand: string,
+  pid: number,
+  status: number,
+  signal: ?string,
+  error: ?Error,
+  stdout: string,
+  stderr: string,
+};
 
-  const result = spawnSync('buck2', args, {
+export function runCommand(
+  command: string,
+  args: Array<string>,
+): AsyncCommandResult {
+  const childProcess = spawn(command, args, {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+    },
+  });
+
+  const result: AsyncCommandResult = {
+    childProcess,
+    done: new Promise(resolve => {
+      childProcess.on('close', (code: number, signal: string) => {
+        result.status = code;
+        result.signal = signal;
+        resolve(result);
+      });
+    }),
+    originalCommand: `${command} ${args.join(' ')}`,
+    pid: childProcess.pid,
+    status: null,
+    signal: null,
+    error: null,
+  };
+
+  childProcess.on('error', error => {
+    result.error = error;
+  });
+
+  return result;
+}
+
+export function runCommandSync(
+  command: string,
+  args: Array<string>,
+): SyncCommandResult {
+  const result = spawnSync(command, args, {
     encoding: 'utf8',
     env: {
       ...process.env,
@@ -70,13 +112,18 @@ export function runBuck2(args: Array<string>): SpawnResultWithOriginalCommand {
   });
 
   return {
-    ...result,
-    originalCommand: `buck2 ${args.join(' ')}`,
+    originalCommand: `${command} ${args.join(' ')}`,
+    pid: result.pid,
+    status: result.status,
+    signal: result.signal,
+    error: result.error,
+    stdout: result.stdout.toString(),
+    stderr: result.stderr.toString(),
   };
 }
 
 export function getDebugInfoFromCommandResult(
-  commandResult: SpawnResultWithOriginalCommand,
+  commandResult: SyncCommandResult,
 ): string {
   const maybeSignal =
     commandResult.signal != null ? `, signal: ${commandResult.signal}` : '';
@@ -100,6 +147,28 @@ export function getDebugInfoFromCommandResult(
   }
 
   return logLines.join('\n');
+}
+
+export function runBuck2(args: Array<string>): AsyncCommandResult {
+  return runCommand('buck2', processArgsForBuck(args));
+}
+
+export function runBuck2Sync(args: Array<string>): SyncCommandResult {
+  return runCommandSync('buck2', processArgsForBuck(args));
+}
+
+function processArgsForBuck(args: Array<string>): Array<string> {
+  // If these tests are already running from withing a buck2 process, e.g. when
+  // they are scheduled by a `buck2 test` wrapper, calling `buck2` again would
+  // cause a daemon-level deadlock.
+  // To prevent this - explicitly pass custom `--isolation-dir`. Reuse the same
+  // dir across tests (even running in different jest processes) to properly
+  // employ caching.
+  if (process.env.BUCK2_WRAPPER != null) {
+    return ['--isolation-dir', BUCK_ISOLATION_DIR].concat(args);
+  }
+
+  return args;
 }
 
 export function getShortHash(contents: string): string {
@@ -133,4 +202,32 @@ export function symbolicateStackTrace(
       }
     })
     .join('\n');
+}
+
+export type ConsoleLogMessage = {
+  type: 'console-log',
+  level: 'info' | 'warn' | 'error',
+  message: string,
+};
+
+export function printConsoleLogs(
+  logs: $ReadOnlyArray<ConsoleLogMessage>,
+): void {
+  for (const log of logs) {
+    switch (log.type) {
+      case 'console-log':
+        switch (log.level) {
+          case 'info':
+            console.log(log.message);
+            break;
+          case 'warn':
+            console.warn(log.message);
+            break;
+          case 'error':
+            console.error(log.message);
+            break;
+        }
+        break;
+    }
+  }
 }
