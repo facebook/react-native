@@ -81,11 +81,6 @@
   [_window makeKeyAndVisible];
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-  // Noop
-}
-
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
   [NSException raise:@"RCTBridgeDelegate::sourceURLForBridge not implemented"
