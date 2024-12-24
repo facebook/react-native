@@ -11,6 +11,11 @@
 #include <fbsystrace.h>
 #endif
 
+#ifdef WITH_PERFETTO
+#include <perfetto.h>
+#include <reactperflogger/ReactPerfettoCategories.h>
+#endif
+
 #if defined(__APPLE__)
 // This is required so that OS_LOG_TARGET_HAS_10_15_FEATURES will be set.
 #include <os/trace_base.h>
@@ -44,6 +49,21 @@ namespace facebook::react {
  * different values in different files, there is no inconsistency in the sizes
  * of defined symbols.
  */
+#elif defined(WITH_PERFETTO)
+struct TraceSection {
+ public:
+  template <typename... ConvertsToStringPiece>
+  explicit TraceSection(
+      const __unused char* name,
+      __unused ConvertsToStringPiece&&... args) {
+    TRACE_EVENT_BEGIN("react-native", perfetto::DynamicString{name}, args...);
+  }
+
+  ~TraceSection() {
+    TRACE_EVENT_END("react-native");
+  }
+};
+using SystraceSectionUnwrapped = TraceSection;
 #elif defined(WITH_FBSYSTRACE)
 struct ConcreteSystraceSection {
  public:
