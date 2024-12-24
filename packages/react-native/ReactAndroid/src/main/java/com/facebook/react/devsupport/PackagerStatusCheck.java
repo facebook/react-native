@@ -27,7 +27,7 @@ public class PackagerStatusCheck {
 
   private static final String PACKAGER_OK_STATUS = "packager-status:running";
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
-  private static final String PACKAGER_STATUS_URL_TEMPLATE = "http://%s/status";
+  private static final String PACKAGER_STATUS_URL_TEMPLATE = "%s://%s/status";
 
   private final OkHttpClient mClient;
 
@@ -44,8 +44,8 @@ public class PackagerStatusCheck {
     mClient = client;
   }
 
-  public void run(String host, final PackagerStatusCallback callback) {
-    String statusURL = createPackagerStatusURL(host);
+  public void run(String protocol, String host, final PackagerStatusCallback callback) {
+    String statusURL = createPackagerStatusURL(protocol, host);
     Request request = new Request.Builder().url(statusURL).build();
 
     mClient
@@ -96,7 +96,7 @@ public class PackagerStatusCheck {
             });
   }
 
-  private static String createPackagerStatusURL(String host) {
-    return String.format(Locale.US, PACKAGER_STATUS_URL_TEMPLATE, host);
+  private static String createPackagerStatusURL(String protocol, String host) {
+    return String.format(Locale.US, PACKAGER_STATUS_URL_TEMPLATE, protocol, host);
   }
 }
