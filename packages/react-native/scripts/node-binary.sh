@@ -4,6 +4,14 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+# For machines using NVM
+if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
+. "$HOME/.nvm/nvm.sh"
+elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
+. "$(brew --prefix nvm)/nvm.sh"
+fi
+
+
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
 
 nodejs_not_found()
