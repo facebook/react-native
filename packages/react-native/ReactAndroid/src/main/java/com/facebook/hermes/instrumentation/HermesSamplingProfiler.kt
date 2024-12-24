@@ -28,5 +28,5 @@ public object HermesSamplingProfiler {
      * @param filename the file to dump sampling trace to.
      */
     @JvmStatic
-    public external fun dumpSampledTraceToFile(filename: String?)
+    public external fun dumpSampledTraceToFile(filename: String)
 }

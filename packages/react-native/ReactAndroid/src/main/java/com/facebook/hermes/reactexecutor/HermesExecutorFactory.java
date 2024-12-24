@@ -7,6 +7,7 @@
 
 package com.facebook.hermes.reactexecutor;
 
+import androidx.annotation.NonNull;
 import com.facebook.hermes.instrumentation.HermesSamplingProfiler;
 import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
@@ -34,6 +35,7 @@ public class HermesExecutorFactory implements JavaScriptExecutorFactory {
     mDebuggerName = debuggerName;
   }
 
+  @NonNull
   @Override
   public JavaScriptExecutor create() {
     return new HermesExecutor(mConfig, mEnableDebugger, mDebuggerName);
@@ -45,11 +47,12 @@ public class HermesExecutorFactory implements JavaScriptExecutorFactory {
   }
 
   @Override
-  public void stopSamplingProfiler(String filename) {
+  public void stopSamplingProfiler(@NonNull String filename) {
     HermesSamplingProfiler.dumpSampledTraceToFile(filename);
     HermesSamplingProfiler.disable();
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "JSIExecutor+HermesRuntime";

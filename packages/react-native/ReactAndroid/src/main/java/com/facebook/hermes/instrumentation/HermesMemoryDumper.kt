@@ -9,9 +9,9 @@ package com.facebook.hermes.instrumentation
 public interface HermesMemoryDumper {
     public fun shouldSaveSnapshot(): Boolean
 
-    public val internalStorage: String?
+    public fun getInternalStorage(): String
 
-    public val id: String?
+    public fun getId(): String
 
-    public fun setMetaData(crashId: String?)
+    public fun setMetaData(crashId: String)
 }
