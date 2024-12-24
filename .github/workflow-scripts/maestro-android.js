@@ -39,9 +39,10 @@ const MAX_ATTEMPTS = 3;
 async function executeFlowWithRetries(flow, currentAttempt) {
   try {
     console.info(`Executing flow: ${flow}`);
+    const timeout = 1000 * 60 * 10; // 10 minutes
     childProcess.execSync(
       `MAESTRO_DRIVER_STARTUP_TIMEOUT=120000 $HOME/.maestro/bin/maestro test ${flow} --format junit -e APP_ID=${APP_ID} --debug-output /tmp/MaestroLogs`,
-      {stdio: 'inherit'},
+      {stdio: 'inherit', timeout},
     );
   } catch (err) {
     if (currentAttempt < MAX_ATTEMPTS) {
