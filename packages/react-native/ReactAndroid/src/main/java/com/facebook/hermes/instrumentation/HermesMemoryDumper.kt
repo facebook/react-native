@@ -4,15 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
-package com.facebook.hermes.instrumentation;
+package com.facebook.hermes.instrumentation
 
 public interface HermesMemoryDumper {
-  boolean shouldSaveSnapshot();
+    public fun shouldSaveSnapshot(): Boolean
 
-  String getInternalStorage();
+    public fun getInternalStorage(): String
 
-  String getId();
+    public fun getId(): String
 
-  void setMetaData(String crashId);
+    public fun setMetaData(crashId: String)
 }
