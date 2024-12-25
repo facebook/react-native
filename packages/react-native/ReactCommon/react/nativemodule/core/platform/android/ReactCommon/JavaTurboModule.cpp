@@ -9,7 +9,7 @@
 #include <string>
 
 #include <cxxreact/MoveWrapper.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/jsi.h>
@@ -813,7 +813,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            moduleNameStr = name_,
            methodNameStr,
            id = getUniqueId()]() mutable {
-            SystraceSection s(
+            TraceSection s(
                 "JavaTurboModuleAsyncMethodInvocation",
                 "module",
                 moduleNameStr,
@@ -923,7 +923,7 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
            moduleNameStr = name_,
            methodNameStr,
            id = getUniqueId()]() mutable {
-            SystraceSection s(
+            TraceSection s(
                 "JavaTurboModuleAsyncMethodInvocation",
                 "module",
                 moduleNameStr,

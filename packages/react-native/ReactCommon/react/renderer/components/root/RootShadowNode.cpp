@@ -7,7 +7,7 @@
 
 #include "RootShadowNode.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/renderer/components/view/conversions.h>
 
 namespace facebook::react {
@@ -16,7 +16,7 @@ const char RootComponentName[] = "RootView";
 
 bool RootShadowNode::layoutIfNeeded(
     std::vector<const LayoutableShadowNode*>* affectedNodes) {
-  SystraceSection s("RootShadowNode::layout");
+  TraceSection s("RootShadowNode::layout");
 
   if (getIsLayoutClean()) {
     return false;

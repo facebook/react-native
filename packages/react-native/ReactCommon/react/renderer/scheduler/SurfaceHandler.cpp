@@ -7,7 +7,7 @@
 
 #include "SurfaceHandler.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/uimanager/UIManager.h>
 
@@ -59,7 +59,7 @@ Status SurfaceHandler::getStatus() const noexcept {
 }
 
 void SurfaceHandler::start() const noexcept {
-  SystraceSection s("SurfaceHandler::start");
+  TraceSection s("SurfaceHandler::start");
   std::unique_lock lock(linkMutex_);
   react_native_assert(
       link_.status == Status::Registered && "Surface must be registered.");
@@ -71,7 +71,7 @@ void SurfaceHandler::start() const noexcept {
 
   auto parameters = Parameters{};
   {
-    SystraceSection s2("SurfaceHandler::start::paramsLock");
+    TraceSection s2("SurfaceHandler::start::paramsLock");
     std::shared_lock parametersLock(parametersMutex_);
     parameters = parameters_;
   }
@@ -173,7 +173,7 @@ std::string SurfaceHandler::getModuleName() const noexcept {
 }
 
 void SurfaceHandler::setProps(const folly::dynamic& props) const noexcept {
-  SystraceSection s("SurfaceHandler::setProps");
+  TraceSection s("SurfaceHandler::setProps");
   auto parameters = Parameters{};
   {
     std::unique_lock lock(parametersMutex_);
@@ -239,7 +239,7 @@ Size SurfaceHandler::measure(
 void SurfaceHandler::constraintLayout(
     const LayoutConstraints& layoutConstraints,
     const LayoutContext& layoutContext) const noexcept {
-  SystraceSection s("SurfaceHandler::constraintLayout");
+  TraceSection s("SurfaceHandler::constraintLayout");
   {
     std::unique_lock lock(parametersMutex_);
 
@@ -286,7 +286,7 @@ LayoutContext SurfaceHandler::getLayoutContext() const noexcept {
 #pragma mark - Private
 
 void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
-  SystraceSection s("SurfaceHandler::applyDisplayMode");
+  TraceSection s("SurfaceHandler::applyDisplayMode");
   react_native_assert(
       link_.status == Status::Running && "Surface must be running.");
   react_native_assert(

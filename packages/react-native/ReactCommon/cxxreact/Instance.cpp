@@ -16,7 +16,7 @@
 #include "NativeToJsBridge.h"
 #include "RAMBundleRegistry.h"
 #include "RecoverableError.h"
-#include "SystraceSection.h"
+#include "TraceSection.h"
 
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <folly/json.h>
@@ -133,7 +133,7 @@ void Instance::loadBundle(
     std::unique_ptr<const JSBigString> string,
     std::string sourceURL) {
   callback_->incrementPendingJSCalls();
-  SystraceSection s("Instance::loadBundle", "sourceURL", sourceURL);
+  TraceSection s("Instance::loadBundle", "sourceURL", sourceURL);
   nativeToJsBridge_->loadBundle(
       std::move(bundleRegistry), std::move(string), std::move(sourceURL));
 }
@@ -145,14 +145,14 @@ void Instance::loadBundleSync(
   std::unique_lock<std::mutex> lock(m_syncMutex);
   m_syncCV.wait(lock, [this] { return m_syncReady; });
 
-  SystraceSection s("Instance::loadBundleSync", "sourceURL", sourceURL);
+  TraceSection s("Instance::loadBundleSync", "sourceURL", sourceURL);
   nativeToJsBridge_->loadBundleSync(
       std::move(bundleRegistry), std::move(string), std::move(sourceURL));
 }
 
 void Instance::setSourceURL(std::string sourceURL) {
   callback_->incrementPendingJSCalls();
-  SystraceSection s("Instance::setSourceURL", "sourceURL", sourceURL);
+  TraceSection s("Instance::setSourceURL", "sourceURL", sourceURL);
 
   nativeToJsBridge_->loadBundle(nullptr, nullptr, std::move(sourceURL));
 }
@@ -161,7 +161,7 @@ void Instance::loadScriptFromString(
     std::unique_ptr<const JSBigString> string,
     std::string sourceURL,
     bool loadSynchronously) {
-  SystraceSection s("Instance::loadScriptFromString", "sourceURL", sourceURL);
+  TraceSection s("Instance::loadScriptFromString", "sourceURL", sourceURL);
   if (loadSynchronously) {
     loadBundleSync(nullptr, std::move(string), std::move(sourceURL));
   } else {
@@ -241,7 +241,7 @@ void Instance::callJSFunction(
 }
 
 void Instance::callJSCallback(uint64_t callbackId, folly::dynamic&& params) {
-  SystraceSection s("Instance::callJSCallback");
+  TraceSection s("Instance::callJSCallback");
   callback_->incrementPendingJSCalls();
   nativeToJsBridge_->invokeCallback((double)callbackId, std::move(params));
 }

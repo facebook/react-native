@@ -7,7 +7,7 @@
 
 #include "ShadowTree.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
@@ -258,7 +258,7 @@ CommitStatus ShadowTree::commit(
 CommitStatus ShadowTree::tryCommit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
-  SystraceSection s("ShadowTree::commit");
+  TraceSection s("ShadowTree::commit");
 
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
@@ -390,7 +390,7 @@ void ShadowTree::commitEmptyTree() const {
 
 void ShadowTree::emitLayoutEvents(
     std::vector<const LayoutableShadowNode*>& affectedLayoutableNodes) const {
-  SystraceSection s(
+  TraceSection s(
       "ShadowTree::emitLayoutEvents",
       "affectedLayoutableNodes",
       affectedLayoutableNodes.size());

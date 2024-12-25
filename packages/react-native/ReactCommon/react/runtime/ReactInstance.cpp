@@ -12,7 +12,7 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/instrumentation.h>
@@ -77,7 +77,7 @@ ReactInstance::ReactInstance(
             }
 
             jsi::Runtime& jsiRuntime = runtime->getRuntime();
-            SystraceSection s("ReactInstance::_runtimeExecutor[Callback]");
+            TraceSection s("ReactInstance::_runtimeExecutor[Callback]");
             try {
               ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
               callback(jsiRuntime);
@@ -235,7 +235,7 @@ void ReactInstance::loadScript(
                                        std::weak_ptr<BufferedRuntimeExecutor>(
                                            bufferedRuntimeExecutor_),
                                    completion](jsi::Runtime& runtime) {
-    SystraceSection s("ReactInstance::loadScript");
+    TraceSection s("ReactInstance::loadScript");
     bool hasLogger(ReactMarker::logTaggedMarkerBridgelessImpl);
     if (hasLogger) {
       ReactMarker::logTaggedMarkerBridgeless(
@@ -288,7 +288,7 @@ void ReactInstance::callFunctionOnModule(
                                      methodName = methodName,
                                      args = std::move(args)](
                                         jsi::Runtime& runtime) {
-    SystraceSection s(
+    TraceSection s(
         "ReactInstance::callFunctionOnModule",
         "moduleName",
         moduleName,
@@ -337,7 +337,7 @@ void ReactInstance::registerSegment(
   LOG(WARNING) << "Starting to run ReactInstance::registerSegment with segment "
                << segmentId;
   runtimeScheduler_->scheduleWork([=](jsi::Runtime& runtime) {
-    SystraceSection s("ReactInstance::registerSegment");
+    TraceSection s("ReactInstance::registerSegment");
     const auto tag = folly::to<std::string>(segmentId);
     auto script = JSBigFileString::fromPath(segmentPath);
     if (script->size() == 0) {
@@ -394,7 +394,7 @@ void ReactInstance::initializeRuntime(
     BindingsInstallFunc bindingsInstallFunc) noexcept {
   runtimeScheduler_->scheduleWork([this, options, bindingsInstallFunc](
                                       jsi::Runtime& runtime) {
-    SystraceSection s("ReactInstance::initializeRuntime");
+    TraceSection s("ReactInstance::initializeRuntime");
 
     bindNativePerformanceNow(runtime);
 
@@ -654,7 +654,7 @@ void ReactInstance::handleMemoryPressureJs(int pressureLevel) {
       LOG(INFO) << "Memory warning (pressure level: " << levelName
                 << ") received by JS VM, running a GC";
       runtimeScheduler_->scheduleWork([=](jsi::Runtime& runtime) {
-        SystraceSection s("ReactInstance::handleMemoryPressure");
+        TraceSection s("ReactInstance::handleMemoryPressure");
         runtime.instrumentation().collectGarbage(levelName);
       });
       break;
