@@ -17,6 +17,8 @@ import {
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {TextStyle} from '../../StyleSheet/StyleSheetTypes';
 import {
+  NativeBlurEvent,
+  NativeFocusEvent,
   NativeSyntheticEvent,
   NativeTouchEvent,
   TargetedEvent,
@@ -450,9 +452,17 @@ export interface TextInputAndroidProps {
 }
 
 /**
+ * @see TextInputProps.onBlur
+ */
+export interface TextInputBlurEventData extends NativeBlurEvent {
+  text: string;
+  eventCount: number;
+}
+
+/**
  * @see TextInputProps.onFocus
  */
-export interface TextInputFocusEventData extends TargetedEvent {
+export interface TextInputFocusEventData extends NativeFocusEvent {
   text: string;
   eventCount: number;
 }
@@ -759,7 +769,7 @@ export interface TextInputProps
    * Callback that is called when the text input is blurred
    */
   onBlur?:
-    | ((e: NativeSyntheticEvent<TextInputFocusEventData>) => void)
+    | ((e: NativeSyntheticEvent<TextInputBlurEventData>) => void)
     | undefined;
 
   /**
