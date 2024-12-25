@@ -225,6 +225,33 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain_.utf8(s);
   }
 
+  std::u16string utf16(const String& str) override {
+    return plain_.utf16(str);
+  }
+  std::u16string utf16(const PropNameID& sym) override {
+    return plain_.utf16(sym);
+  }
+
+  void getStringData(
+      const jsi::String& str,
+      void* ctx,
+      void (
+          *cb)(void* ctx, bool ascii, const void* data, size_t num)) override {
+    plain_.getStringData(str, ctx, cb);
+  }
+
+  void getPropNameIdData(
+      const jsi::PropNameID& sym,
+      void* ctx,
+      void (
+          *cb)(void* ctx, bool ascii, const void* data, size_t num)) override {
+    plain_.getPropNameIdData(sym, ctx, cb);
+  }
+
+  Object createObjectWithPrototype(const Value& prototype) override {
+    return plain_.createObjectWithPrototype(prototype);
+  }
+
   Object createObject() override {
     return plain_.createObject();
   };
@@ -257,6 +284,14 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
 
   void setExternalMemoryPressure(const Object& obj, size_t amt) override {
     plain_.setExternalMemoryPressure(obj, amt);
+  }
+
+  void setPrototypeOf(const Object& object, const Value& prototype) override {
+    plain_.setPrototypeOf(object, prototype);
+  }
+
+  Value getPrototypeOf(const Object& object) override {
+    return plain_.getPrototypeOf(object);
   }
 
   Value getProperty(const Object& o, const PropNameID& name) override {
@@ -412,12 +447,16 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     plain().instrumentation().stopHeapSampling(os);
   }
 
-  void createSnapshotToFile(const std::string& path) override {
-    plain().instrumentation().createSnapshotToFile(path);
+  void createSnapshotToFile(
+      const std::string& path,
+      const HeapSnapshotOptions& options) override {
+    plain().instrumentation().createSnapshotToFile(path, options);
   }
 
-  void createSnapshotToStream(std::ostream& os) override {
-    plain().instrumentation().createSnapshotToStream(os);
+  void createSnapshotToStream(
+      std::ostream& os,
+      const HeapSnapshotOptions& options) override {
+    plain().instrumentation().createSnapshotToStream(os, options);
   }
 
   std::string flushAndDisableBridgeTrafficTrace() override {
@@ -582,6 +621,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::cloneSymbol(pv);
   };
+  Runtime::PointerValue* cloneBigInt(const Runtime::PointerValue* pv) override {
+    Around around{with_};
+    return RD::cloneBigInt(pv);
+  };
   Runtime::PointerValue* cloneString(const Runtime::PointerValue* pv) override {
     Around around{with_};
     return RD::cloneString(pv);
@@ -610,6 +653,10 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::createPropNameIDFromString(str);
   };
+  PropNameID createPropNameIDFromSymbol(const Symbol& sym) override {
+    Around around{with_};
+    return RD::createPropNameIDFromSymbol(sym);
+  };
   std::string utf8(const PropNameID& id) override {
     Around around{with_};
     return RD::utf8(id);
@@ -624,6 +671,31 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     return RD::symbolToString(sym);
   };
 
+  BigInt createBigIntFromInt64(int64_t i) override {
+    Around around{with_};
+    return RD::createBigIntFromInt64(i);
+  };
+  BigInt createBigIntFromUint64(uint64_t i) override {
+    Around around{with_};
+    return RD::createBigIntFromUint64(i);
+  };
+  bool bigintIsInt64(const BigInt& bi) override {
+    Around around{with_};
+    return RD::bigintIsInt64(bi);
+  };
+  bool bigintIsUint64(const BigInt& bi) override {
+    Around around{with_};
+    return RD::bigintIsUint64(bi);
+  };
+  uint64_t truncate(const BigInt& bi) override {
+    Around around{with_};
+    return RD::truncate(bi);
+  };
+  String bigintToString(const BigInt& bi, int i) override {
+    Around around{with_};
+    return RD::bigintToString(bi, i);
+  };
+
   String createStringFromAscii(const char* str, size_t length) override {
     Around around{with_};
     return RD::createStringFromAscii(str, length);
@@ -635,6 +707,43 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
   std::string utf8(const String& s) override {
     Around around{with_};
     return RD::utf8(s);
+  }
+
+  std::u16string utf16(const String& str) override {
+    Around around{with_};
+    return RD::utf16(str);
+  }
+  std::u16string utf16(const PropNameID& sym) override {
+    Around around{with_};
+    return RD::utf16(sym);
+  }
+
+  void getStringData(
+      const jsi::String& str,
+      void* ctx,
+      void (
+          *cb)(void* ctx, bool ascii, const void* data, size_t num)) override {
+    Around around{with_};
+    RD::getStringData(str, ctx, cb);
+  }
+
+  void getPropNameIdData(
+      const jsi::PropNameID& sym,
+      void* ctx,
+      void (
+          *cb)(void* ctx, bool ascii, const void* data, size_t num)) override {
+    Around around{with_};
+    RD::getPropNameIdData(sym, ctx, cb);
+  }
+
+  Value createValueFromJsonUtf8(const uint8_t* json, size_t length) override {
+    Around around{with_};
+    return RD::createValueFromJsonUtf8(json, length);
+  };
+
+  Object createObjectWithPrototype(const Value& prototype) override {
+    Around around{with_};
+    return RD::createObjectWithPrototype(prototype);
   }
 
   Object createObject() override {
@@ -653,6 +762,30 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::getHostFunction(f);
   };
+
+  bool hasNativeState(const Object& o) override {
+    Around around{with_};
+    return RD::hasNativeState(o);
+  };
+  std::shared_ptr<NativeState> getNativeState(const Object& o) override {
+    Around around{with_};
+    return RD::getNativeState(o);
+  };
+  void setNativeState(const Object& o, std::shared_ptr<NativeState> state)
+      override {
+    Around around{with_};
+    RD::setNativeState(o, state);
+  };
+
+  void setPrototypeOf(const Object& object, const Value& prototype) override {
+    Around around{with_};
+    RD::setPrototypeOf(object, prototype);
+  }
+
+  Value getPrototypeOf(const Object& object) override {
+    Around around{with_};
+    return RD::getPrototypeOf(object);
+  }
 
   Value getProperty(const Object& o, const PropNameID& name) override {
     Around around{with_};
@@ -783,6 +916,11 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
     Around around{with_};
     return RD::strictEquals(a, b);
   };
+  bool strictEquals(const BigInt& a, const BigInt& b) const override {
+    Around around{with_};
+    return RD::strictEquals(a, b);
+  };
+
   bool strictEquals(const String& a, const String& b) const override {
     Around around{with_};
     return RD::strictEquals(a, b);
@@ -795,6 +933,12 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
   bool instanceOf(const Object& o, const Function& f) override {
     Around around{with_};
     return RD::instanceOf(o, f);
+  };
+
+  void setExternalMemoryPressure(const jsi::Object& obj, size_t amount)
+      override {
+    Around around{with_};
+    RD::setExternalMemoryPressure(obj, amount);
   };
 
  private:

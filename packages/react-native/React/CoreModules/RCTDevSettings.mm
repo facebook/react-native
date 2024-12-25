@@ -501,6 +501,15 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
   }
 }
 
+RCT_EXPORT_METHOD(openDebugger)
+{
+#if RCT_ENABLE_INSPECTOR
+  [RCTInspectorDevServerHelper
+          openDebugger:self.bundleManager.bundleURL
+      withErrorMessage:@"Failed to open debugger. Please check that the dev server is running and reload the app."];
+#endif
+}
+
 #pragma mark - Internal
 
 /**
@@ -606,6 +615,9 @@ RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 {
 }
 - (void)setupHMRClientWithAdditionalBundleURL:(NSURL *)bundleURL
+{
+}
+- (void)openDebugger
 {
 }
 - (void)addMenuItem:(NSString *)title

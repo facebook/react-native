@@ -16,9 +16,10 @@ import type {
 } from '../../types/RNTesterTypes';
 import type {KeyboardEvent} from 'react-native/Libraries/Components/Keyboard/Keyboard';
 
+import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {Keyboard, StyleSheet, Text, View} from 'react-native';
+import {Keyboard, StyleSheet, View} from 'react-native';
 
 type KeyboardEventViewerProps = {
   showEvent: 'keyboardWillShow' | 'keyboardDidShow',
@@ -48,20 +49,20 @@ const KeyboardEventViewer = (props: KeyboardEventViewerProps): React.Node => {
 
   return (
     <View>
-      <Text>
-        <Text>Keyboard is </Text>
+      <RNTesterText>
+        <RNTesterText>Keyboard is </RNTesterText>
         {isShown ? (
-          <Text style={styles.openText}>open</Text>
+          <RNTesterText style={styles.openText}>open</RNTesterText>
         ) : (
-          <Text style={styles.closeText}>closed</Text>
+          <RNTesterText style={styles.closeText}>closed</RNTesterText>
         )}
-      </Text>
+      </RNTesterText>
       <View style={styles.eventBox}>
-        <Text>
+        <RNTesterText>
           {lastEvent
             ? JSON.stringify(lastEvent, null, 2)
             : 'No events observed'}
-        </Text>
+        </RNTesterText>
       </View>
     </View>
   );

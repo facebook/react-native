@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
@@ -26,8 +27,12 @@ class RawPropsParser final {
   /*
    * Default constructor.
    * To be used by `ConcreteComponentDescriptor` only.
+   * If `useRawPropsJsiValue` is `true`, the parser will use `jsi::Value`
+   * directly for RawValues instead of converting them to `folly::dynamic`.
    */
-  RawPropsParser() = default;
+  RawPropsParser(
+      bool useRawPropsJsiValue = ReactNativeFeatureFlags::useRawPropsJsiValue())
+      : useRawPropsJsiValue_(useRawPropsJsiValue){};
 
   /*
    * To be used by `ConcreteComponentDescriptor` only.
@@ -56,6 +61,7 @@ class RawPropsParser final {
   template <class ShadowNodeT>
   friend class ConcreteComponentDescriptor;
   friend class RawProps;
+  bool useRawPropsJsiValue_{false};
 
   /*
    * To be used by `RawProps` only.
@@ -72,15 +78,6 @@ class RawPropsParser final {
    */
   const RawValue* at(const RawProps& rawProps, const RawPropsKey& key)
       const noexcept;
-
-  /**
-   * To be used by RawProps only. Value iterator functions.
-   */
-  void iterateOverValues(
-      const RawProps& rawProps,
-      const std::function<
-          void(RawPropsPropNameHash, const char*, const RawValue&)>& visit)
-      const;
 
   mutable std::vector<RawPropsKey> keys_{};
   mutable RawPropsKeyMap nameToIndex_{};

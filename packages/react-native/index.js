@@ -9,6 +9,7 @@
  */
 
 'use strict';
+'use client';
 
 // APIs
 import typeof ActionSheetIOS from './Libraries/ActionSheetIOS/ActionSheetIOS';
@@ -27,6 +28,7 @@ import typeof Clipboard from './Libraries/Components/Clipboard/Clipboard';
 import typeof DrawerLayoutAndroid from './Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 import typeof Keyboard from './Libraries/Components/Keyboard/Keyboard';
 import typeof KeyboardAvoidingView from './Libraries/Components/Keyboard/KeyboardAvoidingView';
+import typeof LayoutConformance from './Libraries/Components/LayoutConformance/LayoutConformance';
 import typeof Pressable from './Libraries/Components/Pressable/Pressable';
 import typeof ProgressBarAndroid from './Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 import typeof RefreshControl from './Libraries/Components/RefreshControl/RefreshControl';
@@ -59,6 +61,7 @@ import typeof VirtualizedList from './Libraries/Lists/VirtualizedList';
 import typeof VirtualizedSectionList from './Libraries/Lists/VirtualizedSectionList';
 import typeof LogBox from './Libraries/LogBox/LogBox';
 import typeof Modal from './Libraries/Modal/Modal';
+// $FlowFixMe[invalid-exported-annotation]
 import typeof NativeDialogManagerAndroid from './Libraries/NativeModules/specs/NativeDialogManagerAndroid';
 import typeof Networking from './Libraries/Network/RCTNetworking';
 import typeof * as Systrace from './Libraries/Performance/Systrace';
@@ -69,7 +72,10 @@ import typeof I18nManager from './Libraries/ReactNative/I18nManager';
 import typeof {RootTagContext} from './Libraries/ReactNative/RootTag';
 import typeof UIManager from './Libraries/ReactNative/UIManager';
 import typeof ReactNative from './Libraries/Renderer/shims/ReactNative';
-import type {HostComponent as _HostComponentInternal} from './Libraries/Renderer/shims/ReactNativeTypes';
+import type {
+  HostComponent,
+  HostInstance,
+} from './Libraries/Renderer/shims/ReactNativeTypes';
 import typeof Settings from './Libraries/Settings/Settings';
 import typeof Share from './Libraries/Share/Share';
 import typeof {PlatformColor} from './Libraries/StyleSheet/PlatformColorValueTypes';
@@ -80,7 +86,7 @@ import typeof StyleSheet from './Libraries/StyleSheet/StyleSheet';
 import typeof Text from './Libraries/Text/Text';
 import typeof * as TurboModuleRegistry from './Libraries/TurboModule/TurboModuleRegistry';
 import typeof UTFSequence from './Libraries/UTFSequence';
-import typeof Appearance from './Libraries/Utilities/Appearance';
+import typeof * as Appearance from './Libraries/Utilities/Appearance';
 import typeof BackHandler from './Libraries/Utilities/BackHandler';
 import typeof DeviceInfo from './Libraries/Utilities/DeviceInfo';
 import typeof DevSettings from './Libraries/Utilities/DevSettings';
@@ -91,11 +97,12 @@ import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof Vibration from './Libraries/Vibration/Vibration';
 import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
+import typeof DevMenu from './src/private/devmenu/DevMenu';
 
 const warnOnce = require('./Libraries/Utilities/warnOnce');
 const invariant = require('invariant');
 
-export type HostComponent<T> = _HostComponentInternal<T>;
+export type {HostComponent, HostInstance};
 
 module.exports = {
   get registerCallableModule(): RegisterCallableModule {
@@ -128,6 +135,10 @@ module.exports = {
   },
   get InputAccessoryView(): InputAccessoryView {
     return require('./Libraries/Components/TextInput/InputAccessoryView')
+      .default;
+  },
+  get experimental_LayoutConformance(): LayoutConformance {
+    return require('./Libraries/Components/LayoutConformance/LayoutConformance')
       .default;
   },
   get KeyboardAvoidingView(): KeyboardAvoidingView {
@@ -235,6 +246,9 @@ module.exports = {
   },
   get DeviceInfo(): DeviceInfo {
     return require('./Libraries/Utilities/DeviceInfo');
+  },
+  get DevMenu(): DevMenu {
+    return require('./src/private/devmenu/DevMenu');
   },
   get DevSettings(): DevSettings {
     return require('./Libraries/Utilities/DevSettings');
@@ -366,7 +380,7 @@ module.exports = {
   get processColor(): processColor {
     return require('./Libraries/StyleSheet/processColor').default;
   },
-  get requireNativeComponent(): <T>(
+  get requireNativeComponent(): <T: {...}>(
     uiViewClassName: string,
   ) => HostComponent<T> {
     return require('./Libraries/ReactNative/requireNativeComponent').default;

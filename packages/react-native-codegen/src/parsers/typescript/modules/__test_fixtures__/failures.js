@@ -208,6 +208,59 @@ export default TurboModuleRegistry.getEnforcing<Spec>(
 );
 `;
 
+const NUMERIC_VALUES_ENUM_NATIVE_MODULE = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export enum SomeEnum {
+  NUM = 1,
+  NEGATIVE = -1,
+  SUBFACTORIAL = !5,
+}
+
+export interface Spec extends TurboModule {
+  readonly getEnums: (a: SomeEnum) => string;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>(
+  'NumericValuesEnumNativeModule',
+);
+`;
+
+const MAP_WITH_EXTRA_KEYS_NATIVE_MODULE = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+type MapWithKey = {
+  [a: string]: string | null,
+  extra: string,
+}
+
+export interface Spec extends TurboModule {
+  readonly getMap: (a: MapWithKey) => string;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('MapWithExtraKeysNativeModule');
+`;
+
 module.exports = {
   NATIVE_MODULES_WITH_UNNAMED_PARAMS,
   NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE,
@@ -218,4 +271,6 @@ module.exports = {
   TWO_NATIVE_EXTENDING_TURBO_MODULE,
   EMPTY_ENUM_NATIVE_MODULE,
   MIXED_VALUES_ENUM_NATIVE_MODULE,
+  NUMERIC_VALUES_ENUM_NATIVE_MODULE,
+  MAP_WITH_EXTRA_KEYS_NATIVE_MODULE,
 };

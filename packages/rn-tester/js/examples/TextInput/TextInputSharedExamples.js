@@ -14,6 +14,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterButton from '../../components/RNTesterButton';
+import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ExampleTextInput from './ExampleTextInput';
 import * as React from 'react';
@@ -77,11 +78,44 @@ const styles = StyleSheet.create({
   },
 });
 
+class AutoFocusWithSelectOnFocusTextExample extends React.Component<
+  $FlowFixMeProps,
+  any,
+> {
+  constructor(props: any | void) {
+    super(props);
+    this.state = {
+      autoFocusFalse: 'autoFocus: false - selectTextOnFocus: true',
+      autoFocusTrue: 'autoFocus: true - selectTextOnFocus: true',
+    };
+  }
+  render(): React.Node {
+    return (
+      <View>
+        <ExampleTextInput
+          autoFocus={false}
+          selectTextOnFocus={true}
+          value={this.state.autoFocusFalse}
+          onChangeText={text => this.setState({autoFocusFalse: text})}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+        <ExampleTextInput
+          autoFocus={true}
+          selectTextOnFocus={true}
+          value={this.state.autoFocusTrue}
+          onChangeText={text => this.setState({autoFocusTrue: text})}
+          accessibilityLabel="I am the accessibility label for text input"
+        />
+      </View>
+    );
+  }
+}
+
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
     return (
       <View style={styles.labelContainer}>
-        <Text style={styles.label}>{this.props.label}</Text>
+        <RNTesterText style={styles.label}>{this.props.label}</RNTesterText>
         <View style={styles.inputContainer}>{this.props.children}</View>
       </View>
     );
@@ -384,13 +418,13 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
           }
           style={styles.singleLine}
         />
-        <Text style={styles.eventLabel}>
+        <RNTesterText style={styles.eventLabel}>
           {this.state.curText}
           {'\n'}
           (prev: {this.state.prevText}){'\n'}
           (prev2: {this.state.prev2Text}){'\n'}
           (prev3: {this.state.prev3Text})
-        </Text>
+        </RNTesterText>
       </View>
     );
   }
@@ -538,34 +572,38 @@ class SelectionExample extends React.Component<
           />
         </View>
         <View>
-          <Text testID={`${this.props.testID}-selection`}>
+          <RNTesterText testID={`${this.props.testID}-selection`}>
             selection ={' '}
             {`{start:${this.state.selection.start},end:${this.state.selection.end}}`}
-          </Text>
-          <Text
+          </RNTesterText>
+          <RNTesterText
             testID={`${this.props.testID}-cursor-start`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onPress={this.placeAt.bind(this, 0)}>
             Place at Start (0, 0)
-          </Text>
-          <Text
+          </RNTesterText>
+          <RNTesterText
             testID={`${this.props.testID}-cursor-end`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onPress={this.placeAt.bind(this, length)}>
             Place at End ({length}, {length})
-          </Text>
+          </RNTesterText>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
            * parameters */}
-          <Text onPress={this.placeAtRandom.bind(this)}>Place at Random</Text>
-          <Text
+          <RNTesterText onPress={this.placeAtRandom.bind(this)}>
+            Place at Random
+          </RNTesterText>
+          <RNTesterText
             testID={`${this.props.testID}-select-all`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onPress={this.select.bind(this, 0, length)}>
             Select All
-          </Text>
+          </RNTesterText>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
            * parameters */}
-          <Text onPress={this.selectRandom.bind(this)}>Select Random</Text>
+          <RNTesterText onPress={this.selectRandom.bind(this)}>
+            Select Random
+          </RNTesterText>
         </View>
       </View>
     );
@@ -813,16 +851,45 @@ function MultilineStyledTextInput({
   );
 }
 
+function DynamicContentWidth() {
+  const [text, setText] = useState('');
+  const update = () => {
+    const randomNumber = Math.floor(Math.random() * 10);
+    setText(text + randomNumber);
+  };
+
+  return (
+    <View>
+      <RNTesterText>Uncontrolled:</RNTesterText>
+      <TextInput
+        placeholder="Type..."
+        style={{
+          fontSize: 16,
+          alignSelf: 'center',
+          backgroundColor: 'orange',
+        }}
+      />
+      <RNTesterText>Controlled:</RNTesterText>
+      <TextInput
+        placeholder="..."
+        value={text}
+        onChangeText={setText}
+        style={{
+          fontSize: 16,
+          alignSelf: 'center',
+          backgroundColor: 'orange',
+        }}
+      />
+      <Button title="Update controlled Input" onPress={update} />
+    </View>
+  );
+}
+
 module.exports = ([
   {
-    title: 'Auto-focus',
+    title: 'Auto-focus & select text on focus',
     render: function (): React.Node {
-      return (
-        <ExampleTextInput
-          autoFocus={true}
-          accessibilityLabel="I am the accessibility label for text input"
-        />
-      );
+      return <AutoFocusWithSelectOnFocusTextExample />;
     },
   },
   {
@@ -946,7 +1013,7 @@ module.exports = ([
   },
   {
     title: 'Blur on submit',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <BlurOnSubmitExample />;
     },
   },
@@ -975,13 +1042,13 @@ module.exports = ([
   },
   {
     title: 'Submit behavior',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <SubmitBehaviorExample />;
     },
   },
   {
     title: 'Event handling',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <TextEventsExample />;
     },
   },
@@ -1084,5 +1151,48 @@ module.exports = ([
     title: 'Text styles',
     name: 'textStyles',
     render: () => <TextStylesExample />,
+  },
+  {
+    title: 'showSoftInputOnFocus',
+    render: function (): React.Node {
+      return (
+        <View>
+          <WithLabel label="showSoftInputOnFocus: false">
+            <ExampleTextInput showSoftInputOnFocus={false} />
+          </WithLabel>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Clipping',
+    name: 'clipping',
+    render: function (): React.Node {
+      return (
+        <View>
+          <ExampleTextInput
+            multiline={true}
+            testID="textinput-clipping"
+            style={{
+              borderRadius: 50,
+              padding: 0,
+              borderColor: 'red',
+              borderWidth: 5,
+              overflow: 'hidden',
+              fontSize: 16,
+            }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </ExampleTextInput>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Dynamic content width',
+    name: 'dynamicWidth',
+    render: function (): React.Node {
+      return <DynamicContentWidth />;
+    },
   },
 ]: Array<RNTesterModuleExample>);

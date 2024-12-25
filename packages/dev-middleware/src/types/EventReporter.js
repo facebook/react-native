@@ -16,6 +16,7 @@ type SuccessResult<Props: {...} | void = {}> = {
 type ErrorResult<ErrorT = mixed> = {
   status: 'error',
   error: ErrorT,
+  prefersFuseboxFrontend?: ?boolean,
 };
 
 type CodedErrorResult<ErrorCode: string> = {
@@ -36,7 +37,13 @@ export type ReportableEvent =
       type: 'launch_debugger_frontend',
       launchType: 'launch' | 'redirect',
       ...
-        | SuccessResult<{appId: string | null, deviceId: string | null}>
+        | SuccessResult<{
+            appId: string | null,
+            deviceId: string | null,
+            resolvedTargetDescription: string,
+            resolvedTargetAppId: string,
+            prefersFuseboxFrontend: boolean,
+          }>
         | ErrorResult<mixed>
         | CodedErrorResult<'NO_APPS_FOUND'>,
     }
@@ -59,6 +66,7 @@ export type ReportableEvent =
       timeSinceStart: number | null,
       ...DebuggerSessionIDs,
       frontendUserAgent: string | null,
+      prefersFuseboxFrontend: boolean | null,
       ...
         | SuccessResult<void>
         | CodedErrorResult<
@@ -68,6 +76,11 @@ export type ReportableEvent =
             | 'UNMATCHED_REQUEST_ID'
             | 'PROTOCOL_ERROR',
           >,
+    }
+  | {
+      type: 'profiling_target_registered',
+      status: 'success',
+      ...DebuggerSessionIDs,
     }
   | {
       type: 'proxy_error',

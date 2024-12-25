@@ -38,7 +38,7 @@ JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
     const static auto ps = sysconf(_SC_PAGESIZE);
     auto d = lldiv(offset, ps);
 
-    m_mapOff = static_cast<off_t>(d.quot);
+    m_mapOff = static_cast<off_t>(d.quot) * ps;
     m_pageOff = static_cast<off_t>(d.rem);
     m_size = size + m_pageOff;
   } else {
@@ -52,7 +52,7 @@ JSBigFileString::~JSBigFileString() {
   if (m_data) {
     munmap((void*)m_data, m_size);
   }
-  close(m_fd);
+  folly::fileops::close(m_fd);
 }
 
 const char* JSBigFileString::c_str() const {
@@ -88,7 +88,7 @@ int JSBigFileString::fd() const {
 
 std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(
     const std::string& sourceURL) {
-  int fd = ::open(sourceURL.c_str(), O_RDONLY);
+  int fd = folly::fileops::open(sourceURL.c_str(), O_RDONLY);
 
   if (fd == -1) {
     const std::string message =
@@ -105,12 +105,12 @@ std::unique_ptr<const JSBigFileString> JSBigFileString::fromPath(
     const std::string message =
         "JSBigFileString::fromPath - fstat on bundle failed: " + sourceURL;
     LOG(ERROR) << message;
-    ::close(fd);
+    folly::fileops::close(fd);
     throw std::runtime_error(message.c_str());
   }
 
   auto ptr = std::make_unique<const JSBigFileString>(fd, fileInfo.st_size);
-  CHECK(::close(fd) == 0);
+  CHECK(folly::fileops::close(fd) == 0);
   return ptr;
 }
 

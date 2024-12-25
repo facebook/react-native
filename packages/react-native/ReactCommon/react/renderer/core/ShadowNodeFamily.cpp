@@ -9,6 +9,7 @@
 #include "ShadowNode.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/State.h>
 
@@ -30,7 +31,9 @@ ShadowNodeFamily::ShadowNodeFamily(
       eventEmitter_(std::move(eventEmitter)),
       componentDescriptor_(componentDescriptor),
       componentHandle_(componentDescriptor.getComponentHandle()),
-      componentName_(componentDescriptor.getComponentName()) {}
+      componentName_(componentDescriptor.getComponentName()),
+      isDeletionOfUnmountedViewsEnabled_(
+          ReactNativeFeatureFlags::enableDeletionOfUnmountedViews()) {}
 
 void ShadowNodeFamily::setParent(const ShadowNodeFamily::Shared& parent) const {
   react_native_assert(parent_.lock() == nullptr || parent_.lock() == parent);
@@ -58,8 +61,28 @@ ComponentName ShadowNodeFamily::getComponentName() const {
   return componentName_;
 }
 
+void ShadowNodeFamily::setMounted() const {
+  hasBeenMounted_ = true;
+}
+
 const ComponentDescriptor& ShadowNodeFamily::getComponentDescriptor() const {
   return componentDescriptor_;
+}
+
+void ShadowNodeFamily::onUnmountedFamilyDestroyed(
+    std::function<void(const ShadowNodeFamily& family)> callback) const {
+  onUnmountedFamilyDestroyedCallback_ = std::move(callback);
+}
+
+Tag ShadowNodeFamily::getTag() const {
+  return tag_;
+}
+
+ShadowNodeFamily::~ShadowNodeFamily() {
+  if (isDeletionOfUnmountedViewsEnabled_ && !hasBeenMounted_ &&
+      onUnmountedFamilyDestroyedCallback_ != nullptr) {
+    onUnmountedFamilyDestroyedCallback_(*this);
+  }
 }
 
 AncestorList ShadowNodeFamily::getAncestors(

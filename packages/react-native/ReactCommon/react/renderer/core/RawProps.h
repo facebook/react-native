@@ -71,7 +71,16 @@ class RawProps final {
    * The support for explicit conversion to `folly::dynamic` is deprecated and
    * will be removed as soon Android implementation does not need it.
    */
-  explicit operator folly::dynamic() const noexcept;
+  explicit operator folly::dynamic() const;
+
+  /*
+   * Deprecated. Do not use.
+   * The support for explicit conversion to `folly::dynamic` is deprecated and
+   * will be removed as soon Android implementation does not need it.
+   */
+  folly::dynamic toDynamic(
+      const std::function<bool(const std::string&)>& filterObjectKeys =
+          nullptr) const;
 
   /*
    * Once called, Yoga style props will be filtered out during conversion to
@@ -94,14 +103,6 @@ class RawProps final {
    */
   const RawValue* at(const char* name, const char* prefix, const char* suffix)
       const noexcept;
-
-  /**
-   * Iterator functions: for when you want to iterate over values in-order
-   * instead of using `at` to access values randomly.
-   */
-  void iterateOverValues(
-      const std::function<
-          void(RawPropsPropNameHash, const char*, const RawValue&)>& fn) const;
 
  private:
   friend class RawPropsParser;

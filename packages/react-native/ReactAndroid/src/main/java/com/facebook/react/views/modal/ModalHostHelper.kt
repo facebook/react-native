@@ -13,6 +13,7 @@ import android.graphics.Point
 import android.view.WindowManager
 
 /** Helper class for Modals. */
+@Deprecated("This class is no longer used and will be removed soon.")
 internal object ModalHostHelper {
   private val MIN_POINT = Point()
   private val MAX_POINT = Point()

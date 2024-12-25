@@ -239,7 +239,10 @@ NSString *RCTMD5Hash(NSString *string)
 {
   const char *str = string.UTF8String;
   unsigned char result[CC_MD5_DIGEST_LENGTH];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   CC_MD5(str, (CC_LONG)strlen(str), result);
+#pragma clang diagnostic pop
 
   return [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
                                     result[0],
@@ -296,8 +299,8 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
 
 static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, dispatch_block_t block)
 {
-  // The solution was borrowed from a post by Ben Alpert:
-  // https://benalpert.com/2014/04/02/dispatch-once-initialization-on-the-main-thread.html
+  // The solution was borrowed from a post by Sophie Alpert:
+  // https://sophiebits.com/2014/04/02/dispatch-once-initialization-on-the-main-thread
   // See also: https://www.mikeash.com/pyblog/friday-qa-2014-06-06-secrets-of-dispatch_once.html
   if (RCTIsMainQueue()) {
     dispatch_once(onceToken, block);
@@ -562,22 +565,34 @@ UIWindow *__nullable RCTKeyWindow(void)
     return nil;
   }
 
-  for (UIScene *scene in RCTSharedApplication().connectedScenes) {
-    if (scene.activationState != UISceneActivationStateForegroundActive ||
-        ![scene isKindOfClass:[UIWindowScene class]]) {
+  NSSet<UIScene *> *connectedScenes = RCTSharedApplication().connectedScenes;
+
+  UIScene *foregroundActiveScene;
+  UIScene *foregroundInactiveScene;
+
+  for (UIScene *scene in connectedScenes) {
+    if (![scene isKindOfClass:[UIWindowScene class]]) {
       continue;
     }
-    UIWindowScene *windowScene = (UIWindowScene *)scene;
 
-    if (@available(iOS 15.0, *)) {
-      return windowScene.keyWindow;
+    if (scene.activationState == UISceneActivationStateForegroundActive) {
+      foregroundActiveScene = scene;
+      break;
     }
 
-    for (UIWindow *window in windowScene.windows) {
-      if (window.isKeyWindow) {
-        return window;
-      }
+    if (!foregroundInactiveScene && scene.activationState == UISceneActivationStateForegroundInactive) {
+      foregroundInactiveScene = scene;
+      // no break, we can have the active scene later in the set.
     }
+  }
+
+  UIScene *sceneToUse = foregroundActiveScene ? foregroundActiveScene : foregroundInactiveScene;
+
+  if ([sceneToUse respondsToSelector:@selector(keyWindow)]) {
+    // We have apps internally that might use UIScenes which are not window scenes.
+    // Calling keyWindow on a UIScene which is not a UIWindowScene can cause a crash
+    UIWindowScene *windowScene = (UIWindowScene *)sceneToUse;
+    return windowScene.keyWindow;
   }
 
   return nil;

@@ -5,16 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @noformat
- * @flow
  * @nolint
- * @generated SignedSource<<0debd6e5a17dc037cb4661315a886de6>>
+ * @flow
+ * @generated SignedSource<<8f46fdc9267fcc4fdc9e76842fe24066>>
  */
-
 'use strict';
 
 import type {ReactNativeType} from './ReactNativeTypes';
 
-let ReactNative;
+let ReactNative: ReactNativeType;
 
 if (__DEV__) {
   ReactNative = require('../implementations/ReactNativeRenderer-dev');
@@ -22,4 +21,4 @@ if (__DEV__) {
   ReactNative = require('../implementations/ReactNativeRenderer-prod');
 }
 
-module.exports = (ReactNative: ReactNativeType);
+export default ReactNative;

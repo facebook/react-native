@@ -5,6 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// TODO T207169925: Migrate CatalystInstance to Reacthost and remove the Suppress("DEPRECATION")
+// annotation
+@file:Suppress("DEPRECATION")
+
 package com.facebook.react.bridge
 
 import com.facebook.react.bridge.queue.MessageQueueThreadSpec
@@ -39,10 +43,10 @@ object ReactTestHelper {
     val reactQueueConfiguration: ReactQueueConfiguration =
         ReactQueueConfigurationImpl.create(spec) { e -> throw RuntimeException(e) }
     val reactInstance: CatalystInstance = mock(CatalystInstance::class.java)
-    whenever(reactInstance.getReactQueueConfiguration()).thenReturn(reactQueueConfiguration)
+    whenever(reactInstance.reactQueueConfiguration).thenReturn(reactQueueConfiguration)
     whenever(reactInstance.getNativeModule(UIManagerModule::class.java))
         .thenReturn(mock(UIManagerModule::class.java))
-    whenever(reactInstance.isDestroyed()).thenReturn(false)
+    whenever(reactInstance.isDestroyed).thenReturn(false)
     return reactInstance
   }
 }

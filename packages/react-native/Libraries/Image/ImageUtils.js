@@ -8,15 +8,18 @@
  * @format
  */
 
-type ResizeMode = 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
+import type {ImageResizeMode} from './ImageResizeMode';
 
-export function convertObjectFitToResizeMode(objectFit: string): ResizeMode {
-  const objectFitMap = {
-    contain: 'contain',
-    cover: 'cover',
-    fill: 'stretch',
-    'scale-down': 'contain',
-  };
-  // $FlowFixMe[invalid-computed-prop]
-  return objectFitMap[objectFit];
+const objectFitMap: {[string]: ImageResizeMode} = {
+  contain: 'contain',
+  cover: 'cover',
+  fill: 'stretch',
+  'scale-down': 'contain',
+  none: 'none',
+};
+
+export function convertObjectFitToResizeMode(
+  objectFit: ?string,
+): ?ImageResizeMode {
+  return objectFit != null ? objectFitMap[objectFit] : undefined;
 }

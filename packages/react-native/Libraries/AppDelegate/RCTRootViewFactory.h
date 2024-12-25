@@ -12,6 +12,7 @@
 @protocol RCTCxxBridgeDelegate;
 @protocol RCTComponentViewFactoryComponentProvider;
 @protocol RCTTurboModuleManagerDelegate;
+@protocol RCTHostDelegate;
 @class RCTBridge;
 @class RCTHost;
 @class RCTRootView;
@@ -24,6 +25,7 @@ typedef UIView *_Nonnull (
     ^RCTCreateRootViewWithBridgeBlock)(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps);
 typedef RCTBridge *_Nonnull (
     ^RCTCreateBridgeWithDelegateBlock)(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions);
+typedef void (^RCTCustomizeRootViewBlock)(UIView *rootView);
 typedef NSURL *_Nullable (^RCTSourceURLForBridgeBlock)(RCTBridge *bridge);
 typedef NSURL *_Nullable (^RCTBundleURLBlock)(void);
 typedef NSArray<id<RCTBridgeModule>> *_Nonnull (^RCTExtraModulesForBridgeBlock)(RCTBridge *bridge);
@@ -57,12 +59,16 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
 - (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock
                         newArchEnabled:(BOOL)newArchEnabled
                     turboModuleEnabled:(BOOL)turboModuleEnabled
-                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER;
+                     bridgelessEnabled:(BOOL)bridgelessEnabled NS_DESIGNATED_INITIALIZER __deprecated;
 
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                    newArchEnabled:(BOOL)newArchEnabled
                turboModuleEnabled:(BOOL)turboModuleEnabled
                 bridgelessEnabled:(BOOL)bridgelessEnabled __deprecated;
+
+- (instancetype)initWithBundleURLBlock:(RCTBundleURLBlock)bundleURLBlock newArchEnabled:(BOOL)newArchEnabled;
+
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL newArchEnabled:(BOOL)newArchEnabled;
 
 /**
  * Block that allows to override logic of creating root view instance.
@@ -91,6 +97,13 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
  * @returns: a newly created instance of RCTBridge.
  */
 @property (nonatomic, nullable) RCTCreateBridgeWithDelegateBlock createBridgeWithDelegate;
+
+/**
+ * Block that allows to customize the rootView that is passed to React Native.
+ *
+ * @parameter: rootView - The root view to customize.
+ */
+@property (nonatomic, nullable) RCTCustomizeRootViewBlock customizeRootView;
 
 #pragma mark - RCTBridgeDelegate blocks
 
@@ -152,9 +165,13 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
 @property (nonatomic, strong, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration
-        andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate;
+        andTurboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate> _Nullable)turboModuleManagerDelegate;
 
 - (instancetype)initWithConfiguration:(RCTRootViewFactoryConfiguration *)configuration;
+
+- (instancetype)initWithTurboModuleDelegate:(id<RCTTurboModuleManagerDelegate>)turboModuleManagerDelegate
+                               hostDelegate:(id<RCTHostDelegate>)hostdelegate
+                              configuration:(RCTRootViewFactoryConfiguration *)configuration;
 
 /**
  * This method can be used to create new RCTRootViews on demand.

@@ -38,7 +38,10 @@ using namespace facebook::react;
 {
   auto telemetry = std::make_shared<ImageTelemetry>(surfaceId);
   auto sharedCancelationFunction = SharedFunction<>();
-  auto imageRequest = ImageRequest(imageSource, telemetry, sharedCancelationFunction);
+
+  // Sync image request is not cancellable so it does not need to be resumed.
+  auto sharedResumeFunction = SharedFunction<>();
+  auto imageRequest = ImageRequest(imageSource, telemetry, sharedResumeFunction, sharedCancelationFunction);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
@@ -58,7 +61,8 @@ using namespace facebook::react;
       auto wrappedMetadata = metadata ? wrapManagedObject(metadata) : nullptr;
       observerCoordinator->nativeImageResponseComplete(ImageResponse(wrapManagedObject(image), wrappedMetadata));
     } else {
-      observerCoordinator->nativeImageResponseFailed();
+      auto wrappedError = error ? wrapManagedObject(error) : nullptr;
+      observerCoordinator->nativeImageResponseFailed(ImageLoadError(wrappedError));
     }
     dispatch_group_leave(imageWaitGroup);
   };
@@ -69,7 +73,7 @@ using namespace facebook::react;
       return;
     }
 
-    observerCoordinator->nativeImageResponseProgress((float)progress / (float)total);
+    observerCoordinator->nativeImageResponseProgress((float)progress / (float)total, progress, total);
   };
 
   RCTImageURLLoaderRequest *loaderRequest =
@@ -85,8 +89,6 @@ using namespace facebook::react;
                                     progressBlock:progressBlock
                                  partialLoadBlock:nil
                                   completionBlock:completionBlock];
-  RCTImageLoaderCancellationBlock cancelationBlock = loaderRequest.cancellationBlock;
-  sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
 
   auto result = dispatch_group_wait(imageWaitGroup, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
   if (result != 0) {

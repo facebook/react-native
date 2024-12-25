@@ -12,7 +12,9 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
+import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
+import TextInlineViewsExample from './TextInlineViewsExample';
 
 const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
@@ -59,7 +61,9 @@ class TextAlignRTLExample extends React.Component<
     const {isRTL} = this.state;
     const toggleRTL = () => this.setState({isRTL: !isRTL});
     return (
-      <View style={{direction: isRTL ? 'rtl' : 'ltr'}}>
+      <View
+        style={{direction: isRTL ? 'rtl' : 'ltr'}}
+        testID="text-align-example">
         <Text>auto (default) - english LTR</Text>
         <Text>
           {'\u0623\u062D\u0628 \u0627\u0644\u0644\u063A\u0629 ' +
@@ -307,9 +311,6 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
           {marker}
         </View>
 
-        {/* iOS-only because it relies on inline views being able to size to content.
-         * Android's implementation requires that a width and height be specified
-         * on the inline view. */}
         <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -344,6 +345,23 @@ class TextBaseLineLayoutExample extends React.Component<{}, mixed> {
             </View>{' '}
             , ante arcu vestibulum ligula, et scelerisque diam.
           </Text>
+        </View>
+
+        <Text style={subtitleStyle}>{'Multi-line <Text> alignment'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          <View style={{width: 50, height: 50, backgroundColor: 'gray'}} />
+          <View style={{width: 125, backgroundColor: '#eee'}}>
+            <Text style={{fontSize: 15}}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </Text>
+          </View>
+          <View style={{width: 125, backgroundColor: '#eee'}}>
+            <Text style={{fontSize: 10}}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </Text>
+          </View>
         </View>
 
         <Text style={subtitleStyle}>{'<TextInput/>:'}</Text>
@@ -550,6 +568,53 @@ class TextWithCapBaseBox extends React.Component<
 
 const examples = [
   {
+    title: 'iOS System Font Families (iOS only)',
+    name: 'iOSSystemFontFamilies',
+    description:
+      ('Shows system font families including system-ui/ui-sans-serif, ui-serif, ui-monospace, and ui-rounded': string),
+    render: function (): React.Node {
+      return (
+        <View testID={'ios-font-families'}>
+          <Text
+            style={{
+              fontFamily: 'system-ui',
+              fontSize: 32,
+              marginBottom: 20,
+            }}>
+            `fontFamily: system-ui` (same as `ui-sans-serif`)
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'ui-sans-serif',
+              fontSize: 32,
+              marginBottom: 20,
+            }}>
+            `fontFamily: ui-sans-serif` (same as `system-ui`)
+          </Text>
+          <Text
+            style={{fontFamily: 'ui-serif', fontSize: 32, marginBottom: 20}}>
+            `fontFamily: ui-serif`
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'ui-monospace',
+              fontSize: 32,
+              marginBottom: 20,
+            }}>
+            `fontFamily: ui-monospace`
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'ui-rounded',
+              fontSize: 32,
+            }}>
+            `fontFamily: ui-rounded`
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
     title: 'Wrap',
     render: function (): React.Node {
       return (
@@ -576,6 +641,68 @@ const examples = [
             Another text in a (inline) red box (which is inside the gray box).
           </Text>
         </Text>
+      );
+    },
+  },
+  {
+    title: 'Background Color and Border Width',
+    name: 'background-border-width',
+    render: function (): React.Node {
+      return (
+        <View testID="background-border-width">
+          <Text
+            style={{
+              backgroundColor: '#F000F0',
+              padding: 10,
+            }}>
+            Text with background color only
+          </Text>
+          <Text
+            style={{
+              backgroundColor: '#F000F0',
+              borderRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with background color and uniform borderRadii
+          </Text>
+          <Text
+            style={{
+              backgroundColor: '#F000F0',
+              borderTopRightRadius: 10,
+              borderTopLeftRadius: 20,
+              borderBottomRightRadius: 20,
+              borderBottomLeftRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with background color and non-uniform borders
+          </Text>
+          <Text
+            style={{
+              borderWidth: 1,
+              borderColor: 'red',
+              borderTopRightRadius: 10,
+              borderTopLeftRadius: 20,
+              borderBottomRightRadius: 20,
+              borderBottomLeftRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with borderWidth
+          </Text>
+          <Text
+            style={{
+              backgroundColor: '#00AA00',
+              borderWidth: 2,
+              borderColor: 'blue',
+              borderRadius: 10,
+              padding: 10,
+              marginTop: 10,
+            }}>
+            Text with background AND borderWidth
+          </Text>
+        </View>
       );
     },
   },
@@ -942,7 +1069,7 @@ const examples = [
   },
   {
     title: 'Toggling Attributes',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <AttributeToggler />;
     },
   },
@@ -1171,12 +1298,13 @@ const examples = [
   },
   {
     title: 'Dynamic Font Size Adjustment',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <AdjustingFontSize />;
     },
   },
   {
     title: 'Text Align with RTL',
+    name: 'textAlign',
     render: function (): React.Node {
       return <TextAlignRTLExample />;
     },
@@ -1270,9 +1398,9 @@ const examples = [
                   return (
                     <View key={code}>
                       <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
-                      <Text lineBreakStrategyIOS={strategy}>
+                      <RNTesterText lineBreakStrategyIOS={strategy}>
                         {textByCode[code]}
-                      </Text>
+                      </RNTesterText>
                     </View>
                   );
                 })}
@@ -1328,6 +1456,49 @@ const examples = [
       );
     },
   },
+  {
+    title: 'Clipping',
+    name: 'clipping',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text
+            testID="text-clipping"
+            style={{
+              borderRadius: 50,
+              padding: 0,
+              borderColor: 'red',
+              borderWidth: 5,
+              overflow: 'hidden',
+              fontSize: 16,
+            }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Box Shadow',
+    name: 'boxShadow',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text
+            testID="text-box-shadow"
+            style={{
+              borderRadius: 10,
+              boxShadow: '0 0 10px red',
+            }}>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+          </Text>
+        </View>
+      );
+    },
+  },
+  TextInlineViewsExample,
 ];
 
 module.exports = ({

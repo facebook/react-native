@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @noformat
- * @flow strict-local
  * @nolint
- * @generated SignedSource<<2881c8e89ef0f73f4cf6612cb518b197>>
+ * @flow strict-local
+ * @generated SignedSource<<908f5fb85384725318e261f40e49d9a6>>
  */
 
 'use strict';
@@ -16,4 +16,4 @@ const ReactFeatureFlags = {
   debugRenderPhaseSideEffects: false,
 };
 
-module.exports = ReactFeatureFlags;
+export default ReactFeatureFlags;

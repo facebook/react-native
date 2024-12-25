@@ -29,7 +29,7 @@ import type {
 
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
-import fetch from 'node-fetch';
+import invariant from 'invariant';
 import * as path from 'path';
 import WS from 'ws';
 
@@ -37,43 +37,34 @@ const debug = require('debug')('Metro:InspectorProxy');
 
 const PAGES_POLLING_INTERVAL = 1000;
 
-// Replace hosts appearing in the `url` and `sourceMapURL` fields of
-// `Debugger.scriptParsed`, and back again in messages from the debugger,
-// to account for device/debugger/proxy running on different networks.
-const REWRITE_HOSTS_TO_LOCALHOST: Array<string> = [
-  // A device may retrieve a bundle through 127.0.0.1 via a (SSH) tunnel, but
-  // the (remote) Metro server may be on a host without an IPv4 loopback, so
-  // 127.0.0.1 may not be addressible locally for (e.g., for source map
-  // fetching). Replacing with the more general 'localhost' should always be
-  // safe while also more compatible with IPv6-only setups.
-  '127.0.0.1',
-  // Android's stock emulator and other emulators such as genymotion use a
-  // standard localhost alias.
-  '10.0.2.2',
-  '10.0.3.2',
-];
-
 // Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDeviceLegacy method for
 // more details.
 const FILE_PREFIX = 'file://';
 
-type DebuggerInfo = {
+type DebuggerConnection = {
   // Debugger web socket connection
   socket: WS,
-  // If we replaced address (like '10.0.2.2') to localhost we need to store original
-  // address because Chrome uses URL or urlRegex params (instead of scriptId) to set breakpoints.
-  originalSourceURLAddress?: string,
   prependedFilePrefix: boolean,
   pageId: string,
   userAgent: string | null,
-};
-
-type DebuggerConnection = {
-  ...DebuggerInfo,
   customHandler: ?CustomMessageHandler,
+  debuggerRelativeBaseUrl: URL,
 };
 
 const REACT_NATIVE_RELOADABLE_PAGE_ID = '-1';
+
+export type DeviceOptions = $ReadOnly<{
+  id: string,
+  name: string,
+  app: string,
+  socket: WS,
+  projectRoot: string,
+  eventReporter: ?EventReporter,
+  createMessageMiddleware: ?CreateCustomMessageHandlerFn,
+  deviceRelativeBaseUrl: URL,
+  serverRelativeBaseUrl: URL,
+  isProfilingBuild: boolean,
+}>;
 
 /**
  * Device class represents single device connection to Inspector Proxy. Each device
@@ -98,7 +89,7 @@ export default class Device {
   #deviceSocket: WS;
 
   // Stores the most recent listing of device's pages, keyed by the `id` field.
-  #pages: $ReadOnlyMap<string, Page>;
+  #pages: $ReadOnlyMap<string, Page> = new Map();
 
   // Stores information about currently connected debugger (if any).
   #debuggerConnection: ?DebuggerConnection = null;
@@ -127,21 +118,38 @@ export default class Device {
   // The device message middleware factory function allowing implementers to handle unsupported CDP messages.
   #createCustomMessageHandler: ?CreateCustomMessageHandlerFn;
 
-  constructor(
-    id: string,
-    name: string,
-    app: string,
-    socket: WS,
-    projectRoot: string,
-    eventReporter: ?EventReporter,
-    createMessageMiddleware: ?CreateCustomMessageHandlerFn,
-  ) {
+  #connectedPageIds: Set<string> = new Set();
+
+  // A base HTTP(S) URL to this server, reachable from the device. Derived from
+  // the http request that created the connection.
+  #deviceRelativeBaseUrl: URL;
+
+  // A base HTTP(S) URL to the server, relative to this server.
+  #serverRelativeBaseUrl: URL;
+
+  constructor(deviceOptions: DeviceOptions) {
+    this.#dangerouslyConstruct(deviceOptions);
+  }
+
+  #dangerouslyConstruct({
+    id,
+    name,
+    app,
+    socket,
+    projectRoot,
+    eventReporter,
+    createMessageMiddleware,
+    serverRelativeBaseUrl,
+    deviceRelativeBaseUrl,
+    isProfilingBuild,
+  }: DeviceOptions) {
     this.#id = id;
     this.#name = name;
     this.#app = app;
-    this.#pages = new Map();
     this.#deviceSocket = socket;
     this.#projectRoot = projectRoot;
+    this.#serverRelativeBaseUrl = serverRelativeBaseUrl;
+    this.#deviceRelativeBaseUrl = deviceRelativeBaseUrl;
     this.#deviceEventReporter = eventReporter
       ? new DeviceEventReporter(eventReporter, {
           deviceId: id,
@@ -150,6 +158,10 @@ export default class Device {
         })
       : null;
     this.#createCustomMessageHandler = createMessageMiddleware;
+
+    if (isProfilingBuild) {
+      this.#deviceEventReporter?.logProfilingTargetRegistered();
+    }
 
     // $FlowFixMe[incompatible-call]
     this.#deviceSocket.on('message', (message: string) => {
@@ -192,14 +204,60 @@ export default class Device {
       PAGES_POLLING_INTERVAL,
     );
     this.#deviceSocket.on('close', () => {
-      this.#deviceEventReporter?.logDisconnection('device');
-      // Device disconnected - close debugger connection.
-      if (this.#debuggerConnection) {
-        this.#debuggerConnection.socket.close();
-        this.#debuggerConnection = null;
+      if (socket === this.#deviceSocket) {
+        this.#deviceEventReporter?.logDisconnection('device');
+        // Device disconnected - close debugger connection.
+        this.#terminateDebuggerConnection();
+        clearInterval(this.#pagesPollingIntervalId);
       }
-      clearInterval(this.#pagesPollingIntervalId);
     });
+  }
+
+  #terminateDebuggerConnection() {
+    const debuggerConnection = this.#debuggerConnection;
+    if (debuggerConnection) {
+      this.#sendDisconnectEventToDevice(
+        this.#mapToDevicePageId(debuggerConnection.pageId),
+      );
+      debuggerConnection.socket.close();
+      this.#debuggerConnection = null;
+    }
+  }
+
+  /**
+   * Used to recreate the device connection if there is a device ID collision.
+   * 1. Checks if the same device is attempting to reconnect for the same app.
+   * 2. If not, close both the device and debugger socket.
+   * 3. If the debugger connection can be reused, close the device socket only.
+   *
+   * This hack attempts to allow users to reload the app, either as result of a
+   * crash, or manually reloading, without having to restart the debugger.
+   */
+  dangerouslyRecreateDevice(deviceOptions: DeviceOptions) {
+    invariant(
+      deviceOptions.id === this.#id,
+      'dangerouslyRecreateDevice() can only be used for the same device ID',
+    );
+
+    const oldDebugger = this.#debuggerConnection;
+
+    if (this.#app !== deviceOptions.app || this.#name !== deviceOptions.name) {
+      this.#deviceSocket.close();
+      this.#terminateDebuggerConnection();
+    }
+
+    this.#debuggerConnection = null;
+
+    if (oldDebugger) {
+      oldDebugger.socket.removeAllListeners();
+      this.#deviceSocket.close();
+      this.handleDebuggerConnection(oldDebugger.socket, oldDebugger.pageId, {
+        debuggerRelativeBaseUrl: oldDebugger.debuggerRelativeBaseUrl,
+        userAgent: oldDebugger.userAgent,
+      });
+    }
+
+    this.#dangerouslyConstruct(deviceOptions);
   }
 
   getName(): string {
@@ -225,44 +283,56 @@ export default class Device {
   handleDebuggerConnection(
     socket: WS,
     pageId: string,
-    metadata: $ReadOnly<{
+    {
+      debuggerRelativeBaseUrl,
+      userAgent,
+    }: $ReadOnly<{
+      debuggerRelativeBaseUrl: URL,
       userAgent: string | null,
     }>,
   ) {
-    // Clear any commands we were waiting on.
-    this.#deviceEventReporter?.logDisconnection('debugger');
-
-    this.#deviceEventReporter?.logConnection('debugger', {
-      pageId,
-      frontendUserAgent: metadata.userAgent,
-    });
-
-    // Disconnect current debugger if we already have debugger connected.
-    if (this.#debuggerConnection) {
-      this.#debuggerConnection.socket.close();
-      this.#debuggerConnection = null;
-    }
-
-    const debuggerInfo = {
-      socket,
-      prependedFilePrefix: false,
-      pageId,
-      userAgent: metadata.userAgent,
-      customHandler: null,
-    };
-
-    // TODO(moti): Handle null case explicitly, e.g. refuse to connect to
-    // unknown pages.
     const page: ?Page =
       pageId === REACT_NATIVE_RELOADABLE_PAGE_ID
         ? this.#createSyntheticPage()
         : this.#pages.get(pageId);
 
+    if (!page) {
+      debug(
+        `Got new debugger connection via ${debuggerRelativeBaseUrl.href} for ` +
+          `page ${pageId} of ${this.#name}, but no such page exists`,
+      );
+      socket.close();
+      return;
+    }
+
+    // Clear any commands we were waiting on.
+    this.#deviceEventReporter?.logDisconnection('debugger');
+
+    // Disconnect current debugger if we already have debugger connected.
+    this.#terminateDebuggerConnection();
+
+    this.#deviceEventReporter?.logConnection('debugger', {
+      pageId,
+      frontendUserAgent: userAgent,
+    });
+
+    const debuggerInfo = {
+      socket,
+      prependedFilePrefix: false,
+      pageId,
+      userAgent: userAgent,
+      customHandler: null,
+      debuggerRelativeBaseUrl,
+    };
+
     this.#debuggerConnection = debuggerInfo;
 
-    debug(`Got new debugger connection for page ${pageId} of ${this.#name}`);
+    debug(
+      `Got new debugger connection via ${debuggerRelativeBaseUrl.href} for ` +
+        `page ${pageId} of ${this.#name}`,
+    );
 
-    if (page && this.#debuggerConnection && this.#createCustomMessageHandler) {
+    if (this.#debuggerConnection && this.#createCustomMessageHandler) {
       this.#debuggerConnection.customHandler = this.#createCustomMessageHandler(
         {
           page,
@@ -306,12 +376,7 @@ export default class Device {
       }
     }
 
-    this.#sendMessageToDevice({
-      event: 'connect',
-      payload: {
-        pageId: this.#mapToDevicePageId(pageId),
-      },
-    });
+    this.#sendConnectEventToDevice(this.#mapToDevicePageId(pageId));
 
     // $FlowFixMe[incompatible-call]
     socket.on('message', (message: string) => {
@@ -319,7 +384,10 @@ export default class Device {
       const debuggerRequest = JSON.parse(message);
       this.#deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
         pageId: this.#debuggerConnection?.pageId ?? null,
-        frontendUserAgent: metadata.userAgent,
+        frontendUserAgent: userAgent,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
+          this.#debuggerConnection?.pageId,
+        ),
       });
       let processedReq = debuggerRequest;
 
@@ -331,7 +399,7 @@ export default class Device {
         return;
       }
 
-      if (!page || !this.#pageHasCapability(page, 'nativeSourceCodeFetching')) {
+      if (!this.#pageHasCapability(page, 'nativeSourceCodeFetching')) {
         processedReq = this.#interceptClientMessageForSourceFetching(
           debuggerRequest,
           debuggerInfo,
@@ -352,13 +420,9 @@ export default class Device {
     socket.on('close', () => {
       debug(`Debugger for page ${pageId} and ${this.#name} disconnected.`);
       this.#deviceEventReporter?.logDisconnection('debugger');
-      this.#sendMessageToDevice({
-        event: 'disconnect',
-        payload: {
-          pageId: this.#mapToDevicePageId(pageId),
-        },
-      });
-      this.#debuggerConnection = null;
+      if (this.#debuggerConnection?.socket === socket) {
+        this.#terminateDebuggerConnection();
+      }
     });
 
     // $FlowFixMe[method-unbinding]
@@ -370,38 +434,26 @@ export default class Device {
     };
   }
 
-  /**
-   * Handles cleaning up a duplicate device connection, by client-side device ID.
-   * 1. Checks if the same device is attempting to reconnect for the same app.
-   * 2. If not, close both the device and debugger socket.
-   * 3. If the debugger connection can be reused, close the device socket only.
-   *
-   * This allows users to reload the app, either as result of a crash, or manually
-   * reloading, without having to restart the debugger.
-   */
-  handleDuplicateDeviceConnection(newDevice: Device) {
-    if (
-      this.#app !== newDevice.getApp() ||
-      this.#name !== newDevice.getName()
-    ) {
-      this.#deviceSocket.close();
-      this.#debuggerConnection?.socket.close();
+  #sendConnectEventToDevice(devicePageId: string) {
+    if (this.#connectedPageIds.has(devicePageId)) {
+      return;
     }
+    this.#connectedPageIds.add(devicePageId);
+    this.#sendMessageToDevice({
+      event: 'connect',
+      payload: {pageId: devicePageId},
+    });
+  }
 
-    const oldDebugger = this.#debuggerConnection;
-    this.#debuggerConnection = null;
-
-    if (oldDebugger) {
-      oldDebugger.socket.removeAllListeners();
-      this.#deviceSocket.close();
-      newDevice.handleDebuggerConnection(
-        oldDebugger.socket,
-        oldDebugger.pageId,
-        {
-          userAgent: oldDebugger.userAgent,
-        },
-      );
+  #sendDisconnectEventToDevice(devicePageId: string) {
+    if (!this.#connectedPageIds.has(devicePageId)) {
+      return;
     }
+    this.#connectedPageIds.delete(devicePageId);
+    this.#sendMessageToDevice({
+      event: 'disconnect',
+      payload: {pageId: devicePageId},
+    });
   }
 
   /**
@@ -433,6 +485,7 @@ export default class Device {
   // locations).
   async #handleMessageFromDevice(message: MessageFromDevice) {
     if (message.event === 'getPages') {
+      // Preserve ordering - getPages guarantees addition order.
       this.#pages = new Map(
         message.payload.map(({capabilities, ...page}) => [
           page.id,
@@ -521,6 +574,7 @@ export default class Device {
         this.#deviceEventReporter?.logResponse(parsedPayload, 'device', {
           pageId,
           frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+          prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
         });
       }
 
@@ -580,20 +634,10 @@ export default class Device {
     // page.
 
     if (oldPageId != null) {
-      this.#sendMessageToDevice({
-        event: 'disconnect',
-        payload: {
-          pageId: oldPageId,
-        },
-      });
+      this.#sendDisconnectEventToDevice(oldPageId);
     }
 
-    this.#sendMessageToDevice({
-      event: 'connect',
-      payload: {
-        pageId: page.id,
-      },
-    });
+    this.#sendConnectEventToDevice(page.id);
 
     const toSend = [
       {method: 'Runtime.enable', id: 1e9},
@@ -601,9 +645,11 @@ export default class Device {
     ];
 
     for (const message of toSend) {
+      const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logRequest(message, 'proxy', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
+        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
       this.#sendMessageToDevice({
         event: 'wrappedEvent',
@@ -613,6 +659,54 @@ export default class Device {
         },
       });
     }
+  }
+
+  /**
+   * Given a URL from the debugger frontend, returns the equivalent URL
+   * reachable from the device.
+   */
+  #debuggerRelativeToDeviceRelativeUrl(
+    debuggerRelativeUrl: URL,
+    {debuggerRelativeBaseUrl}: DebuggerConnection,
+  ): URL {
+    const deviceRelativeUrl = new URL(debuggerRelativeUrl.href);
+    if (debuggerRelativeUrl.origin === debuggerRelativeBaseUrl.origin) {
+      deviceRelativeUrl.hostname = this.#deviceRelativeBaseUrl.hostname;
+      deviceRelativeUrl.port = this.#deviceRelativeBaseUrl.port;
+      deviceRelativeUrl.protocol = this.#deviceRelativeBaseUrl.protocol;
+    }
+    return deviceRelativeUrl;
+  }
+
+  /**
+   * Given a URL from the device, returns the equivalent URL reachable from
+   * the debugger frontend.
+   */
+  #deviceRelativeUrlToDebuggerRelativeUrl(
+    deviceRelativeUrl: URL,
+    {debuggerRelativeBaseUrl}: DebuggerConnection,
+  ): URL {
+    const debuggerRelativeUrl = new URL(deviceRelativeUrl.href);
+    if (deviceRelativeUrl.origin === this.#deviceRelativeBaseUrl.origin) {
+      debuggerRelativeUrl.hostname = debuggerRelativeBaseUrl.hostname;
+      debuggerRelativeUrl.port = debuggerRelativeBaseUrl.port;
+      debuggerRelativeUrl.protocol = debuggerRelativeUrl.protocol;
+    }
+    return debuggerRelativeUrl;
+  }
+
+  /**
+   * Given a URL from the device, returns the equivalent URL reachable from
+   * this proxy.
+   */
+  #deviceRelativeUrlToServerRelativeUrl(deviceRelativeUrl: URL): URL {
+    const debuggerRelativeUrl = new URL(deviceRelativeUrl.href);
+    if (deviceRelativeUrl.origin === this.#deviceRelativeBaseUrl.origin) {
+      debuggerRelativeUrl.hostname = this.#serverRelativeBaseUrl.hostname;
+      debuggerRelativeUrl.port = this.#serverRelativeBaseUrl.port;
+      debuggerRelativeUrl.protocol = this.#serverRelativeBaseUrl.protocol;
+    }
+    return debuggerRelativeUrl;
   }
 
   // Allows to make changes in incoming message from device.
@@ -634,27 +728,25 @@ export default class Device {
     ) {
       const params = payload.params;
       if ('sourceMapURL' in params) {
-        for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
-          if (params.sourceMapURL.includes(hostToRewrite)) {
-            // $FlowFixMe[cannot-write]
-            payload.params.sourceMapURL = params.sourceMapURL.replace(
-              hostToRewrite,
-              'localhost',
-            );
-            debuggerInfo.originalSourceURLAddress = hostToRewrite;
-          }
-        }
-
         const sourceMapURL = this.#tryParseHTTPURL(params.sourceMapURL);
         if (sourceMapURL) {
+          // Rewrite device-relative URLs to de debugger-relative URLs for the
+          // frontend.
+          payload.params.sourceMapURL =
+            this.#deviceRelativeUrlToDebuggerRelativeUrl(
+              sourceMapURL,
+              debuggerInfo,
+            ).href;
+
           // Some debug clients do not support fetching HTTP URLs. If the
           // message headed to the debug client identifies the source map with
           // an HTTP URL, fetch the content here and convert the content to a
           // Data URL (which is more widely supported) before passing the
           // message to the debug client.
           try {
-            const sourceMap = await this.#fetchText(sourceMapURL);
-            // $FlowFixMe[cannot-write]
+            const sourceMap = await this.#fetchText(
+              this.#deviceRelativeUrlToServerRelativeUrl(sourceMapURL),
+            );
             payload.params.sourceMapURL =
               'data:application/json;charset=utf-8;base64,' +
               Buffer.from(sourceMap).toString('base64');
@@ -666,12 +758,19 @@ export default class Device {
         }
       }
       if ('url' in params) {
-        for (const hostToRewrite of REWRITE_HOSTS_TO_LOCALHOST) {
-          if (params.url.includes(hostToRewrite)) {
-            // $FlowFixMe[cannot-write]
-            payload.params.url = params.url.replace(hostToRewrite, 'localhost');
-            debuggerInfo.originalSourceURLAddress = hostToRewrite;
-          }
+        let serverRelativeUrl = params.url;
+        const parsedUrl = this.#tryParseHTTPURL(params.url);
+        if (parsedUrl) {
+          // Rewrite device-relative URLs pointing to the server so that they're
+          // reachable from the frontend.
+          payload.params.url = this.#deviceRelativeUrlToDebuggerRelativeUrl(
+            parsedUrl,
+            debuggerInfo,
+          ).href;
+
+          // Determine the server-relative URL.
+          serverRelativeUrl =
+            this.#deviceRelativeUrlToServerRelativeUrl(parsedUrl).href;
         }
 
         // Chrome doesn't download source maps if URL param is not a valid
@@ -679,14 +778,17 @@ export default class Device {
         // Chrome to not download source maps. In this case we want to prepend script ID
         // with 'file://' prefix.
         if (payload.params.url.match(/^[0-9a-z]+$/)) {
-          // $FlowFixMe[cannot-write]
           payload.params.url = FILE_PREFIX + payload.params.url;
           debuggerInfo.prependedFilePrefix = true;
         }
 
-        // $FlowFixMe[prop-missing]
-        if (params.scriptId != null) {
-          this.#scriptIdToSourcePathMapping.set(params.scriptId, params.url);
+        if ('scriptId' in params && params.scriptId != null) {
+          // Set a server-relative URL to locally fetch source by script ID
+          // on Debugger.getScriptSource.
+          this.#scriptIdToSourcePathMapping.set(
+            params.scriptId,
+            serverRelativeUrl,
+          );
         }
       }
     }
@@ -713,6 +815,9 @@ export default class Device {
       this.#deviceEventReporter?.logRequest(resumeMessage, 'proxy', {
         pageId: this.#debuggerConnection?.pageId ?? null,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(
+          this.#debuggerConnection?.pageId,
+        ),
       });
       this.#sendMessageToDevice({
         event: 'wrappedEvent',
@@ -743,6 +848,31 @@ export default class Device {
         // Sends response to debugger via side-effect
         this.#processDebuggerGetScriptSource(req, socket);
         return null;
+      case 'Network.loadNetworkResource':
+        // If we're rewriting URLs (to frontend-relative), we don't want to
+        // pass these URLs to the device, since it may try to fetch, return a
+        // CDP *result* (not error) with a network failure, and CDT
+        // will *not* then fall back to fetching locally.
+        //
+        // Instead, take the absence of a nativeSourceCodeFetching
+        // capability as a signal to never pass a loadNetworkResource request
+        // to the device. By returning a CDP error, the frontend should fetch.
+        const result = {
+          error: {
+            code: -32601, // Method not found
+            message:
+              '[inspector-proxy]: Page lacks nativeSourceCodeFetching capability.',
+          },
+        };
+        const response = {id: req.id, result};
+        socket.send(JSON.stringify(response));
+        const pageId = this.#debuggerConnection?.pageId ?? null;
+        this.#deviceEventReporter?.logResponse(response, 'proxy', {
+          pageId,
+          frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+          prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
+        });
+        return null;
       default:
         return req;
     }
@@ -753,36 +883,52 @@ export default class Device {
     debuggerInfo: DebuggerConnection,
   ): CDPRequest<'Debugger.setBreakpointByUrl'> {
     // If we replaced Android emulator's address to localhost we need to change it back.
-    if (debuggerInfo.originalSourceURLAddress != null) {
-      const processedReq = {...req, params: {...req.params}};
-      if (processedReq.params.url != null) {
-        processedReq.params.url = processedReq.params.url.replace(
-          'localhost',
-          debuggerInfo.originalSourceURLAddress,
-        );
+    const {debuggerRelativeBaseUrl, prependedFilePrefix} = debuggerInfo;
 
-        if (
-          processedReq.params.url &&
-          processedReq.params.url.startsWith(FILE_PREFIX) &&
-          debuggerInfo.prependedFilePrefix
-        ) {
-          // Remove fake URL prefix if we modified URL in #processMessageFromDeviceLegacy.
-          // $FlowFixMe[incompatible-use]
-          processedReq.params.url = processedReq.params.url.slice(
-            FILE_PREFIX.length,
-          );
-        }
+    const processedReq = {...req, params: {...req.params}};
+    if (processedReq.params.url != null) {
+      const originalUrlParam = processedReq.params.url;
+      const httpUrl = this.#tryParseHTTPURL(originalUrlParam);
+      if (httpUrl) {
+        processedReq.params.url = this.#debuggerRelativeToDeviceRelativeUrl(
+          httpUrl,
+          debuggerInfo,
+        ).href;
+      } else if (
+        originalUrlParam.startsWith(FILE_PREFIX) &&
+        prependedFilePrefix
+      ) {
+        // Remove fake URL prefix if we modified URL in #processMessageFromDeviceLegacy.
+        processedReq.params.url = originalUrlParam.slice(FILE_PREFIX.length);
       }
-      if (processedReq.params.urlRegex != null) {
-        processedReq.params.urlRegex = processedReq.params.urlRegex.replace(
-          /localhost/g,
-          // $FlowFixMe[incompatible-call]
-          debuggerInfo.originalSourceURLAddress,
-        );
-      }
-      return processedReq;
     }
-    return req;
+
+    // Retain special case rewriting of localhost to device-relative IPs
+    // within regex patterns. We don't rewrite the protocol here because
+    // these patterns typically come from CDT reinterpreting the source URL
+    // `file://host/path` into the regex `host/path|file://host/path`. See:
+    //
+    // https://github.com/ChromeDevTools/devtools-frontend/blob/f913cc6d76f2e2639c05b11ba673fc880b5490dd/front_end/core/sdk/DebuggerModel.ts#L505
+    //
+    // This has always been fragile and probably unnecessary - we don't set
+    // `file://` source URLs. It can be removed when we drop support for
+    // legacy targets, if not sooner.
+    if (
+      // Android's stock emulator and other emulators such as genymotion use a
+      // standard localhost alias.
+      new Set(['10.0.2.2', '10.0.3.2']).has(
+        this.#deviceRelativeBaseUrl.hostname,
+      ) &&
+      debuggerRelativeBaseUrl.hostname === 'localhost' &&
+      processedReq.params.urlRegex != null
+    ) {
+      processedReq.params.urlRegex = processedReq.params.urlRegex.replaceAll(
+        'localhost',
+        // regex-escape IPv4
+        this.#deviceRelativeBaseUrl.hostname.replaceAll('.', '\\.'),
+      );
+    }
+    return processedReq;
   }
 
   #processDebuggerGetScriptSource(
@@ -796,9 +942,11 @@ export default class Device {
         result,
       };
       socket.send(JSON.stringify(response));
+      const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
+        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
     };
     const sendErrorResponse = (error: string) => {
@@ -809,9 +957,11 @@ export default class Device {
 
       // Send to the console as well, so the user can see it
       this.#sendErrorToDebugger(error);
+      const pageId = this.#debuggerConnection?.pageId ?? null;
       this.#deviceEventReporter?.logResponse(response, 'proxy', {
-        pageId: this.#debuggerConnection?.pageId ?? null,
+        pageId,
         frontendUserAgent: this.#debuggerConnection?.userAgent ?? null,
+        prefersFuseboxFrontend: this.#isPageFuseboxFrontend(pageId),
       });
     };
 
@@ -821,6 +971,7 @@ export default class Device {
     if (pathToSource != null) {
       const httpURL = this.#tryParseHTTPURL(pathToSource);
       if (httpURL) {
+        // URL is server-relatve, so we should be able to fetch it from here.
         this.#fetchText(httpURL).then(
           text => sendSuccessResponse(text),
           err =>
@@ -908,5 +1059,18 @@ export default class Device {
         }),
       );
     }
+  }
+
+  #isPageFuseboxFrontend(pageId: ?string): boolean | null {
+    const page = pageId == null ? null : this.#pages.get(pageId);
+    if (page == null) {
+      return null;
+    }
+
+    return this.#pageHasCapability(page, 'prefersFuseboxFrontend');
+  }
+
+  dangerouslyGetSocket(): WS {
+    return this.#deviceSocket;
   }
 }

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<Modal /> should render as <Modal> when mocked 1`] = `
+exports[`Modal should render as <Modal> when mocked 1`] = `
 <Modal
   hardwareAccelerated={false}
   visible={true}
@@ -9,11 +9,11 @@ exports[`<Modal /> should render as <Modal> when mocked 1`] = `
 </Modal>
 `;
 
-exports[`<Modal /> should render as <RCTModalHostView> when not mocked 1`] = `
+exports[`Modal should render as <RCTModalHostView> when not mocked 1`] = `
 <RCTModalHostView
   animationType="none"
   hardwareAccelerated={false}
-  identifier={3}
+  identifier={0}
   onDismiss={[Function]}
   onStartShouldSetResponder={[Function]}
   presentationStyle="fullScreen"
@@ -61,22 +61,4 @@ exports[`<Modal /> should render as <RCTModalHostView> when not mocked 1`] = `
     </View>
   </View>
 </RCTModalHostView>
-`;
-
-exports[`<Modal /> should shallow render as <Modal> when mocked 1`] = `
-<Modal
-  hardwareAccelerated={false}
-  visible={true}
->
-  <View />
-</Modal>
-`;
-
-exports[`<Modal /> should shallow render as <Modal> when not mocked 1`] = `
-<Modal
-  hardwareAccelerated={false}
-  visible={true}
->
-  <View />
-</Modal>
 `;

@@ -138,7 +138,7 @@ function StackFrameList(props: {
 }
 
 function StackFrameFooter(
-  props: $TEMPORARY$object<{message: string, onPress: () => void}>,
+  props: $ReadOnly<{message: string, onPress: () => void}>,
 ) {
   return (
     <View style={stackStyles.collapseContainer}>

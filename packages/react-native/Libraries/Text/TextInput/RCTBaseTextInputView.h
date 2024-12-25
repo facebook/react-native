@@ -36,7 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onSelectionChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onChange;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onChangeSync;
-@property (nonatomic, copy, nullable) RCTDirectEventBlock onTextInput;
 @property (nonatomic, copy, nullable) RCTDirectEventBlock onScroll;
 
 @property (nonatomic, assign) NSInteger mostRecentEventCount;
@@ -50,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSNumber *maxLength;
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @property (nonatomic, copy) NSString *inputAccessoryViewID;
+@property (nonatomic, strong) NSString *inputAccessoryViewButtonLabel;
 @property (nonatomic, assign) UIKeyboardType keyboardType;
 @property (nonatomic, assign) BOOL showSoftInputOnFocus;
 

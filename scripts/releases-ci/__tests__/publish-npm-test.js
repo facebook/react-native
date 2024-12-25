@@ -13,8 +13,9 @@ const execMock = jest.fn();
 const consoleLogMock = jest.fn();
 const isTaggedLatestMock = jest.fn();
 const setVersionMock = jest.fn();
-const setReactNativeVersionMock = jest.fn();
+const updateReactNativeArtifactsMock = jest.fn();
 const publishAndroidArtifactsToMavenMock = jest.fn();
+const publishExternalArtifactsToMavenMock = jest.fn();
 const removeNewArchFlags = jest.fn();
 const env = process.env;
 const publishPackageMock = jest.fn();
@@ -42,10 +43,13 @@ describe('publish-npm', () => {
       .mock('../../releases/utils/release-utils', () => ({
         generateAndroidArtifacts: generateAndroidArtifactsMock,
         publishAndroidArtifactsToMaven: publishAndroidArtifactsToMavenMock,
+        publishExternalArtifactsToMaven: publishExternalArtifactsToMavenMock,
       }))
-      .mock('../../releases/set-version', () => setVersionMock)
-      .mock('../../releases/set-rn-version', () => ({
-        setReactNativeVersion: setReactNativeVersionMock,
+      .mock('../../releases/set-version', () => ({
+        setVersion: setVersionMock,
+      }))
+      .mock('../../releases/set-rn-artifacts-version', () => ({
+        updateReactNativeArtifacts: updateReactNativeArtifactsMock,
       }))
       .mock('../../releases/remove-new-arch-flags', () => ({
         removeNewArchFlags,
@@ -102,19 +106,18 @@ describe('publish-npm', () => {
       expect(removeNewArchFlags).not.toHaveBeenCalled();
 
       expect(setVersionMock).not.toBeCalled();
-      expect(setReactNativeVersionMock).toBeCalledWith(
-        version,
-        null,
-        'dry-run',
-      );
+      expect(updateReactNativeArtifactsMock).toBeCalledWith(version, 'dry-run');
 
-      expect(generateAndroidArtifactsMock).toBeCalledWith(version);
+      // Generate Android artifacts is now delegate to build_android entirely
+      expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
+
       expect(consoleLogMock).toHaveBeenCalledWith(
         'Skipping `npm publish` because --dry-run is set.',
       );
 
       // Expect termination
       expect(publishAndroidArtifactsToMavenMock).not.toHaveBeenCalled();
+      expect(publishExternalArtifactsToMavenMock).not.toHaveBeenCalled();
       expect(publishPackageMock).not.toHaveBeenCalled();
     });
   });
@@ -158,7 +161,10 @@ describe('publish-npm', () => {
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       expect(setVersionMock).toBeCalledWith(expectedVersion);
-      expect(generateAndroidArtifactsMock).toHaveBeenCalled();
+
+      // Generate Android artifacts is now delegate to build_android entirely
+      expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
+
       expect(publishPackageMock.mock.calls).toEqual([
         [
           'path/to/monorepo/pkg-a',
@@ -174,6 +180,10 @@ describe('publish-npm', () => {
         ],
       ]);
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
+        expectedVersion,
+        'nightly',
+      );
+      expect(publishExternalArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
         'nightly',
       );
@@ -207,6 +217,7 @@ describe('publish-npm', () => {
       expect(publishPackageMock).not.toBeCalled();
       expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
       expect(publishAndroidArtifactsToMavenMock).not.toBeCalled();
+      expect(publishExternalArtifactsToMavenMock).not.toHaveBeenCalled();
     });
 
     it('should fail to publish react-native if some monorepo packages fail', async () => {
@@ -271,6 +282,7 @@ describe('publish-npm', () => {
         ['Publishing monorepo/pkg-b...'],
       ]);
       expect(publishAndroidArtifactsToMavenMock).not.toHaveBeenCalled();
+      expect(publishExternalArtifactsToMavenMock).not.toHaveBeenCalled();
     });
   });
 
@@ -290,10 +302,17 @@ describe('publish-npm', () => {
       await publishNpm('release');
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
-      expect(setReactNativeVersionMock).not.toHaveBeenCalled();
+      expect(updateReactNativeArtifactsMock).not.toHaveBeenCalled();
       expect(setVersionMock).not.toBeCalled();
-      expect(generateAndroidArtifactsMock).toHaveBeenCalled();
+
+      // Generate Android artifacts is now delegate to build_android entirely
+      expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
+
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
+        expectedVersion,
+        'release',
+      );
+      expect(publishExternalArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
         'release',
       );
@@ -326,9 +345,16 @@ describe('publish-npm', () => {
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       expect(setVersionMock).not.toBeCalled();
-      expect(setReactNativeVersionMock).not.toBeCalled();
-      expect(generateAndroidArtifactsMock).toHaveBeenCalled();
+      expect(updateReactNativeArtifactsMock).not.toBeCalled();
+
+      // Generate Android artifacts is now delegate to build_android entirely
+      expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
+
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
+        expectedVersion,
+        'release',
+      );
+      expect(publishExternalArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
         'release',
       );
@@ -368,9 +394,16 @@ describe('publish-npm', () => {
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
       expect(setVersionMock).not.toBeCalled();
-      expect(setReactNativeVersionMock).not.toHaveBeenCalled();
-      expect(generateAndroidArtifactsMock).toHaveBeenCalled();
+      expect(updateReactNativeArtifactsMock).not.toHaveBeenCalled();
+
+      // Generate Android artifacts is now delegate to build_android entirely
+      expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
+
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
+        expectedVersion,
+        'release',
+      );
+      expect(publishExternalArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
         'release',
       );
@@ -399,10 +432,17 @@ describe('publish-npm', () => {
       await publishNpm('release');
 
       expect(removeNewArchFlags).not.toHaveBeenCalled();
-      expect(setReactNativeVersionMock).not.toHaveBeenCalled();
+      expect(updateReactNativeArtifactsMock).not.toHaveBeenCalled();
       expect(setVersionMock).not.toBeCalled();
-      expect(generateAndroidArtifactsMock).toHaveBeenCalled();
+
+      // Generate Android artifacts is now delegate to build_android entirely
+      expect(generateAndroidArtifactsMock).not.toHaveBeenCalled();
+
       expect(publishAndroidArtifactsToMavenMock).toHaveBeenCalledWith(
+        expectedVersion,
+        'release',
+      );
+      expect(publishExternalArtifactsToMavenMock).toHaveBeenCalledWith(
         expectedVersion,
         'release',
       );

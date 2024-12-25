@@ -12,6 +12,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.WritableArray
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlagsForTests
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 import java.util.Locale
@@ -33,6 +34,7 @@ class BaseViewManagerTest {
 
   @Before
   fun setUp() {
+    ReactNativeFeatureFlagsForTests.setUp()
     viewManager = ReactViewManager()
     view = ReactViewGroup(RuntimeEnvironment.getApplication())
     arguments = Mockito.mockStatic(Arguments::class.java)

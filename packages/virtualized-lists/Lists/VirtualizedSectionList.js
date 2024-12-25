@@ -14,8 +14,6 @@ import VirtualizedList from './VirtualizedList';
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';
 import invariant from 'invariant';
 import * as React from 'react';
-import {View} from 'react-native';
-
 type Item = any;
 
 export type SectionBase<SectionItemT> = {
@@ -40,7 +38,7 @@ export type SectionBase<SectionItemT> = {
       ...
     },
     ...
-  }) => null | React.Element<any>,
+  }) => null | React.MixedElement,
   ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItemT, index?: ?number) => string,
   ...
@@ -65,22 +63,16 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
       ...
     },
     ...
-  }) => null | React.Element<any>,
+  }) => null | React.Node,
   /**
    * Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
    * iOS. See `stickySectionHeadersEnabled`.
    */
-  renderSectionHeader?: ?(info: {
-    section: SectionT,
-    ...
-  }) => null | React.Element<any>,
+  renderSectionHeader?: ?(info: {section: SectionT, ...}) => null | React.Node,
   /**
    * Rendered at the bottom of each section.
    */
-  renderSectionFooter?: ?(info: {
-    section: SectionT,
-    ...
-  }) => null | React.Element<any>,
+  renderSectionFooter?: ?(info: {section: SectionT, ...}) => null | React.Node,
   /**
    * Rendered at the top and bottom of each section (note this is different from
    * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
@@ -154,7 +146,7 @@ class VirtualizedSectionList<
     this._listRef.scrollToIndex(toIndexParams);
   }
 
-  getListRef(): ?React.ElementRef<typeof VirtualizedList> {
+  getListRef(): ?VirtualizedList {
     return this._listRef;
   }
 
@@ -455,8 +447,8 @@ class VirtualizedSectionList<
 
   _updateHighlightMap: {[string]: (boolean) => void} = {};
   _updatePropsMap: {[string]: void | (boolean => void)} = {};
-  _listRef: ?React.ElementRef<typeof VirtualizedList>;
-  _captureRef = (ref: null | React$ElementRef<Class<VirtualizedList>>) => {
+  _listRef: ?VirtualizedList;
+  _captureRef = (ref: null | VirtualizedList) => {
     this._listRef = ref;
   };
 }
@@ -606,14 +598,12 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   );
 }
 
-/* $FlowFixMe[class-object-subtyping] added when improving typing for this
- * parameters */
-// $FlowFixMe[method-unbinding]
-module.exports = (VirtualizedSectionList: React.AbstractComponent<
-  React.ElementConfig<typeof VirtualizedSectionList>,
-  $ReadOnly<{
-    getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
-    scrollToLocation: (params: ScrollToLocationParamsType) => void,
-    ...
-  }>,
->);
+module.exports = VirtualizedSectionList as component(
+  ref: React.RefSetter<
+    interface {
+      getListRef(): ?VirtualizedList,
+      scrollToLocation(params: ScrollToLocationParamsType): void,
+    },
+  >,
+  ...Props<SectionBase<any>>
+);

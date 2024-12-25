@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.scroll
 
+import android.os.SystemClock
 import androidx.core.util.Pools.SynchronizedPool
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.bridge.Arguments
@@ -27,6 +28,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
   private var scrollViewWidth = 0
   private var scrollViewHeight = 0
   private var scrollEventType: ScrollEventType? = null
+  private var timestamp: Long = 0
 
   override fun onDispose() {
     try {
@@ -49,7 +51,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
       contentWidth: Int,
       contentHeight: Int,
       scrollViewWidth: Int,
-      scrollViewHeight: Int
+      scrollViewHeight: Int,
   ) {
     super.init(surfaceId, viewTag)
     this.scrollEventType = scrollEventType
@@ -61,6 +63,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     this.contentHeight = contentHeight
     this.scrollViewWidth = scrollViewWidth
     this.scrollViewHeight = scrollViewHeight
+    this.timestamp = SystemClock.uptimeMillis()
   }
 
   override fun getEventName(): String =
@@ -93,6 +96,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
     event.putMap("layoutMeasurement", layoutMeasurement)
     event.putMap("velocity", velocity)
     event.putInt("target", viewTag)
+    event.putDouble("timestamp", timestamp.toDouble())
     event.putBoolean("responderIgnoreScroll", true)
     return event
   }
@@ -113,7 +117,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
         contentWidth: Int,
         contentHeight: Int,
         scrollViewWidth: Int,
-        scrollViewHeight: Int
+        scrollViewHeight: Int,
     ): ScrollEvent =
         (EVENTS_POOL.acquire() ?: ScrollEvent()).apply {
           init(
@@ -158,6 +162,7 @@ public class ScrollEvent private constructor() : Event<ScrollEvent>() {
             contentWidth,
             contentHeight,
             scrollViewWidth,
-            scrollViewHeight)
+            scrollViewHeight,
+        )
   }
 }

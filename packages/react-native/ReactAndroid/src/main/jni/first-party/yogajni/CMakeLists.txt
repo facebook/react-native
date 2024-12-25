@@ -6,15 +6,19 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
 add_compile_options(
         -fvisibility=hidden
         -fexceptions
         -frtti
+        -std=c++20
         -O3)
 
 file(GLOB yoga_SRC CONFIGURE_DEPENDS jni/*.cpp)
-add_library(yoga SHARED ${yoga_SRC})
+add_library(yoga OBJECT ${yoga_SRC})
 
 target_include_directories(yoga PUBLIC jni)
+target_merge_so(yoga)
 
 target_link_libraries(yoga yogacore fb fbjni log android)

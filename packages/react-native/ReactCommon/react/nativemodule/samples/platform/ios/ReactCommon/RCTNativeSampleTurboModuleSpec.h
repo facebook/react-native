@@ -15,6 +15,8 @@
 
 #import <ReactCommon/RCTTurboModule.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * The ObjC protocol based on the JS Flow type for SampleTurboModule.
  */
@@ -34,13 +36,24 @@
 - (void)getValueWithPromise:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (void)voidFuncThrows;
 - (NSDictionary *)getObjectThrows:(NSDictionary *)arg;
-- (void)promiseThrows:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (void)promiseThrows:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (void)voidFuncAssert;
 - (NSDictionary *)getObjectAssert:(NSDictionary *)arg;
-- (void)promiseAssert:(BOOL)error resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
+- (void)promiseAssert:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
 - (NSDictionary *)constantsToExport;
 - (NSDictionary *)getConstants;
 
+@end
+
+@interface NativeSampleTurboModuleSpecBase : NSObject {
+ @protected
+  facebook::react::EventEmitterCallback _eventEmitterCallback;
+}
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *_Nonnull)eventEmitterCallbackWrapper;
+- (void)emitOnPress;
+- (void)emitOnClick:(NSString *)value;
+- (void)emitOnChange:(NSDictionary *)value;
+- (void)emitOnSubmit:(NSArray *)value;
 @end
 
 namespace facebook::react {
@@ -54,3 +67,5 @@ class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
 };
 
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END

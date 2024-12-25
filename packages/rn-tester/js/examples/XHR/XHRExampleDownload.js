@@ -10,6 +10,8 @@
 
 'use strict';
 
+import RNTesterText from '../../components/RNTesterText';
+
 const React = require('react');
 const {
   Alert,
@@ -40,6 +42,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
     readystateHandler: false,
     progressHandler: true,
     arraybuffer: false,
+    chunked: false,
   };
 
   xhr: ?XMLHttpRequest = null;
@@ -76,6 +79,11 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         progressLoaded: event.loaded,
       });
     };
+    const onerror = (event: ProgressEvent) => {
+      this.setState({downloading: false});
+
+      Alert.alert('Error downloading file', JSON.stringify(event));
+    };
 
     if (this.state.readystateHandler) {
       xhr.onreadystatechange = onreadystatechange;
@@ -86,6 +94,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
     if (this.state.arraybuffer) {
       xhr.responseType = 'arraybuffer';
     }
+    xhr.onerror = onerror;
     xhr.onload = () => {
       this.setState({downloading: false});
       if (this.cancelled) {
@@ -107,12 +116,19 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
         Alert.alert('Error', xhr.responseText);
       }
     };
-    xhr.open(
-      'GET',
-      'http://aleph.gutenberg.org/cache/epub/100/pg100-images.html.utf8',
-    );
-    // Avoid gzip so we can actually show progress
-    xhr.setRequestHeader('Accept-Encoding', '');
+    if (this.state.chunked) {
+      xhr.open(
+        'GET',
+        'https://filesamples.com/samples/ebook/azw3/Around%20the%20World%20in%2028%20Languages.azw3',
+      );
+    } else {
+      xhr.open(
+        'GET',
+        'https://filesamples.com/samples/document/txt/sample3.txt',
+      );
+      // Avoid gzip so we can actually show progress
+      xhr.setRequestHeader('Accept-Encoding', '');
+    }
     xhr.send();
 
     this.setState({downloading: true});
@@ -133,7 +149,11 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
     ) : (
       <TouchableHighlight style={styles.wrapper} onPress={this._download}>
         <View style={styles.button}>
-          <Text>Download 7MB Text File</Text>
+          <Text>
+            {this.state.chunked
+              ? 'Download 10MB File'
+              : 'Download 3KB TXT File'}
+          </Text>
         </View>
       </TouchableHighlight>
     );
@@ -144,10 +164,10 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
       const {responseLength, contentLength} = this.state;
       readystate = (
         <View>
-          <Text style={styles.progressBarLabel}>
+          <RNTesterText style={styles.progressBarLabel}>
             responseText: {roundKilo(responseLength)}/{roundKilo(contentLength)}
             k chars
-          </Text>
+          </RNTesterText>
         </View>
       );
     }
@@ -155,10 +175,10 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
       const {progressLoaded, progressTotal} = this.state;
       progress = (
         <View>
-          <Text style={styles.progressBarLabel}>
+          <RNTesterText style={styles.progressBarLabel}>
             onprogress: {roundKilo(progressLoaded)}/{roundKilo(progressTotal)}{' '}
             KB
-          </Text>
+          </RNTesterText>
         </View>
       );
     }
@@ -166,7 +186,7 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
     return (
       <View>
         <View style={styles.configRow}>
-          <Text>onreadystatechange handler</Text>
+          <RNTesterText>onreadystatechange handler</RNTesterText>
           <Switch
             value={this.state.readystateHandler}
             onValueChange={readystateHandler =>
@@ -175,17 +195,24 @@ class XHRExampleDownload extends React.Component<{...}, Object> {
           />
         </View>
         <View style={styles.configRow}>
-          <Text>onprogress handler</Text>
+          <RNTesterText>onprogress handler</RNTesterText>
           <Switch
             value={this.state.progressHandler}
             onValueChange={progressHandler => this.setState({progressHandler})}
           />
         </View>
         <View style={styles.configRow}>
-          <Text>download as arraybuffer</Text>
+          <RNTesterText>download as arraybuffer</RNTesterText>
           <Switch
             value={this.state.arraybuffer}
             onValueChange={arraybuffer => this.setState({arraybuffer})}
+          />
+        </View>
+        <View style={styles.configRow}>
+          <RNTesterText>transfer-encoding: chunked</RNTesterText>
+          <Switch
+            value={this.state.chunked}
+            onValueChange={chunked => this.setState({chunked})}
           />
         </View>
         {button}

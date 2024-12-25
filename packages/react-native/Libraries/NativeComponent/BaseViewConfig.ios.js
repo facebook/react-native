@@ -193,9 +193,12 @@ const validAttributesForNonEventProps = {
   accessibilityViewIsModal: true,
   accessibilityElementsHidden: true,
   accessibilityIgnoresInvertColors: true,
+  accessibilityShowsLargeContentViewer: true,
+  accessibilityLargeContentTitle: true,
   testID: true,
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   backfaceVisibility: true,
+  cursor: true,
   opacity: true,
   shadowColor: {process: require('../StyleSheet/processColor').default},
   shadowOffset: {diff: require('../Utilities/differ/sizesDiffer')},
@@ -214,11 +217,22 @@ const validAttributesForNonEventProps = {
   role: true,
   borderRadius: true,
   borderColor: {process: require('../StyleSheet/processColor').default},
+  borderBlockColor: {process: require('../StyleSheet/processColor').default},
   borderCurve: true,
   borderWidth: true,
+  borderBlockWidth: true,
   borderStyle: true,
   hitSlop: {diff: require('../Utilities/differ/insetsDiffer')},
   collapsable: true,
+  collapsableChildren: true,
+  filter: {
+    process: require('../StyleSheet/processFilter').default,
+  },
+  boxShadow: {
+    process: require('../StyleSheet/processBoxShadow').default,
+  },
+  mixBlendMode: true,
+  isolation: true,
 
   borderTopWidth: true,
   borderTopColor: {process: require('../StyleSheet/processColor').default},
@@ -229,9 +243,15 @@ const validAttributesForNonEventProps = {
   borderLeftWidth: true,
   borderLeftColor: {process: require('../StyleSheet/processColor').default},
   borderStartWidth: true,
+  borderBlockStartWidth: true,
   borderStartColor: {process: require('../StyleSheet/processColor').default},
+  borderBlockStartColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
   borderEndWidth: true,
+  borderBlockEndWidth: true,
   borderEndColor: {process: require('../StyleSheet/processColor').default},
+  borderBlockEndColor: {process: require('../StyleSheet/processColor').default},
 
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
@@ -328,6 +348,7 @@ const validAttributesForNonEventProps = {
   alignContent: true,
   position: true,
   aspectRatio: true,
+  boxSizing: true,
 
   // Also declared as ViewProps
   // overflow: true,
@@ -336,8 +357,6 @@ const validAttributesForNonEventProps = {
   direction: true,
 
   style: ReactNativeStyleAttributes,
-
-  experimental_layoutConformance: true,
 };
 
 // Props for bubbling and direct events
@@ -373,6 +392,7 @@ const validAttributesForEventProps = ConditionallyIgnoredEventHandlers({
 
   // Pointer events
   onClick: true,
+  onClickCapture: true,
   onPointerUp: true,
   onPointerDown: true,
   onPointerCancel: true,

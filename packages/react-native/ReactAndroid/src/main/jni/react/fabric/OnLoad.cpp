@@ -7,24 +7,20 @@
 
 #include <fbjni/fbjni.h>
 
-#include "Binding.h"
 #include "ComponentFactory.h"
-#include "CoreComponentsRegistry.h"
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
-#include "JEmptyReactNativeConfig.h"
+#include "FabricUIManagerBinding.h"
 #include "StateWrapperImpl.h"
 #include "SurfaceHandlerBinding.h"
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
   return facebook::jni::initialize(vm, [] {
-    facebook::react::Binding::registerNatives();
     facebook::react::EventBeatManager::registerNatives();
     facebook::react::EventEmitterWrapper::registerNatives();
+    facebook::react::FabricUIManagerBinding::registerNatives();
     facebook::react::StateWrapperImpl::registerNatives();
     facebook::react::ComponentFactory::registerNatives();
-    facebook::react::CoreComponentsRegistry::registerNatives();
     facebook::react::SurfaceHandlerBinding::registerNatives();
-    facebook::react::JEmptyReactNativeConfig::registerNatives();
   });
 }

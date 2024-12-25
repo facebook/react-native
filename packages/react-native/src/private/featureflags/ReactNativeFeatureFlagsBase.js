@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow strict
  * @format
  */
 
@@ -19,6 +19,12 @@ const accessedFeatureFlags: Set<string> = new Set();
 let overrides: ?ReactNativeFeatureFlagsJsOnlyOverrides;
 
 export type Getter<T> = () => T;
+
+// This defines the types for the overrides object, whose methods also receive
+// the default value as a parameter.
+export type OverridesFor<T> = Partial<{
+  [key in keyof T]: (ReturnType<T[key]>) => ReturnType<T[key]>,
+}>;
 
 function createGetter<T: boolean | number | string>(
   configName: string,
@@ -45,7 +51,7 @@ export function createJavaScriptFlagGetter<
     configName,
     () => {
       accessedFeatureFlags.add(configName);
-      return overrides?.[configName]?.();
+      return overrides?.[configName]?.(defaultValue);
     },
     defaultValue,
   );

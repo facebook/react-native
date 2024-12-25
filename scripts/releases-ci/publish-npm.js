@@ -18,11 +18,13 @@ import type {BuildType} from '../releases/utils/version-utils';
 const {REPO_ROOT} = require('../consts');
 const {getNpmInfo, publishPackage} = require('../npm-utils');
 const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
-const {setReactNativeVersion} = require('../releases/set-rn-version');
-const setVersion = require('../releases/set-version');
 const {
-  generateAndroidArtifacts,
+  updateReactNativeArtifacts,
+} = require('../releases/set-rn-artifacts-version');
+const {setVersion} = require('../releases/set-version');
+const {
   publishAndroidArtifactsToMaven,
+  publishExternalArtifactsToMaven,
 } = require('../releases/utils/release-utils');
 const {getPackages} = require('../utils/monorepo');
 const path = require('path');
@@ -105,20 +107,23 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
       await setVersion(version);
       await publishMonorepoPackages(tag);
     } else {
-      await setReactNativeVersion(version, null, buildType);
+      await updateReactNativeArtifacts(version, buildType);
     }
   }
-
-  generateAndroidArtifacts(version);
 
   if (buildType === 'dry-run') {
     console.log('Skipping `npm publish` because --dry-run is set.');
     return;
   }
 
-  // We first publish on Maven Central all the necessary artifacts.
-  // NPM publishing is done just after.
+  // We first publish on Maven Central all the Android artifacts.
+  // Those were built by the `build-android` CI job.
   publishAndroidArtifactsToMaven(version, buildType);
+
+  // And we then publish on Maven Central the external artifacts
+  // produced by iOS
+  // NPM publishing is done just after.
+  publishExternalArtifactsToMaven(version, buildType);
 
   const packagePath = path.join(REPO_ROOT, 'packages', 'react-native');
   const result = publishPackage(packagePath, {

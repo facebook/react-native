@@ -26,6 +26,13 @@ class AndroidProgressBarShadowNode final : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(ShadowNodeTraits::Trait::MeasurableYogaNode);
+    return traits;
+  }
+
   // Associates a shared `AndroidProgressBarMeasurementsManager` with the node.
   void setAndroidProgressBarMeasurementsManager(
       const std::shared_ptr<AndroidProgressBarMeasurementsManager>&

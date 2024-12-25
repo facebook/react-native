@@ -11,12 +11,12 @@
 import type {
   HostComponent,
   PartialViewConfig,
+  ViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
 
 import getNativeComponentAttributes from '../ReactNative/getNativeComponentAttributes';
 import UIManager from '../ReactNative/UIManager';
 import * as ReactNativeViewConfigRegistry from '../Renderer/shims/ReactNativeViewConfigRegistry';
-import verifyComponentAttributeEquivalence from '../Utilities/verifyComponentAttributeEquivalence';
 import * as StaticViewConfigValidator from './StaticViewConfigValidator';
 import {createViewConfig} from './ViewConfig';
 import invariant from 'invariant';
@@ -34,7 +34,6 @@ let getRuntimeConfig;
 export function setRuntimeConfigProvider(
   runtimeConfigProvider: (name: string) => ?{
     native: boolean,
-    strict: boolean,
     verify: boolean,
   },
 ): void {
@@ -49,18 +48,17 @@ export function setRuntimeConfigProvider(
  * The supplied `viewConfigProvider` may or may not be invoked and utilized,
  * depending on how `setRuntimeConfigProvider` is configured.
  */
-export function get<Config>(
+export function get<Config: {...}>(
   name: string,
   viewConfigProvider: () => PartialViewConfig,
 ): HostComponent<Config> {
   ReactNativeViewConfigRegistry.register(name, () => {
-    const {native, strict, verify} = getRuntimeConfig?.(name) ?? {
+    const {native, verify} = getRuntimeConfig?.(name) ?? {
       native: !global.RN$Bridgeless,
-      strict: false,
       verify: false,
     };
 
-    let viewConfig;
+    let viewConfig: ViewConfig;
     if (native) {
       viewConfig =
         getNativeComponentAttributes(name) ??
@@ -81,27 +79,29 @@ export function get<Config>(
       const nativeViewConfig = native
         ? viewConfig
         : getNativeComponentAttributes(name);
-      const staticViewConfig = native
+
+      if (nativeViewConfig == null) {
+        // Defer to static view config if native view config is missing.
+        return viewConfig;
+      }
+
+      const staticViewConfig: ViewConfig = native
         ? createViewConfig(viewConfigProvider())
         : viewConfig;
 
-      if (strict) {
-        const validationOutput = StaticViewConfigValidator.validate(
-          name,
-          nativeViewConfig,
-          staticViewConfig,
-        );
+      const validationOutput = StaticViewConfigValidator.validate(
+        name,
+        nativeViewConfig,
+        staticViewConfig,
+      );
 
-        if (validationOutput.type === 'invalid') {
-          console.error(
-            StaticViewConfigValidator.stringifyValidationResult(
-              name,
-              validationOutput,
-            ),
-          );
-        }
-      } else {
-        verifyComponentAttributeEquivalence(nativeViewConfig, staticViewConfig);
+      if (validationOutput.type === 'invalid') {
+        console.error(
+          StaticViewConfigValidator.stringifyValidationResult(
+            name,
+            validationOutput,
+          ),
+        );
       }
     }
 
@@ -121,10 +121,10 @@ export function get<Config>(
  * that the return value of this is not `HostComponent` because the returned
  * component instance is not guaranteed to have native methods.
  */
-export function getWithFallback_DEPRECATED<Config>(
+export function getWithFallback_DEPRECATED<Config: {...}>(
   name: string,
   viewConfigProvider: () => PartialViewConfig,
-): React.AbstractComponent<Config> {
+): React.ComponentType<Config> {
   if (getRuntimeConfig == null) {
     // `getRuntimeConfig == null` when static view configs are disabled
     // If `setRuntimeConfigProvider` is not configured, use native reflection.

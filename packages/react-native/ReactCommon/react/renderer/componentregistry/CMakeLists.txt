@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_componentregistry_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_componentregistry SHARED ${react_render_componentregistry_SRC})
+add_library(react_render_componentregistry OBJECT ${react_render_componentregistry_SRC})
 
 target_include_directories(react_render_componentregistry PUBLIC ${REACT_COMMON_DIR})
 
@@ -23,7 +23,6 @@ target_link_libraries(react_render_componentregistry
         folly_runtime
         glog_init
         jsi
-        react_config
         react_debug
         react_render_core
         react_render_debug

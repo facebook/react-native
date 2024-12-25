@@ -18,8 +18,14 @@ LazyShadowTreeRevisionConsistencyManager::
 void LazyShadowTreeRevisionConsistencyManager::updateCurrentRevision(
     SurfaceId surfaceId,
     RootShadowNode::Shared rootShadowNode) {
-  capturedRootShadowNodesForConsistency_.emplace(
-      surfaceId, std::move(rootShadowNode));
+  std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
+
+  // We don't need to store the revision if we haven't locked.
+  // We can resolve lazily when requested.
+  if (lockCount > 0) {
+    capturedRootShadowNodesForConsistency_[surfaceId] =
+        std::move(rootShadowNode);
+  }
 }
 
 #pragma mark - ShadowTreeRevisionProvider
@@ -27,18 +33,31 @@ void LazyShadowTreeRevisionConsistencyManager::updateCurrentRevision(
 RootShadowNode::Shared
 LazyShadowTreeRevisionConsistencyManager::getCurrentRevision(
     SurfaceId surfaceId) {
-  auto it = capturedRootShadowNodesForConsistency_.find(surfaceId);
-  if (it != capturedRootShadowNodesForConsistency_.end()) {
-    return it->second;
+  {
+    std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
+    if (lockCount > 0) {
+      auto it = capturedRootShadowNodesForConsistency_.find(surfaceId);
+      if (it != capturedRootShadowNodesForConsistency_.end()) {
+        return it->second;
+      }
+    }
   }
 
+  // This method is only going to be called from JS, so we don't need to protect
+  // the access to the shadow tree registry as well.
+  // If this was multi-threaded, we would need to protect it to avoid capturing
+  // root shadow nodes concurrently.
   RootShadowNode::Shared rootShadowNode;
-
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
     rootShadowNode = shadowTree.getCurrentRevision().rootShadowNode;
   });
 
-  capturedRootShadowNodesForConsistency_.emplace(surfaceId, rootShadowNode);
+  {
+    std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
+    if (lockCount > 0) {
+      capturedRootShadowNodesForConsistency_[surfaceId] = rootShadowNode;
+    }
+  }
 
   return rootShadowNode;
 }
@@ -46,27 +65,26 @@ LazyShadowTreeRevisionConsistencyManager::getCurrentRevision(
 #pragma mark - ConsistentShadowTreeRevisionProvider
 
 void LazyShadowTreeRevisionConsistencyManager::lockRevisions() {
-  if (isLocked_) {
-    LOG(WARNING)
-        << "LazyShadowTreeRevisionConsistencyManager::lockRevisions() called without unlocking a previous lock";
-    return;
-  }
+  std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
 
   // We actually capture the state lazily the first time we access it, so we
   // don't need to do anything here.
-  isLocked_ = true;
+  lockCount++;
 }
 
 void LazyShadowTreeRevisionConsistencyManager::unlockRevisions() {
-  if (!isLocked_) {
+  std::unique_lock lock(capturedRootShadowNodesForConsistencyMutex_);
+
+  if (lockCount == 0) {
     LOG(WARNING)
         << "LazyShadowTreeRevisionConsistencyManager::unlockRevisions() called without a previous lock";
-    // We don't return here because we want to do the cleanup anyway
-    // to free up resources.
+  } else {
+    lockCount--;
   }
 
-  isLocked_ = false;
-  capturedRootShadowNodesForConsistency_.clear();
+  if (lockCount == 0) {
+    capturedRootShadowNodesForConsistency_.clear();
+  }
 }
 
 } // namespace facebook::react

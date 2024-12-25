@@ -27,7 +27,7 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
       stack = error.stack;
     } else {
       try {
-        message = require('pretty-format')(rejection);
+        message = require('pretty-format').format(rejection);
       } catch {
         message =
           typeof rejection === 'string'
@@ -36,7 +36,7 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
       }
       // It could although this object is not a standard error, it still has stack information to unwind
       // $FlowFixMe ignore types just check if stack is there
-      if (rejection.stack && typeof rejection.stack === 'string') {
+      if (rejection?.stack && typeof rejection.stack === 'string') {
         stack = rejection.stack;
       }
     }
@@ -52,6 +52,7 @@ let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]> = {
           substitutions: [],
         },
         componentStack: [],
+        componentStackType: null,
         stack,
         category: 'possible_unhandled_promise_rejection',
       });

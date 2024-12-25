@@ -7,11 +7,11 @@
 
 #include "BaseTextProps.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -91,6 +91,12 @@ static TextAttributes convertRawProp(
       "textTransform",
       sourceTextAttributes.textTransform,
       defaultTextAttributes.textTransform);
+  textAttributes.textAlignVertical = convertRawProp(
+      context,
+      rawProps,
+      "textAlignVertical",
+      sourceTextAttributes.textAlignVertical,
+      defaultTextAttributes.textAlignVertical);
 
   // Paragraph
   textAttributes.lineHeight = convertRawProp(
@@ -117,6 +123,12 @@ static TextAttributes convertRawProp(
       "lineBreakStrategyIOS",
       sourceTextAttributes.lineBreakStrategy,
       defaultTextAttributes.lineBreakStrategy);
+  textAttributes.lineBreakMode = convertRawProp(
+      context,
+      rawProps,
+      "lineBreakModeIOS",
+      sourceTextAttributes.lineBreakMode,
+      defaultTextAttributes.lineBreakMode);
 
   // Decoration
   textAttributes.textDecorationColor = convertRawProp(
@@ -218,7 +230,7 @@ BaseTextProps::BaseTextProps(
     const BaseTextProps& sourceProps,
     const RawProps& rawProps)
     : textAttributes(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.textAttributes
               : convertRawProp(
                     context,
@@ -266,6 +278,12 @@ void BaseTextProps::setProp(
         defaults,
         value,
         textAttributes,
+        textAlignVertical,
+        "textAlignVertical");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
         baseWritingDirection,
         "baseWritingDirection");
     REBUILD_FIELD_SWITCH_CASE(
@@ -274,6 +292,8 @@ void BaseTextProps::setProp(
         textAttributes,
         lineBreakStrategy,
         "lineBreakStrategyIOS");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, lineBreakMode, "lineBreakModeIOS");
     REBUILD_FIELD_SWITCH_CASE(
         defaults,
         value,

@@ -9,6 +9,7 @@
 
 #include <react/renderer/imagemanager/ImageResponse.h>
 #include <react/renderer/imagemanager/ImageResponseObserver.h>
+#include <react/utils/SharedFunction.h>
 
 #include <mutex>
 #include <vector>
@@ -23,6 +24,10 @@ namespace facebook::react {
  */
 class ImageResponseObserverCoordinator {
  public:
+  ImageResponseObserverCoordinator(
+      SharedFunction<> resumeFunction,
+      SharedFunction<> cancelationFunction);
+
   /*
    * Interested parties may observe the image response.
    * If the current image request status is not equal to `Loading`, the observer
@@ -38,7 +43,10 @@ class ImageResponseObserverCoordinator {
   /*
    * Platform-specific image loader will call this method with progress updates.
    */
-  void nativeImageResponseProgress(float progress) const;
+  void nativeImageResponseProgress(
+      float progress,
+      int64_t loaded,
+      int64_t total) const;
 
   /*
    * Platform-specific image loader will call this method with a completed image
@@ -50,7 +58,7 @@ class ImageResponseObserverCoordinator {
    * Platform-specific image loader will call this method in case of any
    * failures.
    */
-  void nativeImageResponseFailed() const;
+  void nativeImageResponseFailed(const ImageLoadError& loadError) const;
 
  private:
   /*
@@ -78,9 +86,25 @@ class ImageResponseObserverCoordinator {
   mutable std::shared_ptr<void> imageMetadata_;
 
   /*
+   * Cache image error Data.
+   * Mutable: protected by mutex_.
+   */
+  mutable std::shared_ptr<void> imageErrorData_;
+
+  /*
    * Observer and data mutex.
    */
   mutable std::mutex mutex_;
+
+  /*
+   * Function we can call to resume image request.
+   */
+  SharedFunction<> resumeRequest_;
+
+  /*
+   * Function we can call to cancel image request.
+   */
+  SharedFunction<> cancelRequest_;
 };
 
 } // namespace facebook::react

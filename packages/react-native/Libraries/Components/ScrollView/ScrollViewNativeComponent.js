@@ -134,7 +134,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           contentInsetAdjustmentBehavior: true,
           decelerationRate: true,
           endDraggingSensitivityMultiplier: true,
-          enableSyncOnScroll: true, // iOS-Fabric only.
           directionalLockEnabled: true,
           disableIntervalMomentum: true,
           indicatorStyle: true,
@@ -159,6 +158,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           snapToInterval: true,
           snapToOffsets: true,
           snapToStart: true,
+          verticalScrollIndicatorInsets: {
+            diff: require('../../Utilities/differ/insetsDiffer'),
+          },
           zoomScale: true,
           ...ConditionallyIgnoredEventHandlers({
             onScrollBeginDrag: true,

@@ -1024,6 +1024,10 @@ public class ObjectPropsPropsObjectProp {
   private boolean mBooleanProp;
   private float mFloatProp;
   private int mIntProp;
+  private @Nullable String mStringUserDefaultProp;
+  private boolean mBooleanUserDefaultProp;
+  private float mFloatUserDefaultProp;
+  private int mIntUserDefaultProp;
   private @Nullable String mStringEnumProp;
   private @Nullable Integer mIntEnumProp;
   private ObjectPropsPropsObjectPropObjectArrayProp mObjectArrayProp;
@@ -1045,6 +1049,22 @@ public class ObjectPropsPropsObjectProp {
   @DoNotStrip
   public int getIntProp() {
     return mIntProp;
+  }
+  @DoNotStrip
+  public @Nullable String getStringUserDefaultProp() {
+    return mStringUserDefaultProp;
+  }
+  @DoNotStrip
+  public boolean getBooleanUserDefaultProp() {
+    return mBooleanUserDefaultProp;
+  }
+  @DoNotStrip
+  public float getFloatUserDefaultProp() {
+    return mFloatUserDefaultProp;
+  }
+  @DoNotStrip
+  public int getIntUserDefaultProp() {
+    return mIntUserDefaultProp;
   }
   @DoNotStrip
   public @Nullable String getStringEnumProp() {

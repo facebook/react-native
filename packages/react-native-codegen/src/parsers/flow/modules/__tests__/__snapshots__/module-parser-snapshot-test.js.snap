@@ -2,6 +2,8 @@
 
 exports[`RN Codegen Flow Parser Fails with error message EMPTY_ENUM_NATIVE_MODULE 1`] = `"Module NativeSampleTurboModule: Failed parsing the enum SomeEnum in NativeSampleTurboModule with the error: Enums should have at least one member and member values can not be mixed- they all must be either blank, number, or string values."`;
 
+exports[`RN Codegen Flow Parser Fails with error message MAP_WITH_EXTRA_KEYS_NATIVE_MODULE 1`] = `"Module NativeSampleTurboModule: 'ObjectTypeAnnotation' cannot contain both an indexer and properties."`;
+
 exports[`RN Codegen Flow Parser Fails with error message MIXED_VALUES_ENUM_NATIVE_MODULE 1`] = `
 "Syntax error in path/NativeSampleTurboModule.js: cannot use string initializer in number enum (19:2)
   STR = 'str',
@@ -15,13 +17,19 @@ exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARR
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_ARRAY_WITH_NO_TYPE_FOR_CONTENT_AS_PARAM 1`] = `"Module NativeSampleTurboModule: Generic 'Array' must have type parameters."`;
 
-exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Module NativeSampleTurboModule: Flow interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's. Property 'sampleBool' refers to a 'BooleanTypeAnnotation'."`;
+exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_NOT_ONLY_METHODS 1`] = `"Module NativeSampleTurboModule: Flow interfaces extending TurboModule must only contain 'FunctionTypeAnnotation's or non nullable 'EventEmitter's. Property 'sampleBool' refers to a 'BooleanTypeAnnotation'."`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_PROMISE_WITHOUT_TYPE 1`] = `"Module NativeSampleTurboModule: Generic 'Promise' must have type parameters."`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_READ_ONLY_OBJECT_NO_TYPE_FOR_CONTENT 1`] = `"Module NativeSampleTurboModule: Generic '$ReadOnly' must have exactly one type parameter."`;
 
 exports[`RN Codegen Flow Parser Fails with error message NATIVE_MODULES_WITH_UNNAMED_PARAMS 1`] = `"Module NativeSampleTurboModule: All function parameters must be named."`;
+
+exports[`RN Codegen Flow Parser Fails with error message NUMERIC_VALUES_ENUM_NATIVE_MODULE 1`] = `
+"Syntax error in path/NativeSampleTurboModule.js: 'true', 'false', 'string', 'number' or 'bigint' expected in enum member initializer (20:17)
+  SUBFACTORIAL = !5,
+  ~~~~~~~~~~~~~~~^"
+`;
 
 exports[`RN Codegen Flow Parser Fails with error message TWO_NATIVE_EXTENDING_TURBO_MODULE 1`] = `"Module NativeSampleTurboModule: Every NativeModule spec file must declare exactly one NativeModule Flow interface. This file declares 2: 'Spec', and 'Spec2'. Please remove the extraneous Flow interface declarations."`;
 
@@ -35,7 +43,8 @@ exports[`RN Codegen Flow Parser can generate fixture ANDROID_ONLY_NATIVE_MODULE 
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': []
+        'eventEmitters': [],
+        'methods': []
       },
       'moduleName': 'SampleTurboModuleAndroid',
       'excludedPlatforms': [
@@ -80,6 +89,32 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             }
           ]
         },
+        'CustomDeviceEvent': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'type',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'level',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            },
+            {
+              'name': 'degree',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            }
+          ]
+        },
         'GraphNode': {
           'type': 'ObjectTypeAnnotation',
           'properties': [
@@ -112,11 +147,17 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
           'members': [
             {
               'name': 'SD',
-              'value': 'SD'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'SD'
+              }
             },
             {
               'name': 'HD',
-              'value': 'HD'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'HD'
+              }
             }
           ]
         },
@@ -126,27 +167,25 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
           'memberType': 'NumberTypeAnnotation',
           'members': [
             {
+              'name': 'Corrupted',
+              'value': {
+                'type': 'NumberLiteralTypeAnnotation',
+                'value': -1
+              }
+            },
+            {
               'name': 'Low',
-              'value': 720
+              'value': {
+                'type': 'NumberLiteralTypeAnnotation',
+                'value': 720
+              }
             },
             {
               'name': 'High',
-              'value': 1080
-            }
-          ]
-        },
-        'Floppy': {
-          'name': 'Floppy',
-          'type': 'EnumDeclarationWithMembers',
-          'memberType': 'NumberTypeAnnotation',
-          'members': [
-            {
-              'name': 'LowDensity',
-              'value': 0.72
-            },
-            {
-              'name': 'HighDensity',
-              'value': 1.44
+              'value': {
+                'type': 'NumberLiteralTypeAnnotation',
+                'value': 1080
+              }
             }
           ]
         },
@@ -157,21 +196,31 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
           'members': [
             {
               'name': 'One',
-              'value': 'one'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'one'
+              }
             },
             {
               'name': 'Two',
-              'value': 'two'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'two'
+              }
             },
             {
               'name': 'Three',
-              'value': 'three'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'three'
+              }
             }
           ]
         }
       },
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getCallback',
             'optional': false,
@@ -212,7 +261,9 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'StringTypeAnnotation'
+                'name': 'Quality',
+                'type': 'EnumDeclaration',
+                'memberType': 'StringTypeAnnotation'
               },
               'params': [
                 {
@@ -229,15 +280,6 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                   'optional': true,
                   'typeAnnotation': {
                     'name': 'Resolution',
-                    'type': 'EnumDeclaration',
-                    'memberType': 'NumberTypeAnnotation'
-                  }
-                },
-                {
-                  'name': 'floppy',
-                  'optional': false,
-                  'typeAnnotation': {
-                    'name': 'Floppy',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -390,8 +432,21 @@ exports[`RN Codegen Flow Parser can generate fixture CXX_ONLY_NATIVE_MODULE 1`] 
                   'name': 'chooseString',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'UnionTypeAnnotation',
-                    'memberType': 'StringTypeAnnotation'
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'One'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Two'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Three'
+                      }
+                    ]
                   }
                 }
               ]
@@ -417,7 +472,8 @@ exports[`RN Codegen Flow Parser can generate fixture EMPTY_NATIVE_MODULE 1`] = `
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': []
+        'eventEmitters': [],
+        'methods': []
       },
       'moduleName': 'SampleTurboModule'
     }
@@ -439,11 +495,17 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
           'members': [
             {
               'name': 'SD',
-              'value': 'SD'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'SD'
+              }
             },
             {
               'name': 'HD',
-              'value': 'HD'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'HD'
+              }
             }
           ]
         },
@@ -454,26 +516,17 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
           'members': [
             {
               'name': 'Low',
-              'value': 720
+              'value': {
+                'type': 'NumberLiteralTypeAnnotation',
+                'value': 720
+              }
             },
             {
               'name': 'High',
-              'value': 1080
-            }
-          ]
-        },
-        'Floppy': {
-          'name': 'Floppy',
-          'type': 'EnumDeclarationWithMembers',
-          'memberType': 'NumberTypeAnnotation',
-          'members': [
-            {
-              'name': 'LowDensity',
-              'value': 0.72
-            },
-            {
-              'name': 'HighDensity',
-              'value': 1.44
+              'value': {
+                'type': 'NumberLiteralTypeAnnotation',
+                'value': 1080
+              }
             }
           ]
         },
@@ -484,21 +537,31 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
           'members': [
             {
               'name': 'One',
-              'value': 'one'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'one'
+              }
             },
             {
               'name': 'Two',
-              'value': 'two'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'two'
+              }
             },
             {
               'name': 'Three',
-              'value': 'three'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'three'
+              }
             }
           ]
         }
       },
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getEnums',
             'optional': false,
@@ -522,15 +585,6 @@ exports[`RN Codegen Flow Parser can generate fixture IOS_ONLY_NATIVE_MODULE 1`] 
                   'optional': true,
                   'typeAnnotation': {
                     'name': 'Resolution',
-                    'type': 'EnumDeclaration',
-                    'memberType': 'NumberTypeAnnotation'
-                  }
-                },
-                {
-                  'name': 'floppy',
-                  'optional': false,
-                  'typeAnnotation': {
-                    'name': 'Floppy',
                     'type': 'EnumDeclaration',
                     'memberType': 'NumberTypeAnnotation'
                   }
@@ -600,7 +654,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
       },
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getNumber',
             'optional': false,
@@ -706,6 +761,26 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ALIASES 
             }
           },
           {
+            'name': 'getStringFromPureAlias',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'a',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'TypeAliasTypeAnnotation',
+                    'name': 'ObjectAlias'
+                  }
+                }
+              ]
+            }
+          },
+          {
             'name': 'getStringFromReadOnlyAlias',
             'optional': false,
             'typeAnnotation': {
@@ -764,7 +839,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -806,21 +882,28 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ARRAY_WI
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'ArrayTypeAnnotation'
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'AnyTypeAnnotation'
+                }
               },
               'params': [
                 {
                   'name': 'arg',
                   'optional': false,
                   'typeAnnotation': {
-                    'type': 'ArrayTypeAnnotation'
+                    'type': 'ArrayTypeAnnotation',
+                    'elementType': {
+                      'type': 'AnyTypeAnnotation'
+                    }
                   }
                 }
               ]
@@ -842,7 +925,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_AR
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -909,7 +993,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'passBool',
             'optional': true,
@@ -943,6 +1028,26 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
                   'optional': false,
                   'typeAnnotation': {
                     'type': 'NumberTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'passNumberLiteral',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'NumberLiteralTypeAnnotation',
+                    'value': 4
                   }
                 }
               ]
@@ -985,6 +1090,26 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_BASIC_PA
                 }
               ]
             }
+          },
+          {
+            'name': 'passStringLiteral',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'arg',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'A String Literal'
+                  }
+                }
+              ]
+            }
           }
         ]
       },
@@ -1002,7 +1127,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_CALLBACK
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getValueWithCallback',
             'optional': false,
@@ -1063,7 +1189,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getArray',
             'optional': false,
@@ -1123,7 +1250,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getObject',
             'optional': false,
@@ -1336,7 +1464,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getConstants',
             'optional': false,
@@ -1433,6 +1562,132 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_COMPLEX_
 }"
 `;
 
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_EVENT_EMITTERS 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {
+        'ObjectStruct': {
+          'type': 'ObjectTypeAnnotation',
+          'properties': [
+            {
+              'name': 'a',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            },
+            {
+              'name': 'b',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            },
+            {
+              'name': 'c',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'NullableTypeAnnotation',
+                'typeAnnotation': {
+                  'type': 'StringTypeAnnotation'
+                }
+              }
+            }
+          ]
+        }
+      },
+      'enumMap': {},
+      'spec': {
+        'eventEmitters': [
+          {
+            'name': 'onEvent1',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              }
+            }
+          },
+          {
+            'name': 'onEvent2',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'StringTypeAnnotation'
+              }
+            }
+          },
+          {
+            'name': 'onEvent3',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'NumberTypeAnnotation'
+              }
+            }
+          },
+          {
+            'name': 'onEvent4',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'BooleanTypeAnnotation'
+              }
+            }
+          },
+          {
+            'name': 'onEvent5',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'TypeAliasTypeAnnotation',
+                'name': 'ObjectStruct'
+              }
+            }
+          },
+          {
+            'name': 'onEvent6',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'TypeAliasTypeAnnotation',
+                  'name': 'ObjectStruct'
+                }
+              }
+            }
+          },
+          {
+            'name': 'onEvent7',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'EventEmitterTypeAnnotation',
+              'typeAnnotation': {
+                'type': 'GenericObjectTypeAnnotation',
+                'dictionaryValueType': {
+                  'type': 'StringTypeAnnotation'
+                }
+              }
+            }
+          }
+        ],
+        'methods': []
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
 exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AND_INT32 1`] = `
 "{
   'modules': {
@@ -1441,7 +1696,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_FLOAT_AN
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getInt',
             'optional': false,
@@ -1530,7 +1786,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NESTED_A
       },
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'foo1',
             'optional': false,
@@ -1588,7 +1845,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_NULLABLE
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'voidFunc',
             'optional': false,
@@ -1640,7 +1898,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_OBJECT_W
       },
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getConstants',
             'optional': false,
@@ -1737,7 +1996,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS
       },
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getSomeObj',
             'optional': false,
@@ -1849,7 +2109,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PARTIALS
       },
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getPartialPartial',
             'optional': false,
@@ -1938,7 +2199,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_PROMISE 
       },
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getValueWithPromise',
             'optional': false,
@@ -1998,7 +2260,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_ROOT_TAG
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getRootTag',
             'optional': false,
@@ -2036,7 +2299,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_SIMPLE_O
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getObject',
             'optional': false,
@@ -2072,7 +2336,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION 1`
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getUnion',
             'optional': false,
@@ -2111,8 +2376,153 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION 1`
                   'name': 'chooseString',
                   'optional': false,
                   'typeAnnotation': {
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'One'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Two'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'Three'
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      'moduleName': 'SampleTurboModule'
+    }
+  }
+}"
+`;
+
+exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNION_RETURN_TYPES 1`] = `
+"{
+  'modules': {
+    'NativeSampleTurboModule': {
+      'type': 'NativeModule',
+      'aliasMap': {},
+      'enumMap': {},
+      'spec': {
+        'eventEmitters': [],
+        'methods': [
+          {
+            'name': 'getStringUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'StringLiteralUnionTypeAnnotation',
+                'types': [
+                  {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'light'
+                  },
+                  {
+                    'type': 'StringLiteralTypeAnnotation',
+                    'value': 'dark'
+                  }
+                ]
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'setStringUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'strings',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'StringLiteralUnionTypeAnnotation',
+                    'types': [
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'light'
+                      },
+                      {
+                        'type': 'StringLiteralTypeAnnotation',
+                        'value': 'dark'
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getNumberUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'NumberTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'setNumberUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'numbers',
+                  'optional': false,
+                  'typeAnnotation': {
                     'type': 'UnionTypeAnnotation',
-                    'memberType': 'StringTypeAnnotation'
+                    'memberType': 'NumberTypeAnnotation'
+                  }
+                }
+              ]
+            }
+          },
+          {
+            'name': 'getObjectUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'UnionTypeAnnotation',
+                'memberType': 'ObjectTypeAnnotation'
+              },
+              'params': []
+            }
+          },
+          {
+            'name': 'setObjectUnion',
+            'optional': false,
+            'typeAnnotation': {
+              'type': 'FunctionTypeAnnotation',
+              'returnTypeAnnotation': {
+                'type': 'VoidTypeAnnotation'
+              },
+              'params': [
+                {
+                  'name': 'objects',
+                  'optional': false,
+                  'typeAnnotation': {
+                    'type': 'UnionTypeAnnotation',
+                    'memberType': 'ObjectTypeAnnotation'
                   }
                 }
               ]
@@ -2134,7 +2544,8 @@ exports[`RN Codegen Flow Parser can generate fixture NATIVE_MODULE_WITH_UNSAFE_O
       'aliasMap': {},
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'getUnsafeObject',
             'optional': false,
@@ -2199,8 +2610,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
               'name': 'type',
               'optional': false,
               'typeAnnotation': {
-                'type': 'UnionTypeAnnotation',
-                'memberType': 'StringTypeAnnotation'
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'A_String_Literal'
               }
             }
           ]
@@ -2208,7 +2619,8 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
       },
       'enumMap': {},
       'spec': {
-        'properties': [
+        'eventEmitters': [],
+        'methods': [
           {
             'name': 'returnStringArray',
             'optional': false,
@@ -2249,7 +2661,10 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'PromiseTypeAnnotation'
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'VoidTypeAnnotation'
+                }
               },
               'params': []
             }
@@ -2260,7 +2675,10 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'PromiseTypeAnnotation'
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'VoidTypeAnnotation'
+                }
               },
               'params': []
             }
@@ -2271,7 +2689,10 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
             'typeAnnotation': {
               'type': 'FunctionTypeAnnotation',
               'returnTypeAnnotation': {
-                'type': 'PromiseTypeAnnotation'
+                'type': 'PromiseTypeAnnotation',
+                'elementType': {
+                  'type': 'VoidTypeAnnotation'
+                }
               },
               'params': []
             }
@@ -2302,8 +2723,25 @@ exports[`RN Codegen Flow Parser can generate fixture PROMISE_WITH_COMMONLY_USED_
               'returnTypeAnnotation': {
                 'type': 'PromiseTypeAnnotation',
                 'elementType': {
-                  'type': 'UnionTypeAnnotation',
-                  'memberType': 'StringTypeAnnotation'
+                  'type': 'StringLiteralUnionTypeAnnotation',
+                  'types': [
+                    {
+                      'type': 'StringLiteralTypeAnnotation',
+                      'value': 'Spring'
+                    },
+                    {
+                      'type': 'StringLiteralTypeAnnotation',
+                      'value': 'Summer'
+                    },
+                    {
+                      'type': 'StringLiteralTypeAnnotation',
+                      'value': 'Autumn'
+                    },
+                    {
+                      'type': 'StringLiteralTypeAnnotation',
+                      'value': 'Winter'
+                    }
+                  ]
                 }
               },
               'params': []

@@ -8,9 +8,9 @@
 package com.facebook.react.fabric.events;
 
 import android.annotation.SuppressLint;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.facebook.jni.HybridData;
+import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.jni.HybridClassBase;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.WritableMap;
@@ -21,25 +21,23 @@ import com.facebook.react.uimanager.events.EventCategoryDef;
  * This class holds reference to the C++ EventEmitter object. Instances of this class are created in
  * FabricMountingManager.cpp, where the pointer to the C++ event emitter is set.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 @SuppressLint("MissingNativeLoadLibrary")
-public class EventEmitterWrapper {
-
+public class EventEmitterWrapper extends HybridClassBase {
   static {
     FabricSoLoader.staticInit();
   }
 
-  @DoNotStrip private final HybridData mHybridData;
-
   @DoNotStrip
-  private EventEmitterWrapper(HybridData hybridData) {
-    mHybridData = hybridData;
-  }
+  private EventEmitterWrapper() {}
 
   private native void dispatchEvent(
-      @NonNull String eventName, @NonNull NativeMap params, @EventCategoryDef int category);
+      String eventName, @Nullable NativeMap params, @EventCategoryDef int category);
 
-  private native void dispatchUniqueEvent(@NonNull String eventName, @NonNull NativeMap params);
+  private native void dispatchEventSynchronously(String eventName, @Nullable NativeMap params);
+
+  private native void dispatchUniqueEvent(String eventName, @Nullable NativeMap params);
 
   /**
    * Invokes the execution of the C++ EventEmitter.
@@ -48,13 +46,19 @@ public class EventEmitterWrapper {
    * @param params {@link WritableMap} payload of the event
    */
   public synchronized void dispatch(
-      @NonNull String eventName,
-      @Nullable WritableMap params,
-      @EventCategoryDef int eventCategory) {
+      String eventName, @Nullable WritableMap params, @EventCategoryDef int eventCategory) {
     if (!isValid()) {
       return;
     }
     dispatchEvent(eventName, (NativeMap) params, eventCategory);
+  }
+
+  public synchronized void dispatchEventSynchronously(
+      String eventName, @Nullable WritableMap params) {
+    if (!isValid()) {
+      return;
+    }
+    dispatchEventSynchronously(eventName, (NativeMap) params);
   }
 
   /**
@@ -64,7 +68,7 @@ public class EventEmitterWrapper {
    * @param eventName {@link String} name of the event to execute.
    * @param params {@link WritableMap} payload of the event
    */
-  public synchronized void dispatchUnique(@NonNull String eventName, @Nullable WritableMap params) {
+  public synchronized void dispatchUnique(String eventName, @Nullable WritableMap params) {
     if (!isValid()) {
       return;
     }
@@ -72,15 +76,8 @@ public class EventEmitterWrapper {
   }
 
   public synchronized void destroy() {
-    if (mHybridData != null) {
-      mHybridData.resetNative();
+    if (isValid()) {
+      resetNative();
     }
-  }
-
-  private boolean isValid() {
-    if (mHybridData != null) {
-      return mHybridData.isValid();
-    }
-    return false;
   }
 }

@@ -13,6 +13,8 @@ import type {ConfigT} from 'metro-config';
 
 import {getDefaultConfig as getBaseConfig, mergeConfig} from 'metro-config';
 
+export type {MetroConfig} from 'metro-config';
+
 const INTERNAL_CALLSITES_REGEX = new RegExp(
   [
     '/Libraries/BatchedBridge/MessageQueue\\.js$',
@@ -25,6 +27,7 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/Libraries/vendor/.+\\.js$',
     '/Libraries/WebSocket/.+\\.js$',
     '/Libraries/YellowBox/.+\\.js$',
+    '/src/private/renderer/errorhandling/.+\\.js$',
     '/metro-runtime/.+\\.js$',
     '/node_modules/@babel/runtime/.+\\.js$',
     '/node_modules/@react-native/js-polyfills/.+\\.js$',
@@ -35,7 +38,10 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/node_modules/react-refresh/.+\\.js$',
     '/node_modules/scheduler/.+\\.js$',
     '^\\[native code\\]$',
-  ].join('|'),
+  ]
+    // Make patterns work with both Windows and POSIX paths.
+    .map(pathPattern => pathPattern.replaceAll('/', '[/\\\\]'))
+    .join('|'),
 );
 
 export {mergeConfig} from 'metro-config';
@@ -55,7 +61,6 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
       getModulesRunBeforeMainModule: () => [
         require.resolve('react-native/Libraries/Core/InitializeCore'),
       ],
-      // $FlowFixMe[untyped-import]
       getPolyfills: () => require('@react-native/js-polyfills')(),
       isThirdPartyModule({path: modulePath}: $ReadOnly<{path: string, ...}>) {
         return (

@@ -23,6 +23,8 @@ import type {
   ____ViewStyleProp_Internal,
 } from './StyleSheetTypes';
 
+import composeStyles from '../../src/private/styles/composeStyles';
+
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const PixelRatio = require('../Utilities/PixelRatio').default;
 const flatten = require('./flattenStyle');
@@ -168,7 +170,13 @@ if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
-const absoluteFill = {
+const absoluteFill: {
+  +bottom: 0,
+  +left: 0,
+  +position: 'absolute',
+  +right: 0,
+  +top: 0,
+} = {
   position: 'absolute',
   left: 0,
   right: 0,
@@ -268,16 +276,7 @@ module.exports = {
    * array, saving allocations and maintaining reference equality for
    * PureComponent checks.
    */
-  compose<T: DangerouslyImpreciseStyleProp>(
-    style1: ?T,
-    style2: ?T,
-  ): ?T | $ReadOnlyArray<T> {
-    if (style1 != null && style2 != null) {
-      return ([style1, style2]: $ReadOnlyArray<T>);
-    } else {
-      return style1 != null ? style1 : style2;
-    }
-  },
+  compose: composeStyles,
 
   /**
    * Flattens an array of style objects, into one aggregated style object.

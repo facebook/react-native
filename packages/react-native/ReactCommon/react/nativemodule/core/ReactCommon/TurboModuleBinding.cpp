@@ -7,7 +7,7 @@
 
 #include "TurboModuleBinding.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/utils/jsi-utils.h>
 #include <stdexcept>
 #include <string>
@@ -17,11 +17,25 @@ using namespace facebook;
 namespace facebook::react {
 
 class BridgelessNativeModuleProxy : public jsi::HostObject {
-  std::unique_ptr<TurboModuleBinding> binding_;
+  TurboModuleBinding turboBinding_;
+  std::unique_ptr<TurboModuleBinding> legacyBinding_;
 
  public:
-  BridgelessNativeModuleProxy(std::unique_ptr<TurboModuleBinding> binding)
-      : binding_(std::move(binding)) {}
+  BridgelessNativeModuleProxy(
+      jsi::Runtime& runtime,
+      TurboModuleProviderFunctionType&& moduleProvider,
+      TurboModuleProviderFunctionType&& legacyModuleProvider,
+      std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection)
+      : turboBinding_(
+            runtime,
+            std::move(moduleProvider),
+            longLivedObjectCollection),
+        legacyBinding_(
+            legacyModuleProvider ? std::make_unique<TurboModuleBinding>(
+                                       runtime,
+                                       std::move(legacyModuleProvider),
+                                       longLivedObjectCollection)
+                                 : nullptr) {}
 
   jsi::Value get(jsi::Runtime& runtime, const jsi::PropNameID& name) override {
     /**
@@ -42,14 +56,19 @@ class BridgelessNativeModuleProxy : public jsi::HostObject {
       return jsi::Value(false);
     }
 
-    if (binding_) {
-      return binding_->getModule(runtime, moduleName);
+    auto turboModule = turboBinding_.getModule(runtime, moduleName);
+    if (turboModule.isObject()) {
+      return turboModule;
     }
 
-    throw jsi::JSError(
-        runtime,
-        "Tried to access NativeModule \"" + name.utf8(runtime) +
-            "\" from the bridge. This isn't allowed in Bridgeless mode.");
+    if (legacyBinding_) {
+      auto legacyModule = legacyBinding_->getModule(runtime, moduleName);
+      if (legacyModule.isObject()) {
+        return legacyModule;
+      }
+    }
+
+    return jsi::Value::null();
   }
 
   void set(
@@ -79,51 +98,52 @@ void TurboModuleBinding::install(
     TurboModuleProviderFunctionType&& moduleProvider,
     TurboModuleProviderFunctionType&& legacyModuleProvider,
     std::shared_ptr<LongLivedObjectCollection> longLivedObjectCollection) {
-  runtime.global().setProperty(
-      runtime,
-      "__turboModuleProxy",
-      jsi::Function::createFromHostFunction(
-          runtime,
-          jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
-          1,
-          [binding = TurboModuleBinding(
-               runtime, std::move(moduleProvider), longLivedObjectCollection)](
-              jsi::Runtime& rt,
-              const jsi::Value& thisVal,
-              const jsi::Value* args,
-              size_t count) {
-            if (count < 1) {
-              throw std::invalid_argument(
-                  "__turboModuleProxy must be called with at least 1 argument");
-            }
-            std::string moduleName = args[0].getString(rt).utf8(rt);
-            return binding.getModule(rt, moduleName);
-          }));
+  // TODO(T208105802): We can get this information from the native side!
+  auto isBridgeless = runtime.global().hasProperty(runtime, "RN$Bridgeless");
 
-  if (runtime.global().hasProperty(runtime, "RN$Bridgeless")) {
-    bool rnTurboInterop = legacyModuleProvider != nullptr;
-    auto turboModuleBinding = legacyModuleProvider
-        ? std::make_unique<TurboModuleBinding>(
-              runtime,
-              std::move(legacyModuleProvider),
-              longLivedObjectCollection)
-        : nullptr;
-    auto nativeModuleProxy = std::make_shared<BridgelessNativeModuleProxy>(
-        std::move(turboModuleBinding));
-    defineReadOnlyGlobal(
-        runtime, "RN$TurboInterop", jsi::Value(rnTurboInterop));
-    defineReadOnlyGlobal(
+  if (!isBridgeless) {
+    runtime.global().setProperty(
         runtime,
-        "nativeModuleProxy",
-        jsi::Object::createFromHostObject(runtime, nativeModuleProxy));
+        "__turboModuleProxy",
+        jsi::Function::createFromHostFunction(
+            runtime,
+            jsi::PropNameID::forAscii(runtime, "__turboModuleProxy"),
+            1,
+            [binding = TurboModuleBinding(
+                 runtime,
+                 std::move(moduleProvider),
+                 longLivedObjectCollection)](
+                jsi::Runtime& rt,
+                const jsi::Value& /*thisVal*/,
+                const jsi::Value* args,
+                size_t count) {
+              if (count < 1) {
+                throw std::invalid_argument(
+                    "__turboModuleProxy must be called with at least 1 argument");
+              }
+              std::string moduleName = args[0].getString(rt).utf8(rt);
+              return binding.getModule(rt, moduleName);
+            }));
+    return;
   }
+
+  defineReadOnlyGlobal(runtime, "RN$UnifiedNativeModuleProxy", true);
+  defineReadOnlyGlobal(
+      runtime,
+      "nativeModuleProxy",
+      jsi::Object::createFromHostObject(
+          runtime,
+          std::make_shared<BridgelessNativeModuleProxy>(
+              runtime,
+              std::move(moduleProvider),
+              std::move(legacyModuleProvider),
+              longLivedObjectCollection)));
 }
 
 TurboModuleBinding::~TurboModuleBinding() {
+  LongLivedObjectCollection::get(runtime_).clear();
   if (longLivedObjectCollection_) {
     longLivedObjectCollection_->clear();
-  } else {
-    LongLivedObjectCollection::get(runtime_).clear();
   }
 }
 
@@ -132,8 +152,7 @@ jsi::Value TurboModuleBinding::getModule(
     const std::string& moduleName) const {
   std::shared_ptr<TurboModule> module;
   {
-    SystraceSection s(
-        "TurboModuleBinding::moduleProvider", "module", moduleName);
+    TraceSection s("TurboModuleBinding::moduleProvider", "module", moduleName);
     module = moduleProvider_(moduleName);
   }
   if (module) {

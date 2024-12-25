@@ -18,9 +18,10 @@ export type TargetCapabilityFlags = $ReadOnly<{
    * The target supports a stable page representation across reloads.
    *
    * In the proxy, this disables legacy page reload emulation and the
-   * additional '(Experimental)' target in `/json/list`.
+   * additional 'React Native Experimental' target in `/json/list`.
    *
-   * In the launch flow, this allows targets to be matched directly by `appId`.
+   * In the launch flow, this allows targets to be matched directly by
+   * `logicalDeviceId`.
    */
   nativePageReloads?: boolean,
 
@@ -53,12 +54,18 @@ export type TargetCapabilityFlags = $ReadOnly<{
 export type PageFromDevice = $ReadOnly<{
   id: string,
   title: string,
-  vm: string,
+  /** Sent from modern targets only */
+  description?: string,
+  /** @deprecated This is sent from legacy targets only */
+  vm?: string,
   app: string,
   capabilities?: TargetCapabilityFlags,
 }>;
 
-export type Page = Required<PageFromDevice>;
+export type Page = $ReadOnly<{
+  ...PageFromDevice,
+  capabilities: $NonMaybeType<PageFromDevice['capabilities']>,
+}>;
 
 // Chrome Debugger Protocol message/event passed between device and debugger.
 export type WrappedEvent = $ReadOnly<{
@@ -108,15 +115,20 @@ export type MessageToDevice =
 // Page description object that is sent in response to /json HTTP request from debugger.
 export type PageDescription = $ReadOnly<{
   id: string,
-  description: string,
   title: string,
-  faviconUrl: string,
-  devtoolsFrontendUrl: string,
+  appId: string,
+  description: string,
   type: string,
+  devtoolsFrontendUrl: string,
   webSocketDebuggerUrl: string,
+
+  // React Native specific fields
+  /** @deprecated Prefer `title` */
   deviceName: string,
-  vm: string,
-  // Metadata specific to React Native
+  /** @deprecated This is sent from legacy targets only */
+  vm?: string,
+
+  // React Native specific metadata
   reactNative: $ReadOnly<{
     logicalDeviceId: string,
     capabilities: Page['capabilities'],
@@ -139,3 +151,10 @@ export type JSONSerializable =
   | null
   | $ReadOnlyArray<JSONSerializable>
   | {+[string]: JSONSerializable};
+
+export type DeepReadOnly<T> =
+  T extends $ReadOnlyArray<infer V>
+    ? $ReadOnlyArray<DeepReadOnly<V>>
+    : T extends {...}
+      ? {+[K in keyof T]: DeepReadOnly<T[K]>}
+      : T;

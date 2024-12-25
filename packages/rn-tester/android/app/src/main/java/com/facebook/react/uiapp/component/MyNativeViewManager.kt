@@ -8,8 +8,8 @@
 package com.facebook.react.uiapp.component
 
 import android.graphics.Color
+import androidx.annotation.ColorInt
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -69,13 +69,17 @@ internal class MyNativeViewManager :
     view.emitOnArrayChangedEvent(values)
   }
 
+  override fun setBackgroundColor(view: MyNativeView, @ColorInt backgroundColor: Int) {
+    view.setBackgroundColor(backgroundColor)
+  }
+
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> =
-      MapBuilder.builder<String, Any>()
-          .put(
-              "topIntArrayChanged",
-              MapBuilder.of<String, Any>(
-                  "phasedRegistrationNames",
-                  MapBuilder.of(
-                      "bubbled", "onIntArrayChanged", "captured", "onIntArrayChangedCapture")))
-          .build()
+      mapOf(
+          "topIntArrayChanged" to
+              mapOf(
+                  "phasedRegistrationNames" to
+                      mapOf(
+                          "bubbled" to "onIntArrayChanged",
+                          "captured" to "onIntArrayChangedCapture",
+                      )))
 }

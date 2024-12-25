@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<94f7c3d51e33d757bfed300fe30706a1>>
+ * @generated SignedSource<<c242ec280490cd3a44a8f304782e2b37>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 #include "NativeReactNativeFeatureFlags.h"
@@ -42,39 +42,131 @@ bool NativeReactNativeFeatureFlags::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
-bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
+bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
+  // This flag is configured with `skipNativeAPI: true`.
+  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
+  return false;
 }
 
-bool NativeReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager(
+bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::destroyFabricSurfacesInReactInstanceManager();
+  return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
 }
 
-bool NativeReactNativeFeatureFlags::enableBackgroundExecutor(
+bool NativeReactNativeFeatureFlags::disableEventLoopOnBridgeless(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableBackgroundExecutor();
+  return ReactNativeFeatureFlags::disableEventLoopOnBridgeless();
 }
 
-bool NativeReactNativeFeatureFlags::enableCleanTextInputYogaNode(
+bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableCleanTextInputYogaNode();
+  return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
 }
 
-bool NativeReactNativeFeatureFlags::enableCustomDrawOrderFabric(
+bool NativeReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableCustomDrawOrderFabric();
+  return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
-bool NativeReactNativeFeatureFlags::enableMicrotasks(
+bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableMicrotasks();
+  return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
 }
 
-bool NativeReactNativeFeatureFlags::enableSpannableBuildingUnification(
+bool NativeReactNativeFeatureFlags::enableAndroidLineHeightCentering(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableSpannableBuildingUnification();
+  return ReactNativeFeatureFlags::enableAndroidLineHeightCentering();
+}
+
+bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableBridgelessArchitecture();
+}
+
+bool NativeReactNativeFeatureFlags::enableCppPropsIteratorSetter(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
+}
+
+bool NativeReactNativeFeatureFlags::enableDeletionOfUnmountedViews(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableDeletionOfUnmountedViews();
+}
+
+bool NativeReactNativeFeatureFlags::enableEagerRootViewAttachment(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
+}
+
+bool NativeReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableFabricLogs(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableFabricLogs();
+}
+
+bool NativeReactNativeFeatureFlags::enableFabricRenderer(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableFabricRenderer();
+}
+
+bool NativeReactNativeFeatureFlags::enableFixForViewCommandRace(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableFixForViewCommandRace();
+}
+
+bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
+}
+
+bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
+}
+
+bool NativeReactNativeFeatureFlags::enableImagePrefetchingAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
+}
+
+bool NativeReactNativeFeatureFlags::enableLongTaskAPI(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableLongTaskAPI();
+}
+
+bool NativeReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
+}
+
+bool NativeReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableReportEventPaintTime(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableReportEventPaintTime();
 }
 
 bool NativeReactNativeFeatureFlags::enableSynchronousStateUpdates(
@@ -87,29 +179,74 @@ bool NativeReactNativeFeatureFlags::enableUIConsistency(
   return ReactNativeFeatureFlags::enableUIConsistency();
 }
 
-bool NativeReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid(
+bool NativeReactNativeFeatureFlags::enableViewRecycling(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid();
+  return ReactNativeFeatureFlags::enableViewRecycling();
 }
 
-bool NativeReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection(
+bool NativeReactNativeFeatureFlags::excludeYogaFromRawProps(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::inspectorEnableCxxInspectorPackagerConnection();
+  return ReactNativeFeatureFlags::excludeYogaFromRawProps();
 }
 
-bool NativeReactNativeFeatureFlags::inspectorEnableModernCDPRegistry(
+bool NativeReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::inspectorEnableModernCDPRegistry();
+  return ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag();
 }
 
-bool NativeReactNativeFeatureFlags::preventDoubleTextMeasure(
+bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::preventDoubleTextMeasure();
+  return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
 }
 
-bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
+bool NativeReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useModernRuntimeScheduler();
+  return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::fuseboxEnabledDebug(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fuseboxEnabledDebug();
+}
+
+bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fuseboxEnabledRelease();
+}
+
+bool NativeReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::lazyAnimationCallbacks();
+}
+
+bool NativeReactNativeFeatureFlags::loadVectorDrawablesOnImages(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
+}
+
+bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
+}
+
+bool NativeReactNativeFeatureFlags::useFabricInterop(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useFabricInterop();
+}
+
+bool NativeReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
 }
 
 bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
@@ -117,9 +254,34 @@ bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
 }
 
-bool NativeReactNativeFeatureFlags::useStateAlignmentMechanism(
+bool NativeReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useStateAlignmentMechanism();
+  return ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::useRawPropsJsiValue(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useRawPropsJsiValue();
+}
+
+bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate();
+}
+
+bool NativeReactNativeFeatureFlags::useTurboModuleInterop(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useTurboModuleInterop();
+}
+
+bool NativeReactNativeFeatureFlags::useTurboModules(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useTurboModules();
 }
 
 } // namespace facebook::react

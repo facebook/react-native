@@ -7,9 +7,10 @@
 
 package com.facebook.react.devsupport;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.Settings;
+import android.provider.Settings.Secure;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
@@ -26,7 +27,6 @@ import com.facebook.react.packagerconnection.NotificationOnlyHandler;
 import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 import com.facebook.react.packagerconnection.ReconnectingWebSocket.ConnectionCallback;
 import com.facebook.react.packagerconnection.RequestHandler;
-import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
 import com.facebook.react.util.RNLog;
 import java.io.File;
@@ -75,7 +75,8 @@ public class DevServerHelper {
 
     void onPackagerDevMenuCommand();
 
-    void onCaptureHeapCommand(final Responder responder);
+    @Deprecated(forRemoval = true)
+    default void onCaptureHeapCommand(final Responder responder) {}
 
     // Allow apps to provide listeners for custom packager commands.
     @Nullable
@@ -104,6 +105,7 @@ public class DevServerHelper {
   private final OkHttpClient mClient;
   private final BundleDownloader mBundleDownloader;
   private final PackagerStatusCheck mPackagerStatusCheck;
+  private final Context mApplicationContext;
   private final String mPackageName;
 
   private @Nullable JSPackagerClient mPackagerClient;
@@ -111,7 +113,7 @@ public class DevServerHelper {
 
   public DevServerHelper(
       DeveloperSettings developerSettings,
-      String packageName,
+      Context applicationContext,
       PackagerConnectionSettings packagerConnectionSettings) {
     mSettings = developerSettings;
     mPackagerConnectionSettings = packagerConnectionSettings;
@@ -123,7 +125,8 @@ public class DevServerHelper {
             .build();
     mBundleDownloader = new BundleDownloader(mClient);
     mPackagerStatusCheck = new PackagerStatusCheck(mClient);
-    mPackageName = packageName;
+    mApplicationContext = applicationContext;
+    mPackageName = applicationContext.getPackageName();
   }
 
   public void openPackagerConnection(
@@ -150,14 +153,6 @@ public class DevServerHelper {
               @Override
               public void onNotification(@Nullable Object params) {
                 commandListener.onPackagerDevMenuCommand();
-              }
-            });
-        handlers.put(
-            "captureHeap",
-            new RequestOnlyHandler() {
-              @Override
-              public void onRequest(@Nullable Object params, Responder responder) {
-                commandListener.onCaptureHeapCommand(responder);
               }
             });
         Map<String, RequestHandler> customHandlers = commandListener.customCommandHandlers();
@@ -210,9 +205,13 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        if (InspectorFlags.getEnableCxxInspectorPackagerConnection()) {
+        if (InspectorFlags.getFuseboxEnabled()) {
+          Map<String, String> metadata =
+              AndroidInfoHelpers.getInspectorHostMetadata(mApplicationContext);
+
           mInspectorPackagerConnection =
-              new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
+              new CxxInspectorPackagerConnection(
+                  getInspectorDeviceUrl(), metadata.get("deviceName"), mPackageName);
         } else {
           mInspectorPackagerConnection =
               new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
@@ -301,7 +300,8 @@ public class DevServerHelper {
     // * randomly generated when the user first sets up the device and should remain constant for
     // the lifetime of the user's device (API level < 26).
     // [Source: Android docs]
-    String androidId = Settings.Secure.ANDROID_ID;
+    String androidId =
+        Secure.getString(mApplicationContext.getContentResolver(), Secure.ANDROID_ID);
 
     String rawDeviceId =
         String.format(
@@ -309,7 +309,7 @@ public class DevServerHelper {
             "android-%s-%s-%s",
             packageName,
             androidId,
-            InspectorFlags.getEnableModernCDPRegistry() ? "fusebox" : "legacy");
+            InspectorFlags.getFuseboxEnabled() ? "fusebox" : "legacy");
 
     return getSHA256(rawDeviceId);
   }
@@ -317,11 +317,12 @@ public class DevServerHelper {
   private String getInspectorDeviceUrl() {
     return String.format(
         Locale.US,
-        "http://%s/inspector/device?name=%s&app=%s&device=%s",
+        "http://%s/inspector/device?name=%s&app=%s&device=%s&profiling=%b",
         mPackagerConnectionSettings.getDebugServerHost(),
         Uri.encode(AndroidInfoHelpers.getFriendlyDeviceName()),
         Uri.encode(mPackageName),
-        Uri.encode(getInspectorDeviceId()));
+        Uri.encode(getInspectorDeviceId()),
+        InspectorFlags.getIsProfilingBuild());
   }
 
   public void downloadBundleFromURL(
@@ -381,18 +382,28 @@ public class DevServerHelper {
   private String createBundleURL(
       String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
     boolean dev = getDevMode();
+    StringBuilder additionalOptionsBuilder = new StringBuilder();
+    for (Map.Entry<String, String> entry :
+        mPackagerConnectionSettings.getAdditionalOptionsForPackager().entrySet()) {
+      if (entry.getValue().length() == 0) {
+        continue;
+      }
+      additionalOptionsBuilder.append("&" + entry.getKey() + "=" + Uri.encode(entry.getValue()));
+    }
     return String.format(
-        Locale.US,
-        "http://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
-        host,
-        mainModuleID,
-        type.typeID(),
-        dev, // dev
-        dev, // lazy
-        getJSMinifyMode(),
-        mPackageName,
-        modulesOnly ? "true" : "false",
-        runModule ? "true" : "false");
+            Locale.US,
+            "http://%s/%s.%s?platform=android&dev=%s&lazy=%s&minify=%s&app=%s&modulesOnly=%s&runModule=%s",
+            host,
+            mainModuleID,
+            type.typeID(),
+            dev, // dev
+            dev, // lazy
+            getJSMinifyMode(),
+            mPackageName,
+            modulesOnly ? "true" : "false",
+            runModule ? "true" : "false")
+        + (InspectorFlags.getFuseboxEnabled() ? "&excludeSource=true&sourcePaths=url-server" : "")
+        + additionalOptionsBuilder.toString();
   }
 
   private String createBundleURL(String mainModuleID, BundleType type) {
@@ -502,9 +513,8 @@ public class DevServerHelper {
     String requestUrl =
         String.format(
             Locale.US,
-            "http://%s/open-debugger?appId=%s&device=%s",
+            "http://%s/open-debugger?device=%s",
             mPackagerConnectionSettings.getDebugServerHost(),
-            Uri.encode(mPackageName),
             Uri.encode(getInspectorDeviceId()));
     Request request =
         new Request.Builder().url(requestUrl).method("POST", RequestBody.create(null, "")).build();

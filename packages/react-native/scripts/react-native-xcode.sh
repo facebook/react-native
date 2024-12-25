@@ -90,7 +90,7 @@ fi
 
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
-[ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/cli.js"
+[ -z "$CLI_PATH" ] && CLI_PATH="$REACT_NATIVE_DIR/scripts/bundle.js"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
 
@@ -102,7 +102,10 @@ else
   CONFIG_ARG="--config $BUNDLE_CONFIG"
 fi
 
-BUNDLE_FILE="$CONFIGURATION_BUILD_DIR/main.jsbundle"
+if [[ -z "$BUNDLE_NAME" ]]; then
+  BUNDLE_NAME="main"
+fi
+BUNDLE_FILE="$CONFIGURATION_BUILD_DIR/$BUNDLE_NAME.jsbundle"
 
 EXTRA_ARGS=()
 
@@ -139,6 +142,16 @@ if [[ $USE_HERMES != false && $DEV == false ]]; then
   EXTRA_ARGS+=("--minify" "false")
 fi
 
+# Allow opting out of using npx react-native config
+if [[ -n "$CONFIG_JSON" ]]; then
+  EXTRA_ARGS+=("--load-config" "$CONFIG_JSON")
+elif [[ -n "$CONFIG_CMD" ]]; then
+  EXTRA_ARGS+=("--config-cmd" "$CONFIG_CMD")
+else
+  EXTRA_ARGS+=("--config-cmd" "'$NODE_BINARY' $NODE_ARGS '$REACT_NATIVE_DIR/cli.js' config")
+fi
+
+# shellcheck disable=SC2086
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
   $CONFIG_ARG \
   --entry-file "$ENTRY_FILE" \
@@ -152,7 +165,7 @@ fi
 
 if [[ $USE_HERMES == false ]]; then
   cp "$BUNDLE_FILE" "$DEST/"
-  BUNDLE_FILE="$DEST/main.jsbundle"
+  BUNDLE_FILE="$DEST/$BUNDLE_NAME.jsbundle"
 else
   EXTRA_COMPILER_ARGS=
   if [[ $DEV == true ]]; then
@@ -163,14 +176,14 @@ else
   if [[ $EMIT_SOURCEMAP == true ]]; then
     EXTRA_COMPILER_ARGS="$EXTRA_COMPILER_ARGS -output-source-map"
   fi
-  "$HERMES_CLI_PATH" -emit-binary -max-diagnostic-width=80 $EXTRA_COMPILER_ARGS -out "$DEST/main.jsbundle" "$BUNDLE_FILE"
+  "$HERMES_CLI_PATH" -emit-binary -max-diagnostic-width=80 $EXTRA_COMPILER_ARGS -out "$DEST/$BUNDLE_NAME.jsbundle" "$BUNDLE_FILE"
   if [[ $EMIT_SOURCEMAP == true ]]; then
-    HBC_SOURCEMAP_FILE="$DEST/main.jsbundle.map"
+    HBC_SOURCEMAP_FILE="$DEST/$BUNDLE_NAME.jsbundle.map"
     "$NODE_BINARY" "$COMPOSE_SOURCEMAP_PATH" "$PACKAGER_SOURCEMAP_FILE" "$HBC_SOURCEMAP_FILE" -o "$SOURCEMAP_FILE"
     rm "$HBC_SOURCEMAP_FILE"
     rm "$PACKAGER_SOURCEMAP_FILE"
   fi
-  BUNDLE_FILE="$DEST/main.jsbundle"
+  BUNDLE_FILE="$DEST/$BUNDLE_NAME.jsbundle"
 fi
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then

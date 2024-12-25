@@ -16,9 +16,13 @@ const View = require('../../Components/View/View');
 const Modal = require('../Modal');
 const React = require('react');
 
-describe('<Modal />', () => {
-  it('should render as <Modal> when mocked', () => {
-    const instance = render.create(
+describe('Modal', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  it('should render as <Modal> when mocked', async () => {
+    const instance = await render.create(
       <Modal>
         <View />
       </Modal>,
@@ -26,8 +30,8 @@ describe('<Modal />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should not render <Modal> when mocked with visible=false', () => {
-    const instance = render.create(
+  it('should not render <Modal> when mocked with visible=false', async () => {
+    const instance = await render.create(
       <Modal visible={false}>
         <View testID="child" />
       </Modal>,
@@ -35,30 +39,10 @@ describe('<Modal />', () => {
     expect(instance.toJSON()).toBeNull();
   });
 
-  it('should shallow render as <Modal> when mocked', () => {
-    const output = render.shallow(
-      <Modal>
-        <View />
-      </Modal>,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should shallow render as <Modal> when not mocked', () => {
+  it('should render as <RCTModalHostView> when not mocked', async () => {
     jest.dontMock('../Modal');
 
-    const output = render.shallow(
-      <Modal>
-        <View />
-      </Modal>,
-    );
-    expect(output).toMatchSnapshot();
-  });
-
-  it('should render as <RCTModalHostView> when not mocked', () => {
-    jest.dontMock('../Modal');
-
-    const instance = render.create(
+    const instance = await render.create(
       <Modal>
         <View />
       </Modal>,
@@ -66,10 +50,10 @@ describe('<Modal />', () => {
     expect(instance).toMatchSnapshot();
   });
 
-  it('should not render <RCTModalHostView> when not mocked with visible=false', () => {
+  it('should not render <RCTModalHostView> when not mocked with visible=false', async () => {
     jest.dontMock('../Modal');
 
-    const instance = render.create(
+    const instance = await render.create(
       <Modal visible={false}>
         <View />
       </Modal>,

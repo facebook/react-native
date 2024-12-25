@@ -16,7 +16,6 @@
 #import <react/renderer/components/image/ImageProps.h>
 #import <react/renderer/imagemanager/ImageRequest.h>
 #import <react/renderer/imagemanager/RCTImagePrimitivesConversions.h>
-#import <react/utils/CoreFeatures.h>
 
 using namespace facebook::react;
 
@@ -101,13 +100,6 @@ using namespace facebook::react;
     const auto &imageRequest = _state->getData().getImageRequest();
     auto &observerCoordinator = imageRequest.getObserverCoordinator();
     observerCoordinator.removeObserver(_imageResponseObserverProxy);
-    // Cancelling image request because we are no longer observing it.
-    // This is not 100% correct place to do this because we may want to
-    // re-create RCTImageComponentView with the same image and if it
-    // was cancelled before downloaded, download is not resumed.
-    // This will only become issue if we decouple life cycle of a
-    // ShadowNode from ComponentView, which is not something we do now.
-    imageRequest.cancel();
   }
 
   _state = state;
@@ -136,7 +128,10 @@ using namespace facebook::react;
     return;
   }
 
-  static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoad();
+  auto imageSource = _state->getData().getImageSource();
+  imageSource.size = {image.size.width, image.size.height};
+
+  static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoad(imageSource);
   static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoadEnd();
 
   const auto &imageProps = static_cast<const ImageProps &>(*_props);
@@ -168,16 +163,19 @@ using namespace facebook::react;
   }
 }
 
-- (void)didReceiveProgress:(float)progress fromObserver:(const void *)observer
+- (void)didReceiveProgress:(float)progress
+                    loaded:(int64_t)loaded
+                     total:(int64_t)total
+              fromObserver:(const void *)observer
 {
   if (!_eventEmitter) {
     return;
   }
 
-  static_cast<const ImageEventEmitter &>(*_eventEmitter).onProgress(progress);
+  static_cast<const ImageEventEmitter &>(*_eventEmitter).onProgress(progress, loaded, total);
 }
 
-- (void)didReceiveFailureFromObserver:(const void *)observer
+- (void)didReceiveFailure:(NSError *)error fromObserver:(const void *)observer
 {
   _imageView.image = nil;
 
@@ -185,7 +183,24 @@ using namespace facebook::react;
     return;
   }
 
-  static_cast<const ImageEventEmitter &>(*_eventEmitter).onError();
+  ImageErrorInfo info;
+
+  if (error) {
+    info.error = std::string([error.localizedDescription UTF8String]);
+    id code = error.userInfo[@"httpStatusCode"];
+    if (code) {
+      info.responseCode = [code intValue];
+    }
+    id rspHeaders = error.userInfo[@"httpResponseHeaders"];
+    if (rspHeaders) {
+      for (NSString *key in rspHeaders) {
+        id value = rspHeaders[key];
+        info.httpResponseHeaders.push_back(
+            std::pair<std::string, std::string>(std::string([key UTF8String]), std::string([value UTF8String])));
+      }
+    }
+  }
+  static_cast<const ImageEventEmitter &>(*_eventEmitter).onError(ImageErrorInfo(info));
   static_cast<const ImageEventEmitter &>(*_eventEmitter).onLoadEnd();
 }
 

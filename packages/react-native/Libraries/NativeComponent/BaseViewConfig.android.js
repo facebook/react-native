@@ -166,6 +166,17 @@ const validAttributesForNonEventProps = {
   backgroundColor: {process: require('../StyleSheet/processColor').default},
   transform: true,
   transformOrigin: true,
+  experimental_backgroundImage: {
+    process: require('../StyleSheet/processBackgroundImage').default,
+  },
+  boxShadow: {
+    process: require('../StyleSheet/processBoxShadow').default,
+  },
+  filter: {
+    process: require('../StyleSheet/processFilter').default,
+  },
+  mixBlendMode: true,
+  isolation: true,
   opacity: true,
   elevation: true,
   shadowColor: {process: require('../StyleSheet/processColor').default},
@@ -195,6 +206,7 @@ const validAttributesForNonEventProps = {
   width: true,
   minWidth: true,
   collapsable: true,
+  collapsableChildren: true,
   maxWidth: true,
   height: true,
   minHeight: true,
@@ -215,6 +227,7 @@ const validAttributesForNonEventProps = {
   justifyContent: true,
   overflow: true,
   display: true,
+  boxSizing: true,
 
   margin: true,
   marginBlock: true,
@@ -256,6 +269,11 @@ const validAttributesForNonEventProps = {
   borderLeftWidth: true,
   borderRightWidth: true,
 
+  outlineColor: {process: require('../StyleSheet/processColor').default},
+  outlineOffset: true,
+  outlineStyle: true,
+  outlineWidth: true,
+
   start: true,
   end: true,
   left: true,
@@ -275,7 +293,70 @@ const validAttributesForNonEventProps = {
 
   style: ReactNativeStyleAttributes,
 
-  experimental_layoutConformance: true,
+  // ReactClippingViewManager @ReactProps
+  removeClippedSubviews: true,
+
+  // ReactViewManager @ReactProps
+  accessible: true,
+  hasTVPreferredFocus: true,
+  nextFocusDown: true,
+  nextFocusForward: true,
+  nextFocusLeft: true,
+  nextFocusRight: true,
+  nextFocusUp: true,
+
+  borderRadius: true,
+  borderTopLeftRadius: true,
+  borderTopRightRadius: true,
+  borderBottomRightRadius: true,
+  borderBottomLeftRadius: true,
+  borderTopStartRadius: true,
+  borderTopEndRadius: true,
+  borderBottomStartRadius: true,
+  borderBottomEndRadius: true,
+  borderEndEndRadius: true,
+  borderEndStartRadius: true,
+  borderStartEndRadius: true,
+  borderStartStartRadius: true,
+  borderStyle: true,
+  hitSlop: true,
+  pointerEvents: true,
+  nativeBackgroundAndroid: true,
+  nativeForegroundAndroid: true,
+  needsOffscreenAlphaCompositing: true,
+
+  borderColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
+  borderLeftColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
+  borderRightColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
+  borderTopColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
+  borderBottomColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
+  borderStartColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
+  borderEndColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
+  borderBlockColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
+  borderBlockEndColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
+  borderBlockStartColor: {
+    process: require('../StyleSheet/processColor').default,
+  },
+  focusable: true,
+  backfaceVisibility: true,
 };
 
 // Props for bubbling and direct events
@@ -305,6 +386,7 @@ const validAttributesForEventProps = {
 
   // Pointer events
   onClick: true,
+  onClickCapture: true,
   onPointerEnter: true,
   onPointerEnterCapture: true,
   onPointerLeave: true,

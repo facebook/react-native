@@ -211,7 +211,7 @@ uint_fast16_t compareDocumentPosition(
 
   auto otherAncestors =
       otherShadowNode.getFamily().getAncestors(*currentRevision);
-  if (ancestors.empty()) {
+  if (otherAncestors.empty()) {
     return DOCUMENT_POSITION_DISCONNECTED;
   }
 
@@ -357,7 +357,7 @@ DOMPoint getScrollPosition(
     return DOMPoint{};
   }
 
-  auto scrollPosition = layoutableShadowNode->getContentOriginOffset();
+  auto scrollPosition = layoutableShadowNode->getContentOriginOffset(false);
 
   return DOMPoint{
       .x = scrollPosition.x == 0 ? 0 : -scrollPosition.x,
@@ -380,8 +380,7 @@ DOMSizeRounded getScrollSize(
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
 
-  if (layoutMetrics == EmptyLayoutMetrics ||
-      layoutMetrics.displayType == DisplayType::Inline) {
+  if (layoutMetrics == EmptyLayoutMetrics) {
     return DOMSizeRounded{};
   }
 
@@ -417,8 +416,7 @@ DOMSizeRounded getInnerSize(
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
 
-  if (layoutMetrics == EmptyLayoutMetrics ||
-      layoutMetrics.displayType == DisplayType::Inline) {
+  if (layoutMetrics == EmptyLayoutMetrics) {
     return DOMSizeRounded{};
   }
 
@@ -445,8 +443,7 @@ DOMBorderWidthRounded getBorderWidth(
       *shadowNodeInCurrentRevision,
       {.includeTransform = false});
 
-  if (layoutMetrics == EmptyLayoutMetrics ||
-      layoutMetrics.displayType == DisplayType::Inline) {
+  if (layoutMetrics == EmptyLayoutMetrics) {
     return DOMBorderWidthRounded{};
   }
 

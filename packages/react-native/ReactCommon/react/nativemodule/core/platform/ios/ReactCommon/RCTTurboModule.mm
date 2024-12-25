@@ -16,7 +16,7 @@
 #import <ReactCommon/CallInvoker.h>
 #import <ReactCommon/TurboModule.h>
 #import <ReactCommon/TurboModulePerfLogger.h>
-#import <cxxreact/SystraceSection.h>
+#import <cxxreact/TraceSection.h>
 #import <react/bridging/Bridging.h>
 
 #include <glog/logging.h>
@@ -118,8 +118,8 @@ convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::sh
   NSMutableArray *result = [NSMutableArray new];
   for (size_t i = 0; i < size; i++) {
     // Insert kCFNull when it's `undefined` value to preserve the indices.
-    [result
-        addObject:convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker) ?: (id)kCFNull];
+    id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker);
+    [result addObject:convertedObject ? convertedObject : (id)kCFNull];
   }
   return [result copy];
 }
@@ -369,7 +369,7 @@ id ObjCTurboModule::performMethodInvocation(
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
     nativeMethodCallInvoker_->invokeAsync(methodNameStr, [block, moduleName, methodNameStr]() -> void {
-      SystraceSection s(
+      TraceSection s(
           "RCTTurboModuleAsyncMethodInvocation",
           "module",
           moduleName,
@@ -429,7 +429,7 @@ void ObjCTurboModule::performVoidMethodInvocation(
     asyncCallCounter = getUniqueId();
     TurboModulePerfLogger::asyncMethodCallDispatch(moduleName, methodName);
     nativeMethodCallInvoker_->invokeAsync(methodNameStr, [moduleName, methodNameStr, block]() -> void {
-      SystraceSection s(
+      TraceSection s(
           "RCTTurboModuleAsyncMethodInvocation", "module", moduleName, "method", methodNameStr, "returnType", "void");
       block();
     });
@@ -813,5 +813,18 @@ void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, size_
   methodArgConversionSelectors_[methodName][argIndex] = selectorValue;
 }
 
+void ObjCTurboModule::setEventEmitterCallback(EventEmitterCallback eventEmitterCallback)
+{
+  if ([instance_ conformsToProtocol:@protocol(RCTTurboModule)] &&
+      [instance_ respondsToSelector:@selector(setEventEmitterCallback:)]) {
+    EventEmitterCallbackWrapper *wrapper = [EventEmitterCallbackWrapper new];
+    wrapper->_eventEmitterCallback = std::move(eventEmitterCallback);
+    [(id<RCTTurboModule>)instance_ setEventEmitterCallback:wrapper];
+  }
+}
+
 } // namespace react
 } // namespace facebook
+
+@implementation EventEmitterCallbackWrapper
+@end

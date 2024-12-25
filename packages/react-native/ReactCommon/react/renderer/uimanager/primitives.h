@@ -37,16 +37,26 @@ inline static ShadowNode::Shared shadowNodeFromValue(
     return nullptr;
   }
 
-  return value.getObject(runtime).getNativeState<ShadowNode>(runtime);
+  return value.getObject(runtime)
+      .getNativeState<ShadowNodeWrapper>(runtime)
+      ->shadowNode;
 }
 
 inline static jsi::Value valueFromShadowNode(
     jsi::Runtime& runtime,
-    ShadowNode::Shared shadowNode) {
+    ShadowNode::Shared shadowNode,
+    bool assignRuntimeShadowNodeReference = false) {
+  // Wrap the shadow node so that we can update JS references from native
+  auto wrappedShadowNode =
+      std::make_shared<ShadowNodeWrapper>(std::move(shadowNode));
+
+  if (assignRuntimeShadowNodeReference) {
+    wrappedShadowNode->shadowNode->setRuntimeShadowNodeReference(
+        wrappedShadowNode);
+  }
+
   jsi::Object obj(runtime);
-  // Need to const_cast since JSI only allows non-const pointees
-  obj.setNativeState(
-      runtime, std::const_pointer_cast<ShadowNode>(std::move(shadowNode)));
+  obj.setNativeState(runtime, std::move(wrappedShadowNode));
   return obj;
 }
 

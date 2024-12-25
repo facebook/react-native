@@ -18,23 +18,27 @@ Example contents:
 ```javascript
 module.exports = {
   common: {
-    enableMicrotasks: {
-      description: 'Enable the use of microtasks in the JS runtime.',
+    enableNativeBehavior: {
+      description: 'Enable some behavior both in native and in JS.',
       defaultValue: false
     }
   },
   jsOnly: {
-    enableAccessToHostTreeInFabric: {
-      description: 'Enables access to the host tree in Fabric using DOM-compatible APIs.',
+    enableJSBehavior: {
+      description: 'Enables some behavior in the JS layer.',
       defaultValue: false
     }
   }
 };
 ```
 
-After any changes to this definitions, the code that provides access to them
-must be regenerated running `yarn featureflags-update` from the `react-native`
-repository.
+**After any change to these definitions**, the code that provides access to them
+must be regenerated running this from the `react-native`
+repository:
+
+```shell
+yarn featureflags --update
+```
 
 ## Access
 
@@ -53,7 +57,7 @@ from JavaScript.
 ```c++
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 
-if (ReactNativeFeatureFlags::enableMicrotasks()) {
+if (ReactNativeFeatureFlags::enableNativeBehavior()) {
   // do something
 }
 ```
@@ -64,7 +68,7 @@ if (ReactNativeFeatureFlags::enableMicrotasks()) {
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 
 fun someMethod() {
-  if (ReactNativeFeatureFlags.enableMicrotasks()) {
+  if (ReactNativeFeatureFlags.enableNativeBehavior()) {
     // do something
   }
 }
@@ -75,11 +79,11 @@ fun someMethod() {
 ```javascript
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
-if (ReactNativeFeatureFlags.enableMicrotasks()) {
+if (ReactNativeFeatureFlags.enableNativeBehavior()) {
   // Native flag
 }
 
-if (ReactNativeFeatureFlags.enableAccessToHostTreeInFabric()) {
+if (ReactNativeFeatureFlags.enableJSBehavior()) {
   // JS-only flag
 }
 ```
@@ -105,7 +109,7 @@ class CustomReactNativeFeatureFlags : public ReactNativeFeatureFlagsDefaults {
  public:
   CustomReactNativeFeatureFlags();
 
-  bool enableMicrotasks() override {
+  bool enableNativeBehavior() override {
     return true;
   }
 }
@@ -132,7 +136,7 @@ fun overrideFeatureFlags() {
 import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
 ReactNativeFeatureFlags.override({
-  enableAccessToHostTreeInFabric: () => true,
+  enableJSBehavior: () => true,
 });
 ```
 

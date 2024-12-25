@@ -14,7 +14,7 @@
 
 #include "JsArgumentHelpers.h"
 #include "MessageQueueThread.h"
-#include "SystraceSection.h"
+#include "TraceSection.h"
 
 #include <logger/react_native_log.h>
 
@@ -47,9 +47,12 @@ namespace {
 CxxModule::Callback convertCallback(
     std::function<void(folly::dynamic)> callback) {
   return [callback = std::move(callback)](std::vector<folly::dynamic> args) {
-    callback(folly::dynamic(
-        std::make_move_iterator(args.begin()),
-        std::make_move_iterator(args.end())));
+    // after unpinning folly, can use folly::dynamic::array_range
+    folly::dynamic obj = folly::dynamic::array;
+    for (auto& arg : args) {
+      obj.push_back(std::move(arg));
+    }
+    callback(std::move(obj));
   };
 }
 
@@ -185,7 +188,7 @@ void CxxNativeModule::invoke(
   // mhorowitz #7128529: convert C++ exceptions to Java
 
   const auto& moduleName = name_;
-  SystraceSection s(
+  TraceSection s(
       "CxxMethodCallQueue", "module", moduleName, "method", method.name);
   messageQueueThread_->runOnQueue([method,
                                    moduleName,
@@ -200,7 +203,7 @@ void CxxNativeModule::invoke(
 #else
     (void)(callId);
 #endif
-    SystraceSection s(
+    TraceSection s(
         "CxxMethodCallDispatch", "module", moduleName, "method", method.name);
     try {
       method.func(std::move(params), first, second);

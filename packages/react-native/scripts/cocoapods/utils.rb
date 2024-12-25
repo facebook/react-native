@@ -3,6 +3,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
+require 'shellwords'
+
 require_relative "./helpers.rb"
 
 # Utilities class for React Native Cocoapods
@@ -42,8 +44,10 @@ class ReactNativePodsUtils
     end
 
     def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", "Debug")
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", "Debug")
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-jsinspector", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", :debug)
     end
 
     def self.turn_off_resource_bundle_react_core(installer)
@@ -60,26 +64,15 @@ class ReactNativePodsUtils
         end
     end
 
-    def self.set_use_hermes_build_setting(installer, hermes_enabled)
-        Pod::UI.puts("Setting USE_HERMES build settings")
+    def self.set_build_setting(installer, build_setting:, value:, config_name: nil)
+        Pod::UI.puts("Setting #{build_setting} build settings")
         projects = self.extract_projects(installer)
 
         projects.each do |project|
             project.build_configurations.each do |config|
-                config.build_settings["USE_HERMES"] = hermes_enabled
-            end
-
-            project.save()
-        end
-    end
-
-    def self.set_node_modules_user_settings(installer, react_native_path)
-        Pod::UI.puts("Setting REACT_NATIVE build settings")
-        projects = self.extract_projects(installer)
-
-        projects.each do |project|
-            project.build_configurations.each do |config|
-                config.build_settings["REACT_NATIVE_PATH"] = File.join("${PODS_ROOT}", "..", react_native_path)
+                if config_name == nil || config.name == config_name
+                    config.build_settings[build_setting] = value
+                end
             end
 
             project.save()
@@ -112,6 +105,7 @@ class ReactNativePodsUtils
                     config.build_settings["LD"] = ccache_clang_sh
                     config.build_settings["CXX"] = ccache_clangpp_sh
                     config.build_settings["LDPLUSPLUS"] = ccache_clangpp_sh
+                    config.build_settings["CCACHE_BINARY"] = ccache_path
                 end
 
                 project.save()
@@ -126,10 +120,10 @@ class ReactNativePodsUtils
             projects.each do |project|
                 project.build_configurations.each do |config|
                     # Using the un-qualified names means you can swap in different implementations, for example ccache
-                    config.build_settings["CC"] = config.build_settings["CC"] ? config.build_settings["CC"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, '') : ""
-                    config.build_settings["LD"] = config.build_settings["LD"] ? config.build_settings["LD"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, "") : ""
-                    config.build_settings["CXX"] = config.build_settings["CXX"] ? config.build_settings["CXX"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") : ""
-                    config.build_settings["LDPLUSPLUS"] = config.build_settings["LDPLUSPLUS"] ? config.build_settings["LDPLUSPLUS"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") : ""
+                    config.build_settings["CC"] = config.build_settings["CC"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, '') if config.build_settings["CC"]
+                    config.build_settings["LD"] = config.build_settings["LD"].gsub(/#{Regexp.escape(ccache_clang_sh)}/, "") if config.build_settings["LD"]
+                    config.build_settings["CXX"] = config.build_settings["CXX"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") if config.build_settings["CXX"]
+                    config.build_settings["LDPLUSPLUS"] = config.build_settings["LDPLUSPLUS"].gsub(/#{Regexp.escape(ccache_clangpp_sh)}/, "") if config.build_settings["LDPLUSPLUS"]
                 end
 
                 project.save()
@@ -200,11 +194,11 @@ class ReactNativePodsUtils
 
     private
 
-    def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration)
+    def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration_type)
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             if pod_name.to_s == target_pod_name
                 target_installation_result.native_target.build_configurations.each do |config|
-                        if configuration == nil || (configuration != nil && config.name.include?(configuration))
+                        if configuration_type == nil || (configuration_type != nil && config.type == configuration_type)
                             config.build_settings[settings_name] ||= '$(inherited) '
                             config.build_settings[settings_name] << settings_value
                         end
@@ -243,7 +237,11 @@ class ReactNativePodsUtils
         end
 
         if !file_manager.exist?("#{file_path}.local")
-            node_binary = `command -v node`
+            # When installing pods with a yarn alias, yarn creates a fake yarn and node executables
+            # in a temporary folder.
+            # Using `node --print "process.argv[0]";` we are able to retrieve the actual path from which node is running.
+            # see https://github.com/facebook/react-native/issues/43285 for more info. We've tweaked this slightly.
+            node_binary = Shellwords.escape(`node --print "process.argv[0]"`.strip)
             system("echo 'export NODE_BINARY=#{node_binary}' > #{file_path}.local")
         end
     end
@@ -369,7 +367,7 @@ class ReactNativePodsUtils
                 Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
                 rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
                 target_installation_result.native_target.build_configurations.each do |config|
-                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
+                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherited)"
                     config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
                 end
             end
@@ -537,10 +535,19 @@ class ReactNativePodsUtils
     end
 
     def self.add_search_path_if_not_included(current_search_paths, new_search_path)
-        if !current_search_paths.include?(new_search_path)
-            current_search_paths << " #{new_search_path}"
+        new_search_path = new_search_path.strip
+
+        if current_search_paths.is_a?(String)
+          current_search_paths = current_search_paths.strip
+          return "#{current_search_paths} #{new_search_path}" unless current_search_paths.include?(new_search_path)
         end
-        return current_search_paths
+
+        if current_search_paths.is_a?(Array)
+          current_search_paths = current_search_paths.map(&:strip)
+          return current_search_paths << new_search_path unless current_search_paths.include?(new_search_path)
+        end
+
+        current_search_paths
     end
 
     def self.update_header_paths_if_depends_on(target_installation_result, dependency_name, header_paths)
@@ -558,6 +565,7 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "RCT-Folly", [
             "\"$(PODS_ROOT)/RCT-Folly\"",
             "\"$(PODS_ROOT)/DoubleConversion\"",
+            "\"$(PODS_ROOT)/fast_float/include\"",
             "\"$(PODS_ROOT)/fmt/include\"",
             "\"$(PODS_ROOT)/boost\""
         ])
@@ -589,44 +597,6 @@ class ReactNativePodsUtils
         header_search_paths = ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/imagemanager/platform/ios"])
             .map { |search_path| "\"#{search_path}\"" }
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "React-ImageManager", header_search_paths)
-    end
-
-    def self.get_privacy_manifest_paths_from(user_project)
-        privacy_manifests = user_project
-            .files
-            .select { |p|
-                p.path&.end_with?('PrivacyInfo.xcprivacy')
-            }
-        return privacy_manifests
-    end
-
-    def self.add_privacy_manifest_if_needed(installer)
-        user_project = installer.aggregate_targets
-                    .map{ |t| t.user_project }
-                    .first
-        privacy_manifest = self.get_privacy_manifest_paths_from(user_project).first
-        if privacy_manifest.nil?
-            file_timestamp_reason = {
-                "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryFileTimestamp",
-                "NSPrivacyAccessedAPITypeReasons" => ["C617.1"],
-            }
-            user_defaults_reason = {
-                "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryUserDefaults",
-                "NSPrivacyAccessedAPITypeReasons" => ["CA92.1"],
-            }
-            boot_time_reason = {
-                "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategorySystemBootTime",
-                "NSPrivacyAccessedAPITypeReasons" => ["35F9.1"],
-            }
-            privacy_manifest = {
-                "NSPrivacyCollectedDataTypes" => [],
-                "NSPrivacyTracking" => false,
-                "NSPrivacyAccessedAPITypes" => [file_timestamp_reason, user_defaults_reason, boot_time_reason]
-            }
-            path = File.join(user_project.path.parent, "PrivacyInfo.xcprivacy")
-            Xcodeproj::Plist.write_to_path(privacy_manifest, path)
-            Pod::UI.puts "Your app does not have a privacy manifest! A template has been generated containing Required Reasons API usage in the core React Native library. Please add the PrivacyInfo.xcprivacy file to your project and complete data use, tracking and any additional required reasons your app is using according to Apple's guidance: https://developer.apple.com/documentation/bundleresources/privacy_manifest_files. Then, you will need to manually add this file to your project in Xcode.".red
-        end
     end
 
     def self.react_native_pods
@@ -667,9 +637,11 @@ class ReactNativePodsUtils
             "React-perflogger",
             "React-rncore",
             "React-runtimeexecutor",
+            "React-timing",
             "ReactCommon",
             "Yoga",
             "boost",
+            "fast_float",
             "fmt",
             "glog",
             "hermes-engine",
@@ -693,7 +665,7 @@ class ReactNativePodsUtils
 
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                is_release = config_name.downcase.include?("release") || config_name.downcase.include?("production")
+                is_release = aggregate_target.user_build_configurations[config_name] == :release
                 unless is_release
                     next
                 end
@@ -707,7 +679,7 @@ class ReactNativePodsUtils
 
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             target_installation_result.native_target.build_configurations.each do |config|
-                is_release = config.name.downcase.include?("release") || config.name.downcase.include?("production")
+                is_release = config.type == :release
                 unless is_release
                     next
                 end
@@ -722,10 +694,18 @@ class ReactNativePodsUtils
             map[field] = "$(inherited)" + flag
         else
             unless map[field].include?(flag)
-                map[field] = map[field] + flag
+                if map[field].instance_of? String
+                    map[field] = map[field] + flag
+                elsif map[field].instance_of? Array
+                    map[field].push(flag)
+                end
             end
             unless map[field].include?("$(inherited)")
-                map[field] = "$(inherited) " + map[field]
+                if map[field].instance_of? String
+                    map[field] = "$(inherited) " + map[field]
+                elsif map[field].instance_of? Array
+                    map[field].unshift("$(inherited)")
+                end
             end
         end
     end

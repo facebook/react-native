@@ -37,9 +37,8 @@ class RNTesterComponentTitle extends React.Component<Props> {
 
 const styles = StyleSheet.create({
   titleText: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '400',
-    marginBottom: 5,
   },
 });
 

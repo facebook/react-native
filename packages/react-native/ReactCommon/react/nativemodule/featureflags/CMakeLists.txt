@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"ReactNative\")
 
 file(GLOB react_nativemodule_featureflags_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_nativemodule_featureflags SHARED ${react_nativemodule_featureflags_SRC})
+add_library(react_nativemodule_featureflags OBJECT ${react_nativemodule_featureflags_SRC})
 
 target_include_directories(react_nativemodule_featureflags PUBLIC ${REACT_COMMON_DIR})
 

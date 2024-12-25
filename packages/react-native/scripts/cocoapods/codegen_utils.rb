@@ -39,11 +39,11 @@ class CodegenUtils
     # - spec: the cocoapod specs
     # - codegen_output_dir: the output directory for the codegen
     # - file_manager: a class that implements the `File` interface. Defaults to `File`, the Dependency can be injected for testing purposes.
-    def generate_react_codegen_podspec!(spec, codegen_output_dir, file_manager: File)
+    def generate_react_codegen_podspec!(spec, codegen_output_dir, file_manager: File, logger: CodegenUtils::UI)
         # This podspec file should only be create once in the session/pod install.
         # This happens when multiple targets are calling use_react_native!.
         if @@REACT_CODEGEN_PODSPEC_GENERATED
-          Pod::UI.puts "[Codegen] Skipping ReactCodegen podspec generation."
+          logger.puts("Skipping ReactCodegen podspec generation.")
           return
         end
 
@@ -52,7 +52,7 @@ class CodegenUtils
         Pod::Executable.execute_command("mkdir", ["-p", output_dir]);
 
         podspec_path = file_manager.join(output_dir, 'ReactCodegen.podspec.json')
-        Pod::UI.puts "[Codegen] Generating #{podspec_path}"
+        logger.puts("Generating #{podspec_path}")
 
         file_manager.open(podspec_path, 'w') do |f|
           f.write(spec.to_json)
@@ -69,24 +69,24 @@ class CodegenUtils
     # - hermes_enabled: whether hermes is enabled or not.
     # - script_phases: whether we want to add some build script phases or not.
     # - file_manager: a class that implements the `File` interface. Defaults to `File`, the Dependency can be injected for testing purposes.
-    def get_react_codegen_spec(package_json_file, folly_version: get_folly_config()[:version], hermes_enabled: true, script_phases: nil, file_manager: File)
+    def get_react_codegen_spec(package_json_file, folly_version: get_folly_config()[:version], hermes_enabled: true, script_phases: nil, file_manager: File, logger: CodegenUtils::UI)
         package = JSON.parse(file_manager.read(package_json_file))
         version = package['version']
         use_frameworks = ENV['USE_FRAMEWORKS'] != nil
-        folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32'
-        boost_compiler_flags = '-Wno-documentation'
+
+        folly_compiler_flags = get_folly_config()[:compiler_flags]
+        boost_compiler_flags = get_boost_config()[:compiler_flags]
 
         header_search_paths = [
           "\"$(PODS_ROOT)/boost\"",
           "\"$(PODS_ROOT)/RCT-Folly\"",
           "\"$(PODS_ROOT)/DoubleConversion\"",
+          "\"$(PODS_ROOT)/fast_float/include\"",
           "\"$(PODS_ROOT)/fmt/include\"",
           "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
           "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
           "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
           "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
-          "\"$(PODS_ROOT)/DoubleConversion\"",
-          "\"$(PODS_ROOT)/fmt/include\"",
           "\"$(PODS_TARGET_SRCROOT)\"",
         ]
         framework_search_paths = []
@@ -119,9 +119,11 @@ class CodegenUtils
           'header_mappings_dir' => './',
           'platforms' => min_supported_versions,
           'source_files' => "**/*.{h,mm,cpp}",
+          'exclude_files' => "RCTAppDependencyProvider.{h,mm}", # these files are generated in the same codegen path but needs to belong to a different pod
           'pod_target_xcconfig' => {
             "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
-            "FRAMEWORK_SEARCH_PATHS" => framework_search_paths
+            "FRAMEWORK_SEARCH_PATHS" => framework_search_paths,
+            "OTHER_CPLUSPLUSFLAGS" => "$(inherited) #{folly_compiler_flags} #{boost_compiler_flags}",
           },
           'dependencies': {
             "React-jsiexecutor": [],
@@ -142,6 +144,7 @@ class CodegenUtils
             'React-debug': [],
             'React-utils': [],
             'React-featureflags': [],
+            'React-RCTAppDelegate': [],
           }
         }
 
@@ -156,7 +159,7 @@ class CodegenUtils
         end
 
         if script_phases
-          Pod::UI.puts "[Codegen] Adding script_phases to ReactCodegen."
+          logger.puts("Adding script_phases to ReactCodegen.")
           spec[:'script_phases'] = script_phases
         end
 
@@ -230,10 +233,11 @@ class CodegenUtils
       config_key: 'codegenConfig',
       codegen_utils: CodegenUtils.new(),
       script_phase_extractor: CodegenScriptPhaseExtractor.new(),
-      file_manager: File
+      file_manager: File,
+      logger: CodegenUtils::UI
       )
       if !app_path
-        Pod::UI.warn '[Codegen] error: app_path is required to use codegen discovery.'
+        logger.warn("error: app_path is required to use codegen discovery.")
         abort
       end
 
@@ -280,22 +284,23 @@ class CodegenUtils
       config_key: 'codegenConfig',
       folly_version: get_folly_config()[:version],
       codegen_utils: CodegenUtils.new(),
-      file_manager: File
+      file_manager: File,
+      logger: CodegenUtils::UI
       )
       return if codegen_disabled
 
       if CodegenUtils.react_codegen_discovery_done()
-        Pod::UI.puts "[Codegen] Skipping use_react_native_codegen_discovery."
+        logger.puts("Skipping use_react_native_codegen_discovery.")
         return
       end
 
       if !app_path
-        Pod::UI.warn '[Codegen] Error: app_path is required for use_react_native_codegen_discovery.'
-        Pod::UI.warn '[Codegen] If you are calling use_react_native_codegen_discovery! in your Podfile, please remove the call and pass `app_path` and/or `config_file_dir` to `use_react_native!`.'
+        logger.warn("Error: app_path is required for use_react_native_codegen_discovery.")
+        logger.warn("If you are calling use_react_native_codegen_discovery! in your Podfile, please remove the call and pass `app_path` and/or `config_file_dir` to `use_react_native!`.")
         abort
       end
 
-      Pod::UI.warn '[Codegen] warn: using experimental new codegen integration'
+      logger.warn("warn: using experimental new codegen integration")
       relative_installation_root = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
 
       # Generate ReactCodegen podspec here to add the script phases.
@@ -359,6 +364,26 @@ class CodegenUtils
       if dir_manager.exist?(codegen_path) && dir_manager.glob("#{codegen_path}/*").length() != 0
         Pod::UI.warn "Unable to remove the content of #{codegen_path} folder. Please run rm -rf #{codegen_path} and try again."
         abort
+      end
+    end
+
+    class UI
+      # ANSI escape codes for colors and formatting
+      CYAN = "\e[36m"
+      YELLOW = "\e[33m"
+      BOLD = "\e[1m"
+      RESET = "\e[0m"
+
+      class << self
+        def puts(text, info: false)
+          prefix = "#{CYAN}#{BOLD}[Codegen]#{RESET}"
+          message = info ? "#{YELLOW}#{text}#{RESET}" : text
+          Pod::UI.puts "#{prefix} #{message}"
+        end
+
+        def warn(text)
+          puts(text, info: true)
+        end
       end
     end
 end

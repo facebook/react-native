@@ -7,6 +7,7 @@
 
 #include <cxxreact/JSExecutor.h>
 #include <logger/react_native_log.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include "EventEmitter.h"
 #include "EventLogger.h"
 #include "EventQueue.h"
@@ -38,20 +39,43 @@ void EventQueueProcessor::flushEvents(
   }
 
   for (const auto& event : events) {
-    if (event.category == RawEvent::Category::ContinuousEnd) {
-      hasContinuousEventStarted_ = false;
-    }
+    auto reactPriority = ReactEventPriority::Default;
 
-    auto reactPriority = hasContinuousEventStarted_
-        ? ReactEventPriority::Default
-        : ReactEventPriority::Discrete;
+    if (ReactNativeFeatureFlags::
+            fixMappingOfEventPrioritiesBetweenFabricAndReact()) {
+      reactPriority = [&]() {
+        switch (event.category) {
+          case RawEvent::Category::Discrete:
+            return ReactEventPriority::Discrete;
+          case RawEvent::Category::ContinuousStart:
+            hasContinuousEventStarted_ = true;
+            return ReactEventPriority::Discrete;
+          case RawEvent::Category::ContinuousEnd:
+            hasContinuousEventStarted_ = false;
+            return ReactEventPriority::Discrete;
+          case RawEvent::Category::Continuous:
+            return ReactEventPriority::Continuous;
+          case RawEvent::Category::Unspecified:
+            return hasContinuousEventStarted_ ? ReactEventPriority::Continuous
+                                              : ReactEventPriority::Default;
+        }
+        return ReactEventPriority::Default;
+      }();
+    } else {
+      if (event.category == RawEvent::Category::ContinuousEnd) {
+        hasContinuousEventStarted_ = false;
+      }
 
-    if (event.category == RawEvent::Category::Continuous) {
-      reactPriority = ReactEventPriority::Default;
-    }
+      reactPriority = hasContinuousEventStarted_ ? ReactEventPriority::Default
+                                                 : ReactEventPriority::Discrete;
 
-    if (event.category == RawEvent::Category::Discrete) {
-      reactPriority = ReactEventPriority::Discrete;
+      if (event.category == RawEvent::Category::Continuous) {
+        reactPriority = ReactEventPriority::Default;
+      }
+
+      if (event.category == RawEvent::Category::Discrete) {
+        reactPriority = ReactEventPriority::Discrete;
+      }
     }
 
     auto eventLogger = eventLogger_.lock();

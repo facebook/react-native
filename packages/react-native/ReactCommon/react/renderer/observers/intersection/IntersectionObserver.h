@@ -23,7 +23,7 @@ struct IntersectionObserverEntry {
   ShadowNode::Shared shadowNode;
   Rect targetRect;
   Rect rootRect;
-  std::optional<Rect> intersectionRect;
+  Rect intersectionRect;
   bool isIntersectingAboveThresholds;
   // TODO(T156529385) Define `DOMHighResTimeStamp` as an alias for `double` and
   // use it here.
@@ -35,13 +35,17 @@ class IntersectionObserver {
   IntersectionObserver(
       IntersectionObserverObserverId intersectionObserverId,
       ShadowNode::Shared targetShadowNode,
-      std::vector<Float> thresholds);
+      std::vector<Float> thresholds,
+      std::optional<std::vector<Float>> rootThresholds = std::nullopt);
 
   // Partially equivalent to
   // https://w3c.github.io/IntersectionObserver/#update-intersection-observations-algo
   std::optional<IntersectionObserverEntry> updateIntersectionObservation(
       const RootShadowNode& rootShadowNode,
-      double mountTime);
+      double time);
+
+  std::optional<IntersectionObserverEntry>
+  updateIntersectionObservationForSurfaceUnmount(double time);
 
   IntersectionObserverObserverId getIntersectionObserverId() const {
     return intersectionObserverId_;
@@ -56,23 +60,24 @@ class IntersectionObserver {
   }
 
  private:
-  Float getHighestThresholdCrossed(Float intersectionRatio);
-
   std::optional<IntersectionObserverEntry> setIntersectingState(
       const Rect& rootBoundingRect,
       const Rect& targetBoundingRect,
       const Rect& intersectionRect,
       Float threshold,
-      double mountTime);
+      Float rootThreshold,
+      double time);
 
   std::optional<IntersectionObserverEntry> setNotIntersectingState(
       const Rect& rootBoundingRect,
       const Rect& targetBoundingRect,
-      double mountTime);
+      const Rect& intersectionRect,
+      double time);
 
   IntersectionObserverObserverId intersectionObserverId_;
   ShadowNode::Shared targetShadowNode_;
   std::vector<Float> thresholds_;
+  std::optional<std::vector<Float>> rootThresholds_;
   mutable IntersectionObserverState state_ =
       IntersectionObserverState::Initial();
 };

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import java.util.List;
 import java.util.WeakHashMap;
@@ -21,6 +22,14 @@ public abstract class ViewGroupManager<T extends ViewGroup>
     extends BaseViewManager<T, LayoutShadowNode> implements IViewGroupManager<T> {
 
   private static WeakHashMap<View, Integer> mZIndexHash = new WeakHashMap<>();
+
+  public ViewGroupManager() {
+    super(null);
+  }
+
+  public ViewGroupManager(@Nullable ReactApplicationContext reactContext) {
+    super(reactContext);
+  }
 
   @Override
   public LayoutShadowNode createShadowNodeInstance() {
@@ -59,7 +68,7 @@ public abstract class ViewGroupManager<T extends ViewGroup>
     mZIndexHash.put(view, zIndex);
   }
 
-  public static @Nullable Integer getViewZIndex(View view) {
+  public static @Nullable Integer getViewZIndex(@Nullable View view) {
     return mZIndexHash.get(view);
   }
 

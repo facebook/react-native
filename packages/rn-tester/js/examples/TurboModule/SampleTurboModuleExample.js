@@ -9,16 +9,12 @@
  */
 
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
+import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
+import RNTesterText from '../../components/RNTesterText';
 import styles from './TurboModuleExampleCommon';
 import * as React from 'react';
-import {
-  FlatList,
-  RootTagContext,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, RootTagContext, TouchableOpacity, View} from 'react-native';
 import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 
@@ -33,8 +29,42 @@ type State = {|
   },
 |};
 
+type Examples =
+  | 'callback'
+  | 'getArray'
+  | 'getBool'
+  | 'getConstants'
+  | 'getCustomEnum'
+  | 'getCustomHostObject'
+  | 'getBinaryTreeNode'
+  | 'getGraphNode'
+  | 'getNumEnum'
+  | 'getStrEnum'
+  | 'getMap'
+  | 'getNumber'
+  | 'getObject'
+  | 'getSet'
+  | 'getString'
+  | 'getUnion'
+  | 'getValue'
+  | 'promise'
+  | 'rejectPromise'
+  | 'voidFunc'
+  | 'setMenuItem'
+  | 'optionalArgs'
+  | 'emitDeviceEvent';
+
+type ErrorExamples =
+  | 'voidFuncThrows'
+  | 'getObjectThrows'
+  | 'promiseThrows'
+  | 'voidFuncAssert'
+  | 'getObjectAssert'
+  | 'promiseAssert';
+
 class SampleTurboModuleExample extends React.Component<{||}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
+  eventSubscriptions: EventSubscription[] = [];
 
   state: State = {
     testResults: {},
@@ -55,7 +85,6 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       NativeSampleTurboModule.getValueWithPromise(true)
         .then(() => {})
         .catch(e => {
-          console.error(e);
           this._setResult('rejectPromise', e.message);
         }),
     getConstants: () => NativeSampleTurboModule.getConstants(),
@@ -80,6 +109,10 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     getRootTag: () => NativeSampleTurboModule.getRootTag(this.context),
     getValue: () =>
       NativeSampleTurboModule.getValue(5, 'test', {a: 1, b: 'foo'}),
+  };
+
+  // $FlowFixMe[missing-local-annot]
+  _errorTests = {
     voidFuncThrows: () => {
       try {
         NativeSampleTurboModule.voidFuncThrows?.();
@@ -101,7 +134,6 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => {
           console.error(e);
-          this._setResult('promiseThrows', e.message);
         });
     },
     voidFuncAssert: () => {
@@ -125,34 +157,15 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
         .then(() => {})
         .catch(e => {
           console.error(e);
-          this._setResult('promiseAssert', e.message);
         });
+    },
+    installJSIBindings: () => {
+      return global.__SampleTurboModuleJSIBindings;
     },
   };
 
   _setResult(
-    name:
-      | string
-      | 'callback'
-      | 'getArray'
-      | 'getBool'
-      | 'getEnum'
-      | 'getConstants'
-      | 'getNumber'
-      | 'getObject'
-      | 'getRootTag'
-      | 'getString'
-      | 'getUnsafeObject'
-      | 'getValue'
-      | 'promise'
-      | 'rejectPromise'
-      | 'voidFunc'
-      | 'voidFuncThrows'
-      | 'getObjectThrows'
-      | 'promiseThrows'
-      | 'voidFuncAssert'
-      | 'getObjectAssert'
-      | 'promiseAssert',
+    name: Examples | ErrorExamples,
     result:
       | $FlowFixMe
       | void
@@ -182,8 +195,10 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
     const result = this.state.testResults[name] || {};
     return (
       <View style={styles.result}>
-        <Text style={[styles.value]}>{JSON.stringify(result.value)}</Text>
-        <Text style={[styles.type]}>{result.type}</Text>
+        <RNTesterText style={[styles.value]}>
+          {JSON.stringify(result.value)}
+        </RNTesterText>
+        <RNTesterText style={[styles.type]}>{result.type}</RNTesterText>
       </View>
     );
   }
@@ -193,6 +208,38 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
       );
+    }
+
+    // Lazily load the module
+    NativeSampleTurboModule.getConstants();
+    if (global.__SampleTurboModuleJSIBindings !== 'Hello JSI!') {
+      throw new Error(
+        'The JSI bindings for SampleTurboModule are not installed.',
+      );
+    }
+    this.eventSubscriptions.push(
+      NativeSampleTurboModule.onPress(value => console.log('onPress: ()')),
+    );
+    this.eventSubscriptions.push(
+      NativeSampleTurboModule.onClick(value =>
+        console.log(`onClick: (${value})`),
+      ),
+    );
+    this.eventSubscriptions.push(
+      NativeSampleTurboModule.onChange(value =>
+        console.log(`onChange: (${JSON.stringify(value)})`),
+      ),
+    );
+    this.eventSubscriptions.push(
+      NativeSampleTurboModule.onSubmit(value =>
+        console.log(`onSubmit: (${JSON.stringify(value)})`),
+      ),
+    );
+  }
+
+  componentWillUnmount() {
+    for (const subscription of this.eventSubscriptions) {
+      subscription.remove();
     }
   }
 
@@ -204,26 +251,52 @@ class SampleTurboModuleExample extends React.Component<{||}, State> {
             style={[styles.column, styles.button]}
             onPress={() =>
               Object.keys(this._tests).forEach(item =>
+                // $FlowFixMe[incompatible-call]
                 this._setResult(item, this._tests[item]()),
               )
             }>
-            <Text style={styles.buttonTextLarge}>Run all tests</Text>
+            <RNTesterText style={styles.buttonTextLarge}>
+              Run all tests
+            </RNTesterText>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => this.setState({testResults: {}})}
             style={[styles.column, styles.button]}>
-            <Text style={styles.buttonTextLarge}>Clear results</Text>
+            <RNTesterText style={styles.buttonTextLarge}>
+              Clear results
+            </RNTesterText>
           </TouchableOpacity>
         </View>
         <FlatList
+          // $FlowFixMe[incompatible-type-arg]
           data={Object.keys(this._tests)}
           keyExtractor={item => item}
-          renderItem={({item}) => (
+          renderItem={({item}: {item: Examples, ...}) => (
             <View style={styles.item}>
               <TouchableOpacity
                 style={[styles.column, styles.button]}
                 onPress={e => this._setResult(item, this._tests[item]())}>
-                <Text style={styles.buttonText}>{item}</Text>
+                <RNTesterText style={styles.buttonText}>{item}</RNTesterText>
+              </TouchableOpacity>
+              <View style={[styles.column]}>{this._renderResult(item)}</View>
+            </View>
+          )}
+        />
+        <View style={styles.item}>
+          <RNTesterText style={styles.buttonTextLarge}>
+            Report errors tests
+          </RNTesterText>
+        </View>
+        <FlatList
+          // $FlowFixMe[incompatible-type-arg]
+          data={Object.keys(this._errorTests)}
+          keyExtractor={item => item}
+          renderItem={({item}: {item: ErrorExamples, ...}) => (
+            <View style={styles.item}>
+              <TouchableOpacity
+                style={[styles.column, styles.button]}
+                onPress={e => this._setResult(item, this._errorTests[item]())}>
+                <RNTesterText style={styles.buttonText}>{item}</RNTesterText>
               </TouchableOpacity>
               <View style={[styles.column]}>{this._renderResult(item)}</View>
             </View>

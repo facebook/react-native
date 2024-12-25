@@ -19,7 +19,9 @@ class JReactExceptionManager
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/interfaces/exceptionmanager/ReactJsExceptionHandler;";
 
-  void reportJsException(const JsErrorHandler::ParsedError& error);
+  void reportJsException(
+      jsi::Runtime& runtime,
+      const JsErrorHandler::ProcessedError& error);
 };
 
 } // namespace facebook::react

@@ -150,10 +150,9 @@ describe('Flow Module Parser', () => {
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
 
-        expect(module.spec.properties[0]).not.toBe(null);
-        const param = unwrapNullable(
-          module.spec.properties[0].typeAnnotation,
-        )[0].params[0];
+        expect(module.spec.methods[0]).not.toBe(null);
+        const param = unwrapNullable(module.spec.methods[0].typeAnnotation)[0]
+          .params[0];
         expect(param).not.toBe(null);
         expect(param.name).toBe(paramName);
         expect(param.optional).toBe(optional);
@@ -230,8 +229,13 @@ describe('Flow Module Parser', () => {
               expect(paramTypeAnnotation.type).toBe('ArrayTypeAnnotation');
               invariant(paramTypeAnnotation.type === 'ArrayTypeAnnotation', '');
 
-              expect(paramTypeAnnotation.elementType).not.toBe(null);
-              invariant(paramTypeAnnotation.elementType != null, '');
+              expect(paramTypeAnnotation.elementType.type).not.toEqual(
+                'AnyTypeAnnotation',
+              );
+              invariant(
+                paramTypeAnnotation.elementType.type !== 'AnyTypeAnnotation',
+                '',
+              );
               const [elementType, isElementTypeNullable] =
                 unwrapNullable<NativeModuleBaseTypeAnnotation>(
                   paramTypeAnnotation.elementType,
@@ -361,9 +365,9 @@ describe('Flow Module Parser', () => {
               export default TurboModuleRegistry.get<Spec>('Foo');
             `);
 
-            expect(module.spec.properties[0]).not.toBe(null);
+            expect(module.spec.methods[0]).not.toBe(null);
             const param = unwrapNullable(
-              module.spec.properties[0].typeAnnotation,
+              module.spec.methods[0].typeAnnotation,
             )[0].params[0];
             expect(param.name).toBe('arg');
             expect(param.optional).toBe(optional);
@@ -533,8 +537,13 @@ describe('Flow Module Parser', () => {
 
                     const {elementType: nullableElementType} =
                       property.typeAnnotation;
-                    expect(nullableElementType).not.toBe(null);
-                    invariant(nullableElementType != null, '');
+                    expect(nullableElementType.type).not.toEqual(
+                      'AnyTypeAnnotation',
+                    );
+                    invariant(
+                      nullableElementType.type !== 'AnyTypeAnnotation',
+                      '',
+                    );
 
                     const [elementType, isElementTypeNullable] =
                       unwrapNullable<NativeModuleBaseTypeAnnotation>(
@@ -698,10 +707,10 @@ describe('Flow Module Parser', () => {
         export default TurboModuleRegistry.get<Spec>('Foo');
       `);
 
-      expect(module.spec.properties[0]).not.toBe(null);
+      expect(module.spec.methods[0]).not.toBe(null);
 
       const [functionTypeAnnotation, isFunctionTypeAnnotationNullable] =
-        unwrapNullable(module.spec.properties[0].typeAnnotation);
+        unwrapNullable(module.spec.methods[0].typeAnnotation);
       expect(isFunctionTypeAnnotationNullable).toBe(false);
 
       const [returnTypeAnnotation, isReturnTypeAnnotationNullable] =
@@ -732,9 +741,9 @@ describe('Flow Module Parser', () => {
           export default TurboModuleRegistry.get<Spec>('Foo');
         `);
 
-        expect(module.spec.properties[0]).not.toBe(null);
+        expect(module.spec.methods[0]).not.toBe(null);
         const [functionTypeAnnotation, isFunctionTypeAnnotationNullable] =
-          unwrapNullable(module.spec.properties[0].typeAnnotation);
+          unwrapNullable(module.spec.methods[0].typeAnnotation);
         expect(isFunctionTypeAnnotationNullable).toBe(false);
 
         const [returnTypeAnnotation, isReturnTypeAnnotationNullable] =
@@ -803,8 +812,8 @@ describe('Flow Module Parser', () => {
               const arrayTypeAnnotation = returnTypeAnnotation;
 
               const {elementType} = arrayTypeAnnotation;
-              expect(elementType).not.toBe(null);
-              invariant(elementType != null, '');
+              expect(elementType.type).not.toEqual('AnyTypeAnnotation');
+              invariant(elementType.type !== 'AnyTypeAnnotation', '');
 
               const [elementTypeAnnotation, isElementTypeAnnotation] =
                 unwrapNullable<NativeModuleBaseTypeAnnotation>(elementType);
@@ -1075,8 +1084,13 @@ describe('Flow Module Parser', () => {
 
                       const {elementType: nullableElementType} =
                         property.typeAnnotation;
-                      expect(nullableElementType).not.toBe(null);
-                      invariant(nullableElementType != null, '');
+                      expect(nullableElementType.type).not.toEqual(
+                        'AnyTypeAnnotation',
+                      );
+                      invariant(
+                        nullableElementType.type !== 'AnyTypeAnnotation',
+                        '',
+                      );
 
                       const [elementType, isElementTypeNullable] =
                         unwrapNullable<NativeModuleBaseTypeAnnotation>(

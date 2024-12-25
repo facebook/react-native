@@ -29,6 +29,8 @@ class ReactPropAnnotationSetterSpecTest {
     override fun createViewInstance(reactContext: ThemedReactContext): View =
         createViewInstance(reactContext)
 
+    override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? = null
+
     override fun updateExtraData(root: View, extraData: Any) = Unit
   }
 

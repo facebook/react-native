@@ -19,7 +19,7 @@ export type PlatformConstantsIOS = {|
     major: number,
     minor: number,
     patch: number,
-    prerelease: ?number,
+    prerelease: ?string,
   |},
   forceTouchAvailable: boolean,
   osVersion: string,

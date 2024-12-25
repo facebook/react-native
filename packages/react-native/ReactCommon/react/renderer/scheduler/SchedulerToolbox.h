@@ -49,21 +49,10 @@ struct SchedulerToolbox final {
   RuntimeExecutor runtimeExecutor;
 
   /*
-   * Asynchronous & synchronous event beats.
    * Represent connections with the platform-specific run loops and general
    * purpose background queue.
    */
-  EventBeat::Factory asynchronousEventBeatFactory;
-
-  /*
-   * General-purpose executor that is used to dispatch work on some utility
-   * queue (mostly) asynchronously to avoid unnecessary blocking the caller
-   * queue.
-   * The concrete implementation can use a serial or concurrent queue.
-   * Due to architectural constraints, the concrete implementation *must* call
-   * the call back synchronously if the executor is invoked on the main thread.
-   */
-  BackgroundExecutor backgroundExecutor;
+  EventBeat::Factory eventBeatFactory;
 
   /*
    * A list of `UIManagerCommitHook`s that should be registered in `UIManager`.

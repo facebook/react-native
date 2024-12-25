@@ -1,1 +1,0 @@
-import*as r from"./formatter.js";self.Formatter=self.Formatter||{},Formatter=Formatter||{},Formatter.FormatterWorkerPool=r.FormatterWorkerPool.FormatterWorkerPool,Formatter.formatterWorkerPool=r.FormatterWorkerPool.formatterWorkerPool,Formatter.FormatterSourceMapping=r.ScriptFormatter.FormatterSourceMapping;

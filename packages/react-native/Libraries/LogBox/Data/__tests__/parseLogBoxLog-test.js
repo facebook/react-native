@@ -13,7 +13,11 @@
 
 import type {StackFrame} from '../../../Core/NativeExceptionsManager';
 
-const {parseLogBoxException, parseLogBoxLog} = require('../parseLogBoxLog');
+const {
+  parseLogBoxException,
+  parseLogBoxLog,
+  withoutANSIColorStyles,
+} = require('../parseLogBoxLog');
 
 describe('parseLogBoxLog', () => {
   it('parses strings', () => {
@@ -112,10 +116,40 @@ describe('parseLogBoxLog', () => {
     });
   });
 
+  it('does not duplicate message if component stack found but not parsed', () => {
+    expect(
+      parseLogBoxLog([
+        'Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
+        '\n\nCheck the render method of `MyOtherComponent`.',
+        '',
+        '\n    in\n    in\n    in',
+      ]),
+    ).toEqual({
+      componentStackType: 'legacy',
+      componentStack: [],
+      category:
+        'Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
+      message: {
+        content:
+          'Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
+        substitutions: [
+          {
+            length: 48,
+            offset: 53,
+          },
+          {
+            length: 0,
+            offset: 101,
+          },
+        ],
+      },
+    });
+  });
+
   it('detects a component stack in an interpolated warning', () => {
     expect(
       parseLogBoxLog([
-        'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
+        'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
         '\n\nCheck the render method of `Container(Component)`.',
         '\n    in MyComponent (at filename.js:1)\n    in MyOtherComponent (at filename2.js:1)',
       ]),
@@ -134,14 +168,14 @@ describe('parseLogBoxLog', () => {
         },
       ],
       category:
-        'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
+        'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
       message: {
         content:
-          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `Container(Component)`.',
+          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `Container(Component)`.',
         substitutions: [
           {
             length: 52,
-            offset: 129,
+            offset: 120,
           },
         ],
       },
@@ -771,7 +805,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     it('detects a component stack in an interpolated warning', () => {
       expect(
         parseLogBoxLog([
-          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
+          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
           '\n\nCheck the render method of `MyComponent`.',
           '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
         ]),
@@ -795,14 +829,14 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           },
         ],
         category:
-          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
+          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
         message: {
           content:
-            'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
+            'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
           substitutions: [
             {
               length: 43,
-              offset: 129,
+              offset: 120,
             },
           ],
         },
@@ -877,7 +911,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     it('detects a component stack in the nth argument', () => {
       expect(
         parseLogBoxLog([
-          'Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
+          'Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
           '\n\nCheck the render method of `MyOtherComponent`.',
           '',
           '\n    in MyComponent (created by MyOtherComponent)\n    in MyOtherComponent (created by MyComponent)\n    in MyAppComponent (created by MyOtherComponent)',
@@ -902,18 +936,18 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           },
         ],
         category:
-          'Warning: Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
+          'Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
         message: {
           content:
-            'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
+            'Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
           substitutions: [
             {
               length: 48,
-              offset: 62,
+              offset: 53,
             },
             {
               length: 0,
-              offset: 110,
+              offset: 101,
             },
           ],
         },
@@ -1046,7 +1080,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     it('detects a component stack in an interpolated warning', () => {
       expect(
         parseLogBoxLog([
-          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
+          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
           '\n\nCheck the render method of `MyComponent`.',
           '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
         ]),
@@ -1069,14 +1103,14 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           },
         ],
         category:
-          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
+          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
         message: {
           content:
-            'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
+            'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
           substitutions: [
             {
               length: 43,
-              offset: 129,
+              offset: 120,
             },
           ],
         },
@@ -1149,7 +1183,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     it('detects a component stack in the nth argument', () => {
       expect(
         parseLogBoxLog([
-          'Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
+          'Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
           '\n\nCheck the render method of `MyOtherComponent`.',
           '',
           '\n    at MyComponent (/path/to/filename.js:1:2)\n    at MyOtherComponent\n    at MyAppComponent (/path/to/app.js:100:20)',
@@ -1173,18 +1207,18 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           },
         ],
         category:
-          'Warning: Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
+          'Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
         message: {
           content:
-            'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
+            'Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
           substitutions: [
             {
               length: 48,
-              offset: 62,
+              offset: 53,
             },
             {
               length: 0,
-              offset: 110,
+              offset: 101,
             },
           ],
         },
@@ -1255,7 +1289,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     it('detects a component stack in an interpolated warning', () => {
       expect(
         parseLogBoxLog([
-          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
+          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?%s%s',
           '\n\nCheck the render method of `MyComponent`.',
           '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
         ]),
@@ -1282,14 +1316,14 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           },
         ],
         category:
-          'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
+          'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?﻿%s',
         message: {
           content:
-            'Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
+            'Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?\n\nCheck the render method of `MyComponent`.',
           substitutions: [
             {
               length: 43,
-              offset: 129,
+              offset: 120,
             },
           ],
         },
@@ -1454,7 +1488,7 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
     it('detects a component stack in the nth argument', () => {
       expect(
         parseLogBoxLog([
-          'Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
+          'Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s',
           '\n\nCheck the render method of `MyOtherComponent`.',
           '',
           '\nMyComponent@/path/to/filename.js:1:2\nforEach@[native code]\nMyAppComponent@/path/to/app.js:100:20',
@@ -1482,18 +1516,18 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
           },
         ],
         category:
-          'Warning: Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
+          'Each child in a list should have a unique "key" prop.﻿%s﻿%s See https://fb.me/react-warning-keys for more information.',
         message: {
           content:
-            'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
+            'Each child in a list should have a unique "key" prop.\n\nCheck the render method of `MyOtherComponent`. See https://fb.me/react-warning-keys for more information.',
           substitutions: [
             {
               length: 48,
-              offset: 62,
+              offset: 53,
             },
             {
               length: 0,
-              offset: 110,
+              offset: 101,
             },
           ],
         },
@@ -1624,5 +1658,38 @@ Please follow the instructions at: fburl.com/rn-remote-assets`,
         },
       });
     });
+  });
+});
+
+describe('withoutANSIColorStyles', () => {
+  it('works with non-strings', () => {
+    expect(withoutANSIColorStyles(null)).toEqual(null);
+    expect(withoutANSIColorStyles(undefined)).toEqual(undefined);
+    expect(withoutANSIColorStyles({})).toEqual({});
+    expect(withoutANSIColorStyles(1)).toEqual(1);
+  });
+
+  it('works with empty string', () => {
+    expect(withoutANSIColorStyles('')).toEqual('');
+  });
+
+  it("doesn't modify string that don't have ANSI escape sequences", () => {
+    expect(
+      withoutANSIColorStyles('Warning: this is the React warning %s'),
+    ).toEqual('Warning: this is the React warning %s');
+  });
+
+  it('filters out ANSI escape sequences and preserves console substitutions', () => {
+    expect(
+      withoutANSIColorStyles(
+        '\x1b[2;38;2;124;124;124mWarning: this is the React warning %s\x1b[0m',
+      ),
+    ).toEqual('Warning: this is the React warning %s');
+  });
+
+  it('filters out ANSI escape sequences for string with only console substitutions', () => {
+    expect(
+      withoutANSIColorStyles('\x1b[2;38;2;124;124;124m%s %s\x1b[0m'),
+    ).toEqual('%s %s');
   });
 });

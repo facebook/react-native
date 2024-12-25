@@ -11,6 +11,7 @@
 
 let FlowParser, TypeScriptParser, RNCodegen;
 
+const {cheap: traverseCheap} = require('@babel/traverse').default;
 const {basename} = require('path');
 
 try {
@@ -168,16 +169,32 @@ module.exports = function ({parse, types: t}) {
         exit(path) {
           if (this.defaultExport) {
             const viewConfig = generateViewConfig(this.filename, this.code);
-            this.defaultExport.replaceWithMultiple(
-              parse(viewConfig, {
-                babelrc: false,
-                browserslistConfigFile: false,
-                configFile: false,
-              }).program.body,
-            );
+
+            const ast = parse(viewConfig, {
+              babelrc: false,
+              browserslistConfigFile: false,
+              configFile: false,
+            });
+
+            // Almost the whole file is replaced with the viewConfig generated code that doesn't
+            // have a clear equivalent code on the source file when the user debugs, so we point
+            // it to the location of the default export that in that file, which is the closest
+            // to representing the code that is being generated.
+            // This is mostly useful when that generated code throws an error.
+            traverseCheap(ast, node => {
+              if (node?.loc) {
+                node.loc = this.defaultExport.node.loc;
+                node.start = this.defaultExport.node.start;
+                node.end = this.defaultExport.node.end;
+              }
+            });
+
+            this.defaultExport.replaceWithMultiple(ast.program.body);
+
             if (this.commandsExport != null) {
               this.commandsExport.remove();
             }
+
             this.codeInserted = true;
           }
         },

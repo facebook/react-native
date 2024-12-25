@@ -22,13 +22,13 @@ class InspectorFlags {
   /**
    * Flag determining if the modern CDP backend should be enabled.
    */
-  bool getEnableModernCDPRegistry() const;
+  bool getFuseboxEnabled() const;
 
   /**
-   * Flag determining if the C++ implementation of InspectorPackagerConnection
-   * should be used instead of the per-platform one.
+   * Flag determining if this is a profiling build
+   * (react_native.enable_fusebox_release).
    */
-  bool getEnableCxxInspectorPackagerConnection() const;
+  bool getIsProfilingBuild() const;
 
   /**
    * Reset flags to their upstream values. The caller must ensure any resources
@@ -38,8 +38,8 @@ class InspectorFlags {
 
  private:
   struct Values {
-    bool enableCxxInspectorPackagerConnection;
-    bool enableModernCDPRegistry;
+    bool fuseboxEnabled;
+    bool isProfilingBuild;
     bool operator==(const Values&) const = default;
   };
 

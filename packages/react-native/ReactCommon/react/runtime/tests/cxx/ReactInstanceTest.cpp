@@ -18,6 +18,7 @@
 #include <react/runtime/ReactInstance.h>
 
 using ::testing::_;
+using ::testing::HasSubstr;
 using ::testing::SaveArg;
 
 namespace facebook::react {
@@ -123,9 +124,11 @@ class ReactInstanceTest : public ::testing::Test {
     auto mockRegistry = std::make_unique<MockTimerRegistry>();
     mockRegistry_ = mockRegistry.get();
     timerManager_ = std::make_shared<TimerManager>(std::move(mockRegistry));
-    auto onJsError = [](const JsErrorHandler::ParsedError& errorMap) noexcept {
-      // Do nothing
-    };
+    auto onJsError =
+        [](jsi::Runtime& /*runtime*/,
+           const JsErrorHandler::ProcessedError& /*error*/) noexcept {
+          // Do nothing
+        };
 
     instance_ = std::make_unique<ReactInstance>(
         std::move(runtime),
@@ -159,6 +162,12 @@ class ReactInstanceTest : public ::testing::Test {
 
     // Run the main bundle, so that native -> JS calls no longer get buffered.
     loadScript(script);
+  }
+
+  jsi::Value tryEval(std::string js, std::string defaultVal) {
+    return eval(
+        "(function() { try { return " + js + "; } catch { return " +
+        defaultVal + "; } })()");
   }
 
   jsi::Value eval(std::string js) {
@@ -214,149 +223,19 @@ class ReactInstanceTest : public ::testing::Test {
 };
 
 TEST_F(ReactInstanceTest, testBridgelessFlagIsSet) {
-  eval("RN$Bridgeless === true");
-  expectError();
+  auto valBefore = tryEval("RN$Bridgeless === true", "false");
+  EXPECT_EQ(valBefore.getBool(), false);
   initializeRuntimeWithScript("");
   auto val = eval("RN$Bridgeless === true");
   EXPECT_EQ(val.getBool(), true);
 }
 
 TEST_F(ReactInstanceTest, testProfilingFlag) {
-  eval("__RCTProfileIsProfiling === true");
-  expectError();
+  auto valBefore = tryEval("__RCTProfileIsProfiling === true", "false");
+  EXPECT_EQ(valBefore.getBool(), false);
   initializeRuntimeWithScript({.isProfiling = true}, "");
   auto val = eval("__RCTProfileIsProfiling === true");
   EXPECT_EQ(val.getBool(), true);
-}
-
-TEST_F(ReactInstanceTest, testPromiseIntegration) {
-  initializeRuntimeWithScript("");
-
-  eval(R"xyz123(
-let called = 0;
-function getResult() {
-  return called;
-}
-Promise.resolve().then(() => {
-  called++;
-}).then(() => {
-  called++;
-})
-)xyz123");
-  auto result = runtime_->global()
-                    .getPropertyAsFunction(*runtime_, "getResult")
-                    .call(*runtime_);
-  EXPECT_EQ(result.getNumber(), 2);
-}
-
-TEST_F(ReactInstanceTest, testSetImmediate) {
-  initializeRuntimeWithScript("");
-
-  eval(R"xyz123(
-let called = false;
-function getResult() {
-  return called;
-}
-setImmediate(() => {
-  called = true;
-});
-)xyz123");
-  auto result = runtime_->global()
-                    .getPropertyAsFunction(*runtime_, "getResult")
-                    .call(*runtime_);
-  EXPECT_EQ(result.getBool(), true);
-}
-
-TEST_F(ReactInstanceTest, testNestedSetImmediate) {
-  initializeRuntimeWithScript("");
-
-  eval(R"xyz123(
-let called = false;
-function getResult() {
-  return called;
-}
-setImmediate(() => {
-  setImmediate(() => {
-    called = true;
-  })
-});
-)xyz123");
-  auto result = runtime_->global()
-                    .getPropertyAsFunction(*runtime_, "getResult")
-                    .call(*runtime_);
-  EXPECT_EQ(result.getBool(), true);
-}
-
-TEST_F(ReactInstanceTest, testSetImmediateWithInvalidArgs) {
-  initializeRuntimeWithScript("");
-
-  EXPECT_EQ(
-      getErrorMessage("setImmediate();"),
-      "setImmediate must be called with at least one argument (a function to call)");
-  EXPECT_EQ(
-      getErrorMessage("setImmediate('invalid');"),
-      "The first argument to setImmediate must be a function.");
-  EXPECT_EQ(
-      getErrorMessage("setImmediate({});"),
-      "The first argument to setImmediate must be a function.");
-}
-
-TEST_F(ReactInstanceTest, testClearImmediate) {
-  initializeRuntimeWithScript("");
-
-  eval(R"xyz123(
-let called = false;
-function getResult() {
-  return called;
-}
-const handle = setImmediate(() => {
-  called = true;
-});
-clearImmediate(handle);
-)xyz123");
-
-  auto func = runtime_->global().getPropertyAsFunction(*runtime_, "getResult");
-  auto val = func.call(*runtime_);
-  EXPECT_EQ(val.getBool(), false);
-}
-
-TEST_F(ReactInstanceTest, testClearImmediateWithInvalidHandle) {
-  initializeRuntimeWithScript("");
-
-  auto js = R"xyz123(
-let called = false;
-const handle = setImmediate(() => {
-  called = true;
-});
-function getResult() {
-  return called;
-}
-function clearInvalidHandle() {
-  clearImmediate(handle);
-}
-)xyz123";
-  eval(js);
-
-  auto clear =
-      runtime_->global().getPropertyAsFunction(*runtime_, "clearInvalidHandle");
-  // Clearing an invalid handle should fail silently.
-  EXPECT_NO_THROW(clear.call((*runtime_)));
-}
-
-TEST_F(ReactInstanceTest, testClearImmediateWithInvalidArgs) {
-  initializeRuntimeWithScript("");
-
-  eval("clearImmediate();");
-  expectNoError();
-
-  eval("clearImmediate('invalid');");
-  expectNoError();
-
-  eval("clearImmediate({});");
-  expectNoError();
-
-  eval("clearImmediate(undefined);");
-  expectNoError();
 }
 
 TEST_F(ReactInstanceTest, testSetTimeout) {
@@ -419,12 +298,12 @@ TEST_F(ReactInstanceTest, testSetTimeoutWithInvalidArgs) {
   EXPECT_EQ(
       getErrorMessage("setTimeout();"),
       "setTimeout must be called with at least one argument (the function to call).");
-  EXPECT_EQ(
-      getErrorMessage("setTimeout('invalid');"),
-      "The first argument to setTimeout must be a function.");
-  EXPECT_EQ(
-      getErrorMessage("setTimeout(() => {}, 'invalid');"),
-      "The second argument to setTimeout must be a number or undefined.");
+
+  eval("setTimeout('invalid');");
+  expectNoError();
+
+  eval("setTimeout(() => {}, 'invalid');");
+  expectNoError();
 }
 
 TEST_F(ReactInstanceTest, testClearTimeout) {
@@ -537,16 +416,10 @@ TEST_F(ReactInstanceTest, testSetIntervalWithInvalidArgs) {
 
   EXPECT_EQ(
       getErrorMessage("setInterval();"),
-      "setInterval must be called with at least two arguments (the function to call and the delay).");
-  EXPECT_EQ(
-      getErrorMessage("setInterval(() => {});"),
-      "setInterval must be called with at least two arguments (the function to call and the delay).");
+      "setInterval must be called with at least one argument (the function to call).");
   EXPECT_EQ(
       getErrorMessage("setInterval('invalid', 100);"),
       "The first argument to setInterval must be a function.");
-  EXPECT_EQ(
-      getErrorMessage("setInterval(() => {}, 'invalid');"),
-      "The second argument to setInterval must be a number.");
 }
 
 TEST_F(ReactInstanceTest, testClearInterval) {
@@ -807,9 +680,10 @@ TEST_F(ReactInstanceTest, testCallFunctionOnModule_invalidModule) {
   instance_->callFunctionOnModule("invalidModule", "method", std::move(args));
   step();
   expectError();
-  EXPECT_EQ(
+  EXPECT_THAT(
       getLastErrorMessage(),
-      "Failed to call into JavaScript module method invalidModule.method(). Module has not been registered as callable. Registered callable JavaScript modules (n = 0):. Did you forget to call `RN$registerCallableModule`?");
+      HasSubstr(
+          "Failed to call into JavaScript module method invalidModule.method()"));
 }
 
 TEST_F(ReactInstanceTest, testCallFunctionOnModule_undefinedMethod) {
@@ -826,7 +700,7 @@ RN$registerCallableModule('foo', () => module);
   expectError();
   EXPECT_EQ(
       getLastErrorMessage(),
-      "Failed to call into JavaScript module method foo.invalidMethod. Module exists, but the method is undefined.");
+      "getPropertyAsObject: property 'invalidMethod' is undefined, expected an Object");
 }
 
 TEST_F(ReactInstanceTest, testCallFunctionOnModule_invalidMethod) {

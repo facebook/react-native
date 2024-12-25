@@ -23,7 +23,8 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler_Modern(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now);
+      std::function<RuntimeSchedulerTimePoint()> now,
+      RuntimeSchedulerTaskErrorHandler onTaskError);
 
   /*
    * Not copyable.
@@ -56,7 +57,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
 
   /*
    * Adds a JavaScript callback to the priority queue with the given priority.
-   * Triggers workloop if needed.
+   * Triggers event loop if needed.
    */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
@@ -64,11 +65,29 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
 
   /*
    * Adds a custom callback to the priority queue with the given priority.
-   * Triggers workloop if needed.
+   * Triggers event loop if needed.
    */
   std::shared_ptr<Task> scheduleTask(
       SchedulerPriority priority,
       RawCallback&& callback) noexcept override;
+
+  /*
+   * Adds a JavaScript callback to the idle queue with the given timeout.
+   * Triggers event loop if needed.
+   */
+  std::shared_ptr<Task> scheduleIdleTask(
+      jsi::Function&& callback,
+      RuntimeSchedulerTimeout customTimeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
+  /*
+   * Adds a custom callback to the idle queue with the given timeout.
+   * Triggers event loop if needed.
+   */
+  std::shared_ptr<Task> scheduleIdleTask(
+      RawCallback&& callback,
+      RuntimeSchedulerTimeout customTimeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
 
   /*
    * Cancelled task will never be executed.
@@ -84,7 +103,7 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  bool getShouldYield() const noexcept override;
+  bool getShouldYield() noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.
@@ -120,11 +139,18 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * immediately.
    */
   void scheduleRenderingUpdate(
+      SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
 
   void setShadowTreeRevisionConsistencyManager(
       ShadowTreeRevisionConsistencyManager*
           shadowTreeRevisionConsistencyManager) override;
+
+  void setPerformanceEntryReporter(
+      PerformanceEntryReporter* performanceEntryReporter) override;
+
+  void setEventTimingDelegate(
+      RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
 
  private:
   std::atomic<uint_fast8_t> syncTaskRequests_{0};
@@ -136,17 +162,21 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
       taskQueue_;
 
   Task* currentTask_{};
+  RuntimeSchedulerTimePoint lastYieldingOpportunity_;
+  RuntimeSchedulerDuration longestPeriodWithoutYieldingOpportunity_{};
+
+  void markYieldingOpportunity(RuntimeSchedulerTimePoint currentTime);
 
   /**
-   * This protects the access to `taskQueue_` and `isWorkLoopScheduled_`.
+   * This protects the access to `taskQueue_` and `isevent loopScheduled_`.
    */
   mutable std::shared_mutex schedulingMutex_;
 
   const RuntimeExecutor runtimeExecutor_;
   SchedulerPriority currentPriority_{SchedulerPriority::NormalPriority};
 
-  void scheduleWorkLoop();
-  void startWorkLoop(jsi::Runtime& runtime, bool onlyExpired);
+  void scheduleEventLoop();
+  void runEventLoop(jsi::Runtime& runtime, bool onlyExpired);
 
   std::shared_ptr<Task> selectTask(
       RuntimeSchedulerTimePoint currentTime,
@@ -160,12 +190,12 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * In the future, this will include other steps in the Web event loop, like
    * updating the UI in native, executing resize observer callbacks, etc.
    */
-  void executeTask(
+  void runEventLoopTick(
       jsi::Runtime& runtime,
       Task& task,
       RuntimeSchedulerTimePoint currentTime);
 
-  void executeMacrotask(
+  void executeTask(
       jsi::Runtime& runtime,
       Task& task,
       bool didUserCallbackTimeout) const;
@@ -174,6 +204,11 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
 
   bool performingMicrotaskCheckpoint_{false};
   void performMicrotaskCheckpoint(jsi::Runtime& runtime);
+
+  void reportLongTasks(
+      const Task& task,
+      RuntimeSchedulerTimePoint startTime,
+      RuntimeSchedulerTimePoint endTime);
 
   /*
    * Returns a time point representing the current point in time. May be called
@@ -185,11 +220,18 @@ class RuntimeScheduler_Modern final : public RuntimeSchedulerBase {
    * Flag indicating if callback on JavaScript queue has been
    * scheduled.
    */
-  bool isWorkLoopScheduled_{false};
+  bool isEventLoopScheduled_{false};
 
   std::queue<RuntimeSchedulerRenderingUpdate> pendingRenderingUpdates_;
+  std::unordered_set<SurfaceId> surfaceIdsWithPendingRenderingUpdates_;
+
   ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
       nullptr};
+
+  PerformanceEntryReporter* performanceEntryReporter_{nullptr};
+  RuntimeSchedulerEventTimingDelegate* eventTimingDelegate_{nullptr};
+
+  RuntimeSchedulerTaskErrorHandler onTaskError_;
 };
 
 } // namespace facebook::react

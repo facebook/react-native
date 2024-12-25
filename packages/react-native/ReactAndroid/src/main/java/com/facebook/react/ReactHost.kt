@@ -45,9 +45,6 @@ public interface ReactHost {
   /** [ReactQueueConfiguration] for caller to post jobs in React Native threads */
   public val reactQueueConfiguration: ReactQueueConfiguration?
 
-  /** [JSEngineResolutionAlgorithm] used by this host. */
-  public var jsEngineResolutionAlgorithm: JSEngineResolutionAlgorithm?
-
   /** Routes memory pressure events to interested components */
   public val memoryPressureRouter: MemoryPressureRouter
 
@@ -63,6 +60,12 @@ public interface ReactHost {
 
   /** To be called when the host activity is resumed. */
   public fun onHostResume(activity: Activity?)
+
+  /**
+   * To be called when the host activity is about to go into the background as the result of user
+   * choice.
+   */
+  public fun onHostLeaveHint(activity: Activity?)
 
   /** To be called when the host activity is paused. */
   public fun onHostPause(activity: Activity?)
@@ -81,7 +84,7 @@ public interface ReactHost {
       context: Context,
       moduleName: String,
       initialProps: Bundle?
-  ): ReactSurface?
+  ): ReactSurface
 
   /**
    * This function can be used to initialize the ReactInstance in a background thread before a
@@ -108,12 +111,58 @@ public interface ReactHost {
    * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
    * reload is finished, before destroying.
    *
-   * @param reason describing why ReactHost is being destroyed (e.g. memmory pressure)
+   * The destroy operation is asynchronous and the task returned by this method will complete when
+   * React Native gets destroyed. Note that the destroy operation will execute in multiple threads,
+   * in particular some of the sub-tasks will run in the UIThread. Calling
+   * [TaskInterface.waitForCompletion] from the UIThread will lead into a deadlock. Use [destroy]
+   * passing the onDestroyFinished callback to be notified when React Native gets destroyed.
+   *
+   * @param reason describing why ReactHost is being destroyed (e.g. memory pressure)
    * @param ex exception that caused the trigger to destroy ReactHost (or null) This exception will
    *   be used to log properly the cause of destroy operation.
    * @return A task that completes when React Native gets destroyed.
    */
-  public fun destroy(reason: String, ex: Exception?): TaskInterface<Void>
+  public fun destroy(
+      reason: String,
+      ex: Exception?,
+  ): TaskInterface<Void>
+
+  /**
+   * Entrypoint to destroy the ReactInstance. If the ReactInstance is reloading, will wait until
+   * reload is finished, before destroying.
+   *
+   * The destroy operation is asynchronous and the task returned by this method will complete when
+   * React Native gets destroyed. Note that the destroy operation will execute in multiple threads,
+   * in particular some of the sub-tasks will run in the UIThread. Calling
+   * [TaskInterface.waitForCompletion] from the UIThread will lead into a deadlock. Use
+   * onDestroyFinished callback to be notified when React Native gets destroyed.
+   *
+   * @param reason describing why ReactHost is being destroyed (e.g. memory pressure)
+   * @param ex exception that caused the trigger to destroy ReactHost (or null) This exception will
+   *   be used to log properly the cause of destroy operation.
+   * @param onDestroyFinished callback that will be called when React Native gets destroyed, the
+   *   callback will run on a background thread.
+   * @return A task that completes when React Native gets destroyed.
+   */
+  public fun destroy(
+      reason: String,
+      ex: Exception?,
+      onDestroyFinished: (instanceDestroyedSuccessfully: Boolean) -> Unit = {}
+  ): TaskInterface<Void>
+
+  /**
+   * Permanently destroys the ReactHost, including the ReactInstance (if any). The application MUST
+   * NOT call any further methods on an invalidated ReactHost.
+   *
+   * Applications where the ReactHost may be destroyed before the end of the process SHOULD call
+   * invalidate() before releasing the reference to the ReactHost, to ensure resources are freed in
+   * a timely manner.
+   *
+   * NOTE: This method is designed for complex integrations. Integrators MAY instead hold a
+   * long-lived reference to a single ReactHost for the lifetime of the Application, without ever
+   * calling invalidate(). This is explicitly allowed.
+   */
+  public fun invalidate()
 
   /* To be called when the host activity receives an activity result. */
   public fun onActivityResult(
@@ -134,4 +183,10 @@ public interface ReactHost {
   public fun addBeforeDestroyListener(onBeforeDestroy: () -> Unit)
 
   public fun removeBeforeDestroyListener(onBeforeDestroy: () -> Unit)
+
+  /** Add a listener to be notified of ReactInstance events. */
+  public fun addReactInstanceEventListener(listener: ReactInstanceEventListener)
+
+  /** Remove a listener previously added with {@link #addReactInstanceEventListener}. */
+  public fun removeReactInstanceEventListener(listener: ReactInstanceEventListener)
 }

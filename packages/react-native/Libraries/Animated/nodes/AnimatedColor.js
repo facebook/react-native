@@ -14,14 +14,16 @@ import type {ProcessedColorValue} from '../../StyleSheet/processColor';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {NativeColorValue} from '../../StyleSheet/StyleSheetTypes';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import normalizeColor from '../../StyleSheet/normalizeColor';
 import {processColorObject} from '../../StyleSheet/PlatformColorValueTypes';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedValue, {flushValue} from './AnimatedValue';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
 export type AnimatedColorConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 
@@ -118,7 +120,7 @@ export default class AnimatedColor extends AnimatedWithChildren {
   _suspendCallbacks: number = 0;
 
   constructor(valueIn?: InputValue, config?: ?AnimatedColorConfig) {
-    super();
+    super(config);
 
     let value: RgbaValue | RgbaAnimatedValue | ColorValue =
       valueIn ?? defaultColor;
@@ -315,6 +317,7 @@ export default class AnimatedColor extends AnimatedWithChildren {
       b: this.b.__getNativeTag(),
       a: this.a.__getNativeTag(),
       nativeColor: this.nativeColor,
+      debugID: this.__getDebugID(),
     };
   }
 }

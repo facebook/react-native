@@ -25,10 +25,10 @@ function isTSXSource(fileName) {
 const loose = true;
 
 const defaultPlugins = [
-  [require('@babel/plugin-syntax-flow')],
+  [require('babel-plugin-syntax-hermes-parser'), {parseLangTypes: 'flow'}],
   [require('babel-plugin-transform-flow-enums')],
   [require('@babel/plugin-transform-block-scoping')],
-  [require('@babel/plugin-proposal-class-properties'), {loose}],
+  [require('@babel/plugin-transform-class-properties'), {loose}],
   [require('@babel/plugin-transform-private-methods'), {loose}],
   [require('@babel/plugin-transform-private-property-in-object'), {loose}],
   [require('@babel/plugin-syntax-dynamic-import')],
@@ -37,6 +37,9 @@ const defaultPlugins = [
   [require('@babel/plugin-transform-unicode-regex')],
 ];
 
+// For Static Hermes testing (experimental), the hermes-canary transformProfile
+// is used to enable regenerator (and some related lowering passes) because SH
+// requires more Babel lowering than Hermes temporarily.
 const getPreset = (src, options) => {
   const transformProfile =
     (options && options.unstable_transformProfile) || 'default';
@@ -84,9 +87,9 @@ const getPreset = (src, options) => {
     extraPlugins.push([require('@babel/plugin-transform-classes')]);
   }
 
-  // TODO(gaearon): put this back into '=>' indexOf bailout
-  // and patch react-refresh to not depend on this transform.
-  extraPlugins.push([require('@babel/plugin-transform-arrow-functions')]);
+  if (!isHermes && (isNull || src.includes('=>'))) {
+    extraPlugins.push([require('@babel/plugin-transform-arrow-functions')]);
+  }
 
   if (!isHermes) {
     extraPlugins.push([require('@babel/plugin-transform-computed-properties')]);
@@ -95,28 +98,32 @@ const getPreset = (src, options) => {
       require('@babel/plugin-transform-shorthand-properties'),
     ]);
     extraPlugins.push([
-      require('@babel/plugin-proposal-optional-catch-binding'),
+      require('@babel/plugin-transform-optional-catch-binding'),
     ]);
     extraPlugins.push([require('@babel/plugin-transform-function-name')]);
     extraPlugins.push([require('@babel/plugin-transform-literals')]);
-    extraPlugins.push([require('@babel/plugin-proposal-numeric-separator')]);
+    extraPlugins.push([require('@babel/plugin-transform-numeric-separator')]);
     extraPlugins.push([require('@babel/plugin-transform-sticky-regex')]);
   } else {
     extraPlugins.push([
       require('@babel/plugin-transform-named-capturing-groups-regex'),
     ]);
+    // Needed for regenerator for hermes-canary
+    if (isHermesCanary) {
+      extraPlugins.push([
+        require('@babel/plugin-transform-optional-catch-binding'),
+      ]);
+    }
   }
-  if (!isHermesCanary) {
-    extraPlugins.push([
-      require('@babel/plugin-transform-destructuring'),
-      {useBuiltIns: true},
-    ]);
-  }
+  extraPlugins.push([
+    require('@babel/plugin-transform-destructuring'),
+    {useBuiltIns: true},
+  ]);
   if (!isHermes && (isNull || hasClass || src.indexOf('...') !== -1)) {
     extraPlugins.push(
       [require('@babel/plugin-transform-spread')],
       [
-        require('@babel/plugin-proposal-object-rest-spread'),
+        require('@babel/plugin-transform-object-rest-spread'),
         // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
         {loose: true, useBuiltIns: true},
       ],
@@ -124,7 +131,7 @@ const getPreset = (src, options) => {
   }
   if (isNull || src.indexOf('async') !== -1) {
     extraPlugins.push([
-      require('@babel/plugin-proposal-async-generator-functions'),
+      require('@babel/plugin-transform-async-generator-functions'),
     ]);
     extraPlugins.push([require('@babel/plugin-transform-async-to-generator')]);
   }
@@ -135,15 +142,19 @@ const getPreset = (src, options) => {
   ) {
     extraPlugins.push([require('@babel/plugin-transform-react-display-name')]);
   }
-  if (!isHermes && (isNull || src.indexOf('?.') !== -1)) {
+  // Check !isHermesStable because this is needed for regenerator for
+  // hermes-canary
+  if (!isHermesStable && (isNull || src.indexOf('?.') !== -1)) {
     extraPlugins.push([
-      require('@babel/plugin-proposal-optional-chaining'),
+      require('@babel/plugin-transform-optional-chaining'),
       {loose: true},
     ]);
   }
-  if (!isHermes && (isNull || src.indexOf('??') !== -1)) {
+  // Check !isHermesStable because this is needed for regenerator for
+  // hermes-canary
+  if (!isHermesStable && (isNull || src.indexOf('??') !== -1)) {
     extraPlugins.push([
-      require('@babel/plugin-proposal-nullish-coalescing-operator'),
+      require('@babel/plugin-transform-nullish-coalescing-operator'),
       {loose: true},
     ]);
   }
@@ -155,7 +166,7 @@ const getPreset = (src, options) => {
       src.indexOf('&&=') !== -1)
   ) {
     extraPlugins.push([
-      require('@babel/plugin-proposal-logical-assignment-operators'),
+      require('@babel/plugin-transform-logical-assignment-operators'),
       {loose: true},
     ]);
   }
@@ -163,6 +174,18 @@ const getPreset = (src, options) => {
   if (options && options.dev && !options.useTransformReactJSXExperimental) {
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-source')]);
     extraPlugins.push([require('@babel/plugin-transform-react-jsx-self')]);
+  }
+
+  if (isHermesCanary) {
+    const hasForOf =
+      isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1);
+    if (hasForOf) {
+      // Needed for regenerator
+      extraPlugins.push([
+        require('@babel/plugin-transform-for-of'),
+        {loose: true},
+      ]);
+    }
   }
 
   if (!options || options.enableBabelRuntime !== false) {
@@ -173,10 +196,12 @@ const getPreset = (src, options) => {
       require('@babel/plugin-transform-runtime'),
       {
         helpers: true,
-        regenerator: !isHermes,
+        regenerator: !isHermesStable,
         ...(isVersion && {version: options.enableBabelRuntime}),
       },
     ]);
+  } else if (isHermesCanary) {
+    extraPlugins.push([require('@babel/plugin-transform-regenerator')]);
   }
 
   return {

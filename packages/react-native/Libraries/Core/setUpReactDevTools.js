@@ -10,14 +10,44 @@
 
 'use strict';
 
-import type {Domain} from '../../src/private/fusebox/setUpFuseboxReactDevToolsDispatcher';
+import type {Domain} from '../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher';
+import type {Spec as NativeReactDevToolsRuntimeSettingsModuleSpec} from '../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule';
 
 if (__DEV__) {
   // Register dispatcher on global, which can be used later by Chrome DevTools frontend
-  require('../../src/private/fusebox/setUpFuseboxReactDevToolsDispatcher');
+  require('../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher');
+  const {
+    initialize,
+    connectToDevTools,
+    connectWithCustomMessagingProtocol,
+  } = require('react-devtools-core');
+
+  const reactDevToolsSettingsManager = require('../../src/private/debugging/ReactDevToolsSettingsManager');
+  const serializedHookSettings =
+    reactDevToolsSettingsManager.getGlobalHookSettings();
+  const maybeReactDevToolsRuntimeSettingsModuleModule =
+    require('../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule').default;
+
+  let hookSettings = null;
+  if (serializedHookSettings != null) {
+    try {
+      const parsedSettings = JSON.parse(serializedHookSettings);
+      hookSettings = parsedSettings;
+    } catch {
+      console.error(
+        'Failed to parse persisted React DevTools hook settings. React DevTools will be initialized with default settings.',
+      );
+    }
+  }
+
+  const {
+    isProfiling: shouldStartProfilingNow,
+    profilingSettings: initialProfilingSettings,
+  } = readReloadAndProfileConfig(maybeReactDevToolsRuntimeSettingsModuleModule);
 
   // Install hook before React is loaded.
-  const reactDevTools = require('react-devtools-core');
+  initialize(hookSettings, shouldStartProfilingNow, initialProfilingSettings);
+
   // This should be defined in DEV, otherwise error is expected.
   const fuseboxReactDevToolsDispatcher =
     global.__FUSEBOX_REACT_DEVTOOLS_DISPATCHER__;
@@ -25,8 +55,13 @@ if (__DEV__) {
     fuseboxReactDevToolsDispatcher.BINDING_NAME;
 
   const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
-  const devToolsSettingsManager = require('../DevToolsSettings/DevToolsSettingsManager');
   const resolveRNStyle = require('../StyleSheet/flattenStyle');
+
+  function handleReactDevToolsSettingsUpdate(settings: Object) {
+    reactDevToolsSettingsManager.setGlobalHookSettings(
+      JSON.stringify(settings),
+    );
+  }
 
   let disconnect = null;
   function disconnectBackendFromReactDevToolsInFuseboxIfNeeded() {
@@ -37,7 +72,15 @@ if (__DEV__) {
   }
 
   function connectToReactDevToolsInFusebox(domain: Domain) {
-    disconnect = reactDevTools.connectWithCustomMessagingProtocol({
+    const {
+      isReloadAndProfileSupported,
+      isProfiling,
+      onReloadAndProfile,
+      onReloadAndProfileFlagsReset,
+    } = readReloadAndProfileConfig(
+      maybeReactDevToolsRuntimeSettingsModuleModule,
+    );
+    disconnect = connectWithCustomMessagingProtocol({
       onSubscribe: listener => {
         domain.onMessage.addEventListener(listener);
       },
@@ -47,9 +90,13 @@ if (__DEV__) {
       onMessage: (event, payload) => {
         domain.sendMessage({event, payload});
       },
-      settingsManager: devToolsSettingsManager,
       nativeStyleEditorValidAttributes: Object.keys(ReactNativeStyleAttributes),
       resolveRNStyle,
+      onSettingsUpdated: handleReactDevToolsSettingsUpdate,
+      isReloadAndProfileSupported,
+      isProfiling,
+      onReloadAndProfile,
+      onReloadAndProfileFlagsReset,
     });
   }
 
@@ -101,14 +148,26 @@ if (__DEV__) {
         isWebSocketOpen = true;
       });
 
-      reactDevTools.connectToDevTools({
+      const {
+        isReloadAndProfileSupported,
+        isProfiling,
+        onReloadAndProfile,
+        onReloadAndProfileFlagsReset,
+      } = readReloadAndProfileConfig(
+        maybeReactDevToolsRuntimeSettingsModuleModule,
+      );
+      connectToDevTools({
         isAppActive,
         resolveRNStyle,
         nativeStyleEditorValidAttributes: Object.keys(
           ReactNativeStyleAttributes,
         ),
         websocket: ws,
-        devToolsSettingsManager,
+        onSettingsUpdated: handleReactDevToolsSettingsUpdate,
+        isReloadAndProfileSupported,
+        isProfiling,
+        onReloadAndProfile,
+        onReloadAndProfileFlagsReset,
       });
     }
   }
@@ -139,4 +198,44 @@ if (__DEV__) {
     connectToWSBasedReactDevToolsFrontend,
   );
   connectToWSBasedReactDevToolsFrontend(); // Try connecting once on load
+}
+
+function readReloadAndProfileConfig(
+  maybeModule: ?NativeReactDevToolsRuntimeSettingsModuleSpec,
+) {
+  const isReloadAndProfileSupported = maybeModule != null;
+  const config = maybeModule?.getReloadAndProfileConfig();
+  const isProfiling = config?.shouldReloadAndProfile === true;
+  const profilingSettings = {
+    recordChangeDescriptions: config?.recordChangeDescriptions === true,
+    recordTimeline: false,
+  };
+  const onReloadAndProfile = (recordChangeDescriptions: boolean) => {
+    if (maybeModule == null) {
+      return;
+    }
+
+    maybeModule.setReloadAndProfileConfig({
+      shouldReloadAndProfile: true,
+      recordChangeDescriptions,
+    });
+  };
+  const onReloadAndProfileFlagsReset = () => {
+    if (maybeModule == null) {
+      return;
+    }
+
+    maybeModule.setReloadAndProfileConfig({
+      shouldReloadAndProfile: false,
+      recordChangeDescriptions: false,
+    });
+  };
+
+  return {
+    isReloadAndProfileSupported,
+    isProfiling,
+    profilingSettings,
+    onReloadAndProfile,
+    onReloadAndProfileFlagsReset,
+  };
 }

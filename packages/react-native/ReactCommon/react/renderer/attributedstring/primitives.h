@@ -80,6 +80,13 @@ enum class TextAlignment {
   Justified // Fully-justified. The last line in a paragraph is natural-aligned.
 };
 
+enum class TextAlignmentVertical {
+  Auto,
+  Top,
+  Bottom,
+  Center,
+};
+
 enum class WritingDirection {
   Natural, // Determines direction using the Unicode Bidi Algorithm rules P2 and
            // P3.
@@ -94,6 +101,15 @@ enum class LineBreakStrategy {
                       // characters.
   Standard // Use the same configuration of line break strategies that the
            // system uses for standard UI labels.
+};
+
+enum class LineBreakMode {
+  Word, // Wrap at word boundaries, default
+  Char, // Wrap at character boundaries
+  Clip, // Simply clip
+  Head, // Truncate at head of line: "...wxyz"
+  Middle, // Truncate middle of line:  "ab...yz"
+  Tail // Truncate at tail of line: "abcd..."
 };
 
 enum class TextDecorationLineType {

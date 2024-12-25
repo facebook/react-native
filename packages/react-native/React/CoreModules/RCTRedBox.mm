@@ -95,6 +95,7 @@
 
 - (void)viewDidLoad
 {
+  [super viewDidLoad];
   self.view.backgroundColor = [UIColor blackColor];
 
   const CGFloat buttonHeight = 60;
@@ -218,7 +219,11 @@
 
 - (NSInteger)bottomSafeViewHeight
 {
+#if TARGET_OS_MACCATALYST
+  return 0;
+#else
   return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
+#endif
 }
 
 RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)

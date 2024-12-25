@@ -288,7 +288,7 @@ class JSI_EXPORT Runtime {
   // rvalue arguments/methods would also reduce the number of clones.
 
   struct PointerValue {
-    virtual void invalidate() = 0;
+    virtual void invalidate() noexcept = 0;
 
    protected:
     virtual ~PointerValue() = default;
@@ -333,11 +333,17 @@ class JSI_EXPORT Runtime {
   virtual std::shared_ptr<HostObject> getHostObject(const jsi::Object&) = 0;
   virtual HostFunctionType& getHostFunction(const jsi::Function&) = 0;
 
+  // Creates a new Object with the custom prototype
+  virtual Object createObjectWithPrototype(const Value& prototype);
+
   virtual bool hasNativeState(const jsi::Object&) = 0;
   virtual std::shared_ptr<NativeState> getNativeState(const jsi::Object&) = 0;
   virtual void setNativeState(
       const jsi::Object&,
       std::shared_ptr<NativeState> state) = 0;
+
+  virtual void setPrototypeOf(const Object& object, const Value& prototype);
+  virtual Value getPrototypeOf(const Object& object);
 
   virtual Value getProperty(const Object&, const PropNameID& name) = 0;
   virtual Value getProperty(const Object&, const String& name) = 0;
@@ -399,6 +405,37 @@ class JSI_EXPORT Runtime {
       const jsi::Object& obj,
       size_t amount) = 0;
 
+  virtual std::u16string utf16(const String& str);
+  virtual std::u16string utf16(const PropNameID& sym);
+
+  /// Invokes the provided callback \p cb with the String content in \p str.
+  /// The callback must take in three arguments: bool ascii, const void* data,
+  /// and size_t num, respectively. \p ascii indicates whether the \p data
+  /// passed to the callback should be interpreted as a pointer to a sequence of
+  /// \p num ASCII characters or UTF16 characters. Depending on the internal
+  /// representation of the string, the function may invoke the callback
+  /// multiple times, with a different format on each invocation. The callback
+  /// must not access runtime functionality, as any operation on the runtime may
+  /// invalidate the data pointers.
+  virtual void getStringData(
+      const jsi::String& str,
+      void* ctx,
+      void (*cb)(void* ctx, bool ascii, const void* data, size_t num));
+
+  /// Invokes the provided callback \p cb with the PropNameID content in \p sym.
+  /// The callback must take in three arguments: bool ascii, const void* data,
+  /// and size_t num, respectively. \p ascii indicates whether the \p data
+  /// passed to the callback should be interpreted as a pointer to a sequence of
+  /// \p num ASCII characters or UTF16 characters. Depending on the internal
+  /// representation of the string, the function may invoke the callback
+  /// multiple times, with a different format on each invocation. The callback
+  /// must not access runtime functionality, as any operation on the runtime may
+  /// invalidate the data pointers.
+  virtual void getPropNameIdData(
+      const jsi::PropNameID& sym,
+      void* ctx,
+      void (*cb)(void* ctx, bool ascii, const void* data, size_t num));
+
   // These exist so derived classes can access the private parts of
   // Value, Symbol, String, and Object, which are all friends of Runtime.
   template <typename T>
@@ -415,7 +452,7 @@ class JSI_EXPORT Runtime {
 // Base class for pointer-storing types.
 class JSI_EXPORT Pointer {
  protected:
-  explicit Pointer(Pointer&& other) : ptr_(other.ptr_) {
+  explicit Pointer(Pointer&& other) noexcept : ptr_(other.ptr_) {
     other.ptr_ = nullptr;
   }
 
@@ -425,7 +462,7 @@ class JSI_EXPORT Pointer {
     }
   }
 
-  Pointer& operator=(Pointer&& other);
+  Pointer& operator=(Pointer&& other) noexcept;
 
   friend class Runtime;
   friend class Value;
@@ -499,6 +536,27 @@ class JSI_EXPORT PropNameID : public Pointer {
   /// Copies the data in a PropNameID as utf8 into a C++ string.
   std::string utf8(Runtime& runtime) const {
     return runtime.utf8(*this);
+  }
+
+  /// Copies the data in a PropNameID as utf16 into a C++ string.
+  std::u16string utf16(Runtime& runtime) const {
+    return runtime.utf16(*this);
+  }
+
+  /// Invokes the user provided callback to process the content in PropNameId.
+  /// The callback must take in three arguments: bool ascii, const void* data,
+  /// and size_t num, respectively. \p ascii indicates whether the \p data
+  /// passed to the callback should be interpreted as a pointer to a sequence of
+  /// \p num ASCII characters or UTF16 characters. The function may invoke the
+  /// callback multiple times, with a different format on each invocation. The
+  /// callback must not access runtime functionality, as any operation on the
+  /// runtime may invalidate the data pointers.
+  template <typename CB>
+  void getPropNameIdData(Runtime& runtime, CB& cb) const {
+    runtime.getPropNameIdData(
+        *this, &cb, [](void* ctx, bool ascii, const void* data, size_t num) {
+          (*((CB*)ctx))(ascii, data, num);
+        });
   }
 
   static bool compare(
@@ -651,6 +709,27 @@ class JSI_EXPORT String : public Pointer {
     return runtime.utf8(*this);
   }
 
+  /// Copies the data in a JS string as utf16 into a C++ string.
+  std::u16string utf16(Runtime& runtime) const {
+    return runtime.utf16(*this);
+  }
+
+  /// Invokes the user provided callback to process content in String. The
+  /// callback must take in three arguments: bool ascii, const void* data, and
+  /// size_t num, respectively. \p ascii indicates whether the \p data passed to
+  /// the callback should be interpreted as a pointer to a sequence of \p num
+  /// ASCII characters or UTF16 characters. The function may invoke the callback
+  /// multiple times, with a different format on each invocation. The callback
+  /// must not access runtime functionality, as any operation on the runtime may
+  /// invalidate the data pointers.
+  template <typename CB>
+  void getStringData(Runtime& runtime, CB& cb) const {
+    runtime.getStringData(
+        *this, &cb, [](void* ctx, bool ascii, const void* data, size_t num) {
+          (*((CB*)ctx))(ascii, data, num);
+        });
+  }
+
   friend class Runtime;
   friend class Value;
 };
@@ -675,6 +754,11 @@ class JSI_EXPORT Object : public Pointer {
     return runtime.createObject(ho);
   }
 
+  /// Creates a new Object with the custom prototype
+  static Object create(Runtime& runtime, const Value& prototype) {
+    return runtime.createObjectWithPrototype(prototype);
+  }
+
   /// \return whether this and \c obj are the same JSObject or not.
   static bool strictEquals(Runtime& runtime, const Object& a, const Object& b) {
     return runtime.strictEquals(a, b);
@@ -684,6 +768,16 @@ class JSI_EXPORT Object : public Pointer {
   bool instanceOf(Runtime& rt, const Function& ctor) const {
     return rt.instanceOf(*this, ctor);
   }
+
+  /// Sets \p prototype as the prototype of the object. The prototype must be
+  /// either an Object or null. If the prototype was not set successfully, this
+  /// method will throw.
+  void setPrototype(Runtime& runtime, const Value& prototype) const {
+    return runtime.setPrototypeOf(*this, prototype);
+  }
+
+  /// \return the prototype of the object
+  inline Value getPrototype(Runtime& runtime) const;
 
   /// \return the property of the object with the given ascii name.
   /// If the name isn't a property on the object, returns the
@@ -1000,6 +1094,11 @@ class JSI_EXPORT Function : public Object {
   /// \param name the name property for the function.
   /// \param paramCount the length property for the function, which
   /// may not be the number of arguments the function is passed.
+  /// \note The std::function's dtor will be called when the GC finalizes this
+  /// function. As with HostObject, this may be as late as when the Runtime is
+  /// shut down, and may occur on an arbitrary thread. If the function contains
+  /// any captured values, you are responsible for ensuring that their
+  /// destructors are safe to call on any thread.
   static Function createFromHostFunction(
       Runtime& runtime,
       const jsi::PropNameID& name,
@@ -1103,7 +1202,7 @@ class JSI_EXPORT Function : public Object {
 class JSI_EXPORT Value {
  public:
   /// Default ctor creates an \c undefined JS value.
-  Value() : Value(UndefinedKind) {}
+  Value() noexcept : Value(UndefinedKind) {}
 
   /// Creates a \c null JS value.
   /* implicit */ Value(std::nullptr_t) : kind_(NullKind) {}
@@ -1144,7 +1243,7 @@ class JSI_EXPORT Value {
         "Value cannot be constructed directly from const char*");
   }
 
-  Value(Value&& value);
+  Value(Value&& other) noexcept;
 
   /// Copies a Symbol lvalue into a new JS value.
   Value(Runtime& runtime, const Symbol& sym) : Value(SymbolKind) {
@@ -1199,7 +1298,7 @@ class JSI_EXPORT Value {
   /// https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
   static bool strictEquals(Runtime& runtime, const Value& a, const Value& b);
 
-  Value& operator=(Value&& other) {
+  Value& operator=(Value&& other) noexcept {
     this->~Value();
     new (this) Value(std::move(other));
     return *this;

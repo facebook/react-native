@@ -33,6 +33,8 @@ class EventEmitter {
  public:
   using Shared = std::shared_ptr<const EventEmitter>;
 
+  static std::string normalizeEventType(std::string type);
+
   static std::mutex& DispatchMutex();
 
   static ValueFactory defaultPayloadFactory();
@@ -102,8 +104,6 @@ class EventEmitter {
   void dispatchUniqueEvent(std::string type, SharedEventPayload payload) const;
 
  private:
-  void toggleEventTargetOwnership_() const;
-
   friend class UIManagerBinding;
 
   mutable SharedEventTarget eventTarget_;

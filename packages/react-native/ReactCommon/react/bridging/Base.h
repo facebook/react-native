@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include <react/bridging/Convert.h>
-
-#include <ReactCommon/CallInvoker.h>
 #include <jsi/jsi.h>
+#include <react/bridging/Convert.h>
 
 #include <cstdint>
 #include <memory>
 #include <type_traits>
 
 namespace facebook::react {
+
+class CallInvoker;
 
 template <typename T, typename = void>
 struct Bridging;
@@ -63,8 +63,9 @@ using bridging_t = typename detail::bridging_wrapper<T>::type;
 
 template <typename R, typename T, std::enable_if_t<is_jsi_v<T>, int> = 0>
 auto fromJs(jsi::Runtime& rt, T&& value, const std::shared_ptr<CallInvoker>&)
-    -> decltype(static_cast<R>(convert(rt, std::forward<T>(value)))) {
-  return convert(rt, std::forward<T>(value));
+    -> decltype(static_cast<R>(
+        std::move(convert(rt, std::forward<T>(value))))) {
+  return static_cast<R>(std::move(convert(rt, std::forward<T>(value))));
 }
 
 template <typename R, typename T>
@@ -121,7 +122,7 @@ auto toJs(
 template <typename, typename = jsi::Value, typename = void>
 inline constexpr bool supportsFromJs = false;
 
-template <typename T, typename Arg = jsi::Value>
+template <typename T, typename Arg>
 inline constexpr bool supportsFromJs<
     T,
     Arg,
@@ -130,10 +131,19 @@ inline constexpr bool supportsFromJs<
         std::declval<Arg>(),
         nullptr))>> = true;
 
+template <typename T>
+inline constexpr bool supportsFromJs<
+    T,
+    jsi::Value,
+    std::void_t<decltype(fromJs<T>(
+        std::declval<jsi::Runtime&>(),
+        std::declval<jsi::Value>(),
+        nullptr))>> = true;
+
 template <typename, typename = jsi::Value, typename = void>
 inline constexpr bool supportsToJs = false;
 
-template <typename T, typename Ret = jsi::Value>
+template <typename T, typename Ret>
 inline constexpr bool supportsToJs<
     T,
     Ret,
@@ -147,6 +157,21 @@ inline constexpr bool supportsToJs<
             std::declval<T>(),
             nullptr)),
         Ret>;
+
+template <typename T>
+inline constexpr bool supportsToJs<
+    T,
+    jsi::Value,
+    std::void_t<decltype(toJs(
+        std::declval<jsi::Runtime&>(),
+        std::declval<T>(),
+        nullptr))>> =
+    std::is_convertible_v<
+        decltype(toJs(
+            std::declval<jsi::Runtime&>(),
+            std::declval<T>(),
+            nullptr)),
+        jsi::Value>;
 
 } // namespace bridging
 } // namespace facebook::react

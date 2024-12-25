@@ -11,7 +11,9 @@
 #include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/mounting/ShadowTreeRegistry.h>
 #include <react/renderer/uimanager/consistency/ShadowTreeRevisionProvider.h>
+#include <cstdint>
 #include <memory>
+#include <shared_mutex>
 
 namespace facebook::react {
 
@@ -42,10 +44,11 @@ class LazyShadowTreeRevisionConsistencyManager
   void unlockRevisions() override;
 
  private:
+  std::mutex capturedRootShadowNodesForConsistencyMutex_;
   std::unordered_map<SurfaceId, RootShadowNode::Shared>
       capturedRootShadowNodesForConsistency_;
   ShadowTreeRegistry& shadowTreeRegistry_;
-  bool isLocked_{false};
+  uint_fast32_t lockCount{0};
 };
 
 } // namespace facebook::react

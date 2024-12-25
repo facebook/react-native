@@ -16,6 +16,10 @@ const path = require('path');
 
 const rootPath = path.join(__dirname, '../../..');
 
+const packageJson = JSON.stringify({
+  name: 'react-native',
+});
+
 describe('extractLibrariesFromJSON', () => {
   it('extracts a single dependency when config has no libraries', () => {
     let configFile = fixtures.noLibrariesConfigFile;
@@ -153,6 +157,7 @@ describe('delete empty files and folders', () => {
       rmdirSync: filepath => {
         rmdirSyncInvocationCount += 1;
       },
+      readFileSync: () => packageJson,
     }));
 
     underTest._cleanupEmptyFilesAndFolders(targetFilepath);
@@ -186,6 +191,7 @@ describe('delete empty files and folders', () => {
       rmdirSync: filepath => {
         rmdirSyncInvocationCount += 1;
       },
+      readFileSync: () => packageJson,
     }));
 
     underTest._cleanupEmptyFilesAndFolders(targetFilepath);
@@ -224,6 +230,7 @@ describe('delete empty files and folders', () => {
         readdirInvocationCount += 1;
         return content;
       },
+      readFileSync: () => packageJson,
     }));
 
     underTest._cleanupEmptyFilesAndFolders(targetFolder);
@@ -273,6 +280,7 @@ describe('delete empty files and folders', () => {
         readdirInvocation.push(filepath);
         return filepath === targetFolder ? content : emptyContent;
       },
+      readFileSync: () => packageJson,
     }));
 
     underTest._cleanupEmptyFilesAndFolders(targetFolder);
@@ -327,6 +335,7 @@ describe('delete empty files and folders', () => {
             )
           : emptyContent;
       },
+      readFileSync: () => packageJson,
     }));
 
     underTest._cleanupEmptyFilesAndFolders(targetFolder);

@@ -15,6 +15,7 @@
 
 #include <yoga/algorithm/FlexDirection.h>
 #include <yoga/enums/Align.h>
+#include <yoga/enums/BoxSizing.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
 #include <yoga/enums/Display.h>
@@ -29,6 +30,7 @@
 #include <yoga/enums/Wrap.h>
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/StyleLength.h>
+#include <yoga/style/StyleSizeLength.h>
 #include <yoga/style/StyleValuePool.h>
 
 namespace facebook::yoga {
@@ -36,6 +38,7 @@ namespace facebook::yoga {
 class YG_EXPORT Style {
  public:
   using Length = StyleLength;
+  using SizeLength = StyleSizeLength;
 
   static constexpr float DefaultFlexGrow = 0.0f;
   static constexpr float DefaultFlexShrink = 0.0f;
@@ -132,10 +135,10 @@ class YG_EXPORT Style {
     pool_.store(flexShrink_, value);
   }
 
-  Style::Length flexBasis() const {
-    return pool_.getLength(flexBasis_);
+  Style::SizeLength flexBasis() const {
+    return pool_.getSize(flexBasis_);
   }
-  void setFlexBasis(Style::Length value) {
+  void setFlexBasis(Style::SizeLength value) {
     pool_.store(flexBasis_, value);
   }
 
@@ -174,32 +177,79 @@ class YG_EXPORT Style {
     pool_.store(gap_[yoga::to_underlying(gutter)], value);
   }
 
-  Style::Length dimension(Dimension axis) const {
-    return pool_.getLength(dimensions_[yoga::to_underlying(axis)]);
+  Style::SizeLength dimension(Dimension axis) const {
+    return pool_.getSize(dimensions_[yoga::to_underlying(axis)]);
   }
-  void setDimension(Dimension axis, Style::Length value) {
+  void setDimension(Dimension axis, Style::SizeLength value) {
     pool_.store(dimensions_[yoga::to_underlying(axis)], value);
   }
 
-  Style::Length minDimension(Dimension axis) const {
-    return pool_.getLength(minDimensions_[yoga::to_underlying(axis)]);
+  Style::SizeLength minDimension(Dimension axis) const {
+    return pool_.getSize(minDimensions_[yoga::to_underlying(axis)]);
   }
-  void setMinDimension(Dimension axis, Style::Length value) {
+  void setMinDimension(Dimension axis, Style::SizeLength value) {
     pool_.store(minDimensions_[yoga::to_underlying(axis)], value);
   }
 
-  Style::Length maxDimension(Dimension axis) const {
-    return pool_.getLength(maxDimensions_[yoga::to_underlying(axis)]);
+  FloatOptional resolvedMinDimension(
+      Direction direction,
+      Dimension axis,
+      float referenceLength,
+      float ownerWidth) const {
+    FloatOptional value = minDimension(axis).resolve(referenceLength);
+    if (boxSizing() == BoxSizing::BorderBox) {
+      return value;
+    }
+
+    FloatOptional dimensionPaddingAndBorder = FloatOptional{
+        computePaddingAndBorderForDimension(direction, axis, ownerWidth)};
+
+    return value +
+        (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder
+                                               : FloatOptional{0.0});
   }
-  void setMaxDimension(Dimension axis, Style::Length value) {
+
+  Style::SizeLength maxDimension(Dimension axis) const {
+    return pool_.getSize(maxDimensions_[yoga::to_underlying(axis)]);
+  }
+  void setMaxDimension(Dimension axis, Style::SizeLength value) {
     pool_.store(maxDimensions_[yoga::to_underlying(axis)], value);
+  }
+
+  FloatOptional resolvedMaxDimension(
+      Direction direction,
+      Dimension axis,
+      float referenceLength,
+      float ownerWidth) const {
+    FloatOptional value = maxDimension(axis).resolve(referenceLength);
+    if (boxSizing() == BoxSizing::BorderBox) {
+      return value;
+    }
+
+    FloatOptional dimensionPaddingAndBorder = FloatOptional{
+        computePaddingAndBorderForDimension(direction, axis, ownerWidth)};
+
+    return value +
+        (dimensionPaddingAndBorder.isDefined() ? dimensionPaddingAndBorder
+                                               : FloatOptional{0.0});
   }
 
   FloatOptional aspectRatio() const {
     return pool_.getNumber(aspectRatio_);
   }
   void setAspectRatio(FloatOptional value) {
-    pool_.store(aspectRatio_, value);
+    // degenerate aspect ratios act as auto.
+    // see https://drafts.csswg.org/css-sizing-4/#valdef-aspect-ratio-ratio
+    pool_.store(
+        aspectRatio_,
+        value == 0.0f || std::isinf(value.unwrap()) ? FloatOptional{} : value);
+  }
+
+  BoxSizing boxSizing() const {
+    return boxSizing_;
+  }
+  void setBoxSizing(BoxSizing value) {
+    boxSizing_ = value;
   }
 
   bool horizontalInsetsDefined() const {
@@ -223,20 +273,38 @@ class YG_EXPORT Style {
     return computePosition(flexStartEdge(axis), direction).isDefined();
   }
 
+  bool isFlexStartPositionAuto(FlexDirection axis, Direction direction) const {
+    return computePosition(flexStartEdge(axis), direction).isAuto();
+  }
+
   bool isInlineStartPositionDefined(FlexDirection axis, Direction direction)
       const {
     return computePosition(inlineStartEdge(axis, direction), direction)
         .isDefined();
   }
 
+  bool isInlineStartPositionAuto(FlexDirection axis, Direction direction)
+      const {
+    return computePosition(inlineStartEdge(axis, direction), direction)
+        .isAuto();
+  }
+
   bool isFlexEndPositionDefined(FlexDirection axis, Direction direction) const {
     return computePosition(flexEndEdge(axis), direction).isDefined();
+  }
+
+  bool isFlexEndPositionAuto(FlexDirection axis, Direction direction) const {
+    return computePosition(flexEndEdge(axis), direction).isAuto();
   }
 
   bool isInlineEndPositionDefined(FlexDirection axis, Direction direction)
       const {
     return computePosition(inlineEndEdge(axis, direction), direction)
         .isDefined();
+  }
+
+  bool isInlineEndPositionAuto(FlexDirection axis, Direction direction) const {
+    return computePosition(inlineEndEdge(axis, direction), direction).isAuto();
   }
 
   float computeFlexStartPosition(
@@ -414,6 +482,20 @@ class YG_EXPORT Style {
       float widthSize) const {
     return computeFlexEndPadding(axis, direction, widthSize) +
         computeFlexEndBorder(axis, direction);
+  }
+
+  float computePaddingAndBorderForDimension(
+      Direction direction,
+      Dimension dimension,
+      float widthSize) const {
+    FlexDirection flexDirectionForDimension = dimension == Dimension::Width
+        ? FlexDirection::Row
+        : FlexDirection::Column;
+
+    return computeFlexStartPaddingAndBorder(
+               flexDirectionForDimension, direction, widthSize) +
+        computeFlexEndPaddingAndBorder(
+               flexDirectionForDimension, direction, widthSize);
   }
 
   float computeBorderForAxis(FlexDirection axis) const {
@@ -653,6 +735,7 @@ class YG_EXPORT Style {
   Wrap flexWrap_ : bitCount<Wrap>() = Wrap::NoWrap;
   Overflow overflow_ : bitCount<Overflow>() = Overflow::Visible;
   Display display_ : bitCount<Display>() = Display::Flex;
+  BoxSizing boxSizing_ : bitCount<BoxSizing>() = BoxSizing::BorderBox;
 
   StyleValueHandle flex_{};
   StyleValueHandle flexGrow_{};

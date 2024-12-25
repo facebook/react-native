@@ -1,0 +1,56 @@
+name: Create release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The version of React Native we want to release. For example 0.75.0-rc.0"
+        required: true
+        type: string
+      is-latest-on-npm:
+        description: "Whether we want to tag this release as latest on NPM"
+        required: true
+        type: boolean
+        default: false
+      dry-run:
+        description: "Whether the job should be executed in dry-run mode or not"
+        type: boolean
+        default: true
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          fetch-depth: 0
+          fetch-tags: 'true'
+      - name: Check if on stable branch
+        id: check_stable_branch
+        run: |
+          BRANCH="$(git branch --show-current)"
+          PATTERN='^0\.[0-9]+-stable$'
+          if [[ $BRANCH =~ $PATTERN ]]; then
+            echo "On a stable branch"
+            echo "ON_STABLE_BRANCH=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Print output
+        run: echo "ON_STABLE_BRANCH ${{steps.check_stable_branch.outputs.ON_STABLE_BRANCH}}"
+      - name: Check if tag already exists
+        id: check_if_tag_exists
+        run: |
+          TAG="v${{ inputs.version }}"
+          TAG_EXISTS=$(git tag -l "$TAG")
+          if [[ -n "$TAG_EXISTS" ]]; then
+            echo "Version tag already exists!"
+            echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Execute Prepare Release
+        if: ${{ steps.check_stable_branch.outputs.ON_STABLE_BRANCH && !steps.check_if_tag_exists.outputs.TAG_EXISTS }}
+        uses: ./.github/actions/create-release
+        with:
+          version: ${{ inputs.version }}
+          is-latest-on-npm: ${{ inputs.is-latest-on-npm }}
+          dry-run: ${{ inputs.dry-run }}

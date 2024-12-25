@@ -10,6 +10,7 @@
 #include <react/bridging/Base.h>
 #include <react/bridging/CallbackWrapper.h>
 
+#include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/SchedulerPriority.h>
 
 namespace facebook::react {

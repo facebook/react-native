@@ -307,6 +307,7 @@ RCT_ENUM_CONVERTER(
       @"tail" : @(NSLineBreakByTruncatingTail),
       @"middle" : @(NSLineBreakByTruncatingMiddle),
       @"wordWrapping" : @(NSLineBreakByWordWrapping),
+      @"char" : @(NSLineBreakByCharWrapping),
     }),
     NSLineBreakByTruncatingTail,
     integerValue)
@@ -546,17 +547,6 @@ RCT_ENUM_CONVERTER(
     integerValue)
 
 RCT_ENUM_CONVERTER(
-    UIBarStyle,
-    (@{
-      @"default" : @(UIBarStyleDefault),
-      @"black" : @(UIBarStyleBlack),
-      @"blackOpaque" : @(UIBarStyleBlackOpaque),
-      @"blackTranslucent" : @(UIBarStyleBlackTranslucent),
-    }),
-    UIBarStyleDefault,
-    integerValue)
-
-RCT_ENUM_CONVERTER(
     RCTCursor,
     (@{
       @"auto" : @(RCTCursorAuto),
@@ -763,11 +753,13 @@ static NSDictionary<NSString *, NSDictionary *> *RCTSemanticColorsMap(void)
         // iOS 13.0
         RCTFallbackARGB : @(0xFFa2845e)
       },
+      @"systemCyanColor" : @{},
       @"systemGreenColor" : @{},
       @"systemIndigoColor" : @{
         // iOS 13.0
         RCTFallbackARGB : @(0xFF5856d6)
       },
+      @"systemMintColor" : @{},
       @"systemOrangeColor" : @{},
       @"systemPinkColor" : @{},
       @"systemPurpleColor" : @{},

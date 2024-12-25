@@ -1,0 +1,26 @@
+appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebook.react.uiapp
+---
+- launchApp
+- assertVisible: "Components"
+- scrollUntilVisible:
+    element:
+      id: "Text"
+    direction: DOWN
+    speed: 60
+    timeout: 60000 #ms
+    visibilityPercentage: 100
+- tapOn:
+    id: "Text"
+- assertVisible: "Text"
+- scrollUntilVisible:
+    element:
+      id: "background-border-width"
+    direction: DOWN
+    speed: 20
+    timeout: 60000 #ms
+    visibilityPercentage: 100
+- assertVisible: "Text with background color only"
+- assertVisible: "Text with background color and uniform borderRadii"
+- assertVisible: "Text with background color and non-uniform borders"
+- assertVisible: "Text with borderWidth"
+- assertVisible: "Text with background AND borderWidth"

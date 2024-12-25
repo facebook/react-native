@@ -6,6 +6,8 @@
  */
 
 #include <folly/Format.h>
+#include <folly/executors/ManualExecutor.h>
+#include <folly/executors/QueuedImmediateExecutor.h>
 
 #include "JsiIntegrationTest.h"
 #include "engines/JsiIntegrationTestGenericEngineAdapter.h"
@@ -31,11 +33,40 @@ using AllEngines = Types<
 
 using AllHermesVariants = Types<JsiIntegrationTestHermesEngineAdapter>;
 
+template <typename EngineAdapter>
+using JsiIntegrationPortableTest = JsiIntegrationPortableTestBase<
+    EngineAdapter,
+    folly::QueuedImmediateExecutor>;
+
 TYPED_TEST_SUITE(JsiIntegrationPortableTest, AllEngines);
 
 template <typename EngineAdapter>
-using JsiIntegrationHermesTest = JsiIntegrationPortableTest<EngineAdapter>;
+using JsiIntegrationHermesTest = JsiIntegrationPortableTestBase<
+    EngineAdapter,
+    folly::QueuedImmediateExecutor>;
+
+/**
+ * Fixture class for tests that run on a ManualExecutor. Work scheduled
+ * on the executor is *not* run automatically; it must be manually advanced
+ * in the body of the test.
+ */
+template <typename EngineAdapter>
+class JsiIntegrationHermesTestAsync : public JsiIntegrationPortableTestBase<
+                                          EngineAdapter,
+                                          folly::ManualExecutor> {
+ public:
+  void TearDown() override {
+    // Assert there are no pending tasks on the ManualExecutor.
+    auto tasksCleared = this->executor_.clear();
+    EXPECT_EQ(tasksCleared, 0)
+        << "There were still pending tasks on executor_ at the end of the test. Use advance() or run() as needed.";
+    JsiIntegrationPortableTestBase<EngineAdapter, folly::ManualExecutor>::
+        TearDown();
+  }
+};
+
 TYPED_TEST_SUITE(JsiIntegrationHermesTest, AllHermesVariants);
+TYPED_TEST_SUITE(JsiIntegrationHermesTestAsync, AllHermesVariants);
 
 #pragma region AllEngines
 
@@ -317,7 +348,29 @@ TYPED_TEST(JsiIntegrationPortableTest, ExceptionDuringAddBindingIsIgnored) {
   EXPECT_TRUE(this->eval("globalThis.foo === 42").getBool());
 }
 
-TYPED_TEST(JsiIntegrationPortableTest, FuseboxSetClientMetadata) {
+TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationEnable) {
+  this->connect();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "id": 1,
+                                          "result": {}
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "ReactNativeApplication.metadataUpdated",
+                                          "params": {
+                                            "integrationName": "JsiIntegrationTest",
+                                            "unstable_isProfilingBuild": false
+                                          }
+                                        })"));
+
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "ReactNativeApplication.enable",
+                                 "params": {}
+                               })");
+}
+
+TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationDisable) {
   this->connect();
 
   this->expectMessageFromPage(JsonEq(R"({
@@ -327,13 +380,63 @@ TYPED_TEST(JsiIntegrationPortableTest, FuseboxSetClientMetadata) {
 
   this->toPage_->sendMessage(R"({
                                  "id": 1,
-                                 "method": "FuseboxClient.setClientMetadata",
+                                 "method": "ReactNativeApplication.disable",
                                  "params": {}
                                })");
 }
 
 #pragma endregion // AllEngines
 #pragma region AllHermesVariants
+
+TYPED_TEST(JsiIntegrationHermesTestAsync, HermesObjectsTableDoesNotMemoryLeak) {
+  // This is a regression test for T186157855 (CDPAgent leaking JSI data in
+  // RemoteObjectsTable past the Runtime's lifetime)
+  this->connect();
+  this->executor_.run();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/method", "Runtime.executionContextCreated"))));
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.enable"
+                               })");
+  this->executor_.run();
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Runtime.consoleAPICalled"),
+      AtJsonPtr("/params/args/0/objectId", "1"))));
+  this->eval(R"(console.log({a: 1});)");
+  this->executor_.run();
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextDestroyed",
+                                          "params": {
+                                            "executionContextId": 1
+                                          }
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextsCleared"
+                                        })"));
+  this->expectMessageFromPage(JsonEq(R"({
+                                          "method": "Runtime.executionContextCreated",
+                                          "params": {
+                                            "context": {
+                                              "id": 2,
+                                              "origin": "",
+                                              "name": "main"
+                                            }
+                                          }
+                                        })"));
+  // NOTE: Doesn't crash when Hermes checks for JSI value leaks
+  this->reload();
+  this->executor_.run();
+}
 
 TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpression) {
   this->connect();
@@ -411,6 +514,44 @@ TYPED_TEST(JsiIntegrationHermesTest, EvaluateExpressionInExecutionContext) {
         "params": {{"expression": "10000", "contextId": {0}}}
       }})",
       std::to_string(executionContextId)));
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterEval) {
+  this->connect();
+
+  InSequence s;
+
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 1,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Debugger.enable"
+                               })");
+
+  auto scriptInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/method", "Debugger.scriptParsed"),
+      AtJsonPtr("/params/url", "breakpointTest.js"))));
+  this->eval(R"( // line 0
+    globalThis.foo = function() { // line 1
+      Date.now(); // line 2
+    };
+    //# sourceURL=breakpointTest.js
+  )");
+  ASSERT_TRUE(scriptInfo->has_value());
+
+  this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 2),
+      AtJsonPtr("/result/locations/0/lineNumber", 2),
+      AtJsonPtr(
+          "/result/locations/0/scriptId",
+          scriptInfo->value()["params"]["scriptId"]))));
+  this->toPage_->sendMessage(R"({
+                                 "id": 2,
+                                 "method": "Debugger.setBreakpointByUrl",
+                                 "params": {"lineNumber": 2, "url": "breakpointTest.js"}
+                               })");
 }
 
 TYPED_TEST(JsiIntegrationHermesTest, ResolveBreakpointAfterReload) {
@@ -565,6 +706,136 @@ TYPED_TEST(JsiIntegrationHermesTest, FunctionDescriptionIncludesName) {
                                "method": "Runtime.evaluate",
                                "params": {"expression": "(function foo() {Math.random()});"}
                              })");
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObject) {
+  this->connect();
+
+  InSequence s;
+
+  // Create a remote object.
+  auto objectInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 1),
+      AtJsonPtr("/result/result/type", "object"),
+      AtJsonPtr("/result/result/objectId", Not(IsEmpty())))));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.evaluate",
+                                 "params": {"expression": "[]"}
+                               })");
+
+  ASSERT_TRUE(objectInfo->has_value());
+  auto objectId = objectInfo->value()["result"]["result"]["objectId"];
+
+  // Ensure we can get the properties of the object.
+  this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/id", 2), AtJsonPtr("/result/result", SizeIs(Gt(0))))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 2,
+          "method": "Runtime.getProperties",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+
+  // Release the object.
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 3,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 3,
+          "method": "Runtime.releaseObject",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+
+  // Getting properties for a released object results in an error.
+  this->expectMessageFromPage(
+      JsonParsed(AllOf(AtJsonPtr("/id", 4), AtJsonPtr("/error/code", -32000))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 4,
+          "method": "Runtime.getProperties",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+
+  // Releasing an already released object is an error.
+  this->expectMessageFromPage(
+      JsonParsed(AllOf(AtJsonPtr("/id", 5), AtJsonPtr("/error/code", -32000))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 5,
+          "method": "Runtime.releaseObject",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+}
+
+TYPED_TEST(JsiIntegrationHermesTest, ReleaseRemoteObjectGroup) {
+  this->connect();
+
+  InSequence s;
+
+  // Create a remote object.
+  auto objectInfo = this->expectMessageFromPage(JsonParsed(AllOf(
+      AtJsonPtr("/id", 1),
+      AtJsonPtr("/result/result/type", "object"),
+      AtJsonPtr("/result/result/objectId", Not(IsEmpty())))));
+  this->toPage_->sendMessage(R"({
+                                 "id": 1,
+                                 "method": "Runtime.evaluate",
+                                 "params": {"expression": "[]", "objectGroup": "foo"}
+                               })");
+
+  ASSERT_TRUE(objectInfo->has_value());
+  auto objectId = objectInfo->value()["result"]["result"]["objectId"];
+
+  // Ensure we can get the properties of the object.
+  this->expectMessageFromPage(JsonParsed(
+      AllOf(AtJsonPtr("/id", 2), AtJsonPtr("/result/result", SizeIs(Gt(0))))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 2,
+          "method": "Runtime.getProperties",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+
+  // Release the object group containing our object.
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 3,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 3,
+                                 "method": "Runtime.releaseObjectGroup",
+                                 "params": {"objectGroup": "foo"}
+                               })");
+
+  // Getting properties for a released object results in an error.
+  this->expectMessageFromPage(
+      JsonParsed(AllOf(AtJsonPtr("/id", 4), AtJsonPtr("/error/code", -32000))));
+  this->toPage_->sendMessage(sformat(
+      R"({{
+          "id": 4,
+          "method": "Runtime.getProperties",
+          "params": {{"objectId": {}, "ownProperties": true}}
+        }})",
+      folly::toJson(objectId)));
+
+  // Releasing an already released object group is a no-op.
+  this->expectMessageFromPage(JsonEq(R"({
+                                         "id": 5,
+                                         "result": {}
+                                       })"));
+  this->toPage_->sendMessage(R"({
+                                 "id": 5,
+                                 "method": "Runtime.releaseObjectGroup",
+                                 "params": {"objectGroup": "foo"}
+                               })");
 }
 
 #pragma endregion // AllHermesVariants

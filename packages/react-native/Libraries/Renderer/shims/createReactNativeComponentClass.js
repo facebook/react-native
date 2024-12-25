@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @noformat
- * @flow strict-local
  * @nolint
- * @generated SignedSource<<ede54ac2fa1b9a09e234cdf098048989>>
+ * @flow strict-local
+ * @generated SignedSource<<52163887de05f1cff05388145cf85b3b>>
  */
 
 'use strict';
@@ -32,4 +32,4 @@ const createReactNativeComponentClass = function (
   return register(name, callback);
 };
 
-module.exports = createReactNativeComponentClass;
+export default createReactNativeComponentClass;

@@ -26,6 +26,10 @@
 
 using namespace facebook::react;
 
+static NSString *kOnScrollEvent = @"onScroll";
+
+static NSString *kOnScrollEndEvent = @"onScrollEnded";
+
 static const CGFloat kClippingLeeway = 44.0;
 
 static UIScrollViewKeyboardDismissMode RCTUIKeyboardDismissModeFromProps(const ScrollViewProps &props)
@@ -56,10 +60,11 @@ static UIScrollViewIndicatorStyle RCTUIScrollViewIndicatorStyleFromProps(const S
 // This is just a workaround to allow animations based on onScroll event.
 // This is only used to animate sticky headers in ScrollViews, and only the contentOffset and tag is used.
 // TODO: T116850910 [Fabric][iOS] Make Fabric not use legacy RCTEventDispatcher for native-driven AnimatedEvents
-static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInteger tag)
+static void
+RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInteger tag, NSString *eventName)
 {
   static uint16_t coalescingKey = 0;
-  RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:@"onScroll"
+  RCTScrollEvent *scrollEvent = [[RCTScrollEvent alloc] initWithEventName:eventName
                                                                  reactTag:[NSNumber numberWithInt:tag]
                                                   scrollViewContentOffset:scrollView.contentOffset
                                                    scrollViewContentInset:scrollView.contentInset
@@ -68,15 +73,10 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
                                                       scrollViewZoomScale:scrollView.zoomScale
                                                                  userData:nil
                                                             coalescingKey:coalescingKey];
-  RCTBridge *bridge = [RCTBridge currentBridge];
-  if (bridge) {
-    [bridge.eventDispatcher sendEvent:scrollEvent];
-  } else {
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:scrollEvent, @"event", nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED"
-                                                        object:nil
-                                                      userInfo:userInfo];
-  }
+  NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:scrollEvent, @"event", nil];
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTNotifyEventDispatcherObserversOfEvent_DEPRECATED
+                                                      object:nil
+                                                    userInfo:userInfo];
 }
 
 @interface RCTScrollViewComponentView () <
@@ -98,6 +98,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   // some other part of the system scrolls scroll view.
   BOOL _isUserTriggeredScrolling;
   BOOL _shouldUpdateContentInsetAdjustmentBehavior;
+  BOOL _automaticallyAdjustKeyboardInsets;
 
   CGPoint _contentOffsetWhenClipped;
 
@@ -121,19 +122,23 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 {
   if (self = [super initWithFrame:frame]) {
     _props = ScrollViewShadowNode::defaultSharedProps();
-
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
+    _scrollView.clipsToBounds = _props->getClipsContentToBounds();
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
     ((RCTEnhancedScrollView *)_scrollView).overridingDelegate = self;
     _isUserTriggeredScrolling = NO;
     _shouldUpdateContentInsetAdjustmentBehavior = YES;
+    _automaticallyAdjustKeyboardInsets = NO;
     [self addSubview:_scrollView];
 
     _containerView = [[UIView alloc] initWithFrame:CGRectZero];
     [_scrollView addSubview:_containerView];
 
     [self.scrollViewDelegateSplitter addDelegate:self];
+#if TARGET_OS_IOS
+    [self _registerKeyboardListener];
+#endif
 
     _scrollEventThrottle = 0;
     _endDraggingSensitivityMultiplier = 1;
@@ -148,6 +153,110 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   // deallocation.
   [self.scrollViewDelegateSplitter removeAllDelegates];
 }
+
+#if TARGET_OS_IOS
+- (void)_registerKeyboardListener
+{
+  // According to Apple docs, we don't need to explicitly unregister the observer, it's done automatically.
+  // See the Apple documentation:
+  // https://developer.apple.com/documentation/foundation/nsnotificationcenter/1413994-removeobserver?language=objc
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_keyboardWillChangeFrame:)
+                                               name:UIKeyboardWillChangeFrameNotification
+                                             object:nil];
+}
+
+- (void)_keyboardWillChangeFrame:(NSNotification *)notification
+{
+  if (!_automaticallyAdjustKeyboardInsets) {
+    return;
+  }
+  BOOL isHorizontal = _scrollView.contentSize.width > self.frame.size.width;
+  if (isHorizontal) {
+    return;
+  }
+
+  bool isInverted = [self isInverted];
+  double duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+
+  UIViewAnimationCurve curve =
+      (UIViewAnimationCurve)[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
+  CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  CGRect keyboardBeginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+
+  CGPoint absoluteViewOrigin = [self convertPoint:self.bounds.origin toView:nil];
+  CGFloat scrollViewLowerY = isInverted ? absoluteViewOrigin.y : absoluteViewOrigin.y + self.bounds.size.height;
+
+  UIEdgeInsets newEdgeInsets = _scrollView.contentInset;
+  CGFloat inset = MAX(scrollViewLowerY - keyboardEndFrame.origin.y, 0);
+  const auto &props = static_cast<const ScrollViewProps &>(*_props);
+  if (isInverted) {
+    newEdgeInsets.top = MAX(inset, props.contentInset.top);
+  } else {
+    newEdgeInsets.bottom = MAX(inset, props.contentInset.bottom);
+  }
+
+  CGPoint newContentOffset = _scrollView.contentOffset;
+  self.firstResponderFocus = CGRectNull;
+
+  CGFloat contentDiff = 0;
+  if ([[UIApplication sharedApplication] sendAction:@selector(reactUpdateResponderOffsetForScrollView:)
+                                                 to:nil
+                                               from:self
+                                           forEvent:nil]) {
+    if (CGRectEqualToRect(_firstResponderFocus, CGRectNull)) {
+      UIView *inputAccessoryView = _firstResponderViewOutsideScrollView.inputAccessoryView;
+      if (inputAccessoryView) {
+        // Text input view is within the inputAccessoryView.
+        contentDiff = keyboardEndFrame.origin.y - keyboardBeginFrame.origin.y;
+      }
+    } else {
+      // Inner text field focused
+      CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
+      if (focusEnd > keyboardEndFrame.origin.y) {
+        // Text field active region is below visible area with keyboard - update diff to bring into view
+        contentDiff = keyboardEndFrame.origin.y - focusEnd;
+      }
+    }
+  }
+
+  if (isInverted) {
+    newContentOffset.y += contentDiff;
+  } else {
+    newContentOffset.y -= contentDiff;
+  }
+
+  if (@available(iOS 14.0, *)) {
+    // On iOS when Prefer Cross-Fade Transitions is enabled, the keyboard position
+    // & height is reported differently (0 instead of Y position value matching height of frame)
+    // Fixes similar issue we saw with https://github.com/facebook/react-native/pull/34503
+    if (UIAccessibilityPrefersCrossFadeTransitions() && keyboardEndFrame.size.height == 0) {
+      newContentOffset.y = 0;
+      newEdgeInsets.bottom = 0;
+    }
+  }
+
+  [UIView animateWithDuration:duration
+                        delay:0.0
+                      options:animationOptionsWithCurve(curve)
+                   animations:^{
+                     self->_scrollView.contentInset = newEdgeInsets;
+                     self->_scrollView.verticalScrollIndicatorInsets = newEdgeInsets;
+                     [self scrollTo:newContentOffset.x y:newContentOffset.y animated:NO];
+                   }
+                   completion:nil];
+}
+
+static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCurve curve)
+{
+  // UIViewAnimationCurve #7 is used for keyboard and therefore private - so we can't use switch/case here.
+  // source: https://stackoverflow.com/a/7327374/5281431
+  RCTAssert(
+      UIViewAnimationCurveLinear << 16 == UIViewAnimationOptionCurveLinear,
+      @"Unexpected implementation of UIViewAnimationCurve");
+  return curve << 16;
+}
+#endif
 
 - (RCTGenericDelegateSplitter<id<UIScrollViewDelegate>> *)scrollViewDelegateSplitter
 {
@@ -190,6 +299,12 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   }
 }
 
+- (bool)isInverted
+{
+  // Look into the entry at position 2,2 to check if scaleY is applied
+  return self.layer.transform.m22 == -1;
+}
+
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
   const auto &oldScrollViewProps = static_cast<const ScrollViewProps &>(*_props);
@@ -225,6 +340,10 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   MAP_SCROLL_VIEW_PROP(showsHorizontalScrollIndicator);
   MAP_SCROLL_VIEW_PROP(showsVerticalScrollIndicator);
 
+  if (oldScrollViewProps.automaticallyAdjustKeyboardInsets != newScrollViewProps.automaticallyAdjustKeyboardInsets) {
+    _automaticallyAdjustKeyboardInsets = newScrollViewProps.automaticallyAdjustKeyboardInsets;
+  }
+
   if (oldScrollViewProps.scrollIndicatorInsets != newScrollViewProps.scrollIndicatorInsets) {
     _scrollView.scrollIndicatorInsets = RCTUIEdgeInsetsFromEdgeInsets(newScrollViewProps.scrollIndicatorInsets);
   }
@@ -248,6 +367,11 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     } else {
       _scrollEventThrottle = throttleInSeconds;
     }
+  }
+
+  // Overflow prop
+  if (oldScrollViewProps.getClipsContentToBounds() != newScrollViewProps.getClipsContentToBounds()) {
+    _scrollView.clipsToBounds = newScrollViewProps.getClipsContentToBounds();
   }
 
   MAP_SCROLL_VIEW_PROP(zoomScale);
@@ -314,6 +438,26 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
   auto contentOffset = RCTCGPointFromPoint(data.contentOffset);
   if (!oldState && !CGPointEqualToPoint(contentOffset, CGPointZero)) {
+    /*
+     * When <ScrollView /> is suspended, it is removed from view hierarchy and its offset is stored in
+     * state. We want to restore this offset from the state but it must be snapped to be within UIScrollView's
+     * content to remove any overscroll.
+     *
+     * This can happen, for example, with pull to refresh. The UIScrollView will be overscrolled into negative offset.
+     * If the offset is not adjusted to be within the content area, it leads to a gap and UIScrollView does not adjust
+     * its offset until user scrolls.
+     */
+
+    // Adjusting overscroll on the top.
+    contentOffset.y = fmax(contentOffset.y, -_scrollView.contentInset.top);
+
+    // Adjusting overscroll on the left.
+    contentOffset.x = fmax(contentOffset.x, -_scrollView.contentInset.left);
+
+    // TODO: T190695447 - Protect against over scroll on the bottom and right as well.
+    // This is not easily done because we need to flip the order of method calls for
+    // ShadowViewMutation::Insert. updateLayout must come before updateState.
+
     _scrollView.contentOffset = contentOffset;
   }
 
@@ -388,13 +532,13 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (ScrollViewEventEmitter::Metrics)_scrollViewMetrics
 {
-  auto metrics = ScrollViewEventEmitter::Metrics{
-      .contentSize = RCTSizeFromCGSize(_scrollView.contentSize),
-      .contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset),
-      .contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset),
-      .containerSize = RCTSizeFromCGSize(_scrollView.bounds.size),
-      .zoomScale = _scrollView.zoomScale,
-  };
+  auto metrics = ScrollViewEventEmitter::Metrics{};
+  metrics.contentSize = RCTSizeFromCGSize(_scrollView.contentSize);
+  metrics.contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
+  metrics.contentInset = RCTEdgeInsetsFromUIEdgeInsets(_scrollView.contentInset);
+  metrics.containerSize = RCTSizeFromCGSize(_scrollView.bounds.size);
+  metrics.zoomScale = _scrollView.zoomScale;
+  metrics.timestamp = CACurrentMediaTime();
 
   if (_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft) {
     metrics.contentOffset.x = metrics.contentSize.width - metrics.containerSize.width - metrics.contentOffset.x;
@@ -408,17 +552,28 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   if (!_state) {
     return;
   }
+
   auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
-  _state->updateState([contentOffset](const ScrollViewShadowNode::ConcreteState::Data &data) {
-    auto newData = data;
-    newData.contentOffset = contentOffset;
-    return std::make_shared<const ScrollViewShadowNode::ConcreteState::Data>(newData);
-  });
+  _state->updateState(
+      [contentOffset](
+          const ScrollViewShadowNode::ConcreteState::Data &oldData) -> ScrollViewShadowNode::ConcreteState::SharedData {
+        if (oldData.contentOffset == contentOffset) {
+          // avoid doing a state update if content offset didn't change.
+          return nullptr;
+        }
+        auto newData = oldData;
+        newData.contentOffset = contentOffset;
+        return std::make_shared<const ScrollViewShadowNode::ConcreteState::Data>(newData);
+      });
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
+  // Must invalidate state before setting contentOffset on ScrollView.
+  // Otherwise the state will be propagated to shadow tree.
+  _state.reset();
+
   const auto &props = static_cast<const ScrollViewProps &>(*_props);
   _scrollView.contentOffset = RCTCGPointFromPoint(props.contentOffset);
   // We set the default behavior to "never" so that iOS
@@ -426,7 +581,6 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   // and keeps it as an opt-in behavior.
   _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
   _shouldUpdateContentInsetAdjustmentBehavior = YES;
-  _state.reset();
   _isUserTriggeredScrolling = NO;
   CGRect oldFrame = self.frame;
   self.frame = CGRectZero;
@@ -459,33 +613,18 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  const auto &props = static_cast<const ScrollViewProps &>(*_props);
   auto scrollMetrics = [self _scrollViewMetrics];
 
-  if (props.enableSyncOnScroll) {
+  [self _updateStateWithContentOffset];
+
+  NSTimeInterval now = CACurrentMediaTime();
+  if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
+    _lastScrollEventDispatchTime = now;
     if (_eventEmitter) {
-      const auto &eventEmitter = static_cast<const ScrollViewEventEmitter &>(*_eventEmitter);
-      // TODO: temporary API to unblock testing of synchronous rendering.
-      eventEmitter.experimental_flushSync([&eventEmitter, &scrollMetrics, &self]() {
-        [self _updateStateWithContentOffset];
-        // TODO: temporary API to unblock testing of synchronous rendering.
-        eventEmitter.experimental_onDiscreteScroll(scrollMetrics);
-      });
-    }
-  } else {
-    if (!_isUserTriggeredScrolling || CoreFeatures::enableGranularScrollViewStateUpdatesIOS) {
-      [self _updateStateWithContentOffset];
+      static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScroll(scrollMetrics);
     }
 
-    NSTimeInterval now = CACurrentMediaTime();
-    if ((_lastScrollEventDispatchTime == 0) || (now - _lastScrollEventDispatchTime > _scrollEventThrottle)) {
-      _lastScrollEventDispatchTime = now;
-      if (_eventEmitter) {
-        static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScroll(scrollMetrics);
-      }
-
-      RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag);
-    }
+    RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag, kOnScrollEvent);
   }
 
   [self _remountChildrenIfNeeded];
@@ -541,6 +680,7 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
     // ScrollView will not decelerate and `scrollViewDidEndDecelerating` will not be called.
     // `_isUserTriggeredScrolling` must be set to NO here.
     _isUserTriggeredScrolling = NO;
+    RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag, kOnScrollEndEvent);
   }
 }
 
@@ -566,11 +706,36 @@ static void RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrol
   static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
   [self _updateStateWithContentOffset];
   _isUserTriggeredScrolling = NO;
+
+  RCTSendScrollEventForNativeAnimations_DEPRECATED(scrollView, self.tag, kOnScrollEndEvent);
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
   [self _handleFinishedScrolling:scrollView];
+}
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  if (!self.window) {
+    // The view is being removed, ensure that the scroll end event is dispatched
+    [self _handleScrollEndIfNeeded];
+  }
+}
+
+- (void)_handleScrollEndIfNeeded
+{
+  if (_scrollView.isDecelerating || !_scrollView.isTracking) {
+    if (!_eventEmitter) {
+      return;
+    }
+    static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onMomentumScrollEnd([self _scrollViewMetrics]);
+
+    [self _updateStateWithContentOffset];
+    _isUserTriggeredScrolling = NO;
+  }
 }
 
 - (void)_handleFinishedScrolling:(UIScrollView *)scrollView

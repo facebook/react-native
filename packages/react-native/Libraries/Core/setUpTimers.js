@@ -21,6 +21,17 @@ if (__DEV__) {
   }
 }
 
+const isEventLoopEnabled = (() => {
+  if (NativeReactNativeFeatureFlags == null) {
+    return false;
+  }
+
+  return (
+    ReactNativeFeatureFlags.enableBridgelessArchitecture() &&
+    !ReactNativeFeatureFlags.disableEventLoopOnBridgeless()
+  );
+})();
+
 // In bridgeless mode, timers are host functions installed from cpp.
 if (global.RN$Bridgeless !== true) {
   /**
@@ -29,14 +40,14 @@ if (global.RN$Bridgeless !== true) {
    */
   const defineLazyTimer = (
     name:
-      | $TEMPORARY$string<'cancelAnimationFrame'>
-      | $TEMPORARY$string<'cancelIdleCallback'>
-      | $TEMPORARY$string<'clearInterval'>
-      | $TEMPORARY$string<'clearTimeout'>
-      | $TEMPORARY$string<'requestAnimationFrame'>
-      | $TEMPORARY$string<'requestIdleCallback'>
-      | $TEMPORARY$string<'setInterval'>
-      | $TEMPORARY$string<'setTimeout'>,
+      | 'cancelAnimationFrame'
+      | 'cancelIdleCallback'
+      | 'clearInterval'
+      | 'clearTimeout'
+      | 'requestAnimationFrame'
+      | 'requestIdleCallback'
+      | 'setInterval'
+      | 'setTimeout',
   ) => {
     polyfillGlobal(name, () => require('./Timers/JSTimers')[name]);
   };
@@ -48,32 +59,38 @@ if (global.RN$Bridgeless !== true) {
   defineLazyTimer('cancelAnimationFrame');
   defineLazyTimer('requestIdleCallback');
   defineLazyTimer('cancelIdleCallback');
+} else if (isEventLoopEnabled) {
+  polyfillGlobal(
+    'requestIdleCallback',
+    () =>
+      require('../../src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks')
+        .default.requestIdleCallback,
+  );
+
+  polyfillGlobal(
+    'cancelIdleCallback',
+    () =>
+      require('../../src/private/webapis/idlecallbacks/specs/NativeIdleCallbacks')
+        .default.cancelIdleCallback,
+  );
 }
 
 // We need to check if the native module is available before accessing the
 // feature flag, because otherwise the API would throw an error in the legacy
 // architecture in OSS, where the native module isn't available.
-if (
-  NativeReactNativeFeatureFlags != null &&
-  ReactNativeFeatureFlags.enableMicrotasks()
-) {
+if (isEventLoopEnabled) {
   // This is the flag that tells React to use `queueMicrotask` to batch state
   // updates, instead of using the scheduler to schedule a regular task.
   // We use a global variable because we don't currently have any other
   // mechanism to pass feature flags from RN to React in OSS.
   global.RN$enableMicrotasksInReact = true;
 
-  polyfillGlobal('queueMicrotask', () => {
-    const nativeQueueMicrotask =
+  polyfillGlobal(
+    'queueMicrotask',
+    () =>
       require('../../src/private/webapis/microtasks/specs/NativeMicrotasks')
-        .default?.queueMicrotask;
-    if (nativeQueueMicrotask) {
-      return nativeQueueMicrotask;
-    } else {
-      // For backwards-compatibility
-      return global.HermesInternal?.enqueueJob;
-    }
-  });
+        .default.queueMicrotask,
+  );
 
   // We shim the immediate APIs via `queueMicrotask` to maintain the backward
   // compatibility.

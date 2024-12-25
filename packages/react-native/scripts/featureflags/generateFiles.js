@@ -28,11 +28,31 @@ export default function generateFiles(
 
   const jsModules = generateJavaScriptModules(generatorConfig);
 
-  const commonCxxModules = generateCommonCxxModules(generatorConfig);
+  const generatorConfigWithDefinitionsForNative = {
+    ...generatorConfig,
+    featureFlagDefinitions: {
+      ...generatorConfig.featureFlagDefinitions,
+      common: Object.fromEntries(
+        Object.entries(generatorConfig.featureFlagDefinitions.common).filter(
+          ([_, definition]) => !definition.skipNativeAPI,
+        ),
+      ),
+    },
+  };
 
-  const androidModules = generateAndroidModules(generatorConfig);
+  const commonCxxModules = generateCommonCxxModules(
+    generatorConfigWithDefinitionsForNative,
+  );
 
-  const generatedFiles = {...jsModules, ...commonCxxModules, ...androidModules};
+  const androidModules = generateAndroidModules(
+    generatorConfigWithDefinitionsForNative,
+  );
+
+  const generatedFiles = {
+    ...jsModules,
+    ...commonCxxModules,
+    ...androidModules,
+  };
 
   if (generatorOptions.verifyUnchanged) {
     const existingModules: {[string]: string} = {};
@@ -58,7 +78,7 @@ export default function generateFiles(
 
       throw new Error(
         `Detected changes in generated files for feature flags:\n${changedFilesStr}\n\n` +
-          'Please rerun `yarn featureflags-update` and commit the changes.',
+          'Please rerun `yarn featureflags --update` and commit the changes.',
       );
     }
 

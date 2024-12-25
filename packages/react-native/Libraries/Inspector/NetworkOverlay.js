@@ -143,6 +143,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     });
 
     XHRInterceptor.setRequestHeaderCallback((header, value, xhr) => {
+      // $FlowFixMe[prop-missing]
       const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
       if (xhrIndex === -1) {
         return;
@@ -159,6 +160,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     });
 
     XHRInterceptor.setSendCallback((data, xhr) => {
+      // $FlowFixMe[prop-missing]
       const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
       if (xhrIndex === -1) {
         return;
@@ -173,6 +175,7 @@ class NetworkOverlay extends React.Component<Props, State> {
 
     XHRInterceptor.setHeaderReceivedCallback(
       (type, size, responseHeaders, xhr) => {
+        // $FlowFixMe[prop-missing]
         const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
         if (xhrIndex === -1) {
           return;
@@ -190,6 +193,7 @@ class NetworkOverlay extends React.Component<Props, State> {
 
     XHRInterceptor.setResponseCallback(
       (status, timeout, response, responseURL, responseType, xhr) => {
+        // $FlowFixMe[prop-missing]
         const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
         if (xhrIndex === -1) {
           return;
@@ -335,7 +339,7 @@ class NetworkOverlay extends React.Component<Props, State> {
   _renderItem = ({
     item,
     index,
-  }: RenderItemProps<NetworkRequestInfo>): React.Element<any> => {
+  }: RenderItemProps<NetworkRequestInfo>): React.MixedElement => {
     const tableRowViewStyle = [
       styles.tableRow,
       index % 2 === 1 ? styles.tableRowOdd : styles.tableRowEven,

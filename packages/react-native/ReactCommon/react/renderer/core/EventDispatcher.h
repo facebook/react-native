@@ -32,9 +32,7 @@ class EventDispatcher {
 
   EventDispatcher(
       const EventQueueProcessor& eventProcessor,
-      const EventBeat::Factory& asynchronousEventBeatFactory,
-      const EventBeat::SharedOwnerBox& ownerBox,
-      RuntimeScheduler& runtimeScheduler,
+      std::unique_ptr<EventBeat> eventBeat,
       StatePipe statePipe,
       std::weak_ptr<EventLogger> eventLogger);
 
@@ -64,7 +62,7 @@ class EventDispatcher {
   /*
    * Adds provided event listener to the event dispatcher.
    */
-  void addListener(const std::shared_ptr<const EventListener>& listener) const;
+  void addListener(std::shared_ptr<const EventListener> listener) const;
 
   /*
    * Removes provided event listener to the event dispatcher.

@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
-
-'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type AnimatedInterpolation from '../nodes/AnimatedInterpolation';
@@ -16,13 +14,12 @@ import type AnimatedValue from '../nodes/AnimatedValue';
 import type AnimatedValueXY from '../nodes/AnimatedValueXY';
 import type {AnimationConfig, EndCallback} from './Animation';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedColor from '../nodes/AnimatedColor';
 import * as SpringConfig from '../SpringConfig';
 import Animation from './Animation';
 import invariant from 'invariant';
 
-export type SpringAnimationConfig = {
+export type SpringAnimationConfig = $ReadOnly<{
   ...AnimationConfig,
   toValue:
     | number
@@ -47,11 +44,11 @@ export type SpringAnimationConfig = {
   restSpeedThreshold?: number,
   velocity?:
     | number
-    | {
+    | $ReadOnly<{
         x: number,
         y: number,
         ...
-      },
+      }>,
   bounciness?: number,
   speed?: number,
   tension?: number,
@@ -60,9 +57,10 @@ export type SpringAnimationConfig = {
   damping?: number,
   mass?: number,
   delay?: number,
-};
+  ...
+}>;
 
-export type SpringAnimationConfigSingle = {
+export type SpringAnimationConfigSingle = $ReadOnly<{
   ...AnimationConfig,
   toValue: number,
   overshootClamping?: boolean,
@@ -77,7 +75,14 @@ export type SpringAnimationConfigSingle = {
   damping?: number,
   mass?: number,
   delay?: number,
-};
+  ...
+}>;
+
+opaque type SpringAnimationInternalState = $ReadOnly<{
+  lastPosition: number,
+  lastVelocity: number,
+  lastTime: number,
+}>;
 
 export default class SpringAnimation extends Animation {
   _overshootClamping: boolean;
@@ -93,17 +98,16 @@ export default class SpringAnimation extends Animation {
   _mass: number;
   _initialVelocity: number;
   _delay: number;
-  _timeout: any;
+  _timeout: ?TimeoutID;
   _startTime: number;
   _lastTime: number;
   _frameTime: number;
   _onUpdate: (value: number) => void;
-  _animationFrame: any;
-  _useNativeDriver: boolean;
+  _animationFrame: ?AnimationFrameID;
   _platformConfig: ?PlatformConfig;
 
   constructor(config: SpringAnimationConfigSingle) {
-    super();
+    super(config);
 
     this._overshootClamping = config.overshootClamping ?? false;
     this._restDisplacementThreshold = config.restDisplacementThreshold ?? 0.001;
@@ -112,10 +116,7 @@ export default class SpringAnimation extends Animation {
     this._lastVelocity = config.velocity ?? 0;
     this._toValue = config.toValue;
     this._delay = config.delay ?? 0;
-    this._useNativeDriver = NativeAnimatedHelper.shouldUseNativeDriver(config);
     this._platformConfig = config.platformConfig;
-    this.__isInteraction = config.isInteraction ?? !this._useNativeDriver;
-    this.__iterations = config.iterations ?? 1;
 
     if (
       config.stiffness !== undefined ||
@@ -167,7 +168,7 @@ export default class SpringAnimation extends Animation {
     invariant(this._mass > 0, 'Mass value must be greater than 0');
   }
 
-  __getNativeAnimationConfig(): {|
+  __getNativeAnimationConfig(): $ReadOnly<{
     damping: number,
     initialVelocity: number,
     iterations: number,
@@ -177,9 +178,10 @@ export default class SpringAnimation extends Animation {
     restDisplacementThreshold: number,
     restSpeedThreshold: number,
     stiffness: number,
-    toValue: any,
-    type: $TEMPORARY$string<'spring'>,
-  |} {
+    toValue: number,
+    type: 'spring',
+    ...
+  }> {
     return {
       type: 'spring',
       overshootClamping: this._overshootClamping,
@@ -192,6 +194,7 @@ export default class SpringAnimation extends Animation {
       toValue: this._toValue,
       iterations: this.__iterations,
       platformConfig: this._platformConfig,
+      debugID: this.__getDebugID(),
     };
   }
 
@@ -202,12 +205,12 @@ export default class SpringAnimation extends Animation {
     previousAnimation: ?Animation,
     animatedValue: AnimatedValue,
   ): void {
-    this.__active = true;
+    super.start(fromValue, onUpdate, onEnd, previousAnimation, animatedValue);
+
     this._startPosition = fromValue;
     this._lastPosition = this._startPosition;
 
     this._onUpdate = onUpdate;
-    this.__onEnd = onEnd;
     this._lastTime = Date.now();
     this._frameTime = 0.0;
 
@@ -221,17 +224,8 @@ export default class SpringAnimation extends Animation {
     }
 
     const start = () => {
-      if (!this._useNativeDriver && animatedValue.__isNative === true) {
-        throw new Error(
-          'Attempting to run JS driven animation on animated node ' +
-            'that has been moved to "native" earlier by starting an ' +
-            'animation with `useNativeDriver: true`',
-        );
-      }
-
-      if (this._useNativeDriver) {
-        this.__startNativeAnimation(animatedValue);
-      } else {
+      const useNativeDriver = this.__startAnimationIfNative(animatedValue);
+      if (!useNativeDriver) {
         this.onUpdate();
       }
     };
@@ -244,7 +238,7 @@ export default class SpringAnimation extends Animation {
     }
   }
 
-  getInternalState(): Object {
+  getInternalState(): SpringAnimationInternalState {
     return {
       lastPosition: this._lastPosition,
       lastVelocity: this._lastVelocity,
@@ -361,7 +355,7 @@ export default class SpringAnimation extends Animation {
         this._onUpdate(this._toValue);
       }
 
-      this.__debouncedOnEnd({finished: true});
+      this.__notifyAnimationEnd({finished: true});
       return;
     }
     // $FlowFixMe[method-unbinding] added when improving typing for this parameters
@@ -370,9 +364,10 @@ export default class SpringAnimation extends Animation {
 
   stop(): void {
     super.stop();
-    this.__active = false;
     clearTimeout(this._timeout);
-    global.cancelAnimationFrame(this._animationFrame);
-    this.__debouncedOnEnd({finished: false});
+    if (this._animationFrame != null) {
+      global.cancelAnimationFrame(this._animationFrame);
+    }
+    this.__notifyAnimationEnd({finished: false});
   }
 }

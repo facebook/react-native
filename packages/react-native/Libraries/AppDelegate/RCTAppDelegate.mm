@@ -11,12 +11,15 @@
 #import <React/RCTRootView.h>
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <React/RCTUtils.h>
+#import <ReactCommon/RCTHost.h>
+#include <UIKit/UIKit.h>
 #import <objc/runtime.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #import <react/renderer/graphics/ColorComponents.h>
 #import "RCTAppDelegate+Protected.h"
 #import "RCTAppSetupUtils.h"
+#import "RCTDependencyProvider.h"
 
 #if RN_DISABLE_OSS_PLUGIN_HEADER
 #import <RCTTurboModulePlugin/RCTTurboModulePlugin.h>
@@ -30,14 +33,22 @@
 #else
 #import <ReactCommon/RCTJscInstance.h>
 #endif
-#import <react/nativemodule/dom/NativeDOM.h>
-#import <react/nativemodule/featureflags/NativeReactNativeFeatureFlags.h>
-#import <react/nativemodule/microtasks/NativeMicrotasks.h>
+#import <react/nativemodule/defaults/DefaultTurboModules.h>
 
-@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider>
+using namespace facebook::react;
+
+@interface RCTAppDelegate () <RCTComponentViewFactoryComponentProvider, RCTHostDelegate>
 @end
 
 @implementation RCTAppDelegate
+
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _automaticallyLoadReactNativeWindow = YES;
+  }
+  return self;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -48,30 +59,29 @@
   RCTAppSetupPrepareApp(application, self.turboModuleEnabled);
 
   self.rootViewFactory = [self createRCTRootViewFactory];
-
-  UIView *rootView = [self.rootViewFactory viewWithModuleName:self.moduleName
-                                            initialProperties:self.initialProps
-                                                launchOptions:launchOptions];
-
   if (self.newArchEnabled || self.fabricEnabled) {
     [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider = self;
   }
-  [self _logWarnIfCreateRootViewWithBridgeIsOverridden];
-  [self customizeRootView:(RCTRootView *)rootView];
 
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [self createRootViewController];
-  [self setRootView:rootView toRootViewController:rootViewController];
-  self.window.rootViewController = rootViewController;
-  self.window.windowScene.delegate = self;
-  [self.window makeKeyAndVisible];
+  if (self.automaticallyLoadReactNativeWindow) {
+    [self loadReactNativeWindow:launchOptions];
+  }
 
   return YES;
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
+- (void)loadReactNativeWindow:(NSDictionary *)launchOptions
 {
-  // Noop
+  UIView *rootView = [self.rootViewFactory viewWithModuleName:self.moduleName
+                                            initialProperties:self.initialProps
+                                                launchOptions:launchOptions];
+
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  UIViewController *rootViewController = [self createRootViewController];
+  [self setRootView:rootView toRootViewController:rootViewController];
+  _window.windowScene.delegate = self;
+  _window.rootViewController = rootViewController;
+  [_window makeKeyAndVisible];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -96,21 +106,6 @@
   rootView.backgroundColor = [UIColor systemBackgroundColor];
 
   return rootView;
-}
-
-// TODO T173939093 - Remove _logWarnIfCreateRootViewWithBridgeIsOverridden after 0.74 is cut
-- (void)_logWarnIfCreateRootViewWithBridgeIsOverridden
-{
-  SEL selector = @selector(createRootViewWithBridge:moduleName:initProps:);
-  IMP baseClassImp = method_getImplementation(class_getInstanceMethod([RCTAppDelegate class], selector));
-  IMP currentClassImp = method_getImplementation(class_getInstanceMethod([self class], selector));
-  if (currentClassImp != baseClassImp) {
-    NSString *warnMessage =
-        @"If you are using the `createRootViewWithBridge` to customize the root view appearence,"
-         "for example to set the backgroundColor, please migrate to `customiseView` method.\n"
-         "The `createRootViewWithBridge` method is not invoked in bridgeless.";
-    RCTLogWarn(@"%@", warnMessage);
-  }
 }
 
 - (UIViewController *)createRootViewController
@@ -176,6 +171,12 @@
   return nullptr;
 }
 
+#pragma mark - RCTHostDelegate
+
+- (void)hostDidStart:(RCTHost *)host
+{
+}
+
 #pragma mark - Bridge and Bridge Adapter properties
 
 - (RCTBridge *)bridge
@@ -209,41 +210,22 @@
 #endif
 }
 
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
+- (std::shared_ptr<TurboModule>)getTurboModule:(const std::string &)name
+                                     jsInvoker:(std::shared_ptr<CallInvoker>)jsInvoker
 {
-  if (name == facebook::react::NativeReactNativeFeatureFlags::kModuleName) {
-    return std::make_shared<facebook::react::NativeReactNativeFeatureFlags>(jsInvoker);
-  }
-
-  if (name == facebook::react::NativeMicrotasks::kModuleName) {
-    return std::make_shared<facebook::react::NativeMicrotasks>(jsInvoker);
-  }
-
-  if (name == facebook::react::NativeDOM::kModuleName) {
-    return std::make_shared<facebook::react::NativeDOM>(jsInvoker);
-  }
-
-  return nullptr;
-}
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                     initParams:
-                                                         (const facebook::react::ObjCTurboModule::InitParams &)params
-{
-  return nullptr;
+  return DefaultTurboModules::getTurboModule(name, jsInvoker);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
-  return RCTAppSetupDefaultModuleFromClass(moduleClass);
+  return RCTAppSetupDefaultModuleFromClass(moduleClass, self.dependencyProvider);
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
-  return @{};
+  return self.dependencyProvider ? self.dependencyProvider.thirdPartyFabricComponents : @{};
 }
 
 - (RCTRootViewFactory *)createRCTRootViewFactory
@@ -266,6 +248,10 @@
 
   configuration.createBridgeWithDelegate = ^RCTBridge *(id<RCTBridgeDelegate> delegate, NSDictionary *launchOptions) {
     return [weakSelf createBridgeWithDelegate:delegate launchOptions:launchOptions];
+  };
+
+  configuration.customizeRootView = ^(UIView *_Nonnull rootView) {
+    [weakSelf customizeRootView:(RCTRootView *)rootView];
   };
 
   configuration.sourceURLForBridge = ^NSURL *_Nullable(RCTBridge *_Nonnull bridge)
@@ -294,17 +280,39 @@
     };
   }
 
-  return [[RCTRootViewFactory alloc] initWithConfiguration:configuration andTurboModuleManagerDelegate:self];
+  return [[RCTRootViewFactory alloc] initWithTurboModuleDelegate:self hostDelegate:self configuration:configuration];
 }
 
 #pragma mark - Feature Flags
 
-class RCTAppDelegateBridgelessFeatureFlags : public facebook::react::ReactNativeFeatureFlagsDefaults {};
+class RCTAppDelegateBridgelessFeatureFlags : public ReactNativeFeatureFlagsDefaults {
+ public:
+  bool enableBridgelessArchitecture() override
+  {
+    return true;
+  }
+  bool enableFabricRenderer() override
+  {
+    return true;
+  }
+  bool useTurboModules() override
+  {
+    return true;
+  }
+  bool useNativeViewConfigsInBridgelessMode() override
+  {
+    return true;
+  }
+  bool enableFixForViewCommandRace() override
+  {
+    return true;
+  }
+};
 
 - (void)_setUpFeatureFlags
 {
   if ([self bridgelessEnabled]) {
-    facebook::react::ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
+    ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
   }
 }
 

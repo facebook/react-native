@@ -15,12 +15,12 @@
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/core/State.h>
 #include <react/renderer/core/StateData.h>
-#include <react/utils/ContextContainer.h>
 
 namespace facebook::react {
 
 class ComponentDescriptorParameters;
 class ComponentDescriptor;
+class ContextContainer;
 
 using SharedComponentDescriptor = std::shared_ptr<const ComponentDescriptor>;
 
@@ -46,14 +46,16 @@ class ComponentDescriptor {
    */
   using Flavor = std::shared_ptr<const void>;
 
-  ComponentDescriptor(const ComponentDescriptorParameters& parameters);
+  explicit ComponentDescriptor(
+      const ComponentDescriptorParameters& parameters,
+      RawPropsParser&& rawPropsParser = {});
 
   virtual ~ComponentDescriptor() = default;
 
   /*
    * Returns stored instance of `ContextContainer`.
    */
-  const ContextContainer::Shared& getContextContainer() const;
+  const std::shared_ptr<const ContextContainer>& getContextContainer() const;
 
   /*
    * Returns `componentHandle` associated with particular kind of components.
@@ -132,9 +134,9 @@ class ComponentDescriptor {
   friend ShadowNode;
 
   EventDispatcher::Weak eventDispatcher_;
-  ContextContainer::Shared contextContainer_;
-  RawPropsParser rawPropsParser_{};
+  std::shared_ptr<const ContextContainer> contextContainer_;
   Flavor flavor_;
+  RawPropsParser rawPropsParser_;
 
   /*
    * Called immediately after `ShadowNode` is created, cloned or state is

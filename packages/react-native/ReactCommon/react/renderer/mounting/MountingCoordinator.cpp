@@ -7,16 +7,16 @@
 
 #include "MountingCoordinator.h"
 
+#include <cxxreact/TraceSection.h>
+#include <react/debug/react_native_assert.h>
+#include <react/renderer/mounting/ShadowViewMutation.h>
+#include <condition_variable>
+#include "updateMountedFlag.h"
+
 #ifdef RN_SHADOW_TREE_INTROSPECTION
 #include <glog/logging.h>
 #include <sstream>
 #endif
-
-#include <condition_variable>
-
-#include <react/debug/react_native_assert.h>
-#include <react/renderer/debug/SystraceSection.h>
-#include <react/renderer/mounting/ShadowViewMutation.h>
 
 namespace facebook::react {
 
@@ -77,9 +77,9 @@ void MountingCoordinator::resetLatestRevision() const {
   lastRevision_.reset();
 }
 
-std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
-    const {
-  SystraceSection section("MountingCoordinator::pullTransaction");
+std::optional<MountingTransaction> MountingCoordinator::pullTransaction(
+    bool willPerformAsynchronously) const {
+  TraceSection section("MountingCoordinator::pullTransaction");
 
   std::scoped_lock lock(mutex_);
 
@@ -103,37 +103,44 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   }
 
   // Override case
-  auto mountingOverrideDelegate = mountingOverrideDelegate_.lock();
-  auto shouldOverridePullTransaction = mountingOverrideDelegate &&
-      mountingOverrideDelegate->shouldOverridePullTransaction();
+#ifdef RN_SHADOW_TREE_INTROSPECTION
+  bool didOverridePullTransaction = false;
+#endif
+  for (const auto& delegate : mountingOverrideDelegates_) {
+    auto mountingOverrideDelegate = delegate.lock();
+    auto shouldOverridePullTransaction = mountingOverrideDelegate &&
+        mountingOverrideDelegate->shouldOverridePullTransaction();
 
-  if (shouldOverridePullTransaction) {
-    SystraceSection section2("MountingCoordinator::overridePullTransaction");
+    if (shouldOverridePullTransaction) {
+      TraceSection section2("MountingCoordinator::overridePullTransaction");
 
-    auto mutations = ShadowViewMutation::List{};
-    auto telemetry = TransactionTelemetry{};
+      auto mutations = ShadowViewMutation::List{};
+      auto telemetry = TransactionTelemetry{};
 
-    if (transaction.has_value()) {
-      mutations = transaction->getMutations();
-      telemetry = transaction->getTelemetry();
-    } else {
-      number_++;
-      telemetry.willLayout();
-      telemetry.didLayout();
-      telemetry.willCommit();
-      telemetry.didCommit();
-      telemetry.willDiff();
-      telemetry.didDiff();
+      if (transaction.has_value()) {
+        mutations = transaction->getMutations();
+        telemetry = transaction->getTelemetry();
+      } else {
+        number_++;
+        telemetry.willLayout();
+        telemetry.didLayout();
+        telemetry.willCommit();
+        telemetry.didCommit();
+        telemetry.willDiff();
+        telemetry.didDiff();
+      }
+
+      transaction = mountingOverrideDelegate->pullTransaction(
+          surfaceId_, number_, telemetry, std::move(mutations));
+#ifdef RN_SHADOW_TREE_INTROSPECTION
+      didOverridePullTransaction = true;
+#endif
     }
-
-    transaction = mountingOverrideDelegate->pullTransaction(
-        surfaceId_, number_, telemetry, std::move(mutations));
   }
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
   if (transaction.has_value()) {
-    SystraceSection section2(
-        "MountingCoordinator::verifyMutationsForDebugging");
+    TraceSection section2("MountingCoordinator::verifyMutationsForDebugging");
 
     // We have something to validate.
     auto mutations = transaction->getMutations();
@@ -145,7 +152,7 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
     // If the transaction was overridden, we don't have a model of the shadow
     // tree therefore we cannot validate the validity of the mutation
     // instructions.
-    if (!shouldOverridePullTransaction && lastRevision_.has_value()) {
+    if (!didOverridePullTransaction && lastRevision_.has_value()) {
       auto stubViewTree = buildStubViewTreeWithoutUsingDifferentiator(
           *lastRevision_->rootShadowNode);
 
@@ -181,13 +188,20 @@ std::optional<MountingTransaction> MountingCoordinator::pullTransaction()
   if (lastRevision_.has_value()) {
     baseRevision_ = std::move(*lastRevision_);
     lastRevision_.reset();
+
+    hasPendingTransactionsOverride_ = willPerformAsynchronously;
   }
   return transaction;
 }
 
 bool MountingCoordinator::hasPendingTransactions() const {
   std::scoped_lock lock(mutex_);
-  return lastRevision_.has_value();
+  return lastRevision_.has_value() || hasPendingTransactionsOverride_;
+}
+
+void MountingCoordinator::didPerformAsyncTransactions() const {
+  std::scoped_lock lock(mutex_);
+  hasPendingTransactionsOverride_ = false;
 }
 
 const TelemetryController& MountingCoordinator::getTelemetryController() const {
@@ -202,7 +216,8 @@ ShadowTreeRevision MountingCoordinator::getBaseRevision() const {
 void MountingCoordinator::setMountingOverrideDelegate(
     std::weak_ptr<const MountingOverrideDelegate> delegate) const {
   std::scoped_lock lock(mutex_);
-  mountingOverrideDelegate_ = std::move(delegate);
+  mountingOverrideDelegates_.insert(
+      mountingOverrideDelegates_.end(), std::move(delegate));
 }
 
 } // namespace facebook::react

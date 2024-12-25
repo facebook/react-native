@@ -10,5 +10,6 @@ package com.facebook.react.views.image
 public enum class ImageResizeMethod {
   AUTO,
   RESIZE,
-  SCALE
+  SCALE,
+  NONE,
 }

@@ -26,70 +26,73 @@ internal class DevInternalSettings(applicationContext: Context, private val list
     DeveloperSettings, OnSharedPreferenceChangeListener {
   private val preferences: SharedPreferences =
       PreferenceManager.getDefaultSharedPreferences(applicationContext)
-  val packagerConnectionSettings: PackagerConnectionSettings
+  override val packagerConnectionSettings: PackagerConnectionSettings =
+      PackagerConnectionSettings(applicationContext)
 
   init {
     preferences.registerOnSharedPreferenceChangeListener(this)
-    packagerConnectionSettings = PackagerConnectionSettings(applicationContext)
   }
 
-  override fun isFpsDebugEnabled(): Boolean = preferences.getBoolean(PREFS_FPS_DEBUG_KEY, false)
+  override var isFpsDebugEnabled: Boolean
+    get() = preferences.getBoolean(PREFS_FPS_DEBUG_KEY, false)
+    set(value) {
+      preferences.edit().putBoolean(PREFS_FPS_DEBUG_KEY, value).apply()
+    }
 
-  override fun isAnimationFpsDebugEnabled(): Boolean =
-      preferences.getBoolean(PREFS_ANIMATIONS_DEBUG_KEY, false)
+  override var isAnimationFpsDebugEnabled: Boolean
+    get() = preferences.getBoolean(PREFS_ANIMATIONS_DEBUG_KEY, false)
+    set(_) {
+      // not used
+    }
 
-  override fun isJSDevModeEnabled(): Boolean =
-      preferences.getBoolean(PREFS_JS_DEV_MODE_DEBUG_KEY, true)
+  override var isJSDevModeEnabled: Boolean
+    get() = preferences.getBoolean(PREFS_JS_DEV_MODE_DEBUG_KEY, true)
+    set(value) {
+      preferences.edit().putBoolean(PREFS_JS_DEV_MODE_DEBUG_KEY, value).apply()
+    }
 
-  override fun isJSMinifyEnabled(): Boolean =
-      preferences.getBoolean(PREFS_JS_MINIFY_DEBUG_KEY, false)
+  override var isJSMinifyEnabled: Boolean
+    get() = preferences.getBoolean(PREFS_JS_MINIFY_DEBUG_KEY, false)
+    set(_) {
+      // not used
+    }
 
   override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
     if (listener != null) {
       if (PREFS_FPS_DEBUG_KEY == key ||
           PREFS_JS_DEV_MODE_DEBUG_KEY == key ||
-          PREFS_START_SAMPLING_PROFILER_ON_INIT == key ||
           PREFS_JS_MINIFY_DEBUG_KEY == key) {
         listener.onInternalSettingsChanged()
       }
     }
   }
 
-  override fun isElementInspectorEnabled(): Boolean =
-      preferences.getBoolean(PREFS_INSPECTOR_DEBUG_KEY, false)
+  override var isElementInspectorEnabled: Boolean
+    get() = preferences.getBoolean(PREFS_INSPECTOR_DEBUG_KEY, false)
+    set(value) {
+      preferences.edit().putBoolean(PREFS_INSPECTOR_DEBUG_KEY, value).apply()
+    }
 
-  override fun isDeviceDebugEnabled(): Boolean = ReactBuildConfig.DEBUG
+  override var isDeviceDebugEnabled: Boolean = ReactBuildConfig.DEBUG
 
-  override fun isRemoteJSDebugEnabled(): Boolean =
-      preferences.getBoolean(PREFS_REMOTE_JS_DEBUG_KEY, false)
+  override var isRemoteJSDebugEnabled: Boolean
+    get() = preferences.getBoolean(PREFS_REMOTE_JS_DEBUG_KEY, false)
+    set(value) {
+      preferences.edit().putBoolean(PREFS_REMOTE_JS_DEBUG_KEY, value).apply()
+    }
 
-  override fun setRemoteJSDebugEnabled(remoteJSDebugEnabled: Boolean) {
-    preferences.edit().putBoolean(PREFS_REMOTE_JS_DEBUG_KEY, remoteJSDebugEnabled).apply()
-  }
-
-  override fun isStartSamplingProfilerOnInit(): Boolean =
-      preferences.getBoolean(PREFS_START_SAMPLING_PROFILER_ON_INIT, false)
+  @Deprecated(
+      "Legacy sampling profiler is no longer supported - This field will be removed in React Native 0.77")
+  override var isStartSamplingProfilerOnInit: Boolean = false
 
   // Not supported.
   override fun addMenuItem(title: String) = Unit
 
-  fun setElementInspectorEnabled(enabled: Boolean) {
-    preferences.edit().putBoolean(PREFS_INSPECTOR_DEBUG_KEY, enabled).apply()
-  }
-
-  var isHotModuleReplacementEnabled: Boolean
+  override var isHotModuleReplacementEnabled: Boolean
     get() = preferences.getBoolean(PREFS_HOT_MODULE_REPLACEMENT_KEY, true)
     set(enabled) {
       preferences.edit().putBoolean(PREFS_HOT_MODULE_REPLACEMENT_KEY, enabled).apply()
     }
-
-  fun setJSDevModeEnabled(value: Boolean) {
-    preferences.edit().putBoolean(PREFS_JS_DEV_MODE_DEBUG_KEY, value).apply()
-  }
-
-  fun setFpsDebugEnabled(enabled: Boolean) {
-    preferences.edit().putBoolean(PREFS_FPS_DEBUG_KEY, enabled).apply()
-  }
 
   interface Listener {
     fun onInternalSettingsChanged()
@@ -103,6 +106,5 @@ internal class DevInternalSettings(applicationContext: Context, private val list
     private const val PREFS_INSPECTOR_DEBUG_KEY = "inspector_debug"
     private const val PREFS_HOT_MODULE_REPLACEMENT_KEY = "hot_module_replacement"
     private const val PREFS_REMOTE_JS_DEBUG_KEY = "remote_js_debug"
-    private const val PREFS_START_SAMPLING_PROFILER_ON_INIT = "start_sampling_profiler_on_init"
   }
 }

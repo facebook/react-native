@@ -31,7 +31,7 @@ export type NativeComponentType<T> = HostComponent<T>;
 // `requireNativeComponent` is not available in Bridgeless mode.
 // e.g. This function runs at runtime if `codegenNativeComponent` was not called
 // from a file suffixed with NativeComponent.js.
-function codegenNativeComponent<Props>(
+function codegenNativeComponent<Props: {...}>(
   componentName: string,
   options?: Options,
 ): NativeComponentType<Props> {

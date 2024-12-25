@@ -7,6 +7,7 @@ require 'json'
 require 'pathname'
 require 'cocoapods'
 require_relative './autolinking_utils.rb'
+require_relative '../react_native_pods.rb'
 
 # Your project will have to depend on the @react-native-community/cli if you use this method
 # for listing React native modules.
@@ -72,6 +73,7 @@ def list_native_modules!(config_command)
     found_pods.push({
       "configurations": configurations,
       "name": name,
+      "root": package["root"],
       "path": relative_path.to_path,
       "podspec_path": podspec_path,
       "script_phases": script_phases
@@ -167,7 +169,7 @@ def link_native_modules!(config)
 
         # Support passing in a path relative to the root of the package
         if phase["path"]
-          phase["script"] = File.read(File.expand_path(phase["path"], package["root"]))
+          phase["script"] = File.read(File.expand_path(phase["path"], package[:root]))
           phase.delete("path")
         end
 

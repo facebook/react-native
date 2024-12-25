@@ -11,7 +11,6 @@
 #include <mutex>
 
 #include <ReactCommon/RuntimeExecutor.h>
-#include <react/config/ReactNativeConfig.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
@@ -85,7 +84,7 @@ class Scheduler final : public UIManagerDelegate {
 #pragma mark - UIManagerDelegate
 
   void uiManagerDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator,
+      std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) override;
   void uiManagerDidCreateShadowNode(const ShadowNode& shadowNode) override;
   void uiManagerDidDispatchCommand(
@@ -109,7 +108,7 @@ class Scheduler final : public UIManagerDelegate {
   void reportMount(SurfaceId surfaceId) const;
 
 #pragma mark - Event listeners
-  void addEventListener(const std::shared_ptr<const EventListener>& listener);
+  void addEventListener(std::shared_ptr<const EventListener> listener);
   void removeEventListener(
       const std::shared_ptr<const EventListener>& listener);
 
@@ -120,7 +119,6 @@ class Scheduler final : public UIManagerDelegate {
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManager> uiManager_;
-  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
 
   std::vector<std::shared_ptr<UIManagerCommitHook>> commitHooks_;
 
@@ -142,11 +140,7 @@ class Scheduler final : public UIManagerDelegate {
    */
   ContextContainer::Shared contextContainer_;
 
-  /*
-   * Temporary flags.
-   */
-  bool removeOutstandingSurfacesOnDestruction_{false};
-  bool reduceDeleteCreateMutationLayoutAnimation_{false};
+  RuntimeScheduler* runtimeScheduler_{nullptr};
 };
 
 } // namespace facebook::react

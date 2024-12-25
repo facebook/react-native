@@ -31,8 +31,12 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -42,15 +46,19 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     
 
   private:
+    friend class NativeSampleTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -99,8 +107,12 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -110,11 +122,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object difficult(jsi::Runtime &rt, jsi::Object A) override {
       static_assert(
@@ -174,6 +189,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -204,27 +220,27 @@ Map {
 namespace facebook::react {
 
 
-#pragma mark - SampleTurboModuleCxxEnumInt
+#pragma mark - NativeSampleTurboModuleEnumInt
 
-enum class SampleTurboModuleCxxEnumInt { IA, IB };
+enum class NativeSampleTurboModuleEnumInt { IA, IB };
 
 template <>
-struct Bridging<SampleTurboModuleCxxEnumInt> {
-  static SampleTurboModuleCxxEnumInt fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+struct Bridging<NativeSampleTurboModuleEnumInt> {
+  static NativeSampleTurboModuleEnumInt fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
     if (value == 23) {
-      return SampleTurboModuleCxxEnumInt::IA;
+      return NativeSampleTurboModuleEnumInt::IA;
     } else if (value == 42) {
-      return SampleTurboModuleCxxEnumInt::IB;
+      return NativeSampleTurboModuleEnumInt::IB;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxEnumInt value) {
-    if (value == SampleTurboModuleCxxEnumInt::IA) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeSampleTurboModuleEnumInt value) {
+    if (value == NativeSampleTurboModuleEnumInt::IA) {
       return bridging::toJs(rt, 23);
-    } else if (value == SampleTurboModuleCxxEnumInt::IB) {
+    } else if (value == NativeSampleTurboModuleEnumInt::IB) {
       return bridging::toJs(rt, 42);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -232,55 +248,55 @@ struct Bridging<SampleTurboModuleCxxEnumInt> {
   }
 };
 
-#pragma mark - SampleTurboModuleCxxEnumFloat
+#pragma mark - NativeSampleTurboModuleEnumFloat
 
-enum class SampleTurboModuleCxxEnumFloat { FA, FB };
+enum class NativeSampleTurboModuleEnumFloat { FA, FB };
 
 template <>
-struct Bridging<SampleTurboModuleCxxEnumFloat> {
-  static SampleTurboModuleCxxEnumFloat fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+struct Bridging<NativeSampleTurboModuleEnumFloat> {
+  static NativeSampleTurboModuleEnumFloat fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
-    if (value == 1.23f) {
-      return SampleTurboModuleCxxEnumFloat::FA;
-    } else if (value == 4.56f) {
-      return SampleTurboModuleCxxEnumFloat::FB;
+    if (value == 1.23) {
+      return NativeSampleTurboModuleEnumFloat::FA;
+    } else if (value == 4.56) {
+      return NativeSampleTurboModuleEnumFloat::FB;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleCxxEnumFloat value) {
-    if (value == SampleTurboModuleCxxEnumFloat::FA) {
-      return bridging::toJs(rt, 1.23f);
-    } else if (value == SampleTurboModuleCxxEnumFloat::FB) {
-      return bridging::toJs(rt, 4.56f);
+  static jsi::Value toJs(jsi::Runtime &rt, NativeSampleTurboModuleEnumFloat value) {
+    if (value == NativeSampleTurboModuleEnumFloat::FA) {
+      return bridging::toJs(rt, 1.23);
+    } else if (value == NativeSampleTurboModuleEnumFloat::FB) {
+      return bridging::toJs(rt, 4.56);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
     }
   }
 };
 
-#pragma mark - SampleTurboModuleCxxEnumNone
+#pragma mark - NativeSampleTurboModuleEnumNone
 
-enum class SampleTurboModuleCxxEnumNone { NA, NB };
+enum class NativeSampleTurboModuleEnumNone { NA, NB };
 
 template <>
-struct Bridging<SampleTurboModuleCxxEnumNone> {
-  static SampleTurboModuleCxxEnumNone fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+struct Bridging<NativeSampleTurboModuleEnumNone> {
+  static NativeSampleTurboModuleEnumNone fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"NA\\") {
-      return SampleTurboModuleCxxEnumNone::NA;
+      return NativeSampleTurboModuleEnumNone::NA;
     } else if (value == \\"NB\\") {
-      return SampleTurboModuleCxxEnumNone::NB;
+      return NativeSampleTurboModuleEnumNone::NB;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleCxxEnumNone value) {
-    if (value == SampleTurboModuleCxxEnumNone::NA) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeSampleTurboModuleEnumNone value) {
+    if (value == NativeSampleTurboModuleEnumNone::NA) {
       return bridging::toJs(rt, \\"NA\\");
-    } else if (value == SampleTurboModuleCxxEnumNone::NB) {
+    } else if (value == NativeSampleTurboModuleEnumNone::NB) {
       return bridging::toJs(rt, \\"NB\\");
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -288,27 +304,27 @@ struct Bridging<SampleTurboModuleCxxEnumNone> {
   }
 };
 
-#pragma mark - SampleTurboModuleCxxEnumStr
+#pragma mark - NativeSampleTurboModuleEnumStr
 
-enum class SampleTurboModuleCxxEnumStr { SA, SB };
+enum class NativeSampleTurboModuleEnumStr { SA, SB };
 
 template <>
-struct Bridging<SampleTurboModuleCxxEnumStr> {
-  static SampleTurboModuleCxxEnumStr fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+struct Bridging<NativeSampleTurboModuleEnumStr> {
+  static NativeSampleTurboModuleEnumStr fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"s---a\\") {
-      return SampleTurboModuleCxxEnumStr::SA;
+      return NativeSampleTurboModuleEnumStr::SA;
     } else if (value == \\"s---b\\") {
-      return SampleTurboModuleCxxEnumStr::SB;
+      return NativeSampleTurboModuleEnumStr::SB;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleCxxEnumStr value) {
-    if (value == SampleTurboModuleCxxEnumStr::SA) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeSampleTurboModuleEnumStr value) {
+    if (value == NativeSampleTurboModuleEnumStr::SA) {
       return bridging::toJs(rt, \\"s---a\\");
-    } else if (value == SampleTurboModuleCxxEnumStr::SB) {
+    } else if (value == NativeSampleTurboModuleEnumStr::SB) {
       return bridging::toJs(rt, \\"s---b\\");
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -316,20 +332,20 @@ struct Bridging<SampleTurboModuleCxxEnumStr> {
   }
 };
   
-#pragma mark - SampleTurboModuleCxxConstantsStruct
+#pragma mark - NativeSampleTurboModuleConstantsStruct
 
 template <typename P0, typename P1, typename P2>
-struct SampleTurboModuleCxxConstantsStruct {
+struct NativeSampleTurboModuleConstantsStruct {
   P0 const1;
   P1 const2;
   P2 const3;
-  bool operator==(const SampleTurboModuleCxxConstantsStruct &other) const {
+  bool operator==(const NativeSampleTurboModuleConstantsStruct &other) const {
     return const1 == other.const1 && const2 == other.const2 && const3 == other.const3;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxConstantsStructBridging {
+struct NativeSampleTurboModuleConstantsStructBridging {
   static T types;
 
   static T fromJs(
@@ -372,20 +388,20 @@ struct SampleTurboModuleCxxConstantsStructBridging {
 
 
 
-#pragma mark - SampleTurboModuleCxxBinaryTreeNode
+#pragma mark - NativeSampleTurboModuleBinaryTreeNode
 
 template <typename P0>
-struct SampleTurboModuleCxxBinaryTreeNode {
-  std::unique_ptr<SampleTurboModuleCxxBinaryTreeNode<P0>> left;
+struct NativeSampleTurboModuleBinaryTreeNode {
+  std::unique_ptr<NativeSampleTurboModuleBinaryTreeNode<P0>> left;
   P0 value;
-  std::unique_ptr<SampleTurboModuleCxxBinaryTreeNode<P0>> right;
-  bool operator==(const SampleTurboModuleCxxBinaryTreeNode &other) const {
+  std::unique_ptr<NativeSampleTurboModuleBinaryTreeNode<P0>> right;
+  bool operator==(const NativeSampleTurboModuleBinaryTreeNode &other) const {
     return left == other.left && value == other.value && right == other.right;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxBinaryTreeNodeBridging {
+struct NativeSampleTurboModuleBinaryTreeNodeBridging {
   static T types;
 
   static T fromJs(
@@ -431,19 +447,19 @@ struct SampleTurboModuleCxxBinaryTreeNodeBridging {
 
 
 
-#pragma mark - SampleTurboModuleCxxGraphNode
+#pragma mark - NativeSampleTurboModuleGraphNode
 
 template <typename P0>
-struct SampleTurboModuleCxxGraphNode {
+struct NativeSampleTurboModuleGraphNode {
   P0 label;
-  std::optional<std::vector<SampleTurboModuleCxxGraphNode<P0>>> neighbors;
-  bool operator==(const SampleTurboModuleCxxGraphNode &other) const {
+  std::optional<std::vector<NativeSampleTurboModuleGraphNode<P0>>> neighbors;
+  bool operator==(const NativeSampleTurboModuleGraphNode &other) const {
     return label == other.label && neighbors == other.neighbors;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxGraphNodeBridging {
+struct NativeSampleTurboModuleGraphNodeBridging {
   static T types;
 
   static T fromJs(
@@ -481,20 +497,20 @@ struct SampleTurboModuleCxxGraphNodeBridging {
 
 
 
-#pragma mark - SampleTurboModuleCxxObjectStruct
+#pragma mark - NativeSampleTurboModuleObjectStruct
 
 template <typename P0, typename P1, typename P2>
-struct SampleTurboModuleCxxObjectStruct {
+struct NativeSampleTurboModuleObjectStruct {
   P0 a;
   P1 b;
   P2 c;
-  bool operator==(const SampleTurboModuleCxxObjectStruct &other) const {
+  bool operator==(const NativeSampleTurboModuleObjectStruct &other) const {
     return a == other.a && b == other.b && c == other.c;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxObjectStructBridging {
+struct NativeSampleTurboModuleObjectStructBridging {
   static T types;
 
   static T fromJs(
@@ -538,20 +554,20 @@ struct SampleTurboModuleCxxObjectStructBridging {
 
 
 
-#pragma mark - SampleTurboModuleCxxValueStruct
+#pragma mark - NativeSampleTurboModuleValueStruct
 
 template <typename P0, typename P1, typename P2>
-struct SampleTurboModuleCxxValueStruct {
+struct NativeSampleTurboModuleValueStruct {
   P0 x;
   P1 y;
   P2 z;
-  bool operator==(const SampleTurboModuleCxxValueStruct &other) const {
+  bool operator==(const NativeSampleTurboModuleValueStruct &other) const {
     return x == other.x && y == other.y && z == other.z;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxValueStructBridging {
+struct NativeSampleTurboModuleValueStructBridging {
   static T types;
 
   static T fromJs(
@@ -593,21 +609,21 @@ struct SampleTurboModuleCxxValueStructBridging {
 
 
 
-#pragma mark - SampleTurboModuleCxxMenuItem
+#pragma mark - NativeSampleTurboModuleMenuItem
 
 template <typename P0, typename P1, typename P2>
-struct SampleTurboModuleCxxMenuItem {
+struct NativeSampleTurboModuleMenuItem {
   P0 label;
   P1 onPress;
   P2 shortcut;
-  std::optional<std::vector<SampleTurboModuleCxxMenuItem<P0, P1, P2>>> items;
-  bool operator==(const SampleTurboModuleCxxMenuItem &other) const {
+  std::optional<std::vector<NativeSampleTurboModuleMenuItem<P0, P1, P2>>> items;
+  bool operator==(const NativeSampleTurboModuleMenuItem &other) const {
     return label == other.label && onPress == other.onPress && shortcut == other.shortcut && items == other.items;
   }
 };
 
 template <typename T>
-struct SampleTurboModuleCxxMenuItemBridging {
+struct NativeSampleTurboModuleMenuItemBridging {
   static T types;
 
   static T fromJs(
@@ -677,7 +693,7 @@ public:
   virtual jsi::Object getObject(jsi::Runtime &rt, jsi::Object arg) = 0;
   virtual jsi::Array getSet(jsi::Runtime &rt, jsi::Array arg) = 0;
   virtual jsi::String getString(jsi::Runtime &rt, jsi::String arg) = 0;
-  virtual jsi::String getUnion(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) = 0;
+  virtual jsi::String getUnion(jsi::Runtime &rt, double x, jsi::String y, jsi::String y-literal, jsi::Object z) = 0;
   virtual jsi::Object getValue(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) = 0;
   virtual void getValueWithCallback(jsi::Runtime &rt, jsi::Function callback) = 0;
   virtual jsi::Value getValueWithPromise(jsi::Runtime &rt, bool error) = 0;
@@ -695,8 +711,12 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModuleCxx\\";
@@ -706,11 +726,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Array getArray(jsi::Runtime &rt, jsi::Array arg) override {
       static_assert(
@@ -832,13 +855,13 @@ private:
       return bridging::callFromJs<jsi::String>(
           rt, &T::getString, jsInvoker_, instance_, std::move(arg));
     }
-    jsi::String getUnion(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) override {
+    jsi::String getUnion(jsi::Runtime &rt, double x, jsi::String y, jsi::String y-literal, jsi::Object z) override {
       static_assert(
-          bridging::getParameterCount(&T::getUnion) == 4,
-          \\"Expected getUnion(...) to have 4 parameters\\");
+          bridging::getParameterCount(&T::getUnion) == 5,
+          \\"Expected getUnion(...) to have 5 parameters\\");
 
       return bridging::callFromJs<jsi::String>(
-          rt, &T::getUnion, jsInvoker_, instance_, std::move(x), std::move(y), std::move(z));
+          rt, &T::getUnion, jsInvoker_, instance_, std::move(x), std::move(y), std::move(y-literal), std::move(z));
     }
     jsi::Object getValue(jsi::Runtime &rt, double x, jsi::String y, jsi::Object z) override {
       static_assert(
@@ -930,6 +953,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -972,8 +996,12 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -983,15 +1011,195 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     
 
   private:
+    friend class NativeSampleTurboModuleCxxSpec;
+    T *instance_;
+  };
+
+  Delegate delegate_;
+};
+
+} // namespace facebook::react
+",
+}
+`;
+
+exports[`GenerateModuleH can generate fixture event_emitter_module 1`] = `
+Map {
+  "event_emitter_moduleJSI.h" => "/**
+ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
+ *
+ * Do not edit this file as changes may cause incorrect behavior and will be lost
+ * once the code is regenerated.
+ *
+ * @generated by codegen project: GenerateModuleH.js
+ */
+
+#pragma once
+
+#include <ReactCommon/TurboModule.h>
+#include <react/bridging/Bridging.h>
+
+namespace facebook::react {
+
+
+  
+#pragma mark - NativeSampleTurboModuleObjectStruct
+
+template <typename P0, typename P1, typename P2>
+struct NativeSampleTurboModuleObjectStruct {
+  P0 a;
+  P1 b;
+  P2 c;
+  bool operator==(const NativeSampleTurboModuleObjectStruct &other) const {
+    return a == other.a && b == other.b && c == other.c;
+  }
+};
+
+template <typename T>
+struct NativeSampleTurboModuleObjectStructBridging {
+  static T types;
+
+  static T fromJs(
+      jsi::Runtime &rt,
+      const jsi::Object &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    T result{
+      bridging::fromJs<decltype(types.a)>(rt, value.getProperty(rt, \\"a\\"), jsInvoker),
+      bridging::fromJs<decltype(types.b)>(rt, value.getProperty(rt, \\"b\\"), jsInvoker),
+      bridging::fromJs<decltype(types.c)>(rt, value.getProperty(rt, \\"c\\"), jsInvoker)};
+    return result;
+  }
+
+#ifdef DEBUG
+  static double aToJs(jsi::Runtime &rt, decltype(types.a) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static jsi::String bToJs(jsi::Runtime &rt, decltype(types.b) value) {
+    return bridging::toJs(rt, value);
+  }
+
+  static std::optional<jsi::String> cToJs(jsi::Runtime &rt, decltype(types.c) value) {
+    return bridging::toJs(rt, value);
+  }
+#endif
+
+  static jsi::Object toJs(
+      jsi::Runtime &rt,
+      const T &value,
+      const std::shared_ptr<CallInvoker> &jsInvoker) {
+    auto result = facebook::jsi::Object(rt);
+    result.setProperty(rt, \\"a\\", bridging::toJs(rt, value.a, jsInvoker));
+    result.setProperty(rt, \\"b\\", bridging::toJs(rt, value.b, jsInvoker));
+    if (value.c) {
+      result.setProperty(rt, \\"c\\", bridging::toJs(rt, value.c.value(), jsInvoker));
+    }
+    return result;
+  }
+};
+
+class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
+
+public:
+  virtual void voidFunc(jsi::Runtime &rt) = 0;
+
+};
+
+template <typename T>
+class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
+public:
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
+protected:
+  NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
+
+  void emitOnEvent1() {
+    static_cast<AsyncEventEmitter<>&>(*delegate_.eventEmitterMap_[\\"onEvent1\\"]).emit();
+  }
+
+  template <typename OnEvent2Type> void emitOnEvent2(OnEvent2Type value) {
+    static_assert(bridging::supportsFromJs<OnEvent2Type, jsi::String>, \\"value cannnot be converted to jsi::String\\");
+    static_cast<AsyncEventEmitter<jsi::Value>&>(*delegate_.eventEmitterMap_[\\"onEvent2\\"]).emit([jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {
+      return bridging::toJs(rt, eventValue, jsInvoker);
+    });
+  }
+
+  template <typename OnEvent3Type> void emitOnEvent3(OnEvent3Type value) {
+    static_assert(bridging::supportsFromJs<OnEvent3Type, double>, \\"value cannnot be converted to double\\");
+    static_cast<AsyncEventEmitter<jsi::Value>&>(*delegate_.eventEmitterMap_[\\"onEvent3\\"]).emit([jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {
+      return bridging::toJs(rt, eventValue, jsInvoker);
+    });
+  }
+
+  template <typename OnEvent4Type> void emitOnEvent4(OnEvent4Type value) {
+    static_assert(bridging::supportsFromJs<OnEvent4Type, bool>, \\"value cannnot be converted to bool\\");
+    static_cast<AsyncEventEmitter<jsi::Value>&>(*delegate_.eventEmitterMap_[\\"onEvent4\\"]).emit([jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {
+      return bridging::toJs(rt, eventValue, jsInvoker);
+    });
+  }
+
+  template <typename OnEvent5Type> void emitOnEvent5(OnEvent5Type value) {
+    static_assert(bridging::supportsFromJs<OnEvent5Type, jsi::Object>, \\"value cannnot be converted to jsi::Object\\");
+    static_cast<AsyncEventEmitter<jsi::Value>&>(*delegate_.eventEmitterMap_[\\"onEvent5\\"]).emit([jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {
+      return bridging::toJs(rt, eventValue, jsInvoker);
+    });
+  }
+
+  template <typename OnEvent6Type> void emitOnEvent6(std::vector<OnEvent6Type> value) {
+    static_assert(bridging::supportsFromJs<std::vector<OnEvent6Type>, jsi::Array>, \\"value cannnot be converted to jsi::Array\\");
+    static_cast<AsyncEventEmitter<jsi::Value>&>(*delegate_.eventEmitterMap_[\\"onEvent6\\"]).emit([jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {
+      return bridging::toJs(rt, eventValue, jsInvoker);
+    });
+  }
+
+private:
+  class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+      eventEmitterMap_[\\"onEvent1\\"] = std::make_shared<AsyncEventEmitter<>>();
+      eventEmitterMap_[\\"onEvent2\\"] = std::make_shared<AsyncEventEmitter<jsi::Value>>();
+      eventEmitterMap_[\\"onEvent3\\"] = std::make_shared<AsyncEventEmitter<jsi::Value>>();
+      eventEmitterMap_[\\"onEvent4\\"] = std::make_shared<AsyncEventEmitter<jsi::Value>>();
+      eventEmitterMap_[\\"onEvent5\\"] = std::make_shared<AsyncEventEmitter<jsi::Value>>();
+      eventEmitterMap_[\\"onEvent6\\"] = std::make_shared<AsyncEventEmitter<jsi::Value>>();
+    }
+
+    void voidFunc(jsi::Runtime &rt) override {
+      static_assert(
+          bridging::getParameterCount(&T::voidFunc) == 1,
+          \\"Expected voidFunc(...) to have 1 parameters\\");
+
+      return bridging::callFromJs<void>(
+          rt, &T::voidFunc, jsInvoker_, instance_);
+    }
+
+  private:
+    friend class NativeSampleTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -1109,8 +1317,12 @@ public:
 template <typename T>
 class JSI_EXPORT AliasTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"AliasTurboModule\\";
@@ -1120,11 +1332,14 @@ protected:
     : TurboModule(std::string{AliasTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public AliasTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      AliasTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      AliasTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -1144,6 +1359,7 @@ private:
     }
 
   private:
+    friend class AliasTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -1175,23 +1391,23 @@ namespace facebook::react {
 
 
   
-#pragma mark - CameraRollManagerPhotoIdentifierImage
+#pragma mark - NativeCameraRollManagerPhotoIdentifierImage
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5>
-struct CameraRollManagerPhotoIdentifierImage {
+struct NativeCameraRollManagerPhotoIdentifierImage {
   P0 uri;
   P1 playableDuration;
   P2 width;
   P3 height;
   P4 isStored;
   P5 filename;
-  bool operator==(const CameraRollManagerPhotoIdentifierImage &other) const {
+  bool operator==(const NativeCameraRollManagerPhotoIdentifierImage &other) const {
     return uri == other.uri && playableDuration == other.playableDuration && width == other.width && height == other.height && isStored == other.isStored && filename == other.filename;
   }
 };
 
 template <typename T>
-struct CameraRollManagerPhotoIdentifierImageBridging {
+struct NativeCameraRollManagerPhotoIdentifierImageBridging {
   static T types;
 
   static T fromJs(
@@ -1253,18 +1469,18 @@ struct CameraRollManagerPhotoIdentifierImageBridging {
 
 
 
-#pragma mark - CameraRollManagerPhotoIdentifier
+#pragma mark - NativeCameraRollManagerPhotoIdentifier
 
 template <typename P0>
-struct CameraRollManagerPhotoIdentifier {
+struct NativeCameraRollManagerPhotoIdentifier {
   P0 node;
-  bool operator==(const CameraRollManagerPhotoIdentifier &other) const {
+  bool operator==(const NativeCameraRollManagerPhotoIdentifier &other) const {
     return node == other.node;
   }
 };
 
 template <typename T>
-struct CameraRollManagerPhotoIdentifierBridging {
+struct NativeCameraRollManagerPhotoIdentifierBridging {
   static T types;
 
   static T fromJs(
@@ -1294,19 +1510,19 @@ struct CameraRollManagerPhotoIdentifierBridging {
 
 
 
-#pragma mark - CameraRollManagerPhotoIdentifiersPage
+#pragma mark - NativeCameraRollManagerPhotoIdentifiersPage
 
 template <typename P0, typename P1>
-struct CameraRollManagerPhotoIdentifiersPage {
+struct NativeCameraRollManagerPhotoIdentifiersPage {
   P0 edges;
   P1 page_info;
-  bool operator==(const CameraRollManagerPhotoIdentifiersPage &other) const {
+  bool operator==(const NativeCameraRollManagerPhotoIdentifiersPage &other) const {
     return edges == other.edges && page_info == other.page_info;
   }
 };
 
 template <typename T>
-struct CameraRollManagerPhotoIdentifiersPageBridging {
+struct NativeCameraRollManagerPhotoIdentifiersPageBridging {
   static T types;
 
   static T fromJs(
@@ -1342,10 +1558,10 @@ struct CameraRollManagerPhotoIdentifiersPageBridging {
 
 
 
-#pragma mark - CameraRollManagerGetPhotosParams
+#pragma mark - NativeCameraRollManagerGetPhotosParams
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
-struct CameraRollManagerGetPhotosParams {
+struct NativeCameraRollManagerGetPhotosParams {
   P0 first;
   P1 after;
   P2 groupName;
@@ -1353,13 +1569,13 @@ struct CameraRollManagerGetPhotosParams {
   P4 assetType;
   P5 maxSize;
   P6 mimeTypes;
-  bool operator==(const CameraRollManagerGetPhotosParams &other) const {
+  bool operator==(const NativeCameraRollManagerGetPhotosParams &other) const {
     return first == other.first && after == other.after && groupName == other.groupName && groupTypes == other.groupTypes && assetType == other.assetType && maxSize == other.maxSize && mimeTypes == other.mimeTypes;
   }
 };
 
 template <typename T>
-struct CameraRollManagerGetPhotosParamsBridging {
+struct NativeCameraRollManagerGetPhotosParamsBridging {
   static T types;
 
   static T fromJs(
@@ -1450,8 +1666,12 @@ public:
 template <typename T>
 class JSI_EXPORT NativeCameraRollManagerCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"CameraRollManager\\";
@@ -1461,11 +1681,14 @@ protected:
     : TurboModule(std::string{NativeCameraRollManagerCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeCameraRollManagerCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeCameraRollManagerCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeCameraRollManagerCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -1501,6 +1724,7 @@ private:
     }
 
   private:
+    friend class NativeCameraRollManagerCxxSpec;
     T *instance_;
   };
 
@@ -1509,22 +1733,22 @@ private:
 
 
   
-#pragma mark - ExceptionsManagerStackFrame
+#pragma mark - NativeExceptionsManagerStackFrame
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4>
-struct ExceptionsManagerStackFrame {
+struct NativeExceptionsManagerStackFrame {
   P0 column;
   P1 file;
   P2 lineNumber;
   P3 methodName;
   P4 collapse;
-  bool operator==(const ExceptionsManagerStackFrame &other) const {
+  bool operator==(const NativeExceptionsManagerStackFrame &other) const {
     return column == other.column && file == other.file && lineNumber == other.lineNumber && methodName == other.methodName && collapse == other.collapse;
   }
 };
 
 template <typename T>
-struct ExceptionsManagerStackFrameBridging {
+struct NativeExceptionsManagerStackFrameBridging {
   static T types;
 
   static T fromJs(
@@ -1584,10 +1808,10 @@ struct ExceptionsManagerStackFrameBridging {
 
 
 
-#pragma mark - ExceptionsManagerExceptionData
+#pragma mark - NativeExceptionsManagerExceptionData
 
 template <typename P0, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
-struct ExceptionsManagerExceptionData {
+struct NativeExceptionsManagerExceptionData {
   P0 message;
   P1 originalMessage;
   P2 name;
@@ -1596,13 +1820,13 @@ struct ExceptionsManagerExceptionData {
   P5 id;
   P6 isFatal;
   P7 extraData;
-  bool operator==(const ExceptionsManagerExceptionData &other) const {
+  bool operator==(const NativeExceptionsManagerExceptionData &other) const {
     return message == other.message && originalMessage == other.originalMessage && name == other.name && componentStack == other.componentStack && stack == other.stack && id == other.id && isFatal == other.isFatal && extraData == other.extraData;
   }
 };
 
 template <typename T>
-struct ExceptionsManagerExceptionDataBridging {
+struct NativeExceptionsManagerExceptionDataBridging {
   static T types;
 
   static T fromJs(
@@ -1690,8 +1914,12 @@ public:
 template <typename T>
 class JSI_EXPORT NativeExceptionsManagerCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"ExceptionsManager\\";
@@ -1701,11 +1929,14 @@ protected:
     : TurboModule(std::string{NativeExceptionsManagerCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeExceptionsManagerCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeExceptionsManagerCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeExceptionsManagerCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     void reportFatalException(jsi::Runtime &rt, jsi::String message, jsi::Array stack, double exceptionId) override {
       static_assert(
@@ -1749,6 +1980,7 @@ private:
     }
 
   private:
+    friend class NativeExceptionsManagerCxxSpec;
     T *instance_;
   };
 
@@ -1779,27 +2011,27 @@ Map {
 namespace facebook::react {
 
 
-#pragma mark - SampleTurboModuleNumEnum
+#pragma mark - NativeSampleTurboModuleNumEnum
 
-enum class SampleTurboModuleNumEnum { ONE, TWO };
+enum class NativeSampleTurboModuleNumEnum { ONE, TWO };
 
 template <>
-struct Bridging<SampleTurboModuleNumEnum> {
-  static SampleTurboModuleNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+struct Bridging<NativeSampleTurboModuleNumEnum> {
+  static NativeSampleTurboModuleNumEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
     if (value == 1) {
-      return SampleTurboModuleNumEnum::ONE;
+      return NativeSampleTurboModuleNumEnum::ONE;
     } else if (value == 2) {
-      return SampleTurboModuleNumEnum::TWO;
+      return NativeSampleTurboModuleNumEnum::TWO;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleNumEnum value) {
-    if (value == SampleTurboModuleNumEnum::ONE) {
+  static jsi::Value toJs(jsi::Runtime &rt, NativeSampleTurboModuleNumEnum value) {
+    if (value == NativeSampleTurboModuleNumEnum::ONE) {
       return bridging::toJs(rt, 1);
-    } else if (value == SampleTurboModuleNumEnum::TWO) {
+    } else if (value == NativeSampleTurboModuleNumEnum::TWO) {
       return bridging::toJs(rt, 2);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -1807,59 +2039,59 @@ struct Bridging<SampleTurboModuleNumEnum> {
   }
 };
 
-#pragma mark - SampleTurboModuleFloatEnum
+#pragma mark - NativeSampleTurboModuleFloatEnum
 
-enum class SampleTurboModuleFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO };
+enum class NativeSampleTurboModuleFloatEnum { POINT_ZERO, POINT_ONE, POINT_TWO };
 
 template <>
-struct Bridging<SampleTurboModuleFloatEnum> {
-  static SampleTurboModuleFloatEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
+struct Bridging<NativeSampleTurboModuleFloatEnum> {
+  static NativeSampleTurboModuleFloatEnum fromJs(jsi::Runtime &rt, const jsi::Value &rawValue) {
     double value = (double)rawValue.asNumber();
-    if (value == 0.0f) {
-      return SampleTurboModuleFloatEnum::POINT_ZERO;
-    } else if (value == 0.1f) {
-      return SampleTurboModuleFloatEnum::POINT_ONE;
-    } else if (value == 0.2f) {
-      return SampleTurboModuleFloatEnum::POINT_TWO;
+    if (value == 0) {
+      return NativeSampleTurboModuleFloatEnum::POINT_ZERO;
+    } else if (value == 0.1) {
+      return NativeSampleTurboModuleFloatEnum::POINT_ONE;
+    } else if (value == 0.2) {
+      return NativeSampleTurboModuleFloatEnum::POINT_TWO;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::Value toJs(jsi::Runtime &rt, SampleTurboModuleFloatEnum value) {
-    if (value == SampleTurboModuleFloatEnum::POINT_ZERO) {
-      return bridging::toJs(rt, 0.0f);
-    } else if (value == SampleTurboModuleFloatEnum::POINT_ONE) {
-      return bridging::toJs(rt, 0.1f);
-    } else if (value == SampleTurboModuleFloatEnum::POINT_TWO) {
-      return bridging::toJs(rt, 0.2f);
+  static jsi::Value toJs(jsi::Runtime &rt, NativeSampleTurboModuleFloatEnum value) {
+    if (value == NativeSampleTurboModuleFloatEnum::POINT_ZERO) {
+      return bridging::toJs(rt, 0);
+    } else if (value == NativeSampleTurboModuleFloatEnum::POINT_ONE) {
+      return bridging::toJs(rt, 0.1);
+    } else if (value == NativeSampleTurboModuleFloatEnum::POINT_TWO) {
+      return bridging::toJs(rt, 0.2);
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
     }
   }
 };
 
-#pragma mark - SampleTurboModuleStringEnum
+#pragma mark - NativeSampleTurboModuleStringEnum
 
-enum class SampleTurboModuleStringEnum { HELLO, GoodBye };
+enum class NativeSampleTurboModuleStringEnum { HELLO, GoodBye };
 
 template <>
-struct Bridging<SampleTurboModuleStringEnum> {
-  static SampleTurboModuleStringEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
+struct Bridging<NativeSampleTurboModuleStringEnum> {
+  static NativeSampleTurboModuleStringEnum fromJs(jsi::Runtime &rt, const jsi::String &rawValue) {
     std::string value = rawValue.utf8(rt);
     if (value == \\"hello\\") {
-      return SampleTurboModuleStringEnum::HELLO;
+      return NativeSampleTurboModuleStringEnum::HELLO;
     } else if (value == \\"goodbye\\") {
-      return SampleTurboModuleStringEnum::GoodBye;
+      return NativeSampleTurboModuleStringEnum::GoodBye;
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for value\\");
     }
   }
 
-  static jsi::String toJs(jsi::Runtime &rt, SampleTurboModuleStringEnum value) {
-    if (value == SampleTurboModuleStringEnum::HELLO) {
+  static jsi::String toJs(jsi::Runtime &rt, NativeSampleTurboModuleStringEnum value) {
+    if (value == NativeSampleTurboModuleStringEnum::HELLO) {
       return bridging::toJs(rt, \\"hello\\");
-    } else if (value == SampleTurboModuleStringEnum::GoodBye) {
+    } else if (value == NativeSampleTurboModuleStringEnum::GoodBye) {
       return bridging::toJs(rt, \\"goodbye\\");
     } else {
       throw jsi::JSError(rt, \\"No appropriate enum member found for enum value\\");
@@ -1891,8 +2123,12 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -1902,11 +2138,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -2022,6 +2261,90 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleCxxSpec;
+    T *instance_;
+  };
+
+  Delegate delegate_;
+};
+
+} // namespace facebook::react
+",
+}
+`;
+
+exports[`GenerateModuleH can generate fixture string_literals 1`] = `
+Map {
+  "string_literalsJSI.h" => "/**
+ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
+ *
+ * Do not edit this file as changes may cause incorrect behavior and will be lost
+ * once the code is regenerated.
+ *
+ * @generated by codegen project: GenerateModuleH.js
+ */
+
+#pragma once
+
+#include <ReactCommon/TurboModule.h>
+#include <react/bridging/Bridging.h>
+
+namespace facebook::react {
+
+
+  class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
+
+public:
+  virtual jsi::String getStringLiteral(jsi::Runtime &rt, jsi::String literalParam) = 0;
+
+};
+
+template <typename T>
+class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
+public:
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
+protected:
+  NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
+
+  template <typename LiteralEventType> void emitLiteralEvent(LiteralEventType value) {
+    static_assert(bridging::supportsFromJs<LiteralEventType, jsi::String>, \\"value cannnot be converted to jsi::String\\");
+    static_cast<AsyncEventEmitter<jsi::Value>&>(*delegate_.eventEmitterMap_[\\"literalEvent\\"]).emit([jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {
+      return bridging::toJs(rt, eventValue, jsInvoker);
+    });
+  }
+
+private:
+  class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+      eventEmitterMap_[\\"literalEvent\\"] = std::make_shared<AsyncEventEmitter<jsi::Value>>();
+    }
+
+    jsi::String getStringLiteral(jsi::Runtime &rt, jsi::String literalParam) override {
+      static_assert(
+          bridging::getParameterCount(&T::getStringLiteral) == 2,
+          \\"Expected getStringLiteral(...) to have 2 parameters\\");
+
+      return bridging::callFromJs<jsi::String>(
+          rt, &T::getStringLiteral, jsInvoker_, instance_, std::move(literalParam));
+    }
+
+  private:
+    friend class NativeSampleTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2064,8 +2387,12 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
@@ -2075,11 +2402,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     void voidFunc(jsi::Runtime &rt) override {
       static_assert(
@@ -2091,6 +2421,7 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModuleCxxSpec;
     T *instance_;
   };
 
@@ -2111,8 +2442,12 @@ public:
 template <typename T>
 class JSI_EXPORT NativeSampleTurboModule2CxxSpec : public TurboModule {
 public:
-  jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
-    return delegate_.get(rt, propName);
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
   }
 
   static constexpr std::string_view kModuleName = \\"SampleTurboModule2\\";
@@ -2122,11 +2457,14 @@ protected:
     : TurboModule(std::string{NativeSampleTurboModule2CxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+
 private:
   class Delegate : public NativeSampleTurboModule2CxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
-      NativeSampleTurboModule2CxxSpecJSI(std::move(jsInvoker)), instance_(instance) {}
+      NativeSampleTurboModule2CxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
 
     jsi::Object getConstants(jsi::Runtime &rt) override {
       static_assert(
@@ -2146,6 +2484,84 @@ private:
     }
 
   private:
+    friend class NativeSampleTurboModule2CxxSpec;
+    T *instance_;
+  };
+
+  Delegate delegate_;
+};
+
+} // namespace facebook::react
+",
+}
+`;
+
+exports[`GenerateModuleH can generate fixture union_module 1`] = `
+Map {
+  "union_moduleJSI.h" => "/**
+ * This code was generated by [react-native-codegen](https://www.npmjs.com/package/react-native-codegen).
+ *
+ * Do not edit this file as changes may cause incorrect behavior and will be lost
+ * once the code is regenerated.
+ *
+ * @generated by codegen project: GenerateModuleH.js
+ */
+
+#pragma once
+
+#include <ReactCommon/TurboModule.h>
+#include <react/bridging/Bridging.h>
+
+namespace facebook::react {
+
+
+  class JSI_EXPORT NativeSampleTurboModuleCxxSpecJSI : public TurboModule {
+protected:
+  NativeSampleTurboModuleCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker);
+
+public:
+  virtual jsi::Object getUnion(jsi::Runtime &rt, double chooseInt, double chooseFloat, jsi::Object chooseObject, jsi::String chooseString, jsi::String chooseStringLiteral) = 0;
+
+};
+
+template <typename T>
+class JSI_EXPORT NativeSampleTurboModuleCxxSpec : public TurboModule {
+public:
+  jsi::Value create(jsi::Runtime &rt, const jsi::PropNameID &propName) override {
+    return delegate_.create(rt, propName);
+  }
+
+  std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime& runtime) override {
+    return delegate_.getPropertyNames(runtime);
+  }
+
+  static constexpr std::string_view kModuleName = \\"SampleTurboModule\\";
+
+protected:
+  NativeSampleTurboModuleCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
+    : TurboModule(std::string{NativeSampleTurboModuleCxxSpec::kModuleName}, jsInvoker),
+      delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
+
+
+private:
+  class Delegate : public NativeSampleTurboModuleCxxSpecJSI {
+  public:
+    Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
+      NativeSampleTurboModuleCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
+
+    }
+
+    jsi::Object getUnion(jsi::Runtime &rt, double chooseInt, double chooseFloat, jsi::Object chooseObject, jsi::String chooseString, jsi::String chooseStringLiteral) override {
+      static_assert(
+          bridging::getParameterCount(&T::getUnion) == 6,
+          \\"Expected getUnion(...) to have 6 parameters\\");
+
+      return bridging::callFromJs<jsi::Object>(
+          rt, &T::getUnion, jsInvoker_, instance_, std::move(chooseInt), std::move(chooseFloat), std::move(chooseObject), std::move(chooseString), std::move(chooseStringLiteral));
+    }
+
+  private:
+    friend class NativeSampleTurboModuleCxxSpec;
     T *instance_;
   };
 

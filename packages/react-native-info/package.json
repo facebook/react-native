@@ -1,6 +1,6 @@
 {
   "name": "react-native-info",
-  "version": "1.0.0",
+  "version": "0.77.0-main",
   "main": "build/index.js",
   "license": "MIT",
   "private": true,
@@ -17,10 +17,10 @@
     "directory": "packages/react-native-info"
   },
   "dependencies": {
-    "@react-native-community/cli-config": "^13.6.4",
-    "@react-native-community/cli-platform-apple": "^13.6.4",
-    "@react-native-community/cli-tools": "^13.6.4",
-    "@react-native-community/cli-types": "^13.6.4",
+    "@react-native-community/cli-config": "15.0.0-alpha.2",
+    "@react-native-community/cli-platform-apple": "15.0.0-alpha.2",
+    "@react-native-community/cli-tools": "15.0.0-alpha.2",
+    "@react-native-community/cli-types": "15.0.0-alpha.2",
     "commander": "^12.0.0",
     "fs-extra": "^11.2.0",
     "yaml": "^2.4.1"

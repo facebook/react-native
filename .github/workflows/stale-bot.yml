@@ -1,4 +1,4 @@
-name: Mark stale issues and pull requests
+name: Stale bot
 on:
   schedule:
     - cron: "*/10 5 * * *"
@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/stale@v9
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           days-before-stale: 180
           stale-issue-message: 'This issue is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
           stale-pr-message: 'This PR is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/stale@v9
         with:
           ascending: true
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           days-before-stale: 180
           stale-issue-message: 'This issue is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
           stale-pr-message: 'This PR is stale because it has been open 180 days with no activity. Remove stale label or comment or this will be closed in 7 days.'
@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/stale@v9
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           any-of-labels: 'Needs: Author Feedback'
           days-before-stale: 24
           stale-issue-message: "This issue is waiting for author's feedback since 24 days. Please provide the requested feedback or this will be closed in 7 days."
@@ -66,7 +66,7 @@ jobs:
       - uses: actions/stale@v9
         with:
           ascending: true
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           any-of-labels: 'Needs: Author Feedback'
           days-before-stale: 24
           stale-issue-message: "This issue is waiting for author's feedback since 24 days. Please provide the requested feedback or this will be closed in 7 days."

@@ -22,7 +22,8 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
  public:
   explicit RuntimeScheduler_Legacy(
       RuntimeExecutor runtimeExecutor,
-      std::function<RuntimeSchedulerTimePoint()> now);
+      std::function<RuntimeSchedulerTimePoint()> now,
+      RuntimeSchedulerTaskErrorHandler onTaskError);
 
   /*
    * Not copyable.
@@ -62,6 +63,24 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
       RawCallback&& callback) noexcept override;
 
   /*
+   * Adds a JavaScript callback to the idle queue with the given timeout.
+   * Triggers workloop if needed.
+   */
+  std::shared_ptr<Task> scheduleIdleTask(
+      jsi::Function&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
+  /*
+   * Adds a custom callback to the idle queue with the given timeout.
+   * Triggers workloop if needed.
+   */
+  std::shared_ptr<Task> scheduleIdleTask(
+      RawCallback&& callback,
+      RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
+          SchedulerPriority::IdlePriority)) noexcept override;
+
+  /*
    * Cancelled task will never be executed.
    *
    * Operates on JSI object.
@@ -75,7 +94,7 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  bool getShouldYield() const noexcept override;
+  bool getShouldYield() noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.
@@ -103,11 +122,18 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
   void callExpiredTasks(jsi::Runtime& runtime) override;
 
   void scheduleRenderingUpdate(
+      SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
 
   void setShadowTreeRevisionConsistencyManager(
       ShadowTreeRevisionConsistencyManager*
           shadowTreeRevisionConsistencyManager) override;
+
+  void setPerformanceEntryReporter(
+      PerformanceEntryReporter* performanceEntryReporter) override;
+
+  void setEventTimingDelegate(
+      RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
 
  private:
   std::priority_queue<
@@ -158,6 +184,8 @@ class RuntimeScheduler_Legacy final : public RuntimeSchedulerBase {
 
   ShadowTreeRevisionConsistencyManager* shadowTreeRevisionConsistencyManager_{
       nullptr};
+
+  RuntimeSchedulerTaskErrorHandler onTaskError_;
 };
 
 } // namespace facebook::react

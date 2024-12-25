@@ -22,6 +22,7 @@ const base64 = require('base64-js');
 const invariant = require('invariant');
 
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
+const LABEL_FOR_MISSING_URL_FOR_PROFILING = 'Unknown URL';
 
 export type NativeResponseType = 'base64' | 'blob' | 'text';
 export type ResponseType =
@@ -78,7 +79,9 @@ const REQUEST_EVENTS = [
 
 const XHR_EVENTS = REQUEST_EVENTS.concat('readystatechange');
 
-class XMLHttpRequestEventTarget extends (EventTarget(...REQUEST_EVENTS): any) {
+class XMLHttpRequestEventTarget extends (EventTarget(
+  ...REQUEST_EVENTS,
+): typeof EventTarget) {
   onload: ?Function;
   onloadstart: ?Function;
   onprogress: ?Function;
@@ -91,7 +94,7 @@ class XMLHttpRequestEventTarget extends (EventTarget(...REQUEST_EVENTS): any) {
 /**
  * Shared base for platform-specific XMLHttpRequest implementations.
  */
-class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
+class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
   static UNSENT: number = UNSENT;
   static OPENED: number = OPENED;
   static HEADERS_RECEIVED: number = HEADERS_RECEIVED;
@@ -99,6 +102,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   static DONE: number = DONE;
 
   static _interceptor: ?XHRInterceptor = null;
+  static _profiling: boolean = false;
 
   UNSENT: number = UNSENT;
   OPENED: number = OPENED;
@@ -142,10 +146,15 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
   _timedOut: boolean = false;
   _trackingName: string = 'unknown';
   _incrementalEvents: boolean = false;
+  _startTime: ?number = null;
   _performanceLogger: IPerformanceLogger = GlobalPerformanceLogger;
 
   static setInterceptor(interceptor: ?XHRInterceptor) {
     XMLHttpRequest._interceptor = interceptor;
+  }
+
+  static enableProfiling(enableProfiling: boolean): void {
+    XMLHttpRequest._profiling = enableProfiling;
   }
 
   constructor() {
@@ -354,6 +363,11 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       this._response += responseText;
     }
 
+    if (XMLHttpRequest._profiling) {
+      performance.mark(
+        'Track:XMLHttpRequest:Incremental Data: ' + this._getMeasureURL(),
+      );
+    }
     XMLHttpRequest._interceptor &&
       XMLHttpRequest._interceptor.dataReceived(requestId, responseText);
 
@@ -396,7 +410,13 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       this._clearSubscriptions();
       this._requestId = null;
       this.setReadyState(this.DONE);
-
+      if (XMLHttpRequest._profiling && this._startTime != null) {
+        const start = this._startTime;
+        performance.measure('Track:XMLHttpRequest:' + this._getMeasureURL(), {
+          start,
+          end: performance.now(),
+        });
+      }
       if (error) {
         XMLHttpRequest._interceptor &&
           XMLHttpRequest._interceptor.loadingFailed(requestId, error);
@@ -570,6 +590,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
         this._trackingName !== 'unknown' ? this._trackingName : this._url;
       this._perfKey = 'network_XMLHttpRequest_' + String(friendlyName);
       this._performanceLogger.startTimespan(this._perfKey);
+      this._startTime = performance.now();
       invariant(
         this._method,
         'XMLHttpRequest method needs to be defined (%s).',
@@ -665,6 +686,12 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): any) {
       this._incrementalEvents = true;
     }
     super.addEventListener(type, listener);
+  }
+
+  _getMeasureURL(): string {
+    return (
+      this._trackingName ?? this._url ?? LABEL_FOR_MISSING_URL_FOR_PROFILING
+    );
   }
 }
 

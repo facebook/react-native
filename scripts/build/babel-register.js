@@ -9,9 +9,7 @@
  * @oncall react_native
  */
 
-const {PACKAGES_DIR} = require('./build');
-const {buildConfig, getBabelConfig} = require('./config');
-const path = require('path');
+const {PACKAGES_DIR, RN_INTEGRATION_TESTS_RUNNER_DIR} = require('../consts');
 
 let isRegisteredForMonorepo = false;
 
@@ -32,28 +30,17 @@ function registerForMonorepo() {
     return;
   }
 
-  for (const [packageName, {target}] of Object.entries(buildConfig.packages)) {
-    if (target === 'node') {
-      registerPackage(packageName);
-    }
+  if (process.env.FBSOURCE_ENV === '1') {
+    // $FlowExpectedError[cannot-resolve-module] - Won't resolve in OSS
+    require('@fb-tools/babel-register');
+  } else {
+    require('metro-babel-register')([
+      PACKAGES_DIR,
+      RN_INTEGRATION_TESTS_RUNNER_DIR,
+    ]);
   }
 
   isRegisteredForMonorepo = true;
-}
-
-function registerPackage(packageName /*: string */) {
-  const packageDir = path.join(PACKAGES_DIR, packageName);
-
-  // Prepare the config object before calling `require('@babel/register')` to
-  // prevent `require` calls within `getBabelConfig` triggering Babel to
-  // attempt to load its config from a babel.config file.
-  const registerConfig = {
-    ...getBabelConfig(packageName),
-    root: packageDir,
-    ignore: [/[/\\]node_modules[/\\]/],
-  };
-
-  require('@babel/register')(registerConfig);
 }
 
 module.exports = {registerForMonorepo};

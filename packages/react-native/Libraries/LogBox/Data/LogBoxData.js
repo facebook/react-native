@@ -8,30 +8,33 @@
  * @format
  */
 
-('use strict');
-
 import type {ExtendedError} from '../../Core/ExtendedError';
 import type {LogLevel} from './LogBoxLog';
 import type {
   Category,
   ComponentStack,
+  ComponentStackType,
   ExtendedExceptionData,
   Message,
 } from './parseLogBoxLog';
 
+import DebuggerSessionObserver from '../../../src/private/debugging/FuseboxSessionObserver';
 import parseErrorStack from '../../Core/Devtools/parseErrorStack';
+import NativeDevSettings from '../../NativeModules/specs/NativeDevSettings';
 import NativeLogBox from '../../NativeModules/specs/NativeLogBox';
 import LogBoxLog from './LogBoxLog';
 import {parseLogBoxException} from './parseLogBoxLog';
 import * as React from 'react';
+
 export type LogBoxLogs = Set<LogBoxLog>;
-export type LogData = $ReadOnly<{|
+export type LogData = $ReadOnly<{
   level: LogLevel,
   message: Message,
   category: Category,
   componentStack: ComponentStack,
+  componentStackType: ComponentStackType | null,
   stack?: string,
-|}>;
+}>;
 
 export type Observer = (
   $ReadOnly<{|
@@ -72,14 +75,16 @@ let logs: LogBoxLogs = new Set();
 let updateTimeout: $FlowFixMe | null = null;
 let _isDisabled = false;
 let _selectedIndex = -1;
+let hasShownFuseboxWarningsMigrationMessage = false;
+let hostTargetSessionObserverSubscription = null;
 
 let warningFilter: WarningFilter = function (format) {
   return {
     finalFormat: format,
     forceDialogImmediately: false,
-    suppressDialog_LEGACY: true,
+    suppressDialog_LEGACY: false,
     suppressCompletely: false,
-    monitorEvent: 'unknown',
+    monitorEvent: 'warning_unhandled',
     monitorListVersion: 0,
     monitorSampleRate: 1,
   };
@@ -193,6 +198,30 @@ function appendNewLog(newLog: LogBoxLog) {
 }
 
 export function addLog(log: LogData): void {
+  if (hostTargetSessionObserverSubscription == null) {
+    hostTargetSessionObserverSubscription = DebuggerSessionObserver.subscribe(
+      hasActiveSession => {
+        if (hasActiveSession) {
+          clearWarnings();
+        } else {
+          // Reset the flag so that we can show the message again if new warning was emitted
+          hasShownFuseboxWarningsMigrationMessage = false;
+        }
+      },
+    );
+  }
+
+  // If Host has Fusebox support
+  if (log.level === 'warn' && global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__) {
+    // And there is no active debugging session
+    if (!DebuggerSessionObserver.hasActiveSession()) {
+      showFuseboxWarningsMigrationMessageOnce();
+    }
+
+    // Don't show LogBox warnings when Host has active debugging session
+    return;
+  }
+
   const errorForStackTrace = new Error();
 
   // Parsing logs are expensive so we schedule this
@@ -209,6 +238,7 @@ export function addLog(log: LogData): void {
           stack,
           category: log.category,
           componentStack: log.componentStack,
+          componentStackType: log.componentStackType || 'legacy',
         }),
       );
     } catch (error) {
@@ -391,7 +421,7 @@ type State = $ReadOnly<{|
   selectedLogIndex: number,
 |}>;
 
-type SubscribedComponent = React.AbstractComponent<
+type SubscribedComponent = React.ComponentType<
   $ReadOnly<{|
     logs: $ReadOnlyArray<LogBoxLog>,
     isDisabled: boolean,
@@ -401,7 +431,7 @@ type SubscribedComponent = React.AbstractComponent<
 
 export function withSubscription(
   WrappedComponent: SubscribedComponent,
-): React.AbstractComponent<{||}> {
+): React.ComponentType<{||}> {
   class LogBoxStateSubscription extends React.Component<Props, State> {
     static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};
@@ -410,6 +440,7 @@ export function withSubscription(
     componentDidCatch(err: Error, errorInfo: {componentStack: string, ...}) {
       /* $FlowFixMe[class-object-subtyping] added when improving typing for
        * this parameters */
+      // $FlowFixMe[incompatible-call]
       reportLogBoxError(err, errorInfo.componentStack);
     }
 
@@ -449,32 +480,32 @@ export function withSubscription(
         this._subscription.unsubscribe();
       }
     }
-
-    _handleDismiss = (): void => {
-      // Here we handle the cases when the log is dismissed and it
-      // was either the last log, or when the current index
-      // is now outside the bounds of the log array.
-      const {selectedLogIndex, logs: stateLogs} = this.state;
-      const logsArray = Array.from(stateLogs);
-      if (selectedLogIndex != null) {
-        if (logsArray.length - 1 <= 0) {
-          setSelectedLog(-1);
-        } else if (selectedLogIndex >= logsArray.length - 1) {
-          setSelectedLog(selectedLogIndex - 1);
-        }
-
-        dismiss(logsArray[selectedLogIndex]);
-      }
-    };
-
-    _handleMinimize = (): void => {
-      setSelectedLog(-1);
-    };
-
-    _handleSetSelectedLog = (index: number): void => {
-      setSelectedLog(index);
-    };
   }
 
   return LogBoxStateSubscription;
+}
+
+function showFuseboxWarningsMigrationMessageOnce() {
+  if (hasShownFuseboxWarningsMigrationMessage) {
+    return;
+  }
+  hasShownFuseboxWarningsMigrationMessage = true;
+  appendNewLog(
+    new LogBoxLog({
+      level: 'warn',
+      message: {
+        content: 'Open debugger to view warnings.',
+        substitutions: [],
+      },
+      isComponentError: false,
+      stack: [],
+      category: 'fusebox-warnings-migration',
+      componentStack: [],
+      onNotificationPress: () => {
+        if (NativeDevSettings.openDebugger) {
+          NativeDevSettings.openDebugger();
+        }
+      },
+    }),
+  );
 }

@@ -8,9 +8,8 @@
 #include "RuntimeScheduler_Legacy.h"
 #include "SchedulerPriorityUtils.h"
 
-#include <cxxreact/ErrorUtils.h>
+#include <cxxreact/TraceSection.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
-#include <react/renderer/debug/SystraceSection.h>
 #include <utility>
 
 namespace facebook::react {
@@ -19,17 +18,20 @@ namespace facebook::react {
 
 RuntimeScheduler_Legacy::RuntimeScheduler_Legacy(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now)
-    : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
+    std::function<RuntimeSchedulerTimePoint()> now,
+    RuntimeSchedulerTaskErrorHandler onTaskError)
+    : runtimeExecutor_(std::move(runtimeExecutor)),
+      now_(std::move(now)),
+      onTaskError_(std::move(onTaskError)) {}
 
 void RuntimeScheduler_Legacy::scheduleWork(RawCallback&& callback) noexcept {
-  SystraceSection s("RuntimeScheduler::scheduleWork");
+  TraceSection s("RuntimeScheduler::scheduleWork");
 
   runtimeAccessRequests_ += 1;
 
   runtimeExecutor_(
       [this, callback = std::move(callback)](jsi::Runtime& runtime) {
-        SystraceSection s2("RuntimeScheduler::scheduleWork callback");
+        TraceSection s2("RuntimeScheduler::scheduleWork callback");
         runtimeAccessRequests_ -= 1;
         {
           ScopedShadowTreeRevisionLock revisionLock(
@@ -43,7 +45,7 @@ void RuntimeScheduler_Legacy::scheduleWork(RawCallback&& callback) noexcept {
 std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
     SchedulerPriority priority,
     jsi::Function&& callback) noexcept {
-  SystraceSection s(
+  TraceSection s(
       "RuntimeScheduler::scheduleTask",
       "priority",
       serialize(priority),
@@ -63,7 +65,7 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
 std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
     SchedulerPriority priority,
     RawCallback&& callback) noexcept {
-  SystraceSection s(
+  TraceSection s(
       "RuntimeScheduler::scheduleTask",
       "priority",
       serialize(priority),
@@ -80,7 +82,25 @@ std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleTask(
   return task;
 }
 
-bool RuntimeScheduler_Legacy::getShouldYield() const noexcept {
+std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
+    jsi::Function&& /*callback*/,
+    RuntimeSchedulerTimeout /*timeout*/) noexcept {
+  // Idle tasks are not supported on Legacy RuntimeScheduler.
+  // Because the method is `noexcept`, we return `nullptr` here and handle it
+  // on the caller side.
+  return nullptr;
+}
+
+std::shared_ptr<Task> RuntimeScheduler_Legacy::scheduleIdleTask(
+    RawCallback&& /*callback*/,
+    RuntimeSchedulerTimeout /*timeout*/) noexcept {
+  // Idle tasks are not supported on Legacy RuntimeScheduler.
+  // Because the method is `noexcept`, we return `nullptr` here and handle it
+  // on the caller side.
+  return nullptr;
+}
+
+bool RuntimeScheduler_Legacy::getShouldYield() noexcept {
   return runtimeAccessRequests_ > 0;
 }
 
@@ -99,22 +119,32 @@ RuntimeSchedulerTimePoint RuntimeScheduler_Legacy::now() const noexcept {
 
 void RuntimeScheduler_Legacy::executeNowOnTheSameThread(
     RawCallback&& callback) {
-  SystraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
+  TraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
 
-  runtimeAccessRequests_ += 1;
-  executeSynchronouslyOnSameThread_CAN_DEADLOCK(
-      runtimeExecutor_,
-      [this, callback = std::move(callback)](jsi::Runtime& runtime) {
-        SystraceSection s2(
-            "RuntimeScheduler::executeNowOnTheSameThread callback");
+  static thread_local jsi::Runtime* runtimePtr = nullptr;
 
-        runtimeAccessRequests_ -= 1;
-        {
-          ScopedShadowTreeRevisionLock revisionLock(
-              shadowTreeRevisionConsistencyManager_);
-          callback(runtime);
-        }
-      });
+  if (runtimePtr == nullptr) {
+    runtimeAccessRequests_ += 1;
+    executeSynchronouslyOnSameThread_CAN_DEADLOCK(
+        runtimeExecutor_, [this, &callback](jsi::Runtime& runtime) {
+          TraceSection s2(
+              "RuntimeScheduler::executeNowOnTheSameThread callback");
+
+          runtimeAccessRequests_ -= 1;
+          {
+            ScopedShadowTreeRevisionLock revisionLock(
+                shadowTreeRevisionConsistencyManager_);
+            runtimePtr = &runtime;
+            callback(runtime);
+            runtimePtr = nullptr;
+          }
+        });
+  } else {
+    // Protecting against re-entry into `executeNowOnTheSameThread` from within
+    // `executeNowOnTheSameThread`. Without accounting for re-rentry, a deadlock
+    // will occur when trying to gain access to the runtime.
+    return callback(*runtimePtr);
+  }
 
   // Resume work loop if needed. In synchronous mode
   // only expired tasks are executed. Tasks with lower priority
@@ -123,7 +153,7 @@ void RuntimeScheduler_Legacy::executeNowOnTheSameThread(
 }
 
 void RuntimeScheduler_Legacy::callExpiredTasks(jsi::Runtime& runtime) {
-  SystraceSection s("RuntimeScheduler::callExpiredTasks");
+  TraceSection s("RuntimeScheduler::callExpiredTasks");
 
   auto previousPriority = currentPriority_;
   try {
@@ -139,15 +169,19 @@ void RuntimeScheduler_Legacy::callExpiredTasks(jsi::Runtime& runtime) {
       executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
-    handleJSError(runtime, error, true);
+    onTaskError_(runtime, error);
+  } catch (std::exception& ex) {
+    jsi::JSError error(runtime, std::string("Non-js exception: ") + ex.what());
+    onTaskError_(runtime, error);
   }
 
   currentPriority_ = previousPriority;
 }
 
 void RuntimeScheduler_Legacy::scheduleRenderingUpdate(
+    SurfaceId /*surfaceId*/,
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
-  SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
+  TraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
 
   if (renderingUpdate != nullptr) {
     renderingUpdate();
@@ -158,6 +192,16 @@ void RuntimeScheduler_Legacy::setShadowTreeRevisionConsistencyManager(
     ShadowTreeRevisionConsistencyManager*
         shadowTreeRevisionConsistencyManager) {
   shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
+}
+
+void RuntimeScheduler_Legacy::setPerformanceEntryReporter(
+    PerformanceEntryReporter* /*performanceEntryReporter*/) {
+  // No-op in the legacy scheduler
+}
+
+void RuntimeScheduler_Legacy::setEventTimingDelegate(
+    RuntimeSchedulerEventTimingDelegate* /*eventTimingDelegate*/) {
+  // No-op in the legacy scheduler
 }
 
 #pragma mark - Private
@@ -173,7 +217,7 @@ void RuntimeScheduler_Legacy::scheduleWorkLoopIfNecessary() {
 }
 
 void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) {
-  SystraceSection s("RuntimeScheduler::startWorkLoop");
+  TraceSection s("RuntimeScheduler::startWorkLoop");
 
   auto previousPriority = currentPriority_;
   isPerformingWork_ = true;
@@ -191,7 +235,10 @@ void RuntimeScheduler_Legacy::startWorkLoop(jsi::Runtime& runtime) {
       executeTask(runtime, topPriorityTask, didUserCallbackTimeout);
     }
   } catch (jsi::JSError& error) {
-    handleJSError(runtime, error, true);
+    onTaskError_(runtime, error);
+  } catch (std::exception& ex) {
+    jsi::JSError error(runtime, std::string("Non-js exception: ") + ex.what());
+    onTaskError_(runtime, error);
   }
 
   currentPriority_ = previousPriority;
@@ -202,7 +249,7 @@ void RuntimeScheduler_Legacy::executeTask(
     jsi::Runtime& runtime,
     const std::shared_ptr<Task>& task,
     bool didUserCallbackTimeout) {
-  SystraceSection s(
+  TraceSection s(
       "RuntimeScheduler::executeTask",
       "priority",
       serialize(task->priority),

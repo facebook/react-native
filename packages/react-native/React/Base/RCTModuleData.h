@@ -12,24 +12,24 @@
 @protocol RCTBridgeMethod;
 @protocol RCTBridgeModule;
 @class RCTBridge;
+@class RCTModuleData;
 @class RCTModuleRegistry;
 @class RCTViewRegistry;
 @class RCTBundleManager;
 @class RCTCallableJSModules;
+@class RCTCallInvoker;
 
 typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
+
+@protocol RCTModuleDataCallInvokerProvider <NSObject>
+
+- (RCTCallInvoker *)callInvokerForModuleData:(RCTModuleData *)moduleData;
+
+@end
 
 @interface RCTModuleData : NSObject <RCTInvalidating>
 
 - (instancetype)initWithModuleClass:(Class)moduleClass
-                             bridge:(RCTBridge *)bridge
-                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
-                      bundleManager:(RCTBundleManager *)bundleManager
-                  callableJSModules:(RCTCallableJSModules *)callableJSModules;
-
-- (instancetype)initWithModuleClass:(Class)moduleClass
-                     moduleProvider:(RCTBridgeModuleProvider)moduleProvider
                              bridge:(RCTBridge *)bridge
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
@@ -104,10 +104,6 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
  */
 @property (nonatomic, assign, readonly) BOOL implementsBatchDidComplete;
 
-/**
- * Whether the receiver has a valid `instance` which implements
- * -partialBatchDidFlush.
- */
-@property (nonatomic, assign, readonly) BOOL implementsPartialBatchDidFlush;
+@property (nonatomic, weak, readwrite) id<RCTModuleDataCallInvokerProvider> callInvokerProvider;
 
 @end

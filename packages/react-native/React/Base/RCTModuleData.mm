@@ -16,6 +16,7 @@
 #import "RCTBridge+Private.h"
 #import "RCTBridge.h"
 #import "RCTBridgeModuleDecorator.h"
+#import "RCTCallInvokerModule.h"
 #import "RCTConstants.h"
 #import "RCTInitializing.h"
 #import "RCTLog.h"
@@ -52,10 +53,22 @@ int32_t getUniqueId()
 @synthesize instance = _instance;
 @synthesize methodQueue = _methodQueue;
 
-- (void)setUp
+- (void)_setUpWithBridge:(RCTBridge *)bridge
+             moduleRegistry:(RCTModuleRegistry *)moduleRegistry
+    viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
+              bundleManager:(RCTBundleManager *)bundleManager
+          callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
+  // start with the ivars
+  {
+    _bridge = bridge;
+    _moduleRegistry = moduleRegistry;
+    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
+    _bundleManager = bundleManager;
+    _callableJSModules = callableJSModules;
+  }
+
   _implementsBatchDidComplete = [_moduleClass instancesRespondToSelector:@selector(batchDidComplete)];
-  _implementsPartialBatchDidFlush = [_moduleClass instancesRespondToSelector:@selector(partialBatchDidFlush)];
 
   // If a module overrides `constantsToExport` and doesn't implement `requiresMainQueueSetup`, then we must assume
   // that it must be called on the main thread, because it may need to access UIKit.
@@ -87,34 +100,16 @@ int32_t getUniqueId()
                       bundleManager:(RCTBundleManager *)bundleManager
                   callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
-  return [self initWithModuleClass:moduleClass
-                    moduleProvider:^id<RCTBridgeModule> {
-                      return [moduleClass new];
-                    }
-                            bridge:bridge
-                    moduleRegistry:moduleRegistry
-           viewRegistry_DEPRECATED:viewRegistry_DEPRECATED
-                     bundleManager:bundleManager
-                 callableJSModules:callableJSModules];
-}
-
-- (instancetype)initWithModuleClass:(Class)moduleClass
-                     moduleProvider:(RCTBridgeModuleProvider)moduleProvider
-                             bridge:(RCTBridge *)bridge
-                     moduleRegistry:(RCTModuleRegistry *)moduleRegistry
-            viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
-                      bundleManager:(RCTBundleManager *)bundleManager
-                  callableJSModules:(RCTCallableJSModules *)callableJSModules
-{
   if (self = [super init]) {
-    _bridge = bridge;
     _moduleClass = moduleClass;
-    _moduleProvider = [moduleProvider copy];
-    _moduleRegistry = moduleRegistry;
-    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
-    _bundleManager = bundleManager;
-    _callableJSModules = callableJSModules;
-    [self setUp];
+    _moduleProvider = [^id<RCTBridgeModule> {
+      return [moduleClass new];
+    } copy];
+    [self _setUpWithBridge:bridge
+                 moduleRegistry:moduleRegistry
+        viewRegistry_DEPRECATED:viewRegistry_DEPRECATED
+                  bundleManager:bundleManager
+              callableJSModules:callableJSModules];
   }
   return self;
 }
@@ -127,14 +122,13 @@ int32_t getUniqueId()
                      callableJSModules:(RCTCallableJSModules *)callableJSModules
 {
   if (self = [super init]) {
-    _bridge = bridge;
     _instance = instance;
     _moduleClass = [instance class];
-    _moduleRegistry = moduleRegistry;
-    _viewRegistry_DEPRECATED = viewRegistry_DEPRECATED;
-    _bundleManager = bundleManager;
-    _callableJSModules = callableJSModules;
-    [self setUp];
+    [self _setUpWithBridge:bridge
+                 moduleRegistry:moduleRegistry
+        viewRegistry_DEPRECATED:viewRegistry_DEPRECATED
+                  bundleManager:bundleManager
+              callableJSModules:callableJSModules];
   }
   return self;
 }
@@ -201,6 +195,11 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
                                                    bundleManager:_bundleManager
                                                callableJSModules:_callableJSModules];
       [moduleDecorator attachInteropAPIsToModule:_instance];
+
+      // This is a more performant alternative for conformsToProtocol:@protocol(RCTCallInvokerModule)
+      if ([_instance respondsToSelector:@selector(setCallInvoker:)]) {
+        [(id<RCTCallInvokerModule>)_instance setCallInvoker:[self.callInvokerProvider callInvokerForModuleData:self]];
+      }
     }
 
     [self setUpMethodQueue];

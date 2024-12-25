@@ -29,12 +29,13 @@ struct WritableNativeMap
   WritableNativeMap();
   WritableNativeMap(folly::dynamic&& val);
 
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
+  static void initHybrid(jni::alias_ref<jhybridobject> jobj);
 
   void putNull(std::string key);
   void putBoolean(std::string key, bool val);
   void putDouble(std::string key, double val);
   void putInt(std::string key, int val);
+  void putLong(std::string key, jlong val);
   void putString(std::string key, jni::alias_ref<jstring> val);
   void putNativeArray(std::string key, ReadableNativeArray* val);
   void putNativeMap(std::string key, ReadableNativeMap* val);

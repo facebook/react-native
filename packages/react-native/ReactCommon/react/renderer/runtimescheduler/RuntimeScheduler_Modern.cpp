@@ -8,31 +8,45 @@
 #include "RuntimeScheduler_Modern.h"
 #include "SchedulerPriorityUtils.h"
 
-#include <cxxreact/ErrorUtils.h>
+#include <cxxreact/TraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
-#include <react/renderer/debug/SystraceSection.h>
+#include <react/timing/primitives.h>
 #include <react/utils/OnScopeExit.h>
 #include <utility>
 
 namespace facebook::react {
 
+namespace {
+std::chrono::milliseconds getResolvedTimeoutForIdleTask(
+    std::chrono::milliseconds customTimeout) {
+  return customTimeout <
+          timeoutForSchedulerPriority(SchedulerPriority::IdlePriority)
+      ? timeoutForSchedulerPriority(SchedulerPriority::LowPriority) +
+          customTimeout
+      : customTimeout;
+}
+} // namespace
+
 #pragma mark - Public
 
 RuntimeScheduler_Modern::RuntimeScheduler_Modern(
     RuntimeExecutor runtimeExecutor,
-    std::function<RuntimeSchedulerTimePoint()> now)
-    : runtimeExecutor_(std::move(runtimeExecutor)), now_(std::move(now)) {}
+    std::function<RuntimeSchedulerTimePoint()> now,
+    RuntimeSchedulerTaskErrorHandler onTaskError)
+    : runtimeExecutor_(std::move(runtimeExecutor)),
+      now_(std::move(now)),
+      onTaskError_(std::move(onTaskError)) {}
 
 void RuntimeScheduler_Modern::scheduleWork(RawCallback&& callback) noexcept {
-  SystraceSection s("RuntimeScheduler::scheduleWork");
+  TraceSection s("RuntimeScheduler::scheduleWork");
   scheduleTask(SchedulerPriority::ImmediatePriority, std::move(callback));
 }
 
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
     SchedulerPriority priority,
     jsi::Function&& callback) noexcept {
-  SystraceSection s(
+  TraceSection s(
       "RuntimeScheduler::scheduleTask",
       "priority",
       serialize(priority),
@@ -51,7 +65,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
     SchedulerPriority priority,
     RawCallback&& callback) noexcept {
-  SystraceSection s(
+  TraceSection s(
       "RuntimeScheduler::scheduleTask",
       "priority",
       serialize(priority),
@@ -67,8 +81,51 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
   return task;
 }
 
-bool RuntimeScheduler_Modern::getShouldYield() const noexcept {
+std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
+    jsi::Function&& callback,
+    RuntimeSchedulerTimeout customTimeout) noexcept {
+  TraceSection s(
+      "RuntimeScheduler::scheduleIdleTask",
+      "customTimeout",
+      customTimeout.count(),
+      "callbackType",
+      "jsi::Function");
+
+  auto timeout = getResolvedTimeoutForIdleTask(customTimeout);
+  auto expirationTime = now_() + timeout;
+  auto task = std::make_shared<Task>(
+      SchedulerPriority::IdlePriority, std::move(callback), expirationTime);
+
+  scheduleTask(task);
+
+  return task;
+}
+
+std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
+    RawCallback&& callback,
+    RuntimeSchedulerTimeout customTimeout) noexcept {
+  TraceSection s(
+      "RuntimeScheduler::scheduleIdleTask",
+      "customTimeout",
+      customTimeout.count(),
+      "callbackType",
+      "RawCallback");
+
+  auto expirationTime = now_() + getResolvedTimeoutForIdleTask(customTimeout);
+  auto task = std::make_shared<Task>(
+      SchedulerPriority::IdlePriority, std::move(callback), expirationTime);
+
+  scheduleTask(task);
+
+  return task;
+}
+
+bool RuntimeScheduler_Modern::getShouldYield() noexcept {
   std::shared_lock lock(schedulingMutex_);
+
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    markYieldingOpportunity(now_());
+  }
 
   return syncTaskRequests_ > 0 ||
       (!taskQueue_.empty() && taskQueue_.top().get() != currentTask_);
@@ -89,67 +146,64 @@ RuntimeSchedulerTimePoint RuntimeScheduler_Modern::now() const noexcept {
 
 void RuntimeScheduler_Modern::executeNowOnTheSameThread(
     RawCallback&& callback) {
-  SystraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
+  TraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
+
+  static thread_local jsi::Runtime* runtimePtr = nullptr;
+
+  auto currentTime = now_();
+  auto priority = SchedulerPriority::ImmediatePriority;
+  auto expirationTime = currentTime + timeoutForSchedulerPriority(priority);
+  Task task{priority, std::move(callback), expirationTime};
+
+  if (runtimePtr != nullptr) {
+    // Protecting against re-entry into `executeNowOnTheSameThread` from within
+    // `executeNowOnTheSameThread`. Without accounting for re-rentry, a deadlock
+    // will occur when trying to gain access to the runtime.
+    return executeTask(*runtimePtr, task, true);
+  }
 
   syncTaskRequests_++;
-
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
       runtimeExecutor_,
-      [this, callback = std::move(callback)](jsi::Runtime& runtime) mutable {
-        SystraceSection s2(
-            "RuntimeScheduler::executeNowOnTheSameThread callback");
+      [this, currentTime, &task](jsi::Runtime& runtime) mutable {
+        TraceSection s2("RuntimeScheduler::executeNowOnTheSameThread callback");
 
         syncTaskRequests_--;
-
-        auto currentTime = now_();
-        auto priority = SchedulerPriority::ImmediatePriority;
-        auto expirationTime =
-            currentTime + timeoutForSchedulerPriority(priority);
-
-        auto task = Task{priority, std::move(callback), expirationTime};
-        executeTask(runtime, task, currentTime);
+        runtimePtr = &runtime;
+        runEventLoopTick(runtime, task, currentTime);
+        runtimePtr = nullptr;
       });
 
-  bool shouldScheduleWorkLoop = false;
+  bool shouldScheduleEventLoop = false;
 
   {
-    // Unique access because we might write to `isWorkLoopScheduled_`.
+    // Unique access because we might write to `isEventLoopScheduled_`.
     std::unique_lock lock(schedulingMutex_);
 
-    // We only need to schedule the work loop if there any remaining tasks
+    // We only need to schedule the event loop if there any remaining tasks
     // in the queue.
-    if (!taskQueue_.empty() && !isWorkLoopScheduled_) {
-      isWorkLoopScheduled_ = true;
-      shouldScheduleWorkLoop = true;
+    if (!taskQueue_.empty() && !isEventLoopScheduled_) {
+      isEventLoopScheduled_ = true;
+      shouldScheduleEventLoop = true;
     }
   }
 
-  if (shouldScheduleWorkLoop) {
-    scheduleWorkLoop();
+  if (shouldScheduleEventLoop) {
+    scheduleEventLoop();
   }
 }
 
 void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
-  // If we have first-class support for microtasks, this a no-op.
-  if (ReactNativeFeatureFlags::enableMicrotasks()) {
-    return;
-  }
-
-  SystraceSection s("RuntimeScheduler::callExpiredTasks");
-  startWorkLoop(runtime, true);
+  // No-op in the event loop implementation.
 }
 
 void RuntimeScheduler_Modern::scheduleRenderingUpdate(
+    SurfaceId surfaceId,
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
-  SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
+  TraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
 
-  if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
-    pendingRenderingUpdates_.push(renderingUpdate);
-  } else {
-    if (renderingUpdate != nullptr) {
-      renderingUpdate();
-    }
-  }
+  surfaceIdsWithPendingRenderingUpdates_.insert(surfaceId);
+  pendingRenderingUpdates_.push(renderingUpdate);
 }
 
 void RuntimeScheduler_Modern::setShadowTreeRevisionConsistencyManager(
@@ -158,58 +212,65 @@ void RuntimeScheduler_Modern::setShadowTreeRevisionConsistencyManager(
   shadowTreeRevisionConsistencyManager_ = shadowTreeRevisionConsistencyManager;
 }
 
+void RuntimeScheduler_Modern::setPerformanceEntryReporter(
+    PerformanceEntryReporter* performanceEntryReporter) {
+  performanceEntryReporter_ = performanceEntryReporter;
+}
+
+void RuntimeScheduler_Modern::setEventTimingDelegate(
+    RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) {
+  eventTimingDelegate_ = eventTimingDelegate;
+}
+
 #pragma mark - Private
 
 void RuntimeScheduler_Modern::scheduleTask(std::shared_ptr<Task> task) {
-  bool shouldScheduleWorkLoop = false;
+  bool shouldScheduleEventLoop = false;
 
   {
     std::unique_lock lock(schedulingMutex_);
 
-    // We only need to schedule the work loop if the task we're about to
+    // We only need to schedule the event loop if the task we're about to
     // schedule is the only one in the queue.
     // Otherwise, we don't need to schedule it because there's another one
     // running already that will pick up the new task.
-    if (taskQueue_.empty() && !isWorkLoopScheduled_) {
-      isWorkLoopScheduled_ = true;
-      shouldScheduleWorkLoop = true;
+    if (taskQueue_.empty() && !isEventLoopScheduled_) {
+      isEventLoopScheduled_ = true;
+      shouldScheduleEventLoop = true;
     }
 
-    taskQueue_.push(task);
+    taskQueue_.push(std::move(task));
   }
 
-  if (shouldScheduleWorkLoop) {
-    scheduleWorkLoop();
+  if (shouldScheduleEventLoop) {
+    scheduleEventLoop();
   }
 }
 
-void RuntimeScheduler_Modern::scheduleWorkLoop() {
+void RuntimeScheduler_Modern::scheduleEventLoop() {
   runtimeExecutor_(
-      [this](jsi::Runtime& runtime) { startWorkLoop(runtime, false); });
+      [this](jsi::Runtime& runtime) { runEventLoop(runtime, false); });
 }
 
-void RuntimeScheduler_Modern::startWorkLoop(
+void RuntimeScheduler_Modern::runEventLoop(
     jsi::Runtime& runtime,
     bool onlyExpired) {
-  SystraceSection s("RuntimeScheduler::startWorkLoop");
+  TraceSection s("RuntimeScheduler::runEventLoop");
 
   auto previousPriority = currentPriority_;
 
-  try {
-    while (syncTaskRequests_ == 0) {
-      auto currentTime = now_();
-      auto topPriorityTask = selectTask(currentTime, onlyExpired);
+  auto currentTime = now_();
+  // `selectTask` must be called unconditionaly to ensure that
+  // `isEventLoopScheduled_` is set to false and the event loop resume
+  // correctly if a synchronous task is scheduled.
+  // Unit test normalTaskYieldsToSynchronousAccessAndResumes covers this
+  // scenario.
+  auto topPriorityTask = selectTask(currentTime, onlyExpired);
+  while (topPriorityTask && syncTaskRequests_ == 0) {
+    runEventLoopTick(runtime, *topPriorityTask, currentTime);
 
-      if (!topPriorityTask) {
-        // No pending work to do.
-        // Events will restart the loop when necessary.
-        break;
-      }
-
-      executeTask(runtime, *topPriorityTask, currentTime);
-    }
-  } catch (jsi::JSError& error) {
-    handleJSError(runtime, error, true);
+    currentTime = now_();
+    topPriorityTask = selectTask(currentTime, onlyExpired);
   }
 
   currentPriority_ = previousPriority;
@@ -224,7 +285,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
 
   // It's safe to reset the flag here, as its access is also synchronized with
   // the access to the task queue.
-  isWorkLoopScheduled_ = false;
+  isEventLoopScheduled_ = false;
 
   // Skip executed tasks
   while (!taskQueue_.empty() && !taskQueue_.top()->callback) {
@@ -242,38 +303,38 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::selectTask(
   return nullptr;
 }
 
-void RuntimeScheduler_Modern::executeTask(
+void RuntimeScheduler_Modern::runEventLoopTick(
     jsi::Runtime& runtime,
     Task& task,
-    RuntimeSchedulerTimePoint currentTime) {
-  auto didUserCallbackTimeout = task.expirationTime <= currentTime;
+    RuntimeSchedulerTimePoint taskStartTime) {
+  TraceSection s("RuntimeScheduler::runEventLoopTick");
 
-  SystraceSection s(
-      "RuntimeScheduler::executeTask",
-      "priority",
-      serialize(task.priority),
-      "didUserCallbackTimeout",
-      didUserCallbackTimeout);
+  ScopedShadowTreeRevisionLock revisionLock(
+      shadowTreeRevisionConsistencyManager_);
 
   currentTask_ = &task;
   currentPriority_ = task.priority;
 
-  {
-    ScopedShadowTreeRevisionLock revisionLock(
-        shadowTreeRevisionConsistencyManager_);
-
-    executeMacrotask(runtime, task, didUserCallbackTimeout);
-
-    if (ReactNativeFeatureFlags::enableMicrotasks()) {
-      // "Perform a microtask checkpoint" step.
-      performMicrotaskCheckpoint(runtime);
-    }
-
-    if (ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop()) {
-      // "Update the rendering" step.
-      updateRendering();
-    }
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    lastYieldingOpportunity_ = taskStartTime;
+    longestPeriodWithoutYieldingOpportunity_ =
+        std::chrono::milliseconds::zero();
   }
+
+  auto didUserCallbackTimeout = task.expirationTime <= taskStartTime;
+  executeTask(runtime, task, didUserCallbackTimeout);
+
+  // "Perform a microtask checkpoint" step.
+  performMicrotaskCheckpoint(runtime);
+
+  if (ReactNativeFeatureFlags::enableLongTaskAPI()) {
+    auto taskEndTime = now_();
+    markYieldingOpportunity(taskEndTime);
+    reportLongTasks(task, taskStartTime, taskEndTime);
+  }
+
+  // "Update the rendering" step.
+  updateRendering();
 
   currentTask_ = nullptr;
 }
@@ -284,7 +345,15 @@ void RuntimeScheduler_Modern::executeTask(
  * https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering.
  */
 void RuntimeScheduler_Modern::updateRendering() {
-  SystraceSection s("RuntimeScheduler::updateRendering");
+  TraceSection s("RuntimeScheduler::updateRendering");
+
+  if (eventTimingDelegate_ != nullptr &&
+      ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+    eventTimingDelegate_->dispatchPendingEventTimingEntries(
+        surfaceIdsWithPendingRenderingUpdates_);
+  }
+
+  surfaceIdsWithPendingRenderingUpdates_.clear();
 
   while (!pendingRenderingUpdates_.empty()) {
     auto& pendingRenderingUpdate = pendingRenderingUpdates_.front();
@@ -295,18 +364,30 @@ void RuntimeScheduler_Modern::updateRendering() {
   }
 }
 
-void RuntimeScheduler_Modern::executeMacrotask(
+void RuntimeScheduler_Modern::executeTask(
     jsi::Runtime& runtime,
     Task& task,
     bool didUserCallbackTimeout) const {
-  SystraceSection s("RuntimeScheduler::executeMacrotask");
+  TraceSection s(
+      "RuntimeScheduler::executeTask",
+      "priority",
+      serialize(task.priority),
+      "didUserCallbackTimeout",
+      didUserCallbackTimeout);
 
-  auto result = task.execute(runtime, didUserCallbackTimeout);
+  try {
+    auto result = task.execute(runtime, didUserCallbackTimeout);
 
-  if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
-    // If the task returned a continuation callback, we re-assign it to the task
-    // and keep the task in the queue.
-    task.callback = result.getObject(runtime).getFunction(runtime);
+    if (result.isObject() && result.getObject(runtime).isFunction(runtime)) {
+      // If the task returned a continuation callback, we re-assign it to the
+      // task and keep the task in the queue.
+      task.callback = result.getObject(runtime).getFunction(runtime);
+    }
+  } catch (jsi::JSError& error) {
+    onTaskError_(runtime, error);
+  } catch (std::exception& ex) {
+    jsi::JSError error(runtime, std::string("Non-js exception: ") + ex.what());
+    onTaskError_(runtime, error);
   }
 }
 
@@ -319,7 +400,7 @@ void RuntimeScheduler_Modern::executeMacrotask(
  */
 void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
     jsi::Runtime& runtime) {
-  SystraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
+  TraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
 
   if (performingMicrotaskCheckpoint_) {
     return;
@@ -340,7 +421,11 @@ void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
         break;
       }
     } catch (jsi::JSError& error) {
-      handleJSError(runtime, error, true);
+      onTaskError_(runtime, error);
+    } catch (std::exception& ex) {
+      jsi::JSError error(
+          runtime, std::string("Non-js exception: ") + ex.what());
+      onTaskError_(runtime, error);
     }
     retries++;
   }
@@ -348,6 +433,33 @@ void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
   if (retries == kRetriesBound) {
     throw std::runtime_error("Hits microtasks retries bound.");
   }
+}
+
+void RuntimeScheduler_Modern::reportLongTasks(
+    const Task& /*task*/,
+    RuntimeSchedulerTimePoint startTime,
+    RuntimeSchedulerTimePoint endTime) {
+  auto reporter = performanceEntryReporter_;
+  if (reporter == nullptr) {
+    return;
+  }
+
+  auto checkedDurationMs =
+      chronoToDOMHighResTimeStamp(longestPeriodWithoutYieldingOpportunity_);
+  if (checkedDurationMs >= LONG_TASK_DURATION_THRESHOLD_MS) {
+    auto durationMs = chronoToDOMHighResTimeStamp(endTime - startTime);
+    auto startTimeMs = chronoToDOMHighResTimeStamp(startTime);
+    reporter->reportLongTask(startTimeMs, durationMs);
+  }
+}
+
+void RuntimeScheduler_Modern::markYieldingOpportunity(
+    RuntimeSchedulerTimePoint currentTime) {
+  auto currentPeriod = currentTime - lastYieldingOpportunity_;
+  if (currentPeriod > longestPeriodWithoutYieldingOpportunity_) {
+    longestPeriodWithoutYieldingOpportunity_ = currentPeriod;
+  }
+  lastYieldingOpportunity_ = currentTime;
 }
 
 } // namespace facebook::react

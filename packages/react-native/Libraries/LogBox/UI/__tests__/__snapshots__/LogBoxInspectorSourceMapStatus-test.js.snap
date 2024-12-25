@@ -27,7 +27,8 @@ exports[`LogBoxInspectorSourceMapStatus should render for failed 1`] = `
     }
   }
 >
-  <Animated(Image)
+  <Image
+    collapsable={false}
     source={
       Object {
         "testUri": "../Libraries/LogBox/UI/LogBoxImages/alert-triangle.png",
@@ -94,25 +95,25 @@ exports[`LogBoxInspectorSourceMapStatus should render for pending 1`] = `
     }
   }
 >
-  <Animated(Image)
+  <Image
+    collapsable={false}
     source={
       Object {
         "testUri": "../Libraries/LogBox/UI/LogBoxImages/loader.png",
       }
     }
     style={
-      Array [
-        Object {
-          "height": 14,
-          "marginEnd": 4,
-          "tintColor": "rgba(255, 255, 255, 0.4)",
-          "width": 16,
-        },
-        Object {
-          "tintColor": "rgba(250, 186, 48, 1)",
-        },
-        null,
-      ]
+      Object {
+        "height": 14,
+        "marginEnd": 4,
+        "tintColor": "rgba(250, 186, 48, 1)",
+        "transform": Array [
+          Object {
+            "rotate": "0deg",
+          },
+        ],
+        "width": 16,
+      }
     }
   />
   <Text

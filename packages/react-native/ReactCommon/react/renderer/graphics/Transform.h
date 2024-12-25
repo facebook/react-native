@@ -47,9 +47,10 @@ enum class TransformOperationType {
 
 struct TransformOperation {
   TransformOperationType type;
-  Float x;
-  Float y;
-  Float z;
+  ValueUnit x;
+  ValueUnit y;
+  ValueUnit z;
+  bool operator==(const TransformOperation& other) const = default;
 };
 
 struct TransformOrigin {
@@ -66,6 +67,17 @@ struct TransformOrigin {
     return xy[0].value != 0.0f || xy[0].unit != UnitType::Undefined ||
         xy[1].value != 0.0f || xy[1].unit != UnitType::Undefined || z != 0.0f;
   }
+
+#ifdef ANDROID
+
+  /**
+   * Convert to folly::dynamic.
+   */
+  operator folly::dynamic() const {
+    return folly::dynamic::array(xy[0].value, xy[1].value, z);
+  }
+
+#endif
 };
 
 /*
@@ -88,7 +100,9 @@ struct Transform {
    * Given a TransformOperation, return the proper transform.
    */
   static Transform FromTransformOperation(
-      TransformOperation transformOperation);
+      TransformOperation transformOperation,
+      const Size& size,
+      const Transform& transform = Transform::Identity());
   static TransformOperation DefaultTransformOperation(
       TransformOperationType type);
 
@@ -143,15 +157,16 @@ struct Transform {
    * performs slerp between the two rotations, and a linear interpolation
    * of scale and translation.
    *
-   * @param progress
-   * @param lhs
-   * @param rhs
-   * @return
+   * @param animationProgress of the animation
+   * @param lhs start of the interpolation
+   * @param rhs end of the interpolation
+   * @return the Transformation
    */
   static Transform Interpolate(
       Float animationProgress,
       const Transform& lhs,
-      const Transform& rhs);
+      const Transform& rhs,
+      const Size& size);
 
   static bool isVerticalInversion(const Transform& transform);
   static bool isHorizontalInversion(const Transform& transform);

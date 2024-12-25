@@ -15,7 +15,6 @@ import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.systrace.Systrace;
@@ -318,11 +317,8 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
     }
 
     private void post() {
-      if (!ReactFeatureFlags.enableFabricRendererExclusively) {
-        ReactChoreographer.getInstance()
-            .postFrameCallback(
-                ReactChoreographer.CallbackType.TIMERS_EVENTS, mCurrentFrameCallback);
-      }
+      ReactChoreographer.getInstance()
+          .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, mCurrentFrameCallback);
     }
 
     public void maybePostFromNonUI() {

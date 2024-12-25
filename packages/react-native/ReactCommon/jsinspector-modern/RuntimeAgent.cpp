@@ -26,6 +26,11 @@ RuntimeAgent::RuntimeAgent(
       targetController_.installBindingHandler(name);
     }
   }
+
+  if (sessionState_.isRuntimeDomainEnabled &&
+      sessionState_.isLogDomainEnabled) {
+    targetController_.notifyDebuggerSessionCreated();
+  }
 }
 
 bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
@@ -83,6 +88,18 @@ bool RuntimeAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     return true;
   }
+  if (req.method == "Runtime.enable" && sessionState_.isLogDomainEnabled) {
+    targetController_.notifyDebuggerSessionCreated();
+  }
+  if (req.method == "Log.enable" && sessionState_.isRuntimeDomainEnabled) {
+    targetController_.notifyDebuggerSessionCreated();
+  }
+  if (req.method == "Runtime.disable" && sessionState_.isLogDomainEnabled) {
+    targetController_.notifyDebuggerSessionDestroyed();
+  }
+  if (req.method == "Log.disable" && sessionState_.isRuntimeDomainEnabled) {
+    targetController_.notifyDebuggerSessionDestroyed();
+  }
   if (delegate_) {
     return delegate_->handleRequest(req);
   }
@@ -120,6 +137,11 @@ RuntimeAgent::ExportedState RuntimeAgent::getExportedState() {
 }
 
 RuntimeAgent::~RuntimeAgent() {
+  if (sessionState_.isRuntimeDomainEnabled &&
+      sessionState_.isLogDomainEnabled) {
+    targetController_.notifyDebuggerSessionDestroyed();
+  }
+
   // TODO: Eventually, there may be more than one Runtime per Page, and we'll
   // need to store multiple agent states here accordingly. For now let's do
   // the simple thing and assume (as we do elsewhere) that only one Runtime

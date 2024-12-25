@@ -42,8 +42,15 @@ EOF
     patch -p1 config.sub fix_glog_0.3.5_apple_silicon.patch
 fi
 
-export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
-export CXX="$CC"
+XCRUN="$(which xcrun || true)"
+if [ -n "$XCRUN" ]; then
+  export CC="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
+  export CXX="$CC"
+else
+  export CC="$CC:-$(which gcc)"
+  export CXX="$CXX:-$(which g++ || true)"
+fi
+export CXX="$CXX:-$CC"
 
 # Remove automake symlink if it exists
 if [ -h "test-driver" ]; then
@@ -54,7 +61,7 @@ fi
 sed -i.bak -e 's/\@ac_cv_have_libgflags\@/0/' src/glog/logging.h.in && rm src/glog/logging.h.in.bak
 sed -i.bak -e 's/HAVE_LIB_GFLAGS/HAVE_LIB_GFLAGS_DISABLED/' src/config.h.in && rm src/config.h.in.bak
 
-./configure --host arm-apple-darwin
+./configure --host arm-apple-darwin || true
 
 cat << EOF >> src/config.h
 /* Add in so we have Apple Target Conditionals */

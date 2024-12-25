@@ -10,6 +10,7 @@
 #include "ShadowNodeFragment.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/debug/DebugStringConvertible.h>
@@ -18,6 +19,19 @@
 #include <utility>
 
 namespace facebook::react {
+
+/*
+ * Runtime shadow node reference updates should only run from one thread at all
+ * times to avoid having more than one shadow tree updating the current fiber
+ * tree simultaneously. This thread_local flag allows enabling the updates for
+ * choses threads.
+ */
+thread_local bool useRuntimeShadowNodeReferenceUpdateOnThread{false}; // NOLINT
+
+/* static */ void ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(
+    bool isEnabled) {
+  useRuntimeShadowNodeReferenceUpdateOnThread = isEnabled;
+}
 
 ShadowNode::SharedListOfShared ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
@@ -77,7 +91,6 @@ ShadowNode::ShadowNode(
   react_native_assert(children_);
 
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
-  traits_.set(fragment.traits.get());
 
   for (const auto& child : *children_) {
     child->family_->setParent(family_);
@@ -109,9 +122,7 @@ ShadowNode::ShadowNode(
 
   // State could have been progressed above by checking
   // `sourceShadowNode.getMostRecentState()`.
-  traits_.unset(ShadowNodeTraits::Trait::ClonedByNativeStateUpdate);
   traits_.set(ShadowNodeTraits::Trait::ChildrenAreShared);
-  traits_.set(fragment.traits.get());
 
   if (fragment.children) {
     for (const auto& child : *children_) {
@@ -135,8 +146,7 @@ ShadowNode::Unshared ShadowNode::clone(
           *this,
           {.props = props,
            .children = fragment.children,
-           .state = fragment.state,
-           .traits = fragment.traits});
+           .state = fragment.state});
       return clonedNode;
     } else {
       // TODO: We might need to merge fragment.priops with
@@ -281,30 +291,41 @@ void ShadowNode::cloneChildrenIfShared() {
 void ShadowNode::setMounted(bool mounted) const {
   if (mounted) {
     family_->setMostRecentState(getState());
+    family_->setMounted();
     hasBeenMounted_ = mounted;
   }
 
   family_->eventEmitter_->setEnabled(mounted);
 }
 
-bool ShadowNode::getHasBeenMounted() const {
-  return hasBeenMounted_;
+bool ShadowNode::getHasBeenPromoted() const {
+  return hasBeenMounted_.load();
 }
 
-bool ShadowNode::progressStateIfNecessary() {
-  if (!hasBeenMounted_ && state_) {
-    ensureUnsealed();
-    auto mostRecentState = family_->getMostRecentStateIfObsolete(*state_);
-    if (mostRecentState) {
-      state_ = mostRecentState;
-      const auto& componentDescriptor = family_->componentDescriptor_;
-      // Must call ComponentDescriptor::adopt to trigger any side effect
-      // state may have. E.g. adjusting padding.
-      componentDescriptor.adopt(*this);
-      return true;
-    }
+void ShadowNode::setRuntimeShadowNodeReference(
+    const std::shared_ptr<ShadowNodeWrapper>& runtimeShadowNodeReference)
+    const {
+  runtimeShadowNodeReference_ = runtimeShadowNodeReference;
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode) const {
+  destinationShadowNode->runtimeShadowNodeReference_ =
+      runtimeShadowNodeReference_;
+
+  if (auto reference = runtimeShadowNodeReference_.lock()) {
+    reference->shadowNode = destinationShadowNode;
   }
-  return false;
+}
+
+void ShadowNode::transferRuntimeShadowNodeReference(
+    const Shared& destinationShadowNode,
+    const ShadowNodeFragment& fragment) const {
+  if (useRuntimeShadowNodeReferenceUpdateOnThread &&
+      fragment.runtimeShadowNodeReference &&
+      ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate()) {
+    transferRuntimeShadowNodeReference(destinationShadowNode);
+  }
 }
 
 const ShadowNodeFamily& ShadowNode::getFamily() const {
@@ -314,8 +335,7 @@ const ShadowNodeFamily& ShadowNode::getFamily() const {
 ShadowNode::Unshared ShadowNode::cloneTree(
     const ShadowNodeFamily& shadowNodeFamily,
     const std::function<ShadowNode::Unshared(const ShadowNode& oldShadowNode)>&
-        callback,
-    ShadowNodeTraits traits) const {
+        callback) const {
   auto ancestors = shadowNodeFamily.getAncestors(*this);
 
   if (ancestors.empty()) {
@@ -343,8 +363,7 @@ ShadowNode::Unshared ShadowNode::cloneTree(
     children[childIndex] = childNode;
 
     childNode = parentNode.clone(
-        {.children = std::make_shared<ShadowNode::ListOfShared>(children),
-         .traits = traits});
+        {.children = std::make_shared<ShadowNode::ListOfShared>(children)});
   }
 
   return std::const_pointer_cast<ShadowNode>(childNode);
@@ -360,7 +379,8 @@ std::string ShadowNode::getDebugName() const {
 std::string ShadowNode::getDebugValue() const {
   return "r" + folly::to<std::string>(revision_) + "/sr" +
       folly::to<std::string>(state_ ? state_->getRevision() : 0) +
-      (getSealed() ? "/sealed" : "");
+      (getSealed() ? "/sealed" : "") +
+      (getProps()->nativeId.empty() ? "" : "/id=" + getProps()->nativeId);
 }
 
 SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
@@ -383,5 +403,11 @@ SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
           debugStringConvertibleItem("tag", folly::to<std::string>(getTag()))};
 }
 #endif
+
+// Explicitly define destructors here, as they have to exist in order to act as
+// a "key function" for the ShadowNodeWrapper class -- this allows for RTTI to
+// work properly across dynamic library boundaries (i.e. dynamic_cast that is
+// used by getNativeState method)
+ShadowNodeWrapper::~ShadowNodeWrapper() = default;
 
 } // namespace facebook::react

@@ -15,6 +15,7 @@
 #import <React/RCTBridgeMethod.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTBridgeModuleDecorator.h>
+#import <React/RCTCallInvoker.h>
 #import <React/RCTConstants.h>
 #import <React/RCTConvert.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -161,20 +162,21 @@ static void mapReactMarkerToPerformanceLogger(
 
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger)
 {
+  std::unique_lock lock(ReactMarker::logTaggedMarkerImplMutex);
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
-  ReactMarker::logTaggedMarkerImpl = [weakPerformanceLogger](
-                                         const ReactMarker::ReactMarkerId markerId, const char *tag) {
+  ReactMarker::LogTaggedMarker newMarker = [weakPerformanceLogger](
+                                               const ReactMarker::ReactMarkerId markerId, const char *tag) {
     mapReactMarkerToPerformanceLogger(markerId, weakPerformanceLogger, tag);
   };
+  ReactMarker::logTaggedMarkerImpl = newMarker;
 }
 
-@interface RCTCxxBridge ()
+@interface RCTCxxBridge () <RCTModuleDataCallInvokerProvider>
 
 @property (nonatomic, weak, readonly) RCTBridge *parentBridge;
 @property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge;
-- (void)partialBatchDidFlush;
 - (void)batchDidComplete;
 
 @end
@@ -184,15 +186,13 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCTInstanceCallback(RCTCxxBridge *bridge) : bridge_(bridge){};
   void onBatchComplete() override
   {
-    // There's no interface to call this per partial batch
-    [bridge_ partialBatchDidFlush];
     [bridge_ batchDidComplete];
   }
 };
 
 @implementation RCTCxxBridge {
   BOOL _didInvalidate;
-  BOOL _moduleRegistryCreated;
+  std::atomic<BOOL> _moduleRegistryCreated;
 
   NSMutableArray<RCTPendingCall> *_pendingCalls;
   std::atomic<NSInteger> _pendingCount;
@@ -219,12 +219,32 @@ struct RCTInstanceCallback : public InstanceCallback {
   RCTViewRegistry *_viewRegistry_DEPRECATED;
   RCTBundleManager *_bundleManager;
   RCTCallableJSModules *_callableJSModules;
+  std::atomic<BOOL> _loading;
+  std::atomic<BOOL> _valid;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
-@synthesize loading = _loading;
 @synthesize performanceLogger = _performanceLogger;
-@synthesize valid = _valid;
+
+- (BOOL)isLoading
+{
+  return _loading;
+}
+
+- (void)setLoading:(BOOL)newValue
+{
+  _loading = newValue;
+}
+
+- (BOOL)isValid
+{
+  return _valid;
+}
+
+- (void)setValid:(BOOL)newValue
+{
+  _valid = newValue;
+}
 
 - (RCTModuleRegistry *)moduleRegistry
 {
@@ -351,7 +371,8 @@ struct RCTInstanceCallback : public InstanceCallback {
   // in case if some other tread resets it.
   auto reactInstance = _reactInstance;
   if (reactInstance) {
-    int unloadLevel = RCTGetMemoryPressureUnloadLevel();
+    // Memory Pressure Unloading Level 15 represents TRIM_MEMORY_RUNNING_CRITICAL.
+    int unloadLevel = 15;
     reactInstance->handleMemoryPressure(unloadLevel);
   }
 }
@@ -767,6 +788,7 @@ struct RCTInstanceCallback : public InstanceCallback {
                                     viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
                                               bundleManager:_bundleManager
                                           callableJSModules:_callableJSModules];
+    moduleData.callInvokerProvider = self;
     BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
 
     _moduleDataByName[moduleName] = moduleData;
@@ -1492,30 +1514,29 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 
 #pragma mark - Payload Processing
 
-- (void)partialBatchDidFlush
-{
-  for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (moduleData.implementsPartialBatchDidFlush) {
-      [self
-          dispatchBlock:^{
-            [moduleData.instance partialBatchDidFlush];
-          }
-                  queue:moduleData.methodQueue];
-    }
-  }
-}
-
 - (void)batchDidComplete
 {
-  // TODO #12592471: batchDidComplete is only used by RCTUIManager,
-  // can we eliminate this special case?
-  for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (moduleData.implementsBatchDidComplete) {
+  if (RCTBridgeModuleBatchDidCompleteDisabled()) {
+    id uiManager = [self moduleForName:@"UIManager"];
+    if ([uiManager respondsToSelector:@selector(batchDidComplete)] &&
+        [uiManager respondsToSelector:@selector(methodQueue)]) {
       [self
           dispatchBlock:^{
-            [moduleData.instance batchDidComplete];
+            [uiManager batchDidComplete];
           }
-                  queue:moduleData.methodQueue];
+                  queue:[uiManager methodQueue]];
+    }
+  } else {
+    // TODO #12592471: batchDidComplete is only used by RCTUIManager,
+    // can we eliminate this special case?
+    for (RCTModuleData *moduleData in _moduleDataByID) {
+      if (moduleData.implementsBatchDidComplete) {
+        [self
+            dispatchBlock:^{
+              [moduleData.instance batchDidComplete];
+            }
+                    queue:moduleData.methodQueue];
+      }
     }
   }
 }
@@ -1593,6 +1614,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
     (std::shared_ptr<NativeMethodCallInvoker>)nativeInvoker
 {
   return _reactInstance ? _reactInstance->getDecoratedNativeMethodCallInvoker(nativeInvoker) : nullptr;
+}
+
+#pragma mark - RCTModuleDataCallInvokerProvider
+
+- (RCTCallInvoker *)callInvokerForModuleData:(RCTModuleData *)moduleData
+{
+  return [[RCTCallInvoker alloc] initWithCallInvoker:self.jsCallInvoker];
 }
 
 @end

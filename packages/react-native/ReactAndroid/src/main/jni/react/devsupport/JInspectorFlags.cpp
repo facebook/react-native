@@ -11,25 +11,23 @@
 
 namespace facebook::react::jsinspector_modern {
 
-bool JInspectorFlags::getEnableModernCDPRegistry(jni::alias_ref<jclass>) {
+bool JInspectorFlags::getFuseboxEnabled(jni::alias_ref<jclass> /*unused*/) {
   auto& inspectorFlags = InspectorFlags::getInstance();
-  return inspectorFlags.getEnableModernCDPRegistry();
+  return inspectorFlags.getFuseboxEnabled();
 }
 
-bool JInspectorFlags::getEnableCxxInspectorPackagerConnection(
-    jni::alias_ref<jclass>) {
+bool JInspectorFlags::getIsProfilingBuild(jni::alias_ref<jclass> /*unused*/) {
   auto& inspectorFlags = InspectorFlags::getInstance();
-  return inspectorFlags.getEnableCxxInspectorPackagerConnection();
+  return inspectorFlags.getIsProfilingBuild();
 }
 
 void JInspectorFlags::registerNatives() {
   javaClassLocal()->registerNatives({
+      makeNativeMethod("getFuseboxEnabled", JInspectorFlags::getFuseboxEnabled),
+  });
+  javaClassLocal()->registerNatives({
       makeNativeMethod(
-          "getEnableModernCDPRegistry",
-          JInspectorFlags::getEnableModernCDPRegistry),
-      makeNativeMethod(
-          "getEnableCxxInspectorPackagerConnection",
-          JInspectorFlags::getEnableCxxInspectorPackagerConnection),
+          "getIsProfilingBuild", JInspectorFlags::getIsProfilingBuild),
   });
 }
 

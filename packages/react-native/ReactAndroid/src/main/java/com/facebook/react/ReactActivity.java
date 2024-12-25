@@ -65,8 +65,8 @@ public abstract class ReactActivity extends AppCompatActivity
     mDelegate.onDestroy();
   }
 
-  public void getReactDelegate() {
-    mDelegate.getReactDelegate();
+  public @Nullable ReactDelegate getReactDelegate() {
+    return mDelegate.getReactDelegate();
   }
 
   public ReactActivityDelegate getReactActivityDelegate() {
@@ -114,6 +114,12 @@ public abstract class ReactActivity extends AppCompatActivity
   }
 
   @Override
+  public void onUserLeaveHint() {
+    super.onUserLeaveHint();
+    mDelegate.onUserLeaveHint();
+  }
+
+  @Override
   public void requestPermissions(
       String[] permissions, int requestCode, PermissionListener listener) {
     mDelegate.requestPermissions(permissions, requestCode, listener);
@@ -140,6 +146,10 @@ public abstract class ReactActivity extends AppCompatActivity
 
   protected final ReactNativeHost getReactNativeHost() {
     return mDelegate.getReactNativeHost();
+  }
+
+  protected ReactHost getReactHost() {
+    return mDelegate.getReactHost();
   }
 
   protected final ReactInstanceManager getReactInstanceManager() {

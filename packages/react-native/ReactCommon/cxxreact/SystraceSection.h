@@ -7,53 +7,22 @@
 
 #pragma once
 
-#ifdef WITH_FBSYSTRACE
-#include <fbsystrace.h>
-#endif
+#include "TraceSection.h"
 
+// NOTE: This is here for a backwards compatibility and should be removed once
+// all of the external references to `facebook::react::SystraceSection` are
+// gone.
 namespace facebook::react {
 
-/**
- * Allow providing an fbsystrace implementation that can short-circuit out
- * quickly and can throttle too frequent events so we can get useful traces even
- * if rendering etc. is spinning. For throttling we'll need file/line info so we
- * use a macro.
- */
 #if defined(WITH_LOOM_TRACE)
-#define SystraceSection                                         \
-  static constexpr const char systraceSectionFile[] = __FILE__; \
-  fbsystrace::FbSystraceSection<systraceSectionFile, __LINE__>
-/**
- * This is a convenience class to avoid lots of verbose profiling
- * #ifdefs.  If WITH_FBSYSTRACE is not defined, the optimizer will
- * remove this completely.  If it is defined, it will behave as
- * FbSystraceSection, with the right tag provided. Use two separate classes to
- * to ensure that the ODR rule isn't violated, that is, if WITH_FBSYSTRACE has
- * different values in different files, there is no inconsistency in the sizes
- * of defined symbols.
- */
-#elif defined(WITH_FBSYSTRACE)
-struct ConcreteSystraceSection {
- public:
-  template <typename... ConvertsToStringPiece>
-  explicit ConcreteSystraceSection(
-      const char* name,
-      ConvertsToStringPiece&&... args)
-      : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...) {}
-
- private:
-  fbsystrace::FbSystraceSection m_section;
-};
-using SystraceSection = ConcreteSystraceSection;
+#define SystraceSection TraceSection
 #else
-struct DummySystraceSection {
- public:
+struct [[deprecated("Use TraceSection")]] SystraceSection
+    : public TraceSection {
   template <typename... ConvertsToStringPiece>
-  explicit DummySystraceSection(
-      const __unused char* name,
-      __unused ConvertsToStringPiece&&... args) {}
+  explicit SystraceSection(const char* name, ConvertsToStringPiece&&... args)
+      : TraceSection(name, args...) {}
 };
-using SystraceSection = DummySystraceSection;
 #endif
 
 } // namespace facebook::react

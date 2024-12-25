@@ -60,6 +60,7 @@ class TextAttributes : public DebugStringConvertible {
   std::optional<TextAlignment> alignment{};
   std::optional<WritingDirection> baseWritingDirection{};
   std::optional<LineBreakStrategy> lineBreakStrategy{};
+  std::optional<LineBreakMode> lineBreakMode{};
 
   // Decoration
   SharedColor textDecorationColor{};
@@ -83,6 +84,8 @@ class TextAttributes : public DebugStringConvertible {
   std::optional<LayoutDirection> layoutDirection{};
   std::optional<AccessibilityRole> accessibilityRole{};
   std::optional<Role> role{};
+
+  std::optional<TextAlignmentVertical> textAlignVertical{};
 
 #pragma mark - Operations
 
@@ -123,8 +126,10 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textTransform,
         textAttributes.lineHeight,
         textAttributes.alignment,
+        textAttributes.textAlignVertical,
         textAttributes.baseWritingDirection,
         textAttributes.lineBreakStrategy,
+        textAttributes.lineBreakMode,
         textAttributes.textDecorationColor,
         textAttributes.textDecorationLineType,
         textAttributes.textDecorationStyle,

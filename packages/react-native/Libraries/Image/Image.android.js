@@ -133,7 +133,6 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       width: undefined,
       height: undefined,
     };
-    const defaultSource = resolveAssetSource(props.defaultSource);
     const loadingIndicatorSource = resolveAssetSource(
       props.loadingIndicatorSource,
     );
@@ -150,31 +149,25 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       );
     }
 
-    let style;
+    let style: ImageStyleProp;
     let sources;
     if (Array.isArray(source)) {
-      style = flattenStyle<ImageStyleProp>([styles.base, props.style]);
+      style = [styles.base, props.style];
       sources = source;
     } else {
       const {uri} = source;
-      const width = source.width ?? props.width;
-      const height = source.height ?? props.height;
-      style = flattenStyle<ImageStyleProp>([
-        {width, height},
-        styles.base,
-        props.style,
-      ]);
-      sources = [source];
       if (uri === '') {
         console.warn('source.uri should not be an empty string');
       }
+      const width = source.width ?? props.width;
+      const height = source.height ?? props.height;
+      style = [{width, height}, styles.base, props.style];
+      sources = [source];
     }
-
-    const {height, width, ...restProps} = props;
 
     const {onLoadStart, onLoad, onLoadEnd, onError} = props;
     const nativeProps = {
-      ...restProps,
+      ...props,
       style,
       shouldNotifyLoadEvents: !!(onLoadStart || onLoad || onLoadEnd || onError),
       // Both iOS and C++ sides expect to have "source" prop, whereas on Android it's "src"
@@ -185,7 +178,6 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
        * when making Flow check .android.js files. */
       headers: (source?.[0]?.headers || source?.headers: ?{[string]: string}),
-      defaultSrc: defaultSource ? defaultSource.uri : null,
       loadingIndicatorSrc: loadingIndicatorSource
         ? loadingIndicatorSource.uri
         : null,
@@ -203,11 +195,10 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       },
     };
 
-    const objectFit = style?.objectFit
-      ? convertObjectFitToResizeMode(style.objectFit)
-      : null;
+    const flattenedStyle = flattenStyle<ImageStyleProp>(style);
+    const objectFit = convertObjectFitToResizeMode(flattenedStyle?.objectFit);
     const resizeMode =
-      objectFit || props.resizeMode || style?.resizeMode || 'cover';
+      objectFit || props.resizeMode || flattenedStyle?.resizeMode || 'cover';
 
     const actualRef = useWrapRefWithImageAttachedCallbacks(forwardedRef);
 

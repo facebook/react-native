@@ -10,12 +10,13 @@
 
 'use strict';
 
-const React = require('react');
-const {Platform, Switch, Text, View} = require('react-native');
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {Platform, Switch, View} from 'react-native';
 
 type OnOffIndicatorProps = $ReadOnly<{|on: boolean, testID: string|}>;
 function OnOffIndicator({on, testID}: OnOffIndicatorProps) {
-  return <Text testID={testID}>{on ? 'On' : 'Off'}</Text>;
+  return <RNTesterText testID={testID}>{on ? 'On' : 'Off'}</RNTesterText>;
 }
 
 type ExampleRowProps = $ReadOnly<{|children: React.Node|}>;
@@ -183,9 +184,9 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
             style={{marginBottom: 10}}
             value={this.state.eventSwitchIsOn}
           />
-          <Text testID="event-switch-indicator">
+          <RNTesterText testID="event-switch-indicator">
             {this.state.eventSwitchIsOn ? 'On' : 'Off'}
-          </Text>
+          </RNTesterText>
         </View>
         <View>
           <Switch
@@ -204,9 +205,9 @@ class EventSwitchExample extends React.Component<{...}, $FlowFixMeState> {
             style={{marginBottom: 10}}
             value={this.state.eventSwitchRegressionIsOn}
           />
-          <Text testID="event-switch-regression-indicator">
+          <RNTesterText testID="event-switch-regression-indicator">
             {this.state.eventSwitchRegressionIsOn ? 'On' : 'Off'}
-          </Text>
+          </RNTesterText>
         </View>
       </View>
     );
@@ -226,10 +227,10 @@ class IOSBackgroundColEx extends React.Component<{...}, $FlowFixMeState> {
           ios_backgroundColor={this.state.iosBackgroundColor}
           style={{marginBottom: 20}}
         />
-        <Text>
+        <RNTesterText>
           The background color can be seen either when the switch value is false
           or when the switch is disabled (and the switch is translucent).{' '}
-        </Text>
+        </RNTesterText>
       </View>
     );
   }
@@ -276,47 +277,47 @@ exports.examples = [
   {
     title: 'Switches can be set to true or false',
     name: 'basic',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <BasicSwitchExample />;
     },
   },
   {
     title: 'Switches can be disabled',
     name: 'disabled',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <DisabledSwitchExample />;
     },
   },
   {
     title: 'Change events can be detected',
     name: 'events',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <EventSwitchExample />;
     },
   },
   {
     title: 'Switches are controlled components',
     name: 'controlled',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <Switch testID="controlled-switch" />;
     },
   },
   {
     title: 'Custom colors can be provided',
     name: 'custom-colors',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ColorSwitchExample />;
     },
   },
   {
     title: 'OnChange receives the change event as an argument',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <OnChangeExample />;
     },
   },
   {
     title: "The container's background color can be set",
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <ContainerBackgroundColorStyleExample />;
     },
   },
@@ -325,7 +326,7 @@ exports.examples = [
 if (Platform.OS === 'ios') {
   exports.examples.push({
     title: '[iOS Only] Custom background colors can be set',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return <IOSBackgroundColEx />;
     },
   });

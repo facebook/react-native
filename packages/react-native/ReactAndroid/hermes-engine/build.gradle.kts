@@ -6,6 +6,7 @@
  */
 
 import de.undercouch.gradle.tasks.download.Download
+import java.io.FileOutputStream
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
@@ -36,9 +37,13 @@ fun getSDKPath(): String {
 fun getSDKManagerPath(): String {
   val metaSdkManagerPath = File("${getSDKPath()}/cmdline-tools/latest/bin/sdkmanager")
   val ossSdkManagerPath = File("${getSDKPath()}/tools/bin/sdkmanager")
+  val windowsMetaSdkManagerPath = File("${getSDKPath()}/cmdline-tools/latest/bin/sdkmanager.bat")
+  val windowsOssSdkManagerPath = File("${getSDKPath()}/tools/bin/sdkmanager.bat")
   return when {
     metaSdkManagerPath.exists() -> metaSdkManagerPath.absolutePath
+    windowsMetaSdkManagerPath.exists() -> windowsMetaSdkManagerPath.absolutePath
     ossSdkManagerPath.exists() -> ossSdkManagerPath.absolutePath
+    windowsOssSdkManagerPath.exists() -> windowsOssSdkManagerPath.absolutePath
     else -> throw GradleException("Could not find sdkmanager executable.")
   }
 }
@@ -70,13 +75,7 @@ val hermesCOutputBinary = File("$buildDir/hermes/bin/hermesc")
 // and won't rebuilt hermesc unless those files are changing.
 val hermesBuildOutputFileTree =
     fileTree(hermesBuildDir.toString())
-        .include(
-            "**/*.make",
-            "**/*.cmake",
-            "**/*.marks",
-            "**/compiler_depends.ts",
-            "**/Makefile",
-            "**/link.txt")
+        .include("**/*.cmake", "**/*.marks", "**/compiler_depends.ts", "**/Makefile", "**/link.txt")
 
 var hermesVersion = "main"
 val hermesVersionFile = File(reactNativeRootDir, "sdks/.hermesversion")
@@ -96,6 +95,7 @@ val downloadHermes by
       src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
       onlyIfModified(true)
       overwrite(true)
+      quiet(true)
       useETag("all")
       retries(5)
       dest(File(downloadsDir, "hermes.tar.gz"))
@@ -138,12 +138,17 @@ val configureBuildForHermes by
       commandLine(
           windowsAwareCommandLine(
               cmakeBinaryPath,
+              // Suppress all warnings as this is the Hermes build and we can't fix them.
+              "--log-level=ERROR",
+              "-Wno-dev",
               if (Os.isFamily(Os.FAMILY_WINDOWS)) "-GNMake Makefiles" else "",
               "-S",
               ".",
               "-B",
               hermesBuildDir.toString(),
-              "-DJSI_DIR=" + jsiDir.absolutePath))
+              "-DJSI_DIR=" + jsiDir.absolutePath,
+          ))
+      standardOutput = FileOutputStream("$buildDir/configure-hermesc.log")
     }
 
 val buildHermesC by
@@ -153,15 +158,16 @@ val buildHermesC by
       inputs.files(hermesBuildOutputFileTree)
       outputs.file(hermesCOutputBinary)
       commandLine(
-          windowsAwareCommandLine(
-              cmakeBinaryPath,
-              "--build",
-              hermesBuildDir.toString(),
-              "--target",
-              "hermesc",
-              "-j",
-              ndkBuildJobs,
-          ))
+          cmakeBinaryPath,
+          "--build",
+          hermesBuildDir.toString(),
+          "--target",
+          "hermesc",
+          "-j",
+          ndkBuildJobs,
+      )
+      standardOutput = FileOutputStream("$buildDir/build-hermesc.log")
+      errorOutput = FileOutputStream("$buildDir/build-hermesc.error.log")
     }
 
 val prepareHeadersForPrefab by
@@ -221,9 +227,12 @@ android {
     externalNativeBuild {
       cmake {
         arguments(
+            "--log-level=ERROR",
+            "-Wno-dev",
             "-DHERMES_IS_ANDROID=True",
             "-DANDROID_STL=c++_shared",
             "-DANDROID_PIE=True",
+            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON",
             "-DIMPORT_HERMESC=${File(hermesBuildDir, "ImportHermesc.cmake").toString()}",
             "-DJSI_DIR=${jsiDir}",
             "-DHERMES_SLOW_DEBUG=False",
@@ -231,10 +240,7 @@ android {
             "-DHERMES_RELEASE_VERSION=for RN ${version}",
             // We intentionally build Hermes with Intl support only. This is to simplify
             // the build setup and to avoid overcomplicating the build-type matrix.
-            "-DHERMES_ENABLE_INTL=True",
-            // Due to https://github.com/android/ndk/issues/1693 we're losing Android
-            // specific compilation flags. This can be removed once we moved to NDK 25/26
-            "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON")
+            "-DHERMES_ENABLE_INTL=True")
 
         targets("libhermes")
       }
@@ -258,11 +264,6 @@ android {
           // This has the (unlucky) side effect of letting AGP call the build
           // tasks `configureCMakeRelease` while is actually building the debug flavor.
           arguments("-DCMAKE_BUILD_TYPE=Release")
-          // Adding -O3 to handle the issue here:
-          // https://github.com/android/ndk/issues/1740#issuecomment-1198438260
-          // The old NDK toolchain is not passing -O3 correctly for release CMake builds. This is
-          // fixed in NDK 25 and can be removed once we're there.
-          cppFlags("-O3")
         }
       }
     }
@@ -290,7 +291,6 @@ android {
 
   dependencies {
     implementation(libs.fbjni)
-    implementation(libs.soloader)
     implementation(libs.yoga.proguard.annotations)
     implementation(libs.androidx.annotation)
   }
@@ -325,6 +325,11 @@ afterEvaluate {
   }
   tasks.getByName("preBuild").dependsOn(buildHermesC)
   tasks.getByName("preBuild").dependsOn(prepareHeadersForPrefab)
+}
+
+tasks.withType<JavaCompile>().configureEach {
+  options.compilerArgs.add("-Xlint:deprecation,unchecked")
+  options.compilerArgs.add("-Werror")
 }
 
 /* Publishing Configuration */

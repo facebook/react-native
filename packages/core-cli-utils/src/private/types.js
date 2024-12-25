@@ -9,7 +9,8 @@
  * @oncall react_native
  */
 
-export type Task = {
+export type Task<R = mixed> = {
+  order: number,
   label: string,
-  action: () => Promise<mixed>,
+  action: () => R,
 };

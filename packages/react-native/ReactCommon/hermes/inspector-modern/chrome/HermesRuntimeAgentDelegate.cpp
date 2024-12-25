@@ -12,7 +12,6 @@
 #include <hermes/AsyncDebuggerAPI.h>
 #include <hermes/cdp/CDPAgent.h>
 #include <hermes/hermes.h>
-#include <hermes/inspector/RuntimeAdapter.h>
 #include <jsinspector-modern/ReactCdp.h>
 
 using namespace facebook::hermes;

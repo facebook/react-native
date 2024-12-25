@@ -19,12 +19,12 @@ type Fn<Args, Return> = (...Args) => Return;
  * when loading a module. This will report any errors encountered before
  * ExceptionsManager is configured.
  */
-let _globalHandler: ErrorHandler = function onError(
-  e: mixed,
-  isFatal: boolean,
-) {
-  throw e;
-};
+let _globalHandler: ErrorHandler =
+  global.RN$useAlwaysAvailableJSErrorHandling === true
+    ? global.RN$handleException
+    : (e: mixed, isFatal: boolean) => {
+        throw e;
+      };
 
 /**
  * The particular require runtime that we are using looks for a global

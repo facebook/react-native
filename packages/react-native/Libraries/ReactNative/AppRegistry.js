@@ -8,12 +8,13 @@
  * @format
  */
 
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {RootTag} from '../Types/RootTagTypes';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import type {DisplayModeType} from './DisplayMode';
 
-import BatchedBridge from '../BatchedBridge/BatchedBridge';
 import BugReporting from '../BugReporting/BugReporting';
+import registerCallableModule from '../Core/registerCallableModule';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import infoLog from '../Utilities/infoLog';
 import SceneTracker from '../Utilities/SceneTracker';
@@ -45,7 +46,6 @@ type AppParameters = {
   initialProps: $ReadOnly<{[string]: mixed, ...}>,
   rootTag: RootTag,
   fabric?: boolean,
-  concurrentRoot?: boolean,
 };
 export type Runnable = (
   appParameters: AppParameters,
@@ -60,6 +60,7 @@ export type Registry = {
 export type WrapperComponentProvider = (
   appParameters: Object,
 ) => React$ComponentType<any>;
+export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 
 const runnables: Runnables = {};
 let runCount = 1;
@@ -70,7 +71,7 @@ let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
   (component: ComponentProvider) => component();
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
-let showArchitectureIndicator = false;
+let rootViewStyleProvider: ?RootViewStyleProvider;
 
 /**
  * `AppRegistry` is the JavaScript entry point to running all React Native apps.
@@ -82,8 +83,8 @@ const AppRegistry = {
     wrapperComponentProvider = provider;
   },
 
-  enableArchitectureIndicator(enabled: boolean): void {
-    showArchitectureIndicator = enabled;
+  setRootViewStyleProvider(provider: RootViewStyleProvider) {
+    rootViewStyleProvider = provider;
   },
 
   registerConfig(config: Array<AppConfig>): void {
@@ -118,10 +119,6 @@ const AppRegistry = {
   ): string {
     const scopedPerformanceLogger = createPerformanceLogger();
     runnables[appKey] = (appParameters, displayMode) => {
-      const concurrentRootEnabled = Boolean(
-        appParameters.initialProps?.concurrentRoot ||
-          appParameters.concurrentRoot,
-      );
       renderApplication(
         componentProviderInstrumentationHook(
           componentProvider,
@@ -130,13 +127,12 @@ const AppRegistry = {
         appParameters.initialProps,
         appParameters.rootTag,
         wrapperComponentProvider && wrapperComponentProvider(appParameters),
+        rootViewStyleProvider && rootViewStyleProvider(appParameters),
         appParameters.fabric,
-        showArchitectureIndicator,
         scopedPerformanceLogger,
         appKey === 'LogBox', // is logbox
         appKey,
         displayMode,
-        concurrentRootEnabled,
       );
     };
     if (section) {
@@ -196,10 +192,8 @@ const AppRegistry = {
     displayMode?: number,
   ): void {
     if (appKey !== 'LogBox') {
-      const logParams = __DEV__
-        ? '" with ' + JSON.stringify(appParameters)
-        : '';
-      const msg = 'Running "' + appKey + logParams;
+      const logParams = __DEV__ ? ` with ${JSON.stringify(appParameters)}` : '';
+      const msg = `Running "${appKey}"${logParams}`;
       infoLog(msg);
       BugReporting.addSource(
         'AppRegistry.runApplication' + runCount++,
@@ -361,10 +355,6 @@ global.RN$SurfaceRegistry = {
   setSurfaceProps: AppRegistry.setSurfaceProps,
 };
 
-if (global.RN$Bridgeless === true) {
-  console.log('Bridgeless mode is enabled');
-} else {
-  BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
-}
+registerCallableModule('AppRegistry', AppRegistry);
 
 module.exports = AppRegistry;

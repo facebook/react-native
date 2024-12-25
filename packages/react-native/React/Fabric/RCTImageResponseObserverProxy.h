@@ -20,8 +20,8 @@ class RCTImageResponseObserverProxy final : public ImageResponseObserver {
   RCTImageResponseObserverProxy(id<RCTImageResponseDelegate> delegate = nil);
 
   void didReceiveImage(const ImageResponse &imageResponse) const override;
-  void didReceiveProgress(float progress) const override;
-  void didReceiveFailure() const override;
+  void didReceiveProgress(float progress, int64_t loaded, int64_t total) const override;
+  void didReceiveFailure(const ImageLoadError &error) const override;
 
  private:
   __weak id<RCTImageResponseDelegate> delegate_;

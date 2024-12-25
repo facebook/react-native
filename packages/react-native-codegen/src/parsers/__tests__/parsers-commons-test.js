@@ -401,7 +401,7 @@ describe('buildSchemaFromConfigType', () => {
     type: 'NativeModule',
     aliasMap: {},
     enumMap: {},
-    spec: {properties: []},
+    spec: {eventEmitters: [], methods: []},
     moduleName: '',
   };
 
@@ -836,7 +836,8 @@ describe('buildSchema', () => {
             aliasMap: {},
             enumMap: {},
             spec: {
-              properties: [
+              eventEmitters: [],
+              methods: [
                 {
                   name: 'getArray',
                   optional: false,
@@ -850,7 +851,10 @@ describe('buildSchema', () => {
                       {
                         name: 'a',
                         optional: false,
-                        typeAnnotation: {type: 'ArrayTypeAnnotation'},
+                        typeAnnotation: {
+                          type: 'ArrayTypeAnnotation',
+                          elementType: {type: 'AnyTypeAnnotation'},
+                        },
                       },
                     ],
                   },
@@ -1247,7 +1251,8 @@ describe('buildModuleSchema', () => {
       excludedPlatforms: undefined,
       moduleName: 'SampleTurboModule',
       spec: {
-        properties: [
+        eventEmitters: [],
+        methods: [
           {
             name: 'getArray',
             optional: false,
@@ -1256,7 +1261,10 @@ describe('buildModuleSchema', () => {
                 {
                   name: 'a',
                   optional: false,
-                  typeAnnotation: {type: 'ArrayTypeAnnotation'},
+                  typeAnnotation: {
+                    type: 'ArrayTypeAnnotation',
+                    elementType: {type: 'AnyTypeAnnotation'},
+                  },
                 },
               ],
               returnTypeAnnotation: {

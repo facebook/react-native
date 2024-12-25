@@ -126,6 +126,12 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   boolean mCollapsable;
 
+  @ReactProp(name = "collapsableChildren")
+  public void setCollapsableChildren(boolean collapsableChildren) {
+    // Do Nothing: Align with static ViewConfigs
+
+  }
+
   @ReactProp(name = "collapsable")
   public void setCollapsable(boolean collapsable) {
     mCollapsable = collapsable;
@@ -324,7 +330,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
     flexBasis.recycle();
   }
 
-  @ReactProp(name = ViewProps.ASPECT_RATIO, defaultFloat = YogaConstants.UNDEFINED)
+  @ReactProp(name = ViewProps.ASPECT_RATIO, defaultFloat = Float.NaN)
   public void setAspectRatio(float aspectRatio) {
     setStyleAspectRatio(aspectRatio);
   }
@@ -713,6 +719,71 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   @ReactPropGroup(
       names = {
+        "marginBlock",
+        "marginBlockEnd",
+        "marginBlockStart",
+      })
+  public void setMarginBlock(int index, Dynamic margin) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "marginInline",
+        "marginInlineEnd",
+        "marginInlineStart",
+      })
+  public void setMarginInline(int index, Dynamic margin) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "paddingBlock",
+        "paddingBlockEnd",
+        "paddingBlockStart",
+      })
+  public void setPaddingBlock(int index, Dynamic padding) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "paddingInline",
+        "paddingInlineEnd",
+        "paddingInlineStart",
+      })
+  public void setPaddingInline(int index, Dynamic padding) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "insetBlock",
+        "insetBlockEnd",
+        "insetBlockStart",
+      })
+  public void setInsetBlock(int index, Dynamic inset) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
+        "insetInline",
+        "insetInlineEnd",
+        "insetInlineStart",
+      })
+  public void setInsetInline(int index, Dynamic inset) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactProp(name = "inset")
+  public void setInset(Dynamic inset) {
+    // Do Nothing: Align with static ViewConfigs
+  }
+
+  @ReactPropGroup(
+      names = {
         ViewProps.MARGIN,
         ViewProps.MARGIN_VERTICAL,
         ViewProps.MARGIN_HORIZONTAL,
@@ -792,7 +863,7 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
         ViewProps.BORDER_LEFT_WIDTH,
         ViewProps.BORDER_RIGHT_WIDTH,
       },
-      defaultFloat = YogaConstants.UNDEFINED)
+      defaultFloat = Float.NaN)
   public void setBorderWidths(int index, float borderWidth) {
     if (isVirtual()) {
       return;
@@ -889,19 +960,16 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   @ReactProp(name = "onPointerEnter")
   public void setShouldNotifyPointerEnter(boolean value) {
-    // This method exists to inject Native View configs in RN Android VR
-    // DO NOTHING
+    // Do Nothing: Align with static ViewConfigs
   }
 
   @ReactProp(name = "onPointerLeave")
   public void setShouldNotifyPointerLeave(boolean value) {
-    // This method exists to inject Native View configs in RN Android VR
-    // DO NOTHING
+    // Do Nothing: Align with static ViewConfigs
   }
 
   @ReactProp(name = "onPointerMove")
   public void setShouldNotifyPointerMove(boolean value) {
-    // This method exists to inject Native View configs in RN Android VR
-    // DO NOTHING
+    // Do Nothing: Align with static ViewConfigs
   }
 }

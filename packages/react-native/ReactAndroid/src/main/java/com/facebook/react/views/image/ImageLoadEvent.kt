@@ -41,6 +41,7 @@ private constructor(
           ON_PROGRESS -> {
             putInt("loaded", loaded)
             putInt("total", total)
+            putDouble("progress", loaded / total.toDouble())
           }
           ON_LOAD -> putMap("source", createEventDataSource())
           ON_ERROR -> putString("error", errorMessage)

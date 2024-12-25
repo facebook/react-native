@@ -37,8 +37,23 @@ export type Int32TypeAnnotation = $ReadOnly<{
   type: 'Int32TypeAnnotation',
 }>;
 
+export type NumberLiteralTypeAnnotation = $ReadOnly<{
+  type: 'NumberLiteralTypeAnnotation',
+  value: number,
+}>;
+
 export type StringTypeAnnotation = $ReadOnly<{
   type: 'StringTypeAnnotation',
+}>;
+
+export type StringLiteralTypeAnnotation = $ReadOnly<{
+  type: 'StringLiteralTypeAnnotation',
+  value: string,
+}>;
+
+export type StringLiteralUnionTypeAnnotation = $ReadOnly<{
+  type: 'StringLiteralUnionTypeAnnotation',
+  types: $ReadOnlyArray<StringLiteralTypeAnnotation>,
 }>;
 
 export type StringEnumTypeAnnotation = $ReadOnly<{
@@ -53,13 +68,17 @@ export type VoidTypeAnnotation = $ReadOnly<{
 export type ObjectTypeAnnotation<+T> = $ReadOnly<{
   type: 'ObjectTypeAnnotation',
   properties: $ReadOnlyArray<NamedShape<T>>,
-
   // metadata for objects that generated from interfaces
   baseTypes?: $ReadOnlyArray<string>,
 }>;
 
 export type MixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
+}>;
+
+export type EventEmitterTypeAnnotation = $ReadOnly<{
+  type: 'EventEmitterTypeAnnotation',
+  typeAnnotation: NativeModuleEventEmitterTypeAnnotation | $FlowFixMe,
 }>;
 
 type FunctionTypeAnnotation<+P, +R> = $ReadOnly<{
@@ -91,14 +110,11 @@ export type ComponentShape = $ReadOnly<{
 
 export type OptionsShape = $ReadOnly<{
   interfaceOnly?: boolean,
-
   // Use for components with no current paper rename in progress
   // Does not check for new name
   paperComponentName?: string,
-
   // Use for components that are not used on other platforms.
   excludedPlatforms?: $ReadOnlyArray<PlatformType>,
-
   // Use for components currently being renamed in paper
   // Will use new name if it is available and fallback to this name
   paperComponentNameDeprecated?: string,
@@ -246,8 +262,12 @@ export type NativeModuleSchema = $ReadOnly<{
 }>;
 
 type NativeModuleSpec = $ReadOnly<{
-  properties: $ReadOnlyArray<NativeModulePropertyShape>,
+  eventEmitters: $ReadOnlyArray<NativeModuleEventEmitterShape>,
+  methods: $ReadOnlyArray<NativeModulePropertyShape>,
 }>;
+
+export type NativeModuleEventEmitterShape =
+  NamedShape<EventEmitterTypeAnnotation>;
 
 export type NativeModulePropertyShape = NamedShape<
   Nullable<NativeModuleFunctionTypeAnnotation>,
@@ -278,39 +298,21 @@ export type NativeModuleArrayTypeAnnotation<
    * TODO(T72031674): Migrate all our NativeModule specs to not use
    * invalid Array ElementTypes. Then, make the elementType required.
    */
-  elementType?: T,
+  elementType: T | UnsafeAnyTypeAnnotation,
 }>;
 
-export type NativeModuleStringTypeAnnotation = $ReadOnly<{
-  type: 'StringTypeAnnotation',
-}>;
+export type UnsafeAnyTypeAnnotation = {
+  type: 'AnyTypeAnnotation',
+};
 
 export type NativeModuleNumberTypeAnnotation = $ReadOnly<{
   type: 'NumberTypeAnnotation',
 }>;
 
-export type NativeModuleInt32TypeAnnotation = $ReadOnly<{
-  type: 'Int32TypeAnnotation',
-}>;
-
-export type NativeModuleDoubleTypeAnnotation = $ReadOnly<{
-  type: 'DoubleTypeAnnotation',
-}>;
-
-export type NativeModuleFloatTypeAnnotation = $ReadOnly<{
-  type: 'FloatTypeAnnotation',
-}>;
-
-export type NativeModuleBooleanTypeAnnotation = $ReadOnly<{
-  type: 'BooleanTypeAnnotation',
-}>;
-
-export type NativeModuleEnumMembers = $ReadOnlyArray<
-  $ReadOnly<{
-    name: string,
-    value: string,
-  }>,
->;
+export type NativeModuleEnumMember = {
+  name: string,
+  value: StringLiteralTypeAnnotation | NumberLiteralTypeAnnotation,
+};
 
 export type NativeModuleEnumMemberType =
   | 'NumberTypeAnnotation'
@@ -326,12 +328,11 @@ export type NativeModuleEnumDeclarationWithMembers = {
   name: string,
   type: 'EnumDeclarationWithMembers',
   memberType: NativeModuleEnumMemberType,
-  members: NativeModuleEnumMembers,
+  members: $ReadOnlyArray<NativeModuleEnumMember>,
 };
 
 export type NativeModuleGenericObjectTypeAnnotation = $ReadOnly<{
   type: 'GenericObjectTypeAnnotation',
-
   // a dictionary type is codegen as "Object"
   // but we know all its members are in the same type
   // when it happens, the following field is non-null
@@ -345,7 +346,7 @@ export type NativeModuleTypeAliasTypeAnnotation = $ReadOnly<{
 
 export type NativeModulePromiseTypeAnnotation = $ReadOnly<{
   type: 'PromiseTypeAnnotation',
-  elementType?: Nullable<NativeModuleBaseTypeAnnotation>,
+  elementType: VoidTypeAnnotation | Nullable<NativeModuleBaseTypeAnnotation>,
 }>;
 
 export type UnionTypeAnnotationMemberType =
@@ -362,13 +363,37 @@ export type NativeModuleMixedTypeAnnotation = $ReadOnly<{
   type: 'MixedTypeAnnotation',
 }>;
 
-export type NativeModuleBaseTypeAnnotation =
-  | NativeModuleStringTypeAnnotation
+type NativeModuleEventEmitterBaseTypeAnnotation =
+  | BooleanTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
   | NativeModuleNumberTypeAnnotation
-  | NativeModuleInt32TypeAnnotation
-  | NativeModuleDoubleTypeAnnotation
-  | NativeModuleFloatTypeAnnotation
-  | NativeModuleBooleanTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | StringTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
+  | NativeModuleTypeAliasTypeAnnotation
+  | NativeModuleGenericObjectTypeAnnotation
+  | VoidTypeAnnotation;
+
+export type NativeModuleEventEmitterTypeAnnotation =
+  | NativeModuleEventEmitterBaseTypeAnnotation
+  | {
+      type: 'ArrayTypeAnnotation',
+      elementType: NativeModuleEventEmitterBaseTypeAnnotation,
+    };
+
+export type NativeModuleBaseTypeAnnotation =
+  | StringTypeAnnotation
+  | StringLiteralTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
+  | NativeModuleNumberTypeAnnotation
+  | NumberLiteralTypeAnnotation
+  | Int32TypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | BooleanTypeAnnotation
   | NativeModuleEnumDeclaration
   | NativeModuleGenericObjectTypeAnnotation
   | ReservedTypeAnnotation
@@ -389,9 +414,25 @@ export type NativeModuleReturnTypeAnnotation =
 export type NativeModuleTypeAnnotation =
   | NativeModuleBaseTypeAnnotation
   | NativeModuleParamOnlyTypeAnnotation
-  | NativeModuleReturnOnlyTypeAnnotation;
+  | NativeModuleReturnOnlyTypeAnnotation
+  | NativeModuleEventEmitterTypeAnnotation;
 
 type NativeModuleParamOnlyTypeAnnotation = NativeModuleFunctionTypeAnnotation;
+
 type NativeModuleReturnOnlyTypeAnnotation =
   | NativeModulePromiseTypeAnnotation
   | VoidTypeAnnotation;
+
+// Used by compatibility check which needs to handle all possible types
+// This will eventually also include the union of all view manager types
+export type CompleteTypeAnnotation =
+  | NativeModuleTypeAnnotation
+  | NativeModuleFunctionTypeAnnotation
+  | NullableTypeAnnotation<NativeModuleTypeAnnotation>
+  | EventEmitterTypeAnnotation
+  | NativeModuleEnumDeclarationWithMembers
+  | UnsafeAnyTypeAnnotation
+  // Native Module event emitters and methods
+  | ObjectTypeAnnotation<
+      Nullable<NativeModuleFunctionTypeAnnotation> | EventEmitterTypeAnnotation,
+    >;

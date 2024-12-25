@@ -8,6 +8,7 @@
  * @flow
  */
 
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 import GlobalPerformanceLogger from '../Utilities/GlobalPerformanceLogger';
@@ -22,23 +23,24 @@ import * as React from 'react';
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 import '../Utilities/BackHandler';
 
-type ActivityType = React.AbstractComponent<{
-  mode: 'visible' | 'hidden',
-  children: React.Node,
-}>;
+type ActivityType = component(
+  ...{
+    mode: 'visible' | 'hidden',
+    children: React.Node,
+  }
+);
 
 export default function renderApplication<Props: Object>(
   RootComponent: React.ComponentType<Props>,
   initialProps: Props,
   rootTag: any,
   WrapperComponent?: ?React.ComponentType<any>,
+  rootViewStyle?: ?ViewStyleProp,
   fabric?: boolean,
-  showArchitectureIndicator?: boolean,
   scopedPerformanceLogger?: IPerformanceLogger,
   isLogBox?: boolean,
   debugName?: string,
   displayMode?: ?DisplayModeType,
-  useConcurrentRoot?: boolean,
   useOffscreen?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
@@ -50,8 +52,8 @@ export default function renderApplication<Props: Object>(
       <AppContainer
         rootTag={rootTag}
         fabric={fabric}
-        showArchitectureIndicator={showArchitectureIndicator}
         WrapperComponent={WrapperComponent}
+        rootViewStyle={rootViewStyle}
         initialProps={initialProps ?? Object.freeze({})}
         internal_excludeLogBox={isLogBox}>
         <RootComponent {...initialProps} rootTag={rootTag} />
@@ -84,12 +86,12 @@ export default function renderApplication<Props: Object>(
   }
 
   // We want to have concurrentRoot always enabled when you're on Fabric.
-  const useConcurrentRootOverride = fabric;
+  const useConcurrentRoot = Boolean(fabric);
 
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra(
     'usedReactConcurrentRoot',
-    useConcurrentRootOverride ? '1' : '0',
+    useConcurrentRoot ? '1' : '0',
   );
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
   performanceLogger.setExtra(
@@ -100,7 +102,7 @@ export default function renderApplication<Props: Object>(
     element: renderable,
     rootTag,
     useFabric: Boolean(fabric),
-    useConcurrentRoot: Boolean(useConcurrentRootOverride),
+    useConcurrentRoot,
   });
   performanceLogger.stopTimespan('renderApplication_React_render');
 }

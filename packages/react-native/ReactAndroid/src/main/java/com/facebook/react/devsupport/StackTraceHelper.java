@@ -8,12 +8,17 @@
 package com.facebook.react.devsupport;
 
 import androidx.annotation.Nullable;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.interfaces.StackFrame;
+import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler.ProcessedError;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONArray;
@@ -23,8 +28,19 @@ import org.json.JSONObject;
 /** Helper class converting JS and Java stack traces into arrays of {@link StackFrame} objects. */
 public class StackTraceHelper {
 
-  public static final java.lang.String COLUMN_KEY = "column";
-  public static final java.lang.String LINE_NUMBER_KEY = "lineNumber";
+  public static final String COLUMN_KEY = "column";
+  public static final String LINE_NUMBER_KEY = "lineNumber";
+  public static final String FILE_KEY = "file";
+  public static final String METHOD_NAME_KEY = "methodName";
+
+  public static final String MESSAGE_KEY = "message";
+  public static final String ORIGINAL_MESSAGE_KEY = "originalMessage";
+  public static final String NAME_KEY = "name";
+  public static final String COMPONENT_STACK_KEY = "componentStack";
+  public static final String STACK_KEY = "stack";
+  public static final String ID_KEY = "id";
+  public static final String IS_FATAL_KEY = "isFatal";
+  public static final String EXTRA_DATA_KEY = "extraData";
 
   private static final Pattern STACK_FRAME_PATTERN1 =
       Pattern.compile("^(?:(.*?)@)?(.*?)\\:([0-9]+)\\:([0-9]+)$");
@@ -245,5 +261,36 @@ public class StackTraceHelper {
     }
 
     return stackTrace.toString();
+  }
+
+  public static JavaOnlyMap convertProcessedError(ProcessedError error) {
+    List<ProcessedError.StackFrame> frames = error.getStack();
+    List<ReadableMap> readableMapList = new ArrayList<>();
+    for (ProcessedError.StackFrame frame : frames) {
+      JavaOnlyMap map = new JavaOnlyMap();
+      map.putDouble(COLUMN_KEY, frame.getColumn());
+      map.putDouble(LINE_NUMBER_KEY, frame.getLineNumber());
+      map.putString(FILE_KEY, (String) frame.getFile());
+      map.putString(METHOD_NAME_KEY, (String) frame.getMethodName());
+      readableMapList.add(map);
+    }
+
+    JavaOnlyMap data = new JavaOnlyMap();
+    data.putString(MESSAGE_KEY, error.getMessage());
+    if (error.getOriginalMessage() != null) {
+      data.putString(ORIGINAL_MESSAGE_KEY, error.getOriginalMessage());
+    }
+    if (error.getName() != null) {
+      data.putString(NAME_KEY, error.getName());
+    }
+    if (error.getComponentStack() != null) {
+      data.putString(COMPONENT_STACK_KEY, error.getComponentStack());
+    }
+    data.putArray(STACK_KEY, JavaOnlyArray.from(readableMapList));
+    data.putInt(ID_KEY, error.getId());
+    data.putBoolean(IS_FATAL_KEY, error.isFatal());
+    data.putMap(EXTRA_DATA_KEY, error.getExtraData());
+
+    return data;
   }
 }

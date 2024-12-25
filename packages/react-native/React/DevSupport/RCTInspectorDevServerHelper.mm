@@ -80,16 +80,21 @@ static NSString *getInspectorDeviceId()
   // A bundle ID uniquely identifies a single app throughout the system. [Source: Apple docs]
   NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
 
+#if TARGET_OS_IPHONE
   // An alphanumeric string that uniquely identifies a device to the app's vendor. [Source: Apple docs]
   NSString *identifierForVendor = [[UIDevice currentDevice] identifierForVendor].UUIDString;
+#else
+  // macOS does not support UIDevice. Use an empty string, with the assumption
+  // that we are only building to the current system.
+  NSString *identifierForVendor = @"";
+#endif
 
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
 
-  NSString *rawDeviceId =
-      [NSString stringWithFormat:@"apple-%@-%@-%s",
-                                 identifierForVendor,
-                                 bundleId,
-                                 inspectorFlags.getEnableModernCDPRegistry() ? "fusebox" : "legacy"];
+  NSString *rawDeviceId = [NSString stringWithFormat:@"apple-%@-%@-%s",
+                                                     identifierForVendor,
+                                                     bundleId,
+                                                     inspectorFlags.getFuseboxEnabled() ? "fusebox" : "legacy"];
 
   return getSHA256(rawDeviceId);
 }
@@ -137,15 +142,11 @@ static void sendEventToAllConnections(NSString *event)
 
 + (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage
 {
-  NSString *appId = [[[NSBundle mainBundle] bundleIdentifier]
-      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
-
   NSString *escapedInspectorDeviceId = [getInspectorDeviceId()
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 
-  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/open-debugger?appId=%@&device=%@",
+  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/open-debugger?device=%@",
                                                                getServerHost(bundleURL),
-                                                               appId,
                                                                escapedInspectorDeviceId]];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   [request setHTTPMethod:@"POST"];
@@ -163,7 +164,7 @@ static void sendEventToAllConnections(NSString *event)
 + (void)disableDebugger
 {
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
-  if (!inspectorFlags.getEnableModernCDPRegistry()) {
+  if (!inspectorFlags.getFuseboxEnabled()) {
     sendEventToAllConnections(kDebuggerMsgDisable);
   }
 }
@@ -182,7 +183,7 @@ static void sendEventToAllConnections(NSString *event)
   NSString *key = [inspectorURL absoluteString];
   id<RCTInspectorPackagerConnectionProtocol> connection = socketConnections[key];
   if (!connection || !connection.isConnected) {
-    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getEnableCxxInspectorPackagerConnection()) {
+    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getFuseboxEnabled()) {
       connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
     } else {
       connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];

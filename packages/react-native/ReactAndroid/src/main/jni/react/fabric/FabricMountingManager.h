@@ -18,13 +18,11 @@
 namespace facebook::react {
 
 class MountingTransaction;
-class ReactNativeConfig;
 struct ShadowView;
 
 class FabricMountingManager final {
  public:
   FabricMountingManager(
-      std::shared_ptr<const ReactNativeConfig>& config,
       jni::global_ref<JFabricUIManager::javaobject>& javaUIManager);
   FabricMountingManager(const FabricMountingManager&) = delete;
 
@@ -32,7 +30,15 @@ class FabricMountingManager final {
 
   void onSurfaceStop(SurfaceId surfaceId);
 
-  void preallocateShadowView(SurfaceId surfaceId, const ShadowView& shadowView);
+  void maybePreallocateShadowNode(const ShadowNode& shadowNode);
+
+  void destroyUnmountedShadowNode(const ShadowNodeFamily& family);
+
+  /*
+   * Drains preallocatedViewsQueue_ by calling preallocateShadowView on each
+   * item in the queue. Can be called by any thread.
+   */
+  void drainPreallocateViewsQueue();
 
   void executeMount(const MountingTransaction& transaction);
 
@@ -55,17 +61,31 @@ class FabricMountingManager final {
   void onAllAnimationsComplete();
 
  private:
+  bool isOnMainThread();
+
   jni::global_ref<JFabricUIManager::javaobject> javaUIManager_;
 
   std::recursive_mutex commitMutex_;
+
+  /*
+   * Protects preallocatedViewsQueue_.
+   */
+  std::mutex preallocateMutex_;
+
+  /*
+   * A queue of views to be preallocated on the Java side.
+   */
+  std::vector<ShadowView> preallocatedViewsQueue_{};
 
   std::unordered_map<SurfaceId, std::unordered_set<Tag>>
       allocatedViewRegistry_{};
   std::recursive_mutex allocatedViewsMutex_;
 
-  jni::local_ref<jobject> getProps(
-      const ShadowView& oldShadowView,
-      const ShadowView& newShadowView);
+  /*
+   * Calls FabricUIManager.preallocateView() on the Java side if view needs to
+   * be preallocated.
+   */
+  void preallocateShadowView(const ShadowView& shadowView);
 };
 
 } // namespace facebook::react

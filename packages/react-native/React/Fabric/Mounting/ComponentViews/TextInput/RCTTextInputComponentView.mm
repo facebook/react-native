@@ -12,6 +12,7 @@
 #import <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #import <React/RCTBackedTextInputViewProtocol.h>
+#import <React/RCTScrollViewComponentView.h>
 #import <React/RCTUITextField.h>
 #import <React/RCTUITextView.h>
 #import <React/RCTUtils.h>
@@ -22,10 +23,15 @@
 
 #import "RCTFabricComponentsPlugins.h"
 
+/** Native iOS text field bottom keyboard offset amount */
+static const CGFloat kSingleLineKeyboardBottomOffset = 15.0;
+
 using namespace facebook::react;
 
 @interface RCTTextInputComponentView () <RCTBackedTextInputDelegate, RCTTextInputViewProtocol>
 @end
+
+static NSSet<NSNumber *> *returnKeyTypesSet;
 
 @implementation RCTTextInputComponentView {
   TextInputShadowNode::ConcreteState::Shared _state;
@@ -55,6 +61,15 @@ using namespace facebook::react;
    */
   BOOL _comingFromJS;
   BOOL _didMoveToWindow;
+
+  /*
+   * Newly initialized default typing attributes contain a no-op NSParagraphStyle and NSShadow. These cause inequality
+   * between the AttributedString backing the input and those generated from state. We store these attributes to make
+   * later comparison insensitive to them.
+   */
+  NSDictionary<NSAttributedStringKey, id> *_originalTypingAttributes;
+
+  BOOL _hasInputAccessoryView;
 }
 
 #pragma mark - UIView overrides
@@ -65,15 +80,34 @@ using namespace facebook::react;
     const auto &defaultProps = TextInputShadowNode::defaultSharedProps();
     _props = defaultProps;
 
-    _backedTextInputView = defaultProps->traits.multiline ? [RCTUITextView new] : [RCTUITextField new];
+    _backedTextInputView = defaultProps->multiline ? [RCTUITextView new] : [RCTUITextField new];
     _backedTextInputView.textInputDelegate = self;
     _ignoreNextTextInputCall = NO;
     _comingFromJS = NO;
     _didMoveToWindow = NO;
+    _originalTypingAttributes = [_backedTextInputView.typingAttributes copy];
+
     [self addSubview:_backedTextInputView];
+    [self initializeReturnKeyType];
   }
 
   return self;
+}
+
+- (void)updateEventEmitter:(const EventEmitter::Shared &)eventEmitter
+{
+  [super updateEventEmitter:eventEmitter];
+
+  NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
+      [_backedTextInputView.defaultTextAttributes mutableCopy];
+
+#if !TARGET_OS_MACCATALYST
+  RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
+  eventEmitterWrapper.eventEmitter = _eventEmitter;
+  defaultAttributes[RCTAttributedStringEventEmitterKey] = eventEmitterWrapper;
+#endif
+
+  _backedTextInputView.defaultTextAttributes = defaultAttributes;
 }
 
 - (void)didMoveToWindow
@@ -84,10 +118,38 @@ using namespace facebook::react;
     const auto &props = static_cast<const TextInputProps &>(*_props);
     if (props.autoFocus) {
       [_backedTextInputView becomeFirstResponder];
+      [self scrollCursorIntoView];
     }
     _didMoveToWindow = YES;
+    [self initializeReturnKeyType];
   }
+
   [self _restoreTextSelection];
+}
+
+- (void)reactUpdateResponderOffsetForScrollView:(RCTScrollViewComponentView *)scrollView
+{
+  if (![self isDescendantOfView:scrollView.scrollView] || !_backedTextInputView.isFirstResponder) {
+    // View is outside scroll view or it's not a first responder.
+    scrollView.firstResponderViewOutsideScrollView = _backedTextInputView;
+    return;
+  }
+
+  UITextRange *selectedTextRange = _backedTextInputView.selectedTextRange;
+  UITextSelectionRect *selection = [_backedTextInputView selectionRectsForRange:selectedTextRange].firstObject;
+  CGRect focusRect;
+  if (selection == nil) {
+    // No active selection or caret - fallback to entire input frame
+    focusRect = self.bounds;
+  } else {
+    // Focus on text selection frame
+    focusRect = selection.rect;
+    BOOL isMultiline = [_backedTextInputView isKindOfClass:[UITextView class]];
+    if (!isMultiline) {
+      focusRect.size.height += kSingleLineKeyboardBottomOffset;
+    }
+  }
+  scrollView.firstResponderFocus = [self convertRect:focusRect toView:nil];
 }
 
 #pragma mark - RCTViewComponentView overrides
@@ -110,8 +172,8 @@ using namespace facebook::react;
   const auto &newTextInputProps = static_cast<const TextInputProps &>(*props);
 
   // Traits:
-  if (newTextInputProps.traits.multiline != oldTextInputProps.traits.multiline) {
-    [self _setMultiline:newTextInputProps.traits.multiline];
+  if (newTextInputProps.multiline != oldTextInputProps.multiline) {
+    [self _setMultiline:newTextInputProps.multiline];
   }
 
   if (newTextInputProps.traits.autocapitalizationType != oldTextInputProps.traits.autocapitalizationType) {
@@ -185,6 +247,10 @@ using namespace facebook::react;
         RCTUITextSmartInsertDeleteTypeFromOptionalBool(newTextInputProps.traits.smartInsertDelete);
   }
 
+  if (newTextInputProps.traits.showSoftInputOnFocus != oldTextInputProps.traits.showSoftInputOnFocus) {
+    [self _setShowSoftInputOnFocus:newTextInputProps.traits.showSoftInputOnFocus];
+  }
+
   // Traits `blurOnSubmit`, `clearTextOnFocus`, and `selectTextOnFocus` were omitted intentionally here
   // because they are being checked on-demand.
 
@@ -198,8 +264,13 @@ using namespace facebook::react;
   }
 
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
-    _backedTextInputView.defaultTextAttributes =
+    NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+#if !TARGET_OS_MACCATALYST
+    defaultAttributes[RCTAttributedStringEventEmitterKey] =
+        _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
+#endif
+    _backedTextInputView.defaultTextAttributes = defaultAttributes;
   }
 
   if (newTextInputProps.selectionColor != oldTextInputProps.selectionColor) {
@@ -208,6 +279,11 @@ using namespace facebook::react;
 
   if (newTextInputProps.inputAccessoryViewID != oldTextInputProps.inputAccessoryViewID) {
     _backedTextInputView.inputAccessoryViewID = RCTNSStringFromString(newTextInputProps.inputAccessoryViewID);
+  }
+
+  if (newTextInputProps.inputAccessoryViewButtonLabel != oldTextInputProps.inputAccessoryViewButtonLabel) {
+    _backedTextInputView.inputAccessoryViewButtonLabel =
+        RCTNSStringFromString(newTextInputProps.inputAccessoryViewButtonLabel);
   }
   [super updateProps:props oldProps:oldProps];
 
@@ -274,18 +350,6 @@ using namespace facebook::react;
 
 - (void)textInputDidBeginEditing
 {
-  const auto &props = static_cast<const TextInputProps &>(*_props);
-
-  if (props.traits.clearTextOnFocus) {
-    _backedTextInputView.attributedText = nil;
-    [self textInputDidChange];
-  }
-
-  if (props.traits.selectTextOnFocus) {
-    [_backedTextInputView selectAll:nil];
-    [self textInputDidChangeSelection];
-  }
-
   if (_eventEmitter) {
     static_cast<const TextInputEventEmitter &>(*_eventEmitter).onFocus([self _textInputMetrics]);
   }
@@ -395,8 +459,14 @@ using namespace facebook::react;
   if (_comingFromJS) {
     return;
   }
+
+  // T207198334: Setting a new AttributedString (_comingFromJS) will trigger a selection change before the backing
+  // string is updated, so indicies won't point to what we want yet. Only respond to user selection change, and let
+  // `_setAttributedString` handle updating typing attributes if content changes.
+  [self _updateTypingAttributes];
+
   const auto &props = static_cast<const TextInputProps &>(*_props);
-  if (props.traits.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+  if (props.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     [self textInputDidChange];
     _ignoreNextTextInputCall = YES;
   }
@@ -425,6 +495,20 @@ using namespace facebook::react;
 - (void)focus
 {
   [_backedTextInputView becomeFirstResponder];
+
+  const auto &props = static_cast<const TextInputProps &>(*_props);
+
+  if (props.traits.clearTextOnFocus) {
+    _backedTextInputView.attributedText = nil;
+    [self textInputDidChange];
+  }
+
+  if (props.traits.selectTextOnFocus) {
+    [_backedTextInputView selectAll:nil];
+    [self textInputDidChangeSelection];
+  }
+
+  [self scrollCursorIntoView];
 }
 
 - (void)blur
@@ -462,6 +546,48 @@ using namespace facebook::react;
 
 #pragma mark - Default input accessory view
 
+- (NSString *)returnKeyTypeToString:(UIReturnKeyType)returnKeyType
+{
+  switch (returnKeyType) {
+    case UIReturnKeyGo:
+      return @"Go";
+    case UIReturnKeyNext:
+      return @"Next";
+    case UIReturnKeySearch:
+      return @"Search";
+    case UIReturnKeySend:
+      return @"Send";
+    case UIReturnKeyYahoo:
+      return @"Yahoo";
+    case UIReturnKeyGoogle:
+      return @"Google";
+    case UIReturnKeyRoute:
+      return @"Route";
+    case UIReturnKeyJoin:
+      return @"Join";
+    case UIReturnKeyEmergencyCall:
+      return @"Emergency Call";
+    default:
+      return @"Done";
+  }
+}
+
+- (void)initializeReturnKeyType
+{
+  returnKeyTypesSet = [NSSet setWithObjects:@(UIReturnKeyDone),
+                                            @(UIReturnKeyGo),
+                                            @(UIReturnKeyNext),
+                                            @(UIReturnKeySearch),
+                                            @(UIReturnKeySend),
+                                            @(UIReturnKeyYahoo),
+                                            @(UIReturnKeyGoogle),
+                                            @(UIReturnKeyRoute),
+                                            @(UIReturnKeyJoin),
+                                            @(UIReturnKeyRoute),
+                                            @(UIReturnKeyEmergencyCall),
+                                            nil];
+}
+
 - (void)setDefaultInputAccessoryView
 {
   // InputAccessoryView component sets the inputAccessoryView when inputAccessoryViewID exists
@@ -473,27 +599,37 @@ using namespace facebook::react;
   }
 
   UIKeyboardType keyboardType = _backedTextInputView.keyboardType;
+  UIReturnKeyType returnKeyType = _backedTextInputView.returnKeyType;
+  NSString *inputAccessoryViewButtonLabel = _backedTextInputView.inputAccessoryViewButtonLabel;
 
-  // These keyboard types (all are number pads) don't have a "Done" button by default,
+  BOOL containsKeyType = [returnKeyTypesSet containsObject:@(returnKeyType)];
+  BOOL containsInputAccessoryViewButtonLabel = inputAccessoryViewButtonLabel != nil;
+
+  // These keyboard types (all are number pads) don't have a "returnKey" button by default,
   // so we create an `inputAccessoryView` with this button for them.
   BOOL shouldHaveInputAccessoryView =
       (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
-      _backedTextInputView.returnKeyType == UIReturnKeyDone;
+      (containsKeyType || containsInputAccessoryViewButtonLabel);
 
-  if ((_backedTextInputView.inputAccessoryView != nil) == shouldHaveInputAccessoryView) {
+  if (_hasInputAccessoryView == shouldHaveInputAccessoryView) {
     return;
   }
 
+  _hasInputAccessoryView = shouldHaveInputAccessoryView;
+
   if (shouldHaveInputAccessoryView) {
+    NSString *buttonLabel = inputAccessoryViewButtonLabel != nil ? inputAccessoryViewButtonLabel
+                                                                 : [self returnKeyTypeToString:returnKeyType];
+
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];
     UIBarButtonItem *flexibleSpace =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    UIBarButtonItem *doneButton =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                      target:self
-                                                      action:@selector(handleInputAccessoryDoneButton)];
+    UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithTitle:buttonLabel
+                                                                   style:UIBarButtonItemStylePlain
+                                                                  target:self
+                                                                  action:@selector(handleInputAccessoryDoneButton)];
     toolbarView.items = @[ flexibleSpace, doneButton ];
     _backedTextInputView.inputAccessoryView = toolbarView;
   } else {
@@ -507,6 +643,8 @@ using namespace facebook::react;
 
 - (void)handleInputAccessoryDoneButton
 {
+  // Ignore the value of whether we submitted; just make sure the submit event is called if necessary.
+  [self textInputShouldSubmitOnReturn];
   if ([self textInputShouldReturn]) {
     [_backedTextInputView endEditing:YES];
   }
@@ -589,7 +727,34 @@ using namespace facebook::react;
     [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
   }
   [self _restoreTextSelection];
+  [self _updateTypingAttributes];
   _lastStringStateWasUpdatedWith = attributedString;
+}
+
+// Ensure that newly typed text will inherit any custom attributes. We follow the logic of RN Android, where attributes
+// to the left of the cursor are copied into new text, unless we are at the start of the field, in which case we will
+// copy the attributes from text to the right. This allows consistency between backed input and new AttributedText
+// https://github.com/facebook/react-native/blob/3102a58df38d96f3dacef0530e4dbb399037fcd2/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/text/internal/span/SetSpanOperation.kt#L30
+- (void)_updateTypingAttributes
+{
+  if (_backedTextInputView.attributedText.length > 0 && _backedTextInputView.selectedTextRange != nil) {
+    NSUInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                           toPosition:_backedTextInputView.selectedTextRange.start];
+
+    NSUInteger samplePoint = offsetStart == 0 ? 0 : offsetStart - 1;
+    _backedTextInputView.typingAttributes = [_backedTextInputView.attributedText attributesAtIndex:samplePoint
+                                                                                    effectiveRange:NULL];
+  }
+}
+
+- (void)scrollCursorIntoView
+{
+  UITextRange *selectedRange = _backedTextInputView.selectedTextRange;
+  if (selectedRange.empty) {
+    NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                          toPosition:selectedRange.start];
+    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
+  }
 }
 
 - (void)_setMultiline:(BOOL)multiline
@@ -600,6 +765,23 @@ using namespace facebook::react;
   RCTCopyBackedTextInput(_backedTextInputView, backedTextInputView);
   _backedTextInputView = backedTextInputView;
   [self addSubview:_backedTextInputView];
+}
+
+- (void)_setShowSoftInputOnFocus:(BOOL)showSoftInputOnFocus
+{
+  if (showSoftInputOnFocus) {
+    // Resets to default keyboard.
+    _backedTextInputView.inputView = nil;
+
+    // Without the call to reloadInputViews, the keyboard will not change until the textInput field (the first
+    // responder) loses and regains focus.
+    if (_backedTextInputView.isFirstResponder) {
+      [_backedTextInputView reloadInputViews];
+    }
+  } else {
+    // Hides keyboard, but keeps blinking cursor.
+    _backedTextInputView.inputView = [UIView new];
+  }
 }
 
 - (BOOL)_textOf:(NSAttributedString *)newText equals:(NSAttributedString *)oldText
@@ -630,23 +812,17 @@ using namespace facebook::react;
       _backedTextInputView.markedTextRange || _backedTextInputView.isSecureTextEntry || fontHasBeenUpdatedBySystem;
 
   if (shouldFallbackToBareTextComparison) {
-    return ([newText.string isEqualToString:oldText.string]);
+    return [newText.string isEqualToString:oldText.string];
   } else {
-    return ([newText isEqualToAttributedString:oldText]);
+    return RCTIsAttributedStringEffectivelySame(
+        newText, oldText, _originalTypingAttributes, static_cast<const TextInputProps &>(*_props).textAttributes);
   }
 }
 
 - (SubmitBehavior)getSubmitBehavior
 {
   const auto &props = static_cast<const TextInputProps &>(*_props);
-  const SubmitBehavior submitBehaviorDefaultable = props.traits.submitBehavior;
-
-  // We should always have a non-default `submitBehavior`, but in case we don't, set it based on multiline.
-  if (submitBehaviorDefaultable == SubmitBehavior::Default) {
-    return props.traits.multiline ? SubmitBehavior::Newline : SubmitBehavior::BlurAndSubmit;
-  }
-
-  return submitBehaviorDefaultable;
+  return props.getNonDefaultSubmitBehavior();
 }
 
 @end

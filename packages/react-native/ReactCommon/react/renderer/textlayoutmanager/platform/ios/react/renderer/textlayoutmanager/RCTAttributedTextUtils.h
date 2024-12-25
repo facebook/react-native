@@ -22,7 +22,7 @@ NSString *const RCTTextAttributesAccessibilityRoleAttributeName = @"Accessibilit
 /*
  * Creates `NSTextAttributes` from given `facebook::react::TextAttributes`
  */
-NSDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
+NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttributes(
     const facebook::react::TextAttributes &textAttributes);
 
 /*
@@ -38,6 +38,19 @@ facebook::react::AttributedStringBox RCTAttributedStringBoxFromNSAttributedStrin
     NSAttributedString *nsAttributedString);
 
 NSString *RCTNSStringFromStringApplyingTextTransform(NSString *string, facebook::react::TextTransform textTransform);
+
+void RCTApplyBaselineOffset(NSMutableAttributedString *attributedText);
+
+/*
+ * Whether two `NSAttributedString` lead to the same underlying displayed text, even if they are not strictly equal.
+ * I.e. is one string substitutable for the other when backing a control (which may have some ignorable attributes
+ * provided).
+ */
+BOOL RCTIsAttributedStringEffectivelySame(
+    NSAttributedString *text1,
+    NSAttributedString *text2,
+    NSDictionary<NSAttributedStringKey, id> *insensitiveAttributes,
+    const facebook::react::TextAttributes &baseTextAttributes);
 
 @interface RCTWeakEventEmitterWrapper : NSObject
 @property (nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;

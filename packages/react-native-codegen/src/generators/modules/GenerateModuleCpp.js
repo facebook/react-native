@@ -161,6 +161,10 @@ function serializeArg(
       }
     case 'StringTypeAnnotation':
       return wrap(val => `${val}.asString(rt)`);
+    case 'StringLiteralTypeAnnotation':
+      return wrap(val => `${val}.asString(rt)`);
+    case 'StringLiteralUnionTypeAnnotation':
+      return wrap(val => `${val}.asString(rt)`);
     case 'BooleanTypeAnnotation':
       return wrap(val => `${val}.asBool()`);
     case 'EnumDeclaration':
@@ -181,6 +185,8 @@ function serializeArg(
     case 'DoubleTypeAnnotation':
       return wrap(val => `${val}.asNumber()`);
     case 'Int32TypeAnnotation':
+      return wrap(val => `${val}.asNumber()`);
+    case 'NumberLiteralTypeAnnotation':
       return wrap(val => `${val}.asNumber()`);
     case 'ArrayTypeAnnotation':
       return wrap(val => `${val}.asObject(rt).asArray(rt)`);
@@ -249,11 +255,11 @@ module.exports = {
         const {
           aliasMap,
           enumMap,
-          spec: {properties},
+          spec: {methods},
           moduleName,
         } = nativeModule;
         const resolveAlias = createAliasResolver(aliasMap);
-        const hostFunctions = properties.map(property =>
+        const hostFunctions = methods.map(property =>
           serializePropertyIntoHostFunction(
             moduleName,
             hasteModuleName,
@@ -267,7 +273,7 @@ module.exports = {
           hasteModuleName,
           hostFunctions,
           moduleName,
-          methods: properties.map(
+          methods: methods.map(
             ({name: propertyName, typeAnnotation: nullableTypeAnnotation}) => {
               const [{params}] = unwrapNullable(nullableTypeAnnotation);
               return {

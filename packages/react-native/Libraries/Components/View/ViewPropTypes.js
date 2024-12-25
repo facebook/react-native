@@ -416,6 +416,20 @@ type IOSViewProps = $ReadOnly<{|
   accessibilityViewIsModal?: ?boolean,
 
   /**
+   * @platform ios
+   *
+   * See https://reactnative.dev/docs/view#accessibilityshowslargecontentviewer
+   */
+  accessibilityShowsLargeContentViewer?: ?boolean,
+
+  /**
+   * @platform ios
+   *
+   * See https://reactnative.dev/docs/view#accessibilitylargecontenttitle
+   */
+  accessibilityLargeContentTitle?: ?string,
+
+  /**
    * The aria-modal attribute indicates content contained within a modal with aria-modal="true"
    * should be accessible to the user.
    * Default is `false`.
@@ -553,21 +567,16 @@ export type ViewProps = $ReadOnly<{|
    * optimization. Set this property to `false` to disable this optimization and
    * ensure that this `View` exists in the native view hierarchy.
    *
-   * @platform android
-   * In Fabric, this prop is used in ios as well.
-   *
    * See https://reactnative.dev/docs/view#collapsable
    */
   collapsable?: ?boolean,
 
   /**
-   * Contols whether this view, and its transitive children, are laid in a way
-   * consistent with web browsers ('strict'), or consistent with existing
-   * React Native code which may rely on incorrect behavior ('classic').
-   *
-   * This prop only works when using Fabric.
+   * Setting to false prevents direct children of the view from being removed
+   * from the native view hierarchy, similar to the effect of setting
+   * `collapsable={false}` on each child.
    */
-  experimental_layoutConformance?: ?('strict' | 'classic'),
+  collapsableChildren?: ?boolean,
 
   /**
    * Used to locate this view from native classes. Has precedence over `nativeID` prop.
