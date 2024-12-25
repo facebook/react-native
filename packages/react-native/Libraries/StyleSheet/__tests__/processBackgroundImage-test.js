@@ -697,4 +697,34 @@ describe('processBackgroundImage', () => {
       });
     }
   });
+
+  it('should process color transition hint in object style', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        direction: 'To Bottom',
+        colorStops: [{color: 'red'}, {positions: ['20%']}, {color: 'blue'}],
+      },
+    ];
+    const result = processBackgroundImage(input);
+    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].direction).toEqual({type: 'angle', value: 180});
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: null, position: 0.2},
+      {color: processColor('blue'), position: 1},
+    ]);
+  });
+
+  it('should process color transition hint', () => {
+    const input = 'linear-gradient(red, 40%, blue)';
+    const result = processBackgroundImage(input);
+    expect(result[0].type).toBe('linearGradient');
+    expect(result[0].direction).toEqual({type: 'angle', value: 180});
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: null, position: 0.4},
+      {color: processColor('blue'), position: 1},
+    ]);
+  });
 });
