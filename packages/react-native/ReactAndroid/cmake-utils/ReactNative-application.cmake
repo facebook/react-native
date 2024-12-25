@@ -39,9 +39,16 @@ if (PROJECT_ROOT_DIR)
 # variable is defined if user need to access it.
 endif ()
 
-file(GLOB input_SRC CONFIGURE_DEPENDS
-        ${REACT_ANDROID_DIR}/cmake-utils/default-app-setup/*.cpp
-        ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)
+file(GLOB override_cpp_SRC CONFIGURE_DEPENDS *.cpp)
+if(override_cpp_SRC)
+        file(GLOB input_SRC CONFIGURE_DEPENDS
+                *.cpp
+                ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)
+else()
+        file(GLOB input_SRC CONFIGURE_DEPENDS
+                ${REACT_ANDROID_DIR}/cmake-utils/default-app-setup/*.cpp
+                ${BUILD_DIR}/generated/autolinking/src/main/jni/*.cpp)
+endif()
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${input_SRC})
 
