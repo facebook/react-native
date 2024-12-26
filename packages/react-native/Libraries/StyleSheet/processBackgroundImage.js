@@ -198,16 +198,16 @@ function parseCSSLinearGradient(
     for (const stop of stops) {
       const trimmedStop = stop.trim().toLowerCase();
       // Match function like pattern or single words
-      const parts = trimmedStop.match(/\S+\([^)]*\)|\S+/g);
-      if (parts == null) {
+      const colorStopParts = trimmedStop.match(/\S+\([^)]*\)|\S+/g);
+      if (colorStopParts == null) {
         // If a color stop is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
       // Case 1: [color, position, position]
-      if (parts.length === 3) {
-        const color = parts[0];
-        const position1 = parts[1];
-        const position2 = parts[2];
+      if (colorStopParts.length === 3) {
+        const color = colorStopParts[0];
+        const position1 = colorStopParts[1];
+        const position2 = colorStopParts[2];
         const processedColor = processColor(color);
         if (processedColor == null) {
           // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
@@ -228,9 +228,9 @@ function parseCSSLinearGradient(
         }
       }
       // Case 2: [color, position]
-      else if (parts.length === 2) {
-        const color = parts[0];
-        const position = parts[1];
+      else if (colorStopParts.length === 2) {
+        const color = colorStopParts[0];
+        const position = colorStopParts[1];
         const processedColor = processColor(color);
         if (processedColor == null) {
           // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
@@ -248,14 +248,14 @@ function parseCSSLinearGradient(
       }
       // Case 3: [color]
       // Case 4: [position] => transition hint syntax
-      else if (parts.length === 1) {
-        if (parts[0].endsWith('%')) {
+      else if (colorStopParts.length === 1) {
+        if (colorStopParts[0].endsWith('%')) {
           colorStops.push({
             color: null,
-            position: parseFloat(parts[0]) / 100,
+            position: parseFloat(colorStopParts[0]) / 100,
           });
         } else {
-          const processedColor = processColor(parts[0]);
+          const processedColor = processColor(colorStopParts[0]);
           if (processedColor == null) {
             // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
             return [];
