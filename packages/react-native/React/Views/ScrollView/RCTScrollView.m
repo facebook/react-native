@@ -1018,6 +1018,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
       return; // The prop might have changed in the previous UIBlocks, so need to abort here.
     }
     NSNumber *autoscrollThreshold = self->_maintainVisibleContentPosition[@"autoscrollToTopThreshold"];
+    NSNumber *viewOffset = self->_maintainVisibleContentPosition[@"viewOffset"];
+    NSNumber *viewPosition = self->_maintainVisibleContentPosition[@"viewPosition"];
     // TODO: detect and handle/ignore re-ordering
     if ([self isHorizontal:self->_scrollView]) {
       CGFloat deltaX = self->_firstVisibleView.frame.origin.x - self->_prevFirstVisibleFrame.origin.x;
@@ -1029,7 +1031,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
           if (x <= [autoscrollThreshold integerValue]) {
-            [self scrollToOffset:CGPointMake(-leftInset, self->_scrollView.contentOffset.y) animated:YES];
+            CGFloat offset = MAX(0, deltaX - self.frame.size.width) * [viewPosition floatValue] - [viewOffset floatValue] - leftInset;
+            [self scrollToOffset:CGPointMake(offset, self->_scrollView.contentOffset.y) animated:YES];
           }
         }
       }
@@ -1045,7 +1048,8 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
         if (autoscrollThreshold != nil) {
           // If the offset WAS within the threshold of the start, animate to the start.
           if (y <= [autoscrollThreshold integerValue]) {
-            [self scrollToOffset:CGPointMake(self->_scrollView.contentOffset.x, -bottomInset) animated:YES];
+            CGFloat offset = MAX(0, deltaY - self.frame.size.height) * [viewPosition floatValue] - [viewOffset floatValue] - bottomInset;
+            [self scrollToOffset:CGPointMake(self->_scrollView.contentOffset.x, offset) animated:YES];
           }
         }
       }
