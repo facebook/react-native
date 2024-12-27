@@ -53,11 +53,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-  [super applicationDidEnterBackground:application];
-}
-
 - (NSDictionary *)prepareInitialProps
 {
   NSMutableDictionary *initProps = [NSMutableDictionary new];
