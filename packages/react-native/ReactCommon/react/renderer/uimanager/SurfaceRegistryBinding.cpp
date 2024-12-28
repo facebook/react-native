@@ -6,7 +6,7 @@
  */
 
 #include "SurfaceRegistryBinding.h"
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/renderer/uimanager/bindingUtils.h>
 #include <react/renderer/uimanager/primitives.h>
 #include "bindingUtils.h"
@@ -35,7 +35,7 @@ void SurfaceRegistryBinding::startSurface(
     const std::string& moduleName,
     const folly::dynamic& initialProps,
     DisplayMode displayMode) {
-  SystraceSection s("SurfaceRegistryBinding::startSurface");
+  TraceSection s("SurfaceRegistryBinding::startSurface");
   jsi::Object parameters(runtime);
   parameters.setProperty(runtime, "rootTag", surfaceId);
   parameters.setProperty(
@@ -70,7 +70,7 @@ void SurfaceRegistryBinding::setSurfaceProps(
     const std::string& moduleName,
     const folly::dynamic& initialProps,
     DisplayMode displayMode) {
-  SystraceSection s("UIManagerBinding::setSurfaceProps");
+  TraceSection s("UIManagerBinding::setSurfaceProps");
   jsi::Object parameters(runtime);
   parameters.setProperty(runtime, "rootTag", surfaceId);
   parameters.setProperty(

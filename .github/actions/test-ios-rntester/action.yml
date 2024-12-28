@@ -109,8 +109,8 @@ runs:
           export USE_FRAMEWORKS=dynamic
         fi
 
-        if [[ ${{ inputs.architecture }} == "NewArch" ]]; then
-          export RCT_NEW_ARCH_ENABLED=1
+        if [[ ${{ inputs.architecture }} == "OldArch" ]]; then
+          export RCT_NEW_ARCH_ENABLED=0
         fi
 
         cd packages/rn-tester

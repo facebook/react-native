@@ -7,7 +7,7 @@
 
 #include "TurboModuleBinding.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/utils/jsi-utils.h>
 #include <stdexcept>
 #include <string>
@@ -152,8 +152,7 @@ jsi::Value TurboModuleBinding::getModule(
     const std::string& moduleName) const {
   std::shared_ptr<TurboModule> module;
   {
-    SystraceSection s(
-        "TurboModuleBinding::moduleProvider", "module", moduleName);
+    TraceSection s("TurboModuleBinding::moduleProvider", "module", moduleName);
     module = moduleProvider_(moduleName);
   }
   if (module) {

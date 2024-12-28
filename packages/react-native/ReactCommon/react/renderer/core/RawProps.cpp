@@ -7,7 +7,7 @@
 
 #include "RawProps.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsParser.h>
