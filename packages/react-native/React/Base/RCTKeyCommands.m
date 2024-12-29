@@ -14,7 +14,7 @@
 #import "RCTDefines.h"
 #import "RCTUtils.h"
 
-#if RCT_DEV
+#if RCT_DEV_KEY_COMMANDS
 
 @interface UIEvent (UIPhysicalKeyboardEvent)
 
