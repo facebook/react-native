@@ -9,6 +9,7 @@
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #import <react/renderer/components/text/ParagraphProps.h>
 #import <react/renderer/components/text/ParagraphState.h>
@@ -326,6 +327,40 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
   CAShapeLayer *_highlightLayer;
 }
 
+- (CGRect)calculateCenteredFrameWithAttributedText:(NSAttributedString *)attributedText
+                                             frame:(CGRect)frame {
+  UIFont *font = [attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+  if (!font) {
+      font = [UIFont systemFontOfSize:14];
+  }
+
+  NSParagraphStyle *paragraphStyle = [attributedText attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
+  CGFloat lineHeight = font.lineHeight;
+
+  if (paragraphStyle && paragraphStyle.minimumLineHeight > 0) {
+      lineHeight = paragraphStyle.minimumLineHeight;
+  }
+
+  CGFloat ascent = font.ascender;
+  CGFloat descent = fabs(font.descender);
+  CGFloat textHeight = ascent + descent;
+
+  CGFloat verticalOffset = 0;
+  // Adjust vertical offset to ensure text is vertically centered relative to the line height.
+  // Positive offset when text height exceeds line height, negative when line height exceeds text height.
+  if (textHeight > lineHeight) {
+      CGFloat difference = textHeight - lineHeight;
+      verticalOffset = difference / 2.0;
+  } else if (textHeight < lineHeight) {
+      CGFloat difference = lineHeight - textHeight;
+      verticalOffset = -(difference / 2.0);
+  }
+
+  frame.origin.y += verticalOffset;
+
+  return frame;
+}
+
 - (void)drawRect:(CGRect)rect
 {
   if (!_state) {
@@ -342,6 +377,11 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
       (RCTTextLayoutManager *)unwrapManagedObject(textLayoutManager->getNativeTextLayoutManager());
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
+
+  if (ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS()) {
+    NSAttributedString *attributedText = RCTNSAttributedStringFromAttributedString(_state->getData().attributedString);
+    frame = [self calculateCenteredFrameWithAttributedText:attributedText frame:frame];
+  }
 
   [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
                             paragraphAttributes:_paragraphAttributes
