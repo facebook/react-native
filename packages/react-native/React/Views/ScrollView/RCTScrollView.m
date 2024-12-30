@@ -589,6 +589,11 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
       y = fmin(y, CGRectGetMaxY(maxRect));
       offset = CGPointMake(x, y);
     }
+    // Notify of momentum scroll begin before setting content offset or events can fire out of order and scrollview gets
+    // stuck in "animating" state
+    if (animated) {
+      [self sendScrollEventWithName:@"onMomentumScrollBegin" scrollView:_scrollView userData:nil];
+    }
     [_scrollView setContentOffset:offset animated:animated];
   }
 }
@@ -611,6 +616,11 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
+    // Notify of momentum scroll begin before setting content offset or events can fire out of order and scrollview gets
+    // stuck in "animating" state
+    if (animated) {
+      [self sendScrollEventWithName:@"onMomentumScrollBegin" scrollView:_scrollView userData:nil];
+    }
     [_scrollView setContentOffset:offset animated:animated];
   }
 }
