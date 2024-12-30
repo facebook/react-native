@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.77.0-rc.5
+
+### Fixed
+
+#### iOS specific
+
+- Fixes numeric TextInput not triggering `onSubmitEditing` ([0bcb0c2b2f](https://github.com/facebook/react-native/commit/0bcb0c2b2f460ed1a9d525d1a5b343f4b71f9347) by [@zhongwuzw](https://github.com/zhongwuzw))
+- Fixed problem with third party libraries overwriting `inputAccessoryView` ([d34032b6c0](https://github.com/facebook/react-native/commit/d34032b6c0bb3564a7b77ef270cc3289d99365f2) by [@kirillzyusko](https://github.com/kirillzyusko))
+
 ## v0.77.0-rc.4
 
 ### Fixed
