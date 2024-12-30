@@ -8,6 +8,8 @@
 #import "RCTLinearGradient.h"
 
 #import <React/RCTConversions.h>
+#import <React/RCTAnimationUtils.h>
+#import <react/utils/FloatComparison.h>
 
 using namespace facebook::react;
 
@@ -17,7 +19,7 @@ using namespace facebook::react;
 {
   UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
   const auto &direction = gradient.direction;
-  const auto &colorStops = gradient.colorStops;
+  const auto colorStops = processColorTransitionHints(gradient.colorStops);
 
   UIImage *gradientImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
     CGContextRef context = rendererContext.CGContext;
@@ -129,6 +131,133 @@ static CGFloat getAngleForKeyword(GradientKeyword keyword, CGSize size)
     default:
       return 180.0;
   }
+}
+
+// Spec: https://drafts.csswg.org/css-images-4/#coloring-gradient-line (Refer transition hint section)
+// Browsers add 9 intermediate color stops when a transition hint is present
+// Algorithm is referred from Blink engine [source](https://github.com/chromium/chromium/blob/a296b1bad6dc1ed9d751b7528f7ca2134227b828/third_party/blink/renderer/core/css/css_gradient_value.cc#L240). 
+static std::vector<ColorStop> processColorTransitionHints(const std::vector<ColorStop>& originalStops)
+{
+  std::vector<ColorStop> colorStops = originalStops;
+  int indexOffset = 0;
+  
+  for (size_t i = 1; i < colorStops.size() - 1; i++) {
+    auto &colorStop = colorStops[i];
+    // Skip if not a color hint
+    if (colorStop.color) {
+      continue;
+    }
+    
+    size_t x = i + indexOffset;
+    if (x < 1) {
+      continue;
+    }
+    
+    Float offsetLeft = colorStops[x - 1].position;
+    Float offsetRight = colorStops[x + 1].position;
+    Float offset = colorStop.position;
+    Float leftDist = offset - offsetLeft;
+    Float rightDist = offsetRight - offset;
+    Float totalDist = offsetRight - offsetLeft;
+    SharedColor leftSharedColor = colorStops[x - 1].color;
+    SharedColor rightSharedColor = colorStops[x + 1].color;
+
+    if (facebook::react::floatEquality(leftDist, rightDist)) {
+      colorStops.erase(colorStops.begin() + x);
+      --indexOffset;
+      continue;
+    }
+    
+    if (facebook::react::floatEquality(leftDist, .0f)) {
+      colorStop.color = rightSharedColor;
+      continue;
+    }
+    
+    if (facebook::react::floatEquality(rightDist, .0f)) {
+      colorStop.color = leftSharedColor;
+      continue;
+    }
+    
+    std::vector<ColorStop> newStops;
+    newStops.reserve(9);
+    
+    // Position the new color stops
+    if (leftDist > rightDist) {
+      for (int y = 0; y < 7; ++y) {
+        ColorStop newStop{
+          SharedColor(),
+          offsetLeft + leftDist * ((7.0f + y) / 13.0f)
+        };
+        newStops.push_back(newStop);
+      }
+      ColorStop stop1{
+        SharedColor(),
+        offset + rightDist * (1.0f / 3.0f)
+      };
+      ColorStop stop2 {
+        SharedColor(),
+        offset + rightDist * (2.0f / 3.0f)
+      };
+      newStops.push_back(stop1);
+      newStops.push_back(stop2);
+    } else {
+      ColorStop stop1 {
+        SharedColor(),
+        offsetLeft + leftDist * (1.0f / 3.0f)
+      };
+      ColorStop stop2 {
+        SharedColor(),
+        offsetLeft + leftDist * (2.0f / 3.0f)
+      };
+      newStops.push_back(stop1);
+      newStops.push_back(stop2);
+      for (int y = 0; y < 7; ++y) {
+        ColorStop newStop {
+          SharedColor(),
+          offset + rightDist * (y / 13.0f)
+        };
+        newStops.push_back(newStop);
+      }
+    }
+    
+    // calculate colors for the new color hints.
+    // The color weighting for the new color stops will be
+    // pointRelativeOffset^(ln(0.5)/ln(hintRelativeOffset)).
+    Float hintRelativeOffset = leftDist / totalDist;
+    for (auto &newStop : newStops) {
+      Float pointRelativeOffset = (newStop.position - offsetLeft) / totalDist;
+      Float weighting = pow(
+        pointRelativeOffset,
+        log(0.5) / log(hintRelativeOffset)
+      );
+      
+      if (!std::isfinite(weighting) || std::isnan(weighting)) {
+        continue;
+      }
+      
+      NSArray<NSNumber *> *inputRange = @[@0.0, @1.0];
+      auto leftColor = RCTUIColorFromSharedColor(leftSharedColor);
+      auto rightColor = RCTUIColorFromSharedColor(rightSharedColor);
+      NSArray<UIColor *> *outputRange = @[leftColor, rightColor];
+      
+      auto interpolatedColor = RCTInterpolateColorInRange(weighting, inputRange, outputRange);
+      
+      auto alpha = (interpolatedColor >> 24) & 0xFF;
+      auto red = (interpolatedColor >> 16) & 0xFF;
+      auto green = (interpolatedColor >> 8) & 0xFF;
+      auto blue = interpolatedColor & 0xFF;
+                                        
+      newStop.color = facebook::react::colorFromRGBA(red, green, blue, alpha);
+
+    }
+    
+    // Replace the color hint with new color stops
+    colorStops.erase(colorStops.begin() + x);
+    colorStops.insert(colorStops.begin() + x, newStops.begin(), newStops.end());
+    indexOffset += 8;
+  }
+  
+  return colorStops;
 }
 
 @end

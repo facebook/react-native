@@ -224,4 +224,17 @@ exports.examples = [
       );
     },
   },
+  {
+    title: 'Transition hint',
+    render(): React.Node {
+      return (
+        <GradientBox
+          style={{
+            experimental_backgroundImage: 'linear-gradient(red, 40%, blue)',
+          }}
+          testID="linear-gradient-transition-hint"
+        />
+      );
+    },
+  },
 ];
