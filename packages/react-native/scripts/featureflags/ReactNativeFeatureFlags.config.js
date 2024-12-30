@@ -391,7 +391,7 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     loadVectorDrawablesOnImages: {
-      defaultValue: false,
+      defaultValue: true,
       metadata: {
         dateAdded: '2024-07-12',
         description:
