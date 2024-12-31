@@ -38,7 +38,7 @@ export type SectionBase<SectionItemT> = {
       ...
     },
     ...
-  }) => null | React.Element<any>,
+  }) => null | React.MixedElement,
   ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItemT, index?: ?number) => string,
   ...
@@ -146,7 +146,7 @@ class VirtualizedSectionList<
     this._listRef.scrollToIndex(toIndexParams);
   }
 
-  getListRef(): ?React.ElementRef<typeof VirtualizedList> {
+  getListRef(): ?VirtualizedList {
     return this._listRef;
   }
 
@@ -447,8 +447,8 @@ class VirtualizedSectionList<
 
   _updateHighlightMap: {[string]: (boolean) => void} = {};
   _updatePropsMap: {[string]: void | (boolean => void)} = {};
-  _listRef: ?React.ElementRef<typeof VirtualizedList>;
-  _captureRef = (ref: null | React$ElementRef<Class<VirtualizedList>>) => {
+  _listRef: ?VirtualizedList;
+  _captureRef = (ref: null | VirtualizedList) => {
     this._listRef = ref;
   };
 }
@@ -598,14 +598,12 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   );
 }
 
-/* $FlowFixMe[class-object-subtyping] added when improving typing for this
- * parameters */
-// $FlowFixMe[method-unbinding]
-module.exports = (VirtualizedSectionList: React.AbstractComponent<
-  React.ElementConfig<typeof VirtualizedSectionList>,
-  $ReadOnly<{
-    getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
-    scrollToLocation: (params: ScrollToLocationParamsType) => void,
-    ...
-  }>,
->);
+module.exports = VirtualizedSectionList as component(
+  ref: React.RefSetter<
+    interface {
+      getListRef(): ?VirtualizedList,
+      scrollToLocation(params: ScrollToLocationParamsType): void,
+    },
+  >,
+  ...Props<SectionBase<any>>
+);

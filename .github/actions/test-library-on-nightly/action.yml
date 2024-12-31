@@ -1,0 +1,46 @@
+name: test-library-on-nightly
+description: Tests a library on a nightly
+inputs:
+  library-npm-package:
+    description: The library npm package to add
+    required: true
+  platform:
+    description: whether we want to build for iOS or Android
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Create new app
+      shell: bash
+      run: |
+        cd /tmp
+        npx @react-native-community/cli init RNApp --skip-install --version nightly
+    - name: Add library
+      shell: bash
+      run: |
+        cd /tmp/RNApp
+        yarn add ${{ inputs.library-npm-package }}
+
+    - name: Build iOS
+      shell: bash
+      if: ${{ inputs.platform == 'ios' }}
+      run: |
+        cd /tmp/RNApp/ios
+        bundle install
+        bundle exec pod install
+        xcodebuild build \
+          -workspace RNApp.xcworkspace \
+          -scheme RNApp \
+          -sdk iphonesimulator
+    - name: Setup Java for Android
+      if: ${{ inputs.platform == 'android' }}
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17'
+        distribution: 'zulu'
+    - name: Build Android
+      shell: bash
+      if: ${{ inputs.platform == 'android' }}
+      run: |
+        cd /tmp/RNApp/android
+        ./gradlew assembleDebug

@@ -7,8 +7,11 @@
 
 #pragma once
 
+#include "CdpJson.h"
 #include "HostTarget.h"
+#include "NetworkIOAgent.h"
 #include "SessionState.h"
+#include "TracingAgent.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InstanceAgent.h>
@@ -39,12 +42,14 @@ class HostAgent final {
    * HostTargetDelegate and underlying HostTarget both outlive the agent.
    * \param hostMetadata Metadata about the host that created this agent.
    * \param sessionState The state of the session that created this agent.
+   * \param executor A void executor to be used by async-aware handlers.
    */
   HostAgent(
       FrontendChannel frontendChannel,
       HostTargetController& targetController,
       HostTargetMetadata hostMetadata,
-      SessionState& sessionState);
+      SessionState& sessionState,
+      VoidExecutor executor);
 
   HostAgent(const HostAgent&) = delete;
   HostAgent(HostAgent&&) = delete;
@@ -73,7 +78,7 @@ class HostAgent final {
 
   /**
    * Send a simple Log.entryAdded notification with the given
-   * \param text. You must ensure that the frontend has enabled Log
+   * \param text . You must ensure that the frontend has enabled Log
    * notifications (using Log.enable) prior to calling this function. In Chrome
    * DevTools, the message will appear in the Console tab along with regular
    * console messages. The difference between Log.entryAdded and
@@ -104,6 +109,10 @@ class HostAgent final {
    * during handleRequest and other method calls on the same thread.
    */
   SessionState& sessionState_;
+
+  NetworkIOAgent networkIOAgent_;
+
+  TracingAgent tracingAgent_;
 };
 
 } // namespace facebook::react::jsinspector_modern

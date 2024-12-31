@@ -48,4 +48,8 @@ folly::dynamic mergeDynamicProps(
     const folly::dynamic& patch,
     NullValueStrategy nullValueStrategy);
 
+folly::dynamic diffDynamicProps(
+    const folly::dynamic& oldProps,
+    const folly::dynamic& newProps);
+
 } // namespace facebook::react

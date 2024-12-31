@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`expect toMatchSnapshot() complex types 1`] = `
+Object {
+  "foo": "bar",
+}
+`;
+
+exports[`expect toMatchSnapshot() complex types 2`] = `
+<span>
+  hello
+</span>
+`;
+
+exports[`expect toMatchSnapshot() complex types 3`] = `[Function foo]`;
+
+exports[`expect toMatchSnapshot() complex types 4`] = `
+Map {
+  "foo" => "bar",
+}
+`;
+
+exports[`expect toMatchSnapshot() complex types 5`] = `
+Set {
+  1,
+  2,
+}
+`;
+
+exports[`expect toMatchSnapshot() complex types 6`] = `2025-01-02T00:00:00.000Z`;
+
+exports[`expect toMatchSnapshot() complex types 7`] = `[Error]`;
+
+exports[`expect toMatchSnapshot() complex types 8`] = `/asd/`;
+
+exports[`expect toMatchSnapshot() complex types 9`] = `
+Promise {
+  "_h": 0,
+  "_i": 0,
+  "_j": null,
+  "_k": null,
+}
+`;
+
+exports[`expect toMatchSnapshot() named snapshots: named snapshot 1`] = `
+Object {
+  "a": "b",
+}
+`;
+
+exports[`expect toMatchSnapshot() primitive types 1`] = `undefined`;
+
+exports[`expect toMatchSnapshot() primitive types 2`] = `null`;
+
+exports[`expect toMatchSnapshot() primitive types 3`] = `true`;
+
+exports[`expect toMatchSnapshot() primitive types 4`] = `1`;
+
+exports[`expect toMatchSnapshot() primitive types 5`] = `1n`;
+
+exports[`expect toMatchSnapshot() primitive types 6`] = `"foo"`;
+
+exports[`expect toMatchSnapshot() primitive types 8`] = `Symbol(foo)`;
+
+exports[`expect toMatchSnapshot() primitive types: multiline 7`] = `
+"foo
+bar"
+`;

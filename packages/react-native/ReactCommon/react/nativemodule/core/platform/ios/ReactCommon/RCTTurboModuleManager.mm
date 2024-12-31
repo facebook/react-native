@@ -7,7 +7,6 @@
 
 #import "RCTTurboModuleManager.h"
 #import "RCTInteropTurboModule.h"
-#import "RCTRuntimeExecutor.h"
 
 #import <atomic>
 #import <cassert>
@@ -27,7 +26,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
-#import <React/RCTRuntimeExecutorModule.h>
 #import <React/RCTUtils.h>
 #import <ReactCommon/CxxTurboModuleUtils.h>
 #import <ReactCommon/RCTTurboModuleWithJSIBindings.h>
@@ -406,7 +404,10 @@ typedef struct {
     }
     _turboModuleCache.insert({moduleName, turboModule});
 
-    if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:)]) {
+    if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:callInvoker:)]) {
+      [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime callInvoker:_jsInvoker];
+    } else if ([module respondsToSelector:@selector(installJSIBindingsWithRuntime:)]) {
+      // Old API without CallInvoker (deprecated)
       [(id<RCTTurboModuleWithJSIBindings>)module installJSIBindingsWithRuntime:*runtime];
     }
     return turboModule;
@@ -474,30 +475,18 @@ typedef struct {
 
 - (BOOL)_isTurboModule:(const char *)moduleName
 {
-  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
-    return NO;
-  }
-
   Class moduleClass = [self _getModuleClassFromName:moduleName];
   return moduleClass != nil && (isTurboModuleClass(moduleClass) && ![moduleClass isSubclassOfClass:RCTCxxModule.class]);
 }
 
 - (BOOL)_isLegacyModule:(const char *)moduleName
 {
-  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
-    return YES;
-  }
-
   Class moduleClass = [self _getModuleClassFromName:moduleName];
   return [self _isLegacyModuleClass:moduleClass];
 }
 
 - (BOOL)_isLegacyModuleClass:(Class)moduleClass
 {
-  if (RCTTurboModuleInteropForAllTurboModulesEnabled()) {
-    return YES;
-  }
-
   return moduleClass != nil && (!isTurboModuleClass(moduleClass) || [moduleClass isSubclassOfClass:RCTCxxModule.class]);
 }
 
@@ -690,13 +679,6 @@ typedef struct {
            "or provide your own setter method.",
           RCTBridgeModuleNameForClass([module class]));
     }
-  }
-
-  // This is a more performant alternative for conformsToProtocol:@protocol(RCTRuntimeExecutorModule)
-  if ([module respondsToSelector:@selector(setRuntimeExecutor:)]) {
-    RCTRuntimeExecutor *runtimeExecutor = [[RCTRuntimeExecutor alloc]
-        initWithRuntimeExecutor:[_runtimeHandler runtimeExecutorForTurboModuleManager:self]];
-    [(id<RCTRuntimeExecutorModule>)module setRuntimeExecutor:runtimeExecutor];
   }
 
   // This is a more performant alternative for conformsToProtocol:@protocol(RCTCallInvokerModule)

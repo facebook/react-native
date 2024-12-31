@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RNTesterModuleInfo} from '../types/RNTesterTypes';
+import type {RNTesterModule, RNTesterModuleInfo} from '../types/RNTesterTypes';
 
 import ReactNativeFeatureFlags from 'react-native/Libraries/ReactNative/ReactNativeFeatureFlags';
 
@@ -44,6 +44,11 @@ const Components: Array<RNTesterModuleInfo> = [
     key: 'ImageExample',
     category: 'Basic',
     module: require('../examples/Image/ImageExample'),
+  },
+  {
+    key: 'LayoutConformanceExample',
+    module: require('../examples/LayoutConformance/LayoutConformanceExample')
+      .default,
   },
   {
     key: 'JSResponderHandlerExample',
@@ -202,6 +207,12 @@ const APIs: Array<RNTesterModuleInfo> = ([
     category: 'UI',
     module: require('../examples/Dimensions/DimensionsExample'),
   },
+  {
+    key: 'DisplayContentsExample',
+    category: 'UI',
+    module: require('../examples/DisplayContents/DisplayContentsExample')
+      .default,
+  },
   // Only show the link for the example if the API is available.
   typeof IntersectionObserver === 'function'
     ? {
@@ -312,6 +323,11 @@ const APIs: Array<RNTesterModuleInfo> = ([
     module: require('../examples/Filter/FilterExample'),
   },
   {
+    key: 'LinearGradient',
+    category: 'UI',
+    module: require('../examples/LinearGradient/LinearGradientExample'),
+  },
+  {
     key: 'MixBlendModeExample',
     category: 'UI',
     module: require('../examples/MixBlendMode/MixBlendModeExample'),
@@ -360,9 +376,16 @@ if (ReactNativeFeatureFlags.shouldEmitW3CPointerEvents()) {
   });
 }
 
-const Modules: any = {};
+const Playgrounds: Array<RNTesterModuleInfo> = [
+  {
+    key: 'PlaygroundExample',
+    module: require('../examples/Playground/PlaygroundExample'),
+  },
+];
 
-APIs.concat(Components).forEach(Example => {
+const Modules: {[key: string]: RNTesterModule} = {};
+
+[...APIs, ...Components, ...Playgrounds].forEach(Example => {
   Modules[Example.key] = Example.module;
 });
 

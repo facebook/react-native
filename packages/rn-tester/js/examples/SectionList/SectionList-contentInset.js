@@ -9,6 +9,9 @@
  */
 
 'use strict';
+
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import SectionListBaseExample from './SectionListBaseExample';
 import * as React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
@@ -77,8 +80,8 @@ const styles = StyleSheet.create({
 export default {
   title: 'SectionList Content Inset',
   platform: 'ios',
-  name: 'SectionList-contentInset',
+  name: 'contentInset',
   render: function (): React.MixedElement {
     return <SectionList_contentInset />;
   },
-};
+} as RNTesterModuleExample;

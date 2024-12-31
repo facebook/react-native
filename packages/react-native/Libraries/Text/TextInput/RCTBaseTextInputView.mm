@@ -36,6 +36,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 {
   if (![self isDescendantOfView:scrollView]) {
     // View is outside scroll view
+    scrollView.firstResponderViewOutsideScrollView = self.backedTextInputView;
     return;
   }
 
@@ -297,6 +298,14 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       @"oneTimeCode" : UITextContentTypeOneTimeCode,
     }];
 
+    if (@available(iOS 15.0, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"dateTime" : UITextContentTypeDateTime,
+        @"flightNumber" : UITextContentTypeFlightNumber,
+        @"shipmentTrackingNumber" : UITextContentTypeShipmentTrackingNumber,
+      }];
+    }
+
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
     if (@available(iOS 17.0, *)) {
       [mutableContentTypeMap addEntriesFromDictionary:@{
@@ -315,6 +324,15 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
         @"birthdateYear" : UITextContentTypeBirthdateYear,
       }];
     }
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 170400 /* __IPHONE_17_4 */
+    if (@available(iOS 17.4, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"cellularEID" : UITextContentTypeCellularEID,
+        @"cellularIMEI" : UITextContentTypeCellularIMEI,
+      }];
+    }
+#endif
 #endif
 
     contentTypeMap = mutableContentTypeMap;
@@ -364,6 +382,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
     // Hides keyboard, but keeps blinking cursor.
     self.backedTextInputView.inputView = [UIView new];
   }
+}
+
+- (NSString *)inputAccessoryViewButtonLabel
+{
+  return self.backedTextInputView.inputAccessoryViewButtonLabel;
+}
+
+- (void)setInputAccessoryViewButtonLabel:(NSString *)inputAccessoryViewButtonLabel
+{
+  self.backedTextInputView.inputAccessoryViewButtonLabel = inputAccessoryViewButtonLabel;
 }
 
 #pragma mark - RCTBackedTextInputDelegate
@@ -458,6 +486,9 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
             // the character at the length limit takes more than 16bits, truncation should end at the character before
             allowedLength = cutOffCharacterRange.location;
           }
+        }
+        if (allowedLength <= 0) {
+          return nil;
         }
         // Truncate the input string so the result is exactly maxLength
         NSString *limitedString = [text substringToIndex:allowedLength];
@@ -651,8 +682,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 - (NSString *)returnKeyTypeToString:(UIReturnKeyType)returnKeyType
 {
   switch (returnKeyType) {
-    case UIReturnKeyDefault:
-      return @"Default";
     case UIReturnKeyGo:
       return @"Go";
     case UIReturnKeyNext:
@@ -680,7 +709,6 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 {
   returnKeyTypesSet = [NSSet setWithObjects:@(UIReturnKeyDone),
                                             @(UIReturnKeyGo),
-                                            @(UIReturnKeyDefault),
                                             @(UIReturnKeyNext),
                                             @(UIReturnKeySearch),
                                             @(UIReturnKeySend),
@@ -697,6 +725,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 {
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
   UIKeyboardType keyboardType = textInputView.keyboardType;
+  NSString *inputAccessoryViewButtonLabel = textInputView.inputAccessoryViewButtonLabel;
 
   // These keyboard types (all are number pads) don't have a Return Key button by default,
   // so we create an `inputAccessoryView` with this button for them.
@@ -704,11 +733,12 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   UIReturnKeyType returnKeyType = textInputView.returnKeyType;
 
   BOOL containsKeyType = [returnKeyTypesSet containsObject:@(returnKeyType)];
+  BOOL containsInputAccessoryViewButtonLabel = inputAccessoryViewButtonLabel != nil;
 
   BOOL shouldHaveInputAccessoryView =
       (keyboardType == UIKeyboardTypeNumberPad || keyboardType == UIKeyboardTypePhonePad ||
        keyboardType == UIKeyboardTypeDecimalPad || keyboardType == UIKeyboardTypeASCIICapableNumberPad) &&
-      containsKeyType;
+      (containsKeyType || containsInputAccessoryViewButtonLabel);
 
   if (_hasInputAccessoryView == shouldHaveInputAccessoryView) {
     return;
@@ -717,7 +747,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   _hasInputAccessoryView = shouldHaveInputAccessoryView;
 
   if (shouldHaveInputAccessoryView) {
-    NSString *buttonLabel = [self returnKeyTypeToString:returnKeyType];
+    NSString *buttonLabel = inputAccessoryViewButtonLabel != nil ? inputAccessoryViewButtonLabel
+                                                                 : [self returnKeyTypeToString:returnKeyType];
 
     UIToolbar *toolbarView = [UIToolbar new];
     [toolbarView sizeToFit];

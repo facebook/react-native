@@ -23,7 +23,6 @@ target_link_libraries(react_render_scheduler
         folly_runtime
         glog
         jsi
-        react_config
         react_debug
         react_featureflags
         react_performance_timeline

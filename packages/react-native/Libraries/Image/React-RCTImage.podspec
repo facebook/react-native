@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "RCTImage"
   s.pod_target_xcconfig    = {
                                "USE_HEADERMAP" => "YES",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
   s.framework              = ["Accelerate", "UIKit", "QuartzCore", "ImageIO", "CoreGraphics"]
@@ -53,7 +53,7 @@ Pod::Spec.new do |s|
   s.dependency "React-Core/RCTImageHeaders"
   s.dependency "React-RCTNetwork"
 
-  add_dependency(s, "ReactCodegen")
+  add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
 

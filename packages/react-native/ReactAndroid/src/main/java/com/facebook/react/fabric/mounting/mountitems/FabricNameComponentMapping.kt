@@ -7,12 +7,7 @@
 
 package com.facebook.react.fabric.mounting.mountitems
 
-/**
- * Utility class for Fabric components, this will be removed
- *
- * TODO T97384889: remove this class when the component names are unified between JS - Android -
- * iOS - C++
- */
+/** Utility class for Fabric components, this will be removed */
 internal object FabricNameComponentMapping {
   private val componentNames: Map<String, String> =
       mapOf(
@@ -23,7 +18,7 @@ internal object FabricNameComponentMapping {
           "Slider" to "RCTSlider",
           "ModalHostView" to "RCTModalHostView",
           "Paragraph" to "RCTText",
-          "Text" to "RCText",
+          "Text" to "RCTText",
           "RawText" to "RCTRawText",
           "ActivityIndicatorView" to "AndroidProgressBar",
           "ShimmeringView" to "RKShimmeringView",
@@ -39,7 +34,6 @@ internal object FabricNameComponentMapping {
   /** @return the name of component in the Fabric environment */
   @JvmStatic
   fun getFabricComponentName(componentName: String): String {
-    val component = componentNames[componentName]
-    return component ?: componentName
+    return componentNames[componentName] ?: componentName
   }
 }

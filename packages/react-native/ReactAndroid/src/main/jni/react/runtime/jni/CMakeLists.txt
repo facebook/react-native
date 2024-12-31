@@ -6,10 +6,12 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
 file(GLOB_RECURSE bridgeless_jni_SRC CONFIGURE_DEPENDS *.cpp)
 
 add_library(rninstance
-        SHARED
+        OBJECT
         ${bridgeless_jni_SRC}
 )
 target_compile_options(
@@ -19,6 +21,7 @@ target_compile_options(
         -std=c++20
         -fexceptions
 )
+target_merge_so(rninstance)
 target_include_directories(rninstance PUBLIC .)
 target_link_libraries(
         rninstance

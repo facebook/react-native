@@ -392,7 +392,7 @@ exports.description =
 exports.examples = [
   {
     title: 'And example app',
-    render(): React.Element<typeof AnExApp> {
+    render(): React.MixedElement {
       return <AnExApp />;
     },
   },

@@ -12,10 +12,12 @@
 import type {Config} from '@react-native-community/cli-types';
 import type {ConfigT, InputConfigT, YargArguments} from 'metro-config';
 
+import {CLIError} from './errors';
 import {reactNativePlatformResolver} from './metroPlatformResolver';
-import {CLIError, logger} from '@react-native-community/cli-tools';
 import {loadConfig, mergeConfig, resolveConfig} from 'metro-config';
 import path from 'path';
+
+const debug = require('debug')('ReactNative:CommunityCliPlugin');
 
 export type {Config};
 
@@ -91,20 +93,20 @@ export default async function loadMetroConfig(
     throw new CLIError(`No Metro config found in ${cwd}`);
   }
 
-  logger.debug(`Reading Metro config from ${projectConfig.filepath}`);
+  debug(`Reading Metro config from ${projectConfig.filepath}`);
 
   if (!global.__REACT_NATIVE_METRO_CONFIG_LOADED) {
     const warning = `
 =================================================================================================
 From React Native 0.73, your project's Metro config should extend '@react-native/metro-config'
 or it will fail to build. Please copy the template at:
-https://github.com/facebook/react-native/blob/main/packages/react-native/template/metro.config.js
+https://github.com/react-native-community/template/blob/main/template/metro.config.js
 This warning will be removed in future (https://github.com/facebook/metro/issues/1018).
 =================================================================================================
     `;
 
     for (const line of warning.trim().split('\n')) {
-      logger.warn(line);
+      console.warn(line);
     }
   }
 

@@ -85,8 +85,15 @@ const RCTTextInputViewConfig = {
     topContentSizeChange: {
       registrationName: 'onContentSizeChange',
     },
+    topChangeSync: {
+      registrationName: 'onChangeSync',
+    },
+    topKeyPressSync: {
+      registrationName: 'onKeyPressSync',
+    },
   },
   validAttributes: {
+    dynamicTypeRamp: true,
     fontSize: true,
     fontWeight: true,
     fontVariant: true,
@@ -114,6 +121,7 @@ const RCTTextInputViewConfig = {
     },
     editable: true,
     inputAccessoryViewID: true,
+    inputAccessoryViewButtonLabel: true,
     caretHidden: true,
     enablesReturnKeyAutomatically: true,
     placeholderTextColor: {
@@ -144,12 +152,15 @@ const RCTTextInputViewConfig = {
     showSoftInputOnFocus: true,
     autoFocus: true,
     lineBreakStrategyIOS: true,
+    lineBreakModeIOS: true,
     smartInsertDelete: true,
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,
       onSelectionChange: true,
       onContentSizeChange: true,
       onScroll: true,
+      onChangeSync: true,
+      onKeyPressSync: true,
     }),
   },
 };

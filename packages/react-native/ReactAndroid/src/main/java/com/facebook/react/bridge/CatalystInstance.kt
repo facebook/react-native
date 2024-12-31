@@ -9,7 +9,6 @@ package com.facebook.react.bridge
 
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
-import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
@@ -20,6 +19,9 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
  * the invocation of JavaScript methods and lets a set of Java APIs be invocable from JavaScript as
  * well.
  */
+@Deprecated(
+    message =
+        "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
 @DoNotStrip
 public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundleLoaderDelegate {
   public fun runJSBundle()
@@ -106,7 +108,10 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
    * Returns a hybrid object that contains a pointer to a JS CallInvoker, which is used to schedule
    * work on the JS Thread. Required for TurboModuleManager initialization.
    */
-  @get:Deprecated("") public val jSCallInvokerHolder: CallInvokerHolder
+  @get:Deprecated("Use ReactContext.getJSCallInvokerHolder instead")
+  @Suppress("INAPPLICABLE_JVM_NAME")
+  @get:JvmName("getJSCallInvokerHolder") // This is needed to keep backward compatibility
+  public val jsCallInvokerHolder: CallInvokerHolder
 
   /**
    * Returns a hybrid object that contains a pointer to a NativeMethodCallInvoker, which is used to
@@ -114,21 +119,18 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
    */
   public val nativeMethodCallInvokerHolder: NativeMethodCallInvokerHolder
 
-  @DeprecatedInNewArchitecture(
+  @Deprecated(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not" +
-              " encouraged usage.")
+          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
   public fun setTurboModuleRegistry(turboModuleRegistry: TurboModuleRegistry)
 
-  @DeprecatedInNewArchitecture(
+  @Deprecated(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not" +
-              " encouraged usage.")
+          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
   public fun setFabricUIManager(fabricUIManager: UIManager)
 
-  @DeprecatedInNewArchitecture(
+  @Deprecated(
       message =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not" +
-              " encouraged usage.")
+          "This method is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
   public fun getFabricUIManager(): UIManager?
 }

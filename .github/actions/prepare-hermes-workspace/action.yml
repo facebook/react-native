@@ -1,15 +1,12 @@
 name: prepare-hermes-workspace
 description: This action prepares the hermes workspace with the right hermes and react-native versions.
 inputs:
-  HERMES_WS_DIR:
+  hermes-ws-dir:
     required: true
     description: The hermes dir we need to use to setup the workspace
-  HERMES_VERSION_FILE:
+  hermes-version-file:
     required: true
     description: the path to the file that will contain the hermes version
-  BUILD_FROM_SOURCE:
-    description: Whether we need to build from source or not
-    default: true
 outputs:
   hermes-version:
     description: the version of Hermes tied to this run
@@ -29,9 +26,9 @@ runs:
       run: |
         mkdir -p "/tmp/hermes" "/tmp/hermes/download" "/tmp/hermes/hermes"
 
-        if [ -f "$HERMES_VERSION_FILE" ]; then
+        if [ -f "${{ inputs.hermes-version-file }}" ]; then
           echo "Hermes Version file found! Using this version for the build:"
-          echo "VERSION=$(cat $HERMES_VERSION_FILE)" >> "$GITHUB_OUTPUT"
+          echo "VERSION=$(cat ${{ inputs.hermes-version-file }})" >> "$GITHUB_OUTPUT"
         else
           echo "Hermes Version file not found!!!"
           echo "Using the last commit from main for the build:"
@@ -51,7 +48,7 @@ runs:
 
     - name: Cache hermes workspace
       id: restore-hermes
-      uses: actions/cache/restore@v4.0.0
+      uses: actions/cache/restore@v4
       with:
         path: |
           /tmp/hermes/download/
@@ -72,21 +69,20 @@ runs:
 
     - name: Yarn- Install Dependencies
       if: ${{ steps.meaningful-cache.outputs.HERMES_CACHED != 'true' }}
-      shell: bash
-      run: yarn install --non-interactive
+      uses: ./.github/actions/yarn-install
 
     - name: Download Hermes tarball
       if: ${{ steps.meaningful-cache.outputs.HERMES_CACHED != 'true' }}
       shell: bash
       run: |
         node packages/react-native/scripts/hermes/prepare-hermes-for-build ${{ github.event.pull_request.html_url }}
-        cp packages/react-native/sdks/download/* $HERMES_WS_DIR/download/.
-        cp -r packages/react-native/sdks/hermes/* $HERMES_WS_DIR/hermes/.
+        cp packages/react-native/sdks/download/* ${{ inputs.hermes-ws-dir }}/download/.
+        cp -r packages/react-native/sdks/hermes/* ${{ inputs.hermes-ws-dir }}/hermes/.
 
         echo ${{ steps.hermes-version.outputs.version }}
 
     - name: Upload Hermes artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: hermes-workspace
         path: |
@@ -94,7 +90,7 @@ runs:
           /tmp/hermes/hermes/
 
     - name: Cache hermes workspace
-      uses: actions/cache/save@v4.0.0
+      uses: actions/cache/save@v4
       if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode.
       with:
         path: |

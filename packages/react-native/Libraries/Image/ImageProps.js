@@ -19,8 +19,9 @@ import type {
 } from '../StyleSheet/StyleSheet';
 import type {LayoutEvent, SyntheticEvent} from '../Types/CoreEventTypes';
 import typeof Image from './Image';
+import type {ImageResizeMode} from './ImageResizeMode';
 import type {ImageSource} from './ImageSource';
-import type {Node, Ref} from 'react';
+import type {ElementRef, Node, RefSetter} from 'react';
 
 export type ImageLoadEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -65,7 +66,7 @@ type AndroidImageProps = $ReadOnly<{|
    * dimensions differ from the image view's dimensions. Defaults to `'auto'`.
    * See https://reactnative.dev/docs/image#resizemethod-android
    */
-  resizeMethod?: ?('auto' | 'resize' | 'scale'),
+  resizeMethod?: ?('auto' | 'resize' | 'scale' | 'none'),
 
   /**
    * When the `resizeMethod` is set to `resize`, the destination dimensions are
@@ -77,7 +78,7 @@ type AndroidImageProps = $ReadOnly<{|
   resizeMultiplier?: ?number,
 |}>;
 
-export type ImageProps = {|
+export type ImageProps = $ReadOnly<{|
   ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
   ...IOSImageProps,
   ...AndroidImageProps,
@@ -234,7 +235,7 @@ export type ImageProps = {|
    *
    * See https://reactnative.dev/docs/image#resizemode
    */
-  resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
+  resizeMode?: ?ImageResizeMode,
 
   /**
    * A unique identifier for this element to be used in UI Automation
@@ -266,7 +267,7 @@ export type ImageProps = {|
    */
   srcSet?: ?string,
   children?: empty,
-|};
+|}>;
 
 export type ImageBackgroundProps = $ReadOnly<{|
   ...ImageProps,
@@ -291,5 +292,5 @@ export type ImageBackgroundProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/imagebackground#imageref
    */
-  imageRef?: Ref<Image>,
+  imageRef?: RefSetter<ElementRef<Image>>,
 |}>;

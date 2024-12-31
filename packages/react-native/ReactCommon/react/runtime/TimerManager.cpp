@@ -7,7 +7,7 @@
 
 #include "TimerManager.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 
 #include <cmath>
@@ -48,6 +48,7 @@ inline const char* getTimerSourceName(TimerSource source) {
     case TimerSource::RequestAnimationFrame:
       return "requestAnimationFrame";
   }
+  return "unknown";
 }
 
 } // namespace
@@ -104,7 +105,7 @@ TimerHandle TimerManager::createTimer(
   // Get the id for the callback.
   TimerHandle timerID = timerIndex_++;
 
-  SystraceSection s(
+  TraceSection s(
       "TimerManager::createTimer",
       "id",
       timerID,
@@ -135,7 +136,7 @@ TimerHandle TimerManager::createRecurringTimer(
   // Get the id for the callback.
   TimerHandle timerID = timerIndex_++;
 
-  SystraceSection s(
+  TraceSection s(
       "TimerManager::createRecurringTimer",
       "id",
       timerID,
@@ -201,7 +202,7 @@ void TimerManager::callTimer(TimerHandle timerHandle) {
       bool repeats = timerCallback.repeat;
 
       {
-        SystraceSection s(
+        TraceSection s(
             "TimerManager::callTimer",
             "id",
             timerHandle,
@@ -225,7 +226,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
 
   // Ensure that we don't define `setImmediate` and `clearImmediate` if
   // microtasks are enabled (as we polyfill them using `queueMicrotask` then).
-  if (!ReactNativeFeatureFlags::enableMicrotasks()) {
+  if (ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
     runtime.global().setProperty(
         runtime,
         "setImmediate",

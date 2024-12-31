@@ -260,7 +260,7 @@ type EnableArgs = {
 };
 
 class NetworkAgent extends InspectorAgent {
-  static DOMAIN: $TEMPORARY$string<'Network'> = 'Network';
+  static DOMAIN: string = 'Network';
 
   _sendEvent: EventSender;
   _interceptor: ?Interceptor;

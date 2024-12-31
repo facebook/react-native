@@ -6,7 +6,7 @@
  */
 
 #include "MutationObserverManager.h"
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <utility>
 #include "MutationObserver.h"
 
@@ -19,7 +19,7 @@ void MutationObserverManager::observe(
     ShadowNode::Shared shadowNode,
     bool observeSubtree,
     const UIManager& uiManager) {
-  SystraceSection s("MutationObserverManager::observe");
+  TraceSection s("MutationObserverManager::observe");
 
   auto surfaceId = shadowNode->getSurfaceId();
 
@@ -29,9 +29,9 @@ void MutationObserverManager::observe(
   if (observerIt == observers.end()) {
     auto observer = MutationObserver{mutationObserverId};
     observer.observe(shadowNode, observeSubtree);
-    observers.insert({mutationObserverId, std::move(observer)});
+    observers.emplace(mutationObserverId, std::move(observer));
   } else {
-    auto observer = observerIt->second;
+    auto& observer = observerIt->second;
     observer.observe(shadowNode, observeSubtree);
   }
 }
@@ -39,7 +39,7 @@ void MutationObserverManager::observe(
 void MutationObserverManager::unobserve(
     MutationObserverId mutationObserverId,
     const ShadowNode& shadowNode) {
-  SystraceSection s("MutationObserverManager::unobserve");
+  TraceSection s("MutationObserverManager::unobserve");
 
   auto surfaceId = shadowNode.getSurfaceId();
 
@@ -71,7 +71,7 @@ void MutationObserverManager::unobserve(
 void MutationObserverManager::connect(
     UIManager& uiManager,
     std::function<void(std::vector<MutationRecord>&)> onMutations) {
-  SystraceSection s("MutationObserverManager::connect");
+  TraceSection s("MutationObserverManager::connect");
 
   // Fail-safe in case the caller doesn't guarantee consistency.
   if (commitHookRegistered_) {
@@ -85,7 +85,7 @@ void MutationObserverManager::connect(
 }
 
 void MutationObserverManager::disconnect(UIManager& uiManager) {
-  SystraceSection s("MutationObserverManager::disconnect");
+  TraceSection s("MutationObserverManager::disconnect");
 
   // Fail-safe in case the caller doesn't guarantee consistency.
   if (!commitHookRegistered_) {
@@ -115,7 +115,7 @@ void MutationObserverManager::runMutationObservations(
     const ShadowTree& shadowTree,
     const RootShadowNode& oldRootShadowNode,
     const RootShadowNode& newRootShadowNode) {
-  SystraceSection s("MutationObserverManager::runMutationObservations");
+  TraceSection s("MutationObserverManager::runMutationObservations");
 
   auto surfaceId = shadowTree.getSurfaceId();
 

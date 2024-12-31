@@ -37,6 +37,11 @@ class SurfaceManager final {
       const LayoutConstraints& layoutConstraints = {},
       const LayoutContext& layoutContext = {}) const noexcept;
 
+  void startEmptySurface(
+      SurfaceId surfaceId,
+      const LayoutConstraints& layoutConstraints = {},
+      const LayoutContext& layoutContext = {}) const noexcept;
+
   void stopSurface(SurfaceId surfaceId) const noexcept;
 
   Size measureSurface(
@@ -49,7 +54,7 @@ class SurfaceManager final {
       const LayoutConstraints& layoutConstraints,
       const LayoutContext& layoutContext) const noexcept;
 
-  MountingCoordinator::Shared findMountingCoordinator(
+  std::shared_ptr<const MountingCoordinator> findMountingCoordinator(
       SurfaceId surfaceId) const noexcept;
 
  private:

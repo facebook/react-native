@@ -10,10 +10,11 @@
 
 'use strict';
 
-const RNTesterBlock = require('../../components/RNTesterBlock');
-const RNTesterPage = require('../../components/RNTesterPage');
-const React = require('react');
-const {StyleSheet, Text, View} = require('react-native');
+import RNTesterBlock from '../../components/RNTesterBlock';
+import RNTesterPage from '../../components/RNTesterPage';
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
 
 class Circle extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
@@ -61,19 +62,19 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
     return (
       <RNTesterPage title={this.props.navigator ? null : 'Layout'}>
         <RNTesterBlock title="Flex Direction">
-          <Text>row</Text>
+          <RNTesterText>row</RNTesterText>
           <CircleBlock style={{flexDirection: 'row'}}>
             {fiveColoredCircles}
           </CircleBlock>
-          <Text>row-reverse</Text>
+          <RNTesterText>row-reverse</RNTesterText>
           <CircleBlock style={{flexDirection: 'row-reverse'}}>
             {fiveColoredCircles}
           </CircleBlock>
-          <Text>column</Text>
+          <RNTesterText>column</RNTesterText>
           <CircleBlock style={{flexDirection: 'column'}}>
             {fiveColoredCircles}
           </CircleBlock>
-          <Text>column-reverse</Text>
+          <RNTesterText>column-reverse</RNTesterText>
           <CircleBlock style={{flexDirection: 'column-reverse'}}>
             {fiveColoredCircles}
           </CircleBlock>
@@ -82,34 +83,36 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
               styles.overlay,
               {position: 'absolute', top: 15, left: 160},
             ]}>
-            <Text>{'top: 15, left: 160'}</Text>
+            <RNTesterText style={{color: 'black'}}>
+              {'top: 15, left: 160'}
+            </RNTesterText>
           </View>
         </RNTesterBlock>
 
         <RNTesterBlock title="Justify Content - Main Direction">
-          <Text>flex-start</Text>
+          <RNTesterText>flex-start</RNTesterText>
           <CircleBlock style={{justifyContent: 'flex-start'}}>
             {fiveColoredCircles}
           </CircleBlock>
-          <Text>center</Text>
+          <RNTesterText>center</RNTesterText>
           <CircleBlock style={{justifyContent: 'center'}}>
             {fiveColoredCircles}
           </CircleBlock>
-          <Text>flex-end</Text>
+          <RNTesterText>flex-end</RNTesterText>
           <CircleBlock style={{justifyContent: 'flex-end'}}>
             {fiveColoredCircles}
           </CircleBlock>
-          <Text>space-between</Text>
+          <RNTesterText>space-between</RNTesterText>
           <CircleBlock style={{justifyContent: 'space-between'}}>
             {fiveColoredCircles}
           </CircleBlock>
-          <Text>space-around</Text>
+          <RNTesterText>space-around</RNTesterText>
           <CircleBlock style={{justifyContent: 'space-around'}}>
             {fiveColoredCircles}
           </CircleBlock>
         </RNTesterBlock>
         <RNTesterBlock title="Align Items - Other Direction">
-          <Text>flex-start</Text>
+          <RNTesterText>flex-start</RNTesterText>
           <CircleBlock style={{alignItems: 'flex-start', height: 30}}>
             <Circle size={15} />
             <Circle size={10} />
@@ -129,7 +132,7 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
             <Circle size={15} />
             <Circle size={8} />
           </CircleBlock>
-          <Text>center</Text>
+          <RNTesterText>center</RNTesterText>
           <CircleBlock style={{alignItems: 'center', height: 30}}>
             <Circle size={15} />
             <Circle size={10} />
@@ -149,7 +152,7 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
             <Circle size={15} />
             <Circle size={8} />
           </CircleBlock>
-          <Text>flex-end</Text>
+          <RNTesterText>flex-end</RNTesterText>
           <CircleBlock style={{alignItems: 'flex-end', height: 30}}>
             <Circle size={15} />
             <Circle size={10} />
@@ -199,7 +202,7 @@ exports.displayName = 'LayoutExample';
 exports.examples = [
   {
     title: 'Simple layout using flexbox',
-    render: function (): React.Element<typeof LayoutExample> {
+    render(): React.MixedElement {
       return <LayoutExample />;
     },
   },

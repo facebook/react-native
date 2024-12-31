@@ -16,9 +16,18 @@ bool JInspectorFlags::getFuseboxEnabled(jni::alias_ref<jclass> /*unused*/) {
   return inspectorFlags.getFuseboxEnabled();
 }
 
+bool JInspectorFlags::getIsProfilingBuild(jni::alias_ref<jclass> /*unused*/) {
+  auto& inspectorFlags = InspectorFlags::getInstance();
+  return inspectorFlags.getIsProfilingBuild();
+}
+
 void JInspectorFlags::registerNatives() {
   javaClassLocal()->registerNatives({
       makeNativeMethod("getFuseboxEnabled", JInspectorFlags::getFuseboxEnabled),
+  });
+  javaClassLocal()->registerNatives({
+      makeNativeMethod(
+          "getIsProfilingBuild", JInspectorFlags::getIsProfilingBuild),
   });
 }
 

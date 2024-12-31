@@ -480,10 +480,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     this._checkProps(this.props);
   }
 
-  _listRef: ?React.ElementRef<typeof VirtualizedList>;
+  _listRef: ?VirtualizedList;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
-  _captureRef = (ref: ?React.ElementRef<typeof VirtualizedList>) => {
+  _captureRef = (ref: ?VirtualizedList) => {
     this._listRef = ref;
   };
 
@@ -617,7 +617,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   _renderer = (
-    ListItemComponent: ?(React.ComponentType<any> | React.Element<any>),
+    ListItemComponent: ?(React.ComponentType<any> | React.MixedElement),
     renderItem: ?RenderItemType<ItemT>,
     columnWrapperStyle: ?ViewStyleProp,
     numColumns: ?number,

@@ -8,6 +8,6 @@
 package com.facebook.debug.holder
 
 /** Holder for debugging tool instance. */
-public object PrinterHolder {
-  @JvmStatic public var printer: Printer = NoopPrinter
+internal object PrinterHolder {
+  @JvmStatic var printer: Printer = NoopPrinter
 }

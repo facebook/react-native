@@ -31,26 +31,27 @@ static inline SchedulerPriority fromRawValue(double value) {
       return SchedulerPriority::LowPriority;
     case 5:
       return SchedulerPriority::IdlePriority;
-    default:
-      react_native_assert(false && "Unsupported SchedulerPriority value");
-      return SchedulerPriority::NormalPriority;
   }
+  react_native_assert(false && "Unsupported SchedulerPriority value");
+  return SchedulerPriority::NormalPriority;
 }
 
 static inline std::chrono::milliseconds timeoutForSchedulerPriority(
     SchedulerPriority schedulerPriority) noexcept {
   switch (schedulerPriority) {
     case SchedulerPriority::ImmediatePriority:
-      return std::chrono::milliseconds(-1);
+      return std::chrono::milliseconds(0);
     case SchedulerPriority::UserBlockingPriority:
       return std::chrono::milliseconds(250);
     case SchedulerPriority::NormalPriority:
-      return std::chrono::milliseconds(5000);
+      return std::chrono::seconds(5);
     case SchedulerPriority::LowPriority:
-      return std::chrono::milliseconds(10'000);
+      return std::chrono::seconds(10);
     case SchedulerPriority::IdlePriority:
-      return std::chrono::milliseconds::max();
+      return std::chrono::minutes(5);
   }
+  react_native_assert(false && "Unsupported SchedulerPriority value");
+  return std::chrono::seconds(5);
 }
 
 } // namespace facebook::react

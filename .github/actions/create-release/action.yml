@@ -15,8 +15,7 @@ runs:
   using: composite
   steps:
     - name: Yarn install
-      shell: bash
-      run: yarn install --non-interactive
+      uses: ./.github/actions/yarn-install
     - name: Configure Git
       shell: bash
       run: |
@@ -32,7 +31,7 @@ runs:
         GIT_PAGER=cat git show HEAD
     - name: Update "latest" tag if needed
       shell: bash
-      if: ${{ inputs.tag == 'latest' }}
+      if: ${{ inputs.is-latest-on-npm == 'true' }}
       run: |
         git tag -d "latest"
         git push origin :latest

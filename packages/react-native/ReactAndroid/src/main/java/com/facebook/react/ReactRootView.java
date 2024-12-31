@@ -8,13 +8,16 @@
 package com.facebook.react;
 
 import static com.facebook.infer.annotation.ThreadConfined.UI;
+import static com.facebook.react.uimanager.BlendModeHelper.needsIsolatedLayer;
 import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
+import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Insets;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
@@ -49,6 +52,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -64,6 +68,7 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -290,6 +295,30 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
   }
 
   @Override
+  protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+
+    BlendMode mixBlendMode = null;
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        && ViewUtil.getUIManagerType(this) == UIManagerType.FABRIC
+        && needsIsolatedLayer(this)) {
+      mixBlendMode = (BlendMode) child.getTag(R.id.mix_blend_mode);
+      if (mixBlendMode != null) {
+        Paint p = new Paint();
+        p.setBlendMode(mixBlendMode);
+        canvas.saveLayer(0, 0, getWidth(), getHeight(), p);
+      }
+    }
+
+    boolean result = super.drawChild(canvas, child, drawingTime);
+
+    if (mixBlendMode != null) {
+      canvas.restore();
+    }
+
+    return result;
+  }
+
+  @Override
   public boolean dispatchKeyEvent(KeyEvent ev) {
     if (!hasActiveReactContext() || !isViewAttachedToReactInstance()) {
       FLog.w(TAG, "Unable to handle key event as the catalyst instance has not been attached");
@@ -359,7 +388,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
     EventDispatcher eventDispatcher =
         UIManagerHelper.getEventDispatcher(getCurrentReactContext(), getUIManagerType());
     if (eventDispatcher != null) {
-      mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
+      mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher, getCurrentReactContext());
     }
   }
 
@@ -478,7 +507,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
       mReactInstanceManager.createReactContextInBackground();
       // if in this experiment, we initialize the root earlier in startReactApplication
       // instead of waiting for the initial measure
-      if (ReactFeatureFlags.enableEagerRootViewAttachment) {
+      if (ReactNativeFeatureFlags.enableEagerRootViewAttachment()) {
         if (!mWasMeasured) {
           // Ideally, those values will be used by default, but we only update them here to scope
           // this change to `enableEagerRootViewAttachment` experiment.
@@ -817,6 +846,9 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   @Nullable
   public ReactContext getCurrentReactContext() {
+    if (mReactInstanceManager == null) {
+      return null;
+    }
     return mReactInstanceManager.getCurrentReactContext();
   }
 
@@ -891,7 +923,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           sendEvent(
               "keyboardDidHide",
               createKeyboardEventPayload(
-                  PixelUtil.toDIPFromPixel(mLastHeight),
+                  PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
                   0,
                   PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                   0));
@@ -940,7 +972,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
         sendEvent(
             "keyboardDidHide",
             createKeyboardEventPayload(
-                PixelUtil.toDIPFromPixel(mLastHeight),
+                PixelUtil.toDIPFromPixel(mVisibleViewArea.height()),
                 0,
                 PixelUtil.toDIPFromPixel(mVisibleViewArea.width()),
                 0));

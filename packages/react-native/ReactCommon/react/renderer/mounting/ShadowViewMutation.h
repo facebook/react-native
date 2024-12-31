@@ -13,7 +13,7 @@
 
 namespace facebook::react {
 
-/*
+/**
  * Describes a single native view tree mutation which may contain
  * pointers to an old shadow view, a new shadow view, a parent shadow view and
  * final index of inserted or updated view.
@@ -24,84 +24,89 @@ struct ShadowViewMutation final {
 
   ShadowViewMutation() = delete;
 
-#pragma mark - Platform feature flags
-
-  static bool PlatformSupportsRemoveDeleteTreeInstruction;
-
 #pragma mark - Designated Initializers
 
-  /*
+  /**
    * Creates and returns an `Create` mutation.
    */
   static ShadowViewMutation CreateMutation(ShadowView shadowView);
 
-  /*
+  /**
    * Creates and returns an `Delete` mutation.
    */
-  static ShadowViewMutation DeleteMutation(
-      ShadowView shadowView,
-      bool isRedundantOperation = false);
+  static ShadowViewMutation DeleteMutation(ShadowView shadowView);
 
-  /*
+  /**
    * Creates and returns an `Insert` mutation.
    */
-  static ShadowViewMutation InsertMutation(
-      ShadowView parentShadowView,
-      ShadowView childShadowView,
-      int index);
+  static ShadowViewMutation
+  InsertMutation(Tag parentTag, ShadowView childShadowView, int index);
 
-  /*
+  /**
+   * Creates and returns an `Insert` mutation.
+   * @deprecated Pass parentTag instead of parentShadowView.
+   */
+  static ShadowViewMutation InsertMutation(
+      const ShadowView& parentShadowView,
+      ShadowView childShadowView,
+      int index) {
+    return InsertMutation(parentShadowView.tag, childShadowView, index);
+  }
+
+  /**
    * Creates and returns a `Remove` mutation.
    */
-  static ShadowViewMutation RemoveMutation(
-      ShadowView parentShadowView,
-      ShadowView childShadowView,
-      int index,
-      bool isRedundantOperation = false);
+  static ShadowViewMutation
+  RemoveMutation(Tag parentTag, ShadowView childShadowView, int index);
 
-  /*
-   * Creates and returns a `RemoveDelete` mutation.
-   * This is a signal to (for supported platforms)
-   * remove and delete an entire subtree with a single
-   * instruction.
+  /**
+   * Creates and returns a `Remove` mutation.
+   * @deprecated Pass parentTag instead of parentShadowView.
    */
-  static ShadowViewMutation RemoveDeleteTreeMutation(
-      ShadowView parentShadowView,
+  static ShadowViewMutation RemoveMutation(
+      const ShadowView& parentShadowView,
       ShadowView childShadowView,
-      int index);
+      int index) {
+    return RemoveMutation(parentShadowView.tag, childShadowView, index);
+  }
 
-  /*
+  /**
    * Creates and returns an `Update` mutation.
    */
   static ShadowViewMutation UpdateMutation(
       ShadowView oldChildShadowView,
       ShadowView newChildShadowView,
-      ShadowView parentShadowView);
+      Tag parentTag);
+
+  /**
+   * Creates and returns an `Update` mutation.
+   * @deprecated Pass parentTag instead of parentShadowView.
+   */
+  static ShadowViewMutation UpdateMutation(
+      ShadowView oldChildShadowView,
+      ShadowView newChildShadowView,
+      const ShadowView& parentShadowView) {
+    return UpdateMutation(
+        oldChildShadowView, newChildShadowView, parentShadowView.tag);
+  }
 
 #pragma mark - Type
 
-  enum Type {
+  enum Type : std::uint8_t {
     Create = 1,
     Delete = 2,
     Insert = 4,
     Remove = 8,
     Update = 16,
-    RemoveDeleteTree = 32
   };
 
 #pragma mark - Fields
 
   Type type = {Create};
-  ShadowView parentShadowView = {};
+  Tag parentTag = -1;
   ShadowView oldChildShadowView = {};
   ShadowView newChildShadowView = {};
   int index = -1;
-
-  // RemoveDeleteTree causes many Remove/Delete operations to be redundant.
-  // However, we must internally produce all of them for any consumers that
-  // rely on explicit instructions to remove/delete every node in the tree.
-  // Notably (as of the time of writing this) LayoutAnimations.
-  bool isRedundantOperation = false;
 
   // Some platforms can have the notion of virtual views - views that are in the
   // ShadowTree hierarchy but never are on the platform. Generally this is used
@@ -113,11 +118,10 @@ struct ShadowViewMutation final {
  private:
   ShadowViewMutation(
       Type type,
-      ShadowView parentShadowView,
+      Tag parentTag,
       ShadowView oldChildShadowView,
       ShadowView newChildShadowView,
-      int index,
-      bool isRedundantOperation = false);
+      int index);
 };
 
 using ShadowViewMutationList = std::vector<ShadowViewMutation>;

@@ -73,6 +73,7 @@ def list_native_modules!(config_command)
     found_pods.push({
       "configurations": configurations,
       "name": name,
+      "root": package["root"],
       "path": relative_path.to_path,
       "podspec_path": podspec_path,
       "script_phases": script_phases
@@ -168,7 +169,7 @@ def link_native_modules!(config)
 
         # Support passing in a path relative to the root of the package
         if phase["path"]
-          phase["script"] = File.read(File.expand_path(phase["path"], package[:path]))
+          phase["script"] = File.read(File.expand_path(phase["path"], package[:root]))
           phase.delete("path")
         end
 

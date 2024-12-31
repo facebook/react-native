@@ -22,14 +22,13 @@ def generatedConfig = file("../../.react-native.config")
  */
 react {
     /* Folders */
-    //   The root of your project, i.e. where "package.json" lives. Default is '..'
-    root = file("../")
-    //   The folder where the react-native NPM package is. Default is ../node_modules/react-native
-    reactNativeDir = file("../../../react-native")
-    //   The folder where the react-native Codegen package is. Default is ../node_modules/@react-native/codegen
-    codegenDir = file("$rootDir/node_modules/@react-native/codegen")
-    //   The cli.js file which is the React Native CLI entrypoint. Default is ../node_modules/react-native/cli.js,
-    //   but now points to our simplified bundle wrapper.
+    //   The root of your project, i.e. where "package.json" lives. Default is '../..'
+    // root = file("../../")
+    //   The folder where the react-native NPM package is. Default is ../../node_modules/react-native
+    // reactNativeDir = file("../../node_modules/react-native")
+    //   The folder where the react-native Codegen package is. Default is ../../node_modules/@react-native/codegen
+    // codegenDir = file("../../node_modules/@react-native/codegen")
+    //   The cli.js file which is the React Native CLI entrypoint. Default is ../../node_modules/react-native/cli.js
     cliFile = file("../../../react-native/scripts/bundle.js")
     /* Variants */
     //   The list of variants to that are debuggable. For those we're going to
@@ -65,7 +64,6 @@ react {
     /* Hermes Commands */
     //   The hermes compiler command to run. By default it is 'hermesc'
     // hermesCommand = "$rootDir/my-custom-hermesc/bin/hermesc"
-    hermesCommand = file("../../../react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc").absolutePath
     //
     //   The list of flags to pass to the Hermes compiler. By default is "-O", "-output-source-map"
     // hermesFlags = ["-O", "-output-source-map"]
@@ -83,14 +81,14 @@ def enableProguardInReleaseBuilds = false
  * The preferred build flavor of JavaScriptCore (JSC)
  *
  * For example, to use the international variant, you can use:
- * `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
+ * `def jscFlavor = "io.github.react-native-community:jsc-android-intl:2026004.+"`
  *
  * The international variant includes ICU i18n library and necessary data
  * allowing to use e.g. `Date.toLocaleString` and `String.localeCompare` that
  * give correct results when using with locales other than en-US. Note that
  * this variant is about 6MiB larger per architecture than default.
  */
-def jscFlavor = 'org.webkit:android-jsc:+'
+def jscFlavor = "io.github.react-native-community:jsc-android:2026004.+"
 
 android {
     ndkVersion rootProject.ext.ndkVersion
@@ -136,12 +134,4 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-}
-
-afterEvaluate {
-    // As HelloWorld is building from source, we need to make sure hermesc is built before the JS bundle is created.
-    // Otherwise the release version of the app will fail to build due to missing hermesc.
-    tasks
-        .getByName("createBundleReleaseJsAndAssets")
-        .dependsOn(gradle.includedBuild("react-native").task(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC"))
 }

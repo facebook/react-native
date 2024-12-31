@@ -8,7 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(-fexceptions -fno-omit-frame-pointer)
 
-add_library(glog_init STATIC glog_init.cpp)
+add_library(glog_init OBJECT glog_init.cpp)
 
 target_include_directories(glog_init PUBLIC .)
 

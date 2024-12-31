@@ -28,6 +28,10 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
+  smallBox: {
+    width: 50,
+    height: 50,
+  },
   wrapper: {
     flexDirection: 'row',
   },
@@ -232,6 +236,26 @@ const styles = StyleSheet.create({
   hotdog: {
     width: 100,
     height: 100,
+  },
+  borderWithChildren: {
+    backgroundColor: 'red',
+    borderWidth: 10,
+    borderRadius: 10,
+    borderColor: 'rgba(0, 0, 0, 0.5)',
+    overflow: 'hidden',
+  },
+  borderWithChildren2: {
+    backgroundColor: 'red',
+    borderWidth: 10,
+    borderTopLeftRadius: 20,
+    borderColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  childOfBorder: {
+    width: 20,
+    height: 20,
+    left: -10,
+    top: -10,
+    backgroundColor: 'blue',
   },
 });
 
@@ -537,6 +561,33 @@ export default ({
             testID="border-test-child-clipping-radius"
             style={[styles.box, styles.borderWithClippingAndRadius]}>
             <Image source={hotdog} style={styles.hotdog} />
+          </View>
+        );
+      },
+    },
+    {
+      title: 'Borders and children compliance',
+      name: 'border-clipping-compliance',
+      description: 'Some edge cases of Views with borders and children.',
+      render: function (): React.Node {
+        return (
+          <View
+            testID="border-test-border-clipping-compliance"
+            style={{flexDirection: 'row', gap: '10'}}>
+            <View style={[styles.smallBox, styles.borderWithChildren]}>
+              <View style={styles.childOfBorder} />
+            </View>
+            <View
+              style={[
+                styles.smallBox,
+                styles.borderWithChildren2,
+                {overflow: 'hidden'},
+              ]}>
+              <View style={styles.childOfBorder} />
+            </View>
+            <View style={[styles.smallBox, styles.borderWithChildren2]}>
+              <View style={[styles.childOfBorder, {left: -15, top: 0}]} />
+            </View>
           </View>
         );
       },

@@ -8,8 +8,7 @@
 package com.facebook.react.utils
 
 import com.facebook.react.utils.NdkConfiguratorUtils.getPackagingOptionsForVariant
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class NdkConfiguratorUtilsTest {
@@ -18,29 +17,21 @@ class NdkConfiguratorUtilsTest {
   fun getPackagingOptionsForVariant_withHermesEnabled() {
     val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled = true)
 
-    assertTrue("**/libjsc.so" in excludes)
-    assertTrue("**/libjscexecutor.so" in excludes)
-    assertFalse("**/libjsc.so" in includes)
-    assertFalse("**/libjscexecutor.so" in includes)
+    assertThat(excludes).containsExactly("**/libjsc.so", "**/libjsctooling.so")
+    assertThat(includes).doesNotContain("**/libjsc.so", "**/libjsctooling.so")
 
-    assertTrue("**/libhermes.so" in includes)
-    assertTrue("**/libhermes_executor.so" in includes)
-    assertFalse("**/libhermes.so" in excludes)
-    assertFalse("**/libhermes_executor.so" in excludes)
+    assertThat(includes).containsExactly("**/libhermes.so", "**/libhermestooling.so")
+    assertThat(excludes).doesNotContain("**/libhermes.so", "**/libhermestooling.so")
   }
 
   @Test
   fun getPackagingOptionsForVariant_withHermesDisabled() {
     val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled = false)
 
-    assertTrue("**/libhermes.so" in excludes)
-    assertTrue("**/libhermes_executor.so" in excludes)
-    assertFalse("**/libhermes.so" in includes)
-    assertFalse("**/libhermes_executor.so" in includes)
+    assertThat(excludes).containsExactly("**/libhermes.so", "**/libhermestooling.so")
+    assertThat(includes).doesNotContain("**/libhermes.so", "**/libhermestooling.so")
 
-    assertTrue("**/libjsc.so" in includes)
-    assertTrue("**/libjscexecutor.so" in includes)
-    assertFalse("**/libjsc.so" in excludes)
-    assertFalse("**/libjscexecutor.so" in excludes)
+    assertThat(includes).containsExactly("**/libjsc.so", "**/libjsctooling.so")
+    assertThat(excludes).doesNotContain("**/libjsc.so", "**/libjsctooling.so")
   }
 }

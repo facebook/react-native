@@ -87,7 +87,7 @@ type Props = $ReadOnly<{|
   backgroundColor?: ?ColorValue,
 |}>;
 
-const InputAccessoryView: React.AbstractComponent<Props> = (props: Props) => {
+const InputAccessoryView: React.ComponentType<Props> = (props: Props) => {
   const {width} = useWindowDimensions();
 
   if (Platform.OS === 'ios') {

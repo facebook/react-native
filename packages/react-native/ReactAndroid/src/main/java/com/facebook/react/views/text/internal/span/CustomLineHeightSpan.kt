@@ -11,59 +11,46 @@ import android.graphics.Paint.FontMetricsInt
 import android.text.style.LineHeightSpan
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.min
 
 /**
- * We use a custom [LineHeightSpan], because `lineSpacingExtra` is broken. Details here:
- * https://github.com/facebook/react-native/issues/7546
+ * Implements a [LineHeightSpan] which follows web-like behavior for line height, unlike
+ * LineHeightSpan.Standard which only effects space between the baselines of adjacent line boxes
+ * (does not impact space before the first line or after the last).
  */
 public class CustomLineHeightSpan(height: Float) : LineHeightSpan, ReactSpan {
   public val lineHeight: Int = ceil(height.toDouble()).toInt()
 
   public override fun chooseHeight(
-      text: CharSequence?,
+      text: CharSequence,
       start: Int,
       end: Int,
       spanstartv: Int,
       v: Int,
-      fm: FontMetricsInt
+      fm: FontMetricsInt,
   ) {
-    // This is more complicated that I wanted it to be. You can find a good explanation of what the
-    // FontMetrics mean here: http://stackoverflow.com/questions/27631736.
-    // The general solution is that if there's not enough height to show the full line height, we
-    // will prioritize in this order: descent, ascent, bottom, top
+    // https://www.w3.org/TR/css-inline-3/#inline-height
+    // When its computed line-height is not normal, its layout bounds are derived solely from
+    // metrics of its first available font (ignoring glyphs from other fonts), and leading is used
+    // to adjust the effective A and D to add up to the used line-height. Calculate the leading L as
+    // L = line-height - (A + D). Half the leading (its half-leading) is added above A of the first
+    // available font, and the other half below D of the first available font, giving an effective
+    // ascent above the baseline of A′ = A + L/2, and an effective descent of D′ = D + L/2. However,
+    // if line-fit-edge is not leading and this is not the root inline box, if the half-leading is
+    // positive, treat it as zero. The layout bounds exactly encloses this effective A′ and D′.
 
-    if (fm.descent > lineHeight) {
-      // Show as much descent as possible
-      fm.descent = min(lineHeight.toDouble(), fm.descent.toDouble()).toInt()
+    val leading = lineHeight - ((-fm.ascent) + fm.descent)
+    fm.ascent -= ceil(leading / 2.0f).toInt()
+    fm.descent += floor(leading / 2.0f).toInt()
+
+    // The top of the first line, and the bottom of the last line, may influence bounds of the
+    // paragraph, so we match them to the text ascent/descent. It is otherwise desirable to allow
+    // line boxes to overlap (to allow too large glyphs to be drawn outside them), so we do not
+    // adjust the top/bottom of interior line-boxes.
+    if (start == 0) {
+      fm.top = fm.ascent
+    }
+    if (end == text.length) {
       fm.bottom = fm.descent
-      fm.ascent = 0
-      fm.top = fm.ascent
-    } else if (-fm.ascent + fm.descent > lineHeight) {
-      // Show all descent, and as much ascent as possible
-      fm.bottom = fm.descent
-      fm.ascent = -lineHeight + fm.descent
-      fm.top = fm.ascent
-    } else if (-fm.ascent + fm.bottom > lineHeight) {
-      // Show all ascent, descent, as much bottom as possible
-      fm.top = fm.ascent
-      fm.bottom = fm.ascent + lineHeight
-    } else if (-fm.top + fm.bottom > lineHeight) {
-      // Show all ascent, descent, bottom, as much top as possible
-      fm.top = fm.bottom - lineHeight
-    } else {
-      // Show proportionally additional ascent / top & descent / bottom
-      val additional = lineHeight - (-fm.top + fm.bottom)
-
-      // Round up for the negative values and down for the positive values  (arbitrary choice)
-      // So that bottom - top equals additional even if it's an odd number.
-      val top = (fm.top - ceil(additional / 2.0f)).toInt()
-      val bottom = (fm.bottom + floor(additional / 2.0f)).toInt()
-
-      fm.top = top
-      fm.ascent = top
-      fm.descent = bottom
-      fm.bottom = bottom
     }
   }
 }

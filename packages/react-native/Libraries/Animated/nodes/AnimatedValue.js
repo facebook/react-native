@@ -13,14 +13,16 @@
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
 
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import InteractionManager from '../../Interaction/InteractionManager';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
 export type AnimatedValueConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 
@@ -49,6 +51,7 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
  * transform which can receive values from multiple parents.
  */
 export function flushValue(rootNode: AnimatedNode): void {
+  // eslint-disable-next-line func-call-spacing
   const leaves = new Set<{update: () => void, ...}>();
   function findAnimatedStyles(node: AnimatedNode) {
     // $FlowFixMe[prop-missing]
@@ -89,7 +92,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
   _tracking: ?AnimatedTracking;
 
   constructor(value: number, config?: ?AnimatedValueConfig) {
-    super();
+    super(config);
     if (typeof value !== 'number') {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
     }
@@ -297,6 +300,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
       type: 'value',
       value: this._value,
       offset: this._offset,
+      debugID: this.__getDebugID(),
     };
   }
 }

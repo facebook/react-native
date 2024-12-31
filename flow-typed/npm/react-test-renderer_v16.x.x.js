@@ -1,6 +1,3 @@
-// flow-typed signature: 7bac6c05f7415881918d3d510109e739
-// flow-typed version: fce74493f0/react-test-renderer_v16.x.x/flow_>=v0.104.x
-
 // Type definitions for react-test-renderer 16.x.x
 // Ported from: https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react-test-renderer
 
@@ -44,14 +41,14 @@ type ReactTestInstance = {
   ...
 };
 
-type TestRendererOptions = { createNodeMock(element: React$Element<any>): any, ... };
+type TestRendererOptions = { createNodeMock(element: React.MixedElement): any, ... };
 
 declare module "react-test-renderer" {
   declare export type ReactTestRenderer = {
     toJSON(): null | ReactTestRendererJSON,
     toTree(): null | ReactTestRendererTree,
-    unmount(nextElement?: React$Element<any>): void,
-    update(nextElement: React$Element<any>): void,
+    unmount(nextElement?: React.MixedElement): void,
+    update(nextElement: React.MixedElement): void,
     getInstance(): ?ReactComponentInstance,
     root: ReactTestInstance,
     ...
@@ -60,7 +57,7 @@ declare module "react-test-renderer" {
   declare type Thenable = { then(resolve: () => mixed, reject?: () => mixed): mixed, ... };
 
   declare function create(
-    nextElement: React$Element<any>,
+    nextElement: React.MixedElement,
     options?: TestRendererOptions
   ): ReactTestRenderer;
 
@@ -71,9 +68,9 @@ declare module "react-test-renderer/shallow" {
   declare export default class ShallowRenderer {
     static createRenderer(): ShallowRenderer;
     getMountedInstance(): ReactTestInstance;
-    getRenderOutput<E: React$Element<any>>(): E;
-    getRenderOutput(): React$Element<any>;
-    render(element: React$Element<any>, context?: any): void;
+    getRenderOutput<E: React.MixedElement>(): E;
+    getRenderOutput(): React.MixedElement;
+    render(element: React.MixedElement, context?: any): void;
     unmount(): void;
   }
 }

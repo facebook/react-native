@@ -98,6 +98,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
   UIColor *cancelButtonTintColor =
       [RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];
+  UIColor *disabledButtonTintColor =
+      [RCTConvert UIColor:options.disabledButtonTintColor() ? @(*options.disabledButtonTintColor()) : nil];
   NSString *userInterfaceStyle = [RCTConvert NSString:options.userInterfaceStyle()];
 
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -106,15 +108,16 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     if (controller == nil) {
       RCTLogError(
           @"Tried to display action sheet but there is no application window. options: %@", @{
-            @"title" : title,
-            @"message" : message,
+            @"title" : title ?: @"(null)",
+            @"message" : message ?: @"(null)",
             @"options" : buttons,
             @"cancelButtonIndex" : @(cancelButtonIndex),
             @"destructiveButtonIndices" : destructiveButtonIndices,
-            @"anchor" : anchor,
-            @"tintColor" : tintColor,
-            @"cancelButtonTintColor" : cancelButtonTintColor,
-            @"disabledButtonIndices" : disabledButtonIndices,
+            @"anchor" : anchor ?: @"(null)",
+            @"tintColor" : tintColor ?: @"(null)",
+            @"cancelButtonTintColor" : cancelButtonTintColor ?: @"(null)",
+            @"disabledButtonTintColor" : disabledButtonTintColor ?: @"(null)",
+            @"disabledButtonIndices" : disabledButtonIndices ?: @"(null)",
           });
       return;
     }
@@ -166,7 +169,11 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     if (disabledButtonIndices) {
       for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
         if ([disabledButtonIndex integerValue] < buttons.count) {
-          [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
+          UIAlertAction *action = alertController.actions[[disabledButtonIndex integerValue]];
+          [action setEnabled:false];
+          if (disabledButtonTintColor) {
+            [action setValue:disabledButtonTintColor forKey:@"titleTextColor"];
+          }
         } else {
           RCTLogError(
               @"Index %@ from `disabledButtonIndices` is out of bounds. Maximum index value is %@.",

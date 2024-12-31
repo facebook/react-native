@@ -15,11 +15,14 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB react_render_observers_events_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_observers_events SHARED ${react_render_observers_events_SRC})
+add_library(react_render_observers_events OBJECT ${react_render_observers_events_SRC})
 
 target_include_directories(react_render_observers_events PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(react_render_observers_events
         react_performance_timeline
+        react_timing
         react_render_core
+        react_render_runtimescheduler
+        react_featureflags
         react_render_uimanager
         react_utils)

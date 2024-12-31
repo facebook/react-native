@@ -24,6 +24,7 @@ header_search_paths = [
     "\"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_ROOT)/DoubleConversion\"",
+    "\"$(PODS_ROOT)/fast_float/include\"",
     "\"$(PODS_ROOT)/fmt/include\""
 ]
 
@@ -45,7 +46,7 @@ Pod::Spec.new do |s|
   s.header_dir             = "react/renderer/debug"
   s.exclude_files          = "tests"
   s.pod_target_xcconfig    = {
-    "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+    "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
     "DEFINES_MODULE" => "YES"
   }
@@ -57,6 +58,7 @@ Pod::Spec.new do |s|
 
   s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+  s.dependency "fast_float", "6.1.4"
+  s.dependency "fmt", "11.0.2"
   add_dependency(s, "React-debug")
 end

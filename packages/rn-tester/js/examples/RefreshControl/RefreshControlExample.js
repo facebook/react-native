@@ -9,15 +9,15 @@
 
 'use strict';
 
-const React = require('react');
-const {
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
-} = require('react-native');
+} from 'react-native';
 
 const styles = StyleSheet.create({
   row: {
@@ -45,9 +45,9 @@ class Row extends React.Component {
     return (
       <TouchableWithoutFeedback onPress={this._onClick}>
         <View style={styles.row}>
-          <Text testID="refresh_control_row" style={styles.text}>
+          <RNTesterText testID="refresh_control_row" style={styles.text}>
             {this.props.data.text + ' (' + this.props.data.clicks + ' clicks)'}
-          </Text>
+          </RNTesterText>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -121,7 +121,7 @@ exports.description = 'Adds pull-to-refresh support to a scrollview.';
 exports.examples = [
   {
     title: 'Simple refresh',
-    render: function (): React.Element<typeof RefreshControlExample> {
+    render(): React.MixedElement {
       return <RefreshControlExample />;
     },
   },

@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import org.gradle.api.internal.classpath.ModuleRegistry
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.configurationcache.extensions.serviceOf
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -50,14 +50,8 @@ dependencies {
   implementation(libs.javapoet)
 
   testImplementation(libs.junit)
-
-  testRuntimeOnly(
-      files(
-          serviceOf<ModuleRegistry>()
-              .getModule("gradle-tooling-api-builders")
-              .classpath
-              .asFiles
-              .first()))
+  testImplementation(libs.assertj)
+  testImplementation(project(":shared-testutil"))
 }
 
 // We intentionally don't build for Java 17 as users will see a cryptic bytecode version
@@ -68,11 +62,12 @@ java { targetCompatibility = JavaVersion.VERSION_11 }
 kotlin { jvmToolchain(17) }
 
 tasks.withType<KotlinCompile>().configureEach {
-  kotlinOptions {
-    apiVersion = "1.6"
+  compilerOptions {
+    apiVersion.set(KotlinVersion.KOTLIN_1_7)
     // See comment above on JDK 11 support
-    jvmTarget = "11"
-    allWarningsAsErrors = true
+    jvmTarget.set(JvmTarget.JVM_11)
+    allWarningsAsErrors =
+        project.properties["enableWarningsAsErrors"]?.toString()?.toBoolean() ?: false
   }
 }
 

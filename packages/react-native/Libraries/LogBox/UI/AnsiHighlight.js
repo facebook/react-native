@@ -37,6 +37,8 @@ const COLORS = {
   'ansi-bright-white': 'rgb(247, 247, 247)',
 };
 
+const LRM = '\u200E'; // Left-to-Right Mark
+
 export default function Ansi({
   text,
   style,
@@ -80,25 +82,28 @@ export default function Ansi({
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       {parsedLines.map((items, i) => (
         <View style={styles.line} key={i}>
-          {items.map((bundle, key) => {
-            const textStyle =
-              bundle.fg && COLORS[bundle.fg]
-                ? {
-                    backgroundColor: bundle.bg && COLORS[bundle.bg],
-                    color: bundle.fg && COLORS[bundle.fg],
-                  }
-                : {
-                    backgroundColor: bundle.bg && COLORS[bundle.bg],
-                  };
-            return (
-              <Text style={[style, textStyle]} key={key}>
-                {getText(bundle.content, key)}
-              </Text>
-            );
-          })}
+          <Text>
+            {LRM}
+            {items.map((bundle, key) => {
+              const textStyle =
+                bundle.fg && COLORS[bundle.fg]
+                  ? {
+                      backgroundColor: bundle.bg && COLORS[bundle.bg],
+                      color: bundle.fg && COLORS[bundle.fg],
+                    }
+                  : {
+                      backgroundColor: bundle.bg && COLORS[bundle.bg],
+                    };
+              return (
+                <Text style={[style, textStyle]} key={key}>
+                  {getText(bundle.content, key)}
+                </Text>
+              );
+            })}
+          </Text>
         </View>
       ))}
     </View>
@@ -106,6 +111,10 @@ export default function Ansi({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    minWidth: '100%',
+    direction: 'ltr',
+  },
   line: {
     flexDirection: 'row',
   },

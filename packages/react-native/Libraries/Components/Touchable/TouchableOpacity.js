@@ -37,7 +37,7 @@ type Props = $ReadOnly<{|
   activeOpacity?: ?number,
   style?: ?ViewStyleProp,
 
-  hostRef?: ?React.Ref<typeof Animated.View>,
+  hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 |}>;
 
 type State = $ReadOnly<{|
@@ -291,6 +291,7 @@ class TouchableOpacity extends React.Component<Props, State> {
           this.props.onPress !== undefined &&
           !this.props.disabled
         }
+        // $FlowFixMe[prop-missing]
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
         {this.props.children}
@@ -326,10 +327,10 @@ class TouchableOpacity extends React.Component<Props, State> {
   }
 }
 
-const Touchable: React.AbstractComponent<
-  Props,
-  React.ElementRef<typeof Animated.View>,
-> = React.forwardRef((props, ref) => (
+const Touchable: component(
+  ref: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ...props: Props
+) = React.forwardRef((props, ref) => (
   <TouchableOpacity {...props} hostRef={ref} />
 ));
 

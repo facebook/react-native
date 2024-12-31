@@ -18,6 +18,9 @@ style.setProperty('--image-file-navigationControls_2x', 'url(\"' + new URL('./na
 style.setProperty('--image-file-navigationControls', 'url(\"' + new URL('./navigationControls.png', import.meta.url).toString() + '\")');
 style.setProperty('--image-file-nodeIcon', 'url(\"' + new URL('./nodeIcon.avif', import.meta.url).toString() + '\")');
 style.setProperty('--image-file-popoverArrows', 'url(\"' + new URL('./popoverArrows.png', import.meta.url).toString() + '\")');
+style.setProperty('--image-file-react_native/learn-debugging-basics', 'url(\"' + new URL('./react_native/learn-debugging-basics.jpg', import.meta.url).toString() + '\")');
+style.setProperty('--image-file-react_native/learn-native-debugging', 'url(\"' + new URL('./react_native/learn-native-debugging.jpg', import.meta.url).toString() + '\")');
+style.setProperty('--image-file-react_native/learn-react-native-devtools', 'url(\"' + new URL('./react_native/learn-react-native-devtools.jpg', import.meta.url).toString() + '\")');
 style.setProperty('--image-file-react_native/welcomeIcon', 'url(\"' + new URL('./react_native/welcomeIcon.png', import.meta.url).toString() + '\")');
 style.setProperty('--image-file-toolbarResizerVertical', 'url(\"' + new URL('./toolbarResizerVertical.png', import.meta.url).toString() + '\")');
 style.setProperty('--image-file-touchCursor_2x', 'url(\"' + new URL('./touchCursor_2x.png', import.meta.url).toString() + '\")');

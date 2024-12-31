@@ -24,7 +24,7 @@ internal open class ReactImageDownloadListener<INFO> :
     return super.onLevelChange(level)
   }
 
-  override fun onSubmit(id: String, callerContext: Any) = Unit
+  override fun onSubmit(id: String, callerContext: Any?) = Unit
 
   override fun onFinalImageSet(id: String, imageInfo: INFO?, animatable: Animatable?) = Unit
 
@@ -44,7 +44,7 @@ internal open class ReactImageDownloadListener<INFO> :
 
     override fun setColorFilter(colorFilter: ColorFilter?) = Unit
 
-    override fun getOpacity(): Int = PixelFormat.OPAQUE
+    @Deprecated("Deprecated in Java") override fun getOpacity(): Int = PixelFormat.OPAQUE
   }
 
   companion object {

@@ -43,6 +43,9 @@ internal object NdkConfiguratorUtils {
         if (cmakeArgs.none { it.startsWith("-DPROJECT_BUILD_DIR") }) {
           cmakeArgs.add("-DPROJECT_BUILD_DIR=${project.layout.buildDirectory.get().asFile}")
         }
+        if (cmakeArgs.none { it.startsWith("-DPROJECT_ROOT_DIR") }) {
+          cmakeArgs.add("-DPROJECT_ROOT_DIR=${project.rootProject.layout.projectDirectory.asFile}")
+        }
         if (cmakeArgs.none { it.startsWith("-DREACT_ANDROID_DIR") }) {
           cmakeArgs.add(
               "-DREACT_ANDROID_DIR=${extension.reactNativeDir.file("ReactAndroid").get().asFile}")
@@ -50,11 +53,8 @@ internal object NdkConfiguratorUtils {
         if (cmakeArgs.none { it.startsWith("-DANDROID_STL") }) {
           cmakeArgs.add("-DANDROID_STL=c++_shared")
         }
-        // Due to the new NDK toolchain file, the C++ flags gets overridden between compilation
-        // units. This is causing some libraries to don't be compiled with -DANDROID and other
-        // crucial flags. This can be revisited once we bump to NDK 25/26
-        if (cmakeArgs.none { it.startsWith("-DANDROID_USE_LEGACY_TOOLCHAIN_FILE") }) {
-          cmakeArgs.add("-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON")
+        if (cmakeArgs.none { it.startsWith("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES") }) {
+          cmakeArgs.add("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
         }
 
         val architectures = project.getReactNativeArchitectures()
@@ -93,30 +93,9 @@ internal object NdkConfiguratorUtils {
               "**/libfbjni.so",
               // Those are prefab libraries we distribute via ReactAndroid
               // Due to a bug in AGP, they fire a warning on console as both the JNI
-              // and the prefab .so files gets considered. See more on:
-              "**/libfabricjni.so",
-              "**/libfolly_runtime.so",
-              "**/libglog.so",
+              // and the prefab .so files gets considered.
+              "**/libreactnative.so",
               "**/libjsi.so",
-              "**/libmapbufferjni.so",
-              "**/libreact_codegen_rncore.so",
-              "**/libreact_debug.so",
-              "**/libreact_nativemodule_core.so",
-              "**/libreact_newarchdefaults.so",
-              "**/libreact_cxxreactpackage.so",
-              "**/libreact_render_componentregistry.so",
-              "**/libreact_render_core.so",
-              "**/libreact_render_debug.so",
-              "**/libreact_render_graphics.so",
-              "**/libreact_render_imagemanager.so",
-              "**/libreact_render_mapbuffer.so",
-              "**/libreact_utils.so",
-              "**/librrc_image.so",
-              "**/librrc_legacyviewmanagerinterop.so",
-              "**/librrc_view.so",
-              "**/libruntimeexecutor.so",
-              "**/libturbomodulejsijni.so",
-              "**/libyoga.so",
               // AGP will give priority of libc++_shared coming from App modules.
               "**/libc++_shared.so",
           ))
@@ -144,14 +123,14 @@ internal object NdkConfiguratorUtils {
     val includes = mutableListOf<String>()
     if (hermesEnabled) {
       excludes.add("**/libjsc.so")
-      excludes.add("**/libjscexecutor.so")
+      excludes.add("**/libjsctooling.so")
       includes.add("**/libhermes.so")
-      includes.add("**/libhermes_executor.so")
+      includes.add("**/libhermestooling.so")
     } else {
       excludes.add("**/libhermes.so")
-      excludes.add("**/libhermes_executor.so")
+      excludes.add("**/libhermestooling.so")
       includes.add("**/libjsc.so")
-      includes.add("**/libjscexecutor.so")
+      includes.add("**/libjsctooling.so")
     }
     return excludes to includes
   }

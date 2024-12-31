@@ -29,13 +29,17 @@ internal object DependencyUtils {
       with(eachProject) {
         if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
           val mavenLocalRepoPath = property(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO) as String
-          mavenRepoFromURI(File(mavenLocalRepoPath).toURI())
+          mavenRepoFromURI(File(mavenLocalRepoPath).toURI()) { repo ->
+            repo.content { it.excludeGroup("org.webkit") }
+          }
         }
         // We add the snapshot for users on nightlies.
-        mavenRepoFromUrl("https://oss.sonatype.org/content/repositories/snapshots/")
+        mavenRepoFromUrl("https://oss.sonatype.org/content/repositories/snapshots/") { repo ->
+          repo.content { it.excludeGroup("org.webkit") }
+        }
         repositories.mavenCentral { repo ->
           // We don't want to fetch JSC from Maven Central as there are older versions there.
-          repo.content { it.excludeModule("org.webkit", "android-jsc") }
+          repo.content { it.excludeGroup("org.webkit") }
 
           // If the user provided a react.internal.mavenLocalRepo, do not attempt to load
           // anything from Maven Central that is react related.
@@ -43,10 +47,22 @@ internal object DependencyUtils {
             repo.content { it.excludeGroup("com.facebook.react") }
           }
         }
-        // Android JSC is installed from npm
-        mavenRepoFromURI(File(reactNativeDir, "../jsc-android/dist").toURI())
-        repositories.google()
-        mavenRepoFromUrl("https://www.jitpack.io")
+        repositories.google { repo ->
+          repo.content {
+            // We don't want to fetch JSC or React from Google
+            it.excludeGroup("org.webkit")
+            it.excludeGroup("io.github.react-native-community")
+            it.excludeGroup("com.facebook.react")
+          }
+        }
+        mavenRepoFromUrl("https://www.jitpack.io") { repo ->
+          repo.content {
+            // We don't want to fetch JSC or React from JitPack
+            it.excludeGroup("org.webkit")
+            it.excludeGroup("io.github.react-native-community")
+            it.excludeGroup("com.facebook.react")
+          }
+        }
       }
     }
   }
@@ -134,9 +150,21 @@ internal object DependencyUtils {
     return Pair(versionString, groupString)
   }
 
-  fun Project.mavenRepoFromUrl(url: String): MavenArtifactRepository =
-      project.repositories.maven { it.url = URI.create(url) }
+  fun Project.mavenRepoFromUrl(
+      url: String,
+      action: (MavenArtifactRepository) -> Unit = {}
+  ): MavenArtifactRepository =
+      project.repositories.maven {
+        it.url = URI.create(url)
+        action(it)
+      }
 
-  fun Project.mavenRepoFromURI(uri: URI): MavenArtifactRepository =
-      project.repositories.maven { it.url = uri }
+  fun Project.mavenRepoFromURI(
+      uri: URI,
+      action: (MavenArtifactRepository) -> Unit = {}
+  ): MavenArtifactRepository =
+      project.repositories.maven {
+        it.url = uri
+        action(it)
+      }
 }

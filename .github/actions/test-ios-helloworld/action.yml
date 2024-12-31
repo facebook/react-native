@@ -41,8 +41,7 @@ runs:
       shell: bash
       run: ls -lR "$HERMES_WS_DIR"
     - name: Run yarn
-      shell: bash
-      run: yarn install --non-interactive
+      uses: ./.github/actions/yarn-install
     - name: Setup ruby
       uses: ruby/setup-ruby@v1.170.0
       with:

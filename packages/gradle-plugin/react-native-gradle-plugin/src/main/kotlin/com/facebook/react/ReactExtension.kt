@@ -184,19 +184,24 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
     internal fun getGradleDependenciesToApply(inputFile: File): MutableList<Pair<String, String>> {
       val model = JsonUtils.fromAutolinkingConfigJson(inputFile)
       val result = mutableListOf<Pair<String, String>>()
-      model?.dependencies?.values?.forEach { deps ->
-        val nameCleansed = deps.nameCleansed
-        val dependencyConfiguration = deps.platforms?.android?.dependencyConfiguration
-        val buildTypes = deps.platforms?.android?.buildTypes ?: emptyList()
-        if (buildTypes.isEmpty()) {
-          result.add((dependencyConfiguration ?: "implementation") to ":$nameCleansed")
-        } else {
-          buildTypes.forEach { buildType ->
-            result.add(
-                (dependencyConfiguration ?: "${buildType}Implementation") to ":$nameCleansed")
+      model
+          ?.dependencies
+          ?.values
+          ?.filter { it.platforms?.android !== null }
+          ?.filterNot { it.platforms?.android?.isPureCxxDependency == true }
+          ?.forEach { deps ->
+            val nameCleansed = deps.nameCleansed
+            val dependencyConfiguration = deps.platforms?.android?.dependencyConfiguration
+            val buildTypes = deps.platforms?.android?.buildTypes ?: emptyList()
+            if (buildTypes.isEmpty()) {
+              result.add((dependencyConfiguration ?: "implementation") to ":$nameCleansed")
+            } else {
+              buildTypes.forEach { buildType ->
+                result.add(
+                    (dependencyConfiguration ?: "${buildType}Implementation") to ":$nameCleansed")
+              }
+            }
           }
-        }
-      }
       return result
     }
   }

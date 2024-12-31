@@ -52,6 +52,17 @@ if (__DEV__) {
 
       isLogBoxInstalled = true;
 
+      if (global.RN$registerExceptionListener != null) {
+        global.RN$registerExceptionListener(
+          (error: ExtendedExceptionData & {preventDefault: () => mixed}) => {
+            if (global.RN$isRuntimeReady?.() || !error.isFatal) {
+              error.preventDefault();
+              addException(error);
+            }
+          },
+        );
+      }
+
       // Trigger lazy initialization of module.
       require('../NativeModules/specs/NativeLogBox');
 
@@ -122,12 +133,14 @@ if (__DEV__) {
       }
     },
 
-    addException(error: ExtendedExceptionData): void {
-      if (isLogBoxInstalled) {
-        LogBoxData.addException(error);
-      }
-    },
+    addException,
   };
+
+  function addException(error: ExtendedExceptionData): void {
+    if (isLogBoxInstalled) {
+      LogBoxData.addException(error);
+    }
+  }
 
   const isRCTLogAdviceWarning = (...args: Array<mixed>) => {
     // RCTLogAdvice is a native logging function designed to show users

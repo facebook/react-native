@@ -7,15 +7,15 @@
 
 package com.facebook.react
 
+import com.facebook.react.ReactSettingsExtension.Companion.checkAndUpdateCache
 import com.facebook.react.ReactSettingsExtension.Companion.checkAndUpdateLockfiles
 import com.facebook.react.ReactSettingsExtension.Companion.computeSha256
 import com.facebook.react.ReactSettingsExtension.Companion.getLibrariesToAutolink
-import groovy.test.GroovyTestCase.assertEquals
+import com.facebook.react.ReactSettingsExtension.GenerateConfig
 import java.io.File
+import org.assertj.core.api.Assertions.assertThat
 import org.gradle.testfixtures.ProjectBuilder
 import org.intellij.lang.annotations.Language
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -34,10 +34,8 @@ class ReactSettingsExtensionTest {
       }
       """
                 .trimIndent())
-
-    assertEquals(
-        "838aa9a72a16fdd55b0d49b510a82e264a30f59333b5fdd97c7798a29146f6a8",
-        computeSha256(validFile))
+    assertThat(computeSha256(validFile))
+        .isEqualTo("838aa9a72a16fdd55b0d49b510a82e264a30f59333b5fdd97c7798a29146f6a8")
   }
 
   @Test
@@ -52,7 +50,7 @@ class ReactSettingsExtensionTest {
                 .trimIndent())
 
     val map = getLibrariesToAutolink(validJsonFile)
-    assertEquals(0, map.keys.size)
+    assertThat(map.keys).isEmpty()
   }
 
   @Test
@@ -97,11 +95,9 @@ class ReactSettingsExtensionTest {
                 .trimIndent())
 
     val map = getLibrariesToAutolink(validJsonFile)
-    assertEquals(1, map.keys.size)
-    assertTrue(":react-native_oss-library-example" in map.keys)
-    assertEquals(
-        File("./node_modules/@react-native/oss-library-example/android"),
-        map[":react-native_oss-library-example"])
+    assertThat(map.keys).containsExactly(":react-native_oss-library-example")
+    assertThat(map[":react-native_oss-library-example"])
+        .isEqualTo(File("./node_modules/@react-native/oss-library-example/android"))
   }
 
   @Test
@@ -130,14 +126,14 @@ class ReactSettingsExtensionTest {
                 .trimIndent())
 
     val map = getLibrariesToAutolink(validJsonFile)
-    assertEquals(0, map.keys.size)
+    assertThat(map.keys).isEmpty()
   }
 
   @Test
   fun checkAndUpdateLockfiles_withNothingToCheck_returnsFalse() {
     val project = ProjectBuilder.builder().build()
     val noFiles = project.files()
-    assertFalse(checkAndUpdateLockfiles(noFiles, tempFolder.root))
+    assertThat(checkAndUpdateLockfiles(noFiles, tempFolder.root)).isFalse()
   }
 
   @Test
@@ -147,11 +143,10 @@ class ReactSettingsExtensionTest {
     tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
     val lockfileCollection = project.files("yarn.lock")
 
-    assertTrue(checkAndUpdateLockfiles(lockfileCollection, buildFolder))
-    assertTrue(File(buildFolder, "yarn.lock.sha").exists())
-    assertEquals(
-        "76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8",
-        File(buildFolder, "yarn.lock.sha").readText())
+    assertThat(checkAndUpdateLockfiles(lockfileCollection, buildFolder)).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").readText())
+        .isEqualTo("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
   }
 
   @Test
@@ -164,11 +159,10 @@ class ReactSettingsExtensionTest {
     tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
     val lockfileCollection = project.files("yarn.lock")
 
-    assertTrue(checkAndUpdateLockfiles(lockfileCollection, buildFolder))
-    assertTrue(File(buildFolder, "yarn.lock.sha").exists())
-    assertEquals(
-        "76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8",
-        File(buildFolder, "yarn.lock.sha").readText())
+    assertThat(checkAndUpdateLockfiles(lockfileCollection, buildFolder)).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").readText())
+        .isEqualTo("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
   }
 
   @Test
@@ -182,11 +176,10 @@ class ReactSettingsExtensionTest {
     tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
     val lockfileCollection = project.files("yarn.lock")
 
-    assertFalse(checkAndUpdateLockfiles(lockfileCollection, buildFolder))
-    assertTrue(File(buildFolder, "yarn.lock.sha").exists())
-    assertEquals(
-        "76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8",
-        File(buildFolder, "yarn.lock.sha").readText())
+    assertThat(checkAndUpdateLockfiles(lockfileCollection, buildFolder)).isFalse()
+    assertThat(File(buildFolder, "yarn.lock.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").readText())
+        .isEqualTo("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
   }
 
   @Test
@@ -200,15 +193,13 @@ class ReactSettingsExtensionTest {
     tempFolder.newFile("package-lock.json").apply { writeText("and I'm another lockfile") }
     val lockfileCollection = project.files("yarn.lock", "package-lock.json")
 
-    assertTrue(checkAndUpdateLockfiles(lockfileCollection, buildFolder))
-    assertTrue(File(buildFolder, "yarn.lock.sha").exists())
-    assertTrue(File(buildFolder, "package-lock.json.sha").exists())
-    assertEquals(
-        "76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8",
-        File(buildFolder, "yarn.lock.sha").readText())
-    assertEquals(
-        "9be5bca432b81becf4f54451aea021add68376330581eaa93ab9a0b3e4e29a3b",
-        File(buildFolder, "package-lock.json.sha").readText())
+    assertThat(checkAndUpdateLockfiles(lockfileCollection, buildFolder)).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "package-lock.json.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").readText())
+        .isEqualTo("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
+    assertThat(File(buildFolder, "package-lock.json.sha").readText())
+        .isEqualTo("9be5bca432b81becf4f54451aea021add68376330581eaa93ab9a0b3e4e29a3b")
   }
 
   @Test
@@ -225,17 +216,250 @@ class ReactSettingsExtensionTest {
     tempFolder.newFile("package-lock.json").apply { writeText("and I'm another lockfile") }
     val lockfileCollection = project.files("yarn.lock", "package-lock.json")
 
-    assertFalse(checkAndUpdateLockfiles(lockfileCollection, buildFolder))
-    assertTrue(File(buildFolder, "yarn.lock.sha").exists())
-    assertTrue(File(buildFolder, "package-lock.json.sha").exists())
-    assertEquals(
-        "76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8",
-        File(buildFolder, "yarn.lock.sha").readText())
-    assertEquals(
-        "9be5bca432b81becf4f54451aea021add68376330581eaa93ab9a0b3e4e29a3b",
-        File(buildFolder, "package-lock.json.sha").readText())
+    assertThat(checkAndUpdateLockfiles(lockfileCollection, buildFolder)).isFalse()
+    assertThat(File(buildFolder, "yarn.lock.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "package-lock.json.sha").exists()).isTrue()
+    assertThat(File(buildFolder, "yarn.lock.sha").readText())
+        .isEqualTo("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
+    assertThat(File(buildFolder, "package-lock.json.sha").readText())
+        .isEqualTo("9be5bca432b81becf4f54451aea021add68376330581eaa93ab9a0b3e4e29a3b")
+  }
+
+  @Test
+  fun skipUpdateIfConfigInCacheIsValid() {
+    val project = ProjectBuilder.builder().withProjectDir(tempFolder.root).build()
+    val buildFolder = tempFolder.newFolder("build")
+    val generatedFolder = tempFolder.newFolder("build", "generated")
+    val outputFile =
+        File(generatedFolder, "autolinking.json").apply {
+          writeText(
+              """
+      {
+        "root": "/",
+        "reactNativePath": "/node_modules/react-native",
+        "reactNativeVersion": "0.75",
+        "dependencies": {},
+        "healthChecks": [],
+        "platforms": {
+          "ios": {},
+          "android": {}
+        },
+        "assets": [],
+        "project": {
+          "ios": {},
+          "android": {
+            "sourceDir": "/",
+            "appName": "app",
+            "packageName": "com.TestApp",
+            "applicationId": "com.TestApp",
+            "mainActivity": ".MainActivity",
+            "assets": []
+          }
+        }
+      }
+    """
+                  .trimIndent())
+        }
+    tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
+    val lockfileCollection = project.files("yarn.lock")
+
+    // Prebuild the shas with the invalid empty autolinking.json
+    checkAndUpdateLockfiles(lockfileCollection, buildFolder)
+
+    val monitoredUpdateConfig = createMonitoredUpdateConfig()
+
+    checkAndUpdateCache(monitoredUpdateConfig, outputFile, buildFolder, lockfileCollection)
+
+    // The autolinking.json file is valid, SHA's are untouched therefore config should NOT be
+    // refreshed
+    assertThat(monitoredUpdateConfig.run).isFalse()
+  }
+
+  @Test
+  fun checkAndUpdateConfigIfEmpty() {
+    val project = ProjectBuilder.builder().withProjectDir(tempFolder.root).build()
+    val buildFolder = tempFolder.newFolder("build")
+    val generatedFolder = tempFolder.newFolder("build", "generated")
+    val outputFile = File(generatedFolder, "autolinking.json").apply { writeText("") }
+    tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
+    val lockfileCollection = project.files("yarn.lock")
+
+    // Prebuild the shas with the invalid empty autolinking.json
+    checkAndUpdateLockfiles(lockfileCollection, buildFolder)
+
+    val monitoredUpdateConfig = createMonitoredUpdateConfig()
+
+    checkAndUpdateCache(monitoredUpdateConfig, outputFile, buildFolder, lockfileCollection)
+
+    // The autolinking.json file is invalid and should be refreshed
+    assertThat(monitoredUpdateConfig.run).isTrue()
+  }
+
+  @Test
+  fun checkAndUpdateConfigIfCachedConfigInvalid() {
+    val project = ProjectBuilder.builder().withProjectDir(tempFolder.root).build()
+    val buildFolder = tempFolder.newFolder("build")
+    val generatedFolder = tempFolder.newFolder("build", "generated")
+    val outputFile =
+        File(generatedFolder, "autolinking.json").apply {
+          writeText(
+              """
+      {
+        "project": {
+          "ios": {},
+          "android": {}
+        }
+      }
+    """
+                  .trimIndent())
+        }
+    tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
+    val lockfileCollection = project.files("yarn.lock")
+
+    // Prebuild the shas with the invalid empty autolinking.json
+    checkAndUpdateLockfiles(lockfileCollection, buildFolder)
+
+    val monitoredUpdateConfig = createMonitoredUpdateConfig()
+
+    checkAndUpdateCache(monitoredUpdateConfig, outputFile, buildFolder, lockfileCollection)
+
+    // The autolinking.json file is invalid and should be refreshed
+    assertThat(monitoredUpdateConfig.run).isTrue()
+  }
+
+  @Test
+  fun isCacheDirty_withMissingAutolinkingFile_returnsTrue() {
+    val project = ProjectBuilder.builder().withProjectDir(tempFolder.root).build()
+    val buildFolder =
+        tempFolder.newFolder("build").apply {
+          File(this, "yarn.lock.sha")
+              .writeText("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
+        }
+    tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
+    val lockfiles = project.files("yarn.lock")
+    val emptyConfigFile = File(tempFolder.newFolder("build", "autolinking"), "autolinking.json")
+
+    assertThat(ReactSettingsExtension.isCacheDirty(emptyConfigFile, buildFolder, lockfiles))
+        .isTrue()
+  }
+
+  @Test
+  fun isCacheDirty_withInvalidAutolinkingFile_returnsTrue() {
+    val project = ProjectBuilder.builder().withProjectDir(tempFolder.root).build()
+    val buildFolder =
+        tempFolder.newFolder("build").apply {
+          File(this, "yarn.lock.sha")
+              .writeText("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
+        }
+    tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
+    val lockfiles = project.files("yarn.lock")
+    val invalidConfigFile =
+        createJsonFile(
+            """
+      {}
+      """
+                .trimIndent())
+
+    assertThat(ReactSettingsExtension.isCacheDirty(invalidConfigFile, buildFolder, lockfiles))
+        .isTrue()
+  }
+
+  @Test
+  fun isCacheDirty_withMissingDependenciesInJson_returnsFalse() {
+    val project = ProjectBuilder.builder().withProjectDir(tempFolder.root).build()
+    val buildFolder =
+        tempFolder.newFolder("build").apply {
+          File(this, "yarn.lock.sha")
+              .writeText("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
+        }
+    tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
+    val lockfiles = project.files("yarn.lock")
+    val invalidConfigFile =
+        createJsonFile(
+            """
+      {
+        "reactNativeVersion": "1000.0.0"
+      }
+      """
+                .trimIndent())
+
+    assertThat(ReactSettingsExtension.isCacheDirty(invalidConfigFile, buildFolder, lockfiles))
+        .isTrue()
+  }
+
+  @Test
+  fun isCacheDirty_withExistingEmptyDependenciesInJson_returnsTrue() {
+    val project = ProjectBuilder.builder().withProjectDir(tempFolder.root).build()
+    val buildFolder =
+        tempFolder.newFolder("build").apply {
+          File(this, "yarn.lock.sha")
+              .writeText("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
+        }
+    tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
+    val lockfiles = project.files("yarn.lock")
+    val invalidConfigFile =
+        createJsonFile(
+            """
+      {
+        "reactNativeVersion": "1000.0.0",
+        "dependencies": {}
+      }
+      """
+                .trimIndent())
+
+    assertThat(ReactSettingsExtension.isCacheDirty(invalidConfigFile, buildFolder, lockfiles))
+        .isTrue()
+  }
+
+  @Test
+  fun isCacheDirty_withExistingDependenciesInJson_returnsTrue() {
+    val project = ProjectBuilder.builder().withProjectDir(tempFolder.root).build()
+    val buildFolder =
+        tempFolder.newFolder("build").apply {
+          File(this, "yarn.lock.sha")
+              .writeText("76046b72442ee7eb130627e56c3db7c9907eef4913b17ad130335edc0eb702a8")
+        }
+    tempFolder.newFile("yarn.lock").apply { writeText("I'm a lockfile") }
+    val lockfiles = project.files("yarn.lock")
+    val invalidConfigFile =
+        createJsonFile(
+            """
+      {
+        "reactNativeVersion": "1000.0.0",
+        "dependencies": {
+          "@react-native/oss-library-example": {
+            "root": "./node_modules/@react-native/oss-library-example",
+            "name": "@react-native/oss-library-example",
+            "platforms": {
+              "ios": {
+                "podspecPath": "./node_modules/@react-native/oss-library-example/OSSLibraryExample.podspec",
+                "version": "0.0.1",
+                "configurations": [],
+                "scriptPhases": []
+              }
+            }
+          }
+        }
+      }
+      """
+                .trimIndent())
+
+    assertThat(ReactSettingsExtension.isCacheDirty(invalidConfigFile, buildFolder, lockfiles))
+        .isTrue()
   }
 
   private fun createJsonFile(@Language("JSON") input: String) =
       tempFolder.newFile().apply { writeText(input) }
+
+  private fun createMonitoredUpdateConfig() =
+      object : GenerateConfig {
+        var run = false
+
+        override fun start(): Process {
+          run = true
+          return ProcessBuilder("true").start()
+        }
+
+        override fun command(): List<String> = listOf("true")
+      }
 }

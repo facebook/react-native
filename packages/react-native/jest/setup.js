@@ -146,17 +146,20 @@ jest
         remove: jest.fn(),
       })),
       announceForAccessibility: jest.fn(),
-      isAccessibilityServiceEnabled: jest.fn(),
-      isBoldTextEnabled: jest.fn(),
-      isGrayscaleEnabled: jest.fn(),
-      isInvertColorsEnabled: jest.fn(),
-      isReduceMotionEnabled: jest.fn(),
-      prefersCrossFadeTransitions: jest.fn(),
-      isReduceTransparencyEnabled: jest.fn(),
+      announceForAccessibilityWithOptions: jest.fn(),
+      isAccessibilityServiceEnabled: jest.fn(() => Promise.resolve(false)),
+      isBoldTextEnabled: jest.fn(() => Promise.resolve(false)),
+      isGrayscaleEnabled: jest.fn(() => Promise.resolve(false)),
+      isInvertColorsEnabled: jest.fn(() => Promise.resolve(false)),
+      isReduceMotionEnabled: jest.fn(() => Promise.resolve(false)),
+      isHighTextContrastEnabled: jest.fn(() => Promise.resolve(false)),
+      isDarkerSystemColorsEnabled: jest.fn(() => Promise.resolve(false)),
+      prefersCrossFadeTransitions: jest.fn(() => Promise.resolve(false)),
+      isReduceTransparencyEnabled: jest.fn(() => Promise.resolve(false)),
       isScreenReaderEnabled: jest.fn(() => Promise.resolve(false)),
       setAccessibilityFocus: jest.fn(),
       sendAccessibilityEvent: jest.fn(),
-      getRecommendedTimeoutMillis: jest.fn(),
+      getRecommendedTimeoutMillis: jest.fn(() => Promise.resolve(false)),
     },
   }))
   .mock('../Libraries/Components/Clipboard/Clipboard', () => ({
@@ -279,6 +282,34 @@ jest
       addListener: jest.fn(),
       removeListeners: jest.fn(),
     },
+    NativeAnimatedModule: {
+      createAnimatedNode: jest.fn(),
+      updateAnimatedNodeConfig: jest.fn(),
+      getValue: jest.fn(),
+      startListeningToAnimatedNodeValue: jest.fn(),
+      stopListeningToAnimatedNodeValue: jest.fn(),
+      connectAnimatedNodes: jest.fn(),
+      disconnectAnimatedNodes: jest.fn(),
+      startAnimatingNode: jest.fn(
+        (animationId, nodeTag, config, endCallback) => {
+          setTimeout(() => endCallback({finished: true}), 16);
+        },
+      ),
+      stopAnimation: jest.fn(),
+      setAnimatedNodeValue: jest.fn(),
+      setAnimatedNodeOffset: jest.fn(),
+      flattenAnimatedNodeOffset: jest.fn(),
+      extractAnimatedNodeOffset: jest.fn(),
+      connectAnimatedNodeToView: jest.fn(),
+      disconnectAnimatedNodeFromView: jest.fn(),
+      restoreDefaultValues: jest.fn(),
+      dropAnimatedNode: jest.fn(),
+      addAnimatedEventToView: jest.fn(),
+      removeAnimatedEventFromView: jest.fn(),
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      removeListeners: jest.fn(),
+    },
     Networking: {
       sendRequest: jest.fn(),
       abortRequest: jest.fn(),
@@ -392,10 +423,6 @@ jest
   .mock('../Libraries/ReactNative/requireNativeComponent', () => {
     return jest.requireActual('./mockNativeComponent');
   })
-  .mock(
-    '../Libraries/Utilities/verifyComponentAttributeEquivalence',
-    () => function () {},
-  )
   .mock('../Libraries/Vibration/Vibration', () => ({
     vibrate: jest.fn(),
     cancel: jest.fn(),
@@ -421,4 +448,8 @@ jest
     return jest.requireActual(
       '../Libraries/ReactNative/RendererImplementation',
     );
-  });
+  })
+  .mock('../Libraries/Utilities/useColorScheme', () => ({
+    __esModule: true,
+    default: jest.fn().mockReturnValue('light'),
+  }));

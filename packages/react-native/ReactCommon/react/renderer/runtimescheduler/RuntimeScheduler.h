@@ -8,15 +8,21 @@
 #pragma once
 
 #include <ReactCommon/RuntimeExecutor.h>
+#include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/renderer/consistency/ShadowTreeRevisionConsistencyManager.h>
 #include <react/renderer/runtimescheduler/RuntimeSchedulerClock.h>
 #include <react/renderer/runtimescheduler/SchedulerPriorityUtils.h>
 #include <react/renderer/runtimescheduler/Task.h>
+#include "RuntimeSchedulerEventTimingDelegate.h"
 
 namespace facebook::react {
 
 using RuntimeSchedulerRenderingUpdate = std::function<void()>;
 using RuntimeSchedulerTimeout = std::chrono::milliseconds;
+using SurfaceId = int32_t;
+
+using RuntimeSchedulerTaskErrorHandler =
+    std::function<void(jsi::Runtime& runtime, jsi::JSError& error)>;
 
 // This is a temporary abstract class for RuntimeScheduler forks to implement
 // (and use them interchangeably).
@@ -40,14 +46,19 @@ class RuntimeSchedulerBase {
       RuntimeSchedulerTimeout timeout = timeoutForSchedulerPriority(
           SchedulerPriority::IdlePriority)) noexcept = 0;
   virtual void cancelTask(Task& task) noexcept = 0;
-  virtual bool getShouldYield() const noexcept = 0;
+  virtual bool getShouldYield() noexcept = 0;
   virtual SchedulerPriority getCurrentPriorityLevel() const noexcept = 0;
   virtual RuntimeSchedulerTimePoint now() const noexcept = 0;
   virtual void callExpiredTasks(jsi::Runtime& runtime) = 0;
   virtual void scheduleRenderingUpdate(
+      SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) = 0;
   virtual void setShadowTreeRevisionConsistencyManager(
       ShadowTreeRevisionConsistencyManager* provider) = 0;
+  virtual void setPerformanceEntryReporter(
+      PerformanceEntryReporter* reporter) = 0;
+  virtual void setEventTimingDelegate(
+      RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) = 0;
 };
 
 // This is a proxy for RuntimeScheduler implementation, which will be selected
@@ -57,7 +68,8 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   explicit RuntimeScheduler(
       RuntimeExecutor runtimeExecutor,
       std::function<RuntimeSchedulerTimePoint()> now =
-          RuntimeSchedulerClock::now);
+          RuntimeSchedulerClock::now,
+      RuntimeSchedulerTaskErrorHandler onTaskError = handleTaskErrorDefault);
 
   /*
    * Not copyable.
@@ -120,7 +132,7 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
    *
    * Can be called from any thread.
    */
-  bool getShouldYield() const noexcept override;
+  bool getShouldYield() noexcept override;
 
   /*
    * Returns value of currently executed task. Designed to be called from React.
@@ -148,16 +160,26 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
   void callExpiredTasks(jsi::Runtime& runtime) override;
 
   void scheduleRenderingUpdate(
+      SurfaceId surfaceId,
       RuntimeSchedulerRenderingUpdate&& renderingUpdate) override;
 
   void setShadowTreeRevisionConsistencyManager(
       ShadowTreeRevisionConsistencyManager*
           shadowTreeRevisionConsistencyManager) override;
 
+  void setPerformanceEntryReporter(PerformanceEntryReporter* reporter) override;
+
+  void setEventTimingDelegate(
+      RuntimeSchedulerEventTimingDelegate* eventTimingDelegate) override;
+
  private:
   // Actual implementation, stored as a unique pointer to simplify memory
   // management.
   std::unique_ptr<RuntimeSchedulerBase> runtimeSchedulerImpl_;
+
+  static void handleTaskErrorDefault(
+      jsi::Runtime& runtime,
+      jsi::JSError& error);
 };
 
 } // namespace facebook::react

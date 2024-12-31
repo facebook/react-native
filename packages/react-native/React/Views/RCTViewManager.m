@@ -295,6 +295,28 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityState, NSDictionary, RCTView)
   }
 }
 
+RCT_CUSTOM_VIEW_PROPERTY(accessibilityShowsLargeContentViewer, BOOL, RCTView)
+{
+  if (@available(iOS 13.0, *)) {
+    BOOL showsLargeContentViewer = json ? [RCTConvert BOOL:json] : defaultView.showsLargeContentViewer;
+
+    if (showsLargeContentViewer) {
+      view.showsLargeContentViewer = YES;
+      UILargeContentViewerInteraction *interaction = [[UILargeContentViewerInteraction alloc] init];
+      [view addInteraction:interaction];
+    } else {
+      view.showsLargeContentViewer = NO;
+    }
+  }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(accessibilityLargeContentTitle, NSString, RCTView)
+{
+  if (@available(iOS 13.0, *)) {
+    view.largeContentTitle = json ? [RCTConvert NSString:json] : defaultView.largeContentTitle;
+  }
+}
+
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)
 {
   view.nativeID = json ? [RCTConvert NSString:json] : defaultView.nativeID;
@@ -348,9 +370,9 @@ RCT_CUSTOM_VIEW_PROPERTY(borderCurve, RCTBorderCurve, RCTView)
 RCT_CUSTOM_VIEW_PROPERTY(borderRadius, CGFloat, RCTView)
 {
   if ([view respondsToSelector:@selector(setBorderRadius:)]) {
-    view.borderRadius = json ? [RCTConvert CGFloat:json] : defaultView.borderRadius;
+    view.borderRadius = json ? RCTJSONParseOnlyNumber(json) : defaultView.borderRadius;
   } else {
-    view.layer.cornerRadius = json ? [RCTConvert CGFloat:json] : defaultView.layer.cornerRadius;
+    view.layer.cornerRadius = json ? RCTJSONParseOnlyNumber(json) : defaultView.layer.cornerRadius;
   }
 }
 RCT_CUSTOM_VIEW_PROPERTY(borderColor, UIColor, RCTView)
@@ -402,7 +424,22 @@ RCT_CUSTOM_VIEW_PROPERTY(collapsableChildren, BOOL, RCTView)
   // filtered by view configs.
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(experimental_layoutConformance, NSString *, RCTView)
+typedef NSArray *FilterArray; // Custom type to make the StaticViewConfigValidator Happy
+RCT_CUSTOM_VIEW_PROPERTY(filter, FilterArray, RCTView)
+{
+  //   Property is only to be used in the new renderer.
+  //   It is necessary to add it here, otherwise it gets
+  //   filtered by view configs.
+}
+typedef NSArray *BoxShadowArray; // Custom type to make the StaticViewConfigValidator Happy
+RCT_CUSTOM_VIEW_PROPERTY(boxShadow, BoxShadowArray, RCTView)
+{
+  //   Property is only to be used in the new renderer.
+  //   It is necessary to add it here, otherwise it gets
+  //   filtered by view configs.
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(mixBlendMode, NSString *, RCTView)
 {
   // Property is only to be used in the new renderer.
   // It is necessary to add it here, otherwise it gets
@@ -433,12 +470,12 @@ RCT_VIEW_BORDER_PROPERTY(Block)
 RCT_VIEW_BORDER_PROPERTY(BlockEnd)
 RCT_VIEW_BORDER_PROPERTY(BlockStart)
 
-#define RCT_VIEW_BORDER_RADIUS_PROPERTY(SIDE)                                                          \
-  RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTView)                                     \
-  {                                                                                                    \
-    if ([view respondsToSelector:@selector(setBorder##SIDE##Radius:)]) {                               \
-      view.border##SIDE##Radius = json ? [RCTConvert CGFloat:json] : defaultView.border##SIDE##Radius; \
-    }                                                                                                  \
+#define RCT_VIEW_BORDER_RADIUS_PROPERTY(SIDE)                                                             \
+  RCT_CUSTOM_VIEW_PROPERTY(border##SIDE##Radius, CGFloat, RCTView)                                        \
+  {                                                                                                       \
+    if ([view respondsToSelector:@selector(setBorder##SIDE##Radius:)]) {                                  \
+      view.border##SIDE##Radius = json ? RCTJSONParseOnlyNumber(json) : defaultView.border##SIDE##Radius; \
+    }                                                                                                     \
   }
 
 RCT_VIEW_BORDER_RADIUS_PROPERTY(TopLeft)
@@ -695,5 +732,13 @@ RCT_EXPORT_VIEW_PROPERTY(onPointerOver, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPointerOut, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onGotPointerCapture, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLostPointerCapture, RCTBubblingEventBlock)
+
+CGFloat RCTJSONParseOnlyNumber(id json)
+{
+  if ([json isKindOfClass:[NSNumber class]]) {
+    return [RCTConvert CGFloat:json];
+  }
+  return 0.0f;
+}
 
 @end

@@ -39,7 +39,7 @@ inline int toInt(const DisplayType& displayType) {
       return 0;
     case DisplayType::Flex:
       return 1;
-    case DisplayType::Inline:
+    case DisplayType::Contents:
       return 2;
   }
 }
@@ -50,8 +50,8 @@ inline std::string toString(const DisplayType& displayType) {
       return "none";
     case DisplayType::Flex:
       return "flex";
-    case DisplayType::Inline:
-      return "inline";
+    case DisplayType::Contents:
+      return "contents";
   }
 }
 

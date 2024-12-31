@@ -21,6 +21,10 @@ bool InspectorFlags::getFuseboxEnabled() const {
   return loadFlagsAndAssertUnchanged().fuseboxEnabled;
 }
 
+bool InspectorFlags::getIsProfilingBuild() const {
+  return loadFlagsAndAssertUnchanged().isProfilingBuild;
+}
+
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
 }
@@ -44,8 +48,16 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
           true,
 #elif defined(HERMES_ENABLE_DEBUGGER)
           ReactNativeFeatureFlags::fuseboxEnabledDebug(),
+#elif defined(REACT_NATIVE_ENABLE_FUSEBOX_RELEASE)
+          true,
 #else
           ReactNativeFeatureFlags::fuseboxEnabledRelease(),
+#endif
+      .isProfilingBuild =
+#if defined(REACT_NATIVE_ENABLE_FUSEBOX_RELEASE)
+          true,
+#else
+          false,
 #endif
   };
 

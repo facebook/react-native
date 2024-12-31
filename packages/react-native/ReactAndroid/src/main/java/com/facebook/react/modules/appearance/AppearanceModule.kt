@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.facebook.fbreact.specs.NativeAppearanceSpec
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.module.annotations.ReactModule
 
 /** Module that exposes the user's preferred color scheme. */
@@ -24,7 +25,7 @@ constructor(
     private val overrideColorScheme: OverrideColorScheme? = null
 ) : NativeAppearanceSpec(reactContext) {
 
-  private var colorScheme = colorSchemeForCurrentConfiguration(reactContext)
+  private var lastEmittedColorScheme: String? = null
 
   /** Optional override to the current color scheme */
   public fun interface OverrideColorScheme {
@@ -42,10 +43,10 @@ constructor(
 
     val currentNightMode =
         context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-    when (currentNightMode) {
-      Configuration.UI_MODE_NIGHT_NO -> return "light"
-      Configuration.UI_MODE_NIGHT_YES -> return "dark"
-      else -> return "light"
+    return when (currentNightMode) {
+      Configuration.UI_MODE_NIGHT_NO -> "light"
+      Configuration.UI_MODE_NIGHT_YES -> "dark"
+      else -> "light"
     }
   }
 
@@ -54,16 +55,17 @@ constructor(
     // scheme. This covers the scenario when AppCompatDelegate.setDefaultNightMode()
     // is called directly (which can occur in Brownfield apps for example).
     val activity = getCurrentActivity()
-    colorScheme = colorSchemeForCurrentConfiguration(activity ?: getReactApplicationContext())
-    return colorScheme
+    return colorSchemeForCurrentConfiguration(activity ?: getReactApplicationContext())
   }
 
   public override fun setColorScheme(style: String) {
-    when {
-      style == "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-      style == "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-      style == "unspecified" ->
-          AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    UiThreadUtil.runOnUiThread {
+      when (style) {
+        "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        "light" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        "unspecified" ->
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+      }
     }
   }
 
@@ -79,9 +81,9 @@ constructor(
    */
   public fun onConfigurationChanged(currentContext: Context) {
     val newColorScheme = colorSchemeForCurrentConfiguration(currentContext)
-    if (colorScheme != newColorScheme) {
-      colorScheme = newColorScheme
-      emitAppearanceChanged(colorScheme)
+    if (lastEmittedColorScheme != newColorScheme) {
+      lastEmittedColorScheme = newColorScheme
+      emitAppearanceChanged(newColorScheme)
     }
   }
 

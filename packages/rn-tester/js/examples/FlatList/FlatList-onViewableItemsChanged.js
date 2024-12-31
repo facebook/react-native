@@ -11,76 +11,15 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {ViewToken} from 'react-native/Libraries/Lists/ViewabilityHelper';
 
-import BaseFlatListExample from './BaseFlatListExample';
+import {FlatList_BaseOnViewableItemsChanged} from './FlatList-BaseOnViewableItemsChanged';
 import * as React from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
-
-type FlatListProps = React.ElementProps<typeof FlatList>;
-type ViewabilityConfig = $PropertyType<FlatListProps, 'viewabilityConfig'>;
-
-const VIEWABILITY_CONFIG = {
-  minimumViewTime: 1000,
-  viewAreaCoveragePercentThreshold: 100,
-  waitForInteraction: true,
-};
-
-export function FlatList_onViewableItemsChanged(props: {
-  viewabilityConfig: ViewabilityConfig,
-  offScreen?: ?boolean,
-  horizontal?: ?boolean,
-  useScrollRefScroll?: ?boolean,
-}): React.Node {
-  const {viewabilityConfig, offScreen, horizontal, useScrollRefScroll} = props;
-  const [output, setOutput] = React.useState('');
-  const onViewableItemsChanged = React.useCallback(
-    (info: {changed: Array<ViewToken>, viewableItems: Array<ViewToken>, ...}) =>
-      setOutput(
-        info.viewableItems
-          .filter(viewToken => viewToken.index != null && viewToken.isViewable)
-          .map(viewToken => viewToken.item)
-          .join(', '),
-      ),
-    [setOutput],
-  );
-  const exampleProps = {
-    onViewableItemsChanged,
-    viewabilityConfig,
-    horizontal,
-  };
-
-  const ref = React.useRef<any>(null);
-  const onTest =
-    useScrollRefScroll === true
-      ? () => {
-          ref?.current?.getScrollResponder()?.scrollToEnd();
-        }
-      : null;
-
-  return (
-    <BaseFlatListExample
-      ref={ref}
-      exampleProps={exampleProps}
-      onTest={onTest}
-      testOutput={output}>
-      {offScreen === true ? <View style={styles.offScreen} /> : null}
-    </BaseFlatListExample>
-  );
-}
-
-const styles = StyleSheet.create({
-  offScreen: {
-    height: 1000,
-  },
-});
 
 export default ({
-  title: 'onViewableItemsChanged',
+  title: 'FlatList onViewableItemsChanged',
   name: 'onViewableItemsChanged',
-  description:
-    'Scroll list to see what items are returned in `onViewableItemsChanged` callback.',
+  description: 'Test onViewableItemsChanged behavior',
   render: () => (
-    <FlatList_onViewableItemsChanged viewabilityConfig={VIEWABILITY_CONFIG} />
+    <FlatList_BaseOnViewableItemsChanged waitForInteraction={true} />
   ),
 }: RNTesterModuleExample);

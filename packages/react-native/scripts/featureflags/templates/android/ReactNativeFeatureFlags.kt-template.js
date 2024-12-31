@@ -50,7 +50,7 @@ ${Object.entries(definitions.common)
   .map(
     ([flagName, flagConfig]) =>
       `  /**
-   * ${flagConfig.description}
+   * ${flagConfig.metadata.description}
    */
   @JvmStatic
   public fun ${flagName}(): ${getKotlinTypeFromDefaultValue(flagConfig.defaultValue)} = accessor.${flagName}()`,
@@ -91,6 +91,32 @@ ${Object.entries(definitions.common)
 
     // This discards the cached values and the overrides set in the JVM.
     accessor = accessorProvider()
+  }
+
+  /**
+   * This is a combination of \`dangerouslyReset\` and \`override\` that reduces
+   * the likeliness of a race condition between the two calls.
+   *
+   * This is **dangerous** because it can introduce consistency issues that will
+   * be much harder to debug. For example, it could hide the fact that feature
+   * flags are read before you set the values you want to use everywhere. It
+   * could also cause a workflow to suddently have different feature flags for
+   * behaviors that were configured with different values before.
+   *
+   * It returns a string that contains the feature flags that were accessed
+   * before this call (or between the last call to \`dangerouslyReset\` and this
+   * call). If you are using this method, you do not want the hard crash that
+   * you would get from using \`dangerouslyReset\` and \`override\` separately,
+   * but you should still log this somehow.
+   *
+   * Please see the documentation of \`dangerouslyReset\` for additional details.
+   */
+  @JvmStatic
+  public fun dangerouslyForceOverride(provider: ReactNativeFeatureFlagsProvider): String? {
+    val newAccessor = accessorProvider()
+    val previouslyAccessedFlags = newAccessor.dangerouslyForceOverride(provider)
+    accessor = newAccessor
+    return previouslyAccessedFlags
   }
 
   /**

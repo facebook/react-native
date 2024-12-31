@@ -128,7 +128,10 @@ static BOOL RCTIsIPhoneNotched()
     RCTAssertMainQueue();
 
     // 20pt is the top safeArea value in non-notched devices
-    isIPhoneNotched = RCTSharedApplication().keyWindow.safeAreaInsets.top > 20;
+    UIWindow *keyWindow = RCTKeyWindow();
+    if (keyWindow) {
+      isIPhoneNotched = keyWindow.safeAreaInsets.top > 20;
+    }
   });
 #endif
 
@@ -214,7 +217,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (void)_interfaceOrientationDidChange
 {
-#if TARGET_OS_IOS
+#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
   UIApplication *application = RCTSharedApplication();
   UIInterfaceOrientation nextOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
 

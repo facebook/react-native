@@ -1,3 +1,4 @@
+// @lint-ignore-every LICENSELINT
 /*
  * Copyright (c) 2015 Daniel Kirchner
  *
@@ -26,10 +27,6 @@
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /// magic constants :-)
 static const uint64_t PRIME1 = 11400714785074694791ULL;
@@ -106,13 +103,18 @@ NS_INLINE uint64_t h32bytes(const char *p, uint64_t len, const uint64_t seed)
   return h32bytes_compute(p, len, seed + PRIME1 + PRIME2, seed + PRIME2, seed, seed - PRIME1);
 }
 
-NS_INLINE uint64_t FBxxHash64(const char *p, uint64_t len, uint64_t seed)
+/*
+  Primary APIs
+ */
+
+NS_INLINE uint64_t meta_xxhash64(const char *p, uint64_t len, uint64_t seed)
 {
-  return finalize((len >= 32 ? h32bytes(p, len, seed) : seed + PRIME5) + len, p + (len & ~0x1F), len & 0x1F);
+  return finalize((len >= 32 ? h32bytes(p, len, seed) : seed + PRIME5) + len, p + (len & ~0x1FULL), len & 0x1FULL);
 }
 
-#ifdef __cplusplus
+NS_INLINE uint64_t FBxxHash64(const char *p, uint64_t len, uint64_t seed)
+{
+  return meta_xxhash64(p, len, seed);
 }
-#endif
 
 NS_ASSUME_NONNULL_END

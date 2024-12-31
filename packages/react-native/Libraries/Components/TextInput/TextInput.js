@@ -8,7 +8,8 @@
  * @format
  */
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
+import type {____TextStyle_Internal as TextStyleInternal} from '../../StyleSheet/StyleSheetTypes';
 import type {
   PressEvent,
   ScrollEvent,
@@ -36,10 +37,10 @@ import * as React from 'react';
 import {useCallback, useLayoutEffect, useRef, useState} from 'react';
 
 type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
-type TextInputInstance = React.ElementRef<HostComponent<mixed>> & {
+type TextInputInstance = HostInstance & {
   +clear: () => void,
   +isFocused: () => boolean,
-  +getNativeRef: () => ?React.ElementRef<HostComponent<mixed>>,
+  +getNativeRef: () => ?HostInstance,
   +setSelection: (start: number, end: number) => void,
 };
 
@@ -237,7 +238,12 @@ export type TextContentType =
   | 'birthdate'
   | 'birthdateDay'
   | 'birthdateMonth'
-  | 'birthdateYear';
+  | 'birthdateYear'
+  | 'cellularEID'
+  | 'cellularIMEI'
+  | 'dateTime'
+  | 'flightNumber'
+  | 'shipmentTrackingNumber';
 
 export type enterKeyHintType =
   // Cross Platform
@@ -305,6 +311,12 @@ type IOSProps = $ReadOnly<{|
   inputAccessoryViewID?: ?string,
 
   /**
+   * An optional label that overrides the default input accessory view button label.
+   * @platform ios
+   */
+  inputAccessoryViewButtonLabel?: ?string,
+
+  /**
    * Determines the color of the keyboard.
    * @platform ios
    */
@@ -356,6 +368,19 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   lineBreakStrategyIOS?: ?('none' | 'standard' | 'hangul-word' | 'push-out'),
+
+  /**
+   * Set line break mode on iOS.
+   * @platform ios
+   */
+  lineBreakModeIOS?: ?(
+    | 'wordWrapping'
+    | 'char'
+    | 'clip'
+    | 'head'
+    | 'middle'
+    | 'tail'
+  ),
 
   /**
    * If `false`, the iOS system will not insert an extra space after a paste operation
@@ -987,7 +1012,7 @@ function useTextInputStateSynchronization_STATE({
   props: Props,
   mostRecentEventCount: number,
   selection: ?Selection,
-  inputRef: React.RefObject<null | React.ElementRef<HostComponent<mixed>>>,
+  inputRef: React.RefObject<null | HostInstance>,
   text: string,
   viewCommands: ViewCommands,
 }): {
@@ -1068,7 +1093,7 @@ function useTextInputStateSynchronization_REFS({
   props: Props,
   mostRecentEventCount: number,
   selection: ?Selection,
-  inputRef: React.RefObject<null | React.ElementRef<HostComponent<mixed>>>,
+  inputRef: React.RefObject<null | HostInstance>,
   text: string,
   viewCommands: ViewCommands,
 }): {
@@ -1268,9 +1293,8 @@ function InternalTextInput(props: Props): React.Node {
     ...otherProps
   } = props;
 
-  const inputRef = useRef<null | React.ElementRef<HostComponent<mixed>>>(null);
+  const inputRef = useRef<null | HostInstance>(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const selection: ?Selection =
     propsSelection == null
       ? null
@@ -1367,7 +1391,7 @@ function InternalTextInput(props: Props): React.Node {
           isFocused(): boolean {
             return TextInputState.currentlyFocusedInput() === inputRef.current;
           },
-          getNativeRef(): ?React.ElementRef<HostComponent<mixed>> {
+          getNativeRef(): ?HostInstance {
             return inputRef.current;
           },
           setSelection(start: number, end: number): void {
@@ -1515,7 +1539,7 @@ function InternalTextInput(props: Props): React.Node {
 
   // TextInput handles onBlur and onFocus events
   // so omitting onBlur and onFocus pressability handlers here.
-  const {onBlur, onFocus, ...eventHandlers} = usePressability(config) || {};
+  const {onBlur, onFocus, ...eventHandlers} = usePressability(config);
 
   let _accessibilityState;
   if (
@@ -1535,12 +1559,29 @@ function InternalTextInput(props: Props): React.Node {
     };
   }
 
-  const style = flattenStyle<TextStyleProp>(props.style);
+  // Keep the original (potentially nested) style when possible, as React can diff these more efficiently
+  let _style = props.style;
+  const flattenedStyle = flattenStyle<TextStyleProp>(props.style);
+  if (flattenedStyle != null) {
+    let overrides: ?{...TextStyleInternal} = null;
+    if (typeof flattenedStyle?.fontWeight === 'number') {
+      overrides = overrides || ({}: {...TextStyleInternal});
+      overrides.fontWeight =
+        // $FlowFixMe[incompatible-cast]
+        (flattenedStyle.fontWeight.toString(): TextStyleInternal['fontWeight']);
+    }
 
-  if (typeof style?.fontWeight === 'number') {
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[cannot-write]
-    style.fontWeight = style?.fontWeight.toString();
+    if (flattenedStyle.verticalAlign != null) {
+      overrides = overrides || ({}: {...TextStyleInternal});
+      overrides.textAlignVertical =
+        verticalAlignToTextAlignVerticalMap[flattenedStyle.verticalAlign];
+      overrides.verticalAlign = undefined;
+    }
+
+    if (overrides != null) {
+      // $FlowFixMe[incompatible-type]
+      _style = [_style, overrides];
+    }
   }
 
   if (Platform.OS === 'ios') {
@@ -1551,10 +1592,10 @@ function InternalTextInput(props: Props): React.Node {
 
     const useMultilineDefaultStyle =
       props.multiline === true &&
-      (style == null ||
-        (style.padding == null &&
-          style.paddingVertical == null &&
-          style.paddingTop == null));
+      (flattenedStyle == null ||
+        (flattenedStyle.padding == null &&
+          flattenedStyle.paddingVertical == null &&
+          flattenedStyle.paddingTop == null));
 
     textInput = (
       <RCTTextInputView
@@ -1581,7 +1622,7 @@ function InternalTextInput(props: Props): React.Node {
         selectionColor={selectionColor}
         style={StyleSheet.compose(
           useMultilineDefaultStyle ? styles.multilineDefault : null,
-          style,
+          _style,
         )}
         text={text}
       />
@@ -1648,7 +1689,7 @@ function InternalTextInput(props: Props): React.Node {
         onScroll={_onScroll}
         onSelectionChange={_onSelectionChange}
         placeholder={placeholder}
-        style={style}
+        style={_style}
         text={text}
         textBreakStrategy={props.textBreakStrategy}
       />
@@ -1754,11 +1795,11 @@ const autoCompleteWebToTextContentTypeMap = {
   username: 'username',
 };
 
-const ExportedForwardRef: React.AbstractComponent<
-  React.ElementConfig<typeof InternalTextInput>,
-  TextInputInstance,
+const ExportedForwardRef: component(
+  ref: React.RefSetter<TextInputInstance>,
+  ...props: React.ElementConfig<typeof InternalTextInput>
   // $FlowFixMe[incompatible-call]
-> = React.forwardRef(function TextInput(
+) = React.forwardRef(function TextInput(
   {
     allowFontScaling = true,
     rejectResponderTermination = true,
@@ -1776,20 +1817,6 @@ const ExportedForwardRef: React.AbstractComponent<
   },
   forwardedRef: ReactRefSetter<TextInputInstance>,
 ) {
-  // $FlowFixMe[underconstrained-implicit-instantiation]
-  let style = flattenStyle(restProps.style);
-
-  if (style?.verticalAlign != null) {
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[cannot-write]
-    style.textAlignVertical =
-      // $FlowFixMe[invalid-computed-prop]
-      verticalAlignToTextAlignVerticalMap[style.verticalAlign];
-    // $FlowFixMe[prop-missing]
-    // $FlowFixMe[cannot-write]
-    delete style.verticalAlign;
-  }
-
   return (
     <InternalTextInput
       allowFontScaling={allowFontScaling}
@@ -1826,7 +1853,6 @@ const ExportedForwardRef: React.AbstractComponent<
       }
       {...restProps}
       forwardedRef={forwardedRef}
-      style={style}
     />
   );
 });

@@ -278,12 +278,12 @@ public class PointerEvent extends Event<PointerEvent> {
     int activePointerIndex = mMotionEvent.getActionIndex();
     List<WritableMap> pointersEventData = null;
     switch (mEventName) {
-        // Cases where all pointer info is relevant
+      // Cases where all pointer info is relevant
       case PointerEventHelper.POINTER_MOVE:
       case PointerEventHelper.POINTER_CANCEL:
         pointersEventData = createW3CPointerEvents();
         break;
-        // Cases where only the "active" pointer info is relevant
+      // Cases where only the "active" pointer info is relevant
       case PointerEventHelper.POINTER_ENTER:
       case PointerEventHelper.POINTER_DOWN:
       case PointerEventHelper.POINTER_UP:

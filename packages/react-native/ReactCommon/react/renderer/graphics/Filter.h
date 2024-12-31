@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Float.h>
 
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 namespace facebook::react {
@@ -28,11 +30,20 @@ enum class FilterType {
   DropShadow
 };
 
-struct FilterPrimitive {
-  bool operator==(const FilterPrimitive& other) const = default;
+struct DropShadowParams {
+  bool operator==(const DropShadowParams& other) const = default;
 
-  FilterType type;
-  Float amount;
+  Float offsetX{};
+  Float offsetY{};
+  Float standardDeviation{};
+  SharedColor color{};
+};
+
+struct FilterFunction {
+  bool operator==(const FilterFunction& other) const = default;
+
+  FilterType type{};
+  std::variant<Float, DropShadowParams> parameters{};
 };
 
 inline FilterType filterTypeFromString(std::string_view filterName) {
@@ -44,7 +55,7 @@ inline FilterType filterTypeFromString(std::string_view filterName) {
     return FilterType::Contrast;
   } else if (filterName == "grayscale") {
     return FilterType::Grayscale;
-  } else if (filterName == "hue-rotate") {
+  } else if (filterName == "hueRotate") {
     return FilterType::HueRotate;
   } else if (filterName == "invert") {
     return FilterType::Invert;
@@ -54,7 +65,7 @@ inline FilterType filterTypeFromString(std::string_view filterName) {
     return FilterType::Saturate;
   } else if (filterName == "sepia") {
     return FilterType::Sepia;
-  } else if (filterName == "drop-shadow") {
+  } else if (filterName == "dropShadow") {
     return FilterType::DropShadow;
   } else {
     throw std::invalid_argument(std::string(filterName));

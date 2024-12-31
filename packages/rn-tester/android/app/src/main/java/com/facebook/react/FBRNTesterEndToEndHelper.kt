@@ -10,7 +10,8 @@ package com.facebook.react
 import android.app.Application
 import java.io.PrintWriter
 
-object FBRNTesterEndToEndHelper {
+@Suppress("UNUSED_PARAMETER")
+internal object FBRNTesterEndToEndHelper {
   fun onCreate(application: Application) {
     // no-op This is an empty implementation to stub out Meta's internal test coverage
     // instrumentation.

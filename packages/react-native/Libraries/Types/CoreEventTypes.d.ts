@@ -8,7 +8,7 @@
  */
 
 import type * as React from 'react';
-import {HostComponent} from '../../types/public/ReactNativeTypes';
+import {HostInstance} from '../../types/public/ReactNativeTypes';
 
 export interface LayoutRectangle {
   x: number;
@@ -41,11 +41,7 @@ export interface TextLayoutEventData extends TargetedEvent {
 
 // Similar to React.SyntheticEvent except for nativeEvent
 export interface NativeSyntheticEvent<T>
-  extends React.BaseSyntheticEvent<
-    T,
-    React.ElementRef<HostComponent<unknown>>,
-    React.ElementRef<HostComponent<unknown>>
-  > {}
+  extends React.BaseSyntheticEvent<T, HostInstance, HostInstance> {}
 
 export interface NativeTouchEvent {
   /**
@@ -173,10 +169,7 @@ export interface NativeMouseEvent extends NativeUIEvent {
   /**
    * The secondary target for the event, if there is one.
    */
-  readonly relatedTarget:
-    | null
-    | number
-    | React.ElementRef<HostComponent<unknown>>;
+  readonly relatedTarget: null | number | HostInstance;
   // offset is proposed: https://drafts.csswg.org/cssom-view/#extensions-to-the-mouseevent-interface
   /**
    * The X coordinate of the mouse pointer between that event and the padding edge of the target node

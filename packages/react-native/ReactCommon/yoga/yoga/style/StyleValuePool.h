@@ -13,6 +13,7 @@
 #include <yoga/numeric/FloatOptional.h>
 #include <yoga/style/SmallValueBuffer.h>
 #include <yoga/style/StyleLength.h>
+#include <yoga/style/StyleSizeLength.h>
 #include <yoga/style/StyleValueHandle.h>
 
 namespace facebook::yoga {
@@ -32,10 +33,27 @@ class StyleValuePool {
     } else if (length.isAuto()) {
       handle.setType(StyleValueHandle::Type::Auto);
     } else {
-      auto type = length.unit() == Unit::Point
-          ? StyleValueHandle::Type::Point
-          : StyleValueHandle::Type::Percent;
+      auto type = length.isPoints() ? StyleValueHandle::Type::Point
+                                    : StyleValueHandle::Type::Percent;
       storeValue(handle, length.value().unwrap(), type);
+    }
+  }
+
+  void store(StyleValueHandle& handle, StyleSizeLength sizeValue) {
+    if (sizeValue.isUndefined()) {
+      handle.setType(StyleValueHandle::Type::Undefined);
+    } else if (sizeValue.isAuto()) {
+      handle.setType(StyleValueHandle::Type::Auto);
+    } else if (sizeValue.isMaxContent()) {
+      storeKeyword(handle, StyleValueHandle::Keyword::MaxContent);
+    } else if (sizeValue.isStretch()) {
+      storeKeyword(handle, StyleValueHandle::Keyword::Stretch);
+    } else if (sizeValue.isFitContent()) {
+      storeKeyword(handle, StyleValueHandle::Keyword::FitContent);
+    } else {
+      auto type = sizeValue.isPoints() ? StyleValueHandle::Type::Point
+                                       : StyleValueHandle::Type::Percent;
+      storeValue(handle, sizeValue.value().unwrap(), type);
     }
   }
 
@@ -49,9 +67,9 @@ class StyleValuePool {
 
   StyleLength getLength(StyleValueHandle handle) const {
     if (handle.isUndefined()) {
-      return value::undefined();
+      return StyleLength::undefined();
     } else if (handle.isAuto()) {
-      return value::ofAuto();
+      return StyleLength::ofAuto();
     } else {
       assert(
           handle.type() == StyleValueHandle::Type::Point ||
@@ -61,8 +79,33 @@ class StyleValuePool {
           : unpackInlineInteger(handle.value());
 
       return handle.type() == StyleValueHandle::Type::Point
-          ? value::points(value)
-          : value::percent(value);
+          ? StyleLength::points(value)
+          : StyleLength::percent(value);
+    }
+  }
+
+  StyleSizeLength getSize(StyleValueHandle handle) const {
+    if (handle.isUndefined()) {
+      return StyleSizeLength::undefined();
+    } else if (handle.isAuto()) {
+      return StyleSizeLength::ofAuto();
+    } else if (handle.isKeyword(StyleValueHandle::Keyword::MaxContent)) {
+      return StyleSizeLength::ofMaxContent();
+    } else if (handle.isKeyword(StyleValueHandle::Keyword::FitContent)) {
+      return StyleSizeLength::ofFitContent();
+    } else if (handle.isKeyword(StyleValueHandle::Keyword::Stretch)) {
+      return StyleSizeLength::ofStretch();
+    } else {
+      assert(
+          handle.type() == StyleValueHandle::Type::Point ||
+          handle.type() == StyleValueHandle::Type::Percent);
+      float value = (handle.isValueIndexed())
+          ? std::bit_cast<float>(buffer_.get32(handle.value()))
+          : unpackInlineInteger(handle.value());
+
+      return handle.type() == StyleValueHandle::Type::Point
+          ? StyleSizeLength::points(value)
+          : StyleSizeLength::percent(value);
     }
   }
 
@@ -95,6 +138,20 @@ class StyleValuePool {
       auto newIndex = buffer_.push(std::bit_cast<uint32_t>(value));
       handle.setValue(newIndex);
       handle.setValueIsIndexed();
+    }
+  }
+
+  void storeKeyword(
+      StyleValueHandle& handle,
+      StyleValueHandle::Keyword keyword) {
+    handle.setType(StyleValueHandle::Type::Keyword);
+
+    if (handle.isValueIndexed()) {
+      auto newIndex =
+          buffer_.replace(handle.value(), static_cast<uint32_t>(keyword));
+      handle.setValue(newIndex);
+    } else {
+      handle.setValue(static_cast<uint16_t>(keyword));
     }
   }
 

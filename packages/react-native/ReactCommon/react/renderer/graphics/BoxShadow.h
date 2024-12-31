@@ -18,7 +18,7 @@ struct BoxShadow {
   Float offsetX{};
   Float offsetY{};
   Float blurRadius{};
-  Float spreadRadius{};
+  Float spreadDistance{};
   SharedColor color{};
   bool inset{};
 };

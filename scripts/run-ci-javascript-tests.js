@@ -34,7 +34,7 @@ try {
   echo('Executing JavaScript tests');
 
   describe('Test: feature flags codegen');
-  if (exec(`${YARN_BINARY} run featureflags-check`).code) {
+  if (exec(`${YARN_BINARY} run featureflags --verify-unchanged`).code) {
     echo('Failed to run featureflags check.');
     exitCode = 1;
     throw Error(exitCode);
@@ -43,6 +43,13 @@ try {
   describe('Test: eslint');
   if (exec(`${YARN_BINARY} run lint`).code) {
     echo('Failed to run eslint.');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+
+  describe('Test: No JS build artifacts');
+  if (exec(`${YARN_BINARY} run build --check`).code) {
+    echo('Failed, there are build artifacts in this commit.');
     exitCode = 1;
     throw Error(exitCode);
   }

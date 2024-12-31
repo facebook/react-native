@@ -5,14 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// Conflicting okhttp versions
+@file:Suppress("DEPRECATION_ERROR")
+
 package com.facebook.react.modules.network
 
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.network.OkHttpCallUtil
@@ -21,9 +22,7 @@ import java.nio.charset.StandardCharsets
 import okhttp3.Call
 import okhttp3.Headers
 import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.MultipartBody.Companion.FORM
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -31,93 +30,70 @@ import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.any
-import org.mockito.ArgumentMatchers.eq
-import org.mockito.Captor
 import org.mockito.MockedStatic
-import org.mockito.Mockito.mock
+import org.mockito.Mockito.RETURNS_MOCKS
+import org.mockito.Mockito.mockConstruction
 import org.mockito.Mockito.mockStatic
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.`when` as whenever
+import org.mockito.kotlin.KArgumentCaptor
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.mockito.kotlin.withSettings
 import org.robolectric.RobolectricTestRunner
 
-/**
- * Returns Mockito.any() as nullable type to avoid java.lang.IllegalStateException when null is
- * returned.
- */
-private fun <T> anyOrNull(type: Class<T>): T = any(type)
-
-/**
- * Returns ArgumentCaptor.capture() as nullable type to avoid java.lang.IllegalStateException when
- * null is returned.
- */
-fun <T> capture(argumentCaptor: ArgumentCaptor<T>): T = argumentCaptor.capture()
-
+/** Tests [NetworkingModule] */
 @RunWith(RobolectricTestRunner::class)
 class NetworkingModuleTest {
+
   private lateinit var networkingModule: NetworkingModule
   private lateinit var httpClient: OkHttpClient
   private lateinit var context: ReactApplicationContext
   private lateinit var arguments: MockedStatic<Arguments>
+  private lateinit var okHttpCallUtil: MockedStatic<OkHttpCallUtil>
   private lateinit var requestBodyUtil: MockedStatic<RequestBodyUtil>
-
-  @Captor private lateinit var requestArgumentCaptor: ArgumentCaptor<Request>
+  private lateinit var requestArgumentCaptor: KArgumentCaptor<Request>
 
   @Before
-  fun prepareModules() {
-    httpClient = mock(OkHttpClient::class.java)
-    whenever(httpClient.cookieJar).thenReturn(mock(CookieJarContainer::class.java))
-    whenever(httpClient.newCall(anyOrNull(Request::class.java))).thenAnswer {
-      val callMock = mock(Call::class.java)
-      callMock
-    }
+  fun setUp() {
+    httpClient = mock()
+    whenever(httpClient.cookieJar()).thenReturn(mock<CookieJarContainer>())
+    whenever(httpClient.newCall(any())).thenReturn(mock())
 
-    val clientBuilder = mock(OkHttpClient.Builder::class.java)
+    val clientBuilder = mock<OkHttpClient.Builder>()
     whenever(clientBuilder.build()).thenReturn(httpClient)
     whenever(httpClient.newBuilder()).thenReturn(clientBuilder)
 
-    val reactInstance = mock(CatalystInstance::class.java)
-
-    context = mock(ReactApplicationContext::class.java)
-    whenever(context.catalystInstance).thenReturn(reactInstance)
+    context = mock()
     whenever(context.hasActiveReactInstance()).thenReturn(true)
 
-    networkingModule = NetworkingModule(context, "", httpClient)
+    networkingModule = NetworkingModule(context, "", httpClient, null)
 
     arguments = mockStatic(Arguments::class.java)
-    arguments.`when`<WritableArray>(Arguments::createArray).thenAnswer { JavaOnlyArray() }
-    arguments.`when`<WritableMap>(Arguments::createMap).thenAnswer { JavaOnlyMap() }
+    arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
+    arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
 
-    requestBodyUtil = mockStatic(RequestBodyUtil::class.java)
+    okHttpCallUtil = mockStatic(OkHttpCallUtil::class.java)
+    requestArgumentCaptor = argumentCaptor()
+  }
+
+  private fun setupRequestBodyUtil() {
+    requestBodyUtil =
+        mockStatic(RequestBodyUtil::class.java, withSettings().defaultAnswer(RETURNS_MOCKS))
     requestBodyUtil
-        .`when`<InputStream> {
-          RequestBodyUtil.getFileInputStream(any(ReactContext::class.java), any(String::class.java))
-        }
-        .thenReturn(mock(InputStream::class.java))
-    requestBodyUtil
-        .`when`<RequestBody> {
-          RequestBodyUtil.create(any(MediaType::class.java), any(InputStream::class.java))
-        }
-        .thenReturn(mock(RequestBody::class.java))
-    requestBodyUtil
-        .`when`<ProgressRequestBody> {
-          RequestBodyUtil.createProgressRequest(
-              any(RequestBody::class.java), any(ProgressListener::class.java))
-        }
+        .`when`<ProgressRequestBody> { RequestBodyUtil.createProgressRequest(any(), any()) }
         .thenCallRealMethod()
-
-    requestArgumentCaptor = ArgumentCaptor.forClass(Request::class.java)
   }
 
   @After
   fun tearDown() {
     arguments.close()
-    requestBodyUtil.close()
+    okHttpCallUtil.close()
   }
 
   @Test
@@ -133,11 +109,14 @@ class NetworkingModuleTest {
         0.0, /* timeout */
         false /* withCredentials */)
 
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
-    assertThat(requestArgumentCaptor.value.url.toString()).isEqualTo("http://somedomain/foo")
-    // We set the User-Agent header by default
-    assertThat(requestArgumentCaptor.value.headers.size).isEqualTo(1)
-    assertThat(requestArgumentCaptor.value.method).isEqualTo("GET")
+    with(requestArgumentCaptor) {
+      verify(httpClient).newCall(capture())
+
+      assertThat(firstValue.url().toString()).isEqualTo("http://somedomain/foo")
+      // We set the User-Agent header by default
+      assertThat(firstValue.headers().size()).isEqualTo(1)
+      assertThat(firstValue.method()).isEqualTo("GET")
+    }
   }
 
   @Test
@@ -194,12 +173,12 @@ class NetworkingModuleTest {
   }
 
   private fun verifyErrorEmit(context: ReactApplicationContext, requestId: Int) {
-    val captor = ArgumentCaptor.forClass(WritableArray::class.java)
+    val captor = argumentCaptor<WritableArray>()
     verify(context).emitDeviceEvent(eq("didCompleteNetworkResponse"), captor.capture())
 
-    val array = captor.value
+    val array = captor.firstValue
     assertThat(array.getInt(0)).isEqualTo(requestId)
-    assertThat(array.getString(1)).isNotNull
+    assertThat(array.getString(1)).isNotBlank
   }
 
   @Test
@@ -218,15 +197,17 @@ class NetworkingModuleTest {
         0.0, /* timeout */
         false /* withCredentials */)
 
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
-    assertThat(requestArgumentCaptor.value.url.toString()).isEqualTo("http://somedomain/bar")
-    assertThat(requestArgumentCaptor.value.headers.size).isEqualTo(2)
-    assertThat(requestArgumentCaptor.value.method).isEqualTo("POST")
-    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.type).isEqualTo("text")
-    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.subtype).isEqualTo("plain")
-    val contentBuffer = Buffer()
-    requestArgumentCaptor.value.body!!.writeTo(contentBuffer)
-    assertThat(contentBuffer.readUtf8()).isEqualTo("This is request body")
+    with(requestArgumentCaptor) {
+      verify(httpClient).newCall(capture())
+      assertThat(firstValue.url().toString()).isEqualTo("http://somedomain/bar")
+      assertThat(firstValue.headers().size()).isEqualTo(2)
+      assertThat(firstValue.method()).isEqualTo("POST")
+      assertThat(firstValue.body()?.contentType()?.type()).isEqualTo("text")
+      assertThat(firstValue.body()?.contentType()?.subtype()).isEqualTo("plain")
+      val contentBuffer = Buffer()
+      firstValue.body()?.writeTo(contentBuffer)
+      assertThat(contentBuffer.readUtf8()).isEqualTo("This is request body")
+    }
   }
 
   @Test
@@ -247,11 +228,13 @@ class NetworkingModuleTest {
         0.0, /* timeout */
         false /* withCredentials */)
 
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
-    val requestHeaders = requestArgumentCaptor.value.headers
-    assertThat(requestHeaders.size).isEqualTo(2)
-    assertThat(requestHeaders["Accept"]).isEqualTo("text/plain")
-    assertThat(requestHeaders["User-Agent"]).isEqualTo("React test agent/1.0")
+    with(requestArgumentCaptor) {
+      verify(httpClient).newCall(capture())
+      val requestHeaders = firstValue.headers()
+      assertThat(requestHeaders.size()).isEqualTo(2)
+      assertThat(requestHeaders["Accept"]).isEqualTo("text/plain")
+      assertThat(requestHeaders["User-Agent"]).isEqualTo("React test agent/1.0")
+    }
   }
 
   @Test
@@ -270,10 +253,10 @@ class NetworkingModuleTest {
         0.0, /* timeout */
         false /* withCredentials */)
 
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
+    verify(httpClient).newCall(requestArgumentCaptor.capture())
 
     // Verify okhttp does not append "charset=utf-8"
-    assertThat(requestArgumentCaptor.value.body!!.contentType().toString())
+    assertThat(requestArgumentCaptor.firstValue.body()?.contentType().toString())
         .isEqualTo("application/json")
   }
 
@@ -295,10 +278,10 @@ class NetworkingModuleTest {
         0.0, /* timeout */
         false /* withCredentials */)
 
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
+    verify(httpClient).newCall(requestArgumentCaptor.capture())
 
     val contentBuffer = Buffer()
-    requestArgumentCaptor.value.body!!.writeTo(contentBuffer)
+    requestArgumentCaptor.firstValue.body()?.writeTo(contentBuffer)
     assertThat(contentBuffer.readString(StandardCharsets.UTF_16)).isEqualTo(testString)
   }
 
@@ -318,17 +301,18 @@ class NetworkingModuleTest {
         0.0, /* timeout */
         false /* withCredentials */)
 
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
+    verify(httpClient).newCall(requestArgumentCaptor.capture())
 
     val contentBuffer = Buffer()
-    requestArgumentCaptor.value.body!!.writeTo(contentBuffer)
+    requestArgumentCaptor.firstValue.body()?.writeTo(contentBuffer)
 
     assertThat(contentBuffer.readString(StandardCharsets.UTF_8)).isEqualTo("test")
-    assertThat(requestArgumentCaptor.value.header("Content-Type")).isEqualTo("invalid")
+    assertThat(requestArgumentCaptor.firstValue.header("Content-Type")).isEqualTo("invalid")
   }
 
   @Test
   fun testMultipartPostRequestSimple() {
+    setupRequestBodyUtil()
     val body = JavaOnlyMap()
     val formData = JavaOnlyArray()
     val bodyPart = JavaOnlyMap()
@@ -350,17 +334,22 @@ class NetworkingModuleTest {
         false /* withCredentials */)
 
     // verify url, method, headers
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
-    assertThat(requestArgumentCaptor.value.url.toString()).isEqualTo("http://someurl/uploadFoo")
-    assertThat(requestArgumentCaptor.value.method).isEqualTo("POST")
-    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.type).isEqualTo(FORM.type)
-    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.subtype).isEqualTo(FORM.subtype)
-    val requestHeaders = requestArgumentCaptor.value.headers
-    assertThat(requestHeaders.size).isEqualTo(1)
+    with(requestArgumentCaptor) {
+      verify(httpClient).newCall(capture())
+      assertThat(firstValue.url().toString()).isEqualTo("http://someurl/uploadFoo")
+      assertThat(firstValue.method()).isEqualTo("POST")
+      assertThat(firstValue.body()?.contentType()?.type()).isEqualTo(FORM.type())
+      assertThat(firstValue.body()?.contentType()?.subtype()).isEqualTo(FORM.subtype())
+      val requestHeaders = firstValue.headers()
+      assertThat(requestHeaders.size()).isEqualTo(1)
+    }
+
+    requestBodyUtil.close()
   }
 
   @Test
   fun testMultipartPostRequestHeaders() {
+    setupRequestBodyUtil()
     val headers =
         listOf(
             JavaOnlyArray.of("Accept", "text/plain"),
@@ -388,36 +377,37 @@ class NetworkingModuleTest {
         false /* withCredentials */)
 
     // verify url, method, headers
-    verify(httpClient).newCall(capture(requestArgumentCaptor))
-    assertThat(requestArgumentCaptor.value.url.toString()).isEqualTo("http://someurl/uploadFoo")
-    assertThat(requestArgumentCaptor.value.method).isEqualTo("POST")
-    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.type).isEqualTo(FORM.type)
-    assertThat(requestArgumentCaptor.value.body!!.contentType()!!.subtype).isEqualTo(FORM.subtype)
-    val requestHeaders = requestArgumentCaptor.value.headers
-    assertThat(requestHeaders.size).isEqualTo(3)
-    assertThat(requestHeaders["Accept"]).isEqualTo("text/plain")
-    assertThat(requestHeaders["User-Agent"]).isEqualTo("React test agent/1.0")
-    assertThat(requestHeaders["content-type"]).isEqualTo("multipart/form-data")
+    with(requestArgumentCaptor) {
+      verify(httpClient).newCall(capture())
+      assertThat(firstValue.url().toString()).isEqualTo("http://someurl/uploadFoo")
+      assertThat(firstValue.method()).isEqualTo("POST")
+      assertThat(firstValue.body()?.contentType()?.type()).isEqualTo(FORM.type())
+      assertThat(firstValue.body()?.contentType()?.subtype()).isEqualTo(FORM.subtype())
+      val requestHeaders = firstValue.headers()
+      assertThat(requestHeaders.size()).isEqualTo(3)
+      assertThat(requestHeaders["Accept"]).isEqualTo("text/plain")
+      assertThat(requestHeaders["User-Agent"]).isEqualTo("React test agent/1.0")
+      assertThat(requestHeaders["content-type"]).isEqualTo("multipart/form-data")
+    }
+    requestBodyUtil.close()
   }
 
   @Test
-  @Ignore("TODO: Fix me (T171890419)")
   fun testMultipartPostRequestBody() {
-    val inputStream = mock(InputStream::class.java)
+    val inputStream = mock<InputStream>()
     whenever(inputStream.available()).thenReturn("imageUri".length)
-
-    val multipartBuilder = mock(MultipartBody.Builder::class.java)
-    // TODO This PowerMock statement should be migrated to an equivalent for Mockito
-    //      once this test is unsuppressed.
-    //    whenNew(MultipartBody.Builder.class)
-    //        .withNoArguments()
-    //        .thenReturn(multipartBuilder);
-    whenever(multipartBuilder.setType(anyOrNull(MediaType::class.java))).thenAnswer {
-      multipartBuilder
+    setupRequestBodyUtil()
+    with(requestBodyUtil) {
+      `when`<InputStream> { RequestBodyUtil.getFileInputStream(any(), any()) }
+          .thenReturn(inputStream)
+      `when`<RequestBody> { RequestBodyUtil.create(any(), any()) }.thenCallRealMethod()
     }
-    whenever(multipartBuilder.addPart(any(Headers::class.java), anyOrNull(RequestBody::class.java)))
-        .thenAnswer { multipartBuilder }
-    whenever(multipartBuilder.build()).thenAnswer { mock(MultipartBody::class.java) }
+    val multipartBodyBuilderMock =
+        mockConstruction(MultipartBody.Builder::class.java) { mock, _ ->
+          whenever(mock.setType(any())).thenReturn(mock)
+          whenever(mock.addPart(any(), any())).thenReturn(mock)
+          whenever(mock.build()).thenReturn(mock())
+        }
 
     val headers = listOf(JavaOnlyArray.of("content-type", "multipart/form-data"))
 
@@ -456,23 +446,17 @@ class NetworkingModuleTest {
         false /* withCredentials */)
 
     // verify RequestBodyPart for image
-
-    // TODO This should be migrated to requestBodyUtil.verify();
-    //  PowerMockito.verifyStatic(RequestBodyUtil.class, times(1));
-    RequestBodyUtil.getFileInputStream(any(ReactContext::class.java), eq("imageUri"))
-    // TODO This should be migrated to requestBodyUtil.verify();
-    //  PowerMockito.verifyStatic(RequestBodyUtil.class, times(1));
-    RequestBodyUtil.create("image/jpg".toMediaTypeOrNull(), inputStream)
+    requestBodyUtil.verify { RequestBodyUtil.getFileInputStream(any(), eq("imageUri")) }
+    requestBodyUtil.verify { RequestBodyUtil.create(eq(MediaType.parse("image/jpg")), any()) }
 
     // verify body
-    // TODO fix it (now mock is not called)
+    val multipartBuilder = multipartBodyBuilderMock.constructed()[0]
     verify(multipartBuilder).build()
     verify(multipartBuilder).setType(FORM)
-    // TODO fix it (Captors are nulls)
-    val headersArgumentCaptor = ArgumentCaptor.forClass(Headers::class.java)
-    val bodyArgumentCaptor = ArgumentCaptor.forClass(RequestBody::class.java)
+    val headersArgumentCaptor = argumentCaptor<Headers>()
+    val bodyArgumentCaptor = argumentCaptor<RequestBody>()
     verify(multipartBuilder, times(2))
-        .addPart(capture(headersArgumentCaptor), capture(bodyArgumentCaptor))
+        .addPart(headersArgumentCaptor.capture(), bodyArgumentCaptor.capture())
 
     val bodyHeaders = headersArgumentCaptor.allValues
     assertThat(bodyHeaders.size).isEqualTo(2)
@@ -484,23 +468,24 @@ class NetworkingModuleTest {
     assertThat(bodyRequestBody[0].contentLength()).isEqualTo("locale".toByteArray().size.toLong())
     assertThat(bodyHeaders[1]["content-disposition"])
         .isEqualTo("filename=\"测试photo.jpg\"; filename*=utf-8''%E6%B5%8B%E8%AF%95photo.jpg")
-    assertThat<MediaType?>(bodyRequestBody[1].contentType())
-        .isEqualTo("image/jpg".toMediaTypeOrNull())
+    assertThat<MediaType?>(bodyRequestBody[1].contentType()).isEqualTo(MediaType.parse("image/jpg"))
     assertThat(bodyRequestBody[1].contentLength()).isEqualTo("imageUri".toByteArray().size.toLong())
+
+    multipartBodyBuilderMock.close()
+    requestBodyUtil.close()
   }
 
   @Test
-  @Ignore("TODO: Fix me (T171890419)")
   fun testCancelAllCallsInvalidate() {
     val requests = 3
-    val calls = arrayOfNulls<Call>(requests)
+    val calls = mutableListOf<Call>()
     for (idx in 0 until requests) {
-      calls[idx] = mock(Call::class.java)
+      calls.add(mock<Call>())
     }
 
-    whenever(httpClient.newCall(anyOrNull(Request::class.java))).thenAnswer { invocation ->
+    whenever(httpClient.newCall(any())).thenAnswer { invocation ->
       val request = invocation.arguments[0] as Request
-      calls[(request.tag() as Int?)!! - 1]
+      calls[(request.tag() as Int) - 1]
     }
     networkingModule.initialize()
 
@@ -517,15 +502,12 @@ class NetworkingModuleTest {
           false /* withCredentials */)
     }
 
-    verify(httpClient, times(3)).newCall(anyOrNull(Request::class.java))
+    verify(httpClient, times(3)).newCall(any())
 
     networkingModule.invalidate()
-    // TODO This should be migrated to okHttpCallUtil.verify();
-    //  PowerMockito.verifyStatic(OkHttpCallUtil.class, times(3));
-    val clientArguments = ArgumentCaptor.forClass(OkHttpClient::class.java)
-    val requestIdArguments = ArgumentCaptor.forClass(Int::class.java)
-
-    OkHttpCallUtil.cancelTag(capture(clientArguments), capture(requestIdArguments))
+    val requestIdArguments = argumentCaptor<Int>()
+    okHttpCallUtil.verify(
+        { OkHttpCallUtil.cancelTag(any(), requestIdArguments.capture()) }, times(requests))
 
     assertThat(requestIdArguments.allValues.size).isEqualTo(requests)
     for (idx in 0 until requests) {
@@ -534,18 +516,16 @@ class NetworkingModuleTest {
   }
 
   @Test
-  @Ignore("TODO: Fix me (T171890419)")
   fun testCancelSomeCallsInvalidate() {
     val requests = 3
     val calls = arrayOfNulls<Call>(requests)
     for (idx in 0 until requests) {
-      calls[idx] = mock(Call::class.java)
+      calls[idx] = mock<Call>()
     }
-    whenever(httpClient.newCall(anyOrNull(Request::class.java))).thenAnswer { invocation ->
+    whenever(httpClient.newCall(any())).thenAnswer { invocation ->
       val request = invocation.arguments[0] as Request
-      calls[(request.tag() as Int?)!! - 1]
+      calls[(request.tag() as Int) - 1]
     }
-
     for (idx in 0 until requests) {
       networkingModule.sendRequest(
           "GET",
@@ -558,14 +538,14 @@ class NetworkingModuleTest {
           0.0, /* timeout */
           false /* withCredentials */)
     }
-    verify(httpClient, times(3)).newCall(anyOrNull(Request::class.java))
+    verify(httpClient, times(3)).newCall(any())
 
     networkingModule.abortRequest(requests.toDouble())
-    // TODO This should be migrated to okHttpCallUtil.verify();
-    //  PowerMockito.verifyStatic(OkHttpCallUtil.class, times(1));
-    var clientArguments = ArgumentCaptor.forClass(OkHttpClient::class.java)
-    var requestIdArguments = ArgumentCaptor.forClass(Int::class.java)
-    OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture())
+    var clientArguments = argumentCaptor<OkHttpClient>()
+    var requestIdArguments = argumentCaptor<Int>()
+    okHttpCallUtil.verify {
+      OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture())
+    }
     println(requestIdArguments.allValues)
     assertThat(requestIdArguments.allValues.size).isEqualTo(1)
     assertThat(requestIdArguments.allValues[0]).isEqualTo(requests)
@@ -575,14 +555,16 @@ class NetworkingModuleTest {
     // If `cancelTag` would've been called again for the aborted call, we would have had
     // `requests + 1` calls.
     networkingModule.invalidate()
-    // TODO This should be migrated to okHttpCallUtil.verify();
-    //  PowerMockito.verifyStatic(OkHttpCallUtil.class, times(requests));
-    clientArguments = ArgumentCaptor.forClass(OkHttpClient::class.java)
-    requestIdArguments = ArgumentCaptor.forClass(Int::class.java)
-    OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture())
+    clientArguments = argumentCaptor<OkHttpClient>()
+    requestIdArguments = argumentCaptor<Int>()
+    okHttpCallUtil.verify(
+        { OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture()) },
+        times(requests))
     assertThat(requestIdArguments.allValues.size).isEqualTo(requests)
     for (idx in 0 until requests) {
       assertThat(requestIdArguments.allValues.contains(idx + 1)).isTrue
     }
   }
 }
+
+private val FORM = MediaType.get("multipart/form-data")

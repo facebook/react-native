@@ -94,7 +94,13 @@ function toObjCType(
       }
     case 'StringTypeAnnotation':
       return 'NSString *';
+    case 'StringLiteralTypeAnnotation':
+      return 'NSString *';
+    case 'StringLiteralUnionTypeAnnotation':
+      return 'NSString *';
     case 'NumberTypeAnnotation':
+      return wrapCxxOptional('double', isRequired);
+    case 'NumberLiteralTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'FloatTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
@@ -118,7 +124,7 @@ function toObjCType(
     case 'GenericObjectTypeAnnotation':
       return wrapObjCOptional('id<NSObject>', isRequired);
     case 'ArrayTypeAnnotation':
-      if (typeAnnotation.elementType == null) {
+      if (typeAnnotation.elementType.type === 'AnyTypeAnnotation') {
         return wrapObjCOptional('id<NSObject>', isRequired);
       }
 
@@ -173,7 +179,13 @@ function toObjCValue(
       }
     case 'StringTypeAnnotation':
       return value;
+    case 'StringLiteralTypeAnnotation':
+      return value;
+    case 'StringLiteralUnionTypeAnnotation':
+      return value;
     case 'NumberTypeAnnotation':
+      return wrapPrimitive('double');
+    case 'NumberLiteralTypeAnnotation':
       return wrapPrimitive('double');
     case 'FloatTypeAnnotation':
       return wrapPrimitive('double');
@@ -198,7 +210,7 @@ function toObjCValue(
       return value;
     case 'ArrayTypeAnnotation':
       const {elementType} = typeAnnotation;
-      if (elementType == null) {
+      if (elementType.type === 'AnyTypeAnnotation') {
         return value;
       }
 

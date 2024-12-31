@@ -57,7 +57,7 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
 }
 
 - (instancetype)initWithBridge:(nullable RCTBridge *)bridge
-              surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter;
+              surfacePresenter:(id<RCTSurfacePresenterStub>)surfacePresenter
 {
   if ((self = [super init])) {
     _bridge = bridge;
@@ -368,6 +368,15 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
     [drivers addObject:driver];
     _eventDrivers[key] = drivers;
   }
+
+  // Handle onScrollEnded special events.
+  // These are triggered when the user stops dragging or when the
+  // scroll view stops decelerating after the user swiped
+  // The goal is to use this event to force a resync of the Shadow Tree
+  // with the Native tree
+  if ([eventName isEqualToString:@"onScroll"]) {
+    [self addAnimatedEventToView:viewTag eventName:@"onScrollEnded" eventMapping:eventMapping];
+  }
 }
 
 - (void)removeAnimatedEventFromView:(NSNumber *)viewTag
@@ -468,6 +477,24 @@ static NSString *RCTNormalizeAnimatedEventName(NSString *eventName)
   }
 
   [self stopAnimationLoopIfNeeded];
+}
+
+- (NSSet<NSNumber *> *)getTagsOfConnectedNodesFrom:(NSNumber *)tag andEvent:(NSString *)eventName
+{
+  NSMutableSet<NSNumber *> *tags = [NSMutableSet new];
+  NSString *key = [NSString stringWithFormat:@"%@%@", tag, RCTNormalizeAnimatedEventName(eventName)];
+  NSArray<RCTEventAnimation *> *eventAnimations = _eventDrivers[key];
+  for (RCTEventAnimation *animation in eventAnimations) {
+    NSNumber *nodeTag = [animation.valueNode nodeTag];
+    if (nodeTag) {
+      [tags addObject:nodeTag];
+    }
+    for (NSNumber *childNodeKey in [animation.valueNode childNodes]) {
+      [tags addObject:childNodeKey];
+    }
+  }
+
+  return tags;
 }
 
 #pragma mark-- Updates

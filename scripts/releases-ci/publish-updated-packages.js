@@ -11,8 +11,8 @@
 
 const {publishPackage} = require('../npm-utils');
 const {getPackages} = require('../utils/monorepo');
-const {parseArgs} = require('@pkgjs/parseargs');
 const {execSync} = require('child_process');
+const {parseArgs} = require('util');
 
 const PUBLISH_PACKAGES_TAG = '#publish-packages-to-npm';
 const NPM_CONFIG_OTP = process.env.NPM_CONFIG_OTP;
@@ -47,9 +47,7 @@ async function publishUpdatedPackages() {
   try {
     commitMessage = execSync('git log -1 --pretty=%B').toString();
   } catch {
-    console.error('Failed to read Git commit message, exiting.');
-    process.exitCode = 1;
-    return;
+    throw new Error('Failed to read Git commit message, exiting.');
   }
 
   if (!commitMessage.includes(PUBLISH_PACKAGES_TAG)) {
@@ -117,8 +115,7 @@ async function publishUpdatedPackages() {
   }
 
   if (failedPackages.length) {
-    process.exitCode = 1;
-    return;
+    throw new Error(`Failed packages count = ${failedPackages.length}`);
   }
 
   console.log('Done ✅');

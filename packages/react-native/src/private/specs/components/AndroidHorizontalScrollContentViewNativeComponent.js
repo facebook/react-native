@@ -23,4 +23,5 @@ type NativeType = HostComponent<NativeProps>;
 
 export default (codegenNativeComponent<NativeProps>(
   'AndroidHorizontalScrollContentView',
+  {interfaceOnly: true},
 ): NativeType);

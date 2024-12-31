@@ -55,7 +55,7 @@ static void calculateShadowViewMutationsForNewTree(
     mutations.push_back(
         ShadowViewMutation::CreateMutation(newChildPair->shadowView));
     mutations.push_back(ShadowViewMutation::InsertMutation(
-        parentShadowView,
+        parentShadowView.tag,
         newChildPair->shadowView,
         static_cast<int>(newChildPair->mountIndex)));
 

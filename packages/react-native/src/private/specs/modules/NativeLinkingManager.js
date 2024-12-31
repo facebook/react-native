@@ -14,7 +14,7 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 
 export interface Spec extends TurboModule {
   // Common interface
-  +getInitialURL: () => Promise<string>;
+  +getInitialURL: () => Promise<?string>;
   +canOpenURL: (url: string) => Promise<boolean>;
   +openURL: (url: string) => Promise<void>;
   +openSettings: () => Promise<void>;

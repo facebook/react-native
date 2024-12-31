@@ -58,7 +58,7 @@ public class Task<TResult> implements TaskInterface<TResult> {
   private static volatile UnobservedExceptionHandler unobservedExceptionHandler;
 
   /** Returns the handler invoked when a task has an unobserved exception or {@code null}. */
-  public static UnobservedExceptionHandler getUnobservedExceptionHandler() {
+  public static @Nullable UnobservedExceptionHandler getUnobservedExceptionHandler() {
     return unobservedExceptionHandler;
   }
 

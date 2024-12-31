@@ -62,7 +62,7 @@ void RawPropsKeyMap::reindex() noexcept {
     auto result = it;
     while (++it != end) {
       if (hasSameName(*result, *it)) {
-        LOG(ERROR)
+        LOG(WARNING)
             << "Component property map contains multiple entries for '"
             << std::string_view(it->name, it->length)
             << "'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.";

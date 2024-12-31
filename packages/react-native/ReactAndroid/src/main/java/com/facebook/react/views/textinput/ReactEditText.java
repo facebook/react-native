@@ -23,6 +23,7 @@ import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.KeyListener;
@@ -49,10 +50,21 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.common.UIManagerType;
+import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.LogicalEdge;
+import com.facebook.react.uimanager.style.Overflow;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.ReactTypefaceUtils;
 import com.facebook.react.views.text.TextAttributes;
@@ -60,14 +72,15 @@ import com.facebook.react.views.text.TextLayoutManager;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
+import com.facebook.react.views.text.internal.span.LegacyLineHeightSpan;
 import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactForegroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactSpan;
 import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
+import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
-import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -120,9 +133,9 @@ public class ReactEditText extends AppCompatEditText {
   private boolean mAutoFocus = false;
   private boolean mContextMenuHidden = false;
   private boolean mDidAttachToWindow = false;
+  private boolean mSelectTextOnFocus = false;
   private @Nullable String mPlaceholder = null;
-
-  private final ReactViewBackgroundManager mReactBackgroundManager;
+  private Overflow mOverflow = Overflow.VISIBLE;
 
   private StateWrapper mStateWrapper = null;
   protected boolean mDisableTextDiffing = false;
@@ -136,7 +149,6 @@ public class ReactEditText extends AppCompatEditText {
     super(context);
     setFocusableInTouchMode(false);
 
-    mReactBackgroundManager = new ReactViewBackgroundManager(this);
     mInputMethodManager =
         (InputMethodManager)
             Assertions.assertNotNull(context.getSystemService(Context.INPUT_METHOD_SERVICE));
@@ -238,6 +250,12 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     onContentSizeChange();
+    if (mSelectTextOnFocus && isFocused()) {
+      // Explicitly call this method to select text when layout is drawn
+      selectAll();
+      // Prevent text on being selected for next layout pass
+      mSelectTextOnFocus = false;
+    }
   }
 
   @Override
@@ -390,6 +408,10 @@ public class ReactEditText extends AppCompatEditText {
       return;
     }
 
+    maybeSetSelection(start, end);
+  }
+
+  private void maybeSetSelection(int start, int end) {
     if (start != ReactConstants.UNSET && end != ReactConstants.UNSET) {
       // clamp selection values for safety
       start = clampToTextLength(start);
@@ -516,7 +538,8 @@ public class ReactEditText extends AppCompatEditText {
       int selectionStart = getSelectionStart();
       int selectionEnd = getSelectionEnd();
       setInputType(mStagedInputType);
-      setSelection(selectionStart, selectionEnd);
+      // Restore the selection
+      maybeSetSelection(selectionStart, selectionEnd);
     }
   }
 
@@ -748,7 +771,9 @@ public class ReactEditText extends AppCompatEditText {
     stripSpansOfKind(
         sb,
         ReactBackgroundColorSpan.class,
-        (span) -> span.getBackgroundColor() == mReactBackgroundManager.getBackgroundColor());
+        (span) ->
+            Objects.equals(
+                span.getBackgroundColor(), BackgroundStyleApplicator.getBackgroundColor(this)));
 
     stripSpansOfKind(
         sb,
@@ -810,8 +835,8 @@ public class ReactEditText extends AppCompatEditText {
     workingText.setSpan(
         new ReactForegroundColorSpan(getCurrentTextColor()), 0, workingText.length(), spanFlags);
 
-    int backgroundColor = mReactBackgroundManager.getBackgroundColor();
-    if (backgroundColor != Color.TRANSPARENT) {
+    @Nullable Integer backgroundColor = BackgroundStyleApplicator.getBackgroundColor(this);
+    if (backgroundColor != null && backgroundColor != Color.TRANSPARENT) {
       workingText.setSpan(
           new ReactBackgroundColorSpan(backgroundColor), 0, workingText.length(), spanFlags);
     }
@@ -848,7 +873,13 @@ public class ReactEditText extends AppCompatEditText {
 
     float lineHeight = mTextAttributes.getEffectiveLineHeight();
     if (!Float.isNaN(lineHeight)) {
-      workingText.setSpan(new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
+      if (ReactNativeFeatureFlags.enableAndroidLineHeightCentering()) {
+        workingText.setSpan(
+            new CustomLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
+      } else {
+        workingText.setSpan(
+            new LegacyLineHeightSpan(lineHeight), 0, workingText.length(), spanFlags);
+      }
     }
   }
 
@@ -1035,11 +1066,17 @@ public class ReactEditText extends AppCompatEditText {
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
 
+    int selectionStart = getSelectionStart();
+    int selectionEnd = getSelectionEnd();
+
     // Used to ensure that text is selectable inside of removeClippedSubviews
     // See https://github.com/facebook/react-native/issues/6805 for original
     // fix that was ported to here.
 
     super.setTextIsSelectable(true);
+
+    // Restore the selection since `setTextIsSelectable` changed it.
+    maybeSetSelection(selectionStart, selectionEnd);
 
     if (mContainsImages) {
       Spanned text = getText();
@@ -1070,31 +1107,42 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public void setBackgroundColor(int color) {
-    mReactBackgroundManager.setBackgroundColor(color);
+    BackgroundStyleApplicator.setBackgroundColor(this, color);
   }
 
   public void setBorderWidth(int position, float width) {
-    mReactBackgroundManager.setBorderWidth(position, width);
+    BackgroundStyleApplicator.setBorderWidth(
+        this, LogicalEdge.values()[position], PixelUtil.toDIPFromPixel(width));
   }
 
-  public void setBorderColor(int position, float color, float alpha) {
-    mReactBackgroundManager.setBorderColor(position, color, alpha);
+  public void setBorderColor(int position, @Nullable Integer color) {
+    BackgroundStyleApplicator.setBorderColor(this, LogicalEdge.values()[position], color);
   }
 
   public int getBorderColor(int position) {
-    return mReactBackgroundManager.getBorderColor(position);
+    @Nullable
+    Integer borderColor =
+        BackgroundStyleApplicator.getBorderColor(this, LogicalEdge.values()[position]);
+    return borderColor == null ? Color.TRANSPARENT : borderColor;
   }
 
   public void setBorderRadius(float borderRadius) {
-    mReactBackgroundManager.setBorderRadius(borderRadius);
+    setBorderRadius(borderRadius, BorderRadiusProp.BORDER_RADIUS.ordinal());
   }
 
   public void setBorderRadius(float borderRadius, int position) {
-    mReactBackgroundManager.setBorderRadius(borderRadius, position);
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(
+                PixelUtil.toDIPFromPixel(borderRadius), LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(this, BorderRadiusProp.values()[position], radius);
   }
 
   public void setBorderStyle(@Nullable String style) {
-    mReactBackgroundManager.setBorderStyle(style);
+    BackgroundStyleApplicator.setBorderStyle(
+        this, style == null ? null : BorderStyle.fromString(style));
   }
 
   public void setLetterSpacingPt(float letterSpacingPt) {
@@ -1123,6 +1171,11 @@ public class ReactEditText extends AppCompatEditText {
 
   public void setAutoFocus(boolean autoFocus) {
     mAutoFocus = autoFocus;
+  }
+
+  public void setSelectTextOnFocus(boolean selectTextOnFocus) {
+    super.setSelectAllOnFocus(selectTextOnFocus);
+    mSelectTextOnFocus = selectTextOnFocus;
   }
 
   public void setContextMenuHidden(boolean contextMenuHidden) {
@@ -1221,13 +1274,18 @@ public class ReactEditText extends AppCompatEditText {
     if (!haveText) {
       if (getHint() != null && getHint().length() > 0) {
         sb.append(getHint());
-      } else {
+      } else if (ViewUtil.getUIManagerType(this) != UIManagerType.FABRIC) {
         // Measure something so we have correct height, even if there's no string.
         sb.append("I");
       }
     }
 
     addSpansFromStyleAttributes(sb);
+    sb.setSpan(
+        new ReactTextPaintHolderSpan(new TextPaint(getPaint())),
+        0,
+        sb.length(),
+        Spannable.SPAN_INCLUSIVE_INCLUSIVE);
     TextLayoutManager.setCachedSpannableForTag(getId(), sb);
   }
 
@@ -1236,12 +1294,22 @@ public class ReactEditText extends AppCompatEditText {
   }
 
   public void setOverflow(@Nullable String overflow) {
-    mReactBackgroundManager.setOverflow(overflow);
+    if (overflow == null) {
+      mOverflow = Overflow.VISIBLE;
+    } else {
+      @Nullable Overflow parsedOverflow = Overflow.fromString(overflow);
+      mOverflow = parsedOverflow == null ? Overflow.VISIBLE : parsedOverflow;
+    }
+
+    invalidate();
   }
 
   @Override
   public void onDraw(Canvas canvas) {
-    mReactBackgroundManager.maybeClipToPaddingBox(canvas);
+    if (mOverflow != Overflow.VISIBLE) {
+      BackgroundStyleApplicator.clipToPaddingBox(this, canvas);
+    }
+
     super.onDraw(canvas);
   }
 

@@ -43,13 +43,13 @@ UIColor *_Nullable UIColorFromDynamicColor(const facebook::react::DynamicColor &
   if (lightColor != nil && darkColor != nil) {
     UIColor *color = [UIColor colorWithDynamicProvider:^UIColor *_Nonnull(UITraitCollection *_Nonnull collection) {
       if (collection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-        if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDarkColor != nil) {
+        if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastDark != 0) {
           return highContrastDarkColor;
         } else {
           return darkColor;
         }
       } else {
-        if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLightColor != nil) {
+        if (collection.accessibilityContrast == UIAccessibilityContrastHigh && highContrastLight != 0) {
           return highContrastLightColor;
         } else {
           return lightColor;
@@ -133,6 +133,15 @@ int32_t Color::getColor() const
 {
   return ColorFromUIColor(uiColor_);
 }
+
+float Color::getChannel(int channelId) const
+{
+  CGFloat rgba[4];
+  UIColor *color = (__bridge UIColor *)getUIColor().get();
+  [color getRed:&rgba[0] green:&rgba[1] blue:&rgba[2] alpha:&rgba[3]];
+  return static_cast<float>(rgba[channelId]);
+}
+
 } // namespace facebook::react
 
 NS_ASSUME_NONNULL_END

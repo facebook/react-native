@@ -8,6 +8,7 @@
  * @format
  */
 
+import SafeAreaView from '../../src/private/components/SafeAreaView_INTERNAL_DO_NOT_USE';
 import View from '../Components/View/View';
 import StyleSheet from '../StyleSheet/StyleSheet';
 import * as LogBoxData from './Data/LogBoxData';
@@ -58,7 +59,7 @@ export function _LogBoxNotificationContainer(props: Props): React.Node {
     log => log.level === 'error' || log.level === 'fatal',
   );
   return (
-    <View style={styles.list}>
+    <SafeAreaView style={styles.list}>
       {warnings.length > 0 && (
         <View style={styles.toast}>
           <LogBoxLogNotification
@@ -81,7 +82,7 @@ export function _LogBoxNotificationContainer(props: Props): React.Node {
           />
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -101,4 +102,4 @@ const styles = StyleSheet.create({
 
 export default (LogBoxData.withSubscription(
   _LogBoxNotificationContainer,
-): React.AbstractComponent<{||}>);
+): React.ComponentType<{||}>);

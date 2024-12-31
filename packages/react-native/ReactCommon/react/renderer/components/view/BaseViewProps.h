@@ -13,9 +13,12 @@
 #include <react/renderer/core/LayoutMetrics.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/graphics/BackgroundImage.h>
+#include <react/renderer/graphics/BlendMode.h>
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Color.h>
 #include <react/renderer/graphics/Filter.h>
+#include <react/renderer/graphics/Isolation.h>
 #include <react/renderer/graphics/Transform.h>
 
 #include <optional>
@@ -28,7 +31,9 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   BaseViewProps(
       const PropsParserContext& context,
       const BaseViewProps& sourceProps,
-      const RawProps& rawProps);
+      const RawProps& rawProps,
+      const std::function<bool(const std::string&)>& filterObjectKeys =
+          nullptr);
 
   void setProp(
       const PropsParserContext& context,
@@ -48,6 +53,12 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   CascadedBorderCurves borderCurves{}; // iOS only?
   CascadedBorderStyles borderStyles{};
 
+  // Outline
+  SharedColor outlineColor{};
+  Float outlineOffset{};
+  OutlineStyle outlineStyle{OutlineStyle::Solid};
+  Float outlineWidth{};
+
   // Shadow
   SharedColor shadowColor{};
   Size shadowOffset{0, -3};
@@ -60,10 +71,16 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
   std::vector<BoxShadow> boxShadow{};
 
   // Filter
-  std::vector<FilterPrimitive> filter{};
+  std::vector<FilterFunction> filter{};
+
+  // Background Image
+  std::vector<BackgroundImage> backgroundImage{};
 
   // MixBlendMode
-  std::string mixBlendMode;
+  BlendMode mixBlendMode{BlendMode::Normal};
+
+  // Isolate
+  Isolation isolation{Isolation::Auto};
 
   // Transform
   Transform transform{};
@@ -91,10 +108,9 @@ class BaseViewProps : public YogaStylableProps, public AccessibilityProps {
 
   bool removeClippedSubviews{false};
 
-  LayoutConformance experimental_layoutConformance{};
-
 #pragma mark - Convenience Methods
 
+  CascadedBorderWidths getBorderWidths() const;
   BorderMetrics resolveBorderMetrics(const LayoutMetrics& layoutMetrics) const;
   Transform resolveTransform(const LayoutMetrics& layoutMetrics) const;
   bool getClipsContentToBounds() const;

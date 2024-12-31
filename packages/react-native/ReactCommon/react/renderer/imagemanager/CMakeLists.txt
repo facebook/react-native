@@ -16,25 +16,27 @@ add_compile_options(
 
 file(GLOB react_render_imagemanager_SRC CONFIGURE_DEPENDS
         *.cpp
-        platform/cxx/react/renderer/imagemanager/*.cpp)
+        platform/android/react/renderer/imagemanager/*.cpp)
 
 add_library(react_render_imagemanager
-        SHARED
+        OBJECT
         ${react_render_imagemanager_SRC})
 
 target_include_directories(react_render_imagemanager
         PUBLIC
           ${REACT_COMMON_DIR}
-          ${CMAKE_CURRENT_SOURCE_DIR}/platform/cxx/
+          ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
         PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}
         )
 
 target_link_libraries(react_render_imagemanager
         folly_runtime
+        mapbufferjni
         react_debug
         react_render_core
         react_render_debug
         react_render_graphics
         react_render_mounting
+        reactnativejni
         yoga)
