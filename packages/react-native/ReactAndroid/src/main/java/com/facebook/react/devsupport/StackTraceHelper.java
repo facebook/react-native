@@ -268,8 +268,12 @@ public class StackTraceHelper {
     List<ReadableMap> readableMapList = new ArrayList<>();
     for (ParsedError.StackFrame frame : frames) {
       JavaOnlyMap map = new JavaOnlyMap();
-      map.putDouble(COLUMN_KEY, frame.getColumn());
-      map.putDouble(LINE_NUMBER_KEY, frame.getLineNumber());
+      if (frame.getColumn() != null) {
+        map.putDouble(COLUMN_KEY, frame.getColumn());
+      }
+      if (frame.getLineNumber() != null) {
+        map.putDouble(LINE_NUMBER_KEY, frame.getLineNumber());
+      }
       map.putString(FILE_KEY, (String) frame.getFile());
       map.putString(METHOD_NAME_KEY, (String) frame.getMethodName());
       readableMapList.add(map);
