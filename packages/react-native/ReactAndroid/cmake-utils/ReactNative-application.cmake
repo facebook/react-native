@@ -40,6 +40,9 @@ if (PROJECT_ROOT_DIR)
 endif ()
 
 file(GLOB override_cpp_SRC CONFIGURE_DEPENDS *.cpp)
+# We check if the user is providing a custom OnLoad.cpp file. If so, we pick that
+# for compilation. Otherwise we fallback to using the `default-app-setup/OnLoad.cpp` 
+# file instead.
 if(override_cpp_SRC)
         file(GLOB input_SRC CONFIGURE_DEPENDS
                 *.cpp
