@@ -21,7 +21,10 @@ type ErrorInfo = {
   +errorBoundary?: ?React$Component<any, any>,
 };
 
-export function onUncaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
+function getExtendedError(
+  errorValue: mixed,
+  errorInfo: ErrorInfo,
+): ExtendedError {
   let error;
 
   // Typically, `errorValue` should be an error. However, other values such as
@@ -49,39 +52,19 @@ export function onUncaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
   } catch {
     // Ignored.
   }
+
+  return error;
+}
+
+export function onUncaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
+  const error = getExtendedError(errorValue, errorInfo);
 
   // Uncaught errors are fatal.
   handleException(error, true);
 }
 
 export function onCaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
-  let error;
-
-  // Typically, `errorValue` should be an error. However, other values such as
-  // strings (or even null) are sometimes thrown.
-  if (errorValue instanceof Error) {
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for
-     * this parameters */
-    // $FlowFixMe[incompatible-cast]
-    error = (errorValue: ExtendedError);
-  } else if (typeof errorValue === 'string') {
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for
-     * this parameters */
-    // $FlowFixMe[incompatible-cast]
-    error = (new SyntheticError(errorValue): ExtendedError);
-  } else {
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for
-     * this parameters */
-    // $FlowFixMe[incompatible-cast]
-    error = (new SyntheticError('Unspecified error'): ExtendedError);
-  }
-  try {
-    // $FlowFixMe[incompatible-use] this is in try/catch.
-    error.componentStack = errorInfo.componentStack;
-    error.isComponentError = true;
-  } catch {
-    // Ignored.
-  }
+  const error = getExtendedError(errorValue, errorInfo);
 
   // Caught errors are not fatal.
   handleException(error, false);
@@ -91,33 +74,7 @@ export function onRecoverableError(
   errorValue: mixed,
   errorInfo: ErrorInfo,
 ): void {
-  let error;
-
-  // Typically, `errorValue` should be an error. However, other values such as
-  // strings (or even null) are sometimes thrown.
-  if (errorValue instanceof Error) {
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for
-     * this parameters */
-    // $FlowFixMe[incompatible-cast]
-    error = (errorValue: ExtendedError);
-  } else if (typeof errorValue === 'string') {
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for
-     * this parameters */
-    // $FlowFixMe[incompatible-cast]
-    error = (new SyntheticError(errorValue): ExtendedError);
-  } else {
-    /* $FlowFixMe[class-object-subtyping] added when improving typing for
-     * this parameters */
-    // $FlowFixMe[incompatible-cast]
-    error = (new SyntheticError('Unspecified error'): ExtendedError);
-  }
-  try {
-    // $FlowFixMe[incompatible-use] this is in try/catch.
-    error.componentStack = errorInfo.componentStack;
-    error.isComponentError = true;
-  } catch {
-    // Ignored.
-  }
+  const error = getExtendedError(errorValue, errorInfo);
 
   // Recoverable errors should only be warnings.
   // This will make it a soft error in LogBox.
