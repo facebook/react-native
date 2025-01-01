@@ -91,6 +91,11 @@ function verifyPlatforms(
       return;
     }
 
+    if (name.endsWith('MacOS')) {
+      excludedPlatforms.add('android');
+      return;
+    }
+
     if (name.endsWith('Cxx')) {
       cxxOnly = true;
       excludedPlatforms.add('iOS');
