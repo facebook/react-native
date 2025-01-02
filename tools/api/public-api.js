@@ -133,10 +133,17 @@ function trimCPPNoise(
   if (filetype === FileType.UNKNOWN) {
     return;
   }
+  // src: https://en.cppreference.com/w/cpp/preprocessor/replace#Predefined_macros.
+  //
+  // I think we should only be define this without a specific version. It affects the preprocessor beyond simply gating code.
+  // This means we're forever going to introduce massive changes to the outputted API file that aren't meaningful for capturing
+  // user introduced API changes. This will affect our revision control commit logs.
+  const CPP20 = '202002L';
+
   // Strip comments, runs the preprocessor and removes formatting noise. The downside of this approach is it can be extremely
   // noisy if the preprocessor is able to resolve imports. This isn't the case the majority of the time.
   let sourceFileContents = execSync(
-    `${clang} -E -P -D__cplusplus=201703L ${sourcePath} 2> /dev/null | ${clangFormat}`,
+    `${clang} -E -P -D__cplusplus=${CPP20} ${sourcePath} 2> /dev/null | ${clangFormat}`,
     {encoding: 'utf-8'},
   )
     .toString()
@@ -191,8 +198,8 @@ function main() {
     `📚 Indexing header files took ${(performance.now() - start).toFixed(0)}ms`,
   );
 
-  // Write the output to a file
-  const outputFile = path.join(__dirname, config.settings.output);
+  // Write the output to a file. We lean on revision control to track changes.
+  const outputFile = path.join(GLOB_PROJECT_ROOT, config.settings.output);
   try {
     fs.unlinkSync(outputFile);
     log.info(`🔥 ${outputFile} already exists, deleting...`);
