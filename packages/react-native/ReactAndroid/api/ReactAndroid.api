@@ -5737,6 +5737,7 @@ public final class com/facebook/react/uimanager/events/TouchEvent : com/facebook
 	public fun dispatch (Lcom/facebook/react/uimanager/events/RCTEventEmitter;)V
 	public fun dispatchModern (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
 	public fun getCoalescingKey ()S
+	public fun getEventCategory ()I
 	public fun getEventName ()Ljava/lang/String;
 	public final fun getMotionEvent ()Landroid/view/MotionEvent;
 	public final fun getTouchEventType ()Lcom/facebook/react/uimanager/events/TouchEventType;
@@ -5778,9 +5779,11 @@ public final class com/facebook/react/uimanager/events/TouchEventType$Companion 
 	public final fun getJSEventName (Lcom/facebook/react/uimanager/events/TouchEventType;)Ljava/lang/String;
 }
 
-public class com/facebook/react/uimanager/events/TouchesHelper {
+public final class com/facebook/react/uimanager/events/TouchesHelper {
+	public static final field INSTANCE Lcom/facebook/react/uimanager/events/TouchesHelper;
 	public static final field TARGET_KEY Ljava/lang/String;
-	public fun <init> ()V
+	public static final fun sendTouchEvent (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
+	public static final fun sendTouchesLegacy (Lcom/facebook/react/uimanager/events/RCTEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
 }
 
 public final class com/facebook/react/uimanager/layoutanimation/InterpolatorType : java/lang/Enum {
