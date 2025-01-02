@@ -118,16 +118,7 @@ runs:
         bundle install
         bundle exec pod install
     - name: Build RNTester
-      if: ${{ inputs.run-unit-tests != 'true' && inputs.run-e2e-tests == 'false' }}
       shell: bash
-      run: |
-        xcodebuild build \
-          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-          -scheme RNTester \
-          -sdk iphonesimulator
-    - name: Build RNTester (E2E Tests)
-      shell: bash
-      if: ${{ inputs.run-e2e-tests == 'true' }}
       run: |
         xcodebuild \
           -scheme "RNTester" \
