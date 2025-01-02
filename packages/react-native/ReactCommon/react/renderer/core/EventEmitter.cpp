@@ -43,12 +43,6 @@ std::mutex& EventEmitter::DispatchMutex() {
   return mutex;
 }
 
-ValueFactory EventEmitter::defaultPayloadFactory() {
-  static auto payloadFactory =
-      ValueFactory{[](jsi::Runtime& runtime) { return jsi::Object(runtime); }};
-  return payloadFactory;
-}
-
 EventEmitter::EventEmitter(
     SharedEventTarget eventTarget,
     EventDispatcher::Weak eventDispatcher)

@@ -10,7 +10,8 @@
 namespace facebook::react {
 
 void ImageEventEmitter::onLoadStart() const {
-  dispatchEvent("loadStart");
+  dispatchEvent(
+      "loadStart", [](jsi::Runtime& runtime) { return jsi::Object(runtime); });
 }
 
 void ImageEventEmitter::onLoad(const ImageSource& source) const {
@@ -26,7 +27,8 @@ void ImageEventEmitter::onLoad(const ImageSource& source) const {
 }
 
 void ImageEventEmitter::onLoadEnd() const {
-  dispatchEvent("loadEnd");
+  dispatchEvent(
+      "loadEnd", [](jsi::Runtime& runtime) { return jsi::Object(runtime); });
 }
 
 void ImageEventEmitter::onProgress(
@@ -63,7 +65,9 @@ void ImageEventEmitter::onError(const ImageErrorInfo& error) const {
 }
 
 void ImageEventEmitter::onPartialLoad() const {
-  dispatchEvent("partialLoad");
+  dispatchEvent("partialLoad", [](jsi::Runtime& runtime) {
+    return jsi::Object(runtime);
+  });
 }
 
 } // namespace facebook::react
