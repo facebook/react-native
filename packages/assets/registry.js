@@ -10,6 +10,7 @@
 
 'use strict';
 
+/*::
 export type AssetDestPathResolver = 'android' | 'generic';
 
 export type PackagerAsset = {
@@ -25,16 +26,17 @@ export type PackagerAsset = {
   +resolver?: AssetDestPathResolver,
   ...
 };
+*/
 
-const assets: Array<PackagerAsset> = [];
+const assets /*: Array<PackagerAsset> */ = [];
 
-function registerAsset(asset: PackagerAsset): number {
+function registerAsset(asset /*: PackagerAsset */) /*: number */ {
   // `push` returns new array length, so the first asset will
   // get id 1 (not 0) to make the value truthy
   return assets.push(asset);
 }
 
-function getAssetByID(assetId: number): PackagerAsset {
+function getAssetByID(assetId /*: number */) /*: PackagerAsset */ {
   return assets[assetId - 1];
 }
 
