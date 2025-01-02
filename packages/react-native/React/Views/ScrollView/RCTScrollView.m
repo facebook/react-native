@@ -589,6 +589,11 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
       y = fmin(y, CGRectGetMaxY(maxRect));
       offset = CGPointMake(x, y);
     }
+    // Notify of momentum scroll begin before setting content offset or events can fire out of order and scrollview gets
+    // stuck in "animating" state
+    if (animated) {
+      [self sendScrollEventWithName:@"onMomentumScrollBegin" scrollView:_scrollView userData:nil];
+    }
     [_scrollView setContentOffset:offset animated:animated];
   }
 }
@@ -611,6 +616,11 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
+    // Notify of momentum scroll begin before setting content offset or events can fire out of order and scrollview gets
+    // stuck in "animating" state
+    if (animated) {
+      [self sendScrollEventWithName:@"onMomentumScrollBegin" scrollView:_scrollView userData:nil];
+    }
     [_scrollView setContentOffset:offset animated:animated];
   }
 }
@@ -880,16 +890,16 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
   RCT_FORWARD_SCROLL_EVENT(scrollViewDidEndZooming : scrollView withView : view atScale : scale);
 }
 
-- (void)didMoveToWindow
+- (void)willMoveToWindow:(UIWindow *)newWindow
 {
-  [super didMoveToWindow];
-  if (self.window == nil) {
+  [super willMoveToWindow:newWindow];
+  if (!newWindow) {
     // Check if the ScrollView was in motion
-    if (_scrollView.isDecelerating || !_scrollView.isTracking) {
+    if (_scrollView.isDecelerating) {
       // Trigger the onMomentumScrollEnd event manually
       RCT_SEND_SCROLL_EVENT(onMomentumScrollEnd, nil);
-      // We can't use the RCT_FORWARD_SCROLL_EVENT here beacuse the `_cmd` parameter passed
-      // to `respondsToSelector` is the current method - so it will be `didMoveToWindow` - and not
+      // We can't use the RCT_FORWARD_SCROLL_EVENT here because the `_cmd` parameter passed
+      // to `respondsToSelector` is the current method - so it will be `willMoveToWindow` - and not
       // `scrollViewDidEndDecelerating` that is passed.
       for (NSObject<UIScrollViewDelegate> *scrollViewListener in _scrollListeners) {
         if ([scrollViewListener respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
