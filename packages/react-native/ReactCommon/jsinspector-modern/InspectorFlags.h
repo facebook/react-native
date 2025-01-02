@@ -31,6 +31,12 @@ class InspectorFlags {
   bool getIsProfilingBuild() const;
 
   /**
+   * Forcibly disable the main `getFuseboxEnabled()` flag. This should ONLY be
+   * used by `ReactInstanceIntegrationTest`.
+   */
+  void dangerouslyDisableFuseboxForTest();
+
+  /**
    * Reset flags to their upstream values. The caller must ensure any resources
    * that have read previous flag values have been cleaned up.
    */
@@ -50,6 +56,7 @@ class InspectorFlags {
 
   mutable std::optional<Values> cachedValues_;
   mutable bool inconsistentFlagsStateLogged_{false};
+  bool fuseboxDisabledForTest_{false};
 
   const Values& loadFlagsAndAssertUnchanged() const;
 };

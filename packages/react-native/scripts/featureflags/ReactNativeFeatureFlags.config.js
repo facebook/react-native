@@ -353,15 +353,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    fuseboxEnabledDebug: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
     fuseboxEnabledRelease: {
       defaultValue: false,
       metadata: {
