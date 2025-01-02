@@ -224,21 +224,22 @@ static std::vector<ColorStop> processColorTransitionHints(const std::vector<Colo
     // The color weighting for the new color stops will be
     // pointRelativeOffset^(ln(0.5)/ln(hintRelativeOffset)).
     Float hintRelativeOffset = leftDist / totalDist;
+    const Float logRatio = log(0.5) / log(hintRelativeOffset);
+    auto leftColor = RCTUIColorFromSharedColor(leftSharedColor);
+    auto rightColor = RCTUIColorFromSharedColor(rightSharedColor);
+    NSArray<NSNumber *> *inputRange = @[@0.0, @1.0];
+    NSArray<UIColor *> *outputRange = @[leftColor, rightColor];
+
     for (auto &newStop : newStops) {
       Float pointRelativeOffset = (newStop.position - offsetLeft) / totalDist;
       Float weighting = pow(
         pointRelativeOffset,
-        log(0.5) / log(hintRelativeOffset)
+        logRatio
       );
       
       if (!std::isfinite(weighting) || std::isnan(weighting)) {
         continue;
       }
-      
-      NSArray<NSNumber *> *inputRange = @[@0.0, @1.0];
-      auto leftColor = RCTUIColorFromSharedColor(leftSharedColor);
-      auto rightColor = RCTUIColorFromSharedColor(rightSharedColor);
-      NSArray<UIColor *> *outputRange = @[leftColor, rightColor];
       
       auto interpolatedColor = RCTInterpolateColorInRange(weighting, inputRange, outputRange);
       

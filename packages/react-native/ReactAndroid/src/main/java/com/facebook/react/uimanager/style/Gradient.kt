@@ -75,7 +75,7 @@ internal class Gradient(gradient: ReadableMap?, context: Context) {
   // Browsers add 9 intermediate color stops when a transition hint is present
   // Algorithm is referred from Blink engine [source](https://github.com/chromium/chromium/blob/a296b1bad6dc1ed9d751b7528f7ca2134227b828/third_party/blink/renderer/core/css/css_gradient_value.cc#L240).
   private fun processColorTransitionHints(originalStopsArray: ReadableArray, context: Context): List<ColorStop> {
-    val colorStops = ArrayList<ColorStop>(originalStopsArray.size())
+    val colorStops = ArrayList<ColorStop>(originalStopsArray.size() + 9)
     for (i in 0 until originalStopsArray.size()) {
       val colorStop = originalStopsArray.getMap(i) ?: continue
       val position = colorStop.getDouble("position").toFloat()
@@ -161,11 +161,12 @@ internal class Gradient(gradient: ReadableMap?, context: Context) {
       // The color weighting for the new color stops will be
       // pointRelativeOffset^(ln(0.5)/ln(hintRelativeOffset)).
       val hintRelativeOffset = leftDist / totalDist
+      val logRatio = ln(0.5) / ln(hintRelativeOffset)
       for (newStop in newStops) {
         val pointRelativeOffset = (newStop.position - offsetLeft) / totalDist
         val weighting = Math.pow(
           pointRelativeOffset.toDouble(),
-          ln(0.5) / ln(hintRelativeOffset.toDouble())
+          logRatio
         ).toFloat()
 
         if (weighting.isInfinite() || weighting.isNaN()) {
