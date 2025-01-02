@@ -56,11 +56,6 @@ export type StringLiteralUnionTypeAnnotation = $ReadOnly<{
   types: $ReadOnlyArray<StringLiteralTypeAnnotation>,
 }>;
 
-export type StringEnumTypeAnnotation = $ReadOnly<{
-  type: 'StringEnumTypeAnnotation',
-  options: $ReadOnlyArray<string>,
-}>;
-
 export type VoidTypeAnnotation = $ReadOnly<{
   type: 'VoidTypeAnnotation',
 }>;
@@ -143,7 +138,7 @@ export type EventTypeAnnotation =
   | FloatTypeAnnotation
   | Int32TypeAnnotation
   | MixedTypeAnnotation
-  | StringEnumTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | ObjectTypeAnnotation<EventTypeAnnotation>
   | ArrayTypeAnnotation<EventTypeAnnotation>;
 

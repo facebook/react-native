@@ -2325,46 +2325,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -2750,57 +2774,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -3088,46 +3136,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -3513,57 +3585,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -3850,46 +3946,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -4275,57 +4395,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -4613,46 +4757,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -5038,57 +5206,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture COMMANDS_EVENTS_TYPES
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -5664,46 +5856,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -6089,57 +6305,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -6426,46 +6666,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -6851,57 +7115,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -7188,46 +7476,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -7613,57 +7925,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -7950,46 +8286,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -8375,57 +8735,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -8713,46 +9097,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -9138,57 +9546,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -9475,46 +9907,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -9900,57 +10356,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -10237,46 +10717,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -10662,57 +11166,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -10999,46 +11527,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -11424,57 +11976,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -11761,46 +12337,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -12186,57 +12786,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -12524,46 +13148,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -12949,57 +13597,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture EVENTS_DEFINED_INLINE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -14302,46 +14974,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -14727,57 +15423,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -15065,46 +15785,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -15490,57 +16234,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -15827,46 +16595,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -16252,57 +17044,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
@@ -16590,46 +17406,70 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       }
                     },
                     {
-                      'name': 'enum_required',
+                      'name': 'union_required',
                       'optional': false,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_key',
+                      'name': 'union_optional_key',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_value',
+                      'name': 'union_optional_value',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
                     {
-                      'name': 'enum_optional_both',
+                      'name': 'union_optional_both',
                       'optional': true,
                       'typeAnnotation': {
-                        'type': 'StringEnumTypeAnnotation',
-                        'options': [
-                          'small',
-                          'large'
+                        'type': 'StringLiteralUnionTypeAnnotation',
+                        'types': [
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'small'
+                          },
+                          {
+                            'type': 'StringLiteralTypeAnnotation',
+                            'value': 'large'
+                          }
                         ]
                       }
                     },
@@ -17015,57 +17855,81 @@ exports[`RN Codegen TypeScript Parser can generate fixture PROPS_AND_EVENTS_TYPE
                       }
                     },
                     {
-                      'name': 'enum_array_required',
+                      'name': 'union_array_required',
                       'optional': false,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_key',
+                      'name': 'union_array_optional_key',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_value',
+                      'name': 'union_array_optional_value',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
                     },
                     {
-                      'name': 'enum_array_optional_both',
+                      'name': 'union_array_optional_both',
                       'optional': true,
                       'typeAnnotation': {
                         'type': 'ArrayTypeAnnotation',
                         'elementType': {
-                          'type': 'StringEnumTypeAnnotation',
-                          'options': [
-                            'small',
-                            'large'
+                          'type': 'StringLiteralUnionTypeAnnotation',
+                          'types': [
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'small'
+                            },
+                            {
+                              'type': 'StringLiteralTypeAnnotation',
+                              'value': 'large'
+                            }
                           ]
                         }
                       }
