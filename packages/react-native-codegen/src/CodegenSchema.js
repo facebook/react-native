@@ -145,30 +145,27 @@ export type EventTypeAnnotation =
   | MixedTypeAnnotation
   | StringEnumTypeAnnotation
   | ObjectTypeAnnotation<EventTypeAnnotation>
-  | $ReadOnly<{
-      type: 'ArrayTypeAnnotation',
-      elementType: EventTypeAnnotation,
-    }>;
+  | ArrayTypeAnnotation<EventTypeAnnotation>;
 
-export type ArrayTypeAnnotation = $ReadOnly<{
+export type ComponentArrayTypeAnnotation = ArrayTypeAnnotation<
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
+  | $ReadOnly<{
+      type: 'StringEnumTypeAnnotation',
+      default: string,
+      options: $ReadOnlyArray<string>,
+    }>
+  | ObjectTypeAnnotation<PropTypeAnnotation>
+  | ReservedPropTypeAnnotation
+  | ArrayTypeAnnotation<ObjectTypeAnnotation<PropTypeAnnotation>>,
+>;
+
+export type ArrayTypeAnnotation<+T> = $ReadOnly<{
   type: 'ArrayTypeAnnotation',
-  elementType:
-    | BooleanTypeAnnotation
-    | StringTypeAnnotation
-    | DoubleTypeAnnotation
-    | FloatTypeAnnotation
-    | Int32TypeAnnotation
-    | $ReadOnly<{
-        type: 'StringEnumTypeAnnotation',
-        default: string,
-        options: $ReadOnlyArray<string>,
-      }>
-    | ObjectTypeAnnotation<PropTypeAnnotation>
-    | ReservedPropTypeAnnotation
-    | $ReadOnly<{
-        type: 'ArrayTypeAnnotation',
-        elementType: ObjectTypeAnnotation<PropTypeAnnotation>,
-      }>,
+  elementType: T,
 }>;
 
 export type PropTypeAnnotation =
@@ -204,7 +201,7 @@ export type PropTypeAnnotation =
     }>
   | ReservedPropTypeAnnotation
   | ObjectTypeAnnotation<PropTypeAnnotation>
-  | ArrayTypeAnnotation
+  | ComponentArrayTypeAnnotation
   | MixedTypeAnnotation;
 
 export type ReservedPropTypeAnnotation = $ReadOnly<{
@@ -230,7 +227,7 @@ export type CommandParamTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation
-  | ArrayTypeAnnotation;
+  | ComponentArrayTypeAnnotation;
 
 export type ReservedTypeAnnotation = $ReadOnly<{
   type: 'ReservedTypeAnnotation',
@@ -292,14 +289,14 @@ export type NativeModuleObjectTypeAnnotation = ObjectTypeAnnotation<
 
 export type NativeModuleArrayTypeAnnotation<
   +T: Nullable<NativeModuleBaseTypeAnnotation>,
-> = $ReadOnly<{
-  type: 'ArrayTypeAnnotation',
+> = ArrayTypeAnnotation<
+  | T
   /**
    * TODO(T72031674): Migrate all our NativeModule specs to not use
    * invalid Array ElementTypes. Then, make the elementType required.
    */
-  elementType: T | UnsafeAnyTypeAnnotation,
-}>;
+  | UnsafeAnyTypeAnnotation,
+>;
 
 export type UnsafeAnyTypeAnnotation = {
   type: 'AnyTypeAnnotation',
@@ -379,10 +376,7 @@ type NativeModuleEventEmitterBaseTypeAnnotation =
 
 export type NativeModuleEventEmitterTypeAnnotation =
   | NativeModuleEventEmitterBaseTypeAnnotation
-  | {
-      type: 'ArrayTypeAnnotation',
-      elementType: NativeModuleEventEmitterBaseTypeAnnotation,
-    };
+  | ArrayTypeAnnotation<NativeModuleEventEmitterBaseTypeAnnotation>;
 
 export type NativeModuleBaseTypeAnnotation =
   | StringTypeAnnotation

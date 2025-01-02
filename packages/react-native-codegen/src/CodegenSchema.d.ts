@@ -129,14 +129,9 @@ export type EventTypeAnnotation =
   | MixedTypeAnnotation
   | StringEnumTypeAnnotation
   | ObjectTypeAnnotation<EventTypeAnnotation>
-  | {
-    readonly type: 'ArrayTypeAnnotation';
-    readonly elementType: EventTypeAnnotation
-  };
+  | ArrayTypeAnnotation<EventTypeAnnotation>
 
-export type ArrayTypeAnnotation = {
-  readonly type: 'ArrayTypeAnnotation';
-  readonly elementType:
+export type ComponentArrayTypeAnnotation = ArrayTypeAnnotation<
   | BooleanTypeAnnotation
   | StringTypeAnnotation
   | DoubleTypeAnnotation
@@ -149,10 +144,12 @@ export type ArrayTypeAnnotation = {
   }
   | ObjectTypeAnnotation<PropTypeAnnotation>
   | ReservedPropTypeAnnotation
-  | {
-    readonly type: 'ArrayTypeAnnotation';
-    readonly elementType: ObjectTypeAnnotation<PropTypeAnnotation>;
-  };
+  | ArrayTypeAnnotation<ObjectTypeAnnotation<PropTypeAnnotation>>
+>;
+
+export interface ArrayTypeAnnotation<T> {
+  readonly type: 'ArrayTypeAnnotation';
+  readonly elementType: T;
 }
 
 export type PropTypeAnnotation =
@@ -188,7 +185,7 @@ export type PropTypeAnnotation =
   }
   | ReservedPropTypeAnnotation
   | ObjectTypeAnnotation<PropTypeAnnotation>
-  | ArrayTypeAnnotation
+  | ComponentArrayTypeAnnotation
   | MixedTypeAnnotation;
 
 export interface ReservedPropTypeAnnotation {
@@ -214,7 +211,7 @@ export type CommandParamTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation
-  | ArrayTypeAnnotation;
+  | ComponentArrayTypeAnnotation;
 
 export interface ReservedTypeAnnotation {
   readonly type: 'ReservedTypeAnnotation';
@@ -273,14 +270,12 @@ export type NativeModuleObjectTypeAnnotation = ObjectTypeAnnotation<
   Nullable<NativeModuleBaseTypeAnnotation>
 >;
 
-export interface NativeModuleArrayTypeAnnotation<T extends Nullable<NativeModuleBaseTypeAnnotation>> {
-  readonly type: 'ArrayTypeAnnotation';
-  /**
-   * TODO(T72031674): Migrate all our NativeModule specs to not use
-   * invalid Array ElementTypes. Then, make the elementType required.
-   */
-  readonly elementType: T | UnsafeAnyTypeAnnotation;
-}
+/**
+ * TODO(T72031674): Migrate all our NativeModule specs to not use
+ * invalid Array ElementTypes. Then, make the elementType required.
+ */
+interface NativeModuleArrayTypeAnnotation<T> extends ArrayTypeAnnotation<T | UnsafeAnyTypeAnnotation> { }
+
 
 export interface UnsafeAnyTypeAnnotation {
   readonly type: 'AnyTypeAnnotation',
@@ -395,13 +390,10 @@ export type NativeModuleEventEmitterBaseTypeAnnotation =
 
 export type NativeModuleEventEmitterTypeAnnotation =
   | NativeModuleEventEmitterBaseTypeAnnotation
-  | {
-    readonly type: 'ArrayTypeAnnotation';
-    readonly elementType: NativeModuleEventEmitterBaseTypeAnnotation;
-  };
+  | ArrayTypeAnnotation<NativeModuleEventEmitterBaseTypeAnnotation>;
 
 export type NativeModuleBaseTypeAnnotation =
-  | NativeModuleStringTypeAnnotation
+  NativeModuleStringTypeAnnotation
   | NativeModuleStringLiteralTypeAnnotation
   | NativeModuleStringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
@@ -414,10 +406,10 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleGenericObjectTypeAnnotation
   | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
-  | NativeModuleArrayTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
   | NativeModuleObjectTypeAnnotation
   | NativeModuleUnionTypeAnnotation
-  | NativeModuleMixedTypeAnnotation;
+  | NativeModuleMixedTypeAnnotation
+  | NativeModuleArrayTypeAnnotation<NativeModuleBaseTypeAnnotation>;
 
 export type NativeModuleParamTypeAnnotation =
   | NativeModuleBaseTypeAnnotation
