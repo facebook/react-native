@@ -21,6 +21,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 export type Props = $ReadOnly<{
   children?: ExactReactElement_DEPRECATED<$FlowFixMe>,
   nextHeaderLayoutY: ?number,
+  prevHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
   scrollAnimatedValue: Animated.Value,
   // Will cause sticky headers to stick at the bottom of the ScrollView instead
@@ -34,6 +35,7 @@ export type Props = $ReadOnly<{
 
 type Instance = {
   ...React.ElementRef<typeof Animated.View>,
+  setPrevHeaderY: number => void,
   setNextHeaderY: number => void,
   ...
 };
@@ -48,6 +50,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
     hiddenOnScroll,
     scrollAnimatedValue,
     nextHeaderLayoutY: _nextHeaderLayoutY,
+    prevHeaderLayoutY: _prevHeaderLayoutY,
   } = props;
 
   const [measured, setMeasured] = useState<boolean>(false);
@@ -56,12 +59,15 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
   const [translateY, setTranslateY] = useState<?number>(null);
   const [nextHeaderLayoutY, setNextHeaderLayoutY] =
     useState<?number>(_nextHeaderLayoutY);
+  const [prevHeaderLayoutY, setPrevHeaderLayoutY] =
+    useState<?number>(_prevHeaderLayoutY);
   const [isFabric, setIsFabric] = useState<boolean>(false);
 
   const callbackRef = useCallback((ref: Instance | null): void => {
     if (ref == null) {
       return;
     }
+    ref.setPrevHeaderY = setPrevHeaderLayoutY;
     ref.setNextHeaderY = setNextHeaderLayoutY;
     setIsFabric(isFabricPublicInstance(ref));
   }, []);
@@ -147,8 +153,8 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
   }, []);
 
   useEffect(() => {
-    const inputRange: Array<number> = [-1, 0];
-    const outputRange: Array<number> = [0, 0];
+    let inputRange: Array<number> = [-1, 0];
+    let outputRange: Array<number> = [0, 0];
 
     if (measured) {
       if (inverted === true) {
@@ -169,20 +175,32 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
         if (scrollViewHeight != null) {
           const stickStartPoint = layoutY + layoutHeight - scrollViewHeight;
           if (stickStartPoint > 0) {
-            inputRange.push(stickStartPoint);
-            outputRange.push(0);
-            inputRange.push(stickStartPoint + 1);
-            outputRange.push(1);
-            // If the next sticky header has not loaded yet (probably windowing) or is the last
-            // we can just keep it sticked forever.
-            const collisionPoint =
-              (nextHeaderLayoutY || 0) - layoutHeight - scrollViewHeight;
-            if (collisionPoint > stickStartPoint) {
-              inputRange.push(collisionPoint, collisionPoint + 1);
-              outputRange.push(
-                collisionPoint - stickStartPoint,
-                collisionPoint - stickStartPoint,
-              );
+            const prevStickEndPoint =
+              (prevHeaderLayoutY || 0) + layoutHeight - scrollViewHeight;
+            const delta = stickStartPoint - prevStickEndPoint;
+            if (delta > 0) {
+              // The interpolate looks like this:
+              //
+              // ------
+              //       \
+              //        \            height = delta
+              //         \---------
+              //  prev^   ^current
+              //        ^ width = delta
+              //
+              // Basically, it starts from `prevStickEndPoint`, where the
+              // previous header stops scrolling. Then we starts the sticking by adding
+              // negative delta to the `translateY` to cancel the scrolling offset.
+              // Until the point, where we have scroll to where the current header's original
+              // position, at this point the `translateY` goes down to 0 so that it
+              // will scroll with the content
+              inputRange = [
+                prevStickEndPoint - 1,
+                prevStickEndPoint,
+                stickStartPoint,
+                stickStartPoint + 1,
+              ];
+              outputRange = [-delta, -delta, 0, 0];
             }
           }
         }
@@ -241,6 +259,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
       }
     };
   }, [
+    prevHeaderLayoutY,
     nextHeaderLayoutY,
     measured,
     layoutHeight,
