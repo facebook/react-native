@@ -5752,13 +5752,13 @@ public final class com/facebook/react/uimanager/events/TouchEvent$Companion {
 	public final fun obtain (ILcom/facebook/react/uimanager/events/TouchEventType;Landroid/view/MotionEvent;JFFLcom/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper;)Lcom/facebook/react/uimanager/events/TouchEvent;
 }
 
-public class com/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper {
+public final class com/facebook/react/uimanager/events/TouchEventCoalescingKeyHelper {
 	public fun <init> ()V
-	public fun addCoalescingKey (J)V
-	public fun getCoalescingKey (J)S
-	public fun hasCoalescingKey (J)Z
-	public fun incrementCoalescingKey (J)V
-	public fun removeCoalescingKey (J)V
+	public final fun addCoalescingKey (J)V
+	public final fun getCoalescingKey (J)S
+	public final fun hasCoalescingKey (J)Z
+	public final fun incrementCoalescingKey (J)V
+	public final fun removeCoalescingKey (J)V
 }
 
 public final class com/facebook/react/uimanager/events/TouchEventType : java/lang/Enum {
