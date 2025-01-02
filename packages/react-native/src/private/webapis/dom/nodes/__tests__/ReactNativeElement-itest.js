@@ -21,6 +21,7 @@ import {
 import HTMLCollection from '../../oldstylecollections/HTMLCollection';
 import NodeList from '../../oldstylecollections/NodeList';
 import ReactNativeElement from '../ReactNativeElement';
+import ReadOnlyElement from '../ReadOnlyElement';
 import ReadOnlyNode from '../ReadOnlyNode';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
@@ -56,6 +57,24 @@ describe('ReactNativeElement', () => {
   });
 
   describe('extends `ReadOnlyNode`', () => {
+    it('should be an instance of `ReadOnlyNode`', () => {
+      let lastNode;
+
+      // Initial render with 3 children
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={node => {
+              lastNode = node;
+            }}
+          />,
+        );
+      });
+
+      expect(lastNode).toBeInstanceOf(ReadOnlyNode);
+    });
+
     describe('nodeType', () => {
       it('returns ReadOnlyNode.ELEMENT_NODE', () => {
         let lastParentNode;
@@ -590,6 +609,24 @@ describe('ReactNativeElement', () => {
   });
 
   describe('extends `ReadOnlyElement`', () => {
+    it('should be an instance of `ReadOnlyElement`', () => {
+      let lastNode;
+
+      // Initial render with 3 children
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={node => {
+              lastNode = node;
+            }}
+          />,
+        );
+      });
+
+      expect(lastNode).toBeInstanceOf(ReadOnlyElement);
+    });
+
     describe('children / childElementCount', () => {
       it('return updated element children information', () => {
         let lastParentElement;
@@ -1104,7 +1141,26 @@ describe('ReactNativeElement', () => {
     });
   });
 
-  describe('implements specific `ReactNativeElement` methods', () => {
+  describe('extends `ReactNativeElement`', () => {
+    it('should be an instance of `ReactNativeElement`', () => {
+      let lastNode;
+
+      // Initial render with 3 children
+      const root = Fantom.createRoot();
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={node => {
+              lastNode = node;
+            }}
+          />,
+        );
+      });
+
+      const node = ensureReactNativeElement(lastNode);
+      expect(node).toBeInstanceOf(ReactNativeElement);
+    });
+
     describe('offsetWidth / offsetHeight', () => {
       it('return the rounded width and height, or 0 when disconnected', () => {
         let lastElement;
