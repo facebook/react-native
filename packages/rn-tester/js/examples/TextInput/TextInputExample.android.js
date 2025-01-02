@@ -522,6 +522,36 @@ const examples: Array<RNTesterModuleExample> = [
       return <ToggleDefaultPaddingExample />;
     },
   },
+  {
+    title: 'Single-line TextInputs - New Arch Bug Reproduction',
+    description:
+      'A single-line TextInput that unexpectedly grows unless numberOfLines={1} is specified.',
+    render: function (): React.Node {
+      return (
+        <View style={{marginVertical: 12}}>
+          <Text style={{fontWeight: '600', marginBottom: 6}}>
+            Single-line TextInput (expected single line, grows incorrectly):
+          </Text>
+          <ExampleTextInput
+            multiline={false}
+            numberOfLines={1}
+            style={{
+              borderWidth: 1,
+              borderColor: '#ccc',
+              paddingVertical: 0,
+              paddingHorizontal: 8,
+              marginBottom: 10,
+            }}
+            placeholder="Type here..."
+          />
+
+          <Text style={{fontStyle: 'italic'}}>
+            Observe if the height increases as you type more characters
+          </Text>
+        </View>
+      );
+    },
+  },
 ];
 
 module.exports = ({
