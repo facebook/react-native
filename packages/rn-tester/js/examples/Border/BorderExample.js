@@ -588,6 +588,14 @@ export default ({
             <View style={[styles.smallBox, styles.borderWithChildren2]}>
               <View style={[styles.childOfBorder, {left: -15, top: 0}]} />
             </View>
+            <View
+              style={[
+                styles.smallBox,
+                styles.borderWithChildren2,
+                {borderStyle: 'dashed', overflow: 'hidden'},
+              ]}>
+              <View style={[styles.childOfBorder, {left: -15, top: 0}]} />
+            </View>
           </View>
         );
       },
