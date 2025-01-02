@@ -11,8 +11,8 @@
 'use strict';
 
 import type {
-  ArrayTypeAnnotation,
   BooleanTypeAnnotation,
+  ComponentArrayTypeAnnotation,
   DoubleTypeAnnotation,
   FloatTypeAnnotation,
   Int32TypeAnnotation,
@@ -111,8 +111,10 @@ class PojoCollector {
       }
       case 'ArrayTypeAnnotation': {
         const arrayTypeAnnotation = typeAnnotation;
-        const elementType: $PropertyType<ArrayTypeAnnotation, 'elementType'> =
-          arrayTypeAnnotation.elementType;
+        const elementType: $PropertyType<
+          ComponentArrayTypeAnnotation,
+          'elementType',
+        > = arrayTypeAnnotation.elementType;
 
         const pojoElementType = (() => {
           switch (elementType.type) {
