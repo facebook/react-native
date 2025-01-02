@@ -26,7 +26,7 @@ import*as e from"../../../core/host/host.js";import*as t from"../../../core/i18n
             title=${e.title}
             .size=${"SMALL"}
             .iconName=${e.iconName}
-            .variant=${"round"}
+            .variant=${"icon"}
             class=${w(e.classMap)}
             @click=${e.onClick}
             .jslogContext=${e.jslogContext}
