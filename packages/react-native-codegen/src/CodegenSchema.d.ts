@@ -38,11 +38,6 @@ export interface StringTypeAnnotation {
   readonly type: 'StringTypeAnnotation';
 }
 
-export interface StringEnumTypeAnnotation {
-  readonly type: 'StringEnumTypeAnnotation';
-  readonly options: readonly string[];
-}
-
 export interface VoidTypeAnnotation {
   readonly type: 'VoidTypeAnnotation';
 }
@@ -127,7 +122,7 @@ export type EventTypeAnnotation =
   | FloatTypeAnnotation
   | Int32TypeAnnotation
   | MixedTypeAnnotation
-  | StringEnumTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | ObjectTypeAnnotation<EventTypeAnnotation>
   | ArrayTypeAnnotation<EventTypeAnnotation>
 
@@ -295,7 +290,7 @@ export interface NativeModuleStringLiteralTypeAnnotation {
   readonly value: string;
 }
 
-export interface NativeModuleStringLiteralUnionTypeAnnotation {
+export interface StringLiteralUnionTypeAnnotation {
   readonly type: 'StringLiteralUnionTypeAnnotation';
   readonly types: NativeModuleStringLiteralTypeAnnotation[];
 }
@@ -383,7 +378,7 @@ export type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleNumberLiteralTypeAnnotation
   | NativeModuleStringTypeAnnotation
   | NativeModuleStringLiteralTypeAnnotation
-  | NativeModuleStringLiteralUnionTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
   | VoidTypeAnnotation;
@@ -395,7 +390,7 @@ export type NativeModuleEventEmitterTypeAnnotation =
 export type NativeModuleBaseTypeAnnotation =
   NativeModuleStringTypeAnnotation
   | NativeModuleStringLiteralTypeAnnotation
-  | NativeModuleStringLiteralUnionTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NativeModuleNumberLiteralTypeAnnotation
   | NativeModuleInt32TypeAnnotation
