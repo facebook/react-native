@@ -234,7 +234,198 @@ describe('ReactNativeElement', () => {
       });
     });
 
-    describe('firstChild / lastChild / previousSibling / nextSibling / parentNode / parentElement / getRootNode()', () => {
+    describe('getRootNode()', () => {
+      // This is the desired implementation (not implemented yet).
+      it.skip('returns a root node representing the document', () => {
+        let lastParentANode;
+        let lastParentBNode;
+        let lastChildANode;
+        let lastChildBNode;
+
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(
+            <>
+              <View
+                key="parentA"
+                ref={node => {
+                  lastParentANode = node;
+                }}>
+                <View
+                  key="childA"
+                  ref={node => {
+                    lastChildANode = node;
+                  }}
+                />
+              </View>
+              <View
+                key="parentB"
+                ref={node => {
+                  lastParentBNode = node;
+                }}>
+                <View
+                  key="childB"
+                  ref={node => {
+                    lastChildBNode = node;
+                  }}
+                />
+              </View>
+            </>,
+          );
+        });
+
+        const parentANode = ensureReactNativeElement(lastParentANode);
+        const childANode = ensureReactNativeElement(lastChildANode);
+        const parentBNode = ensureReactNativeElement(lastParentBNode);
+        const childBNode = ensureReactNativeElement(lastChildBNode);
+
+        expect(childANode.getRootNode()).toBe(childBNode.getRootNode());
+        const document = childANode.getRootNode();
+
+        expect(document.childNodes.length).toBe(1);
+        expect(document.childNodes[0]).toBeInstanceOf(ReactNativeElement);
+
+        const documentElement = document.childNodes[0];
+        expect(documentElement.childNodes[0]).toBeInstanceOf(
+          ReactNativeElement,
+        );
+        expect(documentElement.childNodes[0]).toBe(parentANode);
+        expect(documentElement.childNodes[1]).toBe(parentBNode);
+
+        Fantom.runTask(() => {
+          root.render(
+            <>
+              <View key="parentA">
+                <View key="childA" />
+              </View>
+            </>,
+          );
+        });
+
+        expect(parentANode.getRootNode()).toBe(document);
+        expect(childANode.getRootNode()).toBe(document);
+
+        // The root node of a disconnected node is itself
+        expect(parentBNode.getRootNode()).toBe(parentBNode);
+        expect(childBNode.getRootNode()).toBe(childBNode);
+      });
+
+      // This is the current (incorrect) behavior.
+      // TODO: fix this implementation and "unskip" the previous test.
+      it('returns the highest parent in the hierarchy', () => {
+        let lastParentNode;
+        let lastChildNode;
+        let lastGrandChildNode;
+
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(
+            <View
+              key="parent"
+              ref={node => {
+                lastParentNode = node;
+              }}>
+              <View
+                key="child"
+                ref={node => {
+                  lastChildNode = node;
+                }}>
+                <View
+                  key="grandchild"
+                  ref={node => {
+                    lastGrandChildNode = node;
+                  }}
+                />
+              </View>
+            </View>,
+          );
+        });
+
+        const parentNode = ensureReactNativeElement(lastParentNode);
+        const childNode = ensureReactNativeElement(lastChildNode);
+        const grandChildNode = ensureReactNativeElement(lastGrandChildNode);
+
+        expect(parentNode.getRootNode()).toBe(parentNode);
+        expect(childNode.getRootNode()).toBe(parentNode);
+        expect(grandChildNode.getRootNode()).toBe(parentNode);
+
+        // Remove the grandchild
+        Fantom.runTask(() => {
+          root.render(
+            <View key="parent">
+              <View key="child" />
+            </View>,
+          );
+        });
+
+        expect(parentNode.getRootNode()).toBe(parentNode);
+        expect(childNode.getRootNode()).toBe(parentNode);
+
+        // The root node of a disconnected node is itself
+        expect(grandChildNode.getRootNode()).toBe(grandChildNode);
+
+        // Unmount node
+        Fantom.runTask(() => {
+          root.render(<></>);
+        });
+
+        // The root node of a disconnected node is itself
+        expect(parentNode.getRootNode()).toBe(parentNode);
+        expect(childNode.getRootNode()).toBe(childNode);
+        expect(grandChildNode.getRootNode()).toBe(grandChildNode);
+      });
+
+      // This is the current (incorrect) behavior.
+      // TODO: fix this implementation and "unskip" the previous test.
+      it('returns the highest parent in the hierarchy (multiple root views)', () => {
+        let lastParentANode;
+        let lastParentBNode;
+        let lastChildANode;
+        let lastChildBNode;
+
+        const root = Fantom.createRoot();
+        Fantom.runTask(() => {
+          root.render(
+            <>
+              <View
+                key="parentA"
+                ref={node => {
+                  lastParentANode = node;
+                }}>
+                <View
+                  key="childA"
+                  ref={node => {
+                    lastChildANode = node;
+                  }}
+                />
+              </View>
+              <View
+                key="parentB"
+                ref={node => {
+                  lastParentBNode = node;
+                }}>
+                <View
+                  key="childB"
+                  ref={node => {
+                    lastChildBNode = node;
+                  }}
+                />
+              </View>
+            </>,
+          );
+        });
+
+        const parentANode = ensureReactNativeElement(lastParentANode);
+        const childANode = ensureReactNativeElement(lastChildANode);
+        const parentBNode = ensureReactNativeElement(lastParentBNode);
+        const childBNode = ensureReactNativeElement(lastChildBNode);
+
+        expect(childANode.getRootNode()).toBe(parentANode);
+        expect(childBNode.getRootNode()).toBe(parentBNode);
+      });
+    });
+
+    describe('firstChild / lastChild / previousSibling / nextSibling / parentNode / parentElement', () => {
       it('return updated relative nodes', () => {
         let lastParentNode;
         let lastChildNodeA;
@@ -282,10 +473,6 @@ describe('ReactNativeElement', () => {
         expect(parentNode.lastChild).toBe(childNodeC);
         expect(parentNode.previousSibling).toBe(null);
         expect(parentNode.nextSibling).toBe(null);
-        // Document-level root nodes are not supported yet
-        expect(parentNode.parentNode).toBe(null);
-        expect(parentNode.parentElement).toBe(null);
-        expect(parentNode.getRootNode()).toBe(parentNode);
 
         expect(childNodeA.isConnected).toBe(true);
         expect(childNodeA.firstChild).toBe(null);
@@ -294,7 +481,6 @@ describe('ReactNativeElement', () => {
         expect(childNodeA.nextSibling).toBe(childNodeB);
         expect(childNodeA.parentNode).toBe(parentNode);
         expect(childNodeA.parentElement).toBe(parentNode);
-        expect(childNodeA.getRootNode()).toBe(parentNode);
 
         expect(childNodeB.isConnected).toBe(true);
         expect(childNodeB.firstChild).toBe(null);
@@ -303,7 +489,6 @@ describe('ReactNativeElement', () => {
         expect(childNodeB.nextSibling).toBe(childNodeC);
         expect(childNodeB.parentNode).toBe(parentNode);
         expect(childNodeB.parentElement).toBe(parentNode);
-        expect(childNodeB.getRootNode()).toBe(parentNode);
 
         expect(childNodeC.isConnected).toBe(true);
         expect(childNodeC.firstChild).toBe(null);
@@ -312,7 +497,6 @@ describe('ReactNativeElement', () => {
         expect(childNodeC.nextSibling).toBe(null);
         expect(childNodeC.parentNode).toBe(parentNode);
         expect(childNodeC.parentElement).toBe(parentNode);
-        expect(childNodeC.getRootNode()).toBe(parentNode);
 
         // Remove one of the children
         Fantom.runTask(() => {
@@ -329,10 +513,6 @@ describe('ReactNativeElement', () => {
         expect(parentNode.lastChild).toBe(childNodeB);
         expect(parentNode.previousSibling).toBe(null);
         expect(parentNode.nextSibling).toBe(null);
-        // Document-level root nodes are not supported yet
-        expect(parentNode.parentNode).toBe(null);
-        expect(parentNode.parentElement).toBe(null);
-        expect(parentNode.getRootNode()).toBe(parentNode);
 
         expect(childNodeA.isConnected).toBe(true);
         expect(childNodeA.firstChild).toBe(null);
@@ -341,7 +521,6 @@ describe('ReactNativeElement', () => {
         expect(childNodeA.nextSibling).toBe(childNodeB);
         expect(childNodeA.parentNode).toBe(parentNode);
         expect(childNodeA.parentElement).toBe(parentNode);
-        expect(childNodeA.getRootNode()).toBe(parentNode);
 
         expect(childNodeB.isConnected).toBe(true);
         expect(childNodeB.firstChild).toBe(null);
@@ -350,7 +529,6 @@ describe('ReactNativeElement', () => {
         expect(childNodeB.nextSibling).toBe(null);
         expect(childNodeB.parentNode).toBe(parentNode);
         expect(childNodeB.parentElement).toBe(parentNode);
-        expect(childNodeB.getRootNode()).toBe(parentNode);
 
         // Disconnected
         expect(childNodeC.isConnected).toBe(false);
@@ -360,7 +538,6 @@ describe('ReactNativeElement', () => {
         expect(childNodeC.nextSibling).toBe(null);
         expect(childNodeC.parentNode).toBe(null);
         expect(childNodeC.parentElement).toBe(null);
-        expect(childNodeC.getRootNode()).toBe(childNodeC);
 
         // Unmount node
         Fantom.runTask(() => {
@@ -375,7 +552,6 @@ describe('ReactNativeElement', () => {
         expect(parentNode.nextSibling).toBe(null);
         expect(parentNode.parentNode).toBe(null);
         expect(parentNode.parentElement).toBe(null);
-        expect(parentNode.getRootNode()).toBe(parentNode);
 
         // Disconnected
         expect(childNodeA.isConnected).toBe(false);
@@ -385,7 +561,6 @@ describe('ReactNativeElement', () => {
         expect(childNodeA.nextSibling).toBe(null);
         expect(childNodeA.parentNode).toBe(null);
         expect(childNodeA.parentElement).toBe(null);
-        expect(childNodeA.getRootNode()).toBe(childNodeA);
 
         // Disconnected
         expect(childNodeB.isConnected).toBe(false);
@@ -395,7 +570,6 @@ describe('ReactNativeElement', () => {
         expect(childNodeB.nextSibling).toBe(null);
         expect(childNodeB.parentNode).toBe(null);
         expect(childNodeB.parentElement).toBe(null);
-        expect(childNodeB.getRootNode()).toBe(childNodeB);
 
         // Disconnected
         expect(childNodeC.isConnected).toBe(false);
@@ -405,7 +579,6 @@ describe('ReactNativeElement', () => {
         expect(childNodeC.nextSibling).toBe(null);
         expect(childNodeC.parentNode).toBe(null);
         expect(childNodeC.parentElement).toBe(null);
-        expect(childNodeC.getRootNode()).toBe(childNodeC);
       });
     });
 
