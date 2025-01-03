@@ -10,7 +10,7 @@
  */
 
 import type {TestSuiteResult} from '../runtime/setup';
-import type {ConsoleLogMessage, SyncCommandResult} from './utils';
+import type {AsyncCommandResult} from './utils';
 
 import entrypointTemplate from './entrypoint-template';
 import getFantomTestConfig from './getFantomTestConfig';
@@ -23,7 +23,8 @@ import {
   getBuckModesForPlatform,
   getDebugInfoFromCommandResult,
   getShortHash,
-  printConsoleLogs,
+  printConsoleLog,
+  runBuck2,
   runBuck2Sync,
   symbolicateStackTrace,
 } from './utils';
@@ -34,6 +35,7 @@ import {SnapshotState, buildSnapshotResolver} from 'jest-snapshot';
 import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
+import readline from 'readline';
 
 const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build');
 fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
@@ -43,41 +45,71 @@ const BUILD_OUTPUT_PATH = fs.mkdtempSync(
 
 const PRINT_FANTOM_OUTPUT: false = false;
 
-function parseRNTesterCommandResult(result: SyncCommandResult): {
-  logs: $ReadOnlyArray<ConsoleLogMessage>,
-  testResult: TestSuiteResult,
-} {
-  const stdout = result.stdout.toString();
+async function processRNTesterCommandResult(
+  result: AsyncCommandResult,
+): Promise<TestSuiteResult> {
+  const stdoutChunks = [];
+  const stderrChunks = [];
 
-  const logs = [];
+  result.childProcess.stdout.on('data', chunk => {
+    stdoutChunks.push(chunk);
+  });
+
+  result.childProcess.stderr.on('data', chunk => {
+    stderrChunks.push(chunk);
+  });
+
   let testResult;
 
-  const lines = stdout
-    .split('\n')
-    .map(line => line.trim())
-    .filter(Boolean);
+  const rl = readline.createInterface({input: result.childProcess.stdout});
+  rl.on('line', (rawLine: string) => {
+    const line = rawLine.trim();
+    if (!line) {
+      return;
+    }
 
-  for (const line of lines) {
     let parsed;
     try {
       parsed = JSON.parse(line);
-    } catch {}
+    } catch {
+      parsed = {
+        type: 'console-log',
+        level: 'info',
+        message: line,
+      };
+    }
 
     switch (parsed?.type) {
       case 'test-result':
         testResult = parsed;
         break;
       case 'console-log':
-        logs.push(parsed);
+        printConsoleLog(parsed);
         break;
       default:
-        logs.push({
+        printConsoleLog({
           type: 'console-log',
-          message: line,
           level: 'info',
+          message: line,
         });
         break;
     }
+  });
+
+  await result.done;
+
+  const getResultWithOutput = () => ({
+    ...result,
+    stdout: stdoutChunks.join(''),
+    stderr: stderrChunks.join(''),
+  });
+
+  if (result.status !== 0) {
+    throw new Error(getDebugInfoFromCommandResult(getResultWithOutput()));
+  }
+
+  if (PRINT_FANTOM_OUTPUT) {
+    console.log(getDebugInfoFromCommandResult(getResultWithOutput()));
   }
 
   if (testResult == null) {
@@ -87,7 +119,7 @@ function parseRNTesterCommandResult(result: SyncCommandResult): {
     );
   }
 
-  return {logs, testResult};
+  return testResult;
 }
 
 function generateBytecodeBundle({
@@ -202,7 +234,7 @@ module.exports = async function runTest(
     });
   }
 
-  const rnTesterCommandResult = runBuck2Sync([
+  const rnTesterCommandResult = runBuck2([
     'run',
     ...getBuckModesForPlatform(
       testConfig.mode === FantomTestConfigMode.Optimized,
@@ -219,19 +251,11 @@ module.exports = async function runTest(
     PRINT_FANTOM_OUTPUT ? 'info' : 'error',
   ]);
 
-  if (rnTesterCommandResult.status !== 0) {
-    throw new Error(getDebugInfoFromCommandResult(rnTesterCommandResult));
-  }
-
-  if (PRINT_FANTOM_OUTPUT) {
-    console.log(getDebugInfoFromCommandResult(rnTesterCommandResult));
-  }
-
-  const rnTesterParsedOutput = parseRNTesterCommandResult(
+  const processedResult = await processRNTesterCommandResult(
     rnTesterCommandResult,
   );
 
-  const testResultError = rnTesterParsedOutput.testResult.error;
+  const testResultError = processedResult.error;
   if (testResultError) {
     const error = new Error(testResultError.message);
     error.stack = symbolicateStackTrace(sourceMapPath, testResultError.stack);
@@ -240,12 +264,8 @@ module.exports = async function runTest(
 
   const endTime = Date.now();
 
-  if (process.env.SANDCASTLE == null) {
-    printConsoleLogs(rnTesterParsedOutput.logs);
-  }
-
   const testResults =
-    nullthrows(rnTesterParsedOutput.testResult.testResults).map(testResult => ({
+    nullthrows(processedResult.testResults).map(testResult => ({
       ancestorTitles: [] as Array<string>,
       failureDetails: [] as Array<string>,
       testFilePath: testPath,
@@ -255,9 +275,9 @@ module.exports = async function runTest(
       ),
     })) ?? [];
 
-  const snapshotResults = nullthrows(
-    rnTesterParsedOutput.testResult.testResults,
-  ).map(testResult => testResult.snapshotResults);
+  const snapshotResults = nullthrows(processedResult.testResults).map(
+    testResult => testResult.snapshotResults,
+  );
 
   const snapshotResult = updateSnapshotsAndGetJestSnapshotResult(
     snapshotState,
