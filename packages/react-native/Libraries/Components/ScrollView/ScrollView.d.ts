@@ -12,6 +12,7 @@ import {Constructor} from '../../../types/private/Utilities';
 import {Insets} from '../../../types/public/Insets';
 import {ColorValue, StyleProp} from '../../StyleSheet/StyleSheet';
 import {ViewStyle} from '../../StyleSheet/StyleSheetTypes';
+import {LayoutChangeEvent} from '../../Types/CoreEventTypes';
 import {
   NativeSyntheticEvent,
   NativeTouchEvent,
@@ -28,6 +29,14 @@ export interface PointProp {
 
 export interface ScrollResponderEvent
   extends NativeSyntheticEvent<NativeTouchEvent> {}
+
+export type StickyHeaderOnLayoutEventContext<
+  T extends Record<string, unknown>,
+> = {
+  index: number;
+  key: string;
+  itemProps: T;
+};
 
 interface SubscribableMixin {
   /**
@@ -660,6 +669,13 @@ export interface ScrollViewProps
    *
    */
   onContentSizeChange?: ((w: number, h: number) => void) | undefined;
+
+  onStickyHeaderLayout?:
+    | ((
+        event: LayoutChangeEvent,
+        context: StickyHeaderOnLayoutEventContext<Record<string, unknown>>,
+      ) => void)
+    | undefined;
 
   /**
    * Fires at most once per frame during scrolling.
