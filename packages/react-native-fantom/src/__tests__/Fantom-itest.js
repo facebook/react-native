@@ -142,8 +142,8 @@ describe('Fantom', () => {
       const rootWithDefaults = createRoot();
 
       expect(getActualViewportDimensions(rootWithDefaults)).toEqual({
-        viewportWidth: 1000,
-        viewportHeight: 1000,
+        viewportWidth: 390,
+        viewportHeight: 844,
       });
 
       const rootWithCustomWidthAndHeight = createRoot({
@@ -246,7 +246,7 @@ describe('Fantom', () => {
             layoutMetrics-frame="{x:0,y:0,width:100,height:100}"
             layoutMetrics-layoutDirection="LeftToRight"
             layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
-            layoutMetrics-pointScaleFactor="1"
+            layoutMetrics-pointScaleFactor="3"
             width="100.000000"
           />,
         );
