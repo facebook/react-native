@@ -134,3 +134,31 @@ export function symbolicateStackTrace(
     })
     .join('\n');
 }
+
+export type ConsoleLogMessage = {
+  type: 'console-log',
+  level: 'info' | 'warn' | 'error',
+  message: string,
+};
+
+export function printConsoleLogs(
+  logs: $ReadOnlyArray<ConsoleLogMessage>,
+): void {
+  for (const log of logs) {
+    switch (log.type) {
+      case 'console-log':
+        switch (log.level) {
+          case 'info':
+            console.log(log.message);
+            break;
+          case 'warn':
+            console.warn(log.message);
+            break;
+          case 'error':
+            console.error(log.message);
+            break;
+        }
+        break;
+    }
+  }
+}

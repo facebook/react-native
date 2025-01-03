@@ -15,6 +15,7 @@ import expect from './expect';
 import {createMockFunction} from './mocks';
 import {setupSnapshotConfig, snapshotContext} from './snapshotContext';
 import nullthrows from 'nullthrows';
+import NativeFantom from 'react-native/src/private/specs/modules/NativeFantom';
 
 export type TestCaseResult = {
   ancestorTitles: Array<string>,
@@ -190,7 +191,12 @@ function executeTests() {
 }
 
 function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
-  console.log(JSON.stringify(testSuiteResult));
+  NativeFantom.reportTestSuiteResultsJSON(
+    JSON.stringify({
+      type: 'test-result',
+      ...testSuiteResult,
+    }),
+  );
 }
 
 global.$$RunTests$$ = () => {
