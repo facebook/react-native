@@ -11,12 +11,10 @@ import android.annotation.SuppressLint
 import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.NativeMap
-import com.facebook.react.bridge.ReadableNativeMap
 import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.bridge.RuntimeScheduler
 import com.facebook.react.common.mapbuffer.MapBufferSoLoader
 import com.facebook.react.fabric.events.EventBeatManager
-import com.facebook.react.fabric.events.EventEmitterWrapper
 import com.facebook.react.uimanager.PixelUtil.getDisplayMetricDensity
 
 @DoNotStrip
@@ -81,10 +79,6 @@ internal class FabricUIManagerBinding : HybridClassBase() {
   public external fun drainPreallocateViewsQueue()
 
   public external fun reportMount(surfaceId: Int)
-
-  public external fun getInspectorDataForInstance(
-      eventEmitterWrapper: EventEmitterWrapper?
-  ): ReadableNativeMap?
 
   public fun register(
       runtimeExecutor: RuntimeExecutor,

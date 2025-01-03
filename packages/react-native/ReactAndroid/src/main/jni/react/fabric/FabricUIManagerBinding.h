@@ -57,9 +57,6 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 
-  jni::local_ref<ReadableNativeMap::jhybridobject> getInspectorDataForInstance(
-      jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper);
-
   static void initHybrid(jni::alias_ref<jhybridobject> jobj);
 
   void installFabricUIManager(
