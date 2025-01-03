@@ -24,7 +24,7 @@ import {
   getDebugInfoFromCommandResult,
   getShortHash,
   printConsoleLogs,
-  runBuck2,
+  runBuck2Sync,
   symbolicateStackTrace,
 } from './utils';
 import fs from 'fs';
@@ -43,7 +43,7 @@ const BUILD_OUTPUT_PATH = fs.mkdtempSync(
 
 const PRINT_FANTOM_OUTPUT: false = false;
 
-function parseRNTesterCommandResult(result: ReturnType<typeof runBuck2>): {
+function parseRNTesterCommandResult(result: ReturnType<typeof runBuck2Sync>): {
   logs: $ReadOnlyArray<ConsoleLogMessage>,
   testResult: TestSuiteResult,
 } {
@@ -99,7 +99,7 @@ function generateBytecodeBundle({
   bytecodePath: string,
   isOptimizedMode: boolean,
 }): void {
-  const hermesCompilerCommandResult = runBuck2(
+  const hermesCompilerCommandResult = runBuck2Sync(
     [
       'run',
       ...getBuckModesForPlatform(isOptimizedMode),
@@ -202,7 +202,7 @@ module.exports = async function runTest(
     });
   }
 
-  const rnTesterCommandResult = runBuck2([
+  const rnTesterCommandResult = runBuck2Sync([
     'run',
     ...getBuckModesForPlatform(
       testConfig.mode === FantomTestConfigMode.Optimized,
