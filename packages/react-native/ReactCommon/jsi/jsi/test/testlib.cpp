@@ -1723,6 +1723,49 @@ TEST_P(JSITest, ObjectCreateWithPrototype) {
   EXPECT_TRUE(child.getPrototype(rd).isNull());
 }
 
+TEST_P(JSITest, CreateFromUtf16Test) {
+  // This Runtime Decorator is used to test the default createStringFromUtf16
+  // and createPropNameIDFromUtf16 implementation for VMs that do not provide
+  // their own implementation
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    String createStringFromUtf16(const char16_t* utf16, size_t length)
+        override {
+      return Runtime::createStringFromUtf16(utf16, length);
+    }
+
+    PropNameID createPropNameIDFromUtf16(const char16_t* utf16, size_t length)
+        override {
+      return Runtime::createPropNameIDFromUtf16(utf16, length);
+    }
+  };
+
+  RD rd = RD(rt);
+  std::u16string utf16 = u"foobar";
+
+  auto jsString = String::createFromUtf16(rd, utf16);
+  EXPECT_EQ(jsString.utf16(rd), utf16);
+  auto prop = PropNameID::forUtf16(rd, utf16);
+  EXPECT_EQ(prop.utf16(rd), utf16);
+
+  utf16 = u"hello!👋";
+  jsString = String::createFromUtf16(rd, utf16.data(), utf16.length());
+  EXPECT_EQ(jsString.utf16(rd), utf16);
+  prop = PropNameID::forUtf16(rd, utf16);
+  EXPECT_EQ(prop.utf16(rd), utf16);
+
+  utf16 = u"\xd83d";
+  jsString = String::createFromUtf16(rd, utf16.data(), utf16.length());
+  /// We need to use charCodeAt instead of UTF16 because the default
+  /// implementation of UTF16 converts to UTF8, then to UTF16, so we will lose
+  /// the lone surrogate value.
+  rd.global().setProperty(rd, "loneSurrogate", jsString);
+  auto cp = eval("loneSurrogate.charCodeAt(0)").getNumber();
+  EXPECT_EQ(cp, 55357); // 0xD83D in decimal
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,

@@ -163,6 +163,45 @@ std::u16string convertUTF8ToUTF16(const std::string& utf8) {
   return ret;
 }
 
+// Given a unsigned number, which is less than 16, return the hex character.
+inline char hexDigit(unsigned x) {
+  return x < 10 ? '0' + x : 'A' + (x - 10);
+}
+
+// Given a sequence of UTF 16 code units, return true if all code units are
+// ASCII characters
+bool isAllASCII(const char16_t* utf16, size_t length) {
+  for (const char16_t* e = utf16 + length; utf16 != e; ++utf16) {
+    if (*utf16 > 0x7F)
+      return false;
+  }
+  return true;
+}
+
+// Given a sequences of UTF 16 code units, return a string that explicitly
+// expresses the code units
+std::string getUtf16CodeUnitString(const char16_t* utf16, size_t length) {
+  // Every character will need 4 hex digits + the character escape "\u".
+  // Plus 2 character for the opening and closing single quote.
+  std::string s = std::string(6 * length + 2, 0);
+  s.front() = '\'';
+
+  for (size_t i = 0; i != length; ++i) {
+    char16_t ch = utf16[i];
+    size_t start = (6 * i) + 1;
+
+    s[start] = '\\';
+    s[start + 1] = 'u';
+
+    s[start + 2] = hexDigit((ch >> 12) & 0x000f);
+    s[start + 3] = hexDigit((ch >> 8) & 0x000f);
+    s[start + 4] = hexDigit((ch >> 4) & 0x000f);
+    s[start + 5] = hexDigit(ch & 0x000f);
+  }
+  s.back() = '\'';
+  return s;
+}
+
 } // namespace
 
 Buffer::~Buffer() = default;
@@ -246,6 +285,25 @@ Value Runtime::createValueFromJsonUtf8(const uint8_t* json, size_t length) {
                            .getPropertyAsObject(*this, "JSON")
                            .getPropertyAsFunction(*this, "parse");
   return parseJson.call(*this, String::createFromUtf8(*this, json, length));
+}
+
+String Runtime::createStringFromUtf16(const char16_t* utf16, size_t length) {
+  if (isAllASCII(utf16, length)) {
+    std::string buffer(utf16, utf16 + length);
+    return createStringFromAscii(buffer.data(), length);
+  }
+  auto s = getUtf16CodeUnitString(utf16, length);
+  return global()
+      .getPropertyAsFunction(*this, "eval")
+      .call(*this, s)
+      .getString(*this);
+}
+
+PropNameID Runtime::createPropNameIDFromUtf16(
+    const char16_t* utf16,
+    size_t length) {
+  auto jsString = createStringFromUtf16(utf16, length);
+  return createPropNameIDFromString(jsString);
 }
 
 std::u16string Runtime::utf16(const PropNameID& sym) {
