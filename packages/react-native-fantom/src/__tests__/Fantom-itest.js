@@ -7,13 +7,47 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import type {Root} from '..';
+
 import {createRoot, runTask} from '..';
 import * as React from 'react';
 import {Text, View} from 'react-native';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
+
+function getActualViewportDimensions(root: Root): {
+  viewportWidth: number,
+  viewportHeight: number,
+} {
+  let maybeNode;
+
+  runTask(() => {
+    root.render(
+      <View
+        style={{width: '100%', height: '100%'}}
+        ref={node => {
+          maybeNode = node;
+        }}
+      />,
+    );
+  });
+
+  if (!(maybeNode instanceof ReactNativeElement)) {
+    throw new Error(
+      `Expected instance of ReactNativeElement but got ${String(maybeNode)}`,
+    );
+  }
+
+  const rect = maybeNode.getBoundingClientRect();
+  return {
+    viewportWidth: rect.width,
+    viewportHeight: rect.height,
+  };
+}
 
 describe('Fantom', () => {
   describe('runTask', () => {
@@ -100,6 +134,29 @@ describe('Fantom', () => {
         });
       });
       expect(threw).toBe(true);
+    });
+  });
+
+  describe('createRoot', () => {
+    it('allows creating a root with specific dimensions', () => {
+      const rootWithDefaults = createRoot();
+
+      expect(getActualViewportDimensions(rootWithDefaults)).toEqual({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
+
+      const rootWithCustomWidthAndHeight = createRoot({
+        viewportWidth: 200,
+        viewportHeight: 600,
+      });
+
+      expect(getActualViewportDimensions(rootWithCustomWidthAndHeight)).toEqual(
+        {
+          viewportWidth: 200,
+          viewportHeight: 600,
+        },
+      );
     });
   });
 
