@@ -12,7 +12,7 @@
 import {
   getBuckModesForPlatform,
   getDebugInfoFromCommandResult,
-  runBuck2,
+  runBuck2Sync,
 } from '../utils';
 // $FlowExpectedError[untyped-import]
 import fs from 'fs';
@@ -94,7 +94,7 @@ async function warmUpMetro(isOptimizedMode: boolean): Promise<void> {
 }
 
 function warmUpHermesCompiler(isOptimizedMode: boolean): void {
-  const buildHermesCompilerCommandResult = runBuck2([
+  const buildHermesCompilerCommandResult = runBuck2Sync([
     'build',
     ...getBuckModesForPlatform(isOptimizedMode),
     '//xplat/hermes/tools/hermesc:hermesc',
@@ -108,7 +108,7 @@ function warmUpHermesCompiler(isOptimizedMode: boolean): void {
 }
 
 function warmUpRNTesterCLI(isOptimizedMode: boolean): void {
-  const buildRNTesterCommandResult = runBuck2([
+  const buildRNTesterCommandResult = runBuck2Sync([
     'build',
     ...getBuckModesForPlatform(isOptimizedMode),
     '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
