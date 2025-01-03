@@ -158,6 +158,18 @@ export type ComponentArrayTypeAnnotation = ArrayTypeAnnotation<
   | ArrayTypeAnnotation<ObjectTypeAnnotation<PropTypeAnnotation>>,
 >;
 
+export type ComponentCommandArrayTypeAnnotation = ArrayTypeAnnotation<
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
+  | ObjectTypeAnnotation<ComponentCommandArrayTypeAnnotation>
+  | ArrayTypeAnnotation<
+      ObjectTypeAnnotation<ComponentCommandArrayTypeAnnotation>,
+    >,
+>;
+
 export type ArrayTypeAnnotation<+T> = $ReadOnly<{
   type: 'ArrayTypeAnnotation',
   elementType: T,
@@ -222,7 +234,7 @@ export type CommandParamTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation
-  | ComponentArrayTypeAnnotation;
+  | ComponentCommandArrayTypeAnnotation;
 
 export type ReservedTypeAnnotation = $ReadOnly<{
   type: 'ReservedTypeAnnotation',
