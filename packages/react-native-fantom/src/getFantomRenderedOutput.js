@@ -152,16 +152,20 @@ function convertRawJsonToJSX(
 function createJSXElementForTestComparison(
   type: string,
   props: mixed,
+  key?: ?string,
 ): React.Node {
   const Tag = type;
-  return <Tag {...props} />;
+  return <Tag key={key} {...props} />;
 }
 
 function rnTypeToTestType(type: string): string {
   return `rn-${type.substring(0, 1).toLowerCase() + type.substring(1)}`;
 }
 
-function jsonChildToJSXChild(jsonChild: FantomJsonObject | string): React.Node {
+function jsonChildToJSXChild(
+  jsonChild: FantomJsonObject | string,
+  index?: ?number,
+): React.Node {
   if (typeof jsonChild === 'string') {
     return jsonChild;
   } else {
@@ -172,6 +176,7 @@ function jsonChildToJSXChild(jsonChild: FantomJsonObject | string): React.Node {
       jsxChildren == null
         ? jsonChild.props
         : {...jsonChild.props, children: jsxChildren},
+      index != null ? String(index) : undefined,
     );
   }
 }
@@ -184,7 +189,7 @@ function jsonChildrenToJSXChildren(jsonChildren: FantomJsonObject['children']) {
     let allJSXChildrenAreStrings = true;
     let jsxChildrenString = '';
     for (let i = 0; i < jsonChildren.length; i++) {
-      const jsxChild = jsonChildToJSXChild(jsonChildren[i]);
+      const jsxChild = jsonChildToJSXChild(jsonChildren[i], i);
       jsxChildren.push(jsxChild);
       if (allJSXChildrenAreStrings) {
         if (typeof jsxChild === 'string') {

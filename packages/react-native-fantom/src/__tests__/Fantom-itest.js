@@ -76,28 +76,30 @@ describe('Fantom', () => {
 
     // TODO: when error handling is fixed, this should verify using `toThrow`
     it('should throw when running a task inside another task', () => {
-      let lastCallbackExecuted = 0;
+      let threw = false;
+
       runTask(() => {
-        lastCallbackExecuted = 1;
-        runTask(() => {
-          lastCallbackExecuted = 2;
-          throw new Error('Recursive runTask should be unreachable');
-        });
+        // TODO replace with expect(() => { ... }).toThrow() when error handling is fixed
+        try {
+          runTask(() => {});
+        } catch {
+          threw = true;
+        }
       });
-      expect(lastCallbackExecuted).toBe(1);
+      expect(threw).toBe(true);
+
+      threw = false;
 
       runTask(() => {
         queueMicrotask(() => {
-          lastCallbackExecuted = 3;
-          runTask(() => {
-            lastCallbackExecuted = 4;
-            throw new Error(
-              'Recursive runTask from micro-task should be unreachable',
-            );
-          });
+          try {
+            runTask(() => {});
+          } catch {
+            threw = true;
+          }
         });
       });
-      expect(lastCallbackExecuted).toBe(3);
+      expect(threw).toBe(true);
     });
   });
 
@@ -125,16 +127,24 @@ describe('Fantom', () => {
         runTask(() => {
           root.render(
             <>
-              <View style={{width: 100, height: 100}} collapsable={false} />
-              <View style={{width: 100, height: 100}} collapsable={false} />
+              <View
+                key="first"
+                style={{width: 100, height: 100}}
+                collapsable={false}
+              />
+              <View
+                key="second"
+                style={{width: 100, height: 100}}
+                collapsable={false}
+              />
             </>,
           );
         });
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <>
-            <rn-view width="100.000000" height="100.000000" />
-            <rn-view width="100.000000" height="100.000000" />
+            <rn-view key="0" width="100.000000" height="100.000000" />
+            <rn-view key="1" width="100.000000" height="100.000000" />
           </>,
         );
 
@@ -233,18 +243,26 @@ describe('Fantom', () => {
         runTask(() => {
           root.render(
             <>
-              <View style={{width: 100, height: 100}} collapsable={false} />
-              <Text>hello world!</Text>
-              <View style={{width: 200, height: 300}} collapsable={false} />
+              <View
+                key="first"
+                style={{width: 100, height: 100}}
+                collapsable={false}
+              />
+              <Text key="second">hello world!</Text>
+              <View
+                key="third"
+                style={{width: 200, height: 300}}
+                collapsable={false}
+              />
             </>,
           );
         });
 
         expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
           <>
-            <rn-view />
-            <rn-paragraph>hello world!</rn-paragraph>
-            <rn-view />
+            <rn-view key="0" />
+            <rn-paragraph key="1">hello world!</rn-paragraph>
+            <rn-view key="2" />
           </>,
         );
 
