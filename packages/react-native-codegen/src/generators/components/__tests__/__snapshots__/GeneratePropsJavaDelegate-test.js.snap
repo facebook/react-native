@@ -224,7 +224,7 @@ public class CommandNativeComponentManagerDelegate<T extends View, U extends Bas
         mViewManager.flashScrollIndicators(view);
         break;
       case \\"allTypes\\":
-        mViewManager.allTypes(view, args.getInt(0), (float) args.getDouble(1), args.getDouble(2), args.getString(3), args.getBoolean(4));
+        mViewManager.allTypes(view, args.getInt(0), (float) args.getDouble(1), args.getDouble(2), args.getString(3), args.getBoolean(4), args.getArray(5));
         break;
     }
   }

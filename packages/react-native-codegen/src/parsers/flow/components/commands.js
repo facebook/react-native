@@ -13,6 +13,7 @@
 import type {
   CommandParamTypeAnnotation,
   CommandTypeAnnotation,
+  ComponentCommandArrayTypeAnnotation,
   NamedShape,
 } from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
@@ -109,19 +110,15 @@ function buildCommandSchema(
         }
         returnType = {
           type: 'ArrayTypeAnnotation',
-          elementType: {
-            // TODO: T172453752 support complex type annotation for array element
-            type: paramValue.typeParameters.params[0].type,
-          },
+          elementType: getCommandArrayElementTypeType(
+            paramValue.typeParameters.params[0],
+          ),
         };
         break;
       case 'ArrayTypeAnnotation':
         returnType = {
           type: 'ArrayTypeAnnotation',
-          elementType: {
-            // TODO: T172453752 support complex type annotation for array element
-            type: paramValue.elementType.type,
-          },
+          elementType: getCommandArrayElementTypeType(paramValue.elementType),
         };
         break;
       default:
@@ -149,6 +146,66 @@ function buildCommandSchema(
       },
     },
   };
+}
+
+type Allowed = ComponentCommandArrayTypeAnnotation['elementType'];
+
+function getCommandArrayElementTypeType(inputType: mixed): Allowed {
+  // TODO: T172453752 support more complex type annotation for array element
+  if (typeof inputType !== 'object') {
+    throw new Error('Expected an object');
+  }
+
+  const type = inputType?.type;
+
+  if (inputType == null || typeof type !== 'string') {
+    throw new Error('Command array element type must be a string');
+  }
+
+  switch (type) {
+    case 'BooleanTypeAnnotation':
+      return {
+        type: 'BooleanTypeAnnotation',
+      };
+    case 'StringTypeAnnotation':
+      return {
+        type: 'StringTypeAnnotation',
+      };
+    case 'GenericTypeAnnotation':
+      const name = typeof inputType.id === 'object' ? inputType.id?.name : null;
+
+      if (typeof name !== 'string') {
+        throw new Error(
+          'Expected GenericTypeAnnotation AST name to be a string',
+        );
+      }
+
+      switch (name) {
+        case 'Int32':
+          return {
+            type: 'Int32TypeAnnotation',
+          };
+        case 'Float':
+          return {
+            type: 'FloatTypeAnnotation',
+          };
+        case 'Double':
+          return {
+            type: 'DoubleTypeAnnotation',
+          };
+        default:
+          // This is not a great solution. This generally means its a type alias to another type
+          // like an object or union. Ideally we'd encode that in the schema so the compat-check can
+          // validate those deeper objects for breaking changes and the generators can do something smarter.
+          // As of now, the generators just create ReadableMap or (const NSArray *) which are untyped
+          return {
+            type: 'MixedTypeAnnotation',
+          };
+      }
+
+    default:
+      throw new Error(`Unsupported array element type ${type}`);
+  }
 }
 
 function getCommands(
