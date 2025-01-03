@@ -890,9 +890,9 @@ describe('ReactNativeElement', () => {
         const boundingClientRect = element.getBoundingClientRect();
         expect(boundingClientRect).toBeInstanceOf(DOMRect);
         expect(boundingClientRect.x).toBe(5);
-        expect(boundingClientRect.y).toBe(10);
-        expect(boundingClientRect.width).toBe(50);
-        expect(boundingClientRect.height).toBe(101);
+        expect(boundingClientRect.y).toBeCloseTo(10.33);
+        expect(boundingClientRect.width).toBeCloseTo(50.33);
+        expect(boundingClientRect.height).toBeCloseTo(100.33);
 
         Fantom.runTask(() => {
           root.render(<View key="otherParent" />);
@@ -1131,7 +1131,7 @@ describe('ReactNativeElement', () => {
         const element = ensureReactNativeElement(lastElement);
 
         expect(element.offsetWidth).toBe(50);
-        expect(element.offsetHeight).toBe(101);
+        expect(element.offsetHeight).toBe(100);
 
         Fantom.runTask(() => {
           root.render(<View key="otherParent" />);

@@ -340,7 +340,10 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <View
@@ -477,7 +480,10 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 200}}>
@@ -539,7 +545,10 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 25}}>
@@ -600,7 +609,10 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 25}}>
@@ -661,7 +673,10 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <View
@@ -762,7 +777,10 @@ describe('IntersectionObserver', () => {
       let observer1: IntersectionObserver;
       let observer2: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 100}}>
@@ -872,7 +890,10 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = Fantom.createRoot();
+        const root = Fantom.createRoot({
+          viewportWidth: 1000,
+          viewportHeight: 1000,
+        });
         Fantom.runTask(() => {
           root.render(
             <View
@@ -932,7 +953,10 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = Fantom.createRoot();
+        const root = Fantom.createRoot({
+          viewportWidth: 1000,
+          viewportHeight: 1000,
+        });
         Fantom.runTask(() => {
           root.render(
             <ScrollView contentOffset={{x: 0, y: 25}}>
@@ -993,7 +1017,10 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = Fantom.createRoot();
+        const root = Fantom.createRoot({
+          viewportWidth: 1000,
+          viewportHeight: 1000,
+        });
         Fantom.runTask(() => {
           root.render(
             <ScrollView contentOffset={{x: 0, y: 200}}>
@@ -1054,7 +1081,10 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = Fantom.createRoot();
+        const root = Fantom.createRoot({
+          viewportWidth: 1000,
+          viewportHeight: 1000,
+        });
         Fantom.runTask(() => {
           root.render(
             <View
