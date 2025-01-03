@@ -110,26 +110,20 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
 
   override fun receiveEvent(
       surfaceId: Int,
-      targetReactTag: Int,
+      targetTag: Int,
       eventName: String,
       canCoalesceEvent: Boolean,
       customCoalesceKey: Int,
       event: WritableMap?,
       @EventCategoryDef category: Int
   ) {
-    @UIManagerType val uiManagerType = getUIManagerType(targetReactTag, surfaceId)
+    @UIManagerType val uiManagerType = getUIManagerType(targetTag, surfaceId)
     if (uiManagerType == UIManagerType.FABRIC) {
       fabricEventEmitter?.receiveEvent(
-          surfaceId,
-          targetReactTag,
-          eventName,
-          canCoalesceEvent,
-          customCoalesceKey,
-          event,
-          category)
+          surfaceId, targetTag, eventName, canCoalesceEvent, customCoalesceKey, event, category)
     } else if (uiManagerType == UIManagerType.DEFAULT) {
       val defaultEmitter = defaultEventEmitter
-      @Suppress("DEPRECATION") defaultEmitter?.receiveEvent(targetReactTag, eventName, event)
+      @Suppress("DEPRECATION") defaultEmitter?.receiveEvent(targetTag, eventName, event)
     }
   }
 
