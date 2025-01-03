@@ -70,11 +70,11 @@ runs:
       with:
         name: e2e_ios_${{ inputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}_${{ inputs.architecture }}
         path: |
-          video_record_1.mov
-          video_record_2.mov
-          video_record_3.mov
-          video_record_4.mov
-          video_record_5.mov
+          video_record_${{ inputs.jsengine }}_1.mov
+          video_record_${{ inputs.jsengine }}_2.mov
+          video_record_${{ inputs.jsengine }}_3.mov
+          video_record_${{ inputs.jsengine }}_4.mov
+          video_record_${{ inputs.jsengine }}_5.mov
           report.xml
     - name: Store Logs
       if: failure() && steps.run-tests.outcome == 'failure'
