@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import {spawnSync} from 'child_process';
+import {spawn, spawnSync} from 'child_process';
 import crypto from 'crypto';
 import fs from 'fs';
 import os from 'os';
@@ -44,11 +44,60 @@ export function getBuckModesForPlatform(
   return ['@//xplat/mode/react-force-cxx-platform', osPlatform];
 }
 
-type SyncCommandResult = {
-  ...ReturnType<typeof spawnSync>,
+export type AsyncCommandResult = {
   originalCommand: string,
-  ...
+  childProcess: ReturnType<typeof spawn>,
+  done: Promise<AsyncCommandResult>,
+  pid: number,
+  status: ?number,
+  signal: ?string,
+  error: ?Error,
 };
+
+export type SyncCommandResult = {
+  originalCommand: string,
+  pid: number,
+  status: number,
+  signal: ?string,
+  error: ?Error,
+  stdout: string,
+  stderr: string,
+};
+
+export function runCommand(
+  command: string,
+  args: Array<string>,
+): AsyncCommandResult {
+  const childProcess = spawn(command, args, {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+    },
+  });
+
+  const result: AsyncCommandResult = {
+    childProcess,
+    done: new Promise(resolve => {
+      childProcess.on('close', (code: number, signal: string) => {
+        result.status = code;
+        result.signal = signal;
+        resolve(result);
+      });
+    }),
+    originalCommand: `${command} ${args.join(' ')}`,
+    pid: childProcess.pid,
+    status: null,
+    signal: null,
+    error: null,
+  };
+
+  childProcess.on('error', error => {
+    result.error = error;
+  });
+
+  return result;
+}
 
 export function runCommandSync(
   command: string,
@@ -63,8 +112,13 @@ export function runCommandSync(
   });
 
   return {
-    ...result,
     originalCommand: `${command} ${args.join(' ')}`,
+    pid: result.pid,
+    status: result.status,
+    signal: result.signal,
+    error: result.error,
+    stdout: result.stdout.toString(),
+    stderr: result.stderr.toString(),
   };
 }
 
@@ -95,7 +149,15 @@ export function getDebugInfoFromCommandResult(
   return logLines.join('\n');
 }
 
+export function runBuck2(args: Array<string>): AsyncCommandResult {
+  return runCommand('buck2', processArgsForBuck(args));
+}
+
 export function runBuck2Sync(args: Array<string>): SyncCommandResult {
+  return runCommandSync('buck2', processArgsForBuck(args));
+}
+
+function processArgsForBuck(args: Array<string>): Array<string> {
   // If these tests are already running from withing a buck2 process, e.g. when
   // they are scheduled by a `buck2 test` wrapper, calling `buck2` again would
   // cause a daemon-level deadlock.
@@ -103,10 +165,10 @@ export function runBuck2Sync(args: Array<string>): SyncCommandResult {
   // dir across tests (even running in different jest processes) to properly
   // employ caching.
   if (process.env.BUCK2_WRAPPER != null) {
-    args.unshift('--isolation-dir', BUCK_ISOLATION_DIR);
+    return ['--isolation-dir', BUCK_ISOLATION_DIR].concat(args);
   }
 
-  return runCommandSync('buck2', args);
+  return args;
 }
 
 export function getShortHash(contents: string): string {
