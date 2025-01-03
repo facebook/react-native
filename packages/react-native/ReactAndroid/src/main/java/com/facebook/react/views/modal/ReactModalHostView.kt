@@ -220,6 +220,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   private fun getCurrentActivity(): Activity? = (context as ThemedReactContext).currentActivity
 
+  private fun isFlagSecureSet(activity: Activity?): Boolean {
+    if (activity == null) {
+      return false
+    }
+
+    val flags = activity.window.attributes.flags
+    return (flags and WindowManager.LayoutParams.FLAG_SECURE) != 0
+  }
+
   /**
    * showOrUpdate will display the Dialog. It is called by the manager once all properties are set
    * because we need to know all of them before creating the Dialog. It is also smart during updates
@@ -292,6 +301,11 @@ public class ReactModalHostView(context: ThemedReactContext) :
     newDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     if (hardwareAccelerated) {
       newDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
+    }
+    val flagSecureSet = isFlagSecureSet(currentActivity)
+    if (flagSecureSet) {
+      newDialog.window?.setFlags(
+          WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
     }
     if (currentActivity?.isFinishing == false) {
       newDialog.show()
