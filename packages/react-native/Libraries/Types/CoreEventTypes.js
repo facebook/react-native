@@ -268,17 +268,14 @@ export type ScrollEvent = SyntheticEvent<
   |}>,
 >;
 
-export type BlurEvent = SyntheticEvent<
+type TargetEvent = SyntheticEvent<
   $ReadOnly<{|
     target: number,
   |}>,
 >;
 
-export type FocusEvent = SyntheticEvent<
-  $ReadOnly<{|
-    target: number,
-  |}>,
->;
+export type BlurEvent = TargetEvent;
+export type FocusEvent = TargetEvent;
 
 export type MouseEvent = SyntheticEvent<
   $ReadOnly<{|
