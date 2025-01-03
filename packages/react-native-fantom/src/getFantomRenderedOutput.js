@@ -9,10 +9,10 @@
  * @oncall react_native
  */
 
-import NativeFantom from './specs/NativeFantom';
 // $FlowExpectedError[untyped-import]
 import micromatch from 'micromatch';
 import * as React from 'react';
+import NativeFantom from 'react-native/src/private/specs/modules/NativeFantom';
 
 export type RenderOutputConfig = {
   ...FantomRenderedOutputConfig,
