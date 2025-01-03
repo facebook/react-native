@@ -39,9 +39,14 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import org.mockito.MockedStatic
-import org.mockito.Mockito
-import org.mockito.Mockito.*
-import org.mockito.Mockito.`when` as whenever
+import org.mockito.Mockito.mockStatic
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
@@ -59,12 +64,12 @@ class RootViewTest {
   fun setUp() {
     ReactNativeFeatureFlagsForTests.setUp()
 
-    arguments = Mockito.mockStatic(Arguments::class.java)
+    arguments = mockStatic(Arguments::class.java)
     arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
     arguments.`when`<WritableMap> { Arguments.createMap() }.thenAnswer { JavaOnlyMap() }
 
     val ts = SystemClock.uptimeMillis()
-    systemClock = Mockito.mockStatic(SystemClock::class.java)
+    systemClock = mockStatic(SystemClock::class.java)
     systemClock.`when`<Long> { SystemClock.uptimeMillis() }.thenReturn(ts)
 
     catalystInstanceMock = ReactTestHelper.createMockCatalystInstance()
@@ -72,7 +77,7 @@ class RootViewTest {
     reactContext.initializeWithInstance(catalystInstanceMock)
 
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext)
-    val uiManagerModuleMock = mock(UIManagerModule::class.java)
+    val uiManagerModuleMock: UIManagerModule = mock()
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java))
         .thenReturn(uiManagerModuleMock)
   }
@@ -85,11 +90,11 @@ class RootViewTest {
 
   @Test
   fun testTouchEmitter() {
-    val instanceManager = mock(ReactInstanceManager::class.java)
+    val instanceManager: ReactInstanceManager = mock()
     whenever(instanceManager.currentReactContext).thenReturn(reactContext)
-    val uiManager = mock(UIManagerModule::class.java)
-    val eventDispatcher = mock(EventDispatcher::class.java)
-    val eventEmitterModuleMock = mock(RCTEventEmitter::class.java)
+    val uiManager: UIManagerModule = mock()
+    val eventDispatcher: EventDispatcher = mock()
+    val eventEmitterModuleMock: RCTEventEmitter = mock()
     whenever(catalystInstanceMock.getNativeModule(UIManagerModule::class.java))
         .thenReturn(uiManager)
     whenever(uiManager.eventDispatcher).thenReturn(eventDispatcher)
@@ -186,7 +191,7 @@ class RootViewTest {
 
   @Test
   fun testRemountApplication() {
-    val instanceManager = mock(ReactInstanceManager::class.java)
+    val instanceManager: ReactInstanceManager = mock()
     val rootView = ReactRootView(reactContext)
     rootView.startReactApplication(instanceManager, "")
     rootView.unmountReactApplication()
@@ -195,7 +200,7 @@ class RootViewTest {
 
   @Test
   fun testCheckForKeyboardEvents() {
-    val instanceManager = mock(ReactInstanceManager::class.java)
+    val instanceManager: ReactInstanceManager = mock()
     val activity = Robolectric.buildActivity(Activity::class.java).create().get()
     whenever(instanceManager.currentReactContext).thenReturn(reactContext)
     val rootView: ReactRootView =

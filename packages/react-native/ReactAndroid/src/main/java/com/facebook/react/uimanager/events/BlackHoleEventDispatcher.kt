@@ -14,10 +14,10 @@ import com.facebook.common.logging.FLog
  * expect an EventDispatcher when the instance doesn't exist.
  */
 public class BlackHoleEventDispatcher private constructor() : EventDispatcher {
-  public override fun dispatchEvent(event: Event<*>) {
+  public override fun dispatchEvent(event: Event<*>?) {
     FLog.d(
         "BlackHoleEventDispatcher",
-        "Trying to emit event to JS, but the React instance isn't ready. Event: ${event.eventName}")
+        "Trying to emit event to JS, but the React instance isn't ready. Event: ${event?.eventName ?: "null"}")
   }
 
   public override fun dispatchAllEvents(): Unit = Unit

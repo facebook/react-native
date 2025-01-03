@@ -24,7 +24,7 @@ class FakeEventDispatcher : EventDispatcher {
     return recordedDispatchedEvents
   }
 
-  override fun dispatchEvent(event: Event<*>) {
+  override fun dispatchEvent(event: Event<*>?) {
     recordedDispatchedEvents.add(event)
   }
 
