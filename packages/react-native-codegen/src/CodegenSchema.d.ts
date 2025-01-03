@@ -142,6 +142,18 @@ export type ComponentArrayTypeAnnotation = ArrayTypeAnnotation<
   | ArrayTypeAnnotation<ObjectTypeAnnotation<PropTypeAnnotation>>
 >;
 
+export type ComponentCommandArrayTypeAnnotation = ArrayTypeAnnotation<
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
+  | ObjectTypeAnnotation<ComponentCommandArrayTypeAnnotation>
+  | ArrayTypeAnnotation<
+    ObjectTypeAnnotation<ComponentCommandArrayTypeAnnotation>
+  >
+>;
+
 export interface ArrayTypeAnnotation<T> {
   readonly type: 'ArrayTypeAnnotation';
   readonly elementType: T;
@@ -206,7 +218,7 @@ export type CommandParamTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation
-  | ComponentArrayTypeAnnotation;
+  | ComponentCommandArrayTypeAnnotation;
 
 export interface ReservedTypeAnnotation {
   readonly type: 'ReservedTypeAnnotation';
