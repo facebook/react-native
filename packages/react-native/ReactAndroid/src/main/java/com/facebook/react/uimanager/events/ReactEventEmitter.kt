@@ -44,8 +44,8 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
   }
 
   @Deprecated("Please use RCTModernEventEmitter")
-  override fun receiveEvent(targetReactTag: Int, eventName: String, event: WritableMap?) {
-    receiveEvent(-1, targetReactTag, eventName, event)
+  override fun receiveEvent(targetTag: Int, eventName: String, event: WritableMap?) {
+    receiveEvent(-1, targetTag, eventName, event)
   }
 
   override fun receiveEvent(
