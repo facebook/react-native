@@ -57,6 +57,11 @@ type EventListenerRegistration = {
   removed: boolean,
 };
 
+type ListenersMap = Map<string, Array<EventListenerRegistration>>;
+
+const CAPTURING_LISTENERS_KEY = Symbol('capturingListeners');
+const BUBBLING_LISTENERS_KEY = Symbol('bubblingListeners');
+
 function getDefaultPassiveValue(
   type: string,
   eventTarget: EventTarget,
@@ -65,9 +70,6 @@ function getDefaultPassiveValue(
 }
 
 export default class EventTarget {
-  #listeners: Map<string, Array<EventListenerRegistration>> = new Map();
-  #captureListeners: Map<string, Array<EventListenerRegistration>> = new Map();
-
   addEventListener(
     type: string,
     callback: EventListener | null,
@@ -114,11 +116,13 @@ export default class EventTarget {
       return;
     }
 
-    const listenerMap = capture ? this.#captureListeners : this.#listeners;
-    let listenerList = listenerMap.get(processedType);
+    let listenersMap = this._getListenersMap(capture);
+    let listenerList = listenersMap?.get(processedType);
     if (listenerList == null) {
+      listenersMap = new Map();
       listenerList = [];
-      listenerMap.set(processedType, listenerList);
+      listenersMap.set(processedType, listenerList);
+      this._setListenersMap(capture, listenersMap);
     } else {
       for (const listener of listenerList) {
         if (listener.callback === callback) {
@@ -165,8 +169,8 @@ export default class EventTarget {
         ? optionsOrUseCapture
         : optionsOrUseCapture.capture ?? false;
 
-    const listenerMap = capture ? this.#captureListeners : this.#listeners;
-    const listenerList = listenerMap.get(processedType);
+    const listenersMap = this._getListenersMap(capture);
+    const listenerList = listenersMap?.get(processedType);
     if (listenerList == null) {
       return;
     }
@@ -200,7 +204,7 @@ export default class EventTarget {
 
     setIsTrusted(event, false);
 
-    this.#dispatch(event);
+    this._dispatch(event);
 
     return !event.defaultPrevented;
   }
@@ -213,10 +217,10 @@ export default class EventTarget {
    * Implements the "event dispatch" concept
    * (see https://dom.spec.whatwg.org/#concept-event-dispatch).
    */
-  #dispatch(event: Event): void {
+  _dispatch(event: Event): void {
     setEventDispatchFlag(event, true);
 
-    const eventPath = this.#getEventPath(event);
+    const eventPath = this._getEventPath(event);
     setComposedPath(event, eventPath);
     setTarget(event, this);
 
@@ -230,7 +234,7 @@ export default class EventTarget {
         event,
         target === this ? Event.AT_TARGET : Event.CAPTURING_PHASE,
       );
-      target.#invoke(event, Event.CAPTURING_PHASE);
+      target._invoke(event, Event.CAPTURING_PHASE);
     }
 
     for (const target of eventPath) {
@@ -248,7 +252,7 @@ export default class EventTarget {
         event,
         target === this ? Event.AT_TARGET : Event.BUBBLING_PHASE,
       );
-      target.#invoke(event, Event.BUBBLING_PHASE);
+      target._invoke(event, Event.BUBBLING_PHASE);
     }
 
     setEventPhase(event, Event.NONE);
@@ -266,7 +270,7 @@ export default class EventTarget {
    *
    * The return value is also set as `composedPath` for the event.
    */
-  #getEventPath(event: Event): $ReadOnlyArray<EventTarget> {
+  _getEventPath(event: Event): $ReadOnlyArray<EventTarget> {
     const path = [];
     // eslint-disable-next-line consistent-this
     let target: EventTarget | null = this;
@@ -284,19 +288,20 @@ export default class EventTarget {
    * Implements the event listener invoke concept
    * (see https://dom.spec.whatwg.org/#concept-event-listener-invoke).
    */
-  #invoke(event: Event, eventPhase: EventPhase) {
-    const listenerMap =
-      eventPhase === Event.CAPTURING_PHASE
-        ? this.#captureListeners
-        : this.#listeners;
+  _invoke(event: Event, eventPhase: EventPhase) {
+    const listenersMap = this._getListenersMap(
+      eventPhase === Event.CAPTURING_PHASE,
+    );
 
     setCurrentTarget(event, this);
 
     // This is a copy so listeners added during dispatch are NOT executed.
-    const listenerList = listenerMap.get(event.type)?.slice();
+    const listenerList = listenersMap?.get(event.type)?.slice();
     if (listenerList == null) {
       return;
     }
+
+    setCurrentTarget(event, this);
 
     for (const listener of listenerList) {
       if (listener.removed) {
@@ -344,6 +349,24 @@ export default class EventTarget {
     }
   }
 
+  _getListenersMap(isCapture: boolean): ?ListenersMap {
+    return isCapture
+      ? // $FlowExpectedError[prop-missing]
+        this[CAPTURING_LISTENERS_KEY]
+      : // $FlowExpectedError[prop-missing]
+        this[BUBBLING_LISTENERS_KEY];
+  }
+
+  _setListenersMap(isCapture: boolean, listenersMap: ListenersMap): void {
+    if (isCapture) {
+      // $FlowExpectedError[prop-missing]
+      this[CAPTURING_LISTENERS_KEY] = listenersMap;
+    } else {
+      // $FlowExpectedError[prop-missing]
+      this[BUBBLING_LISTENERS_KEY] = listenersMap;
+    }
+  }
+
   /**
    * This a "protected" method to be overridden by a subclass to allow event
    * propagation.
@@ -361,7 +384,7 @@ export default class EventTarget {
    */
   // $FlowExpectedError[unsupported-syntax]
   [INTERNAL_DISPATCH_METHOD_KEY](event: Event): void {
-    this.#dispatch(event);
+    this._dispatch(event);
   }
 }
 
