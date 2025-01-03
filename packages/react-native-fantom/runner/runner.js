@@ -47,10 +47,7 @@ function parseRNTesterCommandResult(result: ReturnType<typeof runBuck2>): {
 } {
   const stdout = result.stdout.toString();
 
-  const outputArray = stdout
-    .trim()
-    .split('\n')
-    .filter(log => !log.startsWith('Running "')); // remove AppRegistry logs.
+  const outputArray = stdout.trim().split('\n');
 
   // The last line should be the test output in JSON format
   const testResultJSON = outputArray.pop();
