@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f56022e0738217726e5e7b938666b56e>>
+ * @generated SignedSource<<0b570bc8931ec25f16ee777f0bfcd04f>>
  */
 
 /**
@@ -56,7 +56,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var fixDifferentiatorEmittingUpdatesWithWrongParentTagCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
-  private var fuseboxEnabledDebugCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var initEagerTurboModulesOnNativeModulesQueueAndroidCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
@@ -389,16 +388,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.fixMountingCoordinatorReportedPendingTransactionsOnAndroid()
       accessedFeatureFlags.add("fixMountingCoordinatorReportedPendingTransactionsOnAndroid")
       fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun fuseboxEnabledDebug(): Boolean {
-    var cached = fuseboxEnabledDebugCache
-    if (cached == null) {
-      cached = currentProvider.fuseboxEnabledDebug()
-      accessedFeatureFlags.add("fuseboxEnabledDebug")
-      fuseboxEnabledDebugCache = cached
     }
     return cached
   }

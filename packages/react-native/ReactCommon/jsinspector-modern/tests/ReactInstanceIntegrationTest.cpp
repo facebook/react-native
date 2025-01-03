@@ -13,8 +13,6 @@
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <jsinspector-modern/InspectorFlags.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/featureflags/ReactNativeFeatureFlagsDefaults.h>
 #include <react/runtime/hermes/HermesInstance.h>
 
 using namespace ::testing;
@@ -27,9 +25,14 @@ ReactInstanceIntegrationTest::ReactInstanceIntegrationTest()
     : runtime(nullptr),
       instance(nullptr),
       messageQueueThread(std::make_shared<MockMessageQueueThread>()),
-      errorHandler(std::make_shared<ErrorUtils>()) {}
+      errorHandler(std::make_shared<ErrorUtils>()),
+      testMode_(GetParam()) {}
 
 void ReactInstanceIntegrationTest::SetUp() {
+  if (testMode_ == ReactInstanceIntegrationTestMode::LEGACY_HERMES) {
+    InspectorFlags::getInstance().dangerouslyDisableFuseboxForTest();
+  }
+
   auto mockRegistry = std::make_unique<MockTimerRegistry>();
   auto timerManager =
       std::make_shared<react::TimerManager>(std::move(mockRegistry));
@@ -128,7 +131,6 @@ void ReactInstanceIntegrationTest::TearDown() {
 
   // Expect the remote connection to have been destroyed.
   EXPECT_EQ(mockRemoteConnections_[0], nullptr);
-  ReactNativeFeatureFlags::dangerouslyReset();
 }
 
 void ReactInstanceIntegrationTest::initializeRuntime(std::string_view script) {
@@ -191,12 +193,12 @@ bool ReactInstanceIntegrationTest::verbose(bool isVerbose) {
 
 #pragma endregion
 
-TEST_F(ReactInstanceIntegrationTest, RuntimeEvalTest) {
+TEST_P(ReactInstanceIntegrationTest, RuntimeEvalTest) {
   auto val = run("1 + 2");
   EXPECT_EQ(val.asNumber(), 3);
 }
 
-TEST_P(ReactInstanceIntegrationTestWithFlags, ConsoleLog) {
+TEST_P(ReactInstanceIntegrationTest, ConsoleLog) {
   EXPECT_CALL(
       getRemoteConnection(),
       onMessage(JsonParsed(
@@ -220,11 +222,10 @@ TEST_P(ReactInstanceIntegrationTestWithFlags, ConsoleLog) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    ReactInstanceVaryingInspectorFlags,
-    ReactInstanceIntegrationTestWithFlags,
+    ReactInstanceVaryingInspectorBackend,
+    ReactInstanceIntegrationTest,
     ::testing::Values(
-        InspectorFlagOverrides{.fuseboxEnabledDebug = false},
-        InspectorFlagOverrides{.fuseboxEnabledDebug = false},
-        InspectorFlagOverrides{.fuseboxEnabledDebug = true}));
+        ReactInstanceIntegrationTestMode::LEGACY_HERMES,
+        ReactInstanceIntegrationTestMode::FUSEBOX));
 
 } // namespace facebook::react::jsinspector_modern
