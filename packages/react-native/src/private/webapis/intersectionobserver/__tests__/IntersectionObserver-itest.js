@@ -24,22 +24,11 @@ import '../../../../../Libraries/Core/InitializeCore.js';
 
 import ScrollView from '../../../../../Libraries/Components/ScrollView/ScrollView';
 import View from '../../../../../Libraries/Components/View/View';
+import ensureInstance from '../../../utilities/ensureInstance';
 
 declare const IntersectionObserver: Class<IntersectionObserverType>;
 
 setUpIntersectionObserver();
-
-function ensureInstance<T>(value: mixed, Class: Class<T>): T {
-  if (!(value instanceof Class)) {
-    // $FlowExpectedError[incompatible-use]
-    const className = Class.name;
-    throw new Error(
-      `Expected instance of ${className} but got ${String(value)}`,
-    );
-  }
-
-  return value;
-}
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);

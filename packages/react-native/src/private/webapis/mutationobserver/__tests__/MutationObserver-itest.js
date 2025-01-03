@@ -20,22 +20,11 @@ import nullthrows from 'nullthrows';
 import * as React from 'react';
 
 import '../../../../../Libraries/Core/InitializeCore.js';
+import ensureInstance from '../../../utilities/ensureInstance';
 
 declare const MutationObserver: Class<MutationObserverType>;
 
 setUpMutationObserver();
-
-function ensureInstance<T>(value: mixed, Class: Class<T>): T {
-  if (!(value instanceof Class)) {
-    // $FlowExpectedError[incompatible-use]
-    const className = Class.name;
-    throw new Error(
-      `Expected instance of ${className} but got ${String(value)}`,
-    );
-  }
-
-  return value;
-}
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
