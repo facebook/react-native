@@ -39,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewButtonLabel;
 
+@property (nonatomic, assign) BOOL disableKeyboardShortcuts;
+
 @end
 
 NS_ASSUME_NONNULL_END

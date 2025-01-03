@@ -285,6 +285,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _backedTextInputView.inputAccessoryViewButtonLabel =
         RCTNSStringFromString(newTextInputProps.inputAccessoryViewButtonLabel);
   }
+
+  if (newTextInputProps.disableKeyboardShortcuts != oldTextInputProps.disableKeyboardShortcuts) {
+    _backedTextInputView.disableKeyboardShortcuts = newTextInputProps.disableKeyboardShortcuts;
+  }
+  
   [super updateProps:props oldProps:oldProps];
 
   [self setDefaultInputAccessoryView];

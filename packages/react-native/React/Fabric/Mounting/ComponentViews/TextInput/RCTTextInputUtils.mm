@@ -45,6 +45,7 @@ void RCTCopyBackedTextInput(
   toTextInput.textContentType = fromTextInput.textContentType;
   toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;
   toTextInput.passwordRules = fromTextInput.passwordRules;
+  toTextInput.disableKeyboardShortcuts = fromTextInput.disableKeyboardShortcuts;
 
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
 }
