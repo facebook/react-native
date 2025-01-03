@@ -233,22 +233,27 @@ module.exports = async function runTest(
     });
   }
 
-  const rnTesterCommandResult = runBuck2([
-    'run',
-    ...getBuckModesForPlatform(
-      testConfig.mode === FantomTestConfigMode.Optimized,
-    ),
-    '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
-    '--',
-    '--bundlePath',
-    testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
-      ? testJSBundlePath
-      : testBytecodeBundlePath,
-    '--featureFlags',
-    JSON.stringify(testConfig.flags.common),
-    '--minLogLevel',
-    EnvironmentOptions.printCLIOutput ? 'info' : 'error',
-  ]);
+  const rnTesterCommandResult = runBuck2(
+    [
+      'run',
+      ...getBuckModesForPlatform(
+        testConfig.mode === FantomTestConfigMode.Optimized,
+      ),
+      '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
+      '--',
+      '--bundlePath',
+      testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
+        ? testJSBundlePath
+        : testBytecodeBundlePath,
+      '--featureFlags',
+      JSON.stringify(testConfig.flags.common),
+      '--minLogLevel',
+      EnvironmentOptions.printCLIOutput ? 'info' : 'error',
+    ],
+    {
+      withFDB: EnvironmentOptions.enableCppDebugging,
+    },
+  );
 
   const processedResult = await processRNTesterCommandResult(
     rnTesterCommandResult,

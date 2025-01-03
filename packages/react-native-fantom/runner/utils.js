@@ -166,12 +166,40 @@ export function getDebugInfoFromCommandResult(
   return logLines.join('\n');
 }
 
-export function runBuck2(args: Array<string>): AsyncCommandResult {
-  return runCommand('buck2', processArgsForBuck(args));
+function getCommandAndArgsWithFDB(
+  command: string,
+  args: Array<string>,
+  useFDB: boolean,
+) {
+  if (useFDB) {
+    return ['fdb', [command].concat(args)];
+  } else {
+    return [command, args];
+  }
 }
 
-export function runBuck2Sync(args: Array<string>): SyncCommandResult {
-  return runCommandSync('buck2', processArgsForBuck(args));
+export function runBuck2(
+  args: Array<string>,
+  options?: {withFDB: boolean},
+): AsyncCommandResult {
+  const [actualCommand, actualArgs] = getCommandAndArgsWithFDB(
+    'buck2',
+    processArgsForBuck(args),
+    options?.withFDB ?? false,
+  );
+  return runCommand(actualCommand, actualArgs);
+}
+
+export function runBuck2Sync(
+  args: Array<string>,
+  options?: {withFDB: boolean},
+): SyncCommandResult {
+  const [actualCommand, actualArgs] = getCommandAndArgsWithFDB(
+    'buck2',
+    processArgsForBuck(args),
+    options?.withFDB ?? false,
+  );
+  return runCommandSync(actualCommand, actualArgs);
 }
 
 function processArgsForBuck(args: Array<string>): Array<string> {
