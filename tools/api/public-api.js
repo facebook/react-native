@@ -27,6 +27,8 @@ const log = {
 };
 
 const CPP_IS_PRIVATE = /\n private:([\s\S]*?)(?= public:| protected:|};)/g;
+const CPP_FORWARD_DECLARATION =
+  /(?:^|\n)?\s*(@?class|struct|@protocol) [^{ ]+;/g;
 
 // $FlowFixMe[prop-missing]
 const isTTY = process.stdout.isTTY;
@@ -151,7 +153,6 @@ function trimCPPNoise(
 
   // The second pass isn't very robust, but it's good enough for now.
   if (filetype === FileType.CPP || filetype === FileType.C) {
-    // Remove private members
     sourceFileContents = sourceFileContents.replace(CPP_IS_PRIVATE, '');
   }
 
@@ -294,7 +295,13 @@ function main() {
   );
 
   for (const filename of files) {
-    const cleaned = cache[filename] ?? '';
+    let cleaned = cache[filename] ?? '';
+    const filetype = filetypes[filename] ?? FileType.UNKNOWN;
+
+    if (filetype !== FileType.UNKNOWN) {
+      // Remove forward declarations at the late stage avoid dirtying when we deduplicate all the imports
+      cleaned = cleaned.replace(CPP_FORWARD_DECLARATION, '');
+    }
     // Cache output so we can clean up more noise
     fs.appendFileSync(
       outputFile,

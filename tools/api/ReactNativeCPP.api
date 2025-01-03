@@ -14,9 +14,6 @@
 /// @dep {packages/react-native/Libraries/AppDelegate/RCTDependencyProvider.h}
 /// @dep {packages/react-native/Libraries/AppDelegate/RCTRootViewFactory.h}
 /// @dep {packages/react-native/Libraries/AppDelegate/RCTUIConfiguratorProtocol.h}
-@class RCTBridge;
-@protocol RCTComponentViewProtocol;
-@class RCTSurfacePresenterBridgeAdapter;
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTReactNativeFactoryDelegate <
     RCTBridgeDelegate,
@@ -49,12 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTDefaultReactNativeFactoryDelegate : UIResponder <RCTReactNativeFactoryDelegate>
 @end
 NS_ASSUME_NONNULL_END
-@class RCTBridge;
-@protocol RCTBridgeDelegate;
-@protocol RCTComponentViewProtocol;
-@class RCTRootView;
-@class RCTSurfacePresenterBridgeAdapter;
-@protocol RCTDependencyProvider;
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTAppDelegate : RCTDefaultReactNativeFactoryDelegate <UIApplicationDelegate, UISceneDelegate>
 @property (nonatomic, strong, nonnull) UIWindow *window;
@@ -69,9 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/AppDelegate/RCTAppSetupUtils.h}:
-@protocol RCTDependencyProvider;
+
 namespace facebook::react {
-class RuntimeScheduler;
 }
 RCT_EXTERN id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(
     Class moduleClass,
@@ -105,9 +95,6 @@ RCT_EXTERN_C_END
 /// @dep {packages/react-native/Libraries/AppDelegate/RCTDependencyProvider.h}
 /// @dep {packages/react-native/Libraries/AppDelegate/RCTRootViewFactory.h}
 /// @dep {packages/react-native/Libraries/AppDelegate/RCTUIConfiguratorProtocol.h}
-@class RCTBridge;
-@protocol RCTComponentViewProtocol;
-@class RCTSurfacePresenterBridgeAdapter;
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTReactNativeFactoryDelegate <
     RCTBridgeDelegate,
@@ -142,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/AppDelegate/RCTDependencyProvider.h}:
-@protocol RCTComponentViewProtocol;
+
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTDependencyProvider <NSObject>
 - (NSArray<NSString *> *)imageURLLoaderClassNames;
@@ -157,9 +144,6 @@ NS_ASSUME_NONNULL_END
 /// @dep {packages/react-native/Libraries/AppDelegate/RCTDependencyProvider.h}
 /// @dep {packages/react-native/Libraries/AppDelegate/RCTRootViewFactory.h}
 /// @dep {packages/react-native/Libraries/AppDelegate/RCTUIConfiguratorProtocol.h}
-@class RCTBridge;
-@protocol RCTComponentViewProtocol;
-@class RCTSurfacePresenterBridgeAdapter;
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTReactNativeFactoryDelegate <
     RCTBridgeDelegate,
@@ -189,14 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/AppDelegate/RCTRootViewFactory.h}:
-@protocol RCTCxxBridgeDelegate;
-@protocol RCTComponentViewFactoryComponentProvider;
-@protocol RCTTurboModuleManagerDelegate;
-@protocol RCTHostDelegate;
-@class RCTBridge;
-@class RCTHost;
-@class RCTRootView;
-@class RCTSurfacePresenterBridgeAdapter;
+
 NS_ASSUME_NONNULL_BEGIN
 typedef UIView *_Nonnull (
     ^RCTCreateRootViewWithBridgeBlock)(RCTBridge *bridge, NSString *moduleName, NSDictionary *initProps);
@@ -252,7 +229,7 @@ typedef BOOL (^RCTBridgeDidNotFindModuleBlock)(RCTBridge *bridge, NSString *modu
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/AppDelegate/RCTUIConfiguratorProtocol.h}:
-@class RCTRootView;
+
 @protocol RCTUIConfiguratorProtocol
 - (RCTColorSpace)defaultColorSpace;
 - (void)customizeRootView:(RCTRootView *)rootView;
@@ -261,7 +238,7 @@ NS_ASSUME_NONNULL_END
 @end
 
 /// @src {packages/react-native/Libraries/Blob/RCTBlobCollector.h}:
-@class RCTBlobManager;
+
 namespace facebook::react {
 class JSI_EXPORT RCTBlobCollector : public jsi::HostObject {
  public:
@@ -711,8 +688,7 @@ RCT_EXTERN BOOL RCTImageHasAlpha(CGImageRef image);
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/Image/RCTImageView.h}:
-@class RCTBridge;
-@class RCTImageSource;
+
 @interface RCTImageView : RCTView
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 @property (nonatomic, assign) UIEdgeInsets capInsets;
@@ -804,7 +780,6 @@ Class RCTLinkingManagerCls(void) __attribute__((used));
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Drivers/RCTAnimationDriver.h}:
 static CGFloat RCTSingleFrameInterval = (CGFloat)(1.0 / 60.0);
-@class RCTValueAnimatedNode;
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTAnimationDriver <NSObject>
 @property (nonatomic, readonly) NSNumber *animationId;
@@ -849,8 +824,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAdditionAnimatedNode.h}:
 /// @dep {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h}
-
-@class RCTValueAnimatedNode;
 @protocol RCTValueAnimatedNodeObserver <NSObject>
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value;
 @end
@@ -867,7 +840,7 @@ NS_ASSUME_NONNULL_END
 @end
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h}:
-@class RCTNativeAnimatedNodesManager;
+
 @interface RCTAnimatedNode : NSObject
 - (instancetype)initWithTag:(NSNumber *)tag config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
 @property (nonatomic, readonly) NSNumber *nodeTag;
@@ -894,8 +867,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Nodes/RCTDiffClampAnimatedNode.h}:
 /// @dep {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h}
-
-@class RCTValueAnimatedNode;
 @protocol RCTValueAnimatedNodeObserver <NSObject>
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value;
 @end
@@ -913,8 +884,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Nodes/RCTDivisionAnimatedNode.h}:
 /// @dep {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h}
-
-@class RCTValueAnimatedNode;
 @protocol RCTValueAnimatedNodeObserver <NSObject>
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value;
 @end
@@ -932,8 +901,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Nodes/RCTInterpolationAnimatedNode.h}:
 /// @dep {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h}
-
-@class RCTValueAnimatedNode;
 @protocol RCTValueAnimatedNodeObserver <NSObject>
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value;
 @end
@@ -959,8 +926,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Nodes/RCTModuloAnimatedNode.h}:
 /// @dep {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h}
-
-@class RCTValueAnimatedNode;
 @protocol RCTValueAnimatedNodeObserver <NSObject>
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value;
 @end
@@ -978,8 +943,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Nodes/RCTMultiplicationAnimatedNode.h}:
 /// @dep {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h}
-
-@class RCTValueAnimatedNode;
 @protocol RCTValueAnimatedNodeObserver <NSObject>
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value;
 @end
@@ -1004,8 +967,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Nodes/RCTPropsAnimatedNode.h}:
 /// @dep {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h}
-@class RCTBridge;
-@class RCTViewPropertyMapper;
 @interface RCTPropsAnimatedNode : RCTAnimatedNode
 - (void)connectToView:(NSNumber *)viewTag
              viewName:(NSString *)viewName
@@ -1024,8 +985,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Nodes/RCTSubtractionAnimatedNode.h}:
 /// @dep {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h}
-
-@class RCTValueAnimatedNode;
 @protocol RCTValueAnimatedNodeObserver <NSObject>
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value;
 @end
@@ -1056,8 +1015,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/NativeAnimation/Nodes/RCTValueAnimatedNode.h}:
 /// @dep {packages/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h}
-
-@class RCTValueAnimatedNode;
 @protocol RCTValueAnimatedNodeObserver <NSObject>
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value;
 @end
@@ -1114,7 +1071,7 @@ RCT_EXTERN CGFloat RCTAnimationDragCoefficient(void);
 @end
 
 /// @src {packages/react-native/Libraries/NativeAnimation/RCTNativeAnimatedNodesManager.h}:
-@protocol RCTValueAnimatedNodeObserver;
+
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTNativeAnimatedNodesManager : NSObject
 - (nonnull instancetype)initWithBridge:(nullable RCTBridge *)bridge
@@ -1505,7 +1462,7 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegate.h}:
-@protocol RCTBackedTextInputViewProtocol;
+
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTBackedTextInputDelegate <NSObject>
 - (BOOL)textInputShouldBeginEditing;
@@ -1540,8 +1497,7 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/Text/TextInput/RCTBackedTextInputViewProtocol.h}:
-@protocol RCTBackedTextInputDelegate;
-@class RCTTextAttributes;
+
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTBackedTextInputViewProtocol <UITextInput>
 @property (nonatomic, copy, nullable) NSAttributedString *attributedText;
@@ -1589,10 +1545,6 @@ NS_ASSUME_NONNULL_END
 /// @src {packages/react-native/Libraries/Text/TextInput/RCTBaseTextInputView.h}:
 /// @dep {packages/react-native/Libraries/Text/TextInput/RCTBackedTextInputDelegate.h}
 /// @dep {packages/react-native/Libraries/Text/TextInput/RCTBackedTextInputViewProtocol.h}
-
-@class RCTBridge;
-@class RCTTextAttributes;
-@class RCTTextSelection;
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTBaseTextInputView : RCTView <RCTBackedTextInputDelegate>
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
@@ -1635,8 +1587,7 @@ NS_ASSUME_NONNULL_END
 @end
 
 /// @src {packages/react-native/Libraries/Text/TextInput/RCTInputAccessoryView.h}:
-@class RCTBridge;
-@class RCTInputAccessoryViewContent;
+
 @interface RCTInputAccessoryView : UIView
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 @end
@@ -1803,7 +1754,7 @@ Class RCTVibrationCls(void) __attribute__((used));
 
 
 /// @src {packages/react-native/Libraries/Wrapper/RCTWrapperShadowView.h}:
-@class RCTBridge;
+
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTWrapperShadowView : RCTShadowView
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
@@ -1812,7 +1763,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/Wrapper/RCTWrapperView.h}:
 typedef CGSize (^RCTWrapperMeasureBlock)(CGSize minimumSize, CGSize maximumSize);
-@class RCTBridge;
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTWrapperView : UIView
 @property (nonatomic, retain, nullable) UIView *contentView;
@@ -1840,7 +1790,7 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/Libraries/Wrapper/RCTWrapperViewManager.h}:
-@class RCTWrapperView;
+
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTWrapperViewManager : RCTViewManager
 - (RCTWrapperView *)view NS_REQUIRES_SUPER;
@@ -1901,9 +1851,7 @@ RCTNewArchitectureValidationPlaceholder(RCTNotAllowedValidation type, id context
 @end
 
 /// @src {packages/react-native/React/Base/RCTBridge+Private.h}:
-@class RCTModuleRegistry;
-@class RCTModuleData;
-@protocol RCTJavaScriptExecutor;
+
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 RCT_EXTERN void RCTRegisterModule(Class);
 @interface RCTBridge ()
@@ -1947,10 +1895,6 @@ RCT_EXTERN void RCTRegisterModule(Class);
 /// @src {packages/react-native/React/Base/RCTBridge.h}:
 /// @dep {packages/react-native/React/Base/RCTBridgeConstants.h}
 /// @dep {packages/react-native/React/Base/RCTConstants.h}
-
-@class JSValue;
-@class RCTBridge;
-@class RCTPerformanceLogger;
 typedef NSArray<id<RCTBridgeModule>> * (^RCTBridgeModuleListProvider)(void);
 RCT_EXTERN_C_BEGIN
 NSString *RCTBridgeModuleNameForClass(Class bridgeModuleClass);
@@ -2031,8 +1975,7 @@ RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationReasonKey;
 RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey;
 
 /// @src {packages/react-native/React/Base/RCTBridgeDelegate.h}:
-@class RCTBridge;
-@protocol RCTBridgeModule;
+
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTBridgeDelegate <NSObject>
 - (NSURL *__nullable)sourceURLForBridge:(RCTBridge *)bridge;
@@ -2049,7 +1992,7 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Base/RCTBridgeMethod.h}:
-@class RCTBridge;
+
 typedef NS_ENUM(NSInteger, RCTFunctionType) {
   RCTFunctionTypeNormal,
   RCTFunctionTypePromise,
@@ -2074,14 +2017,6 @@ static inline const char *RCTFunctionDescriptorFromType(RCTFunctionType type)
 
 /// @src {packages/react-native/React/Base/RCTBridgeModule.h}:
 /// @dep {packages/react-native/React/Base/RCTBundleManager.h}
-
-@class RCTBridge;
-@protocol RCTBridgeMethod;
-@protocol RCTTurboModule;
-@protocol RCTTurboModuleRegistry;
-@class RCTModuleRegistry;
-@class RCTViewRegistry;
-@class RCTCallableJSModules;
 typedef void (^RCTResponseSenderBlock)(NSArray *response);
 typedef void (^RCTResponseErrorBlock)(NSError *error);
 typedef void (^RCTPromiseResolveBlock)(id result);
@@ -2140,11 +2075,6 @@ typedef void (^RCTBridgelessJSModuleMethodInvoker)(
 
 /// @src {packages/react-native/React/Base/RCTBridgeModuleDecorator.h}:
 /// @dep {packages/react-native/React/Base/RCTBridgeModule.h}
-
-@class RCTBundleManager;
-@class RCTCallableJSModules;
-@class RCTModuleRegistry;
-@class RCTViewRegistry;
 @interface RCTBridgeModuleDecorator : NSObject
 @property (nonatomic, strong, readonly) RCTViewRegistry *viewRegistry_DEPRECATED;
 @property (nonatomic, strong, readonly) RCTModuleRegistry *moduleRegistry;
@@ -2161,10 +2091,6 @@ typedef void (^RCTBridgelessJSModuleMethodInvoker)(
 /// @dep {packages/react-native/React/Base/RCTBridgeModule.h}
 
 NS_ASSUME_NONNULL_BEGIN
-@class RCTBundleManager;
-@class RCTCallableJSModules;
-@class RCTModuleRegistry;
-@class RCTViewRegistry;
 @interface RCTBridgeProxy : NSProxy
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
@@ -2193,10 +2119,6 @@ NS_ASSUME_NONNULL_END
 /// @dep {packages/react-native/React/Base/RCTBridgeModule.h}
 
 NS_ASSUME_NONNULL_BEGIN
-@class RCTBundleManager;
-@class RCTCallableJSModules;
-@class RCTModuleRegistry;
-@class RCTViewRegistry;
 @interface RCTBridgeProxy : NSProxy
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
@@ -2218,7 +2140,7 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Base/RCTBundleManager.h}:
-@class RCTBridge;
+
 typedef NSURL * (^RCTBridgelessBundleURLGetter)(void);
 typedef void (^RCTBridgelessBundleURLSetter)(NSURL *bundleURL);
 @interface RCTBundleManager : NSObject
@@ -2448,8 +2370,7 @@ RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
 
 
 /// @src {packages/react-native/React/Base/RCTDisplayLink.h}:
-@protocol RCTBridgeModule;
-@class RCTModuleData;
+
 @interface RCTDisplayLink : NSObject
 - (instancetype)init;
 - (void)invalidate;
@@ -2458,13 +2379,13 @@ RCT_EXTERN NSArray *RCTConvertArrayValue(SEL, id);
 @end
 
 /// @src {packages/react-native/React/Base/RCTErrorCustomizer.h}:
-@class RCTErrorInfo;
+
 @protocol RCTErrorCustomizer <NSObject>
 - (nonnull RCTErrorInfo *)customizeErrorInfo:(nonnull RCTErrorInfo *)info;
 @end
 
 /// @src {packages/react-native/React/Base/RCTErrorInfo.h}:
-@class RCTJSStackFrame;
+
 @interface RCTErrorInfo : NSObject
 @property (nonatomic, copy, readonly) NSString *errorMessage;
 @property (nonatomic, copy, readonly) NSArray<RCTJSStackFrame *> *stack;
@@ -2521,7 +2442,7 @@ typedef NS_ENUM(NSInteger, RCTTextEventType) {
 @end
 
 /// @src {packages/react-native/React/Base/RCTFrameUpdate.h}:
-@class CADisplayLink;
+
 @interface RCTFrameUpdate : NSObject
 @property (nonatomic, readonly) NSTimeInterval timestamp;
 @property (nonatomic, readonly) NSTimeInterval deltaTime;
@@ -2650,8 +2571,7 @@ typedef void (^RCTSourceLoadBlock)(NSError *error, RCTSource *source);
 @end
 
 /// @src {packages/react-native/React/Base/RCTLog.h}:
-@class RCTModuleRegistry;
-@class RCTCallableJSModules;
+
 typedef NS_ENUM(NSInteger, RCTLogLevel) {
   RCTLogLevelTrace = 0,
   RCTLogLevelInfo = 1,
@@ -2703,15 +2623,7 @@ RCTManagedPointer *managedPointer(P initializer)
 
 
 /// @src {packages/react-native/React/Base/RCTModuleData.h}:
-@protocol RCTBridgeMethod;
-@protocol RCTBridgeModule;
-@class RCTBridge;
-@class RCTModuleData;
-@class RCTModuleRegistry;
-@class RCTViewRegistry;
-@class RCTBundleManager;
-@class RCTCallableJSModules;
-@class RCTCallInvoker;
+
 typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 @protocol RCTModuleDataCallInvokerProvider <NSObject>
 - (RCTCallInvoker *)callInvokerForModuleData:(RCTModuleData *)moduleData;
@@ -2745,7 +2657,7 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
 @end
 
 /// @src {packages/react-native/React/Base/RCTModuleMethod.h}:
-@class RCTBridge;
+
 @interface RCTMethodArgument : NSObject
 @property (nonatomic, copy, readonly) NSString *type;
 @property (nonatomic, readonly) RCTNullability nullability;
@@ -2883,8 +2795,7 @@ RCT_EXTERN NSString *const RCTTriggerReloadCommandBundleURLKey;
 RCT_EXTERN void RCTReloadCommandSetBundleURL(NSURL *URL);
 
 /// @src {packages/react-native/React/Base/RCTRootContentView.h}:
-@class RCTBridge;
-@class RCTTouchHandler;
+
 @interface RCTRootContentView : RCTView <RCTInvalidating>
 @property (nonatomic, readonly, weak) RCTBridge *bridge;
 @property (nonatomic, readonly, assign) BOOL contentHasAppeared;
@@ -2899,7 +2810,7 @@ RCT_EXTERN void RCTReloadCommandSetBundleURL(NSURL *URL);
 @end
 
 /// @src {packages/react-native/React/Base/RCTRootView.h}:
-@protocol RCTRootViewDelegate;
+
 typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
   RCTRootViewSizeFlexibilityNone = 0,
   RCTRootViewSizeFlexibilityWidth = 1 << 0,
@@ -2940,7 +2851,7 @@ extern "C" NS_ASSUME_NONNULL_BEGIN NSString *const RCTContentDidAppearNotificati
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Base/RCTRootViewDelegate.h}:
-@class RCTRootView;
+
 @protocol RCTRootViewDelegate <NSObject>
 - (void)rootViewDidChangeIntrinsicSize:(RCTRootView *)rootView;
 @end
@@ -2961,7 +2872,7 @@ NS_ASSUME_NONNULL_END
 @end
 
 /// @src {packages/react-native/React/Base/RCTTouchHandler.h}:
-@class RCTBridge;
+
 @interface RCTTouchHandler : UIGestureRecognizer
 - (instancetype)initWithBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 - (void)attachToView:(UIView *)view;
@@ -3080,9 +2991,6 @@ RCT_EXTERN NSDictionary *RCTGetReactNativeVersion(void);
 
 /// @src {packages/react-native/React/Base/Surface/RCTSurface.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTBridge;
-@class RCTSurfaceView;
-@protocol RCTSurfaceDelegate;
 @interface RCTSurface : NSObject <RCTSurfaceProtocol>
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
@@ -3100,7 +3008,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Base/Surface/RCTSurfaceDelegate.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTSurface;
 @protocol RCTSurfaceDelegate <NSObject>
 @optional
 - (void)surface:(RCTSurface *)surface didChangeStage:(RCTSurfaceStage)stage;
@@ -3110,8 +3017,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Base/Surface/RCTSurfaceProtocol.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTSurfaceView;
-@protocol RCTSurfaceDelegate;
 @protocol RCTSurfaceProtocol <NSObject>
 @property (atomic, readonly) RCTSurfaceStage stage;
 @property (atomic, readonly) NSString *moduleName;
@@ -3142,7 +3047,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Base/Surface/RCTSurfaceRootShadowViewDelegate.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTSurfaceRootShadowView;
 @protocol RCTSurfaceRootShadowViewDelegate <NSObject>
 - (void)rootShadowView:(RCTSurfaceRootShadowView *)rootShadowView didChangeIntrinsicSize:(CGSize)intrinsicSize;
 - (void)rootShadowViewDidStartRendering:(RCTSurfaceRootShadowView *)rootShadowView;
@@ -3176,7 +3080,7 @@ RCT_EXTERN BOOL RCTSurfaceStageIsRunning(RCTSurfaceStage stage);
 RCT_EXTERN BOOL RCTSurfaceStageIsPreparing(RCTSurfaceStage stage);
 
 /// @src {packages/react-native/React/Base/Surface/RCTSurfaceView+Internal.h}:
-@class RCTSurfaceRootView;
+
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfaceView (Internal)
 @property (nonatomic, nullable, strong) RCTSurfaceRootView *rootView;
@@ -3186,7 +3090,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Base/Surface/RCTSurfaceView.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTSurface;
 @interface RCTSurfaceView : UIView
 - (instancetype)initWithSurface:(RCTSurface *)surface NS_DESIGNATED_INITIALIZER;
 @property (nonatomic, weak, readonly, nullable) RCTSurface *surface;
@@ -3223,8 +3126,7 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Base/Surface/SurfaceHostingView/RCTSurfaceHostingView.h}:
-@class RCTBridge;
-@class RCTSurface;
+
 typedef UIView *_Nullable (^RCTSurfaceHostingViewActivityIndicatorViewFactory)(void);
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfaceHostingView : UIView <RCTSurfaceDelegate>
@@ -3358,7 +3260,7 @@ RCT_EXTERN NSString *RCTColorSchemePreference(UITraitCollection *traitCollection
 @end
 
 /// @src {packages/react-native/React/CoreModules/RCTDevMenu.h}:
-@class RCTDevMenuItem;
+
 @interface RCTDevMenu : NSObject
 @property (nonatomic, assign) BOOL shakeToShow DEPRECATED_ATTRIBUTE;
 @property (nonatomic, assign) BOOL profilingEnabled DEPRECATED_ATTRIBUTE;
@@ -3385,7 +3287,7 @@ typedef NSString * (^RCTDevMenuItemTitleBlock)(void);
 @end
 
 /// @src {packages/react-native/React/CoreModules/RCTDevSettings.h}:
-@protocol RCTPackagerClientMethod;
+
 @protocol RCTDevSettingsDataSource <NSObject>
 - (void)updateSettingWithValue:(id)value forKey:(NSString *)key;
 - (id)settingForKey:(NSString *)key;
@@ -3491,7 +3393,7 @@ NS_ASSUME_NONNULL_END
 @end
 
 /// @src {packages/react-native/React/CoreModules/RCTRedBox.h}:
-@class RCTJSStackFrame;
+
 typedef void (^RCTRedBoxButtonPressHandler)(void);
 @interface RCTRedBox : NSObject <RCTBridgeModule>
 - (void)registerErrorCustomizer:(id<RCTErrorCustomizer>)errorCustomizer;
@@ -3603,7 +3505,6 @@ class NSDataBigString : public JSBigString {
 
 /// @src {packages/react-native/React/CxxBridge/RCTCxxBridgeDelegate.h}:
 namespace facebook::react {
-class JSExecutorFactory;
 }
 @protocol RCTCxxBridgeDelegate <RCTBridgeDelegate>
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge;
@@ -3679,18 +3580,14 @@ class DispatchMessageQueueThread : public MessageQueueThread {
 
 /// @src {packages/react-native/React/CxxModule/RCTCxxModule.h}:
 namespace facebook::xplat::module {
-class CxxModule;
 }
 @interface RCTCxxModule : NSObject <RCTBridgeModule>
 - (std::unique_ptr<facebook::xplat::module::CxxModule>)createModule;
 @end
 
 /// @src {packages/react-native/React/CxxModule/RCTCxxUtils.h}:
-@class RCTBridge;
-@class RCTModuleData;
+
 namespace facebook::react {
-class Instance;
-class NativeModule;
 std::vector<std::unique_ptr<NativeModule>>
 createNativeModules(NSArray<RCTModuleData *> *modules, RCTBridge *bridge, const std::shared_ptr<Instance> &instance);
 NSError *tryAndReturnError(const std::function<void()> &func);
@@ -3721,7 +3618,7 @@ id convertFollyDynamicToId(const folly::dynamic& dyn);
 } // namespace facebook::react
 
 /// @src {packages/react-native/React/DevSupport/RCTDevLoadingViewProtocol.h}:
-@class RCTLoadingProgress;
+
 @protocol RCTDevLoadingViewProtocol <NSObject>
 + (void)setEnabled:(BOOL)enabled;
 - (void)showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor;
@@ -3773,7 +3670,6 @@ typedef facebook::react::jsinspector_modern::LoadNetworkResourceRequest RCTInspe
 
 /// @src {packages/react-native/React/Fabric/AppleEventBeat.h}:
 namespace facebook::react {
-class RuntimeScheduler;
 class AppleEventBeat : public EventBeat, public RunLoopObserver::Delegate {
  public:
   AppleEventBeat(
@@ -4176,7 +4072,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Fabric/Mounting/RCTMountingManager.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTComponentViewRegistry;
 @interface RCTMountingManager : NSObject
 @property (nonatomic, weak) id<RCTMountingManagerDelegate> delegate;
 @property (nonatomic, strong) RCTComponentViewRegistry *componentViewRegistry;
@@ -4197,7 +4092,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Fabric/Mounting/RCTMountingManagerDelegate.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTMountingManager;
 @protocol RCTMountingManagerDelegate <NSObject>
 - (void)mountingManager:(RCTMountingManager *)mountingManager willMountComponentsWithRootTag:(ReactTag)MountingManager;
 - (void)mountingManager:(RCTMountingManager *)mountingManager didMountComponentsWithRootTag:(ReactTag)rootTag;
@@ -4492,10 +4386,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Fabric/RCTSurfacePresenter.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTFabricSurface;
-@class RCTImageLoader;
-@class RCTMountingManager;
-@class RCTScheduler;
 @interface RCTSurfacePresenter : NSObject
 - (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContainer
                          runtimeExecutor:(facebook::react::RuntimeExecutor)runtimeExecutor
@@ -4523,8 +4413,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Fabric/RCTSurfacePresenterBridgeAdapter.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTSurfacePresenter;
-@class RCTBridge;
 facebook::react::RuntimeExecutor RCTRuntimeExecutorFromBridge(RCTBridge *bridge);
 @interface RCTSurfacePresenterBridgeAdapter : NSObject
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -4536,7 +4424,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Fabric/RCTSurfaceRegistry.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTFabricSurface;
 typedef void (^RCTSurfaceEnumeratorBlock)(NSEnumerator<RCTFabricSurface *> *enumerator);
 @interface RCTSurfaceRegistry : NSObject
 - (void)enumerateWithBlock:(RCTSurfaceEnumeratorBlock)block;
@@ -4562,9 +4449,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Fabric/Surface/RCTFabricSurface.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTBridge;
-@class RCTSurfaceView;
-@class RCTSurfacePresenter;
 @interface RCTFabricSurface : NSObject <RCTSurfaceProtocol>
 - (instancetype)initWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
                               moduleName:(NSString *)moduleName
@@ -4830,7 +4714,7 @@ NSString *RCTLocalizedStringFromKey(uint64_t key, NSString *defaultValue);
 @end
 
 /// @src {packages/react-native/React/Modules/RCTLayoutAnimationGroup.h}:
-@class RCTLayoutAnimation;
+
 @interface RCTLayoutAnimationGroup : NSObject
 @property (nonatomic, readonly) RCTLayoutAnimation *creatingLayoutAnimation;
 @property (nonatomic, readonly) RCTLayoutAnimation *updatingLayoutAnimation;
@@ -4853,7 +4737,7 @@ NSString *RCTLocalizedStringFromKey(uint64_t key, NSString *defaultValue);
 @end
 
 /// @src {packages/react-native/React/Modules/RCTSurfacePresenterStub.h}:
-@protocol RCTSurfaceProtocol;
+
 NS_ASSUME_NONNULL_BEGIN
 @protocol RCTSurfacePresenterObserver <NSObject>
 @optional
@@ -4880,8 +4764,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Modules/RCTUIManager.h}:
 RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification;
-@class RCTLayoutAnimationGroup;
-@class RCTUIManagerObserverCoordinator;
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
 - (void)registerRootViewTag:(NSNumber *)rootTag;
 - (void)registerRootView:(UIView *)rootView;
@@ -5071,10 +4953,7 @@ static inline BOOL RCTIsReactRootView(NSNumber *reactTag)
 }
 
 /// @src {packages/react-native/React/Views/RCTComponentData.h}:
-@class RCTBridge;
-@class RCTShadowView;
-@class UIView;
-@class RCTEventDispatcherProtocol;
+
 NS_ASSUME_NONNULL_BEGIN
 @interface RCTComponentData : NSObject
 @property (nonatomic, readonly) Class managerClass;
@@ -5158,7 +5037,6 @@ RCT_EXTERN RCTFontWeight RCTGetFontWeight(UIFont *font);
 
 /// @src {packages/react-native/React/Views/RCTLayout.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTShadowView;
 typedef NS_ENUM(NSInteger, RCTDisplayType) {
   RCTDisplayTypeNone,
   RCTDisplayTypeFlex,
@@ -5195,9 +5073,7 @@ RCT_EXTERN RCTDisplayType RCTReactDisplayTypeFromYogaDisplayType(YGDisplay displ
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Views/RCTModalHostView.h}:
-@class RCTBridge;
-@class RCTModalHostViewController;
-@protocol RCTModalHostViewInteractor;
+
 @interface RCTModalHostView : UIView <RCTInvalidating, UIAdaptivePresentationControllerDelegate>
 @property (nonatomic, copy) NSString *animationType;
 @property (nonatomic, assign) UIModalPresentationStyle presentationStyle;
@@ -5262,7 +5138,7 @@ typedef NS_ENUM(NSInteger, RCTPointerEvents) {
 @end
 
 /// @src {packages/react-native/React/Views/RCTShadowView+Internal.h}:
-@class RCTRootShadowView;
+
 @interface RCTShadowView (Internal)
 @property (nonatomic, weak, readwrite) RCTRootShadowView *rootView;
 @end
@@ -5279,8 +5155,7 @@ typedef NS_ENUM(NSInteger, RCTPointerEvents) {
 @end
 
 /// @src {packages/react-native/React/Views/RCTShadowView.h}:
-@class RCTRootShadowView;
-@class RCTSparseArray;
+
 typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry);
 @interface RCTShadowView : NSObject <RCTComponent>
 + (YGConfigRef)yogaConfig;
@@ -5388,7 +5263,6 @@ typedef NS_ENUM(NSInteger, RCTTextDecorationLineType) {
 
 /// @src {packages/react-native/React/Views/RCTView.h}:
 extern const UIAccessibilityTraits SwitchAccessibilityTrait;
-@protocol RCTAutoInsetsProtocol;
 @interface RCTView : UIView
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityAction;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
@@ -5452,10 +5326,7 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @end
 
 /// @src {packages/react-native/React/Views/RCTViewManager.h}:
-@class RCTBridge;
-@class RCTShadowView;
-@class RCTSparseArray;
-@class RCTUIManager;
+
 typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry);
 @interface RCTViewManager : NSObject <RCTBridgeModule>
 @property (nonatomic, weak) RCTBridge *bridge;
@@ -5473,7 +5344,7 @@ RCT_EXTERN_C_END
 NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Views/RCTWrapperViewController.h}:
-@class RCTWrapperViewController;
+
 @interface RCTWrapperViewController : UIViewController
 - (instancetype)initWithContentView:(UIView *)contentView NS_DESIGNATED_INITIALIZER;
 @end
@@ -5502,7 +5373,6 @@ NS_ASSUME_NONNULL_END
 
 /// @src {packages/react-native/React/Views/SafeAreaView/RCTSafeAreaView.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTBridge;
 @interface RCTSafeAreaView : RCTView
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 @end
@@ -5548,7 +5418,7 @@ NS_ASSUME_NONNULL_END
 @end
 
 /// @src {packages/react-native/React/Views/ScrollView/RCTScrollView.h}:
-@protocol UIScrollViewDelegate;
+
 @interface RCTScrollView : RCTView <UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
 - (instancetype)initWithEventDispatcher:(id<RCTEventDispatcherProtocol>)eventDispatcher NS_DESIGNATED_INITIALIZER;
 @property (nonatomic, readonly) UIView *contentView;
@@ -5620,7 +5490,7 @@ __attribute__((deprecated("Use RCTCustomRefreshControlProtocol instead")))
 @end
 
 /// @src {packages/react-native/React/Views/UIView+React.h}:
-@class RCTShadowView;
+
 typedef struct {
   YGValue x;
   YGValue y;
@@ -5856,7 +5726,7 @@ class RefPtr {
     }
   }
   template <typename U>
-  friend class RefPtr;
+  friend
   T* m_ptr;
 };
 template <typename T>
@@ -6582,12 +6452,6 @@ class AndroidEventBeat final : public EventBeat,
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/fabric/SurfaceHandlerBinding.h}
 
 namespace facebook::react {
-class ComponentFactory;
-class EventBeatManager;
-class FabricMountingManager;
-class Instance;
-class LayoutAnimationDriver;
-class Scheduler;
 class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
                                public SchedulerDelegate,
                                public LayoutAnimationStatusDelegate {
@@ -6607,7 +6471,6 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/fabric/ComponentFactory.h}:
 namespace facebook::react {
-class Instance;
 class ComponentFactory : public jni::HybridClass<ComponentFactory> {
  public:
   constexpr static const char* const kJavaDescriptor =
@@ -6648,7 +6511,6 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/fabric/EventEmitterWrapper.h}:
 namespace facebook::react {
-class Instance;
 class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
  public:
   constexpr static const char* const kJavaDescriptor =
@@ -6665,8 +6527,6 @@ class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/fabric/FabricMountingManager.h}:
 namespace facebook::react {
-class MountingTransaction;
-struct ShadowView;
 class FabricMountingManager final {
  public:
   FabricMountingManager(
@@ -6704,7 +6564,6 @@ class FabricMountingManager final {
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/fabric/JFabricUIManager.h}:
 namespace facebook::react {
-class FabricUIManagerBinding;
 class JFabricUIManager : public jni::JavaClass<JFabricUIManager> {
  public:
   static constexpr auto kJavaDescriptor =
@@ -6761,7 +6620,6 @@ struct CppMountItem final {
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/fabric/StateWrapperImpl.h}:
 namespace facebook::react {
-class Instance;
 class StateWrapperImpl : public jni::HybridClass<StateWrapperImpl> {
  public:
   constexpr static const char* const kJavaDescriptor =
@@ -6981,7 +6839,6 @@ class HermesSamplingProfiler : public jni::JavaClass<HermesSamplingProfiler> {
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/JavaModuleWrapper.h}
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/CxxModuleWrapper.h}
 namespace facebook::react {
-class MessageQueueThread;
 class ModuleHolder : public jni::JavaClass<ModuleHolder> {
  public:
   static auto constexpr kJavaDescriptor =
@@ -7001,9 +6858,6 @@ std::vector<std::unique_ptr<NativeModule>> buildNativeModuleList(
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/ReactInstanceManagerInspectorTarget.h}
 
 namespace facebook::react {
-class Instance;
-class JavaScriptExecutorHolder;
-class NativeArray;
 struct JInstanceCallback : public jni::JavaClass<JInstanceCallback> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/CatalystInstanceImpl$InstanceCallback;";
@@ -7106,7 +6960,6 @@ class InspectorNetworkRequestListener
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/NativeArray.h}
 
 namespace facebook::react {
-class Instance;
 struct JCallback : public jni::JavaClass<JCallback> {
   constexpr static auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/Callback;";
@@ -7194,7 +7047,6 @@ class ReadableNativeArray
 };
 } // namespace facebook::react
 namespace facebook::react {
-struct WritableNativeMap;
 struct ReadableMap : jni::JavaClass<ReadableMap> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/bridge/ReadableMap;";
@@ -7215,8 +7067,7 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   static void registerNatives();
   using HybridBase::HybridBase;
   friend HybridBase;
-  friend struct WritableNativeMap;
-};
+  friend
 } // namespace facebook::react
 namespace facebook::react {
 struct JDynamic : public jni::JavaClass<JDynamic> {
@@ -7391,8 +7242,6 @@ inline jni::local_ref<jni::JWeakReference<T>> makeJWeakReference(
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/MethodInvoker.h}
 
 namespace facebook::react {
-class Instance;
-class MessageQueueThread;
 struct JMethodDescriptor : public jni::JavaClass<JMethodDescriptor> {
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/bridge/JavaModuleWrapper$MethodDescriptor;";
@@ -7484,7 +7333,6 @@ class JniJSModulesUnbundle : public JSModulesUnbundle {
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/MethodInvoker.h}:
 namespace facebook::react {
-class Instance;
 struct JReflectMethod : public jni::JavaClass<JReflectMethod> {
   static constexpr auto kJavaDescriptor = "Ljava/lang/reflect/Method;";
   jmethodID getMethodID() {
@@ -7521,7 +7369,6 @@ class MethodInvoker {
 /// @dep {packages/react-native/ReactAndroid/src/main/jni/react/jni/JavaModuleWrapper.h}
 
 namespace facebook::react {
-class MessageQueueThread;
 class ModuleHolder : public jni::JavaClass<ModuleHolder> {
  public:
   static auto constexpr kJavaDescriptor =
@@ -7801,7 +7648,6 @@ class ReadableNativeArray
 } // namespace facebook::react
 
 namespace facebook::react {
-struct WritableNativeMap;
 struct ReadableMap : jni::JavaClass<ReadableMap> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/bridge/ReadableMap;";
@@ -7822,8 +7668,7 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   static void registerNatives();
   using HybridBase::HybridBase;
   friend HybridBase;
-  friend struct WritableNativeMap;
-};
+  friend
 } // namespace facebook::react
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/jni/SafeReleaseJniRef.h}:
@@ -7913,7 +7758,6 @@ class ReadableNativeArray
 } // namespace facebook::react
 
 namespace facebook::react {
-struct ReadableNativeMap;
 struct WritableArray : jni::JavaClass<WritableArray> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/bridge/WritableArray;";
@@ -7984,7 +7828,6 @@ class ReadableNativeArray
 };
 } // namespace facebook::react
 namespace facebook::react {
-struct WritableNativeMap;
 struct ReadableMap : jni::JavaClass<ReadableMap> {
   static auto constexpr kJavaDescriptor =
       "Lcom/facebook/react/bridge/ReadableMap;";
@@ -8005,8 +7848,7 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   static void registerNatives();
   using HybridBase::HybridBase;
   friend HybridBase;
-  friend struct WritableNativeMap;
-};
+  friend
 } // namespace facebook::react
 
 namespace facebook::react {
@@ -8134,8 +7976,6 @@ class JNativeModulePerfLogger
 
 /// @src {packages/react-native/ReactAndroid/src/main/jni/react/runtime/cxxreactpackage/ReactCommon/CxxReactPackage.h}:
 namespace facebook::react {
-class TurboModule;
-class CallInvoker;
 class CxxReactPackage : public jni::HybridClass<CxxReactPackage> {
  public:
   static auto constexpr kJavaDescriptor =
@@ -8515,7 +8355,6 @@ class UIConstantsProviderBinding
 /// @dep {packages/react-native/ReactCommon/callinvoker/ReactCommon/SchedulerPriority.h}
 
 namespace facebook::jsi {
-class Runtime;
 }
 namespace facebook::react {
 using CallFunc = std::function<void(jsi::Runtime&)>;
@@ -8560,7 +8399,6 @@ enum class SchedulerPriority : int {
 
 /// @src {packages/react-native/ReactCommon/cxxreact/CxxModule.h}:
 namespace facebook::react {
-class Instance;
 }
 namespace facebook {
 namespace xplat {
@@ -8708,8 +8546,6 @@ class CxxModule {
 
 /// @src {packages/react-native/ReactCommon/cxxreact/CxxNativeModule.h}:
 namespace facebook::react {
-class Instance;
-class MessageQueueThread;
 typedef void (*WarnOnUsageLogger)(std::string message);
 std::function<void(folly::dynamic)> makeCallback(
     std::weak_ptr<Instance> instance,
@@ -8767,14 +8603,8 @@ handleJSError(jsi::Runtime& runtime, const jsi::JSError& error, bool isFatal) {
 
 /// @src {packages/react-native/ReactCommon/cxxreact/Instance.h}:
 namespace folly {
-struct dynamic;
 }
 namespace facebook::react {
-class JSBigString;
-class JSExecutorFactory;
-class MessageQueueThread;
-class ModuleRegistry;
-class RAMBundleRegistry;
 struct InstanceCallback {
   virtual ~InstanceCallback() {}
   virtual void onBatchComplete() {}
@@ -8940,12 +8770,6 @@ __attribute__((visibility("default"))) bool isHermesBytecodeBundle(
 
 /// @src {packages/react-native/ReactCommon/cxxreact/JSExecutor.h}:
 namespace facebook::react {
-class JSBigString;
-class JSExecutor;
-class JSModulesUnbundle;
-class MessageQueueThread;
-class ModuleRegistry;
-class RAMBundleRegistry;
 class ExecutorDelegate {
  public:
   virtual ~ExecutorDelegate() {}
@@ -9245,7 +9069,6 @@ std::vector<MethodCall> parseMethodCalls(folly::dynamic&& calls);
 
 /// @src {packages/react-native/ReactCommon/cxxreact/ModuleRegistry.h}:
 namespace facebook::react {
-class NativeModule;
 struct ModuleConfig {
   size_t index;
   folly::dynamic config;
@@ -9334,17 +9157,11 @@ class NativeModule {
 
 /// @src {packages/react-native/ReactCommon/cxxreact/NativeToJsBridge.h}:
 namespace folly {
-struct dynamic;
 }
 namespace facebook::react {
-struct InstanceCallback;
-class JsToNativeBridge;
-class MessageQueueThread;
-class ModuleRegistry;
-class RAMBundleRegistry;
 class NativeToJsBridge {
  public:
-  friend class JsToNativeBridge;
+  friend
   NativeToJsBridge(
       JSExecutorFactory* jsExecutorFactory,
       std::shared_ptr<ModuleRegistry> registry,
@@ -10837,7 +10654,7 @@ String BigInt::toString(Runtime& runtime, int radix) const {
 } // namespace facebook
 
 /// @src {packages/react-native/ReactCommon/jsi/jsi/jsi.h}:
-class FBJSRuntime;
+
 namespace facebook {
 namespace jsi {
 class __attribute__((visibility("default"))) Buffer {
@@ -10869,22 +10686,6 @@ class __attribute__((visibility("default"))) PreparedJavaScript {
  public:
   virtual ~PreparedJavaScript() = 0;
 };
-class Runtime;
-class Pointer;
-class PropNameID;
-class Symbol;
-class BigInt;
-class String;
-class Object;
-class WeakObject;
-class Array;
-class ArrayBuffer;
-class Function;
-class Value;
-class Instrumentation;
-class Scope;
-class JSIException;
-class JSError;
 using HostFunctionType = std::function<
     Value(Runtime& rt, const Value& thisVal, const Value* args, size_t count)>;
 class __attribute__((visibility("default"))) HostObject {
@@ -10917,19 +10718,19 @@ class __attribute__((visibility("default"))) Runtime {
   virtual Instrumentation& instrumentation();
 
  protected:
-  friend class Pointer;
-  friend class PropNameID;
-  friend class Symbol;
-  friend class BigInt;
-  friend class String;
-  friend class Object;
-  friend class WeakObject;
-  friend class Array;
-  friend class ArrayBuffer;
-  friend class Function;
-  friend class Value;
-  friend class Scope;
-  friend class JSError;
+  friend
+  friend
+  friend
+  friend
+  friend
+  friend
+  friend
+  friend
+  friend
+  friend
+  friend
+  friend
+  friend
   struct PointerValue {
     virtual void invalidate() noexcept = 0;
 
@@ -11012,7 +10813,6 @@ class __attribute__((visibility("default"))) Runtime {
       size_t count) = 0;
   virtual Value
   callAsConstructor(const Function&, const Value* args, size_t count) = 0;
-  struct ScopeState;
   virtual ScopeState* pushScope();
   virtual void popScope(ScopeState*);
   virtual bool strictEquals(const Symbol& a, const Symbol& b) const = 0;
@@ -11038,10 +10838,9 @@ class __attribute__((visibility("default"))) Runtime {
   static PointerValue* getPointerValue(Pointer& pointer);
   static const PointerValue* getPointerValue(const Pointer& pointer);
   static const PointerValue* getPointerValue(const Value& value);
-  friend class ::FBJSRuntime;
+  friend
   template <typename Plain, typename Base>
-  friend class RuntimeDecorator;
-};
+  friend
 class __attribute__((visibility("default"))) Pointer {
  protected:
   explicit Pointer(Pointer&& other) noexcept : ptr_(other.ptr_) {
@@ -11053,8 +10852,8 @@ class __attribute__((visibility("default"))) Pointer {
     }
   }
   Pointer& operator=(Pointer&& other) noexcept;
-  friend class Runtime;
-  friend class Value;
+  friend
+  friend
   explicit Pointer(Runtime::PointerValue* ptr) : ptr_(ptr) {}
   typename Runtime::PointerValue* ptr_;
 };
@@ -11111,9 +10910,8 @@ class __attribute__((visibility("default"))) PropNameID : public Pointer {
       const jsi::PropNameID& b) {
     return runtime.compare(a, b);
   }
-  friend class Runtime;
-  friend class Value;
-};
+  friend
+  friend
 class __attribute__((visibility("default"))) Symbol : public Pointer {
  public:
   using Pointer::Pointer;
@@ -11125,9 +10923,8 @@ class __attribute__((visibility("default"))) Symbol : public Pointer {
   std::string toString(Runtime& runtime) const {
     return runtime.symbolToString(*this);
   }
-  friend class Runtime;
-  friend class Value;
-};
+  friend
+  friend
 class __attribute__((visibility("default"))) BigInt : public Pointer {
  public:
   using Pointer::Pointer;
@@ -11157,9 +10954,8 @@ class __attribute__((visibility("default"))) BigInt : public Pointer {
   }
   uint64_t asUint64(Runtime& runtime) const;
   inline String toString(Runtime& runtime, int radix = 10) const;
-  friend class Runtime;
-  friend class Value;
-};
+  friend
+  friend
 class __attribute__((visibility("default"))) String : public Pointer {
  public:
   using Pointer::Pointer;
@@ -11199,11 +10995,8 @@ class __attribute__((visibility("default"))) String : public Pointer {
           (*((CB*)ctx))(ascii, data, num);
         });
   }
-  friend class Runtime;
-  friend class Value;
-};
-class Array;
-class Function;
+  friend
+  friend
 class __attribute__((visibility("default"))) Object : public Pointer {
  public:
   using Pointer::Pointer;
@@ -11289,9 +11082,8 @@ class __attribute__((visibility("default"))) Object : public Pointer {
       const Value& value) const {
     return runtime.setPropertyValue(*this, name, value);
   }
-  friend class Runtime;
-  friend class Value;
-};
+  friend
+  friend
 class __attribute__((visibility("default"))) WeakObject : public Pointer {
  public:
   using Pointer::Pointer;
@@ -11300,8 +11092,7 @@ class __attribute__((visibility("default"))) WeakObject : public Pointer {
   WeakObject(Runtime& runtime, const Object& o)
       : WeakObject(runtime.createWeakObject(o)) {}
   Value lock(Runtime& runtime) const;
-  friend class Runtime;
-};
+  friend
 class __attribute__((visibility("default"))) Array : public Object {
  public:
   Array(Array&&) = default;
@@ -11658,7 +11449,6 @@ class SourceJavaScriptPreparation final : public jsi::PreparedJavaScript,
 /// @src {packages/react-native/ReactCommon/jsi/jsi/test/testlib.h}:
 namespace facebook {
 namespace jsi {
-class Runtime;
 using RuntimeFactory = std::function<std::unique_ptr<Runtime>()>;
 std::vector<RuntimeFactory> runtimeGenerators();
 class JSITestBase : public ::testing::TestWithParam<RuntimeFactory> {
@@ -12042,10 +11832,6 @@ class RuntimeAgentDelegate {
 
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/WeakList.h}
 namespace facebook::react::jsinspector_modern {
-class RuntimeAgent;
-class RuntimeAgentDelegate;
-class RuntimeTarget;
-struct SessionState;
 class RuntimeTargetDelegate {
  public:
   virtual ~RuntimeTargetDelegate() = default;
@@ -12094,13 +11880,10 @@ class __attribute__((visibility("default"))) RuntimeTarget
   void installDebuggerSessionObserver();
   void emitDebuggerSessionCreated();
   void emitDebuggerSessionDestroyed();
-  friend class RuntimeTargetController;
-};
+  friend
 } // namespace facebook::react::jsinspector_modern
 
 namespace facebook::react::jsinspector_modern {
-class RuntimeTargetController;
-struct SessionState;
 class RuntimeAgent final {
  public:
   RuntimeAgent(
@@ -12170,8 +11953,6 @@ class RuntimeAgentDelegate {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class RuntimeTargetController;
-struct SessionState;
 class RuntimeAgent final {
  public:
   RuntimeAgent(
@@ -12199,10 +11980,6 @@ class RuntimeAgent final {
 
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/WeakList.h}
 namespace facebook::react::jsinspector_modern {
-class RuntimeAgent;
-class RuntimeAgentDelegate;
-class RuntimeTarget;
-struct SessionState;
 class RuntimeTargetDelegate {
  public:
   virtual ~RuntimeTargetDelegate() = default;
@@ -12251,8 +12028,7 @@ class __attribute__((visibility("default"))) RuntimeTarget
   void installDebuggerSessionObserver();
   void emitDebuggerSessionCreated();
   void emitDebuggerSessionDestroyed();
-  friend class RuntimeTargetController;
-};
+  friend
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
 struct SessionState {
@@ -12310,8 +12086,6 @@ class RuntimeAgentDelegate {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class RuntimeTargetController;
-struct SessionState;
 class RuntimeAgent final {
  public:
   RuntimeAgent(
@@ -12339,10 +12113,6 @@ class RuntimeAgent final {
 
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/WeakList.h}
 namespace facebook::react::jsinspector_modern {
-class RuntimeAgent;
-class RuntimeAgentDelegate;
-class RuntimeTarget;
-struct SessionState;
 class RuntimeTargetDelegate {
  public:
   virtual ~RuntimeTargetDelegate() = default;
@@ -12391,8 +12161,7 @@ class __attribute__((visibility("default"))) RuntimeTarget
   void installDebuggerSessionObserver();
   void emitDebuggerSessionCreated();
   void emitDebuggerSessionDestroyed();
-  friend class RuntimeTargetController;
-};
+  friend
 } // namespace facebook::react::jsinspector_modern
 
 namespace facebook::react::jsinspector_modern {
@@ -12409,7 +12178,6 @@ struct SessionState {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class InstanceAgent;
 class InstanceTargetDelegate {
  public:
   InstanceTargetDelegate() = default;
@@ -12447,7 +12215,6 @@ using StreamID = const std::string;
 using Headers = std::map<std::string, std::string>;
 using IOReadError = const std::string;
 namespace {
-class Stream;
 using StreamsMap = std::unordered_map<std::string, std::shared_ptr<Stream>>;
 } // namespace
 struct LoadNetworkResourceRequest {
@@ -12549,10 +12316,6 @@ class NetworkIOAgent {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class HostTargetSession;
-class HostAgent;
-class HostCommandSender;
-class HostTarget;
 struct HostTargetMetadata {
   std::optional<std::string> appDisplayName;
   std::optional<std::string> appIdentifier;
@@ -12630,8 +12393,7 @@ class __attribute__((visibility("default"))) HostTarget
   inline bool hasInstance() const {
     return currentInstance_ != nullptr;
   }
-  friend class HostTargetController;
-};
+  friend
 folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata);
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
@@ -12643,9 +12405,6 @@ class TracingAgent {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class HostTarget;
-class InstanceAgent;
-class InstanceTarget;
 class HostAgent final {
  public:
   HostAgent(
@@ -12709,8 +12468,6 @@ class RuntimeAgentDelegate {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class RuntimeTargetController;
-struct SessionState;
 class RuntimeAgent final {
  public:
   RuntimeAgent(
@@ -12738,10 +12495,6 @@ class RuntimeAgent final {
 
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/WeakList.h}
 namespace facebook::react::jsinspector_modern {
-class RuntimeAgent;
-class RuntimeAgentDelegate;
-class RuntimeTarget;
-struct SessionState;
 class RuntimeTargetDelegate {
  public:
   virtual ~RuntimeTargetDelegate() = default;
@@ -12790,8 +12543,7 @@ class __attribute__((visibility("default"))) RuntimeTarget
   void installDebuggerSessionObserver();
   void emitDebuggerSessionCreated();
   void emitDebuggerSessionDestroyed();
-  friend class RuntimeTargetController;
-};
+  friend
 } // namespace facebook::react::jsinspector_modern
 
 namespace facebook::react::jsinspector_modern {
@@ -12808,7 +12560,6 @@ struct SessionState {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class InstanceAgent;
 class InstanceTargetDelegate {
  public:
   InstanceTargetDelegate() = default;
@@ -12846,7 +12597,6 @@ using StreamID = const std::string;
 using Headers = std::map<std::string, std::string>;
 using IOReadError = const std::string;
 namespace {
-class Stream;
 using StreamsMap = std::unordered_map<std::string, std::shared_ptr<Stream>>;
 } // namespace
 struct LoadNetworkResourceRequest {
@@ -12948,10 +12698,6 @@ class NetworkIOAgent {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class HostTargetSession;
-class HostAgent;
-class HostCommandSender;
-class HostTarget;
 struct HostTargetMetadata {
   std::optional<std::string> appDisplayName;
   std::optional<std::string> appIdentifier;
@@ -13029,8 +12775,7 @@ class __attribute__((visibility("default"))) HostTarget
   inline bool hasInstance() const {
     return currentInstance_ != nullptr;
   }
-  friend class HostTargetController;
-};
+  friend
 folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata);
 } // namespace facebook::react::jsinspector_modern
 
@@ -13127,7 +12872,6 @@ using FrontendChannel = std::function<void(std::string_view messageJson)>;
 /// @src {packages/react-native/ReactCommon/jsinspector-modern/InspectorPackagerConnection.h}:
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/WebSocketInterfaces.h}
 namespace facebook::react::jsinspector_modern {
-class InspectorPackagerConnectionDelegate;
 class InspectorPackagerConnection {
  public:
   InspectorPackagerConnection(
@@ -13177,7 +12921,6 @@ class InspectorPackagerConnection::Impl
       SessionId sourceSessionId,
       std::string sourcePageId);
 };
-  class RemoteConnection;
   Impl(
       std::string url,
       std::string deviceName,
@@ -13267,8 +13010,6 @@ class RuntimeAgentDelegate {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class RuntimeTargetController;
-struct SessionState;
 class RuntimeAgent final {
  public:
   RuntimeAgent(
@@ -13296,10 +13037,6 @@ class RuntimeAgent final {
 
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/WeakList.h}
 namespace facebook::react::jsinspector_modern {
-class RuntimeAgent;
-class RuntimeAgentDelegate;
-class RuntimeTarget;
-struct SessionState;
 class RuntimeTargetDelegate {
  public:
   virtual ~RuntimeTargetDelegate() = default;
@@ -13348,8 +13085,7 @@ class __attribute__((visibility("default"))) RuntimeTarget
   void installDebuggerSessionObserver();
   void emitDebuggerSessionCreated();
   void emitDebuggerSessionDestroyed();
-  friend class RuntimeTargetController;
-};
+  friend
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
 struct SessionState {
@@ -13365,7 +13101,6 @@ struct SessionState {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class InstanceTarget;
 class InstanceAgent final {
  public:
   explicit InstanceAgent(
@@ -13400,8 +13135,6 @@ class RuntimeAgentDelegate {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class RuntimeTargetController;
-struct SessionState;
 class RuntimeAgent final {
  public:
   RuntimeAgent(
@@ -13429,10 +13162,6 @@ class RuntimeAgent final {
 
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/WeakList.h}
 namespace facebook::react::jsinspector_modern {
-class RuntimeAgent;
-class RuntimeAgentDelegate;
-class RuntimeTarget;
-struct SessionState;
 class RuntimeTargetDelegate {
  public:
   virtual ~RuntimeTargetDelegate() = default;
@@ -13481,8 +13210,7 @@ class __attribute__((visibility("default"))) RuntimeTarget
   void installDebuggerSessionObserver();
   void emitDebuggerSessionCreated();
   void emitDebuggerSessionDestroyed();
-  friend class RuntimeTargetController;
-};
+  friend
 } // namespace facebook::react::jsinspector_modern
 
 namespace facebook::react::jsinspector_modern {
@@ -13499,7 +13227,6 @@ struct SessionState {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class InstanceAgent;
 class InstanceTargetDelegate {
  public:
   InstanceTargetDelegate() = default;
@@ -13542,7 +13269,6 @@ using StreamID = const std::string;
 using Headers = std::map<std::string, std::string>;
 using IOReadError = const std::string;
 namespace {
-class Stream;
 using StreamsMap = std::unordered_map<std::string, std::shared_ptr<Stream>>;
 } // namespace
 struct LoadNetworkResourceRequest {
@@ -13670,10 +13396,6 @@ class RuntimeAgentDelegate {
 
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/WeakList.h}
 namespace facebook::react::jsinspector_modern {
-class RuntimeAgent;
-class RuntimeAgentDelegate;
-class RuntimeTarget;
-struct SessionState;
 class RuntimeTargetDelegate {
  public:
   virtual ~RuntimeTargetDelegate() = default;
@@ -13722,13 +13444,10 @@ class __attribute__((visibility("default"))) RuntimeTarget
   void installDebuggerSessionObserver();
   void emitDebuggerSessionCreated();
   void emitDebuggerSessionDestroyed();
-  friend class RuntimeTargetController;
-};
+  friend
 } // namespace facebook::react::jsinspector_modern
 
 namespace facebook::react::jsinspector_modern {
-class RuntimeTargetController;
-struct SessionState;
 class RuntimeAgent final {
  public:
   RuntimeAgent(
@@ -13792,8 +13511,6 @@ class RuntimeAgentDelegate {
 };
 } // namespace facebook::react::jsinspector_modern
 namespace facebook::react::jsinspector_modern {
-class RuntimeTargetController;
-struct SessionState;
 class RuntimeAgent final {
  public:
   RuntimeAgent(
@@ -13821,10 +13538,6 @@ class RuntimeAgent final {
 
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/WeakList.h}
 namespace facebook::react::jsinspector_modern {
-class RuntimeAgent;
-class RuntimeAgentDelegate;
-class RuntimeTarget;
-struct SessionState;
 class RuntimeTargetDelegate {
  public:
   virtual ~RuntimeTargetDelegate() = default;
@@ -13873,8 +13586,7 @@ class __attribute__((visibility("default"))) RuntimeTarget
   void installDebuggerSessionObserver();
   void emitDebuggerSessionCreated();
   void emitDebuggerSessionDestroyed();
-  friend class RuntimeTargetController;
-};
+  friend
 } // namespace facebook::react::jsinspector_modern
 
 /// @src {packages/react-native/ReactCommon/jsinspector-modern/ScopedExecutor.h}:
@@ -13951,10 +13663,6 @@ class RuntimeAgentDelegate {
 
 /// @dep {packages/react-native/ReactCommon/jsinspector-modern/WeakList.h}
 namespace facebook::react::jsinspector_modern {
-class RuntimeAgent;
-class RuntimeAgentDelegate;
-class RuntimeTarget;
-struct SessionState;
 class RuntimeTargetDelegate {
  public:
   virtual ~RuntimeTargetDelegate() = default;
@@ -14003,13 +13711,10 @@ class __attribute__((visibility("default"))) RuntimeTarget
   void installDebuggerSessionObserver();
   void emitDebuggerSessionCreated();
   void emitDebuggerSessionDestroyed();
-  friend class RuntimeTargetController;
-};
+  friend
 } // namespace facebook::react::jsinspector_modern
 
 namespace facebook::react::jsinspector_modern {
-class RuntimeTargetController;
-struct SessionState;
 class RuntimeAgent final {
  public:
   RuntimeAgent(
@@ -14414,9 +14119,7 @@ struct Bridging<std::set<T>> : array_detail::BridgingDynamic<std::set<T>> {
 
 /// @src {packages/react-native/ReactCommon/react/bridging/Base.h}:
 namespace facebook::react {
-class CallInvoker;
 template <typename T, typename = void>
-struct Bridging;
 template <>
 struct Bridging<void> {
   static void fromJs(jsi::Runtime&, const jsi::Value&) {}
@@ -14424,7 +14127,6 @@ struct Bridging<void> {
 namespace bridging {
 namespace detail {
 template <typename F>
-struct function_wrapper;
 template <typename C, typename R, typename... Args>
 struct function_wrapper<R (C::*)(Args...)> {
   using type = std::function<R(Args...)>;
@@ -14566,7 +14268,6 @@ struct Bridging<bool> {
 
 /// @src {packages/react-native/ReactCommon/react/bridging/CallbackWrapper.h}:
 namespace facebook::react {
-class CallInvoker;
 class CallbackWrapper : public LongLivedObject { public:
   static std::weak_ptr<CallbackWrapper> createWeak(
       jsi::Function&& callback,
@@ -14685,7 +14386,6 @@ inline constexpr bool
     is_optional_jsi_v<T, typename std::enable_if_t<is_optional_v<T>>> =
         is_jsi_v<typename T::value_type>;
 template <typename T>
-struct Converter;
 template <typename T>
 struct ConverterBase {
   using BaseT = remove_cvref_t<T>;
@@ -14928,7 +14628,6 @@ struct Bridging<AsyncEventEmitter<Args...>> {
 /// @src {packages/react-native/ReactCommon/react/bridging/Function.h}:
 namespace facebook::react {
 template <typename F>
-class SyncCallback;
 template <typename... Args>
 class AsyncCallback {
  public:
@@ -15504,8 +15203,6 @@ enum TurboModuleMethodValueKind {
 TurboModuleMethodValueKind getTurboModuleMethodValueKind(
     jsi::Runtime& rt,
     const jsi::Value* value);
-class TurboCxxModule;
-class TurboModuleBinding;
 class JSI_EXPORT TurboModule : public jsi::HostObject {
  public:
   TurboModule(std::string name, std::shared_ptr<CallInvoker> jsInvoker);
@@ -15583,7 +15280,6 @@ using TurboModuleProviderFunctionType =
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleBinding.h}:
 namespace facebook::react {
-class BridgelessNativeModuleProxy;
 class TurboModuleBinding {
  public:
   static void install(
@@ -15801,8 +15497,6 @@ class JSI_EXPORT ObjCInteropTurboModule : public ObjCTurboModule {
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModule.h}:
 namespace facebook::react {
-class CallbackWrapper;
-class Instance;
 using EventEmitterCallback = std::function<void(const std::string &, id)>;
 namespace TurboModuleConvertUtils {
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
@@ -15874,8 +15568,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
 /// @src {packages/react-native/ReactCommon/react/nativemodule/core/platform/ios/ReactCommon/RCTTurboModuleManager.h}:
 namespace facebook::react {
-class CallbackWrapper;
-class Instance;
 using EventEmitterCallback = std::function<void(const std::string &, id)>;
 namespace TurboModuleConvertUtils {
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
@@ -15974,9 +15666,6 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 - (std::shared_ptr<facebook::react::NativeMethodCallInvoker>)decorateNativeMethodCallInvoker:
     (std::shared_ptr<facebook::react::NativeMethodCallInvoker>)nativeMethodCallInvoker;
 @end
-
-@class RCTBridgeProxy;
-@class RCTTurboModuleManager;
 @protocol RCTTurboModuleManagerDelegate <NSObject>
 - (Class)getModuleClassFromName:(const char *)name;
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass;
@@ -16734,7 +16423,6 @@ class PerformanceEntryKeyedBuffer : public PerformanceEntryBuffer {
 };
 } // namespace facebook::react
 namespace facebook::react {
-class PerformanceObserver;
 class PerformanceObserverRegistry {
  public:
   PerformanceObserverRegistry() = default;
@@ -16864,7 +16552,6 @@ class PerformanceEntryBuffer {
 };
 } // namespace facebook::react
 namespace facebook::react {
-class PerformanceObserver;
 class PerformanceObserverRegistry {
  public:
   PerformanceObserverRegistry() = default;
@@ -16925,7 +16612,6 @@ inline bool operator==(
 /// @dep {packages/react-native/ReactCommon/react/performance/timeline/PerformanceEntry.h}
 
 namespace facebook::react {
-class PerformanceObserver;
 class PerformanceObserverRegistry {
  public:
   PerformanceObserverRegistry() = default;
@@ -17381,7 +17067,6 @@ std::pair<Float, Float> calculateAnimationProgress(
 
 /// @src {packages/react-native/ReactCommon/react/renderer/attributedstring/AttributedString.h}:
 namespace facebook::react {
-class AttributedString;
 using SharedAttributedString = std::shared_ptr<const AttributedString>;
 class AttributedString : public Sealable, public DebugStringConvertible {
  public:
@@ -17477,7 +17162,6 @@ struct std::hash<facebook::react::AttributedStringBox> {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/attributedstring/ParagraphAttributes.h}:
 namespace facebook::react {
-class ParagraphAttributes;
 using SharedParagraphAttributes = std::shared_ptr<const ParagraphAttributes>;
 class ParagraphAttributes : public DebugStringConvertible {
  public:
@@ -17513,7 +17197,6 @@ struct hash<facebook::react::ParagraphAttributes> {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/attributedstring/TextAttributes.h}:
 namespace facebook::react {
-class TextAttributes;
 using SharedTextAttributes = std::shared_ptr<const TextAttributes>;
 class TextAttributes : public DebugStringConvertible {
  public:
@@ -18453,8 +18136,6 @@ class ComponentDescriptorProviderRegistry final {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/componentregistry/ComponentDescriptorRegistry.h}:
 namespace facebook::react {
-class ComponentDescriptorProviderRegistry;
-class ComponentDescriptorRegistry;
 using SharedComponentDescriptorRegistry =
     std::shared_ptr<const ComponentDescriptorRegistry>;
 class ComponentDescriptorRegistry {
@@ -18495,7 +18176,6 @@ void bindHasComponentProvider(
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/image/ImageComponentDescriptor.h}:
 namespace facebook::react {
-class ImageManager;
 extern const char ImageManagerKey[];
 class ImageComponentDescriptor final
     : public ConcreteComponentDescriptor<ImageShadowNode> {
@@ -18808,7 +18488,6 @@ class LegacyViewManagerInteropState final {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/LegacyViewManagerInteropViewEventEmitter.h}:
 namespace facebook::react {
-class LegacyViewManagerInteropViewEventEmitter;
 using SharedLegacyViewManagerInteropViewEventEmitter =
     std::shared_ptr<const LegacyViewManagerInteropViewEventEmitter>;
 class LegacyViewManagerInteropViewEventEmitter : public ViewEventEmitter {
@@ -18834,9 +18513,6 @@ class LegacyViewManagerInteropViewProps final : public ViewProps {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/legacyviewmanagerinterop/RCTLegacyViewManagerInteropCoordinator.h}:
 NS_ASSUME_NONNULL_BEGIN
-@class RCTComponentData;
-@class RCTBridge;
-@class RCTBridgeProxy;
 typedef void (^InterceptorBlock)(std::string eventName, folly::dynamic event);
 @interface RCTLegacyViewManagerInteropCoordinator : NSObject
 - (instancetype)initWithComponentData:(RCTComponentData *)componentData
@@ -19042,7 +18718,6 @@ class RootProps final : public ViewProps {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/root/RootShadowNode.h}:
 namespace facebook::react {
-class RootShadowNode;
 extern const char RootComponentName[];
 class RootShadowNode final
     : public ConcreteViewShadowNode<RootComponentName, RootProps> {
@@ -19662,7 +19337,6 @@ using RawTextComponentDescriptor =
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/text/RawTextProps.h}:
 namespace facebook::react {
-class RawTextProps;
 using SharedRawTextProps = std::shared_ptr<const RawTextProps>;
 class RawTextProps : public Props {
  public:
@@ -21296,7 +20970,6 @@ struct TouchEvent {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/components/view/TouchEventEmitter.h}:
 namespace facebook::react {
-class TouchEventEmitter;
 using SharedTouchEventEmitter = std::shared_ptr<const TouchEventEmitter>;
 class TouchEventEmitter : public EventEmitter {
  public:
@@ -24626,9 +24299,6 @@ class ShadowTreeRevisionConsistencyManager {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/ComponentDescriptor.h}:
 namespace facebook::react {
-class ComponentDescriptorParameters;
-class ComponentDescriptor;
-class ContextContainer;
 using SharedComponentDescriptor = std::shared_ptr<const ComponentDescriptor>;
 class ComponentDescriptor {
  public:
@@ -24952,10 +24622,8 @@ folly::dynamic diffDynamicProps(
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/EventBeat.h}:
 namespace facebook::react {
-class RuntimeScheduler;
 }
 namespace facebook::jsi {
-class Runtime;
 }
 namespace facebook::react {
 class EventBeat {
@@ -24988,8 +24656,6 @@ class EventBeat {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/EventDispatcher.h}:
 namespace facebook::react {
-struct RawEvent;
-class RuntimeScheduler;
 class EventDispatcher {
  public:
   using Shared = std::shared_ptr<const EventDispatcher>;
@@ -25011,7 +24677,6 @@ class EventDispatcher {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/EventEmitter.h}:
 namespace facebook::react {
-class EventEmitter;
 using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
 class EventEmitter {
  public:
@@ -25324,8 +24989,6 @@ enum class LayoutDirection {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/LayoutableShadowNode.h}:
 namespace facebook::react {
-struct LayoutConstraints;
-struct LayoutContext;
 class LayoutableShadowNode : public ShadowNode {
  public:
   LayoutableShadowNode(
@@ -25451,7 +25114,6 @@ struct RawEvent {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/RawProps.h}:
 namespace facebook::react {
-class RawPropsParser;
 class RawProps final {
  public:
   enum class Mode { Empty, JSI, Dynamic };
@@ -25565,7 +25227,6 @@ constexpr static auto kPropNameLengthHardCap = 64;
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/RawValue.h}:
 namespace facebook::react {
-class RawPropsParser;
 class RawValue {
  public:
   RawValue() noexcept : value_(folly::dynamic(nullptr)) {}
@@ -25768,9 +25429,6 @@ class Sealable {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/ShadowNode.h}:
 namespace facebook::react {
-class ComponentDescriptor;
-struct ShadowNodeFragment;
-struct ShadowNodeWrapper;
 class ShadowNode : public Sealable,
                    public DebugStringConvertible,
                    public jsi::NativeState {
@@ -25865,9 +25523,6 @@ struct ShadowNodeWrapper : public jsi::NativeState {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/ShadowNodeFamily.h}:
 namespace facebook::react {
-class ComponentDescriptor;
-class ShadowNode;
-class State;
 struct ShadowNodeFamilyFragment {
   const Tag tag;
   const SurfaceId surfaceId;
@@ -25975,8 +25630,8 @@ class State {
   size_t getRevision() const;
 
  protected:
-  friend class ShadowNodeFamily;
-  friend class UIManager;
+  friend
+  friend
   const StateData::Shared& getDataPointer() const {
     return data_;
   }
@@ -26001,7 +25656,6 @@ using StatePipe = std::function<void(const StateUpdate& stateUpdate)>;
 
 /// @src {packages/react-native/ReactCommon/react/renderer/core/StateUpdate.h}:
 namespace facebook::react {
-class ShadowNodeFamily;
 using SharedShadowNodeFamily = std::shared_ptr<const ShadowNodeFamily>;
 class StateUpdate {
  public:
@@ -26386,7 +26040,6 @@ class TestProps : public ViewProps {
       : ViewProps(context, sourceProps, rawProps) {}
 };
 using SharedTestProps = std::shared_ptr<const TestProps>;
-class TestShadowNode;
 using SharedTestShadowNode = std::shared_ptr<const TestShadowNode>;
 class TestShadowNode final : public ConcreteViewShadowNode<
                                  TestComponentName,
@@ -28599,7 +28252,7 @@ enum class CSSComponentValueDelimiter {
 };
 class CSSSyntaxParser {
   template <typename ReturnT, CSSComponentValueVisitor<ReturnT>... VisitorsT>
-  friend struct CSSComponentValueVisitorDispatcher;
+  friend
 
  public:
   explicit constexpr CSSSyntaxParser(std::string_view css)
@@ -30791,7 +30444,6 @@ inline long double floor(long double value) noexcept {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/imagemanager/ImageManager.h}:
 namespace facebook::react {
-class ImageManager;
 using SharedImageManager = std::shared_ptr<ImageManager>;
 class ImageManager {
  public:
@@ -31096,7 +30748,6 @@ class ImageRequestParams {
 /// @dep {packages/react-native/ReactCommon/react/renderer/imagemanager/platform/ios/react/renderer/imagemanager/RCTImageManagerProtocol.h}
 
 NS_ASSUME_NONNULL_BEGIN
-@protocol RCTImageLoaderWithAttributionProtocol;
 @interface RCTImageManager : NSObject <RCTImageManagerProtocol>
 - (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader;
 - (facebook::react::ImageRequest)requestImage:(facebook::react::ImageSource)imageSource
@@ -31114,7 +30765,6 @@ NS_ASSUME_NONNULL_END
 /// @dep {packages/react-native/ReactCommon/react/renderer/imagemanager/platform/ios/react/renderer/imagemanager/RCTImageManagerProtocol.h}
 
 NS_ASSUME_NONNULL_BEGIN
-@protocol RCTImageLoaderWithAttributionProtocol;
 @interface RCTSyncImageManager : NSObject <RCTImageManagerProtocol>
 - (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader;
 - (facebook::react::ImageRequest)requestImage:(facebook::react::ImageSource)imageSource
@@ -31138,7 +30788,6 @@ NS_ASSUME_NONNULL_END
 /// @dep {packages/react-native/ReactCommon/react/renderer/imagemanager/platform/ios/react/renderer/imagemanager/RCTImageManagerProtocol.h}
 
 NS_ASSUME_NONNULL_BEGIN
-@protocol RCTImageLoaderWithAttributionProtocol;
 @interface RCTSyncImageManager : NSObject <RCTImageManagerProtocol>
 - (instancetype)initWithImageLoader:(id<RCTImageLoaderWithAttributionProtocol>)imageLoader;
 - (facebook::react::ImageRequest)requestImage:(facebook::react::ImageSource)imageSource
@@ -31214,7 +30863,6 @@ class WeakFamilyRegistry final {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/mapbuffer/MapBuffer.h}:
 namespace facebook::react {
-class JReadableMapBuffer;
 class MapBuffer {
  public:
   using Key = uint16_t;
@@ -31350,7 +30998,6 @@ class MountingCoordinator final {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/mounting/MountingOverrideDelegate.h}:
 namespace facebook::react {
-class MountingCoordinator;
 class MountingOverrideDelegate {
  public:
   virtual bool shouldOverridePullTransaction() const = 0;
@@ -31446,7 +31093,6 @@ class ShadowTree final {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/mounting/ShadowTreeDelegate.h}:
 namespace facebook::react {
-class ShadowTree;
 class ShadowTreeDelegate {
  public:
   virtual RootShadowNode::Unshared shadowTreeWillCommit(
@@ -31482,8 +31128,8 @@ namespace facebook::react {
 class ShadowTreeRevision final {
  public:
   using Number = int64_t;
-  friend class ShadowTree;
-  friend class MountingCoordinator;
+  friend
+  friend
   RootShadowNode::Shared rootShadowNode;
   Number number;
   TransactionTelemetry telemetry;
@@ -31582,12 +31228,11 @@ using ShadowViewMutationList = std::vector<ShadowViewMutation>;
 
 /// @src {packages/react-native/ReactCommon/react/renderer/mounting/TelemetryController.h}:
 namespace facebook::react {
-class MountingCoordinator;
 using MountingTransactionCallback = std::function<void(
     const MountingTransaction& transaction,
     const SurfaceTelemetry& surfaceTelemetry)>;
 class TelemetryController final {
-  friend class MountingCoordinator;
+  friend
   TelemetryController(const MountingCoordinator& mountingCoordinator) noexcept;
   TelemetryController(const TelemetryController& other) noexcept = delete;
   TelemetryController& operator=(const TelemetryController& other) noexcept =
@@ -31955,7 +31600,6 @@ class RuntimeScheduler final : RuntimeSchedulerBase {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeSchedulerBinding.h}:
 namespace facebook::react {
-class RuntimeScheduler;
 class RuntimeSchedulerBinding : public jsi::HostObject {
  public:
   RuntimeSchedulerBinding(std::shared_ptr<RuntimeScheduler> runtimeScheduler);
@@ -31971,7 +31615,6 @@ class RuntimeSchedulerBinding : public jsi::HostObject {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h}:
 namespace facebook::react {
-class RuntimeScheduler;
 class RuntimeSchedulerCallInvoker : public CallInvoker {
  public:
   RuntimeSchedulerCallInvoker(std::weak_ptr<RuntimeScheduler> runtimeScheduler);
@@ -32195,9 +31838,6 @@ static inline std::chrono::milliseconds timeoutForSchedulerPriority(
 
 /// @src {packages/react-native/ReactCommon/react/renderer/runtimescheduler/Task.h}:
 namespace facebook::react {
-class RuntimeScheduler_Legacy;
-class RuntimeScheduler_Modern;
-class TaskPriorityComparer;
 using RawCallback = std::function<void(jsi::Runtime&)>;
 struct Task final : public jsi::NativeState {
   Task(
@@ -32445,10 +32085,6 @@ struct SchedulerToolbox final {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/scheduler/SurfaceHandler.h}:
 namespace facebook::react {
-class Scheduler;
-class ShadowTree;
-class MountingCoordinator;
-class UIManager;
 class SurfaceHandler {
  public:
   enum class Status {
@@ -32635,7 +32271,6 @@ inline bool operator!=(
 
 /// @src {packages/react-native/ReactCommon/react/renderer/textlayoutmanager/TextLayoutManager.h}:
 namespace facebook::react {
-class TextLayoutManager;
 class TextLayoutManager {
  public:
   TextLayoutManager(const ContextContainer::Shared& contextContainer);
@@ -33075,8 +32710,6 @@ inline static RCTUIColor *_Nullable RCTUIColorFromSharedColor(const facebook::re
 /// @src {packages/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/windows/third-party/TextLayoutManager.h}:
 namespace facebook {
 namespace react {
-class TextLayoutManager;
-struct AttachmentItem;
 using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
 class TextLayoutManager {
  public:
@@ -33220,9 +32853,6 @@ class SurfaceRegistryBinding final {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/uimanager/UIManager.h}:
 namespace facebook::react {
-class UIManagerBinding;
-class UIManagerCommitHook;
-class UIManagerMountHook;
 class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
@@ -33372,8 +33002,6 @@ class UIManagerBinding : public jsi::HostObject {
 
 /// @src {packages/react-native/ReactCommon/react/renderer/uimanager/UIManagerCommitHook.h}:
 namespace facebook::react {
-class ShadowTree;
-class UIManager;
 class UIManagerCommitHook {
  public:
   virtual void commitHookWasRegistered(const UIManager& uiManager) noexcept = 0;
@@ -33414,8 +33042,6 @@ class UIManagerDelegate {
 /// @dep {packages/react-native/ReactCommon/react/renderer/uimanager/UIManager.h}
 
 namespace facebook::react {
-class ShadowTree;
-class UIManager;
 class UIManagerMountHook {
  public:
   virtual void shadowTreeDidMount(
@@ -33798,14 +33424,6 @@ void install(
 NS_ASSUME_NONNULL_BEGIN
 RCT_EXTERN NSString *RCTInstanceRuntimeDiagnosticFlags(void);
 RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
-@class RCTBundleManager;
-@class RCTInstance;
-@class RCTJSThreadManager;
-@class RCTModuleRegistry;
-@class RCTPerformanceLogger;
-@class RCTSource;
-@class RCTSurfacePresenter;
-@protocol RCTTurboModuleManagerDelegate;
 @protocol RCTInstanceDelegate <RCTContextContainerHandling>
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 - (void)loadBundleAtURL:(NSURL *)sourceURL
@@ -33838,10 +33456,6 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
-@class RCTFabricSurface;
-@class RCTHost;
-@class RCTModuleRegistry;
-@protocol RCTTurboModuleManagerDelegate;
 typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
 @protocol RCTHostDelegate <NSObject>
 - (void)hostDidStart:(RCTHost *)host;
@@ -33901,14 +33515,6 @@ NS_ASSUME_NONNULL_END
 NS_ASSUME_NONNULL_BEGIN
 RCT_EXTERN NSString *RCTInstanceRuntimeDiagnosticFlags(void);
 RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
-@class RCTBundleManager;
-@class RCTInstance;
-@class RCTJSThreadManager;
-@class RCTModuleRegistry;
-@class RCTPerformanceLogger;
-@class RCTSource;
-@class RCTSurfacePresenter;
-@protocol RCTTurboModuleManagerDelegate;
 @protocol RCTInstanceDelegate <RCTContextContainerHandling>
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 - (void)loadBundleAtURL:(NSURL *)sourceURL
@@ -33941,10 +33547,6 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
-@class RCTFabricSurface;
-@class RCTHost;
-@class RCTModuleRegistry;
-@protocol RCTTurboModuleManagerDelegate;
 typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
 @protocol RCTHostDelegate <NSObject>
 - (void)hostDidStart:(RCTHost *)host;
@@ -33997,14 +33599,6 @@ NS_ASSUME_NONNULL_END
 NS_ASSUME_NONNULL_BEGIN
 RCT_EXTERN NSString *RCTInstanceRuntimeDiagnosticFlags(void);
 RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
-@class RCTBundleManager;
-@class RCTInstance;
-@class RCTJSThreadManager;
-@class RCTModuleRegistry;
-@class RCTPerformanceLogger;
-@class RCTSource;
-@class RCTSurfacePresenter;
-@protocol RCTTurboModuleManagerDelegate;
 @protocol RCTInstanceDelegate <RCTContextContainerHandling>
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 - (void)loadBundleAtURL:(NSURL *)sourceURL
@@ -34063,14 +33657,6 @@ NS_ASSUME_NONNULL_END
 NS_ASSUME_NONNULL_BEGIN
 RCT_EXTERN NSString *RCTInstanceRuntimeDiagnosticFlags(void);
 RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
-@class RCTBundleManager;
-@class RCTInstance;
-@class RCTJSThreadManager;
-@class RCTModuleRegistry;
-@class RCTPerformanceLogger;
-@class RCTSource;
-@class RCTSurfacePresenter;
-@protocol RCTTurboModuleManagerDelegate;
 @protocol RCTInstanceDelegate <RCTContextContainerHandling>
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 - (void)loadBundleAtURL:(NSURL *)sourceURL
@@ -34103,10 +33689,6 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
-@class RCTFabricSurface;
-@class RCTHost;
-@class RCTModuleRegistry;
-@protocol RCTTurboModuleManagerDelegate;
 typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
 @protocol RCTHostDelegate <NSObject>
 - (void)hostDidStart:(RCTHost *)host;
@@ -34166,14 +33748,6 @@ NS_ASSUME_NONNULL_END
 NS_ASSUME_NONNULL_BEGIN
 RCT_EXTERN NSString *RCTInstanceRuntimeDiagnosticFlags(void);
 RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
-@class RCTBundleManager;
-@class RCTInstance;
-@class RCTJSThreadManager;
-@class RCTModuleRegistry;
-@class RCTPerformanceLogger;
-@class RCTSource;
-@class RCTSurfacePresenter;
-@protocol RCTTurboModuleManagerDelegate;
 @protocol RCTInstanceDelegate <RCTContextContainerHandling>
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 - (void)loadBundleAtURL:(NSURL *)sourceURL
@@ -34206,10 +33780,6 @@ RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
 NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
-@class RCTFabricSurface;
-@class RCTHost;
-@class RCTModuleRegistry;
-@protocol RCTTurboModuleManagerDelegate;
 typedef NSURL *_Nullable (^RCTHostBundleURLProvider)(void);
 @protocol RCTHostDelegate <NSObject>
 - (void)hostDidStart:(RCTHost *)host;
@@ -34262,14 +33832,6 @@ NS_ASSUME_NONNULL_END
 NS_ASSUME_NONNULL_BEGIN
 RCT_EXTERN NSString *RCTInstanceRuntimeDiagnosticFlags(void);
 RCT_EXTERN void RCTInstanceSetRuntimeDiagnosticFlags(NSString *_Nullable flags);
-@class RCTBundleManager;
-@class RCTInstance;
-@class RCTJSThreadManager;
-@class RCTModuleRegistry;
-@class RCTPerformanceLogger;
-@class RCTSource;
-@class RCTSurfacePresenter;
-@protocol RCTTurboModuleManagerDelegate;
 @protocol RCTInstanceDelegate <RCTContextContainerHandling>
 - (void)instance:(RCTInstance *)instance didInitializeRuntime:(facebook::jsi::Runtime &)runtime;
 - (void)loadBundleAtURL:(NSURL *)sourceURL
@@ -35363,8 +34925,6 @@ inline bool needsTrailingPosition(const FlexDirection axis) {
 /// @src {packages/react-native/ReactCommon/yoga/yoga/config/Config.h}:
 struct YGConfig {};
 namespace facebook::yoga {
-class Config;
-class Node;
 using ExperimentalFeatureSet = std::bitset<ordinalCount<ExperimentalFeature>()>;
 bool configUpdateInvalidatesLayout(
     const Config& oldConfig,
@@ -35416,8 +34976,6 @@ inline const Config* resolveRef(const YGConfigConstRef ref) {
 
 /// @src {packages/react-native/ReactCommon/yoga/yoga/debug/AssertFatal.h}:
 namespace facebook::yoga {
-class Node;
-class Config;
 [[noreturn]] void fatalWithMessage(const char* message);
 void assertFatal(bool condition, const char* message);
 void assertFatalWithNode(
@@ -35955,7 +35513,6 @@ struct YG_EXPORT Event {
     NodeBaselineStart,
     NodeBaselineEnd,
   };
-  class Data;
   using Subscriber = void(YGNodeConstRef, Type, Data);
   using Subscribers = std::vector<std::function<Subscriber>>;
   template <Type E>
@@ -36114,7 +35671,6 @@ struct LayoutResults {
 
 /// @src {packages/react-native/ReactCommon/yoga/yoga/node/LayoutableChildren.h}:
 namespace facebook::yoga {
-class Node;
 template <typename T>
 class LayoutableChildren {
  public:
