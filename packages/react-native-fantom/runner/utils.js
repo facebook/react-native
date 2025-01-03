@@ -44,6 +44,16 @@ export function getBuckModesForPlatform(
   return ['@//xplat/mode/react-force-cxx-platform', osPlatform];
 }
 
+function isEmpty(value: ?string): boolean {
+  return value == null || value === '';
+}
+
+export function isRunningFromCI(): boolean {
+  return (
+    !isEmpty(process.env.SANDCASTLE) || !isEmpty(process.env.GITHUB_ACTIONS)
+  );
+}
+
 type SpawnResultWithOriginalCommand = {
   ...ReturnType<typeof spawnSync>,
   originalCommand: string,
