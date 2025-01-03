@@ -48,13 +48,13 @@ export default class Event {
   static AT_TARGET: 2 = 2;
   static BUBBLING_PHASE: 3 = 3;
 
-  #bubbles: boolean;
-  #cancelable: boolean;
-  #composed: boolean;
-  #type: string;
+  _bubbles: boolean;
+  _cancelable: boolean;
+  _composed: boolean;
+  _type: string;
 
-  #defaultPrevented: boolean = false;
-  #timeStamp: number = performance.now();
+  _defaultPrevented: boolean = false;
+  _timeStamp: number = performance.now();
 
   // $FlowExpectedError[unsupported-syntax]
   [COMPOSED_PATH_KEY]: boolean = [];
@@ -93,22 +93,22 @@ export default class Event {
       );
     }
 
-    this.#type = String(type);
-    this.#bubbles = Boolean(options?.bubbles);
-    this.#cancelable = Boolean(options?.cancelable);
-    this.#composed = Boolean(options?.composed);
+    this._type = String(type);
+    this._bubbles = Boolean(options?.bubbles);
+    this._cancelable = Boolean(options?.cancelable);
+    this._composed = Boolean(options?.composed);
   }
 
   get bubbles(): boolean {
-    return this.#bubbles;
+    return this._bubbles;
   }
 
   get cancelable(): boolean {
-    return this.#cancelable;
+    return this._cancelable;
   }
 
   get composed(): boolean {
-    return this.#composed;
+    return this._composed;
   }
 
   get currentTarget(): EventTarget | null {
@@ -116,7 +116,7 @@ export default class Event {
   }
 
   get defaultPrevented(): boolean {
-    return this.#defaultPrevented;
+    return this._defaultPrevented;
   }
 
   get eventPhase(): EventPhase {
@@ -132,11 +132,11 @@ export default class Event {
   }
 
   get timeStamp(): number {
-    return this.#timeStamp;
+    return this._timeStamp;
   }
 
   get type(): string {
-    return this.#type;
+    return this._type;
   }
 
   composedPath(): $ReadOnlyArray<EventTarget> {
@@ -144,7 +144,7 @@ export default class Event {
   }
 
   preventDefault(): void {
-    if (!this.#cancelable) {
+    if (!this._cancelable) {
       return;
     }
 
@@ -157,7 +157,7 @@ export default class Event {
       return;
     }
 
-    this.#defaultPrevented = true;
+    this._defaultPrevented = true;
   }
 
   stopImmediatePropagation(): void {
