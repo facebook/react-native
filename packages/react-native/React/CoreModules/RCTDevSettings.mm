@@ -265,6 +265,10 @@ RCT_EXPORT_MODULE()
     [[RCTPackagerConnection sharedPackagerConnection] removeHandler:devMenuToken];
 #endif
   }
+
+#if RCT_ENABLE_INSPECTOR
+  [RCTInspectorDevServerHelper clearSocketConnections];
+#endif
 #endif
 }
 
