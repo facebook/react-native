@@ -15,7 +15,7 @@ import com.facebook.react.uimanager.events.TouchEventType.Companion.getJSEventNa
 import com.facebook.systrace.Systrace
 
 /** Class responsible for generating catalyst touch events based on android [MotionEvent]. */
-public object TouchesHelper {
+internal object TouchesHelper {
   @JvmField @Deprecated("Not used in New Architecture") public val TARGET_KEY: String = "target"
 
   private const val TARGET_SURFACE_KEY = "targetSurface"
