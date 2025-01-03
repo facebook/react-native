@@ -76,6 +76,39 @@ EventPayloadType ScrollEvent::getType() const {
   return EventPayloadType::ScrollEvent;
 }
 
+jsi::Value ScrollEndDragEvent::asJSIValue(jsi::Runtime& runtime) const {
+  auto payload = ScrollEvent::asJSIValue(runtime).asObject(runtime);
+
+  {
+    auto targetContentOffsetObj = jsi::Object(runtime);
+    targetContentOffsetObj.setProperty(runtime, "x", targetContentOffset.x);
+    targetContentOffsetObj.setProperty(runtime, "y", targetContentOffset.y);
+    payload.setProperty(runtime, "targetContentOffset", targetContentOffsetObj);
+  }
+
+  {
+    auto velocityObj = jsi::Object(runtime);
+    velocityObj.setProperty(runtime, "x", velocity.x);
+    velocityObj.setProperty(runtime, "y", velocity.y);
+    payload.setProperty(runtime, "velocity", velocityObj);
+  }
+
+  return payload;
+}
+
+folly::dynamic ScrollEndDragEvent::asDynamic() const {
+  auto metrics = ScrollEvent::asDynamic();
+
+  auto targetContentOffsetObj = folly::dynamic::object(
+      "x", targetContentOffset.x)("y", targetContentOffset.y);
+  metrics["targetContentOffset"] = std::move(targetContentOffsetObj);
+
+  auto velocityObj = folly::dynamic::object("x", velocity.x)("y", velocity.y);
+  metrics["velocity"] = std::move(velocityObj);
+
+  return metrics;
+};
+
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(const ScrollEvent& /*scrollEvent*/) {
