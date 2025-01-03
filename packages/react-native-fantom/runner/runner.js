@@ -22,6 +22,7 @@ import {
   getBuckModesForPlatform,
   getDebugInfoFromCommandResult,
   getShortHash,
+  isRunningFromCI,
   runBuck2,
   symbolicateStackTrace,
 } from './utils';
@@ -145,6 +146,7 @@ module.exports = async function runTest(
       updateSnapshot: snapshotState._updateSnapshot,
       data: getInitialSnapshotData(snapshotState),
     },
+    isRunningFromCI: isRunningFromCI(),
   });
 
   const entrypointPath = path.join(
