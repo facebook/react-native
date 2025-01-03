@@ -17,6 +17,7 @@ import type {Root} from '..';
 import {createRoot, runTask} from '..';
 import * as React from 'react';
 import {Text, View} from 'react-native';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 function getActualViewportDimensions(root: Root): {
@@ -36,13 +37,9 @@ function getActualViewportDimensions(root: Root): {
     );
   });
 
-  if (!(maybeNode instanceof ReactNativeElement)) {
-    throw new Error(
-      `Expected instance of ReactNativeElement but got ${String(maybeNode)}`,
-    );
-  }
+  const node = ensureInstance(maybeNode, ReactNativeElement);
 
-  const rect = maybeNode.getBoundingClientRect();
+  const rect = node.getBoundingClientRect();
   return {
     viewportWidth: rect.width,
     viewportHeight: rect.height,

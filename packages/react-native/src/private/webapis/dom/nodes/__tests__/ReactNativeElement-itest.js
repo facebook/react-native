@@ -18,6 +18,7 @@ import {
   NativeText,
   NativeVirtualText,
 } from '../../../../../../Libraries/Text/TextNativeComponent';
+import ensureInstance from '../../../../utilities/ensureInstance';
 import HTMLCollection from '../../oldstylecollections/HTMLCollection';
 import NodeList from '../../oldstylecollections/NodeList';
 import ReactNativeElement from '../ReactNativeElement';
@@ -26,13 +27,7 @@ import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {
-  if (!(value instanceof ReactNativeElement)) {
-    throw new Error(
-      `Expected instance of ReactNativeElement but got ${String(value)}`,
-    );
-  }
-
-  return value;
+  return ensureInstance(value, ReactNativeElement);
 }
 
 /* eslint-disable no-bitwise */
