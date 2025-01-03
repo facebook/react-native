@@ -9,6 +9,7 @@ package com.facebook.react.uimanager.events;
 
 import android.util.LongSparseArray;
 import android.view.Choreographer;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -111,7 +112,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
   }
 
   /** Sends the given Event to JS, coalescing eligible events if JS is backed up. */
-  public void dispatchEvent(Event event) {
+  public void dispatchEvent(@Nullable Event event) {
     Assertions.assertCondition(event.isInitialized(), "Dispatched event hasn't been initialized");
 
     for (EventDispatcherListener listener : mListeners) {
