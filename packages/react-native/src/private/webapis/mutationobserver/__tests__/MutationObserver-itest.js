@@ -383,14 +383,14 @@ describe('MutationObserver', () => {
           <View
             key="node1"
             ref={receivedNode => {
-              maybeObservedNode = ensureReactNativeElement(receivedNode);
+              maybeObservedNode = receivedNode;
             }}>
             <View key="node1-1" />
           </View>,
         );
       });
 
-      const observedNode = nullthrows(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(maybeObservedNode);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -968,13 +968,13 @@ describe('MutationObserver', () => {
           <View
             key="node1"
             ref={receivedNode => {
-              maybeObservedNode = ensureReactNativeElement(receivedNode);
+              maybeObservedNode = receivedNode;
             }}
           />,
         );
       });
 
-      const observedNode = nullthrows(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(maybeObservedNode);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -1016,13 +1016,13 @@ describe('MutationObserver', () => {
           <View
             key="node1"
             ref={receivedNode => {
-              maybeObservedNode = ensureReactNativeElement(receivedNode);
+              maybeObservedNode = receivedNode;
             }}
           />,
         );
       });
 
-      const observedNode = nullthrows(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(maybeObservedNode);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -1048,13 +1048,13 @@ describe('MutationObserver', () => {
           <View
             key="node1"
             ref={receivedNode => {
-              maybeObservedNode = ensureReactNativeElement(receivedNode);
+              maybeObservedNode = receivedNode;
             }}
           />,
         );
       });
 
-      const observedNode = nullthrows(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(maybeObservedNode);
 
       Fantom.runTask(() => {
         root.render(<></>);
