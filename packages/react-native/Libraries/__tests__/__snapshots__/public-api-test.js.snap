@@ -8889,6 +8889,7 @@ declare export default typeof UTFSequence;
 exports[`public API should not change unintentionally Libraries/Utilities/Appearance.js 1`] = `
 "declare export function getColorScheme(): ?ColorSchemeName;
 declare export function setColorScheme(colorScheme: ?ColorSchemeName): void;
+declare export function isEdgeToEdge(): boolean;
 declare export function addChangeListener(
   listener: ({ colorScheme: ?ColorSchemeName }) => void
 ): EventSubscription;

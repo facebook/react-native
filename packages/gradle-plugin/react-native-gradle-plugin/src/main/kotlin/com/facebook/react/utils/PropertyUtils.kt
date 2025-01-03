@@ -14,7 +14,7 @@ object PropertyUtils {
   const val NEW_ARCH_ENABLED = "newArchEnabled"
   const val SCOPED_NEW_ARCH_ENABLED = "react.newArchEnabled"
 
-  /** Public property that toggles the New Architecture */
+  /** Public property that toggles Hermes */
   const val HERMES_ENABLED = "hermesEnabled"
   const val SCOPED_HERMES_ENABLED = "react.hermesEnabled"
 
