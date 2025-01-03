@@ -227,4 +227,5 @@ ReactNativeElement.prototype = Object.create(
 );
 
 // $FlowExpectedError[prop-missing]
+// $FlowFixMe[incompatible-cast]
 export default ReactNativeElement as typeof ReactNativeElementMethods;
