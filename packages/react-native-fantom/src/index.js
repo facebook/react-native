@@ -30,9 +30,10 @@ export type RootConfig = {
   devicePixelRatio?: number,
 };
 
-const DEFAULT_VIEWPORT_WIDTH = 1000;
-const DEFAULT_VIEWPORT_HEIGHT = 1000;
-const DEFAULT_DEVICE_PIXEL_RATIO = 1;
+// Defaults use iPhone 14 values (very common device).
+const DEFAULT_VIEWPORT_WIDTH = 390;
+const DEFAULT_VIEWPORT_HEIGHT = 844;
+const DEFAULT_DEVICE_PIXEL_RATIO = 3;
 
 class Root {
   #surfaceId: number;
