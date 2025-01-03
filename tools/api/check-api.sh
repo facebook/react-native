@@ -41,14 +41,14 @@ EOF
 )
 
 function check_if_mentions_breaking_change() {
-    IN_COMMIT_MESSAGE=$(sl log -r . -T '{desc}' | grep -iE '\[(android|ios|general|internal)\]\s*\[breaking\]' || true)
+    IN_COMMIT_MESSAGE=$(hg log -r . -T '{desc}' | grep -iE '\[(android|ios|general|internal)\]\s*\[breaking\]' || true)
     if [ -z "$IN_COMMIT_MESSAGE" ]; then
         echo "$ERROR_MENTION_BREAKING_CHANGE"
         exit $ERR_CODE_BAD_COMMIT
     fi
 }
 
-FBSOURCE_ROOT="$(sl root)"
+FBSOURCE_ROOT="$(hg root)"
 
 # shellcheck source=xplat/js/env-utils/setup_env_base.sh
 source "$FBSOURCE_ROOT/xplat/js/env-utils/setup_env_base.sh"
@@ -77,7 +77,7 @@ echo
 
 API_FILE=$(grep -oP '(?<=output=)[^ \n]+' tools/api/public-api.conf)
 
-API_STATUS=$(sl status --no-status "$API_FILE")
+API_STATUS=$(hg status --no-status "$API_FILE")
 if [ -z "$API_STATUS" ]; then
     echo "🎉 No public API changes, happy days!"
     exit 0
