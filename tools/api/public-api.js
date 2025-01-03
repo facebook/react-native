@@ -143,7 +143,7 @@ function trimCPPNoise(
   // Strip comments, runs the preprocessor and removes formatting noise. The downside of this approach is it can be extremely
   // noisy if the preprocessor is able to resolve imports. This isn't the case the majority of the time.
   let sourceFileContents = execSync(
-    `${clang} -E -P -D__cplusplus=${CPP20} ${sourcePath} 2> /dev/null | ${clangFormat}`,
+    `${clang} -E -P -D__cplusplus=${CPP20} -nostdinc -nostdlibinc -nostdinc++ -nostdlib++ ${sourcePath} 2> /dev/null | ${clangFormat}`,
     {encoding: 'utf-8'},
   )
     .toString()
