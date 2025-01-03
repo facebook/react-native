@@ -36,7 +36,7 @@ import {
   setStopPropagationFlag,
 } from './internals/EventInternals';
 
-type EventInit = {
+export type EventInit = {
   bubbles?: boolean,
   cancelable?: boolean,
   composed?: boolean,
