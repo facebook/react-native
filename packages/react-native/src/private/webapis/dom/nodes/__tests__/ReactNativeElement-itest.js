@@ -580,6 +580,21 @@ describe('ReactNativeElement', () => {
         );
         expect(altParentNode.contains(childNodeA)).toBe(false);
         expect(childNodeA.contains(altParentNode)).toBe(false);
+
+        // Unmounted root
+        Fantom.runTask(() => {
+          root.destroy();
+        });
+
+        expect(parentNode.compareDocumentPosition(parentNode)).toBe(0);
+        expect(parentNode.contains(parentNode)).toBe(true);
+
+        expect(parentNode.compareDocumentPosition(childNodeA)).toBe(
+          ReadOnlyNode.DOCUMENT_POSITION_DISCONNECTED,
+        );
+        expect(parentNode.compareDocumentPosition(altParentNode)).toBe(
+          ReadOnlyNode.DOCUMENT_POSITION_DISCONNECTED,
+        );
       });
     });
   });
