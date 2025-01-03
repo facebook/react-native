@@ -5666,8 +5666,9 @@ public class com/facebook/react/uimanager/events/PointerEvent$PointerEventState 
 	public fun supportsHover (I)Z
 }
 
-public class com/facebook/react/uimanager/events/PointerEventHelper {
+public final class com/facebook/react/uimanager/events/PointerEventHelper {
 	public static final field CLICK Ljava/lang/String;
+	public static final field INSTANCE Lcom/facebook/react/uimanager/events/PointerEventHelper;
 	public static final field POINTER_CANCEL Ljava/lang/String;
 	public static final field POINTER_DOWN Ljava/lang/String;
 	public static final field POINTER_ENTER Ljava/lang/String;
@@ -5680,16 +5681,15 @@ public class com/facebook/react/uimanager/events/PointerEventHelper {
 	public static final field POINTER_TYPE_TOUCH Ljava/lang/String;
 	public static final field POINTER_TYPE_UNKNOWN Ljava/lang/String;
 	public static final field POINTER_UP Ljava/lang/String;
-	public fun <init> ()V
-	public static fun getButtonChange (Ljava/lang/String;II)I
-	public static fun getButtons (Ljava/lang/String;Ljava/lang/String;I)I
-	public static fun getEventCategory (Ljava/lang/String;)I
-	public static fun getPressure (ILjava/lang/String;)D
-	public static fun getW3CPointerType (I)Ljava/lang/String;
-	public static fun isBubblingEvent (Ljava/lang/String;)Z
-	public static fun isExitEvent (Ljava/lang/String;)Z
-	public static fun isListening (Landroid/view/View;Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;)Z
-	public static fun supportsHover (Landroid/view/MotionEvent;)Z
+	public static final fun getButtonChange (Ljava/lang/String;II)I
+	public static final fun getButtons (Ljava/lang/String;Ljava/lang/String;I)I
+	public static final fun getEventCategory (Ljava/lang/String;)I
+	public static final fun getPressure (ILjava/lang/String;)D
+	public static final fun getW3CPointerType (I)Ljava/lang/String;
+	public static final fun isBubblingEvent (Ljava/lang/String;)Z
+	public final fun isExitEvent (Ljava/lang/String;)Z
+	public static final fun isListening (Landroid/view/View;Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;)Z
+	public final fun supportsHover (Landroid/view/MotionEvent;)Z
 }
 
 public final class com/facebook/react/uimanager/events/PointerEventHelper$EVENT : java/lang/Enum {
@@ -5711,6 +5711,7 @@ public final class com/facebook/react/uimanager/events/PointerEventHelper$EVENT 
 	public static final field OVER_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
 	public static final field UP Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
 	public static final field UP_CAPTURE Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
 	public static fun values ()[Lcom/facebook/react/uimanager/events/PointerEventHelper$EVENT;
 }
@@ -5777,13 +5778,6 @@ public final class com/facebook/react/uimanager/events/TouchEventType : java/lan
 
 public final class com/facebook/react/uimanager/events/TouchEventType$Companion {
 	public final fun getJSEventName (Lcom/facebook/react/uimanager/events/TouchEventType;)Ljava/lang/String;
-}
-
-public final class com/facebook/react/uimanager/events/TouchesHelper {
-	public static final field INSTANCE Lcom/facebook/react/uimanager/events/TouchesHelper;
-	public static final field TARGET_KEY Ljava/lang/String;
-	public static final fun sendTouchEvent (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
-	public static final fun sendTouchesLegacy (Lcom/facebook/react/uimanager/events/RCTEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
 }
 
 public final class com/facebook/react/uimanager/layoutanimation/InterpolatorType : java/lang/Enum {
