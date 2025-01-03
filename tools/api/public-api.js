@@ -27,6 +27,8 @@ const log = {
 };
 
 const CPP_IS_PRIVATE = /\n private:([\s\S]*?)(?= public:| protected:|};)/g;
+const CPP_FORWARD_DECLARATION =
+  /(?:^|\n)?\s*(@?class|struct|@protocol) [^{ ]+;/g;
 
 // $FlowFixMe[prop-missing]
 const isTTY = process.stdout.isTTY;
@@ -143,7 +145,7 @@ function trimCPPNoise(
   // Strip comments, runs the preprocessor and removes formatting noise. The downside of this approach is it can be extremely
   // noisy if the preprocessor is able to resolve imports. This isn't the case the majority of the time.
   let sourceFileContents = execSync(
-    `${clang} -E -P -D__cplusplus=${CPP20} ${sourcePath} 2> /dev/null | ${clangFormat}`,
+    `${clang} -E -P -D__cplusplus=${CPP20} -nostdinc -nostdlibinc -nostdinc++ -nostdlib++ ${sourcePath} 2> /dev/null | ${clangFormat}`,
     {encoding: 'utf-8'},
   )
     .toString()
@@ -151,7 +153,6 @@ function trimCPPNoise(
 
   // The second pass isn't very robust, but it's good enough for now.
   if (filetype === FileType.CPP || filetype === FileType.C) {
-    // Remove private members
     sourceFileContents = sourceFileContents.replace(CPP_IS_PRIVATE, '');
   }
 
@@ -294,7 +295,13 @@ function main() {
   );
 
   for (const filename of files) {
-    const cleaned = cache[filename] ?? '';
+    let cleaned = cache[filename] ?? '';
+    const filetype = filetypes[filename] ?? FileType.UNKNOWN;
+
+    if (filetype !== FileType.UNKNOWN) {
+      // Remove forward declarations at the late stage avoid dirtying when we deduplicate all the imports
+      cleaned = cleaned.replace(CPP_FORWARD_DECLARATION, '');
+    }
     // Cache output so we can clean up more noise
     fs.appendFileSync(
       outputFile,
