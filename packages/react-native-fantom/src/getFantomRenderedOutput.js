@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import FantomModule from './specs/NativeFantomModule';
+import NativeFantom from './specs/NativeFantom';
 // $FlowExpectedError[untyped-import]
 import micromatch from 'micromatch';
 import * as React from 'react';
@@ -114,7 +114,7 @@ export default function getFantomRenderedOutput(
   } = config;
   return new FantomRenderedOutput(
     JSON.parse(
-      FantomModule.getRenderedOutput(surfaceId, {
+      NativeFantom.getRenderedOutput(surfaceId, {
         includeRoot,
         includeLayoutMetrics,
       }),
