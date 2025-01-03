@@ -8,6 +8,7 @@
 #include "PerformanceTracer.h"
 
 #include <folly/json.h>
+#include <hermes/hermes.h>
 
 #include <mutex>
 #include <unordered_set>
@@ -22,6 +23,12 @@ const uint64_t PID = 1000;
 /** Default/starting track ID for the "Timings" track. */
 const uint64_t USER_TIMINGS_DEFAULT_TRACK = 1000;
 
+long long getCurrentTimestamp() {
+  return std::chrono::duration_cast<std::chrono::microseconds>(
+             std::chrono::steady_clock::now().time_since_epoch())
+      .count();
+}
+
 } // namespace
 
 PerformanceTracer& PerformanceTracer::getInstance() {
@@ -34,8 +41,130 @@ bool PerformanceTracer::startTracing() {
   if (tracing_) {
     return false;
   }
+
+  tracingStartedTimestamp_ = getCurrentTimestamp();
+  facebook::hermes::HermesRuntime::enableSamplingProfiler(1000);
+
   tracing_ = true;
   return true;
+}
+
+void PerformanceTracer::processSingleHermesDataSource(
+    const facebook::hermes::sampling_profiler::TraceEventCollectionDataSource&
+        source) {
+  buffer_.push_back(TraceEvent{
+      .name = "process_name",
+      .cat = "__metadata",
+      .ph = 'M',
+      .ts = 0,
+      .pid = source.getProcess().getId(),
+      .tid = 0,
+      .args = folly::dynamic::object("name", source.getProcess().getName()),
+  });
+
+  for (const facebook::hermes::sampling_profiler::Thread& thread :
+       source.getThreads()) {
+    buffer_.push_back(TraceEvent{
+        .name = "thread_name",
+        .cat = "__metadata",
+        .ph = 'M',
+        .ts = 0,
+        .pid = source.getProcess().getId(),
+        .tid = thread.getId(),
+        .args = folly::dynamic::object("name", thread.getName()),
+    });
+
+    buffer_.push_back(TraceEvent{
+        .name = thread.getName(),
+        .cat = "disabled-by-default-devtools.timeline",
+        .ph = 'X',
+        .ts = 0,
+        .pid = source.getProcess().getId(),
+        .tid = thread.getId(),
+        .dur = 0,
+    });
+  }
+
+  facebook::hermes::sampling_profiler::Profile profile = source.getProfile();
+  buffer_.push_back(TraceEvent{
+      .name = "Profile",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = profile.getTimestamp(),
+      .pid = profile.getProcessId(),
+      .tid = profile.getThreadId(),
+      .args = folly::dynamic::object(
+          "data",
+          folly ::dynamic::object("startTime", tracingStartedTimestamp_)),
+  });
+
+  const facebook::hermes::sampling_profiler::ProfileChunk& profileChunk =
+      source.getProfileChunk();
+  folly::dynamic dynamicNodes = folly::dynamic::array();
+  for (const facebook::hermes::sampling_profiler::ProfileNode& node :
+       profileChunk.getNodes()) {
+    const facebook::hermes::sampling_profiler::ProfileNodeCallFrame& callFrame =
+        node.getCallFrame();
+
+    folly::dynamic dynamicCallFrame = folly::dynamic::object();
+    dynamicCallFrame["codeType"] = callFrame.getCodeType();
+    dynamicCallFrame["scriptId"] = callFrame.getScriptId();
+    dynamicCallFrame["functionName"] = callFrame.getFunctionName();
+    if (callFrame.hasUrl()) {
+      dynamicCallFrame["url"] = callFrame.getUrl();
+    }
+    if (callFrame.hasLineNumber()) {
+      dynamicCallFrame["lineNumber"] = callFrame.getLineNumber();
+    }
+    if (callFrame.hasColumnNumber()) {
+      dynamicCallFrame["columnNumber"] = callFrame.getColumnNumber();
+    }
+
+    folly::dynamic dynamicNode = folly::dynamic::object();
+    dynamicNode["callFrame"] = dynamicCallFrame;
+    dynamicNode["id"] = node.getId();
+    if (node.hasParentId()) {
+      dynamicNode["parent"] = node.getParentId();
+    }
+
+    dynamicNodes.push_back(dynamicNode);
+  }
+  folly::dynamic dynamicSamples = folly::dynamic::array();
+  for (const uint64_t sampleRootNodeId : profileChunk.getSamples()) {
+    dynamicSamples.push_back(sampleRootNodeId);
+  }
+  folly::dynamic dynamicCpuProfile =
+      folly::dynamic::object("nodes", dynamicNodes)("samples", dynamicSamples);
+
+  folly::dynamic dynamicTimeDeltas = folly::dynamic::array();
+  for (const uint64_t timeDelta : profileChunk.getTimeDeltas()) {
+    dynamicTimeDeltas.push_back(timeDelta);
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "ProfileChunk",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = profileChunk.getTimestamp(),
+      .pid = profileChunk.getProcessId(),
+      .tid = profileChunk.getThreadId(),
+      .args = folly::dynamic::object(
+          "data",
+          folly ::dynamic::object("cpuProfile", dynamicCpuProfile)(
+              "timeDeltas", dynamicTimeDeltas)),
+  });
+
+  //
+}
+
+void PerformanceTracer::populateTraceEventsForHermes(
+    const std::vector<
+        facebook::hermes::sampling_profiler::TraceEventCollectionDataSource>&
+        dataSources) {
+  for (const facebook::hermes::sampling_profiler::
+           TraceEventCollectionDataSource& source : dataSources) {
+    processSingleHermesDataSource(source);
+  }
 }
 
 bool PerformanceTracer::stopTracingAndCollectEvents(
@@ -46,6 +175,14 @@ bool PerformanceTracer::stopTracingAndCollectEvents(
   if (!tracing_) {
     return false;
   }
+
+  facebook::hermes::HermesRuntime::disableSamplingProfiler();
+  std::vector<
+      facebook::hermes::sampling_profiler::TraceEventCollectionDataSource>
+      javascriptSamplingsDataSources = facebook::hermes::HermesRuntime::
+          dumpSampledTraceAsTraceEventCollectionDataSource();
+
+  populateTraceEventsForHermes(javascriptSamplingsDataSources);
 
   tracing_ = false;
   if (buffer_.empty()) {
