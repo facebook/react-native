@@ -52,6 +52,8 @@ export type AsyncCommandResult = {
   status: ?number,
   signal: ?string,
   error: ?Error,
+  stdout: ?string,
+  stderr: ?string,
 };
 
 export type SyncCommandResult = {
@@ -90,6 +92,8 @@ export function runCommand(
     status: null,
     signal: null,
     error: null,
+    stdout: null,
+    stderr: null,
   };
 
   childProcess.on('error', error => {
@@ -123,22 +127,24 @@ export function runCommandSync(
 }
 
 export function getDebugInfoFromCommandResult(
-  commandResult: SyncCommandResult,
+  commandResult: SyncCommandResult | AsyncCommandResult,
 ): string {
   const maybeSignal =
     commandResult.signal != null ? `, signal: ${commandResult.signal}` : '';
   const resultByStatus =
     commandResult.status === 0
       ? 'succeeded'
-      : `failed (status code: ${commandResult.status}${maybeSignal})`;
+      : `failed (status code: ${commandResult.status ?? '(empty)'}${maybeSignal})`;
 
   const logLines = [
     `Command ${resultByStatus}: ${commandResult.originalCommand}`,
     '',
     'stdout:',
+    // $FlowExpectedError[sketchy-null-string]
     commandResult.stdout || '(empty)',
     '',
     'stderr:',
+    // $FlowExpectedError[sketchy-null-string]
     commandResult.stderr || '(empty)',
   ];
 
@@ -210,24 +216,24 @@ export type ConsoleLogMessage = {
   message: string,
 };
 
-export function printConsoleLogs(
-  logs: $ReadOnlyArray<ConsoleLogMessage>,
-): void {
-  for (const log of logs) {
-    switch (log.type) {
-      case 'console-log':
-        switch (log.level) {
-          case 'info':
-            console.log(log.message);
-            break;
-          case 'warn':
-            console.warn(log.message);
-            break;
-          case 'error':
-            console.error(log.message);
-            break;
-        }
-        break;
-    }
+export function printConsoleLog(log: ConsoleLogMessage): void {
+  if (process.env.SANDCASTLE != null) {
+    return;
+  }
+
+  switch (log.type) {
+    case 'console-log':
+      switch (log.level) {
+        case 'info':
+          console.log(log.message);
+          break;
+        case 'warn':
+          console.warn(log.message);
+          break;
+        case 'error':
+          console.error(log.message);
+          break;
+      }
+      break;
   }
 }
