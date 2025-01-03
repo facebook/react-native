@@ -26,4 +26,6 @@ interface Spec extends TurboModule {
   getRenderedOutput: (surfaceId: number, config: RenderFormatOptions) => string;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('Fantom') as Spec;
+export default TurboModuleRegistry.getEnforcing<Spec>(
+  'NativeFantomCxx',
+) as Spec;

@@ -15,7 +15,7 @@ import type {
 import type {MixedElement} from 'react';
 
 import getFantomRenderedOutput from './getFantomRenderedOutput';
-import FantomModule from './specs/NativeFantomModule';
+import NativeFantom from './specs/NativeFantom';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 
 let globalSurfaceIdCounter = 1;
@@ -35,7 +35,7 @@ class Root {
 
   render(element: MixedElement) {
     if (!this.#hasRendered) {
-      FantomModule.startSurface(this.#surfaceId);
+      NativeFantom.startSurface(this.#surfaceId);
       this.#hasRendered = true;
     }
 
@@ -43,13 +43,13 @@ class Root {
   }
 
   getMountingLogs(): Array<string> {
-    return FantomModule.getMountingManagerLogs(this.#surfaceId);
+    return NativeFantom.getMountingManagerLogs(this.#surfaceId);
   }
 
   destroy() {
     // TODO: check for leaks.
-    FantomModule.stopSurface(this.#surfaceId);
-    FantomModule.flushMessageQueue();
+    NativeFantom.stopSurface(this.#surfaceId);
+    NativeFantom.flushMessageQueue();
   }
 
   getRenderedOutput(config: RenderOutputConfig = {}): FantomRenderedOutput {
@@ -100,7 +100,7 @@ export function runWorkLoop(): void {
 
   try {
     flushingQueue = true;
-    FantomModule.flushMessageQueue();
+    NativeFantom.flushMessageQueue();
   } finally {
     flushingQueue = false;
   }
