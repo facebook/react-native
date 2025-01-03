@@ -10,7 +10,7 @@
  */
 
 import type {TestSuiteResult} from '../runtime/setup';
-import type {ConsoleLogMessage} from './utils';
+import type {ConsoleLogMessage, SyncCommandResult} from './utils';
 
 import entrypointTemplate from './entrypoint-template';
 import getFantomTestConfig from './getFantomTestConfig';
@@ -43,7 +43,7 @@ const BUILD_OUTPUT_PATH = fs.mkdtempSync(
 
 const PRINT_FANTOM_OUTPUT: false = false;
 
-function parseRNTesterCommandResult(result: ReturnType<typeof runBuck2Sync>): {
+function parseRNTesterCommandResult(result: SyncCommandResult): {
   logs: $ReadOnlyArray<ConsoleLogMessage>,
   testResult: TestSuiteResult,
 } {
