@@ -733,6 +733,8 @@ static CALayerCornerCurve CornerCurveFromBorderCurve(BorderCurve borderCurve)
 static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 {
   switch (borderStyle) {
+    case BorderStyle::None:
+      return RCTBorderStyleUnset;
     case BorderStyle::Solid:
       return RCTBorderStyleSolid;
     case BorderStyle::Dotted:

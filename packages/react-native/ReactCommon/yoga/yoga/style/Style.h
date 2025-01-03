@@ -15,6 +15,7 @@
 
 #include <yoga/algorithm/FlexDirection.h>
 #include <yoga/enums/Align.h>
+#include <yoga/enums/BorderStyle.h>
 #include <yoga/enums/BoxSizing.h>
 #include <yoga/enums/Dimension.h>
 #include <yoga/enums/Direction.h>
@@ -250,6 +251,13 @@ class YG_EXPORT Style {
   }
   void setBoxSizing(BoxSizing value) {
     boxSizing_ = value;
+  }
+
+  BorderStyle borderStyle() const {
+    return borderStyle_;
+  }
+  void setBorderStyle(BorderStyle value) {
+    borderStyle_ = value;
   }
 
   bool horizontalInsetsDefined() const {
@@ -709,6 +717,10 @@ class YG_EXPORT Style {
   }
 
   Style::Length computeBorder(PhysicalEdge edge, Direction direction) const {
+    if (borderStyle_ == BorderStyle::None) {
+      return Style::Length{};
+    }
+
     switch (edge) {
       case PhysicalEdge::Left:
         return computeLeftEdge(border_, direction);
@@ -736,6 +748,7 @@ class YG_EXPORT Style {
   Overflow overflow_ : bitCount<Overflow>() = Overflow::Visible;
   Display display_ : bitCount<Display>() = Display::Flex;
   BoxSizing boxSizing_ : bitCount<BoxSizing>() = BoxSizing::BorderBox;
+  BorderStyle borderStyle_ : bitCount<BorderStyle>() = BorderStyle::Solid;
 
   StyleValueHandle flex_{};
   StyleValueHandle flexGrow_{};
