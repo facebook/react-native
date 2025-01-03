@@ -13,6 +13,7 @@ import type {TestSuiteResult} from '../runtime/setup';
 import type {AsyncCommandResult} from './utils';
 
 import entrypointTemplate from './entrypoint-template';
+import * as EnvironmentOptions from './EnvironmentOptions';
 import getFantomTestConfig from './getFantomTestConfig';
 import {FantomTestConfigMode} from './getFantomTestConfig';
 import {
@@ -42,8 +43,6 @@ fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
 const BUILD_OUTPUT_PATH = fs.mkdtempSync(
   path.join(BUILD_OUTPUT_ROOT, `run-${Date.now()}-`),
 );
-
-const PRINT_FANTOM_OUTPUT: false = false;
 
 async function processRNTesterCommandResult(
   result: AsyncCommandResult,
@@ -108,7 +107,7 @@ async function processRNTesterCommandResult(
     throw new Error(getDebugInfoFromCommandResult(getResultWithOutput()));
   }
 
-  if (PRINT_FANTOM_OUTPUT) {
+  if (EnvironmentOptions.printCLIOutput) {
     console.log(getDebugInfoFromCommandResult(getResultWithOutput()));
   }
 
@@ -248,7 +247,7 @@ module.exports = async function runTest(
     '--featureFlags',
     JSON.stringify(testConfig.flags.common),
     '--minLogLevel',
-    PRINT_FANTOM_OUTPUT ? 'info' : 'error',
+    EnvironmentOptions.printCLIOutput ? 'info' : 'error',
   ]);
 
   const processedResult = await processRNTesterCommandResult(
