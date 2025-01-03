@@ -19,7 +19,12 @@ export type RenderFormatOptions = {
 };
 
 interface Spec extends TurboModule {
-  startSurface: (surfaceId: number) => void;
+  startSurface: (
+    surfaceId: number,
+    viewportWidth: number,
+    viewportHeight: number,
+    devicePixelRatio: number,
+  ) => void;
   stopSurface: (surfaceId: number) => void;
   getMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;
