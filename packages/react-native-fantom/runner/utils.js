@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import * as EnvironmentOptions from './EnvironmentOptions';
 import {spawn, spawnSync} from 'child_process';
 import crypto from 'crypto';
 import fs from 'fs';
@@ -66,10 +67,18 @@ export type SyncCommandResult = {
   stderr: string,
 };
 
+function maybeLogCommand(command: string, args: Array<string>): void {
+  if (EnvironmentOptions.logCommands) {
+    console.log(`RUNNING \`${command} ${args.join(' ')}\``);
+  }
+}
+
 export function runCommand(
   command: string,
   args: Array<string>,
 ): AsyncCommandResult {
+  maybeLogCommand(command, args);
+
   const childProcess = spawn(command, args, {
     encoding: 'utf8',
     env: {
@@ -107,6 +116,8 @@ export function runCommandSync(
   command: string,
   args: Array<string>,
 ): SyncCommandResult {
+  maybeLogCommand(command, args);
+
   const result = spawnSync(command, args, {
     encoding: 'utf8',
     env: {
