@@ -22,6 +22,7 @@ type LinearGradientDirection =
   | {type: 'angle', value: number}
   | {type: 'keyword', value: string};
 
+// null color stops indicate that the transition hint syntax is used. e.g. red, 20%, blue
 type ColorStopColor = ProcessedColorValue | null;
 
 type ParsedGradientValue = {
@@ -158,13 +159,6 @@ function parseCSSLinearGradient(
     let direction: LinearGradientDirection = DEFAULT_DIRECTION;
     const trimmedDirection = parts[0].trim().toLowerCase();
 
-    // matches individual color stops in a gradient function
-    // supports various color formats: named colors, hex colors, rgb(a), and hsl(a)
-    // e.g. "red 20%", "blue 50%", "rgba(0, 0, 0, 0.5) 30% 50%"
-    // TODO: does not support color hint syntax yet. It is WIP.
-    const colorStopRegex =
-      /\s*((?:(?:rgba?|hsla?)\s*\([^)]+\))|#[0-9a-fA-F]+|[a-zA-Z]+)(?:\s+(-?[0-9.]+%?)(?:\s+(-?[0-9.]+%?))?)?\s*/gi;
-
     if (ANGLE_UNIT_REGEX.test(trimmedDirection)) {
       const parsedAngle = getAngleInDegrees(trimmedDirection);
       if (parsedAngle != null) {
@@ -186,15 +180,13 @@ function parseCSSLinearGradient(
         // If a direction is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
-    } else if (!colorStopRegex.test(trimmedDirection)) {
-      // If first part is not an angle/direction or a color stop, return an empty array and do not apply any gradient. Same as web.
-      return [];
     }
 
     const colorStopsString = parts.join(',');
     const colorStops = [];
     // split by comma, but not if it's inside a parentheses. e.g. red, rgba(0, 0, 0, 0.5), green => ["red", "rgba(0, 0, 0, 0.5)", "green"]
     const stops = colorStopsString.split(/,(?![^(]*\))/);
+    let lastStop = null;
     for (const stop of stops) {
       const trimmedStop = stop.trim().toLowerCase();
       // Match function like pattern or single words
@@ -250,6 +242,14 @@ function parseCSSLinearGradient(
       // Case 4: [position] => transition hint syntax
       else if (colorStopParts.length === 1) {
         if (colorStopParts[0].endsWith('%')) {
+          if (
+            lastStop != null &&
+            lastStop.length === 1 &&
+            lastStop[0].endsWith('%')
+          ) {
+            // If the last stop is a transition hint syntax, return an empty array and do not apply any gradient. Same as web.
+            return [];
+          }
           colorStops.push({
             color: null,
             position: parseFloat(colorStopParts[0]) / 100,
@@ -269,6 +269,7 @@ function parseCSSLinearGradient(
         // If a color stop is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
+      lastStop = colorStopParts;
     }
 
     const fixedColorStops = getFixedColorStops(colorStops);

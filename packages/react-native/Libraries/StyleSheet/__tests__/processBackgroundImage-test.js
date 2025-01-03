@@ -727,4 +727,124 @@ describe('processBackgroundImage', () => {
       {color: processColor('blue'), position: 1},
     ]);
   });
+
+  it('should return empty array for invalid transition hints', () => {
+    let result = processBackgroundImage('linear-gradient(red, 40, blue)');
+    expect(result).toEqual([]);
+
+    result = processBackgroundImage('linear-gradient(red, 40px, blue)');
+    expect(result).toEqual([]);
+
+    // Multiple hints in a row
+    result = processBackgroundImage('linear-gradient(red, 20%, 40%, blue)');
+    expect(result).toEqual([]);
+
+    // Invalid object syntax
+    result = processBackgroundImage([
+      {
+        type: 'linearGradient',
+        colorStops: [{color: 'red'}, {positions: ['40']}, {color: 'blue'}],
+      },
+    ]);
+    expect(result).toEqual([]);
+  });
+
+  it('should process complex gradients with multiple transitioon hints', () => {
+    const input = 'linear-gradient(red, 20%, blue, 60%, green, 80%, yellow)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: null, position: 0.2},
+      {color: processColor('blue'), position: 0.4},
+      {color: null, position: 0.6},
+      {color: processColor('green'), position: 0.7},
+      {color: null, position: 0.8},
+      {color: processColor('yellow'), position: 1},
+    ]);
+  });
+
+  it('should process object syntax with multiple hints', () => {
+    const input = [
+      {
+        type: 'linearGradient',
+        direction: 'to right',
+        colorStops: [
+          {color: 'red'},
+          {positions: ['20%']},
+          {color: 'blue'},
+          {positions: ['60%']},
+          {color: 'green'},
+          {positions: ['80%']},
+          {color: 'yellow'},
+        ],
+      },
+    ];
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: null, position: 0.2},
+      {color: processColor('blue'), position: 0.4},
+      {color: null, position: 0.6},
+      {color: processColor('green'), position: 0.7},
+      {color: null, position: 0.8},
+      {color: processColor('yellow'), position: 1},
+    ]);
+  });
+
+  it('should process hints with explicit color stops', () => {
+    const input = 'linear-gradient(red 0%, 25%, blue 50%, 75%, green 100%)';
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: null, position: 0.25},
+      {color: processColor('blue'), position: 0.5},
+      {color: null, position: 0.75},
+      {color: processColor('green'), position: 1},
+    ]);
+  });
+
+  it('should handle very complex gradients', () => {
+    const input = `linear-gradient(
+      red 0%,
+      20% ,
+      blue 30%,
+      45%,
+      green 50%,
+      65%,
+      yellow 70%  ,
+      85%,
+      purple 100%
+    )`;
+    const result = processBackgroundImage(input);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: null, position: 0.2},
+      {color: processColor('blue'), position: 0.3},
+      {color: null, position: 0.45},
+      {color: processColor('green'), position: 0.5},
+      {color: null, position: 0.65},
+      {color: processColor('yellow'), position: 0.7},
+      {color: null, position: 0.85},
+      {color: processColor('purple'), position: 1},
+    ]);
+  });
+
+  it('should handle multiple gradients with hints', () => {
+    const input = `
+      linear-gradient(red, 30%, blue),
+      linear-gradient(to right, green, 60%, yellow)
+    `;
+    const result = processBackgroundImage(input);
+    expect(result).toHaveLength(2);
+    expect(result[0].colorStops).toEqual([
+      {color: processColor('red'), position: 0},
+      {color: null, position: 0.3},
+      {color: processColor('blue'), position: 1},
+    ]);
+    expect(result[1].colorStops).toEqual([
+      {color: processColor('green'), position: 0},
+      {color: null, position: 0.6},
+      {color: processColor('yellow'), position: 1},
+    ]);
+  });
 });
