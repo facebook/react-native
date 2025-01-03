@@ -6,6 +6,7 @@
  */
 
 #import "RCTKeyboardObserver.h"
+#import "RCTUtils.h"
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTEventDispatcherProtocol.h>
@@ -116,6 +117,10 @@ static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
   UIViewAnimationCurve curve =
       static_cast<UIViewAnimationCurve>([userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
   NSInteger isLocalUserInfoKey = [userInfo[UIKeyboardIsLocalUserInfoKey] integerValue];
+
+  UIWindow *window = RCTKeyWindow();
+  beginFrame = [window convertRect:beginFrame fromCoordinateSpace:window.screen.coordinateSpace];
+  endFrame = [window convertRect:endFrame fromCoordinateSpace:window.screen.coordinateSpace];
 
   return @{
     @"startCoordinates" : RCTRectDictionaryValue(beginFrame),
