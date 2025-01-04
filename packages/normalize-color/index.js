@@ -20,6 +20,16 @@ function normalizeColor(color) {
     return null;
   }
 
+  if (
+    typeof color === 'object' &&
+    'r' in color &&
+    'g' in color &&
+    'b' in color &&
+    'a' in color
+  ) {
+    return color;
+  }
+
   if (typeof color !== 'string') {
     return null;
   }
@@ -155,6 +165,24 @@ function normalizeColor(color) {
     );
   }
 
+  if ((match = matchers.color.exec(color))) {
+    return match[2]
+      ? {
+          space: match[2],
+          r: parseFloat(match[3]),
+          g: parseFloat(match[4]),
+          b: parseFloat(match[5]),
+          a: 1,
+        }
+      : {
+          space: match[6],
+          r: parseFloat(match[7]),
+          g: parseFloat(match[8]),
+          b: parseFloat(match[9]),
+          a: parseFloat(match[10]),
+        };
+  }
+
   return null;
 }
 
@@ -209,6 +237,7 @@ function hwbToRgb(h, w, b) {
   );
 }
 
+const COLOR_SPACE = 'display-p3|srgb';
 const NUMBER = '[-+]?\\d*\\.?\\d+';
 const PERCENTAGE = NUMBER + '%';
 
@@ -235,6 +264,13 @@ let cachedMatchers;
 function getMatchers() {
   if (cachedMatchers === undefined) {
     cachedMatchers = {
+      color: new RegExp(
+        'color(' +
+          call(COLOR_SPACE, NUMBER, NUMBER, NUMBER) +
+          '|' +
+          callWithSlashSeparator(COLOR_SPACE, NUMBER, NUMBER, NUMBER, NUMBER) +
+          ')',
+      ),
       rgb: new RegExp('rgb' + call(NUMBER, NUMBER, NUMBER)),
       rgba: new RegExp(
         'rgba(' +
