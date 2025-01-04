@@ -14,6 +14,7 @@ import type {
 } from './getFantomRenderedOutput';
 import type {MixedElement} from 'react';
 
+import * as Benchmark from './Benchmark';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import NativeFantom from 'react-native/src/private/specs/modules/NativeFantom';
@@ -63,7 +64,7 @@ class Root {
       this.#hasRendered = true;
     }
 
-    ReactFabric.render(element, this.#surfaceId, () => {}, true);
+    ReactFabric.render(element, this.#surfaceId, null, true);
   }
 
   getMountingLogs(): Array<string> {
@@ -136,4 +137,70 @@ export function runWorkLoop(): void {
 // Surfacep rops: concurrentRoot, surfaceWidth, surfaceHeight, layoutDirection, pointScaleFactor.
 export function createRoot(rootConfig?: RootConfig): Root {
   return new Root(rootConfig);
+}
+
+export const benchmark = Benchmark;
+
+/**
+ * Quick and dirty polyfills required by tinybench.
+ */
+
+if (typeof global.Event === 'undefined') {
+  global.Event = class Event {
+    constructor() {}
+  };
+} else {
+  console.warn(
+    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
+  );
+}
+
+if (typeof global.EventTarget === 'undefined') {
+  global.EventTarget = class EventTarget {
+    listeners: $FlowFixMe;
+
+    constructor() {
+      this.listeners = {};
+    }
+
+    addEventListener(type: string, cb: () => void) {
+      if (!(type in this.listeners)) {
+        this.listeners[type] = [];
+      }
+      this.listeners[type].push(cb);
+    }
+
+    removeEventListener(type: string, cb: () => void): void {
+      if (!(type in this.listeners)) {
+        return;
+      }
+      let handlers = this.listeners[type];
+      for (let i in handlers) {
+        if (cb === handlers[i]) {
+          handlers.splice(i, 1);
+          return;
+        }
+      }
+    }
+
+    dispatchEvent(type: string, event: Event) {
+      if (!(type in this.listeners)) {
+        return;
+      }
+      let handlers = this.listeners[type];
+      for (let i in handlers) {
+        handlers[i].call(this, event);
+      }
+    }
+
+    clearEventListeners() {
+      for (let i in this.listeners) {
+        delete this.listeners[i];
+      }
+    }
+  };
+} else {
+  console.warn(
+    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
+  );
 }
