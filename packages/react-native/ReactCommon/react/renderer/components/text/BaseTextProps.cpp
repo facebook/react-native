@@ -49,6 +49,12 @@ static TextAttributes convertRawProp(
       "fontSizeMultiplier",
       sourceTextAttributes.fontSizeMultiplier,
       defaultTextAttributes.fontSizeMultiplier);
+  textAttributes.maxFontSizeMultiplier = convertRawProp(
+      context,
+      rawProps,
+      "maxFontSizeMultiplier",
+      sourceTextAttributes.maxFontSizeMultiplier,
+      defaultTextAttributes.maxFontSizeMultiplier);
   textAttributes.fontWeight = convertRawProp(
       context,
       rawProps,
