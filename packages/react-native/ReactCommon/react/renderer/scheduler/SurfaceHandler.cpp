@@ -22,10 +22,6 @@ SurfaceHandler::SurfaceHandler(
   parameters_.surfaceId = surfaceId;
 }
 
-SurfaceHandler::SurfaceHandler(SurfaceId surfaceId) noexcept {
-  parameters_.surfaceId = surfaceId;
-}
-
 SurfaceHandler::SurfaceHandler(SurfaceHandler&& other) noexcept {
   operator=(std::move(other));
 }
