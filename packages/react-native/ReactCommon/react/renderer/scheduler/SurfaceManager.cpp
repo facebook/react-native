@@ -55,14 +55,8 @@ void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     surfaceHandler.stop();
     scheduler_.unregisterSurface(surfaceHandler);
+    registry_.erase(surfaceId);
   });
-
-  {
-    std::unique_lock lock(mutex_);
-
-    auto iterator = registry_.find(surfaceId);
-    registry_.erase(iterator);
-  }
 }
 
 void SurfaceManager::stopAllSurfaces() const noexcept {
