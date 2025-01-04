@@ -1331,7 +1331,13 @@ inline void fromRawValue(
                 positionIt->second.hasType<Float>()) {
               ColorStop colorStop;
               colorStop.position = (Float)(positionIt->second);
-              fromRawValue(context, colorIt->second, colorStop.color);
+              if (colorIt->second.hasValue()) {
+                fromRawValue(
+                    context.contextContainer,
+                    context.surfaceId,
+                    colorIt->second,
+                    colorStop.color);
+              }
               linearGradient.colorStops.push_back(colorStop);
             }
           }

@@ -22,11 +22,14 @@ type LinearGradientDirection =
   | {type: 'angle', value: number}
   | {type: 'keyword', value: string};
 
+// null color stops indicate that the transition hint syntax is used. e.g. red, 20%, blue
+type ColorStopColor = ProcessedColorValue | null;
+
 type ParsedGradientValue = {
   type: 'linearGradient',
   direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
-    color: ProcessedColorValue,
+    color: ColorStopColor,
     position: number,
   }>,
 };
@@ -49,33 +52,52 @@ export default function processBackgroundImage(
   } else if (Array.isArray(backgroundImage)) {
     for (const bgImage of backgroundImage) {
       const processedColorStops: Array<{
-        color: ProcessedColorValue,
+        color: ColorStopColor,
         position: number | null,
       }> = [];
       for (let index = 0; index < bgImage.colorStops.length; index++) {
         const colorStop = bgImage.colorStops[index];
-        const processedColor = processColor(colorStop.color);
-        if (processedColor == null) {
-          // If a color is invalid, return an empty array and do not apply gradient. Same as web.
-          return [];
-        }
-        if (colorStop.positions != null && colorStop.positions.length > 0) {
-          for (const position of colorStop.positions) {
-            if (position.endsWith('%')) {
-              processedColorStops.push({
-                color: processedColor,
-                position: parseFloat(position) / 100,
-              });
-            } else {
-              // If a position is invalid, return an empty array and do not apply gradient. Same as web.
-              return [];
-            }
+        const positions = colorStop.positions;
+        // Color transition hint syntax (red, 20%, blue)
+        if (
+          colorStop.color == null &&
+          Array.isArray(positions) &&
+          positions.length === 1
+        ) {
+          const position = positions[0];
+          if (typeof position === 'string' && position.endsWith('%')) {
+            processedColorStops.push({
+              color: null,
+              position: parseFloat(position) / 100,
+            });
+          } else {
+            // If a position is invalid, return an empty array and do not apply gradient. Same as web.
+            return [];
           }
         } else {
-          processedColorStops.push({
-            color: processedColor,
-            position: null,
-          });
+          const processedColor = processColor(colorStop.color);
+          if (processedColor == null) {
+            // If a color is invalid, return an empty array and do not apply gradient. Same as web.
+            return [];
+          }
+          if (positions != null && positions.length > 0) {
+            for (const position of positions) {
+              if (position.endsWith('%')) {
+                processedColorStops.push({
+                  color: processedColor,
+                  position: parseFloat(position) / 100,
+                });
+              } else {
+                // If a position is invalid, return an empty array and do not apply gradient. Same as web.
+                return [];
+              }
+            }
+          } else {
+            processedColorStops.push({
+              color: processedColor,
+              position: null,
+            });
+          }
         }
       }
 
@@ -137,13 +159,6 @@ function parseCSSLinearGradient(
     let direction: LinearGradientDirection = DEFAULT_DIRECTION;
     const trimmedDirection = parts[0].trim().toLowerCase();
 
-    // matches individual color stops in a gradient function
-    // supports various color formats: named colors, hex colors, rgb(a), and hsl(a)
-    // e.g. "red 20%", "blue 50%", "rgba(0, 0, 0, 0.5) 30% 50%"
-    // TODO: does not support color hint syntax yet. It is WIP.
-    const colorStopRegex =
-      /\s*((?:(?:rgba?|hsla?)\s*\([^)]+\))|#[0-9a-fA-F]+|[a-zA-Z]+)(?:\s+(-?[0-9.]+%?)(?:\s+(-?[0-9.]+%?))?)?\s*/gi;
-
     if (ANGLE_UNIT_REGEX.test(trimmedDirection)) {
       const parsedAngle = getAngleInDegrees(trimmedDirection);
       if (parsedAngle != null) {
@@ -165,42 +180,36 @@ function parseCSSLinearGradient(
         // If a direction is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
-    } else if (!colorStopRegex.test(trimmedDirection)) {
-      // If first part is not an angle/direction or a color stop, return an empty array and do not apply any gradient. Same as web.
-      return [];
     }
-    colorStopRegex.lastIndex = 0;
 
+    const colorStopsString = parts.join(',');
     const colorStops = [];
-    const fullColorStopsStr = parts.join(',');
-    let colorStopMatch;
-    while ((colorStopMatch = colorStopRegex.exec(fullColorStopsStr))) {
-      const [, color, position1, position2] = colorStopMatch;
-      const processedColor = processColor(color.trim().toLowerCase());
-      if (processedColor == null) {
-        // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
+    // split by comma, but not if it's inside a parentheses. e.g. red, rgba(0, 0, 0, 0.5), green => ["red", "rgba(0, 0, 0, 0.5)", "green"]
+    const stops = colorStopsString.split(/,(?![^(]*\))/);
+    let lastStop = null;
+    for (const stop of stops) {
+      const trimmedStop = stop.trim().toLowerCase();
+      // Match function like pattern or single words
+      const colorStopParts = trimmedStop.match(/\S+\([^)]*\)|\S+/g);
+      if (colorStopParts == null) {
+        // If a color stop is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
-
-      if (typeof position1 !== 'undefined') {
-        if (position1.endsWith('%')) {
+      // Case 1: [color, position, position]
+      if (colorStopParts.length === 3) {
+        const color = colorStopParts[0];
+        const position1 = colorStopParts[1];
+        const position2 = colorStopParts[2];
+        const processedColor = processColor(color);
+        if (processedColor == null) {
+          // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
+          return [];
+        }
+        if (position1.endsWith('%') && position2.endsWith('%')) {
           colorStops.push({
             color: processedColor,
             position: parseFloat(position1) / 100,
           });
-        } else {
-          // If a position is invalid, return an empty array and do not apply any gradient. Same as web.
-          return [];
-        }
-      } else {
-        colorStops.push({
-          color: processedColor,
-          position: null,
-        });
-      }
-
-      if (typeof position2 !== 'undefined') {
-        if (position2.endsWith('%')) {
           colorStops.push({
             color: processedColor,
             position: parseFloat(position2) / 100,
@@ -210,6 +219,57 @@ function parseCSSLinearGradient(
           return [];
         }
       }
+      // Case 2: [color, position]
+      else if (colorStopParts.length === 2) {
+        const color = colorStopParts[0];
+        const position = colorStopParts[1];
+        const processedColor = processColor(color);
+        if (processedColor == null) {
+          // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
+          return [];
+        }
+        if (position.endsWith('%')) {
+          colorStops.push({
+            color: processedColor,
+            position: parseFloat(position) / 100,
+          });
+        } else {
+          // If a position is invalid, return an empty array and do not apply any gradient. Same as web.
+          return [];
+        }
+      }
+      // Case 3: [color]
+      // Case 4: [position] => transition hint syntax
+      else if (colorStopParts.length === 1) {
+        if (colorStopParts[0].endsWith('%')) {
+          if (
+            lastStop != null &&
+            lastStop.length === 1 &&
+            lastStop[0].endsWith('%')
+          ) {
+            // If the last stop is a transition hint syntax, return an empty array and do not apply any gradient. Same as web.
+            return [];
+          }
+          colorStops.push({
+            color: null,
+            position: parseFloat(colorStopParts[0]) / 100,
+          });
+        } else {
+          const processedColor = processColor(colorStopParts[0]);
+          if (processedColor == null) {
+            // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
+            return [];
+          }
+          colorStops.push({
+            color: processedColor,
+            position: null,
+          });
+        }
+      } else {
+        // If a color stop is invalid, return an empty array and do not apply any gradient. Same as web.
+        return [];
+      }
+      lastStop = colorStopParts;
     }
 
     const fixedColorStops = getFixedColorStops(colorStops);
@@ -286,15 +346,15 @@ function getAngleInDegrees(angle?: string): ?number {
 // https://drafts.csswg.org/css-images-4/#color-stop-fixup
 function getFixedColorStops(
   colorStops: $ReadOnlyArray<{
-    color: ProcessedColorValue,
+    color: ColorStopColor,
     position: number | null,
   }>,
 ): Array<{
-  color: ProcessedColorValue,
+  color: ColorStopColor,
   position: number,
 }> {
   let fixedColorStops: Array<{
-    color: ProcessedColorValue,
+    color: ColorStopColor,
     position: number,
   }> = [];
   let hasNullPositions = false;
