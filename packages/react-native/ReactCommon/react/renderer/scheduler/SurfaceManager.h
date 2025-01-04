@@ -27,6 +27,7 @@ namespace facebook::react {
 class SurfaceManager final {
  public:
   explicit SurfaceManager(const Scheduler& scheduler) noexcept;
+  ~SurfaceManager() noexcept;
 
 #pragma mark - Surface Management
 
@@ -43,6 +44,12 @@ class SurfaceManager final {
       const LayoutContext& layoutContext = {}) const noexcept;
 
   void stopSurface(SurfaceId surfaceId) const noexcept;
+
+  void stopAllSurfaces() const noexcept;
+
+  bool isSurfaceRunning(SurfaceId surfaceId) const noexcept;
+
+  std::unordered_set<SurfaceId> getRunningSurfaces() const noexcept;
 
   Size measureSurface(
       SurfaceId surfaceId,
