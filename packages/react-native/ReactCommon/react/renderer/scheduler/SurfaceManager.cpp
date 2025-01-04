@@ -7,12 +7,19 @@
 
 #include "SurfaceManager.h"
 
+#include <glog/logging.h>
 #include <react/renderer/scheduler/Scheduler.h>
 
 namespace facebook::react {
 
 SurfaceManager::SurfaceManager(const Scheduler& scheduler) noexcept
     : scheduler_(scheduler) {}
+
+SurfaceManager::~SurfaceManager() noexcept {
+  LOG(WARNING) << "SurfaceManager::~SurfaceManager() was called (address: "
+               << this << ").";
+  stopAllSurfaces();
+}
 
 void SurfaceManager::startSurface(
     SurfaceId surfaceId,
@@ -48,13 +55,20 @@ void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     surfaceHandler.stop();
     scheduler_.unregisterSurface(surfaceHandler);
+    registry_.erase(surfaceId);
   });
+}
 
+void SurfaceManager::stopAllSurfaces() const noexcept {
+  std::unordered_set<SurfaceId> surfaceIds;
   {
-    std::unique_lock lock(mutex_);
-
-    auto iterator = registry_.find(surfaceId);
-    registry_.erase(iterator);
+    std::shared_lock lock(mutex_);
+    for (const auto& [surfaceId, _] : registry_) {
+      surfaceIds.insert(surfaceId);
+    }
+  }
+  for (const auto& surfaceId : surfaceIds) {
+    stopSurface(surfaceId);
   }
 }
 
