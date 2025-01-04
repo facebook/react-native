@@ -89,18 +89,28 @@ function startVideoRecording(jsengine, currentAttempt) {
   console.log(
     `Start video record using pid: video_record_${jsengine}_${currentAttempt}.pid`,
   );
-  childProcess.exec(
-    `xcrun simctl io booted recordVideo video_record_${jsengine}_${currentAttempt}.mov & echo $! > video_record_${jsengine}_${currentAttempt}.pid`,
-  );
+
+  const recordingArgs =
+    `simctl io booted recordVideo video_record_${jsengine}_${currentAttempt}.mov`.split(
+      ' ',
+    );
+  const recordingProcess = childProcess.spawn('xcrun', recordingArgs, {
+    detached: true,
+    stdio: 'ignore',
+  });
+
+  return recordingProcess;
 }
 
-function stopVideoRecording(jsengine, currentAttempt) {
-  console.log(
-    `Stop video record using pid: video_record_${jsengine}_${currentAttempt}.pid`,
-  );
-  childProcess.exec(
-    `kill -SIGINT $(cat video_record_${jsengine}_${currentAttempt}.pid)`,
-  );
+function stopVideoRecording(recordingProcess) {
+  if (!recordingProcess) {
+    console.log("Passed a null recording process. Can't kill it");
+    return;
+  }
+
+  console.log(`Stop video record using pid: ${recordingProcess.pid}`);
+
+  recordingProcess.kill('SIGINT');
 }
 
 function executeTestsWithRetries(
@@ -110,9 +120,8 @@ function executeTestsWithRetries(
   jsengine,
   currentAttempt,
 ) {
+  const recProcess = startVideoRecording(jsengine, currentAttempt);
   try {
-    startVideoRecording(jsengine, currentAttempt);
-
     const timeout = 1000 * 60 * 10; // 10 minutes
     const command = `$HOME/.maestro/bin/maestro --udid="${udid}" test "${maestroFlow}" --format junit -e APP_ID="${appId}"`;
     console.log(command);
@@ -121,11 +130,11 @@ function executeTestsWithRetries(
       timeout,
     });
 
-    stopVideoRecording(jsengine, currentAttempt);
+    stopVideoRecording(recProcess);
   } catch (error) {
     // Can't put this in the finally block because it will be executed after the
     // recursive call of executeTestsWithRetries
-    stopVideoRecording(jsengine, currentAttempt);
+    stopVideoRecording(recProcess);
 
     if (currentAttempt < MAX_ATTEMPTS) {
       executeTestsWithRetries(
