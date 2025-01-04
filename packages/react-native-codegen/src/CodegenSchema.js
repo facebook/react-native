@@ -158,6 +158,18 @@ export type ComponentArrayTypeAnnotation = ArrayTypeAnnotation<
   | ArrayTypeAnnotation<ObjectTypeAnnotation<PropTypeAnnotation>>,
 >;
 
+export type ComponentCommandArrayTypeAnnotation = ArrayTypeAnnotation<
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
+  | ObjectTypeAnnotation<ComponentCommandArrayTypeAnnotation>
+  | ArrayTypeAnnotation<
+      ObjectTypeAnnotation<ComponentCommandArrayTypeAnnotation>,
+    >,
+>;
+
 export type ArrayTypeAnnotation<+T> = $ReadOnly<{
   type: 'ArrayTypeAnnotation',
   elementType: T,
@@ -222,7 +234,7 @@ export type CommandParamTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation
-  | ComponentArrayTypeAnnotation;
+  | ComponentCommandArrayTypeAnnotation;
 
 export type ReservedTypeAnnotation = $ReadOnly<{
   type: 'ReservedTypeAnnotation',
@@ -412,6 +424,14 @@ type NativeModuleReturnOnlyTypeAnnotation =
   | NativeModulePromiseTypeAnnotation
   | VoidTypeAnnotation;
 
+// Add the allowed component reserved types to the native module union
+export type CompleteReservedTypeAnnotation =
+  | ReservedTypeAnnotation
+  | {
+      type: 'ReservedTypeAnnotation',
+      name: ReservedPropTypeAnnotation['name'],
+    };
+
 // Used by compatibility check which needs to handle all possible types
 // This will eventually also include the union of all view manager types
 export type CompleteTypeAnnotation =
@@ -421,7 +441,8 @@ export type CompleteTypeAnnotation =
   | EventEmitterTypeAnnotation
   | NativeModuleEnumDeclarationWithMembers
   | UnsafeAnyTypeAnnotation
-  // Native Module event emitters and methods
-  | ObjectTypeAnnotation<
-      Nullable<NativeModuleFunctionTypeAnnotation> | EventEmitterTypeAnnotation,
-    >;
+  | ArrayTypeAnnotation<CompleteTypeAnnotation>
+  | ObjectTypeAnnotation<CompleteTypeAnnotation>
+  // Components
+  | CommandTypeAnnotation
+  | CompleteReservedTypeAnnotation;
