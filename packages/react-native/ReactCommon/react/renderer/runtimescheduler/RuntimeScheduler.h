@@ -24,6 +24,8 @@ using SurfaceId = int32_t;
 using RuntimeSchedulerTaskErrorHandler =
     std::function<void(jsi::Runtime& runtime, jsi::JSError& error)>;
 
+extern const char RuntimeSchedulerKey[];
+
 // This is a temporary abstract class for RuntimeScheduler forks to implement
 // (and use them interchangeably).
 class RuntimeSchedulerBase {
