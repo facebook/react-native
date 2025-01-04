@@ -169,6 +169,14 @@ jobs:
       matrix:
         jsengine: [Hermes, JSC]
         architecture: [NewArch, OldArch]
+        flavor: [Debug, Release]
+        exclude: # We don't want to test the Old Arch in Release for E2E
+          - jsengine: Hermes
+            architecture: OldArch
+            flavor: Release
+          - jsengine: JSC
+            architecture: OldArch
+            flavor: Release
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -181,6 +189,7 @@ jobs:
           use-frameworks: StaticLibraries
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          flavor: ${{ matrix.flavor }}
 
   test_e2e_ios_rntester:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
@@ -460,6 +469,7 @@ jobs:
         run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
+        timeout-minutes: 60
         with:
           app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/app-${{ matrix.jsengine }}-x86-${{ matrix.flavor }}.apk
           app-id: com.facebook.react.uiapp

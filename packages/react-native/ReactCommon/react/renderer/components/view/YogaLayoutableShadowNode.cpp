@@ -6,7 +6,7 @@
  */
 
 #include "YogaLayoutableShadowNode.h"
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <logger/react_native_log.h>
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
@@ -584,13 +584,13 @@ void YogaLayoutableShadowNode::layoutTree(
     LayoutConstraints layoutConstraints) {
   ensureUnsealed();
 
-  SystraceSection s1("YogaLayoutableShadowNode::layoutTree");
+  TraceSection s1("YogaLayoutableShadowNode::layoutTree");
 
   bool swapLeftAndRight = layoutContext.swapLeftAndRightInRTL &&
       layoutConstraints.layoutDirection == LayoutDirection::RightToLeft;
 
   {
-    SystraceSection s2("YogaLayoutableShadowNode::configureYogaTree");
+    TraceSection s2("YogaLayoutableShadowNode::configureYogaTree");
     configureYogaTree(
         layoutContext.pointScaleFactor,
         YGErrataAll /*defaultErrata*/,
@@ -649,7 +649,7 @@ void YogaLayoutableShadowNode::layoutTree(
   threadLocalLayoutContext = layoutContext;
 
   {
-    SystraceSection s3("YogaLayoutableShadowNode::YGNodeCalculateLayout");
+    TraceSection s3("YogaLayoutableShadowNode::YGNodeCalculateLayout");
     YGNodeCalculateLayout(&yogaNode_, ownerWidth, ownerHeight, direction);
   }
 
@@ -798,7 +798,7 @@ YGNodeRef YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
     YGNodeConstRef /*oldYogaNode*/,
     YGNodeConstRef parentYogaNode,
     size_t childIndex) {
-  SystraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
+  TraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
 
   auto& parentNode = shadowNodeFromContext(parentYogaNode);
   return &parentNode.cloneChildInPlace(childIndex).yogaNode_;
@@ -810,8 +810,7 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
     YGMeasureMode widthMode,
     float height,
     YGMeasureMode heightMode) {
-  SystraceSection s(
-      "YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector");
+  TraceSection s("YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector");
 
   auto& shadowNode = shadowNodeFromContext(yogaNode);
 
@@ -855,8 +854,7 @@ float YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector(
     YGNodeConstRef yogaNode,
     float width,
     float height) {
-  SystraceSection s(
-      "YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector");
+  TraceSection s("YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector");
 
   auto& shadowNode = shadowNodeFromContext(yogaNode);
   auto baseline = shadowNode.baseline(

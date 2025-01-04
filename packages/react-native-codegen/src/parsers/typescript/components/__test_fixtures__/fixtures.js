@@ -38,10 +38,10 @@ const EVENT_DEFINITION = `
   int32_optional_value: Int32 | null | undefined;
   int32_optional_both?: Int32 | null | undefined;
 
-  enum_required: 'small' | 'large';
-  enum_optional_key?: 'small' | 'large';
-  enum_optional_value: ('small' | 'large') | null | undefined;
-  enum_optional_both?: ('small' | 'large') | null | undefined;
+  union_required: 'small' | 'large';
+  union_optional_key?: 'small' | 'large';
+  union_optional_value: ('small' | 'large') | null | undefined;
+  union_optional_both?: ('small' | 'large') | null | undefined;
 
   object_required: {
     boolean_required: boolean;
@@ -110,10 +110,10 @@ const EVENT_DEFINITION = `
   int32_array_optional_value: Int32[] | null | undefined;
   int32_array_optional_both?: Int32[] | null | undefined;
 
-  enum_array_required: ('small' | 'large')[];
-  enum_array_optional_key?: ('small' | 'large')[];
-  enum_array_optional_value: ('small' | 'large')[] | null | undefined;
-  enum_array_optional_both?: ('small' | 'large')[] | null | undefined;
+  union_array_required: ('small' | 'large')[];
+  union_array_optional_key?: ('small' | 'large')[];
+  union_array_optional_value: ('small' | 'large')[] | null | undefined;
+  union_array_optional_both?: ('small' | 'large')[] | null | undefined;
 
   object_array_required: {
     boolean_required: boolean;

@@ -9,7 +9,8 @@
  * @oncall react_native
  */
 
-import {spawnSync} from 'child_process';
+import * as EnvironmentOptions from './EnvironmentOptions';
+import {spawn, spawnSync} from 'child_process';
 import crypto from 'crypto';
 import fs from 'fs';
 import os from 'os';
@@ -44,24 +45,80 @@ export function getBuckModesForPlatform(
   return ['@//xplat/mode/react-force-cxx-platform', osPlatform];
 }
 
-type SpawnResultWithOriginalCommand = {
-  ...ReturnType<typeof spawnSync>,
+export type AsyncCommandResult = {
   originalCommand: string,
-  ...
+  childProcess: ReturnType<typeof spawn>,
+  done: Promise<AsyncCommandResult>,
+  pid: number,
+  status: ?number,
+  signal: ?string,
+  error: ?Error,
+  stdout: ?string,
+  stderr: ?string,
 };
 
-export function runBuck2(args: Array<string>): SpawnResultWithOriginalCommand {
-  // If these tests are already running from withing a buck2 process, e.g. when
-  // they are scheduled by a `buck2 test` wrapper, calling `buck2` again would
-  // cause a daemon-level deadlock.
-  // To prevent this - explicitly pass custom `--isolation-dir`. Reuse the same
-  // dir across tests (even running in different jest processes) to properly
-  // employ caching.
-  if (process.env.BUCK2_WRAPPER != null) {
-    args.unshift('--isolation-dir', BUCK_ISOLATION_DIR);
-  }
+export type SyncCommandResult = {
+  originalCommand: string,
+  pid: number,
+  status: number,
+  signal: ?string,
+  error: ?Error,
+  stdout: string,
+  stderr: string,
+};
 
-  const result = spawnSync('buck2', args, {
+function maybeLogCommand(command: string, args: Array<string>): void {
+  if (EnvironmentOptions.logCommands) {
+    console.log(`RUNNING \`${command} ${args.join(' ')}\``);
+  }
+}
+
+export function runCommand(
+  command: string,
+  args: Array<string>,
+): AsyncCommandResult {
+  maybeLogCommand(command, args);
+
+  const childProcess = spawn(command, args, {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `/usr/local/bin:${process.env.PATH ?? ''}`,
+    },
+  });
+
+  const result: AsyncCommandResult = {
+    childProcess,
+    done: new Promise(resolve => {
+      childProcess.on('close', (code: number, signal: string) => {
+        result.status = code;
+        result.signal = signal;
+        resolve(result);
+      });
+    }),
+    originalCommand: `${command} ${args.join(' ')}`,
+    pid: childProcess.pid,
+    status: null,
+    signal: null,
+    error: null,
+    stdout: null,
+    stderr: null,
+  };
+
+  childProcess.on('error', error => {
+    result.error = error;
+  });
+
+  return result;
+}
+
+export function runCommandSync(
+  command: string,
+  args: Array<string>,
+): SyncCommandResult {
+  maybeLogCommand(command, args);
+
+  const result = spawnSync(command, args, {
     encoding: 'utf8',
     env: {
       ...process.env,
@@ -70,28 +127,35 @@ export function runBuck2(args: Array<string>): SpawnResultWithOriginalCommand {
   });
 
   return {
-    ...result,
-    originalCommand: `buck2 ${args.join(' ')}`,
+    originalCommand: `${command} ${args.join(' ')}`,
+    pid: result.pid,
+    status: result.status,
+    signal: result.signal,
+    error: result.error,
+    stdout: result.stdout.toString(),
+    stderr: result.stderr.toString(),
   };
 }
 
 export function getDebugInfoFromCommandResult(
-  commandResult: SpawnResultWithOriginalCommand,
+  commandResult: SyncCommandResult | AsyncCommandResult,
 ): string {
   const maybeSignal =
     commandResult.signal != null ? `, signal: ${commandResult.signal}` : '';
   const resultByStatus =
     commandResult.status === 0
       ? 'succeeded'
-      : `failed (status code: ${commandResult.status}${maybeSignal})`;
+      : `failed (status code: ${commandResult.status ?? '(empty)'}${maybeSignal})`;
 
   const logLines = [
     `Command ${resultByStatus}: ${commandResult.originalCommand}`,
     '',
     'stdout:',
+    // $FlowExpectedError[sketchy-null-string]
     commandResult.stdout || '(empty)',
     '',
     'stderr:',
+    // $FlowExpectedError[sketchy-null-string]
     commandResult.stderr || '(empty)',
   ];
 
@@ -100,6 +164,56 @@ export function getDebugInfoFromCommandResult(
   }
 
   return logLines.join('\n');
+}
+
+function getCommandAndArgsWithFDB(
+  command: string,
+  args: Array<string>,
+  useFDB: boolean,
+) {
+  if (useFDB) {
+    return ['fdb', [command].concat(args)];
+  } else {
+    return [command, args];
+  }
+}
+
+export function runBuck2(
+  args: Array<string>,
+  options?: {withFDB: boolean},
+): AsyncCommandResult {
+  const [actualCommand, actualArgs] = getCommandAndArgsWithFDB(
+    'buck2',
+    processArgsForBuck(args),
+    options?.withFDB ?? false,
+  );
+  return runCommand(actualCommand, actualArgs);
+}
+
+export function runBuck2Sync(
+  args: Array<string>,
+  options?: {withFDB: boolean},
+): SyncCommandResult {
+  const [actualCommand, actualArgs] = getCommandAndArgsWithFDB(
+    'buck2',
+    processArgsForBuck(args),
+    options?.withFDB ?? false,
+  );
+  return runCommandSync(actualCommand, actualArgs);
+}
+
+function processArgsForBuck(args: Array<string>): Array<string> {
+  // If these tests are already running from withing a buck2 process, e.g. when
+  // they are scheduled by a `buck2 test` wrapper, calling `buck2` again would
+  // cause a daemon-level deadlock.
+  // To prevent this - explicitly pass custom `--isolation-dir`. Reuse the same
+  // dir across tests (even running in different jest processes) to properly
+  // employ caching.
+  if (process.env.BUCK2_WRAPPER != null) {
+    return ['--isolation-dir', BUCK_ISOLATION_DIR].concat(args);
+  }
+
+  return args;
 }
 
 export function getShortHash(contents: string): string {
@@ -133,4 +247,32 @@ export function symbolicateStackTrace(
       }
     })
     .join('\n');
+}
+
+export type ConsoleLogMessage = {
+  type: 'console-log',
+  level: 'info' | 'warn' | 'error',
+  message: string,
+};
+
+export function printConsoleLog(log: ConsoleLogMessage): void {
+  if (process.env.SANDCASTLE != null) {
+    return;
+  }
+
+  switch (log.type) {
+    case 'console-log':
+      switch (log.level) {
+        case 'info':
+          console.log(log.message);
+          break;
+        case 'warn':
+          console.warn(log.message);
+          break;
+        case 'error':
+          console.error(log.message);
+          break;
+      }
+      break;
+  }
 }

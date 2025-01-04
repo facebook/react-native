@@ -53,7 +53,7 @@ JReactInstance::JReactInstance(
   auto onJsError =
       [weakJReactExceptionManager = jni::make_weak(jReactExceptionManager)](
           jsi::Runtime& runtime,
-          const JsErrorHandler::ParsedError& error) mutable noexcept {
+          const JsErrorHandler::ProcessedError& error) mutable noexcept {
         if (auto jReactExceptionManager =
                 weakJReactExceptionManager.lockLocal()) {
           jReactExceptionManager->reportJsException(runtime, error);

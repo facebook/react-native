@@ -21,9 +21,7 @@ JsiIntegrationTestHermesEngineAdapter::JsiIntegrationTestHermesEngineAdapter(
 
 /* static */ InspectorFlagOverrides
 JsiIntegrationTestHermesEngineAdapter::getInspectorFlagOverrides() noexcept {
-  return {
-      .fuseboxEnabledDebug = true,
-  };
+  return {};
 }
 
 RuntimeTargetDelegate&

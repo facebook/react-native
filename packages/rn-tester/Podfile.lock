@@ -6,16 +6,8 @@ PODS:
   - fmt (11.0.2)
   - glog (0.3.5)
   - hermes-engine (1000.0.0):
-    - hermes-engine/cdp (= 1000.0.0)
-    - hermes-engine/Hermes (= 1000.0.0)
-    - hermes-engine/inspector (= 1000.0.0)
-    - hermes-engine/inspector_chrome (= 1000.0.0)
-    - hermes-engine/Public (= 1000.0.0)
-  - hermes-engine/cdp (1000.0.0)
-  - hermes-engine/Hermes (1000.0.0)
-  - hermes-engine/inspector (1000.0.0)
-  - hermes-engine/inspector_chrome (1000.0.0)
-  - hermes-engine/Public (1000.0.0)
+    - hermes-engine/Pre-built (= 1000.0.0)
+  - hermes-engine/Pre-built (1000.0.0)
   - MyNativeView (0.77.0-main):
     - DoubleConversion
     - glog
@@ -1256,6 +1248,7 @@ PODS:
     - React-perflogger (= 1000.0.0)
     - React-runtimeexecutor
   - React-idlecallbacksnativemodule (1000.0.0):
+    - glog
     - hermes-engine
     - RCT-Folly
     - React-jsi
@@ -1895,13 +1888,13 @@ EXTERNAL SOURCES:
     :path: "../react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 1dca942403ed9342f98334bf4c3621f011aa7946
-  DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
+  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
+  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: d3c2dd739a63c1a124e775df075dc7c517a719cb
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
-  hermes-engine: 32b7ecaa185482fd292f4b88221ac733c3f7e0a1
+  hermes-engine: 60e4048240c6d6c4bf6fe622e6ea9a1fb6d9706d
   MyNativeView: d92d8827d14b7c296f84424a8aed94fad2c689f5
   NativeCxxModuleExample: a9058817bb3f1776256d9def25c341fa1aa9cc07
   OCMock: 589f2c84dacb1f5aaf6e4cec1f292551fe748e74
@@ -1912,20 +1905,20 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 459a16418c6b413060d35434ba3e83f5b0bd2651
   React: 170a01a19ba2525ab7f11243e2df6b19bf268093
   React-callinvoker: f08f425e4043cd1998a158b6e39a6aed1fd1d718
-  React-Core: d8061cff8b62f34d9291d8781580650d2ba87ee5
+  React-Core: a1d04289bb054eb9f2de0b1ddbbd5ff22b8dbab9
   React-CoreModules: 60a8ca66ac2348dee82ecc768b4d631f02baa549
   React-cxxreact: 7d2cf5415a8e75e0d4b3e9a467e1a72c76a15a24
   React-debug: 195df38487d3f48a7af04deddeb4a5c6d4440416
   React-defaultsnativemodule: 809281bb19b5ba6aad8973694f6a73f3e10d8c5d
   React-domnativemodule: 31be96c046c8537cbdf92943b07cd9fe8d830d19
   React-Fabric: 93aea764b03a651c7b103d3a07b2535c3a3c08b2
-  React-FabricComponents: 5cf53e8eb70eb678e834422692eca7464bb454ad
+  React-FabricComponents: 5d813c8f71c50c397c7320dbf130ebffba2422a4
   React-FabricImage: be4b453a55590a65b2d35dbf956dae3a8f1853f9
   React-featureflags: 7faf26669323dc8b2869ba9d15cfa453b71685f1
   React-featureflagsnativemodule: 09e3acf24f068d883d93bbfc5a20a00d3835b6c0
   React-graphics: 1981e7fe8e9a7046577d8fc9df17c022ed927be5
   React-hermes: 695f334095ee48442dee2783970199525cecaf72
-  React-idlecallbacksnativemodule: a72749bd259cf1da5439b5ade707f6a1b10e6b92
+  React-idlecallbacksnativemodule: 899e0a7fc71a51f1fda81d26fea67456780e0019
   React-ImageManager: 575cefd6f3fe4a9998409eebe9c26eee9ed702f7
   React-jserrorhandler: 021a49bbc21c7612c53acb3397cd9f61e8a4db84
   React-jsi: e666d26bdc29dccfe681075979b924cbe1f183a8
@@ -1943,7 +1936,7 @@ SPEC CHECKSUMS:
   React-RCTAnimation: ac4a08b91b12a5d61e522698162d92a52581dcc5
   React-RCTAppDelegate: 148645da9bc427c825da55d2b63686545ca463f3
   React-RCTBlob: 310559ebf6e64228675806a145f43aa7197a9d14
-  React-RCTFabric: 9df4bfe8504555d833039138b81b4bad0585e4b9
+  React-RCTFabric: 64387d220300433e81bb4cc045bcd53b114215dc
   React-RCTFBReactNativeSpec: 5ac2a4a112a4fdd830bf33816563cee67b0793f6
   React-RCTImage: d84619c84f38ba644ec0d6fb8049cee8435b28c3
   React-RCTLinking: 4b179cdacf8dfab5ee483546ff9353797361f520
@@ -1969,7 +1962,7 @@ SPEC CHECKSUMS:
   ReactCommon-Samples: 921a9a38ed66f267559171430ae000a5aa0973d8
   ScreenshotManager: 6c5a166001490d34391f6d7c441409849544f730
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Yoga: 59290f2ce3fc5c34797a21244288cad99b357b63
+  Yoga: 216ee0d4bcba7186f47624eeac1477a068bceea0
 
 PODFILE CHECKSUM: 8591f96a513620a2a83a0b9a125ad3fa32ea1369
 

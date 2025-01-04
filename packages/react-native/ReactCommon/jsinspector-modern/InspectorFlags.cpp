@@ -18,6 +18,10 @@ InspectorFlags& InspectorFlags::getInstance() {
 }
 
 bool InspectorFlags::getFuseboxEnabled() const {
+  if (fuseboxDisabledForTest_) {
+    return false;
+  }
+
   return loadFlagsAndAssertUnchanged().fuseboxEnabled;
 }
 
@@ -27,6 +31,10 @@ bool InspectorFlags::getIsProfilingBuild() const {
 
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
+}
+
+void InspectorFlags::dangerouslyDisableFuseboxForTest() {
+  fuseboxDisabledForTest_ = true;
 }
 
 #if defined(REACT_NATIVE_FORCE_ENABLE_FUSEBOX) && \
@@ -46,8 +54,6 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
 #elif defined(HERMES_ENABLE_DEBUGGER) && \
     defined(REACT_NATIVE_ENABLE_FUSEBOX_DEBUG)
           true,
-#elif defined(HERMES_ENABLE_DEBUGGER)
-          ReactNativeFeatureFlags::fuseboxEnabledDebug(),
 #elif defined(REACT_NATIVE_ENABLE_FUSEBOX_RELEASE)
           true,
 #else

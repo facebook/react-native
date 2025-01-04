@@ -109,8 +109,8 @@ runs:
           export USE_FRAMEWORKS=dynamic
         fi
 
-        if [[ ${{ inputs.architecture }} == "NewArch" ]]; then
-          export RCT_NEW_ARCH_ENABLED=1
+        if [[ ${{ inputs.architecture }} == "OldArch" ]]; then
+          export RCT_NEW_ARCH_ENABLED=0
         fi
 
         cd packages/rn-tester
@@ -118,16 +118,7 @@ runs:
         bundle install
         bundle exec pod install
     - name: Build RNTester
-      if: ${{ inputs.run-unit-tests != 'true' && inputs.run-e2e-tests == 'false' }}
       shell: bash
-      run: |
-        xcodebuild build \
-          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-          -scheme RNTester \
-          -sdk iphonesimulator
-    - name: Build RNTester (E2E Tests)
-      shell: bash
-      if: ${{ inputs.run-e2e-tests == 'true' }}
       run: |
         xcodebuild \
           -scheme "RNTester" \

@@ -38,10 +38,10 @@ const EVENT_DEFINITION = `
   int32_optional_value: ?Int32,
   int32_optional_both?: ?Int32,
 
-  enum_required: ('small' | 'large'),
-  enum_optional_key?: ('small' | 'large'),
-  enum_optional_value: ?('small' | 'large'),
-  enum_optional_both?: ?('small' | 'large'),
+  union_required: ('small' | 'large'),
+  union_optional_key?: ('small' | 'large'),
+  union_optional_value: ?('small' | 'large'),
+  union_optional_both?: ?('small' | 'large'),
 
   object_required: {
     boolean_required: boolean,
@@ -110,10 +110,10 @@ const EVENT_DEFINITION = `
   int32_array_optional_value: ?$ReadOnlyArray<Int32>,
   int32_array_optional_both?: ?Int32[],
 
-  enum_array_required: $ReadOnlyArray<('small' | 'large')>,
-  enum_array_optional_key?: ('small' | 'large')[],
-  enum_array_optional_value: ?$ReadOnlyArray<('small' | 'large')>,
-  enum_array_optional_both?: ?('small' | 'large')[],
+  union_array_required: $ReadOnlyArray<('small' | 'large')>,
+  union_array_optional_key?: ('small' | 'large')[],
+  union_array_optional_value: ?$ReadOnlyArray<('small' | 'large')>,
+  union_array_optional_both?: ?('small' | 'large')[],
 
   object_array_required: $ReadOnlyArray<{
     boolean_required: boolean,

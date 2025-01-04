@@ -7,13 +7,44 @@
  * @flow strict-local
  * @format
  * @oncall react_native
+ * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
 
+import type {Root} from '..';
+
 import {createRoot, runTask} from '..';
 import * as React from 'react';
 import {Text, View} from 'react-native';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
+
+function getActualViewportDimensions(root: Root): {
+  viewportWidth: number,
+  viewportHeight: number,
+} {
+  let maybeNode;
+
+  runTask(() => {
+    root.render(
+      <View
+        style={{width: '100%', height: '100%'}}
+        ref={node => {
+          maybeNode = node;
+        }}
+      />,
+    );
+  });
+
+  const node = ensureInstance(maybeNode, ReactNativeElement);
+
+  const rect = node.getBoundingClientRect();
+  return {
+    viewportWidth: rect.width,
+    viewportHeight: rect.height,
+  };
+}
 
 describe('Fantom', () => {
   describe('runTask', () => {
@@ -76,28 +107,53 @@ describe('Fantom', () => {
 
     // TODO: when error handling is fixed, this should verify using `toThrow`
     it('should throw when running a task inside another task', () => {
-      let lastCallbackExecuted = 0;
+      let threw = false;
+
       runTask(() => {
-        lastCallbackExecuted = 1;
-        runTask(() => {
-          lastCallbackExecuted = 2;
-          throw new Error('Recursive runTask should be unreachable');
-        });
+        // TODO replace with expect(() => { ... }).toThrow() when error handling is fixed
+        try {
+          runTask(() => {});
+        } catch {
+          threw = true;
+        }
       });
-      expect(lastCallbackExecuted).toBe(1);
+      expect(threw).toBe(true);
+
+      threw = false;
 
       runTask(() => {
         queueMicrotask(() => {
-          lastCallbackExecuted = 3;
-          runTask(() => {
-            lastCallbackExecuted = 4;
-            throw new Error(
-              'Recursive runTask from micro-task should be unreachable',
-            );
-          });
+          try {
+            runTask(() => {});
+          } catch {
+            threw = true;
+          }
         });
       });
-      expect(lastCallbackExecuted).toBe(3);
+      expect(threw).toBe(true);
+    });
+  });
+
+  describe('createRoot', () => {
+    it('allows creating a root with specific dimensions', () => {
+      const rootWithDefaults = createRoot();
+
+      expect(getActualViewportDimensions(rootWithDefaults)).toEqual({
+        viewportWidth: 390,
+        viewportHeight: 844,
+      });
+
+      const rootWithCustomWidthAndHeight = createRoot({
+        viewportWidth: 200,
+        viewportHeight: 600,
+      });
+
+      expect(getActualViewportDimensions(rootWithCustomWidthAndHeight)).toEqual(
+        {
+          viewportWidth: 200,
+          viewportHeight: 600,
+        },
+      );
     });
   });
 
@@ -125,16 +181,24 @@ describe('Fantom', () => {
         runTask(() => {
           root.render(
             <>
-              <View style={{width: 100, height: 100}} collapsable={false} />
-              <View style={{width: 100, height: 100}} collapsable={false} />
+              <View
+                key="first"
+                style={{width: 100, height: 100}}
+                collapsable={false}
+              />
+              <View
+                key="second"
+                style={{width: 100, height: 100}}
+                collapsable={false}
+              />
             </>,
           );
         });
 
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <>
-            <rn-view width="100.000000" height="100.000000" />
-            <rn-view width="100.000000" height="100.000000" />
+            <rn-view key="0" width="100.000000" height="100.000000" />
+            <rn-view key="1" width="100.000000" height="100.000000" />
           </>,
         );
 
@@ -179,7 +243,7 @@ describe('Fantom', () => {
             layoutMetrics-frame="{x:0,y:0,width:100,height:100}"
             layoutMetrics-layoutDirection="LeftToRight"
             layoutMetrics-overflowInset="{top:0,right:-0,bottom:-0,left:0}"
-            layoutMetrics-pointScaleFactor="1"
+            layoutMetrics-pointScaleFactor="3"
             width="100.000000"
           />,
         );
@@ -233,18 +297,26 @@ describe('Fantom', () => {
         runTask(() => {
           root.render(
             <>
-              <View style={{width: 100, height: 100}} collapsable={false} />
-              <Text>hello world!</Text>
-              <View style={{width: 200, height: 300}} collapsable={false} />
+              <View
+                key="first"
+                style={{width: 100, height: 100}}
+                collapsable={false}
+              />
+              <Text key="second">hello world!</Text>
+              <View
+                key="third"
+                style={{width: 200, height: 300}}
+                collapsable={false}
+              />
             </>,
           );
         });
 
         expect(root.getRenderedOutput({props: []}).toJSX()).toEqual(
           <>
-            <rn-view />
-            <rn-paragraph>hello world!</rn-paragraph>
-            <rn-view />
+            <rn-view key="0" />
+            <rn-paragraph key="1">hello world!</rn-paragraph>
+            <rn-view key="2" />
           </>,
         );
 
