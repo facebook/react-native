@@ -46,6 +46,11 @@ runs:
       shell: bash
       if: ${{ inputs.flavor == 'Debug' }}
       run: |
+        yarn install
+
+        # build codegen or we will see a redbox
+        ./packages/react-native-codegen/scripts/oss/build.sh
+
         cd ${{ inputs.working-directory }}
         yarn start &
         sleep 5 # to give metro time to load
