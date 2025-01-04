@@ -45,18 +45,18 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
   }
 
   @Deprecated("Please use RCTModernEventEmitter")
-  override fun receiveEvent(targetReactTag: Int, eventName: String, event: WritableMap?) {
-    receiveEvent(-1, targetReactTag, eventName, event)
+  override fun receiveEvent(targetReactTag: Int, eventName: String, params: WritableMap?) {
+    receiveEvent(-1, targetReactTag, eventName, params)
   }
 
   override fun receiveEvent(
       surfaceId: Int,
       targetTag: Int,
       eventName: String,
-      event: WritableMap?
+      params: WritableMap?
   ) {
     // We assume this event can't be coalesced. `customCoalesceKey` has no meaning in Fabric.
-    receiveEvent(surfaceId, targetTag, eventName, false, 0, event, EventCategoryDef.UNSPECIFIED)
+    receiveEvent(surfaceId, targetTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
   }
 
   @Deprecated("Please use RCTModernEventEmitter")
@@ -108,25 +108,19 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
 
   override fun receiveEvent(
       surfaceId: Int,
-      targetReactTag: Int,
+      targetTag: Int,
       eventName: String,
       canCoalesceEvent: Boolean,
       customCoalesceKey: Int,
-      event: WritableMap?,
+      params: WritableMap?,
       @EventCategoryDef category: Int
   ) {
-    @UIManagerType val uiManagerType = getUIManagerType(targetReactTag, surfaceId)
+    @UIManagerType val uiManagerType = getUIManagerType(targetTag, surfaceId)
     if (uiManagerType == UIManagerType.FABRIC) {
       fabricEventEmitter?.receiveEvent(
-          surfaceId,
-          targetReactTag,
-          eventName,
-          canCoalesceEvent,
-          customCoalesceKey,
-          event,
-          category)
+          surfaceId, targetTag, eventName, canCoalesceEvent, customCoalesceKey, params, category)
     } else if (uiManagerType == UIManagerType.DEFAULT) {
-      ensureDefaultEventEmitter()?.receiveEvent(targetReactTag, eventName, event)
+      ensureDefaultEventEmitter()?.receiveEvent(targetTag, eventName, params)
     }
   }
 
