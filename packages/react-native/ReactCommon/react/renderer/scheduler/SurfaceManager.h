@@ -47,6 +47,10 @@ class SurfaceManager final {
 
   void stopAllSurfaces() const noexcept;
 
+  bool isSurfaceRunning(SurfaceId surfaceId) const noexcept;
+
+  std::unordered_set<SurfaceId> getRunningSurfaces() const noexcept;
+
   Size measureSurface(
       SurfaceId surfaceId,
       const LayoutConstraints& layoutConstraints,
