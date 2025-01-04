@@ -412,6 +412,14 @@ type NativeModuleReturnOnlyTypeAnnotation =
   | NativeModulePromiseTypeAnnotation
   | VoidTypeAnnotation;
 
+// Add the allowed component reserved types to the native module union
+export type CompleteReservedTypeAnnotation =
+  | ReservedTypeAnnotation
+  | {
+      type: 'ReservedTypeAnnotation',
+      name: ReservedPropTypeAnnotation['name'],
+    };
+
 // Used by compatibility check which needs to handle all possible types
 // This will eventually also include the union of all view manager types
 export type CompleteTypeAnnotation =
@@ -421,7 +429,6 @@ export type CompleteTypeAnnotation =
   | EventEmitterTypeAnnotation
   | NativeModuleEnumDeclarationWithMembers
   | UnsafeAnyTypeAnnotation
-  // Native Module event emitters and methods
-  | ObjectTypeAnnotation<
-      Nullable<NativeModuleFunctionTypeAnnotation> | EventEmitterTypeAnnotation,
-    >;
+  | ArrayTypeAnnotation<CompleteTypeAnnotation>
+  | ObjectTypeAnnotation<CompleteTypeAnnotation>
+  | CompleteReservedTypeAnnotation;
