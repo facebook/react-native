@@ -22,9 +22,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatcher
-import org.mockito.Mockito.argThat
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 
@@ -75,7 +75,7 @@ class JSPointerDispatcherTest {
     val ev =
         createMotionEvent(
             MotionEvent.ACTION_DOWN, childRect.centerX().toFloat(), childRect.centerY().toFloat())
-    val mockDispatcher: EventDispatcher = mock(EventDispatcher::class.java)
+    val mockDispatcher: EventDispatcher = mock()
     pointerDispatcher.handleMotionEvent(ev, mockDispatcher, false)
     verify(mockDispatcher).dispatchEvent(argThat(EventWithName(PointerEventHelper.POINTER_DOWN)))
   }
