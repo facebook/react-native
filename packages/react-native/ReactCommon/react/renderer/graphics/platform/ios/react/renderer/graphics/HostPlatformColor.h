@@ -107,7 +107,6 @@ template <>
 struct std::hash<facebook::react::Color> {
   size_t operator()(const facebook::react::Color& color) const {
     auto seed = size_t{0};
-//    facebook::react::hash_combine(seed, color.getColor());
     facebook::react::hash_combine(seed, color.getUIColorHash());
     return seed;
   }

@@ -153,7 +153,7 @@ int32_t Color::getUIColorHash() const
   if (!uiColorHashValue_) {
     return uiColorHashValue_;
   }
-  
+
   static UITraitCollection *darkModeTraitCollection =
       [UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark];
   auto darkColor = ColorFromUIColorForSpecificTraitCollection(uiColor_, darkModeTraitCollection);
@@ -178,7 +178,7 @@ int32_t Color::getUIColorHash() const
   auto lightAccessibilityContrastColor =
       ColorFromUIColorForSpecificTraitCollection(uiColor_, lightModeAccessibilityContrastTraitCollection);
   uiColorHashValue_ = facebook::react::hash_combine(
-                                            darkColor, lightColor, darkAccessibilityContrastColor, lightAccessibilityContrastColor);
+      darkColor, lightColor, darkAccessibilityContrastColor, lightAccessibilityContrastColor);
   return uiColorHashValue_;
 }
 
