@@ -16,7 +16,7 @@ runs:
     - name: Setup node.js
       uses: ./.github/actions/setup-node
     - name: Install node dependencies
-      uses: ./.github/actions/yarn-install-with-cache
+      uses: ./.github/actions/yarn-install
     - name: Set React Native Version
       shell: bash
       run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.release-type }}

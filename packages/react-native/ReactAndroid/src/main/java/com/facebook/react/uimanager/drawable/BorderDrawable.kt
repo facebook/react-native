@@ -24,8 +24,8 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import com.facebook.react.uimanager.FloatUtil.floatsEqual
 import com.facebook.react.uimanager.LengthPercentage
-import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.PixelUtil.dpToPx
+import com.facebook.react.uimanager.PixelUtil.pxToDp
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.style.BorderColors
 import com.facebook.react.uimanager.style.BorderInsets
@@ -138,7 +138,7 @@ internal class BorderDrawable(
   @Deprecated("Deprecated in Java")
   override fun getOpacity(): Int {
     val maxBorderAlpha =
-        minOf(
+        maxOf(
             (Color.alpha(multiplyColorAlpha(computedBorderColors.left, borderAlpha))),
             (Color.alpha(multiplyColorAlpha(computedBorderColors.top, borderAlpha))),
             (Color.alpha(multiplyColorAlpha(computedBorderColors.right, borderAlpha))),
@@ -675,10 +675,10 @@ internal class BorderDrawable(
 
     val borderWidth = computeBorderInsets()
 
-    // Clip border ONLY if its color is non transparent
-    if (Color.alpha(computedBorderColors.left) != 0 &&
-        Color.alpha(computedBorderColors.top) != 0 &&
-        Color.alpha(computedBorderColors.right) != 0 &&
+    // Clip border ONLY if at least one edge is non-transparent
+    if (Color.alpha(computedBorderColors.left) != 0 ||
+        Color.alpha(computedBorderColors.top) != 0 ||
+        Color.alpha(computedBorderColors.right) != 0 ||
         Color.alpha(computedBorderColors.bottom) != 0) {
       innerClipTempRectForBorderRadius?.top =
           innerClipTempRectForBorderRadius?.top?.plus(borderWidth.top) ?: 0f
@@ -703,8 +703,8 @@ internal class BorderDrawable(
         this.borderRadius?.resolve(
             layoutDirection,
             this.context,
-            PixelUtil.toDIPFromPixel(outerClipTempRectForBorderRadius?.width() ?: 0f),
-            PixelUtil.toDIPFromPixel(outerClipTempRectForBorderRadius?.height() ?: 0f),
+            outerClipTempRectForBorderRadius?.width()?.pxToDp() ?: 0f,
+            outerClipTempRectForBorderRadius?.height()?.pxToDp() ?: 0f,
         )
 
     val topLeftRadius = computedBorderRadius?.topLeft?.toPixelFromDIP() ?: CornerRadii(0f, 0f)

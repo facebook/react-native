@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e81b275213e8668a8cd22cd40eea70af>>
+ * @generated SignedSource<<8af906cf2c1799274d66979fd2532c57>>
  */
 
 /**
@@ -45,11 +45,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool commonTestFlag();
 
   /**
-   * Adds support for recursively processing commits that mount synchronously (Android only).
-   */
-  RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
-
-  /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
    */
   RN_EXPORT static bool completeReactInstanceCreationOnBgThreadOnAndroid();
@@ -63,6 +58,11 @@ class ReactNativeFeatureFlags {
    * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
+
+  /**
+   * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
+   */
+  RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
@@ -110,9 +110,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableFabricRenderer();
 
   /**
-   * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
+   * Synchronise the view command dispatching with mounting of new transaction
    */
-  RN_EXPORT static bool enableFabricRendererExclusively();
+  RN_EXPORT static bool enableFixForViewCommandRace();
 
   /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
@@ -123,6 +123,11 @@ class ReactNativeFeatureFlags {
    * iOS Views will clip to their padding box vs border box
    */
   RN_EXPORT static bool enableIOSViewClipToPaddingBox();
+
+  /**
+   * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+   */
+  RN_EXPORT static bool enableImagePrefetchingAndroid();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -180,6 +185,11 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool excludeYogaFromRawProps();
 
   /**
+   * Fixes a bug in Differentiator where parent views may be referenced before they're created
+   */
+  RN_EXPORT static bool fixDifferentiatorEmittingUpdatesWithWrongParentTag();
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   RN_EXPORT static bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -188,16 +198,6 @@ class ReactNativeFeatureFlags {
    * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
    */
   RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-
-  /**
-   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
-   */
-  RN_EXPORT static bool forceBatchingMountItemsOnAndroid();
-
-  /**
-   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
-   */
-  RN_EXPORT static bool fuseboxEnabledDebug();
 
   /**
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
@@ -218,11 +218,6 @@ class ReactNativeFeatureFlags {
    * Adds support for loading vector drawable assets in the Image component (only on Android)
    */
   RN_EXPORT static bool loadVectorDrawablesOnImages();
-
-  /**
-   * Propagate layout direction to Android views.
-   */
-  RN_EXPORT static bool setAndroidLayoutDirection();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
@@ -258,6 +253,11 @@ class ReactNativeFeatureFlags {
    * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
    */
   RN_EXPORT static bool useOptimizedEventBatchingOnAndroid();
+
+  /**
+   * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
+   */
+  RN_EXPORT static bool useRawPropsJsiValue();
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

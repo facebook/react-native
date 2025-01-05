@@ -70,11 +70,11 @@ internal class MyLegacyViewManager(reactContext: ReactApplicationContext) :
   override fun receiveCommand(view: MyNativeView, commandId: Int, args: ReadableArray?) {
     when (commandId) {
       COMMAND_CHANGE_BACKGROUND_COLOR -> {
-        val sentColor: Int = Color.parseColor(args?.getString(0))
+        val sentColor = Color.parseColor(args?.getString(0))
         view.setBackgroundColor(sentColor)
       }
       COMMAND_ADD_OVERLAYS -> {
-        val overlayColors: ReadableArray = args!!.getArray(0)
+        val overlayColors = checkNotNull(args?.getArray(0))
         view.addOverlays(overlayColors)
       }
       COMMAND_REMOVE_OVERLAYS -> {

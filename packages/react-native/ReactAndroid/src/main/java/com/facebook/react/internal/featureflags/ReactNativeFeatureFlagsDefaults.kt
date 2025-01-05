@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<09dd6fb517b7b965c5cc554a075e5590>>
+ * @generated SignedSource<<7075974bc541d91e275ee370f2a3709b>>
  */
 
 /**
@@ -25,13 +25,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun commonTestFlag(): Boolean = false
 
-  override fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = false
-
-  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = false
+  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = true
 
   override fun disableEventLoopOnBridgeless(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
+
+  override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 
   override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
@@ -51,11 +51,13 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFabricRenderer(): Boolean = false
 
-  override fun enableFabricRendererExclusively(): Boolean = false
+  override fun enableFixForViewCommandRace(): Boolean = false
 
   override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
+
+  override fun enableImagePrefetchingAndroid(): Boolean = false
 
   override fun enableLayoutAnimationsOnAndroid(): Boolean = false
 
@@ -79,23 +81,19 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun excludeYogaFromRawProps(): Boolean = false
 
+  override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = true
+
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
   override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
 
-  override fun forceBatchingMountItemsOnAndroid(): Boolean = false
-
-  override fun fuseboxEnabledDebug(): Boolean = true
-
   override fun fuseboxEnabledRelease(): Boolean = false
 
-  override fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean = false
+  override fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean = true
 
   override fun lazyAnimationCallbacks(): Boolean = false
 
-  override fun loadVectorDrawablesOnImages(): Boolean = false
-
-  override fun setAndroidLayoutDirection(): Boolean = true
+  override fun loadVectorDrawablesOnImages(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
@@ -103,7 +101,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useFabricInterop(): Boolean = false
 
-  override fun useImmediateExecutorInAndroidBridgeless(): Boolean = false
+  override fun useImmediateExecutorInAndroidBridgeless(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 
@@ -111,7 +109,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
-  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
+  override fun useRawPropsJsiValue(): Boolean = false
+
+  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = true
 
   override fun useTurboModuleInterop(): Boolean = false
 

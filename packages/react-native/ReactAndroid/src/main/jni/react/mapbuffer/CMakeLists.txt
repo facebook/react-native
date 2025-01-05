@@ -33,6 +33,5 @@ target_link_libraries(mapbufferjni
         react_debug
         react_render_mapbuffer
         react_utils
-        react_config
         yoga
 )

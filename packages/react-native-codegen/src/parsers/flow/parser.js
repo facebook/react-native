@@ -230,10 +230,28 @@ class FlowParser implements Parser {
   parseEnumMembers(
     typeAnnotation: $FlowFixMe,
   ): $ReadOnlyArray<NativeModuleEnumMember> {
-    return typeAnnotation.members.map(member => ({
-      name: member.id.name,
-      value: member.init?.value ?? member.id.name,
-    }));
+    return typeAnnotation.members.map(member => {
+      const value =
+        typeof member.init?.value === 'number'
+          ? {
+              type: 'NumberLiteralTypeAnnotation',
+              value: member.init.value,
+            }
+          : typeof member.init?.value === 'string'
+          ? {
+              type: 'StringLiteralTypeAnnotation',
+              value: member.init.value,
+            }
+          : {
+              type: 'StringLiteralTypeAnnotation',
+              value: member.id.name,
+            };
+
+      return {
+        name: member.id.name,
+        value: value,
+      };
+    });
   }
 
   isModuleInterface(node: $FlowFixMe): boolean {

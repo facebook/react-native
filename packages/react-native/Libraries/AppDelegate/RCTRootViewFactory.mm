@@ -26,7 +26,6 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
-#import <ReactCommon/RCTContextContainerHandling.h>
 #if USE_HERMES
 #import <ReactCommon/RCTHermesInstance.h>
 #else
@@ -35,21 +34,9 @@
 #import <ReactCommon/RCTHost+Internal.h>
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
-#import <react/config/ReactNativeConfig.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/runtime/JSRuntimeFactory.h>
-
-static NSString *const kRNConcurrentRoot = @"concurrentRoot";
-
-static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabricEnabled)
-{
-  NSMutableDictionary *mutableProps = initialProps != NULL ? [initialProps mutableCopy] : [NSMutableDictionary new];
-  // Hardcoding the Concurrent Root as it it not recommended to
-  // have the concurrentRoot turned off when Fabric is enabled.
-  mutableProps[kRNConcurrentRoot] = @(isFabricEnabled);
-  return mutableProps;
-}
 
 @implementation RCTRootViewFactoryConfiguration
 
@@ -99,13 +86,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 
 @end
 
-@interface RCTRootViewFactory () <RCTContextContainerHandling> {
-  std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
-  facebook::react::ContextContainer::Shared _contextContainer;
-}
-@end
-
 @interface RCTRootViewFactory () <RCTCxxBridgeDelegate> {
+  facebook::react::ContextContainer::Shared _contextContainer;
   std::shared_ptr<facebook::react::RuntimeScheduler> _runtimeScheduler;
 }
 @end
@@ -124,8 +106,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
     _configuration = configuration;
     _hostDelegate = hostdelegate;
     _contextContainer = std::make_shared<const facebook::react::ContextContainer>();
-    _reactNativeConfig = std::make_shared<const facebook::react::EmptyReactNativeConfig>();
-    _contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
     _turboModuleManagerDelegate = turboModuleManagerDelegate;
   }
   return self;
@@ -158,11 +138,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 }
 
 - (UIView *)viewWithModuleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
+             initialProperties:(NSDictionary *)initProps
                  launchOptions:(NSDictionary *)launchOptions
 {
-  NSDictionary *initProps = updateInitialProps(initialProperties, _configuration.fabricEnabled);
-
   if (_configuration.bridgelessEnabled) {
     // Enable TurboModule interop by default in Bridgeless mode
     RCTEnableTurboModuleInterop(YES);
@@ -176,8 +154,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
         [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
 
     surfaceHostingProxyRootView.backgroundColor = [UIColor systemBackgroundColor];
-    if (self->_configuration.customizeRootView != nil) {
-      self->_configuration.customizeRootView(surfaceHostingProxyRootView);
+    if (_configuration.customizeRootView != nil) {
+      _configuration.customizeRootView(surfaceHostingProxyRootView);
     }
     return surfaceHostingProxyRootView;
   }
@@ -191,8 +169,8 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   } else {
     rootView = [self createRootViewWithBridge:self.bridge moduleName:moduleName initProps:initProps];
   }
-  if (self->_configuration.customizeRootView != nil) {
-    self->_configuration.customizeRootView(rootView);
+  if (_configuration.customizeRootView != nil) {
+    _configuration.customizeRootView(rootView);
   }
   return rootView;
 }
@@ -206,11 +184,9 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
                           moduleName:(NSString *)moduleName
                            initProps:(NSDictionary *)initProps
 {
-  BOOL enableFabric = self->_configuration.fabricEnabled;
+  BOOL enableFabric = _configuration.fabricEnabled;
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, moduleName, initProps, enableFabric);
-
   rootView.backgroundColor = [UIColor systemBackgroundColor];
-
   return rootView;
 }
 
@@ -281,7 +257,6 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
   [reactHost setBundleURLProvider:^NSURL *() {
     return [weakSelf bundleURL];
   }];
-  [reactHost setContextContainerHandler:self];
   [reactHost start];
   return reactHost;
 }
@@ -289,16 +264,10 @@ static NSDictionary *updateInitialProps(NSDictionary *initialProps, BOOL isFabri
 - (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory
 {
 #if USE_HERMES
-  return std::make_shared<facebook::react::RCTHermesInstance>(
-      _reactNativeConfig, nullptr, /* allocInOldGenBeforeTTI */ false);
+  return std::make_shared<facebook::react::RCTHermesInstance>(nullptr, /* allocInOldGenBeforeTTI */ false);
 #else
   return std::make_shared<facebook::react::RCTJscInstance>();
 #endif
-}
-
-- (void)didCreateContextContainer:(std::shared_ptr<facebook::react::ContextContainer>)contextContainer
-{
-  contextContainer->insert("ReactNativeConfig", _reactNativeConfig);
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge

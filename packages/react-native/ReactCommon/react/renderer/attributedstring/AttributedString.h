@@ -65,15 +65,8 @@ class AttributedString : public Sealable, public DebugStringConvertible {
   /*
    * Appends and prepends a `fragment` to the string.
    */
-  void appendFragment(const Fragment& fragment);
-  void prependFragment(const Fragment& fragment);
-
-  /*
-   * Appends and prepends an `attributedString` (all its fragments) to
-   * the string.
-   */
-  void appendAttributedString(const AttributedString& attributedString);
-  void prependAttributedString(const AttributedString& attributedString);
+  void appendFragment(Fragment&& fragment);
+  void prependFragment(Fragment&& fragment);
 
   /*
    * Sets attributes which would apply to hypothetical text not included in the

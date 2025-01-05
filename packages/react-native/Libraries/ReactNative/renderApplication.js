@@ -41,7 +41,6 @@ export default function renderApplication<Props: Object>(
   isLogBox?: boolean,
   debugName?: string,
   displayMode?: ?DisplayModeType,
-  useConcurrentRoot?: boolean,
   useOffscreen?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
@@ -87,12 +86,12 @@ export default function renderApplication<Props: Object>(
   }
 
   // We want to have concurrentRoot always enabled when you're on Fabric.
-  const useConcurrentRootOverride = fabric;
+  const useConcurrentRoot = Boolean(fabric);
 
   performanceLogger.startTimespan('renderApplication_React_render');
   performanceLogger.setExtra(
     'usedReactConcurrentRoot',
-    useConcurrentRootOverride ? '1' : '0',
+    useConcurrentRoot ? '1' : '0',
   );
   performanceLogger.setExtra('usedReactFabric', fabric ? '1' : '0');
   performanceLogger.setExtra(
@@ -103,7 +102,7 @@ export default function renderApplication<Props: Object>(
     element: renderable,
     rootTag,
     useFabric: Boolean(fabric),
-    useConcurrentRoot: Boolean(useConcurrentRootOverride),
+    useConcurrentRoot,
   });
   performanceLogger.stopTimespan('renderApplication_React_render');
 }

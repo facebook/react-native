@@ -121,6 +121,12 @@ function reportException(
     const NativeExceptionsManager =
       require('./NativeExceptionsManager').default;
     if (NativeExceptionsManager) {
+      if (isFatal) {
+        if (global.RN$hasHandledFatalException?.()) {
+          return;
+        }
+        global.RN$notifyOfFatalException?.();
+      }
       NativeExceptionsManager.reportException(data);
     }
   }
@@ -177,10 +183,7 @@ function reactConsoleErrorHandler(...args) {
   if (!console.reportErrorsAsExceptions) {
     return;
   }
-  if (
-    inExceptionHandler ||
-    (global.RN$inExceptionHandler && global.RN$inExceptionHandler())
-  ) {
+  if (inExceptionHandler || global.RN$inExceptionHandler?.()) {
     // The fundamental trick here is that are multiple entry point to logging errors:
     // (see D19743075 for more background)
     //

@@ -29,7 +29,7 @@ internal object FilterHelper {
     filters ?: return null
     var chainedEffects: RenderEffect? = null
     for (i in 0 until filters.size()) {
-      val filter = filters.getMap(i).entryIterator.next()
+      val filter = checkNotNull(filters.getMap(i)).entryIterator.next()
       val filterName = filter.key
 
       chainedEffects =
@@ -58,7 +58,7 @@ internal object FilterHelper {
     // New ColorMatrix objects represent the identity matrix
     val resultColorMatrix = ColorMatrix()
     for (i in 0 until filters.size()) {
-      val filter = filters.getMap(i).entryIterator.next()
+      val filter = checkNotNull(filters.getMap(i)).entryIterator.next()
       val filterName = filter.key
       val amount = (filter.value as Double).toFloat()
 
@@ -88,7 +88,7 @@ internal object FilterHelper {
     }
 
     for (i in 0 until filters.size()) {
-      val filter = filters.getMap(i).entryIterator.next()
+      val filter = filters.getMap(i)!!.entryIterator.next()
       val filterName = filter.key
       if (filterName == "blur" || filterName == "dropShadow") {
         return false

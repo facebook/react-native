@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ImageProps} from 'react-native/Libraries/Image/ImageProps';
 import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
@@ -131,6 +132,11 @@ class NetworkImageCallbackExample extends React.Component<
         <Image
           source={this.props.source}
           style={[styles.base, styles.visibleOverflow]}
+          onError={event => {
+            this._loadEventFired(
+              `✘ onError "${event.nativeEvent.error}" (+${Date.now() - mountTime}ms)`,
+            );
+          }}
           onLoadStart={() =>
             this._loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
           }
@@ -465,7 +471,9 @@ class FadeDurationExample extends React.Component<
           </Text>
         </View>
         <Image fadeDuration={1500} source={loadingImage} style={styles.base} />
-        <Text>This image will fade in over the time of 1.5s.</Text>
+        <RNTesterText>
+          This image will fade in over the time of 1.5s.
+        </RNTesterText>
       </View>
     );
   }
@@ -660,6 +668,18 @@ function CacheControlAndroidExample(): React.Node {
           />
         </View>
         <View style={styles.leftMargin}>
+          <RNTesterText style={styles.resizeModeText}>Force-cache</RNTesterText>
+          <Image
+            source={{
+              uri: fullImage.uri + '?cacheBust=force-cache',
+              cache: 'force-cache',
+            }}
+            style={styles.base}
+            key={reload}
+            onError={e => console.log(e.nativeEvent.error)}
+          />
+        </View>
+        <View style={styles.leftMargin}>
           <RNTesterText style={styles.resizeModeText}>
             Only-if-cached
           </RNTesterText>
@@ -824,6 +844,9 @@ const styles = StyleSheet.create({
   },
   objectFitScaleDown: {
     objectFit: 'scale-down',
+  },
+  objectFitNone: {
+    objectFit: 'none',
   },
   imageInBundle: {
     borderColor: 'yellow',
@@ -1466,6 +1489,17 @@ exports.examples = [
                     />
                   </View>
                 </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      None
+                    </RNTesterText>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitNone]}
+                      source={image}
+                    />
+                  </View>
+                </View>
               </View>
             );
           })}
@@ -1533,6 +1567,18 @@ exports.examples = [
                     <Image
                       style={styles.resizeMode}
                       resizeMode="center"
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      None
+                    </RNTesterText>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode="none"
                       source={image}
                     />
                   </View>
@@ -1764,4 +1810,4 @@ exports.examples = [
     },
     platform: 'android',
   },
-];
+] as Array<RNTesterModuleExample>;

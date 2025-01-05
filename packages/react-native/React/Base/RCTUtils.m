@@ -299,8 +299,8 @@ void RCTUnsafeExecuteOnMainQueueSync(dispatch_block_t block)
 
 static void RCTUnsafeExecuteOnMainQueueOnceSync(dispatch_once_t *onceToken, dispatch_block_t block)
 {
-  // The solution was borrowed from a post by Ben Alpert:
-  // https://benalpert.com/2014/04/02/dispatch-once-initialization-on-the-main-thread.html
+  // The solution was borrowed from a post by Sophie Alpert:
+  // https://sophiebits.com/2014/04/02/dispatch-once-initialization-on-the-main-thread
   // See also: https://www.mikeash.com/pyblog/friday-qa-2014-06-06-secrets-of-dispatch_once.html
   if (RCTIsMainQueue()) {
     dispatch_once(onceToken, block);

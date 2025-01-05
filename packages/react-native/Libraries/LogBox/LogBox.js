@@ -55,7 +55,7 @@ if (__DEV__) {
       if (global.RN$registerExceptionListener != null) {
         global.RN$registerExceptionListener(
           (error: ExtendedExceptionData & {preventDefault: () => mixed}) => {
-            if (!error.isFatal) {
+            if (global.RN$isRuntimeReady?.() || !error.isFatal) {
               error.preventDefault();
               addException(error);
             }

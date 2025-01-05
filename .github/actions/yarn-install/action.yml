@@ -1,0 +1,7 @@
+name: yarn-install
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: yarn install --non-interactive --frozen-lockfile

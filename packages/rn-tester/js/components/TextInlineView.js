@@ -10,31 +10,32 @@
 
 'use strict';
 
-const React = require('react');
-const {Image, Text, TouchableHighlight, View} = require('react-native');
+import RNTesterText from '../components/RNTesterText';
+import React from 'react';
+import {Image, TouchableHighlight, View} from 'react-native';
 
 function Basic(): React.Node {
   return (
-    <Text>
+    <RNTesterText>
       This text contains an inline blue view{' '}
       <View style={{width: 25, height: 25, backgroundColor: 'steelblue'}} /> and
       an inline image <Image source={require('../assets/flux.png')} />. Neat,
       huh?
-    </Text>
+    </RNTesterText>
   );
 }
 
 function NestedTexts(): React.Node {
   return (
     <View>
-      <Text>This is the first row</Text>
-      <Text>
-        <Text>
-          <Text>This is a nested text </Text>
+      <RNTesterText>This is the first row</RNTesterText>
+      <RNTesterText>
+        <RNTesterText>
+          <RNTesterText>This is a nested text </RNTesterText>
           <View style={{height: 20, width: 20, backgroundColor: 'red'}} />
-          <Text> with a Red View</Text>
-        </Text>
-      </Text>
+          <RNTesterText> with a Red View</RNTesterText>
+        </RNTesterText>
+      </RNTesterText>
     </View>
   );
 }
@@ -45,11 +46,12 @@ function ClippedByText(): React.Node {
       {/*
        * Inline View
        **/}
-      <Text>
-        The <Text style={{fontWeight: 'bold'}}>inline view</Text> below is
-        taller than its Text parent and should be clipped.
-      </Text>
-      <Text
+      <RNTesterText>
+        The{' '}
+        <RNTesterText style={{fontWeight: 'bold'}}>inline view</RNTesterText>{' '}
+        below is taller than its Text parent and should be clipped.
+      </RNTesterText>
+      <RNTesterText
         style={{
           overflow: 'hidden',
           width: 150,
@@ -69,16 +71,17 @@ function ClippedByText(): React.Node {
             }}
           />
         </View>
-      </Text>
+      </RNTesterText>
 
       {/*
        * Inline Image
        **/}
-      <Text style={{marginTop: 10}}>
-        The <Text style={{fontWeight: 'bold'}}>inline image</Text> below is
-        taller than its Text parent and should be clipped.
-      </Text>
-      <Text
+      <RNTesterText style={{marginTop: 10}}>
+        The{' '}
+        <RNTesterText style={{fontWeight: 'bold'}}>inline image</RNTesterText>{' '}
+        below is taller than its Text parent and should be clipped.
+      </RNTesterText>
+      <RNTesterText
         style={{
           overflow: 'hidden',
           width: 175,
@@ -97,7 +100,7 @@ function ClippedByText(): React.Node {
             height: 100,
           }}
         />
-      </Text>
+      </RNTesterText>
     </View>
   );
 }
@@ -118,11 +121,11 @@ class ChangeImageSize extends React.Component<mixed, ChangeSizeState> {
           onPress={() => {
             this.setState({width: this.state.width === 50 ? 100 : 50});
           }}>
-          <Text style={{fontSize: 15}}>
+          <RNTesterText style={{fontSize: 15}}>
             Change Image Width (width={this.state.width})
-          </Text>
+          </RNTesterText>
         </TouchableHighlight>
-        <Text>
+        <RNTesterText>
           This is an
           <Image
             source={{
@@ -136,7 +139,7 @@ class ChangeImageSize extends React.Component<mixed, ChangeSizeState> {
             }}
           />
           inline image
-        </Text>
+        </RNTesterText>
       </View>
     );
   }
@@ -154,11 +157,11 @@ class ChangeViewSize extends React.Component<mixed, ChangeSizeState> {
           onPress={() => {
             this.setState({width: this.state.width === 50 ? 100 : 50});
           }}>
-          <Text style={{fontSize: 15}}>
+          <RNTesterText style={{fontSize: 15}}>
             Change View Width (width={this.state.width})
-          </Text>
+          </RNTesterText>
         </TouchableHighlight>
-        <Text>
+        <RNTesterText>
           This is an
           <View
             style={{
@@ -168,7 +171,7 @@ class ChangeViewSize extends React.Component<mixed, ChangeSizeState> {
             }}
           />
           inline view
-        </Text>
+        </RNTesterText>
       </View>
     );
   }
@@ -192,9 +195,11 @@ class ChangeInnerViewSize extends React.Component<mixed, ChangeSizeState> {
               rerendered and remains at its old size. If other things change
               (e.g. we display `state.width` as text somewhere) it could circumvent
               the bug and cause the pink view to be rerendered at its new size. */}
-          <Text style={{fontSize: 15}}>Change Pink View Width</Text>
+          <RNTesterText style={{fontSize: 15}}>
+            Change Pink View Width
+          </RNTesterText>
         </TouchableHighlight>
-        <Text>
+        <RNTesterText>
           This is an
           <View style={{width: 125, height: 75, backgroundColor: 'steelblue'}}>
             <View
@@ -206,7 +211,7 @@ class ChangeInnerViewSize extends React.Component<mixed, ChangeSizeState> {
             />
           </View>
           inline view
-        </Text>
+        </RNTesterText>
       </View>
     );
   }

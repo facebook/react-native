@@ -13,15 +13,21 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
     id: "Basic"
 - assertVisible:
     id: "item_550"
-- repeat:
-    while:
-      notVisible:
-        id: "item_600" # should trigger a reload
-    commands:
-      - swipe:
-          start: 50%, 85%
-          end: 50%, 50%
-      - waitForAnimationToEnd: # wait for the reload to happen
-          timeout: 1000
+# - repeat:
+#     while:
+#       notVisible:
+#         id: "item_600" # should trigger a reload
+#     commands:
+#       - swipe:
+#           start: 50%, 85%
+#           end: 50%, 50%
+#       - waitForAnimationToEnd: # wait for the reload to happen
+#           timeout: 1000
+# - assertVisible:
+#     id: "item_600"
 - assertVisible:
-    id: "item_600"
+    text: "Empty:"
+- tapOn:
+    id: "switch_empty_option"
+- assertVisible:
+    text: "The list is empty :o"

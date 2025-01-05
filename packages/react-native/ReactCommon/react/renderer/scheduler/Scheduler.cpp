@@ -10,7 +10,7 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
@@ -54,18 +54,18 @@ Scheduler::Scheduler(
       weakRuntimeScheduler.has_value() &&
       "Unexpected state: RuntimeScheduler was not provided.");
 
-  auto runtimeScheduler = weakRuntimeScheduler.value().lock();
+  runtimeScheduler_ = weakRuntimeScheduler.value().lock().get();
 
   if (ReactNativeFeatureFlags::enableUIConsistency()) {
-    runtimeScheduler->setShadowTreeRevisionConsistencyManager(
+    runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
         uiManager->getShadowTreeRevisionConsistencyManager());
   }
 
   if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
-    runtimeScheduler->setEventTimingDelegate(eventPerformanceLogger_.get());
+    runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());
   }
 
-  auto eventPipe = [uiManager, runtimeScheduler = runtimeScheduler.get()](
+  auto eventPipe = [uiManager](
                        jsi::Runtime& runtime,
                        const EventTarget* eventTarget,
                        const std::string& type,
@@ -79,12 +79,10 @@ Scheduler::Scheduler(
         runtime);
   };
 
-  auto eventPipeConclusion =
-      [runtimeScheduler = runtimeScheduler.get()](jsi::Runtime& runtime) {
-        if (runtimeScheduler != nullptr) {
-          runtimeScheduler->callExpiredTasks(runtime);
-        }
-      };
+  auto eventPipeConclusion = [runtimeScheduler =
+                                  runtimeScheduler_](jsi::Runtime& runtime) {
+    runtimeScheduler->callExpiredTasks(runtime);
+  };
 
   auto statePipe = [uiManager](const StateUpdate& stateUpdate) {
     uiManager->updateState(stateUpdate);
@@ -282,23 +280,17 @@ void Scheduler::animationTick() const {
 void Scheduler::uiManagerDidFinishTransaction(
     std::shared_ptr<const MountingCoordinator> mountingCoordinator,
     bool mountSynchronously) {
-  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
+  TraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_ != nullptr) {
     // This is no-op on all platforms except for Android where we need to
     // observe each transaction to be able to mount correctly.
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
 
-    auto weakRuntimeScheduler =
-        contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-            "RuntimeScheduler");
-    auto runtimeScheduler = weakRuntimeScheduler.has_value()
-        ? weakRuntimeScheduler.value().lock()
-        : nullptr;
-    if (runtimeScheduler && !mountSynchronously) {
+    if (!mountSynchronously) {
       auto surfaceId = mountingCoordinator->getSurfaceId();
 
-      runtimeScheduler->scheduleRenderingUpdate(
+      runtimeScheduler_->scheduleRenderingUpdate(
           surfaceId,
           [delegate = delegate_,
            mountingCoordinator = std::move(mountingCoordinator)]() {
@@ -320,18 +312,30 @@ void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) {
-  SystraceSection s("Scheduler::uiManagerDispatchCommand");
+  TraceSection s("Scheduler::uiManagerDispatchCommand");
 
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
-    delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+    if (ReactNativeFeatureFlags::enableFixForViewCommandRace()) {
+      runtimeScheduler_->scheduleRenderingUpdate(
+          shadowNode->getSurfaceId(),
+          [delegate = delegate_,
+           shadowView = std::move(shadowView),
+           commandName,
+           args]() {
+            delegate->schedulerDidDispatchCommand(
+                shadowView, commandName, args);
+          });
+    } else {
+      delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+    }
   }
 }
 
 void Scheduler::uiManagerDidSendAccessibilityEvent(
     const ShadowNode::Shared& shadowNode,
     const std::string& eventType) {
-  SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
+  TraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
 
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);

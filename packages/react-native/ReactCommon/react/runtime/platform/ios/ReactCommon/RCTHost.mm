@@ -254,7 +254,9 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   surface.surfaceHandler.setDisplayMode(displayMode);
   [self _attachSurface:surface];
 
-  [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
+  __weak RCTFabricSurface *weakSurface = surface;
+  // Use the BufferedRuntimeExecutor to start the surface after the main JS bundle was fully executed.
+  [_instance callFunctionOnBufferedRuntimeExecutor:[weakSurface](facebook::jsi::Runtime &_) { [weakSurface start]; }];
   return surface;
 }
 
@@ -273,6 +275,11 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   return [_instance surfacePresenter];
 }
 
+- (RCTBundleManager *)bundleManager
+{
+  return _bundleManager;
+}
+
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
 {
   [_instance callFunctionOnJSModule:moduleName method:method args:args];
@@ -282,25 +289,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 - (void)didReceiveReloadCommand
 {
-  [_instance invalidate];
-  _instance = nil;
-  if (_bundleURLProvider) {
-    [self _setBundleURL:_bundleURLProvider()];
-  }
-
-  _instance = [[RCTInstance alloc] initWithDelegate:self
-                                   jsRuntimeFactory:[self _provideJSEngine]
-                                      bundleManager:_bundleManager
-                         turboModuleManagerDelegate:_turboModuleManagerDelegate
-                                     moduleRegistry:_moduleRegistry
-                              parentInspectorTarget:_inspectorTarget.get()
-                                      launchOptions:_launchOptions];
-  [_hostDelegate hostDidStart:self];
-
-  for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
-    [surface resetWithSurfacePresenter:self.surfacePresenter];
-    [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
-  }
+  [self _reloadWithShouldRestartSurfaces:YES];
 }
 
 - (void)dealloc
@@ -383,6 +372,11 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   _contextContainerHandler = contextContainerHandler;
 }
 
+- (void)reload
+{
+  [self _reloadWithShouldRestartSurfaces:NO];
+}
+
 #pragma mark - Private
 
 - (void)_attachSurface:(RCTFabricSurface *)surface
@@ -426,6 +420,33 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
   // Update the global bundle URLq
   RCTReloadCommandSetBundleURL(_bundleURL);
 }
+
+- (void)_reloadWithShouldRestartSurfaces:(BOOL)shouldRestartSurfaces
+{
+  [_instance invalidate];
+  _instance = nil;
+  if (_bundleURLProvider) {
+    [self _setBundleURL:_bundleURLProvider()];
+  }
+
+  _instance = [[RCTInstance alloc] initWithDelegate:self
+                                   jsRuntimeFactory:[self _provideJSEngine]
+                                      bundleManager:_bundleManager
+                         turboModuleManagerDelegate:_turboModuleManagerDelegate
+                                     moduleRegistry:_moduleRegistry
+                              parentInspectorTarget:_inspectorTarget.get()
+                                      launchOptions:_launchOptions];
+  [_hostDelegate hostDidStart:self];
+
+  for (RCTFabricSurface *surface in [self _getAttachedSurfaces]) {
+    [surface resetWithSurfacePresenter:self.surfacePresenter];
+    if (shouldRestartSurfaces) {
+      [_instance callFunctionOnBufferedRuntimeExecutor:[surface](facebook::jsi::Runtime &_) { [surface start]; }];
+    }
+  }
+}
+
+#pragma mark - jsinspector_modern
 
 - (jsinspector_modern::HostTarget *)inspectorTarget
 {

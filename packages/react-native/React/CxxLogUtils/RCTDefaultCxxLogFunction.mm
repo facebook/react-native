@@ -13,20 +13,18 @@ namespace facebook::react {
 
 void RCTDefaultCxxLogFunction(ReactNativeLogLevel level, const char *message)
 {
-  NSString *messageString = [NSString stringWithUTF8String:message];
-
   switch (level) {
     case ReactNativeLogLevelInfo:
       LOG(INFO) << message;
-      RCTLogInfo(@"%@", messageString);
+      RCTLogInfo(@"%@", [NSString stringWithUTF8String:message]);
       break;
     case ReactNativeLogLevelWarning:
       LOG(WARNING) << message;
-      RCTLogWarn(@"%@", messageString);
+      RCTLogWarn(@"%@", [NSString stringWithUTF8String:message]);
       break;
     case ReactNativeLogLevelError:
       LOG(ERROR) << message;
-      RCTLogError(@"%@", messageString);
+      RCTLogError(@"%@", [NSString stringWithUTF8String:message]);
       break;
     case ReactNativeLogLevelFatal:
       LOG(FATAL) << message;

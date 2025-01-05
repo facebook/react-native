@@ -79,10 +79,13 @@ Pod::Spec.new do |s|
   s.dependency "fast_float", "6.1.4"
   s.dependency "fmt", "11.0.2"
   s.dependency "React-featureflags"
-  s.dependency "React-ImageManager"
   s.dependency "React-utils"
   s.dependency "Yoga"
 
+  add_dependency(s, "React-ImageManager", :additional_framework_paths => [
+    "react/renderer/components/view/platform/cxx",
+    "react/renderer/imagemanager/platform/ios",
+  ])
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-Fabric", :additional_framework_paths => [

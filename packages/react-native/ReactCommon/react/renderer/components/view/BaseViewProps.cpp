@@ -53,8 +53,9 @@ std::array<float, 3> getTranslateForTransformOrigin(
 BaseViewProps::BaseViewProps(
     const PropsParserContext& context,
     const BaseViewProps& sourceProps,
-    const RawProps& rawProps)
-    : YogaStylableProps(context, sourceProps, rawProps),
+    const RawProps& rawProps,
+    const std::function<bool(const std::string&)>& filterObjectKeys)
+    : YogaStylableProps(context, sourceProps, rawProps, filterObjectKeys),
       AccessibilityProps(context, sourceProps, rawProps),
       opacity(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
@@ -342,16 +343,7 @@ BaseViewProps::BaseViewProps(
                     rawProps,
                     "removeClippedSubviews",
                     sourceProps.removeClippedSubviews,
-                    false)),
-      experimental_layoutConformance(
-          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
-              ? sourceProps.experimental_layoutConformance
-              : convertRawProp(
-                    context,
-                    rawProps,
-                    "experimental_layoutConformance",
-                    sourceProps.experimental_layoutConformance,
-                    {})) {}
+                    false)) {}
 
 #define VIEW_EVENT_CASE(eventType)                      \
   case CONSTEXPR_RAW_PROPS_KEY_HASH("on" #eventType): { \
@@ -397,14 +389,14 @@ void BaseViewProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(collapsable);
     RAW_SET_PROP_SWITCH_CASE_BASIC(collapsableChildren);
     RAW_SET_PROP_SWITCH_CASE_BASIC(removeClippedSubviews);
-    RAW_SET_PROP_SWITCH_CASE_BASIC(experimental_layoutConformance);
     RAW_SET_PROP_SWITCH_CASE_BASIC(cursor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(outlineColor);
     RAW_SET_PROP_SWITCH_CASE_BASIC(outlineOffset);
     RAW_SET_PROP_SWITCH_CASE_BASIC(outlineStyle);
     RAW_SET_PROP_SWITCH_CASE_BASIC(outlineWidth);
-    RAW_SET_PROP_SWITCH_CASE(filter, "filter");
-    RAW_SET_PROP_SWITCH_CASE(boxShadow, "boxShadow");
+    RAW_SET_PROP_SWITCH_CASE_BASIC(filter);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(boxShadow);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(mixBlendMode);
     // events field
     VIEW_EVENT_CASE(PointerEnter);
     VIEW_EVENT_CASE(PointerEnterCapture);
@@ -446,54 +438,52 @@ static BorderRadii ensureNoOverlap(const BorderRadii& radii, const Size& size) {
   // the used values of all border radii until none of them overlap."
   // Source: https://www.w3.org/TR/css-backgrounds-3/#corner-overlap
 
-  auto insets = EdgeInsets{
-      .left = radii.topLeft.horizontal + radii.bottomLeft.horizontal,
-      .top = radii.topLeft.vertical + radii.topRight.vertical,
-      .right = radii.topRight.horizontal + radii.bottomRight.horizontal,
-      .bottom = radii.bottomLeft.vertical + radii.bottomRight.vertical,
-  };
+  float leftEdgeRadii = radii.topLeft.vertical + radii.bottomLeft.vertical;
+  float topEdgeRadii = radii.topLeft.horizontal + radii.topRight.horizontal;
+  float rightEdgeRadii = radii.topRight.vertical + radii.bottomRight.vertical;
+  float bottomEdgeRadii =
+      radii.bottomLeft.horizontal + radii.bottomRight.horizontal;
 
-  auto insetsScale = EdgeInsets{
-      .left =
-          insets.left > 0 ? std::min((Float)1.0, size.height / insets.left) : 0,
-      .top = insets.top > 0 ? std::min((Float)1.0, size.width / insets.top) : 0,
-      .right = insets.right > 0
-          ? std::min((Float)1.0, size.height / insets.right)
-          : 0,
-      .bottom = insets.bottom > 0
-          ? std::min((Float)1.0, size.width / insets.bottom)
-          : 0,
-  };
+  float leftEdgeRadiiScale =
+      (leftEdgeRadii > 0) ? std::min(size.height / leftEdgeRadii, (Float)1) : 0;
+  float topEdgeRadiiScale =
+      (topEdgeRadii > 0) ? std::min(size.width / topEdgeRadii, (Float)1) : 0;
+  float rightEdgeRadiiScale = (rightEdgeRadii > 0)
+      ? std::min(size.height / rightEdgeRadii, (Float)1)
+      : 0;
+  float bottomEdgeRadiiScale = (bottomEdgeRadii > 0)
+      ? std::min(size.width / bottomEdgeRadii, (Float)1)
+      : 0;
 
   return BorderRadii{
       .topLeft =
           {static_cast<float>(
-               radii.topLeft.horizontal *
-               std::min(insetsScale.top, insetsScale.left)),
-           static_cast<float>(
                radii.topLeft.vertical *
-               std::min(insetsScale.top, insetsScale.left))},
+               std::min(topEdgeRadiiScale, leftEdgeRadiiScale)),
+           static_cast<float>(
+               radii.topLeft.horizontal *
+               std::min(topEdgeRadiiScale, leftEdgeRadiiScale))},
       .topRight =
           {static_cast<float>(
-               radii.topRight.horizontal *
-               std::min(insetsScale.top, insetsScale.right)),
-           static_cast<float>(
                radii.topRight.vertical *
-               std::min(insetsScale.top, insetsScale.right))},
+               std::min(topEdgeRadiiScale, rightEdgeRadiiScale)),
+           static_cast<float>(
+               radii.topRight.horizontal *
+               std::min(topEdgeRadiiScale, rightEdgeRadiiScale))},
       .bottomLeft =
           {static_cast<float>(
-               radii.bottomLeft.horizontal *
-               std::min(insetsScale.bottom, insetsScale.left)),
-           static_cast<float>(
                radii.bottomLeft.vertical *
-               std::min(insetsScale.bottom, insetsScale.left))},
+               std::min(bottomEdgeRadiiScale, leftEdgeRadiiScale)),
+           static_cast<float>(
+               radii.bottomLeft.horizontal *
+               std::min(bottomEdgeRadiiScale, leftEdgeRadiiScale))},
       .bottomRight =
           {static_cast<float>(
-               radii.bottomRight.horizontal *
-               std::min(insetsScale.bottom, insetsScale.right)),
-           static_cast<float>(
                radii.bottomRight.vertical *
-               std::min(insetsScale.bottom, insetsScale.right))},
+               std::min(bottomEdgeRadiiScale, rightEdgeRadiiScale)),
+           static_cast<float>(
+               radii.bottomRight.horizontal *
+               std::min(bottomEdgeRadiiScale, rightEdgeRadiiScale))},
   };
 }
 
@@ -502,17 +492,17 @@ static BorderRadii radiiPercentToPoint(
     const Size& size) {
   return BorderRadii{
       .topLeft =
-          {radii.topLeft.resolve(size.width),
-           radii.topLeft.resolve(size.height)},
+          {radii.topLeft.resolve(size.height),
+           radii.topLeft.resolve(size.width)},
       .topRight =
-          {radii.topRight.resolve(size.width),
-           radii.topRight.resolve(size.height)},
+          {radii.topRight.resolve(size.height),
+           radii.topRight.resolve(size.width)},
       .bottomLeft =
-          {radii.bottomLeft.resolve(size.width),
-           radii.bottomLeft.resolve(size.height)},
+          {radii.bottomLeft.resolve(size.height),
+           radii.bottomLeft.resolve(size.width)},
       .bottomRight =
-          {radii.bottomRight.resolve(size.width),
-           radii.bottomRight.resolve(size.height)},
+          {radii.bottomRight.resolve(size.height),
+           radii.bottomRight.resolve(size.width)},
   };
 }
 
@@ -569,7 +559,7 @@ Transform BaseViewProps::resolveTransform(
     for (const auto& operation : transform.operations) {
       transformMatrix = transformMatrix *
           Transform::FromTransformOperation(
-                            operation, layoutMetrics.frame.size);
+                            operation, layoutMetrics.frame.size, transform);
     }
   }
 

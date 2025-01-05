@@ -25,7 +25,7 @@ target_include_directories(jsinspector PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(jsinspector
         folly_runtime
         glog
+        jsinspector_tracing
         react_featureflags
         runtimeexecutor
-        reactperflogger
 )

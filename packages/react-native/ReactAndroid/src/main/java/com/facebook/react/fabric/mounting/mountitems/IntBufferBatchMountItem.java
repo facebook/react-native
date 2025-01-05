@@ -153,15 +153,9 @@ final class IntBufferBatchMountItem implements BatchMountItem {
           int width = mIntBuffer[i++];
           int height = mIntBuffer[i++];
           int displayType = mIntBuffer[i++];
-
-          if (ReactNativeFeatureFlags.setAndroidLayoutDirection()) {
-            int layoutDirection = mIntBuffer[i++];
-            surfaceMountingManager.updateLayout(
-                reactTag, parentTag, x, y, width, height, displayType, layoutDirection);
-          } else {
-            surfaceMountingManager.updateLayout(
-                reactTag, parentTag, x, y, width, height, displayType, 0);
-          }
+          int layoutDirection = mIntBuffer[i++];
+          surfaceMountingManager.updateLayout(
+              reactTag, parentTag, x, y, width, height, displayType, layoutDirection);
         } else if (type == INSTRUCTION_UPDATE_PADDING) {
           surfaceMountingManager.updatePadding(
               mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++], mIntBuffer[i++]);
@@ -251,8 +245,7 @@ final class IntBufferBatchMountItem implements BatchMountItem {
             int w = mIntBuffer[i++];
             int h = mIntBuffer[i++];
             int displayType = mIntBuffer[i++];
-            int layoutDirection =
-                ReactNativeFeatureFlags.setAndroidLayoutDirection() ? mIntBuffer[i++] : 0;
+            int layoutDirection = mIntBuffer[i++];
             s.append(
                 String.format(
                     "UPDATE LAYOUT [%d]->[%d]: x:%d y:%d w:%d h:%d displayType:%d layoutDirection:"

@@ -26,18 +26,10 @@ const isEventLoopEnabled = (() => {
     return false;
   }
 
-  if (NativeReactNativeFeatureFlags.disableEventLoopOnBridgeless == null) {
-    // Flags not unified yet
-    return (
-      ReactNativeFeatureFlags.useModernRuntimeScheduler() &&
-      ReactNativeFeatureFlags.enableMicrotasks()
-    );
-  } else {
-    return (
-      ReactNativeFeatureFlags.enableBridgelessArchitecture() &&
-      !ReactNativeFeatureFlags.disableEventLoopOnBridgeless()
-    );
-  }
+  return (
+    ReactNativeFeatureFlags.enableBridgelessArchitecture() &&
+    !ReactNativeFeatureFlags.disableEventLoopOnBridgeless()
+  );
 })();
 
 // In bridgeless mode, timers are host functions installed from cpp.

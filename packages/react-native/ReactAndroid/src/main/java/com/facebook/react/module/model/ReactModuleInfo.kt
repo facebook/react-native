@@ -14,15 +14,21 @@ import com.facebook.react.turbomodule.core.interfaces.TurboModule
  * so Java modules don't have to be instantiated at React Native start up.
  */
 public class ReactModuleInfo(
-    private val _name: String,
-    private val _className: String,
-    private val _canOverrideExistingModule: Boolean,
-    private val _needsEagerInit: Boolean,
+    @get:JvmName("name") public val name: String,
+    @get:JvmName("className") public val className: String,
+    @get:JvmName("canOverrideExistingModule") public val canOverrideExistingModule: Boolean,
+    @get:JvmName("needsEagerInit") public val needsEagerInit: Boolean,
     public val isCxxModule: Boolean,
     public val isTurboModule: Boolean
 ) {
 
-  @Deprecated("use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)]")
+  @Deprecated(
+      "This constructor is deprecated and will be removed in the future. Use ReactModuleInfo(String, String, boolean, boolean, boolean, boolean)]",
+      replaceWith =
+          ReplaceWith(
+              expression =
+                  "ReactModuleInfo(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule)"),
+      level = DeprecationLevel.WARNING)
   public constructor(
       name: String,
       className: String,
@@ -32,17 +38,6 @@ public class ReactModuleInfo(
       isCxxModule: Boolean,
       isTurboModule: Boolean
   ) : this(name, className, canOverrideExistingModule, needsEagerInit, isCxxModule, isTurboModule)
-
-  public fun name(): String = _name
-
-  public fun className(): String = _className
-
-  public fun canOverrideExistingModule(): Boolean = _canOverrideExistingModule
-
-  public fun needsEagerInit(): Boolean = _needsEagerInit
-
-  @Deprecated("this is hardcoded to return true, regardless if the module has constants or not")
-  public fun hasConstants(): Boolean = true
 
   public companion object {
     /**

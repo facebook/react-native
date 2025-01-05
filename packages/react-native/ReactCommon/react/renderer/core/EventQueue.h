@@ -19,8 +19,6 @@
 
 namespace facebook::react {
 
-class RuntimeScheduler;
-
 /*
  * Event Queue synchronized with given Event Beat and dispatching event
  * using given Event Pipe.

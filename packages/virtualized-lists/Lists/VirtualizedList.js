@@ -687,7 +687,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     if (this._isNestedWithSameOrientation()) {
       this.context.unregisterAsNestedChild({ref: this});
     }
-    this._updateCellsToRenderBatcher.dispose({abort: true});
+    this._updateCellsToRenderBatcher.dispose();
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.dispose();
     });
@@ -1009,6 +1009,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           cells.push(
             <View
               key={`$spacer-${section.first}`}
+              // $FlowFixMe[incompatible-type]
               style={{[spacerKey]: spacerSize}}
             />,
           );
@@ -1653,6 +1654,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     };
   };
 
+  unstable_onScroll(e: Object) {
+    this._onScroll(e);
+  }
+
   _onScroll = (e: Object) => {
     this._nestedChildLists.forEach(childList => {
       childList._onScroll(e);
@@ -1758,7 +1763,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       this._hiPriInProgress = true;
       // Don't worry about interactions when scrolling quickly; focus on filling content as fast
       // as possible.
-      this._updateCellsToRenderBatcher.dispose({abort: true});
+      this._updateCellsToRenderBatcher.dispose();
       this._updateCellsToRender();
       return;
     } else {
@@ -1805,6 +1810,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     return hiPri;
   }
 
+  unstable_onScrollBeginDrag(e: ScrollEvent) {
+    this._onScrollBeginDrag(e);
+  }
+
   _onScrollBeginDrag = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
       childList._onScrollBeginDrag(e);
@@ -1815,6 +1824,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this._hasInteracted = true;
     this.props.onScrollBeginDrag && this.props.onScrollBeginDrag(e);
   };
+
+  unstable_onScrollEndDrag(e: ScrollEvent) {
+    this._onScrollEndDrag(e);
+  }
 
   _onScrollEndDrag = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
@@ -1828,12 +1841,20 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this.props.onScrollEndDrag && this.props.onScrollEndDrag(e);
   };
 
+  unstable_onMomentumScrollBegin(e: ScrollEvent) {
+    this._onMomentumScrollBegin(e);
+  }
+
   _onMomentumScrollBegin = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {
       childList._onMomentumScrollBegin(e);
     });
     this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(e);
   };
+
+  unstable_onMomentumScrollEnd(e: ScrollEvent) {
+    this._onMomentumScrollEnd(e);
+  }
 
   _onMomentumScrollEnd = (e: ScrollEvent): void => {
     this._nestedChildLists.forEach(childList => {

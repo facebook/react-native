@@ -20,6 +20,7 @@
 #import <React/RCTLog.h>
 #import <React/RCTPackagerClient.h>
 #import <React/RCTReconnectingWebSocket.h>
+#import <React/RCTReloadCommand.h>
 #import <React/RCTUtils.h>
 
 #if RCT_DEV
@@ -44,6 +45,7 @@ struct Registration {
   NSString *_serverHostPortForSocket;
   NSString *_serverSchemeForSocket;
   id _bundleURLChangeObserver;
+  id _reloadWithPotentiallyNewURLObserver;
   uint32_t _nextToken;
   std::vector<Registration<RCTNotificationHandler>> _notificationRegistrations;
   std::vector<Registration<RCTRequestHandler>> _requestRegistrations;
@@ -73,6 +75,13 @@ struct Registration {
     RCTPackagerConnection *const __weak weakSelf = self;
     _bundleURLChangeObserver =
         [[NSNotificationCenter defaultCenter] addObserverForName:RCTBundleURLProviderUpdatedNotification
+                                                          object:nil
+                                                           queue:[NSOperationQueue mainQueue]
+                                                      usingBlock:^(NSNotification *_Nonnull __unused note) {
+                                                        [weakSelf bundleURLSettingsChanged];
+                                                      }];
+    _reloadWithPotentiallyNewURLObserver =
+        [[NSNotificationCenter defaultCenter] addObserverForName:RCTTriggerReloadCommandNotification
                                                           object:nil
                                                            queue:[NSOperationQueue mainQueue]
                                                       usingBlock:^(NSNotification *_Nonnull __unused note) {
@@ -119,6 +128,8 @@ static RCTReconnectingWebSocket *socketForLocation(NSString *const serverHostPor
   }
   [[NSNotificationCenter defaultCenter] removeObserver:_bundleURLChangeObserver];
   _bundleURLChangeObserver = nil;
+  [[NSNotificationCenter defaultCenter] removeObserver:_reloadWithPotentiallyNewURLObserver];
+  _reloadWithPotentiallyNewURLObserver = nil;
   _socketConnected = NO;
   [_socket stop];
   _socket = nil;

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-@file:Suppress("DEPRECATION") // As we depend on ReactFeatureFlags still
+@file:Suppress("DEPRECATION") // GenericDraweeView is deprecated
 
 package com.facebook.react.views.image
 
@@ -270,7 +270,7 @@ public class ReactImageView(
       tmpSources.add(getTransparentBitmapImageSource(context))
     } else if (sources.size() == 1) {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
-      val source = sources.getMap(0)
+      val source = checkNotNull(sources.getMap(0))
       val cacheControl = computeCacheControl(source.getString("cache"))
       var imageSource = ImageSource(context, source.getString("uri"), cacheControl = cacheControl)
       if (Uri.EMPTY == imageSource.uri) {
@@ -280,7 +280,7 @@ public class ReactImageView(
       tmpSources.add(imageSource)
     } else {
       for (idx in 0 until sources.size()) {
-        val source = sources.getMap(idx)
+        val source = sources.getMap(idx) ?: continue
         val cacheControl = computeCacheControl(source.getString("cache"))
         var imageSource =
             ImageSource(
@@ -312,6 +312,7 @@ public class ReactImageView(
       null,
       "default" -> ImageCacheControl.DEFAULT
       "reload" -> ImageCacheControl.RELOAD
+      "force-cache" -> ImageCacheControl.FORCE_CACHE
       "only-if-cached" -> ImageCacheControl.ONLY_IF_CACHED
       else -> ImageCacheControl.DEFAULT
     }

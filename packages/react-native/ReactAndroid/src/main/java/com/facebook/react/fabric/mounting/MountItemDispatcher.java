@@ -116,9 +116,7 @@ public class MountItemDispatcher {
       return;
     }
 
-    if (ReactNativeFeatureFlags.forceBatchingMountItemsOnAndroid()) {
-      mInDispatch = true;
-    }
+    mInDispatch = true;
 
     try {
       dispatchMountItems();

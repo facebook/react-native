@@ -3,13 +3,13 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
+    "react": "18.3.1",
     "react-native": "1000.0.0"
   },
   "devDependencies": {
     "@monorepo/pkg-a": "0.0.1",
     "@monorepo/pkg-c": "0.0.0",
-    "@types/react": "^18.2.6",
-    "@types/react-test-renderer": "^18.0.0"
+    "@types/react": "^19.0.0",
+    "@types/react-test-renderer": "^19.0.0"
   }
 }

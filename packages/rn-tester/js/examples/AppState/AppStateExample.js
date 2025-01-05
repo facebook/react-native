@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {AppStateValues} from 'react-native/Libraries/AppState/AppState';
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
@@ -159,4 +160,4 @@ exports.examples = [
       return <AppStateSubscription detectEvents={true} />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

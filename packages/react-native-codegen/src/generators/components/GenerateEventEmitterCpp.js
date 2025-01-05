@@ -104,7 +104,7 @@ function generateSetter(
 ) {
   const eventChain = usingEvent
     ? `$event.${[...propertyParts, propertyName].join('.')}`
-    : [propertyParts, propertyName].join('.');
+    : [...propertyParts, propertyName].join('.');
   return `${variableName}.setProperty(runtime, "${propertyName}", ${valueMapper(
     eventChain,
   )});`;
@@ -157,7 +157,7 @@ function generateArraySetter(
 ): string {
   const eventChain = usingEvent
     ? `$event.${[...propertyParts, propertyName].join('.')}`
-    : [propertyParts, propertyName].join('.');
+    : [...propertyParts, propertyName].join('.');
   const indexVar = `${propertyName}Index`;
   const innerLoopVar = `${propertyName}Value`;
   return `
@@ -207,7 +207,7 @@ function handleArrayElementType(
         loopLocalVariable,
         val => `jsi::valueFromDynamic(runtime, ${val})`,
       );
-    case 'StringEnumTypeAnnotation':
+    case 'StringLiteralUnionTypeAnnotation':
       return setValueAtIndex(
         propertyName,
         indexVariable,
@@ -320,7 +320,7 @@ function generateSetters(
             usingEvent,
             prop => `jsi::valueFromDynamic(runtime, ${prop})`,
           );
-        case 'StringEnumTypeAnnotation':
+        case 'StringLiteralUnionTypeAnnotation':
           return generateSetter(
             parentPropertyName,
             eventProperty.name,

@@ -347,7 +347,32 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  __block BOOL textDidWrap = NO;
+  [layoutManager
+      enumerateLineFragmentsForGlyphRange:glyphRange
+                               usingBlock:^(
+                                   CGRect overallRect,
+                                   CGRect usedRect,
+                                   NSTextContainer *_Nonnull usedTextContainer,
+                                   NSRange lineGlyphRange,
+                                   BOOL *_Nonnull stop) {
+                                 NSRange range = [layoutManager characterRangeForGlyphRange:lineGlyphRange
+                                                                           actualGlyphRange:nil];
+                                 NSUInteger lastCharacterIndex = range.location + range.length - 1;
+                                 BOOL endsWithNewLine =
+                                     [textStorage.string characterAtIndex:lastCharacterIndex] == '\n';
+                                 if (!endsWithNewLine && textStorage.string.length > lastCharacterIndex + 1) {
+                                   textDidWrap = YES;
+                                   *stop = YES;
+                                 }
+                               }];
+
   CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
+
+  if (textDidWrap) {
+    size.width = textContainer.size.width;
+  }
 
   size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
 

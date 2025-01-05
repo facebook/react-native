@@ -80,6 +80,7 @@ function generateSpecFromInMemorySchema(
       schema,
       outputDirectory,
       packageName,
+      assumeNonnull: platform === 'ios',
       useLocalIncludePaths,
     },
     {

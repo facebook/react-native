@@ -118,16 +118,16 @@ class RNTesterPlatformTestEventRecorder {
             (event, eventType) =>
               callback && callback(event, eventType, targetName),
           );
+        // $FlowFixMe[incompatible-call]
         const eventListenerProps = this.relevantEvents.reduce(
-          (acc, eventName) => {
+          (acc: ViewProps, eventName) => {
             const eventPropName =
               'on' + eventName[0].toUpperCase() + eventName.slice(1);
             return {
               ...acc,
-              // $FlowFixMe[missing-local-annot]
-              [eventPropName]: e => {
+              [eventPropName]: (e => {
                 recordedEventHandler(e, eventName);
-              },
+              }) as $FlowFixMe,
             };
           },
           {},

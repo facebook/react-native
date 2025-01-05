@@ -12,6 +12,7 @@
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type {EndCallback} from '../animations/Animation';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 import type AnimatedValue from './AnimatedValue';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
@@ -31,8 +32,9 @@ export default class AnimatedTracking extends AnimatedNode {
     animationClass: any,
     animationConfig: Object,
     callback?: ?EndCallback,
+    config?: ?AnimatedNodeConfig,
   ) {
-    super();
+    super(config);
     this._value = value;
     this._parent = parent;
     this._animationClass = animationClass;
@@ -95,6 +97,7 @@ export default class AnimatedTracking extends AnimatedNode {
       animationConfig,
       toValue: this._parent.__getNativeTag(),
       value: this._value.__getNativeTag(),
+      debugID: this.__getDebugID(),
     };
   }
 }

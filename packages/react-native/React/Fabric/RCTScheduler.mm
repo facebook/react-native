@@ -7,7 +7,7 @@
 
 #import "RCTScheduler.h"
 
-#import <cxxreact/SystraceSection.h>
+#import <cxxreact/TraceSection.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/animations/LayoutAnimationDriver.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>

@@ -34,7 +34,7 @@
     "nullthrows": "^1.1.1"
   },
   "peerDependencies": {
-    "react": "19.0.0-rc-fb9a90fa48-20240614",
+    "react": "19.0.0",
     "react-native": "*"
   },
   "codegenConfig": {
@@ -43,6 +43,11 @@
     "jsSrcsDir": ".",
     "android": {
       "javaPackageName": "com.facebook.fbreact.specs"
+    },
+    "ios": {
+      "componentProvider": {
+        "RNTMyNativeView": "RNTMyNativeViewComponentView"
+      }
     }
   },
   "devDependencies": {

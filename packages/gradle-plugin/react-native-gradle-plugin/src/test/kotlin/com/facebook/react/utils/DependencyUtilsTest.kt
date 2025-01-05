@@ -57,23 +57,6 @@ class DependencyUtilsTest {
   }
 
   @Test
-  fun configureRepositories_containsJscLocalMavenRepo() {
-    val projectFolder = tempFolder.newFolder()
-    val reactNativeDir = tempFolder.newFolder("react-native")
-    val jscAndroidDir = tempFolder.newFolder("jsc-android")
-    val repositoryURI = URI.create("file://${jscAndroidDir}/dist")
-    val project = createProject(projectFolder)
-
-    configureRepositories(project, reactNativeDir)
-
-    assertThat(
-            project.repositories.firstOrNull {
-              it is MavenArtifactRepository && it.url == repositoryURI
-            })
-        .isNotNull()
-  }
-
-  @Test
   fun configureRepositories_containsMavenCentral() {
     val repositoryURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()

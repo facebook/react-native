@@ -207,7 +207,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = ViewProps.POINTER_EVENTS)
   public open fun setPointerEvents(view: ReactViewGroup, pointerEventsStr: String?) {
-    view.pointerEvents = PointerEvents.parsePointerEvents(pointerEventsStr)
+    view.setPointerEvents(PointerEvents.parsePointerEvents(pointerEventsStr))
   }
 
   @ReactProp(name = "nativeBackgroundAndroid")
@@ -303,7 +303,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
   @ReactProp(name = ViewProps.OVERFLOW)
   public open fun setOverflow(view: ReactViewGroup, overflow: String?) {
-    view.overflow = overflow
+    view.setOverflow(overflow)
   }
 
   @ReactProp(name = "backfaceVisibility")

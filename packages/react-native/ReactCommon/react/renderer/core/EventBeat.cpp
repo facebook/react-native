@@ -22,7 +22,7 @@ void EventBeat::request() const {
   react_native_assert(
       beatCallback_ &&
       "Unexpected state: EventBeat::setBeatCallback was not called before EventBeat::request.");
-  isRequested_ = true;
+  isEventBeatRequested_ = true;
 }
 
 void EventBeat::requestSynchronous() const {
@@ -38,11 +38,16 @@ void EventBeat::setBeatCallback(BeatCallback beatCallback) {
 }
 
 void EventBeat::induce() const {
-  if (!isRequested_ || isBeatCallbackScheduled_) {
+  if (!isEventBeatRequested_) {
     return;
   }
 
-  isRequested_ = false;
+  isEventBeatRequested_ = false;
+
+  if (isBeatCallbackScheduled_) {
+    return;
+  }
+
   isBeatCallbackScheduled_ = true;
 
   auto beat = std::function<void(jsi::Runtime&)>(

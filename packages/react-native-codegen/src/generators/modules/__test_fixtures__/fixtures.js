@@ -163,11 +163,17 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'ONE',
-              value: '1',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 1,
+              },
             },
             {
               name: 'TWO',
-              value: '2',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 2,
+              },
             },
           ],
         },
@@ -178,15 +184,24 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'POINT_ZERO',
-              value: '0.0',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 0.0,
+              },
             },
             {
               name: 'POINT_ONE',
-              value: '0.1',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 0.1,
+              },
             },
             {
               name: 'POINT_TWO',
-              value: '0.2',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 0.2,
+              },
             },
           ],
         },
@@ -197,11 +212,17 @@ const SIMPLE_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'HELLO',
-              value: 'hello',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'hello',
+              },
             },
             {
               name: 'GoodBye',
-              value: 'goodbye',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'goodbye',
+              },
             },
           ],
         },
@@ -1717,6 +1738,7 @@ const REAL_MODULE_EXAMPLE: SchemaType = {
 
 const CXX_ONLY_NATIVE_MODULES: SchemaType = {
   modules: {
+    // $FlowFixMe[incompatible-type]
     NativeSampleTurboModule: {
       type: 'NativeModule',
       aliasMap: {
@@ -1925,11 +1947,17 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'IA',
-              value: '23',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 23,
+              },
             },
             {
               name: 'IB',
-              value: '42',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 42,
+              },
             },
           ],
         },
@@ -1940,11 +1968,17 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'FA',
-              value: '1.23',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 1.23,
+              },
             },
             {
               name: 'FB',
-              value: '4.56',
+              value: {
+                type: 'NumberLiteralTypeAnnotation',
+                value: 4.56,
+              },
             },
           ],
         },
@@ -1955,11 +1989,17 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'NA',
-              value: 'NA',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'NA',
+              },
             },
             {
               name: 'NB',
-              value: 'NB',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 'NB',
+              },
             },
           ],
         },
@@ -1970,11 +2010,17 @@ const CXX_ONLY_NATIVE_MODULES: SchemaType = {
           members: [
             {
               name: 'SA',
-              value: 's---a',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 's---a',
+              },
             },
             {
               name: 'SB',
-              value: 's---b',
+              value: {
+                type: 'StringLiteralTypeAnnotation',
+                value: 's---b',
+              },
             },
           ],
         },
@@ -2672,7 +2718,7 @@ const UNION_MODULE: SchemaType = {
   },
 };
 
-const STRING_LITERALS = {
+const STRING_LITERALS: SchemaType = {
   modules: {
     NativeSampleTurboModule: {
       type: 'NativeModule',

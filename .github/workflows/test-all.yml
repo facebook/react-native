@@ -169,6 +169,14 @@ jobs:
       matrix:
         jsengine: [Hermes, JSC]
         architecture: [NewArch, OldArch]
+        flavor: [Debug, Release]
+        exclude: # We don't want to test the Old Arch in Release for E2E
+          - jsengine: Hermes
+            architecture: OldArch
+            flavor: Release
+          - jsengine: JSC
+            architecture: OldArch
+            flavor: Release
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -181,12 +189,13 @@ jobs:
           use-frameworks: StaticLibraries
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
+          flavor: ${{ matrix.flavor }}
 
   test_e2e_ios_rntester:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
     runs-on: macos-13-large
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
+      [test_ios_rntester]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -200,21 +209,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run it
-        uses: ./.github/actions/test-ios-rntester
+      - name: Download App
+        uses: actions/download-artifact@v4
         with:
-          jsengine: ${{ matrix.jsengine }}
-          architecture: ${{ matrix.architecture }}
-          run-unit-tests: "false"
-          use-frameworks: StaticLibraries
-          hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
-          react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
-          run-e2e-tests: "true"
-          flavor: ${{ matrix.flavor }}
+          name: RNTesterApp-${{ matrix.architecture }}-${{ matrix.jsengine }}-${{ matrix.flavor }}
+          path: /tmp/RNTesterBuild/RNTester.app
+      - name: Check downloaded folder content
+        run: ls -lR /tmp/RNTesterBuild
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-ios
         with:
-          app-path: "/tmp/RNTesterBuild/Build/Products/${{ matrix.flavor }}-iphonesimulator/RNTester.app"
+          app-path: "/tmp/RNTesterBuild/RNTester.app"
           app-id: com.meta.RNTester.localDevelopment
           jsengine: ${{ matrix.jsengine }}
           maestro-flow: ./packages/rn-tester/.maestro/
@@ -233,6 +238,7 @@ jobs:
       matrix:
         jsengine: [Hermes, JSC]
         flavor: [Debug, Release]
+        architecture: [OldArch, NewArch]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -241,7 +247,7 @@ jobs:
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run yarn
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Setup ruby
         uses: ruby/setup-ruby@v1.170.0
         with:
@@ -277,7 +283,12 @@ jobs:
 
           cd /tmp/RNTestProject/ios
           bundle install
-          HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH bundle exec pod install
+          NEW_ARCH_ENABLED=1
+          if [[ ${{ matrix.architecture }} == "OldArch" ]]; then
+            echo "Disable the New Architecture"
+            NEW_ARCH_ENABLED=0
+          fi
+          HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
 
           xcodebuild \
             -scheme "RNTestProject" \
@@ -295,6 +306,7 @@ jobs:
           maestro-flow: ./scripts/e2e/.maestro/
           flavor: ${{ matrix.flavor }}
           working-directory: /tmp/RNTestProject
+          architecture: ${{ matrix.architecture }}
 
   test_e2e_android_templateapp:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
@@ -306,13 +318,14 @@ jobs:
       matrix:
         jsengine: [Hermes, JSC]
         flavor: [debug, release]
+        architecture: [OldArch, NewArch]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run yarn
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Set up JDK 17
         uses: actions/setup-java@v2
         with:
@@ -351,6 +364,11 @@ jobs:
           cd /tmp/RNTestProject
           echo "react.internal.mavenLocalRepo=$MAVEN_LOCAL" >> android/gradle.properties
 
+          if [[ ${{matrix.architecture}} == "OldArch" ]]; then
+            echo "Disabling the New Architecture"
+            sed -i 's/newArchEnabled=true/newArchEnabled=false/' android/gradle.properties
+          fi
+
           # Build
           cd android
           CAPITALIZED_FLAVOR=$(echo "${{ matrix.flavor }}" | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
@@ -358,6 +376,7 @@ jobs:
 
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
+        timeout-minutes: 60
         with:
           app-path: /tmp/RNTestProject/android/app/build/outputs/apk/${{ matrix.flavor }}/app-${{ matrix.flavor }}.apk
           app-id: com.rntestproject
@@ -366,6 +385,7 @@ jobs:
           install-java: 'false'
           flavor: ${{ matrix.flavor }}
           working-directory: /tmp/RNTestProject
+          architecture: ${{ matrix.architecture }}
 
   build_hermesc_linux:
     runs-on: ubuntu-latest
@@ -422,7 +442,7 @@ jobs:
 
   test_e2e_android_rntester:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
-    runs-on: ubuntu-latest
+    runs-on: 4-core-ubuntu
     needs: [build_android]
     strategy:
       fail-fast: false
@@ -435,7 +455,7 @@ jobs:
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Install node dependencies
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
@@ -445,6 +465,7 @@ jobs:
         run: ls -lR ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/
       - name: Run E2E Tests
         uses: ./.github/actions/maestro-android
+        timeout-minutes: 60
         with:
           app-path: ./packages/rn-tester/android/app/build/outputs/apk/${{ matrix.jsengine }}/${{ matrix.flavor }}/app-${{ matrix.jsengine }}-x86-${{ matrix.flavor }}.apk
           app-id: com.facebook.react.uiapp
@@ -517,7 +538,7 @@ jobs:
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
       - name: Run yarn install
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application
         shell: bash
         run: node ./scripts/e2e/init-project-e2e.js --useHelloWorld --pathToLocalReactNative "$GITHUB_WORKSPACE/build/$(cat build/react-native-package-version)"

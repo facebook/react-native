@@ -11,7 +11,7 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/ErrorUtils.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <utility>
 

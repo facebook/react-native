@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b7f79cb934f8bf2519439339fc7562d3>>
+ * @generated SignedSource<<cba7d5b72ece69330b97ba0c615502c5>>
  */
 
 /**
@@ -35,12 +35,6 @@ public object ReactNativeFeatureFlags {
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
 
   /**
-   * Adds support for recursively processing commits that mount synchronously (Android only).
-   */
-  @JvmStatic
-  public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean = accessor.allowRecursiveCommitsWithSynchronousMountOnAndroid()
-
-  /**
    * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
    */
   @JvmStatic
@@ -57,6 +51,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun disableMountItemReorderingAndroid(): Boolean = accessor.disableMountItemReorderingAndroid()
+
+  /**
+   * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
+   */
+  @JvmStatic
+  public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
 
   /**
    * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
@@ -113,10 +113,10 @@ public object ReactNativeFeatureFlags {
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
 
   /**
-   * When the app is completely migrated to Fabric, set this flag to true to disable parts of Paper infrastructure that are not needed anymore but consume memory and CPU. Specifically, UIViewOperationQueue and EventDispatcherImpl will no longer work as they will not subscribe to ReactChoreographer for updates.
+   * Synchronise the view command dispatching with mounting of new transaction
    */
   @JvmStatic
-  public fun enableFabricRendererExclusively(): Boolean = accessor.enableFabricRendererExclusively()
+  public fun enableFixForViewCommandRace(): Boolean = accessor.enableFixForViewCommandRace()
 
   /**
    * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
@@ -129,6 +129,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableIOSViewClipToPaddingBox(): Boolean = accessor.enableIOSViewClipToPaddingBox()
+
+  /**
+   * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
+   */
+  @JvmStatic
+  public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -197,6 +203,12 @@ public object ReactNativeFeatureFlags {
   public fun excludeYogaFromRawProps(): Boolean = accessor.excludeYogaFromRawProps()
 
   /**
+   * Fixes a bug in Differentiator where parent views may be referenced before they're created
+   */
+  @JvmStatic
+  public fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = accessor.fixDifferentiatorEmittingUpdatesWithWrongParentTag()
+
+  /**
    * Uses the default event priority instead of the discreet event priority by default when dispatching events from Fabric to React.
    */
   @JvmStatic
@@ -207,18 +219,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = accessor.fixMountingCoordinatorReportedPendingTransactionsOnAndroid()
-
-  /**
-   * Forces the mounting layer on Android to always batch mount items instead of dispatching them immediately. This might fix some crashes related to synchronous state updates, where some views dispatch state updates during mount.
-   */
-  @JvmStatic
-  public fun forceBatchingMountItemsOnAndroid(): Boolean = accessor.forceBatchingMountItemsOnAndroid()
-
-  /**
-   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
-   */
-  @JvmStatic
-  public fun fuseboxEnabledDebug(): Boolean = accessor.fuseboxEnabledDebug()
 
   /**
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
@@ -243,12 +243,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun loadVectorDrawablesOnImages(): Boolean = accessor.loadVectorDrawablesOnImages()
-
-  /**
-   * Propagate layout direction to Android views.
-   */
-  @JvmStatic
-  public fun setAndroidLayoutDirection(): Boolean = accessor.setAndroidLayoutDirection()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
@@ -291,6 +285,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useOptimizedEventBatchingOnAndroid(): Boolean = accessor.useOptimizedEventBatchingOnAndroid()
+
+  /**
+   * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
+   */
+  @JvmStatic
+  public fun useRawPropsJsiValue(): Boolean = accessor.useRawPropsJsiValue()
 
   /**
    * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.

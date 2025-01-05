@@ -265,6 +265,35 @@ export interface Spec extends TurboModule {
 export default TurboModuleRegistry.getEnforcing<Spec>('MixedValuesEnumNativeModule');
 `;
 
+const NUMERIC_VALUES_ENUM_NATIVE_MODULE = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export enum SomeEnum {
+  NUM = 1,
+  NEGATIVE = -1,
+  SUBFACTORIAL = !5,
+}
+
+export interface Spec extends TurboModule {
+  +getEnums: (a: SomeEnum) => string;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('NumericValuesEnumNativeModule');
+`;
+
 const MAP_WITH_EXTRA_KEYS_NATIVE_MODULE = `
 /**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -304,5 +333,6 @@ module.exports = {
   TWO_NATIVE_EXTENDING_TURBO_MODULE,
   EMPTY_ENUM_NATIVE_MODULE,
   MIXED_VALUES_ENUM_NATIVE_MODULE,
+  NUMERIC_VALUES_ENUM_NATIVE_MODULE,
   MAP_WITH_EXTRA_KEYS_NATIVE_MODULE,
 };

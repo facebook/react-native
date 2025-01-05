@@ -17,4 +17,6 @@ public object InspectorFlags {
   }
 
   @DoNotStrip @JvmStatic public external fun getFuseboxEnabled(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun getIsProfilingBuild(): Boolean
 }

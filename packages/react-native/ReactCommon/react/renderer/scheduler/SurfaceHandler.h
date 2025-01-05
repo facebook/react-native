@@ -62,6 +62,14 @@ class SurfaceHandler {
    * Can be constructed anytime with a `moduleName` and a `surfaceId`.
    */
   SurfaceHandler(const std::string& moduleName, SurfaceId surfaceId) noexcept;
+
+  /*
+   * Can be constructed anytime with a `surfaceId`.
+   * As the module name is not passed, the surface will have to be rendered
+   * manually by the caller (AppRegistry will not be called).
+   */
+  SurfaceHandler(SurfaceId surfaceId) noexcept;
+
   virtual ~SurfaceHandler() noexcept;
 
   /*

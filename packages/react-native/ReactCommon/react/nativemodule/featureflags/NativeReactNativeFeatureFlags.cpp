@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3a530491b7f90f1c0a1e75a6d618f586>>
+ * @generated SignedSource<<f39f57b7aafbbea465790baac247f548>>
  */
 
 /**
@@ -49,18 +49,6 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
   return false;
 }
 
-bool NativeReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop(
-    jsi::Runtime& /*runtime*/) {
-  // This flag is configured with `skipNativeAPI: true`.
-  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
-  return false;
-}
-
 bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
@@ -74,6 +62,11 @@ bool NativeReactNativeFeatureFlags::disableEventLoopOnBridgeless(
 bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
@@ -121,9 +114,9 @@ bool NativeReactNativeFeatureFlags::enableFabricRenderer(
   return ReactNativeFeatureFlags::enableFabricRenderer();
 }
 
-bool NativeReactNativeFeatureFlags::enableFabricRendererExclusively(
+bool NativeReactNativeFeatureFlags::enableFixForViewCommandRace(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableFabricRendererExclusively();
+  return ReactNativeFeatureFlags::enableFixForViewCommandRace();
 }
 
 bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
@@ -134,6 +127,11 @@ bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
 bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
+}
+
+bool NativeReactNativeFeatureFlags::enableImagePrefetchingAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
@@ -149,13 +147,6 @@ bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnIOS(
 bool NativeReactNativeFeatureFlags::enableLongTaskAPI(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableLongTaskAPI();
-}
-
-bool NativeReactNativeFeatureFlags::enableMicrotasks(
-    jsi::Runtime& /*runtime*/) {
-  // This flag is configured with `skipNativeAPI: true`.
-  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
-  return false;
 }
 
 bool NativeReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables(
@@ -198,6 +189,11 @@ bool NativeReactNativeFeatureFlags::excludeYogaFromRawProps(
   return ReactNativeFeatureFlags::excludeYogaFromRawProps();
 }
 
+bool NativeReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag();
+}
+
 bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndReact();
@@ -206,16 +202,6 @@ bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndR
 bool NativeReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::forceBatchingMountItemsOnAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::fuseboxEnabledDebug(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fuseboxEnabledDebug();
 }
 
 bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
@@ -238,11 +224,6 @@ bool NativeReactNativeFeatureFlags::loadVectorDrawablesOnImages(
   return ReactNativeFeatureFlags::loadVectorDrawablesOnImages();
 }
 
-bool NativeReactNativeFeatureFlags::setAndroidLayoutDirection(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::setAndroidLayoutDirection();
-}
-
 bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -263,13 +244,6 @@ bool NativeReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless(
   return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
 }
 
-bool NativeReactNativeFeatureFlags::useModernRuntimeScheduler(
-    jsi::Runtime& /*runtime*/) {
-  // This flag is configured with `skipNativeAPI: true`.
-  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
-  return false;
-}
-
 bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
@@ -283,6 +257,11 @@ bool NativeReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid(
 bool NativeReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::useRawPropsJsiValue(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useRawPropsJsiValue();
 }
 
 bool NativeReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate(

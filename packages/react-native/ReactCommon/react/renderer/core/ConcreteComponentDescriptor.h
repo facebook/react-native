@@ -46,8 +46,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteState = typename ShadowNodeT::ConcreteState;
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
-  ConcreteComponentDescriptor(const ComponentDescriptorParameters& parameters)
-      : ComponentDescriptor(parameters) {
+  explicit ConcreteComponentDescriptor(
+      const ComponentDescriptorParameters& parameters,
+      RawPropsParser&& rawPropsParser = {})
+      : ComponentDescriptor(parameters, std::move(rawPropsParser)) {
     rawPropsParser_.prepare<ConcreteProps>();
   }
 
@@ -183,5 +185,18 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
         shadowNode.getComponentHandle() == getComponentHandle());
   }
 };
+
+template <typename TManager>
+std::shared_ptr<TManager> getManagerByName(
+    std::shared_ptr<const ContextContainer>& contextContainer,
+    const char name[]) {
+  if (contextContainer) {
+    if (auto manager = contextContainer->find<std::shared_ptr<TManager>>(name);
+        manager.has_value()) {
+      return manager.value();
+    }
+  }
+  return std::make_shared<TManager>(contextContainer);
+}
 
 } // namespace facebook::react

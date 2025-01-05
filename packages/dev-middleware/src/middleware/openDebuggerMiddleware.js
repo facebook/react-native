@@ -72,12 +72,14 @@ export default function openDebuggerMiddleware({
         ...
       } = query;
 
-      const targets = inspectorProxy.getPageDescriptions().filter(
-        // Only use targets with better reloading support
-        app =>
-          app.title === LEGACY_SYNTHETIC_PAGE_TITLE ||
-          app.reactNative.capabilities?.nativePageReloads === true,
-      );
+      const targets = inspectorProxy
+        .getPageDescriptions(new URL(serverBaseUrl))
+        .filter(
+          // Only use targets with better reloading support
+          app =>
+            app.title === LEGACY_SYNTHETIC_PAGE_TITLE ||
+            app.reactNative.capabilities?.nativePageReloads === true,
+        );
 
       let target;
 

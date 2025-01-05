@@ -553,6 +553,48 @@ if (global.nativeLoggingHook) {
     assert: consoleAssertPolyfill,
   };
 
+  // TODO(T206796580): This was copy-pasted from ExceptionsManager.js
+  // Delete the copy there after the c++ pipeline is rolled out everywhere.
+  if (global.RN$useAlwaysAvailableJSErrorHandling === true) {
+    let originalConsoleError = console.error;
+    console.reportErrorsAsExceptions = true;
+    function stringifySafe(arg) {
+      return inspect(arg, {depth: 10}).replace(/\n\s*/g, ' ');
+    }
+    console.error = function (...args) {
+      originalConsoleError.apply(this, args);
+      if (!console.reportErrorsAsExceptions) {
+        return;
+      }
+      if (global.RN$inExceptionHandler?.()) {
+        return;
+      }
+      let error;
+
+      const firstArg = args[0];
+      if (firstArg?.stack) {
+        // RN$handleException will console.error this with high enough fidelity.
+        error = firstArg;
+      } else {
+        if (typeof firstArg === 'string' && firstArg.startsWith('Warning: ')) {
+          // React warnings use console.error so that a stack trace is shown, but
+          // we don't (currently) want these to show a redbox
+          return;
+        }
+        const message = args
+          .map(arg => (typeof arg === 'string' ? arg : stringifySafe(arg)))
+          .join(' ');
+
+        error = new Error(message);
+        error.name = 'console.error';
+      }
+
+      const isFatal = false;
+      const reportToConsole = false;
+      global.RN$handleException(error, isFatal, reportToConsole);
+    };
+  }
+
   Object.defineProperty(console, '_isPolyfilled', {
     value: true,
     enumerable: false,

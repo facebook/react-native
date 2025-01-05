@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
                                     stack:(nullable NSArray *)stack
                               exceptionId:(NSNumber *)exceptionId
                           extraDataAsJSON:(nullable NSString *)extraDataAsJSON;
+
+@optional
+- (NSDictionary<NSString *, id> *)decorateJSExceptionData:(NSDictionary<NSString *, id> *)exceptionData;
 @end
 
 @interface RCTExceptionsManager : NSObject <RCTBridgeModule>

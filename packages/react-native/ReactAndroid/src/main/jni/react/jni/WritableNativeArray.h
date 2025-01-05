@@ -36,6 +36,7 @@ struct WritableNativeArray
   void pushBoolean(jboolean value);
   void pushDouble(jdouble value);
   void pushInt(jint value);
+  void pushLong(jlong value);
   void pushString(jstring value);
   void pushNativeArray(ReadableNativeArray* otherArray);
   void pushNativeMap(ReadableNativeMap* map);

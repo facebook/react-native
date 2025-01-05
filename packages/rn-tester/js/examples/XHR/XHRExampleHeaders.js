@@ -10,8 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-const {StyleSheet, Text, TouchableHighlight, View} = require('react-native');
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 
 class XHRExampleHeaders extends React.Component {
   xhr: XMLHttpRequest;
@@ -94,7 +95,7 @@ class XHRExampleHeaders extends React.Component {
     return (
       <View>
         {button}
-        <Text>{this.state.headers}</Text>
+        <RNTesterText>{this.state.headers}</RNTesterText>
       </View>
     );
   }

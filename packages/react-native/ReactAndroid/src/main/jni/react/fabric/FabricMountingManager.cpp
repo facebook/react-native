@@ -11,10 +11,11 @@
 #include "MountItem.h"
 #include "StateWrapperImpl.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
+#include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/conversions.h>
 #include <react/renderer/mounting/MountingTransaction.h>
 #include <react/renderer/mounting/ShadowView.h>
@@ -31,7 +32,6 @@
 namespace facebook::react {
 
 FabricMountingManager::FabricMountingManager(
-    std::shared_ptr<const ReactNativeConfig>& config,
     jni::global_ref<JFabricUIManager::javaobject>& javaUIManager)
     : javaUIManager_(javaUIManager) {}
 
@@ -63,9 +63,7 @@ inline int getIntBufferSizeForType(CppMountItem::Type mountItemType) {
     case CppMountItem::Type::UpdatePadding:
       return 5; // tag, top, left, bottom, right
     case CppMountItem::Type::UpdateLayout:
-      return ReactNativeFeatureFlags::setAndroidLayoutDirection()
-          ? 8 // tag, parentTag, x, y, w, h, DisplayType, LayoutDirection
-          : 7; // tag, parentTag, x, y, w, h, DisplayType
+      return 8; // tag, parentTag, x, y, w, h, DisplayType, LayoutDirection
     case CppMountItem::Type::UpdateOverflowInset:
       return 5; // tag, left, top, right, bottom
     case CppMountItem::Undefined:
@@ -218,18 +216,26 @@ inline float scale(Float value, Float pointScaleFactor) {
 jni::local_ref<jobject> getProps(
     const ShadowView& oldShadowView,
     const ShadowView& newShadowView) {
-  auto componentName = newShadowView.componentName;
   // We calculate the diffing between the props of the last mounted ShadowTree
   // and the Props of the latest commited ShadowTree). ONLY for <View>
   // components when the "enablePropsUpdateReconciliationAndroid" feature flag
   // is enabled.
+  auto* oldProps = oldShadowView.props.get();
+  auto* newProps = newShadowView.props.get();
   if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() &&
-      strcmp(componentName, "View") == 0) {
-    const Props* oldProps = oldShadowView.props.get();
-    auto diffProps = newShadowView.props->getDiffProps(oldProps);
-    return ReadableNativeMap::newObjectCxxArgs(diffProps);
+      strcmp(newShadowView.componentName, "View") == 0) {
+    return ReadableNativeMap::newObjectCxxArgs(
+        newProps->getDiffProps(oldProps));
   }
-  return ReadableNativeMap::newObjectCxxArgs(newShadowView.props->rawProps);
+  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+    if (oldProps == nullptr) {
+      return ReadableNativeMap::newObjectCxxArgs(newProps->rawProps);
+    } else {
+      return ReadableNativeMap::newObjectCxxArgs(
+          diffDynamicProps(oldProps->rawProps, newProps->rawProps));
+    }
+  }
+  return ReadableNativeMap::newObjectCxxArgs(newProps->rawProps);
 }
 
 struct InstructionBuffer {
@@ -322,18 +328,14 @@ inline void writeInsertMountItem(
     InstructionBuffer& buffer,
     const CppMountItem& mountItem) {
   buffer.writeIntArray(std::array<int, 3>{
-      mountItem.newChildShadowView.tag,
-      mountItem.parentShadowView.tag,
-      mountItem.index});
+      mountItem.newChildShadowView.tag, mountItem.parentTag, mountItem.index});
 }
 
 inline void writeRemoveMountItem(
     InstructionBuffer& buffer,
     const CppMountItem& mountItem) {
   buffer.writeIntArray(std::array<int, 3>{
-      mountItem.oldChildShadowView.tag,
-      mountItem.parentShadowView.tag,
-      mountItem.index});
+      mountItem.oldChildShadowView.tag, mountItem.parentTag, mountItem.index});
 }
 
 inline void writeUpdatePropsMountItem(
@@ -377,26 +379,15 @@ inline void writeUpdateLayoutMountItem(
   int w = round(scale(frame.size.width, pointScaleFactor));
   int h = round(scale(frame.size.height, pointScaleFactor));
 
-  if (ReactNativeFeatureFlags::setAndroidLayoutDirection()) {
-    buffer.writeIntArray(std::array<int, 8>{
-        mountItem.newChildShadowView.tag,
-        mountItem.parentShadowView.tag,
-        x,
-        y,
-        w,
-        h,
-        toInt(layoutMetrics.displayType),
-        toInt(layoutMetrics.layoutDirection)});
-  } else {
-    buffer.writeIntArray(std::array<int, 7>{
-        mountItem.newChildShadowView.tag,
-        mountItem.parentShadowView.tag,
-        x,
-        y,
-        w,
-        h,
-        toInt(layoutMetrics.displayType)});
-  }
+  buffer.writeIntArray(std::array<int, 8>{
+      mountItem.newChildShadowView.tag,
+      mountItem.parentTag,
+      x,
+      y,
+      w,
+      h,
+      toInt(layoutMetrics.displayType),
+      toInt(layoutMetrics.layoutDirection)});
 }
 
 inline void writeUpdateEventEmitterMountItem(
@@ -455,7 +446,7 @@ inline void writeUpdateOverflowInsetMountItem(
 
 void FabricMountingManager::executeMount(
     const MountingTransaction& transaction) {
-  SystraceSection section("FabricMountingManager::executeMount");
+  TraceSection section("FabricMountingManager::executeMount");
 
   std::scoped_lock lock(commitMutex_);
   auto finishTransactionStartTime = telemetryTimePointNow();
@@ -500,7 +491,7 @@ void FabricMountingManager::executeMount(
     }
 
     for (const auto& mutation : mutations) {
-      const auto& parentShadowView = mutation.parentShadowView;
+      auto parentTag = mutation.parentTag;
       const auto& oldChildShadowView = mutation.oldChildShadowView;
       const auto& newChildShadowView = mutation.newChildShadowView;
       auto& mutationType = mutation.type;
@@ -522,7 +513,7 @@ void FabricMountingManager::executeMount(
         case ShadowViewMutation::Remove: {
           if (!isVirtual) {
             cppCommonMountItems.push_back(CppMountItem::RemoveMountItem(
-                parentShadowView, oldChildShadowView, index));
+                parentTag, oldChildShadowView, index));
           }
           break;
         }
@@ -572,7 +563,7 @@ void FabricMountingManager::executeMount(
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdateLayoutMountItems)
                   .push_back(CppMountItem::UpdateLayoutMountItem(
-                      mutation.newChildShadowView, parentShadowView));
+                      mutation.newChildShadowView, parentTag));
             }
 
             // OverflowInset: This is the values indicating boundaries including
@@ -601,17 +592,29 @@ void FabricMountingManager::executeMount(
           if (!isVirtual) {
             // Insert item
             cppCommonMountItems.push_back(CppMountItem::InsertMountItem(
-                parentShadowView, newChildShadowView, index));
+                parentTag, newChildShadowView, index));
 
             bool shouldCreateView =
                 !allocatedViewTags.contains(newChildShadowView.tag);
-            if (shouldCreateView) {
-              LOG(ERROR) << "Emitting insert for unallocated view "
-                         << newChildShadowView.tag;
+            if (ReactNativeFeatureFlags::
+                    enableAccumulatedUpdatesInRawPropsAndroid()) {
+              if (shouldCreateView) {
+                LOG(ERROR) << "Emitting insert for unallocated view "
+                           << newChildShadowView.tag;
+              }
               (maintainMutationOrder ? cppCommonMountItems
                                      : cppUpdatePropsMountItems)
                   .push_back(CppMountItem::UpdatePropsMountItem(
                       {}, newChildShadowView));
+            } else {
+              if (shouldCreateView) {
+                LOG(ERROR) << "Emitting insert for unallocated view "
+                           << newChildShadowView.tag;
+                (maintainMutationOrder ? cppCommonMountItems
+                                       : cppUpdatePropsMountItems)
+                    .push_back(CppMountItem::UpdatePropsMountItem(
+                        {}, newChildShadowView));
+              }
             }
 
             // State
@@ -638,7 +641,7 @@ void FabricMountingManager::executeMount(
             (maintainMutationOrder ? cppCommonMountItems
                                    : cppUpdateLayoutMountItems)
                 .push_back(CppMountItem::UpdateLayoutMountItem(
-                    newChildShadowView, parentShadowView));
+                    newChildShadowView, parentTag));
 
             // OverflowInset: This is the values indicating boundaries including
             // children of the current view. The layout of current view may not
@@ -936,7 +939,7 @@ void FabricMountingManager::maybePreallocateShadowNode(
 
 void FabricMountingManager::preallocateShadowView(
     const ShadowView& shadowView) {
-  SystraceSection section("FabricMountingManager::preallocateShadowView");
+  TraceSection section("FabricMountingManager::preallocateShadowView");
 
   {
     std::lock_guard lock(allocatedViewsMutex_);

@@ -7,14 +7,14 @@
 
 #include "TracingAgent.h"
 
-#include <reactperflogger/fusebox/FuseboxTracer.h>
+#include <jsinspector-modern/tracing/PerformanceTracer.h>
 
 namespace facebook::react::jsinspector_modern {
 
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
     // @cdp Tracing.start support is experimental.
-    if (FuseboxTracer::getFuseboxTracer().startTracing()) {
+    if (PerformanceTracer::getInstance().startTracing()) {
       frontendChannel_(cdp::jsonResult(req.id));
     } else {
       frontendChannel_(cdp::jsonError(
@@ -28,15 +28,16 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     // @cdp Tracing.end support is experimental.
     bool firstChunk = true;
     auto id = req.id;
-    bool wasStopped = FuseboxTracer::getFuseboxTracer().stopTracing(
-        [this, firstChunk, id](const folly::dynamic& eventsChunk) {
-          if (firstChunk) {
-            frontendChannel_(cdp::jsonResult(id));
-          }
-          frontendChannel_(cdp::jsonNotification(
-              "Tracing.dataCollected",
-              folly::dynamic::object("value", eventsChunk)));
-        });
+    bool wasStopped =
+        PerformanceTracer::getInstance().stopTracingAndCollectEvents(
+            [this, firstChunk, id](const folly::dynamic& eventsChunk) {
+              if (firstChunk) {
+                frontendChannel_(cdp::jsonResult(id));
+              }
+              frontendChannel_(cdp::jsonNotification(
+                  "Tracing.dataCollected",
+                  folly::dynamic::object("value", eventsChunk)));
+            });
 
     if (!wasStopped) {
       frontendChannel_(cdp::jsonError(

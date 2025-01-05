@@ -10,6 +10,8 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {
@@ -515,7 +517,7 @@ exports.examples = [
     },
     platform: 'android',
   },
-];
+] as Array<RNTesterModuleExample>;
 
 const styles = StyleSheet.create({
   container: {

@@ -25,7 +25,7 @@ import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIM
 import {create as createAttributePayload} from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
 import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
-import ReadOnlyNode from './ReadOnlyNode';
+import ReadOnlyNode, {setInstanceHandle} from './ReadOnlyNode';
 import {
   getPublicInstanceFromInternalInstanceHandle,
   getShadowNode,
@@ -35,7 +35,26 @@ import nullthrows from 'nullthrows';
 
 const noop = () => {};
 
-export default class ReactNativeElement
+// Ideally, this class would be exported as-is, but this implementation is
+// significantly slower than the existing `ReactFabricHostComponent`.
+// This is a very hot code path (this class is instantiated once per rendered
+// host component in the tree) and we can't regress performance here.
+//
+// This implementation is slower because this is a subclass and we have to call
+// super(), which is a very slow operation the way that Babel transforms it at
+// the moment.
+//
+// The optimization we're doing is using an old-style function constructor,
+// where we're not required to use `super()`, and we make that constructor
+// extend this class so it inherits all the methods and it sets the class
+// hierarchy correctly.
+//
+// An alternative implementation was to implement the constructor as a function
+// returning a manually constructed instance using `Object.create()` but that
+// was slower than this method because the engine has to create an object than
+// we then discard to create a new one.
+
+class ReactNativeElementMethods
   extends ReadOnlyElement
   implements INativeMethods
 {
@@ -43,8 +62,10 @@ export default class ReactNativeElement
   __nativeTag: number;
   __internalInstanceHandle: InternalInstanceHandle;
 
-  #viewConfig: ViewConfig;
+  __viewConfig: ViewConfig;
 
+  // This constructor isn't really used. See the `ReactNativeElement` function
+  // below.
   constructor(
     tag: number,
     viewConfig: ViewConfig,
@@ -54,7 +75,7 @@ export default class ReactNativeElement
 
     this.__nativeTag = tag;
     this.__internalInstanceHandle = internalInstanceHandle;
-    this.#viewConfig = viewConfig;
+    this.__viewConfig = viewConfig;
   }
 
   get offsetHeight(): number {
@@ -171,12 +192,12 @@ export default class ReactNativeElement
 
   setNativeProps(nativeProps: {...}): void {
     if (__DEV__) {
-      warnForStyleProps(nativeProps, this.#viewConfig.validAttributes);
+      warnForStyleProps(nativeProps, this.__viewConfig.validAttributes);
     }
 
     const updatePayload = createAttributePayload(
       nativeProps,
-      this.#viewConfig.validAttributes,
+      this.__viewConfig.validAttributes,
     );
 
     const node = getShadowNode(this);
@@ -186,3 +207,25 @@ export default class ReactNativeElement
     }
   }
 }
+
+// Alternative constructor just implemented to provide a better performance than
+// calling super() in the original class.
+function ReactNativeElement(
+  this: ReactNativeElementMethods,
+  tag: number,
+  viewConfig: ViewConfig,
+  internalInstanceHandle: InternalInstanceHandle,
+) {
+  this.__nativeTag = tag;
+  this.__internalInstanceHandle = internalInstanceHandle;
+  this.__viewConfig = viewConfig;
+  setInstanceHandle(this, internalInstanceHandle);
+}
+
+ReactNativeElement.prototype = Object.create(
+  ReactNativeElementMethods.prototype,
+);
+
+// $FlowExpectedError[prop-missing]
+// $FlowFixMe[incompatible-cast]
+export default ReactNativeElement as typeof ReactNativeElementMethods;

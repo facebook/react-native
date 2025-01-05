@@ -1314,6 +1314,7 @@ function SetAccessibilityFocusExample(props: {}): React.Node {
 
   return (
     <View>
+      {/* $FlowFixMe[prop-missing] */}
       <RNTesterText ref={myRef}>
         SetAccessibilityFocus on native element. This should get focus after
         clicking the button!
@@ -1333,12 +1334,6 @@ class EnabledExamples extends React.Component<{}> {
               <EnabledExample
                 test="bold text"
                 eventListener="boldTextChanged"
-              />
-            </RNTesterBlock>
-            <RNTesterBlock title="isGrayScaleEnabled()">
-              <EnabledExample
-                test="gray scale"
-                eventListener="grayscaleChanged"
               />
             </RNTesterBlock>
             <RNTesterBlock title="isReduceTransparencyEnabled()">
@@ -1382,6 +1377,9 @@ class EnabledExamples extends React.Component<{}> {
             test="screen reader"
             eventListener="screenReaderChanged"
           />
+        </RNTesterBlock>
+        <RNTesterBlock title="isGrayScaleEnabled()">
+          <EnabledExample test="gray scale" eventListener="grayscaleChanged" />
         </RNTesterBlock>
       </View>
     );

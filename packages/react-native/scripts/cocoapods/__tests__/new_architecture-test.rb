@@ -40,18 +40,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
         assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
-        assert_equal(installer.pods_project.targets[1].received_resolved_build_setting_parameters, [ReceivedCommonResolvedBuildSettings.new("CLANG_CXX_LANGUAGE_STANDARD", true)])
         assert_equal(Pod::UI.collected_messages, ["Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path.xcproj", "Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path2.xcproj"])
-    end
-
-    def test_setClangCxxLanguageStandardIfNeeded_whenReactCoreIsNotPresent
-        installer = prepare_mocked_installer_without_react_core
-        NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
-
-        assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], nil)
-        assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], nil)
-        assert_equal(installer.pods_project.targets[0].received_resolved_build_setting_parameters, [])
-        assert_equal(Pod::UI.collected_messages, [])
     end
 
     def test_setClangCxxLanguageStandardIfNeeded_whenThereAreDifferentValuesForLanguageStandard_takesTheFirstValue
@@ -60,7 +49,6 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         assert_equal(installer.aggregate_targets[0].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
         assert_equal(installer.aggregate_targets[1].user_project.build_configurations[0].build_settings["CLANG_CXX_LANGUAGE_STANDARD"], "c++20")
-        assert_equal(installer.pods_project.targets[1].received_resolved_build_setting_parameters, [ReceivedCommonResolvedBuildSettings.new("CLANG_CXX_LANGUAGE_STANDARD", true)])
         assert_equal(Pod::UI.collected_messages, ["Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path.xcproj", "Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /test/path2.xcproj"])
     end
 
@@ -536,16 +524,20 @@ def prepare_installer_for_cpp_flags(xcconfigs, build_configs)
     end
 
     pod_target_installation_results_map = {}
+    user_build_configuration_map = {}
     build_configs.each do |name, build_configs|
         pod_target_installation_results_map[name.to_s] = prepare_pod_target_installation_results_mock(
             name.to_s, build_configs
         )
+        build_configs.each do |config|
+            user_build_configuration_map[config.name] = config
+        end
     end
 
     return InstallerMock.new(
         PodsProjectMock.new,
         [
-            AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/")
+            AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/", :user_build_configurations => user_build_configuration_map)
         ],
         :pod_target_installation_results => pod_target_installation_results_map
     )

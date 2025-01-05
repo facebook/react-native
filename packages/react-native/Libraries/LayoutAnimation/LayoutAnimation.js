@@ -121,7 +121,7 @@ const Presets = {
     'opacity',
   ): LayoutAnimationConfig),
   linear: (create(500, 'linear', 'opacity'): LayoutAnimationConfig),
-  spring: {
+  spring: ({
     duration: 700,
     create: {
       type: 'linear',
@@ -135,7 +135,7 @@ const Presets = {
       type: 'linear',
       property: 'opacity',
     },
-  },
+  }: LayoutAnimationConfig),
 };
 
 /**

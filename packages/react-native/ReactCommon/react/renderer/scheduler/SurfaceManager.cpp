@@ -7,12 +7,19 @@
 
 #include "SurfaceManager.h"
 
+#include <glog/logging.h>
 #include <react/renderer/scheduler/Scheduler.h>
 
 namespace facebook::react {
 
 SurfaceManager::SurfaceManager(const Scheduler& scheduler) noexcept
     : scheduler_(scheduler) {}
+
+SurfaceManager::~SurfaceManager() noexcept {
+  LOG(WARNING) << "SurfaceManager::~SurfaceManager() was called (address: "
+               << this << ").";
+  stopAllSurfaces();
+}
 
 void SurfaceManager::startSurface(
     SurfaceId surfaceId,
@@ -37,6 +44,13 @@ void SurfaceManager::startSurface(
   });
 }
 
+void SurfaceManager::startEmptySurface(
+    SurfaceId surfaceId,
+    const LayoutConstraints& layoutConstraints,
+    const LayoutContext& layoutContext) const noexcept {
+  startSurface(surfaceId, "", {}, layoutConstraints, layoutContext);
+}
+
 void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     surfaceHandler.stop();
@@ -48,6 +62,19 @@ void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
 
     auto iterator = registry_.find(surfaceId);
     registry_.erase(iterator);
+  }
+}
+
+void SurfaceManager::stopAllSurfaces() const noexcept {
+  std::unordered_set<SurfaceId> surfaceIds;
+  {
+    std::shared_lock lock(mutex_);
+    for (const auto& [surfaceId, _] : registry_) {
+      surfaceIds.insert(surfaceId);
+    }
+  }
+  for (const auto& surfaceId : surfaceIds) {
+    stopSurface(surfaceId);
   }
 }
 

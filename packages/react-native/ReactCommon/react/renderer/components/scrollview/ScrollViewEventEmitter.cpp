@@ -13,14 +13,6 @@ void ScrollViewEventEmitter::onScroll(const ScrollEvent& scrollEvent) const {
   dispatchUniqueEvent("scroll", std::make_shared<ScrollEvent>(scrollEvent));
 }
 
-void ScrollViewEventEmitter::experimental_onDiscreteScroll(
-    const ScrollEvent& scrollEvent) const {
-  dispatchEvent(
-      "scroll",
-      std::make_shared<ScrollEvent>(scrollEvent),
-      RawEvent::Category::Discrete);
-}
-
 void ScrollViewEventEmitter::onScrollToTop(
     const ScrollEvent& scrollEvent) const {
   dispatchUniqueEvent(

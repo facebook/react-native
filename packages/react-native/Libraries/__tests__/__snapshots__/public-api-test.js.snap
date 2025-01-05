@@ -12,6 +12,7 @@ exports[`public API should not change unintentionally Libraries/ActionSheetIOS/A
       +anchor?: ?number,
       +tintColor?: ColorValue | ProcessedColorValue,
       +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
+      +disabledButtonTintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
       +disabledButtonIndices?: Array<number>,
     |},
@@ -423,6 +424,7 @@ export type AnimationConfig = $ReadOnly<{
   onComplete?: ?EndCallback,
   iterations?: number,
   isLooping?: boolean,
+  debugID?: ?string,
   ...
 }>;
 declare export default class Animation {
@@ -430,6 +432,7 @@ declare export default class Animation {
   __isInteraction: boolean;
   __isLooping: ?boolean;
   __iterations: number;
+  __debugID: ?string;
   constructor(config: AnimationConfig): void;
   start(
     fromValue: number,
@@ -446,6 +449,7 @@ declare export default class Animation {
   __findAnimatedPropsNodes(node: AnimatedNode): Array<AnimatedProps>;
   __startAnimationIfNative(animatedValue: AnimatedValue): boolean;
   __notifyAnimationEnd(result: EndResult): void;
+  __getDebugID(): ?string;
 }
 "
 `;
@@ -707,7 +711,7 @@ declare export default typeof AnimatedScrollView;
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedSectionList.js 1`] = `
 "declare export default AnimatedComponentType<
   React.ElementConfig<typeof SectionList>,
-  React.ElementRef<typeof SectionList>,
+  SectionList<SectionBase<any>>,
 >;
 "
 `;
@@ -769,7 +773,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 "declare export default class AnimatedAddition extends AnimatedWithChildren {
   _a: AnimatedNode;
   _b: AnimatedNode;
-  constructor(a: AnimatedNode | number, b: AnimatedNode | number): void;
+  constructor(
+    a: AnimatedNode | number,
+    b: AnimatedNode | number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): number;
   interpolate<OutputT: number | string>(
@@ -784,6 +792,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedColor.js 1`] = `
 "export type AnimatedColorConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 type ColorListenerCallback = (value: ColorValue) => mixed;
@@ -834,7 +843,12 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   _max: number;
   _value: number;
   _lastValue: number;
-  constructor(a: AnimatedNode, min: number, max: number): void;
+  constructor(
+    a: AnimatedNode,
+    min: number,
+    max: number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   interpolate<OutputT: number | string>(
     config: InterpolationConfigType<OutputT>
@@ -852,7 +866,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   _a: AnimatedNode;
   _b: AnimatedNode;
   _warnedAboutDivideByZero: boolean;
-  constructor(a: AnimatedNode | number, b: AnimatedNode | number): void;
+  constructor(
+    a: AnimatedNode | number,
+    b: AnimatedNode | number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): number;
   interpolate<OutputT: number | string>(
@@ -868,6 +886,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedInterpolation.js 1`] = `
 "type ExtrapolateType = \\"extend\\" | \\"identity\\" | \\"clamp\\";
 export type InterpolationConfigType<OutputT: number | string> = $ReadOnly<{
+  ...AnimatedNodeConfig,
   inputRange: $ReadOnlyArray<number>,
   outputRange: $ReadOnlyArray<OutputT>,
   easing?: (input: number) => number,
@@ -902,7 +921,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 "declare export default class AnimatedModulo extends AnimatedWithChildren {
   _a: AnimatedNode;
   _modulus: number;
-  constructor(a: AnimatedNode, modulus: number): void;
+  constructor(
+    a: AnimatedNode,
+    modulus: number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): number;
   interpolate<OutputT: number | string>(
@@ -921,7 +944,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 {
   _a: AnimatedNode;
   _b: AnimatedNode;
-  constructor(a: AnimatedNode | number, b: AnimatedNode | number): void;
+  constructor(
+    a: AnimatedNode | number,
+    b: AnimatedNode | number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): number;
   interpolate<OutputT: number | string>(
@@ -935,8 +962,17 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedNode.js 1`] = `
-"declare export default class AnimatedNode {
+"export type AnimatedNodeConfig = $ReadOnly<{
+  debugID?: string,
+}>;
+declare export default class AnimatedNode {
   _platformConfig: ?PlatformConfig;
+  constructor(
+    config?: ?$ReadOnly<{
+      ...AnimatedNodeConfig,
+      ...
+    }>
+  ): void;
   __attach(): void;
   __detach(): void;
   __getValue(): any;
@@ -958,6 +994,8 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   __getPlatformConfig(): ?PlatformConfig;
   __setPlatformConfig(platformConfig: ?PlatformConfig): void;
   toJSON(): mixed;
+  __debugID: ?string;
+  __getDebugID(): ?string;
 }
 "
 `;
@@ -969,7 +1007,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 declare export default class AnimatedObject extends AnimatedWithChildren {
   _value: mixed;
   static from(value: mixed): ?AnimatedObject;
-  constructor(nodes: $ReadOnlyArray<AnimatedNode>, value: mixed): void;
+  constructor(
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    value: mixed,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __getValue(): any;
   __getValueWithStaticObject(staticObject: mixed): any;
   __getAnimatedValue(): any;
@@ -990,7 +1032,8 @@ declare export default class AnimatedProps extends AnimatedNode {
   constructor(
     inputProps: { [string]: mixed },
     callback: () => void,
-    allowlist?: ?AnimatedPropsAllowlist
+    allowlist?: ?AnimatedPropsAllowlist,
+    config?: ?AnimatedNodeConfig
   ): void;
   __getValue(): Object;
   __getValueWithStaticProps(staticProps: Object): Object;
@@ -1019,7 +1062,8 @@ declare export default class AnimatedStyle extends AnimatedWithChildren {
     nodeKeys: $ReadOnlyArray<string>,
     nodes: $ReadOnlyArray<AnimatedNode>,
     style: { [string]: mixed },
-    inputStyle: any
+    inputStyle: any,
+    config?: ?AnimatedNodeConfig
   ): void;
   __getValue(): Object | Array<Object>;
   __getValueWithStaticStyle(staticStyle: Object): Object | Array<Object>;
@@ -1036,7 +1080,11 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 "declare export default class AnimatedSubtraction extends AnimatedWithChildren {
   _a: AnimatedNode;
   _b: AnimatedNode;
-  constructor(a: AnimatedNode | number, b: AnimatedNode | number): void;
+  constructor(
+    a: AnimatedNode | number,
+    b: AnimatedNode | number,
+    config?: ?AnimatedNodeConfig
+  ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): number;
   interpolate<OutputT: number | string>(
@@ -1062,7 +1110,8 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
     parent: AnimatedNode,
     animationClass: any,
     animationConfig: Object,
-    callback?: ?EndCallback
+    callback?: ?EndCallback,
+    config?: ?AnimatedNodeConfig
   ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): Object;
@@ -1088,7 +1137,8 @@ declare export default class AnimatedTransform extends AnimatedWithChildren {
   static from(transforms: $ReadOnlyArray<Transform<>>): ?AnimatedTransform;
   constructor(
     nodes: $ReadOnlyArray<AnimatedNode>,
-    transforms: $ReadOnlyArray<Transform<>>
+    transforms: $ReadOnlyArray<Transform<>>,
+    config?: ?AnimatedNodeConfig
   ): void;
   __makeNative(platformConfig: ?PlatformConfig): void;
   __getValue(): $ReadOnlyArray<Transform<any>>;
@@ -1105,6 +1155,7 @@ declare export default class AnimatedTransform extends AnimatedWithChildren {
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedValue.js 1`] = `
 "export type AnimatedValueConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 declare export function flushValue(rootNode: AnimatedNode): void;
@@ -1138,6 +1189,7 @@ declare export default class AnimatedValue extends AnimatedWithChildren {
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedValueXY.js 1`] = `
 "export type AnimatedValueXYConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 type ValueXYListenerCallback = (value: { x: number, y: number, ... }) => mixed;
@@ -1835,6 +1887,25 @@ declare export default typeof NativeKeyboardObserver;
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Components/LayoutConformance/LayoutConformance.js 1`] = `
+"type Props = $ReadOnly<{
+  mode: \\"strict\\" | \\"compatibility\\",
+  children: React.Node,
+}>;
+declare export default component(...Props);
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/LayoutConformance/LayoutConformanceNativeComponent.js 1`] = `
+"type Props = $ReadOnly<{
+  mode: \\"strict\\" | \\"compatibility\\",
+  ...ViewProps,
+}>;
+declare const LayoutConformanceNativeComponent: HostComponent<Props>;
+declare export default typeof LayoutConformanceNativeComponent;
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Components/Pressable/Pressable.js 1`] = `
 "type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, \\"style\\">;
 export type StateCallbackType = $ReadOnly<{|
@@ -2042,7 +2113,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 export type DecelerationRateType = \\"fast\\" | \\"normal\\" | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
 type PublicScrollViewInstance = $ReadOnly<{|
-  ...$Exact<TScrollViewNativeComponentInstance>,
+  ...HostInstance,
   ...ScrollViewImperativeMethods,
 |}>;
 type InnerViewInstance = React.ElementRef<View>;
@@ -2169,7 +2240,7 @@ declare class ScrollView extends React.Component<Props, State> {
   getScrollableNode: () => ?number;
   getInnerViewNode: () => ?number;
   getInnerViewRef: () => InnerViewInstance | null;
-  getNativeScrollRef: () => TScrollViewNativeComponentInstance | null;
+  getNativeScrollRef: () => HostInstance | null;
   scrollTo: (
     options?:
       | {
@@ -2184,9 +2255,6 @@ declare class ScrollView extends React.Component<Props, State> {
   ) => void;
   scrollToEnd: (options?: ?{ animated?: boolean, ... }) => void;
   flashScrollIndicators: () => void;
-  _subscribeToOnScroll: (
-    callback: ({ x: number, y: number }) => void
-  ) => EventSubscription;
   scrollResponderScrollNativeHandleToKeyboard: (
     nodeHandle: number | HostInstance,
     additionalOffset?: number,
@@ -2224,10 +2292,7 @@ declare class ScrollView extends React.Component<Props, State> {
   _handleLayout: $FlowFixMe;
   _handleContentOnLayout: $FlowFixMe;
   _innerView: RefForwarder<InnerViewInstance, InnerViewInstance>;
-  _scrollView: RefForwarder<
-    TScrollViewNativeImperativeHandle,
-    PublicScrollViewInstance | null,
-  >;
+  _scrollView: RefForwarder<HostInstance, PublicScrollViewInstance | null>;
   scrollResponderKeyboardWillShow: (e: KeyboardEvent) => void;
   scrollResponderKeyboardWillHide: (e: KeyboardEvent) => void;
   scrollResponderKeyboardDidShow: (e: KeyboardEvent) => void;
@@ -2968,6 +3033,7 @@ type IOSProps = $ReadOnly<{|
     | $ReadOnlyArray<DataDetectorTypesType>,
   enablesReturnKeyAutomatically?: ?boolean,
   inputAccessoryViewID?: ?string,
+  inputAccessoryViewButtonLabel?: ?string,
   keyboardAppearance?: ?(\\"default\\" | \\"light\\" | \\"dark\\"),
   passwordRules?: ?PasswordRules,
   rejectResponderTermination?: ?boolean,
@@ -3320,6 +3386,7 @@ type IOSProps = $ReadOnly<{|
     | $ReadOnlyArray<DataDetectorTypesType>,
   enablesReturnKeyAutomatically?: ?boolean,
   inputAccessoryViewID?: ?string,
+  inputAccessoryViewButtonLabel?: ?string,
   keyboardAppearance?: ?(\\"default\\" | \\"light\\" | \\"dark\\"),
   passwordRules?: ?PasswordRules,
   rejectResponderTermination?: ?boolean,
@@ -4220,7 +4287,6 @@ export type ViewProps = $ReadOnly<{|
   \\"aria-hidden\\"?: ?boolean,
   collapsable?: ?boolean,
   collapsableChildren?: ?boolean,
-  experimental_layoutConformance?: ?(\\"strict\\" | \\"classic\\"),
   id?: string,
   testID?: ?string,
   nativeID?: ?string,
@@ -4700,18 +4766,6 @@ declare export default typeof EventPolyfill;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/HeapCapture/HeapCapture.js 1`] = `
-"declare const HeapCapture: { captureHeap: (path: string) => void };
-declare module.exports: HeapCapture;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/HeapCapture/NativeJSCHeapCapture.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeJSCHeapCapture\\";
-declare export default typeof NativeJSCHeapCapture;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Image/AssetRegistry.js 1`] = `
 "declare module.exports: $FlowFixMe;
 "
@@ -4869,7 +4923,7 @@ export type ImageProps = $ReadOnly<{|
     | \\"strict-origin-when-cross-origin\\"
     | \\"unsafe-url\\"
   ),
-  resizeMode?: ?(\\"cover\\" | \\"contain\\" | \\"stretch\\" | \\"repeat\\" | \\"center\\"),
+  resizeMode?: ?ImageResizeMode,
   testID?: ?string,
   tintColor?: ColorValue,
   src?: ?string,
@@ -4892,7 +4946,8 @@ exports[`public API should not change unintentionally Libraries/Image/ImageResiz
   | \\"contain\\"
   | \\"cover\\"
   | \\"repeat\\"
-  | \\"stretch\\";
+  | \\"stretch\\"
+  | \\"none\\";
 "
 `;
 
@@ -4989,10 +5044,9 @@ export type { ImageProps } from \\"./ImageProps\\";
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/ImageUtils.js 1`] = `
-"type ResizeMode = \\"cover\\" | \\"contain\\" | \\"stretch\\" | \\"repeat\\" | \\"center\\";
-declare export function convertObjectFitToResizeMode(
+"declare export function convertObjectFitToResizeMode(
   objectFit: ?string
-): ?ResizeMode;
+): ?ImageResizeMode;
 "
 `;
 
@@ -5341,7 +5395,41 @@ declare const InteractionManager: {
   addListener: $FlowFixMe,
   setDeadline(deadline: number): void,
 };
-declare module.exports: InteractionManager;
+declare module.exports: typeof InteractionManager;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Interaction/InteractionManagerStub.js 1`] = `
+"export type Handle = number;
+type Task =
+  | {
+      name: string,
+      run: () => void,
+    }
+  | {
+      name: string,
+      gen: () => Promise<void>,
+    }
+  | (() => void);
+declare const InteractionManagerStub: {
+  Events: {
+    interactionStart: \\"interactionStart\\",
+    interactionComplete: \\"interactionComplete\\",
+  },
+  runAfterInteractions(task: ?Task): {
+    then: <U>(
+      onFulfill?: ?(void) => ?(Promise<U> | U),
+      onReject?: ?(error: mixed) => ?(Promise<U> | U)
+    ) => Promise<U>,
+    cancel: () => void,
+    ...
+  },
+  createInteractionHandle(): Handle,
+  clearInteractionHandle(handle: Handle): void,
+  addListener(): EventSubscription,
+  setDeadline(deadline: number): void,
+};
+declare module.exports: InteractionManagerStub;
 "
 `;
 
@@ -5578,12 +5666,7 @@ declare function create(
 declare const Presets: {
   easeInEaseOut: LayoutAnimationConfig,
   linear: LayoutAnimationConfig,
-  spring: {
-    duration: 700,
-    create: { type: \\"linear\\", property: \\"opacity\\" },
-    update: { type: \\"spring\\", springDamping: 0.4 },
-    delete: { type: \\"linear\\", property: \\"opacity\\" },
-  },
+  spring: LayoutAnimationConfig,
 };
 declare const LayoutAnimation: {
   configureNext: configureNext,
@@ -6411,6 +6494,7 @@ export type Props = $ReadOnly<{|
   ),
   transparent?: ?boolean,
   statusBarTranslucent?: ?boolean,
+  navigationBarTranslucent?: ?boolean,
   hardwareAccelerated?: ?boolean,
   visible?: ?boolean,
   onRequestClose?: ?DirectEventHandler<null>,
@@ -6642,15 +6726,7 @@ declare export default typeof NativeNetworkingIOS;
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/RCTNetworking.js.flow 1`] = `
-"type RCTNetworkingEventDefinitions = $ReadOnly<{
-  didSendNetworkData: [[number, number, number]],
-  didReceiveNetworkResponse: [[number, number, ?{ [string]: string }, ?string]],
-  didReceiveNetworkData: [[number, string]],
-  didReceiveNetworkIncrementalData: [[number, string, number, number]],
-  didReceiveNetworkDataProgress: [[number, number, number]],
-  didCompleteNetworkResponse: [[number, string, boolean]],
-}>;
-declare const RCTNetworking: interface {
+"declare const RCTNetworking: interface {
   addListener<K: $Keys<RCTNetworkingEventDefinitions>>(
     eventType: K,
     listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
@@ -6672,6 +6748,18 @@ declare const RCTNetworking: interface {
   clearCookies(callback: (result: boolean) => void): void,
 };
 declare export default typeof RCTNetworking;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Network/RCTNetworkingEventDefinitions.flow.js 1`] = `
+"export type RCTNetworkingEventDefinitions = $ReadOnly<{
+  didSendNetworkData: [[number, number, number]],
+  didReceiveNetworkResponse: [[number, number, ?{ [string]: string }, ?string]],
+  didReceiveNetworkData: [[number, string]],
+  didReceiveNetworkIncrementalData: [[number, string, number, number]],
+  didReceiveNetworkDataProgress: [[number, number, number]],
+  didCompleteNetworkResponse: [[number, string, boolean]],
+}>;
 "
 `;
 
@@ -6871,49 +6959,6 @@ exports[`public API should not change unintentionally Libraries/Network/fetch.js
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/Colors.js 1`] = `
-"declare export default {
-  primary: \\"#1292B4\\",
-  white: \\"#FFF\\",
-  lighter: \\"#F3F3F3\\",
-  light: \\"#DAE1E7\\",
-  dark: \\"#444\\",
-  darker: \\"#222\\",
-  black: \\"#000\\",
-};
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/DebugInstructions.js 1`] = `
-"declare const DebugInstructions: () => Node;
-declare export default typeof DebugInstructions;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/Header.js 1`] = `
-"declare const Header: () => Node;
-declare export default typeof Header;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/HermesBadge.js 1`] = `
-"declare const HermesBadge: () => Node;
-declare export default typeof HermesBadge;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/LearnMoreLinks.js 1`] = `
-"declare const LinkList: () => Node;
-declare export default typeof LinkList;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/NewAppScreen/components/ReloadInstructions.js 1`] = `
-"declare const ReloadInstructions: () => Node;
-declare export default typeof ReloadInstructions;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/NewAppScreen/index.js 1`] = `
 "export {
   Colors,
@@ -6923,18 +6968,6 @@ exports[`public API should not change unintentionally Libraries/NewAppScreen/ind
   DebugInstructions,
   ReloadInstructions,
 };
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Performance/NativeJSCSamplingProfiler.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeJSCSamplingProfiler\\";
-declare export default typeof NativeJSCSamplingProfiler;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Performance/SamplingProfiler.js 1`] = `
-"declare const SamplingProfiler: { poke: (token: number) => void };
-declare module.exports: SamplingProfiler;
 "
 `;
 
@@ -7202,7 +7235,7 @@ exports[`public API should not change unintentionally Libraries/Pressability/Pre
 exports[`public API should not change unintentionally Libraries/Pressability/usePressability.js 1`] = `
 "declare export default function usePressability(
   config: ?PressabilityConfig
-): ?EventHandlers;
+): null | EventHandlers;
 "
 `;
 
@@ -7352,7 +7385,6 @@ type AppParameters = {
   initialProps: $ReadOnly<{ [string]: mixed, ... }>,
   rootTag: RootTag,
   fabric?: boolean,
-  concurrentRoot?: boolean,
 };
 export type Runnable = (
   appParameters: AppParameters,
@@ -7522,14 +7554,6 @@ declare export default typeof NativeUIManager;
 exports[`public API should not change unintentionally Libraries/ReactNative/PaperUIManager.js 1`] = `
 "declare const UIManagerJS: UIManagerJSInterface;
 declare module.exports: UIManagerJS;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/ReactNative/ReactFabricInternals.js 1`] = `
-"declare const createReactNativeComponentClass: $FlowFixMe;
-declare module.exports: {
-  createReactNativeComponentClass: createReactNativeComponentClass,
-};
 "
 `;
 
@@ -7720,7 +7744,6 @@ exports[`public API should not change unintentionally Libraries/ReactNative/rend
   isLogBox?: boolean,
   debugName?: string,
   displayMode?: ?DisplayModeType,
-  useConcurrentRoot?: boolean,
   useOffscreen?: boolean
 ): void;
 "
@@ -7731,37 +7754,6 @@ exports[`public API should not change unintentionally Libraries/ReactNative/requ
   uiViewClassName: string
 ) => HostComponent<T>;
 declare export default typeof requireNativeComponent;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/ReactPrivate/ReactNativePrivateInitializeCore.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/ReactPrivate/ReactNativePrivateInterface.js 1`] = `
-"declare module.exports: {
-  get BatchedBridge(): BatchedBridge,
-  get ExceptionsManager(): ExceptionsManager,
-  get Platform(): Platform,
-  get RCTEventEmitter(): RCTEventEmitter,
-  get ReactNativeViewConfigRegistry(): ReactNativeViewConfigRegistry,
-  get TextInputState(): TextInputState,
-  get UIManager(): UIManager,
-  get deepDiffer(): deepDiffer,
-  get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
-    { ... } | Array<mixed>,
-  >,
-  get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp>,
-  get ReactFiberErrorDialog(): ReactFiberErrorDialog,
-  get legacySendAccessibilityEvent(): legacySendAccessibilityEvent,
-  get RawEventEmitter(): RawEventEmitter,
-  get CustomEvent(): CustomEvent,
-  get createAttributePayload(): createAttributePayload,
-  get diffAttributePayloads(): diffAttributePayloads,
-  get createPublicInstance(): createPublicInstance,
-  get createPublicTextInstance(): createPublicTextInstance,
-  get getNativeTagFromPublicInstance(): getNativeTagFromPublicInstance,
-  get getNodeFromPublicInstance(): getNodeFromPublicInstance,
-  get getInternalInstanceHandleFromPublicInstance(): getInternalInstanceHandleFromPublicInstance,
-};
 "
 `;
 
@@ -8261,8 +8253,8 @@ export type ____TextStyle_Internal = $ReadOnly<{
 }>;
 export type ____ImageStyle_InternalCore = $ReadOnly<{
   ...$Exact<____ViewStyle_Internal>,
-  resizeMode?: \\"contain\\" | \\"cover\\" | \\"stretch\\" | \\"center\\" | \\"repeat\\",
-  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\",
+  resizeMode?: ImageResizeMode,
+  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
@@ -8272,8 +8264,8 @@ export type ____ImageStyle_Internal = $ReadOnly<{
 }>;
 export type ____DangerouslyImpreciseStyle_InternalCore = $ReadOnly<{
   ...$Exact<____TextStyle_Internal>,
-  resizeMode?: \\"contain\\" | \\"cover\\" | \\"stretch\\" | \\"center\\" | \\"repeat\\",
-  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\",
+  resizeMode?: ImageResizeMode,
+  objectFit?: \\"cover\\" | \\"contain\\" | \\"fill\\" | \\"scale-down\\" | \\"none\\",
   tintColor?: ____ColorValue_Internal,
   overlayColor?: string,
 }>;
@@ -8380,10 +8372,12 @@ declare module.exports: processAspectRatio;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/processBackgroundImage.js 1`] = `
-"type ParsedGradientValue = {
+"type LinearGradientDirection =
+  | { type: \\"angle\\", value: number }
+  | { type: \\"keyword\\", value: string };
+type ParsedGradientValue = {
   type: \\"linearGradient\\",
-  start: { x: number, y: number },
-  end: { x: number, y: number },
+  direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
     color: ProcessedColorValue,
     position: number,
@@ -8578,7 +8572,7 @@ export type TextProps = $ReadOnly<{
   style?: ?TextStyleProp,
   testID?: ?string,
   disabled?: ?boolean,
-  selectionColor?: ?string,
+  selectionColor?: ?ColorValue,
   dataDetectorType?: ?(\\"phoneNumber\\" | \\"link\\" | \\"email\\" | \\"none\\" | \\"all\\"),
   textBreakStrategy?: ?(\\"balanced\\" | \\"highQuality\\" | \\"simple\\"),
   adjustsFontSizeToFit?: ?boolean,
@@ -8909,10 +8903,6 @@ type TBackHandler = {|
     eventName: BackPressEventName,
     handler: () => ?boolean
   ) => { remove: () => void, ... },
-  +removeEventListener: (
-    eventName: BackPressEventName,
-    handler: () => ?boolean
-  ) => void,
 |};
 declare module.exports: TBackHandler;
 "
@@ -9631,6 +9621,7 @@ declare module.exports: {
   get Image(): Image,
   get ImageBackground(): ImageBackground,
   get InputAccessoryView(): InputAccessoryView,
+  get experimental_LayoutConformance(): LayoutConformance,
   get KeyboardAvoidingView(): KeyboardAvoidingView,
   get Modal(): Modal,
   get Pressable(): Pressable,

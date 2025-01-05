@@ -19,6 +19,7 @@ import type {
 } from '../StyleSheet/StyleSheet';
 import type {LayoutEvent, SyntheticEvent} from '../Types/CoreEventTypes';
 import typeof Image from './Image';
+import type {ImageResizeMode} from './ImageResizeMode';
 import type {ImageSource} from './ImageSource';
 import type {ElementRef, Node, RefSetter} from 'react';
 
@@ -234,7 +235,7 @@ export type ImageProps = $ReadOnly<{|
    *
    * See https://reactnative.dev/docs/image#resizemode
    */
-  resizeMode?: ?('cover' | 'contain' | 'stretch' | 'repeat' | 'center'),
+  resizeMode?: ?ImageResizeMode,
 
   /**
    * A unique identifier for this element to be used in UI Automation

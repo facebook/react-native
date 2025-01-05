@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0c6450697814b66ae910d66f278213ef>>
+ * @generated SignedSource<<080245bea6e8535f2e8a91c1559e2fcc>>
  */
 
 /**
@@ -25,13 +25,13 @@ import com.facebook.proguard.annotations.DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
-  @DoNotStrip public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
-
   @DoNotStrip public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
 
   @DoNotStrip public fun disableEventLoopOnBridgeless(): Boolean
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
+
+  @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
 
   @DoNotStrip public fun enableAlignItemsBaselineOnFabricIOS(): Boolean
 
@@ -51,11 +51,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
 
-  @DoNotStrip public fun enableFabricRendererExclusively(): Boolean
+  @DoNotStrip public fun enableFixForViewCommandRace(): Boolean
 
   @DoNotStrip public fun enableGranularShadowTreeStateReconciliation(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
+
+  @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
@@ -79,13 +81,11 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun excludeYogaFromRawProps(): Boolean
 
+  @DoNotStrip public fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean
+
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean
-
-  @DoNotStrip public fun forceBatchingMountItemsOnAndroid(): Boolean
-
-  @DoNotStrip public fun fuseboxEnabledDebug(): Boolean
 
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
@@ -94,8 +94,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
 
   @DoNotStrip public fun loadVectorDrawablesOnImages(): Boolean
-
-  @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
@@ -110,6 +108,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useOptimisedViewPreallocationOnAndroid(): Boolean
 
   @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
+
+  @DoNotStrip public fun useRawPropsJsiValue(): Boolean
 
   @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 

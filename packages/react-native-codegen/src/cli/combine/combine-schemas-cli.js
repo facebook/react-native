@@ -84,4 +84,4 @@ for (const file of schemaFiles) {
   }
 }
 
-fs.writeFileSync(output, JSON.stringify({modules}, null, 2));
+fs.writeFileSync(output, JSON.stringify({modules}));

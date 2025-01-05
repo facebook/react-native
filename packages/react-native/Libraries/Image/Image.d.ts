@@ -200,6 +200,8 @@ export interface ImagePropsBase
    * 'center': Scale the image down so that it is completely visible,
    * if bigger than the area of the view.
    * The image will not be scaled up.
+   *
+   * 'none': Do not resize the image. The image will be displayed at its intrinsic size.
    */
   resizeMode?: ImageResizeMode | undefined;
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ef77bba170be911320a9f8f2c1c98a9f>>
+ * @generated SignedSource<<cbb45db752cf0fa01db78a16b23cda86>>
  */
 
 /**
@@ -33,10 +33,10 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
-  bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
   bool completeReactInstanceCreationOnBgThreadOnAndroid();
   bool disableEventLoopOnBridgeless();
   bool disableMountItemReorderingAndroid();
+  bool enableAccumulatedUpdatesInRawPropsAndroid();
   bool enableAlignItemsBaselineOnFabricIOS();
   bool enableAndroidLineHeightCentering();
   bool enableBridgelessArchitecture();
@@ -46,9 +46,10 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableEventEmitterRetentionDuringGesturesOnAndroid();
   bool enableFabricLogs();
   bool enableFabricRenderer();
-  bool enableFabricRendererExclusively();
+  bool enableFixForViewCommandRace();
   bool enableGranularShadowTreeStateReconciliation();
   bool enableIOSViewClipToPaddingBox();
+  bool enableImagePrefetchingAndroid();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableLongTaskAPI();
@@ -60,15 +61,13 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableUIConsistency();
   bool enableViewRecycling();
   bool excludeYogaFromRawProps();
+  bool fixDifferentiatorEmittingUpdatesWithWrongParentTag();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-  bool forceBatchingMountItemsOnAndroid();
-  bool fuseboxEnabledDebug();
   bool fuseboxEnabledRelease();
   bool initEagerTurboModulesOnNativeModulesQueueAndroid();
   bool lazyAnimationCallbacks();
   bool loadVectorDrawablesOnImages();
-  bool setAndroidLayoutDirection();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool useAlwaysAvailableJSErrorHandling();
   bool useFabricInterop();
@@ -76,6 +75,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool useNativeViewConfigsInBridgelessMode();
   bool useOptimisedViewPreallocationOnAndroid();
   bool useOptimizedEventBatchingOnAndroid();
+  bool useRawPropsJsiValue();
   bool useRuntimeShadowNodeReferenceUpdate();
   bool useTurboModuleInterop();
   bool useTurboModules();
@@ -93,10 +93,10 @@ class ReactNativeFeatureFlagsAccessor {
   std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
-  std::atomic<std::optional<bool>> allowRecursiveCommitsWithSynchronousMountOnAndroid_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
   std::atomic<std::optional<bool>> disableEventLoopOnBridgeless_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
+  std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
   std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
   std::atomic<std::optional<bool>> enableAndroidLineHeightCentering_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
@@ -106,9 +106,10 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableEventEmitterRetentionDuringGesturesOnAndroid_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;
-  std::atomic<std::optional<bool>> enableFabricRendererExclusively_;
+  std::atomic<std::optional<bool>> enableFixForViewCommandRace_;
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
+  std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
@@ -120,15 +121,13 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableUIConsistency_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> excludeYogaFromRawProps_;
+  std::atomic<std::optional<bool>> fixDifferentiatorEmittingUpdatesWithWrongParentTag_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixMountingCoordinatorReportedPendingTransactionsOnAndroid_;
-  std::atomic<std::optional<bool>> forceBatchingMountItemsOnAndroid_;
-  std::atomic<std::optional<bool>> fuseboxEnabledDebug_;
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> initEagerTurboModulesOnNativeModulesQueueAndroid_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> loadVectorDrawablesOnImages_;
-  std::atomic<std::optional<bool>> setAndroidLayoutDirection_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useFabricInterop_;
@@ -136,6 +135,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useOptimisedViewPreallocationOnAndroid_;
   std::atomic<std::optional<bool>> useOptimizedEventBatchingOnAndroid_;
+  std::atomic<std::optional<bool>> useRawPropsJsiValue_;
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdate_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;

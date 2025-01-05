@@ -17,6 +17,12 @@ public enum class ImageCacheControl {
   RELOAD,
   /**
    * The existing cache data will be used to satisfy a request, regardless of its age or expiration
+   * date. If there is no existing data in the cache corresponding to a URL load request, the data
+   * is loaded from the originating source.
+   */
+  FORCE_CACHE,
+  /**
+   * The existing cache data will be used to satisfy a request, regardless of its age or expiration
    * date. If there is no existing data in the cache corresponding to a URL load request, no attempt
    * is made to load the data from the originating source, and the load is considered to have
    * failed.

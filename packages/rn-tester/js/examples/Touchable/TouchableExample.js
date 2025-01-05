@@ -8,6 +8,8 @@
  * @flow
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {useEffect, useRef, useState} from 'react';
@@ -314,7 +316,7 @@ function TouchableNativeMethodChecker<
   T: component(ref?: React.RefSetter<any>, ...any),
 >(props: {|Component: T, name: string|}): React.Node {
   const [status, setStatus] = useState<?boolean>(null);
-  const ref = useRef<?React.ElementRef<T>>(null);
+  const ref = useRef<any>(null);
 
   useEffect(() => {
     setStatus(ref.current != null && typeof ref.current.measure === 'function');
@@ -557,9 +559,8 @@ const TouchableTouchSoundDisabled = () => {
   );
 };
 
-// $FlowFixMe[missing-local-annot]
-function TouchableOnFocus<T: component(ref?: React.RefSetter<any>, ...any)>() {
-  const ref = useRef<?React.ElementRef<T> | {focus: Function}>(null);
+function TouchableOnFocus() {
+  const ref = useRef<?{focus(): void, ...}>(null);
   const [isFocused, setIsFocused] = useState<string | boolean>(false);
   const [focusStatus, setFocusStatus] = useState(
     'This touchable is not focused.',
@@ -800,4 +801,4 @@ exports.examples = [
       return <TouchableDisabled />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

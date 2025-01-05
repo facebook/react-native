@@ -211,7 +211,7 @@ uint_fast16_t compareDocumentPosition(
 
   auto otherAncestors =
       otherShadowNode.getFamily().getAncestors(*currentRevision);
-  if (ancestors.empty()) {
+  if (otherAncestors.empty()) {
     return DOCUMENT_POSITION_DISCONNECTED;
   }
 

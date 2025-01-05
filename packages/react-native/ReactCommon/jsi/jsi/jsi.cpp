@@ -258,7 +258,44 @@ std::u16string Runtime::utf16(const String& str) {
   return convertUTF8ToUTF16(utf8Str);
 }
 
-Pointer& Pointer::operator=(Pointer&& other) {
+void Runtime::getStringData(
+    const jsi::String& str,
+    void* ctx,
+    void (*cb)(void* ctx, bool ascii, const void* data, size_t num)) {
+  auto utf16Str = utf16(str);
+  cb(ctx, false, utf16Str.data(), utf16Str.size());
+}
+
+void Runtime::getPropNameIdData(
+    const jsi::PropNameID& sym,
+    void* ctx,
+    void (*cb)(void* ctx, bool ascii, const void* data, size_t num)) {
+  auto utf16Str = utf16(sym);
+  cb(ctx, false, utf16Str.data(), utf16Str.size());
+}
+
+void Runtime::setPrototypeOf(const Object& object, const Value& prototype) {
+  auto setPrototypeOfFn = global()
+                              .getPropertyAsObject(*this, "Object")
+                              .getPropertyAsFunction(*this, "setPrototypeOf");
+  setPrototypeOfFn.call(*this, object, prototype).asObject(*this);
+}
+
+Value Runtime::getPrototypeOf(const Object& object) {
+  auto setPrototypeOfFn = global()
+                              .getPropertyAsObject(*this, "Object")
+                              .getPropertyAsFunction(*this, "getPrototypeOf");
+  return setPrototypeOfFn.call(*this, object);
+}
+
+Object Runtime::createObjectWithPrototype(const Value& prototype) {
+  auto createFn = global()
+                      .getPropertyAsObject(*this, "Object")
+                      .getPropertyAsFunction(*this, "create");
+  return createFn.call(*this, prototype).asObject(*this);
+}
+
+Pointer& Pointer::operator=(Pointer&& other) noexcept {
   if (ptr_) {
     ptr_->invalidate();
   }
@@ -333,7 +370,7 @@ Function Object::asFunction(Runtime& runtime) && {
   return std::move(*this).getFunction(runtime);
 }
 
-Value::Value(Value&& other) : Value(other.kind_) {
+Value::Value(Value&& other) noexcept : Value(other.kind_) {
   if (kind_ == BooleanKind) {
     data_.boolean = other.data_.boolean;
   } else if (kind_ == NumberKind) {

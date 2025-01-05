@@ -73,8 +73,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
-  const useSetNativePropsInNativeAnimationsInFabric =
-    ReactNativeFeatureFlags.shouldUseSetNativePropsInNativeAnimationsInFabric();
 
   const useAnimatedPropsLifecycle =
     ReactNativeFeatureFlags.useInsertionEffectsForAnimations()
@@ -119,12 +117,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           if (isFabricNode) {
             // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
             // Must not be called in Paper.
-            if (useSetNativePropsInNativeAnimationsInFabric) {
-              // $FlowFixMe[incompatible-use]
-              instance.setNativeProps(node.__getAnimatedValue());
-            } else {
-              scheduleUpdate();
-            }
+            scheduleUpdate();
           }
           return;
         }
@@ -201,12 +194,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         }
       };
     },
-    [
-      node,
-      useNativePropsInFabric,
-      useSetNativePropsInNativeAnimationsInFabric,
-      props,
-    ],
+    [node, useNativePropsInFabric, props],
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 

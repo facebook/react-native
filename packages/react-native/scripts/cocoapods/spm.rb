@@ -45,7 +45,7 @@ class SPMManager
       log_warning "If you're using Xcode 15 or earlier you might need to close and reopen the Xcode workspace"
       unless ENV["USE_FRAMEWORKS"] == "dynamic"
         @dependencies_by_pod.each do |pod_name, dependencies|
-          log_warning "Pod #{pod_name} is using swift package(s) #{dependencies.map{|i| i[:products]}.flatten.uniq.join(", ")} with static linking, this might cause linker errors. Consider using USE_FRAMEOWRKS=dynamic, see https://github.com/facebook/react-native/pull/44627#issuecomment-2123119711 for more information"
+          log_warning "Pod #{pod_name} is using swift package(s) #{dependencies.map{|i| i[:products]}.flatten.uniq.join(", ")} with static linking, this might cause linker errors. Consider using USE_FRAMEWORKS=dynamic, see https://github.com/facebook/react-native/pull/44627#issuecomment-2123119711 for more information"
         end
       end
     end

@@ -12,7 +12,8 @@
 
 import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
 
-const createReactNativeComponentClass = require('../Renderer/shims/createReactNativeComponentClass');
+const createReactNativeComponentClass =
+  require('../Renderer/shims/createReactNativeComponentClass').default;
 const getNativeComponentAttributes = require('./getNativeComponentAttributes');
 
 /**
