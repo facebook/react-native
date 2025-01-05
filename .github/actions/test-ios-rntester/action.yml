@@ -15,7 +15,7 @@ inputs:
     default: 2.6.10
   run-unit-tests:
     description: whether unit tests should run or not.
-    default: "false"
+    default: false
   hermes-tarball-artifacts-dir:
     description: The directory where the hermes tarball artifacts are stored
     default: /tmp/hermes/hermes-runtime-darwin
@@ -52,7 +52,7 @@ runs:
       with:
         ruby-version: ${{ inputs.ruby-version }}
     - name: Prepare IOS Tests
-      if: ${{ inputs.run-unit-tests == 'true' }}
+      if: ${{ inputs.run-unit-tests }}
       uses: ./.github/actions/prepare-ios-tests
     - name: Set HERMES_ENGINE_TARBALL_PATH envvar if Hermes tarball is present
       shell: bash
@@ -134,12 +134,12 @@ runs:
           echo "App found at $APP_PATH"
           echo "app-path=$APP_PATH" >> $GITHUB_ENV
     - name: "Run Tests: iOS Unit and Integration Tests"
-      if: ${{ inputs.run-unit-tests == 'true' }}
+      if: ${{ inputs.run-unit-tests }}
       shell: bash
       run: yarn test-ios
 
     - name: Zip Derived data folder
-      if: ${{ inputs.run-unit-tests == 'true' }}
+      if: ${{ inputs.run-unit-tests }}
       shell: bash
       run: |
         echo "zipping tests results"
@@ -148,7 +148,7 @@ runs:
         tar -zcvf xcresults.tar.gz $XCRESULT_PATH
     - name: Upload artifact
       uses: actions/upload-artifact@v4.3.4
-      if: ${{ inputs.run-unit-tests == 'true' }}
+      if: ${{ inputs.run-unit-tests }}
       with:
         name: xcresults
         path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
@@ -159,7 +159,7 @@ runs:
         name: RNTesterApp-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
         path: ${{ env.app-path }}
     - name: Store test results
-      if: ${{ inputs.run-unit-tests == 'true' }}
+      if: ${{ inputs.run-unit-tests }}
       uses: actions/upload-artifact@v4.3.4
       with:
         name: test-results
