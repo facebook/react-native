@@ -22,15 +22,17 @@ type LinearGradientDirection =
   | {type: 'angle', value: number}
   | {type: 'keyword', value: string};
 
-// null color stops indicate that the transition hint syntax is used. e.g. red, 20%, blue
+// null color indicate that the transition hint syntax is used. e.g. red, 20%, blue
 type ColorStopColor = ProcessedColorValue | null;
+// percentage or pixel value
+type ColorStopPosition = number | string | null;
 
 type ParsedGradientValue = {
   type: 'linearGradient',
   direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
     color: ColorStopColor,
-    position: number,
+    position: ColorStopPosition,
   }>,
 };
 
@@ -53,7 +55,7 @@ export default function processBackgroundImage(
     for (const bgImage of backgroundImage) {
       const processedColorStops: Array<{
         color: ColorStopColor,
-        position: number | null,
+        position: ColorStopPosition,
       }> = [];
       for (let index = 0; index < bgImage.colorStops.length; index++) {
         const colorStop = bgImage.colorStops[index];
@@ -65,10 +67,13 @@ export default function processBackgroundImage(
           positions.length === 1
         ) {
           const position = positions[0];
-          if (typeof position === 'string' && position.endsWith('%')) {
+          if (
+            typeof position === 'number' ||
+            (typeof position === 'string' && position.endsWith('%'))
+          ) {
             processedColorStops.push({
               color: null,
-              position: parseFloat(position) / 100,
+              position,
             });
           } else {
             // If a position is invalid, return an empty array and do not apply gradient. Same as web.
@@ -82,10 +87,13 @@ export default function processBackgroundImage(
           }
           if (positions != null && positions.length > 0) {
             for (const position of positions) {
-              if (position.endsWith('%')) {
+              if (
+                typeof position === 'number' ||
+                (typeof position === 'string' && position.endsWith('%'))
+              ) {
                 processedColorStops.push({
                   color: processedColor,
-                  position: parseFloat(position) / 100,
+                  position,
                 });
               } else {
                 // If a position is invalid, return an empty array and do not apply gradient. Same as web.
@@ -131,12 +139,10 @@ export default function processBackgroundImage(
         }
       }
 
-      const fixedColorStops = getFixedColorStops(processedColorStops);
-
       result = result.concat({
         type: 'linearGradient',
         direction,
-        colorStops: fixedColorStops,
+        colorStops: processedColorStops,
       });
     }
   }
@@ -186,8 +192,9 @@ function parseCSSLinearGradient(
     const colorStops = [];
     // split by comma, but not if it's inside a parentheses. e.g. red, rgba(0, 0, 0, 0.5), green => ["red", "rgba(0, 0, 0, 0.5)", "green"]
     const stops = colorStopsString.split(/,(?![^(]*\))/);
-    let lastStop = null;
-    for (const stop of stops) {
+    let prevStop = null;
+    for (let i = 0; i < stops.length; i++) {
+      const stop = stops[i];
       const trimmedStop = stop.trim().toLowerCase();
       // Match function like pattern or single words
       const colorStopParts = trimmedStop.match(/\S+\([^)]*\)|\S+/g);
@@ -198,61 +205,65 @@ function parseCSSLinearGradient(
       // Case 1: [color, position, position]
       if (colorStopParts.length === 3) {
         const color = colorStopParts[0];
-        const position1 = colorStopParts[1];
-        const position2 = colorStopParts[2];
+        const position1 = getPositionFromCSSValue(colorStopParts[1]);
+        const position2 = getPositionFromCSSValue(colorStopParts[2]);
         const processedColor = processColor(color);
         if (processedColor == null) {
           // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
           return [];
         }
-        if (position1.endsWith('%') && position2.endsWith('%')) {
-          colorStops.push({
-            color: processedColor,
-            position: parseFloat(position1) / 100,
-          });
-          colorStops.push({
-            color: processedColor,
-            position: parseFloat(position2) / 100,
-          });
-        } else {
+
+        if (position1 == null || position2 == null) {
           // If a position is invalid, return an empty array and do not apply any gradient. Same as web.
           return [];
         }
+
+        colorStops.push({
+          color: processedColor,
+          position: position1,
+        });
+        colorStops.push({
+          color: processedColor,
+          position: position2,
+        });
       }
       // Case 2: [color, position]
       else if (colorStopParts.length === 2) {
         const color = colorStopParts[0];
-        const position = colorStopParts[1];
+        const position = getPositionFromCSSValue(colorStopParts[1]);
         const processedColor = processColor(color);
         if (processedColor == null) {
           // If a color is invalid, return an empty array and do not apply any gradient. Same as web.
           return [];
         }
-        if (position.endsWith('%')) {
-          colorStops.push({
-            color: processedColor,
-            position: parseFloat(position) / 100,
-          });
-        } else {
+        if (position == null) {
           // If a position is invalid, return an empty array and do not apply any gradient. Same as web.
           return [];
         }
+        colorStops.push({
+          color: processedColor,
+          position,
+        });
       }
       // Case 3: [color]
       // Case 4: [position] => transition hint syntax
       else if (colorStopParts.length === 1) {
-        if (colorStopParts[0].endsWith('%')) {
+        const position = getPositionFromCSSValue(colorStopParts[0]);
+        if (position != null) {
+          // handle invalid transition hint syntax. transition hint syntax must have color before and after the position. e.g. red, 20%, blue
           if (
-            lastStop != null &&
-            lastStop.length === 1 &&
-            lastStop[0].endsWith('%')
+            (prevStop != null &&
+              prevStop.length === 1 &&
+              getPositionFromCSSValue(prevStop[0]) != null) ||
+            i === stops.length - 1 ||
+            i === 0
           ) {
             // If the last stop is a transition hint syntax, return an empty array and do not apply any gradient. Same as web.
             return [];
           }
           colorStops.push({
             color: null,
-            position: parseFloat(colorStopParts[0]) / 100,
+            position,
           });
         } else {
           const processedColor = processColor(colorStopParts[0]);
@@ -269,15 +280,13 @@ function parseCSSLinearGradient(
         // If a color stop is invalid, return an empty array and do not apply any gradient. Same as web.
         return [];
       }
-      lastStop = colorStopParts;
+      prevStop = colorStopParts;
     }
-
-    const fixedColorStops = getFixedColorStops(colorStops);
 
     gradients.push({
       type: 'linearGradient',
       direction,
-      colorStops: fixedColorStops,
+      colorStops,
     });
   }
 
@@ -343,79 +352,12 @@ function getAngleInDegrees(angle?: string): ?number {
   }
 }
 
-// https://drafts.csswg.org/css-images-4/#color-stop-fixup
-function getFixedColorStops(
-  colorStops: $ReadOnlyArray<{
-    color: ColorStopColor,
-    position: number | null,
-  }>,
-): Array<{
-  color: ColorStopColor,
-  position: number,
-}> {
-  let fixedColorStops: Array<{
-    color: ColorStopColor,
-    position: number,
-  }> = [];
-  let hasNullPositions = false;
-  let maxPositionSoFar = colorStops[0].position ?? 0;
-  for (let i = 0; i < colorStops.length; i++) {
-    const colorStop = colorStops[i];
-    let newPosition = colorStop.position;
-    if (newPosition === null) {
-      // Step 1:
-      // If the first color stop does not have a position,
-      // set its position to 0%. If the last color stop does not have a position,
-      // set its position to 100%.
-      if (i === 0) {
-        newPosition = 0;
-      } else if (i === colorStops.length - 1) {
-        newPosition = 1;
-      }
-    }
-    // Step 2:
-    // If a color stop or transition hint has a position
-    // that is less than the specified position of any color stop or transition hint
-    // before it in the list, set its position to be equal to the
-    // largest specified position of any color stop or transition hint before it.
-    if (newPosition !== null) {
-      newPosition = Math.max(newPosition, maxPositionSoFar);
-      fixedColorStops[i] = {
-        color: colorStop.color,
-        position: newPosition,
-      };
-      maxPositionSoFar = newPosition;
-    } else {
-      hasNullPositions = true;
-    }
+function getPositionFromCSSValue(position: string) {
+  if (position.endsWith('px')) {
+    return parseFloat(position);
   }
 
-  // Step 3:
-  // If any color stop still does not have a position,
-  // then, for each run of adjacent color stops without positions,
-  // set their positions so that they are evenly spaced between the preceding and
-  // following color stops with positions.
-  if (hasNullPositions) {
-    let lastDefinedIndex = 0;
-    for (let i = 1; i < fixedColorStops.length; i++) {
-      if (fixedColorStops[i] !== undefined) {
-        const unpositionedStops = i - lastDefinedIndex - 1;
-        if (unpositionedStops > 0) {
-          const startPosition = fixedColorStops[lastDefinedIndex].position;
-          const endPosition = fixedColorStops[i].position;
-          const increment =
-            (endPosition - startPosition) / (unpositionedStops + 1);
-          for (let j = 1; j <= unpositionedStops; j++) {
-            fixedColorStops[lastDefinedIndex + j] = {
-              color: colorStops[lastDefinedIndex + j].color,
-              position: startPosition + increment * j,
-            };
-          }
-        }
-        lastDefinedIndex = i;
-      }
-    }
+  if (position.endsWith('%')) {
+    return position;
   }
-
-  return fixedColorStops;
 }

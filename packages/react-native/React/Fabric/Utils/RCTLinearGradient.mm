@@ -10,6 +10,7 @@
 #import <React/RCTConversions.h>
 #import <React/RCTAnimationUtils.h>
 #import <react/utils/FloatComparison.h>
+#include <react/renderer/graphics/ValueUnit.h>
 
 using namespace facebook::react;
 
@@ -19,22 +20,7 @@ using namespace facebook::react;
 {
   UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
   const auto &direction = gradient.direction;
-  const auto colorStops = processColorTransitionHints(gradient.colorStops);
-
   UIImage *gradientImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext *_Nonnull rendererContext) {
-    CGContextRef context = rendererContext.CGContext;
-    NSMutableArray *colors = [NSMutableArray array];
-    CGFloat locations[colorStops.size()];
-
-    for (size_t i = 0; i < colorStops.size(); ++i) {
-      const auto &colorStop = colorStops[i];
-      CGColorRef cgColor = RCTCreateCGColorRefFromSharedColor(colorStop.color);
-      [colors addObject:(__bridge id)cgColor];
-      locations[i] = colorStop.position;
-    }
-
-    CGGradientRef cgGradient = CGGradientCreateWithColors(NULL, (__bridge CFArrayRef)colors, locations);
-
     CGPoint startPoint;
     CGPoint endPoint;
 
@@ -50,6 +36,25 @@ using namespace facebook::react;
       startPoint = CGPointMake(0.0, 0.0);
       endPoint = CGPointMake(0.0, size.height);
     }
+    
+    CGFloat dx = endPoint.x - startPoint.x;
+    CGFloat dy = endPoint.y - startPoint.y;
+    CGFloat gradientLineLength = sqrt(dx * dx + dy * dy);
+    const auto processedStops = getFixedColorStops(gradient.colorStops, gradientLineLength);
+    const auto colorStops = processColorTransitionHints(processedStops);
+    
+    CGContextRef context = rendererContext.CGContext;
+    NSMutableArray *colors = [NSMutableArray array];
+    CGFloat locations[colorStops.size()];
+
+    for (size_t i = 0; i < colorStops.size(); ++i) {
+      const auto &colorStop = colorStops[i];
+      CGColorRef cgColor = RCTCreateCGColorRefFromSharedColor(colorStop.color);
+      [colors addObject:(__bridge id)cgColor];
+      locations[i] = std::max(std::min(colorStop.position.resolve(0.0f), 1.0f), 0.0f);
+    }
+
+    CGGradientRef cgGradient = CGGradientCreateWithColors(NULL, (__bridge CFArrayRef)colors, locations);
 
     CGContextDrawLinearGradient(context, cgGradient, startPoint, endPoint, 0);
 
@@ -138,13 +143,12 @@ static CGFloat getAngleForKeyword(GradientKeyword keyword, CGSize size)
 // Algorithm is referred from Blink engine [source](https://github.com/chromium/chromium/blob/a296b1bad6dc1ed9d751b7528f7ca2134227b828/third_party/blink/renderer/core/css/css_gradient_value.cc#L240). 
 static std::vector<ColorStop> processColorTransitionHints(const std::vector<ColorStop>& originalStops)
 {
-  std::vector<ColorStop> colorStops = originalStops;
+  std::vector<ColorStop> colorStops = std::vector<ColorStop>(originalStops);
   int indexOffset = 0;
   
-  for (size_t i = 1; i < colorStops.size() - 1; i++) {
-    auto &colorStop = colorStops[i];
+  for (size_t i = 1; i < originalStops.size() - 1; ++i) {
     // Skip if not a color hint
-    if (colorStop.color) {
+    if (originalStops[i].color) {
       continue;
     }
     
@@ -153,9 +157,9 @@ static std::vector<ColorStop> processColorTransitionHints(const std::vector<Colo
       continue;
     }
     
-    Float offsetLeft = colorStops[x - 1].position;
-    Float offsetRight = colorStops[x + 1].position;
-    Float offset = colorStop.position;
+    Float offsetLeft = colorStops[x - 1].position.resolve(0.0f);
+    Float offsetRight = colorStops[x + 1].position.resolve(0.0f);
+    Float offset = colorStops[x].position.resolve(0.0f);
     Float leftDist = offset - offsetLeft;
     Float rightDist = offsetRight - offset;
     Float totalDist = offsetRight - offsetLeft;
@@ -169,12 +173,12 @@ static std::vector<ColorStop> processColorTransitionHints(const std::vector<Colo
     }
     
     if (facebook::react::floatEquality(leftDist, .0f)) {
-      colorStop.color = rightSharedColor;
+      colorStops[x].color = rightSharedColor;
       continue;
     }
     
     if (facebook::react::floatEquality(rightDist, .0f)) {
-      colorStop.color = leftSharedColor;
+      colorStops[x].color = leftSharedColor;
       continue;
     }
     
@@ -186,35 +190,35 @@ static std::vector<ColorStop> processColorTransitionHints(const std::vector<Colo
       for (int y = 0; y < 7; ++y) {
         ColorStop newStop{
           SharedColor(),
-          offsetLeft + leftDist * ((7.0f + y) / 13.0f)
+          ValueUnit(offsetLeft + leftDist * ((7.0f + y) / 13.0f), UnitType::Point)
         };
         newStops.push_back(newStop);
       }
       ColorStop stop1{
         SharedColor(),
-        offset + rightDist * (1.0f / 3.0f)
+        ValueUnit(offset + rightDist * (1.0f / 3.0f), UnitType::Point)
       };
       ColorStop stop2 {
         SharedColor(),
-        offset + rightDist * (2.0f / 3.0f)
+        ValueUnit(offset + rightDist * (2.0f / 3.0f), UnitType::Point)
       };
       newStops.push_back(stop1);
       newStops.push_back(stop2);
     } else {
       ColorStop stop1 {
         SharedColor(),
-        offsetLeft + leftDist * (1.0f / 3.0f)
+        ValueUnit(offsetLeft + leftDist * (1.0f / 3.0f), UnitType::Point)
       };
       ColorStop stop2 {
         SharedColor(),
-        offsetLeft + leftDist * (2.0f / 3.0f)
+        ValueUnit(offsetLeft + leftDist * (2.0f / 3.0f), UnitType::Point)
       };
       newStops.push_back(stop1);
       newStops.push_back(stop2);
       for (int y = 0; y < 7; ++y) {
         ColorStop newStop {
           SharedColor(),
-          offset + rightDist * (y / 13.0f)
+          ValueUnit(offset + rightDist * (y / 13.0f), UnitType::Point)
         };
         newStops.push_back(newStop);
       }
@@ -231,7 +235,7 @@ static std::vector<ColorStop> processColorTransitionHints(const std::vector<Colo
     NSArray<UIColor *> *outputRange = @[leftColor, rightColor];
 
     for (auto &newStop : newStops) {
-      Float pointRelativeOffset = (newStop.position - offsetLeft) / totalDist;
+      Float pointRelativeOffset = (newStop.position.resolve(0.0f) - offsetLeft) / totalDist;
       Float weighting = pow(
         pointRelativeOffset,
         logRatio
@@ -259,6 +263,91 @@ static std::vector<ColorStop> processColorTransitionHints(const std::vector<Colo
   }
   
   return colorStops;
+}
+
+// https://drafts.csswg.org/css-images-4/#color-stop-fixup
+static std::vector<ColorStop> getFixedColorStops(const std::vector<ColorStop>& colorStops, CGFloat gradientLineLength) {
+  std::vector<ColorStop> fixedColorStops(colorStops.size());
+  bool hasNullPositions = false;
+  float maxPositionSoFar = resolveColorStopPosition(colorStops[0].position, gradientLineLength).resolve(0.0f);
+
+  for (size_t i = 0; i < colorStops.size(); i++) {
+    const auto& colorStop = colorStops[i];
+    ValueUnit newPosition = resolveColorStopPosition(colorStop.position, gradientLineLength);
+
+    if (newPosition.unit == UnitType::Undefined) {
+      // Step 1:
+      // If the first color stop does not have a position,
+      // set its position to 0%. If the last color stop does not have a position,
+      // set its position to 100%.
+      if (i == 0) {
+        newPosition.value = 0.0f;
+        newPosition.unit = UnitType::Point;
+      } else if (i == colorStops.size() - 1) {
+        newPosition.value = 1.0f;
+        newPosition.unit = UnitType::Point;
+      }
+    }
+
+    // Step 2:
+    // If a color stop or transition hint has a position
+    // that is less than the specified position of any color stop or transition hint
+    // before it in the list, set its position to be equal to the
+    // largest specified position of any color stop or transition hint before it.
+    if (newPosition.unit != UnitType::Undefined) {
+      newPosition.value = std::max(newPosition.resolve(0.0f), maxPositionSoFar);
+      newPosition.unit = UnitType::Point;
+      fixedColorStops[i] = ColorStop{
+        colorStop.color,
+        newPosition
+      };
+      maxPositionSoFar = newPosition.resolve(0.0f);
+    } else {
+      hasNullPositions = true;
+    }
+  }
+
+  // Step 3:
+  // If any color stop still does not have a position,
+  // then, for each run of adjacent color stops without positions,
+  // set their positions so that they are evenly spaced between the preceding and
+  // following color stops with positions.
+  if (hasNullPositions) {
+    size_t lastDefinedIndex = 0;
+    for (size_t i = 1; i < fixedColorStops.size(); i++) {
+      if (fixedColorStops[i].position.unit != UnitType::Undefined) {
+        size_t unpositionedStops = i - lastDefinedIndex - 1;
+        if (unpositionedStops > 0) {
+          Float startPosition = fixedColorStops[lastDefinedIndex].position.resolve(0.0f);
+          Float endPosition = fixedColorStops[i].position.resolve(0.0f);
+          Float increment = (endPosition - startPosition) / (unpositionedStops + 1);
+          
+          for (size_t j = 1; j <= unpositionedStops; j++) {
+            fixedColorStops[lastDefinedIndex + j] = ColorStop{
+              colorStops[lastDefinedIndex + j].color,
+              ValueUnit(startPosition + increment * j, UnitType::Point)
+            };
+          }
+        }
+        lastDefinedIndex = i;
+      }
+    }
+  }
+
+  return fixedColorStops;
+}
+
+static ValueUnit resolveColorStopPosition(ValueUnit position, CGFloat gradientLineLength) {
+  if (position.unit == UnitType::Point) {
+    return ValueUnit(position.resolve(0.0f) / gradientLineLength, UnitType::Point);
+  }
+  
+  if (position.unit == UnitType::Percent) {
+    return ValueUnit(position.resolve(1.0f), UnitType::Point);
+  }
+  
+  return position;
+  
 }
 
 @end
