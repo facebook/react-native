@@ -36,11 +36,11 @@ class SurfaceManager final {
       const std::string& moduleName,
       const folly::dynamic& props,
       const LayoutConstraints& layoutConstraints = {},
-      const LayoutContext& layoutContext = {}) const noexcept;
+      const LayoutContext& layoutContext = {}) noexcept;
 
-  void stopSurface(SurfaceId surfaceId) const noexcept;
+  void stopSurface(SurfaceId surfaceId) noexcept;
 
-  void stopAllSurfaces() const noexcept;
+  void stopAllSurfaces() noexcept;
 
   Size measureSurface(
       SurfaceId surfaceId,
@@ -63,7 +63,7 @@ class SurfaceManager final {
 
   const Scheduler& scheduler_;
   mutable std::shared_mutex mutex_; // Protects `registry_`.
-  mutable std::unordered_map<SurfaceId, SurfaceHandler> registry_{};
+  std::unordered_map<SurfaceId, SurfaceHandler> registry_{};
 };
 
 } // namespace facebook::react
