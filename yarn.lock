@@ -8348,6 +8348,11 @@ tiny-invariant@^1.3.3:
   resolved "https://registry.yarnpkg.com/tiny-invariant/-/tiny-invariant-1.3.3.tgz#46680b7a873a0d5d10005995eb90a70d74d60127"
   integrity sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==
 
+tinybench@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/tinybench/-/tinybench-3.1.0.tgz#ec68451ff05233cf3de12c46f39f06011897109a"
+  integrity sha512-Km+oMh2xqNCxuyoUsqbRmHgFSd8sATh7v7xreP+kHN6x67w28Pawr83WmBxcaORvxkc0Ex6zgqK951yBnTFaaQ==
+
 tmp@^0.0.33:
   version "0.0.33"
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.0.33.tgz#6d34335889768d21b2bcda0aa277ced3b1bfadf9"
