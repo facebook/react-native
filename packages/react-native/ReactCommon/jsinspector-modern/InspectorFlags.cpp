@@ -51,8 +51,7 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
           true,
 #elif defined(REACT_NATIVE_FORCE_DISABLE_FUSEBOX)
           false,
-#elif defined(HERMES_ENABLE_DEBUGGER) && \
-    defined(REACT_NATIVE_ENABLE_FUSEBOX_DEBUG)
+#elif defined(HERMES_ENABLE_DEBUGGER)
           true,
 #elif defined(REACT_NATIVE_ENABLE_FUSEBOX_RELEASE)
           true,
