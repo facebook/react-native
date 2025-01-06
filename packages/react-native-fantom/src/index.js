@@ -141,6 +141,22 @@ export function createRoot(rootConfig?: RootConfig): Root {
 
 export const benchmark = Benchmark;
 
+type FantomConstants = $ReadOnly<{
+  isRunningFromCI: boolean,
+}>;
+
+let constants: FantomConstants = {
+  isRunningFromCI: false,
+};
+
+export function getConstants(): FantomConstants {
+  return constants;
+}
+
+export function setConstants(newConstants: FantomConstants): void {
+  constants = newConstants;
+}
+
 /**
  * Quick and dirty polyfills required by tinybench.
  */
