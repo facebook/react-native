@@ -25,8 +25,9 @@ void ScrollViewEventEmitter::onScrollBeginDrag(
 }
 
 void ScrollViewEventEmitter::onScrollEndDrag(
-    const ScrollEvent& scrollEvent) const {
-  dispatchScrollViewEvent("scrollEndDrag", scrollEvent);
+    const ScrollEndDragEvent& scrollEvent) const {
+  dispatchEvent(
+      "scrollEndDrag", std::make_shared<ScrollEndDragEvent>(scrollEvent));
 }
 
 void ScrollViewEventEmitter::onMomentumScrollBegin(
