@@ -45,10 +45,17 @@ void SurfaceManager::startSurface(
 }
 
 void SurfaceManager::stopSurface(SurfaceId surfaceId) noexcept {
+  bool surfaceWasRunning = false;
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     surfaceHandler.stop();
     scheduler_.unregisterSurface(surfaceHandler);
+    surfaceWasRunning = true;
   });
+  if (!surfaceWasRunning) {
+    LOG(WARNING)
+        << "SurfaceManager::stopSurface tried to stop a surface which was not running, surfaceId = "
+        << surfaceId;
+  }
 
   {
     std::unique_lock lock(mutex_);
@@ -59,6 +66,19 @@ void SurfaceManager::stopSurface(SurfaceId surfaceId) noexcept {
 }
 
 void SurfaceManager::stopAllSurfaces() noexcept {
+  auto surfaceIds = getRunningSurfaces();
+  for (const auto& surfaceId : surfaceIds) {
+    stopSurface(surfaceId);
+  }
+}
+
+bool SurfaceManager::isSurfaceRunning(SurfaceId surfaceId) const noexcept {
+  std::shared_lock lock(mutex_);
+  return registry_.contains(surfaceId);
+}
+
+std::unordered_set<SurfaceId> SurfaceManager::getRunningSurfaces()
+    const noexcept {
   std::unordered_set<SurfaceId> surfaceIds;
   {
     std::shared_lock lock(mutex_);
@@ -66,9 +86,7 @@ void SurfaceManager::stopAllSurfaces() noexcept {
       surfaceIds.insert(surfaceId);
     }
   }
-  for (const auto& surfaceId : surfaceIds) {
-    stopSurface(surfaceId);
-  }
+  return surfaceIds;
 }
 
 Size SurfaceManager::measureSurface(
