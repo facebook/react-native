@@ -17,6 +17,8 @@
 
 namespace facebook::react {
 
+extern const char RuntimeSchedulerKey[] = "RuntimeScheduler";
+
 namespace {
 std::unique_ptr<RuntimeSchedulerBase> getRuntimeSchedulerImplementation(
     RuntimeExecutor runtimeExecutor,

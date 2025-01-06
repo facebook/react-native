@@ -49,7 +49,7 @@ Scheduler::Scheduler(
 
   auto weakRuntimeScheduler =
       contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-          "RuntimeScheduler");
+          RuntimeSchedulerKey);
   react_native_assert(
       weakRuntimeScheduler.has_value() &&
       "Unexpected state: RuntimeScheduler was not provided.");
@@ -151,7 +151,7 @@ Scheduler::~Scheduler() {
   if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     auto weakRuntimeScheduler =
         contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-            "RuntimeScheduler");
+            RuntimeSchedulerKey);
     auto runtimeScheduler = weakRuntimeScheduler.has_value()
         ? weakRuntimeScheduler.value().lock()
         : nullptr;
