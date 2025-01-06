@@ -26,7 +26,7 @@ void SurfaceManager::startSurface(
     const std::string& moduleName,
     const folly::dynamic& props,
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) const noexcept {
+    const LayoutContext& layoutContext) noexcept {
   {
     std::unique_lock lock(mutex_);
     auto surfaceHandler = SurfaceHandler{moduleName, surfaceId};
@@ -44,7 +44,7 @@ void SurfaceManager::startSurface(
   });
 }
 
-void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
+void SurfaceManager::stopSurface(SurfaceId surfaceId) noexcept {
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     surfaceHandler.stop();
     scheduler_.unregisterSurface(surfaceHandler);
@@ -58,7 +58,7 @@ void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
   }
 }
 
-void SurfaceManager::stopAllSurfaces() const noexcept {
+void SurfaceManager::stopAllSurfaces() noexcept {
   std::unordered_set<SurfaceId> surfaceIds;
   {
     std::shared_lock lock(mutex_);
