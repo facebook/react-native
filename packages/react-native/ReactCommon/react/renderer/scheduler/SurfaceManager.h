@@ -8,6 +8,7 @@
 #pragma once
 
 #include <mutex>
+#include <optional>
 #include <shared_mutex>
 #include <unordered_map>
 
@@ -29,6 +30,15 @@ class SurfaceManager final {
   explicit SurfaceManager(const Scheduler& scheduler) noexcept;
   ~SurfaceManager() noexcept;
 
+  /* SurfaceProps contain information about running surfaces */
+  struct SurfaceProps {
+    SurfaceId surfaceId;
+    std::string moduleName;
+    folly::dynamic props;
+    LayoutConstraints layoutConstraints;
+    LayoutContext layoutContext;
+  };
+
 #pragma mark - Surface Management
 
   void startSurface(
@@ -45,6 +55,9 @@ class SurfaceManager final {
   bool isSurfaceRunning(SurfaceId surfaceId) const noexcept;
 
   std::unordered_set<SurfaceId> getRunningSurfaces() const noexcept;
+
+  std::optional<SurfaceManager::SurfaceProps> getSurfaceProps(
+      SurfaceId surfaceId) const noexcept;
 
   Size measureSurface(
       SurfaceId surfaceId,
