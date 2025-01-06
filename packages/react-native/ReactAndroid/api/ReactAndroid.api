@@ -2223,13 +2223,6 @@ public final class com/facebook/react/devsupport/InspectorFlags {
 	public static final fun getIsProfilingBuild ()Z
 }
 
-public class com/facebook/react/devsupport/InspectorPackagerConnection : com/facebook/react/devsupport/IInspectorPackagerConnection {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
-	public fun closeQuietly ()V
-	public fun connect ()V
-	public fun sendEventToAllConnections (Ljava/lang/String;)V
-}
-
 public class com/facebook/react/devsupport/JSDebuggerWebSocketClient : okhttp3/WebSocketListener {
 	public fun <init> ()V
 	public fun closeQuietly ()V
