@@ -44,13 +44,6 @@ void SurfaceManager::startSurface(
   });
 }
 
-void SurfaceManager::startEmptySurface(
-    SurfaceId surfaceId,
-    const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) const noexcept {
-  startSurface(surfaceId, "", {}, layoutConstraints, layoutContext);
-}
-
 void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     surfaceHandler.stop();
