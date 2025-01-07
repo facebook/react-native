@@ -14,7 +14,7 @@
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-#include <react/renderer/uimanager/SurfaceRegistryBinding.h>
+#include <react/renderer/uimanager/AppRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/renderer/uimanager/UIManagerMountHook.h>
@@ -237,7 +237,7 @@ void UIManager::startSurface(
 
   runtimeExecutor_([=](jsi::Runtime& runtime) {
     TraceSection s("UIManager::startSurface::onRuntime");
-    SurfaceRegistryBinding::startSurface(
+    AppRegistryBinding::startSurface(
         runtime, surfaceId, moduleName, props, displayMode);
   });
 }
@@ -255,7 +255,7 @@ void UIManager::setSurfaceProps(
   TraceSection s("UIManager::setSurfaceProps");
 
   runtimeExecutor_([=](jsi::Runtime& runtime) {
-    SurfaceRegistryBinding::setSurfaceProps(
+    AppRegistryBinding::setSurfaceProps(
         runtime, surfaceId, moduleName, props, displayMode);
   });
 }
@@ -275,7 +275,7 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
     // commits from the JavaScript side will not be able to reference a
     // `ShadowTree` and will fail silently.
     runtimeExecutor_([=](jsi::Runtime& runtime) {
-      SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
+      AppRegistryBinding::stopSurface(runtime, surfaceId);
     });
 
     if (leakChecker_) {
