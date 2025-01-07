@@ -70,6 +70,12 @@ class AndroidTextInputShadowNode final
   AttributedString getMostRecentAttributedString() const;
 
   /*
+   * Determines the constraints to use while measure the underlying text
+   */
+  LayoutConstraints getTextConstraints(
+      const LayoutConstraints& layoutConstraints) const;
+
+  /*
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
