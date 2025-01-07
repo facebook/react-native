@@ -17,6 +17,8 @@ namespace facebook::react {
 
 namespace {
 
+constexpr int INVALID_TIMER_ID = -1;
+
 double coerceNumberTimeout(jsi::Runtime& rt, const jsi::Value& timeout) {
   double delay = 0.0;
 
@@ -195,29 +197,34 @@ void TimerManager::deleteRecurringTimer(
 }
 
 void TimerManager::callTimer(TimerHandle timerHandle) {
-  runtimeExecutor_([this, timerHandle](jsi::Runtime& runtime) {
-    auto it = timers_.find(timerHandle);
-    if (it != timers_.end()) {
-      auto& timerCallback = it->second;
-      bool repeats = timerCallback.repeat;
+  runtimeExecutor_(
+      [weakThis = weak_from_this(), timerHandle](jsi::Runtime& runtime) {
+        auto strongThis = weakThis.lock();
+        if (!strongThis) {
+          return;
+        }
+        if (auto it = strongThis->timers_.find(timerHandle);
+            it != strongThis->timers_.end()) {
+          auto& timerCallback = it->second;
+          bool repeats = timerCallback.repeat;
 
-      {
-        TraceSection s(
-            "TimerManager::callTimer",
-            "id",
-            timerHandle,
-            "type",
-            getTimerSourceName(timerCallback.source));
-        timerCallback.invoke(runtime);
-      }
+          {
+            TraceSection s(
+                "TimerManager::callTimer",
+                "id",
+                timerHandle,
+                "type",
+                getTimerSourceName(timerCallback.source));
+            timerCallback.invoke(runtime);
+          }
 
-      if (!repeats) {
-        // Invoking a timer has the potential to delete it. Do not re-use the
-        // existing iterator to erase it from the map.
-        timers_.erase(timerHandle);
-      }
-    }
-  });
+          if (!repeats) {
+            // Invoking a timer has the potential to delete it. Do not re-use
+            // the existing iterator to erase it from the map.
+            strongThis->timers_.erase(timerHandle);
+          }
+        }
+      });
 }
 
 void TimerManager::attachGlobals(jsi::Runtime& runtime) {
@@ -234,11 +241,16 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             runtime,
             jsi::PropNameID::forAscii(runtime, "setImmediate"),
             2, // Function, ...args
-            [this](
+            [weakThis = weak_from_this()](
                 jsi::Runtime& rt,
                 const jsi::Value& thisVal,
                 const jsi::Value* args,
                 size_t count) {
+              auto strongThis = weakThis.lock();
+              if (!strongThis) {
+                return INVALID_TIMER_ID;
+              }
+
               if (count == 0) {
                 throw jsi::JSError(
                     rt,
@@ -247,7 +259,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
 
               if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
                 // Do not throw any error to match web spec
-                return timerIndex_++;
+                return strongThis->timerIndex_++;
               }
               auto callback = args[0].getObject(rt).getFunction(rt);
 
@@ -257,7 +269,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
                 moreArgs.emplace_back(rt, args[extraArgNum]);
               }
 
-              return createReactNativeMicrotask(
+              return strongThis->createReactNativeMicrotask(
                   std::move(callback), std::move(moreArgs));
             }));
 
@@ -268,14 +280,15 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             runtime,
             jsi::PropNameID::forAscii(runtime, "clearImmediate"),
             1, // handle
-            [this](
+            [weakThis = weak_from_this()](
                 jsi::Runtime& rt,
                 const jsi::Value& thisVal,
                 const jsi::Value* args,
                 size_t count) {
-              if (count > 0 && args[0].isNumber()) {
+              if (auto strongThis = weakThis.lock();
+                  strongThis != nullptr && count > 0 && args[0].isNumber()) {
                 auto handle = (TimerHandle)args[0].asNumber();
-                deleteReactNativeMicrotask(rt, handle);
+                strongThis->deleteReactNativeMicrotask(rt, handle);
               }
               return jsi::Value::undefined();
             }));
@@ -288,11 +301,15 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           runtime,
           jsi::PropNameID::forAscii(runtime, "setTimeout"),
           3, // Function, delay, ...args
-          [this](
+          [weakThis = weak_from_this()](
               jsi::Runtime& rt,
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
+            auto strongThis = weakThis.lock();
+            if (!strongThis) {
+              return INVALID_TIMER_ID;
+            }
             if (count == 0) {
               throw jsi::JSError(
                   rt,
@@ -301,7 +318,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
 
             if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
               // Do not throw any error to match web spec
-              return timerIndex_++;
+              return strongThis->timerIndex_++;
             }
 
             auto callback = args[0].getObject(rt).getFunction(rt);
@@ -313,7 +330,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               moreArgs.emplace_back(rt, args[extraArgNum]);
             }
 
-            return createTimer(
+            return strongThis->createTimer(
                 std::move(callback),
                 std::move(moreArgs),
                 delay,
@@ -327,14 +344,15 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           runtime,
           jsi::PropNameID::forAscii(runtime, "clearTimeout"),
           1, // timerID
-          [this](
+          [weakThis = weak_from_this()](
               jsi::Runtime& rt,
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
-            if (count > 0 && args[0].isNumber()) {
+            if (auto strongThis = weakThis.lock();
+                strongThis != nullptr && count > 0 && args[0].isNumber()) {
               auto handle = (TimerHandle)args[0].asNumber();
-              deleteTimer(rt, handle);
+              strongThis->deleteTimer(rt, handle);
             }
             return jsi::Value::undefined();
           }));
@@ -346,11 +364,16 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           runtime,
           jsi::PropNameID::forAscii(runtime, "setInterval"),
           3, // Function, delay, ...args
-          [this](
+          [weakThis = weak_from_this()](
               jsi::Runtime& rt,
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
+            auto strongThis = weakThis.lock();
+            if (!strongThis) {
+              return INVALID_TIMER_ID;
+            }
+
             if (count == 0) {
               throw jsi::JSError(
                   rt,
@@ -372,7 +395,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
               moreArgs.emplace_back(rt, args[extraArgNum]);
             }
 
-            return createRecurringTimer(
+            return strongThis->createRecurringTimer(
                 std::move(callback),
                 std::move(moreArgs),
                 delay,
@@ -386,14 +409,15 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           runtime,
           jsi::PropNameID::forAscii(runtime, "clearInterval"),
           1, // timerID
-          [this](
+          [weakThis = weak_from_this()](
               jsi::Runtime& rt,
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
-            if (count > 0 && args[0].isNumber()) {
+            if (auto strongThis = weakThis.lock();
+                strongThis != nullptr && count > 0 && args[0].isNumber()) {
               auto handle = (TimerHandle)args[0].asNumber();
-              deleteRecurringTimer(rt, handle);
+              strongThis->deleteRecurringTimer(rt, handle);
             }
             return jsi::Value::undefined();
           }));
@@ -405,11 +429,16 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           runtime,
           jsi::PropNameID::forAscii(runtime, "requestAnimationFrame"),
           1, // callback
-          [this](
+          [weakThis = weak_from_this()](
               jsi::Runtime& rt,
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
+            auto strongThis = weakThis.lock();
+            if (!strongThis) {
+              return INVALID_TIMER_ID;
+            }
+
             if (count == 0) {
               throw jsi::JSError(
                   rt,
@@ -442,7 +471,7 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
             // The current implementation of requestAnimationFrame is the same
             // as setTimeout(0). This isn't exactly how requestAnimationFrame
             // is supposed to work on web, and may change in the future.
-            return createTimer(
+            return strongThis->createTimer(
                 std::move(callback),
                 std::vector<jsi::Value>(),
                 /* delay */ 0,
@@ -456,14 +485,15 @@ void TimerManager::attachGlobals(jsi::Runtime& runtime) {
           runtime,
           jsi::PropNameID::forAscii(runtime, "cancelAnimationFrame"),
           1, // timerID
-          [this](
+          [weakThis = weak_from_this()](
               jsi::Runtime& rt,
               const jsi::Value& thisVal,
               const jsi::Value* args,
               size_t count) {
-            if (count > 0 && args[0].isNumber()) {
+            if (auto strongThis = weakThis.lock();
+                strongThis != nullptr && count > 0 && args[0].isNumber()) {
               auto handle = (TimerHandle)args[0].asNumber();
-              deleteTimer(rt, handle);
+              strongThis->deleteTimer(rt, handle);
             }
             return jsi::Value::undefined();
           }));

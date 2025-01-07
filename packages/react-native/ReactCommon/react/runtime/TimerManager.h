@@ -49,7 +49,7 @@ struct TimerCallback {
   TimerSource source;
 };
 
-class TimerManager {
+class TimerManager : public std::enable_shared_from_this<TimerManager> {
  public:
   explicit TimerManager(
       std::unique_ptr<PlatformTimerRegistry> platformTimerRegistry) noexcept;
