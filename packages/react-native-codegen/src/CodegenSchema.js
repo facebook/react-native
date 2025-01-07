@@ -439,4 +439,6 @@ export type CompleteTypeAnnotation =
   | UnsafeAnyTypeAnnotation
   | ArrayTypeAnnotation<CompleteTypeAnnotation>
   | ObjectTypeAnnotation<CompleteTypeAnnotation>
+  // Components
+  | CommandTypeAnnotation
   | CompleteReservedTypeAnnotation;
