@@ -89,6 +89,22 @@ std::unordered_set<SurfaceId> SurfaceManager::getRunningSurfaces()
   return surfaceIds;
 }
 
+std::optional<SurfaceManager::SurfaceProps> SurfaceManager::getSurfaceProps(
+    SurfaceId surfaceId) const noexcept {
+  std::optional<SurfaceManager::SurfaceProps> surfaceProps;
+
+  visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
+    surfaceProps = SurfaceManager::SurfaceProps{
+        surfaceId,
+        surfaceHandler.getModuleName(),
+        surfaceHandler.getProps(),
+        surfaceHandler.getLayoutConstraints(),
+        surfaceHandler.getLayoutContext()};
+  });
+
+  return surfaceProps;
+}
+
 Size SurfaceManager::measureSurface(
     SurfaceId surfaceId,
     const LayoutConstraints& layoutConstraints,
