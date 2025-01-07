@@ -5,19 +5,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "SurfaceRegistryBinding.h"
+#include "AppRegistryBinding.h"
 #include <cxxreact/TraceSection.h>
 #include <react/renderer/uimanager/primitives.h>
 
 namespace facebook::react {
 
-void SurfaceRegistryBinding::startSurface(
+/* static */ void AppRegistryBinding::startSurface(
     jsi::Runtime& runtime,
     SurfaceId surfaceId,
     const std::string& moduleName,
     const folly::dynamic& initialProps,
     DisplayMode displayMode) {
-  TraceSection s("SurfaceRegistryBinding::startSurface");
+  TraceSection s("AppRegistryBinding::startSurface");
   jsi::Object parameters(runtime);
   parameters.setProperty(runtime, "rootTag", surfaceId);
   parameters.setProperty(
@@ -28,7 +28,7 @@ void SurfaceRegistryBinding::startSurface(
   auto registry = global.getProperty(runtime, "RN$AppRegistry");
   if (!registry.isObject()) {
     throw std::runtime_error(
-        "SurfaceRegistryBinding::startSurface failed. Global was not installed.");
+        "AppRegistryBinding::startSurface failed. Global was not installed.");
   }
   auto method = std::move(registry).asObject(runtime).getPropertyAsFunction(
       runtime, "runApplication");
@@ -39,7 +39,7 @@ void SurfaceRegistryBinding::startSurface(
        jsi::Value(runtime, displayModeToInt(displayMode))});
 }
 
-void SurfaceRegistryBinding::setSurfaceProps(
+/* static */ void AppRegistryBinding::setSurfaceProps(
     jsi::Runtime& runtime,
     SurfaceId surfaceId,
     const std::string& moduleName,
@@ -56,7 +56,7 @@ void SurfaceRegistryBinding::setSurfaceProps(
   auto registry = global.getProperty(runtime, "RN$AppRegistry");
   if (!registry.isObject()) {
     throw std::runtime_error(
-        "SurfaceRegistryBinding::setSurfaceProps failed. Global was not installed.");
+        "AppRegistryBinding::setSurfaceProps failed. Global was not installed.");
   }
 
   auto method = std::move(registry).asObject(runtime).getPropertyAsFunction(
@@ -68,7 +68,7 @@ void SurfaceRegistryBinding::setSurfaceProps(
        jsi::Value(runtime, displayModeToInt(displayMode))});
 }
 
-void SurfaceRegistryBinding::stopSurface(
+/* static */ void AppRegistryBinding::stopSurface(
     jsi::Runtime& runtime,
     SurfaceId surfaceId) {
   auto global = runtime.global();
@@ -76,7 +76,7 @@ void SurfaceRegistryBinding::stopSurface(
   if (!stopFunction.isObject() ||
       !stopFunction.asObject(runtime).isFunction(runtime)) {
     throw std::runtime_error(
-        "SurfaceRegistryBinding::stopSurface failed. Global was not installed.");
+        "AppRegistryBinding::stopSurface failed. Global was not installed.");
   }
 
   std::move(stopFunction)
