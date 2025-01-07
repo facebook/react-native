@@ -20,22 +20,11 @@ import nullthrows from 'nullthrows';
 import * as React from 'react';
 
 import '../../../../../Libraries/Core/InitializeCore.js';
+import ensureInstance from '../../../utilities/ensureInstance';
 
 declare const MutationObserver: Class<MutationObserverType>;
 
 setUpMutationObserver();
-
-function ensureInstance<T>(value: mixed, Class: Class<T>): T {
-  if (!(value instanceof Class)) {
-    // $FlowExpectedError[incompatible-use]
-    const className = Class.name;
-    throw new Error(
-      `Expected instance of ${className} but got ${String(value)}`,
-    );
-  }
-
-  return value;
-}
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
@@ -383,14 +372,14 @@ describe('MutationObserver', () => {
           <View
             key="node1"
             ref={receivedNode => {
-              maybeObservedNode = ensureReactNativeElement(receivedNode);
+              maybeObservedNode = receivedNode;
             }}>
             <View key="node1-1" />
           </View>,
         );
       });
 
-      const observedNode = nullthrows(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(maybeObservedNode);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -968,13 +957,13 @@ describe('MutationObserver', () => {
           <View
             key="node1"
             ref={receivedNode => {
-              maybeObservedNode = ensureReactNativeElement(receivedNode);
+              maybeObservedNode = receivedNode;
             }}
           />,
         );
       });
 
-      const observedNode = nullthrows(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(maybeObservedNode);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -1016,13 +1005,13 @@ describe('MutationObserver', () => {
           <View
             key="node1"
             ref={receivedNode => {
-              maybeObservedNode = ensureReactNativeElement(receivedNode);
+              maybeObservedNode = receivedNode;
             }}
           />,
         );
       });
 
-      const observedNode = nullthrows(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(maybeObservedNode);
 
       const observerCallback = jest.fn();
       const observer = new MutationObserver(observerCallback);
@@ -1048,13 +1037,13 @@ describe('MutationObserver', () => {
           <View
             key="node1"
             ref={receivedNode => {
-              maybeObservedNode = ensureReactNativeElement(receivedNode);
+              maybeObservedNode = receivedNode;
             }}
           />,
         );
       });
 
-      const observedNode = nullthrows(maybeObservedNode);
+      const observedNode = ensureReactNativeElement(maybeObservedNode);
 
       Fantom.runTask(() => {
         root.render(<></>);

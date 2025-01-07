@@ -256,6 +256,7 @@ Pod::Spec.new do |s|
     {
       :name => '[RN]Check rncore',
       :execution_position => :before_compile,
+      :always_out_of_date => '1',
       :script => <<-EOS
 echo "Checking whether Codegen has run..."
 rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"

@@ -3026,6 +3026,7 @@ export type enterKeyHintType =
   | \\"send\\";
 type PasswordRules = string;
 type IOSProps = $ReadOnly<{|
+  disableKeyboardShortcuts?: ?boolean,
   clearButtonMode?: ?(\\"never\\" | \\"while-editing\\" | \\"unless-editing\\" | \\"always\\"),
   clearTextOnFocus?: ?boolean,
   dataDetectorTypes?:
@@ -3379,6 +3380,7 @@ export type enterKeyHintType =
   | \\"enter\\";
 type PasswordRules = string;
 type IOSProps = $ReadOnly<{|
+  disableKeyboardShortcuts?: ?boolean,
   clearButtonMode?: ?(\\"never\\" | \\"while-editing\\" | \\"unless-editing\\" | \\"always\\"),
   clearTextOnFocus?: ?boolean,
   dataDetectorTypes?:

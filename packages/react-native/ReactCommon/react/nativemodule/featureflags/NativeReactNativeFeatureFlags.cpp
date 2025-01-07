@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9676b5510db0e4921e033c98a77a009a>>
+ * @generated SignedSource<<8a3d09022213ac2273459881becad4fe>>
  */
 
 /**
@@ -207,11 +207,6 @@ bool NativeReactNativeFeatureFlags::fixMappingOfEventPrioritiesBetweenFabricAndR
 bool NativeReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::fuseboxEnabledDebug(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::fuseboxEnabledDebug();
 }
 
 bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(

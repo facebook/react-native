@@ -153,6 +153,11 @@ std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
   std::unique_ptr<HermesRuntime> hermesRuntime =
       hermes::makeHermesRuntime(runtimeConfigBuilder.build());
 
+  auto errorPrototype = hermesRuntime->global()
+                            .getPropertyAsObject(*hermesRuntime, "Error")
+                            .getPropertyAsObject(*hermesRuntime, "prototype");
+  errorPrototype.setProperty(*hermesRuntime, "jsEngine", "hermes");
+
 #ifdef HERMES_ENABLE_DEBUGGER
   auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
   if (!inspectorFlags.getFuseboxEnabled()) {

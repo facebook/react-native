@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d29d9611ce7579ea4b4be8d17b636645>>
+ * @generated SignedSource<<cae28f66b5d16c6c723459d99e989082>>
  */
 
 /**
@@ -102,8 +102,6 @@ class NativeReactNativeFeatureFlags
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact(jsi::Runtime& runtime);
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
-
-  bool fuseboxEnabledDebug(jsi::Runtime& runtime);
 
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 

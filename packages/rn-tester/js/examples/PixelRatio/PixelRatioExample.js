@@ -182,21 +182,21 @@ exports.examples = [
   {
     title: 'Get pixel density',
     description: 'Get pixel density of the device.',
-    render(): React$Node {
+    render(): React.Node {
       return <GetPixelRatio />;
     },
   },
   {
     title: 'Get font scale',
     description: 'Get  the scaling factor for font sizes.',
-    render(): React$Node {
+    render(): React.Node {
       return <GetFontScale />;
     },
   },
   {
     title: 'Get pixel size from layout size',
     description: 'layout size (dp) -> pixel size (px)',
-    render(): React$Node {
+    render(): React.Node {
       return <LayoutSizeToPixel />;
     },
   },
@@ -204,7 +204,7 @@ exports.examples = [
     title: 'Rounds a layout size to the nearest pixel',
     description:
       'Rounds a layout size (dp) to the nearest layout size that corresponds to an integer number of pixels',
-    render(): React$Node {
+    render(): React.Node {
       return <RoundToNearestPixel />;
     },
   },

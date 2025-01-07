@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a734c6ded6ca8ccf5ab3ff45531e1f86>>
+ * @generated SignedSource<<36caa4d81c790147714ea6ced92bbe23>>
  */
 
 /**
@@ -159,10 +159,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool fuseboxEnabledDebug() override {
-    return true;
-  }
-
   bool fuseboxEnabledRelease() override {
     return false;
   }
@@ -176,7 +172,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool loadVectorDrawablesOnImages() override {
-    return false;
+    return true;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

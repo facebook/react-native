@@ -8,6 +8,7 @@
  */
 
 const childProcess = require('child_process');
+const fs = require('fs');
 
 const usage = `
 === Usage ===
@@ -32,6 +33,38 @@ const APP_ID = args[1];
 const MAESTRO_FLOW = args[2];
 const IS_DEBUG = args[3] === 'debug';
 const WORKING_DIRECTORY = args[4];
+
+const MAX_ATTEMPTS = 3;
+
+async function executeFlowWithRetries(flow, currentAttempt) {
+  try {
+    console.info(`Executing flow: ${flow}`);
+    const timeout = 1000 * 60 * 10; // 10 minutes
+    childProcess.execSync(
+      `MAESTRO_DRIVER_STARTUP_TIMEOUT=120000 $HOME/.maestro/bin/maestro test ${flow} --format junit -e APP_ID=${APP_ID} --debug-output /tmp/MaestroLogs`,
+      {stdio: 'inherit', timeout},
+    );
+  } catch (err) {
+    if (currentAttempt < MAX_ATTEMPTS) {
+      console.info(`Retrying...`);
+      await executeFlowWithRetries(flow, currentAttempt + 1);
+    } else {
+      throw err;
+    }
+  }
+}
+
+async function executeFlowInFolder(flowFolder) {
+  const files = fs.readdirSync(flowFolder);
+  for (const file of files) {
+    const filePath = `${flowFolder}/${file}`;
+    if (fs.lstatSync(filePath).isDirectory()) {
+      await executeFlowInFolder(filePath);
+    } else {
+      await executeFlowWithRetries(filePath, 0);
+    }
+  }
+}
 
 async function main() {
   console.info('\n==============================');
@@ -81,10 +114,15 @@ async function main() {
   console.info(`Start testing ${MAESTRO_FLOW}`);
   let error = null;
   try {
-    childProcess.execSync(
-      `MAESTRO_DRIVER_STARTUP_TIMEOUT=120000 $HOME/.maestro/bin/maestro test ${MAESTRO_FLOW} --format junit -e APP_ID=${APP_ID} --debug-output /tmp/MaestroLogs`,
-      {stdio: 'inherit'},
-    );
+    //check if MAESTRO_FLOW is a folder
+    if (
+      fs.existsSync(MAESTRO_FLOW) &&
+      fs.lstatSync(MAESTRO_FLOW).isDirectory()
+    ) {
+      await executeFlowInFolder(MAESTRO_FLOW);
+    } else {
+      await executeFlowWithRetries(MAESTRO_FLOW, 0);
+    }
   } catch (err) {
     error = err;
   } finally {

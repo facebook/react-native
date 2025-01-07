@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0515d917d815dfe5b0b643a0fc55bb74>>
+ * @generated SignedSource<<b0c46b4cff86833bf3a6cd62189cd7ca>>
  */
 
 /**
@@ -203,11 +203,6 @@ class ReactNativeFeatureFlags {
    * Fixes a limitation on Android where the mounting coordinator would report there are no pending transactions but some of them were actually not processed due to the use of the push model.
    */
   RN_EXPORT static bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-
-  /**
-   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
-   */
-  RN_EXPORT static bool fuseboxEnabledDebug();
 
   /**
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.

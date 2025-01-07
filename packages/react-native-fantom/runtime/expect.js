@@ -133,17 +133,36 @@ class Expect {
       ).blameToPreviousFrame();
     }
 
-    let pass = false;
+    let thrownError;
     try {
       // $FlowExpectedError[not-a-function]
       this.#received();
     } catch (error) {
-      pass = expected != null ? error.message === expected : true;
+      thrownError = error;
     }
-    if (!this.#isExpectedResult(pass)) {
-      throw new ErrorWithCustomBlame(
-        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to throw`,
-      ).blameToPreviousFrame();
+
+    if (this.#isNot) {
+      if (expected != null) {
+        if (thrownError != null && thrownError.message === expected) {
+          throw new ErrorWithCustomBlame(
+            `Expected ${String(this.#received)} not to throw with message ${expected}"`,
+          ).blameToPreviousFrame();
+        }
+      } else if (thrownError != null) {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(this.#received)} not to throw, but threw ${String(thrownError)}`,
+        ).blameToPreviousFrame();
+      }
+    } else {
+      if (thrownError == null) {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(this.#received)} to throw`,
+        ).blameToPreviousFrame();
+      } else if (expected != null && thrownError.message !== expected) {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(this.#received)} to throw with message "${expected}", but threw with message "${thrownError.message}"`,
+        ).blameToPreviousFrame();
+      }
     }
   }
 

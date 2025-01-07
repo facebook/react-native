@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<14515ef1b547b112d7abff6c1a934fef>>
+ * @generated SignedSource<<0fcce70503da6bc18f90507d620c2cc2>>
  * @flow strict
  */
 
@@ -84,7 +84,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fixDifferentiatorEmittingUpdatesWithWrongParentTag: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
-  fuseboxEnabledDebug: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
   initEagerTurboModulesOnNativeModulesQueueAndroid: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
@@ -324,10 +323,6 @@ export const fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean> =
  */
 export const fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean> = createNativeFlagGetter('fixMountingCoordinatorReportedPendingTransactionsOnAndroid', false);
 /**
- * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
- */
-export const fuseboxEnabledDebug: Getter<boolean> = createNativeFlagGetter('fuseboxEnabledDebug', true);
-/**
  * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
  */
 export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fuseboxEnabledRelease', false);
@@ -342,7 +337,7 @@ export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('l
 /**
  * Adds support for loading vector drawable assets in the Image component (only on Android)
  */
-export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGetter('loadVectorDrawablesOnImages', false);
+export const loadVectorDrawablesOnImages: Getter<boolean> = createNativeFlagGetter('loadVectorDrawablesOnImages', true);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

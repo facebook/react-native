@@ -13,7 +13,7 @@
 #include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
@@ -135,7 +135,7 @@ void FabricUIManagerBinding::startSurfaceWithSurfaceHandler(
     jint surfaceId,
     jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandlerBinding,
     jboolean isMountable) {
-  SystraceSection s("FabricUIManagerBinding::startSurfaceWithSurfaceHandler");
+  TraceSection s("FabricUIManagerBinding::startSurfaceWithSurfaceHandler");
   if (enableFabricLogs_) {
     LOG(WARNING)
         << "FabricUIManagerBinding::startSurfaceWithSurfaceHandler() was called (address: "
@@ -180,7 +180,7 @@ void FabricUIManagerBinding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
     NativeMap* initialProps) {
-  SystraceSection s("FabricUIManagerBinding::startSurface");
+  TraceSection s("FabricUIManagerBinding::startSurface");
 
   if (enableFabricLogs_) {
     LOG(WARNING)
@@ -235,7 +235,7 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
     jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
-  SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
+  TraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
 
   if (enableFabricLogs_) {
     LOG(WARNING)
@@ -293,7 +293,7 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 
 // Used by non-bridgeless+Fabric
 void FabricUIManagerBinding::stopSurface(jint surfaceId) {
-  SystraceSection s("FabricUIManagerBinding::stopSurface");
+  TraceSection s("FabricUIManagerBinding::stopSurface");
   if (enableFabricLogs_) {
     LOG(WARNING)
         << "FabricUIManagerBinding::stopSurface() was called (address: " << this
@@ -336,7 +336,7 @@ void FabricUIManagerBinding::stopSurface(jint surfaceId) {
 void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
     jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
         surfaceHandlerBinding) {
-  SystraceSection s("FabricUIManagerBinding::stopSurfaceWithSurfaceHandler");
+  TraceSection s("FabricUIManagerBinding::stopSurfaceWithSurfaceHandler");
   const auto& surfaceHandler =
       surfaceHandlerBinding->cthis()->getSurfaceHandler();
   if (enableFabricLogs_) {
@@ -377,7 +377,7 @@ void FabricUIManagerBinding::setConstraints(
     jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
-  SystraceSection s("FabricUIManagerBinding::setConstraints");
+  TraceSection s("FabricUIManagerBinding::setConstraints");
 
   auto scheduler = getScheduler();
   if (!scheduler) {
@@ -425,7 +425,7 @@ void FabricUIManagerBinding::installFabricUIManager(
     jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
     EventBeatManager* eventBeatManager,
     ComponentFactory* componentsRegistry) {
-  SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
+  TraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
   enableFabricLogs_ = ReactNativeFeatureFlags::enableFabricLogs();
 

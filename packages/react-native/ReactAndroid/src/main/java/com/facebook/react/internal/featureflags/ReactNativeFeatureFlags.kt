@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9905ea16f20e17fa8a559dfe4c5ea00e>>
+ * @generated SignedSource<<1ac20a64883288436912fa6931bcecdb>>
  */
 
 /**
@@ -225,12 +225,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = accessor.fixMountingCoordinatorReportedPendingTransactionsOnAndroid()
-
-  /**
-   * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in debug builds. This flag is global and should not be changed across React Host lifetimes.
-   */
-  @JvmStatic
-  public fun fuseboxEnabledDebug(): Boolean = accessor.fuseboxEnabledDebug()
 
   /**
    * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.

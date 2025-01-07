@@ -14,9 +14,10 @@ import type {
 } from './getFantomRenderedOutput';
 import type {MixedElement} from 'react';
 
+import * as Benchmark from './Benchmark';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
-import FantomModule from './specs/NativeFantomModule';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
+import NativeFantom from 'react-native/src/private/specs/modules/NativeFantom';
 
 let globalSurfaceIdCounter = 1;
 
@@ -24,32 +25,56 @@ const nativeRuntimeScheduler = global.nativeRuntimeScheduler;
 const schedulerPriorityImmediate =
   nativeRuntimeScheduler.unstable_ImmediatePriority;
 
+export type RootConfig = {
+  viewportWidth?: number,
+  viewportHeight?: number,
+  devicePixelRatio?: number,
+};
+
+// Defaults use iPhone 14 values (very common device).
+const DEFAULT_VIEWPORT_WIDTH = 390;
+const DEFAULT_VIEWPORT_HEIGHT = 844;
+const DEFAULT_DEVICE_PIXEL_RATIO = 3;
+
 class Root {
   #surfaceId: number;
+  #viewportWidth: number;
+  #viewportHeight: number;
+  #devicePixelRatio: number;
+
   #hasRendered: boolean = false;
 
-  constructor() {
+  constructor(config?: RootConfig) {
     this.#surfaceId = globalSurfaceIdCounter;
+    this.#viewportWidth = config?.viewportWidth ?? DEFAULT_VIEWPORT_WIDTH;
+    this.#viewportHeight = config?.viewportHeight ?? DEFAULT_VIEWPORT_HEIGHT;
+    this.#devicePixelRatio =
+      config?.devicePixelRatio ?? DEFAULT_DEVICE_PIXEL_RATIO;
     globalSurfaceIdCounter += 10;
   }
 
   render(element: MixedElement) {
     if (!this.#hasRendered) {
-      FantomModule.startSurface(this.#surfaceId);
+      NativeFantom.startSurface(
+        this.#surfaceId,
+        this.#viewportWidth,
+        this.#viewportHeight,
+        this.#devicePixelRatio,
+      );
       this.#hasRendered = true;
     }
 
-    ReactFabric.render(element, this.#surfaceId, () => {}, true);
+    ReactFabric.render(element, this.#surfaceId, null, true);
   }
 
   getMountingLogs(): Array<string> {
-    return FantomModule.getMountingManagerLogs(this.#surfaceId);
+    return NativeFantom.getMountingManagerLogs(this.#surfaceId);
   }
 
   destroy() {
     // TODO: check for leaks.
-    FantomModule.stopSurface(this.#surfaceId);
-    FantomModule.flushMessageQueue();
+    NativeFantom.stopSurface(this.#surfaceId);
+    NativeFantom.flushMessageQueue();
   }
 
   getRenderedOutput(config: RenderOutputConfig = {}): FantomRenderedOutput {
@@ -58,6 +83,8 @@ class Root {
 
   // TODO: add an API to check if all surfaces were deallocated when tests are finished.
 }
+
+export type {Root};
 
 const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
 
@@ -100,7 +127,7 @@ export function runWorkLoop(): void {
 
   try {
     flushingQueue = true;
-    FantomModule.flushMessageQueue();
+    NativeFantom.flushMessageQueue();
   } finally {
     flushingQueue = false;
   }
@@ -108,6 +135,88 @@ export function runWorkLoop(): void {
 
 // TODO: Add option to define surface props and pass it to startSurface
 // Surfacep rops: concurrentRoot, surfaceWidth, surfaceHeight, layoutDirection, pointScaleFactor.
-export function createRoot(): Root {
-  return new Root();
+export function createRoot(rootConfig?: RootConfig): Root {
+  return new Root(rootConfig);
+}
+
+export const benchmark = Benchmark;
+
+type FantomConstants = $ReadOnly<{
+  isRunningFromCI: boolean,
+}>;
+
+let constants: FantomConstants = {
+  isRunningFromCI: false,
+};
+
+export function getConstants(): FantomConstants {
+  return constants;
+}
+
+export function setConstants(newConstants: FantomConstants): void {
+  constants = newConstants;
+}
+
+/**
+ * Quick and dirty polyfills required by tinybench.
+ */
+
+if (typeof global.Event === 'undefined') {
+  global.Event = class Event {
+    constructor() {}
+  };
+} else {
+  console.warn(
+    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
+  );
+}
+
+if (typeof global.EventTarget === 'undefined') {
+  global.EventTarget = class EventTarget {
+    listeners: $FlowFixMe;
+
+    constructor() {
+      this.listeners = {};
+    }
+
+    addEventListener(type: string, cb: () => void) {
+      if (!(type in this.listeners)) {
+        this.listeners[type] = [];
+      }
+      this.listeners[type].push(cb);
+    }
+
+    removeEventListener(type: string, cb: () => void): void {
+      if (!(type in this.listeners)) {
+        return;
+      }
+      let handlers = this.listeners[type];
+      for (let i in handlers) {
+        if (cb === handlers[i]) {
+          handlers.splice(i, 1);
+          return;
+        }
+      }
+    }
+
+    dispatchEvent(type: string, event: Event) {
+      if (!(type in this.listeners)) {
+        return;
+      }
+      let handlers = this.listeners[type];
+      for (let i in handlers) {
+        handlers[i].call(this, event);
+      }
+    }
+
+    clearEventListeners() {
+      for (let i in this.listeners) {
+        delete this.listeners[i];
+      }
+    }
+  };
+} else {
+  console.warn(
+    'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
+  );
 }

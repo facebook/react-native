@@ -15,7 +15,7 @@ namespace facebook::react {
 
 class JsErrorHandler {
  public:
-  struct ParsedError {
+  struct ProcessedError {
     struct StackFrame {
       std::optional<std::string> file;
       std::string methodName;
@@ -34,11 +34,13 @@ class JsErrorHandler {
     int id;
     bool isFatal;
     jsi::Object extraData;
-    friend std::ostream& operator<<(std::ostream& os, const ParsedError& error);
+    friend std::ostream& operator<<(
+        std::ostream& os,
+        const ProcessedError& error);
   };
 
   using OnJsError =
-      std::function<void(jsi::Runtime& runtime, const ParsedError& error)>;
+      std::function<void(jsi::Runtime& runtime, const ProcessedError& error)>;
 
   explicit JsErrorHandler(OnJsError onJsError);
   ~JsErrorHandler();

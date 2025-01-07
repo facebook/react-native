@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<287cfac1efb7e82dbb2851acad9cca83>>
+ * @generated SignedSource<<40dec53a2f91804a0601564d471f5f4a>>
  */
 
 /**
@@ -340,15 +340,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
-  }
-
-  bool fuseboxEnabledDebug() override {
-    auto value = values_["fuseboxEnabledDebug"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::fuseboxEnabledDebug();
   }
 
   bool fuseboxEnabledRelease() override {

@@ -11,10 +11,6 @@ require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/SpecMock.rb"
 require_relative "./test_utils/FileMock.rb"
 
-def get_folly_config()
-    return Helpers::Constants.folly_config
-end
-
 ## Monkey patching to reset properly static props of the Helper.
 class NewArchitectureHelper
     def self.reset

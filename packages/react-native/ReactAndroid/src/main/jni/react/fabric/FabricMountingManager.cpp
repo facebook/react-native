@@ -11,7 +11,7 @@
 #include "MountItem.h"
 #include "StateWrapperImpl.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/components/scrollview/ScrollViewProps.h>
@@ -446,7 +446,7 @@ inline void writeUpdateOverflowInsetMountItem(
 
 void FabricMountingManager::executeMount(
     const MountingTransaction& transaction) {
-  SystraceSection section("FabricMountingManager::executeMount");
+  TraceSection section("FabricMountingManager::executeMount");
 
   std::scoped_lock lock(commitMutex_);
   auto finishTransactionStartTime = telemetryTimePointNow();
@@ -939,7 +939,7 @@ void FabricMountingManager::maybePreallocateShadowNode(
 
 void FabricMountingManager::preallocateShadowView(
     const ShadowView& shadowView) {
-  SystraceSection section("FabricMountingManager::preallocateShadowView");
+  TraceSection section("FabricMountingManager::preallocateShadowView");
 
   {
     std::lock_guard lock(allocatedViewsMutex_);
