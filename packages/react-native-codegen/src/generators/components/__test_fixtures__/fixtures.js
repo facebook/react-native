@@ -1693,6 +1693,16 @@ const COMMANDS: SchemaType = {
                       type: 'BooleanTypeAnnotation',
                     },
                   },
+                  {
+                    name: 'locations',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'MixedTypeAnnotation',
+                      },
+                    },
+                  },
                 ],
                 returnTypeAnnotation: {
                   type: 'VoidTypeAnnotation',
