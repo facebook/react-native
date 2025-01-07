@@ -67,6 +67,7 @@ export default class AnimatedTracking extends AnimatedNode {
       let {platformConfig} = this._animationConfig;
       this.__makeNative(platformConfig);
     }
+    super.__attach();
   }
 
   __detach(): void {
