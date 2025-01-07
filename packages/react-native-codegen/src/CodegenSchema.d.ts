@@ -148,6 +148,11 @@ export type ComponentCommandArrayTypeAnnotation = ArrayTypeAnnotation<
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | Int32TypeAnnotation
+  // Mixed is not great. This generally means its a type alias to another type
+  // like an object or union. Ideally we'd encode that type in the schema so the compat-check can
+  // validate those deeper objects for breaking changes and the generators can do something smarter.
+  // As of now, the generators just create ReadableMap or (const NSArray *) which are untyped
+  | MixedTypeAnnotation
 >;
 
 export interface ArrayTypeAnnotation<T> {

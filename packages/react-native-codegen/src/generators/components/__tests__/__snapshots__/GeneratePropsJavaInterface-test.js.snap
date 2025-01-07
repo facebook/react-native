@@ -118,11 +118,12 @@ Map {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import com.facebook.react.bridge.ReadableArray;
 
 public interface CommandNativeComponentManagerInterface<T extends View> {
   // No props
   void flashScrollIndicators(T view);
-  void allTypes(T view, int x, float y, double z, String message, boolean animated);
+  void allTypes(T view, int x, float y, double z, String message, boolean animated, ReadableArray locations);
 }
 ",
 }
