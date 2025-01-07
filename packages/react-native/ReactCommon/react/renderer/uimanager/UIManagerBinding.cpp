@@ -19,8 +19,6 @@
 
 #include <utility>
 
-#include "bindingUtils.h"
-
 namespace facebook::react {
 
 void UIManagerBinding::createAndInstallIfNeeded(
