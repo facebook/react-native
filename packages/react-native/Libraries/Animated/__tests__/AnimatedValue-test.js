@@ -8,21 +8,15 @@
  * @oncall react_native
  */
 
-describe('AnimatedNode', () => {
+describe('AnimatedValue', () => {
   let NativeAnimatedHelper;
-  let AnimatedNode;
+  let AnimatedValue;
 
-  function createNativeAnimatedNode(): AnimatedNode {
-    class NativeAnimatedNode extends AnimatedNode {
-      __isNative = true;
-      __getNativeConfig(): {} {
-        return {};
-      }
-    }
-    return new NativeAnimatedNode();
+  function createNativeAnimatedValue(): AnimatedValue {
+    return new AnimatedValue(0, {useNativeDriver: true});
   }
 
-  function emitMockUpdate(node: AnimatedNode, mockValue: number): void {
+  function emitMockUpdate(node: AnimatedValue, mockValue: number): void {
     const nativeTag = node.__nativeTag;
     expect(nativeTag).not.toBe(undefined);
 
@@ -50,7 +44,7 @@ describe('AnimatedNode', () => {
 
     NativeAnimatedHelper =
       require('../../../src/private/animated/NativeAnimatedHelper').default;
-    AnimatedNode = require('../nodes/AnimatedNode').default;
+    AnimatedValue = require('../nodes/AnimatedValue').default;
 
     jest.spyOn(NativeAnimatedHelper.API, 'createAnimatedNode');
     jest.spyOn(NativeAnimatedHelper.API, 'dropAnimatedNode');
@@ -58,7 +52,7 @@ describe('AnimatedNode', () => {
 
   it('emits update events for listeners added', () => {
     const callback = jest.fn();
-    const node = createNativeAnimatedNode();
+    const node = createNativeAnimatedValue();
     node.__attach();
     const id = node.addListener(callback);
 
@@ -75,7 +69,7 @@ describe('AnimatedNode', () => {
   });
 
   it('creates a native node when adding a listener', () => {
-    const node = createNativeAnimatedNode();
+    const node = createNativeAnimatedValue();
     node.__attach();
     expect(NativeAnimatedHelper.API.createAnimatedNode).not.toBeCalled();
 
@@ -85,7 +79,7 @@ describe('AnimatedNode', () => {
   });
 
   it('drops a created native node on detach', () => {
-    const node = createNativeAnimatedNode();
+    const node = createNativeAnimatedValue();
     node.__attach();
     expect(NativeAnimatedHelper.API.createAnimatedNode).toBeCalledTimes(0);
 
@@ -100,7 +94,7 @@ describe('AnimatedNode', () => {
 
   it('emits update events for listeners added after re-attach', () => {
     const callbackA = jest.fn();
-    const node = createNativeAnimatedNode();
+    const node = createNativeAnimatedValue();
     node.__attach();
 
     node.addListener(callbackA);
