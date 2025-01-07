@@ -17,6 +17,8 @@ if (
   NativeBlobModule &&
   typeof NativeBlobModule.getConstants().BLOB_URI_SCHEME === 'string'
 ) {
+  // $FlowFixMe[incompatible-type] asserted above
+  // $FlowFixMe[unsafe-addition]
   const constants = NativeBlobModule.getConstants();
   BLOB_URL_PREFIX = constants.BLOB_URI_SCHEME + ':';
   if (typeof constants.BLOB_URI_HOST === 'string') {
