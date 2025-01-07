@@ -8,14 +8,10 @@
  * @format
  */
 
-import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
 import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import invariant from 'invariant';
-
-const {startListeningToAnimatedNodeValue, stopListeningToAnimatedNodeValue} =
-  NativeAnimatedHelper.API;
 
 type ValueListenerCallback = (state: {value: number, ...}) => mixed;
 
@@ -33,7 +29,6 @@ let _assertNativeAnimatedModule: ?() => void = () => {
 
 export default class AnimatedNode {
   #listeners: Map<string, ValueListenerCallback> = new Map();
-  #updateSubscription: ?EventSubscription = null;
 
   _platformConfig: ?PlatformConfig = undefined;
 
@@ -78,9 +73,6 @@ export default class AnimatedNode {
     );
 
     this._platformConfig = platformConfig;
-    if (this.#listeners.size > 0) {
-      this.#ensureUpdateSubscriptionExists();
-    }
   }
 
   /**
@@ -93,9 +85,6 @@ export default class AnimatedNode {
   addListener(callback: (value: any) => mixed): string {
     const id = String(_uniqueId++);
     this.#listeners.set(id, callback);
-    if (this.__isNative) {
-      this.#ensureUpdateSubscriptionExists();
-    }
     return id;
   }
 
@@ -107,9 +96,6 @@ export default class AnimatedNode {
    */
   removeListener(id: string): void {
     this.#listeners.delete(id);
-    if (this.__isNative && this.#listeners.size === 0) {
-      this.#updateSubscription?.remove();
-    }
   }
 
   /**
@@ -119,42 +105,10 @@ export default class AnimatedNode {
    */
   removeAllListeners(): void {
     this.#listeners.clear();
-    if (this.__isNative) {
-      this.#updateSubscription?.remove();
-    }
   }
 
   hasListeners(): boolean {
     return this.#listeners.size > 0;
-  }
-
-  #ensureUpdateSubscriptionExists(): void {
-    if (this.#updateSubscription != null) {
-      return;
-    }
-    const nativeTag = this.__getNativeTag();
-    startListeningToAnimatedNodeValue(nativeTag);
-    const subscription: EventSubscription =
-      NativeAnimatedHelper.nativeEventEmitter.addListener(
-        'onAnimatedValueUpdate',
-        data => {
-          if (data.tag === nativeTag) {
-            this.__onAnimatedValueUpdateReceived(data.value);
-          }
-        },
-      );
-
-    this.#updateSubscription = {
-      remove: () => {
-        // Only this function assigns to `this.#updateSubscription`.
-        if (this.#updateSubscription == null) {
-          return;
-        }
-        this.#updateSubscription = null;
-        subscription.remove();
-        stopListeningToAnimatedNodeValue(nativeTag);
-      },
-    };
   }
 
   __onAnimatedValueUpdateReceived(value: number): void {
