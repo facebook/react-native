@@ -96,6 +96,13 @@ type State = $ReadOnly<{|
 |}>;
 
 class TouchableNativeFeedback extends React.Component<Props, State> {
+  hostRef: {current: React.ElementRef<typeof View> | null, ...};
+
+  constructor(props: Props) {
+    super(props);
+    this.hostRef = React.createRef();
+  }
+
   /**
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for selectable elements.
@@ -208,7 +215,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
 
   _dispatchPressedStateChange(pressed: boolean): void {
     if (Platform.OS === 'android') {
-      const hostComponentRef = findHostInstance_DEPRECATED(this);
+      const hostComponentRef = this.hostRef.current;
       if (hostComponentRef == null) {
         console.warn(
           'Touchable: Unable to find HostComponent instance. ' +
@@ -223,7 +230,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
   _dispatchHotspotUpdate(event: PressEvent): void {
     if (Platform.OS === 'android') {
       const {locationX, locationY} = event.nativeEvent;
-      const hostComponentRef = findHostInstance_DEPRECATED(this);
+      const hostComponentRef = this.hostRef.current;
       if (hostComponentRef == null) {
         console.warn(
           'Touchable: Unable to find HostComponent instance. ' +
@@ -292,6 +299,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
     return React.cloneElement(
       element,
       {
+        ref: this.hostRef,
         ...eventHandlersWithoutBlurAndFocus,
         ...getBackgroundProp(
           this.props.background === undefined
