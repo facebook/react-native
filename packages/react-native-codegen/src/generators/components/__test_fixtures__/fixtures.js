@@ -1263,8 +1263,17 @@ const EVENT_PROPS: SchemaType = {
                       typeAnnotation: {
                         type: 'ArrayTypeAnnotation',
                         elementType: {
-                          type: 'StringEnumTypeAnnotation',
-                          options: ['YES', 'NO'],
+                          type: 'StringLiteralUnionTypeAnnotation',
+                          types: [
+                            {
+                              type: 'StringLiteralTypeAnnotation',
+                              value: 'YES',
+                            },
+                            {
+                              type: 'StringLiteralTypeAnnotation',
+                              value: 'NO',
+                            },
+                          ],
                         },
                       },
                     },
@@ -1364,8 +1373,17 @@ const EVENT_PROPS: SchemaType = {
                       name: 'orientation',
                       optional: false,
                       typeAnnotation: {
-                        type: 'StringEnumTypeAnnotation',
-                        options: ['landscape', 'portrait'],
+                        type: 'StringLiteralUnionTypeAnnotation',
+                        types: [
+                          {
+                            type: 'StringLiteralTypeAnnotation',
+                            value: 'landscape',
+                          },
+                          {
+                            type: 'StringLiteralTypeAnnotation',
+                            value: 'portrait',
+                          },
+                        ],
                       },
                     },
                   ],
@@ -1673,6 +1691,16 @@ const COMMANDS: SchemaType = {
                     optional: false,
                     typeAnnotation: {
                       type: 'BooleanTypeAnnotation',
+                    },
+                  },
+                  {
+                    name: 'locations',
+                    optional: false,
+                    typeAnnotation: {
+                      type: 'ArrayTypeAnnotation',
+                      elementType: {
+                        type: 'MixedTypeAnnotation',
+                      },
                     },
                   },
                 ],

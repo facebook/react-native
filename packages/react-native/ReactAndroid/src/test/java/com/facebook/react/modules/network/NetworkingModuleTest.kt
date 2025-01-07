@@ -30,7 +30,6 @@ import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.MockedStatic
@@ -73,7 +72,7 @@ class NetworkingModuleTest {
     context = mock()
     whenever(context.hasActiveReactInstance()).thenReturn(true)
 
-    networkingModule = NetworkingModule(context, "", httpClient)
+    networkingModule = NetworkingModule(context, "", httpClient, null)
 
     arguments = mockStatic(Arguments::class.java)
     arguments.`when`<WritableArray> { Arguments.createArray() }.thenAnswer { JavaOnlyArray() }
@@ -477,12 +476,11 @@ class NetworkingModuleTest {
   }
 
   @Test
-  @Ignore("TODO: Fix me (T171890419)")
   fun testCancelAllCallsInvalidate() {
     val requests = 3
-    val calls = arrayOfNulls<Call>(requests)
+    val calls = mutableListOf<Call>()
     for (idx in 0 until requests) {
-      calls[idx] = mock<Call>()
+      calls.add(mock<Call>())
     }
 
     whenever(httpClient.newCall(any())).thenAnswer { invocation ->
@@ -507,11 +505,9 @@ class NetworkingModuleTest {
     verify(httpClient, times(3)).newCall(any())
 
     networkingModule.invalidate()
-    val clientArguments = argumentCaptor<OkHttpClient>()
     val requestIdArguments = argumentCaptor<Int>()
     okHttpCallUtil.verify(
-        { OkHttpCallUtil.cancelTag(clientArguments.capture(), requestIdArguments.capture()) },
-        times(3))
+        { OkHttpCallUtil.cancelTag(any(), requestIdArguments.capture()) }, times(requests))
 
     assertThat(requestIdArguments.allValues.size).isEqualTo(requests)
     for (idx in 0 until requests) {
@@ -520,7 +516,6 @@ class NetworkingModuleTest {
   }
 
   @Test
-  @Ignore("TODO: Fix me (T171890419)")
   fun testCancelSomeCallsInvalidate() {
     val requests = 3
     val calls = arrayOfNulls<Call>(requests)

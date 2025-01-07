@@ -17,7 +17,7 @@ import java.util.ArrayList
 @UnstableReactNativeAPI
 public fun interface ReactJsExceptionHandler {
   @DoNotStripAny
-  public interface ParsedError {
+  public interface ProcessedError {
     @DoNotStripAny
     public interface StackFrame {
       public val file: String?
@@ -37,24 +37,24 @@ public fun interface ReactJsExceptionHandler {
   }
 
   @DoNotStripAny
-  private data class ParsedStackFrameImpl(
+  private data class ProcessedErrorStackFrameImpl(
       override val file: String?,
       override val methodName: String,
       override val lineNumber: Int?,
       override val column: Int?,
-  ) : ParsedError.StackFrame
+  ) : ProcessedError.StackFrame
 
   @DoNotStripAny
-  private data class ParsedErrorImpl(
+  private data class ProcessedErrorImpl(
       override val message: String,
       override val originalMessage: String?,
       override val name: String?,
       override val componentStack: String?,
-      override val stack: ArrayList<ParsedStackFrameImpl>,
+      override val stack: ArrayList<ProcessedErrorStackFrameImpl>,
       override val id: Int,
       override val isFatal: Boolean,
       override val extraData: ReadableNativeMap,
-  ) : ParsedError
+  ) : ProcessedError
 
-  public fun reportJsException(errorMap: ParsedError)
+  public fun reportJsException(errorMap: ProcessedError)
 }

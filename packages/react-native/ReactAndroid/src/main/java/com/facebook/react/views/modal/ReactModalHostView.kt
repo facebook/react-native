@@ -25,6 +25,7 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
 import com.facebook.common.logging.FLog
@@ -221,6 +222,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   private fun getCurrentActivity(): Activity? = (context as ThemedReactContext).currentActivity
 
+  private fun isFlagSecureSet(activity: Activity?): Boolean {
+    if (activity == null) {
+      return false
+    }
+
+    val flags = activity.window.attributes.flags
+    return (flags and WindowManager.LayoutParams.FLAG_SECURE) != 0
+  }
+
   /**
    * showOrUpdate will display the Dialog. It is called by the manager once all properties are set
    * because we need to know all of them before creating the Dialog. It is also smart during updates
@@ -293,6 +303,11 @@ public class ReactModalHostView(context: ThemedReactContext) :
     newDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     if (hardwareAccelerated) {
       newDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
+    }
+    val flagSecureSet = isFlagSecureSet(currentActivity)
+    if (flagSecureSet) {
+      newDialog.window?.setFlags(
+          WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
     }
     if (currentActivity?.isFinishing == false) {
       newDialog.show()
@@ -404,6 +419,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
     }
   }
 
+  /**
+   * Sets the testID on the DialogRootViewGroup. Since the accessibility events are not triggered on
+   * the on the ReactModalHostView, the testID is forwarded to the DialogRootViewGroup to set the
+   * resource-id.
+   */
+  public fun setDialogRootViewGroupTestId(testId: String?) {
+    dialogRootViewGroup.setTag(R.id.react_test_id, testId)
+  }
+
   // This listener is called when the user presses KeyEvent.KEYCODE_BACK
   // An event is then passed to JS which can either close or not close the Modal by setting the
   // visible property
@@ -442,6 +466,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
     init {
       if (ReactFeatureFlags.dispatchPointerEvents) {
         jSPointerDispatcher = JSPointerDispatcher(this)
+      }
+    }
+
+    override fun onInitializeAccessibilityNodeInfo(info: AccessibilityNodeInfo) {
+      super.onInitializeAccessibilityNodeInfo(info)
+
+      val testId = getTag(R.id.react_test_id) as String?
+      if (testId != null) {
+        info.viewIdResourceName = testId
       }
     }
 

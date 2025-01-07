@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<260f2446e2c2d5ad3e4089798bb86ae0>>
+ * @generated SignedSource<<5b4977559c424312ed8bd791a96da52d>>
  */
 
 /**
@@ -228,12 +228,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fixMountingCoordinatorReportedPendingTransactionsOnAndroid");
-    return method(javaProvider_);
-  }
-
-  bool fuseboxEnabledDebug() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("fuseboxEnabledDebug");
     return method(javaProvider_);
   }
 
@@ -491,11 +485,6 @@ bool JReactNativeFeatureFlagsCxxInterop::fixMountingCoordinatorReportedPendingTr
   return ReactNativeFeatureFlags::fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledDebug(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::fuseboxEnabledDebug();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::fuseboxEnabledRelease();
@@ -698,9 +687,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "fixMountingCoordinatorReportedPendingTransactionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::fixMountingCoordinatorReportedPendingTransactionsOnAndroid),
-      makeNativeMethod(
-        "fuseboxEnabledDebug",
-        JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledDebug),
       makeNativeMethod(
         "fuseboxEnabledRelease",
         JReactNativeFeatureFlagsCxxInterop::fuseboxEnabledRelease),

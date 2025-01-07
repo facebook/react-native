@@ -7,7 +7,7 @@
 
 #include "UIManagerBinding.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
@@ -95,7 +95,7 @@ void UIManagerBinding::dispatchEvent(
     const std::string& type,
     ReactEventPriority priority,
     const EventPayload& eventPayload) const {
-  SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
+  TraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
   if (eventPayload.getType() == EventPayloadType::PointerEvent) {
     auto pointerEvent = static_cast<const PointerEvent&>(eventPayload);

@@ -27,6 +27,7 @@ namespace facebook::react {
 class SurfaceManager final {
  public:
   explicit SurfaceManager(const Scheduler& scheduler) noexcept;
+  ~SurfaceManager() noexcept;
 
 #pragma mark - Surface Management
 
@@ -35,14 +36,15 @@ class SurfaceManager final {
       const std::string& moduleName,
       const folly::dynamic& props,
       const LayoutConstraints& layoutConstraints = {},
-      const LayoutContext& layoutContext = {}) const noexcept;
+      const LayoutContext& layoutContext = {}) noexcept;
 
-  void startEmptySurface(
-      SurfaceId surfaceId,
-      const LayoutConstraints& layoutConstraints = {},
-      const LayoutContext& layoutContext = {}) const noexcept;
+  void stopSurface(SurfaceId surfaceId) noexcept;
 
-  void stopSurface(SurfaceId surfaceId) const noexcept;
+  void stopAllSurfaces() noexcept;
+
+  bool isSurfaceRunning(SurfaceId surfaceId) const noexcept;
+
+  std::unordered_set<SurfaceId> getRunningSurfaces() const noexcept;
 
   Size measureSurface(
       SurfaceId surfaceId,
@@ -65,7 +67,7 @@ class SurfaceManager final {
 
   const Scheduler& scheduler_;
   mutable std::shared_mutex mutex_; // Protects `registry_`.
-  mutable std::unordered_map<SurfaceId, SurfaceHandler> registry_{};
+  std::unordered_map<SurfaceId, SurfaceHandler> registry_{};
 };
 
 } // namespace facebook::react

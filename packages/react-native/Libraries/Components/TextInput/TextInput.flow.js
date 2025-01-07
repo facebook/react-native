@@ -217,6 +217,12 @@ type PasswordRules = string;
 
 type IOSProps = $ReadOnly<{|
   /**
+   * If true, the keyboard shortcuts (undo/redo and copy buttons) are disabled. The default value is false.
+   * @platform ios
+   */
+  disableKeyboardShortcuts?: ?boolean,
+
+  /**
    * When the clear button should appear on the right side of the text view.
    * This property is supported only for single-line TextInput component.
    * @platform ios

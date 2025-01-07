@@ -24,22 +24,11 @@ import '../../../../../Libraries/Core/InitializeCore.js';
 
 import ScrollView from '../../../../../Libraries/Components/ScrollView/ScrollView';
 import View from '../../../../../Libraries/Components/View/View';
+import ensureInstance from '../../../utilities/ensureInstance';
 
 declare const IntersectionObserver: Class<IntersectionObserverType>;
 
 setUpIntersectionObserver();
-
-function ensureInstance<T>(value: mixed, Class: Class<T>): T {
-  if (!(value instanceof Class)) {
-    // $FlowExpectedError[incompatible-use]
-    const className = Class.name;
-    throw new Error(
-      `Expected instance of ${className} but got ${String(value)}`,
-    );
-  }
-
-  return value;
-}
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
@@ -340,7 +329,10 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <View
@@ -477,7 +469,10 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 200}}>
@@ -487,7 +482,6 @@ describe('IntersectionObserver', () => {
                 maybeNode = receivedNode;
               }}
             />
-            ,
           </ScrollView>,
         );
       });
@@ -539,7 +533,10 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 25}}>
@@ -549,7 +546,6 @@ describe('IntersectionObserver', () => {
                 maybeNode = receivedNode;
               }}
             />
-            ,
           </ScrollView>,
         );
       });
@@ -600,7 +596,10 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 25}}>
@@ -610,7 +609,6 @@ describe('IntersectionObserver', () => {
                 maybeNode = receivedNode;
               }}
             />
-            ,
           </ScrollView>,
         );
       });
@@ -661,7 +659,10 @@ describe('IntersectionObserver', () => {
       let maybeNode;
       let observer: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <View
@@ -762,7 +763,10 @@ describe('IntersectionObserver', () => {
       let observer1: IntersectionObserver;
       let observer2: IntersectionObserver;
 
-      const root = Fantom.createRoot();
+      const root = Fantom.createRoot({
+        viewportWidth: 1000,
+        viewportHeight: 1000,
+      });
       Fantom.runTask(() => {
         root.render(
           <ScrollView contentOffset={{x: 0, y: 100}}>
@@ -872,7 +876,10 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = Fantom.createRoot();
+        const root = Fantom.createRoot({
+          viewportWidth: 1000,
+          viewportHeight: 1000,
+        });
         Fantom.runTask(() => {
           root.render(
             <View
@@ -932,7 +939,10 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = Fantom.createRoot();
+        const root = Fantom.createRoot({
+          viewportWidth: 1000,
+          viewportHeight: 1000,
+        });
         Fantom.runTask(() => {
           root.render(
             <ScrollView contentOffset={{x: 0, y: 25}}>
@@ -942,7 +952,6 @@ describe('IntersectionObserver', () => {
                   maybeNode = receivedNode;
                 }}
               />
-              ,
             </ScrollView>,
           );
         });
@@ -993,7 +1002,10 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = Fantom.createRoot();
+        const root = Fantom.createRoot({
+          viewportWidth: 1000,
+          viewportHeight: 1000,
+        });
         Fantom.runTask(() => {
           root.render(
             <ScrollView contentOffset={{x: 0, y: 200}}>
@@ -1003,7 +1015,6 @@ describe('IntersectionObserver', () => {
                   maybeNode = receivedNode;
                 }}
               />
-              ,
             </ScrollView>,
           );
         });
@@ -1054,7 +1065,10 @@ describe('IntersectionObserver', () => {
         let maybeNode;
         let observer: IntersectionObserver;
 
-        const root = Fantom.createRoot();
+        const root = Fantom.createRoot({
+          viewportWidth: 1000,
+          viewportHeight: 1000,
+        });
         Fantom.runTask(() => {
           root.render(
             <View
@@ -1314,13 +1328,9 @@ describe('IntersectionObserver', () => {
       });
       expect(node.isConnected).toBe(false);
 
-      Fantom.runTask(() => {
-        observer = new IntersectionObserver(() => {});
-        observer.observe(node);
-        // TODO what happens if this throws an exception?
-        observer.unobserve(node);
-        throw new Error('unobserve should not throw');
-      });
+      observer = new IntersectionObserver(() => {});
+      observer.observe(node);
+      observer.unobserve(node);
     });
 
     it('should not report the initial state if the target is unobserved before it is delivered', () => {
@@ -1497,19 +1507,16 @@ describe('IntersectionObserver', () => {
 
       const node = ensureReactNativeElement(maybeNode);
 
-      Fantom.runTask(() => {
-        observer1 = new IntersectionObserver(() => {});
-        observer2 = new IntersectionObserver(() => {});
+      observer1 = new IntersectionObserver(() => {});
+      observer2 = new IntersectionObserver(() => {});
 
-        observer1.observe(node);
-        observer2.observe(node);
+      observer1.observe(node);
+      observer2.observe(node);
 
-        observer1.unobserve(node);
+      observer1.unobserve(node);
 
-        // The second call shouldn't log errors (that would make the test fail).
-        observer2.unobserve(node);
-        throw new Error('unobserve should not throw');
-      });
+      // The second call shouldn't log errors (that would make the test fail).
+      observer2.unobserve(node);
     });
   });
 
