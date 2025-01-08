@@ -126,20 +126,23 @@ public abstract class BaseViewManagerDelegate<
       ViewProps.Z_INDEX -> mViewManager.setZIndex(view, (value as Double?)?.toFloat() ?: 0.0f)
 
       // Experimental pointer events
-      "onPointerEnter" -> mViewManager.setPointerEnter(view, value as Boolean? ?: false)
-      "onPointerEnterCapture" ->
+      ViewProps.ON_POINTER_ENTER -> mViewManager.setPointerEnter(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_ENTER_CAPTURE ->
           mViewManager.setPointerEnterCapture(view, value as Boolean? ?: false)
-      "onPointerOver" -> mViewManager.setPointerOver(view, value as Boolean? ?: false)
-      "onPointerOverCapture" -> mViewManager.setPointerOverCapture(view, value as Boolean? ?: false)
-      "onPointerOut" -> mViewManager.setPointerOut(view, value as Boolean? ?: false)
-      "onPointerOutCapture" -> mViewManager.setPointerOutCapture(view, value as Boolean? ?: false)
-      "onPointerLeave" -> mViewManager.setPointerLeave(view, value as Boolean? ?: false)
-      "onPointerLeaveCapture" ->
+      ViewProps.ON_POINTER_OVER -> mViewManager.setPointerOver(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_OVER_CAPTURE ->
+          mViewManager.setPointerOverCapture(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_OUT -> mViewManager.setPointerOut(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_OUT_CAPTURE ->
+          mViewManager.setPointerOutCapture(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_LEAVE -> mViewManager.setPointerLeave(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_LEAVE_CAPTURE ->
           mViewManager.setPointerLeaveCapture(view, value as Boolean? ?: false)
-      "onPointerMove" -> mViewManager.setPointerMove(view, value as Boolean? ?: false)
-      "onPointerMoveCapture" -> mViewManager.setPointerMoveCapture(view, value as Boolean? ?: false)
-      "onClick" -> mViewManager.setClick(view, value as Boolean? ?: false)
-      "onClickCapture" -> mViewManager.setClickCapture(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_MOVE -> mViewManager.setPointerMove(view, value as Boolean? ?: false)
+      ViewProps.ON_POINTER_MOVE_CAPTURE ->
+          mViewManager.setPointerMoveCapture(view, value as Boolean? ?: false)
+      ViewProps.ON_CLICK -> mViewManager.setClick(view, value as Boolean? ?: false)
+      ViewProps.ON_CLICK_CAPTURE -> mViewManager.setClickCapture(view, value as Boolean? ?: false)
     }
   }
 

@@ -798,62 +798,62 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   /* Experimental W3C Pointer events start */
-  @ReactProp(name = "onPointerEnter")
+  @ReactProp(name = ViewProps.ON_POINTER_ENTER)
   public void setPointerEnter(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.ENTER, value);
   }
 
-  @ReactProp(name = "onPointerEnterCapture")
+  @ReactProp(name = ViewProps.ON_POINTER_ENTER_CAPTURE)
   public void setPointerEnterCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.ENTER_CAPTURE, value);
   }
 
-  @ReactProp(name = "onPointerOver")
+  @ReactProp(name = ViewProps.ON_POINTER_OVER)
   public void setPointerOver(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.OVER, value);
   }
 
-  @ReactProp(name = "onPointerOverCapture")
+  @ReactProp(name = ViewProps.ON_POINTER_OVER_CAPTURE)
   public void setPointerOverCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.OVER_CAPTURE, value);
   }
 
-  @ReactProp(name = "onPointerOut")
+  @ReactProp(name = ViewProps.ON_POINTER_OUT)
   public void setPointerOut(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.OUT, value);
   }
 
-  @ReactProp(name = "onPointerOutCapture")
+  @ReactProp(name = ViewProps.ON_POINTER_OUT_CAPTURE)
   public void setPointerOutCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.OUT_CAPTURE, value);
   }
 
-  @ReactProp(name = "onPointerLeave")
+  @ReactProp(name = ViewProps.ON_POINTER_LEAVE)
   public void setPointerLeave(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.LEAVE, value);
   }
 
-  @ReactProp(name = "onPointerLeaveCapture")
+  @ReactProp(name = ViewProps.ON_POINTER_LEAVE_CAPTURE)
   public void setPointerLeaveCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.LEAVE_CAPTURE, value);
   }
 
-  @ReactProp(name = "onPointerMove")
+  @ReactProp(name = ViewProps.ON_POINTER_MOVE)
   public void setPointerMove(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.MOVE, value);
   }
 
-  @ReactProp(name = "onPointerMoveCapture")
+  @ReactProp(name = ViewProps.ON_POINTER_MOVE_CAPTURE)
   public void setPointerMoveCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.MOVE_CAPTURE, value);
   }
 
-  @ReactProp(name = "onClick")
+  @ReactProp(name = ViewProps.ON_CLICK)
   public void setClick(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.CLICK, value);
   }
 
-  @ReactProp(name = "onClickCapture")
+  @ReactProp(name = ViewProps.ON_CLICK_CAPTURE)
   public void setClickCapture(@NonNull T view, boolean value) {
     setPointerEventsFlag(view, PointerEventHelper.EVENT.CLICK_CAPTURE, value);
   }
