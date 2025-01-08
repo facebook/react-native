@@ -5371,7 +5371,6 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field IMPORTANT_FOR_ACCESSIBILITY Ljava/lang/String;
 	public static final field INCLUDE_FONT_PADDING Ljava/lang/String;
 	public static final field INSTANCE Lcom/facebook/react/uimanager/ViewProps;
-	public static final field IS_ATTACHMENT Ljava/lang/String;
 	public static final field JUSTIFY_CONTENT Ljava/lang/String;
 	public static final field LAYOUT_DIRECTION Ljava/lang/String;
 	public static final field LEFT Ljava/lang/String;

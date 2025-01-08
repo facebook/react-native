@@ -60,7 +60,6 @@ public object ViewProps {
   public const val WIDTH: String = "width"
   public const val START: String = "start"
   public const val END: String = "end"
-  public const val IS_ATTACHMENT: String = "isAttachment"
   public const val AUTO: String = "auto"
   public const val NONE: String = "none"
   public const val BOX_NONE: String = "box-none"
