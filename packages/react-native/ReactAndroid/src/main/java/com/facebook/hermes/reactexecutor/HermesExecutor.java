@@ -23,7 +23,7 @@ public class HermesExecutor extends JavaScriptExecutor {
   public static void loadLibrary() throws UnsatisfiedLinkError {
     if (mode_ == null) {
       // libhermes must be loaded explicitly to invoke its JNI_OnLoad.
-      SoLoader.loadLibrary("hermes");
+      SoLoader.loadLibrary("hermesvm");
       SoLoader.loadLibrary("hermes_executor");
       // libhermes_executor is built differently for Debug & Release so we load the proper mode.
       mode_ = ReactBuildConfig.DEBUG ? "Debug" : "Release";

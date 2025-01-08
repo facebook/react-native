@@ -26,7 +26,7 @@ target_include_directories(hermesinstancejni PRIVATE .)
 target_merge_so(hermesinstancejni)
 
 target_link_libraries(hermesinstancejni
-        hermes-engine::libhermes
+        hermes-engine::hermesvm
         fbjni
         bridgelesshermes
         reactnative
