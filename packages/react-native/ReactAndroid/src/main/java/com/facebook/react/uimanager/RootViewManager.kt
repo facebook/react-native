@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 
 /** View manager for ReactRootView components. */
-public class RootViewManager : ViewGroupManager<ViewGroup>() {
+internal class RootViewManager : ViewGroupManager<ViewGroup>() {
 
   override public fun getName(): String = REACT_CLASS
 
