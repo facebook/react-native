@@ -14,8 +14,6 @@
 #include <jsinspector-modern/InspectorFlags.h>
 
 #include <hermes/inspector-modern/chrome/HermesRuntimeTargetDelegate.h>
-#include <hermes/inspector-modern/chrome/Registration.h>
-#include <hermes/inspector/RuntimeAdapter.h>
 
 using namespace facebook::hermes;
 using namespace facebook::jsi;
@@ -23,43 +21,6 @@ using namespace facebook::jsi;
 namespace facebook::react {
 
 namespace {
-
-#ifdef HERMES_ENABLE_DEBUGGER
-
-class HermesExecutorRuntimeAdapter
-    : public facebook::hermes::inspector_modern::RuntimeAdapter {
- public:
-  HermesExecutorRuntimeAdapter(
-      std::shared_ptr<HermesRuntime> runtime,
-      std::shared_ptr<MessageQueueThread> thread)
-      : runtime_(runtime), thread_(std::move(thread)) {}
-
-  virtual ~HermesExecutorRuntimeAdapter() = default;
-
-  HermesRuntime& getRuntime() override {
-    return *runtime_;
-  }
-
-  void tickleJs() override {
-    thread_->runOnQueue(
-        [weakRuntime = std::weak_ptr<HermesRuntime>(runtime_)]() {
-          auto runtime = weakRuntime.lock();
-          if (!runtime) {
-            return;
-          }
-          jsi::Function func =
-              runtime->global().getPropertyAsFunction(*runtime, "__tickleJs");
-          func.call(*runtime);
-        });
-  }
-
- private:
-  std::shared_ptr<HermesRuntime> runtime_;
-
-  std::shared_ptr<MessageQueueThread> thread_;
-};
-
-#endif // HERMES_ENABLE_DEBUGGER
 
 struct ReentrancyCheck {
 // This is effectively a very subtle and complex assert, so only
@@ -146,23 +107,8 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
         runtime_(std::move(runtime)) {
 #ifdef HERMES_ENABLE_DEBUGGER
     enableDebugger_ = enableDebugger;
-    if (enableDebugger_) {
-      std::shared_ptr<HermesRuntime> rt(runtime_, &hermesRuntime);
-      auto adapter =
-          std::make_unique<HermesExecutorRuntimeAdapter>(rt, jsQueue);
-      debugToken_ = facebook::hermes::inspector_modern::chrome::enableDebugging(
-          std::move(adapter), debuggerName);
-    }
 #else
     (void)jsQueue;
-#endif // HERMES_ENABLE_DEBUGGER
-  }
-
-  ~DecoratedRuntime() {
-#ifdef HERMES_ENABLE_DEBUGGER
-    if (enableDebugger_) {
-      facebook::hermes::inspector_modern::chrome::disableDebugging(debugToken_);
-    }
 #endif // HERMES_ENABLE_DEBUGGER
   }
 
@@ -178,7 +124,6 @@ class DecoratedRuntime : public jsi::WithRuntimeDecorator<ReentrancyCheck> {
   ReentrancyCheck reentrancyCheck_;
 #ifdef HERMES_ENABLE_DEBUGGER
   bool enableDebugger_;
-  facebook::hermes::inspector_modern::chrome::DebugSessionToken debugToken_;
 #endif // HERMES_ENABLE_DEBUGGER
 };
 
@@ -200,37 +145,17 @@ std::unique_ptr<JSExecutor> HermesExecutorFactory::createJSExecutor(
     TraceSection s("makeHermesRuntime");
     hermesRuntime = hermes::makeHermesRuntime(runtimeConfig_);
   }
-
   HermesRuntime& hermesRuntimeRef = *hermesRuntime;
-  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
-  bool enableDebugger = !inspectorFlags.getFuseboxEnabled() && enableDebugger_;
-  auto decoratedRuntime = std::make_shared<DecoratedRuntime>(
-      std::move(hermesRuntime),
-      hermesRuntimeRef,
-      jsQueue,
-      enableDebugger,
-      debuggerName_);
-
-  // So what do we have now?
-  // DecoratedRuntime -> HermesRuntime
-  //
-  // DecoratedRuntime is held by JSIExecutor.  When it gets used, it
-  // will check that it's on the right thread, do any necessary trace
-  // logging, then call the real HermesRuntime.  When it is destroyed,
-  // it will shut down the debugger before the HermesRuntime is.  In
-  // the normal case where debugging is not compiled in,
-  // all that's left is the thread checking.
-
   // Add js engine information to Error.prototype so in error reporting we
   // can send this information.
   auto errorPrototype =
-      decoratedRuntime->global()
-          .getPropertyAsObject(*decoratedRuntime, "Error")
-          .getPropertyAsObject(*decoratedRuntime, "prototype");
-  errorPrototype.setProperty(*decoratedRuntime, "jsEngine", "hermes");
+      hermesRuntime->global()
+          .getPropertyAsObject(*hermesRuntime, "Error")
+          .getPropertyAsObject(*hermesRuntime, "prototype");
+  errorPrototype.setProperty(*hermesRuntime, "jsEngine", "hermes");
 
   return std::make_unique<HermesExecutor>(
-      decoratedRuntime,
+      std::move(hermesRuntime),
       delegate,
       jsQueue,
       timeoutInvoker_,
