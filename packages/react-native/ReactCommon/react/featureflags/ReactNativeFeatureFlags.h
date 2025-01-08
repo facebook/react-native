@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c8266eb27ec23aaa856fa95275503a81>>
+ * @generated SignedSource<<8c40f45357799de60f939b510f1d2ae5>>
  */
 
 /**
@@ -41,11 +41,6 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
-
-  /**
-   * Adds support for recursively processing commits that mount synchronously (Android only).
-   */
-  RN_EXPORT static bool allowRecursiveCommitsWithSynchronousMountOnAndroid();
 
   /**
    * When enabled, the RuntimeScheduler processing the event loop will batch all rendering updates and dispatch them together at the end of each iteration of the loop.

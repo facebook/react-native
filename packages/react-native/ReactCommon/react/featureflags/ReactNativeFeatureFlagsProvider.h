@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4adf3f21c8c7e370aa59bc79937e91a2>>
+ * @generated SignedSource<<5e7551f6a29374319a2914c4aa22294e>>
  */
 
 /**
@@ -26,7 +26,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual ~ReactNativeFeatureFlagsProvider() = default;
 
   virtual bool commonTestFlag() = 0;
-  virtual bool allowRecursiveCommitsWithSynchronousMountOnAndroid() = 0;
   virtual bool batchRenderingUpdatesInEventLoop() = 0;
   virtual bool completeReactInstanceCreationOnBgThreadOnAndroid() = 0;
   virtual bool destroyFabricSurfacesInReactInstanceManager() = 0;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c23b21fca18699470580e54b99de1126>>
+ * @generated SignedSource<<68e5d4ce0ed3c237eeababaa04821101>>
  */
 
 /**
@@ -42,12 +42,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool commonTestFlag() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("commonTestFlag");
-    return method(javaProvider_);
-  }
-
-  bool allowRecursiveCommitsWithSynchronousMountOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("allowRecursiveCommitsWithSynchronousMountOnAndroid");
     return method(javaProvider_);
   }
 
@@ -336,11 +330,6 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::allowRecursiveCommitsWithSynchronousMountOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::batchRenderingUpdatesInEventLoop();
@@ -591,9 +580,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
-      makeNativeMethod(
-        "allowRecursiveCommitsWithSynchronousMountOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::allowRecursiveCommitsWithSynchronousMountOnAndroid),
       makeNativeMethod(
         "batchRenderingUpdatesInEventLoop",
         JReactNativeFeatureFlagsCxxInterop::batchRenderingUpdatesInEventLoop),
