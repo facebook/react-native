@@ -1168,6 +1168,10 @@ declare export default class AnimatedValue extends AnimatedWithChildren {
   constructor(value: number, config?: ?AnimatedValueConfig): void;
   __detach(): void;
   __getValue(): number;
+  __makeNative(platformConfig: ?PlatformConfig): void;
+  addListener(callback: (value: any) => mixed): string;
+  removeListener(id: string): void;
+  removeAllListeners(): void;
   setValue(value: number): void;
   setOffset(offset: number): void;
   flattenOffset(): void;
@@ -3026,6 +3030,7 @@ export type enterKeyHintType =
   | \\"send\\";
 type PasswordRules = string;
 type IOSProps = $ReadOnly<{|
+  disableKeyboardShortcuts?: ?boolean,
   clearButtonMode?: ?(\\"never\\" | \\"while-editing\\" | \\"unless-editing\\" | \\"always\\"),
   clearTextOnFocus?: ?boolean,
   dataDetectorTypes?:
@@ -3379,6 +3384,7 @@ export type enterKeyHintType =
   | \\"enter\\";
 type PasswordRules = string;
 type IOSProps = $ReadOnly<{|
+  disableKeyboardShortcuts?: ?boolean,
   clearButtonMode?: ?(\\"never\\" | \\"while-editing\\" | \\"unless-editing\\" | \\"always\\"),
   clearTextOnFocus?: ?boolean,
   dataDetectorTypes?:

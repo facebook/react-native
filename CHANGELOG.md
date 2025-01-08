@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.77.0-rc.6
+
+### Fixed
+
+#### Android specific
+
+- Fixes RNTester JSC Debug instacrashing ([17a5d2be5a](https://github.com/facebook/react-native/commit/17a5d2be5a96703ed1c76d89990a8f1e37abd4d4) by [@cortinico](https://github.com/cortinico))
+- Fixes C++ TurboModules: Prioritise OnLoad.cpp, falling back to default-app-setup ([5a64bde701](https://github.com/facebook/react-native/commit/5a64bde701e28615a79ad52d0631de62ce6cab92) by [@timbocole](https://github.com/timbocole))
+
 ## v0.77.0-rc.5
 
 ### Fixed

@@ -19,8 +19,6 @@
 
 #include <utility>
 
-#include "bindingUtils.h"
-
 namespace facebook::react {
 
 void UIManagerBinding::createAndInstallIfNeeded(
@@ -60,33 +58,6 @@ UIManagerBinding::UIManagerBinding(std::shared_ptr<UIManager> uiManager)
 UIManagerBinding::~UIManagerBinding() {
   LOG(WARNING) << "UIManagerBinding::~UIManagerBinding() was called (address: "
                << this << ").";
-}
-
-jsi::Value UIManagerBinding::getInspectorDataForInstance(
-    jsi::Runtime& runtime,
-    const EventEmitter& eventEmitter) const {
-  auto eventTarget = eventEmitter.eventTarget_;
-  EventEmitter::DispatchMutex().lock();
-
-  if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge") ||
-      !eventTarget) {
-    return jsi::Value::undefined();
-  }
-
-  eventTarget->retain(runtime);
-  auto instanceHandle = eventTarget->getInstanceHandle(runtime);
-  eventTarget->release(runtime);
-  EventEmitter::DispatchMutex().unlock();
-
-  if (instanceHandle.isUndefined()) {
-    return jsi::Value::undefined();
-  }
-
-  return callMethodOfModule(
-      runtime,
-      "ReactFabric",
-      "getInspectorDataForInstance",
-      {std::move(instanceHandle)});
 }
 
 void UIManagerBinding::dispatchEvent(

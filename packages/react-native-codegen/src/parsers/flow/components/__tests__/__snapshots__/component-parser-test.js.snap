@@ -1447,6 +1447,68 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_DEFINED_WITH_ALL_T
                   'type': 'VoidTypeAnnotation'
                 }
               }
+            },
+            {
+              'name': 'arrayArgs',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'FunctionTypeAnnotation',
+                'params': [
+                  {
+                    'name': 'booleanArray',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'BooleanTypeAnnotation'
+                      }
+                    }
+                  },
+                  {
+                    'name': 'stringArray',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'StringTypeAnnotation'
+                      }
+                    }
+                  },
+                  {
+                    'name': 'floatArray',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'FloatTypeAnnotation'
+                      }
+                    }
+                  },
+                  {
+                    'name': 'intArray',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'Int32TypeAnnotation'
+                      }
+                    }
+                  },
+                  {
+                    'name': 'doubleArray',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'DoubleTypeAnnotation'
+                      }
+                    }
+                  }
+                ],
+                'returnTypeAnnotation': {
+                  'type': 'VoidTypeAnnotation'
+                }
+              }
             }
           ]
         }
@@ -4824,6 +4886,16 @@ exports[`RN Codegen Flow Parser can generate fixture COMMANDS_WITH_EXTERNAL_TYPE
                       'type': 'ArrayTypeAnnotation',
                       'elementType': {
                         'type': 'StringTypeAnnotation'
+                      }
+                    }
+                  },
+                  {
+                    'name': 'overlayLocations',
+                    'optional': false,
+                    'typeAnnotation': {
+                      'type': 'ArrayTypeAnnotation',
+                      'elementType': {
+                        'type': 'MixedTypeAnnotation'
                       }
                     }
                   }

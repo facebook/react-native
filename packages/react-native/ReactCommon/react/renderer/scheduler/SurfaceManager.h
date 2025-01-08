@@ -8,6 +8,7 @@
 #pragma once
 
 #include <mutex>
+#include <optional>
 #include <shared_mutex>
 #include <unordered_map>
 
@@ -29,6 +30,15 @@ class SurfaceManager final {
   explicit SurfaceManager(const Scheduler& scheduler) noexcept;
   ~SurfaceManager() noexcept;
 
+  /* SurfaceProps contain information about running surfaces */
+  struct SurfaceProps {
+    SurfaceId surfaceId;
+    std::string moduleName;
+    folly::dynamic props;
+    LayoutConstraints layoutConstraints;
+    LayoutContext layoutContext;
+  };
+
 #pragma mark - Surface Management
 
   void startSurface(
@@ -36,16 +46,18 @@ class SurfaceManager final {
       const std::string& moduleName,
       const folly::dynamic& props,
       const LayoutConstraints& layoutConstraints = {},
-      const LayoutContext& layoutContext = {}) const noexcept;
+      const LayoutContext& layoutContext = {}) noexcept;
 
-  void startEmptySurface(
-      SurfaceId surfaceId,
-      const LayoutConstraints& layoutConstraints = {},
-      const LayoutContext& layoutContext = {}) const noexcept;
+  void stopSurface(SurfaceId surfaceId) noexcept;
 
-  void stopSurface(SurfaceId surfaceId) const noexcept;
+  void stopAllSurfaces() noexcept;
 
-  void stopAllSurfaces() const noexcept;
+  bool isSurfaceRunning(SurfaceId surfaceId) const noexcept;
+
+  std::unordered_set<SurfaceId> getRunningSurfaces() const noexcept;
+
+  std::optional<SurfaceManager::SurfaceProps> getSurfaceProps(
+      SurfaceId surfaceId) const noexcept;
 
   Size measureSurface(
       SurfaceId surfaceId,
@@ -68,7 +80,7 @@ class SurfaceManager final {
 
   const Scheduler& scheduler_;
   mutable std::shared_mutex mutex_; // Protects `registry_`.
-  mutable std::unordered_map<SurfaceId, SurfaceHandler> registry_{};
+  std::unordered_map<SurfaceId, SurfaceHandler> registry_{};
 };
 
 } // namespace facebook::react

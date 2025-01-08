@@ -158,6 +158,19 @@ export type ComponentArrayTypeAnnotation = ArrayTypeAnnotation<
   | ArrayTypeAnnotation<ObjectTypeAnnotation<PropTypeAnnotation>>,
 >;
 
+export type ComponentCommandArrayTypeAnnotation = ArrayTypeAnnotation<
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
+  // Mixed is not great. This generally means its a type alias to another type
+  // like an object or union. Ideally we'd encode that type in the schema so the compat-check can
+  // validate those deeper objects for breaking changes and the generators can do something smarter.
+  // As of now, the generators just create ReadableMap or (const NSArray *) which are untyped
+  | MixedTypeAnnotation,
+>;
+
 export type ArrayTypeAnnotation<+T> = $ReadOnly<{
   type: 'ArrayTypeAnnotation',
   elementType: T,
@@ -222,7 +235,7 @@ export type CommandParamTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation
-  | ComponentArrayTypeAnnotation;
+  | ComponentCommandArrayTypeAnnotation;
 
 export type ReservedTypeAnnotation = $ReadOnly<{
   type: 'ReservedTypeAnnotation',
@@ -412,6 +425,14 @@ type NativeModuleReturnOnlyTypeAnnotation =
   | NativeModulePromiseTypeAnnotation
   | VoidTypeAnnotation;
 
+// Add the allowed component reserved types to the native module union
+export type CompleteReservedTypeAnnotation =
+  | ReservedTypeAnnotation
+  | {
+      type: 'ReservedTypeAnnotation',
+      name: ReservedPropTypeAnnotation['name'],
+    };
+
 // Used by compatibility check which needs to handle all possible types
 // This will eventually also include the union of all view manager types
 export type CompleteTypeAnnotation =
@@ -421,7 +442,8 @@ export type CompleteTypeAnnotation =
   | EventEmitterTypeAnnotation
   | NativeModuleEnumDeclarationWithMembers
   | UnsafeAnyTypeAnnotation
-  // Native Module event emitters and methods
-  | ObjectTypeAnnotation<
-      Nullable<NativeModuleFunctionTypeAnnotation> | EventEmitterTypeAnnotation,
-    >;
+  | ArrayTypeAnnotation<CompleteTypeAnnotation>
+  | ObjectTypeAnnotation<CompleteTypeAnnotation>
+  // Components
+  | CommandTypeAnnotation
+  | CompleteReservedTypeAnnotation;

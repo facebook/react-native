@@ -123,7 +123,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   }
 
   @ReactProp(name = "snapToAlignment")
-  public void setSnapToAlignment(ReactScrollView view, String alignment) {
+  public void setSnapToAlignment(ReactScrollView view, @Nullable String alignment) {
     view.setSnapToAlignment(ReactScrollViewHelper.parseSnapToAlignment(alignment));
   }
 
@@ -186,7 +186,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   /** Controls overScroll behaviour */
   @ReactProp(name = "overScrollMode")
-  public void setOverScrollMode(ReactScrollView view, String value) {
+  public void setOverScrollMode(ReactScrollView view, @Nullable String value) {
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
   }
 

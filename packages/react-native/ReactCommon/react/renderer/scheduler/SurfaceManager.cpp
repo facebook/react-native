@@ -26,7 +26,7 @@ void SurfaceManager::startSurface(
     const std::string& moduleName,
     const folly::dynamic& props,
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) const noexcept {
+    const LayoutContext& layoutContext) noexcept {
   {
     std::unique_lock lock(mutex_);
     auto surfaceHandler = SurfaceHandler{moduleName, surfaceId};
@@ -44,18 +44,18 @@ void SurfaceManager::startSurface(
   });
 }
 
-void SurfaceManager::startEmptySurface(
-    SurfaceId surfaceId,
-    const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) const noexcept {
-  startSurface(surfaceId, "", {}, layoutConstraints, layoutContext);
-}
-
-void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
+void SurfaceManager::stopSurface(SurfaceId surfaceId) noexcept {
+  bool surfaceWasRunning = false;
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     surfaceHandler.stop();
     scheduler_.unregisterSurface(surfaceHandler);
+    surfaceWasRunning = true;
   });
+  if (!surfaceWasRunning) {
+    LOG(WARNING)
+        << "SurfaceManager::stopSurface tried to stop a surface which was not running, surfaceId = "
+        << surfaceId;
+  }
 
   {
     std::unique_lock lock(mutex_);
@@ -65,7 +65,20 @@ void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
   }
 }
 
-void SurfaceManager::stopAllSurfaces() const noexcept {
+void SurfaceManager::stopAllSurfaces() noexcept {
+  auto surfaceIds = getRunningSurfaces();
+  for (const auto& surfaceId : surfaceIds) {
+    stopSurface(surfaceId);
+  }
+}
+
+bool SurfaceManager::isSurfaceRunning(SurfaceId surfaceId) const noexcept {
+  std::shared_lock lock(mutex_);
+  return registry_.contains(surfaceId);
+}
+
+std::unordered_set<SurfaceId> SurfaceManager::getRunningSurfaces()
+    const noexcept {
   std::unordered_set<SurfaceId> surfaceIds;
   {
     std::shared_lock lock(mutex_);
@@ -73,9 +86,23 @@ void SurfaceManager::stopAllSurfaces() const noexcept {
       surfaceIds.insert(surfaceId);
     }
   }
-  for (const auto& surfaceId : surfaceIds) {
-    stopSurface(surfaceId);
-  }
+  return surfaceIds;
+}
+
+std::optional<SurfaceManager::SurfaceProps> SurfaceManager::getSurfaceProps(
+    SurfaceId surfaceId) const noexcept {
+  std::optional<SurfaceManager::SurfaceProps> surfaceProps;
+
+  visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
+    surfaceProps = SurfaceManager::SurfaceProps{
+        surfaceId,
+        surfaceHandler.getModuleName(),
+        surfaceHandler.getProps(),
+        surfaceHandler.getLayoutConstraints(),
+        surfaceHandler.getLayoutContext()};
+  });
+
+  return surfaceProps;
 }
 
 Size SurfaceManager::measureSurface(
