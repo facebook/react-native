@@ -78,6 +78,7 @@ public abstract class ReactNativeHost {
       mReactInstanceManager.invalidate();
       mReactInstanceManager = null;
     }
+    DefaultReactHost.INSTANCE.invalidate();
   }
 
   protected ReactInstanceManager createReactInstanceManager() {
@@ -219,9 +220,6 @@ public abstract class ReactNativeHost {
 
   /** Returns whether dev mode should be enabled. This enables e.g. the dev menu. */
   public abstract boolean getUseDeveloperSupport();
-
-  /** Cleanup function for brownfield scenarios. */
-  public abstract void invalidate();
 
   /** Get the {@link DevSupportManagerFactory}. Override this to use a custom dev support manager */
   protected @Nullable DevSupportManagerFactory getDevSupportManagerFactory() {
