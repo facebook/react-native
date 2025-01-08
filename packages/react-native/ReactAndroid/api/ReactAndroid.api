@@ -5397,7 +5397,6 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field NONE Ljava/lang/String;
 	public static final field NUMBER_OF_LINES Ljava/lang/String;
 	public static final field ON Ljava/lang/String;
-	public static final field ON_LAYOUT Ljava/lang/String;
 	public static final field OPACITY Ljava/lang/String;
 	public static final field OUTLINE_COLOR Ljava/lang/String;
 	public static final field OUTLINE_OFFSET Ljava/lang/String;
