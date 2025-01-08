@@ -3311,12 +3311,6 @@ public final class com/facebook/react/modules/fresco/SystraceRequestListener : c
 	public fun requiresExtraMap (Ljava/lang/String;)Z
 }
 
-public final class com/facebook/react/modules/fresco/XmlFormat {
-	public static final field INSTANCE Lcom/facebook/react/modules/fresco/XmlFormat;
-	public final fun addDecodingCapability (Lcom/facebook/imagepipeline/decoder/ImageDecoderConfig$Builder;Landroid/content/Context;)Lcom/facebook/imagepipeline/decoder/ImageDecoderConfig$Builder;
-	public final fun getDrawableFactory ()Lcom/facebook/imagepipeline/drawable/DrawableFactory;
-}
-
 public final class com/facebook/react/modules/i18nmanager/I18nManagerModule : com/facebook/fbreact/specs/NativeI18nManagerSpec {
 	public static final field Companion Lcom/facebook/react/modules/i18nmanager/I18nManagerModule$Companion;
 	public static final field NAME Ljava/lang/String;
