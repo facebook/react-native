@@ -29,7 +29,7 @@ const MACOS_BIN_DIR = path.join(SDKS_DIR, 'hermesc', 'osx-bin');
 const MACOS_HERMESC_PATH = path.join(MACOS_BIN_DIR, 'hermesc');
 const MACOS_IMPORT_HERMESC_PATH = path.join(
   MACOS_BIN_DIR,
-  'ImportHermesc.cmake',
+  'ImportHostCompilers.cmake',
 );
 
 /**
@@ -301,7 +301,7 @@ function createHermesPrebuiltArtifactsTarball(
 function validateHermesFrameworksExist(destrootDir /*: string */) {
   if (
     !fs.existsSync(
-      path.join(destrootDir, 'Library/Frameworks/macosx/hermes.framework'),
+      path.join(destrootDir, 'Library/Frameworks/macosx/hermesvm.framework'),
     )
   ) {
     throw new Error(
@@ -310,7 +310,7 @@ function validateHermesFrameworksExist(destrootDir /*: string */) {
   }
   if (
     !fs.existsSync(
-      path.join(destrootDir, 'Library/Frameworks/universal/hermes.xcframework'),
+      path.join(destrootDir, 'Library/Frameworks/universal/hermesvm.xcframework'),
     )
   ) {
     throw new Error(
