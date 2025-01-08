@@ -168,6 +168,18 @@ public object ViewProps {
   /** Used to locate views in end-to-end (UI) tests. */
   public const val TEST_ID: String = "testID"
   public const val NATIVE_ID: String = "nativeID"
+  internal const val ON_POINTER_ENTER = "onPointerEnter"
+  internal const val ON_POINTER_ENTER_CAPTURE = "onPointerEnterCapture"
+  internal const val ON_POINTER_OVER = "onPointerOver"
+  internal const val ON_POINTER_OVER_CAPTURE = "onPointerOverCapture"
+  internal const val ON_POINTER_OUT = "onPointerOut"
+  internal const val ON_POINTER_OUT_CAPTURE = "onPointerOutCapture"
+  internal const val ON_POINTER_LEAVE = "onPointerLeave"
+  internal const val ON_POINTER_LEAVE_CAPTURE = "onPointerLeaveCapture"
+  internal const val ON_POINTER_MOVE = "onPointerMove"
+  internal const val ON_POINTER_MOVE_CAPTURE = "onPointerMoveCapture"
+  internal const val ON_CLICK = "onClick"
+  internal const val ON_CLICK_CAPTURE = "onClickCapture"
   @JvmField
   public val BORDER_SPACING_TYPES: IntArray =
       intArrayOf(
