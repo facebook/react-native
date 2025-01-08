@@ -5415,7 +5415,6 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field PADDING_VERTICAL Ljava/lang/String;
 	public static final field POINTER_EVENTS Ljava/lang/String;
 	public static final field POSITION Ljava/lang/String;
-	public static final field POSITION_SPACING_TYPES [I
 	public static final field RENDER_TO_HARDWARE_TEXTURE Ljava/lang/String;
 	public static final field RESIZE_METHOD Ljava/lang/String;
 	public static final field RESIZE_MODE Ljava/lang/String;

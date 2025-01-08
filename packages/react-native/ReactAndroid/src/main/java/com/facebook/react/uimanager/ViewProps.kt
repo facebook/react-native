@@ -190,9 +190,6 @@ public object ViewProps {
           Spacing.BOTTOM,
           Spacing.LEFT,
           Spacing.RIGHT)
-  @JvmField
-  public val POSITION_SPACING_TYPES: IntArray =
-      intArrayOf(Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM)
   private val LAYOUT_ONLY_PROPS: HashSet<String> =
       HashSet(
           Arrays.asList(
