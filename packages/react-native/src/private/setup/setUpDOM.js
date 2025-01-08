@@ -19,6 +19,22 @@ export default function setUpDOM() {
 
   initialized = true;
 
+  const EventTarget = require('../webapis/dom/events/EventTarget').default;
+  const Event = require('../webapis/dom/events/Event').default;
+  const CustomEvent = require('../webapis/dom/events/CustomEvent').default;
+
+  // $FlowExpectedError[cannot-write]
+  globalThis.EventTarget = EventTarget;
+
+  // $FlowExpectedError[cannot-write]
+  globalThis.Event = Event;
+
+  // $FlowExpectedError[cannot-write]
+  globalThis.CustomEvent = CustomEvent;
+
+  // $FlowExpectedError[class-object-subtyping]
+  Object.setPrototypeOf(globalThis, EventTarget.prototype);
+
   polyfillGlobal(
     'DOMRect',
     () => require('../webapis/dom/geometry/DOMRect').default,
