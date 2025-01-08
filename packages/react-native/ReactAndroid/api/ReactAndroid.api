@@ -2626,13 +2626,6 @@ public class com/facebook/react/fabric/FabricUIManagerProviderImpl : com/faceboo
 	public fun createUIManager (Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/UIManager;
 }
 
-public abstract class com/facebook/react/fabric/GuardedFrameCallback : android/view/Choreographer$FrameCallback {
-	protected fun <init> (Lcom/facebook/react/bridge/JSExceptionHandler;)V
-	protected fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
-	public fun doFrame (J)V
-	protected abstract fun doFrameGuarded (J)V
-}
-
 public class com/facebook/react/fabric/StateWrapperImpl : com/facebook/jni/HybridClassBase, com/facebook/react/uimanager/StateWrapper {
 	public fun destroyState ()V
 	public fun getStateData ()Lcom/facebook/react/bridge/ReadableNativeMap;
@@ -4075,6 +4068,7 @@ public final class com/facebook/react/uimanager/FloatUtil {
 }
 
 public abstract class com/facebook/react/uimanager/GuardedFrameCallback : android/view/Choreographer$FrameCallback {
+	protected fun <init> (Lcom/facebook/react/bridge/JSExceptionHandler;)V
 	protected fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
 	public fun doFrame (J)V
 	protected abstract fun doFrameGuarded (J)V
