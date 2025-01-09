@@ -20,9 +20,12 @@ public enum class LengthPercentageType {
 }
 
 public data class LengthPercentage(
-    private val value: Float,
+    private val _value: Float,
     public val type: LengthPercentageType,
 ) {
+  public val value: Float
+    get() = _value
+
   public companion object {
     @JvmStatic
     public fun setFromDynamic(dynamic: Dynamic): LengthPercentage? {

@@ -39,6 +39,12 @@ struct ColorStop {
   ValueUnit position;
 };
 
+struct ProcessedColorStop {
+  bool operator==(const ProcessedColorStop& other) const = default;
+  SharedColor color;
+  std::optional<Float> position;
+};
+
 struct LinearGradient {
   GradientDirection direction;
   std::vector<ColorStop> colorStops;

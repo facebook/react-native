@@ -16,6 +16,8 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.uimanager.FloatUtil
+import com.facebook.react.uimanager.LengthPercentage
+import com.facebook.react.uimanager.LengthPercentageType
 import com.facebook.react.uimanager.PixelUtil
 import kotlin.math.atan
 import kotlin.math.ln
@@ -23,20 +25,14 @@ import kotlin.math.sqrt
 import kotlin.math.tan
 import android.graphics.LinearGradient as AndroidLinearGradient
 
-private enum class UnitType {
-  Point,
-  Percent,
-  Undefined
-}
-
-private data class ValueUnit(
-  val value: Float = 0.0f,
-  val unit: UnitType = UnitType.Undefined
-)
-
 private data class ColorStop(
   var color: Int? = null,
-  val position: ValueUnit
+  val position: LengthPercentage? = null
+)
+
+private data class ProcessedColorStop(
+  var color: Int? = null,
+  val position: Float? = null
 )
 
 internal class LinearGradient(
@@ -95,28 +91,7 @@ internal class LinearGradient(
         else -> colorStop.getInt("color")
       }
 
-      val position = when {
-        !colorStop.hasKey("position") || colorStop.isNull("position") -> {
-          ValueUnit()
-        }
-        colorStop.getType("position") == ReadableType.String -> {
-          val positionString = colorStop.getString("position")
-          if (positionString != null && positionString.endsWith("%")) {
-            try {
-              ValueUnit(positionString.removeSuffix("%").toFloat(), UnitType.Percent)
-            } catch (e: NumberFormatException) {
-              ValueUnit()
-            }
-          } else {
-            ValueUnit()
-          }
-        }
-        colorStop.getType("position") == ReadableType.Number -> {
-          val positionDouble = colorStop.getDouble("position")
-          ValueUnit(positionDouble.toFloat(), UnitType.Point)
-        }
-        else -> ValueUnit()
-      }
+      val position = LengthPercentage.setFromDynamic(colorStop.getDynamic("position"))
 
       stops.add(ColorStop(color, position))
     }
@@ -140,9 +115,10 @@ internal class LinearGradient(
     val positions = FloatArray(finalStops.size)
 
     finalStops.forEachIndexed { i, colorStop ->
-      colorStop.color?.let { color ->
-        colors[i] = color
-        positions[i] = colorStop.position.value
+      val color = colorStop.color
+      if (color != null && colorStop.position != null) {
+        colors[i] = color;
+        positions[i] = colorStop.position
       }
     }
     return AndroidLinearGradient(
@@ -220,23 +196,23 @@ internal class LinearGradient(
   private fun getFixedColorStops(
     colorStops: ArrayList<ColorStop>,
     gradientLineLength: Float
-  ): List<ColorStop> {
-    val fixedColorStops = ArrayList<ColorStop>(colorStops.size)
+  ): Array<ProcessedColorStop> {
+    val fixedColorStops = Array<ProcessedColorStop>(colorStops.size) { ProcessedColorStop() }
     var hasNullPositions = false
-    var maxPositionSoFar = resolveColorStopPosition(colorStops[0].position, gradientLineLength).value
+    var maxPositionSoFar = resolveColorStopPosition(colorStops[0].position, gradientLineLength) ?: 0f
 
     for (i in colorStops.indices) {
       val colorStop = colorStops[i]
       var newPosition = resolveColorStopPosition(colorStop.position, gradientLineLength)
 
-      if (newPosition.unit == UnitType.Undefined) {
+      if (newPosition == null) {
         // Step 1:
         // If the first color stop does not have a position,
         // set its position to 0%. If the last color stop does not have a position,
         // set its position to 100%.
         when (i) {
-          0 -> newPosition = ValueUnit(0f, UnitType.Point)
-          colorStops.size - 1 -> newPosition = ValueUnit(1f, UnitType.Point)
+          0 -> newPosition = 0f
+          colorStops.size - 1 -> newPosition = 1f
         }
       }
 
@@ -245,16 +221,12 @@ internal class LinearGradient(
       // that is less than the specified position of any color stop or transition hint
       // before it in the list, set its position to be equal to the
       // largest specified position of any color stop or transition hint before it.
-      if (newPosition.unit != UnitType.Undefined) {
-        newPosition = ValueUnit(
-          maxOf(newPosition.value, maxPositionSoFar),
-          UnitType.Point
-        )
-        fixedColorStops.add(ColorStop(colorStop.color, newPosition))
-        maxPositionSoFar = newPosition.value
+      if (newPosition != null) {
+        newPosition = maxOf(newPosition, maxPositionSoFar)
+        fixedColorStops[i] = ProcessedColorStop(colorStop.color, newPosition)
+        maxPositionSoFar = newPosition
       } else {
         hasNullPositions = true
-        fixedColorStops.add(colorStop)
       }
     }
 
@@ -266,18 +238,19 @@ internal class LinearGradient(
     if (hasNullPositions) {
       var lastDefinedIndex = 0
       for (i in 1 until fixedColorStops.size) {
-        if (fixedColorStops[i].position.unit != UnitType.Undefined) {
+        val endPosition = fixedColorStops[i].position
+        if (endPosition != null) {
           val unpositionedStops = i - lastDefinedIndex - 1
           if (unpositionedStops > 0) {
-            val startPosition = fixedColorStops[lastDefinedIndex].position.value
-            val endPosition = fixedColorStops[i].position.value
-            val increment = (endPosition - startPosition) / (unpositionedStops + 1)
-
-            for (j in 1..unpositionedStops) {
-              fixedColorStops[lastDefinedIndex + j] = ColorStop(
-                fixedColorStops[lastDefinedIndex + j].color,
-                ValueUnit(startPosition + increment * j, UnitType.Point)
-              )
+            val startPosition = fixedColorStops[lastDefinedIndex].position
+            if (startPosition != null) {
+              val increment = (endPosition - startPosition) / (unpositionedStops + 1)
+              for (j in 1..unpositionedStops) {
+                fixedColorStops[lastDefinedIndex + j] = ProcessedColorStop(
+                  colorStops[lastDefinedIndex + j].color,
+                  startPosition + increment * j
+                )
+              }
             }
           }
           lastDefinedIndex = i
@@ -288,7 +261,7 @@ internal class LinearGradient(
     return fixedColorStops
   }
 
-  private fun processColorTransitionHints(originalStops: List<ColorStop>): List<ColorStop> {
+  private fun processColorTransitionHints(originalStops: Array<ProcessedColorStop>): List<ProcessedColorStop> {
     val colorStops = originalStops.toMutableList()
     var indexOffset = 0
 
@@ -303,9 +276,12 @@ internal class LinearGradient(
         continue
       }
 
-      val offsetLeft = colorStops[x - 1].position.value
-      val offsetRight = colorStops[x + 1].position.value
-      val offset = colorStops[x].position.value
+      val offsetLeft = colorStops[x - 1].position
+      val offsetRight = colorStops[x + 1].position
+      val offset = colorStops[x].position
+      if (offsetLeft == null || offsetRight == null || offset == null) {
+        continue
+      }
       val leftDist = offset - offsetLeft
       val rightDist = offsetRight - offset
       val totalDist = offsetRight - offsetLeft
@@ -328,48 +304,48 @@ internal class LinearGradient(
         continue
       }
 
-      val newStops = ArrayList<ColorStop>(9)
+      val newStops = ArrayList<ProcessedColorStop>(9)
 
       // Position the new color stops
       if (leftDist > rightDist) {
         for (y in 0..6) {
           newStops.add(
-            ColorStop(
+            ProcessedColorStop(
               null,
-              ValueUnit(offsetLeft + leftDist * ((7f + y) / 13f), UnitType.Point)
+              offsetLeft + leftDist * ((7f + y) / 13f)
             )
           )
         }
         newStops.add(
-          ColorStop(
+          ProcessedColorStop(
             null,
-            ValueUnit(offset + rightDist * (1f / 3f), UnitType.Point)
+            offset + rightDist * (1f / 3f)
           )
         )
         newStops.add(
-          ColorStop(
+          ProcessedColorStop(
             null,
-            ValueUnit(offset + rightDist * (2f / 3f), UnitType.Point)
+            offset + rightDist * (2f / 3f)
           )
         )
       } else {
         newStops.add(
-          ColorStop(
+          ProcessedColorStop(
             null,
-            ValueUnit(offsetLeft + leftDist * (1f / 3f), UnitType.Point)
+            offsetLeft + leftDist * (1f / 3f)
           )
         )
         newStops.add(
-          ColorStop(
+          ProcessedColorStop(
             null,
-            ValueUnit(offsetLeft + leftDist * (2f / 3f), UnitType.Point)
+            offsetLeft + leftDist * (2f / 3f)
           )
         )
         for (y in 0..6) {
           newStops.add(
-            ColorStop(
+            ProcessedColorStop(
               null,
-              ValueUnit(offset + rightDist * (y / 13f), UnitType.Point)
+              offset + rightDist * (y / 13f)
             )
           )
         }
@@ -380,7 +356,10 @@ internal class LinearGradient(
       val logRatio = ln(0.5) / ln(hintRelativeOffset)
 
       for (newStop in newStops) {
-        val pointRelativeOffset = (newStop.position.value - offsetLeft) / totalDist
+        if (newStop.position == null) {
+          continue
+        }
+        val pointRelativeOffset = (newStop.position - offsetLeft) / totalDist
         val weighting = Math.pow(pointRelativeOffset.toDouble(), logRatio).toFloat()
 
         if (!weighting.isFinite() || weighting.isNaN()) {
@@ -404,11 +383,13 @@ internal class LinearGradient(
     return colorStops
   }
 
-  private fun resolveColorStopPosition(position: ValueUnit, gradientLineLength: Float): ValueUnit {
-    return when (position.unit) {
-      UnitType.Point -> ValueUnit(PixelUtil.toPixelFromDIP(position.value) / gradientLineLength, UnitType.Point)
-      UnitType.Percent -> ValueUnit(position.value / 100, UnitType.Point)
-      UnitType.Undefined -> position
+  private fun resolveColorStopPosition(position: LengthPercentage?, gradientLineLength: Float): Float? {
+    if (position == null) return null
+
+    return when (position.type) {
+      LengthPercentageType.POINT -> PixelUtil.toPixelFromDIP(position.value) / gradientLineLength
+      LengthPercentageType.PERCENT -> position.value / 100
+      else -> null
     }
   }
 }
