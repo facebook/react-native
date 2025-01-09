@@ -180,7 +180,7 @@ public object DefaultReactHost {
     * Cleanup function for brownfield scenarios where you want to remove the references kept by
     * reactHost after destroying the RN instance.
     */
-  public fun invalidate() {
+  internal fun invalidate() {
       reactHost = null
   }
 }

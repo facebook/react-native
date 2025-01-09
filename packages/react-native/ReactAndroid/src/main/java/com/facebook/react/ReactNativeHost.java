@@ -78,7 +78,6 @@ public abstract class ReactNativeHost {
       mReactInstanceManager.invalidate();
       mReactInstanceManager = null;
     }
-    DefaultReactHost.INSTANCE.invalidate();
   }
 
   protected ReactInstanceManager createReactInstanceManager() {
