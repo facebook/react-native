@@ -1786,7 +1786,7 @@ declare export default typeof AndroidDrawerLayoutNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js 1`] = `
-"declare module.exports: $FlowFixMe;
+"declare module.exports: DrawerLayoutAndroid;
 "
 `;
 
