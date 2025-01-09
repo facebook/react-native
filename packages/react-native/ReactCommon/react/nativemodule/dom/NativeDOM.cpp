@@ -251,7 +251,7 @@ bool NativeDOM::hasPointerCapture(
     jsi::Value shadowNodeValue,
     double pointerId) {
   bool isCapturing = getPointerEventsProcessorFromRuntime(rt).hasPointerCapture(
-      pointerId, shadowNodeFromValue(rt, shadowNodeValue).get());
+      static_cast<PointerIdentifier>(pointerId), shadowNodeFromValue(rt, shadowNodeValue).get());
   return isCapturing;
 }
 
@@ -260,7 +260,7 @@ void NativeDOM::setPointerCapture(
     jsi::Value shadowNodeValue,
     double pointerId) {
   getPointerEventsProcessorFromRuntime(rt).setPointerCapture(
-      pointerId, shadowNodeFromValue(rt, shadowNodeValue));
+      static_cast<PointerIdentifier>(pointerId), shadowNodeFromValue(rt, shadowNodeValue));
 }
 
 void NativeDOM::releasePointerCapture(
@@ -268,7 +268,7 @@ void NativeDOM::releasePointerCapture(
     jsi::Value shadowNodeValue,
     double pointerId) {
   getPointerEventsProcessorFromRuntime(rt).releasePointerCapture(
-      pointerId, shadowNodeFromValue(rt, shadowNodeValue).get());
+      static_cast<PointerIdentifier>(pointerId), shadowNodeFromValue(rt, shadowNodeValue).get());
 }
 
 #pragma mark - Legacy RN layout APIs
