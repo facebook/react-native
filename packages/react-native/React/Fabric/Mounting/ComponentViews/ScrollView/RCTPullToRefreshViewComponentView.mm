@@ -148,7 +148,9 @@ using namespace facebook::react;
 {
   [super didMoveToWindow];
   if (self.window) {
-    [self _attach];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self _attach];
+    });
   } else {
     [self _detach];
   }
