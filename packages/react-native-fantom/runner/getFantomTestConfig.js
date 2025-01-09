@@ -46,7 +46,7 @@ const DEFAULT_MODE: FantomTestConfigMode =
 
 const FANTOM_FLAG_FORMAT = /^(\w+):(\w+)$/;
 
-const FANTOM_BENCHMARK_SUITE_RE = /\nbenchmark(\s*)\.suite\(/g;
+const FANTOM_BENCHMARK_SUITE_RE = /\nunstable_benchmark(\s*)\.suite\(/g;
 
 /**
  * Extracts the Fantom configuration from the test file, specified as part of
