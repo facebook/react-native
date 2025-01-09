@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.76.6
+
+### Fixed
+
+- **layout:** Fix TextMeasureCacheKey Throwing Out Some LayoutConstraints ([f7a5db3c06](https://github.com/facebook/react-native/commit/f7a5db3c063b952321826ea431d3d238ef0de65d) by [@NickGerleman](https://github.com/NickGerleman))
+
+#### Android specific
+
+- **layout:** Restore layout/invalidate during ReactViewClippingManager.removeViewAt() ([0683206927](https://github.com/facebook/react-native/commit/068320692748f0c46867625786a780366fdbb1d6) by Thomas Nardone)
+- **Native Modules:** Prioritise local OnLoad.cpp, falling back to default-app-setup ([8b1f049879](https://github.com/facebook/react-native/commit/8b1f04987936ab2bc7dcf62adc92bf394d35f77b) by [@timbocole](https://github.com/timbocole))
+- **runtime:** Remove feature flag for allowRecursiveCommitsWithSynchronousMountOnAndroid ([fb7f87ecb2](https://github.com/facebook/react-native/commit/fb7f87ecb27f9006e2018b9622d329feb1ba23a4) by [@cipolleschi](https://github.com/cipolleschi))
+
+#### iOS specific
+
+- **TextInput:** Fixing TextInput `maxLength` not working in old arch ([9ecf290d27](https://github.com/facebook/react-native/commit/9ecf290d270598e45832a75f657d73cf20088a37) by [@mateoguzmana](https://github.com/mateoguzmana))
+
 ## v0.77.0-rc.6
 
 ### Fixed
