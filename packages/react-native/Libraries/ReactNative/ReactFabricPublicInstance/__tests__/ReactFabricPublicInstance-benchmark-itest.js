@@ -17,7 +17,7 @@ import type {
 
 import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import ReactFabricHostComponent from '../../../ReactNative/ReactFabricPublicInstance/ReactFabricHostComponent';
-import {benchmark} from '@react-native/fantom';
+import {unstable_benchmark} from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 
 // Create fake parameters for the class.
@@ -31,7 +31,7 @@ const viewConfig: ViewConfig = {
 // $FlowExpectedError[incompatible-type]
 const internalInstanceHandle: InternalInstanceHandle = {};
 
-benchmark
+unstable_benchmark
   .suite('ReactNativeElement vs. ReactFabricHostComponent')
   .add('ReactNativeElement', () => {
     // eslint-disable-next-line no-new
