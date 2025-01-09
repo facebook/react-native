@@ -48,7 +48,7 @@
 
 #### Android specific
 
-- **infra:** Gradle to 8.11.1 ([490db92562](https://github.com/facebook/react-native/commit/490db92562df3baf6dc38737778179065f378715) by [@cortinico](https://github.com/cortinico))
+- **deps:** Gradle to 8.11.1 ([490db92562](https://github.com/facebook/react-native/commit/490db92562df3baf6dc38737778179065f378715) by [@cortinico](https://github.com/cortinico))
 
 ### Fixed
 
@@ -219,73 +219,65 @@
 
 ### Changed
 
-- Fixed a typo in the README file. ([30e75a51f3](https://github.com/facebook/react-native/commit/30e75a51f3af7fbad83e4b002526b69bba021753) by [@Aryan2727-debug](https://github.com/Aryan2727-debug))
-- Fix unnececary rerenders of VirtualizedListCells with strictMode={true} ([aafe696453](https://github.com/facebook/react-native/commit/aafe696453186d0e87ae96d0bca4c6650234d222) by [@Tom910](https://github.com/Tom910))
-- The `AnimatedNode` graph will not occur during the insertion effect phase, which means animations can now be reliably started during layout effects. ([316170ce8d](https://github.com/facebook/react-native/commit/316170ce8d0aac1df3261c792b9f768665d134c5) by [@yungsters](https://github.com/yungsters))
-- AttributedString `appendFragment` and `prependFragment` take an rval instead of a const ref; append/prependAttributedString have been removed ([2c31fe99e1](https://github.com/facebook/react-native/commit/2c31fe99e1cc5bfdb393d4f5c70231a042ea67ef) by [@javache](https://github.com/javache))
-- Improved AttributedText generation for raw text nodes. ([2f7957f2fd](https://github.com/facebook/react-native/commit/2f7957f2fd424fdaa980d99a4ff05eb3237d662e) by [@javache](https://github.com/javache))
-- Optimized the performance of updating `Animated` components. ([f0ffcd4f5d](https://github.com/facebook/react-native/commit/f0ffcd4f5dfeab794fbfa3257bb9a8fd793ff2bc) by [@yungsters](https://github.com/yungsters))
-- Bump serve-static to 1.16.2 to fix CVE-2024-43800 ([50e38cc9f1](https://github.com/facebook/react-native/commit/50e38cc9f1e6713228a91ad50f426c4f65e65e1a) by [@cortinico](https://github.com/cortinico))
-- Bump Folly to 2024.10.14.00 ([37375d8aba](https://github.com/facebook/react-native/commit/37375d8aba0869531567426466478b0de9a1aea3) by [@alanleedev](https://github.com/alanleedev))
-- `useMergeRefs` and components using it (e.g. `Pressable`) now support ref cleanup functions. ([01e210fd28](https://github.com/facebook/react-native/commit/01e210fd28bc961e8c1b5fa454b3c947adda296c) by [@yungsters](https://github.com/yungsters))
-- : Update Metro to 0.81.0 ([0902b0af75](https://github.com/facebook/react-native/commit/0902b0af75ba30ec9d4abeda71769d0685637afa) by [@robhogan](https://github.com/robhogan))
-- Animations started with incompatible `useNativeDriver` and `AnimatedValue` configurations will now synchronously fail. Previously, spring and timing animations with non-zero delays would throw the error asynchronously. ([fd8cf19625](https://github.com/facebook/react-native/commit/fd8cf1962585aa49e8921475d89c1a5c2423c51c) by [@yungsters](https://github.com/yungsters))
-- The `Animation` superclass no longer exposes `__onEnd` as a property. Subclasses must instead invoke `super.start(…)` in their `start()` implementation. ([b3fe06b268](https://github.com/facebook/react-native/commit/b3fe06b2685e526fe2bc420a902a3ccd4e1381df) by [@yungsters](https://github.com/yungsters))
-- Simplified Flow types to use `HostInstance` (which changing nominal types). ([177697f539](https://github.com/facebook/react-native/commit/177697f539ec68a47cbb8f57260cebe701589ef1) by [@yungsters](https://github.com/yungsters))
-- Upgrade React DevTools to 6.0.0. ([ed4f6d6891](https://github.com/facebook/react-native/commit/ed4f6d68910677ab050e3fef5aaa87e42d582fe0) by [@hoxyq](https://github.com/hoxyq))
-- Fix: use public instance in Fiber renderer and expose it from getInspectorDataForViewAtPoint (#31068) ([633ad4933e](https://github.com/facebook/react-native/commit/633ad4933e9514d4168d6dcdb7e56c9a1859482a) by [@hoxyq](https://github.com/hoxyq))
-- Get react-native package name from package.json in codegen script ([65575e8399](https://github.com/facebook/react-native/commit/65575e8399a08841a0ccbc5b28cafeee6d41714c) by [@okwasniewski](https://github.com/okwasniewski))
-- Bring back shouldSkipStateUpdatesForLoopingAnimations feature flag ([6e0e712c2a](https://github.com/facebook/react-native/commit/6e0e712c2a680cf4b4de1ee5fb25cc5282b242c5) by [@dmytrorykun](https://github.com/dmytrorykun))
-- AnimatedNode (and its subclasses) once again implement `toJSON()`. ([7bd4a54968](https://github.com/facebook/react-native/commit/7bd4a5496815943b031b68ca46792560d8d798d8) by [@yungsters](https://github.com/yungsters))
-- Do not print Bridgeless Mode is enabled on console anymore ([f3a969f38d](https://github.com/facebook/react-native/commit/f3a969f38d7a2c74bf63ee05c4c819c0873059a9) by [@cortinico](https://github.com/cortinico))
-- Bump main to 0.77-main ([120558c0cd](https://github.com/facebook/react-native/commit/120558c0cd6ae50156d2f7b958d3a29fd7ae4623) by [@cipolleschi](https://github.com/cipolleschi))
-- Improved the performance of unmounting (and updating, when an enclosing Activity becomes hidden) Animated components ([46abda55b9](https://github.com/facebook/react-native/commit/46abda55b9749dc171e0fec551ba83c027818eb7) by Royi Hagigi)
-- AnimatedNode (and its subclasses) no longer implement `toJSON()`. ([fe6228512e](https://github.com/facebook/react-native/commit/fe6228512e076820c9c11869cfe24b19d1abfb58) by [@yungsters](https://github.com/yungsters))
-- Animated now resolves `style` to the original prop value if it contains no `AnimatedNode` instances. Previously, it would resolve to a flattened style object. ([ca234ba10e](https://github.com/facebook/react-native/commit/ca234ba10e8d06630da7ea00aac515b222137645) by [@yungsters](https://github.com/yungsters))
-- Bump Metro dependencies to 0.81.0-alpha.0 ([40f98b5eee](https://github.com/facebook/react-native/commit/40f98b5eeef18bb9c20a9a2762d0b1d648c4ae91) by [@robhogan](https://github.com/robhogan))
+- **Animated:** The `AnimatedNode` graph will not occur during the insertion effect phase, which means animations can now be reliably started during layout effects. ([316170ce8d](https://github.com/facebook/react-native/commit/
+- **Animated:** Optimized the performance of updating `Animated` components. ([f0ffcd4f5d](https://github.com/facebook/react-native/commit/f0ffcd4f5dfeab794fbfa3257bb9a8fd793ff2bc) by [@yungsters](https://github.com/yungsters))
+- **Animated:** Animations started with incompatible `useNativeDriver` and `AnimatedValue` configurations will now synchronously fail. Previously, spring and timing animations with non-zero delays would throw the error asynchronously. ([fd8cf19625](https://github.com/facebook/react-native/commit/fd8cf1962585aa49e8921475d89c1a5c2423c51c) by [@yungsters](https://github.com/yungsters))
+- **Animated:** The `Animation` superclass no longer exposes `__onEnd` as a property. Subclasses must instead invoke `super.start(…)` in their `start()` implementation. ([b3fe06b268](https://github.com/facebook/react-native/commit/b3fe06b2685e526fe2bc420a902a3ccd4e1381df) by [@yungsters](https://github.com/yungsters))
+- **Animated:** Bring back shouldSkipStateUpdatesForLoopingAnimations feature flag ([6e0e712c2a](https://github.com/facebook/react-native/commit/6e0e712c2a680cf4b4de1ee5fb25cc5282b242c5) by [@dmytrorykun](https://github.com/dmytrorykun))
+- **Animated:** AnimatedNode (and its subclasses) once again implement `toJSON()`. ([7bd4a54968](https://github.com/facebook/react-native/commit/7bd4a5496815943b031b68ca46792560d8d798d8) by [@yungsters](https://github.com/yungsters))
+- **Animated:** Improved the performance of unmounting (and updating, when an enclosing Activity becomes hidden) Animated components ([46abda55b9](https://github.com/facebook/react-native/commit/46abda55b9749dc171e0fec551ba83c027818eb7) by Royi Hagigi)
+- **Animated:** AnimatedNode (and its subclasses) no longer implement `toJSON()`. ([fe6228512e](https://github.com/facebook/react-native/commit/fe6228512e076820c9c11869cfe24b19d1abfb58) by [@yungsters](https://github.com/yungsters))
+- **Animated:** Animated now resolves `style` to the original prop value if it contains no `AnimatedNode` instances. Previously, it would resolve to a flattened style object. ([ca234ba10e](https://github.com/facebook/react-native/commit/ca234ba10e8d06630da7ea00aac515b222137645) by [@yungsters](https://github.com/yungsters))
+- **AttributedString:** AttributedString `appendFragment` and `prependFragment` take an rval instead of a const ref; append/prependAttributedString have been removed ([2c31fe99e1](https://github.com/facebook/react-native/commit/2c31fe99e1cc5bfdb393d4f5c70231a042ea67ef) by [@javache](https://github.com/javache))
+- **AttributedString:** Improved AttributedText generation for raw text nodes. ([2f7957f2fd](https://github.com/facebook/react-native/commit/2f7957f2fd424fdaa980d99a4ff05eb3237d662e) by [@javache](https://github.com/javache))
+- **Flow:** Simplified Flow types to use `HostInstance` (which changing nominal types). ([177697f539](https://github.com/facebook/react-native/commit/177697f539ec68a47cbb8f57260cebe701589ef1) by [@yungsters](https://github.com/yungsters))
+- **JS:** `useMergeRefs` and components using it (e.g. `Pressable`) now support ref cleanup functions. ([01e210fd28](https://github.com/facebook/react-native/commit/01e210fd28bc961e8c1b5fa454b3c947adda296c) by [@yungsters](https://github.com/yungsters))
+- **JS:** Fix: use public instance in Fiber renderer and expose it from getInspectorDataForViewAtPoint (#31068) ([633ad4933e](https://github.com/facebook/react-native/commit/633ad4933e9514d4168d6dcdb7e56c9a1859482a) by [@hoxyq](https://github.com/hoxyq))
+- **deps:** Bump serve-static to 1.16.2 to fix CVE-2024-43800 ([50e38cc9f1](https://github.com/facebook/react-native/commit/50e38cc9f1e6713228a91ad50f426c4f65e65e1a) by [@cortinico](https://github.com/cortinico))
+- **deps:** Bump Folly to 2024.10.14.00 ([37375d8aba](https://github.com/facebook/react-native/commit/37375d8aba0869531567426466478b0de9a1aea3) by [@alanleedev](https://github.com/alanleedev))
+- **deps:** Update Metro to 0.81.0 ([0902b0af75](https://github.com/facebook/react-native/commit/0902b0af75ba30ec9d4abeda71769d0685637afa) by [@robhogan](https://github.com/robhogan))
+- **deps:** Upgrade React DevTools to 6.0.0. ([ed4f6d6891](https://github.com/facebook/react-native/commit/ed4f6d68910677ab050e3fef5aaa87e42d582fe0) by [@hoxyq](https://github.com/hoxyq))
+- **infra:** Do not print Bridgeless Mode is enabled on console anymore ([f3a969f38d](https://github.com/facebook/react-native/commit/f3a969f38d7a2c74bf63ee05c4c819c0873059a9) by [@cortinico](https://github.com/cortinico))
+- **VirtualizedList:** Fix unnececary rerenders of VirtualizedListCells with strictMode={true} ([aafe696453](https://github.com/facebook/react-native/commit/aafe696453186d0e87ae96d0bca4c6650234d222) by [@Tom910](https://github.com/Tom910))
+316170ce8d0aac1df3261c792b9f768665d134c5) by [@yungsters](https://github.com/yungsters))
 
 #### Android specific
 
-- Consolidated ReactViewGroup add/remove overrides ([0b22b955f1](https://github.com/facebook/react-native/commit/0b22b955f1494f0e7441a01dd19b3fdf5e20c3dc) by Thomas Nardone)
-- Migrated systeminfo module code from Java to Kotlin ([8dc2c90ce5](https://github.com/facebook/react-native/commit/8dc2c90ce5f4b30f4729560aed2412e6d29f39fa) by [@oddlyspaced](https://github.com/oddlyspaced))
-- Updating targetSdk to 35 (apps can still choose their own targetSdk regardless of RN version) ([48ea6867a9](https://github.com/facebook/react-native/commit/48ea6867a96bd16dc7aed9af5a8e9ce12a487c22) by [@alanleedev](https://github.com/alanleedev))
-- Invocations to JS will now invoke their callbacks immediately if the instance is ready. Surface starts will not wait for the main thread to become available to dispatch the work in JS. ([9fa4845136](https://github.com/facebook/react-native/commit/9fa4845136969ec95ce5615b7ea78feaf0f7f109) by [@javache](https://github.com/javache))
-- TurboModules marked as requiring eager init will now be constructed on the mqt_native thread to increase concurrency in React Native init. ([663b5f9d19](https://github.com/facebook/react-native/commit/663b5f9d19a905520bd0aef62cda890f76ef9b6e) by [@javache](https://github.com/javache))
-- Reduce visibility of Continuation to internal, although this interface wasn't being exposed in any public API ([7b21b9e69c](https://github.com/facebook/react-native/commit/7b21b9e69c6176c7f66af0e479623ed1c2be0d62) by [@mdvacca](https://github.com/mdvacca))
-- Update documentation for ReactHost.destroy() APIs ([443bc32dc4](https://github.com/facebook/react-native/commit/443bc32dc49a86534fce1d6ec0e31c97b8f33053) by [@mdvacca](https://github.com/mdvacca))
-- Deprecate CatalystInstance in old architecture ([3e27ef1f6e](https://github.com/facebook/react-native/commit/3e27ef1f6e024bba8725a3bd64e2648ffd6af496) by [@mdvacca](https://github.com/mdvacca))
-- Deprecate BridgelessCatalystInstance class ([72bd840dd3](https://github.com/facebook/react-native/commit/72bd840dd3dc7b6e3e88a74ac9ddb000a0cb3a60) by [@mdvacca](https://github.com/mdvacca))
-- AGP to 8.7.2 ([e1a1cead43](https://github.com/facebook/react-native/commit/e1a1cead434a6856b2b018274876b9ba8eab706a) by [@cortinico](https://github.com/cortinico))
-- Migrate ReactFeatureFlags to Kotlin ([4076dbfc86](https://github.com/facebook/react-native/commit/4076dbfc8651fcd193b886bf63b23728fad466d7) by [@mdvacca](https://github.com/mdvacca))
-- Android NDK to 27.1 ([ba061a5d18](https://github.com/facebook/react-native/commit/ba061a5d18176fd455c3aa6350127506dac05211) by [@alanleedev](https://github.com/alanleedev))
-- Migrate MainReactPackage to Kotlin (and make it final) ([7bbac8ee27](https://github.com/facebook/react-native/commit/7bbac8ee27daf092b580b57c2c7ee46d2723cd09) by [@cortinico](https://github.com/cortinico))
-- Bump fbjni to 0.7.0 ([1c002c7b4e](https://github.com/facebook/react-native/commit/1c002c7b4ea4f22729920e54a9032402247ea350) by [@alanleedev](https://github.com/alanleedev))
-- Fresco to 3.4.0 ([091025e18b](https://github.com/facebook/react-native/commit/091025e18b1dc5212031e3ed06bfb6c450e788e2) by [@cortinico](https://github.com/cortinico))
-- Bump Kotlin 1.9.x to 2.0.x ([972c2c864c](https://github.com/facebook/react-native/commit/972c2c864c0b563163a36080a13908d1c0a3fb87) by [@cortinico](https://github.com/cortinico))
-- Fix: change opacity logic from random to decrement by -0.20 ([af4907025e](https://github.com/facebook/react-native/commit/af4907025ef358c312d469118a52699dcf14507d) by [@sarthak-d11](https://github.com/sarthak-d11))
-- Bump Android Gradle Plugin (AGP) to 8.7.0 ([cbc0978bb6](https://github.com/facebook/react-native/commit/cbc0978bb65dcfd2a18a54201c845785a626b1b3) by [@cortinico](https://github.com/cortinico))
-- Improve FpsDebugFrameCallback.getTotalTimeMS() accuracy ([d54c25fdae](https://github.com/facebook/react-native/commit/d54c25fdaee4d2642cdbca812b61c6973d3f203d) by [@aamagda](https://github.com/aamagda))
-- Update Fresco from 3.2.0 to 3.3.0 ([86d92e41d2](https://github.com/facebook/react-native/commit/86d92e41d2e129d12589848f75dfe2b2db09ed1a) by [@Abbondanzo](https://github.com/Abbondanzo))
-- Disabling `outline` props on Android to stay consistent with iOS ([7ab0002799](https://github.com/facebook/react-native/commit/7ab0002799d52a876a8cdd32f25ebef6d431650e) by [@jorge-cab](https://github.com/jorge-cab))
-- Gradle to 8.10.1 ([90f89a830a](https://github.com/facebook/react-native/commit/90f89a830acced9e6b8e80ef58aefd7e2c9666a8) by [@cortinico](https://github.com/cortinico))
+- **deps:** Updating targetSdk to 35 (apps can still choose their own targetSdk regardless of RN version) ([48ea6867a9](https://github.com/facebook/react-native/commit/48ea6867a96bd16dc7aed9af5a8e9ce12a487c22) by [@alanleedev](https://github.com/alanleedev))
+9fa4845136969ec95ce5615b7ea78feaf0f7f109) by [@javache](https://github.com/javache))
+- **deps:** AGP to 8.7.2 ([e1a1cead43](https://github.com/facebook/react-native/commit/e1a1cead434a6856b2b018274876b9ba8eab706a) by [@cortinico](https://github.com/cortinico))
+- **deps:** Android NDK to 27.1 ([ba061a5d18](https://github.com/facebook/react-native/commit/ba061a5d18176fd455c3aa6350127506dac05211) by [@alanleedev](https://github.com/alanleedev))
+- **deps:** Bump fbjni to 0.7.0 ([1c002c7b4e](https://github.com/facebook/react-native/commit/1c002c7b4ea4f22729920e54a9032402247ea350) by [@alanleedev](https://github.com/alanleedev))
+- **deps:** Fresco to 3.4.0 ([091025e18b](https://github.com/facebook/react-native/commit/091025e18b1dc5212031e3ed06bfb6c450e788e2) by [@cortinico](https://github.com/cortinico))
+- **deps:** Bump Kotlin 1.9.x to 2.0.x ([972c2c864c](https://github.com/facebook/react-native/commit/972c2c864c0b563163a36080a13908d1c0a3fb87) by [@cortinico](https://github.com/cortinico))
+- **deps:** Bump Android Gradle Plugin (AGP) to 8.7.0 ([cbc0978bb6](https://github.com/facebook/react-native/commit/cbc0978bb65dcfd2a18a54201c845785a626b1b3) by [@cortinico](https://github.com/cortinico))
+- **deps:** Gradle to 8.10.1 ([90f89a830a](https://github.com/facebook/react-native/commit/90f89a830acced9e6b8e80ef58aefd7e2c9666a8) by [@cortinico](https://github.com/cortinico))
+- **Kotlin:** Migrated systeminfo module code from Java to Kotlin ([8dc2c90ce5](https://github.com/facebook/react-native/commit/8dc2c90ce5f4b30f4729560aed2412e6d29f39fa) by [@oddlyspaced](https://github.com/oddlyspaced))
+- **Kotlin:** Migrate ReactFeatureFlags to Kotlin ([4076dbfc86](https://github.com/facebook/react-native/commit/4076dbfc8651fcd193b886bf63b23728fad466d7) by [@mdvacca](https://github.com/mdvacca))
+- **Kotlin:** Migrate MainReactPackage to Kotlin (and make it final) ([7bbac8ee27](https://github.com/facebook/react-native/commit/7bbac8ee27daf092b580b57c2c7ee46d2723cd09) by [@cortinico](https://github.com/cortinico))
+- **Native Modules:** TurboModules marked as requiring eager init will now be constructed on the mqt_native thread to increase concurrency in React Native init. ([663b5f9d19](https://github.com/facebook/react-native/commit/663b5f9d19a905520bd0aef62cda890f76ef9b6e) by [@javache](https://github.com/javache))
+- **ReactViewGroup:** Consolidated ReactViewGroup add/remove overrides ([0b22b955f1](https://github.com/facebook/react-native/commit/0b22b955f1494f0e7441a01dd19b3fdf5e20c3dc) by Thomas Nardone)
+- **runtime:** Invocations to JS will now invoke their callbacks immediately if the instance is ready. Surface starts will not wait for the main thread to become available to dispatch the work in JS. ([9fa4845136](https://github.com/facebook/react-native/commit/
+- **runtime:** Update documentation for ReactHost.destroy() APIs ([443bc32dc4](https://github.com/facebook/react-native/commit/443bc32dc49a86534fce1d6ec0e31c97b8f33053) by [@mdvacca](https://github.com/mdvacca))
+- **style:** Disabling `outline` props on Android to stay consistent with iOS ([7ab0002799](https://github.com/facebook/react-native/commit/7ab0002799d52a876a8cdd32f25ebef6d431650e) by [@jorge-cab](https://github.com/jorge-cab))
+- **tracing:** Improve FpsDebugFrameCallback.getTotalTimeMS() accuracy ([d54c25fdae](https://github.com/facebook/react-native/commit/d54c25fdaee4d2642cdbca812b61c6973d3f203d) by [@aamagda](https://github.com/aamagda))
 
 #### iOS specific
 
-- Make `prefetchImageWithMetadata`'s `queryRootName` nullable in the spec ([4dd60acb7d](https://github.com/facebook/react-native/commit/4dd60acb7ddc2811453e84e3567c1a114fa5e6f9) by [@TheRogue76](https://github.com/TheRogue76))
-- Change how components automatically register ([8becc2514d](https://github.com/facebook/react-native/commit/8becc2514d484c99b51ea76f479f06a8fcdd8265) by [@cipolleschi](https://github.com/cipolleschi))
-- Stop generating the RCTThirdPartyLibraryComponentProvider ([60b9d3d89e](https://github.com/facebook/react-native/commit/60b9d3d89eba90a945070646c6220b3c03b3aeba) by [@cipolleschi](https://github.com/cipolleschi))
-- `RCTSurfaceHostingProxyRootView` no longer has different behavior (whether it calls `start` on the provided *surface*) depending on which initializer is used.  Call `start` yourself on the *surface* instead. ([13b93cfdda](https://github.com/facebook/react-native/commit/13b93cfddaa559697968ac1c19e55f7aaa053070) by Nolan O'Brien)
-- Use `newArchEnabled` flag in RCTAppDelegate and RCTRootViewFactory ([7e1674fc59](https://github.com/facebook/react-native/commit/7e1674fc59abeeb70d946ee082a829fae4c671b7) by [@okwasniewski](https://github.com/okwasniewski))
-- Do not move to the main queue synchronously when starting a new surface ([ab2c47be28](https://github.com/facebook/react-native/commit/ab2c47be285fde99a77d189fd04220ef8ad0933a) by [@cipolleschi](https://github.com/cipolleschi))
-- Rename `RCTUIGraphicsImageRenderer` to `RCTMakeUIGraphicsImageRenderer` ([6a09fc09af](https://github.com/facebook/react-native/commit/6a09fc09af8eedbf409ab870d5714e44892b2a16) by [@Saadnajmi](https://github.com/Saadnajmi))
-- Refactor RCTDevLoadingView to use constraints ([fbda60e657](https://github.com/facebook/react-native/commit/fbda60e65783d9a3f257cd427cbffc1c9b2cc01b) by [@okwasniewski](https://github.com/okwasniewski))
+- **Codegen:** Change how components automatically register ([8becc2514d](https://github.com/facebook/react-native/commit/8becc2514d484c99b51ea76f479f06a8fcdd8265) by [@cipolleschi](https://github.com/cipolleschi))
+- **Codegen:** Stop generating the RCTThirdPartyLibraryComponentProvider ([60b9d3d89e](https://github.com/facebook/react-native/commit/60b9d3d89eba90a945070646c6220b3c03b3aeba) by [@cipolleschi](https://github.com/cipolleschi))
+- **runtime:** `RCTSurfaceHostingProxyRootView` no longer has different behavior (whether it calls `start` on the provided *surface*) depending on which initializer is used.  Call `start` yourself on the *surface* instead. ([13b93cfdda](https://github.com/facebook/react-native/commit/13b93cfddaa559697968ac1c19e55f7aaa053070) by Nolan O'Brien)
+- **runtime:** Use `newArchEnabled` flag in RCTAppDelegate and RCTRootViewFactory ([7e1674fc59](https://github.com/facebook/react-native/commit/7e1674fc59abeeb70d946ee082a829fae4c671b7) by [@okwasniewski](https://github.com/okwasniewski))
+- **runtime:** Do not move to the main queue synchronously when starting a new surface ([ab2c47be28](https://github.com/facebook/react-native/commit/ab2c47be285fde99a77d189fd04220ef8ad0933a) by [@cipolleschi](https://github.com/cipolleschi))
+- **APIs**: Rename `RCTUIGraphicsImageRenderer` to `RCTMakeUIGraphicsImageRenderer` ([6a09fc09af](https://github.com/facebook/react-native/commit/6a09fc09af8eedbf409ab870d5714e44892b2a16) by [@Saadnajmi](https://github.com/Saadnajmi))
 
 ### Deprecated
 
 
-
 #### Android specific
 
+- Deprecate CatalystInstance in old architecture ([3e27ef1f6e](https://github.com/facebook/react-native/commit/3e27ef1f6e024bba8725a3bd64e2648ffd6af496) by [@mdvacca](https://github.com/mdvacca))
+- Deprecate BridgelessCatalystInstance class ([72bd840dd3](https://github.com/facebook/react-native/commit/72bd840dd3dc7b6e3e88a74ac9ddb000a0cb3a60) by [@mdvacca](https://github.com/mdvacca))
 - Deprecated shadows for ReadableNative[Map|Array].[Readable|Writable] ([d424bb9d7c](https://github.com/facebook/react-native/commit/d424bb9d7cf101dc5609e8f787ba8af2a33d0262) by [@javache](https://github.com/javache))
 - ReactContext.getFabricUIManager() method ([fb737ca7d3](https://github.com/facebook/react-native/commit/fb737ca7d34b636a3aa337a0935bf9a5a10c641d) by [@mdvacca](https://github.com/mdvacca))
 
