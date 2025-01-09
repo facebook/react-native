@@ -108,6 +108,27 @@ AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
                                    : reactTreeAttributedString);
 }
 
+LayoutConstraints AndroidTextInputShadowNode::getTextConstraints(
+    const LayoutConstraints& layoutConstraints) const {
+  if (getConcreteProps().multiline) {
+    return layoutConstraints;
+  } else {
+    // A single line TextInput acts as a horizontal scroller of infinitely
+    // expandable text, so we want to measure the text as if it is allowed to
+    // infinitely expand horizontally, and later clamp to the constraints of the
+    // input.
+    return LayoutConstraints{
+        .minimumSize = layoutConstraints.minimumSize,
+        .maximumSize =
+            Size{
+                .width = std::numeric_limits<Float>::infinity(),
+                .height = layoutConstraints.maximumSize.height,
+            },
+        .layoutDirection = layoutConstraints.layoutDirection,
+    };
+  }
+}
+
 void AndroidTextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
@@ -149,20 +170,24 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
 Size AndroidTextInputShadowNode::measureContent(
     const LayoutContext& layoutContext,
     const LayoutConstraints& layoutConstraints) const {
+  auto textConstraints = getTextConstraints(layoutConstraints);
+
   if (getStateData().cachedAttributedStringId != 0) {
-    return textLayoutManager_
-        ->measureCachedSpannableById(
-            getStateData().cachedAttributedStringId,
-            getConcreteProps().paragraphAttributes,
-            layoutConstraints)
-        .size;
+    auto textSize = textLayoutManager_
+                        ->measureCachedSpannableById(
+                            getStateData().cachedAttributedStringId,
+                            getConcreteProps().paragraphAttributes,
+                            textConstraints)
+                        .size;
+    return layoutConstraints.clamp(textSize);
   }
 
   // Layout is called right after measure.
-  // Measure is marked as `const`, and `layout` is not; so State can be updated
-  // during layout, but not during `measure`. If State is out-of-date in layout,
-  // it's too late: measure will have already operated on old State. Thus, we
-  // use the same value here that we *will* use in layout to update the state.
+  // Measure is marked as `const`, and `layout` is not; so State can be
+  // updated during layout, but not during `measure`. If State is out-of-date
+  // in layout, it's too late: measure will have already operated on old
+  // State. Thus, we use the same value here that we *will* use in layout to
+  // update the state.
   AttributedString attributedString = getMostRecentAttributedString();
 
   if (attributedString.isEmpty()) {
@@ -175,13 +200,14 @@ Size AndroidTextInputShadowNode::measureContent(
 
   TextLayoutContext textLayoutContext;
   textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
-  return textLayoutManager_
-      ->measure(
-          AttributedStringBox{attributedString},
-          getConcreteProps().paragraphAttributes,
-          textLayoutContext,
-          layoutConstraints)
-      .size;
+  auto textSize = textLayoutManager_
+                      ->measure(
+                          AttributedStringBox{attributedString},
+                          getConcreteProps().paragraphAttributes,
+                          textLayoutContext,
+                          textConstraints)
+                      .size;
+  return layoutConstraints.clamp(textSize);
 }
 
 Float AndroidTextInputShadowNode::baseline(

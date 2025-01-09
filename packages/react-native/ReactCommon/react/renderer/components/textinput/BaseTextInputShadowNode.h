@@ -72,15 +72,19 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override {
     const auto& props = BaseShadowNode::getConcreteProps();
+    auto textConstraints = getTextConstraints(layoutConstraints);
+
     TextLayoutContext textLayoutContext{
         .pointScaleFactor = layoutContext.pointScaleFactor};
-    return textLayoutManager_
-        ->measure(
-            attributedStringBoxToMeasure(layoutContext),
-            props.getEffectiveParagraphAttributes(),
-            textLayoutContext,
-            layoutConstraints)
-        .size;
+    auto textSize = textLayoutManager_
+                        ->measure(
+                            attributedStringBoxToMeasure(layoutContext),
+                            props.paragraphAttributes,
+                            textLayoutContext,
+                            textConstraints)
+                        .size;
+
+    return layoutConstraints.clamp(textSize);
   }
 
   void layout(LayoutContext layoutContext) override {
@@ -112,9 +116,7 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
 
     AttributedStringBox attributedStringBox{attributedString};
     return textLayoutManager_->baseline(
-               attributedStringBox,
-               props.getEffectiveParagraphAttributes(),
-               size) +
+               attributedStringBox, props.paragraphAttributes, size) +
         top;
   }
 
@@ -164,6 +166,30 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     attributedString.setBaseTextAttributes(textAttributes);
 
     return attributedString;
+  }
+
+  /*
+   * Determines the constraints to use while measure the underlying text
+   */
+  LayoutConstraints getTextConstraints(
+      const LayoutConstraints& layoutConstraints) const {
+    if (BaseShadowNode::getConcreteProps().multiline) {
+      return layoutConstraints;
+    } else {
+      // A single line TextInput acts as a horizontal scroller of infinitely
+      // expandable text, so we want to measure the text as if it is allowed to
+      // infinitely expand horizontally, and later clamp to the constraints of
+      // the input.
+      return LayoutConstraints{
+          .minimumSize = layoutConstraints.minimumSize,
+          .maximumSize =
+              Size{
+                  .width = std::numeric_limits<Float>::infinity(),
+                  .height = layoutConstraints.maximumSize.height,
+              },
+          .layoutDirection = layoutConstraints.layoutDirection,
+      };
+    }
   }
 
   /*
