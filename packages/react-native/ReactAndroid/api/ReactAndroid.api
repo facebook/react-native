@@ -4843,17 +4843,6 @@ public abstract interface class com/facebook/react/uimanager/RootView {
 	public abstract fun onChildStartedNativeGesture (Landroid/view/View;Landroid/view/MotionEvent;)V
 }
 
-public final class com/facebook/react/uimanager/RootViewManager : com/facebook/react/uimanager/ViewGroupManager {
-	public static final field Companion Lcom/facebook/react/uimanager/RootViewManager$Companion;
-	public static final field REACT_CLASS Ljava/lang/String;
-	public fun <init> ()V
-	public synthetic fun createViewInstance (Lcom/facebook/react/uimanager/ThemedReactContext;)Landroid/view/View;
-	public fun getName ()Ljava/lang/String;
-}
-
-public final class com/facebook/react/uimanager/RootViewManager$Companion {
-}
-
 public final class com/facebook/react/uimanager/RootViewUtil {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/RootViewUtil;
 	public static final fun getRootView (Landroid/view/View;)Lcom/facebook/react/uimanager/RootView;
