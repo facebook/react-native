@@ -273,17 +273,16 @@
 
 ### Deprecated
 
-
 #### Android specific
 
-- Deprecate CatalystInstance in old architecture ([3e27ef1f6e](https://github.com/facebook/react-native/commit/3e27ef1f6e024bba8725a3bd64e2648ffd6af496) by [@mdvacca](https://github.com/mdvacca))
-- Deprecate BridgelessCatalystInstance class ([72bd840dd3](https://github.com/facebook/react-native/commit/72bd840dd3dc7b6e3e88a74ac9ddb000a0cb3a60) by [@mdvacca](https://github.com/mdvacca))
-- Deprecated shadows for ReadableNative[Map|Array].[Readable|Writable] ([d424bb9d7c](https://github.com/facebook/react-native/commit/d424bb9d7cf101dc5609e8f787ba8af2a33d0262) by [@javache](https://github.com/javache))
-- ReactContext.getFabricUIManager() method ([fb737ca7d3](https://github.com/facebook/react-native/commit/fb737ca7d34b636a3aa337a0935bf9a5a10c641d) by [@mdvacca](https://github.com/mdvacca))
+- **Codegen:** Deprecated shadows for ReadableNative[Map|Array].[Readable|Writable] ([d424bb9d7c](https://github.com/facebook/react-native/commit/d424bb9d7cf101dc5609e8f787ba8af2a33d0262) by [@javache](https://github.com/javache))
+- **Fabric:** ReactContext.getFabricUIManager() method ([fb737ca7d3](https://github.com/facebook/react-native/commit/fb737ca7d34b636a3aa337a0935bf9a5a10c641d) by [@mdvacca](https://github.com/mdvacca))
+- **runtime:** Deprecate CatalystInstance in old architecture ([3e27ef1f6e](https://github.com/facebook/react-native/commit/3e27ef1f6e024bba8725a3bd64e2648ffd6af496) by [@mdvacca](https://github.com/mdvacca))
+- **runtime:** Deprecate BridgelessCatalystInstance class ([72bd840dd3](https://github.com/facebook/react-native/commit/72bd840dd3dc7b6e3e88a74ac9ddb000a0cb3a60) by [@mdvacca](https://github.com/mdvacca))
 
 #### iOS specific
 
-- Deprecating RCTBridgeModule batchDidComplete and adding configuration to disable it ([731bd95c43](https://github.com/facebook/react-native/commit/731bd95c430c752126aaaa34e4911ba2b87b382f) by [@philIip](https://github.com/philIip))
+- **runtime:** Deprecating RCTBridgeModule batchDidComplete and adding configuration to disable it ([731bd95c43](https://github.com/facebook/react-native/commit/731bd95c430c752126aaaa34e4911ba2b87b382f) by [@philIip](https://github.com/philIip))
 
 ### Removed
 
