@@ -135,9 +135,12 @@ function populateMockFilesystemWithHermesBuildArtifacts() {
   ];
 
   for (const dsymsDir of dsymsDirs) {
-    fs.mkdirSync(path.join(frameworksDir, dsymsDir, 'hermesvm.framework.dSYM'), {
-      recursive: true,
-    });
+    fs.mkdirSync(
+      path.join(frameworksDir, dsymsDir, 'hermesvm.framework.dSYM'),
+      {
+        recursive: true,
+      },
+    );
   }
 }
 

@@ -310,7 +310,10 @@ function validateHermesFrameworksExist(destrootDir /*: string */) {
   }
   if (
     !fs.existsSync(
-      path.join(destrootDir, 'Library/Frameworks/universal/hermesvm.xcframework'),
+      path.join(
+        destrootDir,
+        'Library/Frameworks/universal/hermesvm.xcframework',
+      ),
     )
   ) {
     throw new Error(
