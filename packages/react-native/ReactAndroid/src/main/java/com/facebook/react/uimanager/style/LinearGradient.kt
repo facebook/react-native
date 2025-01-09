@@ -205,15 +205,14 @@ internal class LinearGradient(
       val colorStop = colorStops[i]
       var newPosition = resolveColorStopPosition(colorStop.position, gradientLineLength)
 
-      if (newPosition == null) {
-        // Step 1:
-        // If the first color stop does not have a position,
-        // set its position to 0%. If the last color stop does not have a position,
-        // set its position to 100%.
-        when (i) {
-          0 -> newPosition = 0f
-          colorStops.size - 1 -> newPosition = 1f
-        }
+      // Step 1:
+      // If the first color stop does not have a position,
+      // set its position to 0%. If the last color stop does not have a position,
+      // set its position to 100%.
+      newPosition = newPosition ?: when (i) {
+        0 -> 0f
+        colorStops.size - 1 -> 1f
+        else -> null
       }
 
       // Step 2:
