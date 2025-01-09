@@ -85,8 +85,8 @@ runs:
         if [[ -e $TARBALL_PATH ]]; then
           tar -xf $TARBALL_PATH
           echo 'print(HermesInternal?.getRuntimeProperties?.()["OSS Release Version"])' > test.js
-          chmod +x ./destroot/bin/hermes
-          ./destroot/bin/hermes test.js
+          chmod +x ./destroot/bin/hermesvm
+          ./destroot/bin/hermesvm test.js
           rm test.js
           rm -rf destroot
         else
