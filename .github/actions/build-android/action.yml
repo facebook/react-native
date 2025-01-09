@@ -20,6 +20,8 @@ runs:
     - name: Set React Native Version
       shell: bash
       run: node ./scripts/releases/set-rn-artifacts-version.js --build-type ${{ inputs.release-type }}
+      # We don't want to re-set the artifacts version if we're on the release branch.
+      if: ${{ !contains(github.ref, '-stable') }}
     - name: Setup gradle
       uses: ./.github/actions/setup-gradle
       with:
