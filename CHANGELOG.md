@@ -22,8 +22,8 @@
 
 #### Android specific
 
-- Fixes RNTester JSC Debug instacrashing ([17a5d2be5a](https://github.com/facebook/react-native/commit/17a5d2be5a96703ed1c76d89990a8f1e37abd4d4) by [@cortinico](https://github.com/cortinico))
-- Fixes C++ TurboModules: Prioritise OnLoad.cpp, falling back to default-app-setup ([5a64bde701](https://github.com/facebook/react-native/commit/5a64bde701e28615a79ad52d0631de62ce6cab92) by [@timbocole](https://github.com/timbocole))
+- **JSC:** Fixes RNTester JSC Debug instacrashing ([17a5d2be5a](https://github.com/facebook/react-native/commit/17a5d2be5a96703ed1c76d89990a8f1e37abd4d4) by [@cortinico](https://github.com/cortinico))
+- **C++:** Fixes C++ TurboModules: Prioritise OnLoad.cpp, falling back to default-app-setup ([5a64bde701](https://github.com/facebook/react-native/commit/5a64bde701e28615a79ad52d0631de62ce6cab92) by [@timbocole](https://github.com/timbocole))
 
 ## v0.77.0-rc.5
 
@@ -31,8 +31,8 @@
 
 #### iOS specific
 
-- Fixes numeric TextInput not triggering `onSubmitEditing` ([0bcb0c2b2f](https://github.com/facebook/react-native/commit/0bcb0c2b2f460ed1a9d525d1a5b343f4b71f9347) by [@zhongwuzw](https://github.com/zhongwuzw))
-- Fixed problem with third party libraries overwriting `inputAccessoryView` ([d34032b6c0](https://github.com/facebook/react-native/commit/d34032b6c0bb3564a7b77ef270cc3289d99365f2) by [@kirillzyusko](https://github.com/kirillzyusko))
+- **TextInput:** Fixes numeric TextInput not triggering `onSubmitEditing` ([0bcb0c2b2f](https://github.com/facebook/react-native/commit/0bcb0c2b2f460ed1a9d525d1a5b343f4b71f9347) by [@zhongwuzw](https://github.com/zhongwuzw))
+- **TextInput:** Fixed problem with third party libraries overwriting `inputAccessoryView` ([d34032b6c0](https://github.com/facebook/react-native/commit/d34032b6c0bb3564a7b77ef270cc3289d99365f2) by [@kirillzyusko](https://github.com/kirillzyusko))
 
 ## v0.77.0-rc.4
 
@@ -40,7 +40,7 @@
 
 #### Android specific
 
-- Restore layout/invalidate during ReactViewClippingManager.removeViewAt() ([e3970a4bb3](https://github.com/facebook/react-native/commit/e3970a4bb3f39ec5652277d78d8c58c89e87dc30) by [@tdn20](https://github.com/tdn20))
+- **Layout:** Restore layout/invalidate during ReactViewClippingManager.removeViewAt() ([e3970a4bb3](https://github.com/facebook/react-native/commit/e3970a4bb3f39ec5652277d78d8c58c89e87dc30) by [@tdn20](https://github.com/tdn20))
 
 ## v0.77.0-rc.3
 
@@ -48,46 +48,40 @@
 
 #### Android specific
 
-- Gradle to 8.11.1 ([490db92562](https://github.com/facebook/react-native/commit/490db92562df3baf6dc38737778179065f378715) by [@cortinico](https://github.com/cortinico))
+- **infra:** Gradle to 8.11.1 ([490db92562](https://github.com/facebook/react-native/commit/490db92562df3baf6dc38737778179065f378715) by [@cortinico](https://github.com/cortinico))
 
 ### Fixed
 
-- Skip hidden folders when looking for third party components. ([8ab524312a](https://github.com/facebook/react-native/commit/8ab524312ab3bf1192b94ae6e30d296a85baa944) by [@cipolleschi](https://github.com/cipolleschi))
+- **Codegen:** Skip hidden folders when looking for third party components. ([8ab524312a](https://github.com/facebook/react-native/commit/8ab524312ab3bf1192b94ae6e30d296a85baa944) by [@cipolleschi](https://github.com/cipolleschi))
 
 #### Android specific
 
-- Handle removal of in-transition views. ([f402ed17fa](https://github.com/facebook/react-native/commit/f402ed17fa6d75aea24e2ad99a8b8d8ad20840e3) by [@kkafar](https://github.com/kkafar))
+- **runtime:** Handle removal of in-transition views. ([f402ed17fa](https://github.com/facebook/react-native/commit/f402ed17fa6d75aea24e2ad99a8b8d8ad20840e3) by [@kkafar](https://github.com/kkafar))
 
 #### iOS specific
 
-- Enable hermes debugger by configuration type instead of configuration name ([eda4f185b3](https://github.com/facebook/react-native/commit/eda4f185b381f7569a1029b7697f9a1c8bc6d108) by [@benhandanyan](https://github.com/benhandanyan))
-- Workaround for Mac Catalyst TextInput crash due to serialization attempt of WeakEventEmitter ([e04738b7ec](https://github.com/facebook/react-native/commit/e04738b7ecec9e7da3aab49bb24a6336b9496b94) by [@rozele](https://github.com/rozele))
+- **infra:** Enable hermes debugger by configuration type instead of configuration name ([eda4f185b3](https://github.com/facebook/react-native/commit/eda4f185b381f7569a1029b7697f9a1c8bc6d108) by [@benhandanyan](https://github.com/benhandanyan))
+- **TextInput:** Workaround for Mac Catalyst TextInput crash due to serialization attempt of WeakEventEmitter ([e04738b7ec](https://github.com/facebook/react-native/commit/e04738b7ecec9e7da3aab49bb24a6336b9496b94) by [@rozele](https://github.com/rozele))
 
 ## v0.77.0-rc.2
-
-### Changed
-
-- Reverts #47503. (~~Callbacks passed to `animation.start(<callback>)` will be scheduled for execution in a microtask. Previously, there were certain scenarios in which the callback could be synchronously executed by `start`.~~) ([8793b7d89b](https://github.com/facebook/react-native/commit/8793b7d89bcafdfcca7ecb953e60882b67ffc807) by [@yungsters](https://github.com/yungsters))
 
 ### Fixed
 
 #### Android specific
 
-- Fix crash on HeadlessJsTaskService on old architecture ([4560fc0497](https://github.com/facebook/react-native/commit/4560fc049748a345d5945bc08d43f4b61ca51ff3) by [@cortinico](https://github.com/cortinico))
-- Re-introduce the deprecated constructor on ReactModuleInfo ([734730df75](https://github.com/facebook/react-native/commit/734730df75b3bdddeb5dbe65f4151cc92b988303) by [@cortinico](https://github.com/cortinico))
+- **Headless Tasks:** Fix crash on HeadlessJsTaskService on old architecture ([4560fc0497](https://github.com/facebook/react-native/commit/4560fc049748a345d5945bc08d43f4b61ca51ff3) by [@cortinico](https://github.com/cortinico))
 
 ## v0.77.0-rc.1
 
 ### Fixed
 
-- Replace Object.hasOwn usages to fix Animated on JSC ([e996b3f346](https://github.com/facebook/react-native/commit/e996b3f346462a394012a722ce19990cdf9c3d9a) by [@robhogan](https://github.com/robhogan))
-- Remove non compliant `filename*` attribute in a FormData `content-disposition` header ([f791fb9e66](https://github.com/facebook/react-native/commit/f791fb9e660fe15bccf55029045c48f4bbcbc5cb) by [@foyarash](https://github.com/foyarash))
-- Fix "punycode is deprecated" warning by replacing `node-fetch` with native `fetch` ([881d8a720f](https://github.com/facebook/react-native/commit/881d8a720fb24241d7b2127273ca6116833bf176) by [@jbroma](https://github.com/jbroma))
+- **Animated:** Replace Object.hasOwn usages to fix Animated on JSC ([e996b3f346](https://github.com/facebook/react-native/commit/e996b3f346462a394012a722ce19990cdf9c3d9a) by [@robhogan](https://github.com/robhogan))
+- **FormData:** Remove non compliant `filename*` attribute in a FormData `content-disposition` header ([f791fb9e66](https://github.com/facebook/react-native/commit/f791fb9e660fe15bccf55029045c48f4bbcbc5cb) by [@foyarash](https://github.com/foyarash))
+- **infra:** Fix "punycode is deprecated" warning by replacing `node-fetch` with native `fetch` ([881d8a720f](https://github.com/facebook/react-native/commit/881d8a720fb24241d7b2127273ca6116833bf176) by [@jbroma](https://github.com/jbroma))
 
 #### Android specific
 
-- Reverted removal of TurboReactPackage ([70a957452c](https://github.com/facebook/react-native/commit/70a957452c438a74787f4f752b2c274360cb2edd) by [@javache](https://github.com/javache))
-- Fix IOException in `BuildCodegenCLITask` ([9147b0753a](https://github.com/facebook/react-native/commit/9147b0753a6c3afb2480b079f91614cd7189a28a) by [@vonovak](https://github.com/vonovak))
+- **Codegen:** Fix IOException in `BuildCodegenCLITask` ([9147b0753a](https://github.com/facebook/react-native/commit/9147b0753a6c3afb2480b079f91614cd7189a28a) by [@vonovak](https://github.com/vonovak))
 
 ## v0.77.0-rc.0
 
@@ -239,7 +233,6 @@
 - The `AnimatedNode` graph will not occur during the insertion effect phase, which means animations can now be reliably started during layout effects. ([316170ce8d](https://github.com/facebook/react-native/commit/316170ce8d0aac1df3261c792b9f768665d134c5) by [@yungsters](https://github.com/yungsters))
 - AttributedString `appendFragment` and `prependFragment` take an rval instead of a const ref; append/prependAttributedString have been removed ([2c31fe99e1](https://github.com/facebook/react-native/commit/2c31fe99e1cc5bfdb393d4f5c70231a042ea67ef) by [@javache](https://github.com/javache))
 - Improved AttributedText generation for raw text nodes. ([2f7957f2fd](https://github.com/facebook/react-native/commit/2f7957f2fd424fdaa980d99a4ff05eb3237d662e) by [@javache](https://github.com/javache))
-- Callbacks passed to `animation.start(<callback>)` will be scheduled for execution in a microtask. Previously, there were certain scenarios in which the callback could be synchronously executed by `start`. ([090501d26d](https://github.com/facebook/react-native/commit/090501d26d83be5c5d2df885c60d05ec133d7a54) by [@yungsters](https://github.com/yungsters))
 - Optimized the performance of updating `Animated` components. ([f0ffcd4f5d](https://github.com/facebook/react-native/commit/f0ffcd4f5dfeab794fbfa3257bb9a8fd793ff2bc) by [@yungsters](https://github.com/yungsters))
 - Bump serve-static to 1.16.2 to fix CVE-2024-43800 ([50e38cc9f1](https://github.com/facebook/react-native/commit/50e38cc9f1e6713228a91ad50f426c4f65e65e1a) by [@cortinico](https://github.com/cortinico))
 - Bump Folly to 2024.10.14.00 ([37375d8aba](https://github.com/facebook/react-native/commit/37375d8aba0869531567426466478b0de9a1aea3) by [@alanleedev](https://github.com/alanleedev))
@@ -318,8 +311,6 @@
 #### Android specific
 
 - **APIs:** Remove `BackHandler.removeEventListener` ([44d619414c](https://github.com/facebook/react-native/commit/44d619414c1de3dbf17a421afa8dbcec7cdab025) by [@retyui](https://github.com/retyui))
-- **APIs:** Removed hasConstants constructor from ReactModuleInfo ([aec7a66ae8](https://github.com/facebook/react-native/commit/aec7a66ae84bd7689d902686711db8eabc21c1f1) by [@javache](https://github.com/javache))
-- **APIs:** Removed TurboReactPackage, which was replaced by BaseReactPackage ([bf5c98cf5e](https://github.com/facebook/react-native/commit/bf5c98cf5e1ce5c041d3d9321a0ba2fd3c755b46) by [@javache](https://github.com/javache))
 - **APIs:** DevToolsReactPerfLogger stats gathering now uses an internal API ([f503fe3f10](https://github.com/facebook/react-native/commit/f503fe3f100d96a31fc56451d7846d80ce5c342f) by [@javache](https://github.com/javache))
 - **APIs:** BindingImpl is no longer part of the public interface ([18faf68b48](https://github.com/facebook/react-native/commit/18faf68b4825118253cf247572084c4da8f6366e) by [@javache](https://github.com/javache))
 - **APIs:** FabricComponents is removed from public API ([300db67b27](https://github.com/facebook/react-native/commit/300db67b270a5d6fc85d27188d0d1089675f89c0) by [@javache](https://github.com/javache))
