@@ -215,25 +215,19 @@ AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
 // of T67606511
 AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
     const {
-  // Return placeholder text, since text and children are empty.
-  auto textAttributedString = AttributedString{};
-  auto fragment = AttributedString::Fragment{};
-  fragment.string = getConcreteProps().placeholder;
+  const auto& props = BaseShadowNode::getConcreteProps();
 
-  if (fragment.string.empty()) {
-    fragment.string = BaseTextShadowNode::getEmptyPlaceholder();
-  }
-
+  AttributedString attributedString;
+  auto placeholderString = !props.placeholder.empty()
+      ? props.placeholder
+      : BaseTextShadowNode::getEmptyPlaceholder();
   auto textAttributes = TextAttributes::defaultTextAttributes();
-  textAttributes.apply(getConcreteProps().textAttributes);
-
-  // If there's no text, it's possible that this Fragment isn't actually
-  // appended to the AttributedString (see implementation of appendFragment)
-  fragment.textAttributes = textAttributes;
-  fragment.parentShadowView = ShadowView(*this);
-  textAttributedString.appendFragment(std::move(fragment));
-
-  return textAttributedString;
+  textAttributes.apply(props.textAttributes);
+  attributedString.appendFragment(
+      {.string = std::move(placeholderString),
+       .textAttributes = textAttributes,
+       .parentShadowView = ShadowView(*this)});
+  return attributedString;
 }
 
 } // namespace facebook::react

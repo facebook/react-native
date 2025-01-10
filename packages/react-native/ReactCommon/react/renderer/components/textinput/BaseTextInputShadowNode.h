@@ -97,13 +97,7 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     auto attributedString = getAttributedString(layoutContext);
 
     if (attributedString.isEmpty()) {
-      auto placeholderString = !props.placeholder.empty()
-          ? props.placeholder
-          : BaseTextShadowNode::getEmptyPlaceholder();
-      auto textAttributes =
-          props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
-      attributedString.appendFragment(
-          {std::move(placeholderString), textAttributes, {}});
+      attributedString = getPlaceholderAttributedString(layoutContext);
     }
 
     // Yoga expects a baseline relative to the Node's border-box edge instead of
@@ -217,20 +211,32 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
         : getAttributedString(layoutContext);
 
     if (attributedString.isEmpty()) {
-      const auto& props = BaseShadowNode::getConcreteProps();
-      auto placeholder = props.placeholder;
-      // Note: `zero-width space` is insufficient in some cases (e.g. when we
-      // need to measure the "hight" of the font).
-      // TODO T67606511: We will redefine the measurement of empty strings as
-      // part of T67606511
-      auto string = !placeholder.empty()
-          ? placeholder
-          : BaseTextShadowNode::getEmptyPlaceholder();
-      auto textAttributes =
-          props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
-      attributedString.appendFragment({string, textAttributes, {}});
+      attributedString = getPlaceholderAttributedString(layoutContext);
     }
     return AttributedStringBox{attributedString};
+  }
+
+  // For measurement purposes, we want to make sure that there's at least a
+  // single character in the string so that the measured height is greater
+  // than zero. Otherwise, empty TextInputs with no placeholder don't
+  // display at all.
+  // TODO T67606511: We will redefine the measurement of empty strings as part
+  // of T67606511
+  AttributedString getPlaceholderAttributedString(
+      const LayoutContext& layoutContext) const {
+    const auto& props = BaseShadowNode::getConcreteProps();
+
+    AttributedString attributedString;
+    auto placeholderString = !props.placeholder.empty()
+        ? props.placeholder
+        : BaseTextShadowNode::getEmptyPlaceholder();
+    auto textAttributes =
+        props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
+    attributedString.appendFragment(
+        {.string = std::move(placeholderString),
+         .textAttributes = textAttributes,
+         .parentShadowView = {}});
+    return attributedString;
   }
 };
 
