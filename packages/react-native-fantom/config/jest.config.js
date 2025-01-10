@@ -19,6 +19,7 @@ module.exports = {
   roots: [
     '<rootDir>/packages/react-native',
     '<rootDir>/packages/react-native-fantom',
+    '<rootDir>/packages/polyfills',
   ],
   moduleFileExtensions: [...baseConfig.moduleFileExtensions, 'cpp', 'h'],
   // This allows running Meta-internal tests with the `-test.fb.js` suffix.
