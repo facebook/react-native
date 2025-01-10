@@ -7717,7 +7717,8 @@ declare module.exports: UIManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/UIManagerProperties.js 1`] = `
-"declare module.exports: $FlowFixMe;
+"declare const UIManagerProperties: $ReadOnlyArray<string>;
+declare module.exports: UIManagerProperties;
 "
 `;
 
