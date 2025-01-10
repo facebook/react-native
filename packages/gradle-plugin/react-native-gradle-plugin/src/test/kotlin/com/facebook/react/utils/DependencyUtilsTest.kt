@@ -34,7 +34,7 @@ class DependencyUtilsTest {
     val project = createProject()
     project.extensions.extraProperties.set("react.internal.mavenLocalRepo", localMaven.absolutePath)
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -48,7 +48,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://oss.sonatype.org/content/repositories/snapshots/")
     val project = createProject()
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -62,7 +62,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -76,7 +76,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://dl.google.com/dl/android/maven2/")
     val project = createProject()
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -90,7 +90,7 @@ class DependencyUtilsTest {
     val repositoryURI = URI.create("https://www.jitpack.io")
     val project = createProject()
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -105,7 +105,7 @@ class DependencyUtilsTest {
     var project = createProject()
     project.extensions.extraProperties.set("includeJitpackRepository", "false")
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -117,7 +117,7 @@ class DependencyUtilsTest {
     project = createProject()
     project.extensions.extraProperties.set("react.includeJitpackRepository", "false")
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -132,7 +132,7 @@ class DependencyUtilsTest {
     var project = createProject()
     project.extensions.extraProperties.set("includeJitpackRepository", "true")
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -144,7 +144,7 @@ class DependencyUtilsTest {
     project = createProject()
     project.extensions.extraProperties.set("react.includeJitpackRepository", "true")
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     assertThat(
             project.repositories.firstOrNull {
@@ -161,7 +161,7 @@ class DependencyUtilsTest {
     val project = createProject()
     project.extensions.extraProperties.set("react.internal.mavenLocalRepo", localMaven.absolutePath)
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     val indexOfLocalRepo =
         project.repositories.indexOfFirst {
@@ -180,7 +180,7 @@ class DependencyUtilsTest {
     val mavenCentralURI = URI.create("https://repo.maven.apache.org/maven2/")
     val project = createProject()
 
-    configureRepositories(project, tempFolder.root)
+    configureRepositories(project)
 
     val indexOfSnapshotRepo =
         project.repositories.indexOfFirst {
@@ -200,7 +200,7 @@ class DependencyUtilsTest {
     val appProject = ProjectBuilder.builder().withName("app").withParent(rootProject).build()
     val libProject = ProjectBuilder.builder().withName("lib").withParent(rootProject).build()
 
-    configureRepositories(appProject, tempFolder.root)
+    configureRepositories(appProject)
 
     assertThat(
             appProject.repositories.firstOrNull {
@@ -226,7 +226,7 @@ class DependencyUtilsTest {
       repo.content { content -> content.excludeGroup("com.facebook.react") }
     }
 
-    configureRepositories(appProject, tempFolder.root)
+    configureRepositories(appProject)
 
     // We need to make sure we have Maven Central defined twice, one by the library,
     // and another is the override by RNGP.
