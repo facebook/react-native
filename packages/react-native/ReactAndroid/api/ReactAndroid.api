@@ -6072,7 +6072,7 @@ public class com/facebook/react/viewmanagers/ActivityIndicatorViewManagerDelegat
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/viewmanagers/ActivityIndicatorViewManagerInterface {
+public abstract interface class com/facebook/react/viewmanagers/ActivityIndicatorViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun setAnimating (Landroid/view/View;Z)V
 	public abstract fun setColor (Landroid/view/View;Ljava/lang/Integer;)V
 	public abstract fun setHidesWhenStopped (Landroid/view/View;Z)V
@@ -6085,7 +6085,7 @@ public class com/facebook/react/viewmanagers/AndroidDrawerLayoutManagerDelegate 
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/viewmanagers/AndroidDrawerLayoutManagerInterface {
+public abstract interface class com/facebook/react/viewmanagers/AndroidDrawerLayoutManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun closeDrawer (Landroid/view/View;)V
 	public abstract fun openDrawer (Landroid/view/View;)V
 	public abstract fun setDrawerBackgroundColor (Landroid/view/View;Ljava/lang/Integer;)V
@@ -6101,7 +6101,7 @@ public class com/facebook/react/viewmanagers/AndroidHorizontalScrollContentViewM
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/viewmanagers/AndroidHorizontalScrollContentViewManagerInterface {
+public abstract interface class com/facebook/react/viewmanagers/AndroidHorizontalScrollContentViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun setRemoveClippedSubviews (Landroid/view/View;Z)V
 }
 
@@ -6110,7 +6110,7 @@ public class com/facebook/react/viewmanagers/AndroidProgressBarManagerDelegate :
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/viewmanagers/AndroidProgressBarManagerInterface {
+public abstract interface class com/facebook/react/viewmanagers/AndroidProgressBarManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun setAnimating (Landroid/view/View;Z)V
 	public abstract fun setColor (Landroid/view/View;Ljava/lang/Integer;)V
 	public abstract fun setIndeterminate (Landroid/view/View;Z)V
@@ -6126,7 +6126,7 @@ public class com/facebook/react/viewmanagers/AndroidSwipeRefreshLayoutManagerDel
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/viewmanagers/AndroidSwipeRefreshLayoutManagerInterface {
+public abstract interface class com/facebook/react/viewmanagers/AndroidSwipeRefreshLayoutManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun setColors (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public abstract fun setEnabled (Landroid/view/View;Z)V
 	public abstract fun setNativeRefreshing (Landroid/view/View;Z)V
@@ -6142,7 +6142,7 @@ public class com/facebook/react/viewmanagers/AndroidSwitchManagerDelegate : com/
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/viewmanagers/AndroidSwitchManagerInterface {
+public abstract interface class com/facebook/react/viewmanagers/AndroidSwitchManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun setDisabled (Landroid/view/View;Z)V
 	public abstract fun setEnabled (Landroid/view/View;Z)V
 	public abstract fun setNativeValue (Landroid/view/View;Z)V
@@ -6161,7 +6161,7 @@ public class com/facebook/react/viewmanagers/DebuggingOverlayManagerDelegate : c
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/viewmanagers/DebuggingOverlayManagerInterface {
+public abstract interface class com/facebook/react/viewmanagers/DebuggingOverlayManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun clearElementsHighlights (Landroid/view/View;)V
 	public abstract fun highlightElements (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
 	public abstract fun highlightTraceUpdates (Landroid/view/View;Lcom/facebook/react/bridge/ReadableArray;)V
@@ -6172,7 +6172,7 @@ public class com/facebook/react/viewmanagers/ModalHostViewManagerDelegate : com/
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/viewmanagers/ModalHostViewManagerInterface {
+public abstract interface class com/facebook/react/viewmanagers/ModalHostViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun setAnimated (Landroid/view/View;Z)V
 	public abstract fun setAnimationType (Landroid/view/View;Ljava/lang/String;)V
 	public abstract fun setHardwareAccelerated (Landroid/view/View;Z)V
@@ -6190,7 +6190,7 @@ public class com/facebook/react/viewmanagers/SafeAreaViewManagerDelegate : com/f
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/viewmanagers/SafeAreaViewManagerInterface {
+public abstract interface class com/facebook/react/viewmanagers/SafeAreaViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 }
 
 public class com/facebook/react/viewmanagers/UnimplementedNativeViewManagerDelegate : com/facebook/react/uimanager/BaseViewManagerDelegate {
@@ -6198,7 +6198,7 @@ public class com/facebook/react/viewmanagers/UnimplementedNativeViewManagerDeleg
 	public fun setProperty (Landroid/view/View;Ljava/lang/String;Ljava/lang/Object;)V
 }
 
-public abstract interface class com/facebook/react/viewmanagers/UnimplementedNativeViewManagerInterface {
+public abstract interface class com/facebook/react/viewmanagers/UnimplementedNativeViewManagerInterface : com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
 	public abstract fun setName (Landroid/view/View;Ljava/lang/String;)V
 }
 
