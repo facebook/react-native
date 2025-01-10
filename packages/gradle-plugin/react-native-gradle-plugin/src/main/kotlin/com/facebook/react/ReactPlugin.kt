@@ -67,7 +67,7 @@ class ReactPlugin : Plugin<Project> {
         val versionString = versionAndGroupStrings.first
         val groupString = versionAndGroupStrings.second
         configureDependencies(project, versionString, groupString)
-        configureRepositories(project, reactNativeDir)
+        configureRepositories(project)
       }
 
       configureReactNativeNdk(project, extension)

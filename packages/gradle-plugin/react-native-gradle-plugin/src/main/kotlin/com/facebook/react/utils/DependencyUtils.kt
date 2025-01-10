@@ -27,7 +27,7 @@ internal object DependencyUtils {
    * This method takes care of configuring the repositories{} block for both the app and all the 3rd
    * party libraries which are auto-linked.
    */
-  fun configureRepositories(project: Project, reactNativeDir: File) {
+  fun configureRepositories(project: Project) {
     project.rootProject.allprojects { eachProject ->
       with(eachProject) {
         if (hasProperty(INTERNAL_REACT_NATIVE_MAVEN_LOCAL_REPO)) {
