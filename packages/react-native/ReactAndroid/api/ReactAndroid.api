@@ -5273,6 +5273,9 @@ public abstract interface class com/facebook/react/uimanager/ViewManagerResolver
 	public abstract fun getViewManagerNames ()Ljava/util/Collection;
 }
 
+public abstract interface class com/facebook/react/uimanager/ViewManagerWithGeneratedInterface {
+}
+
 public final class com/facebook/react/uimanager/ViewProps {
 	public static final field ACCESSIBILITY_ACTIONS Ljava/lang/String;
 	public static final field ACCESSIBILITY_COLLECTION Ljava/lang/String;
