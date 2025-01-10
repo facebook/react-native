@@ -284,5 +284,67 @@ describe('console', () => {
         global.nativeLoggingHook = originalNativeLoggingHook;
       }
     });
+
+    it('should only print the selected columns, if specified (arrays)', () => {
+      const originalNativeLoggingHook = global.nativeLoggingHook;
+      const logFn = (global.nativeLoggingHook = jest.fn());
+
+      try {
+        console.table(
+          [
+            {first: 1, second: 2, third: 3},
+            {first: 4, second: 5},
+            {third: 7, fourth: 8},
+            {fifth: 9},
+          ],
+          // $FlowExpectedError[extra-arg]
+          ['first', 'fifth'],
+        );
+        expect(logFn).toHaveBeenCalledTimes(1);
+        expect(logFn.mock.lastCall).toEqual([
+          `
+| (index) | first | fifth |
+| ------- | ----- | ----- |
+| 0       | 1     |       |
+| 1       | 4     |       |
+| 2       |       |       |
+| 3       |       | 9     |`,
+          LOG_LEVELS.info,
+        ]);
+      } finally {
+        global.nativeLoggingHook = originalNativeLoggingHook;
+      }
+    });
+
+    it('should only print the selected columns, if specified (dictionaries)', () => {
+      const originalNativeLoggingHook = global.nativeLoggingHook;
+      const logFn = (global.nativeLoggingHook = jest.fn());
+
+      try {
+        console.table(
+          {
+            a: {first: 1, second: 2, third: 3},
+            b: {first: 4, second: 5},
+            c: {third: 7, fourth: 8},
+            d: {fifth: 9},
+          },
+          // $FlowExpectedError[extra-arg]
+          ['first', 'fifth'],
+        );
+        expect(logFn).toHaveBeenCalledTimes(1);
+        expect(logFn.mock.lastCall).toEqual([
+          `
+| (index) | first | fifth |
+| ------- | ----- | ----- |
+| a       | 1     |       |
+| b       | 4     |       |
+| c       |       |       |
+| d       |       | 9     |`,
+          LOG_LEVELS.info,
+        ]);
+      } finally {
+        global.nativeLoggingHook = originalNativeLoggingHook;
+      }
+    });
   });
 });

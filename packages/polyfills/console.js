@@ -455,17 +455,18 @@ function formatCellValue(cell, key) {
   return '';
 }
 
-function consoleTablePolyfill(rows) {
+function consoleTablePolyfill(data, columns) {
+  var rows;
+
   // convert object -> array
-  if (Array.isArray(rows)) {
-    rows = rows.map((row, index) => {
+  if (Array.isArray(data)) {
+    rows = data.map((row, index) => {
       var processedRow = {};
       processedRow[INDEX_COLUMN_NAME] = String(index);
       Object.assign(processedRow, row);
       return processedRow;
     });
   } else {
-    var data = rows;
     rows = [];
     for (var key in data) {
       if (data.hasOwnProperty(key)) {
@@ -481,12 +482,16 @@ function consoleTablePolyfill(rows) {
     return;
   }
 
-  var columns = Array.from(
-    rows.reduce((columnSet, row) => {
-      Object.keys(row).forEach(key => columnSet.add(key));
-      return columnSet;
-    }, new Set()),
-  );
+  if (Array.isArray(columns)) {
+    columns = [INDEX_COLUMN_NAME].concat(columns);
+  } else {
+    columns = Array.from(
+      rows.reduce((columnSet, row) => {
+        Object.keys(row).forEach(key => columnSet.add(key));
+        return columnSet;
+      }, new Set()),
+    );
+  }
   var stringRows = [];
   var columnWidths = [];
 
