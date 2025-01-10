@@ -10,11 +10,15 @@
 
 'use strict';
 
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {InspectedElementFrame} from './Inspector';
+
+import React from 'react';
+
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
 const resolveBoxStyle = require('./resolveBoxStyle');
-const React = require('react');
 
 const blank = {
   top: 0,
@@ -23,7 +27,12 @@ const blank = {
   bottom: 0,
 };
 
-class BoxInspector extends React.Component<$FlowFixMeProps> {
+type BoxInspectorProps = $ReadOnly<{
+  style: ViewStyleProp,
+  frame?: ?InspectedElementFrame,
+}>;
+
+class BoxInspector extends React.Component<BoxInspectorProps> {
   render(): React.Node {
     const frame = this.props.frame;
     const style = this.props.style;
@@ -34,11 +43,11 @@ class BoxInspector extends React.Component<$FlowFixMeProps> {
         <BoxContainer title="padding" box={padding}>
           <View>
             <Text style={styles.innerText}>
-              ({(frame.left || 0).toFixed(1)}, {(frame.top || 0).toFixed(1)})
+              ({(frame?.left || 0).toFixed(1)}, {(frame?.top || 0).toFixed(1)})
             </Text>
             <Text style={styles.innerText}>
-              {(frame.width || 0).toFixed(1)} &times;{' '}
-              {(frame.height || 0).toFixed(1)}
+              {(frame?.width || 0).toFixed(1)} &times;{' '}
+              {(frame?.height || 0).toFixed(1)}
             </Text>
           </View>
         </BoxContainer>
@@ -47,7 +56,19 @@ class BoxInspector extends React.Component<$FlowFixMeProps> {
   }
 }
 
-class BoxContainer extends React.Component<$FlowFixMeProps> {
+type BoxContainerProps = $ReadOnly<{
+  title: string,
+  box: $ReadOnly<{
+    top: number,
+    right: number,
+    bottom: number,
+    left: number,
+  }>,
+  titleStyle?: ViewStyleProp,
+  children: React.Node,
+}>;
+
+class BoxContainer extends React.Component<BoxContainerProps> {
   render(): React.Node {
     const box = this.props.box;
     return (
