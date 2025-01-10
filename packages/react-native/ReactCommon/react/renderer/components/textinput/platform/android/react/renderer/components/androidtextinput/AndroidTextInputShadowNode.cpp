@@ -20,92 +20,81 @@ namespace facebook::react {
 
 extern const char AndroidTextInputComponentName[] = "AndroidTextInput";
 
-AttributedString AndroidTextInputShadowNode::getAttributedString() const {
-  // Use BaseTextShadowNode to get attributed string from children
-  auto childTextAttributes = TextAttributes::defaultTextAttributes();
-  childTextAttributes.apply(getConcreteProps().textAttributes);
-  // Don't propagate the background color of the TextInput onto the attributed
-  // string. Android tries to render shadow of the background alongside the
-  // shadow of the text which results in weird artifacts.
-  childTextAttributes.backgroundColor = HostPlatformColor::UndefinedColor;
-
-  auto attributedString = AttributedString{};
-  auto attachments = BaseTextShadowNode::Attachments{};
-  BaseTextShadowNode::buildAttributedString(
-      childTextAttributes, *this, attributedString, attachments);
-  attributedString.setBaseTextAttributes(childTextAttributes);
-
-  // BaseTextShadowNode only gets children. We must detect and prepend text
-  // value attributes manually.
-  if (!getConcreteProps().text.empty()) {
-    auto textAttributes = TextAttributes::defaultTextAttributes();
-    textAttributes.apply(getConcreteProps().textAttributes);
-    auto fragment = AttributedString::Fragment{};
-    fragment.string = getConcreteProps().text;
-    fragment.textAttributes = textAttributes;
-    // If the TextInput opacity is 0 < n < 1, the opacity of the TextInput and
-    // text value's background will stack. This is a hack/workaround to prevent
-    // that effect.
-    fragment.textAttributes.backgroundColor = clearColor();
-    fragment.parentShadowView = ShadowView(*this);
-    attributedString.prependFragment(std::move(fragment));
-  }
-
-  return attributedString;
-}
-
-// For measurement purposes, we want to make sure that there's at least a
-// single character in the string so that the measured height is greater
-// than zero. Otherwise, empty TextInputs with no placeholder don't
-// display at all.
-// TODO T67606511: We will redefine the measurement of empty strings as part
-// of T67606511
-AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
-    const {
-  // Return placeholder text, since text and children are empty.
-  auto textAttributedString = AttributedString{};
-  auto fragment = AttributedString::Fragment{};
-  fragment.string = getConcreteProps().placeholder;
-
-  if (fragment.string.empty()) {
-    fragment.string = BaseTextShadowNode::getEmptyPlaceholder();
-  }
-
-  auto textAttributes = TextAttributes::defaultTextAttributes();
-  textAttributes.apply(getConcreteProps().textAttributes);
-
-  // If there's no text, it's possible that this Fragment isn't actually
-  // appended to the AttributedString (see implementation of appendFragment)
-  fragment.textAttributes = textAttributes;
-  fragment.parentShadowView = ShadowView(*this);
-  textAttributedString.appendFragment(std::move(fragment));
-
-  return textAttributedString;
-}
-
 void AndroidTextInputShadowNode::setTextLayoutManager(
     std::shared_ptr<const TextLayoutManager> textLayoutManager) {
   ensureUnsealed();
   textLayoutManager_ = std::move(textLayoutManager);
 }
 
-AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
-    const {
-  const auto& state = getStateData();
+Size AndroidTextInputShadowNode::measureContent(
+    const LayoutContext& layoutContext,
+    const LayoutConstraints& layoutConstraints) const {
+  auto textConstraints = getTextConstraints(layoutConstraints);
 
-  auto reactTreeAttributedString = getAttributedString();
+  if (getStateData().cachedAttributedStringId != 0) {
+    auto textSize = textLayoutManager_
+                        ->measureCachedSpannableById(
+                            getStateData().cachedAttributedStringId,
+                            getConcreteProps().paragraphAttributes,
+                            textConstraints)
+                        .size;
+    return layoutConstraints.clamp(textSize);
+  }
 
-  // Sometimes the treeAttributedString will only differ from the state
-  // not by inherent properties (string or prop attributes), but by the frame of
-  // the parent which has changed Thus, we can't directly compare the entire
-  // AttributedString
-  bool treeAttributedStringChanged =
-      !state.reactTreeAttributedString.compareTextAttributesWithoutFrame(
-          reactTreeAttributedString);
+  // Layout is called right after measure.
+  // Measure is marked as `const`, and `layout` is not; so State can be
+  // updated during layout, but not during `measure`. If State is out-of-date
+  // in layout, it's too late: measure will have already operated on old
+  // State. Thus, we use the same value here that we *will* use in layout to
+  // update the state.
+  AttributedString attributedString = getMostRecentAttributedString();
 
-  return (
-      !treeAttributedStringChanged ? state.attributedStringBox.getValue()
-                                   : reactTreeAttributedString);
+  if (attributedString.isEmpty()) {
+    attributedString = getPlaceholderAttributedString();
+  }
+
+  if (attributedString.isEmpty() && getStateData().mostRecentEventCount != 0) {
+    return {.width = 0, .height = 0};
+  }
+
+  TextLayoutContext textLayoutContext;
+  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
+  auto textSize = textLayoutManager_
+                      ->measure(
+                          AttributedStringBox{attributedString},
+                          getConcreteProps().paragraphAttributes,
+                          textLayoutContext,
+                          textConstraints)
+                      .size;
+  return layoutConstraints.clamp(textSize);
+}
+
+void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
+  updateStateIfNeeded();
+  ConcreteViewShadowNode::layout(layoutContext);
+}
+
+Float AndroidTextInputShadowNode::baseline(
+    const LayoutContext& /*layoutContext*/,
+    Size size) const {
+  AttributedString attributedString = getMostRecentAttributedString();
+
+  if (attributedString.isEmpty()) {
+    attributedString = getPlaceholderAttributedString();
+  }
+
+  // Yoga expects a baseline relative to the Node's border-box edge instead of
+  // the content, so we need to adjust by the padding and border widths, which
+  // have already been set by the time of baseline alignment
+  auto top = YGNodeLayoutGetBorder(&yogaNode_, YGEdgeTop) +
+      YGNodeLayoutGetPadding(&yogaNode_, YGEdgeTop);
+
+  AttributedStringBox attributedStringBox{attributedString};
+  return textLayoutManager_->baseline(
+             attributedStringBox,
+             getConcreteProps().paragraphAttributes,
+             size) +
+      top;
 }
 
 LayoutConstraints AndroidTextInputShadowNode::getTextConstraints(
@@ -165,77 +154,86 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
       newEventCount});
 }
 
-#pragma mark - LayoutableShadowNode
+AttributedString AndroidTextInputShadowNode::getAttributedString() const {
+  // Use BaseTextShadowNode to get attributed string from children
+  auto childTextAttributes = TextAttributes::defaultTextAttributes();
+  childTextAttributes.apply(getConcreteProps().textAttributes);
+  // Don't propagate the background color of the TextInput onto the attributed
+  // string. Android tries to render shadow of the background alongside the
+  // shadow of the text which results in weird artifacts.
+  childTextAttributes.backgroundColor = HostPlatformColor::UndefinedColor;
 
-Size AndroidTextInputShadowNode::measureContent(
-    const LayoutContext& layoutContext,
-    const LayoutConstraints& layoutConstraints) const {
-  auto textConstraints = getTextConstraints(layoutConstraints);
+  auto attributedString = AttributedString{};
+  auto attachments = BaseTextShadowNode::Attachments{};
+  BaseTextShadowNode::buildAttributedString(
+      childTextAttributes, *this, attributedString, attachments);
+  attributedString.setBaseTextAttributes(childTextAttributes);
 
-  if (getStateData().cachedAttributedStringId != 0) {
-    auto textSize = textLayoutManager_
-                        ->measureCachedSpannableById(
-                            getStateData().cachedAttributedStringId,
-                            getConcreteProps().paragraphAttributes,
-                            textConstraints)
-                        .size;
-    return layoutConstraints.clamp(textSize);
+  // BaseTextShadowNode only gets children. We must detect and prepend text
+  // value attributes manually.
+  if (!getConcreteProps().text.empty()) {
+    auto textAttributes = TextAttributes::defaultTextAttributes();
+    textAttributes.apply(getConcreteProps().textAttributes);
+    auto fragment = AttributedString::Fragment{};
+    fragment.string = getConcreteProps().text;
+    fragment.textAttributes = textAttributes;
+    // If the TextInput opacity is 0 < n < 1, the opacity of the TextInput and
+    // text value's background will stack. This is a hack/workaround to prevent
+    // that effect.
+    fragment.textAttributes.backgroundColor = clearColor();
+    fragment.parentShadowView = ShadowView(*this);
+    attributedString.prependFragment(std::move(fragment));
   }
 
-  // Layout is called right after measure.
-  // Measure is marked as `const`, and `layout` is not; so State can be
-  // updated during layout, but not during `measure`. If State is out-of-date
-  // in layout, it's too late: measure will have already operated on old
-  // State. Thus, we use the same value here that we *will* use in layout to
-  // update the state.
-  AttributedString attributedString = getMostRecentAttributedString();
-
-  if (attributedString.isEmpty()) {
-    attributedString = getPlaceholderAttributedString();
-  }
-
-  if (attributedString.isEmpty() && getStateData().mostRecentEventCount != 0) {
-    return {0, 0};
-  }
-
-  TextLayoutContext textLayoutContext;
-  textLayoutContext.pointScaleFactor = layoutContext.pointScaleFactor;
-  auto textSize = textLayoutManager_
-                      ->measure(
-                          AttributedStringBox{attributedString},
-                          getConcreteProps().paragraphAttributes,
-                          textLayoutContext,
-                          textConstraints)
-                      .size;
-  return layoutConstraints.clamp(textSize);
+  return attributedString;
 }
 
-Float AndroidTextInputShadowNode::baseline(
-    const LayoutContext& layoutContext,
-    Size size) const {
-  AttributedString attributedString = getMostRecentAttributedString();
+AttributedString AndroidTextInputShadowNode::getMostRecentAttributedString()
+    const {
+  const auto& state = getStateData();
 
-  if (attributedString.isEmpty()) {
-    attributedString = getPlaceholderAttributedString();
-  }
+  auto reactTreeAttributedString = getAttributedString();
 
-  // Yoga expects a baseline relative to the Node's border-box edge instead of
-  // the content, so we need to adjust by the padding and border widths, which
-  // have already been set by the time of baseline alignment
-  auto top = YGNodeLayoutGetBorder(&yogaNode_, YGEdgeTop) +
-      YGNodeLayoutGetPadding(&yogaNode_, YGEdgeTop);
+  // Sometimes the treeAttributedString will only differ from the state
+  // not by inherent properties (string or prop attributes), but by the frame of
+  // the parent which has changed Thus, we can't directly compare the entire
+  // AttributedString
+  bool treeAttributedStringChanged =
+      !state.reactTreeAttributedString.compareTextAttributesWithoutFrame(
+          reactTreeAttributedString);
 
-  AttributedStringBox attributedStringBox{attributedString};
-  return textLayoutManager_->baseline(
-             attributedStringBox,
-             getConcreteProps().paragraphAttributes,
-             size) +
-      top;
+  return (
+      !treeAttributedStringChanged ? state.attributedStringBox.getValue()
+                                   : reactTreeAttributedString);
 }
 
-void AndroidTextInputShadowNode::layout(LayoutContext layoutContext) {
-  updateStateIfNeeded();
-  ConcreteViewShadowNode::layout(layoutContext);
+// For measurement purposes, we want to make sure that there's at least a
+// single character in the string so that the measured height is greater
+// than zero. Otherwise, empty TextInputs with no placeholder don't
+// display at all.
+// TODO T67606511: We will redefine the measurement of empty strings as part
+// of T67606511
+AttributedString AndroidTextInputShadowNode::getPlaceholderAttributedString()
+    const {
+  // Return placeholder text, since text and children are empty.
+  auto textAttributedString = AttributedString{};
+  auto fragment = AttributedString::Fragment{};
+  fragment.string = getConcreteProps().placeholder;
+
+  if (fragment.string.empty()) {
+    fragment.string = BaseTextShadowNode::getEmptyPlaceholder();
+  }
+
+  auto textAttributes = TextAttributes::defaultTextAttributes();
+  textAttributes.apply(getConcreteProps().textAttributes);
+
+  // If there's no text, it's possible that this Fragment isn't actually
+  // appended to the AttributedString (see implementation of appendFragment)
+  fragment.textAttributes = textAttributes;
+  fragment.parentShadowView = ShadowView(*this);
+  textAttributedString.appendFragment(std::move(fragment));
+
+  return textAttributedString;
 }
 
 } // namespace facebook::react
