@@ -440,7 +440,7 @@ function consoleTablePolyfill(rows) {
     rows = [];
     for (var key in data) {
       if (data.hasOwnProperty(key)) {
-        var row = data[key];
+        var row = Object.assign({}, data[key]);
         row[OBJECT_COLUMN_NAME] = key;
         rows.push(row);
       }

@@ -159,5 +159,40 @@ fourth `,
         global.nativeLoggingHook = originalNativeLoggingHook;
       }
     });
+
+    it('should not modify the logged value', () => {
+      const originalNativeLoggingHook = global.nativeLoggingHook;
+      global.nativeLoggingHook = jest.fn();
+
+      // TODO: replace with `beforeEach` when supported.
+      try {
+        const array = [
+          {name: 'First', value: 500},
+          {name: 'Second', value: 600},
+          {name: 'Third', value: 700},
+          {name: 'Fourth', value: 800, extraValue: true},
+        ];
+        const originalArrayValue = JSON.parse(JSON.stringify(array));
+
+        console.table(array);
+
+        expect(array).toEqual(originalArrayValue);
+
+        const object = {
+          first: {name: 'First', value: 500},
+          second: {name: 'Second', value: 600},
+          third: {name: 'Third', value: 700},
+          fourth: {name: 'Fourth', value: 800, extraValue: true},
+        };
+
+        const originalObjectValue = JSON.parse(JSON.stringify(object));
+
+        console.table(object);
+
+        expect(object).toEqual(originalObjectValue);
+      } finally {
+        global.nativeLoggingHook = originalNativeLoggingHook;
+      }
+    });
   });
 });
