@@ -380,7 +380,7 @@ const inspect = (function () {
   return inspect;
 })();
 
-const OBJECT_COLUMN_NAME = '(index)';
+const INDEX_COLUMN_NAME = '(index)';
 const LOG_LEVELS = {
   trace: 0,
   info: 1,
@@ -433,16 +433,46 @@ function repeat(element, n) {
   });
 }
 
+function formatCellValue(cell, key) {
+  if (key === INDEX_COLUMN_NAME) {
+    return cell[key];
+  }
+
+  if (cell.hasOwnProperty(key)) {
+    var cellValue = cell[key];
+
+    switch (typeof cellValue) {
+      case 'function':
+        return 'ƒ';
+      case 'string':
+        return "'" + cellValue + "'";
+      case 'object':
+        return cellValue == null ? 'null' : '{…}';
+    }
+
+    return String(cellValue);
+  }
+  return '';
+}
+
 function consoleTablePolyfill(rows) {
   // convert object -> array
-  if (!Array.isArray(rows)) {
+  if (Array.isArray(rows)) {
+    rows = rows.map((row, index) => {
+      var processedRow = {};
+      processedRow[INDEX_COLUMN_NAME] = String(index);
+      Object.assign(processedRow, row);
+      return processedRow;
+    });
+  } else {
     var data = rows;
     rows = [];
     for (var key in data) {
       if (data.hasOwnProperty(key)) {
-        var row = Object.assign({}, data[key]);
-        row[OBJECT_COLUMN_NAME] = key;
-        rows.push(row);
+        var processedRow = {};
+        processedRow[INDEX_COLUMN_NAME] = key;
+        Object.assign(processedRow, data[key]);
+        rows.push(processedRow);
       }
     }
   }
@@ -451,7 +481,12 @@ function consoleTablePolyfill(rows) {
     return;
   }
 
-  var columns = Object.keys(rows[0]).sort();
+  var columns = Array.from(
+    rows.reduce((columnSet, row) => {
+      Object.keys(row).forEach(key => columnSet.add(key));
+      return columnSet;
+    }, new Set()),
+  );
   var stringRows = [];
   var columnWidths = [];
 
@@ -460,7 +495,7 @@ function consoleTablePolyfill(rows) {
   columns.forEach(function (k, i) {
     columnWidths[i] = k.length;
     for (var j = 0; j < rows.length; j++) {
-      var cellStr = (rows[j][k] || '?').toString();
+      var cellStr = formatCellValue(rows[j], k);
       stringRows[j] = stringRows[j] || [];
       stringRows[j][i] = cellStr;
       columnWidths[i] = Math.max(columnWidths[i], cellStr.length);
@@ -475,13 +510,13 @@ function consoleTablePolyfill(rows) {
       return cell + extraSpaces;
     });
     space = space || ' ';
-    return cells.join(space + '|' + space);
+    return '| ' + cells.join(space + '|' + space) + ' |';
   }
 
   var separators = columnWidths.map(function (columnWidth) {
     return repeat('-', columnWidth).join('');
   });
-  var separatorRow = joinRow(separators, '-');
+  var separatorRow = joinRow(separators);
   var header = joinRow(columns);
   var table = [header, separatorRow];
 

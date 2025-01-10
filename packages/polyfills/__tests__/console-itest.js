@@ -18,7 +18,7 @@ const LOG_LEVELS = {
 
 describe('console', () => {
   describe('.table(data, rows)', () => {
-    it('should print the passed array as a table', () => {
+    it('should print the passed array as a Markdown table', () => {
       const originalNativeLoggingHook = global.nativeLoggingHook;
       const logFn = (global.nativeLoggingHook = jest.fn());
 
@@ -34,12 +34,12 @@ describe('console', () => {
         expect(logFn).toHaveBeenCalledTimes(1);
         expect(logFn.mock.lastCall).toEqual([
           `
-name   | value
--------|------
-First  | 500 \u0020
-Second | 600 \u0020
-Third  | 700 \u0020
-Fourth | 800  `,
+| (index) | name     | value | extraValue |
+| ------- | -------- | ----- | ---------- |
+| 0       | 'First'  | 500   |            |
+| 1       | 'Second' | 600   |            |
+| 2       | 'Third'  | 700   |            |
+| 3       | 'Fourth' | 800   | true       |`,
           LOG_LEVELS.info,
         ]);
       } finally {
@@ -47,7 +47,7 @@ Fourth | 800  `,
       }
     });
 
-    it('should print the passed dictionary as a table', () => {
+    it('should print the passed dictionary as a Markdown table', () => {
       const originalNativeLoggingHook = global.nativeLoggingHook;
       const logFn = (global.nativeLoggingHook = jest.fn());
 
@@ -63,12 +63,102 @@ Fourth | 800  `,
         expect(logFn).toHaveBeenCalledTimes(1);
         expect(logFn.mock.lastCall).toEqual([
           `
-(index) | name   | value
---------|--------|------
-first   | First  | 500 \u0020
-second  | Second | 600 \u0020
-third   | Third  | 700 \u0020
-fourth  | Fourth | 800  `,
+| (index) | name     | value | extraValue |
+| ------- | -------- | ----- | ---------- |
+| first   | 'First'  | 500   |            |
+| second  | 'Second' | 600   |            |
+| third   | 'Third'  | 700   |            |
+| fourth  | 'Fourth' | 800   | true       |`,
+          LOG_LEVELS.info,
+        ]);
+      } finally {
+        global.nativeLoggingHook = originalNativeLoggingHook;
+      }
+    });
+
+    it('should work with different types of values', () => {
+      const originalNativeLoggingHook = global.nativeLoggingHook;
+      const logFn = (global.nativeLoggingHook = jest.fn());
+
+      // TODO: replace with `beforeEach` when supported.
+      try {
+        console.table([
+          {
+            string: '',
+            number: 0,
+            boolean: true,
+            function: () => {},
+            object: {a: 1, b: 2},
+            null: null,
+            undefined: undefined,
+          },
+          {
+            string: 'a',
+            number: 1,
+            boolean: true,
+            function: () => {},
+            object: {a: 1, b: 2},
+            null: null,
+            undefined: undefined,
+          },
+          {
+            string: 'aa',
+            number: 2,
+            boolean: false,
+            function: () => {},
+            object: {a: 1, b: 2},
+            null: null,
+            undefined: undefined,
+          },
+          {
+            string: 'aaa',
+            number: 3,
+            boolean: false,
+            function: () => {},
+            object: {a: 1, b: 2},
+            null: null,
+            undefined: undefined,
+          },
+        ]);
+
+        expect(logFn).toHaveBeenCalledTimes(1);
+        expect(logFn.mock.lastCall).toEqual([
+          `
+| (index) | string | number | boolean | function | object | null | undefined |
+| ------- | ------ | ------ | ------- | -------- | ------ | ---- | --------- |
+| 0       | ''     | 0      | true    | ƒ        | {…}    | null | undefined |
+| 1       | 'a'    | 1      | true    | ƒ        | {…}    | null | undefined |
+| 2       | 'aa'   | 2      | false   | ƒ        | {…}    | null | undefined |
+| 3       | 'aaa'  | 3      | false   | ƒ        | {…}    | null | undefined |`,
+          LOG_LEVELS.info,
+        ]);
+      } finally {
+        global.nativeLoggingHook = originalNativeLoggingHook;
+      }
+    });
+
+    it('should print the keys in all the objects', () => {
+      const originalNativeLoggingHook = global.nativeLoggingHook;
+      const logFn = (global.nativeLoggingHook = jest.fn());
+
+      // TODO: replace with `beforeEach` when supported.
+      try {
+        console.table([
+          {name: 'foo'},
+          {name: 'bar', value: 1},
+          {value: 2, surname: 'baz'},
+          {address: 'other'},
+        ]);
+
+        expect(logFn).toHaveBeenCalledTimes(1);
+        expect(logFn.mock.lastCall).toEqual([
+          `
+| (index) | name  | value | surname | address |
+| ------- | ----- | ----- | ------- | ------- |
+| 0       | 'foo' |       |         |         |
+| 1       | 'bar' | 1     |         |         |
+| 2       |       | 2     | 'baz'   |         |
+| 3       |       |       |         | 'other' |`,
           LOG_LEVELS.info,
         ]);
       } finally {
@@ -107,7 +197,7 @@ fourth  | Fourth | 800  `,
     });
 
     // This test is currently failing
-    it.skip('should print an indices table for an array of empty objects', () => {
+    it('should print an indices table for an array of empty objects', () => {
       const originalNativeLoggingHook = global.nativeLoggingHook;
       const logFn = (global.nativeLoggingHook = jest.fn());
 
@@ -118,12 +208,12 @@ fourth  | Fourth | 800  `,
         expect(logFn).toHaveBeenCalledTimes(1);
         expect(logFn.mock.lastCall).toEqual([
           `
-(index)
--------
-0     \u0020
-1     \u0020
-2     \u0020
-3      `,
+| (index) |
+| ------- |
+| 0       |
+| 1       |
+| 2       |
+| 3       |`,
           LOG_LEVELS.info,
         ]);
       } finally {
@@ -147,12 +237,12 @@ fourth  | Fourth | 800  `,
         expect(logFn).toHaveBeenCalledTimes(1);
         expect(logFn.mock.lastCall).toEqual([
           `
-(index)
--------
-first \u0020
-second\u0020
-third \u0020
-fourth `,
+| (index) |
+| ------- |
+| first   |
+| second  |
+| third   |
+| fourth  |`,
           LOG_LEVELS.info,
         ]);
       } finally {
