@@ -7,14 +7,10 @@
 
 #pragma once
 
-#include <android/log.h>
 #include <string>
 
 namespace facebook::react {
 
-void reactAndroidLoggingHook(
-    const std::string& message,
-    android_LogPriority logLevel);
 void reactAndroidLoggingHook(const std::string& message, unsigned int logLevel);
 
 } // namespace facebook::react
