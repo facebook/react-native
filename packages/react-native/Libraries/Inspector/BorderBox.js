@@ -10,11 +10,26 @@
 
 'use strict';
 
-const View = require('../Components/View/View');
-const React = require('react');
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
-class BorderBox extends React.Component<$FlowFixMeProps> {
-  render(): $FlowFixMe | React.Node {
+import React from 'react';
+
+const View = require('../Components/View/View');
+
+type Props = $ReadOnly<{|
+  children: React.Node,
+  box?: ?$ReadOnly<{
+    top: number,
+    right: number,
+    bottom: number,
+    left: number,
+    ...
+  }>,
+  style?: ViewStyleProp,
+|}>;
+
+class BorderBox extends React.Component<Props> {
+  render(): React.Node {
     const box = this.props.box;
     if (!box) {
       return this.props.children;
