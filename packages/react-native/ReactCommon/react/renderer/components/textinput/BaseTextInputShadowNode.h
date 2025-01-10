@@ -120,6 +120,32 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
         top;
   }
 
+  /*
+   * Determines the constraints to use while measure the underlying text
+   */
+  LayoutConstraints getTextConstraints(
+      const LayoutConstraints& layoutConstraints) const {
+    if (BaseShadowNode::getConcreteProps().multiline) {
+      return layoutConstraints;
+    } else {
+      // A single line TextInput acts as a horizontal scroller of infinitely
+      // expandable text, so we want to measure the text as if it is allowed to
+      // infinitely expand horizontally, and later clamp to the constraints of
+      // the input.
+      return LayoutConstraints{
+          .minimumSize = layoutConstraints.minimumSize,
+          .maximumSize =
+              Size{
+                  .width = std::numeric_limits<Float>::infinity(),
+                  .height = layoutConstraints.maximumSize.height,
+              },
+          .layoutDirection = layoutConstraints.layoutDirection,
+      };
+    }
+  }
+
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
+
  private:
   /*
    * Creates a `State` object if needed.
@@ -150,46 +176,20 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
   AttributedString getAttributedString(
       const LayoutContext& layoutContext) const {
     const auto& props = BaseShadowNode::getConcreteProps();
-    auto textAttributes =
+    const auto textAttributes =
         props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
-    auto attributedString = AttributedString{};
 
+    AttributedString attributedString;
     attributedString.appendFragment(AttributedString::Fragment{
         .string = props.text,
         .textAttributes = textAttributes,
-        // TODO: Is this really meant to be by value?
         .parentShadowView = ShadowView(*this)});
 
     auto attachments = BaseTextShadowNode::Attachments{};
     BaseTextShadowNode::buildAttributedString(
         textAttributes, *this, attributedString, attachments);
     attributedString.setBaseTextAttributes(textAttributes);
-
     return attributedString;
-  }
-
-  /*
-   * Determines the constraints to use while measure the underlying text
-   */
-  LayoutConstraints getTextConstraints(
-      const LayoutConstraints& layoutConstraints) const {
-    if (BaseShadowNode::getConcreteProps().multiline) {
-      return layoutConstraints;
-    } else {
-      // A single line TextInput acts as a horizontal scroller of infinitely
-      // expandable text, so we want to measure the text as if it is allowed to
-      // infinitely expand horizontally, and later clamp to the constraints of
-      // the input.
-      return LayoutConstraints{
-          .minimumSize = layoutConstraints.minimumSize,
-          .maximumSize =
-              Size{
-                  .width = std::numeric_limits<Float>::infinity(),
-                  .height = layoutConstraints.maximumSize.height,
-              },
-          .layoutDirection = layoutConstraints.layoutDirection,
-      };
-    }
   }
 
   /*
@@ -232,8 +232,6 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     }
     return AttributedStringBox{attributedString};
   }
-
-  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 };
 
 } // namespace facebook::react
