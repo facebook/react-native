@@ -138,6 +138,12 @@ async function testRNTesterAndroid(
     } version of RNTester Android with the new Architecture enabled`,
   );
 
+  // Build Codegen as we're on a empty environment and metro needs it.
+  // This can be removed once we have codegen hooked in the `yarn build` step.
+  exec(
+    '../../gradlew :packages:react-native:ReactAndroid:buildCodegenCLI --quiet',
+  );
+
   // Start the Metro server so it will be ready if the app can be built and installed successfully.
   launchPackagerInSeparateWindow(pwd().toString());
 
