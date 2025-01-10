@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d947be615f76c0f0bd4b7ce1dcbf390>>
+ * @generated SignedSource<<843c77a8566dc0ddc68d66100a58bba8>>
  */
 
 /**
@@ -46,8 +46,6 @@ class NativeReactNativeFeatureFlags
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
-
-  bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
 
   bool enableAndroidLineHeightCentering(jsi::Runtime& runtime);
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cba7d5b72ece69330b97ba0c615502c5>>
+ * @generated SignedSource<<a5c3dc485960e5f1d86dbdc657eb12a7>>
  */
 
 /**
@@ -57,12 +57,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
-
-  /**
-   * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
-   */
-  @JvmStatic
-  public fun enableAlignItemsBaselineOnFabricIOS(): Boolean = accessor.enableAlignItemsBaselineOnFabricIOS()
 
   /**
    * When enabled, custom line height calculation will be centered from top to bottom.

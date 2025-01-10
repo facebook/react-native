@@ -95,16 +95,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableAlignItemsBaselineOnFabricIOS: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-07-10',
-        description:
-          'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-    },
     enableAndroidLineHeightCentering: {
       defaultValue: true,
       metadata: {

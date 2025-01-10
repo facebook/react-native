@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d24ff95d907838caea6eafaaa3faa8b1>>
+ * @generated SignedSource<<9f06559964f84b034ddd8a4cbc359afa>>
  * @flow strict
  */
 
@@ -56,7 +56,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   disableEventLoopOnBridgeless: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
-  enableAlignItemsBaselineOnFabricIOS: Getter<boolean>,
   enableAndroidLineHeightCentering: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
@@ -209,10 +208,6 @@ export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFl
  * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
  */
 export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
-/**
- * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
- */
-export const enableAlignItemsBaselineOnFabricIOS: Getter<boolean> = createNativeFlagGetter('enableAlignItemsBaselineOnFabricIOS', true);
 /**
  * When enabled, custom line height calculation will be centered from top to bottom.
  */
