@@ -101,7 +101,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
       [_backedTextInputView.defaultTextAttributes mutableCopy];
 
-#if !TARGET_OS_MACCATALYST
+#if !TARGET_OS_MAC && !TARGET_OS_MACCATALYST
   RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
   eventEmitterWrapper.eventEmitter = _eventEmitter;
   defaultAttributes[RCTAttributedStringEventEmitterKey] = eventEmitterWrapper;
@@ -266,7 +266,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
     NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
-#if !TARGET_OS_MACCATALYST
+#if !TARGET_OS_MAC && !TARGET_OS_MACCATALYST
     defaultAttributes[RCTAttributedStringEventEmitterKey] =
         _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
 #endif
