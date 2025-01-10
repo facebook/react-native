@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <folly/Conv.h>
-#include <folly/dynamic.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
 #include <react/renderer/components/view/primitives.h>
