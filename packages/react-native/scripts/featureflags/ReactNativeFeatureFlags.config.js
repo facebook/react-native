@@ -95,15 +95,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableAndroidLineHeightCentering: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'When enabled, custom line height calculation will be centered from top to bottom.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
     enableBridgelessArchitecture: {
       defaultValue: false,
       metadata: {

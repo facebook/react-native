@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a19a85c7e9746a0640d8f0f6695a0c13>>
+ * @generated SignedSource<<e38a0e9474ac349a4b8153862470c856>>
  */
 
 /**
@@ -45,10 +45,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     return false;
-  }
-
-  bool enableAndroidLineHeightCentering() override {
-    return true;
   }
 
   bool enableBridgelessArchitecture() override {
