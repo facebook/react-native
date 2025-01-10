@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0b570bc8931ec25f16ee777f0bfcd04f>>
+ * @generated SignedSource<<ca5452a19b165ae2d7bfaf6657a94a25>>
  */
 
 /**
@@ -29,7 +29,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var disableEventLoopOnBridgelessCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
-  private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
   private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
@@ -118,16 +117,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableAccumulatedUpdatesInRawPropsAndroid()
       accessedFeatureFlags.add("enableAccumulatedUpdatesInRawPropsAndroid")
       enableAccumulatedUpdatesInRawPropsAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableAlignItemsBaselineOnFabricIOS(): Boolean {
-    var cached = enableAlignItemsBaselineOnFabricIOSCache
-    if (cached == null) {
-      cached = currentProvider.enableAlignItemsBaselineOnFabricIOS()
-      accessedFeatureFlags.add("enableAlignItemsBaselineOnFabricIOS")
-      enableAlignItemsBaselineOnFabricIOSCache = cached
     }
     return cached
   }

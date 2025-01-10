@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7075974bc541d91e275ee370f2a3709b>>
+ * @generated SignedSource<<c3b554cdb31bf0a29d45889f51295c74>>
  */
 
 /**
@@ -32,8 +32,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
-
-  override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
 
   override fun enableAndroidLineHeightCentering(): Boolean = true
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eead6b4f156908455773230140a7d733>>
+ * @generated SignedSource<<6a9b64bcb7d6e6115d3125c0fad09f19>>
  */
 
 /**
@@ -43,9 +43,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableAccumulatedUpdatesInRawPropsAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableAlignItemsBaselineOnFabricIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableAndroidLineHeightCentering(
