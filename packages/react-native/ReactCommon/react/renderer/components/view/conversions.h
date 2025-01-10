@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <cmath>
 #include <optional>
+#include <string>
 #include <unordered_map>
 
 namespace facebook::react {
@@ -62,6 +63,25 @@ inline float yogaFloatFromFloat(Float value) {
   }
 
   return (float)value;
+}
+
+/*
+ * Converts string to float only if the entire string is valid float.
+ */
+inline std::optional<float> stringToFloat(const std::string& string) {
+  try {
+    size_t pos = 0;
+    auto result = std::stof(string, &pos);
+    // Check if entire string was valid
+    if (pos == string.length()) {
+      return result;
+    }
+  } catch (...) {
+    // Ignore, caller falls back to default value.
+    return std::nullopt;
+  }
+
+  return std::nullopt;
 }
 
 /*
@@ -467,15 +487,15 @@ inline void fromRawValue(
       return;
     } else {
       if (stringValue.back() == '%') {
-        auto tryValue = folly::tryTo<float>(
-            std::string_view(stringValue).substr(0, stringValue.length() - 1));
-        if (tryValue.hasValue()) {
+        auto tryValue =
+            stringToFloat(stringValue.substr(0, stringValue.length() - 1));
+        if (tryValue.has_value()) {
           result = yoga::StyleSizeLength::percent(tryValue.value());
           return;
         }
       } else {
-        auto tryValue = folly::tryTo<float>(stringValue);
-        if (tryValue.hasValue()) {
+        auto tryValue = stringToFloat(stringValue);
+        if (tryValue.has_value()) {
           result = yoga::StyleSizeLength::points(tryValue.value());
           return;
         }
@@ -499,15 +519,15 @@ inline void fromRawValue(
       return;
     } else {
       if (stringValue.back() == '%') {
-        auto tryValue = folly::tryTo<float>(
-            std::string_view(stringValue).substr(0, stringValue.length() - 1));
-        if (tryValue.hasValue()) {
+        auto tryValue =
+            stringToFloat(stringValue.substr(0, stringValue.length() - 1));
+        if (tryValue.has_value()) {
           result = yoga::StyleLength::percent(tryValue.value());
           return;
         }
       } else {
-        auto tryValue = folly::tryTo<float>(stringValue);
-        if (tryValue.hasValue()) {
+        auto tryValue = stringToFloat(stringValue);
+        if (tryValue.has_value()) {
           result = yoga::StyleLength::points(tryValue.value());
           return;
         }
@@ -573,9 +593,9 @@ inline void fromRawValue(
     const auto stringValue = (std::string)value;
 
     if (stringValue.back() == '%') {
-      auto tryValue = folly::tryTo<float>(
-          std::string_view(stringValue).substr(0, stringValue.length() - 1));
-      if (tryValue.hasValue()) {
+      auto tryValue =
+          stringToFloat(stringValue.substr(0, stringValue.length() - 1));
+      if (tryValue.has_value()) {
         valueUnit = ValueUnit(tryValue.value(), UnitType::Percent);
       }
     }
