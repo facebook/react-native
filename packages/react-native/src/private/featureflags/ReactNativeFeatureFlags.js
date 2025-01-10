@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9f06559964f84b034ddd8a4cbc359afa>>
+ * @generated SignedSource<<3037cf1c938dae492b656333cec9633c>>
  * @flow strict
  */
 
@@ -56,7 +56,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   disableEventLoopOnBridgeless: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
-  enableAndroidLineHeightCentering: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableDeletionOfUnmountedViews: Getter<boolean>,
@@ -208,10 +207,6 @@ export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFl
  * When enabled, Andoid will accumulate updates in rawProps to reduce the number of mounting instructions for cascading rerenders.
  */
 export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
-/**
- * When enabled, custom line height calculation will be centered from top to bottom.
- */
-export const enableAndroidLineHeightCentering: Getter<boolean> = createNativeFlagGetter('enableAndroidLineHeightCentering', true);
 /**
  * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
  */

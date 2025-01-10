@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d93f15f9d99b8b7d5847d08f01590c4a>>
+ * @generated SignedSource<<f5a1ea8dd3d64e435b6954c39dacb76a>>
  */
 
 /**
@@ -67,11 +67,6 @@ bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
 bool NativeReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::enableAndroidLineHeightCentering(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableAndroidLineHeightCentering();
 }
 
 bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
