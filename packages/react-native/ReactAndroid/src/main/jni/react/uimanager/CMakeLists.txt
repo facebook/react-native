@@ -25,7 +25,6 @@ target_include_directories(uimanagerjni PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(uimanagerjni
         bridgelessnativeviewconfig
         callinvokerholder
-        fb
         fbjni
         folly_runtime
         glog
