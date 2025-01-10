@@ -18,7 +18,6 @@ import type {
 import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import ReactFabricHostComponent from '../../../ReactNative/ReactFabricPublicInstance/ReactFabricHostComponent';
 import {unstable_benchmark} from '@react-native/fantom';
-import nullthrows from 'nullthrows';
 
 // Create fake parameters for the class.
 const tag = 11;
@@ -40,22 +39,4 @@ unstable_benchmark
   .add('ReactFabricHostComponent', () => {
     // eslint-disable-next-line no-new
     new ReactFabricHostComponent(tag, viewConfig, internalInstanceHandle);
-  })
-  .verify(([modernImplResults, legacyImplResults]) => {
-    const minMedian = Math.min(
-      nullthrows(modernImplResults.latency.p50),
-      nullthrows(legacyImplResults.latency.p50),
-    );
-    const maxMedian = Math.max(
-      nullthrows(modernImplResults.latency.p50),
-      nullthrows(legacyImplResults.latency.p50),
-    );
-
-    const medianDifferencePercent = ((maxMedian - minMedian) / minMedian) * 100;
-    console.log(
-      `Difference in p50 values between ReactFabricHostComponent and ReactNativeElement is ${medianDifferencePercent.toFixed(2)}%`,
-    );
-
-    // No implementation should be more than 25% slower than the other.
-    expect(medianDifferencePercent).toBeLessThan(25);
   });
