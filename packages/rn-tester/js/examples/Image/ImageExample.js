@@ -612,28 +612,25 @@ class OnPartialLoadExample extends React.Component<
   }
 }
 
-type VectorDrawableExampleState = {||};
-
-type VectorDrawableExampleProps = $ReadOnly<{||}>;
-
-class VectorDrawableExample extends React.Component<
-  VectorDrawableExampleProps,
-  VectorDrawableExampleState,
-> {
-  state: VectorDrawableExampleState = {};
-
-  render(): React.Node {
-    const isEnabled = ReactNativeFeatureFlags.loadVectorDrawablesOnImages();
-    return (
-      <View style={styles.flex}>
-        <RNTesterText>Enabled: {isEnabled ? 'true' : 'false'}</RNTesterText>
-        <View style={styles.vectorDrawableRow}>
-          <Image source={{uri: 'ic_android'}} style={styles.vectorDrawable} />
-        </View>
+const VectorDrawableExample = () => {
+  const isEnabled = ReactNativeFeatureFlags.loadVectorDrawablesOnImages();
+  return (
+    <View style={styles.flex} testID="vector-drawable-example">
+      <RNTesterText>Enabled: {isEnabled ? 'true' : 'false'}</RNTesterText>
+      <View style={styles.horizontal}>
+        <Image
+          source={require('../../assets/ic_android.xml')}
+          style={styles.vectorDrawable}
+        />
+        <Image
+          source={require('../../assets/ic_android.xml')}
+          style={styles.vectorDrawable}
+          tintColor="red"
+        />
       </View>
-    );
-  }
-}
+    </View>
+  );
+};
 
 function CacheControlAndroidExample(): React.Node {
   const [reload, setReload] = React.useState(0);
@@ -933,10 +930,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     boxShadow: '80px 0px 10px 0px hotpink',
     transform: 'rotate(-15deg)',
-  },
-  vectorDrawableRow: {
-    flexDirection: 'row',
-    gap: 8,
   },
   vectorDrawable: {
     height: 64,
@@ -1763,6 +1756,7 @@ exports.examples = [
   },
   {
     title: 'Vector Drawable',
+    name: 'vector-drawable',
     description:
       'Demonstrating an example of loading a vector drawable asset by name',
     render: function (): React.Node {

@@ -1166,12 +1166,9 @@ declare export default class AnimatedValue extends AnimatedWithChildren {
   _animation: ?Animation;
   _tracking: ?AnimatedTracking;
   constructor(value: number, config?: ?AnimatedValueConfig): void;
+  __attach(): void;
   __detach(): void;
   __getValue(): number;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  addListener(callback: (value: any) => mixed): string;
-  removeListener(id: string): void;
-  removeAllListeners(): void;
   setValue(value: number): void;
   setOffset(offset: number): void;
   flattenOffset(): void;
@@ -1789,7 +1786,7 @@ declare export default typeof AndroidDrawerLayoutNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js 1`] = `
-"declare module.exports: $FlowFixMe;
+"declare module.exports: DrawerLayoutAndroid;
 "
 `;
 
@@ -7720,7 +7717,8 @@ declare module.exports: UIManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/UIManagerProperties.js 1`] = `
-"declare module.exports: $FlowFixMe;
+"declare const UIManagerProperties: $ReadOnlyArray<string>;
+declare module.exports: UIManagerProperties;
 "
 `;
 

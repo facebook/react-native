@@ -5,11 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <folly/init/Init.h>
-#include <gtest/gtest.h>
+package com.facebook.react.uimanager
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  folly::init(&argc, &argv);
-  return RUN_ALL_TESTS();
-}
+/** Marker interface to be extended by all code-generated ViewManagerInterface. */
+public interface ViewManagerWithGeneratedInterface {}

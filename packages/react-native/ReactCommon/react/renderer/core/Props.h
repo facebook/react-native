@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
-
 #include <react/renderer/core/PropsMacros.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
@@ -17,6 +15,7 @@
 #include <react/renderer/debug/DebugStringConvertible.h>
 
 #ifdef ANDROID
+#include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
 

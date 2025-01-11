@@ -38,8 +38,6 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
    */
   TextAttributes getEffectiveTextAttributes(Float fontSizeMultiplier) const;
 
-  ParagraphAttributes getEffectiveParagraphAttributes() const;
-
 #pragma mark - Props
 
   /*
