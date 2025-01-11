@@ -70,6 +70,8 @@ if ! command -v xcbeautify 1> /dev/null; then
   brew install xcbeautify
 fi
 
+xcodebuild -downloadAllPlatforms
+
 eval "$build_cmd" | xcbeautify --report junit
 
 if [[ "$CCACHE_DISABLE" != "1" ]]; then
