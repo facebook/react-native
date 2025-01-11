@@ -4,47 +4,53 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+package com.facebook.hermes.reactexecutor
 
-package com.facebook.hermes.reactexecutor;
+import com.facebook.jni.HybridData
+import com.facebook.react.bridge.JavaScriptExecutor
+import com.facebook.react.common.build.ReactBuildConfig
+import com.facebook.soloader.SoLoader
 
-import com.facebook.jni.HybridData;
-import com.facebook.react.bridge.JavaScriptExecutor;
-import com.facebook.react.common.build.ReactBuildConfig;
-import com.facebook.soloader.SoLoader;
-import javax.annotation.Nullable;
+public class HermesExecutor internal constructor(
+    config: RuntimeConfig?,
+    enableDebugger: Boolean,
+    debuggerName: String
+) :
+    JavaScriptExecutor(
+      config?.let {
+        initHybrid(enableDebugger, debuggerName, it.heapSizeMB)
+      } ?: initHybridDefaultConfig(enableDebugger, debuggerName)
+    ) {
 
-public class HermesExecutor extends JavaScriptExecutor {
-  private static String mode_;
-
-  static {
-    loadLibrary();
-  }
-
-  public static void loadLibrary() throws UnsatisfiedLinkError {
-    if (mode_ == null) {
-      // libhermes must be loaded explicitly to invoke its JNI_OnLoad.
-      SoLoader.loadLibrary("hermes");
-      SoLoader.loadLibrary("hermes_executor");
-      // libhermes_executor is built differently for Debug & Release so we load the proper mode.
-      mode_ = ReactBuildConfig.DEBUG ? "Debug" : "Release";
+    override fun getName(): String {
+        return "HermesExecutor$mode"
     }
-  }
 
-  HermesExecutor(@Nullable RuntimeConfig config, boolean enableDebugger, String debuggerName) {
-    super(
-        config == null
-            ? initHybridDefaultConfig(enableDebugger, debuggerName)
-            : initHybrid(enableDebugger, debuggerName, config.getHeapSizeMB()));
-  }
+    public companion object {
+        private var mode: String? = null
 
-  @Override
-  public String getName() {
-    return "HermesExecutor" + mode_;
-  }
+        init {
+            loadLibrary()
+        }
 
-  private static native HybridData initHybridDefaultConfig(
-      boolean enableDebugger, String debuggerName);
+        @JvmStatic
+        @Throws(UnsatisfiedLinkError::class)
+        public fun loadLibrary() {
+            if (mode == null) {
+                // libhermes must be loaded explicitly to invoke its JNI_OnLoad.
+                SoLoader.loadLibrary("hermes")
+                SoLoader.loadLibrary("hermes_executor")
+                // libhermes_executor is built differently for Debug & Release so we load the proper mode.
+                mode = if (ReactBuildConfig.DEBUG) "Debug" else "Release"
+            }
+        }
 
-  private static native HybridData initHybrid(
-      boolean enableDebugger, String debuggerName, long heapSizeMB);
+        private external fun initHybridDefaultConfig(
+            enableDebugger: Boolean, debuggerName: String
+        ): HybridData?
+
+        private external fun initHybrid(
+            enableDebugger: Boolean, debuggerName: String, heapSizeMB: Long
+        ): HybridData?
+    }
 }

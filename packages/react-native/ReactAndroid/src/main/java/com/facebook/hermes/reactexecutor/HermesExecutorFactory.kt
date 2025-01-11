@@ -4,54 +4,45 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+package com.facebook.hermes.reactexecutor
 
-package com.facebook.hermes.reactexecutor;
+import com.facebook.hermes.instrumentation.HermesSamplingProfiler.disable
+import com.facebook.hermes.instrumentation.HermesSamplingProfiler.dumpSampledTraceToFile
+import com.facebook.hermes.instrumentation.HermesSamplingProfiler.enable
+import com.facebook.react.bridge.JavaScriptExecutor
+import com.facebook.react.bridge.JavaScriptExecutorFactory
 
-import com.facebook.hermes.instrumentation.HermesSamplingProfiler;
-import com.facebook.react.bridge.JavaScriptExecutor;
-import com.facebook.react.bridge.JavaScriptExecutorFactory;
+public class HermesExecutorFactory @JvmOverloads public constructor(private val config: RuntimeConfig? = null) :
+    JavaScriptExecutorFactory {
+    private var enableDebugger = true
+    private var debuggerName = ""
 
-public class HermesExecutorFactory implements JavaScriptExecutorFactory {
-  private static final String TAG = "Hermes";
+    public fun setEnableDebugger(enableDebugger: Boolean) {
+        this.enableDebugger = enableDebugger
+    }
 
-  private final RuntimeConfig mConfig;
-  private boolean mEnableDebugger = true;
-  private String mDebuggerName = "";
+    public fun setDebuggerName(debuggerName: String) {
+        this.debuggerName = debuggerName
+    }
 
-  public HermesExecutorFactory() {
-    this(null);
-  }
+    override fun create(): JavaScriptExecutor {
+        return HermesExecutor(config, enableDebugger, debuggerName)
+    }
 
-  public HermesExecutorFactory(RuntimeConfig config) {
-    mConfig = config;
-  }
+    override fun startSamplingProfiler() {
+        enable()
+    }
 
-  public void setEnableDebugger(boolean enableDebugger) {
-    mEnableDebugger = enableDebugger;
-  }
+    override fun stopSamplingProfiler(filename: String) {
+        dumpSampledTraceToFile(filename)
+        disable()
+    }
 
-  public void setDebuggerName(String debuggerName) {
-    mDebuggerName = debuggerName;
-  }
+    override fun toString(): String {
+        return "JSIExecutor+HermesRuntime"
+    }
 
-  @Override
-  public JavaScriptExecutor create() {
-    return new HermesExecutor(mConfig, mEnableDebugger, mDebuggerName);
-  }
-
-  @Override
-  public void startSamplingProfiler() {
-    HermesSamplingProfiler.enable();
-  }
-
-  @Override
-  public void stopSamplingProfiler(String filename) {
-    HermesSamplingProfiler.dumpSampledTraceToFile(filename);
-    HermesSamplingProfiler.disable();
-  }
-
-  @Override
-  public String toString() {
-    return "JSIExecutor+HermesRuntime";
-  }
+    public companion object {
+        private const val TAG = "Hermes"
+    }
 }
