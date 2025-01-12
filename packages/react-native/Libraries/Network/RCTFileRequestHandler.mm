@@ -7,7 +7,7 @@
 
 #import <React/RCTFileRequestHandler.h>
 
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import <React/RCTUtils.h>
 #import <ReactCommon/RCTTurboModule.h>
@@ -55,10 +55,7 @@ RCT_EXPORT_MODULE()
 
     // Get mime type
     NSString *fileExtension = [request.URL pathExtension];
-    NSString *UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(
-        kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
-    NSString *contentType =
-        (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)UTI, kUTTagClassMIMEType);
+    NSString *contentType = [UTType typeWithFilenameExtension:fileExtension].preferredMIMEType;
 
     // Send response
     NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL

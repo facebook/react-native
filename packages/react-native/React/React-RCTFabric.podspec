@@ -59,7 +59,7 @@ Pod::Spec.new do |s|
   s.header_dir             = header_dir
   s.module_name            = module_name
   s.weak_framework         = "JavaScriptCore"
-  s.framework              = "MobileCoreServices"
+  s.framework              = "UniformTypeIdentifiers"
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
     "OTHER_CFLAGS" => "$(inherited) " + folly_compiler_flags + new_arch_flags,
