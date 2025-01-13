@@ -35,37 +35,28 @@ type ImageSource = $ReadOnly<{|
   uri: string,
 |}>;
 
-type BlobImageState = {|
-  objectURL: ?string,
-|};
-
 type BlobImageProps = $ReadOnly<{|
   url: string,
 |}>;
 
-class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
-  state: BlobImageState = {
-    objectURL: null,
-  };
+const BlobImage = ({url}: BlobImageProps): React.Node => {
+  const [objectURL, setObjectURL] = React.useState<?string>(null);
 
-  UNSAFE_componentWillMount() {
+  React.useEffect(() => {
     // $FlowFixMe[unused-promise]
     (async () => {
-      const result = await fetch(this.props.url);
+      const result = await fetch(url);
       const blob = await result.blob();
-      const objectURL = URL.createObjectURL(blob);
-      this.setState({objectURL});
+      setObjectURL(URL.createObjectURL(blob));
     })();
-  }
+  }, [url]);
 
-  render(): React.Node {
-    return this.state.objectURL !== null ? (
-      <Image source={{uri: this.state.objectURL}} style={styles.base} />
-    ) : (
-      <Text>Object URL not created yet</Text>
-    );
-  }
-}
+  return objectURL !== null ? (
+    <Image source={{uri: objectURL}} style={styles.base} />
+  ) : (
+    <Text>Object URL not created yet</Text>
+  );
+};
 
 type BlobImageExampleState = {||};
 
@@ -88,146 +79,121 @@ class BlobImageExample extends React.Component<
   }
 }
 
-type NetworkImageCallbackExampleState = {|
-  events: Array<string>,
-  startLoadPrefetched: boolean,
-  mountTime: number,
-  imageHash: number,
-|};
-
 type NetworkImageCallbackExampleProps = $ReadOnly<{|
   source: ImageSource,
   prefetchedSource: ImageSource,
 |}>;
 
-class NetworkImageCallbackExample extends React.Component<
-  NetworkImageCallbackExampleProps,
-  NetworkImageCallbackExampleState,
-> {
-  state: NetworkImageCallbackExampleState = {
-    events: [],
-    startLoadPrefetched: false,
-    mountTime: Date.now(),
-    imageHash: Date.now(),
+const NetworkImageCallbackExample = ({
+  source,
+  prefetchedSource,
+}: NetworkImageCallbackExampleProps): React.Node => {
+  const [events, setEvents] = React.useState<$ReadOnlyArray<string>>([]);
+  const [startLoadPrefetched, setStartLoadPrefetched] = React.useState(false);
+  const [mountTime, setMountTime] = React.useState(Date.now());
+
+  React.useEffect(() => {
+    setMountTime(Date.now());
+  }, []);
+
+  const _loadEventFired = (event: string) => {
+    setEvents(state => [...state, event]);
   };
 
-  UNSAFE_componentWillMount() {
-    this.setState({mountTime: Date.now()});
-  }
-
-  _loadEventFired = (event: string) => {
-    this.setState(state => ({
-      events: [...state.events, event],
-    }));
-  };
-
-  updateLoadingImageHash = () => {
-    this.setState({imageHash: Date.now()});
-  };
-
-  render(): React.Node {
-    const {mountTime} = this.state;
-    return (
-      <View>
-        <Image
-          source={this.props.source}
-          style={[styles.base, styles.visibleOverflow]}
-          onError={event => {
-            this._loadEventFired(
-              `✘ onError "${event.nativeEvent.error}" (+${Date.now() - mountTime}ms)`,
+  return (
+    <View>
+      <Image
+        source={source}
+        style={[styles.base, styles.visibleOverflow]}
+        onError={event => {
+          _loadEventFired(
+            `✘ onError "${event.nativeEvent.error}" (+${Date.now() - mountTime}ms)`,
+          );
+        }}
+        onLoadStart={() =>
+          _loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
+        }
+        onProgress={event => {
+          const {loaded, total} = event.nativeEvent;
+          const percent = Math.round((loaded / total) * 100);
+          _loadEventFired(
+            `✔ onProgress ${percent}% (+${Date.now() - mountTime}ms)`,
+          );
+        }}
+        onLoad={event => {
+          if (event.nativeEvent.source) {
+            const url = event.nativeEvent.source.uri;
+            _loadEventFired(
+              `✔ onLoad (+${Date.now() - mountTime}ms) for URL ${url}`,
             );
-          }}
-          onLoadStart={() =>
-            this._loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
+          } else {
+            _loadEventFired(`✔ onLoad (+${Date.now() - mountTime}ms)`);
           }
-          onProgress={event => {
-            const {loaded, total} = event.nativeEvent;
-            const percent = Math.round((loaded / total) * 100);
-            this._loadEventFired(
-              `✔ onProgress ${percent}% (+${Date.now() - mountTime}ms)`,
-            );
-          }}
+        }}
+        onLoadEnd={() => {
+          _loadEventFired(`✔ onLoadEnd (+${Date.now() - mountTime}ms)`);
+          setStartLoadPrefetched(true);
+          prefetchTask.then(
+            () => {
+              _loadEventFired(`✔ prefetch OK (+${Date.now() - mountTime}ms)`);
+              // $FlowFixMe[unused-promise]
+              Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
+                const result = map[IMAGE_PREFETCH_URL];
+                if (result) {
+                  _loadEventFired(
+                    `✔ queryCache "${result}" (+${Date.now() - mountTime}ms)`,
+                  );
+                } else {
+                  _loadEventFired(
+                    `✘ queryCache (+${Date.now() - mountTime}ms)`,
+                  );
+                }
+              });
+            },
+            error => {
+              _loadEventFired(
+                `✘ prefetch failed (+${Date.now() - mountTime}ms)`,
+              );
+            },
+          );
+        }}
+      />
+      {startLoadPrefetched && (
+        <Image
+          source={prefetchedSource}
+          style={[styles.base, styles.visibleOverflow]}
+          onLoadStart={() =>
+            _loadEventFired(
+              `✔ (prefetched) onLoadStart (+${Date.now() - mountTime}ms)`,
+            )
+          }
           onLoad={event => {
             if (event.nativeEvent.source) {
               const url = event.nativeEvent.source.uri;
-              this._loadEventFired(
-                `✔ onLoad (+${Date.now() - mountTime}ms) for URL ${url}`,
+              _loadEventFired(
+                `✔ (prefetched) onLoad (+${
+                  Date.now() - mountTime
+                }ms) for URL ${url}`,
               );
             } else {
-              this._loadEventFired(`✔ onLoad (+${Date.now() - mountTime}ms)`);
-            }
-          }}
-          onLoadEnd={() => {
-            this._loadEventFired(`✔ onLoadEnd (+${Date.now() - mountTime}ms)`);
-            this.setState({startLoadPrefetched: true}, () => {
-              prefetchTask.then(
-                () => {
-                  this._loadEventFired(
-                    `✔ prefetch OK (+${Date.now() - mountTime}ms)`,
-                  );
-                  // $FlowFixMe[unused-promise]
-                  Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
-                    const result = map[IMAGE_PREFETCH_URL];
-                    if (result) {
-                      this._loadEventFired(
-                        `✔ queryCache "${result}" (+${
-                          Date.now() - mountTime
-                        }ms)`,
-                      );
-                    } else {
-                      this._loadEventFired(
-                        `✘ queryCache (+${Date.now() - mountTime}ms)`,
-                      );
-                    }
-                  });
-                },
-                error => {
-                  this._loadEventFired(
-                    `✘ prefetch failed (+${Date.now() - mountTime}ms)`,
-                  );
-                },
+              _loadEventFired(
+                `✔ (prefetched) onLoad (+${Date.now() - mountTime}ms)`,
               );
-            });
+            }
           }}
+          onLoadEnd={() =>
+            _loadEventFired(
+              `✔ (prefetched) onLoadEnd (+${Date.now() - mountTime}ms)`,
+            )
+          }
         />
-        {this.state.startLoadPrefetched ? (
-          <Image
-            source={this.props.prefetchedSource}
-            style={[styles.base, styles.visibleOverflow]}
-            onLoadStart={() =>
-              this._loadEventFired(
-                `✔ (prefetched) onLoadStart (+${Date.now() - mountTime}ms)`,
-              )
-            }
-            onLoad={event => {
-              // Currently this image source feature is only available on iOS.
-              if (event.nativeEvent.source) {
-                const url = event.nativeEvent.source.uri;
-                this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${
-                    Date.now() - mountTime
-                  }ms) for URL ${url}`,
-                );
-              } else {
-                this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${Date.now() - mountTime}ms)`,
-                );
-              }
-            }}
-            onLoadEnd={() =>
-              this._loadEventFired(
-                `✔ (prefetched) onLoadEnd (+${Date.now() - mountTime}ms)`,
-              )
-            }
-          />
-        ) : null}
-        <RNTesterText style={styles.networkImageText} variant="label">
-          {this.state.events.join('\n')}
-        </RNTesterText>
-      </View>
-    );
-  }
-}
+      )}
+      <RNTesterText style={styles.networkImageText}>
+        {events.join('\n')}
+      </RNTesterText>
+    </View>
+  );
+};
 
 type NetworkImageExampleState = {|
   error: ?string,

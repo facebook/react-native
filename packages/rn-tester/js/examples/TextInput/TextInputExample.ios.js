@@ -18,10 +18,9 @@ import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/Tex
 
 import RNTesterText from '../../components/RNTesterText';
 import ExampleTextInput from './ExampleTextInput';
-
-const TextInputSharedExamples = require('./TextInputSharedExamples.js');
-const React = require('react');
-const {
+import TextInputSharedExamples from './TextInputSharedExamples';
+import React from 'react';
+import {
   Alert,
   Button,
   InputAccessoryView,
@@ -30,7 +29,7 @@ const {
   Text,
   TextInput,
   View,
-} = require('react-native');
+} from 'react-native';
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
@@ -205,67 +204,6 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
             value={this.state.isSecureTextEntry}
           />
         </View>
-      </View>
-    );
-  }
-}
-
-class AutogrowingTextInputExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
-  constructor(props: any | void) {
-    super(props);
-
-    this.state = {
-      multiline: true,
-      fullWidth: true,
-      text: '',
-      contentSize: {
-        width: 0,
-        height: 0,
-      },
-    };
-  }
-
-  UNSAFE_componentWillReceiveProps(props: any) {
-    this.setState({
-      multiline: props.multiline,
-    });
-  }
-
-  render(): React.Node {
-    const {style, multiline, ...props} = this.props;
-    return (
-      <View>
-        <RNTesterText>Full width:</RNTesterText>
-        <Switch
-          value={this.state.fullWidth}
-          onValueChange={value => this.setState({fullWidth: value})}
-        />
-
-        <RNTesterText>Multiline:</RNTesterText>
-        <Switch
-          value={this.state.multiline}
-          onValueChange={value => this.setState({multiline: value})}
-        />
-
-        <RNTesterText>TextInput:</RNTesterText>
-        <ExampleTextInput
-          value="prop"
-          multiline={this.state.multiline}
-          style={[style, {width: this.state.fullWidth ? '100%' : '50%'}]}
-          onChangeText={value => this.setState({text: value})}
-          onContentSizeChange={event =>
-            this.setState({contentSize: event.nativeEvent.contentSize})
-          }
-          {...props}
-        />
-        <RNTesterText>Plain text value representation:</RNTesterText>
-        <RNTesterText>{this.state.text}</RNTesterText>
-        <RNTesterText>
-          Content Size: {JSON.stringify(this.state.contentSize)}
-        </RNTesterText>
       </View>
     );
   }
@@ -805,37 +743,6 @@ const textInputExamples: Array<RNTesterModuleExample> = [
             returnKeyType="go"
             style={[styles.multiline, styles.multilineExpandable]}
           />
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Auto-expanding',
-    render: function (): React.Node {
-      return (
-        <View>
-          <AutogrowingTextInputExample
-            enablesReturnKeyAutomatically={true}
-            returnKeyType="done"
-            multiline={true}
-            style={{
-              maxHeight: 400,
-              minHeight: 20,
-              paddingTop: 0,
-              backgroundColor: '#eeeeee',
-              color: 'blue',
-            }}>
-            <Text style={{fontSize: 30, color: 'green'}}>huge</Text>
-            generic generic generic
-            <Text style={{fontSize: 6, color: 'red'}}>
-              small small small small small small
-            </Text>
-            <Text>regular regular</Text>
-            <Text style={{fontSize: 30, color: 'green'}}>
-              huge huge huge huge huge
-            </Text>
-            generic generic generic
-          </AutogrowingTextInputExample>
         </View>
       );
     },
