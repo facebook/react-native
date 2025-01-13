@@ -35,15 +35,16 @@ const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 const config = {
   allowPositionals: true,
   options: {
-    help: {type: 'boolean'},
     check: {type: 'boolean'},
+    experimentalBuildRNTypes: {type: 'boolean'},
+    help: {type: 'boolean'},
   },
 };
 
 async function build() {
   const {
     positionals: packageNames,
-    values: {help, check},
+    values: {check, experimentalBuildRNTypes, help},
   } = parseArgs(config);
 
   if (help) {
@@ -54,6 +55,13 @@ async function build() {
 
   By default, builds all packages defined in ./scripts/build/config.js. If a
   a package list is provided, builds only those specified.
+
+  Options:
+    --check           Validate that no build artifacts have been accidentally
+                      committed.
+    --experimentalBuildRNTypes
+                      [Experimental] Enable source code -> type translation
+                      output for the react-native package.
     `);
     process.exitCode = 0;
     return;
@@ -69,6 +77,16 @@ async function build() {
 
   let ok = true;
   for (const packageName of packagesToBuild) {
+    if (packageName === 'react-native' && !experimentalBuildRNTypes) {
+      if (packagesToBuild.length === 1) {
+        console.warn(
+          'Building the react-native package must be enabled using ' +
+            '--experimentalBuildRNTypes.',
+        );
+      }
+      continue;
+    }
+
     if (check) {
       ok &&= await checkPackage(packageName);
     } else {
@@ -83,7 +101,7 @@ async function checkPackage(packageName /*: string */) /*: Promise<boolean> */ {
   const artifacts = await exportedBuildArtifacts(packageName);
   if (artifacts.length > 0) {
     console.log(
-      `${chalk.bgRed(packageName)}: has been build and the ${chalk.bold('build artifacts')} committed to the repository. This will break Flow checks.`,
+      `${chalk.bgRed(packageName)}: has been built and the ${chalk.bold('build artifacts')} committed to the repository. This will break Flow checks.`,
     );
     return false;
   }
@@ -91,7 +109,13 @@ async function checkPackage(packageName /*: string */) /*: Promise<boolean> */ {
 }
 
 async function buildPackage(packageName /*: string */) {
-  const {emitTypeScriptDefs} = getBuildOptions(packageName);
+  const {target, emitTypeScriptDefs} = getBuildOptions(packageName);
+
+  if (target === 'react-native-emit-types') {
+    // TODO(T210512000): Implement
+    throw new Error('Building react-native is not yet implemented.');
+  }
+
   const entryPoints = await getEntryPoints(packageName);
 
   const files = glob
