@@ -41,9 +41,9 @@ end
 # This function prepares the project for React Native, before processing
 # all the target exposed by the framework.
 def prepare_react_native_project!
-  # Temporary solution to suppress duplicated GUID error.
+  # Temporary solution to suppress duplicated GUID error & master specs repo warning.
   # Can be removed once we move to generate files outside pod install.
-  install! 'cocoapods', :deterministic_uuids => false
+  install! 'cocoapods', :deterministic_uuids => false, :warn_for_unused_master_specs_repo => false
 
   ReactNativePodsUtils.create_xcode_env_if_missing
 end
