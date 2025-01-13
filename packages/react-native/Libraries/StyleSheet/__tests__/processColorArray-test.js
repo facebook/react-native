@@ -17,7 +17,7 @@ const PlatformColorIOS =
   require('../PlatformColorValueTypes.ios').PlatformColor;
 const DynamicColorIOS =
   require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
-const processColorArray = require('../processColorArray');
+const processColorArray = require('../processColorArray').default;
 
 const platformSpecific =
   OS === 'android'

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const processFontVariant = require('../processFontVariant');
+const processFontVariant = require('../processFontVariant').default;
 
 describe('processFontVariant', () => {
   it('should accept arrays', () => {
