@@ -5150,10 +5150,18 @@ declare module.exports: resolveAssetSource;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/BorderBox.js 1`] = `
-"declare const React: $FlowFixMe;
-declare class BorderBox extends React.Component<$FlowFixMeProps> {
-  render(): $FlowFixMe | React.Node;
-}
+"type Props = $ReadOnly<{
+  children: React.Node,
+  box?: ?$ReadOnly<{
+    top: number,
+    right: number,
+    bottom: number,
+    left: number,
+    ...
+  }>,
+  style?: ViewStyleProp,
+}>;
+declare function BorderBox(Props): React.Node;
 declare module.exports: BorderBox;
 "
 `;
