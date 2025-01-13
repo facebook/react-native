@@ -27,11 +27,10 @@ public class MessageQueueThreadImpl private constructor(
     public val name: String,
     public val looper: Looper,
     exceptionHandler: QueueThreadExceptionHandler,
-    stats: MessageQueueThreadPerfStats? = null
+    private val stats: MessageQueueThreadPerfStats? = null
 ) : MessageQueueThread {
     private val handler = MessageQueueThreadHandler(looper, exceptionHandler)
     private val assertionErrorMessage = "Expected to be called from the '$name' thread!"
-    private val perfStats = stats
 
     @Volatile
     private var isFinished = false
@@ -115,16 +114,16 @@ public class MessageQueueThreadImpl private constructor(
 
     @DoNotStrip
     override fun getPerfStats(): MessageQueueThreadPerfStats? {
-        return perfStats
+        return stats
     }
 
     @DoNotStrip
     override fun resetPerfStats() {
-        assignToPerfStats(perfStats, -1, -1)
+        assignToPerfStats(stats, -1, -1)
         runOnQueue {
             val wallTime = SystemClock.uptimeMillis()
             val cpuTime = SystemClock.currentThreadTimeMillis()
-            assignToPerfStats(perfStats, wallTime, cpuTime)
+            assignToPerfStats(stats, wallTime, cpuTime)
         }
     }
 
