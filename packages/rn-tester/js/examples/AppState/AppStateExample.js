@@ -11,109 +11,90 @@
 'use strict';
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {AppStateValues} from 'react-native/Libraries/AppState/AppState';
-import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
+import {useEffect, useState} from 'react';
 import {AppState, Platform, View} from 'react-native';
 
-class AppStateSubscription extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
-  state: {
-    appState: ?string,
-    eventsDetected: Array<string>,
-    memoryWarnings: number,
-    previousAppStates: Array<?(any | string)>,
-  } = {
-    appState: AppState.currentState,
-    previousAppStates: [],
-    memoryWarnings: 0,
-    eventsDetected: [],
-  };
+type Props = {
+  detectEvents?: boolean,
+  showCurrentOnly?: boolean,
+  showMemoryWarnings?: boolean,
+};
 
-  _subscriptions: ?Array<EventSubscription>;
+function AppStateSubscription(props: Props) {
+  const [currentAppState, setCurrentAppState] = useState<?string>(
+    AppState.currentState,
+  );
+  const [previousAppStates, setPreviousAppStates] = useState<string[]>([]);
+  const [memoryWarnings, setMemoryWarnings] = useState<number>(0);
+  const [eventsDetected, setEventsDetected] = useState<string[]>([]);
 
-  componentDidMount() {
-    this._subscriptions = [
-      AppState.addEventListener('change', this._handleAppStateChange),
-      AppState.addEventListener('memoryWarning', this._handleMemoryWarning),
+  useEffect(() => {
+    const subscriptions = [
+      AppState.addEventListener('change', handleAppStateChange),
+      AppState.addEventListener('memoryWarning', handleMemoryWarning),
     ];
+
     if (Platform.OS === 'android') {
-      this._subscriptions.push(
-        AppState.addEventListener('focus', this._handleFocus),
-        AppState.addEventListener('blur', this._handleBlur),
+      subscriptions.push(
+        AppState.addEventListener('focus', handleFocus),
+        AppState.addEventListener('blur', handleBlur),
       );
     }
-  }
 
-  componentWillUnmount() {
-    if (this._subscriptions != null) {
-      for (const subscription of this._subscriptions) {
-        subscription.remove();
-      }
-    }
-  }
+    return () => {
+      subscriptions.forEach(subscription => subscription.remove());
+    };
+  }, []);
 
-  _handleMemoryWarning = () => {
-    this.setState({memoryWarnings: this.state.memoryWarnings + 1});
+  const handleMemoryWarning = () => {
+    setMemoryWarnings(prev => prev + 1);
   };
 
-  _handleBlur = () => {
-    const eventsDetected = this.state.eventsDetected.slice();
-    eventsDetected.push('blur');
-    this.setState({eventsDetected});
+  const handleBlur = () => {
+    setEventsDetected(prev => [...prev, 'blur']);
   };
 
-  _handleFocus = () => {
-    const eventsDetected = this.state.eventsDetected.slice();
-    eventsDetected.push('focus');
-    this.setState({eventsDetected});
+  const handleFocus = () => {
+    setEventsDetected(prev => [...prev, 'focus']);
   };
 
-  _handleAppStateChange = (appState: AppStateValues) => {
-    const previousAppStates = this.state.previousAppStates.slice();
-    previousAppStates.push(this.state.appState);
-    this.setState({
-      appState,
-      previousAppStates,
-    });
+  const handleAppStateChange = (appState: string) => {
+    setPreviousAppStates(prev => [...prev, appState]);
+    setCurrentAppState(appState);
   };
 
-  render(): React.Node {
-    if (this.props.showMemoryWarnings) {
-      return (
-        <View>
-          <RNTesterText>{this.state.memoryWarnings}</RNTesterText>
-        </View>
-      );
-    }
-    if (this.props.showCurrentOnly) {
-      return (
-        <View>
-          <RNTesterText>{this.state.appState}</RNTesterText>
-        </View>
-      );
-    }
-    if (this.props.detectEvents) {
-      return (
-        <View>
-          <RNTesterText>
-            {JSON.stringify(this.state.eventsDetected)}
-          </RNTesterText>
-        </View>
-      );
-    }
+  if (props.showMemoryWarnings) {
     return (
       <View>
-        <RNTesterText>
-          {JSON.stringify(this.state.previousAppStates)}
-        </RNTesterText>
+        <RNTesterText>{memoryWarnings}</RNTesterText>
       </View>
     );
   }
+
+  if (props.showCurrentOnly) {
+    return (
+      <View>
+        <RNTesterText>{currentAppState}</RNTesterText>
+      </View>
+    );
+  }
+
+  if (props.detectEvents) {
+    return (
+      <View>
+        <RNTesterText>{JSON.stringify(eventsDetected)}</RNTesterText>
+      </View>
+    );
+  }
+
+  return (
+    <View>
+      <RNTesterText>{JSON.stringify(previousAppStates)}</RNTesterText>
+    </View>
+  );
 }
 
 exports.title = 'AppState';
