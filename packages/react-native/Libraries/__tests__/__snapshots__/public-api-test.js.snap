@@ -1476,8 +1476,7 @@ export type BlobOptions = {
 `;
 
 exports[`public API should not change unintentionally Libraries/Blob/File.js 1`] = `
-"declare const Blob: $FlowFixMe;
-declare class File extends Blob {
+"declare class File extends Blob {
   constructor(
     parts: Array<Blob | string>,
     name: string,
@@ -5187,8 +5186,7 @@ declare module.exports: ElementBox;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/ElementProperties.js 1`] = `
-"declare const React: $FlowFixMe;
-type Props = $ReadOnly<{|
+"type Props = $ReadOnly<{|
   hierarchy: ?InspectorData[\\"hierarchy\\"],
   style?: ?ViewStyleProp,
   frame?: ?Object,
@@ -5203,8 +5201,7 @@ declare module.exports: ElementProperties;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/Inspector.js 1`] = `
-"declare const React: $FlowFixMe;
-export type InspectedElementFrame = TouchedViewDataAtPoint[\\"frame\\"];
+"export type InspectedElementFrame = TouchedViewDataAtPoint[\\"frame\\"];
 export type InspectedElement = $ReadOnly<{
   frame: InspectedElementFrame,
   style?: ViewStyleProp,
@@ -5221,8 +5218,7 @@ declare module.exports: Inspector;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/InspectorOverlay.js 1`] = `
-"declare const React: $FlowFixMe;
-type Props = $ReadOnly<{|
+"type Props = $ReadOnly<{|
   inspected?: ?InspectedElement,
   onTouchPoint: (locationX: number, locationY: number) => void,
 |}>;
@@ -5232,8 +5228,7 @@ declare module.exports: InspectorOverlay;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/InspectorPanel.js 1`] = `
-"declare const React: $FlowFixMe;
-type Props = $ReadOnly<{|
+"type Props = $ReadOnly<{|
   devtoolsIsOpen: boolean,
   inspecting: boolean,
   setInspecting: (val: boolean) => void,
@@ -5316,8 +5311,7 @@ declare module.exports: NetworkOverlay;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/PerformanceOverlay.js 1`] = `
-"declare const React: $FlowFixMe;
-declare class PerformanceOverlay extends React.Component<{ ... }> {
+"declare class PerformanceOverlay extends React.Component<{ ... }> {
   render(): React.Node;
 }
 declare module.exports: PerformanceOverlay;
@@ -6492,8 +6486,7 @@ declare export function getTextColor(opacity?: number): string;
 `;
 
 exports[`public API should not change unintentionally Libraries/Modal/Modal.js 1`] = `
-"declare const React: $FlowFixMe;
-type OrientationChangeEvent = $ReadOnly<{|
+"type OrientationChangeEvent = $ReadOnly<{|
   orientation: \\"portrait\\" | \\"landscape\\",
 |}>;
 export type Props = $ReadOnly<{|
@@ -9566,8 +9559,7 @@ declare module.exports: WebSocketInterceptor;
 `;
 
 exports[`public API should not change unintentionally Libraries/YellowBox/YellowBoxDeprecated.js 1`] = `
-"declare const React: $FlowFixMe;
-type Props = $ReadOnly<{||}>;
+"type Props = $ReadOnly<{||}>;
 declare module.exports: Class<React.Component<Props>> & {
   ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
   install(): void,
