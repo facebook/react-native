@@ -9,7 +9,6 @@
  */
 
 import type Blob from './Blob';
-
 import NativeBlobModule from './NativeBlobModule';
 
 let BLOB_URL_PREFIX = null;
@@ -18,9 +17,9 @@ if (
   NativeBlobModule &&
   typeof NativeBlobModule.getConstants().BLOB_URI_SCHEME === 'string'
 ) {
-  const constants = NativeBlobModule.getConstants();
   // $FlowFixMe[incompatible-type] asserted above
   // $FlowFixMe[unsafe-addition]
+  const constants = NativeBlobModule.getConstants();
   BLOB_URL_PREFIX = constants.BLOB_URI_SCHEME + ':';
   if (typeof constants.BLOB_URI_HOST === 'string') {
     BLOB_URL_PREFIX += `//${constants.BLOB_URI_HOST}/`;
@@ -51,19 +50,17 @@ if (
  * </resources>
  * ```
  */
-
-export {URLSearchParams} from './URLSearchParams';
+export { URLSearchParams } from './URLSearchParams';
 
 function validateBaseUrl(url: string) {
   // from this MIT-licensed gist: https://gist.github.com/dperini/729294
-  return /^(?:(?:(?:https?|ftp):)?\/\/)(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)*(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/.test(
-    url,
-  );
+  return /^(?:(?:(?:https?|ftp):)?\/\/)(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)*(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/.test(url);
 }
 
 export class URL {
   _url: string;
   _searchParamsInstance: ?URLSearchParams = null;
+  _parsedUrl: URL;
 
   static createObjectURL(blob: Blob): string {
     if (BLOB_URL_PREFIX === null) {
@@ -76,7 +73,6 @@ export class URL {
     // Do nothing.
   }
 
-  // $FlowFixMe[missing-local-annot]
   constructor(url: string, base: string | URL) {
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {
@@ -104,18 +100,21 @@ export class URL {
       }
       this._url = `${baseUrl}${url}`;
     }
+
+    // Parsing the URL to use for accessors
+    this._parsedUrl = new globalThis.URL(this._url);
   }
 
   get hash(): string {
-    throw new Error('URL.hash is not implemented');
+    return this._parsedUrl.hash;
   }
 
   get host(): string {
-    throw new Error('URL.host is not implemented');
+    return this._parsedUrl.host;
   }
 
   get hostname(): string {
-    throw new Error('URL.hostname is not implemented');
+    return this._parsedUrl.hostname;
   }
 
   get href(): string {
@@ -123,32 +122,32 @@ export class URL {
   }
 
   get origin(): string {
-    throw new Error('URL.origin is not implemented');
+    return this._parsedUrl.origin;
   }
 
   get password(): string {
-    throw new Error('URL.password is not implemented');
+    return this._parsedUrl.password;
   }
 
   get pathname(): string {
-    throw new Error('URL.pathname not implemented');
+    return this._parsedUrl.pathname;
   }
 
   get port(): string {
-    throw new Error('URL.port is not implemented');
+    return this._parsedUrl.port;
   }
 
   get protocol(): string {
-    throw new Error('URL.protocol is not implemented');
+    return this._parsedUrl.protocol;
   }
 
   get search(): string {
-    throw new Error('URL.search is not implemented');
+    return this._parsedUrl.search;
   }
 
   get searchParams(): URLSearchParams {
     if (this._searchParamsInstance == null) {
-      this._searchParamsInstance = new URLSearchParams();
+      this._searchParamsInstance = new URLSearchParams(this._parsedUrl.search);
     }
     return this._searchParamsInstance;
   }
@@ -158,16 +157,12 @@ export class URL {
   }
 
   toString(): string {
-    if (this._searchParamsInstance === null) {
-      return this._url;
-    }
-    // $FlowFixMe[incompatible-use]
-    const instanceString = this._searchParamsInstance.toString();
+    const instanceString = this._searchParamsInstance ? this._searchParamsInstance.toString() : '';
     const separator = this._url.indexOf('?') > -1 ? '&' : '?';
-    return this._url + separator + instanceString;
+    return this._url + (instanceString ? separator + instanceString : '');
   }
 
   get username(): string {
-    throw new Error('URL.username is not implemented');
+    return this._parsedUrl.username;
   }
 }

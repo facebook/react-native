@@ -41,4 +41,20 @@ describe('URL', function () {
     const k = new URL('en-US/docs', 'https://developer.mozilla.org');
     expect(k.href).toBe('https://developer.mozilla.org/en-US/docs');
   });
+
+  it('should implement host, hostname, username, and password accessors correctly', () => {
+    const url = new URL('https://username:password@developer.mozilla.org:8080/en-US/docs?query=test#fragment');
+
+    // Test host
+    expect(url.host).toBe('developer.mozilla.org:8080');
+
+    // Test hostname
+    expect(url.hostname).toBe('developer.mozilla.org');
+
+    // Test username
+    expect(url.username).toBe('username');
+
+    // Test password
+    expect(url.password).toBe('password');
+  });
 });
