@@ -5167,10 +5167,11 @@ declare module.exports: BorderBox;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/BoxInspector.js 1`] = `
-"declare const React: $FlowFixMe;
-declare class BoxInspector extends React.Component<$FlowFixMeProps> {
-  render(): React.Node;
-}
+"type BoxInspectorProps = $ReadOnly<{
+  style: ViewStyleProp,
+  frame: ?InspectedElementFrame,
+}>;
+declare function BoxInspector(BoxInspectorProps): React.Node;
 declare module.exports: BoxInspector;
 "
 `;
