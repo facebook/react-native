@@ -157,7 +157,7 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
 
   test_ios_rntester:
-    runs-on: macos-13
+    runs-on: macos-13-large
     needs:
       [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
     env:
