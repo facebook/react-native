@@ -9,6 +9,8 @@ package com.facebook.react.bridge.queue;
 
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.AssertionException;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 

@@ -4,223 +4,213 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+package com.facebook.react.bridge.queue
 
-package com.facebook.react.bridge.queue;
+import android.os.Looper
+import android.os.Process
+import android.os.SystemClock
+import android.util.Pair
+import com.facebook.common.logging.FLog
+import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.react.bridge.AssertionException
+import com.facebook.react.bridge.SoftAssertions.assertCondition
+import com.facebook.react.bridge.queue.MessageQueueThreadSpec.ThreadType
+import com.facebook.react.common.ReactConstants
+import com.facebook.react.common.futures.SimpleSettableFuture
+import java.util.concurrent.Callable
+import java.util.concurrent.Future
+import kotlin.concurrent.Volatile
 
-import android.os.Looper;
-import android.os.Process;
-import android.os.SystemClock;
-import android.util.Pair;
-import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
-import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.AssertionException;
-import com.facebook.react.bridge.SoftAssertions;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.futures.SimpleSettableFuture;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
-/** Encapsulates a Thread that has a {@link Looper} running on it that can accept Runnables. */
+/** Encapsulates a Thread that has a [Looper] running on it that can accept Runnables.  */
 @DoNotStrip
-public class MessageQueueThreadImpl implements MessageQueueThread {
+public class MessageQueueThreadImpl private constructor(
+    public val name: String,
+    public val looper: Looper,
+    exceptionHandler: QueueThreadExceptionHandler,
+    stats: MessageQueueThreadPerfStats? = null
+) : MessageQueueThread {
+    private val handler = MessageQueueThreadHandler(looper, exceptionHandler)
+    private val assertionErrorMessage = "Expected to be called from the '$name' thread!"
+    private val perfStats = stats
 
-  private final String mName;
-  private final Looper mLooper;
-  private final MessageQueueThreadHandler mHandler;
-  private final String mAssertionErrorMessage;
-  private final @Nullable MessageQueueThreadPerfStats mPerfStats;
-  private volatile boolean mIsFinished = false;
+    @Volatile
+    private var isFinished = false
 
-  private MessageQueueThreadImpl(
-      String name, Looper looper, QueueThreadExceptionHandler exceptionHandler) {
-    this(name, looper, exceptionHandler, null);
-  }
-
-  private MessageQueueThreadImpl(
-      String name,
-      Looper looper,
-      QueueThreadExceptionHandler exceptionHandler,
-      @Nullable MessageQueueThreadPerfStats stats) {
-    mName = name;
-    mLooper = looper;
-    mHandler = new MessageQueueThreadHandler(looper, exceptionHandler);
-    mPerfStats = stats;
-    mAssertionErrorMessage = "Expected to be called from the '" + getName() + "' thread!";
-  }
-
-  /**
-   * Runs the given Runnable on this Thread. It will be submitted to the end of the event queue even
-   * if it is being submitted from the same queue Thread.
-   */
-  @DoNotStrip
-  @Override
-  public boolean runOnQueue(Runnable runnable) {
-    if (mIsFinished) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Tried to enqueue runnable on already finished thread: '"
-              + getName()
-              + "... dropping Runnable.");
-      return false;
+    /**
+     * Runs the given Runnable on this Thread. It will be submitted to the end of the event queue even
+     * if it is being submitted from the same queue Thread.
+     */
+    @DoNotStrip
+    override fun runOnQueue(runnable: Runnable): Boolean {
+        if (isFinished) {
+            FLog.w(
+                ReactConstants.TAG,
+              "Tried to enqueue runnable on already finished thread: '$name... dropping Runnable."
+            )
+            return false
+        }
+        handler.post(runnable)
+        return true
     }
-    mHandler.post(runnable);
-    return true;
-  }
 
-  @DoNotStrip
-  @Override
-  public <T> Future<T> callOnQueue(final Callable<T> callable) {
-    final SimpleSettableFuture<T> future = new SimpleSettableFuture<>();
-    runOnQueue(
-        () -> {
-          try {
-            future.set(callable.call());
-          } catch (Exception e) {
-            future.setException(e);
-          }
-        });
-    return future;
-  }
-
-  /**
-   * @return whether the current Thread is also the Thread associated with this MessageQueueThread.
-   */
-  @DoNotStrip
-  @Override
-  public boolean isOnThread() {
-    return mLooper.getThread() == Thread.currentThread();
-  }
-
-  /**
-   * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an {@link
-   * AssertionError}) if the assertion fails.
-   */
-  @DoNotStrip
-  @Override
-  public void assertIsOnThread() {
-    SoftAssertions.assertCondition(isOnThread(), mAssertionErrorMessage);
-  }
-
-  /**
-   * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an {@link
-   * AssertionError}) if the assertion fails.
-   */
-  @DoNotStrip
-  @Override
-  public void assertIsOnThread(String message) {
-    SoftAssertions.assertCondition(
-        isOnThread(),
-        new StringBuilder().append(mAssertionErrorMessage).append(" ").append(message).toString());
-  }
-
-  /**
-   * Quits this queue's Looper. If that Looper was running on a different Thread than the current
-   * Thread, also waits for the last message being processed to finish and the Thread to die.
-   */
-  @DoNotStrip
-  @Override
-  public void quitSynchronous() {
-    mIsFinished = true;
-    mLooper.quit();
-    if (mLooper.getThread() != Thread.currentThread()) {
-      try {
-        mLooper.getThread().join();
-      } catch (InterruptedException e) {
-        throw new RuntimeException("Got interrupted waiting to join thread " + mName);
-      }
+    @DoNotStrip
+    override fun <T> callOnQueue(callable: Callable<T>): Future<T?> {
+        val future = SimpleSettableFuture<T>()
+        runOnQueue {
+            try {
+                future.set(callable.call())
+            } catch (e: Exception) {
+                future.setException(e)
+            }
+        }
+        return future
     }
-  }
 
-  @Nullable
-  @DoNotStrip
-  @Override
-  public MessageQueueThreadPerfStats getPerfStats() {
-    return mPerfStats;
-  }
-
-  @DoNotStrip
-  @Override
-  public void resetPerfStats() {
-    assignToPerfStats(mPerfStats, -1, -1);
-    runOnQueue(
-        () -> {
-          long wallTime = SystemClock.uptimeMillis();
-          long cpuTime = SystemClock.currentThreadTimeMillis();
-          assignToPerfStats(mPerfStats, wallTime, cpuTime);
-        });
-  }
-
-  @DoNotStrip
-  @Override
-  public boolean isIdle() {
-    return mLooper.getQueue().isIdle();
-  }
-
-  private static void assignToPerfStats(
-      @Nullable MessageQueueThreadPerfStats stats, long wall, long cpu) {
-    if (stats == null) {
-      return;
+    /**
+     * @return whether the current Thread is also the Thread associated with this MessageQueueThread.
+     */
+    @DoNotStrip
+    override fun isOnThread(): Boolean {
+        return looper.thread === Thread.currentThread()
     }
-    stats.wallTime = wall;
-    stats.cpuTime = cpu;
-  }
 
-  public Looper getLooper() {
-    return mLooper;
-  }
-
-  public String getName() {
-    return mName;
-  }
-
-  public static MessageQueueThreadImpl create(
-      MessageQueueThreadSpec spec, QueueThreadExceptionHandler exceptionHandler) {
-    switch (spec.getThreadType()) {
-      case MAIN_UI:
-        return createForMainThread(spec.getName(), exceptionHandler);
-      case NEW_BACKGROUND:
-        return startNewBackgroundThread(spec.getName(), spec.getStackSize(), exceptionHandler);
-      default:
-        throw new RuntimeException("Unknown thread type: " + spec.getThreadType());
+    /**
+     * Asserts [.isOnThread], throwing a [AssertionException] (NOT an [ ]) if the assertion fails.
+     */
+    @DoNotStrip
+    @Throws(AssertionException::class)
+    override fun assertIsOnThread() {
+        assertCondition(isOnThread, assertionErrorMessage)
     }
-  }
 
-  /**
-   * @return a MessageQueueThreadImpl corresponding to Android's main UI thread.
-   */
-  private static MessageQueueThreadImpl createForMainThread(
-      String name, QueueThreadExceptionHandler exceptionHandler) {
-    return new MessageQueueThreadImpl(name, Looper.getMainLooper(), exceptionHandler);
-  }
+    /**
+     * Asserts [.isOnThread], throwing a [AssertionException] (NOT an [ ]) if the assertion fails.
+     */
+    @DoNotStrip
+    @Throws(AssertionException::class)
+    override fun assertIsOnThread(message: String) {
+        assertCondition(
+            isOnThread,
+            StringBuilder().append(assertionErrorMessage).append(" ").append(message).toString()
+        )
+    }
 
-  /**
-   * Creates and starts a new MessageQueueThreadImpl encapsulating a new Thread with a new Looper
-   * running on it. Give it a name for easier debugging and optionally a suggested stack size. When
-   * this method exits, the new MessageQueueThreadImpl is ready to receive events.
-   */
-  private static MessageQueueThreadImpl startNewBackgroundThread(
-      final String name, long stackSize, QueueThreadExceptionHandler exceptionHandler) {
-    final SimpleSettableFuture<Pair<Looper, MessageQueueThreadPerfStats>> dataFuture =
-        new SimpleSettableFuture<>();
-    Thread bgThread =
-        new Thread(
-            null,
-            () -> {
-              Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
-              Looper.prepare();
-              MessageQueueThreadPerfStats stats = new MessageQueueThreadPerfStats();
-              long wallTime = SystemClock.uptimeMillis();
-              long cpuTime = SystemClock.currentThreadTimeMillis();
-              assignToPerfStats(stats, wallTime, cpuTime);
-              dataFuture.set(new Pair<>(Looper.myLooper(), stats));
-              Looper.loop();
-            },
-            "mqt_" + name,
-            stackSize);
-    bgThread.start();
+    /**
+     * Quits this queue's Looper. If that Looper was running on a different Thread than the current
+     * Thread, also waits for the last message being processed to finish and the Thread to die.
+     */
+    @DoNotStrip
+    @Throws(RuntimeException::class)
+    override fun quitSynchronous() {
+        isFinished = true
+        looper.quit()
+        if (looper.thread !== Thread.currentThread()) {
+            try {
+                looper.thread.join()
+            } catch (e: InterruptedException) {
+                throw RuntimeException("Got interrupted waiting to join thread $name")
+            }
+        }
+    }
 
-    Pair<Looper, MessageQueueThreadPerfStats> pair = dataFuture.getOrThrow();
-    return new MessageQueueThreadImpl(name, pair.first, exceptionHandler, pair.second);
-  }
+    @DoNotStrip
+    override fun getPerfStats(): MessageQueueThreadPerfStats? {
+        return perfStats
+    }
+
+    @DoNotStrip
+    override fun resetPerfStats() {
+        assignToPerfStats(perfStats, -1, -1)
+        runOnQueue {
+            val wallTime = SystemClock.uptimeMillis()
+            val cpuTime = SystemClock.currentThreadTimeMillis()
+            assignToPerfStats(perfStats, wallTime, cpuTime)
+        }
+    }
+
+    @DoNotStrip
+    override fun isIdle(): Boolean {
+        return looper.queue.isIdle
+    }
+
+    public companion object {
+        private fun assignToPerfStats(
+            stats: MessageQueueThreadPerfStats?,
+            wall: Long,
+            cpu: Long
+        ) {
+            stats?.let {
+              it.wallTime = wall
+              it.cpuTime = cpu
+            }
+        }
+
+        @JvmStatic
+        @Throws(RuntimeException::class)
+        public fun create(
+            spec: MessageQueueThreadSpec,
+            exceptionHandler: QueueThreadExceptionHandler
+        ): MessageQueueThreadImpl {
+            return when (spec.threadType) {
+                ThreadType.MAIN_UI -> createForMainThread(
+                    spec.name,
+                    exceptionHandler
+                )
+
+                ThreadType.NEW_BACKGROUND -> startNewBackgroundThread(
+                    spec.name,
+                    spec.stackSize,
+                    exceptionHandler
+                )
+
+                else -> throw RuntimeException("Unknown thread type: " + spec.threadType)
+            }
+        }
+
+        /**
+         * @return a MessageQueueThreadImpl corresponding to Android's main UI thread.
+         */
+        private fun createForMainThread(
+            name: String,
+            exceptionHandler: QueueThreadExceptionHandler
+        ): MessageQueueThreadImpl {
+            return MessageQueueThreadImpl(name, Looper.getMainLooper(), exceptionHandler)
+        }
+
+        /**
+         * Creates and starts a new MessageQueueThreadImpl encapsulating a new Thread with a new Looper
+         * running on it. Give it a name for easier debugging and optionally a suggested stack size. When
+         * this method exits, the new MessageQueueThreadImpl is ready to receive events.
+         * throws a Runtime exception if there was no looper for current thread or looper and stats couldn't be made
+         */
+        @Throws(RuntimeException::class)
+        private fun startNewBackgroundThread(
+            name: String,
+            stackSize: Long,
+            exceptionHandler: QueueThreadExceptionHandler
+        ): MessageQueueThreadImpl {
+            val dataFuture = SimpleSettableFuture<Pair<Looper?, MessageQueueThreadPerfStats>>()
+            val bgThread =
+                Thread(
+                    null,
+                    {
+                        Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY)
+                        Looper.prepare()
+                        val stats = MessageQueueThreadPerfStats()
+                        val wallTime = SystemClock.uptimeMillis()
+                        val cpuTime = SystemClock.currentThreadTimeMillis()
+                        assignToPerfStats(stats, wallTime, cpuTime)
+                        dataFuture.set(Pair(Looper.myLooper(), stats))
+                        Looper.loop()
+                    },
+                    "mqt_$name",
+                    stackSize
+                )
+            bgThread.start()
+
+            val pair = dataFuture.getOrThrow()
+            val looper = pair?.first ?: throw RuntimeException("Looper not found for thread")
+            return MessageQueueThreadImpl(name, looper, exceptionHandler, pair.second)
+        }
+    }
 }
