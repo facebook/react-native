@@ -13,10 +13,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.events.NativeGestureUtil
+import kotlin.math.abs
 
 /** Basic extension of [SwipeRefreshLayout] with ReactNative-specific functionality. */
 public class ReactSwipeRefreshLayout(reactContext: ReactContext) :
-    SwipeRefreshLayout(reactContext) {
+        SwipeRefreshLayout(reactContext) {
 
   private var didLayout: Boolean = false
   private var refreshing: Boolean = false
@@ -25,6 +26,7 @@ public class ReactSwipeRefreshLayout(reactContext: ReactContext) :
   private var prevTouchX: Float = 0f
   private var intercepted: Boolean = false
   private var nativeGestureStarted: Boolean = false
+  private var isBeingDraggedHorizontally: Boolean = false
 
   public override fun setRefreshing(refreshing: Boolean) {
     this.refreshing = refreshing
@@ -111,12 +113,17 @@ public class ReactSwipeRefreshLayout(reactContext: ReactContext) :
       MotionEvent.ACTION_DOWN -> {
         prevTouchX = ev.x
         intercepted = false
+        isBeingDraggedHorizontally = false
       }
       MotionEvent.ACTION_MOVE -> {
         val eventX = ev.x
-        val xDiff = Math.abs(eventX - prevTouchX)
+        val xDiff = abs(eventX - prevTouchX)
 
-        if (intercepted || xDiff > touchSlop) {
+        if (xDiff > touchSlop) {
+          isBeingDraggedHorizontally = true
+        }
+
+        if (intercepted || isBeingDraggedHorizontally) {
           intercepted = true
           return false
         }

@@ -221,4 +221,13 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   }
 }
 
+- (void)setTintColor:(UIColor *)tintColor {
+  if (_tintColor != tintColor) {
+    _tintColor = tintColor;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      self.refreshControl.tintColor = tintColor;
+    });
+  }
+}
+
 @end
