@@ -29,6 +29,6 @@ endif()
 
 target_include_directories(hermes_inspector_modern PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(hermes_inspector_modern
-        hermes-engine::libhermes
+        hermes-engine::hermesvm
         jsi
         reactnative)

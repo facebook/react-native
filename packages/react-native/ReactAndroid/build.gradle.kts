@@ -463,7 +463,7 @@ val packageReactNdkLibsForBuck by
       // Shared libraries (.so) are copied from the merged_native_libs folder instead
       from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
       exclude("**/libjsc.so")
-      exclude("**/libhermes.so")
+      exclude("**/libhermesvm.so")
       into("src/main/jni/prebuilt/lib")
     }
 
@@ -601,7 +601,7 @@ android {
     // we produce. The reason behind this is that we want to allow users to pick the
     // JS engine by specifying a dependency on either `hermes-engine` or `android-jsc`
     // that will include the necessary .so files to load.
-    jniLibs.excludes.add("**/libhermes.so")
+    jniLibs.excludes.add("**/libhermesvm.so")
     jniLibs.excludes.add("**/libjsc.so")
   }
 

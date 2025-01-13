@@ -28,6 +28,12 @@ def setup_hermes!(react_native_path: "../node_modules/react-native")
     # We have custom logic to compute the source for hermes-engine. See sdks/hermes-engine/*
     hermestag_file = File.join(react_native_dir, "sdks", ".hermesversion")
     hermestag = File.exist?(hermestag_file) ? File.read(hermestag_file).strip : ''
-    pod 'hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/hermes-engine.podspec", :tag => hermestag
+    podspec_path = "#{react_native_path}/sdks/hermes-engine/hermes-engine.podspec"
+    if hermestag.include? "."
+        pod 'hermes-engine', :podspec => podspec_path, :tag => hermestag
+    else
+        # Temporary workaround to test static Hermes from a specific commit, until the proper tag is created
+        pod 'hermes-engine', :podspec => podspec_path, :commit => hermestag
+    end
     pod 'React-hermes', :path => "#{react_native_path}/ReactCommon/hermes"
 end

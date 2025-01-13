@@ -14,5 +14,5 @@ jsi_path="$1"
 # We want to make sure that hermesc is built for mac.
 # So we clean the environment with env -i, and explicitly set SDKROOT to macosx
 SDKROOT=$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
-env -i SDKROOT="$SDKROOT" "$CMAKE_BINARY" -S "${PODS_ROOT}/hermes-engine" -B "$hermesc_dir_path" -DJSI_DIR="$jsi_path"
+env -i SDKROOT="$SDKROOT" "$CMAKE_BINARY" -S "${PODS_ROOT}/hermes-engine" -B "$hermesc_dir_path" -DJSI_DIR="$jsi_path" -DCMAKE_BUILD_TYPE=Release
 env -i SDKROOT="$SDKROOT" "$CMAKE_BINARY" --build "$hermesc_dir_path" --target hermesc -j "$(sysctl -n hw.ncpu)"

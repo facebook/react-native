@@ -124,10 +124,10 @@ internal object NdkConfiguratorUtils {
     if (hermesEnabled) {
       excludes.add("**/libjsc.so")
       excludes.add("**/libjsctooling.so")
-      includes.add("**/libhermes.so")
+      includes.add("**/libhermesvm.so")
       includes.add("**/libhermestooling.so")
     } else {
-      excludes.add("**/libhermes.so")
+      excludes.add("**/libhermesvm.so")
       excludes.add("**/libhermestooling.so")
       includes.add("**/libjsc.so")
       includes.add("**/libjsctooling.so")

@@ -63,6 +63,11 @@ architectures=$( echo "$ARCHS" | tr  " " ";" )
 
 echo "Configure Apple framework"
 
+boost_context_flag=""
+if [[ $PLATFORM_NAME == "catalyst" ]]; then
+  boost_context_flag="-DHERMES_ALLOW_BOOST_CONTEXT=0"
+fi
+
 "$CMAKE_BINARY" \
   -S "${PODS_ROOT}/hermes-engine" \
   -B "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}" \
@@ -80,15 +85,17 @@ echo "Configure Apple framework"
   -DHERMES_BUILD_SHARED_JSI:BOOLEAN=false \
   -DHERMES_BUILD_APPLE_DSYM:BOOLEAN=true \
   -DIMPORT_HERMESC:PATH="${hermesc_path}" \
+  -DIMPORT_HOST_COMPILERS="${PODS_ROOT}/hermes-engine/build_host_hermesc/ImportHostCompilers.cmake" \
   -DJSI_DIR="$jsi_path" \
-  -DHERMES_RELEASE_VERSION="for RN $release_version" \
-  -DCMAKE_BUILD_TYPE="$cmake_build_type"
+  -DHERMES_RELEASE_VERSION="for RN $release_version (static)" \
+  -DCMAKE_BUILD_TYPE="$cmake_build_type" \
+  $boost_context_flag
 
 echo "Build Apple framework"
 
 "$CMAKE_BINARY" \
   --build "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}" \
-  --target libhermes \
+  --target hermesvm \
   -j "$(sysctl -n hw.ncpu)"
 
 echo "Copy Apple framework to destroot/Library/Frameworks"
@@ -96,5 +103,5 @@ echo "Copy Apple framework to destroot/Library/Frameworks"
 platform_copy_destination=$(get_platform_copy_destination $PLATFORM_NAME)
 
 cp -pfR \
-  "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}/API/hermes/hermes.framework" \
+  "${PODS_ROOT}/hermes-engine/build/${PLATFORM_NAME}/lib/hermesvm.framework" \
   "${PODS_ROOT}/hermes-engine/destroot/Library/Frameworks/${platform_copy_destination}"
