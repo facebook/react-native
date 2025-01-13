@@ -342,9 +342,9 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
 exports[`public API should not change unintentionally Libraries/Animated/AnimatedWeb.js 1`] = `
 "declare export default {
   ...AnimatedImplementation,
-  div: $FlowFixMe,
-  span: $FlowFixMe,
-  img: $FlowFixMe,
+  div: AnimatedComponentType<React.PropsOf<\\"div\\">>,
+  span: AnimatedComponentType<React.PropsOf<\\"span\\">>,
+  img: AnimatedComponentType<React.PropsOf<\\"img\\">>,
 };
 "
 `;
