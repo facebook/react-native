@@ -5333,10 +5333,10 @@ declare export default function ReactDevToolsOverlay(Props): React.Node;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/StyleInspector.js 1`] = `
-"declare const React: $FlowFixMe;
-declare class StyleInspector extends React.Component<$FlowFixMeProps> {
-  render(): React.Node;
-}
+"type Props = $ReadOnly<{
+  style?: ?____FlattenStyleProp_Internal<ViewStyleProp>,
+}>;
+declare function StyleInspector(Props): React.Node;
 declare module.exports: StyleInspector;
 "
 `;
