@@ -41,7 +41,7 @@ public class MessageQueueThreadImpl private constructor(
      * if it is being submitted from the same queue Thread.
      */
     @DoNotStrip
-    override fun runOnQueue(runnable: Runnable): Boolean {
+    public override fun runOnQueue(runnable: Runnable): Boolean {
         if (isFinished) {
             FLog.w(
                 ReactConstants.TAG,
@@ -54,7 +54,7 @@ public class MessageQueueThreadImpl private constructor(
     }
 
     @DoNotStrip
-    override fun <T> callOnQueue(callable: Callable<T>): Future<T?> {
+    public override fun <T> callOnQueue(callable: Callable<T>): Future<T?> {
         val future = SimpleSettableFuture<T>()
         runOnQueue {
             try {
@@ -80,7 +80,7 @@ public class MessageQueueThreadImpl private constructor(
     @DoNotStrip
     @Throws(AssertionException::class)
     override fun assertIsOnThread() {
-        assertCondition(isOnThread, assertionErrorMessage)
+        assertCondition(isOnThread(), assertionErrorMessage)
     }
 
     /**
@@ -88,9 +88,9 @@ public class MessageQueueThreadImpl private constructor(
      */
     @DoNotStrip
     @Throws(AssertionException::class)
-    override fun assertIsOnThread(message: String) {
+    public override fun assertIsOnThread(message: String) {
         assertCondition(
-            isOnThread,
+            isOnThread(),
             StringBuilder().append(assertionErrorMessage).append(" ").append(message).toString()
         )
     }
@@ -129,7 +129,7 @@ public class MessageQueueThreadImpl private constructor(
     }
 
     @DoNotStrip
-    override fun isIdle(): Boolean {
+    public override fun isIdle(): Boolean {
         return looper.queue.isIdle
     }
 
