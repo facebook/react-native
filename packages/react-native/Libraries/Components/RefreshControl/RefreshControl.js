@@ -20,11 +20,7 @@ import PullToRefreshViewNativeComponent, {
 
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
-const {useEffect, useRef} = React;
 
-/**
- * Type definitions for iOS-specific properties
- */
 type IOSProps = $ReadOnly<{|
   /**
    * The color of the refresh indicator.
@@ -40,9 +36,6 @@ type IOSProps = $ReadOnly<{|
   title?: ?string,
 |}>;
 
-/**
- * Type definitions for Android-specific properties
- */
 type AndroidProps = $ReadOnly<{|
   /**
    * Whether the pull to refresh functionality is enabled.
@@ -62,9 +55,6 @@ type AndroidProps = $ReadOnly<{|
   size?: ?('default' | 'large'),
 |}>;
 
-/**
- * The main RefreshControlProps type definition
- */
 export type RefreshControlProps = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
@@ -130,7 +120,6 @@ export type RefreshControlProps = $ReadOnly<{|
  *
  * __Note:__ `refreshing` is a controlled prop, this is why it needs to be set to true
  * in the `onRefresh` function otherwise the refresh indicator will stop immediately.
- * RefreshControl Component
  */
 class RefreshControl extends React.Component<RefreshControlProps> {
   _nativeRef: ?React.ElementRef<
@@ -186,8 +175,6 @@ class RefreshControl extends React.Component<RefreshControlProps> {
           {...props}
           ref={this._setNativeRef}
           onRefresh={this._onRefresh}
-          onTouchStart={this._handleTouchStart}
-          onTouchMove={this._handleTouchMove}
         />
       );
     }
@@ -211,29 +198,6 @@ class RefreshControl extends React.Component<RefreshControlProps> {
     >,
   ) => {
     this._nativeRef = ref;
-  };
-
-  /**
-   * Horizontal Gesture Handling for Android
-   */
-  _handleTouchStart = (event) => {
-    if (Platform.OS === 'android' && event.nativeEvent.touches.length === 1) {
-      this._nativeRef?.prevTouchX = event.nativeEvent.touches[0].pageX;
-    }
-  };
-
-  _handleTouchMove = (event) => {
-    if (Platform.OS === 'android' && event.nativeEvent.touches.length === 1) {
-      const touchX = event.nativeEvent.touches[0].pageX;
-      const prevTouchX = this._nativeRef?.prevTouchX || 0;
-      const xDiff = Math.abs(touchX - prevTouchX);
-
-      if (xDiff > 5 && this._nativeRef) {
-        AndroidSwipeRefreshLayoutCommands.cancelRefreshGesture(
-          this._nativeRef,
-        );
-      }
-    }
   };
 }
 
