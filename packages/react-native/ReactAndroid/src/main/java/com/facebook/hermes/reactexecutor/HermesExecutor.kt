@@ -8,6 +8,7 @@
 package com.facebook.hermes.reactexecutor
 
 import com.facebook.jni.HybridData
+import com.facebook.jni.annotations.DoNotStrip
 import com.facebook.react.bridge.JavaScriptExecutor
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.soloader.SoLoader
@@ -39,11 +40,15 @@ internal constructor(config: RuntimeConfig?, enableDebugger: Boolean, debuggerNa
       }
     }
 
+    @DoNotStrip
+    @JvmStatic
     private external fun initHybridDefaultConfig(
         enableDebugger: Boolean,
         debuggerName: String
     ): HybridData?
 
+    @DoNotStrip
+    @JvmStatic
     private external fun initHybrid(
         enableDebugger: Boolean,
         debuggerName: String,
