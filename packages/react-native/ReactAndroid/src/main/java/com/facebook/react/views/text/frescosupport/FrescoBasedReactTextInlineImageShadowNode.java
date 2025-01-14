@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.common.logging.FLog;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
@@ -32,8 +33,7 @@ import java.util.Locale;
 class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
 
   private @Nullable Uri mUri;
-  // NULLSAFE_FIXME[Field Not Initialized]
-  private ReadableMap mHeaders;
+  private @Nullable ReadableMap mHeaders;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
   private float mWidth = YogaConstants.UNDEFINED;
@@ -49,9 +49,10 @@ class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShad
 
   @ReactProp(name = "src")
   public void setSource(@Nullable ReadableArray sources) {
-    final String source =
-        // NULLSAFE_FIXME[Nullable Dereference]
-        (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
+    final @Nullable String source =
+        (sources == null || sources.size() == 0 || sources.getType(0) != ReadableType.Map)
+            ? null
+            : Preconditions.checkNotNull(sources.getMap(0)).getString("uri");
     Uri uri = null;
     if (source != null) {
       try {
@@ -74,7 +75,7 @@ class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShad
   }
 
   @ReactProp(name = "headers")
-  public void setHeaders(ReadableMap headers) {
+  public void setHeaders(@Nullable ReadableMap headers) {
     mHeaders = headers;
   }
 
@@ -113,7 +114,7 @@ class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShad
     return mUri;
   }
 
-  public ReadableMap getHeaders() {
+  public @Nullable ReadableMap getHeaders() {
     return mHeaders;
   }
 
@@ -149,7 +150,6 @@ class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShad
         getHeaders(),
         getDraweeControllerBuilder(),
         getCallerContext(),
-        // NULLSAFE_FIXME[Parameter Not Nullable]
         mResizeMode);
   }
 

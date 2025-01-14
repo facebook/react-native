@@ -15,8 +15,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
-import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
@@ -53,8 +53,8 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
   private int mTintColor;
   private Uri mUri;
   private int mWidth;
-  private ReadableMap mHeaders;
-  private String mResizeMode;
+  private @Nullable ReadableMap mHeaders;
+  private @Nullable String mResizeMode;
 
   private @Nullable TextView mTextView;
 
@@ -64,10 +64,10 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
       int width,
       int tintColor,
       @Nullable Uri uri,
-      ReadableMap headers,
+      @Nullable ReadableMap headers,
       AbstractDraweeControllerBuilder draweeControllerBuilder,
       @Nullable Object callerContext,
-      String resizeMode) {
+      @Nullable String resizeMode) {
     mDraweeHolder = new DraweeHolder(GenericDraweeHierarchyBuilder.newInstance(resources).build());
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
@@ -118,8 +118,8 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     return mWidth;
   }
 
-  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
-  public void setTextView(TextView textView) {
+  @Override
+  public void setTextView(@Nullable TextView textView) {
     mTextView = textView;
   }
 
@@ -138,26 +138,24 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
       ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(mUri);
       ImageRequest imageRequest =
           ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
-      mDraweeHolder.getHierarchy().setActualImageScaleType(getResizeMode(mResizeMode));
-      DraweeController draweeController =
-          mDraweeControllerBuilder
-              .reset()
-              .setOldController(mDraweeHolder.getController())
-              // NULLSAFE_FIXME[Parameter Not Nullable]
-              .setCallerContext(mCallerContext)
-              .setImageRequest(imageRequest)
-              .build();
+      mDraweeHolder
+          .getHierarchy()
+          .setActualImageScaleType(ImageResizeMode.toScaleType(mResizeMode));
+      mDraweeControllerBuilder.reset();
+      mDraweeControllerBuilder.setOldController(mDraweeHolder.getController());
+      if (mCallerContext != null) {
+        mDraweeControllerBuilder.setCallerContext(mCallerContext);
+      }
+      mDraweeControllerBuilder.setImageRequest(imageRequest);
+      DraweeController draweeController = mDraweeControllerBuilder.build();
       mDraweeHolder.setController(draweeController);
       mDraweeControllerBuilder.reset();
 
-      mDrawable = mDraweeHolder.getTopLevelDrawable();
-      // NULLSAFE_FIXME[Nullable Dereference]
+      mDrawable = Preconditions.checkNotNull(mDraweeHolder.getTopLevelDrawable());
       mDrawable.setBounds(0, 0, mWidth, mHeight);
       if (mTintColor != 0) {
-        // NULLSAFE_FIXME[Nullable Dereference]
         mDrawable.setColorFilter(mTintColor, PorterDuff.Mode.SRC_IN);
       }
-      // NULLSAFE_FIXME[Nullable Dereference]
       mDrawable.setCallback(mTextView);
     }
 
@@ -168,17 +166,11 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     // Align to center
     int fontHeight = (int) (paint.descent() - paint.ascent());
     int centerY = y + (int) paint.descent() - fontHeight / 2;
-    // NULLSAFE_FIXME[Nullable Dereference]
     int transY = centerY - (mDrawable.getBounds().bottom - mDrawable.getBounds().top) / 2;
 
     canvas.translate(x, transY);
-    // NULLSAFE_FIXME[Nullable Dereference]
     mDrawable.draw(canvas);
     canvas.restore();
-  }
-
-  private ScalingUtils.ScaleType getResizeMode(String resizeMode) {
-    return ImageResizeMode.toScaleType(resizeMode);
   }
 
   @Override
