@@ -30,7 +30,24 @@ void ImageShadowNode::updateStateIfNeeded() {
   auto newImageSource = getImageSource();
   const auto& oldImageRequestParams = savedState.getImageRequestParams();
   const auto& imageProps = getConcreteProps();
-  const auto& newImageRequestParams = ImageRequestParams(imageProps.blurRadius);
+  const auto& newImageRequestParams = ImageRequestParams(
+      imageProps.blurRadius
+#ifdef ANDROID
+      ,
+      imageProps.defaultSource,
+      imageProps.resizeMode,
+      imageProps.resizeMethod,
+      // TODO: should we resizeMultiplier * imageSource.scale ?
+      imageProps.resizeMultiplier,
+      imageProps.shouldNotifyLoadEvents,
+      imageProps.overlayColor,
+      imageProps.tintColor,
+      imageProps.fadeDuration,
+      imageProps.progressiveRenderingEnabled,
+      imageProps.loadingIndicatorSource,
+      imageProps.internal_analyticTag
+#endif
+  );
 
   if (oldImageSource == newImageSource &&
       oldImageRequestParams == newImageRequestParams) {

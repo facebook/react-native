@@ -17,25 +17,47 @@ import com.facebook.react.bridge.ReadableArray
  *
  * @param <T> the type of the view supported by this delegate </T>
  */
-public interface ViewManagerDelegate<T : View?> {
+public interface ViewManagerDelegate<T : View> {
 
   /**
    * Sets a property on a view managed by this view manager.
    *
+   * We mark this method as synthetic / hide it from JVM so Java callers will call the deprecated
+   * version and overrides work correctly.
+   *
    * @param view the view to set the property on
-   * @param propName the name of the property to set (NOTE: should be `String` but is kept as
-   *   `String?` to avoid breaking changes)
+   * @param propName the name of the property to set
    * @param value the value to set the property to
    */
-  public fun setProperty(view: T, propName: String?, value: Any?)
+  @Suppress("INAPPLICABLE_JVM_NAME")
+  @JvmName("kotlinCompat\$setProperty")
+  @JvmSynthetic
+  public fun setProperty(view: T, propName: String, value: Any?)
+
+  @Suppress("INAPPLICABLE_JVM_NAME")
+  @Deprecated(message = "propName is not nullable, please update your method signature")
+  @JvmName("setProperty")
+  public fun javaCompat_setProperty(view: T, propName: String?, value: Any?): Unit =
+      setProperty(view, checkNotNull(propName), value)
 
   /**
    * Executes a command from JS to the view
    *
+   * We mark this method as synthetic / hide it from JVM so Java callers will call the deprecated
+   * version and overrides work correctly.
+   *
    * @param view the view to execute the command on
-   * @param commandName the name of the command to execute (NOTE: should be `String` but is kept as
-   *   `String?` to avoid breaking changes)
+   * @param commandName the name of the command to execute
    * @param args the arguments to pass to the command
    */
-  public fun receiveCommand(view: T, commandName: String?, args: ReadableArray?)
+  @Suppress("INAPPLICABLE_JVM_NAME")
+  @JvmName("kotlinCompat\$receiveCommand")
+  @JvmSynthetic
+  public fun receiveCommand(view: T, commandName: String, args: ReadableArray?)
+
+  @Suppress("INAPPLICABLE_JVM_NAME")
+  @Deprecated(message = "commandName is not nullable, please update your method signature")
+  @JvmName("receiveCommand")
+  public fun javaCompat_receiveCommand(view: T, commandName: String?, args: ReadableArray?): Unit =
+      receiveCommand(view, checkNotNull(commandName), args)
 }

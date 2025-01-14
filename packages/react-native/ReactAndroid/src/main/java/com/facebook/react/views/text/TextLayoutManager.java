@@ -32,14 +32,12 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
-import com.facebook.react.views.text.internal.span.LegacyLineHeightSpan;
 import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactClickableSpan;
@@ -319,15 +317,9 @@ public class TextLayoutManager {
                       textAttributes.mTextShadowColor)));
         }
         if (!Float.isNaN(textAttributes.getEffectiveLineHeight())) {
-          if (ReactNativeFeatureFlags.enableAndroidLineHeightCentering()) {
-            ops.add(
-                new SetSpanOperation(
-                    start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
-          } else {
-            ops.add(
-                new SetSpanOperation(
-                    start, end, new LegacyLineHeightSpan(textAttributes.getEffectiveLineHeight())));
-          }
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
         }
 
         ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));
@@ -629,8 +621,8 @@ public class TextLayoutManager {
         && ((maximumNumberOfLines != ReactConstants.UNSET
                 && maximumNumberOfLines != 0
                 && layout.getLineCount() > maximumNumberOfLines)
-            || (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED
-                && layout.getHeight() > height))) {
+            || (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)
+            || (text.length() == 1 && layout.getLineWidth(0) > width))) {
       // TODO: We could probably use a smarter algorithm here. This will require 0(n)
       // measurements based on the number of points the font size needs to be reduced by.
       currentFontSize -= Math.max(1, (int) PixelUtil.toPixelFromDIP(1));
@@ -647,6 +639,9 @@ public class TextLayoutManager {
             text.getSpanEnd(span),
             text.getSpanFlags(span));
         text.removeSpan(span);
+      }
+      if (boring != null) {
+        boring = BoringLayout.isBoring(text, paint);
       }
       layout =
           createLayout(

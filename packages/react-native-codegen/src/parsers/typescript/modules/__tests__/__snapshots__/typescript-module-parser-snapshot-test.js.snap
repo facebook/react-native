@@ -134,11 +134,17 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
           'members': [
             {
               'name': 'SD',
-              'value': 'SD'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'SD'
+              }
             },
             {
               'name': 'HD',
-              'value': 'HD'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'HD'
+              }
             }
           ]
         },
@@ -149,15 +155,24 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
           'members': [
             {
               'name': 'Corrupted',
-              'value': -1
+              'value': {
+                'type': 'NumberLiteralTypeAnnotation',
+                'value': -1
+              }
             },
             {
               'name': 'Low',
-              'value': 720
+              'value': {
+                'type': 'NumberLiteralTypeAnnotation',
+                'value': 720
+              }
             },
             {
               'name': 'High',
-              'value': 1080
+              'value': {
+                'type': 'NumberLiteralTypeAnnotation',
+                'value': 1080
+              }
             }
           ]
         },
@@ -168,15 +183,24 @@ exports[`RN Codegen TypeScript Parser can generate fixture CXX_ONLY_NATIVE_MODUL
           'members': [
             {
               'name': 'One',
-              'value': 'one'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'one'
+              }
             },
             {
               'name': 'Two',
-              'value': 'two'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'two'
+              }
             },
             {
               'name': 'Three',
-              'value': 'three'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'three'
+              }
             }
           ]
         }
@@ -458,11 +482,17 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
           'members': [
             {
               'name': 'SD',
-              'value': 'SD'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'SD'
+              }
             },
             {
               'name': 'HD',
-              'value': 'HD'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'HD'
+              }
             }
           ]
         },
@@ -473,11 +503,17 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
           'members': [
             {
               'name': 'Low',
-              'value': 720
+              'value': {
+                'type': 'NumberLiteralTypeAnnotation',
+                'value': 720
+              }
             },
             {
               'name': 'High',
-              'value': 1080
+              'value': {
+                'type': 'NumberLiteralTypeAnnotation',
+                'value': 1080
+              }
             }
           ]
         },
@@ -488,15 +524,24 @@ exports[`RN Codegen TypeScript Parser can generate fixture IOS_ONLY_NATIVE_MODUL
           'members': [
             {
               'name': 'One',
-              'value': 'one'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'one'
+              }
             },
             {
               'name': 'Two',
-              'value': 'two'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'two'
+              }
             },
             {
               'name': 'Three',
-              'value': 'three'
+              'value': {
+                'type': 'StringLiteralTypeAnnotation',
+                'value': 'three'
+              }
             }
           ]
         }

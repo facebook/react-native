@@ -7,7 +7,7 @@
 
 #include "RawProps.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawPropsKey.h>
 #include <react/renderer/core/RawPropsParser.h>
@@ -172,13 +172,38 @@ void RawProps::parse(const RawPropsParser& parser) noexcept {
  * The support for explicit conversion to `folly::dynamic` is deprecated and
  * will be removed as soon Android implementation does not need it.
  */
-RawProps::operator folly::dynamic() const noexcept {
+RawProps::operator folly::dynamic() const {
+  return toDynamic();
+}
+
+/*
+ * Deprecated. Do not use.
+ * The support for explicit conversion to `folly::dynamic` is deprecated and
+ * will be removed as soon Android implementation does not need it.
+ */
+folly::dynamic RawProps::toDynamic(
+    const std::function<bool(const std::string&)>& filterObjectKeys) const {
   switch (mode_) {
     case Mode::Empty:
       return folly::dynamic::object();
-    case Mode::JSI:
-      return jsi::dynamicFromValue(
-          *runtime_, value_, ignoreYogaStyleProps_ ? isYogaStyleProp : nullptr);
+    case Mode::JSI: {
+      if (ignoreYogaStyleProps_ || filterObjectKeys != nullptr) {
+        // We need to filter props
+        return jsi::dynamicFromValue(
+            *runtime_, value_, [&](const std::string& key) {
+              if (ignoreYogaStyleProps_ && isYogaStyleProp(key)) {
+                return true;
+              }
+              if (filterObjectKeys) {
+                return filterObjectKeys(key);
+              }
+              return false;
+            });
+      } else {
+        // We don't need to filter, just include all props by default
+        return jsi::dynamicFromValue(*runtime_, value_, nullptr);
+      }
+    }
     case Mode::Dynamic:
       return dynamic_;
   }

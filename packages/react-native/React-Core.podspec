@@ -72,7 +72,7 @@ Pod::Spec.new do |s|
   s.resource_bundle        = { "RCTI18nStrings" => ["React/I18n/strings/*.lproj"]}
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags + ' ' + use_hermes_flag
   s.header_dir             = "React"
-  s.framework              = "JavaScriptCore"
+  s.weak_framework         = "JavaScriptCore"
   s.pod_target_xcconfig    = {
                                "HEADER_SEARCH_PATHS" => header_search_paths,
                                "DEFINES_MODULE" => "YES",

@@ -189,10 +189,11 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
 
   UIEdgeInsets newEdgeInsets = _scrollView.contentInset;
   CGFloat inset = MAX(scrollViewLowerY - keyboardEndFrame.origin.y, 0);
+  const auto &props = static_cast<const ScrollViewProps &>(*_props);
   if (isInverted) {
-    newEdgeInsets.top = MAX(inset, _scrollView.contentInset.top);
+    newEdgeInsets.top = MAX(inset, props.contentInset.top);
   } else {
-    newEdgeInsets.bottom = MAX(inset, _scrollView.contentInset.bottom);
+    newEdgeInsets.bottom = MAX(inset, props.contentInset.bottom);
   }
 
   CGPoint newContentOffset = _scrollView.contentOffset;
@@ -210,12 +211,6 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
         contentDiff = keyboardEndFrame.origin.y - keyboardBeginFrame.origin.y;
       }
     } else {
-      CGRect viewIntersection = CGRectIntersection(self.firstResponderFocus, keyboardEndFrame);
-
-      if (CGRectIsNull(viewIntersection)) {
-        return;
-      }
-
       // Inner text field focused
       CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
       if (focusEnd > keyboardEndFrame.origin.y) {
@@ -247,7 +242,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
                    animations:^{
                      self->_scrollView.contentInset = newEdgeInsets;
                      self->_scrollView.verticalScrollIndicatorInsets = newEdgeInsets;
-                     [self scrollToOffset:newContentOffset animated:NO];
+                     [self scrollTo:newContentOffset.x y:newContentOffset.y animated:NO];
                    }
                    completion:nil];
 }
@@ -552,6 +547,17 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   return metrics;
 }
 
+- (ScrollViewEventEmitter::EndDragMetrics)_scrollViewMetricsWithVelocity:(CGPoint)velocity
+                                                  andTargetContentOffset:(CGPoint)targetContentOffset
+{
+  ScrollViewEventEmitter::EndDragMetrics metrics = [self _scrollViewMetrics];
+  metrics.targetContentOffset.x = targetContentOffset.x;
+  metrics.targetContentOffset.y = targetContentOffset.y;
+  metrics.velocity.x = velocity.x;
+  metrics.velocity.y = velocity.y;
+  return metrics;
+}
+
 - (void)_updateStateWithContentOffset
 {
   if (!_state) {
@@ -607,6 +613,14 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
       targetContentOffset->y = scrollView.contentOffset.y + travel * _endDraggingSensitivityMultiplier;
     }
   }
+
+  if (!_eventEmitter) {
+    return;
+  }
+
+  auto metrics = [self _scrollViewMetricsWithVelocity:velocity andTargetContentOffset:*targetContentOffset];
+
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag(metrics);
 }
 
 - (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
@@ -676,8 +690,6 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   if (!_eventEmitter) {
     return;
   }
-
-  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag([self _scrollViewMetrics]);
 
   [self _updateStateWithContentOffset];
 
@@ -775,7 +787,9 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
     return;
   }
 
-  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag([self _scrollViewMetrics]);
+  auto metrics = [self _scrollViewMetricsWithVelocity:{} andTargetContentOffset:{}];
+  static_cast<const ScrollViewEventEmitter &>(*_eventEmitter).onScrollEndDrag(metrics);
+
   [self _updateStateWithContentOffset];
 }
 

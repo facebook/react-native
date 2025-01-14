@@ -138,6 +138,12 @@ async function testRNTesterAndroid(
     } version of RNTester Android with the new Architecture enabled`,
   );
 
+  // Build Codegen as we're on a empty environment and metro needs it.
+  // This can be removed once we have codegen hooked in the `yarn build` step.
+  exec(
+    '../../gradlew :packages:react-native:ReactAndroid:buildCodegenCLI --quiet',
+  );
+
   // Start the Metro server so it will be ready if the app can be built and installed successfully.
   launchPackagerInSeparateWindow(pwd().toString());
 
@@ -164,7 +170,7 @@ async function testRNTesterAndroid(
     exec(`unzip ${downloadPath} -d ${unzipFolder}`);
     let apkPath = path.join(
       unzipFolder,
-      `app-${argv.hermes === true ? 'hermes' : 'jsc'}-${emulatorArch}-release.apk`,
+      `app-${argv.hermes === true ? 'hermes' : 'jsc'}-${emulatorArch}-debug.apk`,
     );
 
     exec(`adb install ${apkPath}`);
@@ -300,9 +306,10 @@ async function testRNTestProject(
     'reactNativeArchitectures=arm64-v8a',
     'android/gradle.properties',
   );
+  const hermesEnabled = (await argv).hermes === true;
 
   // Update gradle properties to set Hermes as false
-  if (argv.hermes == null) {
+  if (!hermesEnabled) {
     sed(
       '-i',
       'hermesEnabled=true',
@@ -317,7 +324,7 @@ async function testRNTestProject(
     exec('bundle install');
     exec(
       `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=${
-        argv.hermes === true ? 1 : 0
+        hermesEnabled ? 1 : 0
       } bundle exec pod install --ansi`,
     );
 

@@ -38,11 +38,6 @@ export interface StringTypeAnnotation {
   readonly type: 'StringTypeAnnotation';
 }
 
-export interface StringEnumTypeAnnotation {
-  readonly type: 'StringEnumTypeAnnotation';
-  readonly options: readonly string[];
-}
-
 export interface VoidTypeAnnotation {
   readonly type: 'VoidTypeAnnotation';
 }
@@ -127,16 +122,11 @@ export type EventTypeAnnotation =
   | FloatTypeAnnotation
   | Int32TypeAnnotation
   | MixedTypeAnnotation
-  | StringEnumTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | ObjectTypeAnnotation<EventTypeAnnotation>
-  | {
-    readonly type: 'ArrayTypeAnnotation';
-    readonly elementType: EventTypeAnnotation
-  };
+  | ArrayTypeAnnotation<EventTypeAnnotation>
 
-export type ArrayTypeAnnotation = {
-  readonly type: 'ArrayTypeAnnotation';
-  readonly elementType:
+export type ComponentArrayTypeAnnotation = ArrayTypeAnnotation<
   | BooleanTypeAnnotation
   | StringTypeAnnotation
   | DoubleTypeAnnotation
@@ -149,10 +139,25 @@ export type ArrayTypeAnnotation = {
   }
   | ObjectTypeAnnotation<PropTypeAnnotation>
   | ReservedPropTypeAnnotation
-  | {
-    readonly type: 'ArrayTypeAnnotation';
-    readonly elementType: ObjectTypeAnnotation<PropTypeAnnotation>;
-  };
+  | ArrayTypeAnnotation<ObjectTypeAnnotation<PropTypeAnnotation>>
+>;
+
+export type ComponentCommandArrayTypeAnnotation = ArrayTypeAnnotation<
+  | BooleanTypeAnnotation
+  | StringTypeAnnotation
+  | DoubleTypeAnnotation
+  | FloatTypeAnnotation
+  | Int32TypeAnnotation
+  // Mixed is not great. This generally means its a type alias to another type
+  // like an object or union. Ideally we'd encode that type in the schema so the compat-check can
+  // validate those deeper objects for breaking changes and the generators can do something smarter.
+  // As of now, the generators just create ReadableMap or (const NSArray *) which are untyped
+  | MixedTypeAnnotation
+>;
+
+export interface ArrayTypeAnnotation<T> {
+  readonly type: 'ArrayTypeAnnotation';
+  readonly elementType: T;
 }
 
 export type PropTypeAnnotation =
@@ -188,7 +193,7 @@ export type PropTypeAnnotation =
   }
   | ReservedPropTypeAnnotation
   | ObjectTypeAnnotation<PropTypeAnnotation>
-  | ArrayTypeAnnotation
+  | ComponentArrayTypeAnnotation
   | MixedTypeAnnotation;
 
 export interface ReservedPropTypeAnnotation {
@@ -214,7 +219,7 @@ export type CommandParamTypeAnnotation =
   | DoubleTypeAnnotation
   | FloatTypeAnnotation
   | StringTypeAnnotation
-  | ArrayTypeAnnotation;
+  | ComponentCommandArrayTypeAnnotation;
 
 export interface ReservedTypeAnnotation {
   readonly type: 'ReservedTypeAnnotation';
@@ -273,14 +278,12 @@ export type NativeModuleObjectTypeAnnotation = ObjectTypeAnnotation<
   Nullable<NativeModuleBaseTypeAnnotation>
 >;
 
-export interface NativeModuleArrayTypeAnnotation<T extends Nullable<NativeModuleBaseTypeAnnotation>> {
-  readonly type: 'ArrayTypeAnnotation';
-  /**
-   * TODO(T72031674): Migrate all our NativeModule specs to not use
-   * invalid Array ElementTypes. Then, make the elementType required.
-   */
-  readonly elementType: T | UnsafeAnyTypeAnnotation;
-}
+/**
+ * TODO(T72031674): Migrate all our NativeModule specs to not use
+ * invalid Array ElementTypes. Then, make the elementType required.
+ */
+interface NativeModuleArrayTypeAnnotation<T> extends ArrayTypeAnnotation<T | UnsafeAnyTypeAnnotation> { }
+
 
 export interface UnsafeAnyTypeAnnotation {
   readonly type: 'AnyTypeAnnotation',
@@ -300,7 +303,7 @@ export interface NativeModuleStringLiteralTypeAnnotation {
   readonly value: string;
 }
 
-export interface NativeModuleStringLiteralUnionTypeAnnotation {
+export interface StringLiteralUnionTypeAnnotation {
   readonly type: 'StringLiteralUnionTypeAnnotation';
   readonly types: NativeModuleStringLiteralTypeAnnotation[];
 }
@@ -327,7 +330,7 @@ export interface NativeModuleBooleanTypeAnnotation {
 
 export type NativeModuleEnumMember = {
   readonly name: string;
-  readonly value: string | number;
+  readonly value: NativeModuleStringLiteralTypeAnnotation | NativeModuleNumberLiteralTypeAnnotation,
 };
 
 export type NativeModuleEnumMemberType =
@@ -388,22 +391,19 @@ export type NativeModuleEventEmitterBaseTypeAnnotation =
   | NativeModuleNumberLiteralTypeAnnotation
   | NativeModuleStringTypeAnnotation
   | NativeModuleStringLiteralTypeAnnotation
-  | NativeModuleStringLiteralUnionTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
   | NativeModuleGenericObjectTypeAnnotation
   | VoidTypeAnnotation;
 
 export type NativeModuleEventEmitterTypeAnnotation =
   | NativeModuleEventEmitterBaseTypeAnnotation
-  | {
-    readonly type: 'ArrayTypeAnnotation';
-    readonly elementType: NativeModuleEventEmitterBaseTypeAnnotation;
-  };
+  | ArrayTypeAnnotation<NativeModuleEventEmitterBaseTypeAnnotation>;
 
 export type NativeModuleBaseTypeAnnotation =
-  | NativeModuleStringTypeAnnotation
+  NativeModuleStringTypeAnnotation
   | NativeModuleStringLiteralTypeAnnotation
-  | NativeModuleStringLiteralUnionTypeAnnotation
+  | StringLiteralUnionTypeAnnotation
   | NativeModuleNumberTypeAnnotation
   | NativeModuleNumberLiteralTypeAnnotation
   | NativeModuleInt32TypeAnnotation
@@ -414,10 +414,10 @@ export type NativeModuleBaseTypeAnnotation =
   | NativeModuleGenericObjectTypeAnnotation
   | ReservedTypeAnnotation
   | NativeModuleTypeAliasTypeAnnotation
-  | NativeModuleArrayTypeAnnotation<Nullable<NativeModuleBaseTypeAnnotation>>
   | NativeModuleObjectTypeAnnotation
   | NativeModuleUnionTypeAnnotation
-  | NativeModuleMixedTypeAnnotation;
+  | NativeModuleMixedTypeAnnotation
+  | NativeModuleArrayTypeAnnotation<NativeModuleBaseTypeAnnotation>;
 
 export type NativeModuleParamTypeAnnotation =
   | NativeModuleBaseTypeAnnotation

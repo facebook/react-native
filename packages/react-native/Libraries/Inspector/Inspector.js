@@ -19,6 +19,7 @@ import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {ReactDevToolsAgent} from '../Types/ReactDevToolsTypes';
 
 import SafeAreaView from '../../src/private/components/SafeAreaView_INTERNAL_DO_NOT_USE';
+import React from 'react';
 
 const View = require('../Components/View/View');
 const PressabilityDebug = require('../Pressability/PressabilityDebug');
@@ -29,7 +30,6 @@ const Platform = require('../Utilities/Platform');
 const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
 const InspectorOverlay = require('./InspectorOverlay');
 const InspectorPanel = require('./InspectorPanel');
-const React = require('react');
 
 const {useState} = React;
 

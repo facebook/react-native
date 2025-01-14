@@ -10,11 +10,10 @@ package com.facebook.react.modules.fresco
 import com.facebook.common.logging.FLog
 import com.facebook.drawee.backends.pipeline.DraweeConfig
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory.newBuilder
+import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory
 import com.facebook.imagepipeline.core.DownsampleMode
 import com.facebook.imagepipeline.core.ImagePipeline
 import com.facebook.imagepipeline.core.ImagePipelineConfig
-import com.facebook.imagepipeline.decoder.ImageDecoderConfig
 import com.facebook.imagepipeline.listener.RequestListener
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
@@ -80,9 +79,6 @@ constructor(
     if (!hasBeenInitialized()) {
       val pipelineConfig = config ?: getDefaultConfig(reactContext)
       val draweeConfigBuilder = DraweeConfig.newBuilder()
-      if (ReactNativeFeatureFlags.loadVectorDrawablesOnImages()) {
-        draweeConfigBuilder.addCustomDrawableFactory(XmlFormat.getDrawableFactory())
-      }
       Fresco.initialize(
           reactContext.applicationContext,
           pipelineConfig,
@@ -158,22 +154,20 @@ constructor(
       requestListeners.add(SystraceRequestListener())
       val client = OkHttpClientProvider.createClient()
 
-      // Add support for XML drawable images
-      val decoderConfigBuilder = ImageDecoderConfig.Builder()
-      if (ReactNativeFeatureFlags.loadVectorDrawablesOnImages()) {
-        XmlFormat.addDecodingCapability(decoderConfigBuilder, context)
-      }
-
       // make sure to forward cookies for any requests via the okHttpClient
       // so that image requests to endpoints that use cookies still work
       val container = OkHttpCompat.getCookieJarContainer(client)
-      val handler = ForwardingCookieHandler(context)
+      val handler = ForwardingCookieHandler()
       container.setCookieJar(JavaNetCookieJar(handler))
-      return newBuilder(context.applicationContext, client)
-          .setNetworkFetcher(ReactOkHttpNetworkFetcher(client))
-          .setImageDecoderConfig(decoderConfigBuilder.build())
-          .setDownsampleMode(DownsampleMode.AUTO)
-          .setRequestListeners(requestListeners)
+      val builder =
+          OkHttpImagePipelineConfigFactory.newBuilder(context.applicationContext, client)
+              .setNetworkFetcher(ReactOkHttpNetworkFetcher(client))
+              .setDownsampleMode(DownsampleMode.AUTO)
+              .setRequestListeners(requestListeners)
+      builder
+          .experiment()
+          .setBinaryXmlEnabled(ReactNativeFeatureFlags.loadVectorDrawablesOnImages())
+      return builder
     }
   }
 }

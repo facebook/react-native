@@ -763,6 +763,16 @@ function findFilesWithExtension(filePath, extension) {
   const dir = fs.readdirSync(filePath);
   dir.forEach(file => {
     const absolutePath = path.join(filePath, file);
+    // Exclude files provided by react-native
+    if (absolutePath.includes(`${path.sep}react-native${path.sep}`)) {
+      return null;
+    }
+
+    // Skip hidden folders, that starts with `.`
+    if (absolutePath.includes(`${path.sep}.`)) {
+      return null;
+    }
+
     if (
       fs.existsSync(absolutePath) &&
       fs.statSync(absolutePath).isDirectory()

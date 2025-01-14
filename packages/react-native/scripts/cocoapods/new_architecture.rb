@@ -68,10 +68,10 @@ class NewArchitectureHelper
         end
     end
 
-    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = get_folly_config()[:version])
+    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = Helpers::Constants.folly_config[:version])
         # Pod::Specification does not have getters so, we have to read
         # the existing values from a hash representation of the object.
-        folly_config = get_folly_config()
+        folly_config = Helpers::Constants.folly_config
         folly_compiler_flags = folly_config[:compiler_flags]
 
         hash = spec.to_hash
@@ -145,7 +145,7 @@ class NewArchitectureHelper
     end
 
     def self.folly_compiler_flags
-        folly_config = get_folly_config()
+        folly_config = Helpers::Constants.folly_config
         return folly_config[:compiler_flags]
     end
 

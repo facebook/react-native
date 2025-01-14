@@ -125,6 +125,7 @@ public class ReactViewGroup extends ViewGroup
   // {@link ViewGroup#getChildCount} so those methods may return views that are not attached.
   // This is risky but allows us to perform a correct cleanup in {@link NativeViewHierarchyManager}.
   private boolean mRemoveClippedSubviews;
+  private volatile boolean mInSubviewClippingLoop;
   private @Nullable View[] mAllChildren;
   private int mAllChildrenCount;
   private @Nullable Rect mClippingRect;
@@ -136,7 +137,8 @@ public class ReactViewGroup extends ViewGroup
   private boolean mNeedsOffscreenAlphaCompositing;
   private @Nullable ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private float mBackfaceOpacity;
-  private String mBackfaceVisibility;
+  private boolean mBackfaceVisible;
+  private @Nullable Set<Integer> mChildrenRemovedWhileTransitioning;
 
   /**
    * Creates a new `ReactViewGroup` instance.
@@ -158,6 +160,7 @@ public class ReactViewGroup extends ViewGroup
     setClipChildren(false);
 
     mRemoveClippedSubviews = false;
+    mInSubviewClippingLoop = false;
     mAllChildren = null;
     mAllChildrenCount = 0;
     mClippingRect = null;
@@ -169,7 +172,8 @@ public class ReactViewGroup extends ViewGroup
     mNeedsOffscreenAlphaCompositing = false;
     mDrawingOrderHelper = null;
     mBackfaceOpacity = 1.f;
-    mBackfaceVisibility = "visible";
+    mBackfaceVisible = true;
+    mChildrenRemovedWhileTransitioning = null;
   }
 
   /* package */ void recycleView() {
@@ -352,6 +356,7 @@ public class ReactViewGroup extends ViewGroup
       return;
     }
     mRemoveClippedSubviews = removeClippedSubviews;
+    mChildrenRemovedWhileTransitioning = null;
     if (removeClippedSubviews) {
       mClippingRect = new Rect();
       ReactClippingViewGroupHelper.calculateClippingRect(this, mClippingRect);
@@ -363,6 +368,7 @@ public class ReactViewGroup extends ViewGroup
         View child = getChildAt(i);
         mAllChildren[i] = child;
         child.addOnLayoutChangeListener(mChildrenLayoutChangeListener);
+        setViewClipped(child, false);
       }
       updateClippingRect();
     } else {
@@ -405,8 +411,29 @@ public class ReactViewGroup extends ViewGroup
     updateClippingToRect(mClippingRect);
   }
 
+  @Override
+  public void endViewTransition(View view) {
+    super.endViewTransition(view);
+    if (mChildrenRemovedWhileTransitioning != null) {
+      mChildrenRemovedWhileTransitioning.remove(view.getId());
+    }
+  }
+
+  private void trackChildViewTransition(int childId) {
+    if (mChildrenRemovedWhileTransitioning == null) {
+      mChildrenRemovedWhileTransitioning = new HashSet<>();
+    }
+    mChildrenRemovedWhileTransitioning.add(childId);
+  }
+
+  private boolean isChildRemovedWhileTransitioning(View child) {
+    return mChildrenRemovedWhileTransitioning != null
+        && mChildrenRemovedWhileTransitioning.contains(child.getId());
+  }
+
   private void updateClippingToRect(Rect clippingRect) {
     Assertions.assertNotNull(mAllChildren);
+    mInSubviewClippingLoop = true;
     int clippedSoFar = 0;
     for (int i = 0; i < mAllChildrenCount; i++) {
       try {
@@ -415,7 +442,7 @@ public class ReactViewGroup extends ViewGroup
         int realClippedSoFar = 0;
         Set<View> uniqueViews = new HashSet<>();
         for (int j = 0; j < i; j++) {
-          realClippedSoFar += isViewClipped(mAllChildren[j]) ? 1 : 0;
+          realClippedSoFar += isViewClipped(mAllChildren[j], null) ? 1 : 0;
           uniqueViews.add(mAllChildren[j]);
         }
 
@@ -436,10 +463,11 @@ public class ReactViewGroup extends ViewGroup
                 + uniqueViews.size(),
             e);
       }
-      if (isViewClipped(mAllChildren[i])) {
+      if (isViewClipped(mAllChildren[i], i)) {
         clippedSoFar++;
       }
     }
+    mInSubviewClippingLoop = false;
   }
 
   private void updateSubviewClipStatus(Rect clippingRect, int idx, int clippedSoFar) {
@@ -458,14 +486,16 @@ public class ReactViewGroup extends ViewGroup
     // it won't be size and located properly.
     Animation animation = child.getAnimation();
     boolean isAnimating = animation != null && !animation.hasEnded();
-    if (!intersects && !isViewClipped(child) && !isAnimating) {
+    if (!intersects && !isViewClipped(child, idx) && !isAnimating) {
+      setViewClipped(child, true);
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
       removeViewInLayout(child);
       needUpdateClippingRecursive = true;
-    } else if (intersects && isViewClipped(child)) {
+    } else if (intersects && isViewClipped(child, idx)) {
       int adjustedIdx = idx - clippedSoFar;
       Assertions.assertCondition(adjustedIdx >= 0);
+      setViewClipped(child, false);
       addViewInLayout(child, adjustedIdx, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
@@ -497,19 +527,21 @@ public class ReactViewGroup extends ViewGroup
             subview.getLeft(), subview.getTop(), subview.getRight(), subview.getBottom());
 
     // If it was intersecting before, should be attached to the parent
-    boolean oldIntersects = !isViewClipped(subview);
+    boolean oldIntersects = !isViewClipped(subview, null);
 
     if (intersects != oldIntersects) {
+      mInSubviewClippingLoop = true;
       int clippedSoFar = 0;
       for (int i = 0; i < mAllChildrenCount; i++) {
         if (mAllChildren[i] == subview) {
           updateSubviewClipStatus(mClippingRect, i, clippedSoFar);
           break;
         }
-        if (isViewClipped(mAllChildren[i])) {
+        if (isViewClipped(mAllChildren[i], i)) {
           clippedSoFar++;
         }
       }
+      mInSubviewClippingLoop = false;
     }
   }
 
@@ -541,7 +573,7 @@ public class ReactViewGroup extends ViewGroup
   @Override
   public void onViewAdded(View child) {
     UiThreadUtil.assertOnUiThread();
-
+    checkViewClippingTag(child, Boolean.FALSE);
     if (!customDrawOrderDisabled()) {
       getDrawingOrderHelper().handleAddView(child);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
@@ -554,7 +586,7 @@ public class ReactViewGroup extends ViewGroup
   @Override
   public void onViewRemoved(View child) {
     UiThreadUtil.assertOnUiThread();
-
+    checkViewClippingTag(child, Boolean.TRUE);
     if (!customDrawOrderDisabled()) {
       if (indexOfChild(child) == -1) {
         return;
@@ -564,7 +596,28 @@ public class ReactViewGroup extends ViewGroup
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
+
+    // The parent might not be null in case the child is transitioning.
+    if (child.getParent() != null) {
+      trackChildViewTransition(child.getId());
+    }
+
     super.onViewRemoved(child);
+  }
+
+  private void checkViewClippingTag(View child, Boolean expectedTag) {
+    if (mInSubviewClippingLoop) {
+      Object tag = child.getTag(R.id.view_clipped);
+      if (!expectedTag.equals(tag)) {
+        ReactSoftExceptionLogger.logSoftException(
+            ReactSoftExceptionLogger.Categories.RVG_ON_VIEW_REMOVED,
+            new ReactNoCrashSoftException(
+                "View clipping tag mismatch: tag=" + tag + " expected=" + expectedTag));
+      }
+    }
+    if (mRemoveClippedSubviews) {
+      child.setTag(R.id.view_clipped, expectedTag);
+    }
   }
 
   @Override
@@ -638,19 +691,22 @@ public class ReactViewGroup extends ViewGroup
   /*package*/ void addViewWithSubviewClippingEnabled(
       final View child, int index, ViewGroup.LayoutParams params) {
     Assertions.assertCondition(mRemoveClippedSubviews);
+    setViewClipped(child, true); // the view has not been added, so it is "clipped"
     addInArray(child, index);
 
     // we add view as "clipped" and then run {@link #updateSubviewClipStatus} to conditionally
     // attach it
     Rect clippingRect = Assertions.assertNotNull(mClippingRect);
     View[] childArray = Assertions.assertNotNull(mAllChildren);
+    mInSubviewClippingLoop = true;
     int clippedSoFar = 0;
     for (int i = 0; i < index; i++) {
-      if (isViewClipped(childArray[i])) {
+      if (isViewClipped(childArray[i], i)) {
         clippedSoFar++;
       }
     }
     updateSubviewClipStatus(clippingRect, index, clippedSoFar);
+    mInSubviewClippingLoop = false;
     child.addOnLayoutChangeListener(mChildrenLayoutChangeListener);
 
     if (child instanceof ReactClippingProhibitedView) {
@@ -685,14 +741,15 @@ public class ReactViewGroup extends ViewGroup
     View[] childArray = Assertions.assertNotNull(mAllChildren);
     view.removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
     int index = indexOfChildInAllChildren(view);
-    if (!isViewClipped(childArray[index])) {
+    if (!isViewClipped(childArray[index], index)) {
       int clippedSoFar = 0;
       for (int i = 0; i < index; i++) {
-        if (isViewClipped(childArray[i])) {
+        if (isViewClipped(childArray[i], i)) {
           clippedSoFar++;
         }
       }
       removeViewsInLayout(index - clippedSoFar, 1);
+      invalidate();
     }
     removeFromArray(index);
   }
@@ -709,15 +766,40 @@ public class ReactViewGroup extends ViewGroup
 
   /**
    * @return {@code true} if the view has been removed from the ViewGroup.
+   * @param index For logging - index of the view in {@code mAllChildren}, or {@code null} to skip
+   *     logging.
    */
-  private boolean isViewClipped(View view) {
+  private boolean isViewClipped(View view, @Nullable Integer index) {
+    Object tag = view.getTag(R.id.view_clipped);
+    if (tag != null) {
+      return (boolean) tag;
+    }
     ViewParent parent = view.getParent();
-    if (parent == null) {
+    boolean transitioning = isChildRemovedWhileTransitioning(view);
+    if (index != null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.RVG_IS_VIEW_CLIPPED,
+          new ReactNoCrashSoftException(
+              "View missing clipping tag: index="
+                  + index
+                  + " parentNull="
+                  + (parent == null)
+                  + " parentThis="
+                  + (parent == this)
+                  + " transitioning="
+                  + transitioning));
+    }
+    // fallback - should be transitioning or have no parent if the view was removed
+    if (parent == null || transitioning) {
       return true;
     } else {
       Assertions.assertCondition(parent == this);
       return false;
     }
+  }
+
+  private static void setViewClipped(View view, boolean clipped) {
+    view.setTag(R.id.view_clipped, clipped);
   }
 
   private int indexOfChildInAllChildren(View child) {
@@ -908,14 +990,12 @@ public class ReactViewGroup extends ViewGroup
   }
 
   public void setBackfaceVisibility(String backfaceVisibility) {
-    mBackfaceVisibility = backfaceVisibility;
+    mBackfaceVisible = "visible".equals(backfaceVisibility);
     setBackfaceVisibilityDependantOpacity();
   }
 
   public void setBackfaceVisibilityDependantOpacity() {
-    boolean isBackfaceVisible = mBackfaceVisibility.equals("visible");
-
-    if (isBackfaceVisible) {
+    if (mBackfaceVisible) {
       setAlpha(mBackfaceOpacity);
       return;
     }

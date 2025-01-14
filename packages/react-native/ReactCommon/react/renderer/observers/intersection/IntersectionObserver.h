@@ -23,7 +23,7 @@ struct IntersectionObserverEntry {
   ShadowNode::Shared shadowNode;
   Rect targetRect;
   Rect rootRect;
-  std::optional<Rect> intersectionRect;
+  Rect intersectionRect;
   bool isIntersectingAboveThresholds;
   // TODO(T156529385) Define `DOMHighResTimeStamp` as an alias for `double` and
   // use it here.
@@ -71,6 +71,7 @@ class IntersectionObserver {
   std::optional<IntersectionObserverEntry> setNotIntersectingState(
       const Rect& rootBoundingRect,
       const Rect& targetBoundingRect,
+      const Rect& intersectionRect,
       double time);
 
   IntersectionObserverObserverId intersectionObserverId_;

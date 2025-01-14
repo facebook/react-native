@@ -6,11 +6,12 @@
  */
 
 #include "YogaLayoutableShadowNode.h"
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <logger/react_native_log.h>
 #include <react/debug/flags.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/view/LayoutConformanceShadowNode.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/components/view/conversions.h>
@@ -501,15 +502,13 @@ void YogaLayoutableShadowNode::configureYogaTree(
 }
 
 YGErrata YogaLayoutableShadowNode::resolveErrata(YGErrata defaultErrata) const {
-  if (auto viewShadowNode = dynamic_cast<const ViewShadowNode*>(this)) {
-    const auto& props = viewShadowNode->getConcreteProps();
-    switch (props.experimental_layoutConformance) {
-      case LayoutConformance::Classic:
-        return YGErrataAll;
+  if (auto layoutConformanceNode =
+          dynamic_cast<const LayoutConformanceShadowNode*>(this)) {
+    switch (layoutConformanceNode->getConcreteProps().mode) {
       case LayoutConformance::Strict:
         return YGErrataNone;
-      case LayoutConformance::Undefined:
-        return defaultErrata;
+      case LayoutConformance::Compatibility:
+        return YGErrataAll;
     }
   }
 
@@ -538,9 +537,9 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
 
   auto style = yogaNode_.style();
   style.setDimension(
-      yoga::Dimension::Width, yoga::StyleLength::points(size.width));
+      yoga::Dimension::Width, yoga::StyleSizeLength::points(size.width));
   style.setDimension(
-      yoga::Dimension::Height, yoga::StyleLength::points(size.height));
+      yoga::Dimension::Height, yoga::StyleSizeLength::points(size.height));
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -585,13 +584,13 @@ void YogaLayoutableShadowNode::layoutTree(
     LayoutConstraints layoutConstraints) {
   ensureUnsealed();
 
-  SystraceSection s1("YogaLayoutableShadowNode::layoutTree");
+  TraceSection s1("YogaLayoutableShadowNode::layoutTree");
 
   bool swapLeftAndRight = layoutContext.swapLeftAndRightInRTL &&
       layoutConstraints.layoutDirection == LayoutDirection::RightToLeft;
 
   {
-    SystraceSection s2("YogaLayoutableShadowNode::configureYogaTree");
+    TraceSection s2("YogaLayoutableShadowNode::configureYogaTree");
     configureYogaTree(
         layoutContext.pointScaleFactor,
         YGErrataAll /*defaultErrata*/,
@@ -631,16 +630,18 @@ void YogaLayoutableShadowNode::layoutTree(
   auto ownerHeight = yogaFloatFromFloat(maximumSize.height);
 
   yogaStyle.setMaxDimension(
-      yoga::Dimension::Width, yoga::StyleLength::points(maximumSize.width));
+      yoga::Dimension::Width, yoga::StyleSizeLength::points(maximumSize.width));
 
   yogaStyle.setMaxDimension(
-      yoga::Dimension::Height, yoga::StyleLength::points(maximumSize.height));
+      yoga::Dimension::Height,
+      yoga::StyleSizeLength::points(maximumSize.height));
 
   yogaStyle.setMinDimension(
-      yoga::Dimension::Width, yoga::StyleLength::points(minimumSize.width));
+      yoga::Dimension::Width, yoga::StyleSizeLength::points(minimumSize.width));
 
   yogaStyle.setMinDimension(
-      yoga::Dimension::Height, yoga::StyleLength::points(minimumSize.height));
+      yoga::Dimension::Height,
+      yoga::StyleSizeLength::points(minimumSize.height));
 
   auto direction =
       yogaDirectionFromLayoutDirection(layoutConstraints.layoutDirection);
@@ -648,7 +649,7 @@ void YogaLayoutableShadowNode::layoutTree(
   threadLocalLayoutContext = layoutContext;
 
   {
-    SystraceSection s3("YogaLayoutableShadowNode::YGNodeCalculateLayout");
+    TraceSection s3("YogaLayoutableShadowNode::YGNodeCalculateLayout");
     YGNodeCalculateLayout(&yogaNode_, ownerWidth, ownerHeight, direction);
   }
 
@@ -797,7 +798,7 @@ YGNodeRef YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
     YGNodeConstRef /*oldYogaNode*/,
     YGNodeConstRef parentYogaNode,
     size_t childIndex) {
-  SystraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
+  TraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
 
   auto& parentNode = shadowNodeFromContext(parentYogaNode);
   return &parentNode.cloneChildInPlace(childIndex).yogaNode_;
@@ -809,8 +810,7 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
     YGMeasureMode widthMode,
     float height,
     YGMeasureMode heightMode) {
-  SystraceSection s(
-      "YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector");
+  TraceSection s("YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector");
 
   auto& shadowNode = shadowNodeFromContext(yogaNode);
 
@@ -854,8 +854,7 @@ float YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector(
     YGNodeConstRef yogaNode,
     float width,
     float height) {
-  SystraceSection s(
-      "YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector");
+  TraceSection s("YogaLayoutableShadowNode::yogaNodeBaselineCallbackConnector");
 
   auto& shadowNode = shadowNodeFromContext(yogaNode);
   auto baseline = shadowNode.baseline(

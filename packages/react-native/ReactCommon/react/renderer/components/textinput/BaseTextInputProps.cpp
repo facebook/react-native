@@ -126,6 +126,12 @@ BaseTextInputProps::BaseTextInputProps(
           rawProps,
           "multiline",
           sourceProps.multiline,
+          {false})),
+      disableKeyboardShortcuts(convertRawProp(
+          context,
+          rawProps,
+          "disableKeyboardShortcuts",
+          sourceProps.disableKeyboardShortcuts,
           {false})) {}
 
 void BaseTextInputProps::setProp(
@@ -208,7 +214,24 @@ void BaseTextInputProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(readOnly);
     RAW_SET_PROP_SWITCH_CASE_BASIC(submitBehavior);
     RAW_SET_PROP_SWITCH_CASE_BASIC(multiline);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(disableKeyboardShortcuts);
   }
+}
+
+TextAttributes BaseTextInputProps::getEffectiveTextAttributes(
+    Float fontSizeMultiplier) const {
+  auto result = TextAttributes::defaultTextAttributes();
+  result.fontSizeMultiplier = fontSizeMultiplier;
+  result.apply(textAttributes);
+
+  /*
+   * These props are applied to `View`, therefore they must not be a part of
+   * base text attributes.
+   */
+  result.backgroundColor = clearColor();
+  result.opacity = 1;
+
+  return result;
 }
 
 SubmitBehavior BaseTextInputProps::getNonDefaultSubmitBehavior() const {

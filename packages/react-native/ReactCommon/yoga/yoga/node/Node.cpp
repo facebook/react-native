@@ -314,16 +314,16 @@ void Node::setPosition(
       crossAxisTrailingEdge);
 }
 
-Style::Length Node::processFlexBasis() const {
-  Style::Length flexBasis = style_.flexBasis();
-  if (flexBasis.unit() != Unit::Auto && flexBasis.unit() != Unit::Undefined) {
+Style::SizeLength Node::processFlexBasis() const {
+  Style::SizeLength flexBasis = style_.flexBasis();
+  if (!flexBasis.isAuto() && !flexBasis.isUndefined()) {
     return flexBasis;
   }
   if (style_.flex().isDefined() && style_.flex().unwrap() > 0.0f) {
-    return config_->useWebDefaults() ? StyleLength::ofAuto()
-                                     : StyleLength::points(0);
+    return config_->useWebDefaults() ? StyleSizeLength::ofAuto()
+                                     : StyleSizeLength::points(0);
   }
-  return StyleLength::ofAuto();
+  return StyleSizeLength::ofAuto();
 }
 
 FloatOptional Node::resolveFlexBasis(

@@ -1009,6 +1009,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           cells.push(
             <View
               key={`$spacer-${section.first}`}
+              // $FlowFixMe[incompatible-type]
               style={{[spacerKey]: spacerSize}}
             />,
           );

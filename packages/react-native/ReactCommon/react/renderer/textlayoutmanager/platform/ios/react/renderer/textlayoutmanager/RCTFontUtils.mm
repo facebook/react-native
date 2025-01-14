@@ -146,6 +146,19 @@ static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties
   return font;
 }
 
+static UIFontDescriptorSystemDesign RCTGetFontDescriptorSystemDesign(NSString *family)
+{
+  static NSDictionary<NSString *, NSString *> *systemDesigns = @{
+    @"system-ui" : UIFontDescriptorSystemDesignDefault,
+    @"ui-sans-serif" : UIFontDescriptorSystemDesignDefault,
+    @"ui-serif" : UIFontDescriptorSystemDesignSerif,
+    @"ui-rounded" : UIFontDescriptorSystemDesignRounded,
+    @"ui-monospace" : UIFontDescriptorSystemDesignMonospaced
+  };
+
+  return systemDesigns[family];
+}
+
 UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
 {
   RCTFontProperties defaultFontProperties = RCTDefaultFontProperties();
@@ -154,7 +167,16 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
   assert(!isnan(fontProperties.sizeMultiplier));
   CGFloat effectiveFontSize = fontProperties.sizeMultiplier * fontProperties.size;
   UIFont *font;
-  if ([fontProperties.family isEqualToString:defaultFontProperties.family]) {
+  UIFontDescriptorSystemDesign design = RCTGetFontDescriptorSystemDesign([fontProperties.family lowercaseString]);
+  if (design) {
+    // Create a system font which `-fontDescriptorWithDesign:` asks for
+    // (see:
+    // https://developer.apple.com/documentation/uikit/uifontdescriptor/3151797-fontdescriptorwithdesign?language=objc)
+    // It's OK to use `RCTDefaultFontWithFontProperties` which creates a system font
+    font = RCTDefaultFontWithFontProperties(fontProperties);
+    UIFontDescriptor *descriptor = [font.fontDescriptor fontDescriptorWithDesign:design];
+    font = [UIFont fontWithDescriptor:descriptor size:effectiveFontSize];
+  } else if ([fontProperties.family isEqualToString:defaultFontProperties.family]) {
     // Handle system font as special case. This ensures that we preserve
     // the specific metrics of the standard system font as closely as possible.
     font = RCTDefaultFontWithFontProperties(fontProperties);

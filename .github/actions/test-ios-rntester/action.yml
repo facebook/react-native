@@ -41,7 +41,7 @@ runs:
     - name: Setup node.js
       uses: ./.github/actions/setup-node
     - name: Run yarn
-      uses: ./.github/actions/yarn-install-with-cache
+      uses: ./.github/actions/yarn-install
     - name: Download Hermes
       uses: actions/download-artifact@v4
       with:
@@ -109,8 +109,8 @@ runs:
           export USE_FRAMEWORKS=dynamic
         fi
 
-        if [[ ${{ inputs.architecture }} == "NewArch" ]]; then
-          export RCT_NEW_ARCH_ENABLED=1
+        if [[ ${{ inputs.architecture }} == "OldArch" ]]; then
+          export RCT_NEW_ARCH_ENABLED=0
         fi
 
         cd packages/rn-tester
@@ -118,16 +118,7 @@ runs:
         bundle install
         bundle exec pod install
     - name: Build RNTester
-      if: ${{ inputs.run-unit-tests != 'true' && inputs.run-e2e-tests == 'false' }}
       shell: bash
-      run: |
-        xcodebuild build \
-          -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-          -scheme RNTester \
-          -sdk iphonesimulator
-    - name: Build RNTester (E2E Tests)
-      shell: bash
-      if: ${{ inputs.run-e2e-tests == 'true' }}
       run: |
         xcodebuild \
           -scheme "RNTester" \
@@ -138,7 +129,10 @@ runs:
           -derivedDataPath "/tmp/RNTesterBuild"
 
           echo "Print path to *.app file"
-          find "/tmp/RNTesterBuild" -type d -name "*.app"
+          APP_PATH=$(find "/tmp/RNTesterBuild" -type d -name "*.app")
+
+          echo "App found at $APP_PATH"
+          echo "app-path=$APP_PATH" >> $GITHUB_ENV
     - name: "Run Tests: iOS Unit and Integration Tests"
       if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash
@@ -158,6 +152,12 @@ runs:
       with:
         name: xcresults
         path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
+    - name: Upload RNTester App
+      if: ${{ inputs.use-frameworks == 'StaticLibraries' && inputs.ruby-version == '2.6.10' }} # This is needed to avoid conflicts with the artifacts
+      uses: actions/upload-artifact@v4.3.4
+      with:
+        name: RNTesterApp-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
+        path: ${{ env.app-path }}
     - name: Store test results
       if: ${{ inputs.run-unit-tests == 'true' }}
       uses: actions/upload-artifact@v4.3.4

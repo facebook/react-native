@@ -42,7 +42,7 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
   for (const auto& mutation : mutations) {
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
-        react_native_assert(mutation.parentShadowView == ShadowView{});
+        react_native_assert(mutation.parentTag == -1);
         react_native_assert(mutation.oldChildShadowView == ShadowView{});
         react_native_assert(mutation.newChildShadowView.props);
         auto stubView = std::make_shared<StubView>();
@@ -69,7 +69,7 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
                      << "] ##"
                      << std::hash<ShadowView>{}(mutation.oldChildShadowView);
         });
-        react_native_assert(mutation.parentShadowView == ShadowView{});
+        react_native_assert(mutation.parentTag == -1);
         react_native_assert(mutation.newChildShadowView == ShadowView{});
         auto tag = mutation.oldChildShadowView.tag;
         react_native_assert(hasTag(tag));
@@ -98,7 +98,7 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
       case ShadowViewMutation::Insert: {
         if (!mutation.mutatedViewIsVirtual()) {
           react_native_assert(mutation.oldChildShadowView == ShadowView{});
-          auto parentTag = mutation.parentShadowView.tag;
+          auto parentTag = mutation.parentTag;
           auto childTag = mutation.newChildShadowView.tag;
           if (!hasTag(parentTag)) {
             LOG(ERROR)
@@ -140,7 +140,7 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
       case ShadowViewMutation::Remove: {
         if (!mutation.mutatedViewIsVirtual()) {
           react_native_assert(mutation.newChildShadowView == ShadowView{});
-          auto parentTag = mutation.parentShadowView.tag;
+          auto parentTag = mutation.parentTag;
           auto childTag = mutation.oldChildShadowView.tag;
           if (!hasTag(parentTag)) {
             LOG(ERROR)
@@ -221,6 +221,10 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
         react_native_assert(hasTag(mutation.newChildShadowView.tag));
         auto oldStubView = registry_[mutation.newChildShadowView.tag];
         react_native_assert(oldStubView->tag != 0);
+        if (mutation.parentTag != 0) {
+          react_native_assert(hasTag(mutation.parentTag));
+          react_native_assert(oldStubView->parentTag == mutation.parentTag);
+        }
         if ((ShadowView)(*oldStubView) != mutation.oldChildShadowView) {
           LOG(ERROR)
               << "StubView: ASSERT FAILURE: UPDATE mutation assertion failure: oldChildShadowView does not match oldStubView: ["

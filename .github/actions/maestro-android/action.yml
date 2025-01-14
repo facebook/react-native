@@ -25,13 +25,17 @@ inputs:
     required: false
     default: "."
     description: The directory from which metro should be started
+  architecture:
+    required: false
+    default: "NewArch"
+    description: The react native architecture to test
 
 runs:
   using: composite
   steps:
     - name: Installing Maestro
       shell: bash
-      run: export MAESTRO_VERSION=1.36.0; curl -Ls "https://get.maestro.mobile.dev" | bash
+      run: export MAESTRO_VERSION=1.39.5; curl -Ls "https://get.maestro.mobile.dev" | bash
     - name: Set up JDK 17
       if: ${{ inputs.install-java == 'true' }}
       uses: actions/setup-java@v4
@@ -52,12 +56,15 @@ runs:
       if: ${{ inputs.flavor == 'debug' }}
       run: ./packages/react-native-codegen/scripts/oss/build.sh
     - name: Run e2e tests
+      id: run-tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: 24
         arch: x86
-        ram-size: '4096M'
+        ram-size: '8192M'
+        heap-size: '4096M'
         disk-size: '10G'
+        cores: '4'
         disable-animations: false
         avd-name: e2e_emulator
         script: node .github/workflow-scripts/maestro-android.js ${{ inputs.app-path }} ${{ inputs.app-id }} ${{ inputs.maestro-flow }} ${{ inputs.flavor }} ${{ inputs.working-directory }}
@@ -69,16 +76,16 @@ runs:
         NORM_APP_ID=$(echo "${{ inputs.app-id }}" | tr '.' '-')
         echo "app-id=$NORM_APP_ID" >> $GITHUB_OUTPUT
     - name: Store tests result
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.3.4
       if: always()
       with:
-        name: e2e_android_${{ steps.normalize-app-id.outputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}
+        name: e2e_android_${{ steps.normalize-app-id.outputs.app-id }}_report_${{ inputs.jsengine }}_${{ inputs.flavor }}_${{ inputs.architecture }}
         path: |
           report.xml
           screen.mp4
     - name: Store Logs
-      if: failure() && steps.run-tests.outcome == 'failure'
+      if: steps.run-tests.outcome == 'failure'
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: maestro-logs-android-${{ steps.normalize-app-id.outputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
+        name: maestro-logs-android-${{ steps.normalize-app-id.outputs.app-id }}-${{ inputs.jsengine }}-${{ inputs.flavor }}-${{ inputs.architecture }}
         path: /tmp/MaestroLogs

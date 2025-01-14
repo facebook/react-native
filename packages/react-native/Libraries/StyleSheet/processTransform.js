@@ -148,6 +148,12 @@ function _validateTransforms(transform: Array<Object>): void {
     );
     const key = keys[0];
     const value = transformation[key];
+    if (key === 'matrix' && transform.length > 1) {
+      console.error(
+        'When using a matrix transform, you must specify exactly one transform object. Passed transform: ' +
+          stringifySafe(transform),
+      );
+    }
     _validateTransform(key, value, transformation);
   });
 }
@@ -260,4 +266,4 @@ function _validateTransform(
   }
 }
 
-module.exports = processTransform;
+export default processTransform;

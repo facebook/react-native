@@ -14,7 +14,7 @@
 
 #include "JsArgumentHelpers.h"
 #include "MessageQueueThread.h"
-#include "SystraceSection.h"
+#include "TraceSection.h"
 
 #include <logger/react_native_log.h>
 
@@ -188,7 +188,7 @@ void CxxNativeModule::invoke(
   // mhorowitz #7128529: convert C++ exceptions to Java
 
   const auto& moduleName = name_;
-  SystraceSection s(
+  TraceSection s(
       "CxxMethodCallQueue", "module", moduleName, "method", method.name);
   messageQueueThread_->runOnQueue([method,
                                    moduleName,
@@ -203,7 +203,7 @@ void CxxNativeModule::invoke(
 #else
     (void)(callId);
 #endif
-    SystraceSection s(
+    TraceSection s(
         "CxxMethodCallDispatch", "module", moduleName, "method", method.name);
     try {
       method.func(std::move(params), first, second);

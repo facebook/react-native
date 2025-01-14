@@ -15,7 +15,7 @@ namespace facebook::react {
 
 class StackTraceParser {
  public:
-  static std::vector<JsErrorHandler::ParsedError::StackFrame> parse(
+  static std::vector<JsErrorHandler::ProcessedError::StackFrame> parse(
       bool isHermes,
       const std::string& stackString);
 };

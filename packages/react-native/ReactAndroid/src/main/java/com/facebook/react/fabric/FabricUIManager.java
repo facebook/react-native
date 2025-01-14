@@ -48,6 +48,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
@@ -67,6 +68,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
@@ -256,29 +258,6 @@ public class FabricUIManager
     return rootTag;
   }
 
-  /**
-   * This API returns metadata associated to the React Component that rendered the Android View
-   * received as a parameter.
-   *
-   * @param surfaceId {@link int} that represents the surfaceId for the View received as a
-   *     parameter. In practice surfaceId can be retrieved calling the {@link View#getId()} method
-   *     on the {@link ReactRoot} that holds the View received as a second parameter.
-   * @param view {@link View} view that will be used to retrieve the React view hierarchy metadata.
-   * @return a {@link ReadableMap} that contains metadata associated to the React Component that
-   *     rendered the Android View received as a parameter. For more details about the keys stored
-   *     in the {@link ReadableMap} refer to the "getInspectorDataForInstance" method from
-   *     jni/react/fabric/Binding.cpp file.
-   */
-  @UiThread
-  @ThreadConfined(UI)
-  public ReadableMap getInspectorDataForInstance(final int surfaceId, final View view) {
-    UiThreadUtil.assertOnUiThread();
-    int reactTag = view.getId();
-
-    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
-    return mBinding.getInspectorDataForInstance(eventEmitter);
-  }
-
   @Override
   @AnyThread
   @ThreadConfined(ANY)
@@ -445,12 +424,18 @@ public class FabricUIManager
 
   @Override
   public void markActiveTouchForTag(int surfaceId, int reactTag) {
-    mMountingManager.getSurfaceManager(surfaceId).markActiveTouchForTag(reactTag);
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    if (surfaceMountingManager != null) {
+      surfaceMountingManager.markActiveTouchForTag(reactTag);
+    }
   }
 
   @Override
   public void sweepActiveTouchForTag(int surfaceId, int reactTag) {
-    mMountingManager.getSurfaceManager(surfaceId).sweepActiveTouchForTag(reactTag);
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    if (surfaceMountingManager != null) {
+      surfaceMountingManager.sweepActiveTouchForTag(reactTag);
+    }
   }
 
   /**
@@ -872,6 +857,17 @@ public class FabricUIManager
     }
   }
 
+  /**
+   * This method initiates preloading of an image specified by ImageSource. It can later be consumed
+   * by an ImageView.
+   */
+  @UnstableReactNativeAPI
+  public void experimental_prefetchResource(
+      String componentName, int surfaceId, int reactTag, ReadableMapBuffer params) {
+    mMountingManager.experimental_prefetchResource(
+        mReactApplicationContext, componentName, surfaceId, reactTag, params);
+  }
+
   public void setBinding(FabricUIManagerBinding binding) {
     mBinding = binding;
   }
@@ -954,7 +950,6 @@ public class FabricUIManager
    * @param reactTag
    * @param eventName
    * @param canCoalesceEvent
-   * @param customCoalesceKey
    * @param params
    * @param eventCategory
    */

@@ -503,9 +503,7 @@ public abstract class ReactContext extends ContextWrapper {
   public abstract @Nullable CallInvokerHolder getJSCallInvokerHolder();
 
   @Deprecated(
-      since =
-          "This method will be deprecated later as part of Stable APIs with bridge removal and not"
-              + " encouraged usage.")
+      since = "This method is deprecated, please use UIManagerHelper.getUIManager() instead.")
   /**
    * Get the UIManager for Fabric from the CatalystInstance.
    *
