@@ -11,7 +11,7 @@
 #include <reactperflogger/BridgeNativeModulePerfLogger.h>
 
 #include "NativeModule.h"
-#include "SystraceSection.h"
+#include "TraceSection.h"
 
 namespace facebook::react {
 
@@ -46,7 +46,7 @@ void ModuleRegistry::updateModuleNamesFromIndex(size_t index) {
 
 void ModuleRegistry::registerModules(
     std::vector<std::unique_ptr<NativeModule>> modules) {
-  SystraceSection s_("ModuleRegistry::registerModules");
+  TraceSection s_("ModuleRegistry::registerModules");
   // Noop if there are no NativeModules to add
   if (modules.empty()) {
     return;
@@ -81,7 +81,7 @@ void ModuleRegistry::registerModules(
 }
 
 std::vector<std::string> ModuleRegistry::moduleNames() {
-  SystraceSection s_("ModuleRegistry::moduleNames");
+  TraceSection s_("ModuleRegistry::moduleNames");
   std::vector<std::string> names;
   for (size_t i = 0; i < modules_.size(); i++) {
     std::string name = normalizeName(modules_[i]->getName());
@@ -92,7 +92,7 @@ std::vector<std::string> ModuleRegistry::moduleNames() {
 }
 
 std::optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name) {
-  SystraceSection s("ModuleRegistry::getConfig", "module", name);
+  TraceSection s("ModuleRegistry::getConfig", "module", name);
 
   // Initialize modulesByName_
   if (modulesByName_.empty() && !modules_.empty()) {
@@ -144,7 +144,7 @@ std::optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name) {
   folly::dynamic config = folly::dynamic::array(name);
 
   {
-    SystraceSection s_("ModuleRegistry::getConstants", "module", name);
+    TraceSection s_("ModuleRegistry::getConstants", "module", name);
     /**
      * In the case that there are constants, we'll initialize the NativeModule,
      * and signal moduleJSRequireEndingStart. Otherwise, we'll simply signal the
@@ -155,7 +155,7 @@ std::optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name) {
   }
 
   {
-    SystraceSection s_("ModuleRegistry::getMethods", "module", name);
+    TraceSection s_("ModuleRegistry::getMethods", "module", name);
     std::vector<MethodDescriptor> methods = module->getMethods();
 
     folly::dynamic methodNames = folly::dynamic::array;

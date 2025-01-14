@@ -10,15 +10,16 @@
 
 'use strict';
 
-const React = require('react');
-const {
+import {RNTesterThemeContext} from '../../components/RNTesterTheme';
+import React from 'react';
+import {
   Button,
   Platform,
   StyleSheet,
   Text,
   TextInput,
   View,
-} = require('react-native');
+} from 'react-native';
 
 class XHRExampleFetch extends React.Component<any, any> {
   responseURL: ?string;
@@ -113,24 +114,33 @@ class XHRExampleFetch extends React.Component<any, any> {
     ) : null;
 
     return (
-      <View>
-        <Button
-          title="RepeatedlyFetch"
-          onPress={() => this.startRepeatedlyFetch()}
-        />
-        <Text style={styles.label}>Edit URL to submit:</Text>
-        <TextInput
-          returnKeyType="go"
-          defaultValue="http://www.posttestserver.com/post.php"
-          onSubmitEditing={event => {
-            this.submit(event.nativeEvent.text);
-          }}
-          style={styles.textInput}
-        />
-        {responseURL}
-        {responseHeaders}
-        {response}
-      </View>
+      <RNTesterThemeContext.Consumer>
+        {theme => (
+          <>
+            <Button
+              title="RepeatedlyFetch"
+              onPress={() => this.startRepeatedlyFetch()}
+            />
+            <Text style={styles.label}>Edit URL to submit:</Text>
+            <TextInput
+              returnKeyType="go"
+              defaultValue="http://www.posttestserver.com/post.php"
+              onSubmitEditing={event => {
+                this.submit(event.nativeEvent.text);
+              }}
+              style={[
+                styles.textInput,
+                {
+                  color: theme.LabelColor,
+                },
+              ]}
+            />
+            {responseURL}
+            {responseHeaders}
+            {response}
+          </>
+        )}
+      </RNTesterThemeContext.Consumer>
     );
   }
 }

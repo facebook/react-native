@@ -24,7 +24,6 @@ target_link_libraries(react_render_animations
         glog
         glog_init
         jsi
-        react_config
         react_debug
         react_render_componentregistry
         react_render_core

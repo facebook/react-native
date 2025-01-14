@@ -18,7 +18,6 @@ import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
-import com.facebook.react.fabric.ReactNativeConfig
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.ViewManagerResolver
 
@@ -63,8 +62,7 @@ protected constructor(
                     reactInstanceManager.getOrCreateViewManagers(reactApplicationContext))
               }
 
-          FabricUIManagerProviderImpl(
-                  componentFactory, ReactNativeConfig.DEFAULT_CONFIG, viewManagerRegistry)
+          FabricUIManagerProviderImpl(componentFactory, viewManagerRegistry)
               .createUIManager(reactApplicationContext)
         }
       } else {
@@ -77,6 +75,11 @@ protected constructor(
         false -> JSEngineResolutionAlgorithm.JSC
         null -> null
       }
+
+  override fun clear() {
+    super.clear()
+    DefaultReactHost.invalidate()
+  }
 
   /**
    * Returns whether the user wants to use the New Architecture or not.

@@ -43,7 +43,9 @@ endfunction()
 # Third-party prefabs
 find_package(hermes-engine REQUIRED CONFIG)
 find_package(fbjni REQUIRED CONFIG)
+find_package(jsc-android REQUIRED CONFIG)
 add_library(fbjni ALIAS fbjni::fbjni)
+add_library(jsc ALIAS jsc-android::jsc)
 
 # Third-party downloaded targets
 add_react_third_party_ndk_subdir(glog)
@@ -52,7 +54,6 @@ add_react_third_party_ndk_subdir(double-conversion)
 add_react_third_party_ndk_subdir(fast_float)
 add_react_third_party_ndk_subdir(fmt)
 add_react_third_party_ndk_subdir(folly)
-add_react_third_party_ndk_subdir(jsc)
 add_react_third_party_ndk_subdir(googletest)
 
 # Common targets
@@ -66,11 +67,11 @@ add_react_common_subdir(jsc)
 add_react_common_subdir(jsi)
 add_react_common_subdir(callinvoker)
 add_react_common_subdir(jsinspector-modern)
+add_react_common_subdir(jsinspector-modern/tracing)
 add_react_common_subdir(hermes/executor)
 add_react_common_subdir(hermes/inspector-modern)
 add_react_common_subdir(react/renderer/runtimescheduler)
 add_react_common_subdir(react/debug)
-add_react_common_subdir(react/config)
 add_react_common_subdir(react/featureflags)
 add_react_common_subdir(react/performance/timeline)
 add_react_common_subdir(react/renderer/animations)
@@ -121,7 +122,6 @@ add_react_common_subdir(react/timing)
 
 # ReactAndroid JNI targets
 add_react_build_subdir(generated/source/codegen/jni)
-add_react_android_subdir(src/main/jni/first-party/fb)
 add_react_android_subdir(src/main/jni/first-party/fbgloginit)
 add_react_android_subdir(src/main/jni/first-party/yogajni)
 add_react_android_subdir(src/main/jni/first-party/jni-lib-merge)
@@ -162,12 +162,12 @@ add_library(reactnative
           $<TARGET_OBJECTS:jni_lib_merge_glue>
           $<TARGET_OBJECTS:jserrorhandler>
           $<TARGET_OBJECTS:jsinspector>
+          $<TARGET_OBJECTS:jsinspector_tracing>
           $<TARGET_OBJECTS:jsireact>
           $<TARGET_OBJECTS:logger>
           $<TARGET_OBJECTS:mapbufferjni>
           $<TARGET_OBJECTS:react_bridging>
           $<TARGET_OBJECTS:react_codegen_rncore>
-          $<TARGET_OBJECTS:react_config>
           $<TARGET_OBJECTS:react_cxxreact>
           $<TARGET_OBJECTS:react_debug>
           $<TARGET_OBJECTS:react_devsupportjni>
@@ -229,7 +229,6 @@ target_link_libraries(reactnative
           PUBLIC
             android
             double-conversion
-            fb
             fbjni
             folly_runtime
             glog
@@ -247,11 +246,11 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:glog_init,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:jserrorhandler,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:jsinspector,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:jsinspector_tracing,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:jsireact,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:mapbufferjni,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_bridging,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_codegen_rncore,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_config,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_cxxreact,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_debug,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_devsupportjni,INTERFACE_INCLUDE_DIRECTORIES>

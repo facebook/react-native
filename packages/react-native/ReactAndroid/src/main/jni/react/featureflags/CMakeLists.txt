@@ -19,7 +19,6 @@ target_include_directories(react_featureflagsjni PUBLIC ${CMAKE_CURRENT_SOURCE_D
 
 target_link_libraries(
         react_featureflagsjni
-        fb
         fbjni
         react_featureflags
         reactnativejni

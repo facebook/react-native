@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9d829c58e49164a0b2b6b66bc0ce088a>>
+ * @generated SignedSource<<5de2cfc00f486b7d07266939ce18a397>>
  */
 
 /**
@@ -31,9 +31,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
-  override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
-
-  override fun enableAndroidLineHeightCentering(): Boolean = true
+  override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
 
   override fun enableBridgelessArchitecture(): Boolean = false
 
@@ -48,8 +46,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRenderer(): Boolean = false
-
-  override fun enableFabricRendererExclusively(): Boolean = false
 
   override fun enableFixForViewCommandRace(): Boolean = false
 
@@ -81,11 +77,11 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun excludeYogaFromRawProps(): Boolean = false
 
+  override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = true
+
   override fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean = false
 
   override fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean = false
-
-  override fun fuseboxEnabledDebug(): Boolean = true
 
   override fun fuseboxEnabledRelease(): Boolean = false
 
@@ -93,7 +89,7 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun lazyAnimationCallbacks(): Boolean = false
 
-  override fun loadVectorDrawablesOnImages(): Boolean = false
+  override fun loadVectorDrawablesOnImages(): Boolean = true
 
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
@@ -109,7 +105,9 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 
-  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = false
+  override fun useRawPropsJsiValue(): Boolean = false
+
+  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean = true
 
   override fun useTurboModuleInterop(): Boolean = false
 

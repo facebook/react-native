@@ -93,6 +93,11 @@ public class ReactModalHostManager :
   @ReactProp(name = "identifier")
   public override fun setIdentifier(view: ReactModalHostView, value: Int): Unit = Unit
 
+  public override fun setTestId(view: ReactModalHostView, value: String?) {
+    super.setTestId(view, value)
+    view.setDialogRootViewGroupTestId(value)
+  }
+
   protected override fun addEventEmitters(
       reactContext: ThemedReactContext,
       view: ReactModalHostView

@@ -74,11 +74,7 @@ static SEL selectorForType(NSString *type)
   if (!_manager && [self isBridgeMode]) {
     _manager = [_bridge moduleForClass:_managerClass];
   } else if (!_manager && !_bridgelessViewManager) {
-    _bridgelessViewManager = [_managerClass new];
-    _bridgelessViewManager.bridge = _bridge;
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
-                                                        object:nil
-                                                      userInfo:@{@"module" : _bridgelessViewManager}];
+    _bridgelessViewManager = [_bridge moduleForClass:_managerClass];
   }
   return _manager ? _manager : _bridgelessViewManager;
 }

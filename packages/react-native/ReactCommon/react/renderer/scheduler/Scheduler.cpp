@@ -10,7 +10,7 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
@@ -49,7 +49,7 @@ Scheduler::Scheduler(
 
   auto weakRuntimeScheduler =
       contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-          "RuntimeScheduler");
+          RuntimeSchedulerKey);
   react_native_assert(
       weakRuntimeScheduler.has_value() &&
       "Unexpected state: RuntimeScheduler was not provided.");
@@ -151,7 +151,7 @@ Scheduler::~Scheduler() {
   if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     auto weakRuntimeScheduler =
         contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-            "RuntimeScheduler");
+            RuntimeSchedulerKey);
     auto runtimeScheduler = weakRuntimeScheduler.has_value()
         ? weakRuntimeScheduler.value().lock()
         : nullptr;
@@ -216,37 +216,6 @@ void Scheduler::registerSurface(
   surfaceHandler.setUIManager(uiManager_.get());
 }
 
-InspectorData Scheduler::getInspectorDataForInstance(
-    const EventEmitter& eventEmitter) const noexcept {
-  return executeSynchronouslyOnSameThread_CAN_DEADLOCK<InspectorData>(
-      runtimeExecutor_, [=](jsi::Runtime& runtime) -> InspectorData {
-        auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-        auto value = uiManagerBinding->getInspectorDataForInstance(
-            runtime, eventEmitter);
-
-        // TODO T97216348: avoid transforming jsi into folly::dynamic
-        auto dynamic = jsi::dynamicFromValue(runtime, value);
-        auto source = dynamic["source"];
-
-        InspectorData result = {};
-        result.fileName =
-            source["fileName"].isNull() ? "" : source["fileName"].c_str();
-        result.lineNumber = (int)source["lineNumber"].getDouble();
-        result.columnNumber = (int)source["columnNumber"].getDouble();
-        result.selectedIndex = (int)dynamic["selectedIndex"].getDouble();
-        // TODO T97216348: remove folly::dynamic from InspectorData struct
-        result.props = dynamic["props"];
-        auto hierarchy = dynamic["hierarchy"];
-        for (auto& i : hierarchy) {
-          auto viewHierarchyValue = i["name"];
-          if (!viewHierarchyValue.isNull()) {
-            result.hierarchy.emplace_back(viewHierarchyValue.c_str());
-          }
-        }
-        return result;
-      });
-}
-
 void Scheduler::unregisterSurface(
     const SurfaceHandler& surfaceHandler) const noexcept {
   surfaceHandler.setUIManager(nullptr);
@@ -280,7 +249,7 @@ void Scheduler::animationTick() const {
 void Scheduler::uiManagerDidFinishTransaction(
     std::shared_ptr<const MountingCoordinator> mountingCoordinator,
     bool mountSynchronously) {
-  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
+  TraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_ != nullptr) {
     // This is no-op on all platforms except for Android where we need to
@@ -312,7 +281,7 @@ void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) {
-  SystraceSection s("Scheduler::uiManagerDispatchCommand");
+  TraceSection s("Scheduler::uiManagerDispatchCommand");
 
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
@@ -335,7 +304,7 @@ void Scheduler::uiManagerDidDispatchCommand(
 void Scheduler::uiManagerDidSendAccessibilityEvent(
     const ShadowNode::Shared& shadowNode,
     const std::string& eventType) {
-  SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
+  TraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
 
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);

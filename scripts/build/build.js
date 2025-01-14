@@ -36,13 +36,14 @@ const config = {
   allowPositionals: true,
   options: {
     help: {type: 'boolean'},
+    check: {type: 'boolean'},
   },
 };
 
 async function build() {
   const {
     positionals: packageNames,
-    values: {help},
+    values: {help, check},
   } = parseArgs(config);
 
   if (help) {
@@ -58,17 +59,35 @@ async function build() {
     return;
   }
 
-  console.log('\n' + chalk.bold.inverse('Building packages') + '\n');
+  if (!check) {
+    console.log('\n' + chalk.bold.inverse('Building packages') + '\n');
+  }
 
   const packagesToBuild = packageNames.length
     ? packageNames.filter(packageName => packageName in buildConfig.packages)
     : Object.keys(buildConfig.packages);
 
+  let ok = true;
   for (const packageName of packagesToBuild) {
-    await buildPackage(packageName);
+    if (check) {
+      ok &&= await checkPackage(packageName);
+    } else {
+      await buildPackage(packageName);
+    }
   }
 
-  process.exitCode = 0;
+  process.exitCode = ok ? 0 : 1;
+}
+
+async function checkPackage(packageName /*: string */) /*: Promise<boolean> */ {
+  const artifacts = await exportedBuildArtifacts(packageName);
+  if (artifacts.length > 0) {
+    console.log(
+      `${chalk.bgRed(packageName)}: has been build and the ${chalk.bold('build artifacts')} committed to the repository. This will break Flow checks.`,
+    );
+    return false;
+  }
+  return true;
 }
 
 async function buildPackage(packageName /*: string */) {
@@ -182,6 +201,33 @@ type PackageJson = {
   exports?: {[subpath: string]: string | mixed},
 };
 */
+
+function isStringOnly(entries /*: mixed */) /*: entries is string */ {
+  return typeof entries === 'string';
+}
+
+async function exportedBuildArtifacts(
+  packageName /*: string */,
+) /*: Promise<string[]> */ {
+  const packagePath = path.resolve(PACKAGES_DIR, packageName, 'package.json');
+  const pkg /*: PackageJson */ = JSON.parse(
+    await fs.readFile(packagePath, 'utf8'),
+  );
+  if (pkg.exports == null) {
+    throw new Error(
+      packageName +
+        ' does not define an "exports" field in its package.json. As part ' +
+        'of the build setup, this field must be used in order to rewrite ' +
+        'paths to built files in production.',
+    );
+  }
+
+  return Object.values(pkg.exports)
+    .filter(isStringOnly)
+    .filter(filepath =>
+      path.dirname(filepath).split(path.sep).includes(BUILD_DIR),
+    );
+}
 
 /**
  * Get the set of Flow entry points to build.

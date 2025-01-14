@@ -1635,6 +1635,94 @@ TEST_P(JSITest, UTF16Test) {
   EXPECT_EQ(str.utf16(rd), u"\uFFFD\u007A");
 }
 
+TEST_P(JSITest, GetStringDataTest) {
+  // This Runtime Decorator is used to test the default getStringData
+  // implementation for VMs that do not provide their own implementation
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void getStringData(
+        const String& str,
+        void* ctx,
+        void (*cb)(void* ctx, bool ascii, const void* data, size_t num))
+        override {
+      Runtime::getStringData(str, ctx, cb);
+    }
+  };
+
+  RD rd = RD(rt);
+  String str = String::createFromUtf8(rd, "hello👋");
+
+  std::u16string buf;
+  auto cb = [&buf](bool ascii, const void* data, size_t num) {
+    assert(!ascii && "Default implementation is always utf16");
+    buf.append((const char16_t*)data, num);
+  };
+
+  str.getStringData(rd, cb);
+  EXPECT_EQ(buf, str.utf16(rd));
+}
+
+TEST_P(JSITest, ObjectSetPrototype) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Object.setPrototypeOf
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void setPrototypeOf(const Object& object, const Value& prototype) override {
+      return Runtime::setPrototypeOf(object, prototype);
+    }
+
+    Value getPrototypeOf(const Object& object) override {
+      return Runtime::getPrototypeOf(object);
+    }
+  };
+
+  RD rd = RD(rt);
+  Object child(rd);
+
+  // Tests null value as prototype
+  child.setPrototype(rd, Value::null());
+  EXPECT_TRUE(child.getPrototype(rd).isNull());
+
+  Object prototypeObj(rd);
+  prototypeObj.setProperty(rd, "someProperty", 123);
+  Value prototype(rd, prototypeObj);
+
+  child.setPrototype(rd, prototype);
+  EXPECT_EQ(child.getProperty(rd, "someProperty").getNumber(), 123);
+
+  auto getPrototypeRes = child.getPrototype(rd).asObject(rd);
+  EXPECT_EQ(getPrototypeRes.getProperty(rd, "someProperty").getNumber(), 123);
+}
+
+TEST_P(JSITest, ObjectCreateWithPrototype) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Object.create(prototype)
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    Object createObjectWithPrototype(const Value& prototype) override {
+      return Runtime::createObjectWithPrototype(prototype);
+    }
+  };
+
+  RD rd = RD(rt);
+  Object prototypeObj(rd);
+  prototypeObj.setProperty(rd, "someProperty", 123);
+  Value prototype(rd, prototypeObj);
+
+  Object child = Object::create(rd, prototype);
+  EXPECT_EQ(child.getProperty(rd, "someProperty").getNumber(), 123);
+
+  // Tests null value as prototype
+  child = Object::create(rd, Value::null());
+  EXPECT_TRUE(child.getPrototype(rd).isNull());
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,

@@ -25,17 +25,17 @@ internal class EventAnimationDriver(
     @JvmField internal var valueNode: ValueAnimatedNode
 ) : RCTModernEventEmitter {
   @Deprecated("Deprecated in Java")
-  override fun receiveEvent(targetReactTag: Int, eventName: String, event: WritableMap?) =
-      receiveEvent(-1, targetReactTag, eventName, event)
+  override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) =
+      receiveEvent(-1, targetTag, eventName, params)
 
   override fun receiveEvent(
       surfaceId: Int,
       targetTag: Int,
       eventName: String,
-      event: WritableMap?
+      params: WritableMap?
   ) =
       // We assume this event can't be coalesced. `customCoalesceKey` has no meaning in Fabric.
-      receiveEvent(surfaceId, targetTag, eventName, false, 0, event, EventCategoryDef.UNSPECIFIED)
+      receiveEvent(surfaceId, targetTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
 
   @Deprecated("Deprecated in Java")
   override fun receiveTouches(
@@ -47,7 +47,7 @@ internal class EventAnimationDriver(
   }
 
   @Deprecated("Deprecated in Java")
-  override fun receiveTouches(touchEvent: TouchEvent) {
+  override fun receiveTouches(event: TouchEvent) {
     throw UnsupportedOperationException("receiveTouches is not support by native animated events")
   }
 
@@ -57,13 +57,13 @@ internal class EventAnimationDriver(
       eventName: String,
       canCoalesceEvent: Boolean,
       customCoalesceKey: Int,
-      event: WritableMap?,
+      params: WritableMap?,
       @EventCategoryDef category: Int
   ) {
-    requireNotNull(event) { "Native animated events must have event data." }
+    requireNotNull(params) { "Native animated events must have event data." }
 
     // Get the new value for the node by looking into the event map using the provided event path.
-    var currMap: ReadableMap? = event
+    var currMap: ReadableMap? = params
     var currArray: ReadableArray? = null
     for (i in 0 until eventPath.size - 1) {
       if (currMap != null) {

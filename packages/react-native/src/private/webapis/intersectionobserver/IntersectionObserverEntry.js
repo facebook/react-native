@@ -77,7 +77,7 @@ export default class IntersectionObserverEntry {
   /**
    * Returns the ratio of the `intersectionRect` to the `boundingRootRect`.
    */
-  get rn_intersectionRootRatio(): number {
+  get rnRootIntersectionRatio(): number {
     const intersectionRect = this.intersectionRect;
 
     const rootRect = this._nativeEntry.rootRect;

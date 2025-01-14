@@ -14,6 +14,7 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {TextStyle} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import RNTesterButton from '../../components/RNTesterButton';
+import RNTesterText from '../../components/RNTesterText';
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 import ExampleTextInput from './ExampleTextInput';
 import * as React from 'react';
@@ -22,6 +23,7 @@ import {
   Button,
   Platform,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   View,
@@ -75,6 +77,9 @@ const styles = StyleSheet.create({
     right: -5,
     bottom: -5,
   },
+  wrappedText: {
+    maxWidth: 300,
+  },
 });
 
 class AutoFocusWithSelectOnFocusTextExample extends React.Component<
@@ -114,7 +119,7 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
   render(): React.Node {
     return (
       <View style={styles.labelContainer}>
-        <Text style={styles.label}>{this.props.label}</Text>
+        <RNTesterText style={styles.label}>{this.props.label}</RNTesterText>
         <View style={styles.inputContainer}>{this.props.children}</View>
       </View>
     );
@@ -417,13 +422,13 @@ class TextEventsExample extends React.Component<{...}, $FlowFixMeState> {
           }
           style={styles.singleLine}
         />
-        <Text style={styles.eventLabel}>
+        <RNTesterText style={styles.eventLabel}>
           {this.state.curText}
           {'\n'}
           (prev: {this.state.prevText}){'\n'}
           (prev2: {this.state.prev2Text}){'\n'}
           (prev3: {this.state.prev3Text})
-        </Text>
+        </RNTesterText>
       </View>
     );
   }
@@ -571,34 +576,38 @@ class SelectionExample extends React.Component<
           />
         </View>
         <View>
-          <Text testID={`${this.props.testID}-selection`}>
+          <RNTesterText testID={`${this.props.testID}-selection`}>
             selection ={' '}
             {`{start:${this.state.selection.start},end:${this.state.selection.end}}`}
-          </Text>
-          <Text
+          </RNTesterText>
+          <RNTesterText
             testID={`${this.props.testID}-cursor-start`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onPress={this.placeAt.bind(this, 0)}>
             Place at Start (0, 0)
-          </Text>
-          <Text
+          </RNTesterText>
+          <RNTesterText
             testID={`${this.props.testID}-cursor-end`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onPress={this.placeAt.bind(this, length)}>
             Place at End ({length}, {length})
-          </Text>
+          </RNTesterText>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
            * parameters */}
-          <Text onPress={this.placeAtRandom.bind(this)}>Place at Random</Text>
-          <Text
+          <RNTesterText onPress={this.placeAtRandom.bind(this)}>
+            Place at Random
+          </RNTesterText>
+          <RNTesterText
             testID={`${this.props.testID}-select-all`}
             // $FlowFixMe[method-unbinding] added when improving typing for this parameters
             onPress={this.select.bind(this, 0, length)}>
             Select All
-          </Text>
+          </RNTesterText>
           {/* $FlowFixMe[method-unbinding] added when improving typing for this
            * parameters */}
-          <Text onPress={this.selectRandom.bind(this)}>Select Random</Text>
+          <RNTesterText onPress={this.selectRandom.bind(this)}>
+            Select Random
+          </RNTesterText>
         </View>
       </View>
     );
@@ -855,7 +864,7 @@ function DynamicContentWidth() {
 
   return (
     <View>
-      <Text>Uncontrolled:</Text>
+      <RNTesterText>Uncontrolled:</RNTesterText>
       <TextInput
         placeholder="Type..."
         style={{
@@ -864,7 +873,7 @@ function DynamicContentWidth() {
           backgroundColor: 'orange',
         }}
       />
-      <Text>Controlled:</Text>
+      <RNTesterText>Controlled:</RNTesterText>
       <TextInput
         placeholder="..."
         value={text}
@@ -876,6 +885,43 @@ function DynamicContentWidth() {
         }}
       />
       <Button title="Update controlled Input" onPress={update} />
+    </View>
+  );
+}
+
+function AutogrowingTextInputExample({
+  style,
+  ...props
+}: React.ElementConfig<typeof TextInput>) {
+  const [multiline, setMultiline] = React.useState(true);
+  const [fullWidth, setFullWidth] = React.useState(true);
+  const [text, setText] = React.useState('');
+  const [contentSize, setContentSize] = React.useState({width: 0, height: 0});
+
+  return (
+    <View>
+      <RNTesterText>Full width:</RNTesterText>
+      <Switch value={fullWidth} onValueChange={setFullWidth} />
+
+      <RNTesterText>Multiline:</RNTesterText>
+      <Switch value={multiline} onValueChange={setMultiline} />
+
+      <RNTesterText>TextInput:</RNTesterText>
+      <ExampleTextInput
+        multiline={multiline}
+        style={[style, {width: fullWidth ? '100%' : '50%'}]}
+        onChangeText={setText}
+        onContentSizeChange={({nativeEvent}) => {
+          setContentSize({
+            width: nativeEvent.contentSize.width,
+            height: nativeEvent.contentSize.height,
+          });
+        }}
+        {...props}
+      />
+      <RNTesterText>Plain text value representation:</RNTesterText>
+      <RNTesterText>{text}</RNTesterText>
+      <RNTesterText>Content Size: {JSON.stringify(contentSize)}</RNTesterText>
     </View>
   );
 }
@@ -1188,6 +1234,29 @@ module.exports = ([
     name: 'dynamicWidth',
     render: function (): React.Node {
       return <DynamicContentWidth />;
+    },
+  },
+  {
+    title: 'Auto-expanding',
+    render: function (): React.Node {
+      return (
+        <View style={styles.wrappedText}>
+          <AutogrowingTextInputExample
+            enablesReturnKeyAutomatically={true}
+            returnKeyType="done"
+            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}>
+            generic generic generic
+            <Text style={{fontSize: 6, color: 'red'}}>
+              small small small small small small
+            </Text>
+            <Text>regular regular</Text>
+            <Text style={{fontSize: 30, color: 'green'}}>
+              huge huge huge huge huge
+            </Text>
+            generic generic generic
+          </AutogrowingTextInputExample>
+        </View>
+      );
     },
   },
 ]: Array<RNTesterModuleExample>);

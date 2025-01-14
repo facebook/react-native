@@ -11,10 +11,6 @@ require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/SpecMock.rb"
 require_relative "./test_utils/FileMock.rb"
 
-def get_folly_config()
-    return Helpers::Constants.folly_config
-end
-
 ## Monkey patching to reset properly static props of the Helper.
 class NewArchitectureHelper
     def self.reset
@@ -524,16 +520,20 @@ def prepare_installer_for_cpp_flags(xcconfigs, build_configs)
     end
 
     pod_target_installation_results_map = {}
+    user_build_configuration_map = {}
     build_configs.each do |name, build_configs|
         pod_target_installation_results_map[name.to_s] = prepare_pod_target_installation_results_mock(
             name.to_s, build_configs
         )
+        build_configs.each do |config|
+            user_build_configuration_map[config.name] = config
+        end
     end
 
     return InstallerMock.new(
         PodsProjectMock.new,
         [
-            AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/")
+            AggregatedProjectMock.new(:xcconfigs => xcconfigs_map, :base_path => "a/path/", :user_build_configurations => user_build_configuration_map)
         ],
         :pod_target_installation_results => pod_target_installation_results_map
     )

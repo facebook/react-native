@@ -7,7 +7,8 @@
 
 #include "JniJSModulesUnbundle.h"
 
-#include <fb/assert.h>
+#include <react/debug/react_native_assert.h>
+
 #include <libgen.h>
 #include <sys/endian.h>
 #include <cstdint>
@@ -72,9 +73,7 @@ bool JniJSModulesUnbundle::isUnbundle(
 JSModulesUnbundle::Module JniJSModulesUnbundle::getModule(
     uint32_t moduleId) const {
   // can be nullptr for default constructor.
-  FBASSERTMSGF(
-      m_assetManager != nullptr,
-      "Unbundle has not been initialized with an asset manager");
+  react_native_assert(m_assetManager != nullptr);
 
   std::ostringstream sourceUrlBuilder;
   sourceUrlBuilder << moduleId << ".js";

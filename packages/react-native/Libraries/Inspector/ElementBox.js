@@ -10,65 +10,72 @@
 
 'use strict';
 
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {InspectedElementFrame} from './Inspector';
+
+import React from 'react';
+
 const View = require('../Components/View/View');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Dimensions = require('../Utilities/Dimensions').default;
 const BorderBox = require('./BorderBox');
 const resolveBoxStyle = require('./resolveBoxStyle');
-const React = require('react');
 
-class ElementBox extends React.Component<$FlowFixMeProps> {
-  render(): React.Node {
-    const style = flattenStyle(this.props.style) || {};
-    let margin: ?$ReadOnly<Style> = resolveBoxStyle('margin', style);
-    let padding: ?$ReadOnly<Style> = resolveBoxStyle('padding', style);
+type Props = $ReadOnly<{
+  frame: InspectedElementFrame,
+  style?: ?ViewStyleProp,
+}>;
 
-    const frameStyle = {...this.props.frame};
-    const contentStyle: {width: number, height: number} = {
-      width: this.props.frame.width,
-      height: this.props.frame.height,
-    };
+function ElementBox({frame, style}: Props): React.Node {
+  const flattenedStyle = flattenStyle(style) || {};
+  let margin: ?$ReadOnly<Style> = resolveBoxStyle('margin', flattenedStyle);
+  let padding: ?$ReadOnly<Style> = resolveBoxStyle('padding', flattenedStyle);
 
-    if (margin != null) {
-      margin = resolveRelativeSizes(margin);
+  const frameStyle = {...frame};
+  const contentStyle: {width: number, height: number} = {
+    width: frame.width,
+    height: frame.height,
+  };
 
-      frameStyle.top -= margin.top;
-      frameStyle.left -= margin.left;
-      frameStyle.height += margin.top + margin.bottom;
-      frameStyle.width += margin.left + margin.right;
+  if (margin != null) {
+    margin = resolveRelativeSizes(margin);
 
-      if (margin.top < 0) {
-        contentStyle.height += margin.top;
-      }
-      if (margin.bottom < 0) {
-        contentStyle.height += margin.bottom;
-      }
-      if (margin.left < 0) {
-        contentStyle.width += margin.left;
-      }
-      if (margin.right < 0) {
-        contentStyle.width += margin.right;
-      }
+    frameStyle.top -= margin.top;
+    frameStyle.left -= margin.left;
+    frameStyle.height += margin.top + margin.bottom;
+    frameStyle.width += margin.left + margin.right;
+
+    if (margin.top < 0) {
+      contentStyle.height += margin.top;
     }
-
-    if (padding != null) {
-      padding = resolveRelativeSizes(padding);
-
-      contentStyle.width -= padding.left + padding.right;
-      contentStyle.height -= padding.top + padding.bottom;
+    if (margin.bottom < 0) {
+      contentStyle.height += margin.bottom;
     }
-
-    return (
-      <View style={[styles.frame, frameStyle]} pointerEvents="none">
-        <BorderBox box={margin} style={styles.margin}>
-          <BorderBox box={padding} style={styles.padding}>
-            <View style={[styles.content, contentStyle]} />
-          </BorderBox>
-        </BorderBox>
-      </View>
-    );
+    if (margin.left < 0) {
+      contentStyle.width += margin.left;
+    }
+    if (margin.right < 0) {
+      contentStyle.width += margin.right;
+    }
   }
+
+  if (padding != null) {
+    padding = resolveRelativeSizes(padding);
+
+    contentStyle.width -= padding.left + padding.right;
+    contentStyle.height -= padding.top + padding.bottom;
+  }
+
+  return (
+    <View style={[styles.frame, frameStyle]} pointerEvents="none">
+      <BorderBox box={margin} style={styles.margin}>
+        <BorderBox box={padding} style={styles.padding}>
+          <View style={[styles.content, contentStyle]} />
+        </BorderBox>
+      </BorderBox>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

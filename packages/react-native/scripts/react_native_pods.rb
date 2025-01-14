@@ -41,9 +41,9 @@ end
 # This function prepares the project for React Native, before processing
 # all the target exposed by the framework.
 def prepare_react_native_project!
-  # Temporary solution to suppress duplicated GUID error.
+  # Temporary solution to suppress duplicated GUID error & master specs repo warning.
   # Can be removed once we move to generate files outside pod install.
-  install! 'cocoapods', :deterministic_uuids => false
+  install! 'cocoapods', :deterministic_uuids => false, :warn_for_unused_master_specs_repo => false
 
   ReactNativePodsUtils.create_xcode_env_if_missing
 end
@@ -96,8 +96,6 @@ def use_react_native! (
 
   ReactNativePodsUtils.warn_if_not_on_arm64()
 
-  build_codegen!(prefix, relative_path_from_current)
-
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"
   pod 'RCTRequired', :path => "#{prefix}/Libraries/Required"
@@ -128,7 +126,6 @@ def use_react_native! (
   pod 'React-defaultsnativemodule', :path => "#{prefix}/ReactCommon/react/nativemodule/defaults"
   pod 'React-Mapbuffer', :path => "#{prefix}/ReactCommon"
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
-  pod 'React-nativeconfig', :path => "#{prefix}/ReactCommon"
   pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   pod 'React-RCTFBReactNativeSpec', :path => "#{prefix}/React"
 
@@ -140,6 +137,7 @@ def use_react_native! (
 
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
+  pod 'React-jsinspectortracing', :path => "#{prefix}/ReactCommon/jsinspector-modern/tracing"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
   pod 'React-performancetimeline', :path => "#{prefix}/ReactCommon/react/performance/timeline"

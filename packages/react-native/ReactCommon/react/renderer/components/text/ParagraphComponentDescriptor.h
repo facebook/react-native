@@ -14,18 +14,20 @@
 
 namespace facebook::react {
 
+extern const char TextLayoutManagerKey[];
+
 /*
  * Descriptor for <Paragraph> component.
  */
 class ParagraphComponentDescriptor final
     : public ConcreteComponentDescriptor<ParagraphShadowNode> {
  public:
-  ParagraphComponentDescriptor(const ComponentDescriptorParameters& parameters)
-      : ConcreteComponentDescriptor<ParagraphShadowNode>(parameters) {
-    // Every single `ParagraphShadowNode` will have a reference to
-    // a shared `TextLayoutManager`.
-    textLayoutManager_ = std::make_shared<TextLayoutManager>(contextContainer_);
-  }
+  explicit ParagraphComponentDescriptor(
+      const ComponentDescriptorParameters& parameters)
+      : ConcreteComponentDescriptor<ParagraphShadowNode>(parameters),
+        textLayoutManager_(getManagerByName<TextLayoutManager>(
+            contextContainer_,
+            TextLayoutManagerKey)) {}
 
  protected:
   void adopt(ShadowNode& shadowNode) const override {
@@ -39,7 +41,8 @@ class ParagraphComponentDescriptor final
   }
 
  private:
-  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
+  // Every `ParagraphShadowNode` has a reference to a shared `TextLayoutManager`
+  const std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 };
 
 } // namespace facebook::react

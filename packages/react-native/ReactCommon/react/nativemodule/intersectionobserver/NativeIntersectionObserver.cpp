@@ -93,14 +93,11 @@ NativeIntersectionObserver::convertToNativeModuleEntry(
       entry.rootRect.origin.y,
       entry.rootRect.size.width,
       entry.rootRect.size.height};
-  std::optional<RectAsTuple> intersectionRect;
-  if (entry.intersectionRect) {
-    intersectionRect = {
-        entry.intersectionRect.value().origin.x,
-        entry.intersectionRect.value().origin.y,
-        entry.intersectionRect.value().size.width,
-        entry.intersectionRect.value().size.height};
-  }
+  RectAsTuple intersectionRect = {
+      entry.intersectionRect.origin.x,
+      entry.intersectionRect.origin.y,
+      entry.intersectionRect.size.width,
+      entry.intersectionRect.size.height};
 
   NativeIntersectionObserverEntry nativeModuleEntry = {
       entry.intersectionObserverId,

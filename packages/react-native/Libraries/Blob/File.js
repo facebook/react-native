@@ -12,7 +12,8 @@
 
 import type {BlobOptions} from './BlobTypes';
 
-const Blob = require('./Blob');
+import Blob from './Blob';
+
 const invariant = require('invariant');
 
 /**

@@ -8,7 +8,7 @@
 #include "RuntimeScheduler_Modern.h"
 #include "SchedulerPriorityUtils.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <react/timing/primitives.h>
@@ -39,14 +39,14 @@ RuntimeScheduler_Modern::RuntimeScheduler_Modern(
       onTaskError_(std::move(onTaskError)) {}
 
 void RuntimeScheduler_Modern::scheduleWork(RawCallback&& callback) noexcept {
-  SystraceSection s("RuntimeScheduler::scheduleWork");
+  TraceSection s("RuntimeScheduler::scheduleWork");
   scheduleTask(SchedulerPriority::ImmediatePriority, std::move(callback));
 }
 
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
     SchedulerPriority priority,
     jsi::Function&& callback) noexcept {
-  SystraceSection s(
+  TraceSection s(
       "RuntimeScheduler::scheduleTask",
       "priority",
       serialize(priority),
@@ -65,7 +65,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
     SchedulerPriority priority,
     RawCallback&& callback) noexcept {
-  SystraceSection s(
+  TraceSection s(
       "RuntimeScheduler::scheduleTask",
       "priority",
       serialize(priority),
@@ -84,7 +84,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleTask(
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
     jsi::Function&& callback,
     RuntimeSchedulerTimeout customTimeout) noexcept {
-  SystraceSection s(
+  TraceSection s(
       "RuntimeScheduler::scheduleIdleTask",
       "customTimeout",
       customTimeout.count(),
@@ -104,7 +104,7 @@ std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
 std::shared_ptr<Task> RuntimeScheduler_Modern::scheduleIdleTask(
     RawCallback&& callback,
     RuntimeSchedulerTimeout customTimeout) noexcept {
-  SystraceSection s(
+  TraceSection s(
       "RuntimeScheduler::scheduleIdleTask",
       "customTimeout",
       customTimeout.count(),
@@ -146,7 +146,7 @@ RuntimeSchedulerTimePoint RuntimeScheduler_Modern::now() const noexcept {
 
 void RuntimeScheduler_Modern::executeNowOnTheSameThread(
     RawCallback&& callback) {
-  SystraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
+  TraceSection s("RuntimeScheduler::executeNowOnTheSameThread");
 
   static thread_local jsi::Runtime* runtimePtr = nullptr;
 
@@ -166,8 +166,7 @@ void RuntimeScheduler_Modern::executeNowOnTheSameThread(
   executeSynchronouslyOnSameThread_CAN_DEADLOCK(
       runtimeExecutor_,
       [this, currentTime, &task](jsi::Runtime& runtime) mutable {
-        SystraceSection s2(
-            "RuntimeScheduler::executeNowOnTheSameThread callback");
+        TraceSection s2("RuntimeScheduler::executeNowOnTheSameThread callback");
 
         syncTaskRequests_--;
         runtimePtr = &runtime;
@@ -201,7 +200,7 @@ void RuntimeScheduler_Modern::callExpiredTasks(jsi::Runtime& runtime) {
 void RuntimeScheduler_Modern::scheduleRenderingUpdate(
     SurfaceId surfaceId,
     RuntimeSchedulerRenderingUpdate&& renderingUpdate) {
-  SystraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
+  TraceSection s("RuntimeScheduler::scheduleRenderingUpdate");
 
   surfaceIdsWithPendingRenderingUpdates_.insert(surfaceId);
   pendingRenderingUpdates_.push(renderingUpdate);
@@ -256,7 +255,7 @@ void RuntimeScheduler_Modern::scheduleEventLoop() {
 void RuntimeScheduler_Modern::runEventLoop(
     jsi::Runtime& runtime,
     bool onlyExpired) {
-  SystraceSection s("RuntimeScheduler::runEventLoop");
+  TraceSection s("RuntimeScheduler::runEventLoop");
 
   auto previousPriority = currentPriority_;
 
@@ -308,7 +307,7 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     jsi::Runtime& runtime,
     Task& task,
     RuntimeSchedulerTimePoint taskStartTime) {
-  SystraceSection s("RuntimeScheduler::runEventLoopTick");
+  TraceSection s("RuntimeScheduler::runEventLoopTick");
 
   ScopedShadowTreeRevisionLock revisionLock(
       shadowTreeRevisionConsistencyManager_);
@@ -346,7 +345,7 @@ void RuntimeScheduler_Modern::runEventLoopTick(
  * https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering.
  */
 void RuntimeScheduler_Modern::updateRendering() {
-  SystraceSection s("RuntimeScheduler::updateRendering");
+  TraceSection s("RuntimeScheduler::updateRendering");
 
   if (eventTimingDelegate_ != nullptr &&
       ReactNativeFeatureFlags::enableReportEventPaintTime()) {
@@ -369,7 +368,7 @@ void RuntimeScheduler_Modern::executeTask(
     jsi::Runtime& runtime,
     Task& task,
     bool didUserCallbackTimeout) const {
-  SystraceSection s(
+  TraceSection s(
       "RuntimeScheduler::executeTask",
       "priority",
       serialize(task.priority),
@@ -401,7 +400,7 @@ void RuntimeScheduler_Modern::executeTask(
  */
 void RuntimeScheduler_Modern::performMicrotaskCheckpoint(
     jsi::Runtime& runtime) {
-  SystraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
+  TraceSection s("RuntimeScheduler::performMicrotaskCheckpoint");
 
   if (performingMicrotaskCheckpoint_) {
     return;

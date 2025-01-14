@@ -162,7 +162,7 @@ export function observe({
     intersectionObserverId,
     targetShadowNode,
     thresholds: registeredObserver.observer.thresholds,
-    rootThresholds: registeredObserver.observer.rootThresholds,
+    rootThresholds: registeredObserver.observer.rnRootThresholds,
   });
 
   return true;

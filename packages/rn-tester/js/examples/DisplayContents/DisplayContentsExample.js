@@ -13,7 +13,7 @@
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
-import {StyleSheet, TextInput, View, Text} from 'react-native';
+import {StyleSheet, Text, TextInput, View} from 'react-native';
 
 const styles = StyleSheet.create({
   contents: {

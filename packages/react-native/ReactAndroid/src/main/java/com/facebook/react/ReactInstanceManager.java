@@ -651,6 +651,16 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void onHostPause(@Nullable Activity activity) {
     if (mRequireActivity) {
+      if (mCurrentActivity == null) {
+        String message =
+            "ReactInstanceManager.onHostPause called with null activity, expected:"
+                + mCurrentActivity.getClass().getSimpleName();
+        FLog.e(TAG, message);
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (StackTraceElement element : stackTrace) {
+          FLog.e(TAG, element.toString());
+        }
+      }
       Assertions.assertCondition(mCurrentActivity != null);
     }
     if (mCurrentActivity != null) {
@@ -1521,7 +1531,8 @@ public class ReactInstanceManager {
     if (mBridgeIdleDebugListener != null) {
       catalystInstance.addBridgeIdleDebugListener(mBridgeIdleDebugListener);
     }
-    if (Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
+    if (BuildConfig.ENABLE_PERFETTO
+        || Systrace.isTracing(TRACE_TAG_REACT_APPS | TRACE_TAG_REACT_JS_VM_CALLS)) {
       catalystInstance.setGlobalVariable("__RCTProfileIsProfiling", "true");
     }
 

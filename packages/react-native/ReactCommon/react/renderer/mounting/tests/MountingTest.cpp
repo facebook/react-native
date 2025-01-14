@@ -32,9 +32,6 @@ static SharedViewProps nonFlattenedDefaultProps(
   dynamic["accessible"] = true;
 
   ContextContainer contextContainer;
-  contextContainer.insert(
-      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
-
   PropsParserContext parserContext{-1, contextContainer};
 
   return std::static_pointer_cast<const ViewProps>(
@@ -74,9 +71,6 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
   auto eventDispatcher = EventDispatcher::Shared{};
 
   auto contextContainer = std::make_shared<ContextContainer>();
-  contextContainer->insert(
-      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
-
   auto componentDescriptorParameters =
       ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
   auto viewComponentDescriptor =
@@ -372,9 +366,6 @@ TEST(MountingTest, testReorderingInstructionGeneration) {
 TEST(MountingTest, testViewReparentingInstructionGeneration) {
   auto eventDispatcher = EventDispatcher::Shared{};
   auto contextContainer = std::make_shared<ContextContainer>();
-  contextContainer->insert(
-      "ReactNativeConfig", std::make_shared<EmptyReactNativeConfig>());
-
   auto componentDescriptorParameters =
       ComponentDescriptorParameters{eventDispatcher, contextContainer, nullptr};
   auto viewComponentDescriptor =
@@ -558,8 +549,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations1[0].oldChildShadowView.tag, childG->getTag());
   EXPECT_EQ(mutations1[1].type, ShadowViewMutation::Update);
   EXPECT_EQ(mutations1[1].oldChildShadowView.tag, reparentedViewA->getTag());
-  // This is incorrect! ChildH does not exist yet at this point
-  EXPECT_EQ(mutations1[1].parentShadowView.tag, childH->getTag());
+  EXPECT_EQ(mutations1[1].parentTag, childG->getTag());
   EXPECT_EQ(mutations1[2].type, ShadowViewMutation::Remove);
   EXPECT_EQ(mutations1[2].oldChildShadowView.tag, reparentedViewA->getTag());
   EXPECT_EQ(mutations1[3].type, ShadowViewMutation::Create);
@@ -574,7 +564,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations2.size(), 5);
   EXPECT_EQ(mutations2[0].type, ShadowViewMutation::Update);
   EXPECT_EQ(mutations2[0].oldChildShadowView.tag, childG->getTag());
-  EXPECT_EQ(mutations2[0].parentShadowView.tag, emptyRootNode->getTag());
+  EXPECT_EQ(mutations2[0].parentTag, emptyRootNode->getTag());
   EXPECT_EQ(mutations2[1].type, ShadowViewMutation::Remove);
   EXPECT_EQ(mutations2[1].oldChildShadowView.tag, reparentedViewA->getTag());
   EXPECT_EQ(mutations2[2].type, ShadowViewMutation::Remove);
@@ -594,7 +584,7 @@ TEST(MountingTest, testViewReparentingInstructionGeneration) {
   EXPECT_EQ(mutations3.size(), 15);
   EXPECT_EQ(mutations3[0].type, ShadowViewMutation::Update);
   EXPECT_EQ(mutations3[0].oldChildShadowView.tag, childG->getTag());
-  EXPECT_EQ(mutations3[0].parentShadowView.tag, emptyRootNode->getTag());
+  EXPECT_EQ(mutations3[0].parentTag, emptyRootNode->getTag());
   EXPECT_EQ(mutations3[1].type, ShadowViewMutation::Remove);
   EXPECT_EQ(mutations3[1].oldChildShadowView.tag, reparentedViewA->getTag());
   EXPECT_EQ(mutations3[2].type, ShadowViewMutation::Create);

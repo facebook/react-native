@@ -8,13 +8,13 @@
 #include "UIManager.h"
 
 #include <cxxreact/JSExecutor.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
-#include <react/renderer/uimanager/SurfaceRegistryBinding.h>
+#include <react/renderer/uimanager/AppRegistryBinding.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 #include <react/renderer/uimanager/UIManagerCommitHook.h>
 #include <react/renderer/uimanager/UIManagerMountHook.h>
@@ -71,7 +71,7 @@ std::shared_ptr<ShadowNode> UIManager::createNode(
     SurfaceId surfaceId,
     RawProps rawProps,
     InstanceHandle::Shared instanceHandle) const {
-  SystraceSection s("UIManager::createNode", "componentName", name);
+  TraceSection s("UIManager::createNode", "componentName", name);
 
   auto& componentDescriptor = componentDescriptorRegistry_->at(name);
   auto fallbackDescriptor =
@@ -114,7 +114,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
     const ShadowNode& shadowNode,
     const ShadowNode::SharedListOfShared& children,
     RawProps rawProps) const {
-  SystraceSection s(
+  TraceSection s(
       "UIManager::cloneNode", "componentName", shadowNode.getComponentName());
 
   PropsParserContext propsParserContext{
@@ -181,7 +181,7 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
 void UIManager::appendChild(
     const ShadowNode::Shared& parentShadowNode,
     const ShadowNode::Shared& childShadowNode) const {
-  SystraceSection s("UIManager::appendChild");
+  TraceSection s("UIManager::appendChild");
 
   auto& componentDescriptor = parentShadowNode->getComponentDescriptor();
   componentDescriptor.appendChild(parentShadowNode, childShadowNode);
@@ -191,7 +191,7 @@ void UIManager::completeSurface(
     SurfaceId surfaceId,
     const ShadowNode::UnsharedListOfShared& rootChildren,
     ShadowTree::CommitOptions commitOptions) {
-  SystraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
+  TraceSection s("UIManager::completeSurface", "surfaceId", surfaceId);
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree& shadowTree) {
     auto result = shadowTree.commit(
@@ -230,16 +230,21 @@ void UIManager::startSurface(
     const std::string& moduleName,
     const folly::dynamic& props,
     DisplayMode displayMode) const {
-  SystraceSection s("UIManager::startSurface");
+  TraceSection s("UIManager::startSurface");
 
   auto surfaceId = shadowTree->getSurfaceId();
   shadowTreeRegistry_.add(std::move(shadowTree));
 
   runtimeExecutor_([=](jsi::Runtime& runtime) {
-    SystraceSection s("UIManager::startSurface::onRuntime");
-    SurfaceRegistryBinding::startSurface(
+    TraceSection s("UIManager::startSurface::onRuntime");
+    AppRegistryBinding::startSurface(
         runtime, surfaceId, moduleName, props, displayMode);
   });
+}
+
+void UIManager::startEmptySurface(ShadowTree::Unique&& shadowTree) const {
+  TraceSection s("UIManager::startEmptySurface");
+  shadowTreeRegistry_.add(std::move(shadowTree));
 }
 
 void UIManager::setSurfaceProps(
@@ -247,16 +252,16 @@ void UIManager::setSurfaceProps(
     const std::string& moduleName,
     const folly::dynamic& props,
     DisplayMode displayMode) const {
-  SystraceSection s("UIManager::setSurfaceProps");
+  TraceSection s("UIManager::setSurfaceProps");
 
   runtimeExecutor_([=](jsi::Runtime& runtime) {
-    SurfaceRegistryBinding::setSurfaceProps(
+    AppRegistryBinding::setSurfaceProps(
         runtime, surfaceId, moduleName, props, displayMode);
   });
 }
 
 ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
-  SystraceSection s("UIManager::stopSurface");
+  TraceSection s("UIManager::stopSurface");
 
   // Stop any ongoing animations.
   stopSurfaceForAnimationDelegate(surfaceId);
@@ -270,7 +275,7 @@ ShadowTree::Unique UIManager::stopSurface(SurfaceId surfaceId) const {
     // commits from the JavaScript side will not be able to reference a
     // `ShadowTree` and will fail silently.
     runtimeExecutor_([=](jsi::Runtime& runtime) {
-      SurfaceRegistryBinding::stopSurface(runtime, surfaceId);
+      AppRegistryBinding::stopSurface(runtime, surfaceId);
     });
 
     if (leakChecker_) {
@@ -342,7 +347,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
     const ShadowNode& shadowNode,
     const ShadowNode* ancestorShadowNode,
     LayoutableShadowNode::LayoutInspectingPolicy policy) const {
-  SystraceSection s("UIManager::getRelativeLayoutMetrics");
+  TraceSection s("UIManager::getRelativeLayoutMetrics");
 
   // We might store here an owning pointer to `ancestorShadowNode` to ensure
   // that the node is not deallocated during method execution lifetime.
@@ -375,7 +380,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 }
 
 void UIManager::updateState(const StateUpdate& stateUpdate) const {
-  SystraceSection s(
+  TraceSection s(
       "UIManager::updateState",
       "componentName",
       stateUpdate.family->getComponentName());
@@ -614,7 +619,7 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     const ShadowTree& shadowTree,
     const RootShadowNode::Shared& oldRootShadowNode,
     const RootShadowNode::Unshared& newRootShadowNode) const {
-  SystraceSection s("UIManager::shadowTreeWillCommit");
+  TraceSection s("UIManager::shadowTreeWillCommit");
 
   std::shared_lock lock(commitHookMutex_);
 
@@ -630,7 +635,7 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
 void UIManager::shadowTreeDidFinishTransaction(
     std::shared_ptr<const MountingCoordinator> mountingCoordinator,
     bool mountSynchronously) const {
-  SystraceSection s("UIManager::shadowTreeDidFinishTransaction");
+  TraceSection s("UIManager::shadowTreeDidFinishTransaction");
 
   if (delegate_ != nullptr) {
     delegate_->uiManagerDidFinishTransaction(
@@ -639,7 +644,7 @@ void UIManager::shadowTreeDidFinishTransaction(
 }
 
 void UIManager::reportMount(SurfaceId surfaceId) const {
-  SystraceSection s("UIManager::reportMount");
+  TraceSection s("UIManager::reportMount");
 
   auto time = JSExecutor::performanceNow();
 
