@@ -41,6 +41,9 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   private static final String NAME = ViewManager.class.getSimpleName();
 
+  private boolean mIsDelegateLoaded = false;
+  private @Nullable ViewManagerDelegate<T> mDelegate = null;
+
   /**
    * For View recycling: we store a Stack of unused, dead Views. This is null by default, and when
    * null signals that View Recycling is disabled. `enableViewRecycling` must be explicitly called
@@ -88,7 +91,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param props {@link ReactStylesDiffMap} props to update the view with
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
-    final ViewManagerDelegate<T> delegate = getDelegate();
+    final ViewManagerDelegate<T> delegate = getOrCreateViewManagerDelegate();
     if (delegate != null) {
       ViewManagerPropertyUpdater.updateProps(delegate, viewToUpdate, props);
     } else {
@@ -109,9 +112,16 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @return an instance of {@link ViewManagerDelegate} if the props of the view managed by this
    *     view manager should be set via this delegate
    */
-  @Nullable
-  protected ViewManagerDelegate<T> getDelegate() {
+  protected @Nullable ViewManagerDelegate<T> getDelegate() {
     return null;
+  }
+
+  private @Nullable ViewManagerDelegate<T> getOrCreateViewManagerDelegate() {
+    if (!mIsDelegateLoaded) {
+      mDelegate = getDelegate();
+      mIsDelegateLoaded = true;
+    }
+    return mDelegate;
   }
 
   /** Creates a view with knowledge of props and state. */
@@ -306,7 +316,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param args optional arguments for the command
    */
   public void receiveCommand(@NonNull T root, String commandId, @Nullable ReadableArray args) {
-    final ViewManagerDelegate<T> delegate = getDelegate();
+    final ViewManagerDelegate<T> delegate = getOrCreateViewManagerDelegate();
     if (delegate != null) {
       delegate.receiveCommand(root, commandId, args);
     }
