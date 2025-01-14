@@ -386,9 +386,8 @@ internal class LinearGradient(
     if (position == null) return null
 
     return when (position.type) {
-      LengthPercentageType.POINT -> PixelUtil.toPixelFromDIP(position.value) / gradientLineLength
-      LengthPercentageType.PERCENT -> position.value / 100
-      else -> null
+      LengthPercentageType.POINT -> PixelUtil.toPixelFromDIP(position.resolve(0f)) / gradientLineLength
+      LengthPercentageType.PERCENT -> position.resolve(1f)
     }
   }
 }

@@ -20,7 +20,7 @@ public enum class LengthPercentageType {
 }
 
 public data class LengthPercentage(
-    public val value: Float,
+    private val value: Float,
     public val type: LengthPercentageType,
 ) {
   public companion object {
@@ -68,6 +68,14 @@ public data class LengthPercentage(
     }
 
     return CornerRadii(value, value)
+  }
+
+  public fun resolve(referenceLength: Float): Float {
+    if (type == LengthPercentageType.PERCENT) {
+      return (value / 100) * referenceLength
+    }
+
+    return value
   }
 
   public constructor() : this(0f, LengthPercentageType.POINT)
