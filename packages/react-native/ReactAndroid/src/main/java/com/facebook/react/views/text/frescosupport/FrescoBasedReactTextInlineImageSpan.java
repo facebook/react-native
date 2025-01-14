@@ -23,6 +23,7 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeHolder;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.PixelUtil;
@@ -40,6 +41,7 @@ import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
  * <p>Note: It borrows code from DynamicDrawableSpan and if that code updates how it computes size
  * or draws, we need to update this as well.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
 
   private @Nullable Drawable mDrawable;
@@ -116,6 +118,7 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     return mWidth;
   }
 
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void setTextView(TextView textView) {
     mTextView = textView;
   }
@@ -140,6 +143,7 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
           mDraweeControllerBuilder
               .reset()
               .setOldController(mDraweeHolder.getController())
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               .setCallerContext(mCallerContext)
               .setImageRequest(imageRequest)
               .build();
@@ -147,10 +151,13 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
       mDraweeControllerBuilder.reset();
 
       mDrawable = mDraweeHolder.getTopLevelDrawable();
+      // NULLSAFE_FIXME[Nullable Dereference]
       mDrawable.setBounds(0, 0, mWidth, mHeight);
       if (mTintColor != 0) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         mDrawable.setColorFilter(mTintColor, PorterDuff.Mode.SRC_IN);
       }
+      // NULLSAFE_FIXME[Nullable Dereference]
       mDrawable.setCallback(mTextView);
     }
 
@@ -161,9 +168,11 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     // Align to center
     int fontHeight = (int) (paint.descent() - paint.ascent());
     int centerY = y + (int) paint.descent() - fontHeight / 2;
+    // NULLSAFE_FIXME[Nullable Dereference]
     int transY = centerY - (mDrawable.getBounds().bottom - mDrawable.getBounds().top) / 2;
 
     canvas.translate(x, transY);
+    // NULLSAFE_FIXME[Nullable Dereference]
     mDrawable.draw(canvas);
     canvas.restore();
   }
