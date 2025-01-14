@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e5e8a3b63e42ed4b5cab143d46d20260>>
+ * @generated SignedSource<<179524938d2e6148ef87835844c4135e>>
  */
 
 /**
@@ -367,6 +367,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useAlwaysAvailableJSErrorHandling();
+  }
+
+  bool useEditTextStockAndroidFocusBehavior() override {
+    auto value = values_["useEditTextStockAndroidFocusBehavior"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useEditTextStockAndroidFocusBehavior();
   }
 
   bool useFabricInterop() override {
