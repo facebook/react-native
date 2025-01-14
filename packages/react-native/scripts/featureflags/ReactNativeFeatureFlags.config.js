@@ -546,7 +546,7 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useInsertionEffectsForAnimations: {
-      defaultValue: true,
+      defaultValue: false,
       metadata: {
         description:
           'Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.',
