@@ -2545,11 +2545,28 @@ type Props = $ReadOnly<{|
   animated?: ?boolean,
   barStyle?: ?(\\"default\\" | \\"light-content\\" | \\"dark-content\\"),
 |}>;
+type StackProps = {
+  backgroundColor: ?{
+    value: Props[\\"backgroundColor\\"],
+    animated: boolean,
+  },
+  barStyle: ?{
+    value: Props[\\"barStyle\\"],
+    animated: boolean,
+  },
+  translucent: Props[\\"translucent\\"],
+  hidden: ?{
+    value: boolean,
+    animated: boolean,
+    transition: Props[\\"showHideTransition\\"],
+  },
+  networkActivityIndicatorVisible: Props[\\"networkActivityIndicatorVisible\\"],
+};
 declare class StatusBar extends React.Component<Props> {
-  static _propsStack: Array<any>;
+  static _propsStack: Array<StackProps>;
   static _defaultProps: any;
-  static _updateImmediate: $FlowFixMe;
-  static _currentValues: $FlowFixMe;
+  static _updateImmediate: ?number;
+  static _currentValues: ?StackProps;
   static currentHeight: ?number;
   static setHidden(hidden: boolean, animation?: StatusBarAnimation): void;
   static setBarStyle(style: StatusBarStyle, animated?: boolean): void;
@@ -2559,7 +2576,7 @@ declare class StatusBar extends React.Component<Props> {
   static pushStackEntry(props: any): any;
   static popStackEntry(entry: any): void;
   static replaceStackEntry(entry: any, props: any): any;
-  _stackEntry: $FlowFixMe;
+  _stackEntry: ?StackProps;
   componentDidMount(): void;
   componentWillUnmount(): void;
   componentDidUpdate(): void;
