@@ -13,6 +13,7 @@
 import type {ElementsHierarchy, InspectedElement} from './Inspector';
 
 import SafeAreaView from '../Components/SafeAreaView/SafeAreaView';
+import React from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
@@ -22,7 +23,6 @@ const Text = require('../Text/Text');
 const ElementProperties = require('./ElementProperties');
 const NetworkOverlay = require('./NetworkOverlay');
 const PerformanceOverlay = require('./PerformanceOverlay');
-const React = require('react');
 
 type Props = $ReadOnly<{|
   devtoolsIsOpen: boolean,

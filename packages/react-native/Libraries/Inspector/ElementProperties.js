@@ -13,6 +13,8 @@
 import type {InspectorData} from '../Renderer/shims/ReactNativeTypes';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
+import React from 'react';
+
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
 const TouchableWithoutFeedback = require('../Components/Touchable/TouchableWithoutFeedback');
 const View = require('../Components/View/View');
@@ -22,7 +24,6 @@ const Text = require('../Text/Text');
 const mapWithSeparator = require('../Utilities/mapWithSeparator');
 const BoxInspector = require('./BoxInspector');
 const StyleInspector = require('./StyleInspector');
-const React = require('react');
 
 type Props = $ReadOnly<{|
   hierarchy: ?InspectorData['hierarchy'],
