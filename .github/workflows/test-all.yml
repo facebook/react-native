@@ -369,6 +369,11 @@ jobs:
             sed -i 's/newArchEnabled=true/newArchEnabled=false/' android/gradle.properties
           fi
 
+          if [[ ${{matrix.jsengine}} == "JSC" ]]; then
+            echo "Using JSC instead of Hermes"
+            sed -i 's/hermesEnabled=true/hermesEnabled=false/' android/gradle.properties
+          fi
+
           # Build
           cd android
           CAPITALIZED_FLAVOR=$(echo "${{ matrix.flavor }}" | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}')
