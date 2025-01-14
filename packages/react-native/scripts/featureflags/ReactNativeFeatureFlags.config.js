@@ -618,12 +618,13 @@ const definitions: FeatureFlagDefinitions = {
       },
     },
     useInsertionEffectsForAnimations: {
-      defaultValue: true,
+      defaultValue: false,
       metadata: {
+        dateAdded: '2024-09-12',
         description:
           'Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.',
         expectedReleaseValue: true,
-        purpose: 'release',
+        purpose: 'experimentation',
       },
     },
     useRefsForTextInputState: {
