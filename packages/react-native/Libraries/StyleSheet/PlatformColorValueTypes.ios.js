@@ -56,7 +56,7 @@ const _normalizeColorObject = (
     // an ios semantic color
     return color;
   } else if ('dynamic' in color && color.dynamic !== undefined) {
-    const normalizeColor = require('./normalizeColor').default;
+    const normalizeColor = require('./normalizeColor');
 
     // a dynamic, appearance aware color
     const dynamic = color.dynamic;

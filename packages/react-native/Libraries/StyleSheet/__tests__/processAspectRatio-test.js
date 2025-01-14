@@ -10,7 +10,7 @@
 
 'use strict';
 
-import processAspectRatio from '../processAspectRatio';
+const processAspectRatio = require('../processAspectRatio');
 
 describe('processAspectRatio', () => {
   it('should accept numbers', () => {

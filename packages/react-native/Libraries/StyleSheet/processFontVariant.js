@@ -27,4 +27,4 @@ function processFontVariant(
   return match;
 }
 
-export default processFontVariant;
+module.exports = processFontVariant;

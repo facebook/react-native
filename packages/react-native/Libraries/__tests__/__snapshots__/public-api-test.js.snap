@@ -8284,7 +8284,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/norma
 "declare function normalizeColor(
   color: ?(ColorValue | ProcessedColorValue)
 ): ?ProcessedColorValue;
-declare export default typeof normalizeColor;
+declare module.exports: normalizeColor;
 "
 `;
 
@@ -8332,7 +8332,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/priva
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/processAspectRatio.js 1`] = `
 "declare function processAspectRatio(aspectRatio?: number | string): ?number;
-declare export default typeof processAspectRatio;
+declare module.exports: processAspectRatio;
 "
 `;
 
@@ -8382,7 +8382,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "declare function processColorArray(
   colors: ?$ReadOnlyArray<ColorValue>
 ): ?$ReadOnlyArray<ProcessedColorValue>;
-declare export default typeof processColorArray;
+declare module.exports: processColorArray;
 "
 `;
 
@@ -8414,7 +8414,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "declare function processFontVariant(
   fontVariant: ____FontVariantArray_Internal | string
 ): ?____FontVariantArray_Internal;
-declare export default typeof processFontVariant;
+declare module.exports: processFontVariant;
 "
 `;
 
@@ -8422,7 +8422,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "declare function processTransform(
   transform: Array<Object> | string
 ): Array<Object> | Array<number>;
-declare export default typeof processTransform;
+declare module.exports: processTransform;
 "
 `;
 
@@ -8435,7 +8435,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/setNormalizedColorAlpha.js 1`] = `
 "declare function setNormalizedColorAlpha(input: number, alpha: number): number;
-declare export default typeof setNormalizedColorAlpha;
+declare module.exports: setNormalizedColorAlpha;
 "
 `;
 

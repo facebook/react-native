@@ -32,4 +32,4 @@ function processColorElement(color: ColorValue): ProcessedColorValue {
   return value;
 }
 
-export default processColorArray;
+module.exports = processColorArray;
