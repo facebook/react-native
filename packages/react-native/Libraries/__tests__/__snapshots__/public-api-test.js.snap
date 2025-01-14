@@ -1109,6 +1109,7 @@ declare export default class AnimatedValue extends AnimatedWithChildren {
   __attach(): void;
   __detach(): void;
   __getValue(): number;
+  __makeNative(platformConfig: ?PlatformConfig): void;
   setValue(value: number): void;
   setOffset(offset: number): void;
   flattenOffset(): void;
