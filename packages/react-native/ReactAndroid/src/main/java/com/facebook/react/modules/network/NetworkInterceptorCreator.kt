@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.modules.network;
+package com.facebook.react.modules.network
 
-import okhttp3.Interceptor;
+import okhttp3.Interceptor
 
 /**
  * Classes implementing this interface return a new {@link Interceptor} when the {@link #create}
  * method is called.
  */
-public interface NetworkInterceptorCreator {
-  Interceptor create();
+public fun interface NetworkInterceptorCreator {
+  public fun create(): Interceptor
 }
