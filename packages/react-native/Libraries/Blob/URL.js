@@ -17,9 +17,9 @@ if (
   NativeBlobModule &&
   typeof NativeBlobModule.getConstants().BLOB_URI_SCHEME === 'string'
 ) {
+  const constants = NativeBlobModule.getConstants();
   // $FlowFixMe[incompatible-type] asserted above
   // $FlowFixMe[unsafe-addition]
-  const constants = NativeBlobModule.getConstants();
   BLOB_URL_PREFIX = constants.BLOB_URI_SCHEME + ':';
   if (typeof constants.BLOB_URI_HOST === 'string') {
     BLOB_URL_PREFIX += `//${constants.BLOB_URI_HOST}/`;
@@ -54,13 +54,15 @@ export { URLSearchParams } from './URLSearchParams';
 
 function validateBaseUrl(url: string) {
   // from this MIT-licensed gist: https://gist.github.com/dperini/729294
-  return /^(?:(?:(?:https?|ftp):)?\/\/)(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)*(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/.test(url);
+  return /^(?:(?:(?:https?|ftp):)?\/\/)(?:(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)*(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/.test(
+    url,
+  );
 }
 
 export class URL {
   _url: string;
   _searchParamsInstance: ?URLSearchParams = null;
-  _parsedUrl: URL;
+  _parsedUrl: ?URL = null;
 
   static createObjectURL(blob: Blob): string {
     if (BLOB_URL_PREFIX === null) {
@@ -73,6 +75,7 @@ export class URL {
     // Do nothing.
   }
 
+  // $FlowFixMe[missing-local-annot]
   constructor(url: string, base: string | URL) {
     let baseUrl = null;
     if (!base || validateBaseUrl(url)) {
@@ -100,52 +103,66 @@ export class URL {
       }
       this._url = `${baseUrl}${url}`;
     }
+  }
 
-    // Parsing the URL to use for accessors
-    this._parsedUrl = new globalThis.URL(this._url);
+  _parseUrlIfNeeded() {
+    if (this._parsedUrl == null) {
+      this._parsedUrl = new (globalThis || window).URL(this._url);
+    }
   }
 
   get hash(): string {
+    this._parseUrlIfNeeded();
     return this._parsedUrl.hash;
   }
 
   get host(): string {
+    this._parseUrlIfNeeded();
     return this._parsedUrl.host;
   }
 
   get hostname(): string {
+    this._parseUrlIfNeeded();
     return this._parsedUrl.hostname;
   }
 
   get href(): string {
+    this._parseUrlIfNeeded();
     return this.toString();
   }
 
   get origin(): string {
+    this._parseUrlIfNeeded();
     return this._parsedUrl.origin;
   }
 
   get password(): string {
+    this._parseUrlIfNeeded();
     return this._parsedUrl.password;
   }
 
   get pathname(): string {
+    this._parseUrlIfNeeded();
     return this._parsedUrl.pathname;
   }
 
   get port(): string {
+    this._parseUrlIfNeeded();
     return this._parsedUrl.port;
   }
 
   get protocol(): string {
+    this._parseUrlIfNeeded();
     return this._parsedUrl.protocol;
   }
 
   get search(): string {
+    this._parseUrlIfNeeded();
     return this._parsedUrl.search;
   }
 
   get searchParams(): URLSearchParams {
+    this._parseUrlIfNeeded();
     if (this._searchParamsInstance == null) {
       this._searchParamsInstance = new URLSearchParams(this._parsedUrl.search);
     }
@@ -157,12 +174,14 @@ export class URL {
   }
 
   toString(): string {
+    this._parseUrlIfNeeded();
     const instanceString = this._searchParamsInstance ? this._searchParamsInstance.toString() : '';
     const separator = this._url.indexOf('?') > -1 ? '&' : '?';
     return this._url + (instanceString ? separator + instanceString : '');
   }
 
   get username(): string {
+    this._parseUrlIfNeeded();
     return this._parsedUrl.username;
   }
 }
