@@ -9,9 +9,9 @@
  */
 
 import {RNTesterThemeContext} from './RNTesterTheme';
+import RNTesterTitle from './RNTesterTitle';
 import {useContext} from 'react';
 
-const RNTesterTitle = require('./RNTesterTitle');
 const React = require('react');
 const {SafeAreaView, ScrollView, StyleSheet, View} = require('react-native');
 
