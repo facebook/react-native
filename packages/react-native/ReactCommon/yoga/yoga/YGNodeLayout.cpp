@@ -42,6 +42,21 @@ float getResolvedLayoutProperty(const YGNodeConstRef nodeRef, const Edge edge) {
   return (node->getLayout().*LayoutMember)(static_cast<PhysicalEdge>(edge));
 }
 
+void fixFlexWrapAlignmentIssue(YGNodeRef node) {
+  if (node->getStyle().flexWrap() != YGWrap::NoWrap &&
+      node->getStyle().alignItems() == YGAlign::FlexEnd) {
+    for (size_t i = 0; i < node->getChildCount(); ++i) {
+      auto child = node->getChild(i);
+      const float parentHeight = node->getLayout().dimension(Dimension::Height);
+      const float childHeight = child->getLayout().dimension(Dimension::Height);
+      const float offset = parentHeight - childHeight;
+
+      child->setLayoutPosition(
+          offset, static_cast<uint8_t>(PhysicalEdge::Top));
+    }
+  }
+}
+
 } // namespace
 
 float YGNodeLayoutGetLeft(const YGNodeConstRef node) {
