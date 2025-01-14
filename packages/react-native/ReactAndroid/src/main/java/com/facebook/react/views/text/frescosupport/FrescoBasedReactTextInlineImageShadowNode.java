@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -27,9 +28,11 @@ import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
 
   private @Nullable Uri mUri;
+  // NULLSAFE_FIXME[Field Not Initialized]
   private ReadableMap mHeaders;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
@@ -47,6 +50,7 @@ class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShad
   @ReactProp(name = "src")
   public void setSource(@Nullable ReadableArray sources) {
     final String source =
+        // NULLSAFE_FIXME[Nullable Dereference]
         (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
     Uri uri = null;
     if (source != null) {
@@ -145,6 +149,7 @@ class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShad
         getHeaders(),
         getDraweeControllerBuilder(),
         getCallerContext(),
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         mResizeMode);
   }
 
