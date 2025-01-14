@@ -269,68 +269,8 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
   _isUsingNativeDriver: () => boolean,
   ...
 };
-declare const spring: (
-  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
-  config: SpringAnimationConfig
-) => CompositeAnimation;
-declare const timing: (
-  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
-  config: TimingAnimationConfig
-) => CompositeAnimation;
-declare const decay: (
-  value: AnimatedValue | AnimatedValueXY | AnimatedColor,
-  config: DecayAnimationConfig
-) => CompositeAnimation;
-declare const sequence: (
-  animations: Array<CompositeAnimation>
-) => CompositeAnimation;
-type ParallelConfig = { stopTogether?: boolean, ... };
-declare const parallel: (
-  animations: Array<CompositeAnimation>,
-  config?: ?ParallelConfig
-) => CompositeAnimation;
-declare const delay: (time: number) => CompositeAnimation;
-declare const stagger: (
-  time: number,
-  animations: Array<CompositeAnimation>
-) => CompositeAnimation;
-type LoopAnimationConfig = {
-  iterations: number,
-  resetBeforeIteration?: boolean,
-  ...
-};
-declare const loop: (
-  animation: CompositeAnimation,
-  LoopAnimationConfig
-) => CompositeAnimation;
 export type { AnimatedNumeric as Numeric };
-declare export default {
-  Value: AnimatedValue,
-  ValueXY: AnimatedValueXY,
-  Color: AnimatedColor,
-  Interpolation: AnimatedInterpolation,
-  Node: AnimatedNode,
-  decay: decay,
-  timing: timing,
-  spring: spring,
-  add: $FlowFixMe,
-  subtract: $FlowFixMe,
-  divide: $FlowFixMe,
-  multiply: $FlowFixMe,
-  modulo: $FlowFixMe,
-  diffClamp: $FlowFixMe,
-  delay: delay,
-  sequence: sequence,
-  parallel: parallel,
-  stagger: stagger,
-  loop: loop,
-  event: $FlowFixMe,
-  createAnimatedComponent: createAnimatedComponent,
-  attachNativeEvent: attachNativeEvent,
-  forkEvent: $FlowFixMe,
-  unforkEvent: $FlowFixMe,
-  Event: AnimatedEvent,
-};
+declare export default typeof AnimatedImplementation;
 "
 `;
 
