@@ -17,29 +17,21 @@ import okio.Buffer
 import okio.BufferedSource
 import okio.buffer
 import okio.source
-import org.junit.Assert.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.eq
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
-@Suppress("DEPRECATION")
 class ProgressResponseBodyTest {
   private lateinit var progressListener: ProgressListener
-  private val mediaType: MediaType by lazy {
-    MediaType.parse("application/octet-stream")!!
-  }
+  private val mediaType: MediaType = MediaType.parse("application/octet-stream")!!
 
   @Before
   fun setUp() {
-    progressListener =
-            object : ProgressListener {
-              override fun onProgress(bytesWritten: Long, contentLength: Long, done: Boolean) {
-                // No-op
-              }
-            }
+    progressListener = ProgressListener { _, _, _ -> }
   }
 
   private fun createResponseBody(
@@ -63,7 +55,7 @@ class ProgressResponseBodyTest {
     val responseBody = createResponseBody(contentType = testMediaType)
     val progressResponseBody = ProgressResponseBody(responseBody, progressListener)
 
-    assertEquals(testMediaType, progressResponseBody.contentType())
+    assertThat(progressResponseBody.contentType()).isEqualTo(testMediaType)
   }
 
   @Test
@@ -72,7 +64,7 @@ class ProgressResponseBodyTest {
     val responseBody = createResponseBody(contentLength = contentLength)
     val progressResponseBody = ProgressResponseBody(responseBody, progressListener)
 
-    assertEquals(contentLength, progressResponseBody.contentLength())
+    assertThat(progressResponseBody.contentLength()).isEqualTo(contentLength)
   }
 
   @Test
@@ -81,7 +73,7 @@ class ProgressResponseBodyTest {
     val responseBody = createResponseBody(contentLength = contentLength)
     val progressResponseBody = ProgressResponseBody(responseBody, progressListener)
 
-    assertEquals(contentLength, progressResponseBody.contentLength())
+    assertThat(progressResponseBody.contentLength()).isEqualTo(contentLength)
   }
 
   @Test
@@ -90,10 +82,12 @@ class ProgressResponseBodyTest {
     val responseBody = createResponseBody(contentLength = contentLength)
     val progressResponseBody = ProgressResponseBody(responseBody, progressListener)
 
-    assertEquals(contentLength, progressResponseBody.contentLength())
+    assertThat(progressResponseBody.contentLength()).isEqualTo(contentLength)
   }
 
+  // OkHttp 3.x compatibility, replace with `toResponseBody` when migrating to OkHttp 4.x.
   /** Test that totalBytesRead() accurately reflects the number of bytes read from the source. */
+  @Suppress("DEPRECATION")
   @Test
   fun testTotalBytesRead() {
     val contentBytes = ByteArray(100000) { 'a'.code.toByte() }
@@ -106,16 +100,16 @@ class ProgressResponseBodyTest {
     val MIN_BYTES_READ: Long = 8192
 
     val bytesRead1 = source.read(buffer, MIN_BYTES_READ)
-    assertEquals(MIN_BYTES_READ, bytesRead1)
-    assertEquals(MIN_BYTES_READ, progressResponseBody.totalBytesRead())
+    assertThat(bytesRead1).isEqualTo(MIN_BYTES_READ)
+    assertThat(progressResponseBody.totalBytesRead()).isEqualTo(MIN_BYTES_READ)
 
     val bytesRead2 = source.read(buffer, MIN_BYTES_READ)
-    assertEquals(MIN_BYTES_READ, bytesRead2)
-    assertEquals(MIN_BYTES_READ * 2, progressResponseBody.totalBytesRead())
+    assertThat(bytesRead2).isEqualTo(MIN_BYTES_READ)
+    assertThat(progressResponseBody.totalBytesRead()).isEqualTo(MIN_BYTES_READ * 2)
 
     val bytesRead3 = source.read(buffer, MIN_BYTES_READ)
-    assertEquals(MIN_BYTES_READ, bytesRead3)
-    assertEquals(MIN_BYTES_READ * 3, progressResponseBody.totalBytesRead())
+    assertThat(bytesRead3).isEqualTo(MIN_BYTES_READ)
+    assertThat(progressResponseBody.totalBytesRead()).isEqualTo(MIN_BYTES_READ * 3)
   }
 
   /** Test that multiple calls to source() return the same BufferedSource instance. */
@@ -127,9 +121,11 @@ class ProgressResponseBodyTest {
     val source1 = progressResponseBody.source()
     val source2 = progressResponseBody.source()
 
-    assertEquals(source1, source2)
+    assertThat(source1).isEqualTo(source2)
   }
 
+  // OkHttp 3.x compatibility, replace with `toResponseBody` when migrating to OkHttp 4.x.
+  @Suppress("DEPRECATION")
   @Test
   fun testReadEndOfStream() {
     val contentBytes = ByteArray(100) { 'a'.code.toByte() }
@@ -143,16 +139,18 @@ class ProgressResponseBodyTest {
     source.read(buffer, 100)
     val bytesRead = source.read(buffer, 10) // Try reading past the end of the stream
 
-    assertEquals(-1L, bytesRead) // Ensure -1 is returned at the end of the stream
-    assertEquals(contentBytes.size.toLong(), progressResponseBody.totalBytesRead())
+    assertThat(bytesRead).isEqualTo(-1) // Ensure -1 is returned at the end of the stream
+    assertThat(progressResponseBody.totalBytesRead()).isEqualTo(contentBytes.size.toLong())
   }
 
+  // OkHttp 3.x compatibility, replace with `toResponseBody` when migrating to OkHttp 4.x.
+  @Suppress("DEPRECATION")
   @Test
   fun testProgressListenerCalls() {
     val contentBytes = ByteArray(100) { 'a'.code.toByte() }
     val contentType = MediaType.parse("text/plain")
     val responseBody = ResponseBody.create(contentType, contentBytes)
-    val mockProgressListener = mock(ProgressListener::class.java)
+    val mockProgressListener = mock<ProgressListener>()
     val progressResponseBody = ProgressResponseBody(responseBody, mockProgressListener)
 
     val source = progressResponseBody.source()
