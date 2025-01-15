@@ -27,6 +27,7 @@ import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -41,7 +42,6 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   private static final String NAME = ViewManager.class.getSimpleName();
 
-  private boolean mIsDelegateLoaded = false;
   private @Nullable ViewManagerDelegate<T> mDelegate = null;
 
   /**
@@ -91,11 +91,11 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param props {@link ReactStylesDiffMap} props to update the view with
    */
   public void updateProperties(@NonNull T viewToUpdate, ReactStylesDiffMap props) {
-    final ViewManagerDelegate<T> delegate = getOrCreateViewManagerDelegate();
-    if (delegate != null) {
-      ViewManagerPropertyUpdater.updateProps(delegate, viewToUpdate, props);
-    } else {
-      ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
+    ViewManagerDelegate<T> delegate = getOrCreateViewManagerDelegate();
+    Iterator<Map.Entry<String, Object>> iterator = props.mBackingMap.getEntryIterator();
+    while (iterator.hasNext()) {
+      Map.Entry<String, Object> entry = iterator.next();
+      delegate.setProperty(viewToUpdate, entry.getKey(), entry.getValue());
     }
     onAfterUpdateTransaction(viewToUpdate);
   }
@@ -106,22 +106,23 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * then get calls to {@link ViewManagerDelegate#setProperty(View, String, Object)} for every prop
    * that must be updated and it's the delegate's responsibility to apply these values to the view.
    *
-   * <p>By default this method returns {@code null}, which means that the view manager doesn't have
-   * a delegate and the view props should be set internally by the view manager itself.
+   * <p>By default, this methods returns a generic {@link ViewManagerDelegate} which uses {@link
+   * ViewManagerSetter} to apply property updates.
    *
    * @return an instance of {@link ViewManagerDelegate} if the props of the view managed by this
    *     view manager should be set via this delegate
    */
-  protected @Nullable ViewManagerDelegate<T> getDelegate() {
-    return null;
+  protected ViewManagerDelegate<T> getDelegate() {
+    return new ViewManagerPropertyUpdater.GenericViewManagerDelegate(this);
   }
 
-  private @Nullable ViewManagerDelegate<T> getOrCreateViewManagerDelegate() {
-    if (!mIsDelegateLoaded) {
-      mDelegate = getDelegate();
-      mIsDelegateLoaded = true;
+  private ViewManagerDelegate<T> getOrCreateViewManagerDelegate() {
+    ViewManagerDelegate<T> delegate = mDelegate;
+    if (delegate == null) {
+      delegate = getDelegate();
+      mDelegate = delegate;
     }
-    return mDelegate;
+    return delegate;
   }
 
   /** Creates a view with knowledge of props and state. */
@@ -316,10 +317,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param args optional arguments for the command
    */
   public void receiveCommand(@NonNull T root, String commandId, @Nullable ReadableArray args) {
-    final ViewManagerDelegate<T> delegate = getOrCreateViewManagerDelegate();
-    if (delegate != null) {
-      delegate.receiveCommand(root, commandId, args);
-    }
+    getOrCreateViewManagerDelegate().receiveCommand(root, commandId, args);
   }
 
   /**
