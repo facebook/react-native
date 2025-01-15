@@ -6,6 +6,7 @@
  */
 
 #import "HostPlatformColor.h"
+#import "UIColor+Graphics.h"
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -19,13 +20,32 @@ NS_ASSUME_NONNULL_BEGIN
 namespace facebook::react {
 
 namespace {
+
+bool UIColorIsP3ColorSpace(const std::shared_ptr<void> &uiColor)
+{
+  UIColor *color = unwrapManagedObject(uiColor);
+  CGColorSpaceRef colorSpace = CGColorGetColorSpace(color.CGColor);
+
+  if (CGColorSpaceGetModel(colorSpace) == kCGColorSpaceModelRGB) {
+    CFStringRef name = CGColorSpaceGetName(colorSpace);
+    if (name != NULL && CFEqual(name, kCGColorSpaceDisplayP3)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 UIColor *_Nullable UIColorFromInt32(int32_t intColor)
 {
   CGFloat a = CGFloat((intColor >> 24) & 0xFF) / 255.0;
   CGFloat r = CGFloat((intColor >> 16) & 0xFF) / 255.0;
   CGFloat g = CGFloat((intColor >> 8) & 0xFF) / 255.0;
   CGFloat b = CGFloat(intColor & 0xFF) / 255.0;
-  return [UIColor colorWithRed:r green:g blue:b alpha:a];
+
+  UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
+  auto colorHash = facebook::react::hash_combine(intColor, intColor, intColor, intColor, 0);
+  color.reactHash = colorHash;
+  return color;
 }
 
 UIColor *_Nullable UIColorFromDynamicColor(const facebook::react::DynamicColor &dynamicColor)
@@ -56,6 +76,8 @@ UIColor *_Nullable UIColorFromDynamicColor(const facebook::react::DynamicColor &
         }
       }
     }];
+    auto colorHash = facebook::react::hash_combine(dark, light, highContrastDark, highContrastLight, 0);
+    color.reactHash = colorHash;
     return color;
   } else {
     return nil;
@@ -64,13 +86,20 @@ UIColor *_Nullable UIColorFromDynamicColor(const facebook::react::DynamicColor &
   return nil;
 }
 
-int32_t ColorFromUIColor(UIColor *color)
+int32_t ColorFromColorComponents(const facebook::react::ColorComponents &components)
 {
   float ratio = 255;
+  auto color = ((int32_t)round((float)components.alpha * ratio) & 0xff) << 24 |
+      ((int)round((float)components.red * ratio) & 0xff) << 16 |
+      ((int)round((float)components.green * ratio) & 0xff) << 8 | ((int)round((float)components.blue * ratio) & 0xff);
+  return color;
+}
+
+int32_t ColorFromUIColor(UIColor *color)
+{
   CGFloat rgba[4];
   [color getRed:&rgba[0] green:&rgba[1] blue:&rgba[2] alpha:&rgba[3]];
-  return ((int32_t)round((float)rgba[3] * ratio) & 0xff) << 24 | ((int)round((float)rgba[0] * ratio) & 0xff) << 16 |
-      ((int)round((float)rgba[1] * ratio) & 0xff) << 8 | ((int)round((float)rgba[2] * ratio) & 0xff);
+  return ColorFromColorComponents({(float)rgba[0], (float)rgba[1], (float)rgba[2], (float)rgba[3]});
 }
 
 int32_t ColorFromUIColorForSpecificTraitCollection(
@@ -93,14 +122,61 @@ int32_t ColorFromUIColor(const std::shared_ptr<void> &uiColor)
 
 UIColor *_Nullable UIColorFromComponentsColor(const facebook::react::ColorComponents &components)
 {
+  UIColor *uiColor = nil;
   if (components.colorSpace == ColorSpace::DisplayP3) {
-    return [UIColor colorWithDisplayP3Red:components.red
-                                    green:components.green
-                                     blue:components.blue
-                                    alpha:components.alpha];
+    uiColor = [UIColor colorWithDisplayP3Red:components.red
+                                       green:components.green
+                                        blue:components.blue
+                                       alpha:components.alpha];
+  } else {
+    uiColor = [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
   }
-  return [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
+
+  auto color = ColorFromColorComponents(components);
+  auto colorHash =
+      facebook::react::hash_combine(color, color, color, color, components.colorSpace == ColorSpace::DisplayP3);
+  uiColor.reactHash = colorHash;
+
+  return uiColor;
 }
+
+int32_t hashFromUIColor(const std::shared_ptr<void> &uiColor)
+{
+  if (uiColor == nullptr) {
+    return 0;
+  }
+
+  static UITraitCollection *darkModeTraitCollection =
+      [UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark];
+  auto darkColor = ColorFromUIColorForSpecificTraitCollection(uiColor, darkModeTraitCollection);
+
+  static UITraitCollection *lightModeTraitCollection =
+      [UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight];
+  auto lightColor = ColorFromUIColorForSpecificTraitCollection(uiColor, lightModeTraitCollection);
+
+  static UITraitCollection *darkModeAccessibilityContrastTraitCollection =
+      [UITraitCollection traitCollectionWithTraitsFromCollections:@[
+        darkModeTraitCollection,
+        [UITraitCollection traitCollectionWithAccessibilityContrast:UIAccessibilityContrastHigh]
+      ]];
+  auto darkAccessibilityContrastColor =
+      ColorFromUIColorForSpecificTraitCollection(uiColor, darkModeAccessibilityContrastTraitCollection);
+
+  static UITraitCollection *lightModeAccessibilityContrastTraitCollection =
+      [UITraitCollection traitCollectionWithTraitsFromCollections:@[
+        lightModeTraitCollection,
+        [UITraitCollection traitCollectionWithAccessibilityContrast:UIAccessibilityContrastHigh]
+      ]];
+  auto lightAccessibilityContrastColor =
+      ColorFromUIColorForSpecificTraitCollection(uiColor, lightModeAccessibilityContrastTraitCollection);
+  return facebook::react::hash_combine(
+      darkColor,
+      lightColor,
+      darkAccessibilityContrastColor,
+      lightAccessibilityContrastColor,
+      UIColorIsP3ColorSpace(uiColor));
+}
+
 } // anonymous namespace
 
 Color::Color(int32_t color)
@@ -120,6 +196,11 @@ Color::Color(const ColorComponents &components)
 
 Color::Color(std::shared_ptr<void> uiColor)
 {
+  UIColor *color = ((UIColor *)unwrapManagedObject(uiColor));
+  if (color && color.reactHash == 0) {
+    auto colorHash = hashFromUIColor(uiColor);
+    color.reactHash = colorHash;
+  }
   uiColor_ = std::move(uiColor);
 }
 
@@ -127,7 +208,8 @@ bool Color::operator==(const Color &other) const
 {
   return (!uiColor_ && !other.uiColor_) ||
       (uiColor_ && other.uiColor_ &&
-       [unwrapManagedObject(getUIColor()) isEqual:unwrapManagedObject(other.getUIColor())]);
+       ((UIColor *)unwrapManagedObject(getUIColor())).reactHash ==
+           ((UIColor *)unwrapManagedObject(other.getUIColor())).reactHash);
 }
 
 bool Color::operator!=(const Color &other) const
@@ -150,36 +232,7 @@ float Color::getChannel(int channelId) const
 
 int32_t Color::getUIColorHash() const
 {
-  if (!uiColorHashValue_) {
-    return uiColorHashValue_;
-  }
-
-  static UITraitCollection *darkModeTraitCollection =
-      [UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleDark];
-  auto darkColor = ColorFromUIColorForSpecificTraitCollection(uiColor_, darkModeTraitCollection);
-
-  static UITraitCollection *lightModeTraitCollection =
-      [UITraitCollection traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight];
-  auto lightColor = ColorFromUIColorForSpecificTraitCollection(uiColor_, lightModeTraitCollection);
-
-  static UITraitCollection *darkModeAccessibilityContrastTraitCollection =
-      [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        darkModeTraitCollection,
-        [UITraitCollection traitCollectionWithAccessibilityContrast:UIAccessibilityContrastHigh]
-      ]];
-  auto darkAccessibilityContrastColor =
-      ColorFromUIColorForSpecificTraitCollection(uiColor_, darkModeAccessibilityContrastTraitCollection);
-
-  static UITraitCollection *lightModeAccessibilityContrastTraitCollection =
-      [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        lightModeTraitCollection,
-        [UITraitCollection traitCollectionWithAccessibilityContrast:UIAccessibilityContrastHigh]
-      ]];
-  auto lightAccessibilityContrastColor =
-      ColorFromUIColorForSpecificTraitCollection(uiColor_, lightModeAccessibilityContrastTraitCollection);
-  uiColorHashValue_ = facebook::react::hash_combine(
-      darkColor, lightColor, darkAccessibilityContrastColor, lightAccessibilityContrastColor);
-  return uiColorHashValue_;
+  return [(UIColor *)unwrapManagedObject(uiColor_) reactHash];
 }
 
 } // namespace facebook::react

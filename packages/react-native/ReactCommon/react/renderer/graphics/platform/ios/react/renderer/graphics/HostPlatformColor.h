@@ -51,7 +51,6 @@ struct Color {
 
  private:
   std::shared_ptr<void> uiColor_;
-  mutable std::size_t uiColorHashValue_;
 };
 
 namespace HostPlatformColor {
