@@ -43,7 +43,7 @@ UIColor *_Nullable UIColorFromInt32(int32_t intColor)
   CGFloat b = CGFloat(intColor & 0xFF) / 255.0;
 
   UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
-  auto colorHash = facebook::react::hash_combine(intColor, intColor, intColor, intColor, 0);
+  auto colorHash = facebook::react::hash_combine(intColor, 0);
   color.reactHash = colorHash;
   return color;
 }
@@ -133,8 +133,7 @@ UIColor *_Nullable UIColorFromComponentsColor(const facebook::react::ColorCompon
   }
 
   auto color = ColorFromColorComponents(components);
-  auto colorHash =
-      facebook::react::hash_combine(color, color, color, color, components.colorSpace == ColorSpace::DisplayP3);
+  auto colorHash = facebook::react::hash_combine(color, components.colorSpace == ColorSpace::DisplayP3);
   uiColor.reactHash = colorHash;
 
   return uiColor;
