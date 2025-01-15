@@ -9,6 +9,8 @@ package com.facebook.react.uimanager
 
 import android.view.View
 import com.facebook.common.logging.FLog
+import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture
 import com.facebook.react.uimanager.ViewManagersPropertyCache.PropSetter
 import java.util.HashMap
 
@@ -40,6 +42,7 @@ public object ViewManagerPropertyUpdater {
   }
 
   @JvmStatic
+  @Deprecated("Use ViewManager#updateProperties to update a view's properties")
   public fun <T : ViewManagerDelegate<V>, V : View> updateProps(
       delegate: T,
       view: V,
@@ -53,6 +56,7 @@ public object ViewManagerPropertyUpdater {
   }
 
   @JvmStatic
+  @Deprecated("Use ViewManager#updateProperties to update a view's properties")
   public fun <V : View> updateProps(
       manager: ViewManager<V, *>,
       view: V,
@@ -66,6 +70,7 @@ public object ViewManagerPropertyUpdater {
     }
   }
 
+  @DeprecatedInNewArchitecture
   @JvmStatic
   public fun <T : ReactShadowNode<T>> updateProps(node: T, props: ReactStylesDiffMap) {
     val setter = findNodeSetter(node.javaClass)
@@ -167,5 +172,18 @@ public object ViewManagerPropertyUpdater {
         props[setter.propName] = setter.propType
       }
     }
+  }
+
+  internal class GenericViewManagerDelegate<T : View>(private val manager: ViewManager<T, *>) :
+      ViewManagerDelegate<T> {
+    private val setter = findManagerSetter(manager.javaClass)
+
+    @Suppress("ACCIDENTAL_OVERRIDE")
+    override fun setProperty(view: T, propName: String, value: Any?): Unit {
+      setter.setProperty(manager, view, propName, value)
+    }
+
+    @Suppress("ACCIDENTAL_OVERRIDE")
+    override fun receiveCommand(view: T, commandName: String, args: ReadableArray?) = Unit
   }
 }
