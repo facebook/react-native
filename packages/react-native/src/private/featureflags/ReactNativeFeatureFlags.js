@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a88e25ee1e5bb8a324ff861c0703b9aa>>
+ * @generated SignedSource<<b7909873b5a9f72390db3a451f719b83>>
  * @flow strict
  */
 
@@ -177,7 +177,7 @@ export const shouldUseSetNativePropsInFabric: Getter<boolean> = createJavaScript
 /**
  * Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.
  */
-export const useInsertionEffectsForAnimations: Getter<boolean> = createJavaScriptFlagGetter('useInsertionEffectsForAnimations', false);
+export const useInsertionEffectsForAnimations: Getter<boolean> = createJavaScriptFlagGetter('useInsertionEffectsForAnimations', true);
 
 /**
  * Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders
