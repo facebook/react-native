@@ -75,18 +75,6 @@ describe('npm-utils', () => {
       process.env.GITHUB_REF_NAME = '';
     });
 
-    it('return the expected format for prealpha', () => {
-      const isoStringSpy = jest.spyOn(Date.prototype, 'toISOString');
-      isoStringSpy.mockReturnValue('2023-10-04T15:43:55.123Z');
-      getCurrentCommitMock.mockImplementation(() => 'abcd1234');
-
-      const returnedValue = getNpmInfo('prealpha');
-      expect(returnedValue).toMatchObject({
-        version: `0.0.0-prealpha-2023100415`,
-        tag: 'prealpha',
-      });
-    });
-
     it('return the expected format for patch-prereleases', () => {
       const isoStringSpy = jest.spyOn(Date.prototype, 'toISOString');
       isoStringSpy.mockReturnValue('2023-10-04T15:43:55.123Z');

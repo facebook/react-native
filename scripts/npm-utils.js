@@ -21,7 +21,7 @@ const {exec} = require('shelljs');
 /*::
 import type { ExecOptsSync, ShellString } from 'shelljs';
 
-type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+type BuildType = 'dry-run' | 'release' | 'nightly';
 type NpmInfo = {
   version: string,
   tag: ?string,
@@ -67,24 +67,6 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
     return {
       version: `${mainVersion}-nightly-${dateIdentifier}-${shortCommit}`,
       tag: 'nightly',
-    };
-  }
-
-  if (buildType === 'prealpha') {
-    const mainVersion = '0.0.0';
-    // Date in the format of YYYYMMDDHH.
-    // This is a progressive int that can track subsequent
-    // releases and it is smaller of 2^32-1.
-    // It is unlikely that we can trigger two prealpha in less
-    // than an hour given that nightlies take ~ 1 hr to complete.
-    const dateIdentifier = new Date()
-      .toISOString()
-      .slice(0, -10)
-      .replace(/[-T:]/g, '');
-
-    return {
-      version: `${mainVersion}-prealpha-${dateIdentifier}`,
-      tag: 'prealpha',
     };
   }
 
