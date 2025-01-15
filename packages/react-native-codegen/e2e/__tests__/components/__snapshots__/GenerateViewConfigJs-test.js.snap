@@ -31,7 +31,7 @@ export const __INTERNAL_VIEW_CONFIG = {
     radii: true,
 
     colors: {
-      process: require('react-native/Libraries/StyleSheet/processColorArray'),
+      process: require('react-native/Libraries/StyleSheet/processColorArray').default,
     },
 
     srcs: true,
