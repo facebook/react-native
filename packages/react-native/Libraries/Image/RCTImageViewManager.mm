@@ -30,6 +30,10 @@ RCT_EXPORT_MODULE()
   return [[RCTImageView alloc] initWithBridge:self.bridge];
 }
 
+#if TARGET_OS_OSX // [macOS
+// setting accessibilityElement on NSImageView has no effect, must be set on NSImageCell
+RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElementCell.accessibilityElement, BOOL)
+#endif // macOS]
 RCT_EXPORT_VIEW_PROPERTY(blurRadius, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(capInsets, UIEdgeInsets)
 RCT_REMAP_VIEW_PROPERTY(defaultSource, defaultImage, UIImage)
