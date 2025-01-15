@@ -3513,7 +3513,7 @@ exports[`public API should not change unintentionally Libraries/Components/TextI
     end: Int32
   ) => void;
 }
-declare const supportedCommands: $FlowFixMe;
+declare const supportedCommands: string[];
 declare export default typeof supportedCommands;
 "
 `;
