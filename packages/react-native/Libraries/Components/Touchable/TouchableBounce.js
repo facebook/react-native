@@ -19,7 +19,7 @@ import {PressabilityDebugView} from '../../Pressability/PressabilityDebug';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
 
   onPressAnimationComplete?: ?() => void,
@@ -29,12 +29,12 @@ type Props = $ReadOnly<{|
   style?: ?ViewStyleProp,
 
   hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
-|}>;
+}>;
 
-type State = $ReadOnly<{|
+type State = $ReadOnly<{
   pressability: Pressability,
   scale: Animated.Value,
-|}>;
+}>;
 
 class TouchableBounce extends React.Component<Props, State> {
   state: State = {
@@ -218,5 +218,5 @@ module.exports = (React.forwardRef((props, hostRef) => (
   <TouchableBounce {...props} hostRef={hostRef} />
 )): component(
   ref: React.RefSetter<mixed>,
-  ...props: $ReadOnly<$Diff<Props, {|hostRef: mixed|}>>
+  ...props: $ReadOnly<$Diff<Props, {hostRef: mixed}>>
 ));

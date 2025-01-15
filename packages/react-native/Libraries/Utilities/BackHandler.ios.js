@@ -13,13 +13,13 @@ type BackPressHandler = () => ?boolean;
 
 function emptyFunction(): void {}
 
-type TBackHandler = {|
+type TBackHandler = {
   +exitApp: () => void,
   +addEventListener: (
     eventName: BackPressEventName,
     handler: BackPressHandler,
   ) => {remove: () => void, ...},
-|};
+};
 
 let BackHandler: TBackHandler = {
   exitApp: emptyFunction,

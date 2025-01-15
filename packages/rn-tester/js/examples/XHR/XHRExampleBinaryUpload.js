@@ -75,7 +75,7 @@ class XHRExampleBinaryUpload extends React.Component<{...}, $FlowFixMeState> {
     Linking.openURL(url);
   }
 
-  state: $FlowFixMe | {|type: 'Uint8Array'|} = {
+  state: $FlowFixMe | {type: 'Uint8Array'} = {
     type: 'Uint8Array',
   };
 

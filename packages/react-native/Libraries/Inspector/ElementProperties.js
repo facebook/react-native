@@ -25,13 +25,13 @@ const mapWithSeparator = require('../Utilities/mapWithSeparator');
 const BoxInspector = require('./BoxInspector');
 const StyleInspector = require('./StyleInspector');
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   hierarchy: ?InspectorData['hierarchy'],
   style?: ?ViewStyleProp,
   frame?: ?Object,
   selection?: ?number,
   setSelection?: number => mixed,
-|}>;
+}>;
 
 class ElementProperties extends React.Component<Props> {
   render(): React.Node {

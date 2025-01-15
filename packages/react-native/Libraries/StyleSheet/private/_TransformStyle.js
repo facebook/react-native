@@ -10,7 +10,7 @@
 
 import type AnimatedNode from '../../Animated/nodes/AnimatedNode';
 
-export type ____TransformStyle_Internal = $ReadOnly<{|
+export type ____TransformStyle_Internal = $ReadOnly<{
   /**
    * `transform` accepts an array of transformation objects. Each object specifies
    * the property that will be transformed as the key, and the value to use in the
@@ -29,27 +29,27 @@ export type ____TransformStyle_Internal = $ReadOnly<{|
    */
   transform?:
     | $ReadOnlyArray<
-        | {|+perspective: number | AnimatedNode|}
-        | {|+rotate: string | AnimatedNode|}
-        | {|+rotateX: string | AnimatedNode|}
-        | {|+rotateY: string | AnimatedNode|}
-        | {|+rotateZ: string | AnimatedNode|}
-        | {|+scale: number | AnimatedNode|}
-        | {|+scaleX: number | AnimatedNode|}
-        | {|+scaleY: number | AnimatedNode|}
-        | {|+translateX: number | AnimatedNode|}
-        | {|+translateY: number | AnimatedNode|}
-        | {|
+        | {+perspective: number | AnimatedNode}
+        | {+rotate: string | AnimatedNode}
+        | {+rotateX: string | AnimatedNode}
+        | {+rotateY: string | AnimatedNode}
+        | {+rotateZ: string | AnimatedNode}
+        | {+scale: number | AnimatedNode}
+        | {+scaleX: number | AnimatedNode}
+        | {+scaleY: number | AnimatedNode}
+        | {+translateX: number | AnimatedNode}
+        | {+translateY: number | AnimatedNode}
+        | {
             +translate:
               | [number | AnimatedNode, number | AnimatedNode]
               | AnimatedNode,
-          |}
-        | {|+skewX: string | AnimatedNode|}
-        | {|+skewY: string | AnimatedNode|}
+          }
+        | {+skewX: string | AnimatedNode}
+        | {+skewY: string | AnimatedNode}
         // TODO: what is the actual type it expects?
-        | {|
+        | {
             +matrix: $ReadOnlyArray<number | AnimatedNode> | AnimatedNode,
-          |},
+          },
       >
     | string,
   /**
@@ -66,4 +66,4 @@ export type ____TransformStyle_Internal = $ReadOnly<{|
   transformOrigin?:
     | [string | number, string | number, string | number]
     | string,
-|}>;
+}>;

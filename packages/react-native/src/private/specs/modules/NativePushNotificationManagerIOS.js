@@ -12,13 +12,13 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-type Permissions = {|
+type Permissions = {
   alert: boolean,
   badge: boolean,
   sound: boolean,
-|};
+};
 
-type Notification = {|
+type Notification = {
   +alertTitle?: ?string,
   +alertBody?: ?string,
   +userInfo?: ?Object,
@@ -55,10 +55,10 @@ type Notification = {|
    * getScheduledLocalNotifications or getDeliveredNotifications.
    */
   +soundName?: ?string,
-|};
+};
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {||};
+  +getConstants: () => {};
   +onFinishRemoteNotification: (
     notificationId: string,
     /**
@@ -71,11 +71,11 @@ export interface Spec extends TurboModule {
   ) => void;
   +setApplicationIconBadgeNumber: (num: number) => void;
   +getApplicationIconBadgeNumber: (callback: (num: number) => void) => void;
-  +requestPermissions: (permission: {|
+  +requestPermissions: (permission: {
     +alert: boolean,
     +badge: boolean,
     +sound: boolean,
-  |}) => Promise<Permissions>;
+  }) => Promise<Permissions>;
   +abandonPermissions: () => void;
   +checkPermissions: (callback: (permissions: Permissions) => void) => void;
   +presentLocalNotification: (notification: Notification) => void;

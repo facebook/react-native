@@ -22,15 +22,15 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type DrawerStateEvent = $ReadOnly<{|
+type DrawerStateEvent = $ReadOnly<{
   drawerState: Int32,
-|}>;
+}>;
 
-type DrawerSlideEvent = $ReadOnly<{|
+type DrawerSlideEvent = $ReadOnly<{
   offset: Float,
-|}>;
+}>;
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
   /**
    * Determines whether the keyboard gets dismissed in response to a drag.
@@ -106,7 +106,7 @@ type NativeProps = $ReadOnly<{|
    * effect on API 21+.
    */
   statusBarBackgroundColor?: ?ColorValue,
-|}>;
+}>;
 
 type NativeType = HostComponent<NativeProps>;
 

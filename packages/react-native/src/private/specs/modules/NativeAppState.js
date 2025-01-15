@@ -12,11 +12,11 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type AppStateConstants = {|
+export type AppStateConstants = {
   initialAppState: string,
-|};
+};
 
-export type AppState = {|app_state: string|};
+export type AppState = {app_state: string};
 
 export interface Spec extends TurboModule {
   +getConstants: () => AppStateConstants;

@@ -21,29 +21,29 @@ import type {
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type ObjectArrayPropType = $ReadOnly<{|
+type ObjectArrayPropType = $ReadOnly<{
   array: $ReadOnlyArray<string>,
-|}>;
+}>;
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
-  objectProp?: $ReadOnly<{|
+  objectProp?: $ReadOnly<{
     stringProp?: WithDefault<string, ''>,
     booleanProp: boolean,
     floatProp: Float,
     intProp: Int32,
     stringEnumProp?: WithDefault<'small' | 'large', 'small'>,
     intEnumProp?: WithDefault<0 | 1, 0>,
-  |}>,
+  }>,
   objectArrayProp: ObjectArrayPropType,
-  objectPrimitiveRequiredProp: $ReadOnly<{|
+  objectPrimitiveRequiredProp: $ReadOnly<{
     image: ImageSource,
     color?: ColorValue,
     point: ?PointValue,
-  |}>,
-|}>;
+  }>,
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'ObjectPropsNativeComponent',

@@ -21,7 +21,7 @@ import PullToRefreshViewNativeComponent, {
 const Platform = require('../../Utilities/Platform');
 const React = require('react');
 
-type IOSProps = $ReadOnly<{|
+type IOSProps = $ReadOnly<{
   /**
    * The color of the refresh indicator.
    */
@@ -34,9 +34,9 @@ type IOSProps = $ReadOnly<{|
    * The title displayed under the refresh indicator.
    */
   title?: ?string,
-|}>;
+}>;
 
-type AndroidProps = $ReadOnly<{|
+type AndroidProps = $ReadOnly<{
   /**
    * Whether the pull to refresh functionality is enabled.
    */
@@ -53,9 +53,9 @@ type AndroidProps = $ReadOnly<{|
    * Size of the refresh indicator.
    */
   size?: ?('default' | 'large'),
-|}>;
+}>;
 
-export type RefreshControlProps = $ReadOnly<{|
+export type RefreshControlProps = $ReadOnly<{
   ...ViewProps,
   ...IOSProps,
   ...AndroidProps,
@@ -74,7 +74,7 @@ export type RefreshControlProps = $ReadOnly<{|
    * Progress view top offset
    */
   progressViewOffset?: ?number,
-|}>;
+}>;
 
 /**
  * This component is used inside a ScrollView or ListView to add pull to refresh

@@ -22,9 +22,9 @@ import LogBoxButton from './LogBoxButton';
 import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   codeFrame: ?CodeFrame,
-|}>;
+}>;
 
 function LogBoxInspectorCodeFrame(props: Props): React.Node {
   const codeFrame = props.codeFrame;

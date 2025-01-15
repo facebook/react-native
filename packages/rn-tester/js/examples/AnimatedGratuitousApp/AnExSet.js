@@ -22,13 +22,13 @@ const randColor = () => {
   return `rgb(${colors.join(',')})`;
 };
 
-type AnExSetProps = $ReadOnly<{|
+type AnExSetProps = $ReadOnly<{
   openVal: Animated.Value,
   containerLayout: {width: number, height: number},
   id: string,
   isActive: boolean,
   onDismiss: (velocity: number) => void,
-|}>;
+}>;
 
 const AnExSet = ({
   openVal,

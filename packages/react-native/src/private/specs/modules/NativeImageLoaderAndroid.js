@@ -20,7 +20,7 @@ export type ImageSize = {
 
 export interface Spec extends TurboModule {
   +abortRequest: (requestId: number) => void;
-  +getConstants: () => {||};
+  +getConstants: () => {};
   +getSize: (uri: string) => Promise<ImageSize>;
   +getSizeWithHeaders: (uri: string, headers: Object) => Promise<ImageSize>;
   +prefetchImage: (uri: string, requestId: number) => Promise<boolean>;

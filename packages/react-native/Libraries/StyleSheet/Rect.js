@@ -8,12 +8,12 @@
  * @flow strict
  */
 
-export type Rect = $ReadOnly<{|
+export type Rect = $ReadOnly<{
   bottom?: ?number,
   left?: ?number,
   right?: ?number,
   top?: ?number,
-|}>;
+}>;
 
 export type RectOrSize = Rect | number;
 

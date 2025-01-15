@@ -181,12 +181,12 @@ function renderTableRow({item}: RenderItemProps<PlatformTestResult>) {
   return <TableRow testResult={item} />;
 }
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   numPending: number,
   reset: () => void,
   results: $ReadOnlyArray<PlatformTestResult>,
   style?: ?ViewStyleProp,
-|}>;
+}>;
 export default function RNTesterPlatformTestResultView(
   props: Props,
 ): React.MixedElement {

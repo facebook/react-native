@@ -31,11 +31,11 @@ const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 
 type DrawerStates = 'Idle' | 'Dragging' | 'Settling';
 
-type DrawerSlideEvent = $ReadOnly<{|
+type DrawerSlideEvent = $ReadOnly<{
   offset: number,
-|}>;
+}>;
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   accessibilityRole?: ?AccessibilityRole,
 
   /**
@@ -116,11 +116,11 @@ type Props = $ReadOnly<{|
 
   children?: React.Node,
   style?: ?ViewStyleProp,
-|}>;
+}>;
 
-type State = {|
+type State = {
   drawerOpened: boolean,
-|};
+};
 
 /**
  * React component that wraps the platform `DrawerLayout` (Android only). The

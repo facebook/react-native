@@ -16,11 +16,11 @@ import LogBoxLog from './Data/LogBoxLog';
 import LogBoxLogNotification from './UI/LogBoxNotification';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   logs: $ReadOnlyArray<LogBoxLog>,
   selectedLogIndex: number,
   isDisabled?: ?boolean,
-|}>;
+}>;
 
 export function _LogBoxNotificationContainer(props: Props): React.Node {
   const {logs} = props;
@@ -102,4 +102,4 @@ const styles = StyleSheet.create({
 
 export default (LogBoxData.withSubscription(
   _LogBoxNotificationContainer,
-): React.ComponentType<{||}>);
+): React.ComponentType<{}>);

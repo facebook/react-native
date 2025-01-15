@@ -14,7 +14,7 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 
 export interface Spec extends TurboModule {
   +sendRequest: (
-    query: {|
+    query: {
       method: string,
       url: string,
       data: Object,
@@ -23,7 +23,7 @@ export interface Spec extends TurboModule {
       incrementalUpdates: boolean,
       timeout: number,
       withCredentials: boolean,
-    |},
+    },
     callback: (requestId: number) => void,
   ) => void;
   +abortRequest: (requestId: number) => void;

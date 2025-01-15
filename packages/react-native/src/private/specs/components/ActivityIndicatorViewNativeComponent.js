@@ -15,7 +15,7 @@ import type {WithDefault} from '../../../../Libraries/Types/CodegenTypes';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -46,7 +46,7 @@ type NativeProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/activityindicator#size
    */
   size?: WithDefault<'small' | 'large', 'small'>,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>('ActivityIndicatorView', {
   paperComponentName: 'RCTActivityIndicatorView',
