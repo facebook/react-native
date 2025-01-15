@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: ms_MY -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Pautan</string>
+    <string name="image_description" gender="unknown">Imej</string>
+    <string name="imagebutton_description" gender="unknown">Butang, Imej</string>
+    <string name="header_description" gender="unknown">Tajuk</string>
+    <string name="alert_description" gender="unknown">Isyarat</string>
+    <string name="combobox_description" gender="unknown">Kotak Kombo</string>
+    <string name="menubar_description" gender="unknown">Bar Menu</string>
+    <string name="menuitem_description" gender="unknown">Item Menu</string>
+    <string name="progressbar_description" gender="unknown">Bar Kemajuan</string>
+    <string name="radiogroup_description" gender="unknown">Kumpulan Radio</string>
+    <string name="scrollbar_description" gender="unknown">Bar Tatal</string>
+    <string name="spinbutton_description" gender="unknown">Butang Putaran</string>
+    <string name="tablist_description" gender="unknown">Senarai Tab</string>
+    <string name="timer_description" gender="unknown">Pemasa</string>
+    <string name="toolbar_description" gender="unknown">Bar Alat</string>
+    <string name="summary_description" gender="unknown">Ringkasan</string>
+    <string name="state_busy_description" gender="unknown">sibuk</string>
+    <string name="state_expanded_description" gender="unknown">dikembangkan</string>
+    <string name="state_collapsed_description" gender="unknown">diruntuhkan</string>
+    <string name="state_unselected_description" gender="unknown">dinyahpilih</string>
+    <string name="state_on_description" gender="unknown">dihidupkan</string>
+    <string name="state_off_description" gender="unknown">dimatikan</string>
+    <string name="state_mixed_description" gender="unknown">campuran</string>
+</resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: ka_GE -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">ბმული</string>
+    <string name="image_description" gender="unknown">გამოსახულება</string>
+    <string name="imagebutton_description" gender="unknown">ღილაკი, გამოსახულება</string>
+    <string name="header_description" gender="unknown">სათაური</string>
+    <string name="alert_description" gender="unknown">გაფრთხილება</string>
+    <string name="menu_description" gender="unknown">მენიუ</string>
+    <string name="menubar_description" gender="unknown">მენიუს ზოლი</string>
+    <string name="menuitem_description" gender="unknown">მენიუს ერთეული</string>
+    <string name="progressbar_description" gender="unknown">პროგრესის ზოლი</string>
+    <string name="radiogroup_description" gender="unknown">რადიო ჯგუფი</string>
+    <string name="scrollbar_description" gender="unknown">გადაადგილების პანელი</string>
+    <string name="spinbutton_description" gender="unknown">დატრიალების ღილაკი</string>
+    <string name="rn_tab_description" gender="unknown">ჩანართი</string>
+    <string name="tablist_description" gender="unknown">ჩანართების სია</string>
+    <string name="timer_description" gender="unknown">ტაიმერი</string>
+    <string name="toolbar_description" gender="unknown">ხელსაწყოების ზოლი</string>
+    <string name="summary_description" gender="unknown">შეჯამება</string>
+    <string name="state_busy_description" gender="unknown">დაკავებული</string>
+    <string name="state_expanded_description" gender="unknown">გაშლილი</string>
+    <string name="state_collapsed_description" gender="unknown">აკეცილი</string>
+    <string name="state_unselected_description" gender="unknown">აურჩეველი</string>
+    <string name="state_on_description" gender="unknown">ჩართული</string>
+    <string name="state_off_description" gender="unknown">გამორთულია</string>
+    <string name="state_mixed_description" gender="unknown">შერეული</string>
+</resources>
