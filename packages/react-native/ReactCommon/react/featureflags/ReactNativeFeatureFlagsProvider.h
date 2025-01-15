@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<36bfe0037e4dba3b6eb6e95075914fce>>
+ * @generated SignedSource<<a36169cf43b41914533e7b5c17ec053c>>
  */
 
 /**
@@ -61,6 +61,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool loadVectorDrawablesOnImages() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
   virtual bool useAlwaysAvailableJSErrorHandling() = 0;
+  virtual bool useEditTextStockAndroidFocusBehavior() = 0;
   virtual bool useFabricInterop() = 0;
   virtual bool useImmediateExecutorInAndroidBridgeless() = 0;
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;

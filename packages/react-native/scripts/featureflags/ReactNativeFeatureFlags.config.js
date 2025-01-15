@@ -390,6 +390,15 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    useEditTextStockAndroidFocusBehavior: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+    },
     useFabricInterop: {
       defaultValue: false,
       metadata: {
