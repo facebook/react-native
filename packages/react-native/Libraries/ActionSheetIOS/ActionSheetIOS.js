@@ -172,4 +172,4 @@ const ActionSheetIOS = {
   },
 };
 
-module.exports = ActionSheetIOS;
+export default ActionSheetIOS;

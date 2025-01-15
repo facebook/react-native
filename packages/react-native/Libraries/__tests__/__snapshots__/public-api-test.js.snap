@@ -25,7 +25,7 @@ exports[`public API should not change unintentionally Libraries/ActionSheetIOS/A
   ): void,
   dismissActionSheet: () => void,
 };
-declare module.exports: ActionSheetIOS;
+declare export default typeof ActionSheetIOS;
 "
 `;
 
@@ -72,7 +72,7 @@ declare class Alert {
     options?: Options
   ): void;
 }
-declare module.exports: Alert;
+declare export default typeof Alert;
 "
 `;
 
@@ -83,7 +83,7 @@ declare export default typeof NativeAlertManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.js.flow 1`] = `
-"declare module.exports: {
+"declare export default {
   alertWithArgs(
     args: Args,
     callback: (id: number, value: string) => void
@@ -7203,7 +7203,7 @@ exports[`public API should not change unintentionally Libraries/Pressability/use
 
 exports[`public API should not change unintentionally Libraries/Promise.js 1`] = `
 "declare const Promise: $FlowFixMe;
-declare module.exports: Promise;
+declare export default typeof Promise;
 "
 `;
 

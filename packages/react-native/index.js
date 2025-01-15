@@ -212,10 +212,10 @@ module.exports = {
 
   // APIs
   get ActionSheetIOS(): ActionSheetIOS {
-    return require('./Libraries/ActionSheetIOS/ActionSheetIOS');
+    return require('./Libraries/ActionSheetIOS/ActionSheetIOS').default;
   },
   get Alert(): Alert {
-    return require('./Libraries/Alert/Alert');
+    return require('./Libraries/Alert/Alert').default;
   },
   // Include any types exported in the Animated module together with its default export, so
   // you can references types such as Animated.Numeric
