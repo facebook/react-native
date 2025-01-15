@@ -276,6 +276,20 @@ function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
     // if the queue is empty. When multiple animated components are mounted at
     // the same time. Only first component flushes the queue and the others will noop.
     NativeAnimatedHelper.API.flushQueue();
+    let drivenAnimationEndedListener: ?EventSubscription = null;
+    if (node.__isNative) {
+      drivenAnimationEndedListener =
+        NativeAnimatedHelper.nativeEventEmitter.addListener(
+          'onUserDrivenAnimationEnded',
+          data => {
+            node.update();
+          },
+        );
+    }
+
+    return () => {
+      drivenAnimationEndedListener?.remove();
+    };
   });
 
   useInsertionEffect(() => {
@@ -287,17 +301,6 @@ function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
 
   useInsertionEffect(() => {
     node.__attach();
-    let drivenAnimationEndedListener: ?EventSubscription = null;
-
-    if (node.__isNative) {
-      drivenAnimationEndedListener =
-        NativeAnimatedHelper.nativeEventEmitter.addListener(
-          'onUserDrivenAnimationEnded',
-          data => {
-            node.update();
-          },
-        );
-    }
     if (prevNodeRef.current != null) {
       const prevNode = prevNodeRef.current;
       // TODO: Stop restoring default values (unless `reset` is called).
@@ -312,8 +315,6 @@ function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
       } else {
         prevNodeRef.current = node;
       }
-
-      drivenAnimationEndedListener?.remove();
     };
   }, [node]);
 }

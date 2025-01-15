@@ -131,6 +131,11 @@ export default class AnimatedValue extends AnimatedWithChildren {
     return this._value + this._offset;
   }
 
+  __makeNative(platformConfig: ?PlatformConfig): void {
+    super.__makeNative(platformConfig);
+    this.#ensureUpdateSubscriptionExists();
+  }
+
   #ensureUpdateSubscriptionExists(): void {
     if (this.#updateSubscription != null) {
       return;
