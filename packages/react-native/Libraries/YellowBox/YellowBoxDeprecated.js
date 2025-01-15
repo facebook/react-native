@@ -16,7 +16,7 @@ import React from 'react';
 
 const LogBox = require('../LogBox/LogBox').default;
 
-type Props = $ReadOnly<{||}>;
+type Props = $ReadOnly<{}>;
 
 let YellowBox;
 if (__DEV__) {

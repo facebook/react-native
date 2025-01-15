@@ -17,14 +17,14 @@ import type {
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
   progress1?: WithDefault<Int32, 0>,
   progress2?: WithDefault<Int32, -1>,
   progress3?: WithDefault<Int32, 10>,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'IntegerPropNativeComponentView',

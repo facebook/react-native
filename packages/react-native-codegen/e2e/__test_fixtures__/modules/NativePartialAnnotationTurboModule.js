@@ -14,10 +14,10 @@ import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-export type SomeObj = {|
+export type SomeObj = {
   a: string,
   b?: boolean,
-|};
+};
 
 export type PartialSomeObj = Partial<SomeObj>;
 

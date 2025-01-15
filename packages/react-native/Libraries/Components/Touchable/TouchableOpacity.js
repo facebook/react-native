@@ -21,16 +21,16 @@ import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-type TVProps = $ReadOnly<{|
+type TVProps = $ReadOnly<{
   hasTVPreferredFocus?: ?boolean,
   nextFocusDown?: ?number,
   nextFocusForward?: ?number,
   nextFocusLeft?: ?number,
   nextFocusRight?: ?number,
   nextFocusUp?: ?number,
-|}>;
+}>;
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
   ...TVProps,
 
@@ -38,12 +38,12 @@ type Props = $ReadOnly<{|
   style?: ?ViewStyleProp,
 
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
-|}>;
+}>;
 
-type State = $ReadOnly<{|
+type State = $ReadOnly<{
   anim: Animated.Value,
   pressability: Pressability,
-|}>;
+}>;
 
 /**
  * A wrapper for making views respond properly to touches.

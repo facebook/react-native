@@ -36,11 +36,11 @@ export interface Spec extends TurboModule {
   +onChange: EventEmitter<ObjectStruct>;
   +onSubmit: EventEmitter<ObjectStruct[]>;
   // Exported methods.
-  +getConstants: () => {|
+  +getConstants: () => {
     const1: boolean,
     const2: number,
     const3: string,
-  |};
+  };
   +voidFunc: () => void;
   +getBool: (arg: boolean) => boolean;
   +getEnum?: (arg: EnumInt) => EnumInt;

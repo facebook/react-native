@@ -15,12 +15,12 @@ import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 import React from 'react';
 import {Pressable, StyleSheet, Text} from 'react-native';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   testID?: string,
   textTestID?: string,
   children?: React.Node,
   onPress?: ?(event: PressEvent) => mixed,
-|}>;
+}>;
 
 function RNTesterButton(props: Props): React.Node {
   return (

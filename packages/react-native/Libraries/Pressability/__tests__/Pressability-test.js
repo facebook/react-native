@@ -82,7 +82,7 @@ const mockSlop = {
   right: 10,
 };
 
-const mockUIManagerMeasure = (options?: {|delay: number|}) => {
+const mockUIManagerMeasure = (options?: {delay: number}) => {
   getMock(UIManager.measure).mockImplementation((id, fn) => {
     if (options && options.delay) {
       setTimeout(
@@ -171,11 +171,11 @@ const createMockMouseEvent = (registrationName: string) => {
 const createMockPressEvent = (
   nameOrOverrides:
     | string
-    | $ReadOnly<{|
+    | $ReadOnly<{
         registrationName: string,
         pageX: number,
         pageY: number,
-      |}>,
+      }>,
 ): PressEvent => {
   let registrationName = '';
   let pageX = 0;

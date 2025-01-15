@@ -12,32 +12,32 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type DisplayMetricsAndroid = {|
+export type DisplayMetricsAndroid = {
   width: number,
   height: number,
   scale: number,
   fontScale: number,
   densityDpi: number,
-|};
+};
 
-export type DisplayMetrics = {|
+export type DisplayMetrics = {
   width: number,
   height: number,
   scale: number,
   fontScale: number,
-|};
+};
 
-export type DimensionsPayload = {|
+export type DimensionsPayload = {
   window?: DisplayMetrics,
   screen?: DisplayMetrics,
   windowPhysicalPixels?: DisplayMetricsAndroid,
   screenPhysicalPixels?: DisplayMetricsAndroid,
-|};
+};
 
-export type DeviceInfoConstants = {|
+export type DeviceInfoConstants = {
   +Dimensions: DimensionsPayload,
   +isIPhoneX_deprecated?: boolean,
-|};
+};
 
 export interface Spec extends TurboModule {
   +getConstants: () => DeviceInfoConstants;

@@ -21,12 +21,12 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type SwitchChangeEvent = $ReadOnly<{|
+type SwitchChangeEvent = $ReadOnly<{
   value: boolean,
   target: Int32,
-|}>;
+}>;
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
@@ -43,7 +43,7 @@ type NativeProps = $ReadOnly<{|
 
   // Events
   onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
-|}>;
+}>;
 
 type ComponentType = HostComponent<NativeProps>;
 

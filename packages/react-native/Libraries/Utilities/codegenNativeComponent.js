@@ -16,12 +16,12 @@ import requireNativeComponent from '../../Libraries/ReactNative/requireNativeCom
 import UIManager from '../ReactNative/UIManager';
 
 // TODO: import from CodegenSchema once workspaces are enabled
-type Options = $ReadOnly<{|
+type Options = $ReadOnly<{
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,
   excludedPlatforms?: $ReadOnlyArray<'iOS' | 'android'>,
-|}>;
+}>;
 
 export type NativeComponentType<T> = HostComponent<T>;
 

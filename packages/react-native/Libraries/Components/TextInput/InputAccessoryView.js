@@ -76,7 +76,7 @@ import * as React from 'react';
  * For an example, look at InputAccessoryViewExample.js in RNTester.
  */
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   +children: React.Node,
   /**
    * An ID which is used to associate this `InputAccessoryView` to
@@ -85,7 +85,7 @@ type Props = $ReadOnly<{|
   nativeID?: ?string,
   style?: ?ViewStyleProp,
   backgroundColor?: ?ColorValue,
-|}>;
+}>;
 
 const InputAccessoryView: React.ComponentType<Props> = (props: Props) => {
   const {width} = useWindowDimensions();

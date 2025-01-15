@@ -19,19 +19,19 @@ import invariant from 'invariant';
 import * as React from 'react';
 import {useMemo} from 'react';
 
-type NativeBackgroundProp = $ReadOnly<{|
+type NativeBackgroundProp = $ReadOnly<{
   type: 'RippleAndroid',
   color: ?number,
   borderless: boolean,
   rippleRadius: ?number,
-|}>;
+}>;
 
-export type RippleConfig = {|
+export type RippleConfig = {
   color?: ColorValue,
   borderless?: boolean,
   radius?: number,
   foreground?: boolean,
-|};
+};
 
 /**
  * Provides the event handlers and props for configuring the ripple effect on
@@ -39,15 +39,15 @@ export type RippleConfig = {|
  */
 export default function useAndroidRippleForView(
   rippleConfig: ?RippleConfig,
-  viewRef: {|current: null | React.ElementRef<typeof View>|},
-): ?$ReadOnly<{|
+  viewRef: {current: null | React.ElementRef<typeof View>},
+): ?$ReadOnly<{
   onPressIn: (event: PressEvent) => void,
   onPressMove: (event: PressEvent) => void,
   onPressOut: (event: PressEvent) => void,
   viewProps:
-    | $ReadOnly<{|nativeBackgroundAndroid: NativeBackgroundProp|}>
-    | $ReadOnly<{|nativeForegroundAndroid: NativeBackgroundProp|}>,
-|}> {
+    | $ReadOnly<{nativeBackgroundAndroid: NativeBackgroundProp}>
+    | $ReadOnly<{nativeForegroundAndroid: NativeBackgroundProp}>,
+}> {
   const {color, borderless, radius, foreground} = rippleConfig ?? {};
 
   return useMemo(() => {

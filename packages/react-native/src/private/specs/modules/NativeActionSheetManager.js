@@ -13,9 +13,9 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {||};
+  +getConstants: () => {};
   +showActionSheetWithOptions: (
-    options: {|
+    options: {
       +title?: ?string,
       +message?: ?string,
       +options: ?Array<string>,
@@ -27,11 +27,11 @@ export interface Spec extends TurboModule {
       +disabledButtonTintColor?: ?number,
       +userInterfaceStyle?: ?string,
       +disabledButtonIndices?: Array<number>,
-    |},
+    },
     callback: (buttonIndex: number) => void,
   ) => void;
   +showShareActionSheetWithOptions: (
-    options: {|
+    options: {
       +message?: ?string,
       +url?: ?string,
       +subject?: ?string,
@@ -41,13 +41,13 @@ export interface Spec extends TurboModule {
       +disabledButtonTintColor?: ?number,
       +excludedActivityTypes?: ?Array<string>,
       +userInterfaceStyle?: ?string,
-    |},
-    failureCallback: (error: {|
+    },
+    failureCallback: (error: {
       +domain: string,
       +code: string,
       +userInfo?: ?Object,
       +message: string,
-    |}) => void,
+    }) => void,
     successCallback: (completed: boolean, activityType: ?string) => void,
   ) => void;
   +dismissActionSheet?: () => void;

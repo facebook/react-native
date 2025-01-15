@@ -30,8 +30,8 @@ const DESTRUCTIVE_INDEX = 3;
 const CANCEL_INDEX = 4;
 const DISABLED_BUTTON_INDICES = [1, 2];
 
-type Props = $ReadOnly<{||}>;
-type State = {|clicked: string|};
+type Props = $ReadOnly<{}>;
+type State = {clicked: string};
 class ActionSheetExample extends React.Component<Props, State> {
   state: State = {
     clicked: 'none',

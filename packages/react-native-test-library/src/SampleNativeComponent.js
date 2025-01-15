@@ -28,18 +28,18 @@ type Event = $ReadOnly<{
   doubles: $ReadOnlyArray<Double>,
   yesNos: $ReadOnlyArray<'yep' | 'nope'>,
   strings: $ReadOnlyArray<string>,
-  latLons: $ReadOnlyArray<{|lat: Double, lon: Double|}>,
+  latLons: $ReadOnlyArray<{lat: Double, lon: Double}>,
   multiArrays: $ReadOnlyArray<$ReadOnlyArray<Int32>>,
 }>;
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
   opacity?: Float,
   values: $ReadOnlyArray<Int32>,
 
   // Events
   onIntArrayChanged?: ?BubblingEventHandler<Event>,
-|}>;
+}>;
 
 export type NativeComponentType = HostComponent<NativeProps>;
 

@@ -55,7 +55,7 @@ export type StatusBarAnimation = $Keys<{
   ...
 }>;
 
-type AndroidProps = $ReadOnly<{|
+type AndroidProps = $ReadOnly<{
   /**
    * The background color of the status bar.
    * @platform android
@@ -69,9 +69,9 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   translucent?: ?boolean,
-|}>;
+}>;
 
-type IOSProps = $ReadOnly<{|
+type IOSProps = $ReadOnly<{
   /**
    * If the network activity indicator should be visible.
    *
@@ -85,9 +85,9 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   showHideTransition?: ?('fade' | 'slide' | 'none'),
-|}>;
+}>;
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...AndroidProps,
   ...IOSProps,
   /**
@@ -103,7 +103,7 @@ type Props = $ReadOnly<{|
    * Sets the color of the status bar text.
    */
   barStyle?: ?('default' | 'light-content' | 'dark-content'),
-|}>;
+}>;
 
 type StackProps = {
   backgroundColor: ?{

@@ -49,11 +49,11 @@ type NetworkRequestInfo = {
   ...
 };
 
-type Props = $ReadOnly<{||}>;
-type State = {|
+type Props = $ReadOnly<{}>;
+type State = {
   detailRowId: ?number,
   requests: Array<NetworkRequestInfo>,
-|};
+};
 
 function getStringByValue(value: any): string {
   if (value === undefined) {

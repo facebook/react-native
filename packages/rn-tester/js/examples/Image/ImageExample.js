@@ -31,13 +31,13 @@ const base64Icon =
 const IMAGE_PREFETCH_URL = `${IMAGE1}?r=1&t=${Date.now()}`;
 const prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
-type ImageSource = $ReadOnly<{|
+type ImageSource = $ReadOnly<{
   uri: string,
-|}>;
+}>;
 
-type BlobImageProps = $ReadOnly<{|
+type BlobImageProps = $ReadOnly<{
   url: string,
-|}>;
+}>;
 
 const BlobImage = ({url}: BlobImageProps): React.Node => {
   const [objectURL, setObjectURL] = React.useState<?string>(null);
@@ -58,11 +58,11 @@ const BlobImage = ({url}: BlobImageProps): React.Node => {
   );
 };
 
-type BlobImageExampleState = {||};
+type BlobImageExampleState = {};
 
-type BlobImageExampleProps = $ReadOnly<{|
+type BlobImageExampleProps = $ReadOnly<{
   urls: string[],
-|}>;
+}>;
 
 class BlobImageExample extends React.Component<
   BlobImageExampleProps,
@@ -79,10 +79,10 @@ class BlobImageExample extends React.Component<
   }
 }
 
-type NetworkImageCallbackExampleProps = $ReadOnly<{|
+type NetworkImageCallbackExampleProps = $ReadOnly<{
   source: ImageSource,
   prefetchedSource: ImageSource,
-|}>;
+}>;
 
 const NetworkImageCallbackExample = ({
   source,
@@ -195,11 +195,11 @@ const NetworkImageCallbackExample = ({
   );
 };
 
-type NetworkImageExampleState = {|
+type NetworkImageExampleState = {
   error: ?string,
   loading: boolean,
   progress: $ReadOnlyArray<number>,
-|};
+};
 
 class NetworkImageExample extends React.Component<
   ImageProps,
@@ -243,14 +243,14 @@ class NetworkImageExample extends React.Component<
   }
 }
 
-type ImageSizeExampleState = {|
+type ImageSizeExampleState = {
   width: number,
   height: number,
-|};
+};
 
-type ImageSizeExampleProps = $ReadOnly<{|
+type ImageSizeExampleProps = $ReadOnly<{
   source: ImageSource,
-|}>;
+}>;
 
 class ImageSizeExample extends React.Component<
   ImageSizeExampleProps,
@@ -280,12 +280,12 @@ class ImageSizeExample extends React.Component<
   }
 }
 
-type MultipleSourcesExampleState = {|
+type MultipleSourcesExampleState = {
   width: number,
   height: number,
-|};
+};
 
-type MultipleSourcesExampleProps = $ReadOnly<{||}>;
+type MultipleSourcesExampleProps = $ReadOnly<{}>;
 
 class MultipleSourcesExample extends React.Component<
   MultipleSourcesExampleProps,
@@ -356,11 +356,11 @@ class MultipleSourcesExample extends React.Component<
   }
 }
 
-type LoadingIndicatorSourceExampleState = {|
+type LoadingIndicatorSourceExampleState = {
   imageHash: number,
-|};
+};
 
-type LoadingIndicatorSourceExampleProps = $ReadOnly<{||}>;
+type LoadingIndicatorSourceExampleProps = $ReadOnly<{}>;
 
 class LoadingIndicatorSourceExample extends React.Component<
   LoadingIndicatorSourceExampleProps,
@@ -404,11 +404,11 @@ class LoadingIndicatorSourceExample extends React.Component<
   }
 }
 
-type FadeDurationExampleState = {|
+type FadeDurationExampleState = {
   imageHash: number,
-|};
+};
 
-type FadeDurationExampleProps = $ReadOnly<{||}>;
+type FadeDurationExampleProps = $ReadOnly<{}>;
 
 class FadeDurationExample extends React.Component<
   FadeDurationExampleProps,
@@ -445,13 +445,13 @@ class FadeDurationExample extends React.Component<
   }
 }
 
-type OnLayoutExampleState = {|
+type OnLayoutExampleState = {
   width: number,
   height: number,
   layoutHandlerMessage: string,
-|};
+};
 
-type OnLayoutExampleProps = $ReadOnly<{||}>;
+type OnLayoutExampleProps = $ReadOnly<{}>;
 
 class OnLayoutExample extends React.Component<
   OnLayoutExampleProps,
@@ -540,11 +540,11 @@ class OnLayoutExample extends React.Component<
   }
 }
 
-type OnPartialLoadExampleState = {|
+type OnPartialLoadExampleState = {
   hasLoaded: boolean,
-|};
+};
 
-type OnPartialLoadExampleProps = $ReadOnly<{||}>;
+type OnPartialLoadExampleProps = $ReadOnly<{}>;
 
 class OnPartialLoadExample extends React.Component<
   OnPartialLoadExampleProps,

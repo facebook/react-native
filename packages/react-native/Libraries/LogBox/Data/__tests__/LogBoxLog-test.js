@@ -40,12 +40,12 @@ function getLogBoxLog() {
   });
 }
 
-function getLogBoxSymbolication(): {|
+function getLogBoxSymbolication(): {
   symbolicate: JestMockFn<
     $ReadOnlyArray<Array<StackFrame>>,
     Promise<SymbolicatedStackTrace>,
   >,
-|} {
+} {
   return (require('../LogBoxSymbolication'): any);
 }
 

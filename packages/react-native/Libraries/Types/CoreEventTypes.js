@@ -10,14 +10,14 @@
 
 import type {HostInstance} from '../Renderer/shims/ReactNativeTypes';
 
-export type SyntheticEvent<+T> = $ReadOnly<{|
+export type SyntheticEvent<+T> = $ReadOnly<{
   bubbles: ?boolean,
   cancelable: ?boolean,
   currentTarget: number | HostInstance,
   defaultPrevented: ?boolean,
-  dispatchConfig: $ReadOnly<{|
+  dispatchConfig: $ReadOnly<{
     registrationName: string,
-  |}>,
+  }>,
   eventPhase: ?number,
   preventDefault: () => void,
   isDefaultPrevented: () => boolean,
@@ -29,16 +29,16 @@ export type SyntheticEvent<+T> = $ReadOnly<{|
   target: ?number | HostInstance,
   timeStamp: number,
   type: ?string,
-|}>;
+}>;
 
-export type ResponderSyntheticEvent<T> = $ReadOnly<{|
+export type ResponderSyntheticEvent<T> = $ReadOnly<{
   ...SyntheticEvent<T>,
-  touchHistory: $ReadOnly<{|
+  touchHistory: $ReadOnly<{
     indexOfSingleActiveTouch: number,
     mostRecentTimeStamp: number,
     numberActiveTouches: number,
     touchBank: $ReadOnlyArray<
-      $ReadOnly<{|
+      $ReadOnly<{
         touchActive: boolean,
         startPageX: number,
         startPageY: number,
@@ -49,37 +49,37 @@ export type ResponderSyntheticEvent<T> = $ReadOnly<{|
         previousPageX: number,
         previousPageY: number,
         previousTimeStamp: number,
-      |}>,
+      }>,
     >,
-  |}>,
-|}>;
+  }>,
+}>;
 
-export type Layout = $ReadOnly<{|
+export type Layout = $ReadOnly<{
   x: number,
   y: number,
   width: number,
   height: number,
-|}>;
+}>;
 
-export type TextLayout = $ReadOnly<{|
+export type TextLayout = $ReadOnly<{
   ...Layout,
   ascender: number,
   capHeight: number,
   descender: number,
   text: string,
   xHeight: number,
-|}>;
+}>;
 
 export type LayoutEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     layout: Layout,
-  |}>,
+  }>,
 >;
 
 export type TextLayoutEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     lines: Array<TextLayout>,
-  |}>,
+  }>,
 >;
 
 /**
@@ -221,7 +221,7 @@ export interface NativePointerEvent extends NativeMouseEvent {
 export type PointerEvent = SyntheticEvent<NativePointerEvent>;
 
 export type PressEvent = ResponderSyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
     force?: number,
     identifier: number,
@@ -232,60 +232,60 @@ export type PressEvent = ResponderSyntheticEvent<
     target: ?number,
     timestamp: number,
     touches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
-  |}>,
+  }>,
 >;
 
 export type ScrollEvent = SyntheticEvent<
-  $ReadOnly<{|
-    contentInset: $ReadOnly<{|
+  $ReadOnly<{
+    contentInset: $ReadOnly<{
       bottom: number,
       left: number,
       right: number,
       top: number,
-    |}>,
-    contentOffset: $ReadOnly<{|
+    }>,
+    contentOffset: $ReadOnly<{
       y: number,
       x: number,
-    |}>,
-    contentSize: $ReadOnly<{|
+    }>,
+    contentSize: $ReadOnly<{
       height: number,
       width: number,
-    |}>,
-    layoutMeasurement: $ReadOnly<{|
+    }>,
+    layoutMeasurement: $ReadOnly<{
       height: number,
       width: number,
-    |}>,
-    targetContentOffset?: $ReadOnly<{|
+    }>,
+    targetContentOffset?: $ReadOnly<{
       y: number,
       x: number,
-    |}>,
-    velocity?: $ReadOnly<{|
+    }>,
+    velocity?: $ReadOnly<{
       y: number,
       x: number,
-    |}>,
+    }>,
     zoomScale?: number,
     responderIgnoreScroll?: boolean,
-  |}>,
+  }>,
 >;
 
 export type BlurEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     target: number,
-  |}>,
+  }>,
 >;
 
 export type FocusEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     target: number,
-  |}>,
+  }>,
 >;
 
 export type MouseEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     clientX: number,
     clientY: number,
     pageX: number,
     pageY: number,
     timestamp: number,
-  |}>,
+  }>,
 >;
