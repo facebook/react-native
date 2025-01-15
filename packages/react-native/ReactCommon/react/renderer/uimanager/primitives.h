@@ -159,6 +159,8 @@ inline static int displayModeToInt(const DisplayMode value) {
       return 2;
     case DisplayMode::Hidden:
       return 3;
+    default:
+      return -1;
   }
 }
 
