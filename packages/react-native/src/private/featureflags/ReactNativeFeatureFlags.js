@@ -4,11 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
-<<<<<<< HEAD
- * @generated SignedSource<<83b5798ee1c7a28fffbf110e19641d69>>
-=======
- * @generated SignedSource<<3bdec862f75745ce81e9cf23fef82468>>
->>>>>>> c799aa07e21 (Back out "RN: Enable `useInsertionEffectsForAnimations`" (#48669))
+ * @generated SignedSource<<aa51de14d1f085127ad410580beb15f6>>
  * @flow strict
  */
 
