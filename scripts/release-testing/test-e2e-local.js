@@ -174,7 +174,7 @@ async function testRNTesterAndroid(
   launchPackagerInSeparateWindow(pwd().toString());
 
   // Wait for the Android Emulator to be properly loaded and bootstrapped
-  exec("adb wait-for-device");
+  exec('adb wait-for-device');
 
   if (ciArtifacts != null) {
     const downloadPath = path.join(ciArtifacts.baseTmpPath(), 'rntester.zip');
