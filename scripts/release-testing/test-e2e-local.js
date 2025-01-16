@@ -300,9 +300,10 @@ async function testRNTestProject(
     'reactNativeArchitectures=arm64-v8a',
     'android/gradle.properties',
   );
+  const hermesEnabled = (await argv).hermes === true;
 
   // Update gradle properties to set Hermes as false
-  if (argv.hermes == null) {
+  if (!hermesEnabled) {
     sed(
       '-i',
       'hermesEnabled=true',
@@ -317,7 +318,7 @@ async function testRNTestProject(
     exec('bundle install');
     exec(
       `HERMES_ENGINE_TARBALL_PATH=${hermesPath} USE_HERMES=${
-        argv.hermes === true ? 1 : 0
+        hermesEnabled ? 1 : 0
       } bundle exec pod install --ansi`,
     );
 
