@@ -8460,7 +8460,7 @@ declare module.exports: Text;
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/TextAncestor.js 1`] = `
-"declare const TextAncestorContext: React$Context<$FlowFixMe>;
+"declare const TextAncestorContext: React$Context<boolean>;
 declare module.exports: TextAncestorContext;
 "
 `;
