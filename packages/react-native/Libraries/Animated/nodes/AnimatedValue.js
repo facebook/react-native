@@ -9,7 +9,6 @@
  */
 
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
-import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
@@ -130,11 +129,6 @@ export default class AnimatedValue extends AnimatedWithChildren {
 
   __getValue(): number {
     return this._value + this._offset;
-  }
-
-  __makeNative(platformConfig: ?PlatformConfig): void {
-    super.__makeNative(platformConfig);
-    this.#ensureUpdateSubscriptionExists();
   }
 
   #ensureUpdateSubscriptionExists(): void {
