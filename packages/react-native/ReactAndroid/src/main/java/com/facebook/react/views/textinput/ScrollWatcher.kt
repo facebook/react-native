@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.textinput;
+package com.facebook.react.views.textinput
 
 public interface ScrollWatcher {
-  void onScrollChanged(int horiz, int vert, int oldHoriz, int oldVert);
+  public fun onScrollChanged(horiz: Int, vert: Int, oldHoriz: Int, oldVert: Int): Unit
 }
