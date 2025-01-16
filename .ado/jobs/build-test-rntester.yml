@@ -98,16 +98,6 @@ jobs:
       steps:
         - template: /.ado/templates/apple-tools-setup.yml@self
 
-        - ${{ if in(slice.sdk, 'xros', 'xrsimulator') }}:
-          - script: |
-              set -eox pipefail
-              # https://github.com/actions/runner-images/issues/10559
-              sudo xcodebuild -runFirstLaunch
-              sudo xcrun simctl list
-              sudo xcodebuild -downloadPlatform visionOS
-              sudo xcodebuild -runFirstLaunch
-            displayName: Download visionOS SDK
-
         - script: |
             yarn install
           displayName: Install npm dependencies
