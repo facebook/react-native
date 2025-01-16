@@ -95,15 +95,17 @@ exports[`public API should not change unintentionally Libraries/Alert/RCTAlertMa
 exports[`public API should not change unintentionally Libraries/Animated/Animated.js 1`] = `
 "export type { CompositeAnimation, Numeric } from \\"./AnimatedImplementation\\";
 declare const Animated: typeof AnimatedImplementation;
-declare export default {
-  get FlatList(): AnimatedFlatList,
-  get Image(): AnimatedImage,
-  get ScrollView(): AnimatedScrollView,
-  get SectionList(): AnimatedSectionList,
-  get Text(): AnimatedText,
-  get View(): AnimatedView,
-  ...Animated,
+type AnimatedExportType = {
+  ...typeof Animated,
+  FlatList: AnimatedFlatList,
+  Image: AnimatedImage,
+  ScrollView: AnimatedScrollView,
+  SectionList: AnimatedSectionList,
+  Text: AnimatedText,
+  View: AnimatedView,
 };
+declare const AnimatedExport: AnimatedExportType;
+declare export default typeof AnimatedExport;
 "
 `;
 
