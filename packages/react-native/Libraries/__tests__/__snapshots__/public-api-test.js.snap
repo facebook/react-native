@@ -7202,8 +7202,7 @@ exports[`public API should not change unintentionally Libraries/Pressability/use
 `;
 
 exports[`public API should not change unintentionally Libraries/Promise.js 1`] = `
-"declare const Promise: $FlowFixMe;
-declare export default typeof Promise;
+"declare export default typeof Promise;
 "
 `;
 
