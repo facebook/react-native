@@ -11,8 +11,8 @@
 'use strict';
 
 import RNTexterText from '../../components/RNTesterText';
-const React = require('react');
-const {
+import React from 'react';
+import {
   Alert,
   Animated,
   Button,
@@ -26,7 +26,7 @@ const {
   TextInput,
   TouchableWithoutFeedback,
   View,
-} = require('react-native');
+} from 'react-native';
 
 type RTLToggleState = {isRTL: boolean, ...};
 
