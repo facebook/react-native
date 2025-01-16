@@ -170,6 +170,11 @@ jobs:
         jsengine: [Hermes, JSC]
         architecture: [NewArch, OldArch]
         flavor: [Debug, Release]
+        include: # We want to limit the variants running tests
+          - jsengine: Hermes
+            architecture: NewArch
+            flavor: Release
+            run-unit-tests: true
         exclude: # We don't want to test the Old Arch in Release for E2E
           - jsengine: Hermes
             architecture: OldArch
@@ -185,7 +190,7 @@ jobs:
         with:
           jsengine: ${{ matrix.jsengine }}
           architecture: ${{ matrix.architecture }}
-          run-unit-tests: true
+          run-unit-tests: ${{ matrix.run-unit-tests }}
           use-frameworks: StaticLibraries
           hermes-version: ${{ needs.prepare_hermes_workspace.outputs.hermes-version }}
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
