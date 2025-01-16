@@ -175,7 +175,7 @@ async function testRNTesterAndroid(
 
   // Wait for the Android Emulator to be properly loaded and bootstrapped
   exec(
-    "adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done; input keyevent 82'",
+    "adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;",
   );
 
   if (ciArtifacts != null) {
