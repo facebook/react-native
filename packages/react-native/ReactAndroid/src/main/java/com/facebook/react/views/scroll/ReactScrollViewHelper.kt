@@ -108,7 +108,8 @@ public object ReactScrollViewHelper {
     // Throttle the scroll event if scrollEventThrottle is set to be equal or more than 17 ms.
     // We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
     // inadvertently filter out any scroll events.
-    if (scrollView.scrollEventThrottle >= Math.max(17, now - scrollView.lastScrollDispatchTime)) {
+    if (scrollEventType == ScrollEventType.SCROLL &&
+        scrollView.scrollEventThrottle >= Math.max(17, now - scrollView.lastScrollDispatchTime)) {
       // Scroll events are throttled.
       return
     }
@@ -138,7 +139,9 @@ public object ReactScrollViewHelper {
               contentView.height,
               scrollView.width,
               scrollView.height))
-      scrollView.lastScrollDispatchTime = now
+      if (scrollEventType == ScrollEventType.SCROLL) {
+        scrollView.lastScrollDispatchTime = now
+      }
     }
   }
 
