@@ -7489,8 +7489,8 @@ exports[`public API should not change unintentionally Libraries/ReactNative/I18n
   allowRTL: (shouldAllow: boolean) => void,
   forceRTL: (shouldForce: boolean) => void,
   swapLeftAndRightInRTL: (flipStyles: boolean) => void,
-  isRTL: $FlowFixMe,
-  doLeftAndRightSwapInRTL: $FlowFixMe,
+  isRTL: I18nManagerConstants[\\"isRTL\\"],
+  doLeftAndRightSwapInRTL: I18nManagerConstants[\\"doLeftAndRightSwapInRTL\\"],
 };
 "
 `;
