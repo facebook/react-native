@@ -4,62 +4,52 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+package com.facebook.react.bridge.queue
 
-package com.facebook.react.bridge.queue;
+import android.os.Looper
+import com.facebook.react.bridge.queue.MessageQueueThreadImpl.Companion.create
+import com.facebook.react.bridge.queue.MessageQueueThreadSpec.Companion.mainThreadSpec
 
-import android.os.Looper;
-
-public class ReactQueueConfigurationImpl implements ReactQueueConfiguration {
-
-  private final MessageQueueThreadImpl mUIQueueThread;
-  private final MessageQueueThreadImpl mNativeModulesQueueThread;
-  private final MessageQueueThreadImpl mJSQueueThread;
-
-  private ReactQueueConfigurationImpl(
-      MessageQueueThreadImpl uiQueueThread,
-      MessageQueueThreadImpl nativeModulesQueueThread,
-      MessageQueueThreadImpl jsQueueThread) {
-    mUIQueueThread = uiQueueThread;
-    mNativeModulesQueueThread = nativeModulesQueueThread;
-    mJSQueueThread = jsQueueThread;
-  }
-
-  @Override
-  public MessageQueueThread getUIQueueThread() {
-    return mUIQueueThread;
-  }
-
-  @Override
-  public MessageQueueThread getNativeModulesQueueThread() {
-    return mNativeModulesQueueThread;
-  }
-
-  @Override
-  public MessageQueueThread getJSQueueThread() {
-    return mJSQueueThread;
-  }
-
-  /**
-   * Should be called when the corresponding {@link com.facebook.react.bridge.CatalystInstance} is
-   * destroyed so that we shut down the proper queue threads.
-   */
-  public void destroy() {
-    if (mNativeModulesQueueThread.getLooper() != Looper.getMainLooper()) {
-      mNativeModulesQueueThread.quitSynchronous();
+public class ReactQueueConfigurationImpl private constructor(
+  private val uiQueueThread: MessageQueueThreadImpl,
+  private val nativeModulesQueueThread: MessageQueueThreadImpl,
+  private val jsQueueThread: MessageQueueThreadImpl
+) : ReactQueueConfiguration {
+    override fun getUIQueueThread(): MessageQueueThread {
+        return uiQueueThread
     }
-    if (mJSQueueThread.getLooper() != Looper.getMainLooper()) {
-      mJSQueueThread.quitSynchronous();
-    }
-  }
 
-  public static ReactQueueConfigurationImpl create(
-      ReactQueueConfigurationSpec spec, QueueThreadExceptionHandler exceptionHandler) {
-    MessageQueueThreadImpl uiThread =
-        MessageQueueThreadImpl.create(MessageQueueThreadSpec.mainThreadSpec(), exceptionHandler);
-    MessageQueueThreadImpl jsThread =
-        MessageQueueThreadImpl.create(spec.getJSQueueThreadSpec(), exceptionHandler);
-    MessageQueueThreadImpl nativeModulesThread =
-        MessageQueueThreadImpl.create(spec.getNativeModulesQueueThreadSpec(), exceptionHandler);
-    return new ReactQueueConfigurationImpl(uiThread, nativeModulesThread, jsThread);
-  }
+    override fun getNativeModulesQueueThread(): MessageQueueThread {
+        return nativeModulesQueueThread
+    }
+
+    override fun getJSQueueThread(): MessageQueueThread {
+        return jsQueueThread
+    }
+
+    /**
+     * Should be called when the corresponding [com.facebook.react.bridge.CatalystInstance] is
+     * destroyed so that we shut down the proper queue threads.
+     */
+    override fun destroy() {
+        if (nativeModulesQueueThread.looper != Looper.getMainLooper()) {
+            nativeModulesQueueThread.quitSynchronous()
+        }
+        if (jsQueueThread.looper != Looper.getMainLooper()) {
+            jsQueueThread.quitSynchronous()
+        }
+    }
+
+    public companion object {
+        @JvmStatic
+        public fun create(
+            spec: ReactQueueConfigurationSpec,
+            exceptionHandler: QueueThreadExceptionHandler
+        ): ReactQueueConfigurationImpl {
+            val uiThread = create(mainThreadSpec(), exceptionHandler)
+            val jsThread = create(spec.jSQueueThreadSpec, exceptionHandler)
+            val nativeModulesThread = create(spec.nativeModulesQueueThreadSpec, exceptionHandler)
+            return ReactQueueConfigurationImpl(uiThread, nativeModulesThread, jsThread)
+        }
+    }
 }

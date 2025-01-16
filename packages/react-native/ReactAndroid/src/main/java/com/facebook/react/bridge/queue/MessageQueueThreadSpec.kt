@@ -4,62 +4,43 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+package com.facebook.react.bridge.queue
 
-package com.facebook.react.bridge.queue;
+/** Spec for creating a MessageQueueThread.  */
+public class MessageQueueThreadSpec private constructor(
+    public val threadType: ThreadType,
+    public val name: String,
+    public val stackSize: Long = DEFAULT_STACK_SIZE_BYTES
+) {
+    public enum class ThreadType {
+        MAIN_UI,
+        NEW_BACKGROUND,
+    }
 
-/** Spec for creating a MessageQueueThread. */
-public class MessageQueueThreadSpec {
+    public companion object {
+        private val MAIN_UI_SPEC = MessageQueueThreadSpec(ThreadType.MAIN_UI, "main_ui")
 
-  private static final MessageQueueThreadSpec MAIN_UI_SPEC =
-      new MessageQueueThreadSpec(ThreadType.MAIN_UI, "main_ui");
+        // The Thread constructor interprets zero the same as not specifying a stack size
+        public const val DEFAULT_STACK_SIZE_BYTES: Long = 0
 
-  // The Thread constructor interprets zero the same as not specifying a stack size
-  public static final long DEFAULT_STACK_SIZE_BYTES = 0;
+        @JvmStatic
+        public fun newUIBackgroundTreadSpec(name: String): MessageQueueThreadSpec {
+            return MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name)
+        }
 
-  protected enum ThreadType {
-    MAIN_UI,
-    NEW_BACKGROUND,
-  }
+        @JvmStatic
+        public fun newBackgroundThreadSpec(name: String): MessageQueueThreadSpec {
+            return MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name)
+        }
 
-  public static MessageQueueThreadSpec newUIBackgroundTreadSpec(String name) {
-    return new MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name);
-  }
+        @JvmStatic
+        public fun newBackgroundThreadSpec(name: String, stackSize: Long): MessageQueueThreadSpec {
+            return MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name, stackSize)
+        }
 
-  public static MessageQueueThreadSpec newBackgroundThreadSpec(String name) {
-    return new MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name);
-  }
-
-  public static MessageQueueThreadSpec newBackgroundThreadSpec(String name, long stackSize) {
-    return new MessageQueueThreadSpec(ThreadType.NEW_BACKGROUND, name, stackSize);
-  }
-
-  public static MessageQueueThreadSpec mainThreadSpec() {
-    return MAIN_UI_SPEC;
-  }
-
-  private final ThreadType mThreadType;
-  private final String mName;
-  private final long mStackSize;
-
-  private MessageQueueThreadSpec(ThreadType threadType, String name) {
-    this(threadType, name, DEFAULT_STACK_SIZE_BYTES);
-  }
-
-  private MessageQueueThreadSpec(ThreadType threadType, String name, long stackSize) {
-    mThreadType = threadType;
-    mName = name;
-    mStackSize = stackSize;
-  }
-
-  public ThreadType getThreadType() {
-    return mThreadType;
-  }
-
-  public String getName() {
-    return mName;
-  }
-
-  public long getStackSize() {
-    return mStackSize;
-  }
+        @JvmStatic
+        public fun mainThreadSpec(): MessageQueueThreadSpec {
+            return MAIN_UI_SPEC
+        }
+    }
 }

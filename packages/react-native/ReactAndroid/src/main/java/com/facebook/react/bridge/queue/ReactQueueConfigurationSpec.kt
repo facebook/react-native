@@ -4,11 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+package com.facebook.react.bridge.queue
 
-package com.facebook.react.bridge.queue;
-
-import androidx.annotation.Nullable;
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Assertions
+import com.facebook.react.bridge.queue.MessageQueueThreadSpec.Companion.newBackgroundThreadSpec
 
 /**
  * Spec for creating a ReactQueueConfiguration. This exists so that CatalystInstance is able to set
@@ -16,58 +15,47 @@ import com.facebook.infer.annotation.Assertions;
  * threads were configured, then passed to CatalystInstance where they are configured more. These
  * specs allows the Threads to be created fully configured.
  */
-public class ReactQueueConfigurationSpec {
+public class ReactQueueConfigurationSpec public constructor(
+    public val nativeModulesQueueThreadSpec: MessageQueueThreadSpec,
+    public val jSQueueThreadSpec: MessageQueueThreadSpec
+) {
+    public class Builder public constructor() {
+        private var nativeModulesQueueSpec: MessageQueueThreadSpec? = null
+        private var jsQueueSpec: MessageQueueThreadSpec? = null
 
-  private final MessageQueueThreadSpec mNativeModulesQueueThreadSpec;
-  private final MessageQueueThreadSpec mJSQueueThreadSpec;
+        public fun setNativeModulesQueueThreadSpec(spec: MessageQueueThreadSpec?): Builder {
+            Assertions.assertCondition(
+                nativeModulesQueueSpec == null, "Setting native modules queue spec multiple times!"
+            )
+            nativeModulesQueueSpec = spec
+            return this
+        }
 
-  public ReactQueueConfigurationSpec(
-      MessageQueueThreadSpec nativeModulesQueueThreadSpec,
-      MessageQueueThreadSpec jsQueueThreadSpec) {
-    mNativeModulesQueueThreadSpec = nativeModulesQueueThreadSpec;
-    mJSQueueThreadSpec = jsQueueThreadSpec;
-  }
+        public fun setJSQueueThreadSpec(spec: MessageQueueThreadSpec?): Builder {
+            Assertions.assertCondition(jsQueueSpec == null, "Setting JS queue multiple times!")
+            jsQueueSpec = spec
+            return this
+        }
 
-  public MessageQueueThreadSpec getNativeModulesQueueThreadSpec() {
-    return mNativeModulesQueueThreadSpec;
-  }
-
-  public MessageQueueThreadSpec getJSQueueThreadSpec() {
-    return mJSQueueThreadSpec;
-  }
-
-  public static Builder builder() {
-    return new Builder();
-  }
-
-  public static ReactQueueConfigurationSpec createDefault() {
-    return new ReactQueueConfigurationSpec(
-        MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules"),
-        MessageQueueThreadSpec.newBackgroundThreadSpec("js"));
-  }
-
-  public static class Builder {
-
-    private @Nullable MessageQueueThreadSpec mNativeModulesQueueSpec;
-    private @Nullable MessageQueueThreadSpec mJSQueueSpec;
-
-    public Builder setNativeModulesQueueThreadSpec(MessageQueueThreadSpec spec) {
-      Assertions.assertCondition(
-          mNativeModulesQueueSpec == null, "Setting native modules queue spec multiple times!");
-      mNativeModulesQueueSpec = spec;
-      return this;
+        public fun build(): ReactQueueConfigurationSpec {
+            return ReactQueueConfigurationSpec(
+                Assertions.assertNotNull(nativeModulesQueueSpec),
+                Assertions.assertNotNull(jsQueueSpec)
+            )
+        }
     }
 
-    public Builder setJSQueueThreadSpec(MessageQueueThreadSpec spec) {
-      Assertions.assertCondition(mJSQueueSpec == null, "Setting JS queue multiple times!");
-      mJSQueueSpec = spec;
-      return this;
-    }
+    public companion object {
+        public fun builder(): Builder {
+            return Builder()
+        }
 
-    public ReactQueueConfigurationSpec build() {
-      return new ReactQueueConfigurationSpec(
-          Assertions.assertNotNull(mNativeModulesQueueSpec),
-          Assertions.assertNotNull(mJSQueueSpec));
+        @JvmStatic
+        public fun createDefault(): ReactQueueConfigurationSpec {
+            return ReactQueueConfigurationSpec(
+                newBackgroundThreadSpec("native_modules"),
+                newBackgroundThreadSpec("js")
+            )
+        }
     }
-  }
 }
