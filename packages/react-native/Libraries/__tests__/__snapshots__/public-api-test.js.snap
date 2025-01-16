@@ -7827,8 +7827,7 @@ declare export function normalizeRect(rectOrSize: ?RectOrSize): ?Rect;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js 1`] = `
-"declare const flatten: $FlowFixMe;
-export type { NativeColorValue } from \\"./StyleSheetTypes\\";
+"export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
