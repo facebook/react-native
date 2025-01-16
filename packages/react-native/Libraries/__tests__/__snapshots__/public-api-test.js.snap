@@ -9485,7 +9485,7 @@ declare module.exports: WebSocket;
 exports[`public API should not change unintentionally Libraries/WebSocket/WebSocketEvent.js 1`] = `
 "declare class WebSocketEvent {
   type: string;
-  constructor(type: string, eventInitDict: $FlowFixMe): void;
+  constructor(type: string, eventInitDict: ?{ ... }): void;
 }
 declare module.exports: WebSocketEvent;
 "
