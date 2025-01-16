@@ -1664,19 +1664,25 @@ public class com/facebook/react/bridge/queue/MessageQueueThreadHandler : android
 	public fun dispatchMessage (Landroid/os/Message;)V
 }
 
-public class com/facebook/react/bridge/queue/MessageQueueThreadImpl : com/facebook/react/bridge/queue/MessageQueueThread {
+public final class com/facebook/react/bridge/queue/MessageQueueThreadImpl : com/facebook/react/bridge/queue/MessageQueueThread {
+	public static final field Companion Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl$Companion;
+	public synthetic fun <init> (Ljava/lang/String;Landroid/os/Looper;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;Lcom/facebook/react/bridge/queue/MessageQueueThreadPerfStats;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun assertIsOnThread ()V
 	public fun assertIsOnThread (Ljava/lang/String;)V
 	public fun callOnQueue (Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
-	public static fun create (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;
-	public fun getLooper ()Landroid/os/Looper;
-	public fun getName ()Ljava/lang/String;
+	public static final fun create (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;
+	public final fun getLooper ()Landroid/os/Looper;
+	public final fun getName ()Ljava/lang/String;
 	public fun getPerfStats ()Lcom/facebook/react/bridge/queue/MessageQueueThreadPerfStats;
 	public fun isIdle ()Z
 	public fun isOnThread ()Z
 	public fun quitSynchronous ()V
 	public fun resetPerfStats ()V
 	public fun runOnQueue (Ljava/lang/Runnable;)Z
+}
+
+public final class com/facebook/react/bridge/queue/MessageQueueThreadImpl$Companion {
+	public final fun create (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;
 }
 
 public class com/facebook/react/bridge/queue/MessageQueueThreadPerfStats {
