@@ -12,6 +12,7 @@
 #include <optional>
 
 namespace facebook::react {
+
 // https://www.w3.org/TR/css-color-4/#named-colors
 template <typename CSSValueT>
 constexpr std::optional<CSSValueT> parseCSSNamedColor(std::string_view name) {
@@ -298,6 +299,8 @@ constexpr std::optional<CSSValueT> parseCSSNamedColor(std::string_view name) {
       return CSSValueT::color(216, 191, 216, 255);
     case fnv1a("tomato"):
       return CSSValueT::color(255, 99, 71, 255);
+    case fnv1a("transparent"):
+      return CSSValueT::color(0, 0, 0, 0);
     case fnv1a("turquoise"):
       return CSSValueT::color(64, 224, 208, 255);
     case fnv1a("violet"):

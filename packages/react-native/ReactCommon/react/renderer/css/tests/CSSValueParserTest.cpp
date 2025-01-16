@@ -415,5 +415,14 @@ TEST(CSSValueParser, named_colors) {
   EXPECT_EQ(namedColorMixedCaseTestValue.getColor().g, 255);
   EXPECT_EQ(namedColorMixedCaseTestValue.getColor().b, 127);
   EXPECT_EQ(namedColorMixedCaseTestValue.getColor().a, 255);
+
+  auto transparentColor =
+      parseCSSValue<CSSWideKeyword, CSSColor>("transparent");
+  EXPECT_EQ(transparentColor.type(), CSSValueType::Color);
+  EXPECT_EQ(transparentColor.getColor().r, 0);
+  EXPECT_EQ(transparentColor.getColor().g, 0);
+  EXPECT_EQ(transparentColor.getColor().b, 0);
+  EXPECT_EQ(transparentColor.getColor().a, 0);
 }
+
 } // namespace facebook::react

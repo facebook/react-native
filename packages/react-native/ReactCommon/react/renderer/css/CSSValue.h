@@ -82,6 +82,10 @@ struct CSSAngle {
   float degrees{};
 };
 
+/**
+ * Representation of CSS <color> data type
+ * https://www.w3.org/TR/css-color-5/#typedef-color
+ */
 struct CSSColor {
   uint8_t r{};
   uint8_t g{};
