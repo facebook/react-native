@@ -69,25 +69,24 @@ class CodegenUtils
     # - hermes_enabled: whether hermes is enabled or not.
     # - script_phases: whether we want to add some build script phases or not.
     # - file_manager: a class that implements the `File` interface. Defaults to `File`, the Dependency can be injected for testing purposes.
-    def get_react_codegen_spec(package_json_file, folly_version: get_folly_config()[:version], hermes_enabled: true, script_phases: nil, file_manager: File, logger: CodegenUtils::UI)
+    def get_react_codegen_spec(package_json_file, folly_version: Helpers::Constants.folly_config[:version], hermes_enabled: true, script_phases: nil, file_manager: File, logger: CodegenUtils::UI)
         package = JSON.parse(file_manager.read(package_json_file))
         version = package['version']
         use_frameworks = ENV['USE_FRAMEWORKS'] != nil
 
-        folly_compiler_flags = get_folly_config()[:compiler_flags]
-        boost_compiler_flags = get_boost_config()[:compiler_flags]
+        folly_compiler_flags = Helpers::Constants.folly_config[:compiler_flags]
+        boost_compiler_flags = Helpers::Constants.boost_config[:compiler_flags]
 
         header_search_paths = [
           "\"$(PODS_ROOT)/boost\"",
           "\"$(PODS_ROOT)/RCT-Folly\"",
           "\"$(PODS_ROOT)/DoubleConversion\"",
+          "\"$(PODS_ROOT)/fast_float/include\"",
           "\"$(PODS_ROOT)/fmt/include\"",
           "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
           "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
           "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
           "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
-          "\"$(PODS_ROOT)/DoubleConversion\"",
-          "\"$(PODS_ROOT)/fmt/include\"",
           "\"$(PODS_TARGET_SRCROOT)\"",
         ]
         framework_search_paths = []
@@ -120,9 +119,11 @@ class CodegenUtils
           'header_mappings_dir' => './',
           'platforms' => min_supported_versions,
           'source_files' => "**/*.{h,mm,cpp}",
+          'exclude_files' => "RCTAppDependencyProvider.{h,mm}", # these files are generated in the same codegen path but needs to belong to a different pod
           'pod_target_xcconfig' => {
             "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
-            "FRAMEWORK_SEARCH_PATHS" => framework_search_paths
+            "FRAMEWORK_SEARCH_PATHS" => framework_search_paths,
+            "OTHER_CPLUSPLUSFLAGS" => "$(inherited) #{folly_compiler_flags} #{boost_compiler_flags}",
           },
           'dependencies': {
             "React-jsiexecutor": [],
@@ -143,6 +144,7 @@ class CodegenUtils
             'React-debug': [],
             'React-utils': [],
             'React-featureflags': [],
+            'React-RCTAppDelegate': [],
           }
         }
 
@@ -280,7 +282,7 @@ class CodegenUtils
       config_file_dir: '',
       codegen_output_dir: 'build/generated/ios',
       config_key: 'codegenConfig',
-      folly_version: get_folly_config()[:version],
+      folly_version: Helpers::Constants.folly_config[:version],
       codegen_utils: CodegenUtils.new(),
       file_manager: File,
       logger: CodegenUtils::UI

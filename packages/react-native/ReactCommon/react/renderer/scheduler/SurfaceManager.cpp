@@ -7,6 +7,7 @@
 
 #include "SurfaceManager.h"
 
+#include <glog/logging.h>
 #include <react/renderer/scheduler/Scheduler.h>
 
 namespace facebook::react {
@@ -14,12 +15,18 @@ namespace facebook::react {
 SurfaceManager::SurfaceManager(const Scheduler& scheduler) noexcept
     : scheduler_(scheduler) {}
 
+SurfaceManager::~SurfaceManager() noexcept {
+  LOG(WARNING) << "SurfaceManager::~SurfaceManager() was called (address: "
+               << this << ").";
+  stopAllSurfaces();
+}
+
 void SurfaceManager::startSurface(
     SurfaceId surfaceId,
     const std::string& moduleName,
     const folly::dynamic& props,
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) const noexcept {
+    const LayoutContext& layoutContext) noexcept {
   {
     std::unique_lock lock(mutex_);
     auto surfaceHandler = SurfaceHandler{moduleName, surfaceId};
@@ -37,11 +44,18 @@ void SurfaceManager::startSurface(
   });
 }
 
-void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
+void SurfaceManager::stopSurface(SurfaceId surfaceId) noexcept {
+  bool surfaceWasRunning = false;
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     surfaceHandler.stop();
     scheduler_.unregisterSurface(surfaceHandler);
+    surfaceWasRunning = true;
   });
+  if (!surfaceWasRunning) {
+    LOG(WARNING)
+        << "SurfaceManager::stopSurface tried to stop a surface which was not running, surfaceId = "
+        << surfaceId;
+  }
 
   {
     std::unique_lock lock(mutex_);
@@ -49,6 +63,46 @@ void SurfaceManager::stopSurface(SurfaceId surfaceId) const noexcept {
     auto iterator = registry_.find(surfaceId);
     registry_.erase(iterator);
   }
+}
+
+void SurfaceManager::stopAllSurfaces() noexcept {
+  auto surfaceIds = getRunningSurfaces();
+  for (const auto& surfaceId : surfaceIds) {
+    stopSurface(surfaceId);
+  }
+}
+
+bool SurfaceManager::isSurfaceRunning(SurfaceId surfaceId) const noexcept {
+  std::shared_lock lock(mutex_);
+  return registry_.contains(surfaceId);
+}
+
+std::unordered_set<SurfaceId> SurfaceManager::getRunningSurfaces()
+    const noexcept {
+  std::unordered_set<SurfaceId> surfaceIds;
+  {
+    std::shared_lock lock(mutex_);
+    for (const auto& [surfaceId, _] : registry_) {
+      surfaceIds.insert(surfaceId);
+    }
+  }
+  return surfaceIds;
+}
+
+std::optional<SurfaceManager::SurfaceProps> SurfaceManager::getSurfaceProps(
+    SurfaceId surfaceId) const noexcept {
+  std::optional<SurfaceManager::SurfaceProps> surfaceProps;
+
+  visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
+    surfaceProps = SurfaceManager::SurfaceProps{
+        surfaceId,
+        surfaceHandler.getModuleName(),
+        surfaceHandler.getProps(),
+        surfaceHandler.getLayoutConstraints(),
+        surfaceHandler.getLayoutContext()};
+  });
+
+  return surfaceProps;
 }
 
 Size SurfaceManager::measureSurface(
@@ -64,9 +118,9 @@ Size SurfaceManager::measureSurface(
   return size;
 }
 
-MountingCoordinator::Shared SurfaceManager::findMountingCoordinator(
-    SurfaceId surfaceId) const noexcept {
-  auto mountingCoordinator = MountingCoordinator::Shared{};
+std::shared_ptr<const MountingCoordinator>
+SurfaceManager::findMountingCoordinator(SurfaceId surfaceId) const noexcept {
+  auto mountingCoordinator = std::shared_ptr<const MountingCoordinator>{};
 
   visit(surfaceId, [&](const SurfaceHandler& surfaceHandler) {
     mountingCoordinator = surfaceHandler.getMountingCoordinator();

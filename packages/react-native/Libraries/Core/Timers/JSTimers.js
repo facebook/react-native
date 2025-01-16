@@ -452,7 +452,7 @@ function setSendIdleEvents(sendIdleEvents: boolean): void {
   NativeTiming.setSendIdleEvents(sendIdleEvents);
 }
 
-let ExportedJSTimers: {|
+let ExportedJSTimers: {
   callIdleCallbacks: (frameTime: number) => any | void,
   callReactNativeMicrotasks: () => void,
   callTimers: (timersToCall: Array<number>) => any | void,
@@ -467,7 +467,7 @@ let ExportedJSTimers: {|
   queueReactNativeMicrotask: (func: any, ...args: any) => number,
   setInterval: (func: any, duration: number, ...args: any) => number,
   setTimeout: (func: any, duration: number, ...args: any) => number,
-|};
+};
 
 if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");

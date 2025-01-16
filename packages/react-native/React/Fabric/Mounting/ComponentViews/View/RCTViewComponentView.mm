@@ -10,11 +10,13 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
+#import <ranges>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <React/RCTBoxShadow.h>
 #import <React/RCTConversions.h>
+#import <React/RCTLinearGradient.h>
 #import <React/RCTLocalizedString.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
@@ -38,7 +40,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   CALayer *_outlineLayer;
   CALayer *_boxShadowLayer;
   CALayer *_filterLayer;
-  NSMutableArray<CAGradientLayer *> *_gradientLayers;
+  NSMutableArray<CALayer *> *_backgroundImageLayers;
   BOOL _needsInvalidateLayer;
   BOOL _isJSResponder;
   BOOL _removeClippedSubviews;
@@ -851,7 +853,8 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 #endif
   const bool useCoreAnimationBorderRendering =
       borderMetrics.borderColors.isUniform() && borderMetrics.borderWidths.isUniform() &&
-      borderMetrics.borderStyles.isUniform() && borderMetrics.borderRadii.isUniform() &&
+      borderMetrics.borderStyles.isUniform() && borderMetrics.borderStyles.left == BorderStyle::Solid &&
+      borderMetrics.borderRadii.isUniform() &&
       (
           // iOS draws borders in front of the content whereas CSS draws them behind
           // the content. For this reason, only use iOS border drawing when clipping
@@ -1001,50 +1004,35 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   }
 
   // background image
-  [self clearExistingGradientLayers];
+  [self clearExistingBackgroundImageLayers];
   if (!_props->backgroundImage.empty()) {
-    for (const auto &gradient : _props->backgroundImage) {
-      CAGradientLayer *gradientLayer = [CAGradientLayer layer];
-      NSMutableArray *colors = [NSMutableArray array];
-      NSMutableArray *locations = [NSMutableArray array];
-      for (const auto &colorStop : gradient.colorStops) {
-        if (colorStop.position.has_value()) {
-          auto location = @(colorStop.position.value());
-          UIColor *color = RCTUIColorFromSharedColor(colorStop.color);
-          [colors addObject:(id)color.CGColor];
-          [locations addObject:location];
+    // iterate in reverse to match CSS specification
+    for (const auto &backgroundImage : std::ranges::reverse_view(_props->backgroundImage)) {
+      if (std::holds_alternative<LinearGradient>(backgroundImage)) {
+        const auto &linearGradient = std::get<LinearGradient>(backgroundImage);
+        CALayer *backgroundImageLayer = [RCTLinearGradient gradientLayerWithSize:self.layer.bounds.size
+                                                                        gradient:linearGradient];
+        backgroundImageLayer.frame = layer.bounds;
+        backgroundImageLayer.masksToBounds = YES;
+        // To make border radius work with gradient layers
+        if (borderMetrics.borderRadii.isUniform()) {
+          backgroundImageLayer.cornerRadius = layer.cornerRadius;
+          backgroundImageLayer.cornerCurve = layer.cornerCurve;
+          backgroundImageLayer.mask = nil;
+        } else {
+          CAShapeLayer *maskLayer =
+              [self createMaskLayer:self.bounds
+                       cornerInsets:RCTGetCornerInsets(
+                                        RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero)];
+          backgroundImageLayer.mask = maskLayer;
+          backgroundImageLayer.cornerRadius = 0;
         }
+
+        backgroundImageLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
+
+        [self.layer addSublayer:backgroundImageLayer];
+        [_backgroundImageLayers addObject:backgroundImageLayer];
       }
-      gradientLayer.startPoint = CGPointMake(gradient.startX, gradient.startY);
-      gradientLayer.endPoint = CGPointMake(gradient.endX, gradient.endY);
-
-      if (locations.count > 0) {
-        gradientLayer.locations = locations;
-      }
-      gradientLayer.colors = colors;
-      gradientLayer.frame = layer.bounds;
-
-      // border styling to work with gradient layers
-      if (useCoreAnimationBorderRendering) {
-        gradientLayer.borderWidth = layer.borderWidth;
-        gradientLayer.borderColor = layer.borderColor;
-        gradientLayer.cornerRadius = layer.cornerRadius;
-        gradientLayer.cornerCurve = layer.cornerCurve;
-      } else {
-        CAShapeLayer *maskLayer = [CAShapeLayer layer];
-        CGPathRef path = RCTPathCreateWithRoundedRect(
-            self.bounds,
-            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero),
-            nil);
-        maskLayer.path = path;
-        CGPathRelease(path);
-        gradientLayer.mask = maskLayer;
-      }
-
-      gradientLayer.zPosition = BACKGROUND_COLOR_ZPOSITION;
-
-      [self.layer addSublayer:gradientLayer];
-      [_gradientLayers addObject:gradientLayer];
     }
   }
 
@@ -1115,16 +1103,16 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
   return maskLayer;
 }
 
-- (void)clearExistingGradientLayers
+- (void)clearExistingBackgroundImageLayers
 {
-  if (_gradientLayers == nil) {
-    _gradientLayers = [NSMutableArray new];
+  if (_backgroundImageLayers == nil) {
+    _backgroundImageLayers = [NSMutableArray new];
     return;
   }
-  for (CAGradientLayer *gradientLayer in _gradientLayers) {
-    [gradientLayer removeFromSuperlayer];
+  for (CALayer *backgroundImageLayer in _backgroundImageLayers) {
+    [backgroundImageLayer removeFromSuperlayer];
   }
-  [_gradientLayers removeAllObjects];
+  [_backgroundImageLayers removeAllObjects];
 }
 
 #pragma mark - Accessibility
@@ -1136,13 +1124,17 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
 
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
-  NSMutableString *result = [NSMutableString stringWithString:@""];
+  // Result string is initialized lazily to prevent useless but costly allocations.
+  NSMutableString *result = nil;
   for (UIView *subview in view.subviews) {
     NSString *label = subview.accessibilityLabel;
     if (!label) {
       label = RCTRecursiveAccessibilityLabel(subview);
     }
     if (label && label.length > 0) {
+      if (result == nil) {
+        result = [NSMutableString string];
+      }
       if (result.length > 0) {
         [result appendString:@" "];
       }

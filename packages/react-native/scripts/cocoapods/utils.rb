@@ -44,10 +44,10 @@ class ReactNativePodsUtils
     end
 
     def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", "Debug")
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-jsinspector", "Debug")
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", "Debug")
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", "Debug")
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-jsinspector", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", :debug)
     end
 
     def self.turn_off_resource_bundle_react_core(installer)
@@ -105,6 +105,7 @@ class ReactNativePodsUtils
                     config.build_settings["LD"] = ccache_clang_sh
                     config.build_settings["CXX"] = ccache_clangpp_sh
                     config.build_settings["LDPLUSPLUS"] = ccache_clangpp_sh
+                    config.build_settings["CCACHE_BINARY"] = ccache_path
                 end
 
                 project.save()
@@ -193,11 +194,11 @@ class ReactNativePodsUtils
 
     private
 
-    def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration)
+    def self.add_build_settings_to_pod(installer, settings_name, settings_value, target_pod_name, configuration_type)
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             if pod_name.to_s == target_pod_name
                 target_installation_result.native_target.build_configurations.each do |config|
-                        if configuration == nil || (configuration != nil && config.name.include?(configuration))
+                        if configuration_type == nil || (configuration_type != nil && config.type == configuration_type)
                             config.build_settings[settings_name] ||= '$(inherited) '
                             config.build_settings[settings_name] << settings_value
                         end
@@ -366,7 +367,7 @@ class ReactNativePodsUtils
                 Pod::UI.puts "Setting -DRCT_DYNAMIC_FRAMEWORKS=1 to React-RCTFabric".green
                 rct_dynamic_framework_flag = " -DRCT_DYNAMIC_FRAMEWORKS=1"
                 target_installation_result.native_target.build_configurations.each do |config|
-                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherithed)"
+                    prev_build_settings = config.build_settings['OTHER_CPLUSPLUSFLAGS'] != nil ? config.build_settings['OTHER_CPLUSPLUSFLAGS'] : "$(inherited)"
                     config.build_settings['OTHER_CPLUSPLUSFLAGS'] = prev_build_settings + rct_dynamic_framework_flag
                 end
             end
@@ -564,6 +565,7 @@ class ReactNativePodsUtils
         ReactNativePodsUtils.update_header_paths_if_depends_on(target_installation_result, "RCT-Folly", [
             "\"$(PODS_ROOT)/RCT-Folly\"",
             "\"$(PODS_ROOT)/DoubleConversion\"",
+            "\"$(PODS_ROOT)/fast_float/include\"",
             "\"$(PODS_ROOT)/fmt/include\"",
             "\"$(PODS_ROOT)/boost\""
         ])
@@ -639,6 +641,7 @@ class ReactNativePodsUtils
             "ReactCommon",
             "Yoga",
             "boost",
+            "fast_float",
             "fmt",
             "glog",
             "hermes-engine",
@@ -662,7 +665,7 @@ class ReactNativePodsUtils
 
         installer.aggregate_targets.each do |aggregate_target|
             aggregate_target.xcconfigs.each do |config_name, config_file|
-                is_release = config_name.downcase.include?("release") || config_name.downcase.include?("production")
+                is_release = aggregate_target.user_build_configurations[config_name] == :release
                 unless is_release
                     next
                 end
@@ -676,7 +679,7 @@ class ReactNativePodsUtils
 
         installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
             target_installation_result.native_target.build_configurations.each do |config|
-                is_release = config.name.downcase.include?("release") || config.name.downcase.include?("production")
+                is_release = config.type == :release
                 unless is_release
                     next
                 end

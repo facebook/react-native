@@ -10,6 +10,7 @@
 
 import type {Task} from './TaskQueue';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
 const BatchedBridge = require('../BatchedBridge/BatchedBridge');
@@ -208,4 +209,8 @@ function _processUpdate() {
   _deleteInteractionSet.clear();
 }
 
-module.exports = InteractionManager;
+module.exports = (
+  ReactNativeFeatureFlags.disableInteractionManager()
+    ? require('./InteractionManagerStub')
+    : InteractionManager
+) as typeof InteractionManager;

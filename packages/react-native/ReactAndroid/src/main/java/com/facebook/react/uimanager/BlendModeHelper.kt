@@ -10,6 +10,9 @@ package com.facebook.react.uimanager
 import android.annotation.TargetApi
 import android.graphics.BlendMode
 import android.os.Build
+import android.view.ViewGroup
+import androidx.core.view.children
+import com.facebook.react.R
 
 @TargetApi(29)
 internal object BlendModeHelper {
@@ -41,4 +44,8 @@ internal object BlendModeHelper {
       else -> throw IllegalArgumentException("Invalid mix-blend-mode name: $mixBlendMode")
     }
   }
+
+  @JvmStatic
+  public fun needsIsolatedLayer(view: ViewGroup): Boolean =
+      view.children.any { it.getTag(R.id.mix_blend_mode) != null }
 }

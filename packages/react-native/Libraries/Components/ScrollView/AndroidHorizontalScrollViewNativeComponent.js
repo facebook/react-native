@@ -31,7 +31,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     pagingEnabled: true,
     persistentScrollbar: true,
     horizontal: true,
-    enableSyncOnScroll: true,
     scrollEnabled: true,
     scrollEventThrottle: true,
     scrollPerfTag: true,

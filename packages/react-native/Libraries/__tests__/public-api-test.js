@@ -26,9 +26,12 @@ const IGNORE_PATTERNS = [
   '**/*.fb.js',
   '**/*.macos.js',
   '**/*.windows.js',
+  'Libraries/NewAppScreen/components/**',
   // Non source files
   'Libraries/Renderer/implementations/**',
   'Libraries/Renderer/shims/**',
+  // ReactNativePrivateInterface
+  'Libraries/ReactPrivate/**',
 ];
 
 const sourceFiles = [

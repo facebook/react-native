@@ -27,7 +27,7 @@ type Props = $ReadOnly<{
   level: LogLevel,
 }>;
 
-const LogBoxInspectorHeaderSafeArea: React.AbstractComponent<ViewProps> =
+const LogBoxInspectorHeaderSafeArea: React.ComponentType<ViewProps> =
   Platform.OS === 'android' ? View : SafeAreaView;
 
 export default function LogBoxInspectorHeader(props: Props): React.Node {

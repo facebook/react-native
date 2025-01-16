@@ -18,6 +18,7 @@ import ModalInjection from './ModalInjection';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
 import {VirtualizedListContextResetter} from '@react-native/virtualized-lists';
+import React from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const View = require('../Components/View/View');
@@ -26,7 +27,6 @@ const I18nManager = require('../ReactNative/I18nManager');
 const {RootTagContext} = require('../ReactNative/RootTag');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Platform = require('../Utilities/Platform');
-const React = require('react');
 
 type ModalEventDefinitions = {
   modalDismissed: [{modalID: number}],
@@ -53,11 +53,11 @@ const ModalEventEmitter =
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-type OrientationChangeEvent = $ReadOnly<{|
+type OrientationChangeEvent = $ReadOnly<{
   orientation: 'portrait' | 'landscape',
-|}>;
+}>;
 
-export type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -94,6 +94,14 @@ export type Props = $ReadOnly<{|
    * See https://reactnative.dev/docs/modal.html#statusbartranslucent-android
    */
   statusBarTranslucent?: ?boolean,
+
+  /**
+   * The `navigationBarTranslucent` prop determines whether your modal should go under
+   * the system navigationbar.
+   *
+   * See https://reactnative.dev/docs/modal.html#navigationbartranslucent-android
+   */
+  navigationBarTranslucent?: ?boolean,
 
   /**
    * The `hardwareAccelerated` prop controls whether to force hardware
@@ -163,7 +171,7 @@ export type Props = $ReadOnly<{|
    * Defaults to `white` if not provided and transparent is `false`. Ignored if `transparent` is `true`.
    */
   backdropColor?: ?string,
-|}>;
+}>;
 
 function confirmProps(props: Props) {
   if (__DEV__) {
@@ -176,6 +184,14 @@ function confirmProps(props: Props) {
         `Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`,
       );
     }
+    if (
+      props.navigationBarTranslucent === true &&
+      props.statusBarTranslucent !== true
+    ) {
+      console.warn(
+        'Modal with translucent navigation bar and without translucent status bar is not supported.',
+      );
+    }
   }
 }
 
@@ -186,7 +202,7 @@ type State = {
 };
 
 class Modal extends React.Component<Props, State> {
-  static defaultProps: {|hardwareAccelerated: boolean, visible: boolean|} = {
+  static defaultProps: {hardwareAccelerated: boolean, visible: boolean} = {
     visible: true,
     hardwareAccelerated: false,
   };
@@ -301,6 +317,7 @@ class Modal extends React.Component<Props, State> {
         onDismiss={onDismiss}
         visible={this.props.visible}
         statusBarTranslucent={this.props.statusBarTranslucent}
+        navigationBarTranslucent={this.props.navigationBarTranslucent}
         identifier={this._identifier}
         style={styles.modal}
         // $FlowFixMe[method-unbinding] added when improving typing for this parameters
@@ -311,6 +328,7 @@ class Modal extends React.Component<Props, State> {
         <VirtualizedListContextResetter>
           <ScrollView.Context.Provider value={null}>
             <View
+              // $FlowFixMe[incompatible-type]
               style={[styles.container, containerStyles]}
               collapsable={false}>
               {innerChildren}
@@ -336,14 +354,14 @@ const styles = StyleSheet.create({
     /* $FlowFixMe[invalid-computed-prop] (>=0.111.0 site=react_native_fb) This
      * comment suppresses an error found when Flow v0.111 was deployed. To see
      * the error, delete this comment and run Flow. */
+    // $FlowFixMe[incompatible-call]
     [side]: 0,
     top: 0,
     flex: 1,
   },
 });
 
-const ExportedModal: React.AbstractComponent<
-  React.ElementConfig<typeof Modal>,
-> = ModalInjection.unstable_Modal ?? Modal;
+const ExportedModal: React.ComponentType<React.ElementConfig<typeof Modal>> =
+  ModalInjection.unstable_Modal ?? Modal;
 
 module.exports = ExportedModal;

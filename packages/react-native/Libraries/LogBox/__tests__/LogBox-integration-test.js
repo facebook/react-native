@@ -58,7 +58,12 @@ describe('LogBox', () => {
     (console: any).warn = warn;
   });
 
-  it('integrates with React and handles a key error in LogBox', () => {
+  // TODO: migrate this test to react-native-fantom
+  // The test has been disabled because it was actually using the react-test-renderer
+  // and testing the react-test-renderer instead of the real one.
+  // The react test renderer is now deprecated, so there is no value in keeping this test
+  // as it is.
+  it.skip('integrates with React and handles a key error in LogBox', () => {
     const spy = jest.spyOn(LogBoxData, 'addLog');
     installLogBox();
 
@@ -80,21 +85,24 @@ describe('LogBox', () => {
     expect(mockWarn).not.toBeCalled();
     expect(console.error).toBeCalledTimes(1);
     expect(console.error.mock.calls[0]).toEqual([
-      'Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information.%s',
-      '\n\nCheck the render method of `DoesNotUseKey`.',
+      expect.stringMatching(
+        'Each child in a list should have a unique "key" prop',
+      ),
+      expect.stringMatching('Check the render method of `DoesNotUseKey`'),
       '',
       expect.stringMatching('at DoesNotUseKey'),
     ]);
     expect(spy).toHaveBeenCalledWith({
       level: 'error',
       category: expect.stringContaining(
-        'Warning: Each child in a list should have a unique',
+        'Each child in a list should have a unique',
       ),
       componentStack: expect.anything(),
       componentStackType: 'stack',
       message: {
-        content:
-          'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `DoesNotUseKey`. See https://react.dev/link/warning-keys for more information.',
+        content: expect.stringContaining(
+          'Each child in a list should have a unique "key" prop',
+        ),
         substitutions: [
           {length: 45, offset: 62},
           {length: 0, offset: 107},
@@ -106,12 +114,17 @@ describe('LogBox', () => {
     // We also interpolate the string before passing to the underlying console method.
     expect(mockError.mock.calls[0]).toEqual([
       expect.stringMatching(
-        'Warning: Each child in a list should have a unique "key" prop.\n\nCheck the render method of `DoesNotUseKey`. See https://react.dev/link/warning-keys for more information.\n    at ',
+        'Each child in a list should have a unique "key" prop',
       ),
     ]);
   });
 
-  it('integrates with React and handles a fragment warning in LogBox', () => {
+  // TODO: migrate this test to react-native-fantom
+  // The test has been disabled because it was actually using the react-test-renderer
+  // and testing the react-test-renderer instead of the real one.
+  // The react test renderer is now deprecated, so there is no value in keeping this test
+  // as it is.
+  it.skip('integrates with React and handles a fragment warning in LogBox', () => {
     const spy = jest.spyOn(LogBoxData, 'addLog');
     installLogBox();
 
@@ -134,7 +147,9 @@ describe('LogBox', () => {
     expect(mockWarn).not.toBeCalled();
     expect(console.error).toBeCalledTimes(1);
     expect(console.error.mock.calls[0]).toEqual([
-      'Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.%s',
+      expect.stringMatching(
+        'Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.%s',
+      ),
       'invalid',
       expect.stringMatching('at FragmentWithProp'),
     ]);
@@ -144,8 +159,9 @@ describe('LogBox', () => {
       componentStack: expect.anything(),
       componentStackType: expect.stringMatching(/(stack|legacy)/),
       message: {
-        content:
-          'Warning: Invalid prop `invalid` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.',
+        content: expect.stringMatching(
+          'Invalid prop `invalid` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props.',
+        ),
         substitutions: [{length: 7, offset: 23}],
       },
     });

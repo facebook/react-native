@@ -134,7 +134,7 @@ public abstract class BaseJavaModule implements NativeModule {
   }
 
   @DoNotStrip
-  private final void setEventEmitterCallback(CxxCallbackImpl eventEmitterCallback) {
+  protected void setEventEmitterCallback(CxxCallbackImpl eventEmitterCallback) {
     mEventEmitterCallback = eventEmitterCallback;
   }
 }

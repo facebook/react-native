@@ -24,31 +24,31 @@ class TouchEventEmitter : public EventEmitter {
  public:
   using EventEmitter::EventEmitter;
 
-  void onTouchStart(const TouchEvent& event) const;
-  void onTouchMove(const TouchEvent& event) const;
-  void onTouchEnd(const TouchEvent& event) const;
-  void onTouchCancel(const TouchEvent& event) const;
+  void onTouchStart(TouchEvent event) const;
+  void onTouchMove(TouchEvent event) const;
+  void onTouchEnd(TouchEvent event) const;
+  void onTouchCancel(TouchEvent event) const;
 
-  void onClick(const PointerEvent& event) const;
-  void onPointerCancel(const PointerEvent& event) const;
-  void onPointerDown(const PointerEvent& event) const;
-  void onPointerMove(const PointerEvent& event) const;
-  void onPointerUp(const PointerEvent& event) const;
-  void onPointerEnter(const PointerEvent& event) const;
-  void onPointerLeave(const PointerEvent& event) const;
-  void onPointerOver(const PointerEvent& event) const;
-  void onPointerOut(const PointerEvent& event) const;
-  void onGotPointerCapture(const PointerEvent& event) const;
-  void onLostPointerCapture(const PointerEvent& event) const;
+  void onClick(PointerEvent event) const;
+  void onPointerCancel(PointerEvent event) const;
+  void onPointerDown(PointerEvent event) const;
+  void onPointerMove(PointerEvent event) const;
+  void onPointerUp(PointerEvent event) const;
+  void onPointerEnter(PointerEvent event) const;
+  void onPointerLeave(PointerEvent event) const;
+  void onPointerOver(PointerEvent event) const;
+  void onPointerOut(PointerEvent event) const;
+  void onGotPointerCapture(PointerEvent event) const;
+  void onLostPointerCapture(PointerEvent event) const;
 
  private:
   void dispatchTouchEvent(
       std::string type,
-      const TouchEvent& event,
+      TouchEvent event,
       RawEvent::Category category) const;
   void dispatchPointerEvent(
       std::string type,
-      const PointerEvent& event,
+      PointerEvent event,
       RawEvent::Category category) const;
 };
 

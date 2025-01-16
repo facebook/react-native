@@ -7,7 +7,7 @@
 
 #import "RCTScheduler.h"
 
-#import <cxxreact/SystraceSection.h>
+#import <cxxreact/TraceSection.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/animations/LayoutAnimationDriver.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
@@ -26,13 +26,13 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
  public:
   SchedulerDelegateProxy(void *scheduler) : scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(const MountingCoordinator::Shared &mountingCoordinator) override
+  void schedulerDidFinishTransaction(const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidFinishTransaction:mountingCoordinator];
   }
 
-  void schedulerShouldRenderTransactions(const MountingCoordinator::Shared &mountingCoordinator) override
+  void schedulerShouldRenderTransactions(const std::shared_ptr<const MountingCoordinator> &mountingCoordinator) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerShouldRenderTransactions:mountingCoordinator];
@@ -114,9 +114,6 @@ class LayoutAnimationDelegateProxy : public LayoutAnimationStatusDelegate, publi
 - (instancetype)initWithToolbox:(SchedulerToolbox)toolbox
 {
   if (self = [super init]) {
-    auto reactNativeConfig =
-        toolbox.contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
-
     _delegateProxy = std::make_unique<SchedulerDelegateProxy>((__bridge void *)self);
 
     if (ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS()) {

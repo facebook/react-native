@@ -146,13 +146,41 @@ public class TextLayoutManager {
         == LayoutDirection.RTL;
   }
 
-  private static Layout.Alignment getTextAlignment(MapBuffer attributedString, Spannable spanned) {
+  @Nullable
+  private static String getTextAlignmentAttr(MapBuffer attributedString) {
     // TODO: Don't read AS_KEY_FRAGMENTS, which may be expensive, and is not present when using
     // cached Spannable
     if (!attributedString.contains(AS_KEY_FRAGMENTS)) {
-      return Layout.Alignment.ALIGN_NORMAL;
+      return null;
     }
 
+    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
+    if (fragments.getCount() != 0) {
+      MapBuffer fragment = fragments.getMapBuffer(0);
+      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+
+      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
+        return textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
+      }
+    }
+
+    return null;
+  }
+
+  private static int getTextJustificationMode(@Nullable String alignmentAttr) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return -1;
+    }
+
+    if (alignmentAttr != null && alignmentAttr.equals("justified")) {
+      return Layout.JUSTIFICATION_MODE_INTER_WORD;
+    }
+
+    return Layout.JUSTIFICATION_MODE_NONE;
+  }
+
+  private static Layout.Alignment getTextAlignment(
+      MapBuffer attributedString, Spannable spanned, @Nullable String alignmentAttr) {
     // Android will align text based on the script, so normal and opposite alignment needs to be
     // swapped when the directions of paragraph and script don't match.
     // I.e. paragraph is LTR but script is RTL, text needs to be aligned to the left, which means
@@ -165,23 +193,15 @@ public class TextLayoutManager {
     Layout.Alignment alignment =
         swapNormalAndOpposite ? Layout.Alignment.ALIGN_OPPOSITE : Layout.Alignment.ALIGN_NORMAL;
 
-    MapBuffer fragments = attributedString.getMapBuffer(AS_KEY_FRAGMENTS);
-    if (fragments.getCount() != 0) {
-      MapBuffer fragment = fragments.getMapBuffer(0);
-      MapBuffer textAttributes = fragment.getMapBuffer(FR_KEY_TEXT_ATTRIBUTES);
+    if (alignmentAttr == null) {
+      return alignment;
+    }
 
-      if (textAttributes.contains(TextAttributeProps.TA_KEY_ALIGNMENT)) {
-        String alignmentAttr = textAttributes.getString(TextAttributeProps.TA_KEY_ALIGNMENT);
-
-        if (alignmentAttr.equals("center")) {
-          alignment = Layout.Alignment.ALIGN_CENTER;
-        } else if (alignmentAttr.equals("right")) {
-          alignment =
-              swapNormalAndOpposite
-                  ? Layout.Alignment.ALIGN_NORMAL
-                  : Layout.Alignment.ALIGN_OPPOSITE;
-        }
-      }
+    if (alignmentAttr.equals("center")) {
+      alignment = Layout.Alignment.ALIGN_CENTER;
+    } else if (alignmentAttr.equals("right")) {
+      alignment =
+          swapNormalAndOpposite ? Layout.Alignment.ALIGN_NORMAL : Layout.Alignment.ALIGN_OPPOSITE;
     }
 
     return alignment;
@@ -190,7 +210,8 @@ public class TextLayoutManager {
   public static int getTextGravity(
       MapBuffer attributedString, Spannable spanned, int defaultValue) {
     int gravity = defaultValue;
-    Layout.Alignment alignment = getTextAlignment(attributedString, spanned);
+    @Nullable String alignmentAttr = getTextAlignmentAttr(attributedString);
+    Layout.Alignment alignment = getTextAlignment(attributedString, spanned, alignmentAttr);
 
     // depending on whether the script is LTR or RTL, ALIGN_NORMAL and ALIGN_OPPOSITE may mean
     // different things
@@ -363,6 +384,7 @@ public class TextLayoutManager {
       int textBreakStrategy,
       int hyphenationFrequency,
       Layout.Alignment alignment,
+      int justificationMode,
       TextPaint paint) {
     Layout layout;
 
@@ -382,7 +404,7 @@ public class TextLayoutManager {
       }
 
       int hintWidth = (int) Math.ceil(desiredWidth);
-      layout =
+      StaticLayout.Builder builder =
           StaticLayout.Builder.obtain(text, 0, spanLength, paint, hintWidth)
               .setAlignment(alignment)
               .setLineSpacing(0.f, 1.f)
@@ -390,8 +412,13 @@ public class TextLayoutManager {
               .setBreakStrategy(textBreakStrategy)
               .setHyphenationFrequency(hyphenationFrequency)
               .setTextDirection(
-                  isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR)
-              .build();
+                  isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        builder.setUseLineSpacingFromFallbacks(true);
+      }
+
+      layout = builder.build();
 
     } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
       int boringLayoutWidth = boring.width;
@@ -419,6 +446,10 @@ public class TextLayoutManager {
               .setHyphenationFrequency(hyphenationFrequency)
               .setTextDirection(
                   isScriptRTL ? TextDirectionHeuristics.RTL : TextDirectionHeuristics.LTR);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        builder.setJustificationMode(justificationMode);
+      }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         builder.setUseLineSpacingFromFallbacks(true);
@@ -506,7 +537,9 @@ public class TextLayoutManager {
             ? paragraphAttributes.getInt(PA_KEY_MAX_NUMBER_OF_LINES)
             : ReactConstants.UNSET;
 
-    Layout.Alignment alignment = getTextAlignment(attributedString, text);
+    @Nullable String alignmentAttr = getTextAlignmentAttr(attributedString);
+    Layout.Alignment alignment = getTextAlignment(attributedString, text, alignmentAttr);
+    int justificationMode = getTextJustificationMode(alignmentAttr);
 
     if (adjustFontSizeToFit) {
       double minimumFontSize =
@@ -526,6 +559,7 @@ public class TextLayoutManager {
           textBreakStrategy,
           hyphenationFrequency,
           alignment,
+          justificationMode,
           paint);
     }
 
@@ -538,6 +572,7 @@ public class TextLayoutManager {
         textBreakStrategy,
         hyphenationFrequency,
         alignment,
+        justificationMode,
         paint);
   }
 
@@ -553,6 +588,7 @@ public class TextLayoutManager {
       int textBreakStrategy,
       int hyphenationFrequency,
       Layout.Alignment alignment,
+      int justificationMode,
       TextPaint paint) {
     BoringLayout.Metrics boring = BoringLayout.isBoring(text, paint);
     Layout layout =
@@ -565,6 +601,7 @@ public class TextLayoutManager {
             textBreakStrategy,
             hyphenationFrequency,
             alignment,
+            justificationMode,
             paint);
 
     // Minimum font size is 4pts to match the iOS implementation.
@@ -584,8 +621,8 @@ public class TextLayoutManager {
         && ((maximumNumberOfLines != ReactConstants.UNSET
                 && maximumNumberOfLines != 0
                 && layout.getLineCount() > maximumNumberOfLines)
-            || (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED
-                && layout.getHeight() > height))) {
+            || (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)
+            || (text.length() == 1 && layout.getLineWidth(0) > width))) {
       // TODO: We could probably use a smarter algorithm here. This will require 0(n)
       // measurements based on the number of points the font size needs to be reduced by.
       currentFontSize -= Math.max(1, (int) PixelUtil.toPixelFromDIP(1));
@@ -603,6 +640,9 @@ public class TextLayoutManager {
             text.getSpanFlags(span));
         text.removeSpan(span);
       }
+      if (boring != null) {
+        boring = BoringLayout.isBoring(text, paint);
+      }
       layout =
           createLayout(
               text,
@@ -613,6 +653,7 @@ public class TextLayoutManager {
               textBreakStrategy,
               hyphenationFrequency,
               alignment,
+              justificationMode,
               paint);
     }
   }
@@ -661,6 +702,10 @@ public class TextLayoutManager {
       for (int lineIndex = 0; lineIndex < calculatedLineCount; lineIndex++) {
         boolean endsWithNewLine =
             text.length() > 0 && text.charAt(layout.getLineEnd(lineIndex) - 1) == '\n';
+        if (!endsWithNewLine && lineIndex + 1 < layout.getLineCount()) {
+          calculatedWidth = width;
+          break;
+        }
         float lineWidth =
             endsWithNewLine ? layout.getLineMax(lineIndex) : layout.getLineWidth(lineIndex);
         if (lineWidth > calculatedWidth) {

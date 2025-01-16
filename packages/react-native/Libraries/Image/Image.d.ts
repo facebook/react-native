@@ -60,18 +60,28 @@ export interface ImagePropsIOS {
 interface ImagePropsAndroid {
   /**
    * The mechanism that should be used to resize the image when the image's dimensions
-   * differ from the image view's dimensions. Defaults to auto.
+   * differ from the image view's dimensions. Defaults to `auto`.
    *
-   * 'auto': Use heuristics to pick between resize and scale.
+   * - `auto`: Use heuristics to pick between `resize` and `scale`.
    *
-   * 'resize': A software operation which changes the encoded image in memory before it gets decoded.
-   * This should be used instead of scale when the image is much larger than the view.
+   * - `resize`: A software operation which changes the encoded image in memory before it
+   * gets decoded. This should be used instead of `scale` when the image is much larger
+   * than the view.
    *
-   * 'scale': The image gets drawn downscaled or upscaled. Compared to resize, scale is faster (usually hardware accelerated)
-   * and produces higher quality images. This should be used if the image is smaller than the view.
-   * It should also be used if the image is slightly bigger than the view.
+   * - `scale`: The image gets drawn downscaled or upscaled. Compared to `resize`, `scale` is
+   * faster (usually hardware accelerated) and produces higher quality images. This
+   * should be used if the image is smaller than the view. It should also be used if the
+   * image is slightly bigger than the view.
+   *
+   * - `none`: No sampling is performed and the image is displayed in its full resolution. This
+   * should only be used in rare circumstances because it is considered unsafe as Android will
+   * throw a runtime exception when trying to render images that consume too much memory.
+   *
+   * More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing-rotating.html.
+   *
+   * @platform android
    */
-  resizeMethod?: 'auto' | 'resize' | 'scale' | undefined;
+  resizeMethod?: 'auto' | 'resize' | 'scale' | 'none' | undefined;
 
   /**
    * Duration of fade in animation in ms. Defaults to 300
@@ -190,29 +200,10 @@ export interface ImagePropsBase
    * 'center': Scale the image down so that it is completely visible,
    * if bigger than the area of the view.
    * The image will not be scaled up.
+   *
+   * 'none': Do not resize the image. The image will be displayed at its intrinsic size.
    */
   resizeMode?: ImageResizeMode | undefined;
-
-  /**
-   * The mechanism that should be used to resize the image when the image's dimensions
-   * differ from the image view's dimensions. Defaults to `auto`.
-   *
-   * - `auto`: Use heuristics to pick between `resize` and `scale`.
-   *
-   * - `resize`: A software operation which changes the encoded image in memory before it
-   * gets decoded. This should be used instead of `scale` when the image is much larger
-   * than the view.
-   *
-   * - `scale`: The image gets drawn downscaled or upscaled. Compared to `resize`, `scale` is
-   * faster (usually hardware accelerated) and produces higher quality images. This
-   * should be used if the image is smaller than the view. It should also be used if the
-   * image is slightly bigger than the view.
-   *
-   * More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing-rotating.html.
-   *
-   * @platform android
-   */
-  resizeMethod?: 'auto' | 'resize' | 'scale' | undefined;
 
   /**
    * The image source (either a remote URL or a local file resource).

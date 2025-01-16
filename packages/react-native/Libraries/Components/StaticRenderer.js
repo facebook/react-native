@@ -12,7 +12,7 @@
 
 const React = require('react');
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   /**
    * Indicates whether the render function needs to be called again
    */
@@ -22,7 +22,7 @@ type Props = $ReadOnly<{|
    * A function that returns a renderable component
    */
   render: () => React.Node,
-|}>;
+}>;
 
 class StaticRenderer extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props): boolean {

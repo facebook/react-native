@@ -513,9 +513,10 @@ class CodegenUtilsTests < Test::Unit::TestCase
           'source' => { :git => '' },
           'header_mappings_dir' => './',
           'platforms' => {
-            :ios => '13.4',
+            :ios => '15.1',
           },
           'source_files' => "**/*.{h,mm,cpp}",
+          'exclude_files' => "RCTAppDependencyProvider.{h,mm}",
           'pod_target_xcconfig' => {
             "FRAMEWORK_SEARCH_PATHS" => [],
             "HEADER_SEARCH_PATHS" =>
@@ -523,14 +524,24 @@ class CodegenUtilsTests < Test::Unit::TestCase
                 "\"$(PODS_ROOT)/boost\"",
                 "\"$(PODS_ROOT)/RCT-Folly\"",
                 "\"$(PODS_ROOT)/DoubleConversion\"",
+                "\"$(PODS_ROOT)/fast_float/include\"",
                 "\"$(PODS_ROOT)/fmt/include\"",
                 "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
                 "\"$(PODS_ROOT)/Headers/Private/React-Fabric\"",
                 "\"$(PODS_ROOT)/Headers/Private/React-RCTFabric\"",
                 "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
-                "\"$(PODS_ROOT)/DoubleConversion\"",
-                "\"$(PODS_ROOT)/fmt/include\"",
                 "\"$(PODS_TARGET_SRCROOT)\"",
+            ].join(' '),
+            'OTHER_CPLUSPLUSFLAGS' => [
+                '$(inherited)',
+                '-DFOLLY_NO_CONFIG',
+                '-DFOLLY_MOBILE=1',
+                '-DFOLLY_USE_LIBCPP=1',
+                '-DFOLLY_CFG_NO_COROUTINES=1',
+                '-DFOLLY_HAVE_CLOCK_GETTIME=1',
+                '-Wno-comma',
+                '-Wno-shorten-64-to-32',
+                '-Wno-documentation'
             ].join(' ')
           },
           'dependencies': {
@@ -545,6 +556,7 @@ class CodegenUtilsTests < Test::Unit::TestCase
             "ReactCommon/turbomodule/core": [],
             "hermes-engine": [],
             "React-NativeModulesApple": [],
+            'React-RCTAppDelegate': [],
             "glog": [],
           }
         }

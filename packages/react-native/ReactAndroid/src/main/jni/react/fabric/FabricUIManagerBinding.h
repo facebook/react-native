@@ -32,7 +32,6 @@ class EventBeatManager;
 class FabricMountingManager;
 class Instance;
 class LayoutAnimationDriver;
-class ReactNativeConfig;
 class Scheduler;
 
 class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
@@ -58,9 +57,6 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       jboolean isRTL,
       jboolean doLeftAndRightSwapInRTL);
 
-  jni::local_ref<ReadableNativeMap::jhybridobject> getInspectorDataForInstance(
-      jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper);
-
   static void initHybrid(jni::alias_ref<jhybridobject> jobj);
 
   void installFabricUIManager(
@@ -68,8 +64,7 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
       jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
       EventBeatManager* eventBeatManager,
-      ComponentFactory* componentsRegistry,
-      jni::alias_ref<jobject> reactNativeConfig);
+      ComponentFactory* componentsRegistry);
 
   void startSurface(
       jint surfaceId,
@@ -101,10 +96,12 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
       jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandler);
 
   void schedulerDidFinishTransaction(
-      const MountingCoordinator::Shared& mountingCoordinator) override;
+      const std::shared_ptr<const MountingCoordinator>& mountingCoordinator)
+      override;
 
   void schedulerShouldRenderTransactions(
-      const MountingCoordinator::Shared& mountingCoordinator) override;
+      const std::shared_ptr<const MountingCoordinator>& mountingCoordinator)
+      override;
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const ShadowNode& shadowNode) override;
@@ -165,7 +162,6 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   float pointScaleFactor_ = 1;
 
-  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_{nullptr};
   bool enableFabricLogs_{false};
 };
 

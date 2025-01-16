@@ -23,7 +23,7 @@ JsiIntegrationTestGenericEngineAdapter::JsiIntegrationTestGenericEngineAdapter(
 
 /* static */ InspectorFlagOverrides
 JsiIntegrationTestGenericEngineAdapter::getInspectorFlagOverrides() noexcept {
-  return {.fuseboxEnabledDebug = true};
+  return {};
 }
 
 RuntimeTargetDelegate&

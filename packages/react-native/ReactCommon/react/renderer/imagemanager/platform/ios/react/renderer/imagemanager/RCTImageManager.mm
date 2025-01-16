@@ -7,7 +7,7 @@
 
 #import "RCTImageManager.h"
 
-#import <cxxreact/SystraceSection.h>
+#import <cxxreact/TraceSection.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SharedFunction.h>
 
@@ -38,7 +38,7 @@ using namespace facebook::react;
 
 - (ImageRequest)requestImage:(ImageSource)imageSource surfaceId:(SurfaceId)surfaceId
 {
-  SystraceSection s("RCTImageManager::requestImage");
+  TraceSection s("RCTImageManager::requestImage");
 
   NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
   std::shared_ptr<ImageTelemetry> telemetry;
@@ -48,8 +48,9 @@ using namespace facebook::react;
     telemetry = nullptr;
   }
 
+  auto sharedResumeFunction = SharedFunction<>();
   auto sharedCancelationFunction = SharedFunction<>();
-  auto imageRequest = ImageRequest(imageSource, telemetry, sharedCancelationFunction);
+  auto imageRequest = ImageRequest(imageSource, telemetry, sharedResumeFunction, sharedCancelationFunction);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
@@ -88,21 +89,28 @@ using namespace facebook::react;
       observerCoordinator->nativeImageResponseProgress((float)progress / (float)total, progress, total);
     };
 
-    RCTImageURLLoaderRequest *loaderRequest =
-        [self->_imageLoader loadImageWithURLRequest:request
-                                               size:CGSizeMake(imageSource.size.width, imageSource.size.height)
-                                              scale:imageSource.scale
-                                            clipped:NO
-                                         resizeMode:RCTResizeModeStretch
-                                           priority:RCTImageLoaderPriorityImmediate
-                                        attribution:{
-                                                        .surfaceId = surfaceId,
-                                                    }
-                                      progressBlock:progressBlock
-                                   partialLoadBlock:nil
-                                    completionBlock:completionBlock];
-    RCTImageLoaderCancellationBlock cancelationBlock = loaderRequest.cancellationBlock;
-    sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
+    void (^startRequest)() = ^() {
+      RCTImageURLLoaderRequest *loaderRequest =
+          [self->_imageLoader loadImageWithURLRequest:request
+                                                 size:CGSizeMake(imageSource.size.width, imageSource.size.height)
+                                                scale:imageSource.scale
+                                              clipped:NO
+                                           resizeMode:RCTResizeModeStretch
+                                             priority:RCTImageLoaderPriorityImmediate
+                                          attribution:{
+                                                          .surfaceId = surfaceId,
+                                                      }
+                                        progressBlock:progressBlock
+                                     partialLoadBlock:nil
+                                      completionBlock:completionBlock];
+
+      RCTImageLoaderCancellationBlock cancelationBlock = loaderRequest.cancellationBlock;
+      sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
+    };
+
+    startRequest();
+
+    sharedResumeFunction.assign([startRequest]() { startRequest(); });
   });
 
   return imageRequest;

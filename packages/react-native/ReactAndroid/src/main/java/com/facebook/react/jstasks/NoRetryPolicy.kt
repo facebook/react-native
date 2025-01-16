@@ -9,20 +9,19 @@ package com.facebook.react.jstasks
 
 internal class NoRetryPolicy private constructor() : HeadlessJsTaskRetryPolicy {
 
-  override public fun canRetry(): Boolean = false
+  override fun canRetry(): Boolean = false
 
-  override public fun getDelay(): Int {
-    throw IllegalStateException("Should not retrieve delay as canRetry is: ${canRetry()}")
-  }
+  override val delay: Int
+    get() = throw IllegalStateException("Should not retrieve delay as canRetry is: ${canRetry()}")
 
-  override public fun update(): HeadlessJsTaskRetryPolicy {
+  override fun update(): HeadlessJsTaskRetryPolicy {
     throw IllegalStateException("Should not update as canRetry is: ${canRetry()}")
   }
 
   // Class is immutable so no need to copy
-  override public fun copy(): HeadlessJsTaskRetryPolicy = this
+  override fun copy(): HeadlessJsTaskRetryPolicy = this
 
-  public companion object {
-    @JvmField public val INSTANCE: NoRetryPolicy = NoRetryPolicy()
+  companion object {
+    @JvmField val INSTANCE: NoRetryPolicy = NoRetryPolicy()
   }
 }

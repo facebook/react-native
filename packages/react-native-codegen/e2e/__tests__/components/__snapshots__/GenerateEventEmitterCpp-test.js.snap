@@ -161,6 +161,20 @@ void EventNestedObjectPropsNativeComponentViewEventEmitter::onChange(OnChange $e
   }
   location.setProperty(runtime, \\"x\\", $event.location.x);
   location.setProperty(runtime, \\"y\\", $event.location.y);
+
+      auto arrayOfObjects = jsi::Array(runtime, $event.location.arrayOfObjects.size());
+      size_t arrayOfObjectsIndex = 0;
+      for (auto arrayOfObjectsValue : $event.location.arrayOfObjects) {
+        auto arrayOfObjectsObject = jsi::Object(runtime);
+        {
+    auto value = jsi::Object(runtime);
+    value.setProperty(runtime, \\"str\\", arrayOfObjectsValue.value.str);
+    arrayOfObjectsObject.setProperty(runtime, \\"value\\", value);
+  }
+        arrayOfObjects.setValueAtIndex(runtime, arrayOfObjectsIndex++, arrayOfObjectsObject);
+      }
+      location.setProperty(runtime, \\"arrayOfObjects\\", arrayOfObjects);
+    
   $payload.setProperty(runtime, \\"location\\", location);
 }
     return $payload;

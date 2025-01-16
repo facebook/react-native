@@ -14,8 +14,9 @@ import type {HostComponent} from '../../../Renderer/shims/ReactNativeTypes';
 import requireNativeComponent from '../../../ReactNative/requireNativeComponent';
 import * as React from 'react';
 
-const RCTRefreshControl: HostComponent<mixed> =
-  requireNativeComponent<mixed>('RCTRefreshControl');
+const RCTRefreshControl: HostComponent<{}> = requireNativeComponent<{}>(
+  'RCTRefreshControl',
+);
 
 class RefreshControlMock extends React.Component<{...}> {
   static latestRef: ?RefreshControlMock;

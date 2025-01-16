@@ -121,6 +121,7 @@ const RCTTextInputViewConfig = {
     },
     editable: true,
     inputAccessoryViewID: true,
+    inputAccessoryViewButtonLabel: true,
     caretHidden: true,
     enablesReturnKeyAutomatically: true,
     placeholderTextColor: {
@@ -161,6 +162,7 @@ const RCTTextInputViewConfig = {
       onChangeSync: true,
       onKeyPressSync: true,
     }),
+    disableKeyboardShortcuts: true,
   },
 };
 

@@ -68,6 +68,10 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTWindowFrameDidChangeNotification
                                              object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(interfaceFrameDidChange)
+                                               name:UIApplicationDidBecomeActiveNotification
+                                             object:nil];
 
 #if TARGET_OS_IOS
 
@@ -128,7 +132,10 @@ static BOOL RCTIsIPhoneNotched()
     RCTAssertMainQueue();
 
     // 20pt is the top safeArea value in non-notched devices
-    isIPhoneNotched = RCTSharedApplication().keyWindow.safeAreaInsets.top > 20;
+    UIWindow *keyWindow = RCTKeyWindow();
+    if (keyWindow) {
+      isIPhoneNotched = keyWindow.safeAreaInsets.top > 20;
+    }
   });
 #endif
 

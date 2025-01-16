@@ -478,11 +478,17 @@ describe('typeEnumResolution', () => {
             members: [
               {
                 name: 'Hello',
-                value: 'hello',
+                value: {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: 'hello',
+                },
               },
               {
                 name: 'Goodbye',
-                value: 'goodbye',
+                value: {
+                  type: 'StringLiteralTypeAnnotation',
+                  value: 'goodbye',
+                },
               },
             ],
           },
@@ -521,11 +527,17 @@ describe('typeEnumResolution', () => {
             members: [
               {
                 name: 'On',
-                value: '1',
+                value: {
+                  type: 'NumberLiteralTypeAnnotation',
+                  value: 1,
+                },
               },
               {
                 name: 'Off',
-                value: '0',
+                value: {
+                  type: 'NumberLiteralTypeAnnotation',
+                  value: 0,
+                },
               },
             ],
           },
@@ -1837,8 +1849,17 @@ describe('emitUnionProp', () => {
         name: 'someProp',
         optional: true,
         typeAnnotation: {
-          type: 'StringEnumTypeAnnotation',
-          options: ['someValue1', 'someValue2'],
+          type: 'StringLiteralUnionTypeAnnotation',
+          types: [
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'someValue1',
+            },
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'someValue2',
+            },
+          ],
         },
       };
 
@@ -1872,8 +1893,17 @@ describe('emitUnionProp', () => {
         name: 'someProp',
         optional: false,
         typeAnnotation: {
-          type: 'StringEnumTypeAnnotation',
-          options: ['someValue1', 'someValue2'],
+          type: 'StringLiteralUnionTypeAnnotation',
+          types: [
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'someValue1',
+            },
+            {
+              type: 'StringLiteralTypeAnnotation',
+              value: 'someValue2',
+            },
+          ],
         },
       };
 

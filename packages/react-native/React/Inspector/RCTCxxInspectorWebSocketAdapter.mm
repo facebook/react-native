@@ -19,6 +19,8 @@
 
 using namespace facebook::react::jsinspector_modern;
 
+static const uint64_t MAX_CONNECTING_TIME_NS = 2 * 1000000000L;
+
 namespace {
 NSString *NSStringFromUTF8StringView(std::string_view view)
 {
@@ -39,6 +41,15 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
     _webSocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:NSStringFromUTF8StringView(url)]];
     _webSocket.delegate = self;
     [_webSocket open];
+    uint64_t startTime = clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW);
+    while ([_webSocket readyState] == SR_CONNECTING) {
+      if ((clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW) - startTime) > MAX_CONNECTING_TIME_NS) {
+        break;
+      }
+    }
+    if ([_webSocket readyState] != SR_OPEN) {
+      return nil;
+    }
   }
   return self;
 }
@@ -50,7 +61,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
   dispatch_async(dispatch_get_main_queue(), ^{
     RCTCxxInspectorWebSocketAdapter *strongSelf = weakSelf;
     if (strongSelf) {
-      [strongSelf->_webSocket send:messageStr];
+      [strongSelf->_webSocket sendString:messageStr error:NULL];
     }
   });
 }

@@ -46,7 +46,7 @@ describe('#publishTemplate', () => {
     expect(github.rest.actions.createWorkflowDispatch).toHaveBeenCalledWith({
       owner: 'react-native-community',
       repo: 'template',
-      workflow_id: 'release.yml',
+      workflow_id: 'release.yaml',
       ref: '0.76-stable',
       inputs: {
         dry_run: true,
@@ -66,7 +66,7 @@ describe('#publishTemplate', () => {
     expect(github.rest.actions.createWorkflowDispatch).toHaveBeenCalledWith({
       owner: 'react-native-community',
       repo: 'template',
-      workflow_id: 'release.yml',
+      workflow_id: 'release.yaml',
       ref: '0.76-stable',
       inputs: {
         dry_run: false,

@@ -19,7 +19,7 @@ import * as React from 'react';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 export type Props = $ReadOnly<{
-  children?: ExactReactElement_DEPRECATED<$FlowFixMe>,
+  children?: React.Node,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
   scrollAnimatedValue: Animated.Value,
@@ -275,12 +275,12 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
       : null;
 
   return (
-    /* $FlowFixMe[prop-missing] passthroughAnimatedPropExplicitValues isn't properly
-       included in the Animated.View flow type. */
     <Animated.View
       collapsable={false}
       nativeID={props.nativeID}
       onLayout={_onLayout}
+      /* $FlowFixMe[prop-missing] passthroughAnimatedPropExplicitValues isn't properly
+         included in the Animated.View flow type. */
       ref={ref}
       style={[
         child.props.style,
@@ -301,7 +301,6 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
 const styles = StyleSheet.create({
   header: {
     zIndex: 10,
-    position: 'relative',
   },
   fill: {
     flex: 1,

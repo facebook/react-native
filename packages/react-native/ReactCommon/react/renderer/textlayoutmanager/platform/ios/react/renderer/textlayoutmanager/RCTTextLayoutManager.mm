@@ -203,27 +203,15 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                 facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
                                                 facebook::react::Size{usedRect.size.width, usedRect.size.height}};
 
-                                            if (ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS()) {
-                                              CGFloat baseline =
-                                                  [layoutManager locationForGlyphAtIndex:range.location].y;
-                                              auto line = LineMeasurement{
-                                                  std::string([renderedString UTF8String]),
-                                                  rect,
-                                                  overallRect.size.height - baseline,
-                                                  font.capHeight,
-                                                  baseline,
-                                                  font.xHeight};
-                                              blockParagraphLines->push_back(line);
-                                            } else {
-                                              auto line = LineMeasurement{
-                                                  std::string([renderedString UTF8String]),
-                                                  rect,
-                                                  -font.descender,
-                                                  font.capHeight,
-                                                  font.ascender,
-                                                  font.xHeight};
-                                              blockParagraphLines->push_back(line);
-                                            }
+                                            CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
+                                            auto line = LineMeasurement{
+                                                std::string([renderedString UTF8String]),
+                                                rect,
+                                                overallRect.size.height - baseline,
+                                                font.capHeight,
+                                                baseline,
+                                                font.xHeight};
+                                            blockParagraphLines->push_back(line);
                                           }];
   return paragraphLines;
 }
@@ -347,7 +335,32 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
   [layoutManager ensureLayoutForTextContainer:textContainer];
 
+  NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  __block BOOL textDidWrap = NO;
+  [layoutManager
+      enumerateLineFragmentsForGlyphRange:glyphRange
+                               usingBlock:^(
+                                   CGRect overallRect,
+                                   CGRect usedRect,
+                                   NSTextContainer *_Nonnull usedTextContainer,
+                                   NSRange lineGlyphRange,
+                                   BOOL *_Nonnull stop) {
+                                 NSRange range = [layoutManager characterRangeForGlyphRange:lineGlyphRange
+                                                                           actualGlyphRange:nil];
+                                 NSUInteger lastCharacterIndex = range.location + range.length - 1;
+                                 BOOL endsWithNewLine =
+                                     [textStorage.string characterAtIndex:lastCharacterIndex] == '\n';
+                                 if (!endsWithNewLine && textStorage.string.length > lastCharacterIndex + 1) {
+                                   textDidWrap = YES;
+                                   *stop = YES;
+                                 }
+                               }];
+
   CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
+
+  if (textDidWrap) {
+    size.width = textContainer.size.width;
+  }
 
   size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
 
@@ -366,18 +379,9 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                 CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
 
                 CGRect frame;
-                if (ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS()) {
-                  CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
+                CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
 
-                  frame = {{glyphRect.origin.x, glyphRect.origin.y + baseline - attachmentSize.height}, attachmentSize};
-                } else {
-                  UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:range.location effectiveRange:nil];
-
-                  frame = {
-                      {glyphRect.origin.x,
-                       glyphRect.origin.y + glyphRect.size.height - attachmentSize.height + font.descender},
-                      attachmentSize};
-                }
+                frame = {{glyphRect.origin.x, glyphRect.origin.y + baseline - attachmentSize.height}, attachmentSize};
 
                 auto rect = facebook::react::Rect{
                     facebook::react::Point{frame.origin.x, frame.origin.y},

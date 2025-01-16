@@ -10,100 +10,100 @@
 
 'use strict';
 
-const AnExBobble = require('./AnExBobble');
-const AnExChained = require('./AnExChained');
-const AnExScroll = require('./AnExScroll');
-const AnExTilt = require('./AnExTilt');
-const React = require('react');
-const {
-  Animated,
-  PanResponder,
-  StyleSheet,
-  Text,
-  View,
-} = require('react-native');
+import AnExBobble from './AnExBobble';
+import AnExChained from './AnExChained';
+import AnExScroll from './AnExScroll';
+import AnExTilt from './AnExTilt';
+import React, {useRef, useState} from 'react';
+import {Animated, PanResponder, StyleSheet, Text, View} from 'react-native';
 
-class AnExSet extends React.Component<Object, any> {
-  constructor(props: Object) {
-    super(props);
-    function randColor() {
-      const colors = [0, 1, 2].map(() => Math.floor(Math.random() * 150 + 100));
-      return 'rgb(' + colors.join(',') + ')';
-    }
-    this.state = {
-      closeColor: randColor(),
-      openColor: randColor(),
-    };
-  }
-  render(): React.Node {
-    const backgroundColor = this.props.openVal
-      ? this.props.openVal.interpolate({
-          inputRange: [0, 1],
-          outputRange: [
-            this.state.closeColor, // interpolates color strings
-            this.state.openColor,
-          ],
-        })
-      : this.state.closeColor;
-    const panelWidth =
-      (this.props.containerLayout && this.props.containerLayout.width) || 320;
-    return (
-      <View style={styles.container}>
-        <Animated.View
-          style={[styles.header, {backgroundColor}]}
-          {...this.state.dismissResponder.panHandlers}>
-          <Text style={[styles.text, styles.headerText]}>{this.props.id}</Text>
-        </Animated.View>
-        {this.props.isActive && (
-          <View style={styles.stream}>
-            <View style={styles.card}>
-              <Text style={styles.text}>July 2nd</Text>
-              <AnExTilt isActive={this.props.isActive} />
-              <AnExBobble />
-            </View>
-            <AnExScroll panelWidth={panelWidth} />
-            <AnExChained />
-          </View>
-        )}
-      </View>
-    );
-  }
+const randColor = () => {
+  const colors = [0, 1, 2].map(() => Math.floor(Math.random() * 150 + 100));
+  return `rgb(${colors.join(',')})`;
+};
 
-  UNSAFE_componentWillMount() {
-    this.state.dismissY = new Animated.Value(0);
-    this.state.dismissResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => this.props.isActive,
-      onPanResponderGrant: () => {
-        Animated.spring(this.props.openVal, {
-          // Animated value passed in.
-          toValue: this.state.dismissY.interpolate({
-            // Track dismiss gesture
-            inputRange: [0, 300], // and interpolate pixel distance
-            outputRange: [1, 0], // to a fraction.
-          }),
+type AnExSetProps = $ReadOnly<{
+  openVal: Animated.Value,
+  containerLayout: {width: number, height: number},
+  id: string,
+  isActive: boolean,
+  onDismiss: (velocity: number) => void,
+}>;
 
+const AnExSet = ({
+  openVal,
+  containerLayout,
+  id,
+  isActive,
+  onDismiss,
+}: AnExSetProps): React.Node => {
+  const [closeColor] = useState(randColor());
+  const [openColor] = useState(randColor());
+  const dismissY = useRef(new Animated.Value(0)).current;
+
+  const dismissResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => isActive,
+    onPanResponderGrant: () => {
+      Animated.spring(openVal, {
+        // Animated value passed in.
+        toValue: dismissY.interpolate({
+          // Track dismiss gesture
+          inputRange: [0, 300], // and interpolate pixel distance
+          outputRange: [1, 0], // to a fraction.
+        }),
+        useNativeDriver: false,
+      }).start();
+    },
+    onPanResponderMove: Animated.event(
+      [null, {dy: dismissY}], // track pan gesture
+      {useNativeDriver: false},
+    ),
+    onPanResponderRelease: (e, gestureState) => {
+      if (gestureState.dy > 100) {
+        onDismiss(gestureState.vy); // delegates dismiss action to parent
+      } else {
+        Animated.spring(openVal, {
+          // animate back open if released early
+          toValue: 1,
           useNativeDriver: false,
         }).start();
-      },
-      onPanResponderMove: Animated.event(
-        [null, {dy: this.state.dismissY}], // track pan gesture
-        {useNativeDriver: false},
-      ),
-      onPanResponderRelease: (e, gestureState) => {
-        if (gestureState.dy > 100) {
-          this.props.onDismiss(gestureState.vy); // delegates dismiss action to parent
-        } else {
-          Animated.spring(this.props.openVal, {
-            // animate back open if released early
-            toValue: 1,
+      }
+    },
+  });
 
-            useNativeDriver: false,
-          }).start();
-        }
-      },
-    });
-  }
-}
+  const backgroundColor = openVal
+    ? openVal.interpolate({
+        inputRange: [0, 1],
+        outputRange: [
+          closeColor, // interpolates color strings
+          openColor,
+        ],
+      })
+    : closeColor;
+
+  const panelWidth = (containerLayout && containerLayout.width) || 320;
+
+  return (
+    <View style={styles.container}>
+      <Animated.View
+        style={[styles.header, {backgroundColor}]}
+        {...dismissResponder.panHandlers}>
+        <Text style={[styles.text, styles.headerText]}>{id}</Text>
+      </Animated.View>
+      {isActive && (
+        <View style={styles.stream}>
+          <View style={styles.card}>
+            <Text style={styles.text}>July 2nd</Text>
+            <AnExTilt isActive={isActive} />
+            <AnExBobble />
+          </View>
+          <AnExScroll panelWidth={panelWidth} />
+          <AnExChained />
+        </View>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -144,4 +144,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = AnExSet;
+export default AnExSet;

@@ -52,6 +52,7 @@ Pod::Spec.new do |s|
   s.dependency "React-cxxreact"
   s.dependency "glog"
   s.dependency "ReactCommon/turbomodule/bridging"
+  add_dependency(s, "React-featureflags")
   add_dependency(s, "React-debug")
 
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"

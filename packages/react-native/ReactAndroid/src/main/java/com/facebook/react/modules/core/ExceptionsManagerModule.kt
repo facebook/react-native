@@ -60,17 +60,6 @@ public open class ExceptionsManagerModule(private val devSupportManager: DevSupp
     }
   }
 
-  override fun updateExceptionMessage(
-      title: String?,
-      details: ReadableArray?,
-      exceptionIdDouble: Double
-  ) {
-    val exceptionId = exceptionIdDouble.toInt()
-    if (devSupportManager.devSupportEnabled) {
-      devSupportManager.updateJSError(title, details, exceptionId)
-    }
-  }
-
   override fun dismissRedbox() {
     if (devSupportManager.devSupportEnabled) {
       devSupportManager.hideRedboxDialog()

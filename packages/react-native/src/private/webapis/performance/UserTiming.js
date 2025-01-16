@@ -25,8 +25,8 @@ export type TimeStampOrName = DOMHighResTimeStamp | string;
 
 export type PerformanceMeasureInit = {
   detail?: DetailType,
-  startTime?: DOMHighResTimeStamp,
-  duration?: DOMHighResTimeStamp,
+  startTime: DOMHighResTimeStamp,
+  duration: DOMHighResTimeStamp,
 };
 
 export class PerformanceMark extends PerformanceEntry {
@@ -53,12 +53,12 @@ export class PerformanceMark extends PerformanceEntry {
 export class PerformanceMeasure extends PerformanceEntry {
   #detail: DetailType;
 
-  constructor(measureName: string, measureOptions?: PerformanceMeasureInit) {
+  constructor(measureName: string, measureOptions: PerformanceMeasureInit) {
     super({
       name: measureName,
       entryType: 'measure',
-      startTime: measureOptions?.startTime ?? 0,
-      duration: measureOptions?.duration ?? 0,
+      startTime: measureOptions.startTime,
+      duration: measureOptions.duration,
     });
 
     if (measureOptions) {

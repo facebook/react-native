@@ -17,9 +17,7 @@ import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNa
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
-import AnimatedNode from './nodes/AnimatedNode';
 import AnimatedProps from './nodes/AnimatedProps';
-import AnimatedValue from './nodes/AnimatedValue';
 import {
   useCallback,
   useEffect,
@@ -38,11 +36,6 @@ type ReducedProps<TProps> = {
 type CallbackRef<T> = T => mixed;
 
 type UpdateCallback = () => void;
-
-type AnimatedValueListeners = Array<{
-  propValue: AnimatedValue,
-  listenerId: string,
-}>;
 
 const useMemoOrAnimatedPropsMemo =
   ReactNativeFeatureFlags.enableAnimatedPropsMemo()
@@ -73,8 +66,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
-  const useSetNativePropsInNativeAnimationsInFabric =
-    ReactNativeFeatureFlags.shouldUseSetNativePropsInNativeAnimationsInFabric();
 
   const useAnimatedPropsLifecycle =
     ReactNativeFeatureFlags.useInsertionEffectsForAnimations()
@@ -119,12 +110,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           if (isFabricNode) {
             // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
             // Must not be called in Paper.
-            if (useSetNativePropsInNativeAnimationsInFabric) {
-              // $FlowFixMe[incompatible-use]
-              instance.setNativeProps(node.__getAnimatedValue());
-            } else {
-              scheduleUpdate();
-            }
+            scheduleUpdate();
           }
           return;
         }
@@ -176,7 +162,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 
       const target = getEventTarget(instance);
       const events = [];
-      const animatedValueListeners: AnimatedValueListeners = [];
 
       for (const propName in props) {
         // $FlowFixMe[invalid-computed-prop]
@@ -184,8 +169,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         if (propValue instanceof AnimatedEvent && propValue.__isNative) {
           propValue.__attach(target, propName);
           events.push([propName, propValue]);
-          // $FlowFixMe[incompatible-call] - the `addListenersToPropsValue` drills down the propValue.
-          addListenersToPropsValue(propValue, animatedValueListeners);
         }
       }
 
@@ -195,18 +178,9 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         for (const [propName, propValue] of events) {
           propValue.__detach(target, propName);
         }
-
-        for (const {propValue, listenerId} of animatedValueListeners) {
-          propValue.removeListener(listenerId);
-        }
       };
     },
-    [
-      node,
-      useNativePropsInFabric,
-      useSetNativePropsInNativeAnimationsInFabric,
-      props,
-    ],
+    [node, useNativePropsInFabric, props],
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 
@@ -225,35 +199,6 @@ function reduceAnimatedProps<TProps>(
       : node.__getValue()),
     collapsable: false,
   };
-}
-
-function addListenersToPropsValue(
-  propValue: AnimatedValue,
-  accumulator: AnimatedValueListeners,
-) {
-  // propValue can be a scalar value, an array or an object.
-  if (propValue instanceof AnimatedValue) {
-    const listenerId = propValue.addListener(() => {});
-    accumulator.push({propValue, listenerId});
-  } else if (Array.isArray(propValue)) {
-    // An array can be an array of scalar values, arrays of arrays, or arrays of objects
-    for (const prop of propValue) {
-      addListenersToPropsValue(prop, accumulator);
-    }
-  } else if (propValue instanceof Object) {
-    addAnimatedValuesListenersToProps(propValue, accumulator);
-  }
-}
-
-function addAnimatedValuesListenersToProps(
-  props: AnimatedNode,
-  accumulator: AnimatedValueListeners,
-) {
-  for (const propName in props) {
-    // $FlowFixMe[prop-missing] - This is an object contained in a prop, but we don't know the exact type.
-    const propValue = props[propName];
-    addListenersToPropsValue(propValue, accumulator);
-  }
 }
 
 /**
@@ -331,6 +276,20 @@ function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
     // if the queue is empty. When multiple animated components are mounted at
     // the same time. Only first component flushes the queue and the others will noop.
     NativeAnimatedHelper.API.flushQueue();
+    let drivenAnimationEndedListener: ?EventSubscription = null;
+    if (node.__isNative) {
+      drivenAnimationEndedListener =
+        NativeAnimatedHelper.nativeEventEmitter.addListener(
+          'onUserDrivenAnimationEnded',
+          data => {
+            node.update();
+          },
+        );
+    }
+
+    return () => {
+      drivenAnimationEndedListener?.remove();
+    };
   });
 
   useInsertionEffect(() => {
@@ -342,17 +301,6 @@ function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
 
   useInsertionEffect(() => {
     node.__attach();
-    let drivenAnimationEndedListener: ?EventSubscription = null;
-
-    if (node.__isNative) {
-      drivenAnimationEndedListener =
-        NativeAnimatedHelper.nativeEventEmitter.addListener(
-          'onUserDrivenAnimationEnded',
-          data => {
-            node.update();
-          },
-        );
-    }
     if (prevNodeRef.current != null) {
       const prevNode = prevNodeRef.current;
       // TODO: Stop restoring default values (unless `reset` is called).
@@ -367,8 +315,6 @@ function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
       } else {
         prevNodeRef.current = node;
       }
-
-      drivenAnimationEndedListener?.remove();
     };
   }, [node]);
 }

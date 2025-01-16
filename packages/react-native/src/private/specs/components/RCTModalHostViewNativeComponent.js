@@ -18,11 +18,11 @@ import type {
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type OrientationChangeEvent = $ReadOnly<{|
+type OrientationChangeEvent = $ReadOnly<{
   orientation: 'portrait' | 'landscape',
-|}>;
+}>;
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -57,6 +57,14 @@ type NativeProps = $ReadOnly<{|
    * See https://reactnative.dev/docs/modal#statusBarTranslucent
    */
   statusBarTranslucent?: WithDefault<boolean, false>,
+
+  /**
+   * The `navigationBarTranslucent` prop determines whether your modal should go under
+   * the system navigationbar.
+   *
+   * See https://reactnative.dev/docs/modal#navigationBarTranslucent
+   */
+  navigationBarTranslucent?: WithDefault<boolean, false>,
 
   /**
    * The `hardwareAccelerated` prop controls whether to force hardware
@@ -131,7 +139,7 @@ type NativeProps = $ReadOnly<{|
    * The `identifier` is the unique number for identifying Modal components.
    */
   identifier?: WithDefault<Int32, 0>,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>('ModalHostView', {
   interfaceOnly: true,

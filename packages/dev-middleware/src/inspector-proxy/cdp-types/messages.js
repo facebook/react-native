@@ -44,6 +44,7 @@ export type CDPClientMessage =
   | CDPRequest<'Debugger.getScriptSource'>
   | CDPRequest<'Debugger.scriptParsed'>
   | CDPRequest<'Debugger.setBreakpointByUrl'>
+  | CDPRequest<'Network.loadNetworkResource'>
   | CDPRequest<>;
 
 export type CDPServerMessage =

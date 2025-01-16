@@ -40,8 +40,8 @@ const HermesBadge = (): Node => {
 const styles = StyleSheet.create({
   badge: {
     position: 'absolute',
-    top: 8,
     right: 12,
+    bottom: 8,
   },
   badgeText: {
     fontSize: 14,

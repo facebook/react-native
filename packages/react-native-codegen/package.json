@@ -31,7 +31,7 @@
   "dependencies": {
     "@babel/parser": "^7.25.3",
     "glob": "^7.1.1",
-    "hermes-parser": "0.24.0",
+    "hermes-parser": "0.25.1",
     "invariant": "^2.2.4",
     "jscodeshift": "^17.0.0",
     "nullthrows": "^1.1.1",
@@ -49,7 +49,7 @@
     "@babel/plugin-transform-flow-strip-types": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "chalk": "^4.0.0",
-    "hermes-estree": "0.24.0",
+    "hermes-estree": "0.25.1",
     "micromatch": "^4.0.4",
     "prettier": "2.8.8",
     "rimraf": "^3.0.2"

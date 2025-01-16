@@ -37,6 +37,7 @@ const {
   emitCommonTypes,
   emitDictionary,
   emitFunction,
+  emitNumberLiteral,
   emitPromise,
   emitRootTag,
   emitStringLiteral,
@@ -402,6 +403,9 @@ function translateTypeAnnotation(
       switch (literal.type) {
         case 'StringLiteral': {
           return emitStringLiteral(nullable, literal.value);
+        }
+        case 'NumericLiteral': {
+          return emitNumberLiteral(nullable, literal.value);
         }
         default: {
           throw new UnsupportedTypeAnnotationParserError(

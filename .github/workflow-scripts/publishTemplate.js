@@ -42,7 +42,7 @@ module.exports.publishTemplate = async (github, version, dryRun = true) => {
   await github.rest.actions.createWorkflowDispatch({
     owner: 'react-native-community',
     repo: 'template',
-    workflow_id: 'release.yml',
+    workflow_id: 'release.yaml',
     ref,
     inputs: {
       dry_run: dryRun,

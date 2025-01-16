@@ -10,42 +10,48 @@
 
 'use strict';
 
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {____FlattenStyleProp_Internal} from '../StyleSheet/StyleSheetTypes';
+
+import React from 'react';
+
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
-const React = require('react');
 
-class StyleInspector extends React.Component<$FlowFixMeProps> {
-  render(): React.Node {
-    if (!this.props.style) {
-      return <Text style={styles.noStyle}>No style</Text>;
-    }
-    const names = Object.keys(this.props.style);
-    return (
-      <View style={styles.container}>
-        <View>
-          {names.map(name => (
-            <Text key={name} style={styles.attr}>
-              {name}:
-            </Text>
-          ))}
-        </View>
+type Props = $ReadOnly<{
+  style?: ?____FlattenStyleProp_Internal<ViewStyleProp>,
+}>;
 
-        <View>
-          {names.map(name => {
-            const value = this.props.style[name];
-            return (
-              <Text key={name} style={styles.value}>
-                {typeof value !== 'string' && typeof value !== 'number'
-                  ? JSON.stringify(value)
-                  : value}
-              </Text>
-            );
-          })}
-        </View>
-      </View>
-    );
+function StyleInspector({style}: Props): React.Node {
+  if (!style) {
+    return <Text style={styles.noStyle}>No style</Text>;
   }
+  const names = Object.keys(style);
+  return (
+    <View style={styles.container}>
+      <View>
+        {names.map(name => (
+          <Text key={name} style={styles.attr}>
+            {name}:
+          </Text>
+        ))}
+      </View>
+
+      <View>
+        {names.map(name => {
+          const value = style?.[name];
+          return (
+            <Text key={name} style={styles.value}>
+              {typeof value !== 'string' && typeof value !== 'number'
+                ? JSON.stringify(value)
+                : value}
+            </Text>
+          );
+        })}
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

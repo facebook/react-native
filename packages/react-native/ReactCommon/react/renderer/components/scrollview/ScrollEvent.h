@@ -37,6 +37,23 @@ struct ScrollEvent : public EventPayload {
   EventPayloadType getType() const override;
 };
 
+struct ScrollEndDragEvent : public ScrollEvent {
+  Point targetContentOffset;
+  Point velocity;
+
+  ScrollEndDragEvent() = default;
+
+  ScrollEndDragEvent(const ScrollEvent& scrollEvent)
+      : ScrollEvent(scrollEvent), targetContentOffset({}), velocity({}) {}
+
+  folly::dynamic asDynamic() const;
+
+  /*
+   * EventPayload implementations
+   */
+  jsi::Value asJSIValue(jsi::Runtime& runtime) const override;
+};
+
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string getDebugName(const ScrollEvent& scrollEvent);

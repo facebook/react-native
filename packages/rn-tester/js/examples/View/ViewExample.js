@@ -17,8 +17,8 @@ import * as React from 'react';
 import {Platform, Pressable, StyleSheet, View} from 'react-native';
 
 class ViewBorderStyleExample extends React.Component<
-  $ReadOnly<{||}>,
-  {|showBorder: boolean|},
+  $ReadOnly<{}>,
+  {showBorder: boolean},
 > {
   state: {showBorder: boolean} = {
     showBorder: true,
@@ -82,10 +82,10 @@ const offscreenAlphaCompositingStyles = StyleSheet.create({
 });
 
 class OffscreenAlphaCompositing extends React.Component<
-  $ReadOnly<{|testID?: ?string|}>,
-  {|
+  $ReadOnly<{testID?: ?string}>,
+  {
     active: boolean,
-  |},
+  },
 > {
   state: {active: boolean} = {
     active: false,
@@ -166,10 +166,10 @@ const ZIndexExampleStyles = StyleSheet.create({
 });
 
 class ZIndexExample extends React.Component<
-  $ReadOnly<{||}>,
-  {|
+  $ReadOnly<{}>,
+  {
     flipped: boolean,
-  |},
+  },
 > {
   state: {flipped: boolean} = {
     flipped: false,
@@ -310,10 +310,10 @@ function PositionStaticZIndexExample(): React.Node {
 }
 
 class DisplayNoneStyle extends React.Component<
-  $ReadOnly<{||}>,
-  {|
+  $ReadOnly<{}>,
+  {
     index: number,
-  |},
+  },
 > {
   state: {index: number} = {
     index: 0,
@@ -376,7 +376,7 @@ class DisplayNoneStyle extends React.Component<
   };
 }
 
-class FlexGapExample extends React.Component<$ReadOnly<{|testID?: ?string|}>> {
+class FlexGapExample extends React.Component<$ReadOnly<{testID?: ?string}>> {
   render(): React.Node {
     return (
       <View
@@ -408,55 +408,6 @@ class FlexGapExample extends React.Component<$ReadOnly<{|testID?: ?string|}>> {
       </View>
     );
   }
-}
-
-function LayoutConformanceExample({
-  testID,
-}: $ReadOnly<{testID: ?string}>): React.Node {
-  return (
-    <View
-      style={{flexDirection: 'row', gap: 10}}
-      testID="view-test-layout-conformance">
-      <View>
-        <RNTesterText>Unset</RNTesterText>
-        <LayoutConformanceBox />
-      </View>
-      <View experimental_layoutConformance="classic">
-        <RNTesterText>Classic</RNTesterText>
-        <LayoutConformanceBox />
-      </View>
-      <View experimental_layoutConformance="strict">
-        <RNTesterText>Strict</RNTesterText>
-        <LayoutConformanceBox />
-      </View>
-    </View>
-  );
-}
-
-function LayoutConformanceBox(): React.Node {
-  return (
-    <View
-      style={{
-        backgroundColor: 'blue',
-        width: 60,
-        height: 60,
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}>
-      <View
-        style={{
-          flexDirection: 'row',
-        }}>
-        <View
-          style={{
-            height: 30,
-            backgroundColor: 'red',
-            flexGrow: 1,
-          }}
-        />
-      </View>
-    </View>
-  );
 }
 
 function BoxShadowExample(): React.Node {
@@ -1354,11 +1305,6 @@ export default ({
           </View>
         );
       },
-    },
-    {
-      title: 'Layout conformance',
-      name: 'layout-conformance',
-      render: LayoutConformanceExample,
     },
     {
       title: 'Box Shadow',

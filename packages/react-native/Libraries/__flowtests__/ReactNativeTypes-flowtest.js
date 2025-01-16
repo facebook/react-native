@@ -17,7 +17,7 @@ import * as React from 'react';
 
 function takesHostComponentInstance(instance: HostInstance | null): void {}
 
-const MyHostComponent = (('Host': any): HostComponent<mixed>);
+const MyHostComponent = (('Host': any): HostComponent<{...}>);
 
 <MyHostComponent
   ref={hostComponentRef => {

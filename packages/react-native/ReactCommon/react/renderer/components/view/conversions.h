@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <folly/Conv.h>
-#include <folly/dynamic.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
 #include <react/renderer/components/view/primitives.h>
@@ -21,6 +19,7 @@
 #include <react/renderer/graphics/BoxShadow.h>
 #include <react/renderer/graphics/Filter.h>
 #include <react/renderer/graphics/Isolation.h>
+#include <react/renderer/graphics/LinearGradient.h>
 #include <react/renderer/graphics/PlatformColorParser.h>
 #include <react/renderer/graphics/Transform.h>
 #include <react/renderer/graphics/ValueUnit.h>
@@ -30,6 +29,7 @@
 #include <algorithm>
 #include <cmath>
 #include <optional>
+#include <string>
 #include <unordered_map>
 
 namespace facebook::react {
@@ -64,6 +64,25 @@ inline float yogaFloatFromFloat(Float value) {
 }
 
 /*
+ * Converts string to float only if the entire string is valid float.
+ */
+inline std::optional<float> stringToFloat(const std::string& string) {
+  try {
+    size_t pos = 0;
+    auto result = std::stof(string, &pos);
+    // Check if entire string was valid
+    if (pos == string.length()) {
+      return result;
+    }
+  } catch (...) {
+    // Ignore, caller falls back to default value.
+    return std::nullopt;
+  }
+
+  return std::nullopt;
+}
+
+/*
  * `yoga::FloatOptional` <-> React Native's `Float`
  *
  * `yoga::FloatOptional` represents optional dimensionless float values in Yoga
@@ -92,18 +111,15 @@ inline yoga::FloatOptional yogaOptionalFloatFromFloat(Float value) {
 inline std::optional<Float> optionalFloatFromYogaValue(
     const yoga::Style::Length& length,
     std::optional<Float> base = {}) {
-  switch (length.unit()) {
-    case yoga::Unit::Undefined:
-      return {};
-    case yoga::Unit::Point:
-      return floatFromYogaOptionalFloat(length.value());
-    case yoga::Unit::Percent:
-      return base.has_value()
-          ? std::optional<Float>(
-                base.value() * floatFromYogaOptionalFloat(length.value()))
-          : std::optional<Float>();
-    case yoga::Unit::Auto:
-      return {};
+  if (length.isPoints()) {
+    return floatFromYogaOptionalFloat(length.value());
+  } else if (length.isPercent()) {
+    return base.has_value()
+        ? std::optional<Float>(
+              base.value() * floatFromYogaOptionalFloat(length.value()))
+        : std::optional<Float>();
+  } else {
+    return {};
   }
 }
 
@@ -447,6 +463,47 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    yoga::Style::SizeLength& result) {
+  if (value.hasType<Float>()) {
+    result = yoga::StyleSizeLength::points((float)value);
+    return;
+  } else if (value.hasType<std::string>()) {
+    const auto stringValue = (std::string)value;
+    if (stringValue == "auto") {
+      result = yoga::StyleSizeLength::ofAuto();
+      return;
+    } else if (stringValue == "max-content") {
+      result = yoga::StyleSizeLength::ofMaxContent();
+      return;
+    } else if (stringValue == "stretch") {
+      result = yoga::StyleSizeLength::ofStretch();
+      return;
+    } else if (stringValue == "fit-content") {
+      result = yoga::StyleSizeLength::ofFitContent();
+      return;
+    } else {
+      if (stringValue.back() == '%') {
+        auto tryValue =
+            stringToFloat(stringValue.substr(0, stringValue.length() - 1));
+        if (tryValue.has_value()) {
+          result = yoga::StyleSizeLength::percent(tryValue.value());
+          return;
+        }
+      } else {
+        auto tryValue = stringToFloat(stringValue);
+        if (tryValue.has_value()) {
+          result = yoga::StyleSizeLength::points(tryValue.value());
+          return;
+        }
+      }
+    }
+  }
+  result = yoga::StyleSizeLength::undefined();
+}
+
+inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     yoga::Style::Length& result) {
@@ -460,15 +517,15 @@ inline void fromRawValue(
       return;
     } else {
       if (stringValue.back() == '%') {
-        auto tryValue = folly::tryTo<float>(
-            std::string_view(stringValue).substr(0, stringValue.length() - 1));
-        if (tryValue.hasValue()) {
+        auto tryValue =
+            stringToFloat(stringValue.substr(0, stringValue.length() - 1));
+        if (tryValue.has_value()) {
           result = yoga::StyleLength::percent(tryValue.value());
           return;
         }
       } else {
-        auto tryValue = folly::tryTo<float>(stringValue);
-        if (tryValue.hasValue()) {
+        auto tryValue = stringToFloat(stringValue);
+        if (tryValue.has_value()) {
           result = yoga::StyleLength::points(tryValue.value());
           return;
         }
@@ -534,9 +591,9 @@ inline void fromRawValue(
     const auto stringValue = (std::string)value;
 
     if (stringValue.back() == '%') {
-      auto tryValue = folly::tryTo<float>(
-          std::string_view(stringValue).substr(0, stringValue.length() - 1));
-      if (tryValue.hasValue()) {
+      auto tryValue =
+          stringToFloat(stringValue.substr(0, stringValue.length() - 1));
+      if (tryValue.has_value()) {
         valueUnit = ValueUnit(tryValue.value(), UnitType::Percent);
       }
     }
@@ -979,22 +1036,21 @@ inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
     LayoutConformance& result) {
-  result = LayoutConformance::Classic;
   react_native_expect(value.hasType<std::string>());
+  result = LayoutConformance::Strict;
   if (!value.hasType<std::string>()) {
     return;
   }
+
   auto stringValue = (std::string)value;
-  if (stringValue == "classic") {
-    result = LayoutConformance::Classic;
-    return;
-  }
   if (stringValue == "strict") {
     result = LayoutConformance::Strict;
-    return;
+  } else if (stringValue == "compatibility") {
+    result = LayoutConformance::Compatibility;
+  } else {
+    LOG(ERROR) << "Unexpected LayoutConformance value:" << stringValue;
+    react_native_expect(false);
   }
-  LOG(ERROR) << "Could not parse LayoutConformance:" << stringValue;
-  react_native_expect(false);
 }
 
 inline void fromRawValue(
@@ -1214,89 +1270,94 @@ inline void fromRawValue(
 inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
-    std::vector<GradientValue>& result) {
+    std::vector<BackgroundImage>& result) {
   react_native_expect(value.hasType<std::vector<RawValue>>());
   if (!value.hasType<std::vector<RawValue>>()) {
     result = {};
     return;
   }
 
-  std::vector<GradientValue> backgroundImage{};
+  std::vector<BackgroundImage> backgroundImage{};
   auto rawBackgroundImage = static_cast<std::vector<RawValue>>(value);
-  for (const auto& rawGradientValue : rawBackgroundImage) {
-    bool isMap =
-        rawGradientValue.hasType<std::unordered_map<std::string, RawValue>>();
+  for (const auto& rawBackgroundImageValue : rawBackgroundImage) {
+    bool isMap = rawBackgroundImageValue
+                     .hasType<std::unordered_map<std::string, RawValue>>();
     react_native_expect(isMap);
     if (!isMap) {
       result = {};
       return;
     }
 
-    auto rawGradientValueMap =
+    auto rawBackgroundImageMap =
         static_cast<std::unordered_map<std::string, RawValue>>(
-            rawGradientValue);
-    GradientValue gradientValue{};
+            rawBackgroundImageValue);
 
-    auto typeIt = rawGradientValueMap.find("type");
-    if (typeIt != rawGradientValueMap.end() &&
-        typeIt->second.hasType<std::string>()) {
-      gradientValue.type =
-          gradientTypeFromString((std::string)(typeIt->second));
+    auto typeIt = rawBackgroundImageMap.find("type");
+    if (typeIt == rawBackgroundImageMap.end() ||
+        !typeIt->second.hasType<std::string>()) {
+      continue;
     }
 
-    auto startIt = rawGradientValueMap.find("start");
-    if (startIt != rawGradientValueMap.end() &&
-        startIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
-      auto startPoints = static_cast<std::unordered_map<std::string, RawValue>>(
-          startIt->second);
-      auto xIt = startPoints.find("x");
-      auto yIt = startPoints.find("y");
-      if (xIt != startPoints.end() && yIt != startPoints.end() &&
-          xIt->second.hasType<Float>() && yIt->second.hasType<Float>()) {
-        gradientValue.startX = (Float)(xIt->second);
-        gradientValue.startY = (Float)(yIt->second);
-      }
-    }
+    std::string type = (std::string)(typeIt->second);
+    if (type == "linearGradient") {
+      LinearGradient linearGradient;
 
-    auto endIt = rawGradientValueMap.find("end");
-    if (endIt != rawGradientValueMap.end() &&
-        endIt->second.hasType<std::unordered_map<std::string, RawValue>>()) {
-      auto endPoints =
-          static_cast<std::unordered_map<std::string, RawValue>>(endIt->second);
-      auto xIt = endPoints.find("x");
-      auto yIt = endPoints.find("y");
-      if (xIt != endPoints.end() && yIt != endPoints.end() &&
-          xIt->second.hasType<Float>() && yIt->second.hasType<Float>()) {
-        gradientValue.endX = (Float)(xIt->second);
-        gradientValue.endY = (Float)(yIt->second);
-      }
-    }
+      auto directionIt = rawBackgroundImageMap.find("direction");
+      if (directionIt != rawBackgroundImageMap.end() &&
+          directionIt->second
+              .hasType<std::unordered_map<std::string, RawValue>>()) {
+        auto directionMap =
+            static_cast<std::unordered_map<std::string, RawValue>>(
+                directionIt->second);
 
-    auto colorStopsIt = rawGradientValueMap.find("colorStops");
-    if (colorStopsIt != rawGradientValueMap.end() &&
-        colorStopsIt->second.hasType<std::vector<RawValue>>()) {
-      auto rawColorStops =
-          static_cast<std::vector<RawValue>>(colorStopsIt->second);
+        auto directionTypeIt = directionMap.find("type");
+        auto valueIt = directionMap.find("value");
 
-      for (const auto& stop : rawColorStops) {
-        if (stop.hasType<std::unordered_map<std::string, RawValue>>()) {
-          auto stopMap =
-              static_cast<std::unordered_map<std::string, RawValue>>(stop);
-          auto positionIt = stopMap.find("position");
-          auto colorIt = stopMap.find("color");
+        if (directionTypeIt != directionMap.end() &&
+            valueIt != directionMap.end()) {
+          std::string directionType = (std::string)(directionTypeIt->second);
 
-          if (positionIt != stopMap.end() && colorIt != stopMap.end() &&
-              positionIt->second.hasType<Float>()) {
-            ColorStop colorStop{};
-            colorStop.position = (Float)(positionIt->second);
-            fromRawValue(context, colorIt->second, colorStop.color);
-            gradientValue.colorStops.push_back(colorStop);
+          if (directionType == "angle") {
+            linearGradient.direction.type = GradientDirectionType::Angle;
+            if (valueIt->second.hasType<Float>()) {
+              linearGradient.direction.value = (Float)(valueIt->second);
+            }
+          } else if (directionType == "keyword") {
+            linearGradient.direction.type = GradientDirectionType::Keyword;
+            if (valueIt->second.hasType<std::string>()) {
+              linearGradient.direction.value =
+                  parseGradientKeyword((std::string)(valueIt->second));
+            }
           }
         }
       }
-    }
 
-    backgroundImage.push_back(gradientValue);
+      auto colorStopsIt = rawBackgroundImageMap.find("colorStops");
+      if (colorStopsIt != rawBackgroundImageMap.end() &&
+          colorStopsIt->second.hasType<std::vector<RawValue>>()) {
+        auto rawColorStops =
+            static_cast<std::vector<RawValue>>(colorStopsIt->second);
+
+        for (const auto& stop : rawColorStops) {
+          if (stop.hasType<std::unordered_map<std::string, RawValue>>()) {
+            auto stopMap =
+                static_cast<std::unordered_map<std::string, RawValue>>(stop);
+            auto positionIt = stopMap.find("position");
+            auto colorIt = stopMap.find("color");
+
+            if (positionIt != stopMap.end() && colorIt != stopMap.end() &&
+                positionIt->second.hasType<Float>()) {
+              ColorStop colorStop;
+              colorStop.position = (Float)(positionIt->second);
+              fromRawValue(context, colorIt->second, colorStop.color);
+              linearGradient.colorStops.push_back(colorStop);
+            }
+          }
+        }
+      }
+
+      backgroundImage.push_back(std::move(linearGradient));
+    }
   }
 
   result = backgroundImage;
@@ -1370,15 +1431,36 @@ inline std::string toString(const yoga::Display& value) {
 }
 
 inline std::string toString(const yoga::Style::Length& length) {
-  switch (length.unit()) {
-    case yoga::Unit::Undefined:
-      return "undefined";
-    case yoga::Unit::Point:
-      return std::to_string(length.value().unwrap());
-    case yoga::Unit::Percent:
-      return std::to_string(length.value().unwrap()) + "%";
-    case yoga::Unit::Auto:
-      return "auto";
+  if (length.isUndefined()) {
+    return "undefined";
+  } else if (length.isAuto()) {
+    return "auto";
+  } else if (length.isPoints()) {
+    return std::to_string(length.value().unwrap());
+  } else if (length.isPercent()) {
+    return std::to_string(length.value().unwrap()) + "%";
+  } else {
+    return "unknown";
+  }
+}
+
+inline std::string toString(const yoga::Style::SizeLength& length) {
+  if (length.isUndefined()) {
+    return "undefined";
+  } else if (length.isAuto()) {
+    return "auto";
+  } else if (length.isPoints()) {
+    return std::to_string(length.value().unwrap());
+  } else if (length.isPercent()) {
+    return std::to_string(length.value().unwrap()) + "%";
+  } else if (length.isMaxContent()) {
+    return "max-content";
+  } else if (length.isFitContent()) {
+    return "fit-content";
+  } else if (length.isStretch()) {
+    return "stretch";
+  } else {
+    return "unknown";
   }
 }
 
@@ -1392,12 +1474,10 @@ inline std::string toString(const yoga::FloatOptional& value) {
 
 inline std::string toString(const LayoutConformance& value) {
   switch (value) {
-    case LayoutConformance::Undefined:
-      return "undefined";
-    case LayoutConformance::Classic:
-      return "classic";
     case LayoutConformance::Strict:
       return "strict";
+    case LayoutConformance::Compatibility:
+      return "compatibility";
   }
 }
 

@@ -7,14 +7,17 @@
 
 #pragma once
 
+#include "PerformanceEntryCircularBuffer.h"
+#include "PerformanceEntryKeyedBuffer.h"
+#include "PerformanceObserverRegistry.h"
+
+#include <jsinspector-modern/tracing/CdpTracing.h>
 #include <react/timing/primitives.h>
+
 #include <memory>
 #include <optional>
 #include <shared_mutex>
 #include <vector>
-#include "PerformanceEntryCircularBuffer.h"
-#include "PerformanceEntryKeyedBuffer.h"
-#include "PerformanceObserverRegistry.h"
 
 namespace facebook::react {
 
@@ -84,7 +87,9 @@ class PerformanceEntryReporter {
       double endTime,
       const std::optional<double>& duration = std::nullopt,
       const std::optional<std::string>& startMark = std::nullopt,
-      const std::optional<std::string>& endMark = std::nullopt);
+      const std::optional<std::string>& endMark = std::nullopt,
+      const std::optional<jsinspector_modern::DevToolsTrackEntryPayload>&
+          trackMetadata = std::nullopt);
 
   void reportEvent(
       std::string name,

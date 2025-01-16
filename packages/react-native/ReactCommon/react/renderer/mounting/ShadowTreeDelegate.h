@@ -33,7 +33,7 @@ class ShadowTreeDelegate {
    * Called right after Shadow Tree commit a new state of the tree.
    */
   virtual void shadowTreeDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator,
+      std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) const = 0;
 
   virtual ~ShadowTreeDelegate() noexcept = default;

@@ -39,7 +39,7 @@ module.exports = {
   overrides: [
     {
       files: ['*.js'],
-      parser: 'hermes-eslint',
+      parser: '@babel/eslint-parser',
       plugins: ['ft-flow'],
       rules: {
         // Flow Plugin
@@ -51,7 +51,7 @@ module.exports = {
     },
     {
       files: ['*.jsx'],
-      parser: 'hermes-eslint',
+      parser: '@babel/eslint-parser',
     },
     {
       files: ['*.ts', '*.tsx'],
@@ -315,8 +315,7 @@ module.exports = {
     'react/no-string-refs': 2,
     'react/no-unknown-property': 0,
     'react/no-unstable-nested-components': 1,
-    'react/prop-types': 0,
-    'react/react-in-jsx-scope': 1,
+    'react/react-in-jsx-scope': 0,
     'react/self-closing-comp': 1,
     'react/wrap-multilines': 0,
 

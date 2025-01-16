@@ -107,7 +107,7 @@ export type ExtendedExceptionData = ExceptionData & {
   ...
 };
 export type Category = string;
-export type CodeFrame = $ReadOnly<{|
+export type CodeFrame = $ReadOnly<{
   content: string,
   location: ?{
     row: number,
@@ -120,26 +120,26 @@ export type CodeFrame = $ReadOnly<{|
   // we gained the ability to use the collapse flag, but
   // it is not integrated into the LogBox UI.
   collapse?: boolean,
-|}>;
-export type Message = $ReadOnly<{|
+}>;
+export type Message = $ReadOnly<{
   content: string,
   substitutions: $ReadOnlyArray<
-    $ReadOnly<{|
+    $ReadOnly<{
       length: number,
       offset: number,
-    |}>,
+    }>,
   >,
-|}>;
+}>;
 
 export type ComponentStack = $ReadOnlyArray<CodeFrame>;
 export type ComponentStackType = 'legacy' | 'stack';
 
 const SUBSTITUTION = UTFSequence.BOM + '%s';
 
-export function parseInterpolation(args: $ReadOnlyArray<mixed>): $ReadOnly<{|
+export function parseInterpolation(args: $ReadOnlyArray<mixed>): $ReadOnly<{
   category: Category,
   message: Message,
-|}> {
+}> {
   const categoryParts = [];
   const contentParts = [];
   const substitutionOffsets = [];
@@ -456,12 +456,12 @@ export function withoutANSIColorStyles(message: mixed): mixed {
   );
 }
 
-export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {|
+export function parseLogBoxLog(args: $ReadOnlyArray<mixed>): {
   componentStack: ComponentStack,
   componentStackType: ComponentStackType,
   category: Category,
   message: Message,
-|} {
+} {
   const message = withoutANSIColorStyles(args[0]);
   let argsWithoutComponentStack: Array<mixed> = [];
   let componentStack: ComponentStack = [];

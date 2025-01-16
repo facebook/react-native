@@ -16,9 +16,6 @@ const NativeModules = require('../BatchedBridge/NativeModules');
 
 const turboModuleProxy = global.__turboModuleProxy;
 
-const useLegacyNativeModuleInterop =
-  global.RN$Bridgeless !== true || global.RN$TurboInterop === true;
-
 function requireModule<T: TurboModule>(name: string): ?T {
   if (turboModuleProxy != null) {
     const module: ?T = turboModuleProxy(name);
@@ -27,8 +24,11 @@ function requireModule<T: TurboModule>(name: string): ?T {
     }
   }
 
-  if (useLegacyNativeModuleInterop) {
-    // Backward compatibility layer during migration.
+  if (
+    global.RN$Bridgeless !== true ||
+    global.RN$TurboInterop === true ||
+    global.RN$UnifiedNativeModuleProxy === true
+  ) {
     const legacyModule: ?T = NativeModules[name];
     if (legacyModule != null) {
       return legacyModule;

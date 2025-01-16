@@ -4,13 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict-local
+ * @format
  */
 
-'use strict';
-
-const {InteractionManager} = require('react-native');
+import {InteractionManager} from 'react-native';
+import * as ReactNativeFeatureFlags from 'react-native/src/private/featureflags/ReactNativeFeatureFlags';
 
 /**
  * A simple class for batching up invocations of a low-pri callback. A timeout is set to run the
@@ -38,37 +37,47 @@ class Batchinator {
   _callback: () => void;
   _delay: number;
   _taskHandle: ?{cancel: () => void, ...};
-  constructor(callback: () => void, delayMS: number) {
-    this._delay = delayMS;
+
+  constructor(callback: () => void, delay: number) {
+    this._delay = delay;
     this._callback = callback;
   }
+
   /*
    * Cleanup any pending tasks.
    *
    * By default, if there is a pending task the callback is run immediately. Set the option abort to
    * true to not call the callback if it was pending.
    */
-  dispose(options: {abort: boolean, ...} = {abort: false}) {
+  dispose(): void {
     if (this._taskHandle) {
       this._taskHandle.cancel();
-      if (!options.abort) {
-        this._callback();
-      }
       this._taskHandle = null;
     }
   }
-  schedule() {
+
+  schedule(): void {
     if (this._taskHandle) {
       return;
     }
-    const timeoutHandle = setTimeout(() => {
-      this._taskHandle = InteractionManager.runAfterInteractions(() => {
-        // Note that we clear the handle before invoking the callback so that if the callback calls
-        // schedule again, it will actually schedule another task.
-        this._taskHandle = null;
-        this._callback();
-      });
-    }, this._delay);
+    const invokeCallback = () => {
+      // Note that we clear the handle before invoking the callback so that if the callback calls
+      // schedule again, it will actually schedule another task.
+      this._taskHandle = null;
+      this._callback();
+    };
+
+    const timeoutHandle = setTimeout(
+      // NOTE: When shipping this, delete `Batchinator` instead of only these
+      // lines of code. Without `InteractionManager`, it's just a `setTimeout`.
+      ReactNativeFeatureFlags.disableInteractionManagerInBatchinator()
+        ? invokeCallback
+        : () => {
+            this._taskHandle =
+              InteractionManager.runAfterInteractions(invokeCallback);
+          },
+      this._delay,
+    );
     this._taskHandle = {cancel: () => clearTimeout(timeoutHandle)};
   }
 }

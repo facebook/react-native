@@ -10,7 +10,6 @@
 #include <cfloat>
 #include <cmath>
 #include <cstring>
-#include <string>
 
 #include <yoga/Yoga.h>
 
@@ -540,7 +539,7 @@ static float computeFlexBasisForChildren(
     const uint32_t generationCount) {
   float totalOuterFlexBasis = 0.0f;
   YGNodeRef singleFlexChild = nullptr;
-  const auto& children = node->getLayoutChildren();
+  auto children = node->getLayoutChildren();
   SizingMode sizingModeMainDim =
       isRow(mainAxis) ? widthSizingMode : heightSizingMode;
   // If there is only one child with flexGrow + flexShrink it means we can set
@@ -693,13 +692,6 @@ static float distributeFreeSpaceSecondPass(
       }
     }
 
-    yoga::assertFatalWithNode(
-        currentLineChild,
-        yoga::isDefined(updatedMainSize),
-        ("updatedMainSize is undefined. mainAxisOwnerSize: " +
-         std::to_string(mainAxisOwnerSize))
-            .c_str());
-
     deltaFreeSpace += updatedMainSize - childFlexBasis;
 
     const float marginMain = currentLineChild->style().computeMarginForAxis(
@@ -749,7 +741,7 @@ static float distributeFreeSpaceSecondPass(
           marginCross;
       const bool isLoosePercentageMeasurement =
           currentLineChild->getProcessedDimension(dimension(crossAxis))
-                  .unit() == Unit::Percent &&
+              .isPercent() &&
           sizingModeCrossDim != SizingMode::StretchFit;
       childCrossSizingMode =
           yoga::isUndefined(childCrossSize) || isLoosePercentageMeasurement
@@ -793,20 +785,6 @@ static float distributeFreeSpaceSecondPass(
     const bool isLayoutPass = performLayout && !requiresStretchLayout;
     // Recursively call the layout algorithm for this child with the updated
     // main size.
-
-    yoga::assertFatalWithNode(
-        currentLineChild,
-        yoga::isUndefined(childMainSize)
-            ? childMainSizingMode == SizingMode::MaxContent
-            : true,
-        "childMainSize is undefined so childMainSizingMode must be MaxContent");
-    yoga::assertFatalWithNode(
-        currentLineChild,
-        yoga::isUndefined(childCrossSize)
-            ? childCrossSizingMode == SizingMode::MaxContent
-            : true,
-        "childCrossSize is undefined so childCrossSizingMode must be MaxContent");
-
     calculateLayoutInternal(
         currentLineChild,
         childWidth,
@@ -1235,10 +1213,10 @@ static void calculateLayoutImpl(
     const float ownerWidth,
     const float ownerHeight,
     const bool performLayout,
+    const LayoutPassReason reason,
     LayoutData& layoutMarkerData,
     const uint32_t depth,
-    const uint32_t generationCount,
-    const LayoutPassReason reason) {
+    const uint32_t generationCount) {
   yoga::assertFatalWithNode(
       node,
       yoga::isUndefined(availableWidth)
@@ -1328,6 +1306,10 @@ static void calculateLayoutImpl(
         ownerHeight,
         layoutMarkerData,
         reason);
+
+    // Clean and update all display: contents nodes with a direct path to the
+    // current node as they will not be traversed
+    cleanupContentsNodesRecursively(node);
     return;
   }
 
@@ -1342,6 +1324,10 @@ static void calculateLayoutImpl(
         heightSizingMode,
         ownerWidth,
         ownerHeight);
+
+    // Clean and update all display: contents nodes with a direct path to the
+    // current node as they will not be traversed
+    cleanupContentsNodesRecursively(node);
     return;
   }
 
@@ -1357,6 +1343,9 @@ static void calculateLayoutImpl(
           heightSizingMode,
           ownerWidth,
           ownerHeight)) {
+    // Clean and update all display: contents nodes with a direct path to the
+    // current node as they will not be traversed
+    cleanupContentsNodesRecursively(node);
     return;
   }
 
@@ -1369,6 +1358,7 @@ static void calculateLayoutImpl(
   // Clean and update all display: contents nodes with a direct path to the
   // current node as they will not be traversed
   cleanupContentsNodesRecursively(node);
+
   // STEP 1: CALCULATE VALUES FOR REMAINDER OF ALGORITHM
   const FlexDirection mainAxis =
       resolveDirection(node->style().flexDirection(), direction);
@@ -1772,6 +1762,7 @@ static void calculateLayoutImpl(
   if (performLayout && (isNodeFlexWrap || isBaselineLayout(node))) {
     float leadPerLine = 0;
     float currentLead = leadingPaddingAndBorderCross;
+    float extraSpacePerLine = 0;
 
     const float unclampedCrossDim = sizingModeCrossDim == SizingMode::StretchFit
         ? availableInnerCrossDim + paddingAndBorderAxisCross
@@ -1789,7 +1780,7 @@ static void calculateLayoutImpl(
                                     crossAxis,
                                     direction,
                                     unclampedCrossDim,
-                                    ownerHeight,
+                                    crossAxisOwnerSize,
                                     ownerWidth) -
         paddingAndBorderAxisCross;
 
@@ -1807,7 +1798,8 @@ static void calculateLayoutImpl(
         currentLead += remainingAlignContentDim / 2;
         break;
       case Align::Stretch:
-        leadPerLine = remainingAlignContentDim / static_cast<float>(lineCount);
+        extraSpacePerLine =
+            remainingAlignContentDim / static_cast<float>(lineCount);
         break;
       case Align::SpaceAround:
         currentLead +=
@@ -1877,6 +1869,7 @@ static void calculateLayoutImpl(
       }
       endIterator = iterator;
       currentLead += i != 0 ? crossAxisGap : 0;
+      lineHeight += extraSpacePerLine;
 
       for (iterator = startIterator; iterator != endIterator; iterator++) {
         const auto child = *iterator;
@@ -2275,10 +2268,10 @@ bool calculateLayoutInternal(
         ownerWidth,
         ownerHeight,
         performLayout,
+        reason,
         layoutMarkerData,
         depth,
-        generationCount,
-        reason);
+        generationCount);
 
     layout->lastOwnerDirection = ownerDirection;
     layout->configVersion = node->getConfig()->getVersion();

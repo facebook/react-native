@@ -124,7 +124,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  * [PanResponder example in RNTester](https://github.com/facebook/react-native/blob/HEAD/packages/rn-tester/js/examples/PanResponder/PanResponderExample.js)
  */
 
-export type GestureState = {|
+export type GestureState = {
   /**
    * ID of the gestureState - persisted as long as there at least one touch on screen
    */
@@ -181,7 +181,7 @@ export type GestureState = {|
    * @private
    */
   _accountsForMovesUpTo: number,
-|};
+};
 
 type ActiveCallback = (
   event: PressEvent,
@@ -190,7 +190,7 @@ type ActiveCallback = (
 
 type PassiveCallback = (event: PressEvent, gestureState: GestureState) => mixed;
 
-export type PanHandlers = {|
+export type PanHandlers = {
   onMoveShouldSetResponder: (event: PressEvent) => boolean,
   onMoveShouldSetResponderCapture: (event: PressEvent) => boolean,
   onResponderEnd: (event: PressEvent) => void,
@@ -203,9 +203,9 @@ export type PanHandlers = {|
   onResponderTerminationRequest: (event: PressEvent) => boolean,
   onStartShouldSetResponder: (event: PressEvent) => boolean,
   onStartShouldSetResponderCapture: (event: PressEvent) => boolean,
-|};
+};
 
-type PanResponderConfig = $ReadOnly<{|
+type PanResponderConfig = $ReadOnly<{
   onMoveShouldSetPanResponder?: ?ActiveCallback,
   onMoveShouldSetPanResponderCapture?: ?ActiveCallback,
   onStartShouldSetPanResponder?: ?ActiveCallback,
@@ -224,7 +224,7 @@ type PanResponderConfig = $ReadOnly<{|
   onPanResponderTerminate?: ?PassiveCallback,
   onPanResponderTerminationRequest?: ?ActiveCallback,
   onShouldBlockNativeResponder?: ?ActiveCallback,
-|}>;
+}>;
 
 const PanResponder = {
   /**

@@ -105,7 +105,7 @@ export interface DrawerLayoutAndroidProps extends ViewProps {
    * The navigation view that will be rendered to the side of the
    * screen and can be pulled in.
    */
-  renderNavigationView: () => JSX.Element;
+  renderNavigationView: () => React.JSX.Element;
 
   /**
    * Make the drawer take the entire screen and draw the background of

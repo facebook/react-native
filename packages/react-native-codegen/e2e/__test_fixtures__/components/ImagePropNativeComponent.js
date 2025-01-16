@@ -14,12 +14,12 @@ import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNat
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
   thumbImage?: ImageSource,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'ImagePropNativeComponentView',

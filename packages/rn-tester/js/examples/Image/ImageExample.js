@@ -10,9 +10,11 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ImageProps} from 'react-native/Libraries/Image/ImageProps';
 import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
+import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
 import ImageCapInsetsExample from './ImageCapInsetsExample';
 import React from 'react';
@@ -29,47 +31,38 @@ const base64Icon =
 const IMAGE_PREFETCH_URL = `${IMAGE1}?r=1&t=${Date.now()}`;
 const prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
-type ImageSource = $ReadOnly<{|
+type ImageSource = $ReadOnly<{
   uri: string,
-|}>;
+}>;
 
-type BlobImageState = {|
-  objectURL: ?string,
-|};
-
-type BlobImageProps = $ReadOnly<{|
+type BlobImageProps = $ReadOnly<{
   url: string,
-|}>;
+}>;
 
-class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
-  state: BlobImageState = {
-    objectURL: null,
-  };
+const BlobImage = ({url}: BlobImageProps): React.Node => {
+  const [objectURL, setObjectURL] = React.useState<?string>(null);
 
-  UNSAFE_componentWillMount() {
+  React.useEffect(() => {
     // $FlowFixMe[unused-promise]
     (async () => {
-      const result = await fetch(this.props.url);
+      const result = await fetch(url);
       const blob = await result.blob();
-      const objectURL = URL.createObjectURL(blob);
-      this.setState({objectURL});
+      setObjectURL(URL.createObjectURL(blob));
     })();
-  }
+  }, [url]);
 
-  render(): React.Node {
-    return this.state.objectURL !== null ? (
-      <Image source={{uri: this.state.objectURL}} style={styles.base} />
-    ) : (
-      <Text>Object URL not created yet</Text>
-    );
-  }
-}
+  return objectURL !== null ? (
+    <Image source={{uri: objectURL}} style={styles.base} />
+  ) : (
+    <Text>Object URL not created yet</Text>
+  );
+};
 
-type BlobImageExampleState = {||};
+type BlobImageExampleState = {};
 
-type BlobImageExampleProps = $ReadOnly<{|
+type BlobImageExampleProps = $ReadOnly<{
   urls: string[],
-|}>;
+}>;
 
 class BlobImageExample extends React.Component<
   BlobImageExampleProps,
@@ -86,147 +79,127 @@ class BlobImageExample extends React.Component<
   }
 }
 
-type NetworkImageCallbackExampleState = {|
-  events: Array<string>,
-  startLoadPrefetched: boolean,
-  mountTime: number,
-  imageHash: number,
-|};
-
-type NetworkImageCallbackExampleProps = $ReadOnly<{|
+type NetworkImageCallbackExampleProps = $ReadOnly<{
   source: ImageSource,
   prefetchedSource: ImageSource,
-|}>;
+}>;
 
-class NetworkImageCallbackExample extends React.Component<
-  NetworkImageCallbackExampleProps,
-  NetworkImageCallbackExampleState,
-> {
-  state: NetworkImageCallbackExampleState = {
-    events: [],
-    startLoadPrefetched: false,
-    mountTime: Date.now(),
-    imageHash: Date.now(),
+const NetworkImageCallbackExample = ({
+  source,
+  prefetchedSource,
+}: NetworkImageCallbackExampleProps): React.Node => {
+  const [events, setEvents] = React.useState<$ReadOnlyArray<string>>([]);
+  const [startLoadPrefetched, setStartLoadPrefetched] = React.useState(false);
+  const [mountTime, setMountTime] = React.useState(Date.now());
+
+  React.useEffect(() => {
+    setMountTime(Date.now());
+  }, []);
+
+  const _loadEventFired = (event: string) => {
+    setEvents(state => [...state, event]);
   };
 
-  UNSAFE_componentWillMount() {
-    this.setState({mountTime: Date.now()});
-  }
-
-  _loadEventFired = (event: string) => {
-    this.setState(state => ({
-      events: [...state.events, event],
-    }));
-  };
-
-  updateLoadingImageHash = () => {
-    this.setState({imageHash: Date.now()});
-  };
-
-  render(): React.Node {
-    const {mountTime} = this.state;
-    return (
-      <View>
+  return (
+    <View>
+      <Image
+        source={source}
+        style={[styles.base, styles.visibleOverflow]}
+        onError={event => {
+          _loadEventFired(
+            `✘ onError "${event.nativeEvent.error}" (+${Date.now() - mountTime}ms)`,
+          );
+        }}
+        onLoadStart={() =>
+          _loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
+        }
+        onProgress={event => {
+          const {loaded, total} = event.nativeEvent;
+          const percent = Math.round((loaded / total) * 100);
+          _loadEventFired(
+            `✔ onProgress ${percent}% (+${Date.now() - mountTime}ms)`,
+          );
+        }}
+        onLoad={event => {
+          if (event.nativeEvent.source) {
+            const url = event.nativeEvent.source.uri;
+            _loadEventFired(
+              `✔ onLoad (+${Date.now() - mountTime}ms) for URL ${url}`,
+            );
+          } else {
+            _loadEventFired(`✔ onLoad (+${Date.now() - mountTime}ms)`);
+          }
+        }}
+        onLoadEnd={() => {
+          _loadEventFired(`✔ onLoadEnd (+${Date.now() - mountTime}ms)`);
+          setStartLoadPrefetched(true);
+          prefetchTask.then(
+            () => {
+              _loadEventFired(`✔ prefetch OK (+${Date.now() - mountTime}ms)`);
+              // $FlowFixMe[unused-promise]
+              Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
+                const result = map[IMAGE_PREFETCH_URL];
+                if (result) {
+                  _loadEventFired(
+                    `✔ queryCache "${result}" (+${Date.now() - mountTime}ms)`,
+                  );
+                } else {
+                  _loadEventFired(
+                    `✘ queryCache (+${Date.now() - mountTime}ms)`,
+                  );
+                }
+              });
+            },
+            error => {
+              _loadEventFired(
+                `✘ prefetch failed (+${Date.now() - mountTime}ms)`,
+              );
+            },
+          );
+        }}
+      />
+      {startLoadPrefetched && (
         <Image
-          source={this.props.source}
+          source={prefetchedSource}
           style={[styles.base, styles.visibleOverflow]}
           onLoadStart={() =>
-            this._loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
+            _loadEventFired(
+              `✔ (prefetched) onLoadStart (+${Date.now() - mountTime}ms)`,
+            )
           }
-          onProgress={event => {
-            const {loaded, total} = event.nativeEvent;
-            const percent = Math.round((loaded / total) * 100);
-            this._loadEventFired(
-              `✔ onProgress ${percent}% (+${Date.now() - mountTime}ms)`,
-            );
-          }}
           onLoad={event => {
             if (event.nativeEvent.source) {
               const url = event.nativeEvent.source.uri;
-              this._loadEventFired(
-                `✔ onLoad (+${Date.now() - mountTime}ms) for URL ${url}`,
+              _loadEventFired(
+                `✔ (prefetched) onLoad (+${
+                  Date.now() - mountTime
+                }ms) for URL ${url}`,
               );
             } else {
-              this._loadEventFired(`✔ onLoad (+${Date.now() - mountTime}ms)`);
-            }
-          }}
-          onLoadEnd={() => {
-            this._loadEventFired(`✔ onLoadEnd (+${Date.now() - mountTime}ms)`);
-            this.setState({startLoadPrefetched: true}, () => {
-              prefetchTask.then(
-                () => {
-                  this._loadEventFired(
-                    `✔ prefetch OK (+${Date.now() - mountTime}ms)`,
-                  );
-                  // $FlowFixMe[unused-promise]
-                  Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
-                    const result = map[IMAGE_PREFETCH_URL];
-                    if (result) {
-                      this._loadEventFired(
-                        `✔ queryCache "${result}" (+${
-                          Date.now() - mountTime
-                        }ms)`,
-                      );
-                    } else {
-                      this._loadEventFired(
-                        `✘ queryCache (+${Date.now() - mountTime}ms)`,
-                      );
-                    }
-                  });
-                },
-                error => {
-                  this._loadEventFired(
-                    `✘ prefetch failed (+${Date.now() - mountTime}ms)`,
-                  );
-                },
+              _loadEventFired(
+                `✔ (prefetched) onLoad (+${Date.now() - mountTime}ms)`,
               );
-            });
+            }
           }}
+          onLoadEnd={() =>
+            _loadEventFired(
+              `✔ (prefetched) onLoadEnd (+${Date.now() - mountTime}ms)`,
+            )
+          }
         />
-        {this.state.startLoadPrefetched ? (
-          <Image
-            source={this.props.prefetchedSource}
-            style={[styles.base, styles.visibleOverflow]}
-            onLoadStart={() =>
-              this._loadEventFired(
-                `✔ (prefetched) onLoadStart (+${Date.now() - mountTime}ms)`,
-              )
-            }
-            onLoad={event => {
-              // Currently this image source feature is only available on iOS.
-              if (event.nativeEvent.source) {
-                const url = event.nativeEvent.source.uri;
-                this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${
-                    Date.now() - mountTime
-                  }ms) for URL ${url}`,
-                );
-              } else {
-                this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${Date.now() - mountTime}ms)`,
-                );
-              }
-            }}
-            onLoadEnd={() =>
-              this._loadEventFired(
-                `✔ (prefetched) onLoadEnd (+${Date.now() - mountTime}ms)`,
-              )
-            }
-          />
-        ) : null}
-        <RNTesterText style={styles.networkImageText} variant="label">
-          {this.state.events.join('\n')}
-        </RNTesterText>
-      </View>
-    );
-  }
-}
+      )}
+      <RNTesterText style={styles.networkImageText}>
+        {events.join('\n')}
+      </RNTesterText>
+    </View>
+  );
+};
 
-type NetworkImageExampleState = {|
+type NetworkImageExampleState = {
   error: ?string,
   loading: boolean,
   progress: $ReadOnlyArray<number>,
-|};
+};
 
 class NetworkImageExample extends React.Component<
   ImageProps,
@@ -270,14 +243,14 @@ class NetworkImageExample extends React.Component<
   }
 }
 
-type ImageSizeExampleState = {|
+type ImageSizeExampleState = {
   width: number,
   height: number,
-|};
+};
 
-type ImageSizeExampleProps = $ReadOnly<{|
+type ImageSizeExampleProps = $ReadOnly<{
   source: ImageSource,
-|}>;
+}>;
 
 class ImageSizeExample extends React.Component<
   ImageSizeExampleProps,
@@ -307,12 +280,12 @@ class ImageSizeExample extends React.Component<
   }
 }
 
-type MultipleSourcesExampleState = {|
+type MultipleSourcesExampleState = {
   width: number,
   height: number,
-|};
+};
 
-type MultipleSourcesExampleProps = $ReadOnly<{||}>;
+type MultipleSourcesExampleProps = $ReadOnly<{}>;
 
 class MultipleSourcesExample extends React.Component<
   MultipleSourcesExampleProps,
@@ -383,11 +356,11 @@ class MultipleSourcesExample extends React.Component<
   }
 }
 
-type LoadingIndicatorSourceExampleState = {|
+type LoadingIndicatorSourceExampleState = {
   imageHash: number,
-|};
+};
 
-type LoadingIndicatorSourceExampleProps = $ReadOnly<{||}>;
+type LoadingIndicatorSourceExampleProps = $ReadOnly<{}>;
 
 class LoadingIndicatorSourceExample extends React.Component<
   LoadingIndicatorSourceExampleProps,
@@ -431,11 +404,11 @@ class LoadingIndicatorSourceExample extends React.Component<
   }
 }
 
-type FadeDurationExampleState = {|
+type FadeDurationExampleState = {
   imageHash: number,
-|};
+};
 
-type FadeDurationExampleProps = $ReadOnly<{||}>;
+type FadeDurationExampleProps = $ReadOnly<{}>;
 
 class FadeDurationExample extends React.Component<
   FadeDurationExampleProps,
@@ -464,19 +437,21 @@ class FadeDurationExample extends React.Component<
           </Text>
         </View>
         <Image fadeDuration={1500} source={loadingImage} style={styles.base} />
-        <Text>This image will fade in over the time of 1.5s.</Text>
+        <RNTesterText>
+          This image will fade in over the time of 1.5s.
+        </RNTesterText>
       </View>
     );
   }
 }
 
-type OnLayoutExampleState = {|
+type OnLayoutExampleState = {
   width: number,
   height: number,
   layoutHandlerMessage: string,
-|};
+};
 
-type OnLayoutExampleProps = $ReadOnly<{||}>;
+type OnLayoutExampleProps = $ReadOnly<{}>;
 
 class OnLayoutExample extends React.Component<
   OnLayoutExampleProps,
@@ -565,11 +540,11 @@ class OnLayoutExample extends React.Component<
   }
 }
 
-type OnPartialLoadExampleState = {|
+type OnPartialLoadExampleState = {
   hasLoaded: boolean,
-|};
+};
 
-type OnPartialLoadExampleProps = $ReadOnly<{||}>;
+type OnPartialLoadExampleProps = $ReadOnly<{}>;
 
 class OnPartialLoadExample extends React.Component<
   OnPartialLoadExampleProps,
@@ -603,27 +578,95 @@ class OnPartialLoadExample extends React.Component<
   }
 }
 
-type VectorDrawableExampleState = {||};
+const VectorDrawableExample = () => {
+  const isEnabled = ReactNativeFeatureFlags.loadVectorDrawablesOnImages();
+  return (
+    <View style={styles.flex} testID="vector-drawable-example">
+      <RNTesterText>Enabled: {isEnabled ? 'true' : 'false'}</RNTesterText>
+      <View style={styles.horizontal}>
+        <Image
+          source={require('../../assets/ic_android.xml')}
+          style={styles.vectorDrawable}
+        />
+        <Image
+          source={require('../../assets/ic_android.xml')}
+          style={styles.vectorDrawable}
+          tintColor="red"
+        />
+      </View>
+    </View>
+  );
+};
 
-type VectorDrawableExampleProps = $ReadOnly<{||}>;
+function CacheControlAndroidExample(): React.Node {
+  const [reload, setReload] = React.useState(0);
 
-class VectorDrawableExample extends React.Component<
-  VectorDrawableExampleProps,
-  VectorDrawableExampleState,
-> {
-  state: VectorDrawableExampleState = {};
+  const onReload = () => {
+    setReload(prevReload => prevReload + 1);
+  };
 
-  render(): React.Node {
-    const isEnabled = ReactNativeFeatureFlags.loadVectorDrawablesOnImages();
-    return (
-      <View style={styles.flex}>
-        <RNTesterText>Enabled: {isEnabled ? 'true' : 'false'}</RNTesterText>
-        <View style={styles.vectorDrawableRow}>
-          <Image source={{uri: 'ic_android'}} style={styles.vectorDrawable} />
+  return (
+    <>
+      <View style={styles.horizontal}>
+        <View>
+          <RNTesterText style={styles.resizeModeText}>Default</RNTesterText>
+          <Image
+            source={{
+              uri: fullImage.uri + '?cacheBust=default',
+              cache: 'default',
+            }}
+            style={styles.base}
+            key={reload}
+          />
+        </View>
+        <View style={styles.leftMargin}>
+          <RNTesterText style={styles.resizeModeText}>Reload</RNTesterText>
+          <Image
+            source={{
+              uri: fullImage.uri + '?cacheBust=reload',
+              cache: 'reload',
+            }}
+            style={styles.base}
+            key={reload}
+          />
+        </View>
+        <View style={styles.leftMargin}>
+          <RNTesterText style={styles.resizeModeText}>Force-cache</RNTesterText>
+          <Image
+            source={{
+              uri: fullImage.uri + '?cacheBust=force-cache',
+              cache: 'force-cache',
+            }}
+            style={styles.base}
+            key={reload}
+            onError={e => console.log(e.nativeEvent.error)}
+          />
+        </View>
+        <View style={styles.leftMargin}>
+          <RNTesterText style={styles.resizeModeText}>
+            Only-if-cached
+          </RNTesterText>
+          <Image
+            source={{
+              uri: fullImage.uri + '?cacheBust=only-if-cached',
+              cache: 'only-if-cached',
+            }}
+            style={styles.base}
+            key={reload}
+            onError={e => console.log(e.nativeEvent.error)}
+          />
         </View>
       </View>
-    );
-  }
+
+      <View style={styles.horizontal}>
+        <View style={styles.cachePolicyAndroidButtonContainer}>
+          <RNTesterButton onPress={onReload}>
+            Re-render image components
+          </RNTesterButton>
+        </View>
+      </View>
+    </>
+  );
 }
 
 const fullImage: ImageSource = {
@@ -765,6 +808,9 @@ const styles = StyleSheet.create({
   objectFitScaleDown: {
     objectFit: 'scale-down',
   },
+  objectFitNone: {
+    objectFit: 'none',
+  },
   imageInBundle: {
     borderColor: 'yellow',
     borderWidth: 4,
@@ -851,10 +897,6 @@ const styles = StyleSheet.create({
     boxShadow: '80px 0px 10px 0px hotpink',
     transform: 'rotate(-15deg)',
   },
-  vectorDrawableRow: {
-    flexDirection: 'row',
-    gap: 8,
-  },
   vectorDrawable: {
     height: 64,
     width: 64,
@@ -862,6 +904,11 @@ const styles = StyleSheet.create({
   resizedImage: {
     height: 100,
     width: '500%',
+  },
+  cachePolicyAndroidButtonContainer: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: 10,
   },
 });
 
@@ -1037,6 +1084,17 @@ exports.examples = [
       );
     },
     platform: 'ios',
+  },
+  {
+    title: 'Cache Policy',
+    description: `- First image will be loaded and cached.
+- Second image is the same but will be reloaded if re-rendered as the cache policy is set to reload.
+- Third image will never be loaded as the cache policy is set to only-if-cached and the image has not been loaded before.
+  `,
+    render: function (): React.Node {
+      return <CacheControlAndroidExample />;
+    },
+    platform: 'android',
   },
   {
     title: 'Borders',
@@ -1390,6 +1448,17 @@ exports.examples = [
                     />
                   </View>
                 </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      None
+                    </RNTesterText>
+                    <Image
+                      style={[styles.resizeMode, styles.objectFitNone]}
+                      source={image}
+                    />
+                  </View>
+                </View>
               </View>
             );
           })}
@@ -1457,6 +1526,18 @@ exports.examples = [
                     <Image
                       style={styles.resizeMode}
                       resizeMode="center"
+                      source={image}
+                    />
+                  </View>
+                </View>
+                <View style={styles.horizontal}>
+                  <View>
+                    <RNTesterText style={styles.resizeModeText}>
+                      None
+                    </RNTesterText>
+                    <Image
+                      style={styles.resizeMode}
+                      resizeMode="none"
                       source={image}
                     />
                   </View>
@@ -1641,6 +1722,7 @@ exports.examples = [
   },
   {
     title: 'Vector Drawable',
+    name: 'vector-drawable',
     description:
       'Demonstrating an example of loading a vector drawable asset by name',
     render: function (): React.Node {
@@ -1688,4 +1770,4 @@ exports.examples = [
     },
     platform: 'android',
   },
-];
+] as Array<RNTesterModuleExample>;

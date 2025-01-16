@@ -13,11 +13,11 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {||};
+  +getConstants: () => {};
   +share: (
-    content: {|title?: string, message?: string|},
+    content: {title?: string, message?: string},
     dialogTitle?: string,
-  ) => Promise<{|action: string|}>;
+  ) => Promise<{action: string}>;
 }
 
 export default (TurboModuleRegistry.get<Spec>('ShareModule'): ?Spec);

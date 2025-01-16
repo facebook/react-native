@@ -16,5 +16,5 @@ import * as React from 'react';
 
 export default (createAnimatedComponent(FlatList): AnimatedComponentType<
   React.ElementConfig<typeof FlatList>,
-  React.ElementRef<typeof FlatList>,
+  FlatList<mixed>,
 >);

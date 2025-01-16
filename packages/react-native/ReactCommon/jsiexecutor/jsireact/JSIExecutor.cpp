@@ -11,7 +11,7 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/ReactMarker.h>
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <folly/Conv.h>
 #include <folly/json.h>
 #include <glog/logging.h>
@@ -80,7 +80,7 @@ JSIExecutor::JSIExecutor(
 }
 
 void JSIExecutor::initializeRuntime() {
-  SystraceSection s("JSIExecutor::initializeRuntime");
+  TraceSection s("JSIExecutor::initializeRuntime");
 
   bindNativePerformanceNow(*runtime_);
 
@@ -152,7 +152,7 @@ void JSIExecutor::initializeRuntime() {
 void JSIExecutor::loadBundle(
     std::unique_ptr<const JSBigString> script,
     std::string sourceURL) {
-  SystraceSection s("JSIExecutor::loadBundle");
+  TraceSection s("JSIExecutor::loadBundle");
   bool hasLogger = false;
   {
     std::shared_lock lock(ReactMarker::logTaggedMarkerImplMutex);
@@ -218,7 +218,7 @@ void JSIExecutor::callFunction(
     const std::string& moduleId,
     const std::string& methodId,
     const folly::dynamic& arguments) {
-  SystraceSection s(
+  TraceSection s(
       "JSIExecutor::callFunction", "moduleId", moduleId, "methodId", methodId);
   if (!callFunctionReturnFlushedQueue_) {
     bindBridge();
@@ -255,7 +255,7 @@ void JSIExecutor::callFunction(
 void JSIExecutor::invokeCallback(
     const double callbackId,
     const folly::dynamic& arguments) {
-  SystraceSection s("JSIExecutor::invokeCallback", "callbackId", callbackId);
+  TraceSection s("JSIExecutor::invokeCallback", "callbackId", callbackId);
   if (!invokeCallbackAndReturnFlushedQueue_) {
     bindBridge();
   }
@@ -274,7 +274,7 @@ void JSIExecutor::invokeCallback(
 void JSIExecutor::setGlobalVariable(
     std::string propName,
     std::unique_ptr<const JSBigString> jsonValue) {
-  SystraceSection s("JSIExecutor::setGlobalVariable", "propName", propName);
+  TraceSection s("JSIExecutor::setGlobalVariable", "propName", propName);
   runtime_->global().setProperty(
       *runtime_,
       propName.c_str(),
@@ -366,7 +366,7 @@ void JSIExecutor::handleMemoryPressure(int pressureLevel) {
 
 void JSIExecutor::bindBridge() {
   std::call_once(bindFlag_, [this] {
-    SystraceSection s("JSIExecutor::bindBridge (once)");
+    TraceSection s("JSIExecutor::bindBridge (once)");
     Value batchedBridgeValue =
         runtime_->global().getProperty(*runtime_, "__fbBatchedBridge");
     if (batchedBridgeValue.isUndefined() || !batchedBridgeValue.isObject()) {
@@ -385,7 +385,7 @@ void JSIExecutor::bindBridge() {
 }
 
 void JSIExecutor::callNativeModules(const Value& queue, bool isEndOfBatch) {
-  SystraceSection s("JSIExecutor::callNativeModules");
+  TraceSection s("JSIExecutor::callNativeModules");
   // If this fails, you need to pass a fully functional delegate with a
   // module registry to the factory/ctor.
   CHECK(delegate_) << "Attempting to use native modules without a delegate";
@@ -401,7 +401,7 @@ void JSIExecutor::callNativeModules(const Value& queue, bool isEndOfBatch) {
 }
 
 void JSIExecutor::flush() {
-  SystraceSection s("JSIExecutor::flush");
+  TraceSection s("JSIExecutor::flush");
   if (flushedQueue_) {
     Value ret = flushedQueue_->call(*runtime_);
     callNativeModules(ret, true);

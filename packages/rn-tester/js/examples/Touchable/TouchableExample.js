@@ -8,6 +8,8 @@
  * @flow
  */
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
+
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {useEffect, useRef, useState} from 'react';
@@ -311,10 +313,10 @@ class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
 }
 
 function TouchableNativeMethodChecker<
-  T: React.AbstractComponent<any, any>,
->(props: {|Component: T, name: string|}): React.Node {
+  T: component(ref?: React.RefSetter<any>, ...any),
+>(props: {Component: T, name: string}): React.Node {
   const [status, setStatus] = useState<?boolean>(null);
-  const ref = useRef<?React.ElementRef<T>>(null);
+  const ref = useRef<any>(null);
 
   useEffect(() => {
     setStatus(ref.current != null && typeof ref.current.measure === 'function');
@@ -557,9 +559,8 @@ const TouchableTouchSoundDisabled = () => {
   );
 };
 
-// $FlowFixMe[missing-local-annot]
-function TouchableOnFocus<T: React.AbstractComponent<any, any>>() {
-  const ref = useRef<?React.ElementRef<T> | {focus: Function}>(null);
+function TouchableOnFocus() {
+  const ref = useRef<?{focus(): void, ...}>(null);
   const [isFocused, setIsFocused] = useState<string | boolean>(false);
   const [focusStatus, setFocusStatus] = useState(
     'This touchable is not focused.',
@@ -677,13 +678,13 @@ exports.examples = [
       'child view is fully opaque, although it can be made to work as a simple ' +
       'background color change as well with the activeOpacity and ' +
       'underlayColor props.': string),
-    render: function (): React.Node {
+    render(): React.Node {
       return <TouchableHighlightBox />;
     },
   },
   {
     title: '<TouchableWithoutFeedback>',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TouchableWithoutFeedbackBox />;
     },
   },
@@ -692,7 +693,7 @@ exports.examples = [
     description: ('TouchableNativeFeedback can have an AnimatedComponent as a' +
       'direct child.': string),
     platform: 'android',
-    render: function (): React.Node {
+    render(): React.Node {
       const mScale = new Animated.Value(1);
       Animated.timing(mScale, {
         toValue: 0.3,
@@ -718,25 +719,25 @@ exports.examples = [
   },
   {
     title: 'TouchableHighlight Underlay Visibility',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TouchableHighlightUnderlayMethods />;
     },
   },
   {
     title: 'Touchable Touch Sound',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TouchableTouchSoundDisabled />;
     },
   },
   {
     title: 'Touchable onFocus',
-    render: function (): React.Node {
+    render(): React.Node {
       return <TouchableOnFocus />;
     },
   },
   {
     title: '<Text onPress={fn}> with highlight',
-    render: function (): React.MixedElement {
+    render(): React.MixedElement {
       return <TextOnPressBox />;
     },
   },
@@ -744,7 +745,7 @@ exports.examples = [
     title: 'Touchable feedback events',
     description: ('<Touchable*> components accept onPress, onPressIn, ' +
       'onPressOut, and onLongPress as props.': string),
-    render: function (): React.MixedElement {
+    render(): React.MixedElement {
       return <TouchableFeedbackEvents />;
     },
   },
@@ -753,7 +754,7 @@ exports.examples = [
     description: ('<Touchable*> components also accept delayPressIn, ' +
       'delayPressOut, and delayLongPress as props. These props impact the ' +
       'timing of feedback events.': string),
-    render: function (): React.MixedElement {
+    render(): React.MixedElement {
       return <TouchableDelayEvents />;
     },
   },
@@ -761,7 +762,7 @@ exports.examples = [
     title: '3D Touch / Force Touch',
     description:
       'iPhone 8 and 8 plus support 3D touch, which adds a force property to touches',
-    render: function (): React.MixedElement {
+    render(): React.MixedElement {
       return <ForceTouchExample />;
     },
     platform: 'ios',
@@ -771,7 +772,7 @@ exports.examples = [
     description:
       ('<Touchable*> components accept hitSlop prop which extends the touch area ' +
         'without changing the view bounds.': string),
-    render: function (): React.MixedElement {
+    render(): React.MixedElement {
       return <TouchableHitSlop />;
     },
   },
@@ -779,7 +780,7 @@ exports.examples = [
     title: 'Touchable Native Methods',
     description:
       ('Some <Touchable*> components expose native methods like `measure`.': string),
-    render: function (): React.MixedElement {
+    render(): React.MixedElement {
       return <TouchableNativeMethods />;
     },
   },
@@ -787,7 +788,7 @@ exports.examples = [
     title: 'Custom Ripple Radius (Android-only)',
     description:
       ('Ripple radius on TouchableNativeFeedback can be controlled': string),
-    render: function (): React.MixedElement {
+    render(): React.MixedElement {
       return <CustomRippleRadius />;
     },
   },
@@ -796,8 +797,8 @@ exports.examples = [
     description:
       ('<Touchable*> components accept disabled prop which prevents ' +
         'any interaction with component': string),
-    render: function (): React.MixedElement {
+    render(): React.MixedElement {
       return <TouchableDisabled />;
     },
   },
-];
+] as Array<RNTesterModuleExample>;

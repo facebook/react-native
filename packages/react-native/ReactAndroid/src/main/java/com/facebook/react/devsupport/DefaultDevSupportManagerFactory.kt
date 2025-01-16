@@ -9,6 +9,7 @@ package com.facebook.react.devsupport
 
 import android.content.Context
 import com.facebook.react.common.SurfaceDelegateFactory
+import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -101,7 +102,11 @@ public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
       useDevSupport: Boolean
   ): DevSupportManager =
       if (!useDevSupport) {
-        ReleaseDevSupportManager()
+        if (ReactBuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE) {
+          PerftestDevSupportManager(applicationContext)
+        } else {
+          ReleaseDevSupportManager()
+        }
       } else {
         BridgelessDevSupportManager(
             applicationContext,

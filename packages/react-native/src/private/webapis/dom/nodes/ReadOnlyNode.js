@@ -26,6 +26,8 @@ let ReadOnlyElementClass: Class<ReadOnlyElement>;
 
 export default class ReadOnlyNode {
   constructor(internalInstanceHandle: InternalInstanceHandle) {
+    // This constructor is inlined in `ReactNativeElement` so if you modify
+    // this make sure that their implementation stays in sync.
     setInstanceHandle(this, internalInstanceHandle);
   }
 
@@ -293,7 +295,7 @@ export function getInstanceHandle(node: ReadOnlyNode): InternalInstanceHandle {
   return node[INSTANCE_HANDLE_KEY];
 }
 
-function setInstanceHandle(
+export function setInstanceHandle(
   node: ReadOnlyNode,
   instanceHandle: InternalInstanceHandle,
 ): void {
@@ -301,11 +303,18 @@ function setInstanceHandle(
   node[INSTANCE_HANDLE_KEY] = instanceHandle;
 }
 
+let RendererProxy;
+function getRendererProxy() {
+  if (RendererProxy == null) {
+    // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
+    // With a static import we can't use these classes for Paper-only variants.
+    RendererProxy = require('../../../../../Libraries/ReactNative/RendererProxy');
+  }
+  return RendererProxy;
+}
+
 export function getShadowNode(node: ReadOnlyNode): ?ShadowNode {
-  // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
-  // With a static import we can't use these classes for Paper-only variants.
-  const RendererProxy = require('../../../../../Libraries/ReactNative/RendererProxy');
-  return RendererProxy.getNodeFromInternalInstanceHandle(
+  return getRendererProxy().getNodeFromInternalInstanceHandle(
     getInstanceHandle(node),
   );
 }
@@ -349,11 +358,10 @@ function getNodeSiblingsAndPosition(
 export function getPublicInstanceFromInternalInstanceHandle(
   instanceHandle: InternalInstanceHandle,
 ): ?ReadOnlyNode {
-  // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
-  // With a static import we can't use these classes for Paper-only variants.
-  const RendererProxy = require('../../../../../Libraries/ReactNative/RendererProxy');
   const mixedPublicInstance =
-    RendererProxy.getPublicInstanceFromInternalInstanceHandle(instanceHandle);
+    getRendererProxy().getPublicInstanceFromInternalInstanceHandle(
+      instanceHandle,
+    );
   // $FlowExpectedError[incompatible-return] React defines public instances as "mixed" because it can't access the definition from React Native.
   return mixedPublicInstance;
 }

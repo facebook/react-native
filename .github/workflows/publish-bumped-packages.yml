@@ -17,7 +17,7 @@ jobs:
       - name: Setup node.js
         uses: ./.github/actions/setup-node
       - name: Run Yarn Install
-        uses: ./.github/actions/yarn-install-with-cache
+        uses: ./.github/actions/yarn-install
       - name: Build packages
         run: yarn build
       - name: Set NPM auth token

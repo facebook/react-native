@@ -7,13 +7,17 @@ appId: ${APP_ID} # iOS: com.meta.RNTester.localDevelopment | Android: com.facebo
       id: "Text"
     direction: DOWN
     speed: 60
+    timeout: 60000 #ms
+    visibilityPercentage: 100
 - tapOn:
     id: "Text"
+- assertVisible: "Text"
 - scrollUntilVisible:
     element:
       id: "background-border-width"
     direction: DOWN
-    speed: 10
+    speed: 20
+    timeout: 60000 #ms
     visibilityPercentage: 100
 - assertVisible: "Text with background color only"
 - assertVisible: "Text with background color and uniform borderRadii"
