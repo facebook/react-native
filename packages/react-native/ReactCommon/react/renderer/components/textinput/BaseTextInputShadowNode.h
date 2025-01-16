@@ -149,19 +149,36 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     const auto& stateData = BaseShadowNode::getStateData();
     const auto& reactTreeAttributedString = getAttributedString(layoutContext);
 
-    react_native_assert(textLayoutManager_);
-    if (stateData.reactTreeAttributedString.isContentEqual(
-            reactTreeAttributedString)) {
+    // Tree is often out of sync with the value of the TextInput.
+    // This is by design - don't change the value of the TextInput in the State,
+    // and therefore in the host platform, unless the tree itself changes.
+    if (stateData.reactTreeAttributedString == reactTreeAttributedString) {
       return;
     }
 
+    // If props event counter is less than what we already have in state, skip
+    // it
     const auto& props = BaseShadowNode::getConcreteProps();
-    TextInputState newState(
+    if (props.mostRecentEventCount < stateData.mostRecentEventCount) {
+      return;
+    }
+
+    // Even if we're here and updating state, it may be only to update the
+    // layout manager If that is the case, make sure we don't update text: pass
+    // in the current attributedString unchanged, and pass in zero for the
+    // "event count" so no changes are applied There's no way to prevent a state
+    // update from flowing to the host platform, so we just ensure it's a noop
+    // in those cases.
+    auto newEventCount = stateData.reactTreeAttributedString.isContentEqual(
+                             reactTreeAttributedString)
+        ? 0
+        : props.mostRecentEventCount;
+
+    BaseShadowNode::setStateData(TextInputState{
         AttributedStringBox{reactTreeAttributedString},
         reactTreeAttributedString,
         props.paragraphAttributes,
-        props.mostRecentEventCount);
-    BaseShadowNode::setStateData(std::move(newState));
+        newEventCount});
   }
 
   /*
