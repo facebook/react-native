@@ -250,6 +250,7 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
       if constexpr (detail::hasFixed<KeywordT>) {
         return KeywordT::Fixed;
       }
+      break;
     case fnv1a("flex"):
       if constexpr (detail::hasFlex<KeywordT>) {
         return KeywordT::Flex;
@@ -399,6 +400,7 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
       if constexpr (detail::hasStart<KeywordT>) {
         return KeywordT::Start;
       }
+      break;
     case fnv1a("static"):
       if constexpr (detail::hasStatic<KeywordT>) {
         return KeywordT::Static;
