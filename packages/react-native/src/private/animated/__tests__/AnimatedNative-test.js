@@ -208,21 +208,15 @@ describe('Native Animated', () => {
 
       const value1 = new Animated.Value(0);
       value1.__makeNative();
-      const nativeTag = value1.__getNativeTag();
-
-      value1.__attach();
       const listener = jest.fn();
       const id = value1.addListener(listener);
       expect(
         NativeAnimatedModule.startListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        NativeAnimatedModule.startListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledWith(nativeTag);
+      ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
         value: 42,
-        tag: nativeTag,
+        tag: value1.__getNativeTag(),
       });
       expect(listener).toHaveBeenCalledTimes(1);
       expect(listener).toBeCalledWith({value: 42});
@@ -230,24 +224,20 @@ describe('Native Animated', () => {
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
         value: 7,
-        tag: nativeTag,
+        tag: value1.__getNativeTag(),
       });
       expect(listener).toHaveBeenCalledTimes(2);
       expect(listener).toBeCalledWith({value: 7});
       expect(value1.__getValue()).toBe(7);
 
       value1.removeListener(id);
-      value1.__detach();
       expect(
         NativeAnimatedModule.stopListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        NativeAnimatedModule.stopListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledWith(nativeTag);
+      ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
         value: 1492,
-        tag: nativeTag,
+        tag: value1.__getNativeTag(),
       });
       expect(listener).toHaveBeenCalledTimes(2);
       expect(value1.__getValue()).toBe(7);
@@ -258,37 +248,27 @@ describe('Native Animated', () => {
 
       const value1 = new Animated.Value(0);
       value1.__makeNative();
-      const nativeTag = value1.__getNativeTag();
-
-      value1.__attach();
       const listener = jest.fn();
       [1, 2, 3, 4].forEach(() => value1.addListener(listener));
       expect(
         NativeAnimatedModule.startListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        NativeAnimatedModule.startListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledWith(nativeTag);
+      ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
         value: 42,
-        tag: nativeTag,
+        tag: value1.__getNativeTag(),
       });
       expect(listener).toHaveBeenCalledTimes(4);
       expect(listener).toBeCalledWith({value: 42});
 
       value1.removeAllListeners();
-      value1.__detach();
       expect(
         NativeAnimatedModule.stopListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        NativeAnimatedModule.stopListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledWith(nativeTag);
+      ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
         value: 7,
-        tag: nativeTag,
+        tag: value1.__getNativeTag(),
       });
       expect(listener).toHaveBeenCalledTimes(4);
     });
