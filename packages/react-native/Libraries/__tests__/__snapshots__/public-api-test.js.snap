@@ -5537,7 +5537,7 @@ exports[`public API should not change unintentionally Libraries/Interaction/Touc
   ) => number,
   currentCentroidX: (touchHistory: TouchHistoryMath) => number,
   currentCentroidY: (touchHistory: TouchHistoryMath) => number,
-  noCentroid: $FlowFixMe,
+  noCentroid: number,
 };
 declare module.exports: TouchHistoryMath;
 "
