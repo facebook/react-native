@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<36caa4d81c790147714ea6ced92bbe23>>
+ * @generated SignedSource<<a8acfd65ad09126802c6731825b93957>>
  */
 
 /**
@@ -45,14 +45,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     return false;
-  }
-
-  bool enableAlignItemsBaselineOnFabricIOS() override {
-    return true;
-  }
-
-  bool enableAndroidLineHeightCentering() override {
-    return true;
   }
 
   bool enableBridgelessArchitecture() override {
@@ -181,6 +173,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useAlwaysAvailableJSErrorHandling() override {
     return false;
+  }
+
+  bool useEditTextStockAndroidFocusBehavior() override {
+    return true;
   }
 
   bool useFabricInterop() override {

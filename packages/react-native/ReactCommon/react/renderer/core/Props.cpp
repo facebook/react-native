@@ -7,7 +7,6 @@
 
 #include "Props.h"
 
-#include <folly/dynamic.h>
 #include <react/renderer/core/propsConversions.h>
 
 #include <react/featureflags/ReactNativeFeatureFlags.h>

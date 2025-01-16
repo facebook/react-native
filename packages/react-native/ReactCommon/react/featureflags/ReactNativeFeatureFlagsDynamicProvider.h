@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<40dec53a2f91804a0601564d471f5f4a>>
+ * @generated SignedSource<<92850bc3ca91ff647be4b3925e82890b>>
  */
 
 /**
@@ -88,24 +88,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableAccumulatedUpdatesInRawPropsAndroid();
-  }
-
-  bool enableAlignItemsBaselineOnFabricIOS() override {
-    auto value = values_["enableAlignItemsBaselineOnFabricIOS"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableAlignItemsBaselineOnFabricIOS();
-  }
-
-  bool enableAndroidLineHeightCentering() override {
-    auto value = values_["enableAndroidLineHeightCentering"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableAndroidLineHeightCentering();
   }
 
   bool enableBridgelessArchitecture() override {
@@ -394,6 +376,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useAlwaysAvailableJSErrorHandling();
+  }
+
+  bool useEditTextStockAndroidFocusBehavior() override {
+    auto value = values_["useEditTextStockAndroidFocusBehavior"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::useEditTextStockAndroidFocusBehavior();
   }
 
   bool useFabricInterop() override {

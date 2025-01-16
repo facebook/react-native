@@ -25,12 +25,12 @@ const I18nManager = require('../ReactNative/I18nManager');
 function resolveBoxStyle(
   prefix: string,
   style: Object,
-): ?$ReadOnly<{|
+): ?$ReadOnly<{
   bottom: number,
   left: number,
   right: number,
   top: number,
-|}> {
+}> {
   let hasParts = false;
   const result = {
     bottom: 0,

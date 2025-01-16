@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e4ae67e890618659498a6c678bbc1a36>>
+ * @generated SignedSource<<2092998ba5850adf395f9c32c9673149>>
  */
 
 /**
@@ -29,8 +29,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var disableEventLoopOnBridgelessCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
-  private var enableAlignItemsBaselineOnFabricIOSCache: Boolean? = null
-  private var enableAndroidLineHeightCenteringCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableDeletionOfUnmountedViewsCache: Boolean? = null
@@ -63,6 +61,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
+  private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -119,26 +118,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableAccumulatedUpdatesInRawPropsAndroid()
       accessedFeatureFlags.add("enableAccumulatedUpdatesInRawPropsAndroid")
       enableAccumulatedUpdatesInRawPropsAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun enableAlignItemsBaselineOnFabricIOS(): Boolean {
-    var cached = enableAlignItemsBaselineOnFabricIOSCache
-    if (cached == null) {
-      cached = currentProvider.enableAlignItemsBaselineOnFabricIOS()
-      accessedFeatureFlags.add("enableAlignItemsBaselineOnFabricIOS")
-      enableAlignItemsBaselineOnFabricIOSCache = cached
-    }
-    return cached
-  }
-
-  override fun enableAndroidLineHeightCentering(): Boolean {
-    var cached = enableAndroidLineHeightCenteringCache
-    if (cached == null) {
-      cached = currentProvider.enableAndroidLineHeightCentering()
-      accessedFeatureFlags.add("enableAndroidLineHeightCentering")
-      enableAndroidLineHeightCenteringCache = cached
     }
     return cached
   }
@@ -459,6 +438,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useAlwaysAvailableJSErrorHandling()
       accessedFeatureFlags.add("useAlwaysAvailableJSErrorHandling")
       useAlwaysAvailableJSErrorHandlingCache = cached
+    }
+    return cached
+  }
+
+  override fun useEditTextStockAndroidFocusBehavior(): Boolean {
+    var cached = useEditTextStockAndroidFocusBehaviorCache
+    if (cached == null) {
+      cached = currentProvider.useEditTextStockAndroidFocusBehavior()
+      accessedFeatureFlags.add("useEditTextStockAndroidFocusBehavior")
+      useEditTextStockAndroidFocusBehaviorCache = cached
     }
     return cached
   }

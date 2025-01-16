@@ -24,10 +24,10 @@ import type {
 } from './StyleSheetTypes';
 
 import composeStyles from '../../src/private/styles/composeStyles';
+import flatten from './flattenStyle';
 
 const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
 const PixelRatio = require('../Utilities/PixelRatio').default;
-const flatten = require('./flattenStyle');
 
 export type {NativeColorValue} from './StyleSheetTypes';
 

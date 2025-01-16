@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<64cf0422c4fcec2c6d105f4b45a3e12c>>
+ * @generated SignedSource<<bb3ba6c3264b9b2db54aa0d7049c3cf8>>
  */
 
 /**
@@ -43,12 +43,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableAccumulatedUpdatesInRawPropsAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableAlignItemsBaselineOnFabricIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool enableAndroidLineHeightCentering(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableBridgelessArchitecture(
@@ -145,6 +139,9 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useAlwaysAvailableJSErrorHandling(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
+
+  static bool useEditTextStockAndroidFocusBehavior(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useFabricInterop(

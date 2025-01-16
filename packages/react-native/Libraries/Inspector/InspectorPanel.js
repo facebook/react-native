@@ -13,6 +13,7 @@
 import type {ElementsHierarchy, InspectedElement} from './Inspector';
 
 import SafeAreaView from '../Components/SafeAreaView/SafeAreaView';
+import React from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
@@ -22,9 +23,8 @@ const Text = require('../Text/Text');
 const ElementProperties = require('./ElementProperties');
 const NetworkOverlay = require('./NetworkOverlay');
 const PerformanceOverlay = require('./PerformanceOverlay');
-const React = require('react');
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   devtoolsIsOpen: boolean,
   inspecting: boolean,
   setInspecting: (val: boolean) => void,
@@ -38,7 +38,7 @@ type Props = $ReadOnly<{|
   selection?: ?number,
   setSelection: number => mixed,
   inspected?: ?InspectedElement,
-|}>;
+}>;
 
 class InspectorPanel extends React.Component<Props> {
   renderWaiting(): React.Node {
@@ -107,11 +107,11 @@ class InspectorPanel extends React.Component<Props> {
   }
 }
 
-type InspectorPanelButtonProps = $ReadOnly<{|
+type InspectorPanelButtonProps = $ReadOnly<{
   onClick: (val: boolean) => void,
   pressed: boolean,
   title: string,
-|}>;
+}>;
 
 class InspectorPanelButton extends React.Component<InspectorPanelButtonProps> {
   render(): React.Node {

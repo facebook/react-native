@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<92985a8aaff4a9a76e22c2df708a51a7>>
+ * @generated SignedSource<<826d31981eb273e766e8d6a0663df106>>
  */
 
 /**
@@ -32,10 +32,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
   override fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = false
-
-  override fun enableAlignItemsBaselineOnFabricIOS(): Boolean = true
-
-  override fun enableAndroidLineHeightCentering(): Boolean = true
 
   override fun enableBridgelessArchitecture(): Boolean = false
 
@@ -100,6 +96,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean = false
 
   override fun useAlwaysAvailableJSErrorHandling(): Boolean = false
+
+  override fun useEditTextStockAndroidFocusBehavior(): Boolean = true
 
   override fun useFabricInterop(): Boolean = false
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<019ee84673771436057f3df9b43ed079>>
+ * @generated SignedSource<<9c721a5d0420b0a91f73e56f7e89a6f8>>
  */
 
 /**
@@ -66,18 +66,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableAccumulatedUpdatesInRawPropsAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAccumulatedUpdatesInRawPropsAndroid");
-    return method(javaProvider_);
-  }
-
-  bool enableAlignItemsBaselineOnFabricIOS() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAlignItemsBaselineOnFabricIOS");
-    return method(javaProvider_);
-  }
-
-  bool enableAndroidLineHeightCentering() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableAndroidLineHeightCentering");
     return method(javaProvider_);
   }
 
@@ -273,6 +261,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool useEditTextStockAndroidFocusBehavior() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useEditTextStockAndroidFocusBehavior");
+    return method(javaProvider_);
+  }
+
   bool useFabricInterop() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useFabricInterop");
@@ -354,16 +348,6 @@ bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
 bool JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableAndroidLineHeightCentering(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableAndroidLineHeightCentering();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture(
@@ -526,6 +510,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling(
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useEditTextStockAndroidFocusBehavior(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useFabricInterop(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useFabricInterop();
@@ -617,12 +606,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableAccumulatedUpdatesInRawPropsAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableAccumulatedUpdatesInRawPropsAndroid),
-      makeNativeMethod(
-        "enableAlignItemsBaselineOnFabricIOS",
-        JReactNativeFeatureFlagsCxxInterop::enableAlignItemsBaselineOnFabricIOS),
-      makeNativeMethod(
-        "enableAndroidLineHeightCentering",
-        JReactNativeFeatureFlagsCxxInterop::enableAndroidLineHeightCentering),
       makeNativeMethod(
         "enableBridgelessArchitecture",
         JReactNativeFeatureFlagsCxxInterop::enableBridgelessArchitecture),
@@ -719,6 +702,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useAlwaysAvailableJSErrorHandling",
         JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling),
+      makeNativeMethod(
+        "useEditTextStockAndroidFocusBehavior",
+        JReactNativeFeatureFlagsCxxInterop::useEditTextStockAndroidFocusBehavior),
       makeNativeMethod(
         "useFabricInterop",
         JReactNativeFeatureFlagsCxxInterop::useFabricInterop),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c18539711f13023ece7da60dd9e8a834>>
+ * @generated SignedSource<<e355280e2e1bb3c194c56a37f1d033f9>>
  */
 
 /**
@@ -37,8 +37,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool disableEventLoopOnBridgeless();
   bool disableMountItemReorderingAndroid();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
-  bool enableAlignItemsBaselineOnFabricIOS();
-  bool enableAndroidLineHeightCentering();
   bool enableBridgelessArchitecture();
   bool enableCppPropsIteratorSetter();
   bool enableDeletionOfUnmountedViews();
@@ -71,6 +69,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool loadVectorDrawablesOnImages();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool useAlwaysAvailableJSErrorHandling();
+  bool useEditTextStockAndroidFocusBehavior();
   bool useFabricInterop();
   bool useImmediateExecutorInAndroidBridgeless();
   bool useNativeViewConfigsInBridgelessMode();
@@ -91,15 +90,13 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 48> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
   std::atomic<std::optional<bool>> disableEventLoopOnBridgeless_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
-  std::atomic<std::optional<bool>> enableAlignItemsBaselineOnFabricIOS_;
-  std::atomic<std::optional<bool>> enableAndroidLineHeightCentering_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
   std::atomic<std::optional<bool>> enableDeletionOfUnmountedViews_;
@@ -132,6 +129,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> loadVectorDrawablesOnImages_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
+  std::atomic<std::optional<bool>> useEditTextStockAndroidFocusBehavior_;
   std::atomic<std::optional<bool>> useFabricInterop_;
   std::atomic<std::optional<bool>> useImmediateExecutorInAndroidBridgeless_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;

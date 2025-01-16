@@ -20,8 +20,8 @@ function burnCPU(milliseconds: number) {
   while (global.performance.now() < start + milliseconds) {}
 }
 
-type RequestIdleCallbackTesterProps = $ReadOnly<{||}>;
-type RequestIdleCallbackTesterState = {|message: string|};
+type RequestIdleCallbackTesterProps = $ReadOnly<{}>;
+type RequestIdleCallbackTesterState = {message: string};
 
 class RequestIdleCallbackTester extends React.Component<
   RequestIdleCallbackTesterProps,
@@ -144,10 +144,10 @@ class RequestIdleCallbackTester extends React.Component<
   };
 }
 
-type TimerTesterProps = $ReadOnly<{|
+type TimerTesterProps = $ReadOnly<{
   dt?: any,
   type: string,
-|}>;
+}>;
 
 class TimerTester extends React.Component<TimerTesterProps> {
   _ii = 0;
@@ -269,10 +269,10 @@ class TimerTester extends React.Component<TimerTesterProps> {
 }
 
 class IntervalExample extends React.Component<
-  $ReadOnly<{||}>,
-  {|
+  $ReadOnly<{}>,
+  {
     showTimer: boolean,
-  |},
+  },
 > {
   state: {showTimer: boolean} = {
     showTimer: true,

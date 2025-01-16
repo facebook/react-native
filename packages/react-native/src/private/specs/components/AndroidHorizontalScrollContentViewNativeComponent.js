@@ -13,11 +13,11 @@ import type {HostComponent} from '../../../../Libraries/Renderer/shims/ReactNati
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   removeClippedSubviews?: ?boolean,
-|}>;
+}>;
 
 type NativeType = HostComponent<NativeProps>;
 

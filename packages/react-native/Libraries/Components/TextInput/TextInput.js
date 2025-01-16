@@ -67,71 +67,71 @@ if (Platform.OS === 'android') {
 }
 
 export type ChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     eventCount: number,
     target: number,
     text: string,
-  |}>,
+  }>,
 >;
 
 export type TextInputEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     eventCount: number,
     previousText: string,
-    range: $ReadOnly<{|
+    range: $ReadOnly<{
       start: number,
       end: number,
-    |}>,
+    }>,
     target: number,
     text: string,
-  |}>,
+  }>,
 >;
 
 export type ContentSizeChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     target: number,
-    contentSize: $ReadOnly<{|
+    contentSize: $ReadOnly<{
       width: number,
       height: number,
-    |}>,
-  |}>,
+    }>,
+  }>,
 >;
 
 type TargetEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     target: number,
-  |}>,
+  }>,
 >;
 
 export type BlurEvent = TargetEvent;
 export type FocusEvent = TargetEvent;
 
-type Selection = $ReadOnly<{|
+type Selection = $ReadOnly<{
   start: number,
   end: number,
-|}>;
+}>;
 
 export type SelectionChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     selection: Selection,
     target: number,
-  |}>,
+  }>,
 >;
 
 export type KeyPressEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     key: string,
     target?: ?number,
     eventCount?: ?number,
-  |}>,
+  }>,
 >;
 
 export type EditingEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     eventCount: number,
     text: string,
     target: number,
-  |}>,
+  }>,
 >;
 
 type DataDetectorTypesType =
@@ -259,7 +259,7 @@ export type enterKeyHintType =
 
 type PasswordRules = string;
 
-type IOSProps = $ReadOnly<{|
+type IOSProps = $ReadOnly<{
   /**
    * If true, the keyboard shortcuts (undo/redo and copy buttons) are disabled. The default value is false.
    * @platform ios
@@ -397,9 +397,9 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   smartInsertDelete?: ?boolean,
-|}>;
+}>;
 
-type AndroidProps = $ReadOnly<{|
+type AndroidProps = $ReadOnly<{
   /**
    * When provided it will set the color of the cursor (or "caret") in the component.
    * Unlike the behavior of `selectionColor` the cursor color will be set independently
@@ -483,10 +483,10 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   underlineColorAndroid?: ?ColorValue,
-|}>;
+}>;
 
-export type Props = $ReadOnly<{|
-  ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
+export type Props = $ReadOnly<{
+  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
   ...IOSProps,
   ...AndroidProps,
 
@@ -903,10 +903,10 @@ export type Props = $ReadOnly<{|
    * The start and end of the text input's selection. Set start and end to
    * the same value to position the cursor.
    */
-  selection?: ?$ReadOnly<{|
+  selection?: ?$ReadOnly<{
     start: number,
     end?: ?number,
-  |}>,
+  }>,
 
   /**
    * The highlight and cursor color of the text input.
@@ -987,7 +987,7 @@ export type Props = $ReadOnly<{|
    * unwanted edits without flicker.
    */
   value?: ?Stringish,
-|}>;
+}>;
 
 type ViewCommands = $NonMaybeType<
   | typeof AndroidTextInputCommands
@@ -995,10 +995,10 @@ type ViewCommands = $NonMaybeType<
   | typeof RCTSinglelineTextInputNativeCommands,
 >;
 
-type LastNativeSelection = {|
+type LastNativeSelection = {
   selection: Selection,
   mostRecentEventCount: number,
-|};
+};
 
 const emptyFunctionThatReturnsTrue = () => true;
 
@@ -1874,14 +1874,14 @@ ExportedForwardRef.State = {
   blurTextInput: TextInputState.blurTextInput,
 };
 
-export type TextInputComponentStatics = $ReadOnly<{|
-  State: $ReadOnly<{|
+export type TextInputComponentStatics = $ReadOnly<{
+  State: $ReadOnly<{
     currentlyFocusedInput: typeof TextInputState.currentlyFocusedInput,
     currentlyFocusedField: typeof TextInputState.currentlyFocusedField,
     focusTextInput: typeof TextInputState.focusTextInput,
     blurTextInput: typeof TextInputState.blurTextInput,
-  |}>,
-|}>;
+  }>,
+}>;
 
 const styles = StyleSheet.create({
   multilineDefault: {

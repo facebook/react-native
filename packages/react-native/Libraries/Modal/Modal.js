@@ -18,6 +18,7 @@ import ModalInjection from './ModalInjection';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
 import {VirtualizedListContextResetter} from '@react-native/virtualized-lists';
+import React from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const View = require('../Components/View/View');
@@ -26,7 +27,6 @@ const I18nManager = require('../ReactNative/I18nManager');
 const {RootTagContext} = require('../ReactNative/RootTag');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Platform = require('../Utilities/Platform');
-const React = require('react');
 
 type ModalEventDefinitions = {
   modalDismissed: [{modalID: number}],
@@ -53,11 +53,11 @@ const ModalEventEmitter =
 // destroyed before the callback is fired.
 let uniqueModalIdentifier = 0;
 
-type OrientationChangeEvent = $ReadOnly<{|
+type OrientationChangeEvent = $ReadOnly<{
   orientation: 'portrait' | 'landscape',
-|}>;
+}>;
 
-export type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -171,7 +171,7 @@ export type Props = $ReadOnly<{|
    * Defaults to `white` if not provided and transparent is `false`. Ignored if `transparent` is `true`.
    */
   backdropColor?: ?string,
-|}>;
+}>;
 
 function confirmProps(props: Props) {
   if (__DEV__) {
@@ -202,7 +202,7 @@ type State = {
 };
 
 class Modal extends React.Component<Props, State> {
-  static defaultProps: {|hardwareAccelerated: boolean, visible: boolean|} = {
+  static defaultProps: {hardwareAccelerated: boolean, visible: boolean} = {
     visible: true,
     hardwareAccelerated: false,
   };

@@ -122,7 +122,6 @@ add_react_common_subdir(react/timing)
 
 # ReactAndroid JNI targets
 add_react_build_subdir(generated/source/codegen/jni)
-add_react_android_subdir(src/main/jni/first-party/fb)
 add_react_android_subdir(src/main/jni/first-party/fbgloginit)
 add_react_android_subdir(src/main/jni/first-party/yogajni)
 add_react_android_subdir(src/main/jni/first-party/jni-lib-merge)
@@ -230,7 +229,6 @@ target_link_libraries(reactnative
           PUBLIC
             android
             double-conversion
-            fb
             fbjni
             folly_runtime
             glog

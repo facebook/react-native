@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e343a8ee4f4747c53a67e77990897719>>
+ * @generated SignedSource<<292582d18884af033dbdb4d0a629d4fe>>
  */
 
 /**
@@ -37,10 +37,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun disableMountItemReorderingAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableAlignItemsBaselineOnFabricIOS(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableAndroidLineHeightCentering(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableBridgelessArchitecture(): Boolean
 
@@ -105,6 +101,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useAlwaysAvailableJSErrorHandling(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useEditTextStockAndroidFocusBehavior(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
 

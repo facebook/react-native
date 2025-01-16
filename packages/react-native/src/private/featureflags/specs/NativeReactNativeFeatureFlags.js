@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b3e46e779ac4f5fea2b30db655d9dfaf>>
+ * @generated SignedSource<<21fee21d733e7b1af753061ed7cafd63>>
  * @flow strict
  */
 
@@ -29,8 +29,6 @@ export interface Spec extends TurboModule {
   +disableEventLoopOnBridgeless?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
-  +enableAlignItemsBaselineOnFabricIOS?: () => boolean;
-  +enableAndroidLineHeightCentering?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
   +enableDeletionOfUnmountedViews?: () => boolean;
@@ -63,6 +61,7 @@ export interface Spec extends TurboModule {
   +loadVectorDrawablesOnImages?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
+  +useEditTextStockAndroidFocusBehavior?: () => boolean;
   +useFabricInterop?: () => boolean;
   +useImmediateExecutorInAndroidBridgeless?: () => boolean;
   +useNativeViewConfigsInBridgelessMode?: () => boolean;

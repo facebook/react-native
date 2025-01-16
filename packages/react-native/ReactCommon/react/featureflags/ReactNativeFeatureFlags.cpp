@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d01637432cd4e03f4ddbafb83d41c00d>>
+ * @generated SignedSource<<a394c09649c7f75bf19de6e1f2f3f757>>
  */
 
 /**
@@ -44,14 +44,6 @@ bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
 
 bool ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() {
   return getAccessor().enableAccumulatedUpdatesInRawPropsAndroid();
-}
-
-bool ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS() {
-  return getAccessor().enableAlignItemsBaselineOnFabricIOS();
-}
-
-bool ReactNativeFeatureFlags::enableAndroidLineHeightCentering() {
-  return getAccessor().enableAndroidLineHeightCentering();
 }
 
 bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
@@ -180,6 +172,10 @@ bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
 
 bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
   return getAccessor().useAlwaysAvailableJSErrorHandling();
+}
+
+bool ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior() {
+  return getAccessor().useEditTextStockAndroidFocusBehavior();
 }
 
 bool ReactNativeFeatureFlags::useFabricInterop() {

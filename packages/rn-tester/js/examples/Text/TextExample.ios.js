@@ -41,9 +41,9 @@ function InlineView(props) {
   );
 }
 
-type TextAlignExampleRTLState = {|
+type TextAlignExampleRTLState = {
   isRTL: boolean,
-|};
+};
 
 class TextAlignRTLExample extends React.Component<
   {},
@@ -155,12 +155,12 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{||}>;
+type AdjustingFontSizeProps = $ReadOnly<{}>;
 
-type AdjustingFontSizeState = {|
+type AdjustingFontSizeState = {
   dynamicText: string,
   shouldRender: boolean,
-|};
+};
 
 class AdjustingFontSize extends React.Component<
   AdjustingFontSizeProps,

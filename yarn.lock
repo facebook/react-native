@@ -3982,13 +3982,6 @@ eslint-plugin-lint@^1.0.0:
   resolved "https://registry.yarnpkg.com/eslint-plugin-lint/-/eslint-plugin-lint-1.0.0.tgz#bfc98ad0d1b5ea437b0072ec735c459df4d084b5"
   integrity sha512-hYl6F/lYLjycZmHYnpTk3dlliNxjy9breG/9URhdQmPZibmENjM378EPKvSdIDBOV+Zw/Z0d3EaJhLTjcWTovA==
 
-eslint-plugin-prettier@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier/-/eslint-plugin-prettier-4.2.1.tgz#651cbb88b1dab98bfd42f017a12fa6b2d993f94b"
-  integrity sha512-f/0rXLXUt0oFYs8ra4w49wYZBG5GKZpAYsJSm6rnYL5uVDjd+zowwMwVZHnAjf4edNrKpCDYfXDgmRE/Ak7QyQ==
-  dependencies:
-    prettier-linter-helpers "^1.0.0"
-
 eslint-plugin-react-hooks@^4.6.0:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.6.2.tgz#c829eb06c0e6f484b3fbb85a97e57784f328c596"
@@ -4256,11 +4249,6 @@ fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
   integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
 
-fast-diff@^1.1.2:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/fast-diff/-/fast-diff-1.3.0.tgz#ece407fa550a64d638536cd727e129c61616e0f0"
-  integrity sha512-VxPP4NqbUjj6MaAOafWeUn2cXWLcCtljklUtZf0Ind4XQ+QPtmA0b18zZy0jIQx+ExRVCR/ZQpBmik5lXshNsw==
-
 fast-glob@^3.2.9, fast-glob@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/fast-glob/-/fast-glob-3.3.2.tgz#a904501e57cfdd2ffcded45e99a54fef55e46129"
@@ -4408,10 +4396,10 @@ flow-api-translator@0.25.1:
     hermes-transform "0.25.1"
     typescript "5.3.2"
 
-flow-bin@^0.258.0:
-  version "0.258.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.258.0.tgz#4aa2ee3166af8be2c4d8ae0b85384f67b6379a6e"
-  integrity sha512-7Vn3NEAB3abwUi6j6UlQrqAJIsfmB0WS/TmFnSJlyMv0dL5DURwAjw0RbHoknz8rX5UY8KgFWjDtPO6xTOS3ng==
+flow-bin@^0.258.1:
+  version "0.258.1"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.258.1.tgz#5580e6085196800487dae67a71777b572d0c9552"
+  integrity sha512-v08KZw8jiwhA01V59kuCLd628kDJ0ZTX4jguh0P2rboF9rMlGmV8Rd+io1f1U9nWGoORTP2ZUI27X42jFA6eDQ==
 
 flow-enums-runtime@^0.0.6:
   version "0.0.6"
@@ -7160,13 +7148,6 @@ prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
-
-prettier-linter-helpers@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/prettier-linter-helpers/-/prettier-linter-helpers-1.0.0.tgz#d23d41fe1375646de2d0104d3454a3008802cf7b"
-  integrity sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==
-  dependencies:
-    fast-diff "^1.1.2"
 
 prettier-plugin-hermes-parser@0.25.1:
   version "0.25.1"

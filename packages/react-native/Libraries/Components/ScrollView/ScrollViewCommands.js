@@ -31,13 +31,13 @@ interface NativeCommands {
   ) => void;
   +zoomToRect: (
     viewRef: React.ElementRef<ScrollViewNativeComponentType>,
-    rect: {|
+    rect: {
       x: Double,
       y: Double,
       width: Double,
       height: Double,
       animated?: boolean,
-    |},
+    },
     animated?: boolean,
   ) => void;
 }

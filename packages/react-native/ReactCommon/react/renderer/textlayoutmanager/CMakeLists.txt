@@ -31,10 +31,8 @@ target_include_directories(react_render_textlayoutmanager
 
 target_link_libraries(react_render_textlayoutmanager
         glog
-        fb
         fbjni
         folly_runtime
-        glog_init
         mapbufferjni
         react_debug
         react_render_attributedstring

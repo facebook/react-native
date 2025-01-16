@@ -1352,10 +1352,10 @@ function ClippingExampleHorizontal() {
   );
 }
 
-class Item extends React.PureComponent<{|
+class Item extends React.PureComponent<{
   msg?: string,
   style?: ViewStyleProp,
-|}> {
+}> {
   render(): $FlowFixMe {
     return (
       <View style={[styles.item, this.props.style]}>

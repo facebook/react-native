@@ -13,10 +13,10 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {|
+  +getConstants: () => {
     +HEIGHT: number,
     +DEFAULT_BACKGROUND_COLOR: number,
-  |};
+  };
   +setColor: (color: number, animated: boolean) => void;
   +setTranslucent: (translucent: boolean) => void;
 
@@ -33,10 +33,10 @@ const NativeModule = TurboModuleRegistry.getEnforcing<Spec>('StatusBarManager');
 let constants = null;
 
 const NativeStatusBarManager = {
-  getConstants(): {|
+  getConstants(): {
     +HEIGHT: number,
     +DEFAULT_BACKGROUND_COLOR?: number,
-  |} {
+  } {
     if (constants == null) {
       constants = NativeModule.getConstants();
     }

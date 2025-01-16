@@ -14,10 +14,10 @@ import type {ColorValue} from '../../../../Libraries/StyleSheet/StyleSheet';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
   backgroundColor?: ?ColorValue,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>('InputAccessory', {
   interfaceOnly: true,

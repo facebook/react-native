@@ -13,17 +13,17 @@
 const React = require('react');
 const {StyleSheet, Text, View} = require('react-native');
 
-type ExampleBoxComponentProps = $ReadOnly<{|
+type ExampleBoxComponentProps = $ReadOnly<{
   onLog: (msg: string) => void,
-|}>;
+}>;
 
-type ExampleBoxProps = $ReadOnly<{|
+type ExampleBoxProps = $ReadOnly<{
   Component: React.ComponentType<ExampleBoxComponentProps>,
-|}>;
+}>;
 
-type ExampleBoxState = $ReadOnly<{|
+type ExampleBoxState = $ReadOnly<{
   log: string[],
-|}>;
+}>;
 
 class ExampleBox extends React.Component<ExampleBoxProps, ExampleBoxState> {
   state: ExampleBoxState = {
@@ -278,10 +278,10 @@ class BoxOnlyStyleExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
-type OverflowExampleProps = $ReadOnly<{|
+type OverflowExampleProps = $ReadOnly<{
   overflow: 'hidden' | 'visible',
   onLog: (msg: string) => void,
-|}>;
+}>;
 
 class OverflowExample extends React.Component<OverflowExampleProps> {
   render(): React.Node {

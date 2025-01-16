@@ -139,7 +139,7 @@ export function createRoot(rootConfig?: RootConfig): Root {
   return new Root(rootConfig);
 }
 
-export const benchmark = Benchmark;
+export const unstable_benchmark = Benchmark;
 
 type FantomConstants = $ReadOnly<{
   isRunningFromCI: boolean,

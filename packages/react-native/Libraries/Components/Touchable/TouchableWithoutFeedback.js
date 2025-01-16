@@ -29,7 +29,7 @@ import usePressability from '../../Pressability/usePressability';
 import * as React from 'react';
 import {useMemo} from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   accessibilityElementsHidden?: ?boolean,
   accessibilityHint?: ?Stringish,
@@ -82,7 +82,7 @@ type Props = $ReadOnly<{|
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
   touchSoundDisabled?: ?boolean,
-|}>;
+}>;
 
 const PASSTHROUGH_PROPS = [
   'accessibilityActions',

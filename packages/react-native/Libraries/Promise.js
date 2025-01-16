@@ -20,4 +20,4 @@ if (__DEV__) {
   );
 }
 
-module.exports = Promise;
+export default Promise;

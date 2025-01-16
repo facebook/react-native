@@ -21,7 +21,6 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -35,7 +34,6 @@ import com.facebook.react.views.text.internal.ReactTextInlineImageShadowNode;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
-import com.facebook.react.views.text.internal.span.LegacyLineHeightSpan;
 import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactClickableSpan;
@@ -231,11 +229,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (!Float.isNaN(effectiveLineHeight)
           && (parentTextAttributes == null
               || parentTextAttributes.getEffectiveLineHeight() != effectiveLineHeight)) {
-        if (ReactNativeFeatureFlags.enableAndroidLineHeightCentering()) {
-          ops.add(new SetSpanOperation(start, end, new CustomLineHeightSpan(effectiveLineHeight)));
-        } else {
-          ops.add(new SetSpanOperation(start, end, new LegacyLineHeightSpan(effectiveLineHeight)));
-        }
+        ops.add(new SetSpanOperation(start, end, new CustomLineHeightSpan(effectiveLineHeight)));
       }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
     }

@@ -19,7 +19,7 @@ import * as React from 'react';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
 export type Props = $ReadOnly<{
-  children?: ExactReactElement_DEPRECATED<$FlowFixMe>,
+  children?: React.Node,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutEvent) => void,
   scrollAnimatedValue: Animated.Value,

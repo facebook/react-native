@@ -95,25 +95,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableAlignItemsBaselineOnFabricIOS: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-07-10',
-        description:
-          'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-    },
-    enableAndroidLineHeightCentering: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'When enabled, custom line height calculation will be centered from top to bottom.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
     enableBridgelessArchitecture: {
       defaultValue: false,
       metadata: {
@@ -415,6 +396,15 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         description:
           'In Bridgeless mode, use the always available javascript error reporting pipeline.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+    },
+    useEditTextStockAndroidFocusBehavior: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.',
         expectedReleaseValue: true,
         purpose: 'release',
       },

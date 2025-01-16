@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1ac20a64883288436912fa6931bcecdb>>
+ * @generated SignedSource<<789432afd52133265940b3121c51d089>>
  */
 
 /**
@@ -57,18 +57,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean = accessor.enableAccumulatedUpdatesInRawPropsAndroid()
-
-  /**
-   * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
-   */
-  @JvmStatic
-  public fun enableAlignItemsBaselineOnFabricIOS(): Boolean = accessor.enableAlignItemsBaselineOnFabricIOS()
-
-  /**
-   * When enabled, custom line height calculation will be centered from top to bottom.
-   */
-  @JvmStatic
-  public fun enableAndroidLineHeightCentering(): Boolean = accessor.enableAndroidLineHeightCentering()
 
   /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
@@ -261,6 +249,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useAlwaysAvailableJSErrorHandling(): Boolean = accessor.useAlwaysAvailableJSErrorHandling()
+
+  /**
+   * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.
+   */
+  @JvmStatic
+  public fun useEditTextStockAndroidFocusBehavior(): Boolean = accessor.useEditTextStockAndroidFocusBehavior()
 
   /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.

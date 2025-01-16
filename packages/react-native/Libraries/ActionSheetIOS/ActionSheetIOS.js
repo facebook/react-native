@@ -40,7 +40,7 @@ const ActionSheetIOS = {
    * See https://reactnative.dev/docs/actionsheetios#showactionsheetwithoptions
    */
   showActionSheetWithOptions(
-    options: {|
+    options: {
       +title?: ?string,
       +message?: ?string,
       +options: Array<string>,
@@ -52,7 +52,7 @@ const ActionSheetIOS = {
       +disabledButtonTintColor?: ColorValue | ProcessedColorValue,
       +userInterfaceStyle?: string,
       +disabledButtonIndices?: Array<number>,
-    |},
+    },
     callback: (buttonIndex: number) => void,
   ) {
     invariant(
@@ -172,4 +172,4 @@ const ActionSheetIOS = {
   },
 };
 
-module.exports = ActionSheetIOS;
+export default ActionSheetIOS;

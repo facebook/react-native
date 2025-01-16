@@ -13,8 +13,8 @@
 import type {GestureState} from 'react-native/Libraries/Interaction/PanResponder';
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
-const React = require('react');
-const {Animated, PanResponder, StyleSheet, View} = require('react-native');
+import React from 'react';
+import {Animated, PanResponder, StyleSheet, View} from 'react-native';
 
 class AnExChained extends React.Component<Object, any> {
   constructor(props: Object) {
@@ -119,4 +119,4 @@ const CHAIN_IMGS = [
   require('../../assets/bunny.png'),
 ];
 
-module.exports = AnExChained;
+export default AnExChained;

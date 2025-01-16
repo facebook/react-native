@@ -36,14 +36,14 @@ class MultiColumnExample extends React.PureComponent<
 > {
   state:
     | any
-    | {|
+    | {
         data: Array<Item>,
         filterText: string,
         fixedHeight: boolean,
         logViewable: boolean,
         numColumns: number,
         virtualized: boolean,
-      |} = {
+      } = {
     data: genNewerItems(1000),
     filterText: '',
     fixedHeight: true,

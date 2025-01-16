@@ -17,7 +17,6 @@ target_include_directories(reactperfloggerjni
 
 target_link_libraries(reactperfloggerjni
         INTERFACE
-        fb
         fbjni
         android
         reactperflogger)

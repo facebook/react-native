@@ -205,17 +205,12 @@ public class DevServerHelper {
     new AsyncTask<Void, Void, Void>() {
       @Override
       protected Void doInBackground(Void... params) {
-        if (InspectorFlags.getFuseboxEnabled()) {
-          Map<String, String> metadata =
-              AndroidInfoHelpers.getInspectorHostMetadata(mApplicationContext);
+        Map<String, String> metadata =
+            AndroidInfoHelpers.getInspectorHostMetadata(mApplicationContext);
 
-          mInspectorPackagerConnection =
-              new CxxInspectorPackagerConnection(
-                  getInspectorDeviceUrl(), metadata.get("deviceName"), mPackageName);
-        } else {
-          mInspectorPackagerConnection =
-              new InspectorPackagerConnection(getInspectorDeviceUrl(), mPackageName);
-        }
+        mInspectorPackagerConnection =
+            new CxxInspectorPackagerConnection(
+                getInspectorDeviceUrl(), metadata.get("deviceName"), mPackageName);
         mInspectorPackagerConnection.connect();
         return null;
       }

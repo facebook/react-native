@@ -8,8 +8,8 @@
  * @format
  */
 
-'use strict';
-
+import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
@@ -85,6 +85,9 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  * See https://reactnative.dev/docs/animatedvalue
  */
 export default class AnimatedValue extends AnimatedWithChildren {
+  #attached: boolean = false;
+  #updateSubscription: ?EventSubscription = null;
+
   _value: number;
   _startingValue: number;
   _offset: number;
@@ -104,18 +107,71 @@ export default class AnimatedValue extends AnimatedWithChildren {
     }
   }
 
-  __detach() {
+  __attach(): void {
+    this.#attached = true;
+    this.#ensureUpdateSubscriptionExists();
+  }
+
+  __detach(): void {
     if (this.__isNative) {
+      this.#updateSubscription?.remove();
       NativeAnimatedAPI.getValue(this.__getNativeTag(), value => {
         this._value = value - this._offset;
       });
     }
     this.stopAnimation();
     super.__detach();
+    this.#attached = false;
   }
 
   __getValue(): number {
     return this._value + this._offset;
+  }
+
+  __makeNative(platformConfig: ?PlatformConfig): void {
+    super.__makeNative(platformConfig);
+    this.#ensureUpdateSubscriptionExists();
+  }
+
+  /**
+   * NOTE: In theory, we should only need to call this when any listeners
+   * are added. However, there is a global `onUserDrivenAnimationEnded`
+   * listener that relies on `onAnimatedValueUpdate` having fired to update
+   * the values in JavaScript. If that listener is removed, this could be
+   * re-optimized.
+   */
+  #ensureUpdateSubscriptionExists(): void {
+    if (this.#updateSubscription != null) {
+      return;
+    }
+    // The order in which `__attach` and `__makeNative` are called is not
+    // deterministic, and we only want to do this when both have occurred.
+    if (!this.#attached || !this.__isNative) {
+      return;
+    }
+    const nativeTag = this.__getNativeTag();
+    NativeAnimatedAPI.startListeningToAnimatedNodeValue(nativeTag);
+    const subscription: EventSubscription =
+      NativeAnimatedHelper.nativeEventEmitter.addListener(
+        'onAnimatedValueUpdate',
+        data => {
+          if (data.tag === nativeTag) {
+            this.__onAnimatedValueUpdateReceived(data.value);
+          }
+        },
+      );
+
+    this.#updateSubscription = {
+      remove: () => {
+        // Only this function assigns to `this.#updateSubscription`.
+        if (this.#updateSubscription == null) {
+          return;
+        }
+        this.#updateSubscription = null;
+        subscription.remove();
+        NativeAnimatedAPI.stopListeningToAnimatedNodeValue(nativeTag);
+      },
+    };
   }
 
   /**

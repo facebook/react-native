@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cae28f66b5d16c6c723459d99e989082>>
+ * @generated SignedSource<<0dd412433f6f9fd69cc8b5140a259bbe>>
  */
 
 /**
@@ -46,10 +46,6 @@ class NativeReactNativeFeatureFlags
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
-
-  bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
-
-  bool enableAndroidLineHeightCentering(jsi::Runtime& runtime);
 
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
@@ -114,6 +110,8 @@ class NativeReactNativeFeatureFlags
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
+
+  bool useEditTextStockAndroidFocusBehavior(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
 
