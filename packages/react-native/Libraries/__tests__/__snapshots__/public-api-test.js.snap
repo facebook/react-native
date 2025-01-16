@@ -5568,8 +5568,7 @@ declare module.exports: JSInspector;
 `;
 
 exports[`public API should not change unintentionally Libraries/JSInspector/NetworkAgent.js 1`] = `
-"declare const InspectorAgent: $FlowFixMe;
-type RequestId = string;
+"type RequestId = string;
 type Headers = { [string]: string };
 declare class Interceptor {
   _agent: NetworkAgent;
