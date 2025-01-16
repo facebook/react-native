@@ -171,6 +171,17 @@
 
 - **TextInput:** Fixing TextInput `maxLength` not working in old arch ([9ecf290d27](https://github.com/facebook/react-native/commit/9ecf290d270598e45832a75f657d73cf20088a37) by [@mateoguzmana](https://github.com/mateoguzmana))
 
+## v0.77.0-rc.7
+
+### Fixed
+
+ - **layout:** Fix TextMeasureCacheKey Throwing Out Some LayoutConstraints ([e7db7a7266](https://github.com/facebook/react-native/commit/e7db7a72661bd49948c13eb46d0f72fbe9e00bf3) by [@NickGerleman
+](https://github.com/NickGerleman))
+ - **Animated:** Fix buttons becoming unresponsive when transform is animated (Revert #48669). ([c799aa07e2](https://github.com/facebook/react-native/commit/c799aa07e2148a2ca38939cb72468c949ed0c95f) by [@sammy-SC](https://github.com/sammy-SC))
+
+#### iOS specific
+ - **TextInput:** Fix `maxLength` not working in old arch ([4b3ef3b00c](https://github.com/facebook/react-native/commit/4b3ef3b00ce0026c0d1e1f2a5546fcec249255d8) by [@mateoguzmana](https://github.com/mateoguzmana))
+
 ## v0.77.0-rc.6
 
 ### Fixed
