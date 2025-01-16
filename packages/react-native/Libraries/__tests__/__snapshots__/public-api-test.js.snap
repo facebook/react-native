@@ -8337,12 +8337,14 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "type LinearGradientDirection =
   | { type: \\"angle\\", value: number }
   | { type: \\"keyword\\", value: string };
+type ColorStopColor = ProcessedColorValue | null;
+type ColorStopPosition = number | string | null;
 type ParsedGradientValue = {
   type: \\"linearGradient\\",
   direction: LinearGradientDirection,
   colorStops: $ReadOnlyArray<{
-    color: ProcessedColorValue,
-    position: number,
+    color: ColorStopColor,
+    position: ColorStopPosition,
   }>,
 };
 declare export default function processBackgroundImage(

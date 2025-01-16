@@ -4165,6 +4165,7 @@ public final class com/facebook/react/uimanager/LengthPercentage {
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getType ()Lcom/facebook/react/uimanager/LengthPercentageType;
 	public fun hashCode ()I
+	public final fun resolve (F)F
 	public final fun resolve (FF)Lcom/facebook/react/uimanager/style/CornerRadii;
 	public static final fun setFromDynamic (Lcom/facebook/react/bridge/Dynamic;)Lcom/facebook/react/uimanager/LengthPercentage;
 	public fun toString ()Ljava/lang/String;
