@@ -2433,8 +2433,7 @@ declare module.exports: SoundManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/StaticRenderer.js 1`] = `
-"declare const React: $FlowFixMe;
-type Props = $ReadOnly<{
+"type Props = $ReadOnly<{
   shouldUpdate: boolean,
   render: () => React.Node,
 }>;
@@ -2442,7 +2441,7 @@ declare class StaticRenderer extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props): boolean;
   render(): React.Node;
 }
-declare module.exports: StaticRenderer;
+declare export default typeof StaticRenderer;
 "
 `;
 
