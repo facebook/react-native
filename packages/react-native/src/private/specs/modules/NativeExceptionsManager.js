@@ -14,13 +14,13 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 
 const Platform = require('../../../../Libraries/Utilities/Platform');
 
-export type StackFrame = {|
+export type StackFrame = {
   column: ?number,
   file: ?string,
   lineNumber: ?number,
   methodName: string,
   collapse?: boolean,
-|};
+};
 export type ExceptionData = {
   message: string,
   originalMessage: ?string,

@@ -317,6 +317,53 @@ inline void fromRawValue(
       } else if (item == "proportional-nums") {
         result =
             (FontVariant)((int)result | (int)FontVariant::ProportionalNums);
+      } else if (item == "stylistic-one") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticOne);
+      } else if (item == "stylistic-two") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticTwo);
+      } else if (item == "stylistic-three") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticThree);
+      } else if (item == "stylistic-four") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticFour);
+      } else if (item == "stylistic-five") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticFive);
+      } else if (item == "stylistic-six") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticSix);
+      } else if (item == "stylistic-seven") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticSeven);
+      } else if (item == "stylistic-eight") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticEight);
+      } else if (item == "stylistic-nine") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticNine);
+      } else if (item == "stylistic-ten") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticTen);
+      } else if (item == "stylistic-eleven") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticEleven);
+      } else if (item == "stylistic-twelve") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticTwelve);
+      } else if (item == "stylistic-thirteen") {
+        result =
+            (FontVariant)((int)result | (int)FontVariant::StylisticThirteen);
+      } else if (item == "stylistic-fourteen") {
+        result =
+            (FontVariant)((int)result | (int)FontVariant::StylisticFourteen);
+      } else if (item == "stylistic-fifteen") {
+        result =
+            (FontVariant)((int)result | (int)FontVariant::StylisticFifteen);
+      } else if (item == "stylistic-sixteen") {
+        result =
+            (FontVariant)((int)result | (int)FontVariant::StylisticSixteen);
+      } else if (item == "stylistic-seventeen") {
+        result =
+            (FontVariant)((int)result | (int)FontVariant::StylisticSeventeen);
+      } else if (item == "stylistic-eighteen") {
+        result =
+            (FontVariant)((int)result | (int)FontVariant::StylisticEighteen);
+      } else if (item == "stylistic-nineteen") {
+        result =
+            (FontVariant)((int)result | (int)FontVariant::StylisticNineteen);
+      } else if (item == "stylistic-twenty") {
+        result = (FontVariant)((int)result | (int)FontVariant::StylisticTwenty);
       } else {
         LOG(ERROR) << "Unsupported FontVariant value: " << item;
         react_native_expect(false);
@@ -345,6 +392,66 @@ inline std::string toString(const FontVariant& fontVariant) {
   }
   if ((int)fontVariant & (int)FontVariant::ProportionalNums) {
     result += "proportional-nums" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticOne) {
+    result += "stylistic-one" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticTwo) {
+    result += "stylistic-two" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticThree) {
+    result += "stylistic-three" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticFour) {
+    result += "stylistic-four" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticFive) {
+    result += "stylistic-five" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticSix) {
+    result += "stylistic-six" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticSeven) {
+    result += "stylistic-seven" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticEight) {
+    result += "stylistic-eight" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticNine) {
+    result += "stylistic-nine" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticTen) {
+    result += "stylistic-ten" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticEleven) {
+    result += "stylistic-eleven" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticTwelve) {
+    result += "stylistic-twelve" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticThirteen) {
+    result += "stylistic-thirteen" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticFourteen) {
+    result += "stylistic-fourteen" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticFifteen) {
+    result += "stylistic-fifteen" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticSixteen) {
+    result += "stylistic-sixteen" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticSeventeen) {
+    result += "stylistic-seventeen" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticEighteen) {
+    result += "stylistic-eighteen" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticNineteen) {
+    result += "stylistic-nineteen" + separator;
+  }
+  if ((int)fontVariant & (int)FontVariant::StylisticTwenty) {
+    result += "stylistic-twenty" + separator;
   }
 
   if (!result.empty()) {

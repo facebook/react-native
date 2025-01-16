@@ -82,23 +82,23 @@ class LogBoxLog {
   isComponentError: boolean;
   extraData: mixed | void;
   symbolicated:
-    | $ReadOnly<{|error: null, stack: null, status: 'NONE'|}>
-    | $ReadOnly<{|error: null, stack: null, status: 'PENDING'|}>
-    | $ReadOnly<{|error: null, stack: Stack, status: 'COMPLETE'|}>
-    | $ReadOnly<{|error: Error, stack: null, status: 'FAILED'|}> = {
+    | $ReadOnly<{error: null, stack: null, status: 'NONE'}>
+    | $ReadOnly<{error: null, stack: null, status: 'PENDING'}>
+    | $ReadOnly<{error: null, stack: Stack, status: 'COMPLETE'}>
+    | $ReadOnly<{error: Error, stack: null, status: 'FAILED'}> = {
     error: null,
     stack: null,
     status: 'NONE',
   };
   symbolicatedComponentStack:
-    | $ReadOnly<{|error: null, componentStack: null, status: 'NONE'|}>
-    | $ReadOnly<{|error: null, componentStack: null, status: 'PENDING'|}>
-    | $ReadOnly<{|
+    | $ReadOnly<{error: null, componentStack: null, status: 'NONE'}>
+    | $ReadOnly<{error: null, componentStack: null, status: 'PENDING'}>
+    | $ReadOnly<{
         error: null,
         componentStack: ComponentStack,
         status: 'COMPLETE',
-      |}>
-    | $ReadOnly<{|error: Error, componentStack: null, status: 'FAILED'|}> = {
+      }>
+    | $ReadOnly<{error: Error, componentStack: null, status: 'FAILED'}> = {
     error: null,
     componentStack: null,
     status: 'NONE',

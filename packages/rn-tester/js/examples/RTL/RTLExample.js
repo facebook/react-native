@@ -142,9 +142,9 @@ function AnimationBlock(props: {
   );
 }
 
-type RTLSwitcherComponentState = {|
+type RTLSwitcherComponentState = {
   isRTL: boolean,
-|};
+};
 
 function withRTLState(
   Component: ({

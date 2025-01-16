@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fc3960bfa407d1fc123ee4c71eac644a>>
+ * @generated SignedSource<<0852372c6b328f128319949a01aa8787>>
  */
 
 /**
@@ -108,6 +108,8 @@ class NativeReactNativeFeatureFlags
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
+
+  bool useEditTextStockAndroidFocusBehavior(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
 

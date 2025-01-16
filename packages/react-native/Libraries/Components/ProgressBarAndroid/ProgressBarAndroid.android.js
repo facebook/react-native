@@ -15,7 +15,7 @@ import ProgressBarAndroidNativeComponent from './ProgressBarAndroidNativeCompone
 
 const React = require('react');
 
-export type ProgressBarAndroidProps = $ReadOnly<{|
+export type ProgressBarAndroidProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -25,12 +25,12 @@ export type ProgressBarAndroidProps = $ReadOnly<{|
    * `progress` value.
    */
   ...
-    | {|
+    | {
         styleAttr: 'Horizontal',
         indeterminate: false,
         progress: number,
-      |}
-    | {|
+      }
+    | {
         typeAttr:
           | 'Horizontal'
           | 'Normal'
@@ -40,7 +40,7 @@ export type ProgressBarAndroidProps = $ReadOnly<{|
           | 'SmallInverse'
           | 'LargeInverse',
         indeterminate: true,
-      |},
+      },
   /**
    * Whether to show the ProgressBar (true, the default) or hide it (false).
    */
@@ -53,7 +53,7 @@ export type ProgressBarAndroidProps = $ReadOnly<{|
    * Used to locate this view in end-to-end tests.
    */
   testID?: ?string,
-|}>;
+}>;
 
 /**
  * React component that wraps the Android-only `ProgressBar`. This component is

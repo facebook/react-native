@@ -23,9 +23,9 @@ const {
 
 class SafeAreaViewExample extends React.Component<
   {...},
-  {|
+  {
     modalVisible: boolean,
-  |},
+  },
 > {
   state: {modalVisible: boolean} = {
     modalVisible: false,

@@ -21,7 +21,7 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -54,7 +54,7 @@ type NativeProps = $ReadOnly<{|
    * Whether the view should be indicating an active refresh.
    */
   refreshing: boolean,
-|}>;
+}>;
 
 type NativeType = HostComponent<NativeProps>;
 

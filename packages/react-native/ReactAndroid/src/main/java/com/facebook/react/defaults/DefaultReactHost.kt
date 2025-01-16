@@ -175,4 +175,12 @@ public object DefaultReactHost {
     }
     return reactNativeHost.toReactHost(context)
   }
+
+  /**
+   * Cleanup function for brownfield scenarios where you want to remove the references kept by
+   * reactHost after destroying the RN instance.
+   */
+  internal fun invalidate() {
+    reactHost = null
+  }
 }

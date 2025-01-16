@@ -12,19 +12,19 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-type Options = {|
-  +offset: {|
+type Options = {
+  +offset: {
     +x: number,
     +y: number,
-  |},
-  +size: {|
+  },
+  +size: {
     +width: number,
     +height: number,
-  |},
-  +displaySize?: ?{|
+  },
+  +displaySize?: ?{
     +width: number,
     +height: number,
-  |},
+  },
   /**
    * Enum with potential values:
    *  - cover
@@ -35,10 +35,10 @@ type Options = {|
    */
   +resizeMode?: ?string,
   +allowExternalStorage?: boolean,
-|};
+};
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {||};
+  +getConstants: () => {};
   +cropImage: (
     uri: string,
     cropData: Options,

@@ -38,7 +38,7 @@ type IOSProps = $ReadOnly<{|
    * The title displayed under the refresh indicator.
    */
   title?: ?string,
-|}>;
+}>;
 
 /**
  * Type definitions for Android-specific properties
@@ -60,7 +60,7 @@ type AndroidProps = $ReadOnly<{|
    * Size of the refresh indicator.
    */
   size?: ?('default' | 'large'),
-|}>;
+}>;
 
 /**
  * The main RefreshControlProps type definition
@@ -84,7 +84,7 @@ export type RefreshControlProps = $ReadOnly<{|
    * Progress view top offset
    */
   progressViewOffset?: ?number,
-|}>;
+}>;
 
 /**
  * This component is used inside a ScrollView or ListView to add pull to refresh

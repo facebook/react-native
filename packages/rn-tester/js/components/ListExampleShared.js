@@ -241,7 +241,7 @@ function getItemLayout(
   data: any,
   index: number,
   horizontal?: boolean,
-): {|index: number, length: number, offset: number|} {
+): {index: number, length: number, offset: number} {
   const [length, separator, header] = horizontal
     ? [HORIZ_WIDTH, 0, HEADER.width]
     : [ITEM_HEIGHT, SEPARATOR_HEIGHT, HEADER.height];

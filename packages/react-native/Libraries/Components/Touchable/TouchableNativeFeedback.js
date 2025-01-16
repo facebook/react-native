@@ -23,7 +23,7 @@ import {Commands} from '../View/ViewNativeComponent';
 import invariant from 'invariant';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
 
   /**
@@ -33,19 +33,19 @@ type Props = $ReadOnly<{|
    * methods to generate that dictionary.
    */
   background?: ?(
-    | $ReadOnly<{|
+    | $ReadOnly<{
         type: 'ThemeAttrAndroid',
         attribute:
           | 'selectableItemBackground'
           | 'selectableItemBackgroundBorderless',
         rippleRadius: ?number,
-      |}>
-    | $ReadOnly<{|
+      }>
+    | $ReadOnly<{
         type: 'RippleAndroid',
         color: ?number,
         borderless: boolean,
         rippleRadius: ?number,
-      |}>
+      }>
   ),
 
   /**
@@ -89,22 +89,22 @@ type Props = $ReadOnly<{|
    * versions, this will fallback to background.
    */
   useForeground?: ?boolean,
-|}>;
+}>;
 
-type State = $ReadOnly<{|
+type State = $ReadOnly<{
   pressability: Pressability,
-|}>;
+}>;
 
 class TouchableNativeFeedback extends React.Component<Props, State> {
   /**
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for selectable elements.
    */
-  static SelectableBackground: (rippleRadius: ?number) => $ReadOnly<{|
+  static SelectableBackground: (rippleRadius: ?number) => $ReadOnly<{
     attribute: 'selectableItemBackground',
     type: 'ThemeAttrAndroid',
     rippleRadius: ?number,
-  |}> = (rippleRadius: ?number) => ({
+  }> = (rippleRadius: ?number) => ({
     type: 'ThemeAttrAndroid',
     attribute: 'selectableItemBackground',
     rippleRadius,
@@ -114,11 +114,11 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
    * Creates a value for the `background` prop that uses the Android theme's
    * default background for borderless selectable elements. Requires API 21+.
    */
-  static SelectableBackgroundBorderless: (rippleRadius: ?number) => $ReadOnly<{|
+  static SelectableBackgroundBorderless: (rippleRadius: ?number) => $ReadOnly<{
     attribute: 'selectableItemBackgroundBorderless',
     type: 'ThemeAttrAndroid',
     rippleRadius: ?number,
-  |}> = (rippleRadius: ?number) => ({
+  }> = (rippleRadius: ?number) => ({
     type: 'ThemeAttrAndroid',
     attribute: 'selectableItemBackgroundBorderless',
     rippleRadius,
@@ -133,12 +133,12 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
     color: string,
     borderless: boolean,
     rippleRadius: ?number,
-  ) => $ReadOnly<{|
+  ) => $ReadOnly<{
     borderless: boolean,
     color: ?number,
     rippleRadius: ?number,
     type: 'RippleAndroid',
-  |}> = (color: string, borderless: boolean, rippleRadius: ?number) => {
+  }> = (color: string, borderless: boolean, rippleRadius: ?number) => {
     const processedColor = processColor(color);
     invariant(
       processedColor == null || typeof processedColor === 'number',

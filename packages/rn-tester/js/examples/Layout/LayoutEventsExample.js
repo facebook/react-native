@@ -19,14 +19,14 @@ import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
 import {Image, LayoutAnimation, StyleSheet, View} from 'react-native';
 
-type Props = $ReadOnly<{||}>;
+type Props = $ReadOnly<{}>;
 type State = {
-  containerStyle?: {|width: number|},
+  containerStyle?: {width: number},
   extraText?: string,
   imageLayout?: ViewLayout,
   textLayout?: ViewLayout,
   viewLayout?: ViewLayout,
-  viewStyle: {|margin: number|},
+  viewStyle: {margin: number},
   ...
 };
 

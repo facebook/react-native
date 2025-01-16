@@ -13,24 +13,24 @@ import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {|
+  +getConstants: () => {
     D?: ?boolean,
     A?: Array<any>,
-    E?: ?{|
+    E?: ?{
       D?: ?boolean,
-      E?: ?{|
+      E?: ?{
         D?: ?boolean,
-        E?: ?{|
+        E?: ?{
           D?: boolean,
           E?: number,
           F?: string,
-        |},
+        },
         F?: string,
-      |},
+      },
       F?: string,
-    |},
+    },
     F?: string,
-  |};
+  };
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>(

@@ -22,7 +22,7 @@ const {
   View,
 } = require('react-native');
 
-type MessageProps = $ReadOnly<{||}>;
+type MessageProps = $ReadOnly<{}>;
 class Message extends React.PureComponent<MessageProps> {
   render(): React.Node {
     return (
@@ -33,8 +33,8 @@ class Message extends React.PureComponent<MessageProps> {
   }
 }
 
-type TextInputProps = $ReadOnly<{||}>;
-type TextInputState = {|text: string|};
+type TextInputProps = $ReadOnly<{}>;
+type TextInputState = {text: string};
 class TextInputBar extends React.PureComponent<TextInputProps, TextInputState> {
   state: TextInputState = {text: ''};
 
@@ -61,7 +61,7 @@ class TextInputBar extends React.PureComponent<TextInputProps, TextInputState> {
 }
 
 const BAR_HEIGHT = 44;
-type InputAccessoryProps = $ReadOnly<{||}>;
+type InputAccessoryProps = $ReadOnly<{}>;
 class InputAccessoryViewExample extends React.Component<InputAccessoryProps> {
   render(): React.Node {
     return (
