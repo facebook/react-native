@@ -68,15 +68,22 @@ describe('AnimatedValue', () => {
     expect(callback).toBeCalledTimes(1);
   });
 
-  it('creates a native node on attach', () => {
+  it('creates a native node when adding a listener', () => {
     const node = createNativeAnimatedValue();
     node.__attach();
+    expect(NativeAnimatedHelper.API.createAnimatedNode).not.toBeCalled();
+
+    const id = node.addListener(jest.fn());
+    node.removeListener(id);
     expect(NativeAnimatedHelper.API.createAnimatedNode).toBeCalledTimes(1);
   });
 
   it('drops a created native node on detach', () => {
     const node = createNativeAnimatedValue();
     node.__attach();
+    expect(NativeAnimatedHelper.API.createAnimatedNode).toBeCalledTimes(0);
+
+    node.addListener(jest.fn());
     expect(NativeAnimatedHelper.API.createAnimatedNode).toBeCalledTimes(1);
     expect(NativeAnimatedHelper.API.dropAnimatedNode).toBeCalledTimes(0);
 
