@@ -6,423 +6,292 @@
  */
 
 #include <gtest/gtest.h>
+#include <react/renderer/css/CSSAngle.h>
+#include <react/renderer/css/CSSColor.h>
+#include <react/renderer/css/CSSKeyword.h>
+#include <react/renderer/css/CSSLength.h>
+#include <react/renderer/css/CSSNumber.h>
+#include <react/renderer/css/CSSPercentage.h>
+#include <react/renderer/css/CSSRatio.h>
 #include <react/renderer/css/CSSValueParser.h>
 
 namespace facebook::react {
 
 TEST(CSSValueParser, keyword_values) {
-  auto emptyValue = parseCSSValue<CSSWideKeyword, CSSKeyword>("");
-  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto emptyValue = parseCSSProperty<CSSKeyword>("");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(emptyValue));
 
-  auto autoValue = parseCSSValue<CSSWideKeyword, CSSKeyword>("auto");
-  EXPECT_EQ(autoValue.type(), CSSValueType::Keyword);
-  EXPECT_EQ(autoValue.getKeyword(), CSSKeyword::Auto);
+  auto inheritValue = parseCSSProperty<>("inherit");
+  EXPECT_TRUE(std::holds_alternative<CSSWideKeyword>(inheritValue));
+  EXPECT_EQ(std::get<CSSWideKeyword>(inheritValue), CSSWideKeyword::Inherit);
 
-  auto autoCapsValue = parseCSSValue<CSSWideKeyword, CSSKeyword>("AuTO");
-  EXPECT_EQ(autoCapsValue.type(), CSSValueType::Keyword);
-  EXPECT_EQ(autoCapsValue.getKeyword(), CSSKeyword::Auto);
+  auto autoValue = parseCSSProperty<CSSKeyword>("auto");
+  EXPECT_TRUE(std::holds_alternative<CSSKeyword>(autoValue));
+  EXPECT_EQ(std::get<CSSKeyword>(autoValue), CSSKeyword::Auto);
 
-  auto autoDisallowedValue = parseCSSValue<CSSWideKeyword>("auto");
-  EXPECT_EQ(autoDisallowedValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(autoDisallowedValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto autoCapsValue = parseCSSProperty<CSSKeyword>("AuTO");
+  EXPECT_TRUE(std::holds_alternative<CSSKeyword>(autoCapsValue));
+  EXPECT_EQ(std::get<CSSKeyword>(autoCapsValue), CSSKeyword::Auto);
 
-  auto whitespaceValue =
-      parseCSSValue<CSSWideKeyword, CSSKeyword>(" flex-start   ");
-  EXPECT_EQ(whitespaceValue.type(), CSSValueType::Keyword);
-  EXPECT_EQ(whitespaceValue.getKeyword(), CSSKeyword::FlexStart);
+  auto autoDisallowedValue = parseCSSProperty<>("auto");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(autoDisallowedValue));
 
-  auto badIdentValue = parseCSSValue<CSSWideKeyword, CSSKeyword>("bad");
-  EXPECT_EQ(badIdentValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(badIdentValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto whitespaceValue = parseCSSProperty<CSSKeyword>(" flex-start   ");
+  EXPECT_TRUE(std::holds_alternative<CSSKeyword>(whitespaceValue));
+  EXPECT_EQ(std::get<CSSKeyword>(whitespaceValue), CSSKeyword::FlexStart);
 
-  auto pxValue = parseCSSValue<CSSWideKeyword>("20px");
-  EXPECT_EQ(pxValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(pxValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto badIdentValue = parseCSSProperty<CSSKeyword>("bad");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(badIdentValue));
 
-  auto multiValue = parseCSSValue<CSSWideKeyword>("auto flex-start");
-  EXPECT_EQ(multiValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(multiValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto pxValue = parseCSSProperty<>("20px");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(pxValue));
+
+  auto multiValue = parseCSSProperty<>("auto flex-start");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(multiValue));
 }
 
 TEST(CSSValueParser, length_values) {
-  auto emptyValue = parseCSSValue<CSSWideKeyword, CSSLength>("");
-  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto emptyValue = parseCSSProperty<CSSLength>("");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(emptyValue));
 
-  auto autoValue = parseCSSValue<CSSWideKeyword, CSSKeyword, CSSLength>("auto");
-  EXPECT_EQ(autoValue.type(), CSSValueType::Keyword);
-  EXPECT_EQ(autoValue.getKeyword(), CSSKeyword::Auto);
+  auto autoValue = parseCSSProperty<CSSKeyword, CSSLength>("auto");
+  EXPECT_TRUE(std::holds_alternative<CSSKeyword>(autoValue));
+  EXPECT_EQ(std::get<CSSKeyword>(autoValue), CSSKeyword::Auto);
 
-  auto pxValue = parseCSSValue<CSSWideKeyword, CSSLength>("20px");
-  EXPECT_EQ(pxValue.type(), CSSValueType::Length);
-  EXPECT_EQ(pxValue.getLength().value, 20.0f);
-  EXPECT_EQ(pxValue.getLength().unit, CSSLengthUnit::Px);
+  auto pxValue = parseCSSProperty<CSSLength>("20px");
+  EXPECT_TRUE(std::holds_alternative<CSSLength>(pxValue));
+  EXPECT_EQ(std::get<CSSLength>(pxValue).value, 20.0f);
+  EXPECT_EQ(std::get<CSSLength>(pxValue).unit, CSSLengthUnit::Px);
 
-  auto capsValue = parseCSSValue<CSSWideKeyword, CSSLength>("50PX");
-  EXPECT_EQ(capsValue.type(), CSSValueType::Length);
-  EXPECT_EQ(capsValue.getLength().value, 50.0f);
-  EXPECT_EQ(capsValue.getLength().unit, CSSLengthUnit::Px);
+  auto capsValue = parseCSSProperty<CSSLength>("50PX");
+  EXPECT_TRUE(std::holds_alternative<CSSLength>(capsValue));
+  EXPECT_EQ(std::get<CSSLength>(capsValue).value, 50.0f);
+  EXPECT_EQ(std::get<CSSLength>(capsValue).unit, CSSLengthUnit::Px);
 
-  auto cmValue = parseCSSValue<CSSWideKeyword, CSSLength>("453cm");
-  EXPECT_EQ(cmValue.type(), CSSValueType::Length);
-  EXPECT_EQ(cmValue.getLength().value, 453.0f);
-  EXPECT_EQ(cmValue.getLength().unit, CSSLengthUnit::Cm);
+  auto cmValue = parseCSSProperty<CSSLength>("453cm");
+  EXPECT_TRUE(std::holds_alternative<CSSLength>(cmValue));
+  EXPECT_TRUE(std::get<CSSLength>(cmValue).value == 453.0f);
+  EXPECT_EQ(std::get<CSSLength>(cmValue).unit, CSSLengthUnit::Cm);
 
-  auto unitlessZeroValue = parseCSSValue<CSSWideKeyword, CSSLength>("0");
-  EXPECT_EQ(unitlessZeroValue.type(), CSSValueType::Length);
-  EXPECT_EQ(unitlessZeroValue.getLength().value, 0.0f);
-  EXPECT_EQ(unitlessZeroValue.getLength().unit, CSSLengthUnit::Px);
+  auto unitlessZeroValue = parseCSSProperty<CSSLength>("0");
+  EXPECT_TRUE(std::holds_alternative<CSSLength>(unitlessZeroValue));
+  EXPECT_EQ(std::get<CSSLength>(unitlessZeroValue).value, 0.0f);
+  EXPECT_EQ(std::get<CSSLength>(unitlessZeroValue).unit, CSSLengthUnit::Px);
 
-  auto unitlessNonzeroValue = parseCSSValue<CSSWideKeyword, CSSLength>("123");
-  EXPECT_EQ(unitlessNonzeroValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(unitlessNonzeroValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto unitlessNonzeroValue = parseCSSProperty<CSSLength>("123");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(unitlessNonzeroValue));
 
-  auto pctValue = parseCSSValue<CSSWideKeyword, CSSLength>("-40%");
-  EXPECT_EQ(pctValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(pctValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto pctValue = parseCSSProperty<CSSLength>("-40%");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(pctValue));
 }
 
 TEST(CSSValueParser, length_percentage_values) {
-  auto emptyValue = parseCSSValue<CSSWideKeyword, CSSLength, CSSPercentage>("");
-  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto emptyValue = parseCSSProperty<CSSLength, CSSPercentage>("");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(emptyValue));
 
   auto autoValue =
-      parseCSSValue<CSSWideKeyword, CSSKeyword, CSSLength, CSSPercentage>(
-          "auto");
-  EXPECT_EQ(autoValue.type(), CSSValueType::Keyword);
-  EXPECT_EQ(autoValue.getKeyword(), CSSKeyword::Auto);
+      parseCSSProperty<CSSKeyword, CSSLength, CSSPercentage>("auto");
+  EXPECT_TRUE(std::holds_alternative<CSSKeyword>(autoValue));
+  EXPECT_EQ(std::get<CSSKeyword>(autoValue), CSSKeyword::Auto);
 
-  auto pxValue =
-      parseCSSValue<CSSWideKeyword, CSSLength, CSSPercentage>("20px");
-  EXPECT_EQ(pxValue.type(), CSSValueType::Length);
-  EXPECT_EQ(pxValue.getLength().value, 20.0f);
-  EXPECT_EQ(pxValue.getLength().unit, CSSLengthUnit::Px);
+  auto pxValue = parseCSSProperty<CSSLength, CSSPercentage>("20px");
+  EXPECT_TRUE(std::holds_alternative<CSSLength>(pxValue));
+  EXPECT_EQ(std::get<CSSLength>(pxValue).value, 20.0f);
+  EXPECT_EQ(std::get<CSSLength>(pxValue).unit, CSSLengthUnit::Px);
 
-  auto pctValue =
-      parseCSSValue<CSSWideKeyword, CSSLength, CSSPercentage>("-40%");
-  EXPECT_EQ(pctValue.type(), CSSValueType::Percentage);
-  EXPECT_EQ(pctValue.getPercentage().value, -40.0f);
+  auto pctValue = parseCSSProperty<CSSLength, CSSPercentage>("-40%");
+  EXPECT_TRUE(std::holds_alternative<CSSPercentage>(pctValue));
+  EXPECT_EQ(std::get<CSSPercentage>(pctValue).value, -40.0f);
 }
 
 TEST(CSSValueParser, number_values) {
-  auto emptyValue = parseCSSValue<CSSWideKeyword, CSSNumber>("");
-  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto emptyValue = parseCSSProperty<CSSNumber>("");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(emptyValue));
 
-  auto inheritValue = parseCSSValue<CSSWideKeyword, CSSNumber>("inherit");
-  EXPECT_EQ(inheritValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(inheritValue.getCSSWideKeyword(), CSSWideKeyword::Inherit);
+  auto pxValue = parseCSSProperty<CSSNumber>("20px");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(pxValue));
 
-  auto pxValue = parseCSSValue<CSSWideKeyword, CSSKeyword, CSSNumber>("20px");
-  EXPECT_EQ(pxValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(pxValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto numberValue = parseCSSProperty<CSSNumber>("123.456");
+  EXPECT_TRUE(std::holds_alternative<CSSNumber>(numberValue));
+  EXPECT_EQ(std::get<CSSNumber>(numberValue).value, 123.456f);
 
-  auto numberValue =
-      parseCSSValue<CSSWideKeyword, CSSKeyword, CSSNumber>("123.456");
-  EXPECT_EQ(numberValue.type(), CSSValueType::Number);
-  EXPECT_EQ(numberValue.getNumber().value, 123.456f);
-
-  auto unitlessZeroValue =
-      parseCSSValue<CSSWideKeyword, CSSLength, CSSNumber>("0");
-  EXPECT_EQ(unitlessZeroValue.type(), CSSValueType::Number);
-  EXPECT_EQ(unitlessZeroValue.getNumber().value, 0.0f);
+  auto unitlessZeroValue = parseCSSProperty<CSSNumber, CSSLength>("0");
+  EXPECT_TRUE(std::holds_alternative<CSSNumber>(unitlessZeroValue));
+  EXPECT_EQ(std::get<CSSNumber>(unitlessZeroValue).value, 0.0f);
 }
 
 TEST(CSSValueParser, ratio_values) {
-  auto emptyValue = parseCSSValue<CSSWideKeyword, CSSRatio>("");
-  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto emptyValue = parseCSSProperty<CSSRatio>("");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(emptyValue));
 
-  auto validRatio = parseCSSValue<CSSWideKeyword, CSSRatio>("16/9");
-  EXPECT_EQ(validRatio.type(), CSSValueType::Ratio);
-  EXPECT_EQ(validRatio.getRatio().numerator, 16.0f);
-  EXPECT_EQ(validRatio.getRatio().denominator, 9.0f);
+  auto validRatio = parseCSSProperty<CSSRatio>("16/9");
+  EXPECT_TRUE(std::holds_alternative<CSSRatio>(validRatio));
+  EXPECT_EQ(std::get<CSSRatio>(validRatio).numerator, 16.0f);
+  EXPECT_EQ(std::get<CSSRatio>(validRatio).denominator, 9.0f);
 
-  auto validRatioWithWhitespace =
-      parseCSSValue<CSSWideKeyword, CSSRatio>("16 / 9");
-  EXPECT_EQ(validRatioWithWhitespace.type(), CSSValueType::Ratio);
-  EXPECT_EQ(validRatioWithWhitespace.getRatio().numerator, 16.0f);
-  EXPECT_EQ(validRatioWithWhitespace.getRatio().denominator, 9.0f);
+  auto validRatioWithWhitespace = parseCSSProperty<CSSRatio>("16 / 9");
+  EXPECT_TRUE(std::holds_alternative<CSSRatio>(validRatioWithWhitespace));
+  EXPECT_EQ(std::get<CSSRatio>(validRatioWithWhitespace).numerator, 16.0f);
+  EXPECT_EQ(std::get<CSSRatio>(validRatioWithWhitespace).denominator, 9.0f);
 
-  auto singleNumberRatio = parseCSSValue<CSSWideKeyword, CSSRatio>("16");
-  EXPECT_EQ(singleNumberRatio.type(), CSSValueType::Ratio);
-  EXPECT_EQ(singleNumberRatio.getRatio().numerator, 16.0f);
-  EXPECT_EQ(singleNumberRatio.getRatio().denominator, 1.0f);
+  auto singleNumberRatio = parseCSSProperty<CSSRatio>("16");
+  EXPECT_TRUE(std::holds_alternative<CSSRatio>(singleNumberRatio));
+  EXPECT_EQ(std::get<CSSRatio>(singleNumberRatio).numerator, 16.0f);
+  EXPECT_EQ(std::get<CSSRatio>(singleNumberRatio).denominator, 1.0f);
 
-  auto fractionalNumber = parseCSSValue<CSSWideKeyword, CSSRatio>("16.5");
-  EXPECT_EQ(fractionalNumber.type(), CSSValueType::Ratio);
-  EXPECT_EQ(fractionalNumber.getRatio().numerator, 16.5f);
-  EXPECT_EQ(fractionalNumber.getRatio().denominator, 1.0f);
+  auto fractionalNumber = parseCSSProperty<CSSRatio>("16.5");
+  EXPECT_TRUE(std::holds_alternative<CSSRatio>(fractionalNumber));
+  EXPECT_EQ(std::get<CSSRatio>(fractionalNumber).numerator, 16.5f);
+  EXPECT_EQ(std::get<CSSRatio>(fractionalNumber).denominator, 1.0f);
 
-  auto negativeNumber = parseCSSValue<CSSWideKeyword, CSSRatio>("-16");
-  EXPECT_EQ(negativeNumber.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(negativeNumber.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto negativeNumber = parseCSSProperty<CSSRatio>("-16");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(negativeNumber));
 
-  auto missingDenominator = parseCSSValue<CSSWideKeyword, CSSRatio>("16/");
-  EXPECT_EQ(missingDenominator.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(missingDenominator.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto missingDenominator = parseCSSProperty<CSSRatio>("16/");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(missingDenominator));
 
-  auto negativeNumerator = parseCSSValue<CSSWideKeyword, CSSRatio>("-16/9");
-  EXPECT_EQ(negativeNumerator.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(negativeNumerator.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto negativeNumerator = parseCSSProperty<CSSRatio>("-16/9");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(negativeNumerator));
 
-  auto negativeDenominator = parseCSSValue<CSSWideKeyword, CSSRatio>("16/-9");
-  EXPECT_EQ(negativeDenominator.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(negativeDenominator.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto negativeDenominator = parseCSSProperty<CSSRatio>("16/-9");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(negativeDenominator));
 
-  auto fractionalNumerator = parseCSSValue<CSSWideKeyword, CSSRatio>("16.5/9");
-  EXPECT_EQ(fractionalNumerator.type(), CSSValueType::Ratio);
-  EXPECT_EQ(fractionalNumerator.getRatio().numerator, 16.5f);
-  EXPECT_EQ(fractionalNumerator.getRatio().denominator, 9.0f);
+  auto fractionalNumerator = parseCSSProperty<CSSRatio>("16.5/9");
+  EXPECT_TRUE(std::holds_alternative<CSSRatio>(fractionalNumerator));
+  EXPECT_EQ(std::get<CSSRatio>(fractionalNumerator).numerator, 16.5f);
+  EXPECT_EQ(std::get<CSSRatio>(fractionalNumerator).denominator, 9.0f);
 
-  auto fractionalDenominator =
-      parseCSSValue<CSSWideKeyword, CSSRatio>("16/9.5");
-  EXPECT_EQ(fractionalDenominator.type(), CSSValueType::Ratio);
-  EXPECT_EQ(fractionalDenominator.getRatio().numerator, 16.0f);
-  EXPECT_EQ(fractionalDenominator.getRatio().denominator, 9.5f);
+  auto fractionalDenominator = parseCSSProperty<CSSRatio>("16/9.5");
+  EXPECT_TRUE(std::holds_alternative<CSSRatio>(fractionalDenominator));
+  EXPECT_EQ(std::get<CSSRatio>(fractionalDenominator).numerator, 16.0f);
 
-  auto degenerateRatio = parseCSSValue<CSSWideKeyword, CSSRatio>("0");
-  EXPECT_EQ(degenerateRatio.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(degenerateRatio.getCSSWideKeyword(), CSSWideKeyword::Unset);
-}
-
-TEST(CSSValueParser, number_ratio_values) {
-  auto emptyValue = parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("");
-  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
-
-  auto validRatio = parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("16/9");
-  EXPECT_EQ(validRatio.type(), CSSValueType::Ratio);
-  EXPECT_EQ(validRatio.getRatio().numerator, 16.0f);
-  EXPECT_EQ(validRatio.getRatio().denominator, 9.0f);
-
-  auto validRatioWithWhitespace =
-      parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("16 / 9");
-  EXPECT_EQ(validRatioWithWhitespace.type(), CSSValueType::Ratio);
-  EXPECT_EQ(validRatioWithWhitespace.getRatio().numerator, 16.0f);
-  EXPECT_EQ(validRatioWithWhitespace.getRatio().denominator, 9.0f);
-
-  auto singleNumberRatio =
-      parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("16");
-  EXPECT_EQ(singleNumberRatio.type(), CSSValueType::Ratio);
-  EXPECT_EQ(singleNumberRatio.getRatio().numerator, 16.0f);
-  EXPECT_EQ(singleNumberRatio.getRatio().denominator, 1.0f);
-
-  auto fractionalNumber =
-      parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("16.5");
-  EXPECT_EQ(fractionalNumber.type(), CSSValueType::Ratio);
-  EXPECT_EQ(fractionalNumber.getRatio().numerator, 16.5f);
-  EXPECT_EQ(singleNumberRatio.getRatio().denominator, 1.0f);
-
-  auto negativeNumber =
-      parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("-16");
-  EXPECT_EQ(negativeNumber.type(), CSSValueType::Number);
-  EXPECT_EQ(negativeNumber.getNumber().value, -16.0f);
-
-  auto missingDenominator =
-      parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("16/");
-  EXPECT_EQ(missingDenominator.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(missingDenominator.getCSSWideKeyword(), CSSWideKeyword::Unset);
-
-  auto negativeNumerator =
-      parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("-16/9");
-  EXPECT_EQ(negativeNumerator.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(negativeNumerator.getCSSWideKeyword(), CSSWideKeyword::Unset);
-
-  auto negativeDenominator =
-      parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("16/-9");
-  EXPECT_EQ(negativeDenominator.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(negativeDenominator.getCSSWideKeyword(), CSSWideKeyword::Unset);
-
-  auto fractionalNumerator =
-      parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("16.5/9");
-  EXPECT_EQ(fractionalNumerator.type(), CSSValueType::Ratio);
-  EXPECT_EQ(fractionalNumerator.getRatio().numerator, 16.5f);
-  EXPECT_EQ(fractionalNumerator.getRatio().denominator, 9.0f);
-
-  auto fractionalDenominator =
-      parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("16/9.5");
-  EXPECT_EQ(fractionalDenominator.type(), CSSValueType::Ratio);
-  EXPECT_EQ(fractionalDenominator.getRatio().numerator, 16.0f);
-  EXPECT_EQ(fractionalDenominator.getRatio().denominator, 9.5f);
-
-  auto degenerateRatio =
-      parseCSSValue<CSSWideKeyword, CSSNumber, CSSRatio>("0");
-  EXPECT_EQ(degenerateRatio.type(), CSSValueType::Number);
-  EXPECT_EQ(degenerateRatio.getNumber().value, 0.0f);
+  auto degenerateRatio = parseCSSProperty<CSSRatio>("0");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(degenerateRatio));
 }
 
 TEST(CSSValueParser, angle_values) {
-  auto emptyValue = parseCSSValue<CSSWideKeyword, CSSAngle>("");
-  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto emptyValue = parseCSSProperty<CSSAngle>("");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(emptyValue));
 
-  auto degreeValue = parseCSSValue<CSSWideKeyword, CSSAngle>("10deg");
-  EXPECT_EQ(degreeValue.type(), CSSValueType::Angle);
-  EXPECT_EQ(degreeValue.getAngle().degrees, 10.0f);
+  auto degreeValue = parseCSSProperty<CSSAngle>("10deg");
+  EXPECT_TRUE(std::holds_alternative<CSSAngle>(degreeValue));
+  EXPECT_EQ(std::get<CSSAngle>(degreeValue).degrees, 10.0f);
 
-  auto spongebobCaseValue = parseCSSValue<CSSWideKeyword, CSSAngle>("20dEg");
-  EXPECT_EQ(spongebobCaseValue.type(), CSSValueType::Angle);
-  EXPECT_EQ(spongebobCaseValue.getAngle().degrees, 20.0f);
+  auto spongebobCaseValue = parseCSSProperty<CSSAngle>("20dEg");
+  EXPECT_TRUE(std::holds_alternative<CSSAngle>(spongebobCaseValue));
+  EXPECT_EQ(std::get<CSSAngle>(spongebobCaseValue).degrees, 20.0f);
 
-  auto radianValue = parseCSSValue<CSSWideKeyword, CSSAngle>("10rad");
-  EXPECT_EQ(radianValue.type(), CSSValueType::Angle);
-  EXPECT_NEAR(radianValue.getAngle().degrees, 572.958f, 0.001f);
+  auto radianValue = parseCSSProperty<CSSAngle>("10rad");
+  EXPECT_TRUE(std::holds_alternative<CSSAngle>(radianValue));
+  ASSERT_NEAR(std::get<CSSAngle>(radianValue).degrees, 572.958f, 0.001f);
 
-  auto negativeRadianValue = parseCSSValue<CSSWideKeyword, CSSAngle>("-10rad");
-  EXPECT_EQ(negativeRadianValue.type(), CSSValueType::Angle);
-  EXPECT_NEAR(negativeRadianValue.getAngle().degrees, -572.958f, 0.001f);
+  auto negativeRadianValue = parseCSSProperty<CSSAngle>("-10rad");
+  EXPECT_TRUE(std::holds_alternative<CSSAngle>(negativeRadianValue));
+  ASSERT_NEAR(
+      std::get<CSSAngle>(negativeRadianValue).degrees, -572.958f, 0.001f);
 
-  auto gradianValue = parseCSSValue<CSSWideKeyword, CSSAngle>("10grad");
-  EXPECT_EQ(gradianValue.type(), CSSValueType::Angle);
-  ASSERT_NEAR(gradianValue.getAngle().degrees, 9.0f, 0.001f);
+  auto gradianValue = parseCSSProperty<CSSAngle>("10grad");
+  EXPECT_TRUE(std::holds_alternative<CSSAngle>(gradianValue));
+  ASSERT_NEAR(std::get<CSSAngle>(gradianValue).degrees, 9.0f, 0.001f);
 
-  auto turnValue = parseCSSValue<CSSWideKeyword, CSSAngle>(".25turn");
-  EXPECT_EQ(turnValue.type(), CSSValueType::Angle);
-  EXPECT_EQ(turnValue.getAngle().degrees, 90.0f);
+  auto turnValue = parseCSSProperty<CSSAngle>(".25turn");
+  EXPECT_TRUE(std::holds_alternative<CSSAngle>(turnValue));
+  EXPECT_EQ(std::get<CSSAngle>(turnValue).degrees, 90.0f);
 }
 
-TEST(CSSValueParser, parse_prop) {
-  auto emptyValue = parseCSSProp<CSSProp::Width>("");
-  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+TEST(CSSValueParser, parse_constexpr) {
+  [[maybe_unused]] constexpr auto rowValue =
+      parseCSSProperty<CSSKeyword>("row");
 
-  auto numberWidthValue = parseCSSProp<CSSProp::Width>("50px");
-  EXPECT_EQ(numberWidthValue.type(), CSSValueType::Length);
-  EXPECT_EQ(numberWidthValue.getLength().value, 50.0f);
-  EXPECT_EQ(numberWidthValue.getLength().unit, CSSLengthUnit::Px);
-
-  auto percentWidthValue = parseCSSProp<CSSProp::Width>("50%");
-  EXPECT_EQ(percentWidthValue.type(), CSSValueType::Percentage);
-  EXPECT_EQ(percentWidthValue.getPercentage().value, 50.0f);
-
-  auto autoWidthValue = parseCSSProp<CSSProp::Width>("auto");
-  EXPECT_EQ(autoWidthValue.type(), CSSValueType::Keyword);
-  EXPECT_EQ(autoWidthValue.getKeyword(), CSSKeyword::Auto);
-
-  auto invalidWidthValue = parseCSSProp<CSSProp::Width>("50");
-  EXPECT_EQ(invalidWidthValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(invalidWidthValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
-
-  auto invalidKeywordValue = parseCSSProp<CSSProp::Width>("flex-start");
-  EXPECT_EQ(invalidKeywordValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(invalidKeywordValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
-
-  auto keywordlessValue = parseCSSProp<CSSProp::BorderRadius>("50px");
-  EXPECT_EQ(keywordlessValue.type(), CSSValueType::Length);
-  EXPECT_EQ(keywordlessValue.getLength().value, 50.0f);
-  EXPECT_EQ(keywordlessValue.getLength().unit, CSSLengthUnit::Px);
-}
-
-TEST(CSSValueParser, parse_keyword_prop_constexpr) {
-  constexpr auto rowValue = parseCSSProp<CSSProp::FlexDirection>("row");
-  EXPECT_EQ(rowValue.type(), CSSValueType::Keyword);
-  EXPECT_EQ(rowValue.getKeyword(), CSSKeyword::Row);
-}
-
-TEST(CSSValueParser, parse_length_prop_constexpr) {
-  constexpr auto pxValue = parseCSSProp<CSSProp::BorderWidth>("2px");
-  EXPECT_EQ(pxValue.type(), CSSValueType::Length);
-  EXPECT_EQ(pxValue.getLength().value, 2.0f);
-  EXPECT_EQ(pxValue.getLength().unit, CSSLengthUnit::Px);
+  [[maybe_unused]] constexpr auto pxValue = parseCSSProperty<CSSLength>("2px");
 }
 
 TEST(CSSValueParser, hex_color_values) {
-  auto emptyValue = parseCSSValue<CSSWideKeyword, CSSColor>("");
-  EXPECT_EQ(emptyValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(emptyValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto emptyValue = parseCSSProperty<CSSColor>("");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(emptyValue));
 
-  auto hex3DigitColorValue = parseCSSValue<CSSWideKeyword, CSSColor>("#fff");
-  EXPECT_EQ(hex3DigitColorValue.type(), CSSValueType::Color);
-  EXPECT_EQ(hex3DigitColorValue.getColor().r, 255);
-  EXPECT_EQ(hex3DigitColorValue.getColor().g, 255);
-  EXPECT_EQ(hex3DigitColorValue.getColor().b, 255);
-  EXPECT_EQ(hex3DigitColorValue.getColor().a, 255);
+  auto hex3DigitColorValue = parseCSSProperty<CSSColor>("#fff");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(hex3DigitColorValue));
+  EXPECT_EQ(std::get<CSSColor>(hex3DigitColorValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex3DigitColorValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex3DigitColorValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex3DigitColorValue).a, 255);
 
-  auto hex4DigitColorValue = parseCSSValue<CSSWideKeyword, CSSColor>("#ffff");
-  EXPECT_EQ(hex4DigitColorValue.type(), CSSValueType::Color);
-  EXPECT_EQ(hex4DigitColorValue.getColor().r, 255);
-  EXPECT_EQ(hex4DigitColorValue.getColor().g, 255);
-  EXPECT_EQ(hex4DigitColorValue.getColor().b, 255);
-  EXPECT_EQ(hex4DigitColorValue.getColor().a, 255);
+  auto hex4DigitColorValue = parseCSSProperty<CSSColor>("#ffff");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(hex4DigitColorValue));
+  EXPECT_EQ(std::get<CSSColor>(hex4DigitColorValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex4DigitColorValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex4DigitColorValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex4DigitColorValue).a, 255);
 
-  auto hex6DigitColorValue = parseCSSValue<CSSWideKeyword, CSSColor>("#ffffff");
-  EXPECT_EQ(hex6DigitColorValue.type(), CSSValueType::Color);
-  EXPECT_EQ(hex6DigitColorValue.getColor().r, 255);
-  EXPECT_EQ(hex6DigitColorValue.getColor().g, 255);
-  EXPECT_EQ(hex6DigitColorValue.getColor().b, 255);
-  EXPECT_EQ(hex6DigitColorValue.getColor().a, 255);
+  auto hex6DigitColorValue = parseCSSProperty<CSSColor>("#ffffff");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(hex6DigitColorValue));
+  EXPECT_EQ(std::get<CSSColor>(hex6DigitColorValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex6DigitColorValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex6DigitColorValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex6DigitColorValue).a, 255);
 
-  auto hex8DigitColorValue =
-      parseCSSValue<CSSWideKeyword, CSSColor>("#ffffffff");
-  EXPECT_EQ(hex8DigitColorValue.type(), CSSValueType::Color);
-  EXPECT_EQ(hex8DigitColorValue.getColor().r, 255);
-  EXPECT_EQ(hex8DigitColorValue.getColor().g, 255);
-  EXPECT_EQ(hex8DigitColorValue.getColor().b, 255);
-  EXPECT_EQ(hex8DigitColorValue.getColor().a, 255);
+  auto hex8DigitColorValue = parseCSSProperty<CSSColor>("#ffffffff");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(hex8DigitColorValue));
+  EXPECT_EQ(std::get<CSSColor>(hex8DigitColorValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex8DigitColorValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex8DigitColorValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(hex8DigitColorValue).a, 255);
 
-  auto hexMixedCaseColorValue =
-      parseCSSValue<CSSWideKeyword, CSSColor>("#FFCc99");
-  EXPECT_EQ(hexMixedCaseColorValue.type(), CSSValueType::Color);
-  EXPECT_EQ(hexMixedCaseColorValue.getColor().r, 255);
-  EXPECT_EQ(hexMixedCaseColorValue.getColor().g, 204);
-  EXPECT_EQ(hexMixedCaseColorValue.getColor().b, 153);
-  EXPECT_EQ(hexMixedCaseColorValue.getColor().a, 255);
+  auto hexMixedCaseColorValue = parseCSSProperty<CSSColor>("#FFCc99");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(hexMixedCaseColorValue));
+  EXPECT_EQ(std::get<CSSColor>(hexMixedCaseColorValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(hexMixedCaseColorValue).g, 204);
+  EXPECT_EQ(std::get<CSSColor>(hexMixedCaseColorValue).b, 153);
+  EXPECT_EQ(std::get<CSSColor>(hexMixedCaseColorValue).a, 255);
 
-  auto hexDigitOnlyColorValue = parseCSSValue<CSSWideKeyword, CSSColor>("#369");
-  EXPECT_EQ(hexDigitOnlyColorValue.type(), CSSValueType::Color);
-  EXPECT_EQ(hexDigitOnlyColorValue.getColor().r, 51);
-  EXPECT_EQ(hexDigitOnlyColorValue.getColor().g, 102);
-  EXPECT_EQ(hexDigitOnlyColorValue.getColor().b, 153);
-  EXPECT_EQ(hexDigitOnlyColorValue.getColor().a, 255);
+  auto hexDigitOnlyColorValue = parseCSSProperty<CSSColor>("#369");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(hexDigitOnlyColorValue));
+  EXPECT_EQ(std::get<CSSColor>(hexDigitOnlyColorValue).r, 51);
+  EXPECT_EQ(std::get<CSSColor>(hexDigitOnlyColorValue).g, 102);
+  EXPECT_EQ(std::get<CSSColor>(hexDigitOnlyColorValue).b, 153);
+  EXPECT_EQ(std::get<CSSColor>(hexDigitOnlyColorValue).a, 255);
 
-  auto hexAlphaTestValue = parseCSSValue<CSSWideKeyword, CSSColor>("#FFFFFFCC");
-  EXPECT_EQ(hexAlphaTestValue.type(), CSSValueType::Color);
-  EXPECT_EQ(hexAlphaTestValue.getColor().r, 255);
-  EXPECT_EQ(hexAlphaTestValue.getColor().g, 255);
-  EXPECT_EQ(hexAlphaTestValue.getColor().b, 255);
-  EXPECT_EQ(hexAlphaTestValue.getColor().a, 204);
+  auto hexAlphaTestValue = parseCSSProperty<CSSColor>("#FFFFFFCC");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(hexAlphaTestValue));
+  EXPECT_EQ(std::get<CSSColor>(hexAlphaTestValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(hexAlphaTestValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(hexAlphaTestValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(hexAlphaTestValue).a, 204);
 }
 
 TEST(CSSValueParser, named_colors) {
-  auto invalidNamedColorTestValue =
-      parseCSSValue<CSSWideKeyword, CSSColor>("redd");
-  EXPECT_EQ(invalidNamedColorTestValue.type(), CSSValueType::CSSWideKeyword);
-  EXPECT_EQ(
-      invalidNamedColorTestValue.getCSSWideKeyword(), CSSWideKeyword::Unset);
+  auto invalidNamedColorTestValue = parseCSSProperty<CSSColor>("redd");
+  EXPECT_TRUE(
+      std::holds_alternative<std::monostate>(invalidNamedColorTestValue));
 
-  auto namedColorTestValue1 = parseCSSValue<CSSWideKeyword, CSSColor>("red");
-  EXPECT_EQ(namedColorTestValue1.type(), CSSValueType::Color);
-  EXPECT_EQ(namedColorTestValue1.getColor().r, 255);
-  EXPECT_EQ(namedColorTestValue1.getColor().g, 0);
-  EXPECT_EQ(namedColorTestValue1.getColor().b, 0);
-  EXPECT_EQ(namedColorTestValue1.getColor().a, 255);
+  auto namedColorTestValue1 = parseCSSProperty<CSSColor>("red");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(namedColorTestValue1));
+  EXPECT_EQ(std::get<CSSColor>(namedColorTestValue1).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(namedColorTestValue1).g, 0);
+  EXPECT_EQ(std::get<CSSColor>(namedColorTestValue1).b, 0);
+  EXPECT_EQ(std::get<CSSColor>(namedColorTestValue1).a, 255);
 
-  auto namedColorTestValue2 =
-      parseCSSValue<CSSWideKeyword, CSSColor>("cornsilk");
-  EXPECT_EQ(namedColorTestValue2.type(), CSSValueType::Color);
-  EXPECT_EQ(namedColorTestValue2.getColor().r, 255);
-  EXPECT_EQ(namedColorTestValue2.getColor().g, 248);
-  EXPECT_EQ(namedColorTestValue2.getColor().b, 220);
-  EXPECT_EQ(namedColorTestValue2.getColor().a, 255);
+  auto namedColorTestValue2 = parseCSSProperty<CSSColor>("cornsilk");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(namedColorTestValue2));
+  EXPECT_EQ(std::get<CSSColor>(namedColorTestValue2).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(namedColorTestValue2).g, 248);
+  EXPECT_EQ(std::get<CSSColor>(namedColorTestValue2).b, 220);
+  EXPECT_EQ(std::get<CSSColor>(namedColorTestValue2).a, 255);
 
-  auto namedColorMixedCaseTestValue =
-      parseCSSValue<CSSWideKeyword, CSSColor>("sPrINgGrEEn");
-  EXPECT_EQ(namedColorMixedCaseTestValue.type(), CSSValueType::Color);
-  EXPECT_EQ(namedColorMixedCaseTestValue.getColor().r, 0);
-  EXPECT_EQ(namedColorMixedCaseTestValue.getColor().g, 255);
-  EXPECT_EQ(namedColorMixedCaseTestValue.getColor().b, 127);
-  EXPECT_EQ(namedColorMixedCaseTestValue.getColor().a, 255);
+  auto namedColorMixedCaseTestValue = parseCSSProperty<CSSColor>("sPrINgGrEEn");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(namedColorMixedCaseTestValue));
+  EXPECT_EQ(std::get<CSSColor>(namedColorMixedCaseTestValue).r, 0);
+  EXPECT_EQ(std::get<CSSColor>(namedColorMixedCaseTestValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(namedColorMixedCaseTestValue).b, 127);
+  EXPECT_EQ(std::get<CSSColor>(namedColorMixedCaseTestValue).a, 255);
 
-  auto transparentColor =
-      parseCSSValue<CSSWideKeyword, CSSColor>("transparent");
-  EXPECT_EQ(transparentColor.type(), CSSValueType::Color);
-  EXPECT_EQ(transparentColor.getColor().r, 0);
-  EXPECT_EQ(transparentColor.getColor().g, 0);
-  EXPECT_EQ(transparentColor.getColor().b, 0);
-  EXPECT_EQ(transparentColor.getColor().a, 0);
+  auto transparentColor = parseCSSProperty<CSSColor>("transparent");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(transparentColor));
+  EXPECT_EQ(std::get<CSSColor>(transparentColor).r, 0);
+  EXPECT_EQ(std::get<CSSColor>(transparentColor).g, 0);
+  EXPECT_EQ(std::get<CSSColor>(transparentColor).b, 0);
+  EXPECT_EQ(std::get<CSSColor>(transparentColor).a, 0);
 }
 
 } // namespace facebook::react

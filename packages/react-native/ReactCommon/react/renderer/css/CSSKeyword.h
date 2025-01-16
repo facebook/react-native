@@ -11,6 +11,7 @@
 #include <optional>
 #include <string_view>
 
+#include <react/renderer/css/CSSDataType.h>
 #include <react/utils/fnv1a.h>
 #include <react/utils/to_underlying.h>
 
@@ -452,5 +453,19 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
 
   return std::nullopt;
 }
+
+template <CSSKeywordSet KeywordT>
+struct CSSDataTypeParser<KeywordT> {
+  static constexpr auto consumePreservedToken(const CSSPreservedToken& token)
+      -> std::optional<KeywordT> {
+    if (token.type() == CSSTokenType::Ident) {
+      return parseCSSKeyword<KeywordT>(token.stringValue());
+    }
+
+    return {};
+  }
+};
+
+static_assert(CSSDataType<CSSWideKeyword>);
 
 } // namespace facebook::react

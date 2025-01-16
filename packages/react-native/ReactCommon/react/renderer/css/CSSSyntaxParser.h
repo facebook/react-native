@@ -251,50 +251,63 @@ struct CSSComponentValueVisitorDispatcher {
     return consumeComponentValue(std::forward<VisitorsT>(visitors)...);
   }
 
-  constexpr std::optional<ReturnT> visitFunction(const VisitorsT&... visitors) {
-    for (auto visitor : {visitors...}) {
-      if constexpr (CSSFunctionVisitor<decltype(visitor), ReturnT>) {
-        auto functionValue =
-            visitor({.name = parser.consumeToken().stringValue()});
-        parser.consumeWhitespace();
-        if (parser.peek().type() == CSSTokenType::CloseParen) {
-          parser.consumeToken();
-          return functionValue;
-        }
-
-        return {};
+  constexpr std::optional<ReturnT> visitFunction(
+      const CSSComponentValueVisitor<ReturnT> auto& visitor,
+      const CSSComponentValueVisitor<ReturnT> auto&... rest) {
+    if constexpr (CSSFunctionVisitor<decltype(visitor), ReturnT>) {
+      auto functionValue =
+          visitor({.name = parser.consumeToken().stringValue()});
+      parser.consumeWhitespace();
+      if (parser.peek().type() == CSSTokenType::CloseParen) {
+        parser.consumeToken();
+        return functionValue;
       }
+
+      return {};
     }
 
+    return visitFunction(rest...);
+  }
+
+  constexpr std::optional<ReturnT> visitFunction() {
     return {};
   }
 
+  // Can be one of std::monostate (variant null-type), CSSWideKeyword,
+  // CSSLength, or CSSPercentage
+
   constexpr std::optional<ReturnT> visitSimpleBlock(
       CSSTokenType endToken,
-      const VisitorsT&... visitors) {
-    for (auto visitor : {visitors...}) {
-      if constexpr (CSSSimpleBlockVisitor<decltype(visitor), ReturnT>) {
-        auto blockValue =
-            visitor({.openBracketType = parser.consumeToken().type()});
-        parser.consumeWhitespace();
-        if (parser.peek().type() == endToken) {
-          parser.consumeToken();
-          return blockValue;
-        }
-
-        return {};
+      const CSSComponentValueVisitor<ReturnT> auto& visitor,
+      const CSSComponentValueVisitor<ReturnT> auto&... rest) {
+    if constexpr (CSSSimpleBlockVisitor<decltype(visitor), ReturnT>) {
+      auto blockValue =
+          visitor({.openBracketType = parser.consumeToken().type()});
+      parser.consumeWhitespace();
+      if (parser.peek().type() == endToken) {
+        parser.consumeToken();
+        return blockValue;
       }
+
+      return {};
     }
+    return visitSimpleBlock(endToken, rest...);
+  }
+
+  constexpr std::optional<ReturnT> visitSimpleBlock(CSSTokenType /*endToken*/) {
     return {};
   }
 
   constexpr std::optional<ReturnT> visitPreservedToken(
-      const VisitorsT&... visitors) {
-    for (auto visitor : {visitors...}) {
-      if constexpr (CSSPreservedTokenVisitor<decltype(visitor), ReturnT>) {
-        return visitor(parser.consumeToken());
-      }
+      const CSSComponentValueVisitor<ReturnT> auto& visitor,
+      const CSSComponentValueVisitor<ReturnT> auto&... rest) {
+    if constexpr (CSSPreservedTokenVisitor<decltype(visitor), ReturnT>) {
+      return visitor(parser.consumeToken());
     }
+    return visitPreservedToken(rest...);
+  }
+
+  constexpr std::optional<ReturnT> visitPreservedToken() {
     return {};
   }
 };
