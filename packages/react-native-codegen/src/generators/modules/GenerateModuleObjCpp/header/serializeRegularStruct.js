@@ -91,6 +91,8 @@ function toObjCType(
       return 'NSString *';
     case 'NumberTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
+    case 'NumberLiteralTypeAnnotation':
+      return wrapCxxOptional('double', isRequired);
     case 'FloatTypeAnnotation':
       return wrapCxxOptional('double', isRequired);
     case 'Int32TypeAnnotation':
@@ -172,6 +174,8 @@ function toObjCValue(
     case 'StringLiteralUnionTypeAnnotation':
       return RCTBridgingTo('String');
     case 'NumberTypeAnnotation':
+      return RCTBridgingTo('Double');
+    case 'NumberLiteralTypeAnnotation':
       return RCTBridgingTo('Double');
     case 'FloatTypeAnnotation':
       return RCTBridgingTo('Double');

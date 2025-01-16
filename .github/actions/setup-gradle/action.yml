@@ -8,7 +8,7 @@ runs:
   using: "composite"
   steps:
     - name: Setup gradle
-      uses: gradle/actions/setup-gradle@v3
+      uses: gradle/actions/setup-gradle@v4
       with:
         gradle-version: wrapper
         # We want the Gradle cache to be written only on main/-stable branches run, and only for jobs with `cache-read-only` == false (i.e. `build_android`).

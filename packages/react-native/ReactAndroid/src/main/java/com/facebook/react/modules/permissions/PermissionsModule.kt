@@ -108,7 +108,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
     var checkedPermissionsCount = 0
     val context = getReactApplicationContext().getBaseContext()
     for (i in 0 until permissions.size()) {
-      val perm = permissions.getString(i)
+      val perm = permissions.getString(i) ?: continue
       if (context.checkSelfPermission(perm) == PackageManager.PERMISSION_GRANTED) {
         grantedPermissions.putString(perm, GRANTED)
         checkedPermissionsCount++

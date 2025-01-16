@@ -47,7 +47,7 @@ runs:
         fi
     - name: Yarn- Install Dependencies
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
-      uses: ./.github/actions/yarn-install-with-cache
+      uses: ./.github/actions/yarn-install
     - name: Slice cache macosx
       if: ${{ steps.check_if_apple_artifacts_are_there.outputs.ARTIFACTS_EXIST != 'true' }}
       uses: actions/download-artifact@v4

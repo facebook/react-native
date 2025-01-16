@@ -96,7 +96,7 @@ function combineSchemasInFileListAndWriteToFile(
   exclude: ?RegExp,
 ): void {
   const combined = combineSchemasInFileList(fileList, platform, exclude);
-  const formattedSchema = JSON.stringify(combined, null, 2);
+  const formattedSchema = JSON.stringify(combined);
   fs.writeFileSync(outfile, formattedSchema);
 }
 

@@ -22,7 +22,7 @@ folly_version = folly_config[:version]
 folly_dep_name = folly_config[:dep_name]
 
 boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags] 
+boost_compiler_flags = boost_config[:compiler_flags]
 react_native_path = ".."
 
 Pod::Spec.new do |s|
@@ -54,7 +54,8 @@ Pod::Spec.new do |s|
   s.dependency "React-logger"
   s.dependency "glog"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+  s.dependency "fast_float", "6.1.4"
+  s.dependency "fmt", "11.0.2"
   s.dependency "React-Core"
   s.dependency "React-debug"
   s.dependency "React-featureflags"
@@ -220,6 +221,13 @@ Pod::Spec.new do |s|
 
   end
 
+  s.subspec "consistency" do |ss|
+    ss.dependency             folly_dep_name, folly_version
+    ss.compiler_flags       = folly_compiler_flags
+    ss.source_files         = "react/renderer/consistency/**/*.{m,mm,cpp,h}"
+    ss.header_dir           = "react/renderer/consistency"
+  end
+
   s.subspec "uimanager" do |ss|
     ss.subspec "consistency" do |sss|
       sss.dependency             folly_dep_name, folly_version
@@ -248,6 +256,7 @@ Pod::Spec.new do |s|
     {
       :name => '[RN]Check rncore',
       :execution_position => :before_compile,
+      :always_out_of_date => '1',
       :script => <<-EOS
 echo "Checking whether Codegen has run..."
 rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"

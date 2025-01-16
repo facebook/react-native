@@ -50,6 +50,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.BackgroundStyleApplicator;
 import com.facebook.react.uimanager.LengthPercentage;
 import com.facebook.react.uimanager.LengthPercentageType;
@@ -145,7 +146,9 @@ public class ReactEditText extends AppCompatEditText {
 
   public ReactEditText(Context context) {
     super(context);
-    setFocusableInTouchMode(false);
+    if (!ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
+      setFocusableInTouchMode(false);
+    }
 
     mInputMethodManager =
         (InputMethodManager)
@@ -188,7 +191,9 @@ public class ReactEditText extends AppCompatEditText {
                 // selection on accessibility click to undo that.
                 setSelection(length);
               }
-              return requestFocusInternal();
+              return ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()
+                  ? requestFocusProgramatically()
+                  : requestFocusInternal();
             }
             return super.performAccessibilityAction(host, action, args);
           }
@@ -338,7 +343,10 @@ public class ReactEditText extends AppCompatEditText {
 
   @Override
   public void clearFocus() {
-    setFocusableInTouchMode(false);
+    boolean useStockFocusBehavior = ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior();
+    if (!useStockFocusBehavior) {
+      setFocusableInTouchMode(false);
+    }
     super.clearFocus();
     hideSoftKeyboard();
   }
@@ -349,7 +357,9 @@ public class ReactEditText extends AppCompatEditText {
     // is a controlled component, which means its focus is controlled by JS, with two exceptions:
     // autofocus when it's attached to the window, and responding to accessibility events. In both
     // of these cases, we call requestFocusInternal() directly.
-    return isFocused();
+    return ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()
+        ? super.requestFocus(direction, previouslyFocusedRect)
+        : isFocused();
   }
 
   private boolean requestFocusInternal() {
@@ -360,6 +370,20 @@ public class ReactEditText extends AppCompatEditText {
     if (getShowSoftInputOnFocus()) {
       showSoftKeyboard();
     }
+
+    return focused;
+  }
+
+  // For cases like autoFocus, or ref.focus() where we request focus programatically and not through
+  // interacting with the EditText directly (like clicking on it). We cannot use stock
+  // requestFocus() because it will not pop up the soft keyboard, only clicking the input will do
+  // that. This method will eventually replace requestFocusInternal()
+  private boolean requestFocusProgramatically() {
+    boolean focused = super.requestFocus(View.FOCUS_DOWN, null);
+    if (isInTouchMode() && getShowSoftInputOnFocus()) {
+      showSoftKeyboard();
+    }
+
     return focused;
   }
 
@@ -406,6 +430,10 @@ public class ReactEditText extends AppCompatEditText {
       return;
     }
 
+    maybeSetSelection(start, end);
+  }
+
+  private void maybeSetSelection(int start, int end) {
     if (start != ReactConstants.UNSET && end != ReactConstants.UNSET) {
       // clamp selection values for safety
       start = clampToTextLength(start);
@@ -532,7 +560,8 @@ public class ReactEditText extends AppCompatEditText {
       int selectionStart = getSelectionStart();
       int selectionEnd = getSelectionEnd();
       setInputType(mStagedInputType);
-      setSelection(selectionStart, selectionEnd);
+      // Restore the selection
+      maybeSetSelection(selectionStart, selectionEnd);
     }
   }
 
@@ -627,7 +656,11 @@ public class ReactEditText extends AppCompatEditText {
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
-    requestFocusInternal();
+    if (ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
+      requestFocusProgramatically();
+    } else {
+      requestFocusInternal();
+    }
   }
 
   /* package */ void clearFocusFromJS() {
@@ -1063,7 +1096,7 @@ public class ReactEditText extends AppCompatEditText {
     super.setTextIsSelectable(true);
 
     // Restore the selection since `setTextIsSelectable` changed it.
-    setSelection(selectionStart, selectionEnd);
+    maybeSetSelection(selectionStart, selectionEnd);
 
     if (mContainsImages) {
       Spanned text = getText();
@@ -1074,7 +1107,11 @@ public class ReactEditText extends AppCompatEditText {
     }
 
     if (mAutoFocus && !mDidAttachToWindow) {
-      requestFocusInternal();
+      if (ReactNativeFeatureFlags.useEditTextStockAndroidFocusBehavior()) {
+        requestFocusProgramatically();
+      } else {
+        requestFocusInternal();
+      }
     }
 
     mDidAttachToWindow = true;

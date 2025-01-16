@@ -62,9 +62,6 @@ public abstract class ReactClippingViewManager<T : ReactViewGroup> : ViewGroupMa
     if (removeClippedSubviews) {
       val child = getChildAt(parent, index)
       if (child != null) {
-        if (child.parent != null) {
-          parent.removeView(child)
-        }
         parent.removeViewWithSubviewClippingEnabled(child)
       }
     } else {

@@ -145,6 +145,17 @@ class DeviceEventReporter {
     });
   }
 
+  logProfilingTargetRegistered() {
+    this.#eventReporter.logEvent({
+      type: 'profiling_target_registered',
+      status: 'success',
+      appId: this.#metadata.appId,
+      deviceName: this.#metadata.deviceName,
+      deviceId: this.#metadata.deviceId,
+      pageId: null,
+    });
+  }
+
   logConnection(
     connectedEntity: 'debugger',
     metadata: $ReadOnly<{

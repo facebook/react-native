@@ -21,15 +21,16 @@ folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
 boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags] 
+boost_compiler_flags = boost_config[:compiler_flags]
 
 Pod::Spec.new do |s|
-  source_files = "**/*.{m,mm,cpp,h}"
+  source_files = "*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
   header_search_paths = [
     "\"$(PODS_ROOT)/boost\"",
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
     "\"$(PODS_ROOT)/RCT-Folly\"",
     "\"$(PODS_ROOT)/DoubleConversion\"",
+    "\"$(PODS_ROOT)/fast_float/include\"",
     "\"$(PODS_ROOT)/fmt/include\""
   ]
 
@@ -43,10 +44,6 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.source_files           = source_files
-  s.exclude_files          = "tests",
-                             "platform/android",
-                             "platform/cxx",
-                             "platform/windows",
   s.header_dir             = "react/renderer/graphics"
   s.framework = "UIKit"
 
@@ -67,5 +64,12 @@ Pod::Spec.new do |s|
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
+  s.dependency "fast_float", "6.1.4"
+  s.dependency "fmt", "11.0.2"
+  
+  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
+    s.dependency "hermes-engine"
+  else
+    s.dependency "React-jsc"
+  end
 end

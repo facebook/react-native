@@ -47,6 +47,7 @@ public object ReactScrollViewHelper {
 
   // Support global native listeners for scroll events
   private val scrollListeners = CopyOnWriteArrayList<WeakReference<ScrollListener>>()
+  private val layoutChangeListeners = CopyOnWriteArrayList<WeakReference<LayoutChangeListener>>()
 
   // If all else fails, this is the hardcoded value in OverScroller.java, in AOSP.
   // The default is defined here (as of this diff):
@@ -102,13 +103,13 @@ public object ReactScrollViewHelper {
       scrollEventType: ScrollEventType,
       xVelocity: Float,
       yVelocity: Float,
-      experimental_isSynchronous: Boolean = false,
   ) where T : HasScrollEventThrottle?, T : ViewGroup {
     val now = System.currentTimeMillis()
     // Throttle the scroll event if scrollEventThrottle is set to be equal or more than 17 ms.
     // We limit the delta to 17ms so that small throttles intended to enable 60fps updates will not
     // inadvertently filter out any scroll events.
-    if (scrollView.scrollEventThrottle >= Math.max(17, now - scrollView.lastScrollDispatchTime)) {
+    if (scrollEventType == ScrollEventType.SCROLL &&
+        scrollView.scrollEventThrottle >= Math.max(17, now - scrollView.lastScrollDispatchTime)) {
       // Scroll events are throttled.
       return
     }
@@ -137,9 +138,10 @@ public object ReactScrollViewHelper {
               contentView.width,
               contentView.height,
               scrollView.width,
-              scrollView.height,
-              experimental_isSynchronous))
-      scrollView.lastScrollDispatchTime = now
+              scrollView.height))
+      if (scrollEventType == ScrollEventType.SCROLL) {
+        scrollView.lastScrollDispatchTime = now
+      }
     }
   }
 
@@ -148,6 +150,13 @@ public object ReactScrollViewHelper {
   public fun emitLayoutEvent(scrollView: ViewGroup) {
     for (scrollListener in scrollListeners) {
       scrollListener.get()?.onLayout(scrollView)
+    }
+  }
+
+  @JvmStatic
+  public fun emitLayoutChangeEvent(scrollView: ViewGroup) {
+    for (listener in layoutChangeListeners) {
+      listener.get()?.onLayoutChange(scrollView)
     }
   }
 
@@ -212,6 +221,16 @@ public object ReactScrollViewHelper {
   @JvmStatic
   public fun removeScrollListener(listener: ScrollListener) {
     scrollListeners.remove(WeakReference(listener))
+  }
+
+  @JvmStatic
+  public fun addLayoutChangeListener(listener: LayoutChangeListener) {
+    layoutChangeListeners.add(WeakReference(listener))
+  }
+
+  @JvmStatic
+  public fun removeLayoutChangeListener(listener: LayoutChangeListener) {
+    layoutChangeListeners.remove(WeakReference(listener))
   }
 
   /**
@@ -315,25 +334,9 @@ public object ReactScrollViewHelper {
     val scrollPos = scrollState.lastStateUpdateScroll
     val scrollX = scrollPos.x
     val scrollY = scrollPos.y
-    val layoutDirection = scrollState.layoutDirection
-    val fabricScrollX =
-        if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
-          // getScrollX returns offset from left even when layout direction is RTL.
-          // The following line calculates offset from right.
-          val child = scrollView.getChildAt(0)
-          val contentWidth = child?.width ?: 0
-          -(contentWidth - scrollX - scrollView.width)
-        } else {
-          scrollX
-        }
     if (DEBUG_MODE) {
       FLog.i(
-          TAG,
-          "updateFabricScrollState[%d] scrollX %d scrollY %d fabricScrollX %d",
-          scrollView.id,
-          scrollX,
-          scrollY,
-          fabricScrollX)
+          TAG, "updateFabricScrollState[%d] scrollX %d scrollY %d", scrollView.id, scrollX, scrollY)
     }
     val stateWrapper = scrollView.stateWrapper
     if (stateWrapper != null) {
@@ -357,28 +360,12 @@ public object ReactScrollViewHelper {
   T : HasScrollState?,
   T : HasStateWrapper?,
   T : ViewGroup {
-    updateStateOnScrollChanged(scrollView, xVelocity, yVelocity, false)
-  }
-
-  @JvmStatic
-  public fun <T> updateStateOnScrollChanged(
-      scrollView: T,
-      xVelocity: Float,
-      yVelocity: Float,
-      experimental_synchronous: Boolean,
-  ) where
-  T : HasFlingAnimator?,
-  T : HasScrollEventThrottle?,
-  T : HasScrollState?,
-  T : HasStateWrapper?,
-  T : ViewGroup {
     // Race an UpdateState with every onScroll. This makes it more likely that, in Fabric,
     // when JS processes the scroll event, the C++ ShadowNode representation will have a
     // "more correct" scroll position. It will frequently be /incorrect/ but this decreases
     // the error as much as possible.
     updateFabricScrollState(scrollView, scrollView.scrollX, scrollView.scrollY)
-    emitScrollEvent(
-        scrollView, ScrollEventType.SCROLL, xVelocity, yVelocity, experimental_synchronous)
+    emitScrollEvent(scrollView, xVelocity, yVelocity)
   }
 
   public fun <T> registerFlingAnimator(scrollView: T) where
@@ -403,6 +390,31 @@ public object ReactScrollViewHelper {
 
               override fun onAnimationCancel(animator: Animator) {
                 scrollView.reactScrollViewScrollState.isCanceled = true
+              }
+
+              override fun onAnimationRepeat(animator: Animator) = Unit
+            })
+  }
+
+  @JvmStatic
+  public fun <T> dispatchMomentumEndOnAnimationEnd(scrollView: T) where
+  T : HasFlingAnimator?,
+  T : HasScrollEventThrottle?,
+  T : ViewGroup {
+    scrollView
+        .getFlingAnimator()
+        .addListener(
+            object : Animator.AnimatorListener {
+              override fun onAnimationStart(animator: Animator) = Unit
+
+              override fun onAnimationEnd(animator: Animator) {
+                emitScrollMomentumEndEvent(scrollView)
+                animator.removeListener(this)
+              }
+
+              override fun onAnimationCancel(animator: Animator) {
+                emitScrollMomentumEndEvent(scrollView)
+                animator.removeListener(this)
               }
 
               override fun onAnimationRepeat(animator: Animator) = Unit
@@ -456,6 +468,10 @@ public object ReactScrollViewHelper {
     public fun onLayout(scrollView: ViewGroup?)
   }
 
+  public interface LayoutChangeListener {
+    public fun onLayoutChange(scrollView: ViewGroup)
+  }
+
   public interface HasStateWrapper {
     public val stateWrapper: StateWrapper?
   }
@@ -478,13 +494,7 @@ public object ReactScrollViewHelper {
     }
   }
 
-  public class ReactScrollViewScrollState(
-      /**
-       * Get the layout direction. Can be either scrollView.LAYOUT_DIRECTION_RTL (1) or
-       * scrollView.LAYOUT_DIRECTION_LTR (0). If the value is -1, it means unknown layout.
-       */
-      public val layoutDirection: Int
-  ) {
+  public class ReactScrollViewScrollState() {
 
     /** Get the position after current animation is finished */
     public val finalAnimatedPositionScroll: Point = Point()

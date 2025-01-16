@@ -98,6 +98,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
   UIColor *tintColor = [RCTConvert UIColor:options.tintColor() ? @(*options.tintColor()) : nil];
   UIColor *cancelButtonTintColor =
       [RCTConvert UIColor:options.cancelButtonTintColor() ? @(*options.cancelButtonTintColor()) : nil];
+  UIColor *disabledButtonTintColor =
+      [RCTConvert UIColor:options.disabledButtonTintColor() ? @(*options.disabledButtonTintColor()) : nil];
   NSString *userInterfaceStyle = [RCTConvert NSString:options.userInterfaceStyle()];
 
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -114,6 +116,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
             @"anchor" : anchor ?: @"(null)",
             @"tintColor" : tintColor ?: @"(null)",
             @"cancelButtonTintColor" : cancelButtonTintColor ?: @"(null)",
+            @"disabledButtonTintColor" : disabledButtonTintColor ?: @"(null)",
             @"disabledButtonIndices" : disabledButtonIndices ?: @"(null)",
           });
       return;
@@ -166,7 +169,11 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions
     if (disabledButtonIndices) {
       for (NSNumber *disabledButtonIndex in disabledButtonIndices) {
         if ([disabledButtonIndex integerValue] < buttons.count) {
-          [alertController.actions[[disabledButtonIndex integerValue]] setEnabled:false];
+          UIAlertAction *action = alertController.actions[[disabledButtonIndex integerValue]];
+          [action setEnabled:false];
+          if (disabledButtonTintColor) {
+            [action setValue:disabledButtonTintColor forKey:@"titleTextColor"];
+          }
         } else {
           RCTLogError(
               @"Index %@ from `disabledButtonIndices` is out of bounds. Maximum index value is %@.",

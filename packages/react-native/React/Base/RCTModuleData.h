@@ -34,7 +34,7 @@ typedef id<RCTBridgeModule> (^RCTBridgeModuleProvider)(void);
                      moduleRegistry:(RCTModuleRegistry *)moduleRegistry
             viewRegistry_DEPRECATED:(RCTViewRegistry *)viewRegistry_DEPRECATED
                       bundleManager:(RCTBundleManager *)bundleManager
-                  callableJSModules:(RCTCallableJSModules *)callableJSModules;
+                  callableJSModules:(RCTCallableJSModules *)callableJSModules NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithModuleInstance:(id<RCTBridgeModule>)instance
                                 bridge:(RCTBridge *)bridge

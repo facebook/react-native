@@ -10,9 +10,9 @@
 
 'use strict';
 
-const React = require('react');
+import React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   /**
    * Indicates whether the render function needs to be called again
    */
@@ -22,7 +22,7 @@ type Props = $ReadOnly<{|
    * A function that returns a renderable component
    */
   render: () => React.Node,
-|}>;
+}>;
 
 class StaticRenderer extends React.Component<Props> {
   shouldComponentUpdate(nextProps: Props): boolean {
@@ -34,4 +34,4 @@ class StaticRenderer extends React.Component<Props> {
   }
 }
 
-module.exports = StaticRenderer;
+export default StaticRenderer;

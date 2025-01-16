@@ -17,7 +17,7 @@
 RCT_MOCK_REF(RCTView, RCTContentInsets);
 
 UIEdgeInsets gContentInsets;
-static UIEdgeInsets RCTContentInsetsMock(UIView *view)
+static UIEdgeInsets RCTContentInsetsMock(__unused UIView *view)
 {
   return gContentInsets;
 }
@@ -40,7 +40,7 @@ static UIEdgeInsets RCTContentInsetsMock(UIView *view)
   [RCTView autoAdjustInsetsForView:parentView withScrollView:scrollView updateOffset:NO];
 
   XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(scrollView.contentInset, UIEdgeInsetsMake(2, 3, 4, 5)));
-  XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(scrollView.scrollIndicatorInsets, UIEdgeInsetsMake(2, 3, 4, 5)));
+  XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(scrollView.verticalScrollIndicatorInsets, UIEdgeInsetsMake(2, 3, 4, 5)));
 
   RCT_MOCK_RESET(RCTView, RCTContentInsets);
 }

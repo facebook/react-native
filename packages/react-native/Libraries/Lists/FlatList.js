@@ -32,14 +32,14 @@ const Platform = require('../Utilities/Platform');
 const invariant = require('invariant');
 const React = require('react');
 
-type RequiredProps<ItemT> = {|
+type RequiredProps<ItemT> = {
   /**
    * An array (or array-like list) of items to render. Other data types can be
    * used by targeting VirtualizedList directly.
    */
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
-|};
-type OptionalProps<ItemT> = {|
+};
+type OptionalProps<ItemT> = {
   /**
    * Takes an item from `data` and renders it into the list. Example usage:
    *
@@ -150,7 +150,7 @@ type OptionalProps<ItemT> = {|
    * Enable an optimization to memoize the item renderer to prevent unnecessary rerenders.
    */
   strictMode?: boolean,
-|};
+};
 
 /**
  * Default Props Helper Functions
@@ -176,10 +176,10 @@ function isArrayLike(data: mixed): boolean {
   return typeof Object(data).length === 'number';
 }
 
-type FlatListProps<ItemT> = {|
+type FlatListProps<ItemT> = {
   ...RequiredProps<ItemT>,
   ...OptionalProps<ItemT>,
-|};
+};
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
@@ -480,10 +480,10 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     this._checkProps(this.props);
   }
 
-  _listRef: ?React.ElementRef<typeof VirtualizedList>;
+  _listRef: ?VirtualizedList;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
-  _captureRef = (ref: ?React.ElementRef<typeof VirtualizedList>) => {
+  _captureRef = (ref: ?VirtualizedList) => {
     this._listRef = ref;
   };
 

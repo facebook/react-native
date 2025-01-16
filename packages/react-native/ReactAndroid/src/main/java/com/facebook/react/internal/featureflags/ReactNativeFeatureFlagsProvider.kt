@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e76048e494ae00fa5d13b45af95c0a3b>>
+ * @generated SignedSource<<4f90c47ea6f23c2ebfae1f35790c4af5>>
  */
 
 /**
@@ -14,7 +14,7 @@
  *   packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config.js.
  *
  * To regenerate this code, run the following script from the repo root:
- *   yarn featureflags-update
+ *   yarn featureflags --update
  */
 
 package com.facebook.react.internal.featureflags
@@ -25,19 +25,17 @@ import com.facebook.proguard.annotations.DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
 
-  @DoNotStrip public fun allowRecursiveCommitsWithSynchronousMountOnAndroid(): Boolean
-
   @DoNotStrip public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
 
   @DoNotStrip public fun disableEventLoopOnBridgeless(): Boolean
 
-  @DoNotStrip public fun enableAlignItemsBaselineOnFabricIOS(): Boolean
+  @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
-  @DoNotStrip public fun enableAndroidLineHeightCentering(): Boolean
+  @DoNotStrip public fun enableAccumulatedUpdatesInRawPropsAndroid(): Boolean
 
   @DoNotStrip public fun enableBridgelessArchitecture(): Boolean
 
-  @DoNotStrip public fun enableCleanTextInputYogaNode(): Boolean
+  @DoNotStrip public fun enableCppPropsIteratorSetter(): Boolean
 
   @DoNotStrip public fun enableDeletionOfUnmountedViews(): Boolean
 
@@ -49,17 +47,21 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
 
-  @DoNotStrip public fun enableFabricRendererExclusively(): Boolean
+  @DoNotStrip public fun enableFixForViewCommandRace(): Boolean
 
   @DoNotStrip public fun enableGranularShadowTreeStateReconciliation(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
+
+  @DoNotStrip public fun enableImagePrefetchingAndroid(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnAndroid(): Boolean
 
   @DoNotStrip public fun enableLayoutAnimationsOnIOS(): Boolean
 
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
+
+  @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
 
   @DoNotStrip public fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean
 
@@ -69,21 +71,17 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableSynchronousStateUpdates(): Boolean
 
-  @DoNotStrip public fun enableTextPreallocationOptimisation(): Boolean
-
   @DoNotStrip public fun enableUIConsistency(): Boolean
 
   @DoNotStrip public fun enableViewRecycling(): Boolean
 
   @DoNotStrip public fun excludeYogaFromRawProps(): Boolean
 
+  @DoNotStrip public fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean
+
   @DoNotStrip public fun fixMappingOfEventPrioritiesBetweenFabricAndReact(): Boolean
 
   @DoNotStrip public fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean
-
-  @DoNotStrip public fun forceBatchingMountItemsOnAndroid(): Boolean
-
-  @DoNotStrip public fun fuseboxEnabledDebug(): Boolean
 
   @DoNotStrip public fun fuseboxEnabledRelease(): Boolean
 
@@ -93,9 +91,11 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun loadVectorDrawablesOnImages(): Boolean
 
-  @DoNotStrip public fun setAndroidLayoutDirection(): Boolean
-
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
+
+  @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
+
+  @DoNotStrip public fun useEditTextStockAndroidFocusBehavior(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
 
@@ -106,6 +106,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useOptimisedViewPreallocationOnAndroid(): Boolean
 
   @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
+
+  @DoNotStrip public fun useRawPropsJsiValue(): Boolean
 
   @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 

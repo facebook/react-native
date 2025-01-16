@@ -16,16 +16,19 @@ public class ReactNetworkImageRequest
 private constructor(
     builder: ImageRequestBuilder,
     /** Headers for the request */
-    internal val headers: ReadableMap?
+    internal val headers: ReadableMap?,
+    internal val cacheControl: ImageCacheControl,
 ) : ImageRequest(builder) {
 
   public companion object {
     @JvmStatic
+    @JvmOverloads
     public fun fromBuilderWithHeaders(
         builder: ImageRequestBuilder,
-        headers: ReadableMap?
+        headers: ReadableMap?,
+        cacheControl: ImageCacheControl = ImageCacheControl.DEFAULT,
     ): ReactNetworkImageRequest {
-      return ReactNetworkImageRequest(builder, headers)
+      return ReactNetworkImageRequest(builder, headers, cacheControl)
     }
   }
 }

@@ -12,6 +12,7 @@ import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import com.facebook.infer.annotation.ThreadConfined
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
+import com.facebook.react.uimanager.events.EventDispatcher
 
 @OptIn(UnstableReactNativeAPI::class)
 public interface UIManager : PerformanceCounter {
@@ -78,7 +79,7 @@ public interface UIManager : PerformanceCounter {
   public fun dispatchCommand(reactTag: Int, commandId: String, commandArgs: ReadableArray?)
 
   /** @return the [EventDispatcher] object that is used by this class. */
-  public val eventDispatcher: Any?
+  public val eventDispatcher: EventDispatcher
 
   /**
    * Used by native animated module to bypass the process of updating the values through the shadow

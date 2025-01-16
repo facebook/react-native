@@ -26,12 +26,12 @@ type ColorChangedEvent = {
   },
 };
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
   opacity?: number,
   color?: string,
   onColorChanged?: (event: ColorChangedEvent) => void,
-|}>;
+}>;
 
 export type MyLegacyViewType = HostComponent<NativeProps>;
 

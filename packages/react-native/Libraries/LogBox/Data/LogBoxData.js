@@ -37,20 +37,20 @@ export type LogData = $ReadOnly<{
 }>;
 
 export type Observer = (
-  $ReadOnly<{|
+  $ReadOnly<{
     logs: LogBoxLogs,
     isDisabled: boolean,
     selectedLogIndex: number,
-  |}>,
+  }>,
 ) => void;
 
 export type IgnorePattern = string | RegExp;
 
-export type Subscription = $ReadOnly<{|
+export type Subscription = $ReadOnly<{
   unsubscribe: () => void,
-|}>;
+}>;
 
-export type WarningInfo = {|
+export type WarningInfo = {
   finalFormat: string,
   forceDialogImmediately: boolean,
   suppressDialog_LEGACY: boolean,
@@ -58,15 +58,15 @@ export type WarningInfo = {|
   monitorEvent: string | null,
   monitorListVersion: number,
   monitorSampleRate: number,
-|};
+};
 
 export type WarningFilter = (format: string) => WarningInfo;
 
-type AppInfo = $ReadOnly<{|
+type AppInfo = $ReadOnly<{
   appVersion: string,
   engine: string,
   onPress?: ?() => void,
-|}>;
+}>;
 
 const observers: Set<{observer: Observer, ...}> = new Set();
 const ignorePatterns: Set<IgnorePattern> = new Set();
@@ -413,25 +413,25 @@ export function observe(observer: Observer): Subscription {
   };
 }
 
-type Props = $ReadOnly<{||}>;
-type State = $ReadOnly<{|
+type Props = $ReadOnly<{}>;
+type State = $ReadOnly<{
   logs: LogBoxLogs,
   isDisabled: boolean,
   hasError: boolean,
   selectedLogIndex: number,
-|}>;
+}>;
 
-type SubscribedComponent = React.AbstractComponent<
-  $ReadOnly<{|
+type SubscribedComponent = React.ComponentType<
+  $ReadOnly<{
     logs: $ReadOnlyArray<LogBoxLog>,
     isDisabled: boolean,
     selectedLogIndex: number,
-  |}>,
+  }>,
 >;
 
 export function withSubscription(
   WrappedComponent: SubscribedComponent,
-): React.AbstractComponent<{||}> {
+): React.ComponentType<{}> {
   class LogBoxStateSubscription extends React.Component<Props, State> {
     static getDerivedStateFromError(): {hasError: boolean} {
       return {hasError: true};

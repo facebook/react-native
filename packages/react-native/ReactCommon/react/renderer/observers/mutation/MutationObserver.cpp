@@ -133,31 +133,30 @@ void MutationObserver::recordMutationsInTarget(
   }
 
   recordMutationsInSubtrees(
-      std::move(targetShadowNode),
-      *oldTargetShadowNode,
-      *newTargetShadowNode,
+      oldTargetShadowNode,
+      newTargetShadowNode,
       observeSubtree,
       recordedMutations,
       processedNodes);
 }
 
 void MutationObserver::recordMutationsInSubtrees(
-    ShadowNode::Shared targetShadowNode,
-    const ShadowNode& oldNode,
-    const ShadowNode& newNode,
+    const ShadowNode::Shared& oldNode,
+    const ShadowNode::Shared& newNode,
     bool observeSubtree,
     std::vector<MutationRecord>& recordedMutations,
-    SetOfShadowNodePointers processedNodes) const {
-  bool isSameNode = &oldNode == &newNode;
+    SetOfShadowNodePointers& processedNodes) const {
+  bool isSameNode = oldNode.get() == newNode.get();
   // If the nodes are referentially equal, their children are also the same.
-  if (isSameNode || processedNodes.find(&newNode) != processedNodes.end()) {
+  if (isSameNode ||
+      processedNodes.find(oldNode.get()) != processedNodes.end()) {
     return;
   }
 
-  processedNodes.insert(&newNode);
+  processedNodes.insert(oldNode.get());
 
-  auto oldChildren = oldNode.getChildren();
-  auto newChildren = newNode.getChildren();
+  auto oldChildren = oldNode->getChildren();
+  auto newChildren = newNode->getChildren();
 
   std::vector<ShadowNode::Shared> addedNodes;
   std::vector<ShadowNode::Shared> removedNodes;
@@ -171,9 +170,8 @@ void MutationObserver::recordMutationsInSubtrees(
       // Nodes are present in both tress. If `subtree` is set to true,
       // we continue checking their children.
       recordMutationsInSubtrees(
-          targetShadowNode,
-          *oldChild,
-          *newChild,
+          oldChild,
+          newChild,
           observeSubtree,
           recordedMutations,
           processedNodes);
@@ -191,7 +189,7 @@ void MutationObserver::recordMutationsInSubtrees(
   if (!addedNodes.empty() || !removedNodes.empty()) {
     recordedMutations.emplace_back(MutationRecord{
         mutationObserverId_,
-        targetShadowNode,
+        oldNode,
         std::move(addedNodes),
         std::move(removedNodes)});
   }

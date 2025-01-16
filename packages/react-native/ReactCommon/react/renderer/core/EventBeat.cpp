@@ -7,18 +7,30 @@
 
 #include "EventBeat.h"
 
+#include <react/debug/react_native_assert.h>
+#include <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #include <utility>
 
 namespace facebook::react {
 
 EventBeat::EventBeat(
     std::shared_ptr<OwnerBox> ownerBox,
-    RuntimeExecutor runtimeExecutor)
-    : ownerBox_(std::move(ownerBox)),
-      runtimeExecutor_(std::move(runtimeExecutor)) {}
+    RuntimeScheduler& runtimeScheduler)
+    : ownerBox_(std::move(ownerBox)), runtimeScheduler_(runtimeScheduler) {}
 
 void EventBeat::request() const {
-  isRequested_ = true;
+  react_native_assert(
+      beatCallback_ &&
+      "Unexpected state: EventBeat::setBeatCallback was not called before EventBeat::request.");
+  isEventBeatRequested_ = true;
+}
+
+void EventBeat::requestSynchronous() const {
+  react_native_assert(
+      beatCallback_ &&
+      "Unexpected state: EventBeat::setBeatCallback was not called before EventBeat::requestSynchronous.");
+  isSynchronousRequested_ = true;
+  request();
 }
 
 void EventBeat::setBeatCallback(BeatCallback beatCallback) {
@@ -26,24 +38,37 @@ void EventBeat::setBeatCallback(BeatCallback beatCallback) {
 }
 
 void EventBeat::induce() const {
-  if (!isRequested_ || isBeatCallbackScheduled_) {
+  if (!isEventBeatRequested_) {
     return;
   }
 
-  isRequested_ = false;
+  isEventBeatRequested_ = false;
+
+  if (isBeatCallbackScheduled_) {
+    return;
+  }
+
   isBeatCallbackScheduled_ = true;
 
-  runtimeExecutor_([this, ownerBox = ownerBox_](jsi::Runtime& runtime) {
-    auto owner = ownerBox->owner.lock();
-    if (!owner) {
-      return;
-    }
+  auto beat = std::function<void(jsi::Runtime&)>(
+      [this, ownerBox = ownerBox_](jsi::Runtime& runtime) {
+        auto owner = ownerBox->owner.lock();
+        if (!owner) {
+          return;
+        }
 
-    isBeatCallbackScheduled_ = false;
-    if (beatCallback_) {
-      beatCallback_(runtime);
-    }
-  });
+        isBeatCallbackScheduled_ = false;
+        if (beatCallback_) {
+          beatCallback_(runtime);
+        }
+      });
+
+  if (isSynchronousRequested_) {
+    isSynchronousRequested_ = false;
+    runtimeScheduler_.executeNowOnTheSameThread(std::move(beat));
+  } else {
+    runtimeScheduler_.scheduleWork(std::move(beat));
+  }
 }
 
 } // namespace facebook::react

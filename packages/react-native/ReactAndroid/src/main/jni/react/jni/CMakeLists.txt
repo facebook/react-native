@@ -32,7 +32,6 @@ target_include_directories(reactnativejni PUBLIC ../../)
 target_link_libraries(reactnativejni
         android
         callinvokerholder
-        fb
         fbjni
         folly_runtime
         glog_init

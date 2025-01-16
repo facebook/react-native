@@ -33,7 +33,6 @@ class EventDispatcher {
   EventDispatcher(
       const EventQueueProcessor& eventProcessor,
       std::unique_ptr<EventBeat> eventBeat,
-      RuntimeScheduler& runtimeScheduler,
       StatePipe statePipe,
       std::weak_ptr<EventLogger> eventLogger);
 

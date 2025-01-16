@@ -62,6 +62,7 @@ class SurfaceHandler {
    * Can be constructed anytime with a `moduleName` and a `surfaceId`.
    */
   SurfaceHandler(const std::string& moduleName, SurfaceId surfaceId) noexcept;
+
   virtual ~SurfaceHandler() noexcept;
 
   /*

@@ -101,6 +101,11 @@ export interface ModalPropsAndroid {
    *  Determines whether your modal should go under the system statusbar.
    */
   statusBarTranslucent?: boolean | undefined;
+
+  /**
+   *  Determines whether your modal should go under the system navigationbar.
+   */
+  navigationBarTranslucent?: boolean | undefined;
 }
 
 export type ModalProps = ModalBaseProps &

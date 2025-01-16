@@ -73,8 +73,6 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
-  const useSetNativePropsInNativeAnimationsInFabric =
-    ReactNativeFeatureFlags.shouldUseSetNativePropsInNativeAnimationsInFabric();
 
   const useAnimatedPropsLifecycle =
     ReactNativeFeatureFlags.useInsertionEffectsForAnimations()
@@ -119,12 +117,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
           if (isFabricNode) {
             // Call `scheduleUpdate` to synchronise Fiber and Shadow tree.
             // Must not be called in Paper.
-            if (useSetNativePropsInNativeAnimationsInFabric) {
-              // $FlowFixMe[incompatible-use]
-              instance.setNativeProps(node.__getAnimatedValue());
-            } else {
-              scheduleUpdate();
-            }
+            scheduleUpdate();
           }
           return;
         }
@@ -201,12 +194,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         }
       };
     },
-    [
-      node,
-      useNativePropsInFabric,
-      useSetNativePropsInNativeAnimationsInFabric,
-      props,
-    ],
+    [node, useNativePropsInFabric, props],
   );
   const callbackRef = useRefEffect<TInstance>(refEffect);
 
@@ -331,6 +319,20 @@ function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
     // if the queue is empty. When multiple animated components are mounted at
     // the same time. Only first component flushes the queue and the others will noop.
     NativeAnimatedHelper.API.flushQueue();
+    let drivenAnimationEndedListener: ?EventSubscription = null;
+    if (node.__isNative) {
+      drivenAnimationEndedListener =
+        NativeAnimatedHelper.nativeEventEmitter.addListener(
+          'onUserDrivenAnimationEnded',
+          data => {
+            node.update();
+          },
+        );
+    }
+
+    return () => {
+      drivenAnimationEndedListener?.remove();
+    };
   });
 
   useInsertionEffect(() => {
@@ -342,17 +344,6 @@ function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
 
   useInsertionEffect(() => {
     node.__attach();
-    let drivenAnimationEndedListener: ?EventSubscription = null;
-
-    if (node.__isNative) {
-      drivenAnimationEndedListener =
-        NativeAnimatedHelper.nativeEventEmitter.addListener(
-          'onUserDrivenAnimationEnded',
-          data => {
-            node.update();
-          },
-        );
-    }
     if (prevNodeRef.current != null) {
       const prevNode = prevNodeRef.current;
       // TODO: Stop restoring default values (unless `reset` is called).
@@ -367,8 +358,6 @@ function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
       } else {
         prevNodeRef.current = node;
       }
-
-      drivenAnimationEndedListener?.remove();
     };
   }, [node]);
 }

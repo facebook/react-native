@@ -46,7 +46,6 @@ type AppParameters = {
   initialProps: $ReadOnly<{[string]: mixed, ...}>,
   rootTag: RootTag,
   fabric?: boolean,
-  concurrentRoot?: boolean,
 };
 export type Runnable = (
   appParameters: AppParameters,
@@ -120,10 +119,6 @@ const AppRegistry = {
   ): string {
     const scopedPerformanceLogger = createPerformanceLogger();
     runnables[appKey] = (appParameters, displayMode) => {
-      const concurrentRootEnabled = Boolean(
-        appParameters.initialProps?.concurrentRoot ||
-          appParameters.concurrentRoot,
-      );
       renderApplication(
         componentProviderInstrumentationHook(
           componentProvider,
@@ -138,7 +133,6 @@ const AppRegistry = {
         appKey === 'LogBox', // is logbox
         appKey,
         displayMode,
-        concurrentRootEnabled,
       );
     };
     if (section) {

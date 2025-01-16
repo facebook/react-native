@@ -22,9 +22,9 @@ import LogBoxButton from './LogBoxButton';
 import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   codeFrame: ?CodeFrame,
-|}>;
+}>;
 
 function LogBoxInspectorCodeFrame(props: Props): React.Node {
   const codeFrame = props.codeFrame;
@@ -59,7 +59,9 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
     <LogBoxInspectorSection heading="Source" action={<AppInfo />}>
       <View style={styles.box}>
         <View style={styles.frame}>
-          <ScrollView horizontal>
+          <ScrollView
+            horizontal
+            contentContainerStyle={styles.contentContainer}>
             <AnsiHighlight style={styles.content} text={codeFrame.content} />
           </ScrollView>
         </View>
@@ -137,6 +139,9 @@ const styles = StyleSheet.create({
   button: {
     paddingTop: 10,
     paddingBottom: 10,
+  },
+  contentContainer: {
+    minWidth: '100%',
   },
   content: {
     color: LogBoxStyle.getTextColor(1),

@@ -12,6 +12,7 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
+import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
 import TextInlineViewsExample from './TextInlineViewsExample';
 
@@ -40,9 +41,9 @@ function InlineView(props) {
   );
 }
 
-type TextAlignExampleRTLState = {|
+type TextAlignExampleRTLState = {
   isRTL: boolean,
-|};
+};
 
 class TextAlignRTLExample extends React.Component<
   {},
@@ -60,7 +61,9 @@ class TextAlignRTLExample extends React.Component<
     const {isRTL} = this.state;
     const toggleRTL = () => this.setState({isRTL: !isRTL});
     return (
-      <View style={{direction: isRTL ? 'rtl' : 'ltr'}}>
+      <View
+        style={{direction: isRTL ? 'rtl' : 'ltr'}}
+        testID="text-align-example">
         <Text>auto (default) - english LTR</Text>
         <Text>
           {'\u0623\u062D\u0628 \u0627\u0644\u0644\u063A\u0629 ' +
@@ -152,12 +155,12 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{||}>;
+type AdjustingFontSizeProps = $ReadOnly<{}>;
 
-type AdjustingFontSizeState = {|
+type AdjustingFontSizeState = {
   dynamicText: string,
   shouldRender: boolean,
-|};
+};
 
 class AdjustingFontSize extends React.Component<
   AdjustingFontSizeProps,
@@ -564,6 +567,53 @@ class TextWithCapBaseBox extends React.Component<
 }
 
 const examples = [
+  {
+    title: 'iOS System Font Families (iOS only)',
+    name: 'iOSSystemFontFamilies',
+    description:
+      ('Shows system font families including system-ui/ui-sans-serif, ui-serif, ui-monospace, and ui-rounded': string),
+    render: function (): React.Node {
+      return (
+        <View testID={'ios-font-families'}>
+          <Text
+            style={{
+              fontFamily: 'system-ui',
+              fontSize: 32,
+              marginBottom: 20,
+            }}>
+            `fontFamily: system-ui` (same as `ui-sans-serif`)
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'ui-sans-serif',
+              fontSize: 32,
+              marginBottom: 20,
+            }}>
+            `fontFamily: ui-sans-serif` (same as `system-ui`)
+          </Text>
+          <Text
+            style={{fontFamily: 'ui-serif', fontSize: 32, marginBottom: 20}}>
+            `fontFamily: ui-serif`
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'ui-monospace',
+              fontSize: 32,
+              marginBottom: 20,
+            }}>
+            `fontFamily: ui-monospace`
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'ui-rounded',
+              fontSize: 32,
+            }}>
+            `fontFamily: ui-rounded`
+          </Text>
+        </View>
+      );
+    },
+  },
   {
     title: 'Wrap',
     render: function (): React.Node {
@@ -1254,6 +1304,7 @@ const examples = [
   },
   {
     title: 'Text Align with RTL',
+    name: 'textAlign',
     render: function (): React.Node {
       return <TextAlignRTLExample />;
     },
@@ -1347,9 +1398,9 @@ const examples = [
                   return (
                     <View key={code}>
                       <Text style={{fontWeight: 'bold'}}>{`[${code}]`}</Text>
-                      <Text lineBreakStrategyIOS={strategy}>
+                      <RNTesterText lineBreakStrategyIOS={strategy}>
                         {textByCode[code]}
-                      </Text>
+                      </RNTesterText>
                     </View>
                   );
                 })}

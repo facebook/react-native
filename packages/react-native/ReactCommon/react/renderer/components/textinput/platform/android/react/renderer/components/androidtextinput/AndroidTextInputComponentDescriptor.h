@@ -28,11 +28,9 @@ class AndroidTextInputComponentDescriptor final
  public:
   AndroidTextInputComponentDescriptor(
       const ComponentDescriptorParameters& parameters)
-      : ConcreteComponentDescriptor<AndroidTextInputShadowNode>(parameters) {
-    // Every single `AndroidTextInputShadowNode` will have a reference to
-    // a shared `TextLayoutManager`.
-    textLayoutManager_ = std::make_shared<TextLayoutManager>(contextContainer_);
-  }
+      : ConcreteComponentDescriptor<AndroidTextInputShadowNode>(parameters),
+        textLayoutManager_(
+            std::make_shared<TextLayoutManager>(contextContainer_)) {}
 
   virtual State::Shared createInitialState(
       const Props::Shared& props,
@@ -70,8 +68,7 @@ class AndroidTextInputComponentDescriptor final
     }
 
     return std::make_shared<AndroidTextInputShadowNode::ConcreteState>(
-        std::make_shared<const AndroidTextInputState>(AndroidTextInputState(
-            0, {}, {}, {}, theme.start, theme.end, theme.top, theme.bottom)),
+        std::make_shared<const TextInputState>(TextInputState({}, {}, {}, 0)),
         family);
   }
 
@@ -80,12 +77,9 @@ class AndroidTextInputComponentDescriptor final
     auto& textInputShadowNode =
         static_cast<AndroidTextInputShadowNode&>(shadowNode);
 
-    // `ParagraphShadowNode` uses `TextLayoutManager` to measure text content
+    // `TextInputShadowNode` uses `TextLayoutManager` to measure text content
     // and communicate text rendering metrics to mounting layer.
     textInputShadowNode.setTextLayoutManager(textLayoutManager_);
-
-    textInputShadowNode.setContextContainer(
-        const_cast<ContextContainer*>(getContextContainer().get()));
 
     int surfaceId = textInputShadowNode.getSurfaceId();
     if (surfaceIdToThemePaddingMap_.find(surfaceId) !=
@@ -152,7 +146,6 @@ class AndroidTextInputComponentDescriptor final
     }
 
     textInputShadowNode.dirtyLayout();
-    textInputShadowNode.enableMeasurement();
 
     ConcreteComponentDescriptor::adopt(shadowNode);
   }
@@ -169,7 +162,7 @@ class AndroidTextInputComponentDescriptor final
   constexpr static auto UIManagerJavaDescriptor =
       "com/facebook/react/fabric/FabricUIManager";
 
-  SharedTextLayoutManager textLayoutManager_;
+  const std::shared_ptr<TextLayoutManager> textLayoutManager_;
   mutable std::unordered_map<int, ThemePadding> surfaceIdToThemePaddingMap_;
 };
 

@@ -21,4 +21,9 @@ add_library(yoga OBJECT ${yoga_SRC})
 target_include_directories(yoga PUBLIC jni)
 target_merge_so(yoga)
 
-target_link_libraries(yoga yogacore fb fbjni log android)
+target_link_libraries(yoga
+        yogacore
+        fbjni
+        log
+        android
+)

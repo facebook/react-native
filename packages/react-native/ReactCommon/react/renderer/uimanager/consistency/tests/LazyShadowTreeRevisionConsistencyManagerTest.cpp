@@ -24,7 +24,7 @@ class FakeShadowTreeDelegate : public ShadowTreeDelegate {
   };
 
   void shadowTreeDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator,
+      std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) const override {};
 };
 

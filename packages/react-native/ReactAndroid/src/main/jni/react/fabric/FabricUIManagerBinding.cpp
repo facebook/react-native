@@ -12,9 +12,8 @@
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
-#include "ReactNativeConfigHolder.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
@@ -30,7 +29,6 @@
 #include <react/renderer/scheduler/SchedulerToolbox.h>
 #include <react/renderer/uimanager/primitives.h>
 #include <react/utils/ContextContainer.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -44,43 +42,6 @@ std::shared_ptr<Scheduler> FabricUIManagerBinding::getScheduler() {
   // Need to return a copy of the shared_ptr to make sure this is safe if called
   // concurrently with uninstallFabricUIManager
   return scheduler_;
-}
-
-jni::local_ref<ReadableNativeMap::jhybridobject>
-FabricUIManagerBinding::getInspectorDataForInstance(
-    jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper) {
-  auto scheduler = getScheduler();
-  if (!scheduler) {
-    LOG(ERROR) << "FabricUIManagerBinding::startSurface: scheduler disappeared";
-    return ReadableNativeMap::newObjectCxxArgs(folly::dynamic::object());
-  }
-
-  EventEmitterWrapper* cEventEmitter = cthis(eventEmitterWrapper);
-  InspectorData data =
-      scheduler->getInspectorDataForInstance(*cEventEmitter->eventEmitter);
-
-  folly::dynamic result = folly::dynamic::object;
-  result["fileName"] = data.fileName;
-  result["lineNumber"] = data.lineNumber;
-  result["columnNumber"] = data.columnNumber;
-  result["selectedIndex"] = data.selectedIndex;
-  result["props"] = data.props;
-  auto hierarchy = folly::dynamic::array();
-  for (const auto& hierarchyItem : data.hierarchy) {
-    hierarchy.push_back(hierarchyItem);
-  }
-  result["hierarchy"] = hierarchy;
-  return ReadableNativeMap::newObjectCxxArgs(result);
-}
-
-constexpr static auto kReactFeatureFlagsJavaDescriptor =
-    "com/facebook/react/config/ReactFeatureFlags";
-
-static bool getFeatureFlagValue(const char* name) {
-  static const auto reactFeatureFlagsClass =
-      jni::findClassStatic(kReactFeatureFlagsJavaDescriptor);
-  const auto field = reactFeatureFlagsClass->getStaticField<jboolean>(name);
-  return reactFeatureFlagsClass->getStaticFieldValue(field) != 0;
 }
 
 void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
@@ -147,7 +108,7 @@ void FabricUIManagerBinding::startSurfaceWithSurfaceHandler(
     jint surfaceId,
     jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandlerBinding,
     jboolean isMountable) {
-  SystraceSection s("FabricUIManagerBinding::startSurfaceWithSurfaceHandler");
+  TraceSection s("FabricUIManagerBinding::startSurfaceWithSurfaceHandler");
   if (enableFabricLogs_) {
     LOG(WARNING)
         << "FabricUIManagerBinding::startSurfaceWithSurfaceHandler() was called (address: "
@@ -168,6 +129,11 @@ void FabricUIManagerBinding::startSurfaceWithSurfaceHandler(
   }
   scheduler->registerSurface(surfaceHandler);
 
+  auto mountingManager = getMountingManager("startSurfaceWithSurfaceHandler");
+  if (mountingManager != nullptr) {
+    mountingManager->onSurfaceStart(surfaceId);
+  }
+
   surfaceHandler.start();
 
   if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
@@ -178,14 +144,8 @@ void FabricUIManagerBinding::startSurfaceWithSurfaceHandler(
   {
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
     surfaceHandlerRegistry_.emplace(
-        surfaceHandler.getSurfaceId(), jni::make_weak(surfaceHandlerBinding));
+        surfaceId, jni::make_weak(surfaceHandlerBinding));
   }
-
-  auto mountingManager = getMountingManager("startSurfaceWithSurfaceHandler");
-  if (!mountingManager) {
-    return;
-  }
-  mountingManager->onSurfaceStart(surfaceHandler.getSurfaceId());
 }
 
 // Used by non-bridgeless+Fabric
@@ -193,7 +153,7 @@ void FabricUIManagerBinding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
     NativeMap* initialProps) {
-  SystraceSection s("FabricUIManagerBinding::startSurface");
+  TraceSection s("FabricUIManagerBinding::startSurface");
 
   if (enableFabricLogs_) {
     LOG(WARNING)
@@ -217,6 +177,11 @@ void FabricUIManagerBinding::startSurface(
 
   scheduler->registerSurface(surfaceHandler);
 
+  auto mountingManager = getMountingManager("startSurface");
+  if (mountingManager != nullptr) {
+    mountingManager->onSurfaceStart(surfaceId);
+  }
+
   surfaceHandler.start();
 
   if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
@@ -225,17 +190,9 @@ void FabricUIManagerBinding::startSurface(
   }
 
   {
-    SystraceSection s2("FabricUIManagerBinding::startSurface::surfaceId::lock");
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    SystraceSection s3("FabricUIManagerBinding::startSurface::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
-
-  auto mountingManager = getMountingManager("startSurface");
-  if (!mountingManager) {
-    return;
-  }
-  mountingManager->onSurfaceStart(surfaceId);
 }
 
 // Used by non-bridgeless+Fabric
@@ -251,7 +208,7 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
     jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
-  SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
+  TraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
 
   if (enableFabricLogs_) {
     LOG(WARNING)
@@ -289,6 +246,11 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 
   scheduler->registerSurface(surfaceHandler);
 
+  auto mountingManager = getMountingManager("startSurfaceWithConstraints");
+  if (mountingManager != nullptr) {
+    mountingManager->onSurfaceStart(surfaceId);
+  }
+
   surfaceHandler.start();
 
   if (ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid()) {
@@ -297,24 +259,14 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
   }
 
   {
-    SystraceSection s2(
-        "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId::lock");
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
-    SystraceSection s3(
-        "FabricUIManagerBinding::startSurfaceWithConstraints::surfaceId");
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
-
-  auto mountingManager = getMountingManager("startSurfaceWithConstraints");
-  if (!mountingManager) {
-    return;
-  }
-  mountingManager->onSurfaceStart(surfaceId);
 }
 
 // Used by non-bridgeless+Fabric
 void FabricUIManagerBinding::stopSurface(jint surfaceId) {
-  SystraceSection s("FabricUIManagerBinding::stopSurface");
+  TraceSection s("FabricUIManagerBinding::stopSurface");
   if (enableFabricLogs_) {
     LOG(WARNING)
         << "FabricUIManagerBinding::stopSurface() was called (address: " << this
@@ -357,7 +309,7 @@ void FabricUIManagerBinding::stopSurface(jint surfaceId) {
 void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
     jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
         surfaceHandlerBinding) {
-  SystraceSection s("FabricUIManagerBinding::stopSurfaceWithSurfaceHandler");
+  TraceSection s("FabricUIManagerBinding::stopSurfaceWithSurfaceHandler");
   const auto& surfaceHandler =
       surfaceHandlerBinding->cthis()->getSurfaceHandler();
   if (enableFabricLogs_) {
@@ -398,7 +350,7 @@ void FabricUIManagerBinding::setConstraints(
     jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
-  SystraceSection s("FabricUIManagerBinding::setConstraints");
+  TraceSection s("FabricUIManagerBinding::setConstraints");
 
   auto scheduler = getScheduler();
   if (!scheduler) {
@@ -445,12 +397,8 @@ void FabricUIManagerBinding::installFabricUIManager(
     jni::alias_ref<JRuntimeScheduler::javaobject> runtimeSchedulerHolder,
     jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
     EventBeatManager* eventBeatManager,
-    ComponentFactory* componentsRegistry,
-    jni::alias_ref<jobject> reactNativeConfig) {
-  SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
-
-  std::shared_ptr<const ReactNativeConfig> config =
-      std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
+    ComponentFactory* componentsRegistry) {
+  TraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
   enableFabricLogs_ = ReactNativeFeatureFlags::enableFabricLogs();
 
@@ -464,48 +412,36 @@ void FabricUIManagerBinding::installFabricUIManager(
 
   auto globalJavaUiManager = make_global(javaUIManager);
   mountingManager_ =
-      std::make_shared<FabricMountingManager>(config, globalJavaUiManager);
+      std::make_shared<FabricMountingManager>(globalJavaUiManager);
 
   ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
 
   auto runtimeExecutor = runtimeExecutorHolder->cthis()->get();
 
-  if (runtimeSchedulerHolder) {
-    auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get().lock();
-    if (runtimeScheduler) {
-      runtimeExecutor =
-          [runtimeScheduler](
-              std::function<void(jsi::Runtime & runtime)>&& callback) {
-            runtimeScheduler->scheduleWork(std::move(callback));
-          };
-      contextContainer->insert(
-          "RuntimeScheduler",
-          std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
-    }
+  auto runtimeScheduler = runtimeSchedulerHolder->cthis()->get().lock();
+  if (runtimeScheduler) {
+    runtimeExecutor =
+        [runtimeScheduler](
+            std::function<void(jsi::Runtime & runtime)>&& callback) {
+          runtimeScheduler->scheduleWork(std::move(callback));
+        };
+    contextContainer->insert(
+        "RuntimeScheduler", std::weak_ptr<RuntimeScheduler>(runtimeScheduler));
   }
 
   EventBeat::Factory eventBeatFactory =
-      [eventBeatManager, runtimeExecutor, globalJavaUiManager](
+      [eventBeatManager, &runtimeScheduler, globalJavaUiManager](
           std::shared_ptr<EventBeat::OwnerBox> ownerBox)
       -> std::unique_ptr<EventBeat> {
     return std::make_unique<AndroidEventBeat>(
         std::move(ownerBox),
         eventBeatManager,
-        runtimeExecutor,
+        *runtimeScheduler,
         globalJavaUiManager);
   };
 
-  contextContainer->insert("ReactNativeConfig", config);
   contextContainer->insert("FabricUIManager", globalJavaUiManager);
-
-  // Keep reference to config object and cache some feature flags here
-  reactNativeConfig_ = config;
-
-  CoreFeatures::enablePropIteratorSetter =
-      getFeatureFlagValue("enableCppPropsIteratorSetter");
-  CoreFeatures::excludeYogaFromRawProps =
-      ReactNativeFeatureFlags::excludeYogaFromRawProps();
 
   auto toolbox = SchedulerToolbox{};
   toolbox.contextContainer = contextContainer;
@@ -535,7 +471,6 @@ void FabricUIManagerBinding::uninstallFabricUIManager() {
   animationDriver_ = nullptr;
   scheduler_ = nullptr;
   mountingManager_ = nullptr;
-  reactNativeConfig_ = nullptr;
 }
 
 std::shared_ptr<FabricMountingManager>
@@ -551,50 +486,65 @@ FabricUIManagerBinding::getMountingManager(const char* locationHint) {
 }
 
 void FabricUIManagerBinding::schedulerDidFinishTransaction(
-    const MountingCoordinator::Shared& mountingCoordinator) {
-  // We shouldn't be pulling the transaction here (which triggers diffing of
-  // the trees to determine the mutations to run on the host platform),
-  // but we have to due to current limitations in the Android implementation.
-  auto mountingTransaction = mountingCoordinator->pullTransaction(
-      // Indicate that the transaction will be performed asynchronously
-      ReactNativeFeatureFlags::
-          fixMountingCoordinatorReportedPendingTransactionsOnAndroid());
-  if (!mountingTransaction.has_value()) {
-    return;
-  }
-
-  std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
-  auto pendingTransaction = std::find_if(
-      pendingTransactions_.begin(),
-      pendingTransactions_.end(),
-      [&](const auto& transaction) {
-        return transaction.getSurfaceId() ==
-            mountingTransaction->getSurfaceId();
-      });
-
-  if (pendingTransaction != pendingTransactions_.end()) {
-    pendingTransaction->mergeWith(std::move(*mountingTransaction));
+    const std::shared_ptr<const MountingCoordinator>& mountingCoordinator) {
+  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+    // We don't do anything here. We will pull the transaction in
+    // `schedulerShouldRenderTransactions`.
   } else {
-    pendingTransactions_.push_back(std::move(*mountingTransaction));
+    // We shouldn't be pulling the transaction here (which triggers diffing of
+    // the trees to determine the mutations to run on the host platform),
+    // but we have to due to current limitations in the Android implementation.
+    auto mountingTransaction = mountingCoordinator->pullTransaction(
+        // Indicate that the transaction will be performed asynchronously
+        ReactNativeFeatureFlags::
+            fixMountingCoordinatorReportedPendingTransactionsOnAndroid());
+    if (!mountingTransaction.has_value()) {
+      return;
+    }
+
+    std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
+    auto pendingTransaction = std::find_if(
+        pendingTransactions_.begin(),
+        pendingTransactions_.end(),
+        [&](const auto& transaction) {
+          return transaction.getSurfaceId() ==
+              mountingTransaction->getSurfaceId();
+        });
+
+    if (pendingTransaction != pendingTransactions_.end()) {
+      pendingTransaction->mergeWith(std::move(*mountingTransaction));
+    } else {
+      pendingTransactions_.push_back(std::move(*mountingTransaction));
+    }
   }
 }
 
 void FabricUIManagerBinding::schedulerShouldRenderTransactions(
-    const MountingCoordinator::Shared& /* mountingCoordinator */) {
+    const std::shared_ptr<const MountingCoordinator>& mountingCoordinator) {
   auto mountingManager =
       getMountingManager("schedulerShouldRenderTransactions");
   if (!mountingManager) {
     return;
   }
-
-  if (ReactNativeFeatureFlags::
-          allowRecursiveCommitsWithSynchronousMountOnAndroid()) {
+  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+    auto mountingTransaction = mountingCoordinator->pullTransaction();
+    if (mountingTransaction.has_value()) {
+      auto transaction = std::move(*mountingTransaction);
+      mountingManager->executeMount(transaction);
+    }
+  } else {
     std::vector<MountingTransaction> pendingTransactions;
 
     {
       // Retain the lock to access the pending transactions but not to execute
       // the mount operations because that method can call into this method
       // again.
+      //
+      // This can be re-entrant when mounting manager triggers state updates
+      // synchronously (this can happen when committing from the UI thread).
+      // This is safe because we're already combining all the transactions for
+      // the same surface ID in a single transaction in the pending transactions
+      // list, so operations won't run out of order.
       std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
       pendingTransactions_.swap(pendingTransactions);
     }
@@ -602,12 +552,6 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
     for (auto& transaction : pendingTransactions) {
       mountingManager->executeMount(transaction);
     }
-  } else {
-    std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
-    for (auto& transaction : pendingTransactions_) {
-      mountingManager->executeMount(transaction);
-    }
-    pendingTransactions_.clear();
   }
 }
 
@@ -690,9 +634,6 @@ void FabricUIManagerBinding::registerNatives() {
           "installFabricUIManager",
           FabricUIManagerBinding::installFabricUIManager),
       makeNativeMethod("startSurface", FabricUIManagerBinding::startSurface),
-      makeNativeMethod(
-          "getInspectorDataForInstance",
-          FabricUIManagerBinding::getInspectorDataForInstance),
       makeNativeMethod(
           "startSurfaceWithConstraints",
           FabricUIManagerBinding::startSurfaceWithConstraints),

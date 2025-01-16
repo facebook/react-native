@@ -14,10 +14,10 @@ import type {WithDefault} from '../../../../Libraries/Types/CodegenTypes';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
   name?: WithDefault<string, ''>,
-|}>;
+}>;
 
 // NOTE: This component is not implemented in paper
 // Do not require this file in paper builds

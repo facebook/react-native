@@ -52,7 +52,7 @@ export type RenderItemType<ItemT> = (
   info: RenderItemProps<ItemT>,
 ) => React.Node;
 
-type RequiredProps = {|
+type RequiredProps = {
   /**
    * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -66,8 +66,8 @@ type RequiredProps = {|
    * Determines how many items are in the data blob.
    */
   getItemCount: (data: any) => number,
-|};
-type OptionalProps = {|
+};
+type OptionalProps = {
   renderItem?: ?RenderItemType<Item>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
@@ -297,13 +297,13 @@ type OptionalProps = {|
    * The legacy implementation is no longer supported.
    */
   legacyImplementation?: empty,
-|};
+};
 
-export type Props = {|
+export type Props = {
   ...React.ElementConfig<ScrollView>,
   ...RequiredProps,
   ...OptionalProps,
-|};
+};
 
 /**
  * Default Props Helper Functions

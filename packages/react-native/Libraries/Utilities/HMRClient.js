@@ -39,7 +39,7 @@ type LogLevel =
   | 'groupEnd'
   | 'debug';
 
-export type HMRClientNativeInterface = {|
+export type HMRClientNativeInterface = {
   enable(): void,
   disable(): void,
   registerBundle(requestUrl: string): void,
@@ -53,7 +53,7 @@ export type HMRClientNativeInterface = {|
     scheme?: string,
   ): void,
   unstable_notifyFuseboxConsoleEnabled(): void,
-|};
+};
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them

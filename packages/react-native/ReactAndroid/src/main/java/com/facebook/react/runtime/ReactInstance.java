@@ -17,6 +17,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.BuildConfig;
 import com.facebook.react.DebugCorePackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.ViewManagerOnDemandReactPackage;
@@ -130,9 +131,7 @@ final class ReactInstance {
         mQueueConfiguration.getNativeModulesQueueThread();
 
     ReactChoreographer.initialize(AndroidChoreographerProvider.getInstance());
-    if (useDevSupport) {
-      devSupportManager.startInspector();
-    }
+    devSupportManager.startInspector();
 
     JSTimerExecutor jsTimerExecutor = createJSTimerExecutor();
     mJavaTimerManager =
@@ -146,7 +145,9 @@ final class ReactInstance {
     BindingsInstaller bindingsInstaller = delegate.getBindingsInstaller();
     // Notify JS if profiling is enabled
     boolean isProfiling =
-        Systrace.isTracing(Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
+        BuildConfig.ENABLE_PERFETTO
+            || Systrace.isTracing(
+                Systrace.TRACE_TAG_REACT_APPS | Systrace.TRACE_TAG_REACT_JS_VM_CALLS);
 
     mHybridData =
         initHybrid(
@@ -277,8 +278,7 @@ final class ReactInstance {
         getRuntimeScheduler(),
         mFabricUIManager,
         eventBeatManager,
-        componentFactory,
-        delegate.getReactNativeConfig());
+        componentFactory);
 
     // Initialize the FabricUIManager
     mFabricUIManager.initialize();
@@ -324,8 +324,8 @@ final class ReactInstance {
     }
 
     @Override
-    public void reportJsException(ParsedError error) {
-      JavaOnlyMap data = StackTraceHelper.convertParsedError(error);
+    public void reportJsException(ProcessedError error) {
+      JavaOnlyMap data = StackTraceHelper.convertProcessedError(error);
 
       try {
         NativeExceptionsManagerSpec exceptionsManager =

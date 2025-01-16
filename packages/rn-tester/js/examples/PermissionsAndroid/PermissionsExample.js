@@ -17,7 +17,7 @@ import * as React from 'react';
 import {PermissionsAndroid, StyleSheet, View} from 'react-native';
 
 function PermissionsExample() {
-  const [permission, setPermission] = React.useState(
+  const [permission, setPermission] = React.useState<string>(
     PermissionsAndroid.PERMISSIONS.CAMERA,
   );
   const [hasPermission, setHasPermission] = React.useState('Not Checked');

@@ -7,11 +7,11 @@
 
 #include "ParagraphProps.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/attributedstring/primitives.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/debugStringConvertibleUtils.h>
-#include <react/utils/CoreFeatures.h>
 
 #include <glog/logging.h>
 
@@ -24,7 +24,7 @@ ParagraphProps::ParagraphProps(
     : ViewProps(context, sourceProps, rawProps),
       BaseTextProps(context, sourceProps, rawProps),
       paragraphAttributes(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.paragraphAttributes
               : convertRawProp(
                     context,
@@ -32,21 +32,23 @@ ParagraphProps::ParagraphProps(
                     sourceProps.paragraphAttributes,
                     {})),
       isSelectable(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.isSelectable
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "selectable",
-                                                       sourceProps.isSelectable,
-                                                       false)),
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.isSelectable
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "selectable",
+                    sourceProps.isSelectable,
+                    false)),
       onTextLayout(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.onTextLayout
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "onTextLayout",
-                                                       sourceProps.onTextLayout,
-                                                       {})) {
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.onTextLayout
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "onTextLayout",
+                    sourceProps.onTextLayout,
+                    {})) {
   /*
    * These props are applied to `View`, therefore they must not be a part of
    * base text attributes.

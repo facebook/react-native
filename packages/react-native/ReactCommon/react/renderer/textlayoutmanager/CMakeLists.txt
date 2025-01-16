@@ -24,16 +24,15 @@ add_library(react_render_textlayoutmanager
 
 target_include_directories(react_render_textlayoutmanager
         PUBLIC
+          .
           ${REACT_COMMON_DIR}
           ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
 )
 
 target_link_libraries(react_render_textlayoutmanager
         glog
-        fb
         fbjni
         folly_runtime
-        glog_init
         mapbufferjni
         react_debug
         react_render_attributedstring

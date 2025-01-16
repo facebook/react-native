@@ -8,11 +8,9 @@
  * @format
  */
 
-import type {AbstractComponent} from 'react';
-
 import * as React from 'react';
 
-type NoopComponent = AbstractComponent<{children: React.Node}>;
+type NoopComponent = component(children: React.Node);
 
 const cache: Map<
   string, // displayName

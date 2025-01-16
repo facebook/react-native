@@ -12,7 +12,8 @@ export type ImageResizeMode =
   | 'contain'
   | 'stretch'
   | 'repeat'
-  | 'center';
+  | 'center'
+  | 'none';
 
 /**
  * @see ImageResizeMode.js
@@ -46,4 +47,10 @@ export interface ImageResizeModeStatic {
    * image will keep it's size and aspect ratio.
    */
   repeat: ImageResizeMode;
+
+  /**
+   * none - The image will be displayed at its intrinsic size, which means the
+   * image will not be scaled up or down.
+   */
+  none: ImageResizeMode;
 }

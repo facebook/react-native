@@ -303,8 +303,12 @@ NSMutableDictionary<NSAttributedStringKey, id> *RCTNSTextAttributesFromTextAttri
     auto textShadowOffset = textAttributes.textShadowOffset.value();
     NSShadow *shadow = [NSShadow new];
     shadow.shadowOffset = CGSize{textShadowOffset.width, textShadowOffset.height};
-    shadow.shadowBlurRadius = textAttributes.textShadowRadius;
-    shadow.shadowColor = RCTUIColorFromSharedColor(textAttributes.textShadowColor);
+    if (!isnan(textAttributes.textShadowRadius)) {
+      shadow.shadowBlurRadius = textAttributes.textShadowRadius;
+    }
+    if (textAttributes.textShadowColor) {
+      shadow.shadowColor = RCTUIColorFromSharedColor(textAttributes.textShadowColor);
+    }
     attributes[NSShadowAttributeName] = shadow;
   }
 
@@ -403,6 +407,7 @@ static NSMutableAttributedString *RCTNSAttributedStringFragmentWithAttributesFro
 {
   auto nsAttributedStringFragment = RCTNSAttributedStringFragmentFromFragment(fragment, placeholderImage);
 
+#if !TARGET_OS_MAC && !TARGET_OS_MACCATALYST
   if (fragment.parentShadowView.componentHandle) {
     RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
     eventEmitterWrapper.eventEmitter = fragment.parentShadowView.eventEmitter;
@@ -413,6 +418,7 @@ static NSMutableAttributedString *RCTNSAttributedStringFragmentWithAttributesFro
     [nsAttributedStringFragment addAttributes:additionalTextAttributes
                                         range:NSMakeRange(0, nsAttributedStringFragment.length)];
   }
+#endif
 
   return nsAttributedStringFragment;
 }

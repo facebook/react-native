@@ -125,21 +125,17 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
-  } else if (req.method == "FuseboxClient.setClientMetadata") {
+  } else if (req.method == "ReactNativeApplication.enable") {
+    sessionState_.isReactNativeApplicationDomainEnabled = true;
     fuseboxClientType_ = FuseboxClientType::Fusebox;
 
     if (sessionState_.isLogDomainEnabled) {
       sendFuseboxNotice();
     }
 
-    shouldSendOKResponse = true;
-    isFinishedHandlingRequest = true;
-  } else if (req.method == "ReactNativeApplication.enable") {
-    sessionState_.isReactNativeApplicationDomainEnabled = true;
-
     frontendChannel_(cdp::jsonNotification(
         "ReactNativeApplication.metadataUpdated",
-        hostMetadataToDynamic(hostMetadata_)));
+        createHostMetadataPayload(hostMetadata_)));
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;

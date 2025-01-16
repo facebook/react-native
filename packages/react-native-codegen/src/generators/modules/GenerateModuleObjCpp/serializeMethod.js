@@ -263,6 +263,8 @@ function getParamObjCType(
       return notStruct(wrapOptional('NSString *', !nullable));
     case 'NumberTypeAnnotation':
       return notStruct(isRequired ? 'double' : 'NSNumber *');
+    case 'NumberLiteralTypeAnnotation':
+      return notStruct(isRequired ? 'double' : 'NSNumber *');
     case 'FloatTypeAnnotation':
       return notStruct(isRequired ? 'float' : 'NSNumber *');
     case 'DoubleTypeAnnotation':
@@ -344,6 +346,8 @@ function getReturnObjCType(
       return wrapOptional('NSString *', isRequired);
     case 'NumberTypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
+    case 'NumberLiteralTypeAnnotation':
+      return wrapOptional('NSNumber *', isRequired);
     case 'FloatTypeAnnotation':
       return wrapOptional('NSNumber *', isRequired);
     case 'DoubleTypeAnnotation':
@@ -413,6 +417,8 @@ function getReturnJSType(
     case 'StringLiteralUnionTypeAnnotation':
       return 'StringKind';
     case 'NumberTypeAnnotation':
+      return 'NumberKind';
+    case 'NumberLiteralTypeAnnotation':
       return 'NumberKind';
     case 'FloatTypeAnnotation':
       return 'NumberKind';

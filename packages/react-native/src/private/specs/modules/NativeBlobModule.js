@@ -12,7 +12,7 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type Constants = {|BLOB_URI_SCHEME: ?string, BLOB_URI_HOST: ?string|};
+export type Constants = {BLOB_URI_SCHEME: ?string, BLOB_URI_HOST: ?string};
 
 export interface Spec extends TurboModule {
   +getConstants: () => Constants;

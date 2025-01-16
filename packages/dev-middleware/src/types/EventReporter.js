@@ -78,6 +78,11 @@ export type ReportableEvent =
           >,
     }
   | {
+      type: 'profiling_target_registered',
+      status: 'success',
+      ...DebuggerSessionIDs,
+    }
+  | {
       type: 'proxy_error',
       status: 'error',
       messageOrigin: 'debugger' | 'device',

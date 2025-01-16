@@ -115,9 +115,6 @@ export default class Performance {
         markName,
         markOptions?.startTime,
       );
-    } else if (NativePerformance?.mark) {
-      computedStartTime = markOptions?.startTime ?? performance.now();
-      NativePerformance?.mark?.(markName, computedStartTime);
     } else {
       warnNoNativePerformance();
       computedStartTime = performance.now();
@@ -203,22 +200,13 @@ export default class Performance {
           startMarkName,
           endMarkName,
         );
-    } else if (NativePerformance?.measure) {
-      NativePerformance.measure(
-        measureName,
-        startTime,
-        endTime,
-        duration,
-        startMarkName,
-        endMarkName,
-      );
     } else {
       warnNoNativePerformance();
     }
 
     const measure = new PerformanceMeasure(measureName, {
       startTime: computedStartTime,
-      duration: computedDuration,
+      duration: computedDuration ?? 0,
       detail: options?.detail,
     });
 

@@ -35,6 +35,7 @@ struct WritableNativeMap
   void putBoolean(std::string key, bool val);
   void putDouble(std::string key, double val);
   void putInt(std::string key, int val);
+  void putLong(std::string key, jlong val);
   void putString(std::string key, jni::alias_ref<jstring> val);
   void putNativeArray(std::string key, ReadableNativeArray* val);
   void putNativeMap(std::string key, ReadableNativeMap* val);

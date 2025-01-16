@@ -15,6 +15,7 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.math.min
 import org.gradle.api.GradleException
 import org.gradle.api.file.FileCollection
 import org.gradle.api.initialization.Settings
@@ -159,7 +160,10 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
           val logger = Logging.getLogger("ReactSettingsExtension")
           logger.error(message)
           if (cacheJsonConfig.length() != 0L) {
-            logger.error(cacheJsonConfig.readText().substring(0, 1024))
+            logger.error(
+                cacheJsonConfig
+                    .readText()
+                    .substring(0, min(1024, cacheJsonConfig.length().toInt())))
           }
           cacheJsonConfig.delete()
           throw GradleException(message)

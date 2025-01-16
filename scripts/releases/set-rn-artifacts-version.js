@@ -16,9 +16,9 @@ import type {BuildType, Version} from './utils/version-utils';
 const {REPO_ROOT} = require('../consts');
 const {getNpmInfo} = require('../npm-utils');
 const {parseVersion, validateBuildType} = require('./utils/version-utils');
-const {parseArgs} = require('@pkgjs/parseargs');
 const {promises: fs} = require('fs');
 const path = require('path');
+const {parseArgs} = require('util');
 
 const GRADLE_FILE_PATH = path.join(
   REPO_ROOT,

@@ -7,15 +7,10 @@
  * @noformat
  * @nolint
  * @flow strict
- * @generated SignedSource<<448b89d0a61a392d9c1eb921f7d51d37>>
+ * @generated SignedSource<<c6ea057ee85cbc116a083e3a306b2b88>>
  */
 
-import type {
-  ElementRef,
-  ElementType,
-  MixedElement,
-  AbstractComponent,
-} from 'react';
+import type {ElementRef, ElementType, MixedElement} from 'react';
 
 export type MeasureOnSuccessCallback = (
   x: number,
@@ -138,7 +133,10 @@ declare const ensureNativeMethodsAreSynced: NativeMethods;
 (ensureNativeMethodsAreSynced: INativeMethods);
 
 export type HostInstance = NativeMethods;
-export type HostComponent<Config> = AbstractComponent<Config, HostInstance>;
+export type HostComponent<Config: {...}> = component(
+  ref: React$RefSetter<HostInstance>,
+  ...Config
+);
 
 type InspectorDataProps = $ReadOnly<{
   [propName: string]: string,
@@ -209,8 +207,8 @@ export type ReactNativeType = {
     componentOrHandle: ?(ElementRef<TElementType> | number),
   ): ?number,
   isChildPublicInstance(
-    parent: PublicInstance | HostComponent<mixed>,
-    child: PublicInstance | HostComponent<mixed>,
+    parent: PublicInstance | HostComponent<empty>,
+    child: PublicInstance | HostComponent<empty>,
   ): boolean,
   dispatchCommand(
     handle: HostInstance,

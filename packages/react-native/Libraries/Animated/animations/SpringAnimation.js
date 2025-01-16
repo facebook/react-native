@@ -194,6 +194,7 @@ export default class SpringAnimation extends Animation {
       toValue: this._toValue,
       iterations: this.__iterations,
       platformConfig: this._platformConfig,
+      debugID: this.__getDebugID(),
     };
   }
 

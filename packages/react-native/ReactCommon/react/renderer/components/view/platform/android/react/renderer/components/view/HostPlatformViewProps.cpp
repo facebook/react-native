@@ -9,29 +9,31 @@
 
 #include <algorithm>
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/view/conversions.h>
 #include <react/renderer/components/view/propsConversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
 HostPlatformViewProps::HostPlatformViewProps(
     const PropsParserContext& context,
     const HostPlatformViewProps& sourceProps,
-    const RawProps& rawProps)
-    : BaseViewProps(context, sourceProps, rawProps),
+    const RawProps& rawProps,
+    const std::function<bool(const std::string&)>& filterObjectKeys)
+    : BaseViewProps(context, sourceProps, rawProps, filterObjectKeys),
       elevation(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.elevation
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "elevation",
-                                                       sourceProps.elevation,
-                                                       {})),
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.elevation
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "elevation",
+                    sourceProps.elevation,
+                    {})),
       nativeBackground(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.nativeBackground
               : convertRawProp(
                     context,
@@ -40,7 +42,7 @@ HostPlatformViewProps::HostPlatformViewProps(
                     sourceProps.nativeBackground,
                     {})),
       nativeForeground(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.nativeForeground
               : convertRawProp(
                     context,
@@ -49,15 +51,16 @@ HostPlatformViewProps::HostPlatformViewProps(
                     sourceProps.nativeForeground,
                     {})),
       focusable(
-          CoreFeatures::enablePropIteratorSetter ? sourceProps.focusable
-                                                 : convertRawProp(
-                                                       context,
-                                                       rawProps,
-                                                       "focusable",
-                                                       sourceProps.focusable,
-                                                       {})),
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.focusable
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "focusable",
+                    sourceProps.focusable,
+                    {})),
       hasTVPreferredFocus(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.hasTVPreferredFocus
               : convertRawProp(
                     context,
@@ -66,7 +69,7 @@ HostPlatformViewProps::HostPlatformViewProps(
                     sourceProps.hasTVPreferredFocus,
                     {})),
       needsOffscreenAlphaCompositing(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.needsOffscreenAlphaCompositing
               : convertRawProp(
                     context,
@@ -75,7 +78,7 @@ HostPlatformViewProps::HostPlatformViewProps(
                     sourceProps.needsOffscreenAlphaCompositing,
                     {})),
       renderToHardwareTextureAndroid(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.renderToHardwareTextureAndroid
               : convertRawProp(
                     context,

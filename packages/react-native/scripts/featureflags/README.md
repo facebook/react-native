@@ -37,7 +37,7 @@ must be regenerated running this from the `react-native`
 repository:
 
 ```shell
-yarn featureflags-update
+yarn featureflags --update
 ```
 
 ## Access
@@ -150,7 +150,7 @@ the C++ core (via JNI).
 * A JavaScript interface that allows accessing the common values (via a native
 module) and accessing and customizing the JS-only values.
 
-![Diagram of the architecture of feature flags in React Native](./assets/react-native-feature-flags-architecture.excalidraw-embedded.png)
+![Diagram of the architecture of feature flags in React Native](./__docs__/react-native-feature-flags-architecture.excalidraw-embedded.png)
 
 _This image has an embedded [Excalidraw](https://www.excalidraw.com) diagram,
 so you can upload it there if you need to make further modifications._

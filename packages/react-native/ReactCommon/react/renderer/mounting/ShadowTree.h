@@ -66,10 +66,6 @@ class ShadowTree final {
     // will then let React run layout effects and apply updates before paint.
     // For all other commits, should be true.
     bool mountSynchronously{true};
-
-    // Called during `tryCommit` phase. Returning true indicates current commit
-    // should yield to the next commit.
-    std::function<bool()> shouldYield;
   };
 
   /*
@@ -130,7 +126,7 @@ class ShadowTree final {
    */
   void notifyDelegatesOfUpdates() const;
 
-  MountingCoordinator::Shared getMountingCoordinator() const;
+  std::shared_ptr<const MountingCoordinator> getMountingCoordinator() const;
 
  private:
   constexpr static ShadowTreeRevision::Number INITIAL_REVISION{0};
@@ -148,7 +144,7 @@ class ShadowTree final {
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision::Number
       lastRevisionNumberWithNewState_; // Protected by `commitMutex_`.
-  MountingCoordinator::Shared mountingCoordinator_;
+  std::shared_ptr<const MountingCoordinator> mountingCoordinator_;
 };
 
 } // namespace facebook::react

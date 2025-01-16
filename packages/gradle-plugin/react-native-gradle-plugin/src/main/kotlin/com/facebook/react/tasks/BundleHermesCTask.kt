@@ -12,6 +12,7 @@ import com.facebook.react.utils.detectOSAwareHermesCommand
 import com.facebook.react.utils.moveTo
 import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
+import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.DirectoryProperty
@@ -19,12 +20,15 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
+import org.gradle.process.ExecOperations
 
 abstract class BundleHermesCTask : DefaultTask() {
 
   init {
     group = "react"
   }
+
+  @get:Inject abstract val execOperations: ExecOperations
 
   @get:Internal abstract val root: DirectoryProperty
 
@@ -127,9 +131,9 @@ abstract class BundleHermesCTask : DefaultTask() {
       File(jsIntermediateSourceMapsDir.get().asFile, "$bundleAssetName.compiler.map")
 
   private fun runCommand(command: List<Any>) {
-    project.exec {
-      it.workingDir(root.get().asFile)
-      it.commandLine(command)
+    execOperations.exec { exec ->
+      exec.workingDir(root.get().asFile)
+      exec.commandLine(command)
     }
   }
 

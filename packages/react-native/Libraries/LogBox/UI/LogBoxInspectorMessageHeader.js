@@ -18,13 +18,13 @@ import LogBoxMessage from './LogBoxMessage';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   collapsed: boolean,
   message: Message,
   level: LogLevel,
   title: string,
   onPress: () => void,
-|}>;
+}>;
 
 const SHOW_MORE_MESSAGE_LENGTH = 300;
 

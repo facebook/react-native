@@ -55,6 +55,8 @@ const EventNames: Map<
       ['highTextContrastChanged', 'highTextContrastDidChange'],
       ['screenReaderChanged', 'touchExplorationDidChange'],
       ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
+      ['invertColorsChanged', 'invertColorDidChange'],
+      ['grayscaleChanged', 'grayscaleModeDidChange'],
     ])
   : new Map([
       ['announcementFinished', 'announcementFinished'],
@@ -113,7 +115,13 @@ const AccessibilityInfo = {
    */
   isGrayscaleEnabled(): Promise<boolean> {
     if (Platform.OS === 'android') {
-      return Promise.resolve(false);
+      return new Promise((resolve, reject) => {
+        if (NativeAccessibilityInfoAndroid?.isGrayscaleEnabled != null) {
+          NativeAccessibilityInfoAndroid.isGrayscaleEnabled(resolve);
+        } else {
+          reject(null);
+        }
+      });
     } else {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerIOS != null) {
@@ -138,7 +146,13 @@ const AccessibilityInfo = {
    */
   isInvertColorsEnabled(): Promise<boolean> {
     if (Platform.OS === 'android') {
-      return Promise.resolve(false);
+      return new Promise((resolve, reject) => {
+        if (NativeAccessibilityInfoAndroid?.isInvertColorsEnabled != null) {
+          NativeAccessibilityInfoAndroid.isInvertColorsEnabled(resolve);
+        } else {
+          reject(null);
+        }
+      });
     } else {
       return new Promise((resolve, reject) => {
         if (NativeAccessibilityManagerIOS != null) {

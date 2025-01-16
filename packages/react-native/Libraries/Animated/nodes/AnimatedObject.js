@@ -12,6 +12,7 @@
 'use strict';
 
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 
 import AnimatedNode from './AnimatedNode';
 import AnimatedWithChildren from './AnimatedWithChildren';
@@ -99,8 +100,12 @@ export default class AnimatedObject extends AnimatedWithChildren {
   /**
    * Should only be called by `AnimatedObject.from`.
    */
-  constructor(nodes: $ReadOnlyArray<AnimatedNode>, value: mixed) {
-    super();
+  constructor(
+    nodes: $ReadOnlyArray<AnimatedNode>,
+    value: mixed,
+    config?: ?AnimatedNodeConfig,
+  ) {
+    super(config);
     this.#nodes = nodes;
     this._value = value;
   }
@@ -131,6 +136,7 @@ export default class AnimatedObject extends AnimatedWithChildren {
       const node = nodes[ii];
       node.__addChild(this);
     }
+    super.__attach();
   }
 
   __detach(): void {
@@ -157,6 +163,7 @@ export default class AnimatedObject extends AnimatedWithChildren {
       value: mapAnimatedNodes(this._value, node => {
         return {nodeTag: node.__getNativeTag()};
       }),
+      debugID: this.__getDebugID(),
     };
   }
 }

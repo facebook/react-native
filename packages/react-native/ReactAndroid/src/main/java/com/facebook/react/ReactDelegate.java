@@ -14,7 +14,9 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.devsupport.ReleaseDevSupportManager;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
@@ -319,7 +321,11 @@ public class ReactDelegate {
   @Nullable
   public ReactRootView getReactRootView() {
     if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
-      return (ReactRootView) mReactSurface.getView();
+      if (mReactSurface != null) {
+        return (ReactRootView) mReactSurface.getView();
+      } else {
+        return null;
+      }
     } else {
       return mReactRootView;
     }
@@ -361,12 +367,36 @@ public class ReactDelegate {
   }
 
   /** Get the {@link ReactNativeHost} used by this app. */
+  @DeprecatedInNewArchitecture(message = "Use getReactHost()")
   private ReactNativeHost getReactNativeHost() {
     return mReactNativeHost;
   }
 
+  @DeprecatedInNewArchitecture(message = "Use getReactHost()")
   public ReactInstanceManager getReactInstanceManager() {
     return getReactNativeHost().getReactInstanceManager();
+  }
+
+  public @Nullable ReactHost getReactHost() {
+    return mReactHost;
+  }
+
+  /**
+   * Get the current {@link ReactContext} from ReactHost or ReactInstanceManager
+   *
+   * <p>Do not store a reference to this, if the React instance is reloaded or destroyed, this
+   * context will no longer be valid.
+   */
+  public @Nullable ReactContext getCurrentReactContext() {
+    if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
+      if (mReactHost != null) {
+        return mReactHost.getCurrentReactContext();
+      } else {
+        return null;
+      }
+    } else {
+      return getReactInstanceManager().getCurrentReactContext();
+    }
   }
 
   /**

@@ -12,6 +12,7 @@
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {CreateCustomMessageHandlerFn} from './CustomMessageHandler';
+import type {DeviceOptions} from './Device';
 import type {
   JsonPagesListResponse,
   JsonVersionResponse,
@@ -22,6 +23,7 @@ import type {IncomingMessage, ServerResponse} from 'http';
 // $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
 import type {Timeout} from 'timers';
 
+import getBaseUrlFromRequest from '../utils/getBaseUrlFromRequest';
 import Device from './Device';
 import nullthrows from 'nullthrows';
 // Import these from node:timers to get the correct Flow types.
@@ -47,7 +49,7 @@ export interface InspectorProxyQueries {
    * Returns list of page descriptions ordered by device connection order, then
    * page addition order.
    */
-  getPageDescriptions(): Array<PageDescription>;
+  getPageDescriptions(requestorRelativeBaseUrl: URL): Array<PageDescription>;
 }
 
 /**
@@ -57,8 +59,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // Root of the project used for relative to absolute source path conversion.
   #projectRoot: string;
 
-  /** The base URL to the dev server from the developer machine. */
-  #serverBaseUrl: string;
+  // The base URL to the dev server from the dev-middleware host.
+  #serverBaseUrl: URL;
 
   // Maps device ID to Device instance.
   #devices: Map<string, Device>;
@@ -81,14 +83,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
     customMessageHandler: ?CreateCustomMessageHandlerFn,
   ) {
     this.#projectRoot = projectRoot;
-    this.#serverBaseUrl = serverBaseUrl;
+    this.#serverBaseUrl = new URL(serverBaseUrl);
     this.#devices = new Map();
     this.#eventReporter = eventReporter;
     this.#experiments = experiments;
     this.#customMessageHandler = customMessageHandler;
   }
 
-  getPageDescriptions(): Array<PageDescription> {
+  getPageDescriptions(requestorRelativeBaseUrl: URL): Array<PageDescription> {
     // Build list of pages from all devices.
     let result: Array<PageDescription> = [];
     Array.from(this.#devices.entries()).forEach(([deviceId, device]) => {
@@ -96,7 +98,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
         device
           .getPagesList()
           .map((page: Page) =>
-            this.#buildPageDescription(deviceId, device, page),
+            this.#buildPageDescription(
+              deviceId,
+              device,
+              page,
+              requestorRelativeBaseUrl,
+            ),
           ),
       );
     });
@@ -117,7 +124,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
       pathname === PAGES_LIST_JSON_URL ||
       pathname === PAGES_LIST_JSON_URL_2
     ) {
-      this.#sendJsonResponse(response, this.getPageDescriptions());
+      this.#sendJsonResponse(
+        response,
+        this.getPageDescriptions(
+          getBaseUrlFromRequest(request) ?? this.#serverBaseUrl,
+        ),
+      );
     } else if (pathname === PAGES_LIST_JSON_VERSION_URL) {
       this.#sendJsonResponse(response, {
         Browser: 'Mobile JavaScript',
@@ -143,8 +155,9 @@ export default class InspectorProxy implements InspectorProxyQueries {
     deviceId: string,
     device: Device,
     page: Page,
+    requestorRelativeBaseUrl: URL,
   ): PageDescription {
-    const {host, protocol} = new URL(this.#serverBaseUrl);
+    const {host, protocol} = requestorRelativeBaseUrl;
     const webSocketScheme = protocol === 'https:' ? 'wss' : 'ws';
 
     const webSocketUrlWithoutProtocol = `${host}${WS_DEBUGGER_URL}?device=${deviceId}&page=${page.id}`;
@@ -212,36 +225,38 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const deviceId = query.device || fallbackDeviceId;
         const deviceName = query.name || 'Unknown';
         const appName = query.app || 'Unknown';
+        const isProfilingBuild = query.profiling === 'true';
+
+        const deviceRelativeBaseUrl =
+          getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
 
         const oldDevice = this.#devices.get(deviceId);
+
         let newDevice;
+        const deviceOptions: DeviceOptions = {
+          id: deviceId,
+          name: deviceName,
+          app: appName,
+          socket,
+          projectRoot: this.#projectRoot,
+          eventReporter: this.#eventReporter,
+          createMessageMiddleware: this.#customMessageHandler,
+          deviceRelativeBaseUrl,
+          serverRelativeBaseUrl: this.#serverBaseUrl,
+          isProfilingBuild,
+        };
+
         if (oldDevice) {
-          oldDevice.dangerouslyRecreateDevice(
-            deviceId,
-            deviceName,
-            appName,
-            socket,
-            this.#projectRoot,
-            this.#eventReporter,
-            this.#customMessageHandler,
-          );
+          oldDevice.dangerouslyRecreateDevice(deviceOptions);
           newDevice = oldDevice;
         } else {
-          newDevice = new Device(
-            deviceId,
-            deviceName,
-            appName,
-            socket,
-            this.#projectRoot,
-            this.#eventReporter,
-            this.#customMessageHandler,
-          );
+          newDevice = new Device(deviceOptions);
         }
 
         this.#devices.set(deviceId, newDevice);
 
         debug(
-          `Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}`,
+          `Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}, via=${deviceRelativeBaseUrl.origin}`,
         );
 
         socket.on('close', () => {
@@ -277,6 +292,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const query = url.parse(req.url || '', true).query || {};
         const deviceId = query.device;
         const pageId = query.page;
+        const debuggerRelativeBaseUrl =
+          getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
 
         if (deviceId == null || pageId == null) {
           throw new Error('Incorrect URL - must provide device and page IDs');
@@ -290,6 +307,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS);
 
         device.handleDebuggerConnection(socket, pageId, {
+          debuggerRelativeBaseUrl,
           userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
       } catch (e) {

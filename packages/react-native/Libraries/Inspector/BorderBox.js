@@ -10,23 +10,35 @@
 
 'use strict';
 
-const View = require('../Components/View/View');
-const React = require('react');
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
-class BorderBox extends React.Component<$FlowFixMeProps> {
-  render(): $FlowFixMe | React.Node {
-    const box = this.props.box;
-    if (!box) {
-      return this.props.children;
-    }
-    const style = {
-      borderTopWidth: box.top,
-      borderBottomWidth: box.bottom,
-      borderLeftWidth: box.left,
-      borderRightWidth: box.right,
-    };
-    return <View style={[style, this.props.style]}>{this.props.children}</View>;
+import React from 'react';
+
+const View = require('../Components/View/View');
+
+type Props = $ReadOnly<{
+  children: React.Node,
+  box?: ?$ReadOnly<{
+    top: number,
+    right: number,
+    bottom: number,
+    left: number,
+    ...
+  }>,
+  style?: ViewStyleProp,
+}>;
+
+function BorderBox({children, box, style}: Props): React.Node {
+  if (!box) {
+    return children;
   }
+  const borderStyle = {
+    borderTopWidth: box.top,
+    borderBottomWidth: box.bottom,
+    borderLeftWidth: box.left,
+    borderRightWidth: box.right,
+  };
+  return <View style={[borderStyle, style]}>{children}</View>;
 }
 
 module.exports = BorderBox;

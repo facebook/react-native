@@ -108,6 +108,8 @@ class UIManager final : public ShadowTreeDelegate {
       const folly::dynamic& props,
       DisplayMode displayMode) const;
 
+  void startEmptySurface(ShadowTree::Unique&& shadowTree) const;
+
   void setSurfaceProps(
       SurfaceId surfaceId,
       const std::string& moduleName,
@@ -119,7 +121,7 @@ class UIManager final : public ShadowTreeDelegate {
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator,
+      std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) const override;
 
   RootShadowNode::Unshared shadowTreeWillCommit(

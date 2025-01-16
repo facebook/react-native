@@ -31,6 +31,7 @@ import type {
   NativeModuleTypeAnnotation,
   NativeModuleUnionTypeAnnotation,
   Nullable,
+  NumberLiteralTypeAnnotation,
   ObjectTypeAnnotation,
   ReservedTypeAnnotation,
   StringLiteralTypeAnnotation,
@@ -167,6 +168,16 @@ function emitMixed(
 ): Nullable<NativeModuleMixedTypeAnnotation> {
   return wrapNullable(nullable, {
     type: 'MixedTypeAnnotation',
+  });
+}
+
+function emitNumberLiteral(
+  nullable: boolean,
+  value: number,
+): Nullable<NumberLiteralTypeAnnotation> {
+  return wrapNullable(nullable, {
+    type: 'NumberLiteralTypeAnnotation',
+    value,
   });
 }
 
@@ -741,10 +752,11 @@ function emitUnionProp(
     name,
     optional,
     typeAnnotation: {
-      type: 'StringEnumTypeAnnotation',
-      options: typeAnnotation.types.map(option =>
-        parser.getLiteralValue(option),
-      ),
+      type: 'StringLiteralUnionTypeAnnotation',
+      types: typeAnnotation.types.map(option => ({
+        type: 'StringLiteralTypeAnnotation',
+        value: parser.getLiteralValue(option),
+      })),
     },
   };
 }
@@ -762,6 +774,7 @@ module.exports = {
   emitInt32Prop,
   emitMixedProp,
   emitNumber,
+  emitNumberLiteral,
   emitGenericObject,
   emitDictionary,
   emitObject,

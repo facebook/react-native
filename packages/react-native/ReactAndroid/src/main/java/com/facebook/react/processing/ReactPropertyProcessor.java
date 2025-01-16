@@ -19,6 +19,7 @@ import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
@@ -268,6 +269,7 @@ public class ReactPropertyProcessor extends ProcessorBase {
     TypeSpec holderClass =
         TypeSpec.classBuilder(holderClassName)
             .addSuperinterface(superType)
+            .addAnnotation(UnstableReactNativeAPI.class)
             .addModifiers(PUBLIC)
             .addMethod(generateSetPropertySpec(classInfo, properties))
             .addMethod(getMethods)

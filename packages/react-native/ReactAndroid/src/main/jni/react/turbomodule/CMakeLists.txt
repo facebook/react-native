@@ -30,7 +30,6 @@ target_include_directories(callinvokerholder
         )
 
 target_link_libraries(callinvokerholder
-        fb
         fbjni
         runtimeexecutor
         callinvoker
@@ -47,7 +46,6 @@ add_library(
         turbomodulejsijni
         OBJECT
         ReactCommon/BindingsInstallerHolder.cpp
-        ReactCommon/CompositeTurboModuleManagerDelegate.cpp
         ReactCommon/OnLoad.cpp
         ReactCommon/TurboModuleManager.cpp
         $<TARGET_OBJECTS:logger>
@@ -62,7 +60,6 @@ target_include_directories(
 )
 
 target_link_libraries(turbomodulejsijni
-        fb
         fbjni
         jsi
         react_nativemodule_core

@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+@file:Suppress("DEPRECATION") // Suppressing as we want to test getFabricUIManager here
 
 package com.facebook.react.runtime
 
@@ -17,6 +18,7 @@ import com.facebook.testutils.shadows.ShadowArguments
 import com.facebook.testutils.shadows.ShadowNativeArray
 import com.facebook.testutils.shadows.ShadowNativeLoader
 import com.facebook.testutils.shadows.ShadowSoLoader
+import com.facebook.testutils.shadows.ShadowWritableNativeArray
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -40,7 +42,7 @@ import org.robolectric.annotation.Config
             ShadowSoLoader::class,
             ShadowNativeLoader::class,
             ShadowArguments::class,
-            ShadowNativeArray.Writable::class])
+            ShadowWritableNativeArray::class])
 class BridgelessReactContextTest {
   private lateinit var context: Context
   private lateinit var reactHost: ReactHostImpl
@@ -71,6 +73,7 @@ class BridgelessReactContextTest {
     assertThat(bridgelessReactContext.getFabricUIManager()).isEqualTo(fabricUiManager)
   }
 
+  @Suppress("DEPRECATION")
   @Test
   fun getCatalystInstanceTest() {
     assertThat(bridgelessReactContext.getCatalystInstance())

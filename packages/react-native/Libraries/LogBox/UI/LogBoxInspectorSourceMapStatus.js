@@ -18,10 +18,10 @@ import LogBoxButton from './LogBoxButton';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   onPress?: ?(event: PressEvent) => void,
   status: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING',
-|}>;
+}>;
 
 function LogBoxInspectorSourceMapStatus(props: Props): React.Node {
   const [state, setState] = React.useState({

@@ -68,10 +68,10 @@ class NewArchitectureHelper
         end
     end
 
-    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = get_folly_config()[:version])
+    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = Helpers::Constants.folly_config[:version])
         # Pod::Specification does not have getters so, we have to read
         # the existing values from a hash representation of the object.
-        folly_config = get_folly_config()
+        folly_config = Helpers::Constants.folly_config
         folly_compiler_flags = folly_config[:compiler_flags]
 
         hash = spec.to_hash
@@ -83,6 +83,7 @@ class NewArchitectureHelper
         header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
         if ENV['USE_FRAMEWORKS']
             header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
+            header_search_paths << "\"$(PODS_ROOT)/fast_float/include\""
             header_search_paths << "\"$(PODS_ROOT)/fmt/include\""
             ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-graphics", "React_graphics", ["react/renderer/graphics/platform/ios"])
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))
@@ -144,7 +145,7 @@ class NewArchitectureHelper
     end
 
     def self.folly_compiler_flags
-        folly_config = get_folly_config()
+        folly_config = Helpers::Constants.folly_config
         return folly_config[:compiler_flags]
     end
 
@@ -155,36 +156,6 @@ class NewArchitectureHelper
         end
         package = json_parser.parse(file_manager.read(package_json_file))
         return package["version"]
-    end
-
-    def self.compute_new_arch_enabled(new_arch_enabled, react_native_version)
-        # Regex that identify a version with the syntax `<major>.<minor>.<patch>[-<prerelease>[.-]k]
-        # where
-        # - major is a number
-        # - minor is a number
-        # - patch is a number
-        # - prerelease is a string (can include numbers)
-        # - k is a number
-        version_regex = /^(\d+)\.(\d+)\.(\d+)(?:-(\w+(?:[-.]\d+)?))?$/
-
-        if match_data = react_native_version.match(version_regex)
-
-            prerelease = match_data[4].to_s
-
-            # We want to enforce the new architecture for 1.0.0 and greater,
-            # but not for 1000 as version 1000 is currently main.
-            if prerelease.include?("prealpha")
-                if ENV['RCT_NEW_ARCH_ENABLED'] != nil && !@@NewArchWarningEmitted
-                    warning_message = "[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
-                                      "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."
-                    Pod::UI.warn warning_message
-                    @@NewArchWarningEmitted = true
-                end
-
-                return "1"
-            end
-        end
-        return new_arch_enabled ? "1" : "0"
     end
 
     def self.new_arch_enabled

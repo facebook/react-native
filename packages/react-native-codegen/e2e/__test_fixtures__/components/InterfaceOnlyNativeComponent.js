@@ -17,15 +17,15 @@ import type {
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
   title?: WithDefault<string, ''>,
 
   // Events
-  onChange?: ?BubblingEventHandler<$ReadOnly<{|value: boolean|}>>,
-|}>;
+  onChange?: ?BubblingEventHandler<$ReadOnly<{value: boolean}>>,
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'InterfaceOnlyNativeComponentView',
