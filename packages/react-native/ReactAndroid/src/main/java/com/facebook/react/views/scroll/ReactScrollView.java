@@ -76,6 +76,7 @@ public class ReactScrollView extends ScrollView
     implements ReactClippingViewGroup,
         ViewGroup.OnHierarchyChangeListener,
         View.OnLayoutChangeListener,
+        ReactAccessibleScrollView,
         ReactOverflowViewWithInset,
         HasScrollState,
         HasStateWrapper,
@@ -380,7 +381,8 @@ public class ReactScrollView extends ScrollView
   }
 
   /** Returns whether the given descendent is partially scrolled in view */
-  boolean isPartiallyScrolledInView(View descendent) {
+  @Override
+  public boolean isPartiallyScrolledInView(View descendent) {
     int scrollDelta = getScrollDelta(descendent);
     descendent.getDrawingRect(mTempRect);
     return scrollDelta != 0 && Math.abs(scrollDelta) < mTempRect.width();
