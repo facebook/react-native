@@ -9148,9 +9148,7 @@ declare module.exports: RCTLog;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/ReactNativeTestTools.js 1`] = `
-"declare const React: $FlowFixMe;
-declare const ReactTestRenderer: $FlowFixMe;
-export type ReactTestInstance = $PropertyType<ReactTestRendererType, \\"root\\">;
+"export type ReactTestInstance = $PropertyType<ReactTestRendererType, \\"root\\">;
 export type Predicate = (node: ReactTestInstance) => boolean;
 export type ReactTestRendererJSON = ReturnType<ReactTestRenderer.create.toJSON>;
 declare function byClickable(): Predicate;
