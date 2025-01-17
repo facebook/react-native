@@ -202,4 +202,4 @@ class Keyboard {
   }
 }
 
-module.exports = (new Keyboard(): Keyboard);
+export default (new Keyboard(): Keyboard);

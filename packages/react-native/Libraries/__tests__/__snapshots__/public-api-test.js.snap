@@ -1636,7 +1636,7 @@ exports[`public API should not change unintentionally Libraries/Components/Acces
   reactTag: number,
   eventType: string
 ): void;
-declare module.exports: legacySendAccessibilityEvent;
+declare export default typeof legacySendAccessibilityEvent;
 "
 `;
 
@@ -1708,7 +1708,7 @@ declare export default typeof Button;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Clipboard/Clipboard.js 1`] = `
-"declare module.exports: {
+"declare export default {
   getString(): Promise<string>,
   setString(content: string): void,
 };
@@ -1728,7 +1728,7 @@ declare export default typeof AndroidDrawerLayoutNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js 1`] = `
-"declare module.exports: DrawerLayoutAndroid;
+"declare export default DrawerLayoutAndroid;
 "
 `;
 
@@ -1785,7 +1785,7 @@ declare class Keyboard {
   metrics(): ?KeyboardMetrics;
   scheduleLayoutAnimation(event: KeyboardEvent): void;
 }
-declare module.exports: Keyboard;
+declare export default Keyboard;
 "
 `;
 

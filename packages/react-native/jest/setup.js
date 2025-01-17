@@ -163,8 +163,11 @@ jest
     },
   }))
   .mock('../Libraries/Components/Clipboard/Clipboard', () => ({
-    getString: jest.fn(() => ''),
-    setString: jest.fn(),
+    __esModule: true,
+    default: {
+      getString: jest.fn(() => ''),
+      setString: jest.fn(),
+    },
   }))
   .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
     jest.requireActual(
