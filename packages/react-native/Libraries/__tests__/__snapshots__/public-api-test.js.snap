@@ -1246,7 +1246,7 @@ declare class AppState {
     handler: (...$ElementType<AppStateEventDefinitions, K>) => void
   ): EventSubscription;
 }
-declare module.exports: AppState;
+declare export default AppState;
 "
 `;
 
@@ -1258,7 +1258,7 @@ declare export default typeof NativeAppState;
 
 exports[`public API should not change unintentionally Libraries/BatchedBridge/BatchedBridge.js 1`] = `
 "declare const BatchedBridge: MessageQueue;
-declare module.exports: BatchedBridge;
+declare export default typeof BatchedBridge;
 "
 `;
 
@@ -1335,7 +1335,7 @@ declare class MessageQueue {
   __callFunction(module: string, method: string, args: mixed[]): void;
   __invokeCallback(cbID: number, args: mixed[]): void;
 }
-declare module.exports: MessageQueue;
+declare export default typeof MessageQueue;
 "
 `;
 
@@ -1349,7 +1349,7 @@ exports[`public API should not change unintentionally Libraries/BatchedBridge/Na
 ];
 export type MethodType = \\"async\\" | \\"promise\\" | \\"sync\\";
 declare let NativeModules: { [moduleName: string]: $FlowFixMe, ... };
-declare module.exports: NativeModules;
+declare export default typeof NativeModules;
 "
 `;
 

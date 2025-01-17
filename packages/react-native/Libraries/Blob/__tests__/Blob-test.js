@@ -11,7 +11,10 @@
 'use strict';
 
 jest.setMock('../../BatchedBridge/NativeModules', {
-  BlobModule: require('../__mocks__/BlobModule'),
+  __esModule: true,
+  default: {
+    BlobModule: require('../__mocks__/BlobModule'),
+  },
 });
 
 const Blob = require('../Blob');

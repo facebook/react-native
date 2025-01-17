@@ -13,7 +13,7 @@ import type {Task} from './TaskQueue';
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
-const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
 const infoLog = require('../Utilities/infoLog');
 const TaskQueue = require('./TaskQueue');
 const invariant = require('invariant');
