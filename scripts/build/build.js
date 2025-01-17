@@ -10,6 +10,7 @@
  */
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
+const buildRNTypes = require('./buildRNTypes');
 const {
   buildConfig,
   getBabelConfig,
@@ -35,15 +36,16 @@ const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 const config = {
   allowPositionals: true,
   options: {
-    help: {type: 'boolean'},
     check: {type: 'boolean'},
+    experimentalBuildRNTypes: {type: 'boolean'},
+    help: {type: 'boolean'},
   },
 };
 
 async function build() {
   const {
     positionals: packageNames,
-    values: {help, check},
+    values: {check, experimentalBuildRNTypes, help},
   } = parseArgs(config);
 
   if (help) {
@@ -54,6 +56,13 @@ async function build() {
 
   By default, builds all packages defined in ./scripts/build/config.js. If a
   a package list is provided, builds only those specified.
+
+  Options:
+    --check           Validate that no build artifacts have been accidentally
+                      committed.
+    --experimentalBuildRNTypes
+                      [Experimental] Enable source code -> type translation
+                      output for the react-native package.
     `);
     process.exitCode = 0;
     return;
@@ -63,9 +72,25 @@ async function build() {
     console.log('\n' + chalk.bold.inverse('Building packages') + '\n');
   }
 
-  const packagesToBuild = packageNames.length
+  let packagesToBuild = packageNames.length
     ? packageNames.filter(packageName => packageName in buildConfig.packages)
     : Object.keys(buildConfig.packages);
+
+  if (packagesToBuild.includes('react-native')) {
+    // Remove react-native from the list of packages to build, only type generation is implemented
+    packagesToBuild = packagesToBuild.filter(
+      packageName => packageName !== 'react-native',
+    );
+
+    if (experimentalBuildRNTypes) {
+      await emitReactNativeTypes();
+    } else if (packagesToBuild.length === 0) {
+      console.warn(
+        'Building the react-native package must be enabled using ' +
+          '--experimentalBuildRNTypes.',
+      );
+    }
+  }
 
   let ok = true;
   for (const packageName of packagesToBuild) {
@@ -79,11 +104,15 @@ async function build() {
   process.exitCode = ok ? 0 : 1;
 }
 
+async function emitReactNativeTypes() {
+  await buildRNTypes();
+}
+
 async function checkPackage(packageName /*: string */) /*: Promise<boolean> */ {
   const artifacts = await exportedBuildArtifacts(packageName);
   if (artifacts.length > 0) {
     console.log(
-      `${chalk.bgRed(packageName)}: has been build and the ${chalk.bold('build artifacts')} committed to the repository. This will break Flow checks.`,
+      `${chalk.bgRed(packageName)}: has been built and the ${chalk.bold('build artifacts')} committed to the repository. This will break Flow checks.`,
     );
     return false;
   }
