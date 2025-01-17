@@ -1364,7 +1364,7 @@ exports[`public API should not change unintentionally Libraries/Blob/Blob.js 1`]
   get size(): number;
   get type(): string;
 }
-declare module.exports: Blob;
+declare export default typeof Blob;
 "
 `;
 
@@ -1382,19 +1382,14 @@ exports[`public API should not change unintentionally Libraries/Blob/BlobManager
   static removeWebSocketHandler(socketId: number): void;
   static sendOverSocket(blob: Blob, socketId: number): void;
 }
-declare module.exports: BlobManager;
+declare export default typeof BlobManager;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Blob/BlobRegistry.js 1`] = `
-"declare const register: (id: string) => void;
-declare const unregister: (id: string) => void;
-declare const has: (id: string) => number | boolean;
-declare module.exports: {
-  register: register,
-  unregister: unregister,
-  has: has,
-};
+"declare export const register: (id: string) => void;
+declare export const unregister: (id: string) => void;
+declare export const has: (id: string) => number | boolean;
 "
 `;
 
@@ -1428,7 +1423,7 @@ exports[`public API should not change unintentionally Libraries/Blob/File.js 1`]
   get name(): string;
   get lastModified(): number;
 }
-declare module.exports: File;
+declare export default typeof File;
 "
 `;
 
@@ -1457,7 +1452,7 @@ declare class FileReader extends EventTarget {
   get error(): ?Error;
   get result(): ?ReaderResult;
 }
-declare module.exports: FileReader;
+declare export default typeof FileReader;
 "
 `;
 

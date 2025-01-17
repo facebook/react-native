@@ -26,11 +26,11 @@ polyfillGlobal('Headers', () => require('../Network/fetch').Headers);
 polyfillGlobal('Request', () => require('../Network/fetch').Request);
 polyfillGlobal('Response', () => require('../Network/fetch').Response);
 polyfillGlobal('WebSocket', () => require('../WebSocket/WebSocket'));
-polyfillGlobal('Blob', () => require('../Blob/Blob'));
-polyfillGlobal('File', () => require('../Blob/File'));
-polyfillGlobal('FileReader', () => require('../Blob/FileReader'));
-polyfillGlobal('URL', () => require('../Blob/URL').URL); // flowlint-line untyped-import:off
-polyfillGlobal('URLSearchParams', () => require('../Blob/URL').URLSearchParams); // flowlint-line untyped-import:off
+polyfillGlobal('Blob', () => require('../Blob/Blob').default);
+polyfillGlobal('File', () => require('../Blob/File').default);
+polyfillGlobal('FileReader', () => require('../Blob/FileReader').default);
+polyfillGlobal('URL', () => require('../Blob/URL').URL);
+polyfillGlobal('URLSearchParams', () => require('../Blob/URL').URLSearchParams);
 polyfillGlobal(
   'AbortController',
   () => require('abort-controller/dist/abort-controller').AbortController, // flowlint-line untyped-import:off

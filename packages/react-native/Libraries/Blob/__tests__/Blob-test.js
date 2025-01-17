@@ -14,7 +14,7 @@ jest.setMock('../../BatchedBridge/NativeModules', {
   BlobModule: require('../__mocks__/BlobModule'),
 });
 
-const Blob = require('../Blob');
+const Blob = require('../Blob').default;
 
 describe('Blob', function () {
   it('should create empty blob', () => {
