@@ -7,6 +7,8 @@
 
 #import <React/RCTFileRequestHandler.h>
 
+#import <mutex>
+
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import <React/RCTUtils.h>
@@ -19,15 +21,17 @@
 
 @implementation RCTFileRequestHandler {
   NSOperationQueue *_fileQueue;
+  std::mutex _operationHandlerMutexLock;
 }
 
 RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+  std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
   if (_fileQueue) {
     for (NSOperation *operation in _fileQueue.operations) {
-      if ([operation isKindOfClass:[NSOperation class]] && !operation.isCancelled && !operation.isFinished) {
+      if (!operation.isCancelled && !operation.isFinished) {
         [operation cancel];
       }
     }
@@ -42,6 +46,7 @@ RCT_EXPORT_MODULE()
 
 - (NSOperation *)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
+  std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
   // Lazy setup
   if (!_fileQueue) {
     _fileQueue = [NSOperationQueue new];
@@ -89,7 +94,10 @@ RCT_EXPORT_MODULE()
 
 - (void)cancelRequest:(NSOperation *)op
 {
-  [op cancel];
+  std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
+  if (!op.isCancelled && !op.isFinished) {
+    [op cancel];
+  }
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
