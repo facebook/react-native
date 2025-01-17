@@ -4630,7 +4630,7 @@ declare export default class NativeEventEmitter<TEventToArgsMap: { ... }>
 `;
 
 exports[`public API should not change unintentionally Libraries/EventEmitter/RCTDeviceEventEmitter.js 1`] = `
-"type RCTDeviceEventDefinitions = $FlowFixMe;
+"type RCTDeviceEventDefinitions = { [name: string]: Array<any> };
 declare export default IEventEmitter<RCTDeviceEventDefinitions>;
 "
 `;
