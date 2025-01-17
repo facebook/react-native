@@ -93,6 +93,7 @@ concept CSSUniqueComponentValueVisitors =
 enum class CSSComponentValueDelimiter {
   Comma,
   Whitespace,
+  CommaOrWhitespace,
   None,
 };
 
@@ -210,6 +211,13 @@ struct CSSComponentValueVisitorDispatcher {
         parser.consumeWhitespace();
         break;
       case CSSComponentValueDelimiter::Whitespace:
+        parser.consumeWhitespace();
+        break;
+      case CSSComponentValueDelimiter::CommaOrWhitespace:
+        parser.consumeWhitespace();
+        if (parser.peek().type() == CSSTokenType::Comma) {
+          parser.consumeToken();
+        }
         parser.consumeWhitespace();
         break;
       case CSSComponentValueDelimiter::None:
