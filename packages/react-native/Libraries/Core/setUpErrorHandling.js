@@ -29,7 +29,7 @@ if (global.RN$useAlwaysAvailableJSErrorHandling !== true) {
       }
     };
 
-    const ErrorUtils = require('../vendor/core/ErrorUtils');
+    const ErrorUtils = require('../vendor/core/ErrorUtils').default;
     ErrorUtils.setGlobalHandler(handleError);
   }
 }

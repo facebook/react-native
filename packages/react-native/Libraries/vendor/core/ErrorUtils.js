@@ -22,4 +22,4 @@ import type {ErrorUtilsT} from '@react-native/js-polyfills/error-guard';
  * that use it aren't just using a global variable, so simply export the global
  * variable here. ErrorUtils is originally defined in a file named error-guard.js.
  */
-module.exports = (global.ErrorUtils: ErrorUtilsT);
+export default (global.ErrorUtils: ErrorUtilsT);

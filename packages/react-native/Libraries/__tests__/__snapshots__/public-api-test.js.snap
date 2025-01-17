@@ -1545,7 +1545,7 @@ declare class BugReporting {
   ): { remove: () => void, ... };
   static collectExtraData(): DebugData;
 }
-declare module.exports: BugReporting;
+declare export default typeof BugReporting;
 "
 `;
 
@@ -1557,13 +1557,13 @@ declare export default typeof NativeBugReporting;
 
 exports[`public API should not change unintentionally Libraries/BugReporting/dumpReactTree.js 1`] = `
 "declare function dumpReactTree(): string;
-declare module.exports: dumpReactTree;
+declare export default typeof dumpReactTree;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/BugReporting/getReactData.js 1`] = `
 "declare function getData(element: Object): Object;
-declare module.exports: getData;
+declare export default typeof getData;
 "
 `;
 
@@ -9411,7 +9411,7 @@ exports[`public API should not change unintentionally Libraries/Vibration/Vibrat
   vibrate: (pattern: number | Array<number>, repeat: boolean) => void,
   cancel: () => void,
 };
-declare module.exports: Vibration;
+declare export default typeof Vibration;
 "
 `;
 
@@ -9515,7 +9515,7 @@ declare module.exports: WebSocketInterceptor;
 
 exports[`public API should not change unintentionally Libraries/YellowBox/YellowBoxDeprecated.js 1`] = `
 "type Props = $ReadOnly<{}>;
-declare module.exports: Class<React.Component<Props>> & {
+declare export default Class<React.Component<Props>> & {
   ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
   install(): void,
   uninstall(): void,
@@ -9531,7 +9531,7 @@ declare export default typeof rejectionTrackingOptions;
 `;
 
 exports[`public API should not change unintentionally Libraries/vendor/core/ErrorUtils.js 1`] = `
-"declare module.exports: ErrorUtilsT;
+"declare export default ErrorUtilsT;
 "
 `;
 

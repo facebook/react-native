@@ -350,10 +350,10 @@ module.exports = {
     return require('./Libraries/UTFSequence').default;
   },
   get Vibration(): Vibration {
-    return require('./Libraries/Vibration/Vibration');
+    return require('./Libraries/Vibration/Vibration').default;
   },
   get YellowBox(): YellowBox {
-    return require('./Libraries/YellowBox/YellowBoxDeprecated');
+    return require('./Libraries/YellowBox/YellowBoxDeprecated').default;
   },
 
   // Plugins
