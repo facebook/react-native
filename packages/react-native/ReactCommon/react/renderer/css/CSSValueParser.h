@@ -42,15 +42,15 @@ class CSSValueParser {
               ReturnT,
               CSSDataTypeParser<AllowedTypesT>...>(token);
         },
-        [&](const CSSSimpleBlock& block) {
+        [&](const CSSSimpleBlock& block, CSSSyntaxParser& blockParser) {
           return tryConsumeSimpleBlock<
               ReturnT,
-              CSSDataTypeParser<AllowedTypesT>...>(block);
+              CSSDataTypeParser<AllowedTypesT>...>(block, blockParser);
         },
-        [&](const CSSFunctionBlock& func) {
+        [&](const CSSFunctionBlock& func, CSSSyntaxParser& blockParser) {
           return tryConsumeFunctionBlock<
               ReturnT,
-              CSSDataTypeParser<AllowedTypesT>...>(func);
+              CSSDataTypeParser<AllowedTypesT>...>(func, blockParser);
         });
   }
 
@@ -90,7 +90,9 @@ class CSSValueParser {
   }
 
   template <typename ReturnT>
-  constexpr ReturnT tryConsumeSimpleBlock(const CSSSimpleBlock& /*token*/) {
+  constexpr ReturnT tryConsumeSimpleBlock(
+      const CSSSimpleBlock& /*token*/,
+      CSSSyntaxParser& /*blockParser*/) {
     return {};
   }
 
@@ -98,18 +100,22 @@ class CSSValueParser {
       typename ReturnT,
       CSSValidDataTypeParser ParserT,
       CSSValidDataTypeParser... RestParserT>
-  constexpr ReturnT tryConsumeSimpleBlock(const CSSSimpleBlock& block) {
+  constexpr ReturnT tryConsumeSimpleBlock(
+      const CSSSimpleBlock& block,
+      CSSSyntaxParser& blockParser) {
     if constexpr (CSSSimpleBlockSink<ParserT>) {
-      if (auto ret = ParserT::consumeSimpleBlock(block, parser_)) {
+      if (auto ret = ParserT::consumeSimpleBlock(block, blockParser)) {
         return *ret;
       }
     }
 
-    return tryConsumeSimpleBlock<ReturnT, RestParserT...>(block);
+    return tryConsumeSimpleBlock<ReturnT, RestParserT...>(block, blockParser);
   }
 
   template <typename ReturnT>
-  constexpr ReturnT tryConsumeFunctionBlock(const CSSFunctionBlock& /*func*/) {
+  constexpr ReturnT tryConsumeFunctionBlock(
+      const CSSFunctionBlock& /*func*/,
+      CSSSyntaxParser& /*blockParser*/) {
     return {};
   }
 
@@ -117,14 +123,16 @@ class CSSValueParser {
       typename ReturnT,
       CSSValidDataTypeParser ParserT,
       CSSValidDataTypeParser... RestParserT>
-  constexpr ReturnT tryConsumeFunctionBlock(const CSSFunctionBlock& func) {
+  constexpr ReturnT tryConsumeFunctionBlock(
+      const CSSFunctionBlock& func,
+      CSSSyntaxParser& blockParser) {
     if constexpr (CSSFunctionBlockSink<ParserT>) {
-      if (auto ret = ParserT::consumeFunctionBlock(func, parser_)) {
+      if (auto ret = ParserT::consumeFunctionBlock(func, blockParser)) {
         return *ret;
       }
     }
 
-    return tryConsumeFunctionBlock<ReturnT, RestParserT...>(func);
+    return tryConsumeFunctionBlock<ReturnT, RestParserT...>(func, blockParser);
   }
 
   CSSSyntaxParser& parser_;
