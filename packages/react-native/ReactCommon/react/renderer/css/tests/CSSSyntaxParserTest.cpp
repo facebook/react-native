@@ -155,6 +155,52 @@ TEST(CSSSyntaxParser, single_function_with_comma_delimited_args) {
   EXPECT_EQ(funcArgs, expectedArgs);
 }
 
+TEST(CSSSyntaxParser, single_function_with_mixed_delimited_args) {
+  CSSSyntaxParser parser{"rgb(100, 200 50 )"};
+
+  auto funcArgs = parser.consumeComponentValue<std::array<uint8_t, 3>>(
+      [&](const CSSFunctionBlock& function, CSSSyntaxParser& blockParser) {
+        EXPECT_EQ(function.name, "rgb");
+
+        std::array<uint8_t, 3> rgb{};
+
+        rgb[0] = blockParser.consumeComponentValue<uint8_t>(
+            CSSComponentValueDelimiter::None,
+            [](const CSSPreservedToken& token) {
+              EXPECT_EQ(token.type(), CSSTokenType::Number);
+              EXPECT_EQ(token.numericValue(), 100);
+              return static_cast<uint8_t>(token.numericValue());
+            });
+
+        rgb[1] = blockParser.consumeComponentValue<uint8_t>(
+            CSSComponentValueDelimiter::CommaOrWhitespace,
+            [](const CSSPreservedToken& token) {
+              EXPECT_EQ(token.type(), CSSTokenType::Number);
+              EXPECT_EQ(token.numericValue(), 200);
+              return static_cast<uint8_t>(token.numericValue());
+            });
+
+        rgb[2] = blockParser.consumeComponentValue<uint8_t>(
+            CSSComponentValueDelimiter::CommaOrWhitespace,
+            [](const CSSPreservedToken& token) {
+              EXPECT_EQ(token.type(), CSSTokenType::Number);
+              EXPECT_EQ(token.numericValue(), 50);
+              return static_cast<uint8_t>(token.numericValue());
+            });
+
+        auto hasMoreTokens = blockParser.consumeComponentValue<bool>(
+            CSSComponentValueDelimiter::Whitespace,
+            [](const CSSPreservedToken& /*token*/) { return true; });
+
+        EXPECT_FALSE(hasMoreTokens);
+
+        return rgb;
+      });
+
+  std::array<uint8_t, 3> expectedArgs{{100, 200, 50}};
+  EXPECT_EQ(funcArgs, expectedArgs);
+}
+
 TEST(CSSSyntaxParser, complex) {
   CSSSyntaxParser parser{"foo(a bar())baz() 12px"};
 
