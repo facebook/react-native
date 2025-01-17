@@ -18,14 +18,18 @@ const {transform} = require('hermes-transform');
 const path = require('path');
 
 const PACKAGE_ROOT = path.resolve(__dirname, '../../');
-const JS_FILES_PATTERN = 'Libraries/**/*.{js,flow}';
-const IGNORE_PATTERNS = [
+const SHARED_PATTERNS = [
   '**/__{tests,mocks,fixtures,flowtests}__/**',
   '**/*.android.js',
   '**/*.ios.js',
   '**/*.fb.js',
   '**/*.macos.js',
   '**/*.windows.js',
+];
+
+const JS_LIBRARIES_FILES_PATTERN = 'Libraries/**/*.{js,flow}';
+const JS_LIBRARIES_FILES_IGNORE_PATTERNS = [
+  ...SHARED_PATTERNS,
   'Libraries/NewAppScreen/components/**',
   // Non source files
   'Libraries/Renderer/implementations/**',
@@ -33,12 +37,25 @@ const IGNORE_PATTERNS = [
   // ReactNativePrivateInterface
   'Libraries/ReactPrivate/**',
 ];
+const JS_PRIVATE_FILES_PATTERN = 'src/private/**/*.{js,flow}';
+const JS_PRIVATE_FILES_IGNORE_PATTERNS = [
+  ...SHARED_PATTERNS,
+  'src/private/debugging',
+  'src/private/featureflags',
+  'src/private/fusebox',
+  'src/private/setup',
+];
 
 const sourceFiles = [
   'index.js',
-  ...glob.sync(JS_FILES_PATTERN, {
+  ...glob.sync(JS_LIBRARIES_FILES_PATTERN, {
     cwd: PACKAGE_ROOT,
-    ignore: IGNORE_PATTERNS,
+    ignore: JS_LIBRARIES_FILES_IGNORE_PATTERNS,
+    nodir: true,
+  }),
+  ...glob.sync(JS_PRIVATE_FILES_PATTERN, {
+    cwd: PACKAGE_ROOT,
+    ignore: JS_PRIVATE_FILES_IGNORE_PATTERNS,
     nodir: true,
   }),
 ];
@@ -57,7 +74,10 @@ describe('public API', () => {
 
       // Require and use adjacent .js.flow file when source file includes an
       // unsupported-syntax suppression
-      if (source.includes('// $FlowFixMe[unsupported-syntax]')) {
+      if (
+        source.includes('// $FlowFixMe[unsupported-syntax]') ||
+        source.includes('// $FlowIssue[unsupported-syntax]')
+      ) {
         const flowDefPath = path.join(
           PACKAGE_ROOT,
           file.replace('.js', '.js.flow'),
