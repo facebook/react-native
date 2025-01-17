@@ -176,7 +176,8 @@ function updateErrorWithErrorData(
   return Object.assign(error, errorData || {});
 }
 
-let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
+/* $FlowFixMe[unclear-type] unclear type of NativeModules */
+let NativeModules: {[moduleName: string]: any, ...} = {};
 if (global.nativeModuleProxy) {
   NativeModules = global.nativeModuleProxy;
 } else {
