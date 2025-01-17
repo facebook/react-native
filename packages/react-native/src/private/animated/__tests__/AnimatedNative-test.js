@@ -34,10 +34,13 @@ describe('Native Animated', () => {
     jest
       .clearAllMocks()
       .mock('../../../../Libraries/BatchedBridge/NativeModules', () => ({
-        NativeAnimatedModule: {},
-        PlatformConstants: {
-          getConstants() {
-            return {};
+        __esModule: true,
+        default: {
+          NativeAnimatedModule: {},
+          PlatformConstants: {
+            getConstants() {
+              return {};
+            },
           },
         },
       }))

@@ -38,7 +38,7 @@ import typeof Platform from '../Utilities/Platform';
 // flowlint unsafe-getters-setters:off
 module.exports = {
   get BatchedBridge(): BatchedBridge {
-    return require('../BatchedBridge/BatchedBridge');
+    return require('../BatchedBridge/BatchedBridge').default;
   },
   get ExceptionsManager(): ExceptionsManager {
     return require('../Core/ExceptionsManager');

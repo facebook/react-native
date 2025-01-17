@@ -489,4 +489,4 @@ class MessageQueue {
   }
 }
 
-module.exports = MessageQueue;
+export default MessageQueue;

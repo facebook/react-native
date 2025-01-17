@@ -114,7 +114,7 @@ if (__DEV__) {
     // not when debugging in chrome
     // TODO(t12832058) This check is broken
     if (!window.document) {
-      const AppState = require('../AppState/AppState');
+      const AppState = require('../AppState/AppState').default;
       const getDevServer = require('./Devtools/getDevServer');
 
       // Don't steal the DevTools from currently active app.

@@ -12,7 +12,7 @@
 
 import type {ExtendedError} from '../Core/ExtendedError';
 
-const BatchedBridge = require('./BatchedBridge');
+const BatchedBridge = require('./BatchedBridge').default;
 const invariant = require('invariant');
 
 export type ModuleConfig = [
@@ -209,4 +209,4 @@ if (global.nativeModuleProxy) {
   );
 }
 
-module.exports = NativeModules;
+export default NativeModules;

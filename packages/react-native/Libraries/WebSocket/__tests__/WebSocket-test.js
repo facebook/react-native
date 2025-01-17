@@ -12,10 +12,13 @@
 
 jest.mock('../../EventEmitter/NativeEventEmitter');
 jest.setMock('../../BatchedBridge/NativeModules', {
-  WebSocketModule: {
-    connect: () => {},
+  __esModule: true,
+  default: {
+    WebSocketModule: {
+      connect: () => {},
+    },
+    PlatformConstants: {},
   },
-  PlatformConstants: {},
 });
 
 const WebSocket = require('../WebSocket');

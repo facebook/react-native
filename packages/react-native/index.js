@@ -230,7 +230,7 @@ module.exports = {
     return require('./Libraries/ReactNative/AppRegistry');
   },
   get AppState(): AppState {
-    return require('./Libraries/AppState/AppState');
+    return require('./Libraries/AppState/AppState').default;
   },
   get BackHandler(): BackHandler {
     return require('./Libraries/Utilities/BackHandler');
@@ -368,7 +368,7 @@ module.exports = {
     return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter');
   },
   get NativeModules(): NativeModules {
-    return require('./Libraries/BatchedBridge/NativeModules');
+    return require('./Libraries/BatchedBridge/NativeModules').default;
   },
   get Platform(): Platform {
     return require('./Libraries/Utilities/Platform');
