@@ -1189,88 +1189,86 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithBundleURL
 
 - (void)invalidate
 {
-  RCTExecuteOnMainQueue(^{
-    if (_didInvalidate) {
-      return;
+  if (_didInvalidate) {
+    return;
+  }
+
+  RCTAssertMainQueue();
+  RCTLogInfo(@"Invalidating %@ (parent: %@, executor: %@)", self, _parentBridge, [self executorClass]);
+
+  if (self->_reactInstance) {
+    // Do this synchronously on the main thread to fulfil unregisterFromInspector's
+    // requirements.
+    self->_reactInstance->unregisterFromInspector();
+  }
+
+  _loading = NO;
+  _valid = NO;
+  _didInvalidate = YES;
+  _moduleRegistryCreated = NO;
+
+  if ([RCTBridge currentBridge] == self) {
+    [RCTBridge setCurrentBridge:nil];
+  }
+
+  // Stop JS instance and message thread
+  [self ensureOnJavaScriptThread:^{
+    [self->_displayLink invalidate];
+    self->_displayLink = nil;
+
+    if (RCTProfileIsProfiling()) {
+      RCTProfileUnhookModules(self);
     }
 
-    RCTAssertMainQueue();
-    RCTLogInfo(@"Invalidating %@ (parent: %@, executor: %@)", self, _parentBridge, [self executorClass]);
+    // Invalidate modules
 
-    if (self->_reactInstance) {
-      // Do this synchronously on the main thread to fulfil unregisterFromInspector's
-      // requirements.
-      self->_reactInstance->unregisterFromInspector();
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillInvalidateModulesNotification
+                                                        object:self->_parentBridge
+                                                      userInfo:@{@"bridge" : self}];
+
+    // We're on the JS thread (which we'll be suspending soon), so no new calls will be made to native modules after
+    // this completes. We must ensure all previous calls were dispatched before deallocating the instance (and module
+    // wrappers) or we may have invalid pointers still in flight.
+    dispatch_group_t moduleInvalidation = dispatch_group_create();
+    for (RCTModuleData *moduleData in self->_moduleDataByID) {
+      // Be careful when grabbing an instance here, we don't want to instantiate
+      // any modules just to invalidate them.
+      if (![moduleData hasInstance]) {
+        continue;
+      }
+
+      if ([moduleData.instance respondsToSelector:@selector(invalidate)]) {
+        dispatch_group_enter(moduleInvalidation);
+        [self
+            dispatchBlock:^{
+              [(id<RCTInvalidating>)moduleData.instance invalidate];
+              dispatch_group_leave(moduleInvalidation);
+            }
+                    queue:moduleData.methodQueue];
+      }
+      [moduleData invalidate];
     }
 
-    _loading = NO;
-    _valid = NO;
-    _didInvalidate = YES;
-    _moduleRegistryCreated = NO;
-
-    if ([RCTBridge currentBridge] == self) {
-      [RCTBridge setCurrentBridge:nil];
+    if (dispatch_group_wait(moduleInvalidation, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
+      RCTLogError(@"Timed out waiting for modules to be invalidated");
     }
 
-    // Stop JS instance and message thread
-    [self ensureOnJavaScriptThread:^{
-      [self->_displayLink invalidate];
-      self->_displayLink = nil;
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeDidInvalidateModulesNotification
+                                                        object:self->_parentBridge
+                                                      userInfo:@{@"bridge" : self}];
 
-      if (RCTProfileIsProfiling()) {
-        RCTProfileUnhookModules(self);
-      }
+    self->_reactInstance.reset();
+    self->_jsMessageThread.reset();
 
-      // Invalidate modules
+    self->_moduleDataByName = nil;
+    self->_moduleDataByID = nil;
+    self->_moduleClassesByID = nil;
+    self->_pendingCalls = nil;
 
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeWillInvalidateModulesNotification
-                                                          object:self->_parentBridge
-                                                        userInfo:@{@"bridge" : self}];
-
-      // We're on the JS thread (which we'll be suspending soon), so no new calls will be made to native modules after
-      // this completes. We must ensure all previous calls were dispatched before deallocating the instance (and module
-      // wrappers) or we may have invalid pointers still in flight.
-      dispatch_group_t moduleInvalidation = dispatch_group_create();
-      for (RCTModuleData *moduleData in self->_moduleDataByID) {
-        // Be careful when grabbing an instance here, we don't want to instantiate
-        // any modules just to invalidate them.
-        if (![moduleData hasInstance]) {
-          continue;
-        }
-
-        if ([moduleData.instance respondsToSelector:@selector(invalidate)]) {
-          dispatch_group_enter(moduleInvalidation);
-          [self
-              dispatchBlock:^{
-                [(id<RCTInvalidating>)moduleData.instance invalidate];
-                dispatch_group_leave(moduleInvalidation);
-              }
-                      queue:moduleData.methodQueue];
-        }
-        [moduleData invalidate];
-      }
-
-      if (dispatch_group_wait(moduleInvalidation, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC))) {
-        RCTLogError(@"Timed out waiting for modules to be invalidated");
-      }
-
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTBridgeDidInvalidateModulesNotification
-                                                          object:self->_parentBridge
-                                                        userInfo:@{@"bridge" : self}];
-
-      self->_reactInstance.reset();
-      self->_jsMessageThread.reset();
-
-      self->_moduleDataByName = nil;
-      self->_moduleDataByID = nil;
-      self->_moduleClassesByID = nil;
-      self->_pendingCalls = nil;
-
-      [self->_jsThread cancel];
-      self->_jsThread = nil;
-      CFRunLoopStop(CFRunLoopGetCurrent());
-    }];
-  });
+    [self->_jsThread cancel];
+    self->_jsThread = nil;
+    CFRunLoopStop(CFRunLoopGetCurrent());
+  }];
 }
 
 - (void)logMessage:(NSString *)message level:(NSString *)level
