@@ -90,6 +90,7 @@ def use_react_native! (
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
   ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
+  ENV["RCT_NEW_ARCH_ENABLED"] = new_arch_enabled ? "1" : "0"
 
   prefix = path
 

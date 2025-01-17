@@ -20,7 +20,7 @@ folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
-is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] != "0"
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 
 new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED=1" : "")
