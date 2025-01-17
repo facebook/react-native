@@ -266,6 +266,7 @@ val prepareBoost by
     tasks.registering(PrepareBoostTask::class) {
       dependsOn(if (boostPathOverride != null) emptyList() else listOf(downloadBoost))
       boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(downloadBoostDest))
+      boostThirdPartyJniPath.set(project.file("src/main/jni/third-party/boost"))
       boostVersion.set(BOOST_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "boost"))
     }
@@ -399,6 +400,7 @@ val prepareGlog by
     tasks.registering(PrepareGlogTask::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGlog))
       glogPath.setFrom(dependenciesPath ?: tarTree(downloadGlogDest))
+      glogThirdPartyJniPath.set(project.file("src/main/jni/third-party/glog/"))
       glogVersion.set(GLOG_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "glog"))
     }
