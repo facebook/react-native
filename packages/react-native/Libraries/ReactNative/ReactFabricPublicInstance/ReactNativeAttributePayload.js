@@ -288,12 +288,20 @@ function diffProperties(
     // functions are converted to booleans as markers that the associated
     // events should be sent from native.
     if (typeof nextProp === 'function') {
-      nextProp = (true: any);
-      // If nextProp is not a function, then don't bother changing prevProp
-      // since nextProp will win and go into the updatePayload regardless.
-      if (typeof prevProp === 'function') {
-        prevProp = (true: any);
-      }
+      if (typeof attributeConfig !== 'object') { // if not an object, its likely bool: true and indicates an event handler
+        nextProp = (true: any);
+        // If nextProp is not a function, then don't bother changing prevProp
+        // since nextProp will win and go into the updatePayload regardless.
+        if (typeof prevProp === 'function') {
+          prevProp = (true: any);
+        }
+      } else if (typeof attributeConfig.process === 'function') {
+        // When the config for a function prop has a custom process method
+        // we don't assume its a regular event handler, but use the process method:
+        nextProp = attributeConfig.process(nextProp);
+        if (typeof prevProp === 'function') {
+          prevProp = attributeConfig.process(prevProp);
+        }
     }
 
     // An explicit value of undefined is treated as a null because it overrides
