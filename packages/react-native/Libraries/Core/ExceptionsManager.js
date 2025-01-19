@@ -12,6 +12,7 @@
 
 import type {ExtendedError} from './ExtendedError';
 import type {ExceptionData} from './NativeExceptionsManager';
+import {captureOwnerStack} from 'react';
 
 class SyntheticError extends Error {
   name: string = '';
@@ -112,11 +113,16 @@ function reportException(
   }
 
   if (__DEV__) {
-    const LogBox = require('../LogBox/LogBox').default;
-    LogBox.addException({
-      ...data,
-      isComponentError: !!e.isComponentError,
-    });
+    // reportToConsole is only true when coming from handleException,
+    // and the error has not yet been logged. If it's false, then it was
+    // reported to LogBox in reactConsoleErrorHandler, and we don't need to.
+    if (reportToConsole) {
+      const LogBox = require('../LogBox/LogBox').default;
+      LogBox.addException({
+        ...data,
+        isComponentError: !!e.isComponentError,
+      });
+    }
   } else if (isFatal || e.type !== 'warn') {
     const NativeExceptionsManager =
       require('./NativeExceptionsManager').default;
@@ -243,6 +249,13 @@ function reactConsoleErrorHandler(...args) {
     !global.RN$handleException ||
     !global.RN$handleException(error, isFatal, reportToConsole)
   ) {
+    if (__DEV__) {
+      // If we're not reporting to the console in reportException,
+      // we need to report it as a console.error here.
+      if (!reportToConsole) {
+        require('../LogBox/LogBox').default.addConsoleLog('error', ...args);
+      }
+    }
     reportException(
       /* $FlowFixMe[class-object-subtyping] added when improving typing for this
        * parameters */
