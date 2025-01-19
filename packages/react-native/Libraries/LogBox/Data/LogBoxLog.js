@@ -79,6 +79,7 @@ class LogBoxLog {
   count: number;
   level: LogLevel;
   codeFrame: ?CodeFrame;
+  componentCodeFrame: ?CodeFrame;
   isComponentError: boolean;
   extraData: mixed | void;
   symbolicated:
@@ -173,7 +174,7 @@ class LogBoxLog {
             this.updateComponentStackStatus(
               null,
               convertStackToComponentStack(data.stack),
-              null,
+              data?.codeFrame,
               callback,
             );
           },
@@ -235,6 +236,9 @@ class LogBoxLog {
         status: 'FAILED',
       };
     } else if (componentStack != null) {
+      if (codeFrame) {
+        this.componentCodeFrame = codeFrame;
+      }
       this.symbolicatedComponentStack = {
         error: null,
         componentStack,

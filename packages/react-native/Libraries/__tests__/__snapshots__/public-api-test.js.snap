@@ -6066,6 +6066,7 @@ declare class LogBoxLog {
   count: number;
   level: LogLevel;
   codeFrame: ?CodeFrame;
+  componentCodeFrame: ?CodeFrame;
   isComponentError: boolean;
   extraData: mixed | void;
   symbolicated:
@@ -6259,6 +6260,7 @@ exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBox
 
 exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBoxInspectorCodeFrame.js 1`] = `
 "type Props = $ReadOnly<{
+  componentCodeFrame: ?CodeFrame,
   codeFrame: ?CodeFrame,
 }>;
 declare function LogBoxInspectorCodeFrame(props: Props): React.Node;
