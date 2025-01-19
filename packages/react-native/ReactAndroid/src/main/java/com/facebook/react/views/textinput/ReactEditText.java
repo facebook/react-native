@@ -732,7 +732,7 @@ public class ReactEditText extends AppCompatEditText {
     // text so, we have to set text to null, which will clear the currently composing text.
     if (reactTextUpdate.getText().length() == 0) {
       setText(null);
-         } else if (isFirstRender && !hasFocus()) {
+    } else if (isFirstRender && !hasFocus()) {
       setText(spannableStringBuilder);
       isFirstRender = false;
     } else {
