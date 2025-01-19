@@ -14,6 +14,7 @@ import type {ExtendedExceptionData} from './Data/parseLogBoxLog';
 import Platform from '../Utilities/Platform';
 import RCTLog from '../Utilities/RCTLog';
 import {hasComponentStack} from './Data/parseLogBoxLog';
+import * as React from 'react';
 
 export type {LogData, ExtendedExceptionData, IgnorePattern};
 
@@ -192,9 +193,21 @@ if (__DEV__) {
     }
 
     try {
+      let stack;
+      // $FlowFixMe[prop-missing] Not added to flow types yet.
+      if (!hasComponentStack(args) && React.captureOwnerStack != null) {
+        stack = React.captureOwnerStack();
+        if (!hasComponentStack(args)) {
+          console.log('hit');
+          if (stack !== '') {
+            args[0] = args[0] += '%s';
+            args.push(stack);
+          }
+        }
+      }
       if (!isWarningModuleWarning(...args) && !hasComponentStack(args)) {
         // Only show LogBox for the 'warning' module, or React errors with
-        // component stacks, otherwise pass the error through.u
+        // component stacks, otherwise pass the error through.
         //
         // By passing through, this will get picked up by the React console override,
         // potentially adding the component stack. React then passes it back to the
@@ -212,7 +225,7 @@ if (__DEV__) {
         return;
       }
 
-      const format = args[0].replace('Warning: ', '');
+      let format = args[0].replace('Warning: ', '');
       const filterResult = LogBoxData.checkWarningFilter(format);
       let level = 'error';
       if (filterResult.monitorEvent !== 'warning_unhandled') {
