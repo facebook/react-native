@@ -14,6 +14,8 @@ import type {
 } from './getFantomRenderedOutput';
 import type {MixedElement} from 'react';
 
+import ReactNativeElement from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
+import {getShadowNode} from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import * as Benchmark from './Benchmark';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
@@ -100,7 +102,7 @@ export function scheduleTask(task: () => void | Promise<void>) {
 let flushingQueue = false;
 
 /*
- * Runs a task on on the event loop. To be used together with root.render.
+ * Runs a task on the event loop. To be used together with root.render.
  *
  * React must run inside of event loop to ensure scheduling environment is closer to production.
  */
@@ -113,6 +115,14 @@ export function runTask(task: () => void | Promise<void>) {
 
   scheduleTask(task);
   runWorkLoop();
+}
+
+/*
+ * Simmulates running a task on the UI thread and forces side effect to drain the event queue, dispatching events to JavaScript.
+ */
+export function runOnUIThread(task: () => void) {
+  task();
+  NativeFantom.flushEventQueue();
 }
 
 /**
@@ -137,6 +147,11 @@ export function runWorkLoop(): void {
 // Surfacep rops: concurrentRoot, surfaceWidth, surfaceHeight, layoutDirection, pointScaleFactor.
 export function createRoot(rootConfig?: RootConfig): Root {
   return new Root(rootConfig);
+}
+
+export function dispatchNativeEvent(node: ReactNativeElement, type: string) {
+  const shadowNode = getShadowNode(node);
+  NativeFantom.dispatchNativeEvent(shadowNode, type);
 }
 
 export const unstable_benchmark = Benchmark;

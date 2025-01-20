@@ -12,7 +12,6 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-// match RenderFormatOptions.h
 export type RenderFormatOptions = {
   includeRoot: boolean,
   includeLayoutMetrics: boolean,
@@ -26,8 +25,13 @@ interface Spec extends TurboModule {
     devicePixelRatio: number,
   ) => void;
   stopSurface: (surfaceId: number) => void;
+  dispatchNativeEvent: (
+    shadowNode: mixed /* ShadowNode */,
+    type: string,
+  ) => void;
   getMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;
+  flushEventQueue: () => void;
   getRenderedOutput: (surfaceId: number, config: RenderFormatOptions) => string;
   reportTestSuiteResultsJSON: (results: string) => void;
 }
