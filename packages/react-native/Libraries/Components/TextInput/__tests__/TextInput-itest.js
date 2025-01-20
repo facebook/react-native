@@ -197,6 +197,44 @@ describe('onChange', () => {
 
     root.destroy();
   });
+
+  it('does not batch onChange events', () => {
+    const root = Fantom.createRoot();
+    let maybeNode;
+    const onChange = jest.fn();
+
+    Fantom.runTask(() => {
+      root.render(
+        <TextInput
+          onChange={event => {
+            onChange(event.nativeEvent);
+          }}
+          ref={node => {
+            maybeNode = node;
+          }}
+        />,
+      );
+    });
+
+    const element = ensureInstance(maybeNode, ReactNativeElement);
+
+    Fantom.runOnUIThread(() => {
+      Fantom.dispatchNativeEvent(element, 'change', {
+        text: 'Hello World 1',
+      });
+      Fantom.dispatchNativeEvent(element, 'change', {
+        text: 'Hello World 2',
+      });
+    });
+
+    Fantom.runWorkLoop();
+
+    expect(onChange).toHaveBeenCalledTimes(2);
+    expect(onChange.mock.calls[0][0].text).toBe('Hello World 1');
+    expect(onChange.mock.calls[1][0].text).toBe('Hello World 2');
+
+    root.destroy();
+  });
 });
 
 describe('onChangeText', () => {
