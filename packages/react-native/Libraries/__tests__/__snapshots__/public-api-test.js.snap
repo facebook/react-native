@@ -5635,8 +5635,8 @@ declare const Presets: {
 declare const LayoutAnimation: {
   configureNext: configureNext,
   create: create,
-  Types: $FlowFixMe,
-  Properties: $FlowFixMe,
+  Types: $ReadOnly<{ [K in LayoutAnimationType]: K }>,
+  Properties: $ReadOnly<{ [K in LayoutAnimationProperty]: K }>,
   checkConfig(...args: Array<mixed>): void,
   Presets: Presets,
   easeInEaseOut: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
