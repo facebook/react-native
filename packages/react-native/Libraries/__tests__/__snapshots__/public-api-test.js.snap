@@ -5655,8 +5655,7 @@ declare class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor(): void;
   addEventListener<K: $Keys<LinkingEventDefinitions>>(
     eventType: K,
-    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
-    context: $FlowFixMe
+    listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed
   ): EventSubscription;
   openURL(url: string): Promise<void>;
   canOpenURL(url: string): Promise<boolean>;
