@@ -5209,9 +5209,7 @@ declare module.exports: InspectorPanel;
 `;
 
 exports[`public API should not change unintentionally Libraries/Inspector/NetworkOverlay.js 1`] = `
-"declare const ScrollView: $FlowFixMe;
-declare const React: $FlowFixMe;
-type NetworkRequestInfo = {
+"type NetworkRequestInfo = {
   id: number,
   type?: string,
   url?: string,
