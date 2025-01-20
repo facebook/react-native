@@ -8591,7 +8591,7 @@ export type DirectEventHandler<T, PaperName: string | empty = empty> = (
 export type Double = number;
 export type Float = number;
 export type Int32 = number;
-export type UnsafeObject = $FlowFixMe;
+export type UnsafeObject = Object;
 export type UnsafeMixed = mixed;
 type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;
 export type WithDefault<Type: DefaultTypes, Value: ?Type | string> = ?Type;
