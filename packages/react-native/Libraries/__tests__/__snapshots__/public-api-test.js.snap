@@ -5356,7 +5356,7 @@ declare const InteractionManager: {
   },
   createInteractionHandle(): Handle,
   clearInteractionHandle(handle: Handle): void,
-  addListener: $FlowFixMe,
+  addListener: Function,
   setDeadline(deadline: number): void,
 };
 declare module.exports: typeof InteractionManager;
