@@ -97,13 +97,17 @@ function runExceptionsManagerTests() {
           error,
         });
 
+        let exceptionData;
         if (__DEV__) {
-          expect(nativeReportException.mock.calls.length).toBe(0);
-          expect(logBoxAddException.mock.calls.length).toBe(1);
-          return;
+          expect(nativeReportException).not.toBe(0);
+          expect(logBoxAddException).toBeCalledTimes(1);
+          exceptionData = logBoxAddException.mock.calls[0][0];
+        } else {
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException.mock.calls.length).toBe(1);
+          exceptionData = nativeReportException.mock.calls[0][0];
         }
-        expect(nativeReportException.mock.calls.length).toBe(1);
-        const exceptionData = nativeReportException.mock.calls[0][0];
+
         const formattedMessage =
           'ReferenceError: ' +
           message +
@@ -140,15 +144,24 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
+        const formattedMessage =
+          'Error: ' +
+          error.message +
+          '\n\n' +
+          'This error is located at:' +
+          capturedErrorDefaults.componentStack;
         expect(getLineFromFrame(exceptionData.stack[0])).toBe(
           "const error = new Error('Some error happened');",
         );
+        expect(console.error).toBeCalledWith(formattedMessage);
       });
 
       test('adds the JS engine to the message', () => {
@@ -165,10 +178,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         expect(exceptionData.message).toBe(
@@ -202,10 +217,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         const formattedMessage =
@@ -235,10 +252,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         const formattedMessage =
@@ -271,15 +290,22 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         expect(getLineFromFrame(exceptionData.stack[0])).toBe(
           "const error = Object.freeze(new Error('Some error happened'));",
         );
+
+        // No component stack.
+        const formattedMessage = 'Error: ' + error.message;
+        expect(exceptionData.message).toBe(formattedMessage);
+        expect(console.error).toBeCalledWith(formattedMessage);
       });
 
       test('does not mutate the message', () => {
@@ -291,12 +317,25 @@ function runExceptionsManagerTests() {
           error,
         });
 
+        let exceptionData;
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
+          exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException).toHaveBeenCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           expect(error.message).toBe(message);
+          exceptionData = nativeReportException.mock.calls[0][0];
         }
+        const formattedMessage =
+          'ReferenceError: ' +
+          message +
+          '\n\n' +
+          'This error is located at:' +
+          capturedErrorDefaults.componentStack;
+        expect(exceptionData.message).toBe(formattedMessage);
+        expect(console.error).toBeCalledWith(formattedMessage);
       });
 
       test('can safely process the same error multiple times', () => {
@@ -325,10 +364,12 @@ function runExceptionsManagerTests() {
           let exceptionData;
 
           if (__DEV__) {
-            expect(logBoxAddException.mock.calls.length).toBe(1);
+            expect(nativeReportException).not.toBeCalled();
+            expect(logBoxAddException).toBeCalledTimes(1);
             exceptionData = logBoxAddException.mock.calls[0][0];
           } else {
-            expect(nativeReportException.mock.calls.length).toBe(1);
+            expect(logBoxAddException).not.toBeCalled();
+            expect(nativeReportException).toBeCalledTimes(1);
             exceptionData = nativeReportException.mock.calls[0][0];
           }
           expect(exceptionData.message).toBe(formattedMessage);
@@ -371,23 +412,26 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).toBeCalledTimes(1);
+          expect(nativeReportException).not.toBeCalled();
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
+          const formattedMessage = 'Error: ' + message;
+          expect(exceptionData.message).toBe(formattedMessage);
+          expect(exceptionData.originalMessage).toBe(message);
+          expect(exceptionData.name).toBe(name);
+          expect(getLineFromFrame(exceptionData.stack[0])).toBe(
+            "const error = new Error('Some error happened');",
+          );
+          expect(exceptionData.isFatal).toBe(false);
         }
-        const formattedMessage = 'Error: ' + message;
-        expect(exceptionData.message).toBe(formattedMessage);
-        expect(exceptionData.originalMessage).toBe(message);
-        expect(exceptionData.name).toBe(name);
-        expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-          "const error = new Error('Some error happened');",
-        );
-        expect(exceptionData.isFatal).toBe(false);
+
         expect(mockError.mock.calls[0]).toHaveLength(1);
         expect(mockError.mock.calls[0][0]).toBeInstanceOf(Error);
-        expect(mockError.mock.calls[0][0].toString()).toBe(formattedMessage);
+        expect(mockError.mock.calls[0][0].toString()).toBe('Error: ' + message);
       });
 
       test('logging a string', () => {
@@ -398,21 +442,23 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).toBeCalledTimes(1);
+          expect(nativeReportException).not.toBeCalled();
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
+          expect(exceptionData.message).toBe(
+            'console.error: Some error happened',
+          );
+          expect(exceptionData.originalMessage).toBe('Some error happened');
+          expect(exceptionData.name).toBe('console.error');
+          expect(
+            getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
+          ).toBe('console.error(message);');
+          expect(exceptionData.isFatal).toBe(false);
         }
-        expect(exceptionData.message).toBe(
-          'console.error: Some error happened',
-        );
-        expect(exceptionData.originalMessage).toBe('Some error happened');
-        expect(exceptionData.name).toBe('console.error');
-        expect(
-          getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
-        ).toBe('console.error(message);');
-        expect(exceptionData.isFatal).toBe(false);
         expect(mockError.mock.calls[0]).toEqual([message]);
       });
 
@@ -424,25 +470,27 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).toBeCalledTimes(1);
+          expect(nativeReportException).not.toBeCalled();
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
+          expect(exceptionData.message).toBe(
+            'console.error: 42 true ["symbol" failed to stringify] {"y":null}',
+          );
+          expect(exceptionData.originalMessage).toBe(
+            '42 true ["symbol" failed to stringify] {"y":null}',
+          );
+          expect(exceptionData.name).toBe('console.error');
+          expect(
+            getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
+          ).toBe('console.error(...args);');
+          expect(exceptionData.isFatal).toBe(false);
         }
-        expect(exceptionData.message).toBe(
-          'console.error: 42 true ["symbol" failed to stringify] {"y":null}',
-        );
-        expect(exceptionData.originalMessage).toBe(
-          '42 true ["symbol" failed to stringify] {"y":null}',
-        );
-        expect(exceptionData.name).toBe('console.error');
-        expect(
-          getLineFromFrame(getFirstFrameInThisFile(exceptionData.stack)),
-        ).toBe('console.error(...args);');
-        expect(exceptionData.isFatal).toBe(false);
 
-        expect(mockError).toHaveBeenCalledTimes(1);
+        expect(mockError).toBeCalledTimes(1);
         // Shallowly compare the mock call arguments with `args`
         expect(mockError.mock.calls[0]).toHaveLength(args.length);
         for (let i = 0; i < args.length; ++i) {
@@ -454,8 +502,8 @@ function runExceptionsManagerTests() {
         const message = 'Warning: Some mild issue happened';
 
         console.error(message);
-
-        expect(nativeReportException).not.toHaveBeenCalled();
+        expect(logBoxAddException).not.toBeCalled();
+        expect(nativeReportException).not.toBeCalled();
         expect(mockError.mock.calls[0]).toEqual([message]);
       });
 
@@ -464,7 +512,8 @@ function runExceptionsManagerTests() {
 
         console.error(...args);
 
-        expect(nativeReportException).not.toHaveBeenCalled();
+        expect(logBoxAddException).not.toBeCalled();
+        expect(nativeReportException).not.toBeCalled();
         expect(mockError.mock.calls[0]).toEqual(args);
       });
 
@@ -480,9 +529,11 @@ function runExceptionsManagerTests() {
         console.error(...args);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
+          expect(nativeReportException).not.toBeCalled();
         } else {
-          expect(nativeReportException).toHaveBeenCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
         }
       });
 
@@ -492,7 +543,11 @@ function runExceptionsManagerTests() {
 
         console.error(error);
 
-        expect(nativeReportException).not.toHaveBeenCalled();
+        if (__DEV__) {
+          expect(logBoxAddException).toBeCalledTimes(1);
+        }
+
+        expect(nativeReportException).not.toBeCalled();
       });
 
       test('reportErrorsAsExceptions = false', () => {
@@ -501,7 +556,8 @@ function runExceptionsManagerTests() {
 
         console.error(message);
 
-        expect(nativeReportException).not.toHaveBeenCalled();
+        expect(logBoxAddException).not.toBeCalled();
+        expect(nativeReportException).not.toBeCalled();
         expect(mockError.mock.calls[0]).toEqual([message]);
       });
 
@@ -518,15 +574,19 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          // In DEV we only send the raw arguments to LogBox.
+          expect(logBoxAddException).toBeCalledTimes(1);
+          expect(nativeReportException).not.toBeCalled();
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
+          expect(logBoxAddException).not.toBeCalled();
           expect(nativeReportException.mock.calls.length).toBe(1);
           exceptionData = nativeReportException.mock.calls[0][0];
+          expect(getLineFromFrame(exceptionData.stack[0])).toBe(
+            "const error = new Error('Some error happened');",
+          );
         }
-        expect(getLineFromFrame(exceptionData.stack[0])).toBe(
-          "const error = new Error('Some error happened');",
-        );
+        expect(mockError.mock.calls[0][0]).toEqual(error);
       });
     });
 
@@ -540,10 +600,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         const formattedMessage = 'Error: ' + message;
@@ -567,10 +629,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         const formattedMessage = 'Error: ' + message;
@@ -593,10 +657,12 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         expect(exceptionData.message).toBe(message);
@@ -604,6 +670,7 @@ function runExceptionsManagerTests() {
         expect(exceptionData.name).toBe(null);
         expect(exceptionData.stack[0].file).toMatch(/ExceptionsManager\.js$/);
         expect(exceptionData.isFatal).toBe(true);
+        expect(console.error.mock.calls[0]).toHaveLength(1);
         expect(console.error.mock.calls[0]).toEqual([message]);
       });
 
@@ -620,15 +687,21 @@ function runExceptionsManagerTests() {
         let exceptionData;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           exceptionData = logBoxAddException.mock.calls[0][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           exceptionData = nativeReportException.mock.calls[0][0];
         }
         expect(getLineFromFrame(exceptionData.stack[0])).toBe(
           "const error = new Error('Some error happened');",
         );
+        expect(console.error.mock.calls[0]).toHaveLength(1);
+        expect(console.error.mock.calls[0]).toEqual([
+          'Error: ' + error.message,
+        ]);
       });
 
       test('logs fatal "warn"-type errors', () => {
@@ -638,10 +711,16 @@ function runExceptionsManagerTests() {
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
         } else {
-          expect(nativeReportException).toHaveBeenCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
         }
+        expect(console.error.mock.calls[0]).toHaveLength(1);
+        expect(console.error.mock.calls[0]).toEqual([
+          'Error: ' + error.message,
+        ]);
       });
     });
 
@@ -682,11 +761,13 @@ function runExceptionsManagerTests() {
         let afterDecorator;
 
         if (__DEV__) {
-          expect(logBoxAddException.mock.calls.length).toBe(2);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(2);
           withoutDecoratorInstalled = logBoxAddException.mock.calls[0][0];
           afterDecorator = logBoxAddException.mock.calls[1][0];
         } else {
-          expect(nativeReportException.mock.calls.length).toBe(2);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(2);
           withoutDecoratorInstalled = nativeReportException.mock.calls[0][0];
           afterDecorator = nativeReportException.mock.calls[1][0];
         }
@@ -705,6 +786,13 @@ function runExceptionsManagerTests() {
           ...beforeDecorator,
           message: 'decorated: ' + beforeDecorator.message,
         });
+        expect(mockError).toBeCalledTimes(2);
+        expect(mockError.mock.calls[0][0]).toEqual(
+          'Error: Some error happened',
+        );
+        expect(mockError.mock.calls[1][0]).toMatch(
+          'decorated: Error: Some error happened',
+        );
       });
 
       test('clearing a decorator', () => {
@@ -718,12 +806,18 @@ function runExceptionsManagerTests() {
         ExceptionsManager.unstable_setExceptionDecorator(null);
         ExceptionsManager.handleException(error, true);
 
-        expect(decorator).not.toHaveBeenCalled();
+        expect(decorator).not.toBeCalled();
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalled();
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
         } else {
-          expect(nativeReportException).toHaveBeenCalled();
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
         }
+        expect(mockError).toBeCalledTimes(1);
+        expect(mockError.mock.calls[0][0]).toEqual(
+          'Error: Some error happened',
+        );
       });
 
       test('prevents decorator recursion from error handler', () => {
@@ -740,17 +834,19 @@ function runExceptionsManagerTests() {
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalledTimes(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           expect(logBoxAddException.mock.calls[0][0].message).toMatch(
             /decorated: .*Some error happened/,
           );
         } else {
-          expect(nativeReportException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           expect(nativeReportException.mock.calls[0][0].message).toMatch(
             /decorated: .*Some error happened/,
           );
         }
-        expect(mockError).toHaveBeenCalledTimes(2);
+        expect(mockError).toBeCalledTimes(2);
         expect(mockError.mock.calls[0][0]).toMatch(
           /Logging an error within the decorator/,
         );
@@ -774,6 +870,7 @@ function runExceptionsManagerTests() {
 
         if (__DEV__) {
           expect(logBoxAddException).toHaveBeenCalledTimes(2);
+          expect(nativeReportException).not.toBeCalled();
           expect(logBoxAddException.mock.calls[0][0].message).toMatch(
             /Logging an error within the decorator/,
           );
@@ -781,7 +878,8 @@ function runExceptionsManagerTests() {
             /decorated: .*Some error happened/,
           );
         } else {
-          expect(nativeReportException).toHaveBeenCalledTimes(2);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(2);
           expect(nativeReportException.mock.calls[0][0].message).toMatch(
             /Logging an error within the decorator/,
           );
@@ -789,7 +887,7 @@ function runExceptionsManagerTests() {
             /decorated: .*Some error happened/,
           );
         }
-        expect(mockError).toHaveBeenCalledTimes(2);
+        expect(mockError).toBeCalledTimes(2);
         // console.error calls are chained without exception pre-processing, so decorator doesn't apply
         expect(mockError.mock.calls[0][0].toString()).toMatch(
           /Error: Some error happened/,
@@ -809,19 +907,21 @@ function runExceptionsManagerTests() {
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalledTimes(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
           expect(logBoxAddException.mock.calls[0][0].message).toMatch(
             /Error: Some error happened/,
           );
         } else {
-          expect(nativeReportException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
           expect(nativeReportException.mock.calls[0][0].message).toMatch(
             /Error: Some error happened/,
           );
         }
-        expect(mockError).toHaveBeenCalledTimes(1);
+        expect(mockError).toBeCalledTimes(1);
         expect(mockError.mock.calls[0][0]).toMatch(
           /Error: Some error happened/,
         );
@@ -838,18 +938,20 @@ function runExceptionsManagerTests() {
 
         if (__DEV__) {
           expect(logBoxAddException).toHaveBeenCalledTimes(1);
+          expect(nativeReportException).not.toBeCalled();
           // Exceptions in decorators are ignored and the decorator is not applied
           expect(logBoxAddException.mock.calls[0][0].message).toMatch(
             /Error: Some error happened/,
           );
         } else {
-          expect(nativeReportException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           // Exceptions in decorators are ignored and the decorator is not applied
           expect(nativeReportException.mock.calls[0][0].message).toMatch(
             /Error: Some error happened/,
           );
         }
-        expect(mockError).toHaveBeenCalledTimes(1);
+        expect(mockError).toBeCalledTimes(1);
         expect(mockError.mock.calls[0][0].toString()).toMatch(
           /Error: Some error happened/,
         );
@@ -863,12 +965,14 @@ function runExceptionsManagerTests() {
         ExceptionsManager.handleException(error, true);
 
         if (__DEV__) {
-          expect(logBoxAddException).toHaveBeenCalledTimes(1);
+          expect(nativeReportException).not.toBeCalled();
+          expect(logBoxAddException).toBeCalledTimes(1);
           expect(logBoxAddException.mock.calls[0][0].extraData?.foo).toBe(
             'bar',
           );
         } else {
-          expect(nativeReportException).toHaveBeenCalledTimes(1);
+          expect(logBoxAddException).not.toBeCalled();
+          expect(nativeReportException).toBeCalledTimes(1);
           expect(nativeReportException.mock.calls[0][0].extraData?.foo).toBe(
             'bar',
           );
