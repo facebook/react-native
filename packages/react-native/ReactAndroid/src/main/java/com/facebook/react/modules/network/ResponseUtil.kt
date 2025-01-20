@@ -18,10 +18,12 @@ public object ResponseUtil {
   public fun onDataSend(
     reactContext: ReactApplicationContext?, requestId: Int, progress: Long, total: Long
   ) {
-    val args = Arguments.createArray()
-    args.pushInt(requestId)
-    args.pushInt(progress.toInt())
-    args.pushInt(total.toInt())
+    val args = Arguments.createArray().apply {
+      pushInt(requestId)
+      pushInt(progress.toInt())
+      pushInt(total.toInt())
+    }
+
     reactContext?.emitDeviceEvent("didSendNetworkData", args)
   }
 
@@ -33,11 +35,12 @@ public object ResponseUtil {
     progress: Long,
     total: Long
   ) {
-    val args = Arguments.createArray()
-    args.pushInt(requestId)
-    args.pushString(data)
-    args.pushInt(progress.toInt())
-    args.pushInt(total.toInt())
+    val args = Arguments.createArray().apply {
+      pushInt(requestId)
+      pushString(data)
+      pushInt(progress.toInt())
+      pushInt(total.toInt())
+    }
 
     reactContext?.emitDeviceEvent("didReceiveNetworkIncrementalData", args)
   }
@@ -46,10 +49,11 @@ public object ResponseUtil {
   public fun onDataReceivedProgress(
     reactContext: ReactApplicationContext?, requestId: Int, progress: Long, total: Long
   ) {
-    val args = Arguments.createArray()
-    args.pushInt(requestId)
-    args.pushInt(progress.toInt())
-    args.pushInt(total.toInt())
+    val args = Arguments.createArray().apply {
+      pushInt(requestId)
+      pushInt(progress.toInt())
+      pushInt(total.toInt())
+    }
 
     reactContext?.emitDeviceEvent("didReceiveNetworkDataProgress", args)
   }
@@ -58,9 +62,10 @@ public object ResponseUtil {
   public fun onDataReceived(
     reactContext: ReactApplicationContext?, requestId: Int, data: String?
   ) {
-    val args = Arguments.createArray()
-    args.pushInt(requestId)
-    args.pushString(data)
+    val args = Arguments.createArray().apply {
+      pushInt(requestId)
+      pushString(data)
+    }
 
     reactContext?.emitDeviceEvent("didReceiveNetworkData", args)
   }
@@ -69,9 +74,10 @@ public object ResponseUtil {
   public fun onDataReceived(
     reactContext: ReactApplicationContext?, requestId: Int, data: WritableMap?
   ) {
-    val args = Arguments.createArray()
-    args.pushInt(requestId)
-    args.pushMap(data)
+    val args = Arguments.createArray().apply {
+      pushInt(requestId)
+      pushMap(data)
+    }
 
     reactContext?.emitDeviceEvent("didReceiveNetworkData", args)
   }
@@ -80,9 +86,10 @@ public object ResponseUtil {
   public fun onRequestError(
     reactContext: ReactApplicationContext?, requestId: Int, error: String?, e: Throwable?
   ) {
-    val args = Arguments.createArray()
-    args.pushInt(requestId)
-    args.pushString(error)
+    val args = Arguments.createArray().apply {
+      pushInt(requestId)
+      pushString(error)
+    }
 
     if ((e != null) && (e.javaClass == SocketTimeoutException::class.java)) {
       args.pushBoolean(true) // last argument is a time out boolean
@@ -95,9 +102,10 @@ public object ResponseUtil {
   public fun onRequestSuccess(
     reactContext: ReactApplicationContext?, requestId: Int
   ) {
-    val args = Arguments.createArray()
-    args.pushInt(requestId)
-    args.pushNull()
+    val args = Arguments.createArray().apply {
+      pushInt(requestId)
+      pushNull()
+    }
 
     reactContext?.emitDeviceEvent("didCompleteNetworkResponse", args)
   }
@@ -110,11 +118,12 @@ public object ResponseUtil {
     headers: WritableMap?,
     url: String?
   ) {
-    val args = Arguments.createArray()
-    args.pushInt(requestId)
-    args.pushInt(statusCode)
-    args.pushMap(headers)
-    args.pushString(url)
+    val args = Arguments.createArray().apply {
+      pushInt(requestId)
+      pushInt(statusCode)
+      pushMap(headers)
+      pushString(url)
+    }
 
     reactContext?.emitDeviceEvent("didReceiveNetworkResponse", args)
   }
