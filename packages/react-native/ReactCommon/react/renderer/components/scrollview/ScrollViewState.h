@@ -12,9 +12,7 @@
 #include <react/renderer/graphics/Rect.h>
 #include <react/renderer/graphics/Size.h>
 
-#ifdef ANDROID
 #include <folly/dynamic.h>
-#endif
 
 namespace facebook::react {
 
@@ -38,7 +36,6 @@ class ScrollViewState final {
    */
   Size getContentSize() const;
 
-#ifdef ANDROID
   ScrollViewState(const ScrollViewState& previousState, folly::dynamic data)
       : contentOffset(
             {(Float)data["contentOffsetLeft"].getDouble(),
@@ -51,7 +48,6 @@ class ScrollViewState final {
         "contentOffsetTop", contentOffset.y)(
         "scrollAwayPaddingTop", scrollAwayPaddingTop);
   };
-#endif
 };
 
 } // namespace facebook::react

@@ -167,6 +167,14 @@ export function dispatchNativeEvent(
   );
 }
 
+export function dispatchNativeStateUpdate(
+  node: ReactNativeElement,
+  payload: {[key: string]: mixed},
+) {
+  const shadowNode = getShadowNode(node);
+  NativeFantom.dispatchNativeStateUpdate(shadowNode, payload);
+}
+
 export const unstable_benchmark = Benchmark;
 
 type FantomConstants = $ReadOnly<{

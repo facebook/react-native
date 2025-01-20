@@ -64,6 +64,10 @@ interface Spec extends TurboModule {
     category?: NativeEventCategory,
     isUnique?: boolean,
   ) => void;
+  dispatchNativeStateUpdate: (
+    shadowNode: mixed /* ShadowNode */,
+    payload: mixed,
+  ) => void;
   getMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;

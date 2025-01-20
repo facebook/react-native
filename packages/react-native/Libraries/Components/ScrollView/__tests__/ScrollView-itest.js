@@ -13,6 +13,7 @@
 import '../../../Core/InitializeCore.js';
 import ensureInstance from '../../../../../react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from '../../../../../react-native/src/private/webapis/dom/nodes/ReactNativeElement';
+import View from '../../View/View';
 import ScrollView from '../ScrollView';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
@@ -115,6 +116,96 @@ describe('onScroll', () => {
     expect(entry.contentOffset).toEqual({
       x: 0,
       y: 2,
+    });
+
+    root.destroy();
+  });
+});
+
+describe('contentOffset + measure', () => {
+  it('delivers onScroll event', () => {
+    const root = Fantom.createRoot();
+    let maybeScrollViewNode;
+    let maybeNode;
+    const onScroll = jest.fn();
+
+    Fantom.runTask(() => {
+      root.render(
+        <ScrollView
+          onScroll={event => {
+            onScroll(event.nativeEvent);
+          }}
+          ref={node => {
+            maybeScrollViewNode = node;
+          }}>
+          <View
+            style={{width: 1, height: 2, top: 3}}
+            ref={node => {
+              maybeNode = node;
+            }}
+          />
+        </ScrollView>,
+      );
+    });
+
+    const scrollViewElement = ensureInstance(
+      maybeScrollViewNode,
+      ReactNativeElement,
+    );
+
+    Fantom.runOnUIThread(() => {
+      Fantom.dispatchNativeEvent(
+        scrollViewElement,
+        'scroll',
+        {
+          contentOffset: {
+            x: 0,
+            y: 1,
+          },
+        },
+        {
+          isUnique: true,
+        },
+      );
+      Fantom.dispatchNativeStateUpdate(scrollViewElement, {
+        contentOffsetLeft: 0,
+        contentOffsetTop: 1,
+        scrollAwayPaddingTop: 0,
+      });
+    });
+
+    Fantom.runWorkLoop();
+
+    expect(onScroll).toHaveBeenCalledTimes(1);
+
+    const viewElement = ensureInstance(maybeNode, ReactNativeElement);
+
+    let rect;
+
+    viewElement.measure((x, y, width, height, pageX, pageY) => {
+      rect = {
+        x,
+        y,
+        width,
+        height,
+        pageX,
+        pageY,
+      };
+    });
+
+    const boundingClientRect = viewElement.getBoundingClientRect();
+    expect(boundingClientRect.x).toBe(0);
+    expect(boundingClientRect.y).toBe(2);
+    expect(boundingClientRect.width).toBe(1);
+    expect(boundingClientRect.height).toBe(2);
+
+    expect(rect).toEqual({
+      x: 0,
+      y: 3,
+      width: 1,
+      height: 2,
+      pageY: 2,
+      pageX: 0,
     });
 
     root.destroy();

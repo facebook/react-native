@@ -16,7 +16,6 @@ import ensureInstance from '../../../../../react-native/src/private/utilities/en
 import ReactNativeElement from '../../../../../react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import {NativeEventCategory} from '../../../../src/private/specs/modules/NativeFantom';
 import Text from '../../../Text/Text';
-import View from '../../View/View';
 import TextInput from '../TextInput';
 import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
