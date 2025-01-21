@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b7909873b5a9f72390db3a451f719b83>>
+ * @generated SignedSource<<ab969cfe42f874899855fd31c7c40aa2>>
  * @flow strict
  */
 
@@ -31,7 +31,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
-  disableInteractionManagerInBatchinator: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   enableAnimatedAllowlist: Getter<boolean>,
   enableAnimatedClearImmediateFix: Getter<boolean>,
@@ -118,11 +117,6 @@ export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGe
  * Disables InteractionManager and replaces its scheduler with `setImmediate`.
  */
 export const disableInteractionManager: Getter<boolean> = createJavaScriptFlagGetter('disableInteractionManager', false);
-
-/**
- * Skips InteractionManager in `Batchinator` and invokes callbacks synchronously.
- */
-export const disableInteractionManagerInBatchinator: Getter<boolean> = createJavaScriptFlagGetter('disableInteractionManagerInBatchinator', false);
 
 /**
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
