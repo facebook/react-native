@@ -4721,7 +4721,10 @@ declare export default typeof EventPolyfill;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/AssetRegistry.js 1`] = `
-"declare module.exports: $FlowFixMe;
+"declare module.exports: {
+  registerAsset: (asset: PackagerAsset) => number,
+  getAssetByID: (assetId: number) => PackagerAsset,
+};
 "
 `;
 
