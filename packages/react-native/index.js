@@ -122,7 +122,8 @@ module.exports = {
   },
   // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
-    return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
+    return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid')
+      .default;
   },
   get FlatList(): FlatList {
     return require('./Libraries/Lists/FlatList');
@@ -242,7 +243,7 @@ module.exports = {
         "It can now be installed and imported from '@react-native-clipboard/clipboard' instead of 'react-native'. " +
         'See https://github.com/react-native-clipboard/clipboard',
     );
-    return require('./Libraries/Components/Clipboard/Clipboard');
+    return require('./Libraries/Components/Clipboard/Clipboard').default;
   },
   get DeviceInfo(): DeviceInfo {
     return require('./Libraries/Utilities/DeviceInfo');
@@ -269,7 +270,7 @@ module.exports = {
     return require('./Libraries/Interaction/InteractionManager');
   },
   get Keyboard(): Keyboard {
-    return require('./Libraries/Components/Keyboard/Keyboard');
+    return require('./Libraries/Components/Keyboard/Keyboard').default;
   },
   get LayoutAnimation(): LayoutAnimation {
     return require('./Libraries/LayoutAnimation/LayoutAnimation');
