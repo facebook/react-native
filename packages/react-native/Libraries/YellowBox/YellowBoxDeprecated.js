@@ -68,7 +68,7 @@ if (__DEV__) {
 }
 
 // $FlowFixMe[method-unbinding]
-module.exports = (YellowBox: Class<React.Component<Props>> & {
+export default (YellowBox: Class<React.Component<Props>> & {
   ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
   install(): void,
   uninstall(): void,

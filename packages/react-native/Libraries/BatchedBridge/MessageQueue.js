@@ -14,7 +14,7 @@ const Systrace = require('../Performance/Systrace');
 const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
 const stringifySafe = require('../Utilities/stringifySafe').default;
 const warnOnce = require('../Utilities/warnOnce');
-const ErrorUtils = require('../vendor/core/ErrorUtils');
+const ErrorUtils = require('../vendor/core/ErrorUtils').default;
 const invariant = require('invariant');
 
 export type SpyData = {

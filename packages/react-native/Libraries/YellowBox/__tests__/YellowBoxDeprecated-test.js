@@ -12,7 +12,7 @@
 'use strict';
 
 const LogBox = require('../../LogBox/LogBox').default;
-const YellowBox = require('../YellowBoxDeprecated');
+const YellowBox = require('../YellowBoxDeprecated').default;
 
 describe('YellowBox', () => {
   beforeEach(() => {

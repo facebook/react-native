@@ -430,8 +430,11 @@ jest
     return jest.requireActual('./mockNativeComponent');
   })
   .mock('../Libraries/Vibration/Vibration', () => ({
-    vibrate: jest.fn(),
-    cancel: jest.fn(),
+    __esModule: true,
+    default: {
+      vibrate: jest.fn(),
+      cancel: jest.fn(),
+    },
   }))
   .mock('../Libraries/Components/View/ViewNativeComponent', () => {
     const React = require('react');
