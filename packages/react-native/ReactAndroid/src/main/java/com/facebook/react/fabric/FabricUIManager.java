@@ -609,6 +609,7 @@ public class FabricUIManager
    *     padding used by RN Android TextInput.
    * @return if theme data is available in the output parameters.
    */
+  @SuppressWarnings("unused")
   public boolean getThemeData(int surfaceId, float[] defaultTextInputPadding) {
     SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
     Context context = surfaceMountingManager != null ? surfaceMountingManager.getContext() : null;
@@ -868,7 +869,7 @@ public class FabricUIManager
         mReactApplicationContext, componentName, surfaceId, reactTag, params);
   }
 
-  public void setBinding(FabricUIManagerBinding binding) {
+  void setBinding(FabricUIManagerBinding binding) {
     mBinding = binding;
   }
 
@@ -985,7 +986,7 @@ public class FabricUIManager
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
     if (eventEmitter == null) {
       if (mMountingManager.getViewExists(reactTag)) {
-        // The view is preallocated and created. However, it hasn't been mounted yet. We will have
+        // The view is pre-allocated and created. However, it hasn't been mounted yet. We will have
         // access to the event emitter later when the view is mounted. For now just save the event
         // in the view state and trigger it later.
         mMountingManager.enqueuePendingEvent(
