@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.78.0-rc.1
+
+### Changed
+
+#### iOS specific
+
+- Pin 'concurrent-ruby' to a working version ([198adb47af](https://github.com/facebook/react-native/commit/198adb47af3676c85b35adb308c110c1d87120c8) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- Buttons becoming unresponsive when transform is animated ([2204ec94d4](https://github.com/facebook/react-native/commit/2204ec94d4b67a9ba559db3f54a5a1ef91e0f233) by [@sammy-SC](https://github.com/sammy-SC))
+
+
 ## v0.78.0-rc.0
 
 ### Breaking
