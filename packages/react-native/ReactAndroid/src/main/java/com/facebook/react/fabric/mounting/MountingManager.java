@@ -331,14 +331,11 @@ public class MountingManager {
   @AnyThread
   @ThreadConfined(ANY)
   public @Nullable EventEmitterWrapper getEventEmitter(int surfaceId, int reactTag) {
-    SurfaceMountingManager surfaceMountingManager =
-        (surfaceId == ViewUtil.NO_SURFACE_ID
-            ? getSurfaceManagerForView(reactTag)
-            : getSurfaceManager(surfaceId));
-    if (surfaceMountingManager == null) {
+    SurfaceMountingManager smm = getSurfaceMountingManager(surfaceId, reactTag);
+    if (smm == null) {
       return null;
     }
-    return surfaceMountingManager.getEventEmitter(reactTag);
+    return smm.getEventEmitter(reactTag);
   }
 
   /**
@@ -458,11 +455,15 @@ public class MountingManager {
       boolean canCoalesceEvent,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory) {
-    @Nullable SurfaceMountingManager smm = getSurfaceManager(surfaceId);
-    if (smm == null) {
-      // Cannot queue event without valid surface mountng manager. Do nothing here.
-      return;
-    }
+    SurfaceMountingManager smm = getSurfaceMountingManager(surfaceId, reactTag);
+    // Cannot queue event without valid surface mounting manager. Do nothing here.
+    if (smm == null) return;
     smm.enqueuePendingEvent(reactTag, eventName, canCoalesceEvent, params, eventCategory);
+  }
+
+  private @Nullable SurfaceMountingManager getSurfaceMountingManager(int surfaceId, int reactTag) {
+    return (surfaceId == ViewUtil.NO_SURFACE_ID
+        ? getSurfaceManagerForView(reactTag)
+        : getSurfaceManager(surfaceId));
   }
 }
