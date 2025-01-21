@@ -112,7 +112,7 @@ class ConcreteShadowNode : public BaseShadowNodeT {
   const std::shared_ptr<const ConcreteProps>& getConcretePropsShared() const {
     react_native_assert(
         BaseShadowNodeT::props_ && "Props must not be `nullptr`.");
-    return std::static_pointer_cast<ConcreteProps>(props_);
+    return std::static_pointer_cast<const ConcreteProps>(props_);
   }
 
   /*
