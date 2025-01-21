@@ -7,13 +7,13 @@
 
 #pragma once
 
+#include <folly/dynamic.h>
 #include <react/debug/react_native_assert.h>
 #include <react/renderer/attributedstring/AttributedString.h>
 #include <react/renderer/attributedstring/ParagraphAttributes.h>
 #include <react/renderer/textlayoutmanager/TextLayoutManager.h>
 
 #ifdef ANDROID
-#include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #endif
 
@@ -54,7 +54,6 @@ class ParagraphState final {
    */
   std::weak_ptr<const TextLayoutManager> layoutManager;
 
-#ifdef ANDROID
   ParagraphState(
       const AttributedString& attributedString,
       const ParagraphAttributes& paragraphAttributes,
@@ -69,6 +68,7 @@ class ParagraphState final {
     react_native_assert(false && "Not supported");
   };
   folly::dynamic getDynamic() const;
+#ifdef ANDROID
   MapBuffer getMapBuffer() const;
 #endif
 };

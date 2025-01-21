@@ -64,10 +64,12 @@ class State {
   size_t getRevision() const;
 
 #ifdef ANDROID
-  virtual folly::dynamic getDynamic() const = 0;
+
   virtual MapBuffer getMapBuffer() const = 0;
-  virtual void updateState(folly::dynamic&& data) const = 0;
+
 #endif
+  virtual folly::dynamic getDynamic() const = 0;
+  virtual void updateState(folly::dynamic&& data) const = 0;
 
  protected:
   friend class ShadowNodeFamily;

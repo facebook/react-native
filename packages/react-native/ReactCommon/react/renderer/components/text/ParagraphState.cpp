@@ -12,11 +12,11 @@
 
 namespace facebook::react {
 
-#ifdef ANDROID
 folly::dynamic ParagraphState::getDynamic() const {
   LOG(FATAL) << "ParagraphState may only be serialized to MapBuffer";
 }
 
+#ifdef ANDROID
 MapBuffer ParagraphState::getMapBuffer() const {
   return toMapBuffer(*this);
 }

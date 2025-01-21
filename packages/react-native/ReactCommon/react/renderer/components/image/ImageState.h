@@ -7,12 +7,12 @@
 
 #pragma once
 
+#include <folly/dynamic.h>
 #include <react/renderer/imagemanager/ImageRequest.h>
 #include <react/renderer/imagemanager/ImageRequestParams.h>
 #include <react/renderer/imagemanager/primitives.h>
 
 #ifdef ANDROID
-#include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
@@ -47,7 +47,7 @@ class ImageState final {
    * Returns stored ImageRequestParams object.
    */
   const ImageRequestParams& getImageRequestParams() const;
-#ifdef ANDROID
+
   ImageState(const ImageState& previousState, folly::dynamic data)
       : imageRequestParams_{} {};
 
@@ -57,7 +57,6 @@ class ImageState final {
   folly::dynamic getDynamic() const {
     return {};
   };
-#endif
 
  private:
   ImageSource imageSource_;

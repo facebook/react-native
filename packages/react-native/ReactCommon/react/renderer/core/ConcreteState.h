@@ -96,7 +96,6 @@ class ConcreteState : public State {
     family->dispatchRawState(std::move(stateUpdate));
   }
 
-#ifdef ANDROID
   folly::dynamic getDynamic() const override {
     return getData().getDynamic();
   }
@@ -104,7 +103,7 @@ class ConcreteState : public State {
   void updateState(folly::dynamic&& data) const override {
     updateState(Data(getData(), std::move(data)));
   }
-
+#ifdef ANDROID
   MapBuffer getMapBuffer() const override {
     if constexpr (usesMapBufferForStateData) {
       return getData().getMapBuffer();

@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include <folly/dynamic.h>
 #include <memory>
 
 #ifdef ANDROID
-#include <folly/dynamic.h>
 #include <react/renderer/mapbuffer/MapBuffer.h>
 #include <react/renderer/mapbuffer/MapBufferBuilder.h>
 #endif
@@ -24,10 +24,11 @@ namespace facebook::react {
 struct StateData final {
   using Shared = std::shared_ptr<const void>;
 
-#ifdef ANDROID
   StateData() = default;
   StateData(const StateData& previousState, folly::dynamic data) {}
   folly::dynamic getDynamic() const;
+
+#ifdef ANDROID
   MapBuffer getMapBuffer() const;
 #endif
 };
