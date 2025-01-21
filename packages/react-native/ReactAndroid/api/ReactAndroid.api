@@ -27,18 +27,22 @@ public class com/facebook/react/DebugCorePackage$$ReactModuleInfoProvider : com/
 }
 
 public abstract class com/facebook/react/HeadlessJsTaskService : android/app/Service, com/facebook/react/jstasks/HeadlessJsTaskEventListener {
+	public static final field Companion Lcom/facebook/react/HeadlessJsTaskService$Companion;
 	public fun <init> ()V
-	public static fun acquireWakeLockNow (Landroid/content/Context;)V
-	protected fun getReactContext ()Lcom/facebook/react/bridge/ReactContext;
-	protected fun getReactHost ()Lcom/facebook/react/ReactHost;
-	protected fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
+	protected final fun getReactContext ()Lcom/facebook/react/bridge/ReactContext;
+	protected final fun getReactHost ()Lcom/facebook/react/ReactHost;
+	protected final fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
 	protected fun getTaskConfig (Landroid/content/Intent;)Lcom/facebook/react/jstasks/HeadlessJsTaskConfig;
 	public fun onBind (Landroid/content/Intent;)Landroid/os/IBinder;
 	public fun onDestroy ()V
 	public fun onHeadlessJsTaskFinish (I)V
 	public fun onHeadlessJsTaskStart (I)V
 	public fun onStartCommand (Landroid/content/Intent;II)I
-	protected fun startTask (Lcom/facebook/react/jstasks/HeadlessJsTaskConfig;)V
+	protected final fun startTask (Lcom/facebook/react/jstasks/HeadlessJsTaskConfig;)V
+}
+
+public final class com/facebook/react/HeadlessJsTaskService$Companion {
+	public final fun acquireWakeLockNow (Landroid/content/Context;)V
 }
 
 public final class com/facebook/react/JSEngineResolutionAlgorithm : java/lang/Enum {
