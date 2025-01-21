@@ -93,7 +93,6 @@ public class ReactTextViewManager
       if (update.containsImages()) {
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
-      view.setText(update);
 
       // If this text view contains any clickable spans, set a view tag and reset the accessibility
       // delegate so that these can be picked up by the accessibility system.
@@ -106,7 +105,16 @@ public class ReactTextViewManager
             new ReactAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable));
         ReactAccessibilityDelegate.resetDelegate(
             view, view.isFocusable(), view.getImportantForAccessibility());
+        // To enable navigation via keyboard, which is distinct from accessibility navigation.
+        view.setMovementMethod(ReactLinkMovementMethod.INSTANCE);
+      } else {
+        view.setMovementMethod(null);
+        view.setTag(R.id.accessibility_links, null);
+        ReactAccessibilityDelegate.resetDelegate(
+            view, view.isFocusable(), view.getImportantForAccessibility());
       }
+
+      view.setText(update);
     }
   }
 
