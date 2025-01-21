@@ -3477,16 +3477,16 @@ public class com/facebook/react/modules/network/ProgressResponseBody : okhttp3/R
 	public fun totalBytesRead ()J
 }
 
-public class com/facebook/react/modules/network/ResponseUtil {
-	public fun <init> ()V
-	public static fun onDataReceived (Lcom/facebook/react/bridge/ReactApplicationContext;ILcom/facebook/react/bridge/WritableMap;)V
-	public static fun onDataReceived (Lcom/facebook/react/bridge/ReactApplicationContext;ILjava/lang/String;)V
-	public static fun onDataReceivedProgress (Lcom/facebook/react/bridge/ReactApplicationContext;IJJ)V
-	public static fun onDataSend (Lcom/facebook/react/bridge/ReactApplicationContext;IJJ)V
-	public static fun onIncrementalDataReceived (Lcom/facebook/react/bridge/ReactApplicationContext;ILjava/lang/String;JJ)V
-	public static fun onRequestError (Lcom/facebook/react/bridge/ReactApplicationContext;ILjava/lang/String;Ljava/lang/Throwable;)V
-	public static fun onRequestSuccess (Lcom/facebook/react/bridge/ReactApplicationContext;I)V
-	public static fun onResponseReceived (Lcom/facebook/react/bridge/ReactApplicationContext;IILcom/facebook/react/bridge/WritableMap;Ljava/lang/String;)V
+public final class com/facebook/react/modules/network/ResponseUtil {
+	public static final field INSTANCE Lcom/facebook/react/modules/network/ResponseUtil;
+	public static final fun onDataReceived (Lcom/facebook/react/bridge/ReactApplicationContext;ILcom/facebook/react/bridge/WritableMap;)V
+	public static final fun onDataReceived (Lcom/facebook/react/bridge/ReactApplicationContext;ILjava/lang/String;)V
+	public static final fun onDataReceivedProgress (Lcom/facebook/react/bridge/ReactApplicationContext;IJJ)V
+	public static final fun onDataSend (Lcom/facebook/react/bridge/ReactApplicationContext;IJJ)V
+	public static final fun onIncrementalDataReceived (Lcom/facebook/react/bridge/ReactApplicationContext;ILjava/lang/String;JJ)V
+	public static final fun onRequestError (Lcom/facebook/react/bridge/ReactApplicationContext;ILjava/lang/String;Ljava/lang/Throwable;)V
+	public static final fun onRequestSuccess (Lcom/facebook/react/bridge/ReactApplicationContext;I)V
+	public static final fun onResponseReceived (Lcom/facebook/react/bridge/ReactApplicationContext;IILcom/facebook/react/bridge/WritableMap;Ljava/lang/String;)V
 }
 
 public class com/facebook/react/modules/network/TLSSocketFactory : javax/net/ssl/SSLSocketFactory {
