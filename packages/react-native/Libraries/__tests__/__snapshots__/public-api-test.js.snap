@@ -5690,9 +5690,7 @@ declare module.exports: FillRateHelper;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/FlatList.js 1`] = `
-"declare const View: $FlowFixMe;
-declare const React: $FlowFixMe;
-type RequiredProps<ItemT> = {
+"type RequiredProps<ItemT> = {
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
 type OptionalProps<ItemT> = {
@@ -5781,7 +5779,7 @@ declare class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }) => void
   ): void;
   _renderer: $FlowFixMe;
-  _memoizedRenderer: $FlowFixMe;
+  _memoizedRenderer: ReturnType<typeof memoizeOne>;
   render(): React.Node;
 }
 declare module.exports: FlatList;
