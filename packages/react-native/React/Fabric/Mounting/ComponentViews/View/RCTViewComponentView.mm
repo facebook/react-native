@@ -617,7 +617,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
 
   BOOL clipsToBounds = self.currentContainerView.clipsToBounds;
 
-  clipsToBounds = clipsToBounds || _layoutMetrics.overflowInset == EdgeInsets{};
+  clipsToBounds = clipsToBounds || (_layoutMetrics.overflowInset == EdgeInsets{} && _props->getClipsContentToBounds());
 
   if (clipsToBounds && !isPointInside) {
     return nil;
