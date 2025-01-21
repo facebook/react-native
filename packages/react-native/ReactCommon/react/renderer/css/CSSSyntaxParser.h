@@ -93,6 +93,7 @@ enum class CSSComponentValueDelimiter {
   Comma,
   Whitespace,
   CommaOrWhitespace,
+  Solidus,
   None,
 };
 
@@ -247,6 +248,15 @@ struct CSSComponentValueVisitorDispatcher {
         if (parser.peek().type() == CSSTokenType::Comma) {
           parser.consumeToken();
         }
+        parser.consumeWhitespace();
+        break;
+      case CSSComponentValueDelimiter::Solidus:
+        parser.consumeWhitespace();
+        if (parser.peek().type() != CSSTokenType::Delim ||
+            parser.peek().stringValue() != "/") {
+          return ReturnT{};
+        }
+        parser.consumeToken();
         parser.consumeWhitespace();
         break;
       case CSSComponentValueDelimiter::None:

@@ -169,8 +169,7 @@ constexpr auto parseCSSProperty(std::string_view css)
 
 /**
  * Attempts to parse the next CSS value of a given set of data types, at the
- * current location of the syntax parser, advancing the syntax parser if
- * successful.
+ * current location of the syntax parser, advancing the syntax parser
  */
 template <CSSDataType... AllowedTypesT>
 constexpr auto parseNextCSSValue(
@@ -179,6 +178,22 @@ constexpr auto parseNextCSSValue(
     -> std::variant<std::monostate, AllowedTypesT...> {
   detail::CSSValueParser valueParser(syntaxParser);
   return valueParser.consumeValue<AllowedTypesT...>(delimeter);
+}
+
+/**
+ * Attempts to parse the next CSS value of a given set of data types, at the
+ * current location of the syntax parser, without advancing the syntax parser
+ */
+template <CSSDataType... AllowedTypesT>
+constexpr auto peekNextCSSValue(
+    CSSSyntaxParser& syntaxParser,
+    CSSComponentValueDelimiter delimeter = CSSComponentValueDelimiter::None)
+    -> std::variant<std::monostate, AllowedTypesT...> {
+  auto savedParser = syntaxParser;
+  detail::CSSValueParser valueParser(syntaxParser);
+  auto ret = valueParser.consumeValue<AllowedTypesT...>(delimeter);
+  syntaxParser = savedParser;
+  return ret;
 }
 
 } // namespace facebook::react

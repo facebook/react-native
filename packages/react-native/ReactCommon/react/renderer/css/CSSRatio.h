@@ -35,26 +35,15 @@ struct CSSDataTypeParser<CSSRatio> {
     if (isValidRatioPart(token.numericValue())) {
       float numerator = token.numericValue();
 
-      auto hasSolidus = parser.peekComponentValue<bool>(
-          CSSComponentValueDelimiter::Whitespace,
-          [&](const CSSPreservedToken& token) {
-            return token.type() == CSSTokenType::Delim &&
-                token.stringValue() == "/";
-          });
-
-      if (!hasSolidus) {
-        return CSSRatio{numerator, 1.0f};
-      }
-
-      parser.consumeComponentValue(CSSComponentValueDelimiter::Whitespace);
-
-      auto denominator = parseNextCSSValue<CSSNumber>(
-          parser, CSSComponentValueDelimiter::Whitespace);
-
+      auto denominator = peekNextCSSValue<CSSNumber>(
+          parser, CSSComponentValueDelimiter::Solidus);
       if (std::holds_alternative<CSSNumber>(denominator) &&
           isValidRatioPart(std::get<CSSNumber>(denominator).value)) {
+        parser.consumeComponentValue(CSSComponentValueDelimiter::Solidus);
         return CSSRatio{numerator, std::get<CSSNumber>(denominator).value};
       }
+
+      return CSSRatio{numerator, 1.0f};
     }
 
     return {};

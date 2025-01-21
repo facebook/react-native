@@ -477,4 +477,45 @@ TEST(CSSSyntaxParser, simple_block_without_visitor_consumed) {
   EXPECT_EQ(identValue, "bar");
 }
 
+TEST(CSSSyntaxParser, solidus_delimiter) {
+  CSSSyntaxParser parser{"foo / bar"};
+
+  auto identValue = parser.consumeComponentValue<std::string_view>(
+      [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Ident);
+        EXPECT_EQ(token.stringValue(), "foo");
+        return token.stringValue();
+      });
+
+  EXPECT_EQ(identValue, "foo");
+
+  auto identValue2 = parser.consumeComponentValue<std::string_view>(
+      CSSComponentValueDelimiter::Solidus, [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Ident);
+        EXPECT_EQ(token.stringValue(), "bar");
+        return token.stringValue();
+      });
+
+  EXPECT_EQ(identValue2, "bar");
+}
+
+TEST(CSSSyntaxParser, solidus_delimiter_not_present) {
+  CSSSyntaxParser parser{"foo bar"};
+
+  auto identValue = parser.consumeComponentValue<std::string_view>(
+      [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Ident);
+        EXPECT_EQ(token.stringValue(), "foo");
+        return token.stringValue();
+      });
+
+  EXPECT_EQ(identValue, "foo");
+
+  auto identValue2 = parser.consumeComponentValue<bool>(
+      CSSComponentValueDelimiter::Solidus,
+      [](const CSSPreservedToken& /*token*/) { return true; });
+
+  EXPECT_FALSE(identValue2);
+}
+
 } // namespace facebook::react
