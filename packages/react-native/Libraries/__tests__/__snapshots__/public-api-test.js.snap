@@ -3897,7 +3897,12 @@ declare export default typeof UnimplementedNativeViewNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/UnimplementedViews/UnimplementedView.js 1`] = `
-"declare class UnimplementedView extends React.Component<$FlowFixMeProps> {
+"type Props = $ReadOnly<{
+  style?: ?ViewStyleProp,
+  children?: React.Node,
+  ...
+}>;
+declare class UnimplementedView extends React.Component<Props> {
   render(): React.Node;
 }
 declare module.exports: UnimplementedView;
