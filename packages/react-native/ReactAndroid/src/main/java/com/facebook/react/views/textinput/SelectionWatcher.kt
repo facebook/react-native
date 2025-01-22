@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.views.textinput;
+package com.facebook.react.views.textinput
 
 /**
  * Implement this interface to be informed of selection changes in the ReactTextEdit This is used by
  * the ReactTextInputManager to forward events from the EditText to JS
  */
-interface SelectionWatcher {
-  void onSelectionChanged(int start, int end);
+internal interface SelectionWatcher {
+  fun onSelectionChanged(start: Int, end: Int): Unit
 }
