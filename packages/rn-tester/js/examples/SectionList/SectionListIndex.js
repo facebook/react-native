@@ -12,6 +12,7 @@
 
 import ContentInset from './SectionList-contentInset';
 import inverted from './SectionList-inverted';
+import invertedStickyHeadersEnabled from './SectionList-inverted-stickyHeadersEnabled';
 import onEndReached from './SectionList-onEndReached';
 import onViewableItemsChanged from './SectionList-onViewableItemsChanged';
 import onViewableItemsChanged_horizontal_noWaitForInteraction from './SectionList-onViewableItemsChanged-horizontal-noWaitForInteraction';
@@ -35,6 +36,7 @@ exports.examples = [
   onViewableItemsChanged,
   withSeparators,
   stickyHeadersEnabled,
+  invertedStickyHeadersEnabled,
   inverted,
   Scrollable,
   onViewableItemsChanged_noWaitForInteraction,

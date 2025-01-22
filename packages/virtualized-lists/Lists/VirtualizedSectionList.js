@@ -170,14 +170,20 @@ class VirtualizedSectionList<
 
     let itemCount = 0;
     for (const section of this.props.sections) {
+      const sectionItemCount = this.props.getItemCount(section.data);
       // Track the section header indices
       if (stickyHeaderIndices != null) {
+        // Headers
         stickyHeaderIndices.push(itemCount + listHeaderOffset);
+        // Footers
+        stickyHeaderIndices.push(
+          itemCount + listHeaderOffset + sectionItemCount + 1,
+        );
       }
 
       // Add two for the section header and footer.
       itemCount += 2;
-      itemCount += this.props.getItemCount(section.data);
+      itemCount += sectionItemCount;
     }
     const renderItem = this._renderItem(itemCount);
 
