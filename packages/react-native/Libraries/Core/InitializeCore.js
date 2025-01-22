@@ -31,10 +31,13 @@ const start = Date.now();
 require('./setUpGlobals');
 require('../../src/private/setup/setUpDOM').default();
 require('./setUpPerformance');
-require('./setUpErrorHandling');
 require('./polyfillPromise');
-require('./setUpRegeneratorRuntime');
 require('./setUpTimers');
+if (__DEV__) {
+  require('./setUpReactDevTools');
+}
+require('./setUpErrorHandling');
+require('./setUpRegeneratorRuntime');
 require('./setUpXHR');
 require('./setUpAlert');
 require('./setUpNavigator');
