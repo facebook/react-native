@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82b69f7d6a2b7155fadbc47832bcf032>>
+ * @generated SignedSource<<b859be47c2d48d62aff10ad54de36e55>>
  */
 
 /**
@@ -63,12 +63,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableCppPropsIteratorSetter(): Boolean = accessor.enableCppPropsIteratorSetter()
-
-  /**
-   * Deletes views that were pre-allocated but never mounted on the screen.
-   */
-  @JvmStatic
-  public fun enableDeletionOfUnmountedViews(): Boolean = accessor.enableDeletionOfUnmountedViews()
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.

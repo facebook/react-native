@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<811a054f0ada56d8cc1ed21c6930fc52>>
+ * @generated SignedSource<<953d33d87ecc5893f0d33881110be620>>
  * @flow strict
  */
 
@@ -53,7 +53,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
-  enableDeletionOfUnmountedViews: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
   enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
@@ -188,10 +187,6 @@ export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGet
  * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
  */
 export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGetter('enableCppPropsIteratorSetter', false);
-/**
- * Deletes views that were pre-allocated but never mounted on the screen.
- */
-export const enableDeletionOfUnmountedViews: Getter<boolean> = createNativeFlagGetter('enableDeletionOfUnmountedViews', false);
 /**
  * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
  */
