@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include <react/renderer/css/CSSColorFunction.h>
 #include <react/renderer/css/CSSDataType.h>
 #include <react/renderer/css/CSSHexColor.h>
 #include <react/renderer/css/CSSNamedColor.h>
@@ -38,6 +39,12 @@ struct CSSDataTypeParser<CSSColor> {
       default:
         return {};
     }
+  }
+
+  static constexpr auto consumeFunctionBlock(
+      const CSSFunctionBlock& func,
+      CSSSyntaxParser& parser) -> std::optional<CSSColor> {
+    return parseCSSColorFunction<CSSColor>(func.name, parser);
   }
 };
 

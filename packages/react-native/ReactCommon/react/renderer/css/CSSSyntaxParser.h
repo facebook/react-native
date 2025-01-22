@@ -199,7 +199,7 @@ class CSSSyntaxParser {
   }
 
  private:
-  CSSSyntaxParser(CSSSyntaxParser& parser, CSSTokenType terminator)
+  constexpr CSSSyntaxParser(CSSSyntaxParser& parser, CSSTokenType terminator)
       : tokenizer_{parser.tokenizer_},
         currentToken_{parser.currentToken_},
         terminator_{terminator} {}

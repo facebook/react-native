@@ -68,7 +68,7 @@ constexpr bool isValidHexColor(std::string_view hex) {
 } // namespace detail
 
 /**
- * Parses a CSS <hex-color> value from hash stoken string value and returns a
+ * Parses a CSS <hex-color> value from hash token string value and returns a
  * CSSColor if it is valid.
  * https://www.w3.org/TR/css-color-4/#hex-color
  */

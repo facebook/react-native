@@ -99,4 +99,145 @@ TEST(CSSColor, named_colors) {
   EXPECT_EQ(std::get<CSSColor>(transparentColor).a, 0);
 }
 
+TEST(CSSColor, rgb_rgba_values) {
+  auto simpleValue = parseCSSProperty<CSSColor>("rgb(255, 255, 255)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(simpleValue));
+  EXPECT_EQ(std::get<CSSColor>(simpleValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(simpleValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(simpleValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(simpleValue).a, 255);
+
+  auto capsValue = parseCSSProperty<CSSColor>("RGB(255, 255, 255)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(capsValue));
+  EXPECT_EQ(std::get<CSSColor>(capsValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(capsValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(capsValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(capsValue).a, 255);
+
+  auto modernSyntaxValue = parseCSSProperty<CSSColor>("rgb(255 255 255)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(modernSyntaxValue));
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxValue).a, 255);
+
+  auto mixedDelimeterValue = parseCSSProperty<CSSColor>("rgb(255,255 255)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(mixedDelimeterValue));
+  EXPECT_EQ(std::get<CSSColor>(mixedDelimeterValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(mixedDelimeterValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(mixedDelimeterValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(mixedDelimeterValue).a, 255);
+
+  auto mixedSpacingValue = parseCSSProperty<CSSColor>("rgb( 5   4,3)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(mixedSpacingValue));
+  EXPECT_EQ(std::get<CSSColor>(mixedSpacingValue).r, 5);
+  EXPECT_EQ(std::get<CSSColor>(mixedSpacingValue).g, 4);
+  EXPECT_EQ(std::get<CSSColor>(mixedSpacingValue).b, 3);
+  EXPECT_EQ(std::get<CSSColor>(mixedSpacingValue).a, 255);
+
+  auto clampedValue = parseCSSProperty<CSSColor>("rgb(-50, 500, 0)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(clampedValue));
+  EXPECT_EQ(std::get<CSSColor>(clampedValue).r, 0);
+  EXPECT_EQ(std::get<CSSColor>(clampedValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(clampedValue).b, 0);
+  EXPECT_EQ(std::get<CSSColor>(clampedValue).a, 255);
+
+  auto fractionalValue = parseCSSProperty<CSSColor>("rgb(0.5, 0.5, 0.5)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(fractionalValue));
+  EXPECT_EQ(std::get<CSSColor>(fractionalValue).r, 1);
+  EXPECT_EQ(std::get<CSSColor>(fractionalValue).g, 1);
+  EXPECT_EQ(std::get<CSSColor>(fractionalValue).b, 1);
+  EXPECT_EQ(std::get<CSSColor>(fractionalValue).a, 255);
+
+  auto percentageValue = parseCSSProperty<CSSColor>("rgb(50%, 50%, 50%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(percentageValue));
+  EXPECT_EQ(std::get<CSSColor>(percentageValue).r, 128);
+  EXPECT_EQ(std::get<CSSColor>(percentageValue).g, 128);
+  EXPECT_EQ(std::get<CSSColor>(percentageValue).b, 128);
+
+  auto mixedNumberPercentageValue =
+      parseCSSProperty<CSSColor>("rgb(50%, 0.5, 50%)");
+  EXPECT_TRUE(
+      std::holds_alternative<std::monostate>(mixedNumberPercentageValue));
+
+  auto rgbWithNumberAlphaValue =
+      parseCSSProperty<CSSColor>("rgb(255 255 255 0.5)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(rgbWithNumberAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(rgbWithNumberAlphaValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbWithNumberAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbWithNumberAlphaValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbWithNumberAlphaValue).a, 128);
+
+  auto rgbWithPercentageAlphaValue =
+      parseCSSProperty<CSSColor>("rgb(255 255 255, 50%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(rgbWithPercentageAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(rgbWithPercentageAlphaValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbWithPercentageAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbWithPercentageAlphaValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbWithPercentageAlphaValue).a, 128);
+
+  auto rgbWithSolidusAlphaValue =
+      parseCSSProperty<CSSColor>("rgb(255 255 255 / 0.5)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(rgbWithSolidusAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(rgbWithSolidusAlphaValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbWithSolidusAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbWithSolidusAlphaValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbWithSolidusAlphaValue).a, 128);
+
+  auto rgbaWithSolidusAlphaValue =
+      parseCSSProperty<CSSColor>("rgba(255 255 255 / 0.5)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(rgbaWithSolidusAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithSolidusAlphaValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithSolidusAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithSolidusAlphaValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithSolidusAlphaValue).a, 128);
+
+  auto rgbaWithPercentageSolidusAlphaValue =
+      parseCSSProperty<CSSColor>("rgba(255 255 255 / 50%)");
+  EXPECT_TRUE(
+      std::holds_alternative<CSSColor>(rgbaWithPercentageSolidusAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithPercentageSolidusAlphaValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithPercentageSolidusAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithPercentageSolidusAlphaValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithPercentageSolidusAlphaValue).a, 128);
+
+  auto rgbaWithoutAlphaValue = parseCSSProperty<CSSColor>("rgba(255 255 255)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(rgbaWithoutAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithoutAlphaValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithoutAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithoutAlphaValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(rgbaWithoutAlphaValue).a, 255);
+
+  auto surroundingWhitespaceValue =
+      parseCSSProperty<CSSColor>("  rgb(255, 1, 2) ");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(surroundingWhitespaceValue));
+  EXPECT_EQ(std::get<CSSColor>(surroundingWhitespaceValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(surroundingWhitespaceValue).g, 1);
+  EXPECT_EQ(std::get<CSSColor>(surroundingWhitespaceValue).b, 2);
+  EXPECT_EQ(std::get<CSSColor>(surroundingWhitespaceValue).a, 255);
+
+  auto valueWithSingleComponent = parseCSSProperty<CSSColor>("rgb(255)");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(valueWithSingleComponent));
+
+  auto valueWithTooFewComponents = parseCSSProperty<CSSColor>("rgb(255, 255)");
+  EXPECT_TRUE(
+      std::holds_alternative<std::monostate>(valueWithTooFewComponents));
+
+  auto valueWithTooManyComponents =
+      parseCSSProperty<CSSColor>("rgb(255, 255, 255, 255, 255)");
+  EXPECT_TRUE(
+      std::holds_alternative<std::monostate>(valueWithTooManyComponents));
+
+  auto valueStartingWithComma = parseCSSProperty<CSSColor>("rgb(, 1, 2)");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(valueStartingWithComma));
+
+  auto valueEndingWithComma = parseCSSProperty<CSSColor>("rgb(1, 2, )");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(valueEndingWithComma));
+}
+
+TEST(CSSColor, constexpr_values) {
+  [[maybe_unused]] constexpr auto simpleValue =
+      parseCSSProperty<CSSColor>("rgb(255, 255, 255)");
+}
+
 } // namespace facebook::react
