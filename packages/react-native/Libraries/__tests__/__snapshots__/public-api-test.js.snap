@@ -2154,8 +2154,11 @@ declare class ScrollView extends React.Component<Props, State> {
   constructor(props: Props): void;
   _scrollAnimatedValue: AnimatedImplementation.Value;
   _scrollAnimatedValueAttachment: ?{ detach: () => void, ... };
-  _stickyHeaderRefs: Map<string, React.ElementRef<StickyHeaderComponentType>>;
-  _headerLayoutYs: Map<string, number>;
+  _stickyHeaderRefs: Map<
+    React.Key,
+    React.ElementRef<StickyHeaderComponentType>,
+  >;
+  _headerLayoutYs: Map<React.Key, number>;
   _keyboardMetrics: ?KeyboardMetrics;
   _additionalScrollOffset: number;
   _isTouching: boolean;
@@ -2214,16 +2217,16 @@ declare class ScrollView extends React.Component<Props, State> {
     width: number,
     height: number
   ) => void;
-  _getKeyForIndex(index: $FlowFixMe, childArray: $FlowFixMe): $FlowFixMe;
+  _getKeyForIndex(index: number, childArray: any): React.Key;
   _updateAnimatedNodeAttachment(): void;
   _setStickyHeaderRef(
     key: string,
     ref: ?React.ElementRef<StickyHeaderComponentType>
   ): void;
   _onStickyHeaderLayout(
-    index: $FlowFixMe,
-    event: $FlowFixMe,
-    key: $FlowFixMe
+    index: number,
+    event: LayoutEvent,
+    key: React.Key
   ): void;
   _handleScroll: $FlowFixMe;
   _handleLayout: $FlowFixMe;
