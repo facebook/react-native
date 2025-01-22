@@ -75,9 +75,11 @@ class CSSValueParser {
       CSSValidDataTypeParser... RestParserT>
   constexpr ReturnT tryConsumePreservedToken(const CSSPreservedToken& token) {
     if constexpr (CSSPreservedTokenSink<ParserT>) {
+      auto currentParser = parser_;
       if (auto ret = ParserT::consumePreservedToken(token, parser_)) {
         return *ret;
       }
+      parser_ = currentParser;
     }
 
     if constexpr (CSSSimplePreservedTokenSink<ParserT>) {
@@ -104,9 +106,11 @@ class CSSValueParser {
       const CSSSimpleBlock& block,
       CSSSyntaxParser& blockParser) {
     if constexpr (CSSSimpleBlockSink<ParserT>) {
+      auto currentParser = blockParser;
       if (auto ret = ParserT::consumeSimpleBlock(block, blockParser)) {
         return *ret;
       }
+      blockParser = currentParser;
     }
 
     return tryConsumeSimpleBlock<ReturnT, RestParserT...>(block, blockParser);
@@ -127,9 +131,11 @@ class CSSValueParser {
       const CSSFunctionBlock& func,
       CSSSyntaxParser& blockParser) {
     if constexpr (CSSFunctionBlockSink<ParserT>) {
+      auto currentParser = blockParser;
       if (auto ret = ParserT::consumeFunctionBlock(func, blockParser)) {
         return *ret;
       }
+      blockParser = currentParser;
     }
 
     return tryConsumeFunctionBlock<ReturnT, RestParserT...>(func, blockParser);
