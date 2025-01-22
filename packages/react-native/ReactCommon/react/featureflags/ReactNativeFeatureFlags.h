@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1d578508c3cd69bbf9616a811508a03e>>
+ * @generated SignedSource<<da35bc7466accd84e6f0ce56f166c845>>
  */
 
 /**
@@ -118,6 +118,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
    */
   RN_EXPORT static bool enableImagePrefetchingAndroid();
+
+  /**
+   * Trigger JS runtime GC on memory pressure event on iOS
+   */
+  RN_EXPORT static bool enableJSRuntimeGCOnMemoryPressureOnIOS();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.

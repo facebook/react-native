@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<18d5c2ffa66a36e364bc358a144534ec>>
+ * @generated SignedSource<<eef5b0c5d02927b3984a2dd8d0c48f1c>>
  */
 
 /**
@@ -40,6 +40,7 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
+  private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
@@ -227,6 +228,16 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableImagePrefetchingAndroid()
       accessedFeatureFlags.add("enableImagePrefetchingAndroid")
       enableImagePrefetchingAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean {
+    var cached = enableJSRuntimeGCOnMemoryPressureOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableJSRuntimeGCOnMemoryPressureOnIOS()
+      accessedFeatureFlags.add("enableJSRuntimeGCOnMemoryPressureOnIOS")
+      enableJSRuntimeGCOnMemoryPressureOnIOSCache = cached
     }
     return cached
   }

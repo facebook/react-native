@@ -199,6 +199,14 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    enableJSRuntimeGCOnMemoryPressureOnIOS: {
+      defaultValue: false,
+      metadata: {
+        description: 'Trigger JS runtime GC on memory pressure event on iOS',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+    },
     enableLayoutAnimationsOnAndroid: {
       defaultValue: false,
       metadata: {
