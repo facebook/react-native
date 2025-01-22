@@ -28,6 +28,10 @@ export interface BackHandlerStatic {
     eventName: BackPressEventName,
     handler: () => boolean | null | undefined,
   ): NativeEventSubscription;
+  removeEventListener(
+    eventName: BackPressEventName,
+    handler: () => boolean | null | undefined,
+  ): NativeEventSubscription;
 }
 
 export const BackHandler: BackHandlerStatic;
