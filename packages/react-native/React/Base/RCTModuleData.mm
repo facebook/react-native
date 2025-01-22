@@ -40,7 +40,7 @@ int32_t getUniqueId()
   __weak RCTBridge *_bridge;
   RCTBridgeModuleProvider _moduleProvider;
   std::mutex _instanceLock;
-  BOOL _setupComplete;
+  std::atomic<BOOL> _setupComplete;
   RCTModuleRegistry *_moduleRegistry;
   RCTViewRegistry *_viewRegistry_DEPRECATED;
   RCTBundleManager *_bundleManager;
