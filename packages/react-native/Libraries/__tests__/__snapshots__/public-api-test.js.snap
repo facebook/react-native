@@ -4359,23 +4359,16 @@ declare module.exports: symbolicateStackTrace;
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/ExceptionsManager.js 1`] = `
-"declare class SyntheticError extends Error {
+"declare export class SyntheticError extends Error {
   name: string;
 }
 type ExceptionDecorator = (ExceptionData) => ExceptionData;
-declare const decoratedExtraDataKey: \\"RN$ErrorExtraDataKey\\";
-declare function unstable_setExceptionDecorator(
+declare export const decoratedExtraDataKey: \\"RN$ErrorExtraDataKey\\";
+declare export function unstable_setExceptionDecorator(
   exceptionDecorator: ?ExceptionDecorator
 ): void;
-declare function handleException(e: mixed, isFatal: boolean): void;
-declare function installConsoleErrorReporter(): void;
-declare module.exports: {
-  decoratedExtraDataKey: decoratedExtraDataKey,
-  handleException: handleException,
-  installConsoleErrorReporter: installConsoleErrorReporter,
-  SyntheticError: SyntheticError,
-  unstable_setExceptionDecorator: unstable_setExceptionDecorator,
-};
+declare export function handleException(e: mixed, isFatal: boolean): void;
+declare export function installConsoleErrorReporter(): void;
 "
 `;
 

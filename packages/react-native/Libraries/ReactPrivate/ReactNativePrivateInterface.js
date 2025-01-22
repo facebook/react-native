@@ -11,7 +11,7 @@
 import typeof BatchedBridge from '../BatchedBridge/BatchedBridge';
 import typeof legacySendAccessibilityEvent from '../Components/AccessibilityInfo/legacySendAccessibilityEvent';
 import typeof TextInputState from '../Components/TextInput/TextInputState';
-import typeof ExceptionsManager from '../Core/ExceptionsManager';
+import typeof * as ExceptionsManager from '../Core/ExceptionsManager';
 import typeof RawEventEmitter from '../Core/RawEventEmitter';
 import typeof ReactFiberErrorDialog from '../Core/ReactFiberErrorDialog';
 import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';

@@ -13,7 +13,7 @@
 import type {ExtendedError} from './ExtendedError';
 import type {ExceptionData} from './NativeExceptionsManager';
 
-class SyntheticError extends Error {
+export class SyntheticError extends Error {
   name: string = '';
 }
 
@@ -26,14 +26,14 @@ let inUserExceptionDecorator = false;
 // Note that data passed using this method should be strictly contained,
 // as data that's not serializable/too large may cause issues with passing the error to the native code.
 // TODO(T204185517): We should use a Symbol for this, but jsi through jsc doesn't support it yet.
-const decoratedExtraDataKey = 'RN$ErrorExtraDataKey';
+export const decoratedExtraDataKey = 'RN$ErrorExtraDataKey';
 
 /**
  * Allows the app to add information to the exception report before it is sent
  * to native. This API is not final.
  */
 
-function unstable_setExceptionDecorator(
+export function unstable_setExceptionDecorator(
   exceptionDecorator: ?ExceptionDecorator,
 ) {
   userExceptionDecorator = exceptionDecorator;
@@ -143,10 +143,7 @@ declare var console: {
 // we do want to make sure that console.error doesn't trigger error reporting again
 let inExceptionHandler = false;
 
-/**
- * Logs exceptions to the (native) console and displays them
- */
-function handleException(e: mixed, isFatal: boolean) {
+function baseHandleException(e: mixed, isFatal: boolean) {
   // TODO(T196834299): We should really use a c++ turbomodule for this
   const reportToConsole = true;
   if (
@@ -174,6 +171,31 @@ function handleException(e: mixed, isFatal: boolean) {
     }
   }
 }
+
+type HandleExceptionMiddleware = (
+  e: mixed,
+  isFatal: boolean,
+  next: (e: mixed, isFatal: boolean) => void,
+) => void;
+
+let handleExceptionMiddleware: ?HandleExceptionMiddleware;
+
+/**
+ * Logs exceptions to the (native) console and displays them
+ */
+export function handleException(e: mixed, isFatal: boolean) {
+  if (handleExceptionMiddleware) {
+    handleExceptionMiddleware(e, isFatal, (e2, isFatal2) => {
+      baseHandleException(e2, isFatal2);
+    });
+  } else {
+    baseHandleException(e, isFatal);
+  }
+}
+
+handleException.setMiddleware = (middleware?: HandleExceptionMiddleware) => {
+  handleExceptionMiddleware = middleware;
+};
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
@@ -258,7 +280,7 @@ function reactConsoleErrorHandler(...args) {
  * Shows a redbox with stacktrace for all console.error messages.  Disable by
  * setting `console.reportErrorsAsExceptions = false;` in your app.
  */
-function installConsoleErrorReporter() {
+export function installConsoleErrorReporter() {
   // Enable reportErrorsAsExceptions
   if (console._errorOriginal) {
     return; // already installed
@@ -272,11 +294,3 @@ function installConsoleErrorReporter() {
     console.reportErrorsAsExceptions = true;
   }
 }
-
-module.exports = {
-  decoratedExtraDataKey,
-  handleException,
-  installConsoleErrorReporter,
-  SyntheticError,
-  unstable_setExceptionDecorator,
-};
