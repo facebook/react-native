@@ -223,64 +223,6 @@ void TimerManager::callTimer(TimerHandle timerHandle) {
 void TimerManager::attachGlobals(jsi::Runtime& runtime) {
   // Install host functions for timers.
   // TODO (T45786383): Add missing timer functions from JSTimers
-
-  // Ensure that we don't define `setImmediate` and `clearImmediate` if
-  // microtasks are enabled (as we polyfill them using `queueMicrotask` then).
-  if (ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
-    runtime.global().setProperty(
-        runtime,
-        "setImmediate",
-        jsi::Function::createFromHostFunction(
-            runtime,
-            jsi::PropNameID::forAscii(runtime, "setImmediate"),
-            2, // Function, ...args
-            [this](
-                jsi::Runtime& rt,
-                const jsi::Value& thisVal,
-                const jsi::Value* args,
-                size_t count) {
-              if (count == 0) {
-                throw jsi::JSError(
-                    rt,
-                    "setImmediate must be called with at least one argument (a function to call)");
-              }
-
-              if (!args[0].isObject() || !args[0].asObject(rt).isFunction(rt)) {
-                // Do not throw any error to match web spec
-                return timerIndex_++;
-              }
-              auto callback = args[0].getObject(rt).getFunction(rt);
-
-              // Package up the remaining argument values into one place.
-              std::vector<jsi::Value> moreArgs;
-              for (size_t extraArgNum = 1; extraArgNum < count; extraArgNum++) {
-                moreArgs.emplace_back(rt, args[extraArgNum]);
-              }
-
-              return createReactNativeMicrotask(
-                  std::move(callback), std::move(moreArgs));
-            }));
-
-    runtime.global().setProperty(
-        runtime,
-        "clearImmediate",
-        jsi::Function::createFromHostFunction(
-            runtime,
-            jsi::PropNameID::forAscii(runtime, "clearImmediate"),
-            1, // handle
-            [this](
-                jsi::Runtime& rt,
-                const jsi::Value& thisVal,
-                const jsi::Value* args,
-                size_t count) {
-              if (count > 0 && args[0].isNumber()) {
-                auto handle = (TimerHandle)args[0].asNumber();
-                deleteReactNativeMicrotask(rt, handle);
-              }
-              return jsi::Value::undefined();
-            }));
-  }
-
   runtime.global().setProperty(
       runtime,
       "setTimeout",

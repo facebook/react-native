@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bc8a67b9d153fc353054f38f32267a89>>
+ * @generated SignedSource<<91864e51f03045343d7f908c87a85901>>
  */
 
 /**
@@ -26,8 +26,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun commonTestFlag(): Boolean = false
 
   override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = true
-
-  override fun disableEventLoopOnBridgeless(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
