@@ -26,8 +26,13 @@ interface Spec extends TurboModule {
     devicePixelRatio: number,
   ) => void;
   stopSurface: (surfaceId: number) => void;
+  dispatchNativeEvent: (
+    shadowNode: mixed /* ShadowNode */,
+    type: string,
+  ) => void;
   getMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;
+  flushEventQueue: () => void;
   getRenderedOutput: (surfaceId: number, config: RenderFormatOptions) => string;
   reportTestSuiteResultsJSON: (results: string) => void;
 }

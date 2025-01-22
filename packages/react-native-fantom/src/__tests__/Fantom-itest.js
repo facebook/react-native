@@ -14,9 +14,15 @@ import 'react-native/Libraries/Core/InitializeCore';
 
 import type {Root} from '..';
 
-import {createRoot, runTask} from '..';
+import {
+  createRoot,
+  dispatchNativeEvent,
+  runOnUIThread,
+  runTask,
+  runWorkLoop,
+} from '..';
 import * as React from 'react';
-import {Text, View} from 'react-native';
+import {Text, TextInput, View} from 'react-native';
 import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -367,6 +373,41 @@ describe('Fantom', () => {
 
         root.destroy();
       });
+    });
+  });
+
+  describe('runOnUIThread + dispatchNativeEvent', () => {
+    it('sends focus event', () => {
+      const root = createRoot();
+      let maybeNode;
+
+      let focusEvent = jest.fn();
+
+      runTask(() => {
+        root.render(
+          <TextInput
+            onFocus={focusEvent}
+            ref={node => {
+              maybeNode = node;
+            }}
+          />,
+        );
+      });
+
+      const element = ensureInstance(maybeNode, ReactNativeElement);
+
+      expect(focusEvent).toHaveBeenCalledTimes(0);
+
+      runOnUIThread(() => {
+        dispatchNativeEvent(element, 'focus');
+      });
+
+      // The tasks have not run.
+      expect(focusEvent).toHaveBeenCalledTimes(0);
+
+      runWorkLoop();
+
+      expect(focusEvent).toHaveBeenCalledTimes(1);
     });
   });
 });
