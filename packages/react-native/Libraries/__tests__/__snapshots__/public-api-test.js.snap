@@ -9852,7 +9852,6 @@ exports[`public API should not change unintentionally src/private/featureflags/R
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
-  disableInteractionManagerInBatchinator: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   enableAnimatedAllowlist: Getter<boolean>,
   enableAnimatedClearImmediateFix: Getter<boolean>,
@@ -9923,7 +9922,6 @@ declare export const jsOnlyTestFlag: Getter<boolean>;
 declare export const animatedShouldDebounceQueueFlush: Getter<boolean>;
 declare export const animatedShouldUseSingleOp: Getter<boolean>;
 declare export const disableInteractionManager: Getter<boolean>;
-declare export const disableInteractionManagerInBatchinator: Getter<boolean>;
 declare export const enableAccessToHostTreeInFabric: Getter<boolean>;
 declare export const enableAnimatedAllowlist: Getter<boolean>;
 declare export const enableAnimatedClearImmediateFix: Getter<boolean>;
