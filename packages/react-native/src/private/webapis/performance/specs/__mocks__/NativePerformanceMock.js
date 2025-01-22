@@ -21,7 +21,7 @@ import type {
 } from '../NativePerformance';
 import typeof NativePerformance from '../NativePerformance';
 
-import {RawPerformanceEntryTypeValues} from '../../RawPerformanceEntry';
+import {RawPerformanceEntryTypeValues} from '../../internals/RawPerformanceEntry';
 
 type MockObserver = {
   handleEntry: (entry: RawPerformanceEntry) => void,

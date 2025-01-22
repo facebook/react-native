@@ -18,17 +18,17 @@
  * the notifications together.
  */
 
-import type ReactNativeElement from '../dom/nodes/ReactNativeElement';
+import type ReactNativeElement from '../../dom/nodes/ReactNativeElement';
 import type IntersectionObserver, {
   IntersectionObserverCallback,
-} from './IntersectionObserver';
-import type IntersectionObserverEntry from './IntersectionObserverEntry';
+} from '../IntersectionObserver';
+import type IntersectionObserverEntry from '../IntersectionObserverEntry';
 
-import * as Systrace from '../../../../Libraries/Performance/Systrace';
-import warnOnce from '../../../../Libraries/Utilities/warnOnce';
-import {getInstanceHandle, getShadowNode} from '../dom/nodes/ReadOnlyNode';
-import {createIntersectionObserverEntry} from './IntersectionObserverEntry';
-import NativeIntersectionObserver from './specs/NativeIntersectionObserver';
+import * as Systrace from '../../../../../Libraries/Performance/Systrace';
+import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
+import {getInstanceHandle, getShadowNode} from '../../dom/nodes/ReadOnlyNode';
+import {createIntersectionObserverEntry} from '../IntersectionObserverEntry';
+import NativeIntersectionObserver from '../specs/NativeIntersectionObserver';
 
 export type IntersectionObserverId = number;
 

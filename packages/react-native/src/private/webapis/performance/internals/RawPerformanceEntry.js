@@ -8,16 +8,16 @@
  * @flow strict
  */
 
-import type {PerformanceEntryType} from './PerformanceEntry';
+import type {PerformanceEntryType} from '../PerformanceEntry';
 import type {
   RawPerformanceEntry,
   RawPerformanceEntryType,
-} from './specs/NativePerformance';
+} from '../specs/NativePerformance';
 
-import {PerformanceEventTiming} from './EventTiming';
-import {PerformanceLongTaskTiming} from './LongTasks';
-import {PerformanceEntry} from './PerformanceEntry';
-import {PerformanceMark, PerformanceMeasure} from './UserTiming';
+import {PerformanceEventTiming} from '../EventTiming';
+import {PerformanceLongTaskTiming} from '../LongTasks';
+import {PerformanceEntry} from '../PerformanceEntry';
+import {PerformanceMark, PerformanceMeasure} from '../UserTiming';
 
 export const RawPerformanceEntryTypeValues = {
   MARK: 1,

@@ -8,7 +8,7 @@
  * @flow strict
  */
 
-import warnOnce from '../../../../Libraries/Utilities/warnOnce';
+import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
 
 export function warnNoNativePerformance() {
   warnOnce(

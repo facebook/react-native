@@ -12106,7 +12106,7 @@ declare export function createIntersectionObserverEntry(
 "
 `;
 
-exports[`public API should not change unintentionally src/private/webapis/intersectionobserver/IntersectionObserverManager.js 1`] = `
+exports[`public API should not change unintentionally src/private/webapis/intersectionobserver/internals/IntersectionObserverManager.js 1`] = `
 "export type IntersectionObserverId = number;
 declare export function registerObserver(
   observer: IntersectionObserver,
@@ -12189,27 +12189,6 @@ declare export default class MutationObserver {
 "
 `;
 
-exports[`public API should not change unintentionally src/private/webapis/mutationobserver/MutationObserverManager.js 1`] = `
-"export type MutationObserverId = number;
-declare export function registerObserver(
-  observer: MutationObserver,
-  callback: MutationObserverCallback
-): MutationObserverId;
-declare export function unregisterObserver(
-  mutationObserverId: MutationObserverId
-): void;
-declare export function observe({
-  mutationObserverId: MutationObserverId,
-  target: ReactNativeElement,
-  subtree: boolean,
-}): boolean;
-declare export function unobserve(
-  mutationObserverId: number,
-  target: ReactNativeElement
-): void;
-"
-`;
-
 exports[`public API should not change unintentionally src/private/webapis/mutationobserver/MutationRecord.js 1`] = `
 "export type MutationType = \\"attributes\\" | \\"characterData\\" | \\"childList\\";
 declare export default class MutationRecord {
@@ -12229,6 +12208,27 @@ declare export default class MutationRecord {
 declare export function createMutationRecord(
   entry: NativeMutationRecord
 ): MutationRecord;
+"
+`;
+
+exports[`public API should not change unintentionally src/private/webapis/mutationobserver/internals/MutationObserverManager.js 1`] = `
+"export type MutationObserverId = number;
+declare export function registerObserver(
+  observer: MutationObserver,
+  callback: MutationObserverCallback
+): MutationObserverId;
+declare export function unregisterObserver(
+  mutationObserverId: MutationObserverId
+): void;
+declare export function observe({
+  mutationObserverId: MutationObserverId,
+  target: ReactNativeElement,
+  subtree: boolean,
+}): boolean;
+declare export function unobserve(
+  mutationObserverId: number,
+  target: ReactNativeElement
+): void;
 "
 `;
 
@@ -12429,25 +12429,6 @@ export { PerformanceEventTiming };
 "
 `;
 
-exports[`public API should not change unintentionally src/private/webapis/performance/RawPerformanceEntry.js 1`] = `
-"declare export const RawPerformanceEntryTypeValues: {
-  MARK: 1,
-  MEASURE: 2,
-  EVENT: 3,
-  LONGTASK: 4,
-};
-declare export function rawToPerformanceEntry(
-  entry: RawPerformanceEntry
-): PerformanceEntry;
-declare export function rawToPerformanceEntryType(
-  type: RawPerformanceEntryType
-): PerformanceEntryType;
-declare export function performanceEntryTypeToRaw(
-  type: PerformanceEntryType
-): RawPerformanceEntryType;
-"
-`;
-
 exports[`public API should not change unintentionally src/private/webapis/performance/ReactNativeStartupTiming.js 1`] = `
 "type ReactNativeStartupTimingLike = {
   startTime: ?number,
@@ -12495,7 +12476,26 @@ declare export class PerformanceMeasure extends PerformanceEntry {
 "
 `;
 
-exports[`public API should not change unintentionally src/private/webapis/performance/Utilities.js 1`] = `
+exports[`public API should not change unintentionally src/private/webapis/performance/internals/RawPerformanceEntry.js 1`] = `
+"declare export const RawPerformanceEntryTypeValues: {
+  MARK: 1,
+  MEASURE: 2,
+  EVENT: 3,
+  LONGTASK: 4,
+};
+declare export function rawToPerformanceEntry(
+  entry: RawPerformanceEntry
+): PerformanceEntry;
+declare export function rawToPerformanceEntryType(
+  type: RawPerformanceEntryType
+): PerformanceEntryType;
+declare export function performanceEntryTypeToRaw(
+  type: PerformanceEntryType
+): RawPerformanceEntryType;
+"
+`;
+
+exports[`public API should not change unintentionally src/private/webapis/performance/internals/Utilities.js 1`] = `
 "declare export function warnNoNativePerformance(): void;
 "
 `;

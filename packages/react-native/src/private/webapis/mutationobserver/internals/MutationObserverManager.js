@@ -18,20 +18,20 @@
  * the notifications together.
  */
 
-import type ReactNativeElement from '../dom/nodes/ReactNativeElement';
+import type ReactNativeElement from '../../dom/nodes/ReactNativeElement';
 import type MutationObserver, {
   MutationObserverCallback,
-} from './MutationObserver';
-import type MutationRecord from './MutationRecord';
+} from '../MutationObserver';
+import type MutationRecord from '../MutationRecord';
 
-import * as Systrace from '../../../../Libraries/Performance/Systrace';
-import warnOnce from '../../../../Libraries/Utilities/warnOnce';
+import * as Systrace from '../../../../../Libraries/Performance/Systrace';
+import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
 import {
   getPublicInstanceFromInternalInstanceHandle,
   getShadowNode,
-} from '../dom/nodes/ReadOnlyNode';
-import {createMutationRecord} from './MutationRecord';
-import NativeMutationObserver from './specs/NativeMutationObserver';
+} from '../../dom/nodes/ReadOnlyNode';
+import {createMutationRecord} from '../MutationRecord';
+import NativeMutationObserver from '../specs/NativeMutationObserver';
 
 export type MutationObserverId = number;
 
