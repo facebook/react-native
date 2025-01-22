@@ -20,11 +20,10 @@ import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
 import type {TimingAnimationConfig} from './animations/TimingAnimation';
 
-import {AnimatedEvent, attachNativeEvent} from './AnimatedEvent';
+import {AnimatedEvent} from './AnimatedEvent';
 import DecayAnimation from './animations/DecayAnimation';
 import SpringAnimation from './animations/SpringAnimation';
 import TimingAnimation from './animations/TimingAnimation';
-import createAnimatedComponent from './createAnimatedComponent';
 import AnimatedAddition from './nodes/AnimatedAddition';
 import AnimatedColor from './nodes/AnimatedColor';
 import AnimatedDiffClamp from './nodes/AnimatedDiffClamp';
@@ -47,39 +46,79 @@ export type CompositeAnimation = {
   ...
 };
 
-const add = function (
+/**
+ * Creates a new Animated value composed from two Animated values added
+ * together.
+ *
+ * See https://reactnative.dev/docs/animated#add
+ */
+export const add = function (
   a: AnimatedNode | number,
   b: AnimatedNode | number,
 ): AnimatedAddition {
   return new AnimatedAddition(a, b);
 };
 
-const subtract = function (
+/**
+ * Creates a new Animated value composed by subtracting the second Animated
+ * value from the first Animated value.
+ *
+ * See https://reactnative.dev/docs/animated#subtract
+ */
+export const subtract = function (
   a: AnimatedNode | number,
   b: AnimatedNode | number,
 ): AnimatedSubtraction {
   return new AnimatedSubtraction(a, b);
 };
 
-const divide = function (
+/**
+ * Creates a new Animated value composed by dividing the first Animated value
+ * by the second Animated value.
+ *
+ * See https://reactnative.dev/docs/animated#divide
+ */
+export const divide = function (
   a: AnimatedNode | number,
   b: AnimatedNode | number,
 ): AnimatedDivision {
   return new AnimatedDivision(a, b);
 };
 
-const multiply = function (
+/**
+ * Creates a new Animated value composed from two Animated values multiplied
+ * together.
+ *
+ * See https://reactnative.dev/docs/animated#multiply
+ */
+export const multiply = function (
   a: AnimatedNode | number,
   b: AnimatedNode | number,
 ): AnimatedMultiplication {
   return new AnimatedMultiplication(a, b);
 };
 
-const modulo = function (a: AnimatedNode, modulus: number): AnimatedModulo {
+/**
+ * Creates a new Animated value that is the (non-negative) modulo of the
+ * provided Animated value.
+ *
+ * See https://reactnative.dev/docs/animated#modulo
+ */
+export const modulo = function (
+  a: AnimatedNode,
+  modulus: number,
+): AnimatedModulo {
   return new AnimatedModulo(a, modulus);
 };
 
-const diffClamp = function (
+/**
+ * Create a new Animated value that is limited between 2 values. It uses the
+ * difference between the last value so even if the value is far from the
+ * bounds it will start changing when the value starts getting closer again.
+ *
+ * See https://reactnative.dev/docs/animated#diffclamp
+ */
+export const diffClamp = function (
   a: AnimatedNode,
   min: number,
   max: number,
@@ -151,7 +190,13 @@ const maybeVectorAnim = function (
   return null;
 };
 
-const spring = function (
+/**
+ * Animates a value according to an analytical spring model based on
+ * damped harmonic oscillation.
+ *
+ * See https://reactnative.dev/docs/animated#spring
+ */
+export const spring = function (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: SpringAnimationConfig,
 ): CompositeAnimation {
@@ -204,7 +249,13 @@ const spring = function (
   );
 };
 
-const timing = function (
+/**
+ * Animates a value along a timed easing curve. The Easing module has tons of
+ * predefined curves, or you can use your own function.
+ *
+ * See https://reactnative.dev/docs/animated#timing
+ */
+export const timing = function (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: TimingAnimationConfig,
 ): CompositeAnimation {
@@ -258,7 +309,13 @@ const timing = function (
   );
 };
 
-const decay = function (
+/**
+ * Animates a value from an initial velocity to zero based on a decay
+ * coefficient.
+ *
+ * See https://reactnative.dev/docs/animated#decay
+ */
+export const decay = function (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: DecayAnimationConfig,
 ): CompositeAnimation {
@@ -300,7 +357,14 @@ const decay = function (
   );
 };
 
-const sequence = function (
+/**
+ * Starts an array of animations in order, waiting for each to complete
+ * before starting the next. If the current running animation is stopped, no
+ * following animations will be started.
+ *
+ * See https://reactnative.dev/docs/animated#sequence
+ */
+export const sequence = function (
   animations: Array<CompositeAnimation>,
 ): CompositeAnimation {
   let current = 0;
@@ -363,7 +427,15 @@ type ParallelConfig = {
   stopTogether?: boolean,
   ...
 };
-const parallel = function (
+
+/**
+ * Starts an array of animations all at the same time. By default, if one
+ * of the animations is stopped, they will all be stopped. You can override
+ * this with the `stopTogether` flag.
+ *
+ * See https://reactnative.dev/docs/animated#parallel
+ */
+export const parallel = function (
   animations: Array<CompositeAnimation>,
   config?: ?ParallelConfig,
 ): CompositeAnimation {
@@ -431,7 +503,12 @@ const parallel = function (
   return result;
 };
 
-const delay = function (time: number): CompositeAnimation {
+/**
+ * Starts an animation after the given delay.
+ *
+ * See https://reactnative.dev/docs/animated#delay
+ */
+export const delay = function (time: number): CompositeAnimation {
   // Would be nice to make a specialized implementation
   return timing(new AnimatedValue(0), {
     toValue: 0,
@@ -441,7 +518,13 @@ const delay = function (time: number): CompositeAnimation {
   });
 };
 
-const stagger = function (
+/**
+ * Array of animations may run in parallel (overlap), but are started in
+ * sequence with successive delays.  Nice for doing trailing effects.
+ *
+ * See https://reactnative.dev/docs/animated#stagger
+ */
+export const stagger = function (
   time: number,
   animations: Array<CompositeAnimation>,
 ): CompositeAnimation {
@@ -458,7 +541,13 @@ type LoopAnimationConfig = {
   ...
 };
 
-const loop = function (
+/**
+ * Loops a given animation continuously, so that each time it reaches the
+ * end, it resets and begins again from the start.
+ *
+ * See https://reactnative.dev/docs/animated#loop
+ */
+export const loop = function (
   animation: CompositeAnimation,
   // $FlowFixMe[prop-missing]
   {iterations = -1, resetBeforeIteration = true}: LoopAnimationConfig = {},
@@ -514,7 +603,13 @@ const loop = function (
   };
 };
 
-function forkEvent(
+/**
+ * Advanced imperative API for snooping on animated events that are passed in
+ * through props. Use values directly where possible.
+ *
+ * See https://reactnative.dev/docs/animated#forkevent
+ */
+export function forkEvent(
   event: ?AnimatedEvent | ?Function,
   listener: Function,
 ): AnimatedEvent | Function {
@@ -531,7 +626,13 @@ function forkEvent(
   }
 }
 
-function unforkEvent(
+/**
+ * Advanced imperative API for snooping on animated events that are passed in
+ * through props. Use values directly where possible.
+ *
+ * See https://reactnative.dev/docs/animated#forkevent
+ */
+export function unforkEvent(
   event: ?AnimatedEvent | ?Function,
   listener: Function,
 ): void {
@@ -540,7 +641,13 @@ function unforkEvent(
   }
 }
 
-const event = function (
+/**
+ * Takes an array of mappings and extracts values from each arg accordingly,
+ * then calls `setValue` on the mapped outputs.
+ *
+ * See https://reactnative.dev/docs/animated#event
+ */
+export const event = function (
   argMapping: $ReadOnlyArray<?Mapping>,
   config: EventConfig,
 ): any {
@@ -566,189 +673,56 @@ type AnimatedNumeric =
 export type {AnimatedNumeric as Numeric};
 
 /**
- * The `Animated` library is designed to make animations fluid, powerful, and
- * easy to build and maintain. `Animated` focuses on declarative relationships
- * between inputs and outputs, with configurable transforms in between, and
- * simple `start`/`stop` methods to control time-based animation execution.
- * If additional transforms are added, be sure to include them in
- * AnimatedMock.js as well.
+ * Standard value class for driving animations.  Typically initialized with
+ * `new Animated.Value(0);`
  *
- * See https://reactnative.dev/docs/animated
+ * See https://reactnative.dev/docs/animated#value
  */
-export default {
-  /**
-   * Standard value class for driving animations.  Typically initialized with
-   * `new Animated.Value(0);`
-   *
-   * See https://reactnative.dev/docs/animated#value
-   */
-  Value: AnimatedValue,
-  /**
-   * 2D value class for driving 2D animations, such as pan gestures.
-   *
-   * See https://reactnative.dev/docs/animatedvaluexy
-   */
-  ValueXY: AnimatedValueXY,
-  /**
-   * Value class for driving color animations.
-   */
-  Color: AnimatedColor,
-  /**
-   * Exported to use the Interpolation type in flow.
-   *
-   * See https://reactnative.dev/docs/animated#interpolation
-   */
-  Interpolation: AnimatedInterpolation,
-  /**
-   * Exported for ease of type checking. All animated values derive from this
-   * class.
-   *
-   * See https://reactnative.dev/docs/animated#node
-   */
-  Node: AnimatedNode,
+export {default as Value} from './nodes/AnimatedValue';
 
-  /**
-   * Animates a value from an initial velocity to zero based on a decay
-   * coefficient.
-   *
-   * See https://reactnative.dev/docs/animated#decay
-   */
-  decay,
-  /**
-   * Animates a value along a timed easing curve. The Easing module has tons of
-   * predefined curves, or you can use your own function.
-   *
-   * See https://reactnative.dev/docs/animated#timing
-   */
-  timing,
-  /**
-   * Animates a value according to an analytical spring model based on
-   * damped harmonic oscillation.
-   *
-   * See https://reactnative.dev/docs/animated#spring
-   */
-  spring,
+/**
+ * 2D value class for driving 2D animations, such as pan gestures.
+ *
+ * See https://reactnative.dev/docs/animatedvaluexy
+ */
+export {default as ValueXY} from './nodes/AnimatedValueXY';
 
-  /**
-   * Creates a new Animated value composed from two Animated values added
-   * together.
-   *
-   * See https://reactnative.dev/docs/animated#add
-   */
-  add,
+/**
+ * Value class for driving color animations.
+ */
+export {default as Color} from './nodes/AnimatedColor';
 
-  /**
-   * Creates a new Animated value composed by subtracting the second Animated
-   * value from the first Animated value.
-   *
-   * See https://reactnative.dev/docs/animated#subtract
-   */
-  subtract,
+/**
+ * Exported to use the Interpolation type in flow.
+ *
+ * See https://reactnative.dev/docs/animated#interpolation
+ */
+export {default as Interpolation} from './nodes/AnimatedInterpolation';
 
-  /**
-   * Creates a new Animated value composed by dividing the first Animated value
-   * by the second Animated value.
-   *
-   * See https://reactnative.dev/docs/animated#divide
-   */
-  divide,
+/**
+ * Exported for ease of type checking. All animated values derive from this
+ * class.
+ *
+ * See https://reactnative.dev/docs/animated#node
+ */
+export {default as Node} from './nodes/AnimatedNode';
 
-  /**
-   * Creates a new Animated value composed from two Animated values multiplied
-   * together.
-   *
-   * See https://reactnative.dev/docs/animated#multiply
-   */
-  multiply,
+/**
+ * Make any React component Animatable.  Used to create `Animated.View`, etc.
+ *
+ * See https://reactnative.dev/docs/animated#createanimatedcomponent
+ */
+export {default as createAnimatedComponent} from './createAnimatedComponent';
 
-  /**
-   * Creates a new Animated value that is the (non-negative) modulo of the
-   * provided Animated value.
-   *
-   * See https://reactnative.dev/docs/animated#modulo
-   */
-  modulo,
+/**
+ * Expose Event class, so it can be used as a type for type checkers.
+ */
+export {AnimatedEvent as Event} from './AnimatedEvent';
 
-  /**
-   * Create a new Animated value that is limited between 2 values. It uses the
-   * difference between the last value so even if the value is far from the
-   * bounds it will start changing when the value starts getting closer again.
-   *
-   * See https://reactnative.dev/docs/animated#diffclamp
-   */
-  diffClamp,
-
-  /**
-   * Starts an animation after the given delay.
-   *
-   * See https://reactnative.dev/docs/animated#delay
-   */
-  delay,
-  /**
-   * Starts an array of animations in order, waiting for each to complete
-   * before starting the next. If the current running animation is stopped, no
-   * following animations will be started.
-   *
-   * See https://reactnative.dev/docs/animated#sequence
-   */
-  sequence,
-  /**
-   * Starts an array of animations all at the same time. By default, if one
-   * of the animations is stopped, they will all be stopped. You can override
-   * this with the `stopTogether` flag.
-   *
-   * See https://reactnative.dev/docs/animated#parallel
-   */
-  parallel,
-  /**
-   * Array of animations may run in parallel (overlap), but are started in
-   * sequence with successive delays.  Nice for doing trailing effects.
-   *
-   * See https://reactnative.dev/docs/animated#stagger
-   */
-  stagger,
-  /**
-   * Loops a given animation continuously, so that each time it reaches the
-   * end, it resets and begins again from the start.
-   *
-   * See https://reactnative.dev/docs/animated#loop
-   */
-  loop,
-
-  /**
-   * Takes an array of mappings and extracts values from each arg accordingly,
-   * then calls `setValue` on the mapped outputs.
-   *
-   * See https://reactnative.dev/docs/animated#event
-   */
-  event,
-
-  /**
-   * Make any React component Animatable.  Used to create `Animated.View`, etc.
-   *
-   * See https://reactnative.dev/docs/animated#createanimatedcomponent
-   */
-  createAnimatedComponent,
-
-  /**
-   * Imperative API to attach an animated value to an event on a view. Prefer
-   * using `Animated.event` with `useNativeDrive: true` if possible.
-   *
-   * See https://reactnative.dev/docs/animated#attachnativeevent
-   */
-  attachNativeEvent,
-
-  /**
-   * Advanced imperative API for snooping on animated events that are passed in
-   * through props. Use values directly where possible.
-   *
-   * See https://reactnative.dev/docs/animated#forkevent
-   */
-  forkEvent,
-  unforkEvent,
-
-  /**
-   * Expose Event class, so it can be used as a type for type checkers.
-   */
-  Event: AnimatedEvent,
-};
+/**
+ * Imperative API to attach an animated value to an event on a view. Prefer
+ * using `Animated.event` with `useNativeDrive: true` if possible.
+ *
+ * See https://reactnative.dev/docs/animated#attachnativeevent
+ */
+export {attachNativeEvent} from './AnimatedEvent';

@@ -18,7 +18,7 @@ import typeof AnimatedText from './components/AnimatedText';
 import typeof AnimatedView from './components/AnimatedView';
 
 import Platform from '../Utilities/Platform';
-import AnimatedImplementation from './AnimatedImplementation';
+import * as AnimatedImplementation from './AnimatedImplementation';
 import AnimatedMock from './AnimatedMock';
 
 const Animated: typeof AnimatedImplementation = Platform.isDisableAnimations

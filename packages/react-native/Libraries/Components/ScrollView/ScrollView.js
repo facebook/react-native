@@ -32,7 +32,7 @@ import {
   VScrollContentViewNativeComponent,
   VScrollViewNativeComponent,
 } from '../../../src/private/components/VScrollViewNativeComponents';
-import AnimatedImplementation from '../../Animated/AnimatedImplementation';
+import * as AnimatedImplementation from '../../Animated/AnimatedImplementation';
 import FrameRateLogger from '../../Interaction/FrameRateLogger';
 import {findNodeHandle} from '../../ReactNative/RendererProxy';
 import UIManager from '../../ReactNative/UIManager';

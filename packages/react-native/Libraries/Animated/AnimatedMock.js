@@ -18,7 +18,7 @@ import type {SpringAnimationConfig} from './animations/SpringAnimation';
 import type {TimingAnimationConfig} from './animations/TimingAnimation';
 
 import {AnimatedEvent, attachNativeEvent} from './AnimatedEvent';
-import AnimatedImplementation from './AnimatedImplementation';
+import * as AnimatedImplementation from './AnimatedImplementation';
 import createAnimatedComponent from './createAnimatedComponent';
 import AnimatedColor from './nodes/AnimatedColor';
 import AnimatedInterpolation from './nodes/AnimatedInterpolation';

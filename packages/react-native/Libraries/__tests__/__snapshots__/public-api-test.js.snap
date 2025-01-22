@@ -149,53 +149,56 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
   _isUsingNativeDriver: () => boolean,
   ...
 };
-declare const add: (
+declare export const add: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedAddition;
-declare const subtract: (
+declare export const subtract: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedSubtraction;
-declare const divide: (
+declare export const divide: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedDivision;
-declare const multiply: (
+declare export const multiply: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
 ) => AnimatedMultiplication;
-declare const modulo: (a: AnimatedNode, modulus: number) => AnimatedModulo;
-declare const diffClamp: (
+declare export const modulo: (
+  a: AnimatedNode,
+  modulus: number
+) => AnimatedModulo;
+declare export const diffClamp: (
   a: AnimatedNode,
   min: number,
   max: number
 ) => AnimatedDiffClamp;
-declare const spring: (
+declare export const spring: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: SpringAnimationConfig
 ) => CompositeAnimation;
-declare const timing: (
+declare export const timing: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: TimingAnimationConfig
 ) => CompositeAnimation;
-declare const decay: (
+declare export const decay: (
   value: AnimatedValue | AnimatedValueXY | AnimatedColor,
   config: DecayAnimationConfig
 ) => CompositeAnimation;
-declare const sequence: (
+declare export const sequence: (
   animations: Array<CompositeAnimation>
 ) => CompositeAnimation;
 type ParallelConfig = {
   stopTogether?: boolean,
   ...
 };
-declare const parallel: (
+declare export const parallel: (
   animations: Array<CompositeAnimation>,
   config?: ?ParallelConfig
 ) => CompositeAnimation;
-declare const delay: (time: number) => CompositeAnimation;
-declare const stagger: (
+declare export const delay: (time: number) => CompositeAnimation;
+declare export const stagger: (
   time: number,
   animations: Array<CompositeAnimation>
 ) => CompositeAnimation;
@@ -204,19 +207,19 @@ type LoopAnimationConfig = {
   resetBeforeIteration?: boolean,
   ...
 };
-declare const loop: (
+declare export const loop: (
   animation: CompositeAnimation,
   LoopAnimationConfig
 ) => CompositeAnimation;
-declare function forkEvent(
+declare export function forkEvent(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): AnimatedEvent | Function;
-declare function unforkEvent(
+declare export function unforkEvent(
   event: ?AnimatedEvent | ?Function,
   listener: Function
 ): void;
-declare const event: (
+declare export const event: (
   argMapping: $ReadOnlyArray<?Mapping>,
   config: EventConfig
 ) => any;
@@ -230,33 +233,14 @@ type AnimatedNumeric =
   | AnimatedSubtraction
   | AnimatedValue;
 export type { AnimatedNumeric as Numeric };
-declare export default {
-  Value: AnimatedValue,
-  ValueXY: AnimatedValueXY,
-  Color: AnimatedColor,
-  Interpolation: AnimatedInterpolation,
-  Node: AnimatedNode,
-  decay: decay,
-  timing: timing,
-  spring: spring,
-  add: add,
-  subtract: subtract,
-  divide: divide,
-  multiply: multiply,
-  modulo: modulo,
-  diffClamp: diffClamp,
-  delay: delay,
-  sequence: sequence,
-  parallel: parallel,
-  stagger: stagger,
-  loop: loop,
-  event: event,
-  createAnimatedComponent: createAnimatedComponent,
-  attachNativeEvent: attachNativeEvent,
-  forkEvent: forkEvent,
-  unforkEvent: unforkEvent,
-  Event: AnimatedEvent,
-};
+export { default as Value } from \\"./nodes/AnimatedValue\\";
+export { default as ValueXY } from \\"./nodes/AnimatedValueXY\\";
+export { default as Color } from \\"./nodes/AnimatedColor\\";
+export { default as Interpolation } from \\"./nodes/AnimatedInterpolation\\";
+export { default as Node } from \\"./nodes/AnimatedNode\\";
+export { default as createAnimatedComponent } from \\"./createAnimatedComponent\\";
+export { AnimatedEvent as Event } from \\"./AnimatedEvent\\";
+export { attachNativeEvent } from \\"./AnimatedEvent\\";
 "
 `;
 

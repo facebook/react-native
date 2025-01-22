@@ -10,7 +10,7 @@
 
 'use strict';
 
-import AnimatedImplementation from '../AnimatedImplementation';
+import * as AnimatedImplementation from '../AnimatedImplementation';
 import AnimatedMock from '../AnimatedMock';
 
 describe('Animated Mock', () => {
