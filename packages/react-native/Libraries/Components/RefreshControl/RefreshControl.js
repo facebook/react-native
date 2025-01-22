@@ -201,4 +201,4 @@ class RefreshControl extends React.Component<RefreshControlProps> {
   };
 }
 
-module.exports = RefreshControl;
+export default RefreshControl;

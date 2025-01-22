@@ -1913,5 +1913,5 @@ Wrapper.displayName = 'ScrollView';
 // $FlowExpectedError[prop-missing]
 Wrapper.Context = ScrollViewContext;
 
-module.exports = ((Wrapper: $FlowFixMe): typeof Wrapper &
+export default ((Wrapper: $FlowFixMe): typeof Wrapper &
   ScrollViewComponentStatics);

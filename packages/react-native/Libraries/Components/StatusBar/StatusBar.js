@@ -493,4 +493,4 @@ class StatusBar extends React.Component<Props> {
   }
 }
 
-module.exports = StatusBar;
+export default StatusBar;

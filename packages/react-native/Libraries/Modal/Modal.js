@@ -20,7 +20,7 @@ import RCTModalHostView from './RCTModalHostViewNativeComponent';
 import {VirtualizedListContextResetter} from '@react-native/virtualized-lists';
 import React from 'react';
 
-const ScrollView = require('../Components/ScrollView/ScrollView');
+const ScrollView = require('../Components/ScrollView/ScrollView').default;
 const View = require('../Components/View/View');
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');

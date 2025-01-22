@@ -169,11 +169,12 @@ jest
       setString: jest.fn(),
     },
   }))
-  .mock('../Libraries/Components/RefreshControl/RefreshControl', () =>
-    jest.requireActual(
+  .mock('../Libraries/Components/RefreshControl/RefreshControl', () => ({
+    __esModule: true,
+    default: jest.requireActual(
       '../Libraries/Components/RefreshControl/__mocks__/RefreshControlMock',
     ),
-  )
+  }))
   .mock('../Libraries/Components/ScrollView/ScrollView', () => {
     const baseComponent = mockComponent(
       '../Libraries/Components/ScrollView/ScrollView',
@@ -190,16 +191,20 @@ jest
         scrollResponderZoomTo: jest.fn(),
         scrollResponderScrollNativeHandleToKeyboard: jest.fn(),
       },
+      true, // isESModule
     );
     const mockScrollView = jest.requireActual('./mockScrollView');
-    return mockScrollView(baseComponent);
+    return {
+      __esModule: true,
+      default: mockScrollView(baseComponent),
+    };
   })
   .mock('../Libraries/Components/ActivityIndicator/ActivityIndicator', () => ({
     __esModule: true,
     default: mockComponent(
       '../Libraries/Components/ActivityIndicator/ActivityIndicator',
-      null,
-      true,
+      null, // instanceMethods
+      true, // isESModule
     ),
   }))
   .mock('../Libraries/AppState/AppState', () => ({

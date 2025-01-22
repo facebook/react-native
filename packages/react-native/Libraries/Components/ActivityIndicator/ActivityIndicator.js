@@ -19,7 +19,7 @@ import * as React from 'react';
 
 const PlatformActivityIndicator =
   Platform.OS === 'android'
-    ? require('../ProgressBarAndroid/ProgressBarAndroid')
+    ? require('../ProgressBarAndroid/ProgressBarAndroid').default
     : require('./ActivityIndicatorViewNativeComponent').default;
 
 const GRAY = '#999999';
