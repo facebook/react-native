@@ -40,12 +40,6 @@ void JCxxInspectorPackagerConnectionWebSocketDelegate::didReceiveMessage(
   }
 }
 
-void JCxxInspectorPackagerConnectionWebSocketDelegate::didOpen() {
-  if (auto delegate = cxxDelegate_.lock()) {
-    delegate->didOpen();
-  }
-}
-
 void JCxxInspectorPackagerConnectionWebSocketDelegate::didClose() {
   if (auto delegate = cxxDelegate_.lock()) {
     delegate->didClose();
