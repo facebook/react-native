@@ -254,7 +254,10 @@ static void updateBorderRadiusProps(
       newBorderRadii.endEnd,
       oldBorderRadii.endEnd);
   updateBorderRadiusPropValue(
-      result, "borderEndStartRadius", newBorderRadii.all, oldBorderRadii.all);
+      result,
+      "borderEndStartRadius",
+      newBorderRadii.endStart,
+      oldBorderRadii.endStart);
   updateBorderRadiusPropValue(
       result,
       "borderStartEndRadius",
@@ -396,6 +399,53 @@ inline static void updateTransformProps(
   }
 }
 
+inline static void updateAccessibilityStateProp(
+    folly::dynamic& result,
+    const std::optional<AccessibilityState>& newState,
+    const std::optional<AccessibilityState>& oldState) {
+  folly::dynamic resultState = folly::dynamic::object();
+
+  if (!newState.has_value() && oldState.has_value()) {
+    result["accessibilityState"] = resultState;
+    return;
+  }
+
+  if (!oldState.has_value() || newState->disabled != oldState->disabled) {
+    resultState["disabled"] = newState->disabled;
+  }
+
+  if (!oldState.has_value() || newState->selected != oldState->selected) {
+    resultState["selected"] = newState->selected;
+  }
+
+  if (!oldState.has_value() || newState->busy != oldState->busy) {
+    resultState["busy"] = newState->busy;
+  }
+
+  if (!oldState.has_value() || newState->expanded != oldState->expanded) {
+    resultState["expanded"] =
+        newState->expanded.has_value() && newState->expanded.value();
+  }
+
+  if (!oldState.has_value() || newState->checked != oldState->checked) {
+    switch (newState->checked) {
+      case AccessibilityState::Unchecked:
+        resultState["checked"] = "unchecked";
+        break;
+      case AccessibilityState::Checked:
+        resultState["checked"] = "checked";
+        break;
+      case AccessibilityState::Mixed:
+        resultState["checked"] = "mixed";
+        break;
+      case AccessibilityState::None:
+        resultState["checked"] = "none";
+        break;
+    }
+  }
+  result["accessibilityState"] = resultState;
+}
+
 folly::dynamic HostPlatformViewProps::getDiffProps(
     const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();
@@ -409,6 +459,11 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   if (this == oldProps) {
     return result;
   }
+
+  if (elevation != oldProps->elevation) {
+    result["elevation"] = elevation;
+  }
+
   if (focusable != oldProps->focusable) {
     result["focusable"] = focusable;
   }
@@ -704,6 +759,129 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
 
   if (transformOrigin != oldProps->transformOrigin) {
     result["transformOrigin"] = transformOrigin;
+  }
+
+  // Accessibility
+
+  if (accessibilityState != oldProps->accessibilityState) {
+    updateAccessibilityStateProp(
+        result, oldProps->accessibilityState, accessibilityState);
+  }
+
+  if (accessibilityLabel != oldProps->accessibilityLabel) {
+    result["accessibilityLabel"] = accessibilityLabel;
+  }
+
+  if (accessibilityLabelledBy != oldProps->accessibilityLabelledBy) {
+    auto accessibilityLabelledByValues = folly::dynamic::array();
+    for (const auto& accessibilityLabelledByValue :
+         accessibilityLabelledBy.value) {
+      accessibilityLabelledByValues.push_back(accessibilityLabelledByValue);
+    }
+    result["accessibilityLabelledBy"] = accessibilityLabelledByValues;
+  }
+
+  if (accessibilityLiveRegion != oldProps->accessibilityLiveRegion) {
+    switch (accessibilityLiveRegion) {
+      case AccessibilityLiveRegion::Assertive:
+        result["accessibilityLiveRegion"] = "assertive";
+        break;
+      case AccessibilityLiveRegion::Polite:
+        result["accessibilityLiveRegion"] = "polite";
+        break;
+      case AccessibilityLiveRegion::None:
+        result["accessibilityLiveRegion"] = "none";
+        break;
+    }
+  }
+
+  if (accessibilityHint != oldProps->accessibilityHint) {
+    result["accessibilityHint"] = accessibilityHint;
+  }
+
+  if (accessibilityRole != oldProps->accessibilityRole) {
+    result["accessibilityRole"] = accessibilityRole;
+  }
+
+  if (accessibilityLanguage != oldProps->accessibilityLanguage) {
+    result["accessibilityLanguage"] = accessibilityLanguage;
+  }
+
+  if (accessibilityValue != oldProps->accessibilityValue) {
+    folly::dynamic accessibilityValueObject = folly::dynamic::object();
+    if (accessibilityValue.min.has_value()) {
+      accessibilityValueObject["min"] = accessibilityValue.min.value();
+    }
+    if (accessibilityValue.max.has_value()) {
+      accessibilityValueObject["max"] = accessibilityValue.max.value();
+    }
+    if (accessibilityValue.now.has_value()) {
+      accessibilityValueObject["now"] = accessibilityValue.now.value();
+    }
+    if (accessibilityValue.text.has_value()) {
+      accessibilityValueObject["text"] = accessibilityValue.text.value();
+    }
+    result["accessibilityValue"] = accessibilityValueObject;
+  }
+
+  if (accessibilityActions != oldProps->accessibilityActions) {
+    auto accessibilityActionsArray = folly::dynamic::array();
+    for (const auto& accessibilityAction : accessibilityActions) {
+      folly::dynamic accessibilityActionObject = folly::dynamic::object();
+      accessibilityActionObject["name"] = accessibilityAction.name;
+      if (accessibilityAction.label.has_value()) {
+        accessibilityActionObject["label"] = accessibilityAction.label.value();
+      }
+      accessibilityActionsArray.push_back(accessibilityActionObject);
+    }
+    result["accessibilityActions"] = accessibilityActionsArray;
+  }
+
+  if (accessibilityViewIsModal != oldProps->accessibilityViewIsModal) {
+    result["accessibilityViewIsModal"] = accessibilityViewIsModal;
+  }
+
+  if (accessibilityElementsHidden != oldProps->accessibilityElementsHidden) {
+    result["accessibilityElementsHidden"] = accessibilityElementsHidden;
+  }
+
+  if (accessibilityIgnoresInvertColors !=
+      oldProps->accessibilityIgnoresInvertColors) {
+    result["accessibilityIgnoresInvertColors"] =
+        accessibilityIgnoresInvertColors;
+  }
+
+  if (onAccessibilityTap != oldProps->onAccessibilityTap) {
+    result["onAccessibilityTap"] = onAccessibilityTap;
+  }
+
+  if (onAccessibilityMagicTap != oldProps->onAccessibilityMagicTap) {
+    result["onAccessibilityMagicTap"] = onAccessibilityMagicTap;
+  }
+
+  if (onAccessibilityEscape != oldProps->onAccessibilityEscape) {
+    result["onAccessibilityEscape"] = onAccessibilityEscape;
+  }
+
+  if (onAccessibilityAction != oldProps->onAccessibilityAction) {
+    result["onAccessibilityAction"] = onAccessibilityAction;
+  }
+
+  if (importantForAccessibility != oldProps->importantForAccessibility) {
+    switch (importantForAccessibility) {
+      case ImportantForAccessibility::Auto:
+        result["importantForAccessibility"] = "auto";
+        break;
+      case ImportantForAccessibility::Yes:
+        result["importantForAccessibility"] = "yes";
+        break;
+      case ImportantForAccessibility::No:
+        result["importantForAccessibility"] = "no";
+        break;
+      case ImportantForAccessibility::NoHideDescendants:
+        result["importantForAccessibility"] = "noHideDescendants";
+        break;
+    }
   }
 
   return result;
