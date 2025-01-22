@@ -145,8 +145,114 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
       ? &defaultProps
       : static_cast<const HostPlatformViewProps*>(prevProps);
 
+  if (this == oldProps) {
+    return result;
+  }
   if (focusable != oldProps->focusable) {
     result["focusable"] = focusable;
+  }
+
+  if (hasTVPreferredFocus != oldProps->hasTVPreferredFocus) {
+    result["hasTVPreferredFocus"] = hasTVPreferredFocus;
+  }
+
+  if (needsOffscreenAlphaCompositing !=
+      oldProps->needsOffscreenAlphaCompositing) {
+    result["needsOffscreenAlphaCompositing"] = needsOffscreenAlphaCompositing;
+  }
+
+  if (renderToHardwareTextureAndroid !=
+      oldProps->renderToHardwareTextureAndroid) {
+    result["renderToHardwareTextureAndroid"] = renderToHardwareTextureAndroid;
+  }
+
+  if (opacity != oldProps->opacity) {
+    result["opacity"] = opacity;
+  }
+
+  if (backgroundColor != oldProps->backgroundColor) {
+    result["backgroundColor"] = *backgroundColor;
+  }
+
+  if (shadowColor != oldProps->shadowColor) {
+    result["shadowColor"] = *shadowColor;
+  }
+
+  if (shadowOpacity != oldProps->shadowOpacity) {
+    result["shadowOpacity"] = shadowOpacity;
+  }
+
+  if (shadowRadius != oldProps->shadowRadius) {
+    result["shadowRadius"] = shadowRadius;
+  }
+
+  if (shouldRasterize != oldProps->shouldRasterize) {
+    result["shouldRasterize"] = shouldRasterize;
+  }
+
+  if (collapsable != oldProps->collapsable) {
+    result["collapsable"] = collapsable;
+  }
+
+  if (removeClippedSubviews != oldProps->removeClippedSubviews) {
+    result["removeClippedSubviews"] = removeClippedSubviews;
+  }
+
+  if (onLayout != oldProps->onLayout) {
+    result["onLayout"] = onLayout;
+  }
+
+  if (zIndex != oldProps->zIndex) {
+    result["zIndex"] = zIndex.value();
+  }
+
+  if (pointerEvents != oldProps->pointerEvents) {
+    std::string value;
+    switch (pointerEvents) {
+      case PointerEventsMode::BoxOnly:
+        result["pointerEvents"] = "box-only";
+        break;
+      case PointerEventsMode::BoxNone:
+        result["pointerEvents"] = "box-none";
+        break;
+      case PointerEventsMode::None:
+        result["pointerEvents"] = "none";
+        break;
+      default:
+        result["pointerEvents"] = "auto";
+        break;
+    }
+
+    if (nativeId != oldProps->nativeId) {
+      result["nativeId"] = nativeId;
+    }
+
+    if (testId != oldProps->testId) {
+      result["testId"] = testId;
+    }
+
+    if (accessible != oldProps->accessible) {
+      result["accessible"] = accessible;
+    }
+
+    if (getClipsContentToBounds() != oldProps->getClipsContentToBounds()) {
+      result["overflow"] = getClipsContentToBounds() ? "hidden" : "visible";
+      result["scroll"] = result["overflow"];
+    }
+
+    if (backfaceVisibility != oldProps->backfaceVisibility) {
+      switch (backfaceVisibility) {
+        case BackfaceVisibility::Auto:
+          result["backfaceVisibility"] = "auto";
+          break;
+        case BackfaceVisibility::Visible:
+          result["backfaceVisibility"] = "visible";
+          break;
+        case BackfaceVisibility::Hidden:
+          result["backfaceVisibility"] = "hidden";
+          break;
+      }
+    }
   }
 
   return result;
