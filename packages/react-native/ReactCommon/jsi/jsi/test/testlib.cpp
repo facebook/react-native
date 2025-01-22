@@ -1601,14 +1601,19 @@ TEST_P(JSITest, UTF16Test) {
   rd.utf8Str = "foobar";
   EXPECT_EQ(str.utf16(rd), u"foobar");
 
-  rd.utf8Str = "你好";
-  EXPECT_EQ(str.utf16(rd), u"你好");
+  // 你 in UTF-8 encoding is 0xe4 0xbd 0xa0 and 好 is 0xe5 0xa5 0xbd
+  // 你 in UTF-16 encoding is 0x4f60 and 好 is 0x597d
+  rd.utf8Str = "\xe4\xbd\xa0\xe5\xa5\xbd";
+  EXPECT_EQ(str.utf16(rd), u"\x4f60\x597d");
 
-  rd.utf8Str = "👍";
-  EXPECT_EQ(str.utf16(rd), u"👍");
+  // 👍 in UTF-8 encoding is 0xf0 0x9f 0x91 0x8d
+  // 👍 in UTF-16 encoding is 0xd83d 0xdc4d
+  rd.utf8Str = "\xf0\x9f\x91\x8d";
+  EXPECT_EQ(str.utf16(rd), u"\xd83d\xdc4d");
 
-  rd.utf8Str = "foobar👍你好";
-  EXPECT_EQ(str.utf16(rd), u"foobar👍你好");
+  // String is foobar👍你好
+  rd.utf8Str = "foobar\xf0\x9f\x91\x8d\xe4\xbd\xa0\xe5\xa5\xbd";
+  EXPECT_EQ(str.utf16(rd), u"foobar\xd83d\xdc4d\x4f60\x597d");
 
   // String ended before second byte of the encoding
   rd.utf8Str = "\xcf";
@@ -1652,7 +1657,8 @@ TEST_P(JSITest, GetStringDataTest) {
   };
 
   RD rd = RD(rt);
-  String str = String::createFromUtf8(rd, "hello👋");
+  // 👋 in UTF8 encoding is 0xf0 0x9f 0x91 0x8b
+  String str = String::createFromUtf8(rd, "hello\xf0\x9f\x91\x8b");
 
   std::u16string buf;
   auto cb = [&buf](bool ascii, const void* data, size_t num) {
