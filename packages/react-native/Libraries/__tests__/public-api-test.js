@@ -37,14 +37,17 @@ const JS_LIBRARIES_FILES_IGNORE_PATTERNS = [
   // ReactNativePrivateInterface
   'Libraries/ReactPrivate/**',
 ];
-const JS_PRIVATE_FILES_PATTERN = 'src/private/**/*.{js,flow}';
-const JS_PRIVATE_FILES_IGNORE_PATTERNS = [
-  ...SHARED_PATTERNS,
-  'src/private/debugging',
-  'src/private/featureflags',
-  'src/private/fusebox',
-  'src/private/setup',
+const JS_PRIVATE_FILES_INCLUDE_PATTERNS = [
+  'setup/**/*.js',
+  'specs/**/*.js',
+  'webapis/dom/geometry/*.js',
+  'webapis/dom/nodes/*.js',
+  'webapis/dom/oldstylecollections/*.js',
+  'webapis/intersectionobserver/*.js',
+  'webapis/mutationobserver/*.js',
+  'webapis/performance/*.js',
 ];
+const JS_PRIVATE_FILES_IGNORE_PATTERNS = SHARED_PATTERNS;
 
 const sourceFiles = [
   'index.js',
@@ -53,11 +56,13 @@ const sourceFiles = [
     ignore: JS_LIBRARIES_FILES_IGNORE_PATTERNS,
     nodir: true,
   }),
-  ...glob.sync(JS_PRIVATE_FILES_PATTERN, {
-    cwd: PACKAGE_ROOT,
-    ignore: JS_PRIVATE_FILES_IGNORE_PATTERNS,
-    nodir: true,
-  }),
+  ...JS_PRIVATE_FILES_INCLUDE_PATTERNS.flatMap(srcPrivateSubpath =>
+    glob.sync(path.join('src', 'private', srcPrivateSubpath), {
+      cwd: PACKAGE_ROOT,
+      ignore: JS_PRIVATE_FILES_IGNORE_PATTERNS,
+      nodir: true,
+    }),
+  ),
 ];
 
 describe('public API', () => {
