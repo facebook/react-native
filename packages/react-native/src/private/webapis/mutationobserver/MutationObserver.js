@@ -10,11 +10,11 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {MutationObserverId} from './MutationObserverManager';
+import type {MutationObserverId} from './internals/MutationObserverManager';
 import type MutationRecord from './MutationRecord';
 
 import ReactNativeElement from '../dom/nodes/ReactNativeElement';
-import * as MutationObserverManager from './MutationObserverManager';
+import * as MutationObserverManager from './internals/MutationObserverManager';
 
 export type MutationObserverCallback = (
   mutationRecords: $ReadOnlyArray<MutationRecord>,
