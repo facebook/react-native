@@ -336,6 +336,38 @@ static void updateBorderColorsProps(
       oldBorderColor.blockStart);
 }
 
+inline static void updateNativeDrawableProp(
+    folly::dynamic& result,
+    const std::string& propName,
+    const std::optional<NativeDrawable>& nativeDrawable) {
+  folly::dynamic nativeDrawableResult;
+  if (nativeDrawable.has_value()) {
+    nativeDrawableResult = folly::dynamic::object();
+    const auto& nativeDrawableValue = nativeDrawable.value();
+    nativeDrawableResult["attribute"] = nativeDrawableValue.themeAttr;
+    switch (nativeDrawableValue.kind) {
+      case NativeDrawable::Kind::Ripple:
+        nativeDrawableResult["type"] = "RippleAndroid";
+        break;
+      case NativeDrawable::Kind::ThemeAttr:
+        nativeDrawableResult["type"] = "ThemeAttrAndroid";
+        break;
+    }
+    if (nativeDrawableValue.ripple.rippleRadius.has_value()) {
+      nativeDrawableResult["rippleRadius"] =
+          nativeDrawableValue.ripple.rippleRadius.value();
+    }
+    if (nativeDrawableValue.ripple.color.has_value()) {
+      nativeDrawableResult["color"] = nativeDrawableValue.ripple.color.value();
+    }
+    nativeDrawableResult["borderless"] = nativeDrawableValue.ripple.borderless;
+  } else {
+    nativeDrawableResult = folly::dynamic(nullptr);
+  }
+
+  result[propName] = nativeDrawableResult;
+}
+
 inline static void updateTransformOperationValue(
     const std::string& operationName,
     const ValueUnit& valueUnit,
@@ -571,8 +603,18 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
     }
   }
 
-  // TODO T212662692: pass events as std::bitset<64> to java
+  if (nativeBackground != oldProps->nativeBackground) {
+    updateNativeDrawableProp(
+        result, "nativeBackgroundAndroid", nativeBackground);
+  }
+
+  if (nativeForeground != oldProps->nativeForeground) {
+    updateNativeDrawableProp(
+        result, "nativeForegroundAndroid", nativeForeground);
+  }
+
   // Events
+  // TODO T212662692: pass events as std::bitset<64> to java
   if (events != oldProps->events) {
     updateEventProp(
         result,

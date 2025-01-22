@@ -114,7 +114,7 @@ public object ReactScrollViewHelper {
       return
     }
     val contentView = scrollView.getChildAt(0) ?: return
-    for (scrollListener in scrollListeners) {
+    for (scrollListener in scrollListeners.toList()) {
       scrollListener.get()?.onScroll(scrollView, scrollEventType, xVelocity, yVelocity)
     }
     val reactContext = scrollView.context as ReactContext
