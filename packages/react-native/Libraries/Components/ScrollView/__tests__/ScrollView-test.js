@@ -15,7 +15,7 @@ const {create, unmount, update} = require('../../../../jest/renderer');
 const Text = require('../../../Text/Text');
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
 const View = require('../../View/View');
-const ScrollView = require('../ScrollView');
+const ScrollView = require('../ScrollView').default;
 const React = require('react');
 
 describe('ScrollView', () => {

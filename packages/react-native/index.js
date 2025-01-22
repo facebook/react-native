@@ -160,22 +160,24 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/progress-bar-android' instead of 'react-native'. " +
         'See https://github.com/react-native-progress-view/progress-bar-android',
     );
-    return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
+    return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid')
+      .default;
   },
   get RefreshControl(): RefreshControl {
-    return require('./Libraries/Components/RefreshControl/RefreshControl');
+    return require('./Libraries/Components/RefreshControl/RefreshControl')
+      .default;
   },
   get SafeAreaView(): SafeAreaView {
     return require('./Libraries/Components/SafeAreaView/SafeAreaView').default;
   },
   get ScrollView(): ScrollView {
-    return require('./Libraries/Components/ScrollView/ScrollView');
+    return require('./Libraries/Components/ScrollView/ScrollView').default;
   },
   get SectionList(): SectionList {
     return require('./Libraries/Lists/SectionList').default;
   },
   get StatusBar(): StatusBar {
-    return require('./Libraries/Components/StatusBar/StatusBar');
+    return require('./Libraries/Components/StatusBar/StatusBar').default;
   },
   get Switch(): Switch {
     return require('./Libraries/Components/Switch/Switch').default;

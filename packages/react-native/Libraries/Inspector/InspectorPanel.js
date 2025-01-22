@@ -15,7 +15,7 @@ import type {ElementsHierarchy, InspectedElement} from './Inspector';
 import SafeAreaView from '../Components/SafeAreaView/SafeAreaView';
 import React from 'react';
 
-const ScrollView = require('../Components/ScrollView/ScrollView');
+const ScrollView = require('../Components/ScrollView/ScrollView').default;
 const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
