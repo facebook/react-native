@@ -147,6 +147,192 @@ inline static void updateEventProp(
   }
 }
 
+static void updateBorderWidthPropValue(
+    folly::dynamic& result,
+    const std::string& propName,
+    const std::optional<float>& newValue,
+    const std::optional<float>& oldValue) {
+  if (newValue != oldValue) {
+    if (newValue.has_value()) {
+      result[propName] = newValue.value();
+    } else {
+      result[propName] = NULL;
+    }
+  }
+}
+
+static void updateBorderWidthProps(
+    folly::dynamic& result,
+    const CascadedBorderWidths& newBorderWidths,
+    const CascadedBorderWidths& oldBorderWidths) {
+  updateBorderWidthPropValue(
+      result, "borderWidth", newBorderWidths.all, oldBorderWidths.all);
+  updateBorderWidthPropValue(
+      result, "borderTopWidth", newBorderWidths.top, oldBorderWidths.top);
+  updateBorderWidthPropValue(
+      result, "borderLeftWidth", newBorderWidths.left, oldBorderWidths.left);
+  updateBorderWidthPropValue(
+      result, "borderStartWidth", newBorderWidths.start, oldBorderWidths.start);
+  updateBorderWidthPropValue(
+      result, "borderEndWidth", newBorderWidths.end, oldBorderWidths.end);
+  updateBorderWidthPropValue(
+      result, "borderRightWidth", newBorderWidths.right, oldBorderWidths.right);
+  updateBorderWidthPropValue(
+      result,
+      "borderBottomWidth",
+      newBorderWidths.bottom,
+      oldBorderWidths.bottom);
+}
+
+static void updateBorderRadiusPropValue(
+    folly::dynamic& result,
+    const std::string& propName,
+    const std::optional<ValueUnit>& newValue,
+    const std::optional<ValueUnit>& oldValue) {
+  if (newValue != oldValue) {
+    if (newValue.has_value()) {
+      if (newValue.value().unit == UnitType::Percent) {
+        result[propName] = std::to_string(newValue.value().value) + "%";
+      } else {
+        result[propName] = newValue.value().value;
+      }
+    } else {
+      result[propName] = -1;
+    }
+  }
+}
+
+static void updateBorderRadiusProps(
+    folly::dynamic& result,
+    const CascadedBorderRadii& newBorderRadii,
+    const CascadedBorderRadii& oldBorderRadii) {
+  updateBorderRadiusPropValue(
+      result, "borderRadius", newBorderRadii.all, oldBorderRadii.all);
+  updateBorderRadiusPropValue(
+      result,
+      "borderTopLeftRadius",
+      newBorderRadii.topLeft,
+      oldBorderRadii.topLeft);
+  updateBorderRadiusPropValue(
+      result,
+      "borderTopRightRadius",
+      newBorderRadii.topRight,
+      oldBorderRadii.topRight);
+  updateBorderRadiusPropValue(
+      result,
+      "borderBottomRightRadius",
+      newBorderRadii.bottomRight,
+      oldBorderRadii.bottomRight);
+  updateBorderRadiusPropValue(
+      result,
+      "borderBottomLeftRadius",
+      newBorderRadii.bottomLeft,
+      oldBorderRadii.bottomLeft);
+  updateBorderRadiusPropValue(
+      result,
+      "borderTopStartRadius",
+      newBorderRadii.topStart,
+      oldBorderRadii.topStart);
+  updateBorderRadiusPropValue(
+      result,
+      "borderTopEndRadius",
+      newBorderRadii.topEnd,
+      oldBorderRadii.topEnd);
+  updateBorderRadiusPropValue(
+      result,
+      "borderBottomStartRadius",
+      newBorderRadii.bottomStart,
+      oldBorderRadii.bottomStart);
+  updateBorderRadiusPropValue(
+      result,
+      "borderBottomEndRadius",
+      newBorderRadii.bottomEnd,
+      oldBorderRadii.bottomEnd);
+  updateBorderRadiusPropValue(
+      result,
+      "borderEndEndRadius",
+      newBorderRadii.endEnd,
+      oldBorderRadii.endEnd);
+  updateBorderRadiusPropValue(
+      result, "borderEndStartRadius", newBorderRadii.all, oldBorderRadii.all);
+  updateBorderRadiusPropValue(
+      result,
+      "borderStartEndRadius",
+      newBorderRadii.startEnd,
+      oldBorderRadii.startEnd);
+  updateBorderRadiusPropValue(
+      result,
+      "borderStartStartRadius",
+      newBorderRadii.startStart,
+      oldBorderRadii.startStart);
+}
+
+static void updateBorderStyleProps(
+    folly::dynamic& result,
+    const CascadedBorderStyles& newBorderStyle,
+    const CascadedBorderStyles& oldBorderStyle) {
+  if (newBorderStyle.all != oldBorderStyle.all) {
+    if (newBorderStyle.all.has_value()) {
+      switch (newBorderStyle.all.value()) {
+        case BorderStyle::Solid:
+          result["borderStyle"] = "solid";
+          break;
+        case BorderStyle::Dotted:
+          result["borderStyle"] = "dotted";
+          break;
+        case BorderStyle::Dashed:
+          result["borderStyle"] = "dashed";
+          break;
+      }
+    } else {
+      result["borderStyle"] = NULL;
+    }
+  }
+}
+
+static void updateBorderColorPropValue(
+    folly::dynamic& result,
+    const std::string& propName,
+    const std::optional<SharedColor>& newColor,
+    const std::optional<SharedColor>& oldColor) {
+  if (newColor != oldColor) {
+    result[propName] = newColor.has_value() ? *newColor.value() : NULL;
+  }
+}
+
+static void updateBorderColorsProps(
+    folly::dynamic& result,
+    const CascadedBorderColors& newBorderColor,
+    const CascadedBorderColors& oldBorderColor) {
+  updateBorderColorPropValue(
+      result, "borderColor", newBorderColor.all, oldBorderColor.all);
+  updateBorderColorPropValue(
+      result, "borderLeftColor", newBorderColor.left, oldBorderColor.left);
+  updateBorderColorPropValue(
+      result, "borderRightColor", newBorderColor.right, oldBorderColor.right);
+  updateBorderColorPropValue(
+      result, "borderTopColor", newBorderColor.top, oldBorderColor.top);
+  updateBorderColorPropValue(
+      result,
+      "borderBottomColor",
+      newBorderColor.bottom,
+      oldBorderColor.bottom);
+  updateBorderColorPropValue(
+      result, "borderStartColor", newBorderColor.start, oldBorderColor.start);
+  updateBorderColorPropValue(
+      result, "borderBlockColor", newBorderColor.block, oldBorderColor.block);
+  updateBorderColorPropValue(
+      result,
+      "borderBlockEndColor",
+      newBorderColor.blockEnd,
+      oldBorderColor.blockEnd);
+  updateBorderColorPropValue(
+      result,
+      "borderBlockStartColor",
+      newBorderColor.blockStart,
+      oldBorderColor.blockStart);
+}
+
 folly::dynamic HostPlatformViewProps::getDiffProps(
     const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();
@@ -268,6 +454,7 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   }
 
   // TODO T212662692: pass events as std::bitset<64> to java
+  // Events
   if (events != oldProps->events) {
     updateEventProp(
         result,
@@ -421,6 +608,25 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
         oldProps->events,
         ViewEvents::Offset::TouchCancel,
         "onTouchCancel");
+  }
+
+  // Borders
+  auto borderWidths = getBorderWidths();
+  auto oldBorderWidths = oldProps->getBorderWidths();
+  if (borderWidths != oldBorderWidths) {
+    updateBorderWidthProps(result, borderWidths, oldBorderWidths);
+  }
+
+  if (borderStyles != oldProps->borderStyles) {
+    updateBorderStyleProps(result, borderStyles, oldProps->borderStyles);
+  }
+
+  if (borderColors != oldProps->borderColors) {
+    updateBorderColorsProps(result, borderColors, oldProps->borderColors);
+  }
+
+  if (borderRadii != oldProps->borderRadii) {
+    updateBorderRadiusProps(result, borderRadii, oldProps->borderRadii);
   }
 
   return result;
