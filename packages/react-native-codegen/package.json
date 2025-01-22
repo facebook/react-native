@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "@babel/parser": "^7.25.3",
-    "glob": "^7.1.1",
+    "glob": "^10.4.5",
     "hermes-parser": "0.25.1",
     "invariant": "^2.2.4",
     "jscodeshift": "^17.0.0",

@@ -13,7 +13,7 @@ import type {TransformVisitor} from 'hermes-transform';
 
 const translate = require('flow-api-translator');
 const {existsSync, promises: fs} = require('fs');
-const glob = require('glob');
+const {globSync} = require('glob');
 const {transform} = require('hermes-transform');
 const path = require('path');
 
@@ -51,18 +51,16 @@ const JS_PRIVATE_FILES_IGNORE_PATTERNS = SHARED_PATTERNS;
 
 const sourceFiles = [
   'index.js',
-  ...glob.sync(JS_LIBRARIES_FILES_PATTERN, {
+  ...globSync(JS_LIBRARIES_FILES_PATTERN, {
     cwd: PACKAGE_ROOT,
     ignore: JS_LIBRARIES_FILES_IGNORE_PATTERNS,
     nodir: true,
   }),
-  ...JS_PRIVATE_FILES_INCLUDE_PATTERNS.flatMap(srcPrivateSubpath =>
-    glob.sync(path.join('src', 'private', srcPrivateSubpath), {
-      cwd: PACKAGE_ROOT,
-      ignore: JS_PRIVATE_FILES_IGNORE_PATTERNS,
-      nodir: true,
-    }),
-  ),
+  ...globSync(JS_PRIVATE_FILES_INCLUDE_PATTERNS, {
+    cwd: path.join(PACKAGE_ROOT, 'src', 'private'),
+    ignore: JS_PRIVATE_FILES_IGNORE_PATTERNS,
+    nodir: true,
+  }),
 ];
 
 describe('public API', () => {

@@ -12,7 +12,7 @@
 const {PACKAGES_DIR} = require('../consts');
 const translate = require('flow-api-translator');
 const {promises: fs} = require('fs');
-const glob = require('glob');
+const {globSync} = require('glob');
 const path = require('path');
 
 const TYPES_DIR = 'new-types';
@@ -23,9 +23,11 @@ const PATHS = ['Libraries/Animated'];
 
 async function buildRNTypes() {
   const files = PATHS.flatMap(src_path =>
-    glob.sync(path.resolve(PACKAGES_DIR, PACKAGE_NAME, src_path, '**/*.js'), {
+    globSync('**/*.js', {
       nodir: true,
-    }),
+      absolute: true,
+      cwd: path.resolve(PACKAGES_DIR, PACKAGE_NAME, src_path),
+    })
   );
 
   console.log('Building RN types...');

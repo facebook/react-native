@@ -20,7 +20,7 @@ const utils = require('./codegen-utils');
 const generateSpecsCLIExecutor = require('./generate-specs-cli-executor');
 const {execSync} = require('child_process');
 const fs = require('fs');
-const glob = require('glob');
+const {globSync} = require('glob');
 const os = require('os');
 const path = require('path');
 
@@ -234,7 +234,7 @@ function getCocoaPodsPlatformKey(platformName) {
 
 function extractSupportedApplePlatforms(dependency, dependencyPath) {
   codegenLog('Searching for podspec in the project dependencies.', true);
-  const podspecs = glob.sync('*.podspec', {cwd: dependencyPath});
+  const podspecs = globSync('*.podspec', {cwd: dependencyPath});
 
   if (podspecs.length === 0) {
     return;
