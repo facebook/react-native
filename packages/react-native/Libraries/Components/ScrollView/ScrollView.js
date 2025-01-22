@@ -712,9 +712,11 @@ class ScrollView extends React.Component<Props, State> {
 
   _scrollAnimatedValue: AnimatedImplementation.Value;
   _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
-  _stickyHeaderRefs: Map<string, React.ElementRef<StickyHeaderComponentType>> =
-    new Map();
-  _headerLayoutYs: Map<string, number> = new Map();
+  _stickyHeaderRefs: Map<
+    React.Key,
+    React.ElementRef<StickyHeaderComponentType>,
+  > = new Map();
+  _headerLayoutYs: Map<React.Key, number> = new Map();
 
   _keyboardMetrics: ?KeyboardMetrics = null;
   _additionalScrollOffset: number = 0;
@@ -1066,7 +1068,11 @@ class ScrollView extends React.Component<Props, State> {
     }
   };
 
-  _getKeyForIndex(index: $FlowFixMe, childArray: $FlowFixMe): $FlowFixMe {
+  _getKeyForIndex(
+    index: number,
+    // $FlowFixMe[unclear-type] - The children and its key is unknown.
+    childArray: any,
+  ): React.Key {
     const child = childArray[index];
     return child && child.key;
   }
@@ -1099,7 +1105,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  _onStickyHeaderLayout(index: $FlowFixMe, event: $FlowFixMe, key: $FlowFixMe) {
+  _onStickyHeaderLayout(index: number, event: LayoutEvent, key: React.Key) {
     const {stickyHeaderIndices} = this.props;
     if (!stickyHeaderIndices) {
       return;
