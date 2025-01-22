@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8423497c73f5315fdc3e8b4fa0bdc8c2>>
+ * @generated SignedSource<<908876e2d8a415a3d90063eea7eace96>>
  */
 
 /**
@@ -48,6 +48,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableGranularShadowTreeStateReconciliation();
   bool enableIOSViewClipToPaddingBox();
   bool enableImagePrefetchingAndroid();
+  bool enableJSRuntimeGCOnMemoryPressureOnIOS();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
   bool enableLongTaskAPI();
@@ -89,7 +90,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 46> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 47> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> completeReactInstanceCreationOnBgThreadOnAndroid_;
@@ -107,6 +108,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
+  std::atomic<std::optional<bool>> enableJSRuntimeGCOnMemoryPressureOnIOS_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;

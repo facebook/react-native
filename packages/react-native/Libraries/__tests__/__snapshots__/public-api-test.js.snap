@@ -9887,6 +9887,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableImagePrefetchingAndroid: Getter<boolean>,
+  enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
@@ -9952,6 +9953,7 @@ declare export const enableFixForViewCommandRace: Getter<boolean>;
 declare export const enableGranularShadowTreeStateReconciliation: Getter<boolean>;
 declare export const enableIOSViewClipToPaddingBox: Getter<boolean>;
 declare export const enableImagePrefetchingAndroid: Getter<boolean>;
+declare export const enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>;
 declare export const enableLayoutAnimationsOnAndroid: Getter<boolean>;
 declare export const enableLayoutAnimationsOnIOS: Getter<boolean>;
 declare export const enableLongTaskAPI: Getter<boolean>;
@@ -10028,6 +10030,7 @@ exports[`public API should not change unintentionally src/private/featureflags/s
   +enableGranularShadowTreeStateReconciliation?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableImagePrefetchingAndroid?: () => boolean;
+  +enableJSRuntimeGCOnMemoryPressureOnIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;

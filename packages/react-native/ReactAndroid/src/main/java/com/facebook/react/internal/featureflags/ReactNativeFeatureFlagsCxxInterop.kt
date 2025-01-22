@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a7f3ca986725fa85a6926c9e7966669b>>
+ * @generated SignedSource<<e9237a045ae4dac8109772f558059534>>
  */
 
 /**
@@ -59,6 +59,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableImagePrefetchingAndroid(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableLayoutAnimationsOnAndroid(): Boolean
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<179524938d2e6148ef87835844c4135e>>
+ * @generated SignedSource<<fdcf5bedda4926edbd612be30d6aa274>>
  */
 
 /**
@@ -187,6 +187,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableImagePrefetchingAndroid();
+  }
+
+  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
+    auto value = values_["enableJSRuntimeGCOnMemoryPressureOnIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableJSRuntimeGCOnMemoryPressureOnIOS();
   }
 
   bool enableLayoutAnimationsOnAndroid() override {

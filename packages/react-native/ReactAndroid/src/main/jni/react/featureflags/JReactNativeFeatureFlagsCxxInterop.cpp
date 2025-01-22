@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<63ebe186ccd5ee30fc654aa8d90f27f9>>
+ * @generated SignedSource<<1359f52ece07f77a4a61083a94f10fe0>>
  */
 
 /**
@@ -132,6 +132,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableImagePrefetchingAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableImagePrefetchingAndroid");
+    return method(javaProvider_);
+  }
+
+  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableJSRuntimeGCOnMemoryPressureOnIOS");
     return method(javaProvider_);
   }
 
@@ -399,6 +405,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid(
   return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableJSRuntimeGCOnMemoryPressureOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid();
@@ -628,6 +639,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableImagePrefetchingAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableImagePrefetchingAndroid),
+      makeNativeMethod(
+        "enableJSRuntimeGCOnMemoryPressureOnIOS",
+        JReactNativeFeatureFlagsCxxInterop::enableJSRuntimeGCOnMemoryPressureOnIOS),
       makeNativeMethod(
         "enableLayoutAnimationsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnAndroid),

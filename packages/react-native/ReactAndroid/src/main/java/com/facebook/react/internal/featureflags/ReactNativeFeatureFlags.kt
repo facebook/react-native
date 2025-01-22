@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2c321a7a8e811dc238a75f76180843b9>>
+ * @generated SignedSource<<9b4dfbbcc5296014d76446c3a562b260>>
  */
 
 /**
@@ -123,6 +123,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableImagePrefetchingAndroid(): Boolean = accessor.enableImagePrefetchingAndroid()
+
+  /**
+   * Trigger JS runtime GC on memory pressure event on iOS
+   */
+  @JvmStatic
+  public fun enableJSRuntimeGCOnMemoryPressureOnIOS(): Boolean = accessor.enableJSRuntimeGCOnMemoryPressureOnIOS()
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.

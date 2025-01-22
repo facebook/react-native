@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<58c69846193598ce0c3666c37b8a185f>>
+ * @generated SignedSource<<b815f41d024d315ba0b6efcec89b31e1>>
  */
 
 /**
@@ -88,6 +88,10 @@ bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
 
 bool ReactNativeFeatureFlags::enableImagePrefetchingAndroid() {
   return getAccessor().enableImagePrefetchingAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS() {
+  return getAccessor().enableJSRuntimeGCOnMemoryPressureOnIOS();
 }
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
