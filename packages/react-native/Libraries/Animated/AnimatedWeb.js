@@ -12,7 +12,7 @@
 
 import type {AnimatedComponentType} from './createAnimatedComponent';
 
-import AnimatedImplementation from './AnimatedImplementation';
+import * as AnimatedImplementation from './AnimatedImplementation';
 import React from 'react';
 
 export default {

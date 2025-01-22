@@ -48,21 +48,21 @@ export type BuildConfig = $ReadOnly<{
 const buildConfig /*: BuildConfig */ = {
   /* eslint sort-keys: "error" */
   packages: {
-    'community-cli-plugin': {
-      target: 'node',
-    },
-    'core-cli-utils': {
-      emitTypeScriptDefs: true,
-      target: 'node',
-    },
-    'dev-middleware': {
-      emitTypeScriptDefs: true,
-      target: 'node',
-    },
-    'metro-config': {
-      emitTypeScriptDefs: true,
-      target: 'node',
-    },
+    // 'community-cli-plugin': {
+    //   target: 'node',
+    // },
+    // 'core-cli-utils': {
+    //   emitTypeScriptDefs: true,
+    //   target: 'node',
+    // },
+    // 'dev-middleware': {
+    //   emitTypeScriptDefs: true,
+    //   target: 'node',
+    // },
+    // 'metro-config': {
+    //   emitTypeScriptDefs: true,
+    //   target: 'node',
+    // },
     'react-native': {
       target: 'react-native-emit-types',
     },

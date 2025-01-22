@@ -11,11 +11,12 @@
 
 const {PACKAGES_DIR} = require('../consts');
 const translate = require('flow-api-translator');
-const {promises: fs} = require('fs');
+const {existsSync, promises: fs} = require('fs');
 const glob = require('glob');
 const path = require('path');
 
 const TYPES_DIR = 'new-types';
+const TYPES_OVERRIDE_DIR = 'types-override';
 const PACKAGE_NAME = 'react-native';
 
 // Start with Animated only as it using the export syntax.
@@ -35,45 +36,85 @@ async function buildRNTypes() {
       continue;
     }
 
-    const buildPath = getBuildPath(file);
-    const source = await fs.readFile(file, 'utf-8');
-    const prettierConfig = {parser: 'babel'};
+    const outputPath = getBuildPath(file);
 
-    await fs.mkdir(path.dirname(buildPath), {recursive: true});
+    await fs.mkdir(path.dirname(outputPath), {recursive: true});
 
-    try {
-      const typescriptDef = await translate.translateFlowToTSDef(
-        source,
-        prettierConfig,
-      );
-
-      if (
-        /Unsupported feature: Translating ".*" is currently not supported/.test(
-          typescriptDef,
-        )
-      ) {
-        throw new Error(
-          'Syntax unsupported by flow-api-translator used in ' + file,
-        );
-      }
-
-      await fs.writeFile(buildPath, typescriptDef);
-    } catch (e) {
-      console.error(`Failed to build ${file.replace(PACKAGES_DIR, '')}`);
+    // There are cases where flow-api-translator generates valid but incorrect types. In these cases,
+    // it's possible to manually create a type definition that is correct to override the generated one.
+    // If the override exists, use it. Otherwise, build the type definitions.
+    if (shouldOverride(file)) {
+      await overrideTypeDefinitions(file, outputPath);
+    } else {
+      await buildTypeDefinitions(file, outputPath);
     }
   }
 }
 
-function getBuildPath(file /*: string */) /*: string */ {
-  const packageDir = path.join(PACKAGES_DIR, PACKAGE_NAME);
+async function overrideTypeDefinitions(
+  file /*: string */,
+  outputPath /*: string */,
+) {
+  const overridePath = getOverridePath(file);
+  await fs.copyFile(overridePath, outputPath);
+}
 
+async function buildTypeDefinitions(
+  file /*: string */,
+  outputPath /*: string */,
+) {
+  const source = await fs.readFile(file, 'utf-8');
+  const prettierConfig = {parser: 'babel'};
+
+  try {
+    const typescriptDef = await translate.translateFlowToTSDef(
+      source,
+      prettierConfig,
+    );
+
+    if (
+      /Unsupported feature: Translating ".*" is currently not supported/.test(
+        typescriptDef,
+      )
+    ) {
+      throw new Error(
+        'Syntax unsupported by flow-api-translator used in ' + file,
+      );
+    }
+
+    await fs.writeFile(outputPath, typescriptDef);
+  } catch (e) {
+    console.error(`Failed to build ${file.replace(PACKAGES_DIR, '')}`);
+  }
+}
+
+function getRNRelativePath(file /*: string */) /*: string */ {
+  const packageDir = path.join(PACKAGES_DIR, PACKAGE_NAME);
+  return file.replace(packageDir, '');
+}
+
+function getBuildPath(file /*: string */) /*: string */ {
+  const relativePath = getRNRelativePath(file);
   return path.join(
-    packageDir,
-    file
-      .replace(packageDir, TYPES_DIR)
-      .replace(/\.flow\.js$/, '.js')
-      .replace(/\.js$/, '.d.ts'),
+    PACKAGES_DIR,
+    PACKAGE_NAME,
+    TYPES_DIR,
+    relativePath.replace(/\.flow\.js$/, '.js').replace(/\.js$/, '.d.ts'),
   );
+}
+
+function getOverridePath(file /*: string */) /*: string */ {
+  const relativePath = getRNRelativePath(file);
+  return path.join(
+    PACKAGES_DIR,
+    PACKAGE_NAME,
+    TYPES_OVERRIDE_DIR,
+    relativePath.replace(/\.flow\.js$/, '.js').replace(/\.js$/, '.d.ts'),
+  );
+}
+
+function shouldOverride(file /*: string */) /*: boolean */ {
+  return existsSync(getOverridePath(file));
 }
 
 module.exports = buildRNTypes;
