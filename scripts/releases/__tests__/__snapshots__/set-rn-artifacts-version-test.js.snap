@@ -11,7 +11,7 @@ exports[`updateReactNativeArtifacts should set nightly version: packages/react-n
  * << GENERATED >>
  */
 
-const version: $ReadOnly<{
+export const version: $ReadOnly<{
   major: number,
   minor: number,
   patch: number,
@@ -22,8 +22,6 @@ const version: $ReadOnly<{
   patch: 0,
   prerelease: 'nightly-29282302-abcd1234',
 };
-
-module.exports = {version};
 "
 `;
 
@@ -136,7 +134,7 @@ exports[`updateReactNativeArtifacts should set release version: packages/react-n
  * << GENERATED >>
  */
 
-const version: $ReadOnly<{
+export const version: $ReadOnly<{
   major: number,
   minor: number,
   patch: number,
@@ -147,8 +145,6 @@ const version: $ReadOnly<{
   patch: 0,
   prerelease: null,
 };
-
-module.exports = {version};
 "
 `;
 

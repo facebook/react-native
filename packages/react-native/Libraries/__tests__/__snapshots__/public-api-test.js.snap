@@ -4434,13 +4434,12 @@ declare export default typeof ReactFiberErrorDialog;
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/ReactNativeVersion.js 1`] = `
-"declare const version: $ReadOnly<{
+"declare export const version: $ReadOnly<{
   major: number,
   minor: number,
   patch: number,
   prerelease: string | null,
 }>;
-declare module.exports: { version: version };
 "
 `;
 
