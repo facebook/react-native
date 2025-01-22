@@ -228,6 +228,21 @@ using namespace facebook::react;
     };
   }
 
+  if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
+    configuration.loadSourceForBridgeWithProgress =
+        ^(RCTBridge *_Nonnull bridge,
+          RCTSourceLoadProgressBlock _Nonnull onProgress,
+          RCTSourceLoadBlock _Nonnull loadCallback) {
+          [weakSelf.delegate loadSourceForBridge:bridge onProgress:onProgress onComplete:loadCallback];
+        };
+  }
+
+  if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
+    configuration.loadSourceForBridge = ^(RCTBridge *_Nonnull bridge, RCTSourceLoadBlock _Nonnull loadCallback) {
+      [weakSelf.delegate loadSourceForBridge:bridge withBlock:loadCallback];
+    };
+  }
+
   return [[RCTRootViewFactory alloc] initWithTurboModuleDelegate:self hostDelegate:self configuration:configuration];
 }
 
