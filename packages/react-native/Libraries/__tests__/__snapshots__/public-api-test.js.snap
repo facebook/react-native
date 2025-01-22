@@ -9877,7 +9877,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
-  disableEventLoopOnBridgeless: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -9943,7 +9942,6 @@ declare export const useRefsForTextInputState: Getter<boolean>;
 declare export const commonTestFlag: Getter<boolean>;
 declare export const commonTestFlagWithoutNativeImplementation: Getter<boolean>;
 declare export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>;
-declare export const disableEventLoopOnBridgeless: Getter<boolean>;
 declare export const disableMountItemReorderingAndroid: Getter<boolean>;
 declare export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>;
 declare export const enableBridgelessArchitecture: Getter<boolean>;
@@ -10020,7 +10018,6 @@ exports[`public API should not change unintentionally src/private/featureflags/s
   +commonTestFlag?: () => boolean;
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
   +completeReactInstanceCreationOnBgThreadOnAndroid?: () => boolean;
-  +disableEventLoopOnBridgeless?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;

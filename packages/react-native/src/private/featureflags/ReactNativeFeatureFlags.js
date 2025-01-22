@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8ab1581a5660c8148c1ff87e12c042cc>>
+ * @generated SignedSource<<0143a1937f6b3938d79fd16b01e9cfed>>
  * @flow strict
  */
 
@@ -53,7 +53,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
   completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
-  disableEventLoopOnBridgeless: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -197,10 +196,6 @@ export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = create
  * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
  */
 export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> = createNativeFlagGetter('completeReactInstanceCreationOnBgThreadOnAndroid', true);
-/**
- * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
- */
-export const disableEventLoopOnBridgeless: Getter<boolean> = createNativeFlagGetter('disableEventLoopOnBridgeless', false);
 /**
  * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
  */

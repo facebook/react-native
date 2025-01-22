@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eef5b0c5d02927b3984a2dd8d0c48f1c>>
+ * @generated SignedSource<<c74fd40b5988929440b157ea5437d65b>>
  */
 
 /**
@@ -26,7 +26,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
 
   private var commonTestFlagCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
-  private var disableEventLoopOnBridgelessCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -88,16 +87,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.completeReactInstanceCreationOnBgThreadOnAndroid()
       accessedFeatureFlags.add("completeReactInstanceCreationOnBgThreadOnAndroid")
       completeReactInstanceCreationOnBgThreadOnAndroidCache = cached
-    }
-    return cached
-  }
-
-  override fun disableEventLoopOnBridgeless(): Boolean {
-    var cached = disableEventLoopOnBridgelessCache
-    if (cached == null) {
-      cached = currentProvider.disableEventLoopOnBridgeless()
-      accessedFeatureFlags.add("disableEventLoopOnBridgeless")
-      disableEventLoopOnBridgelessCache = cached
     }
     return cached
   }

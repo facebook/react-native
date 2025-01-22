@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9b4dfbbcc5296014d76446c3a562b260>>
+ * @generated SignedSource<<82b69f7d6a2b7155fadbc47832bcf032>>
  */
 
 /**
@@ -39,12 +39,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = accessor.completeReactInstanceCreationOnBgThreadOnAndroid()
-
-  /**
-   * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
-   */
-  @JvmStatic
-  public fun disableEventLoopOnBridgeless(): Boolean = accessor.disableEventLoopOnBridgeless()
 
   /**
    * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread

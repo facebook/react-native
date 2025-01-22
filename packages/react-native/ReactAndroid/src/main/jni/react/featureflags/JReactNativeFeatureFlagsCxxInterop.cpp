@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1359f52ece07f77a4a61083a94f10fe0>>
+ * @generated SignedSource<<64272d425ecd02e71d1a59170ad942cd>>
  */
 
 /**
@@ -48,12 +48,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("completeReactInstanceCreationOnBgThreadOnAndroid");
-    return method(javaProvider_);
-  }
-
-  bool disableEventLoopOnBridgeless() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("disableEventLoopOnBridgeless");
     return method(javaProvider_);
   }
 
@@ -335,11 +329,6 @@ bool JReactNativeFeatureFlagsCxxInterop::completeReactInstanceCreationOnBgThread
   return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::disableEventLoopOnBridgeless(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::disableEventLoopOnBridgeless();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
@@ -597,9 +586,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "completeReactInstanceCreationOnBgThreadOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::completeReactInstanceCreationOnBgThreadOnAndroid),
-      makeNativeMethod(
-        "disableEventLoopOnBridgeless",
-        JReactNativeFeatureFlagsCxxInterop::disableEventLoopOnBridgeless),
       makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),

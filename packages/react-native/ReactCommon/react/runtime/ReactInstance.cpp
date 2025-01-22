@@ -81,14 +81,6 @@ ReactInstance::ReactInstance(
             try {
               ShadowNode::setUseRuntimeShadowNodeReferenceUpdateOnThread(true);
               callback(jsiRuntime);
-
-              // If we have first-class support for microtasks,
-              // they would've been called as part of the previous callback.
-              if (ReactNativeFeatureFlags::disableEventLoopOnBridgeless()) {
-                if (auto timerManager = weakTimerManager.lock()) {
-                  timerManager->callReactNativeMicrotasks(jsiRuntime);
-                }
-              }
             } catch (jsi::JSError& originalError) {
               jsErrorHandler->handleError(jsiRuntime, originalError, true);
             } catch (std::exception& ex) {

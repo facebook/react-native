@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fdcf5bedda4926edbd612be30d6aa274>>
+ * @generated SignedSource<<32058afdbd4cfbd28a1c21405ae3107d>>
  */
 
 /**
@@ -61,15 +61,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::completeReactInstanceCreationOnBgThreadOnAndroid();
-  }
-
-  bool disableEventLoopOnBridgeless() override {
-    auto value = values_["disableEventLoopOnBridgeless"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::disableEventLoopOnBridgeless();
   }
 
   bool disableMountItemReorderingAndroid() override {

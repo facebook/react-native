@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aebf023659b590d4af8f7adb17844332>>
+ * @generated SignedSource<<9e4ac7a270dd74f6978374d8e2c05013>>
  */
 
 /**
@@ -52,11 +52,6 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
 bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
-}
-
-bool NativeReactNativeFeatureFlags::disableEventLoopOnBridgeless(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::disableEventLoopOnBridgeless();
 }
 
 bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
