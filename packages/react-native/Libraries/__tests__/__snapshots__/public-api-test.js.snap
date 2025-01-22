@@ -2381,7 +2381,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   snapToOffsets?: ?$ReadOnlyArray<number>,
   snapToStart?: ?boolean,
   zoomScale?: ?number,
-  onResponderGrant?: ?(e: $FlowFixMe) => void | boolean,
+  onResponderGrant?: ?(e: PressEvent) => void | boolean,
   ...
 }>;
 "
