@@ -138,8 +138,9 @@ const InteractionManager = {
     _deleteInteractionSet.add(handle);
   },
 
+  // $FlowFixMe[unclear-type] unclear type of _emitter
   // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-  addListener: (_emitter.addListener.bind(_emitter): $FlowFixMe),
+  addListener: _emitter.addListener.bind(_emitter) as Function,
 
   /**
    * A positive number will use setTimeout to schedule any tasks after the
