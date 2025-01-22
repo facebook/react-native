@@ -10,11 +10,11 @@
 
 // flowlint unsafe-getters-setters:off
 
+import type {IntersectionObserverId} from './internals/IntersectionObserverManager';
 import type IntersectionObserverEntry from './IntersectionObserverEntry';
-import type {IntersectionObserverId} from './IntersectionObserverManager';
 
 import ReactNativeElement from '../dom/nodes/ReactNativeElement';
-import * as IntersectionObserverManager from './IntersectionObserverManager';
+import * as IntersectionObserverManager from './internals/IntersectionObserverManager';
 
 export type IntersectionObserverCallback = (
   entries: Array<IntersectionObserverEntry>,
