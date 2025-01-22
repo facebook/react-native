@@ -149,9 +149,13 @@ export function createRoot(rootConfig?: RootConfig): Root {
   return new Root(rootConfig);
 }
 
-export function dispatchNativeEvent(node: ReactNativeElement, type: string) {
+export function dispatchNativeEvent(
+  node: ReactNativeElement,
+  type: string,
+  payload?: {[key: string]: mixed},
+) {
   const shadowNode = getShadowNode(node);
-  NativeFantom.dispatchNativeEvent(shadowNode, type);
+  NativeFantom.dispatchNativeEvent(shadowNode, type, payload);
 }
 
 export const unstable_benchmark = Benchmark;

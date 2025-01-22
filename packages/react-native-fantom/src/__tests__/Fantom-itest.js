@@ -377,7 +377,7 @@ describe('Fantom', () => {
   });
 
   describe('runOnUIThread + dispatchNativeEvent', () => {
-    it('sends focus event', () => {
+    it('sends event without payload', () => {
       const root = createRoot();
       let maybeNode;
 
@@ -409,5 +409,38 @@ describe('Fantom', () => {
 
       expect(focusEvent).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('sends event with payload', () => {
+    const root = createRoot();
+    let maybeNode;
+    const onChange = jest.fn();
+
+    runTask(() => {
+      root.render(
+        <TextInput
+          onChange={event => {
+            onChange(event.nativeEvent);
+          }}
+          ref={node => {
+            maybeNode = node;
+          }}
+        />,
+      );
+    });
+
+    const element = ensureInstance(maybeNode, ReactNativeElement);
+
+    runOnUIThread(() => {
+      dispatchNativeEvent(element, 'change', {
+        text: 'Hello World',
+      });
+    });
+
+    runWorkLoop();
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const [entry] = onChange.mock.lastCall;
+    expect(entry.text).toEqual('Hello World');
   });
 });
