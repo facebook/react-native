@@ -18,12 +18,7 @@ const {ModuleResolutionKind} = require('typescript');
 /*::
 export type BuildOptions = $ReadOnly<{
   // The target runtime to compile for.
-  target:
-    // Node.js
-    'node' |
-    // [Experimental] react-native package only: Skip build, emit translated
-    // TypeScript types for 3P use.
-    'react-native-emit-types',
+  target: 'node',
 
   // Whether to emit Flow definition files (.js.flow) (default: true).
   emitFlowDefs?: boolean,
@@ -63,9 +58,6 @@ const buildConfig /*: BuildConfig */ = {
       emitTypeScriptDefs: true,
       target: 'node',
     },
-    'react-native': {
-      target: 'react-native-emit-types',
-    },
   },
 };
 
@@ -91,8 +83,6 @@ function getBabelConfig(
   switch (target) {
     case 'node':
       return require('./babel/node.config.js');
-    case 'react-native-emit-types':
-      return {}; // stub
   }
 }
 
