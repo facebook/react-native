@@ -9853,16 +9853,13 @@ exports[`public API should not change unintentionally src/private/featureflags/R
   animatedShouldUseSingleOp: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
-  enableAnimatedAllowlist: Getter<boolean>,
   enableAnimatedClearImmediateFix: Getter<boolean>,
-  enableAnimatedPropsMemo: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
-  useInsertionEffectsForAnimations: Getter<boolean>,
   useRefsForTextInputState: Getter<boolean>,
 }>;
 export type ReactNativeFeatureFlagsJsOnlyOverrides =
@@ -9923,16 +9920,13 @@ declare export const animatedShouldDebounceQueueFlush: Getter<boolean>;
 declare export const animatedShouldUseSingleOp: Getter<boolean>;
 declare export const disableInteractionManager: Getter<boolean>;
 declare export const enableAccessToHostTreeInFabric: Getter<boolean>;
-declare export const enableAnimatedAllowlist: Getter<boolean>;
 declare export const enableAnimatedClearImmediateFix: Getter<boolean>;
-declare export const enableAnimatedPropsMemo: Getter<boolean>;
 declare export const fixVirtualizeListCollapseWindowSize: Getter<boolean>;
 declare export const isLayoutAnimationEnabled: Getter<boolean>;
 declare export const shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>;
 declare export const shouldUseAnimatedObjectForTransform: Getter<boolean>;
 declare export const shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>;
 declare export const shouldUseSetNativePropsInFabric: Getter<boolean>;
-declare export const useInsertionEffectsForAnimations: Getter<boolean>;
 declare export const useRefsForTextInputState: Getter<boolean>;
 declare export const commonTestFlag: Getter<boolean>;
 declare export const commonTestFlagWithoutNativeImplementation: Getter<boolean>;

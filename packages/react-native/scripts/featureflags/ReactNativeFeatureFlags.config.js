@@ -538,15 +538,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    enableAnimatedAllowlist: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Enables Animated to skip non-allowlisted props and styles.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
     enableAnimatedClearImmediateFix: {
       defaultValue: true,
       metadata: {
@@ -555,15 +546,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-    },
-    enableAnimatedPropsMemo: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
     },
     fixVirtualizeListCollapseWindowSize: {
@@ -622,15 +604,6 @@ const definitions: FeatureFlagDefinitions = {
         description: 'Enables use of setNativeProps in JS driven animations.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-    },
-    useInsertionEffectsForAnimations: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
     },
     useRefsForTextInputState: {
