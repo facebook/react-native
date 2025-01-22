@@ -135,6 +135,18 @@ SharedDebugStringConvertibleList HostPlatformViewProps::getDebugProps() const {
 
 #ifdef ANDROID
 
+inline static void updateEventProp(
+    folly::dynamic& result,
+    const ViewEvents& newEvents,
+    const ViewEvents& oldEvents,
+    const ViewEvents::Offset& offset,
+    const std::string& name) {
+  if (newEvents[offset] != oldEvents[offset]) {
+    auto value = newEvents[offset];
+    result[name] = value;
+  }
+}
+
 folly::dynamic HostPlatformViewProps::getDiffProps(
     const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();
@@ -222,37 +234,193 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
         result["pointerEvents"] = "auto";
         break;
     }
+  }
 
-    if (nativeId != oldProps->nativeId) {
-      result["nativeId"] = nativeId;
-    }
+  if (nativeId != oldProps->nativeId) {
+    result["nativeId"] = nativeId;
+  }
 
-    if (testId != oldProps->testId) {
-      result["testId"] = testId;
-    }
+  if (testId != oldProps->testId) {
+    result["testId"] = testId;
+  }
 
-    if (accessible != oldProps->accessible) {
-      result["accessible"] = accessible;
-    }
+  if (accessible != oldProps->accessible) {
+    result["accessible"] = accessible;
+  }
 
-    if (getClipsContentToBounds() != oldProps->getClipsContentToBounds()) {
-      result["overflow"] = getClipsContentToBounds() ? "hidden" : "visible";
-      result["scroll"] = result["overflow"];
-    }
+  if (getClipsContentToBounds() != oldProps->getClipsContentToBounds()) {
+    result["overflow"] = getClipsContentToBounds() ? "hidden" : "visible";
+    result["scroll"] = result["overflow"];
+  }
 
-    if (backfaceVisibility != oldProps->backfaceVisibility) {
-      switch (backfaceVisibility) {
-        case BackfaceVisibility::Auto:
-          result["backfaceVisibility"] = "auto";
-          break;
-        case BackfaceVisibility::Visible:
-          result["backfaceVisibility"] = "visible";
-          break;
-        case BackfaceVisibility::Hidden:
-          result["backfaceVisibility"] = "hidden";
-          break;
-      }
+  if (backfaceVisibility != oldProps->backfaceVisibility) {
+    switch (backfaceVisibility) {
+      case BackfaceVisibility::Auto:
+        result["backfaceVisibility"] = "auto";
+        break;
+      case BackfaceVisibility::Visible:
+        result["backfaceVisibility"] = "visible";
+        break;
+      case BackfaceVisibility::Hidden:
+        result["backfaceVisibility"] = "hidden";
+        break;
     }
+  }
+
+  // TODO T212662692: pass events as std::bitset<64> to java
+  if (events != oldProps->events) {
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerEnter,
+        "onPointerEnter");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerEnterCapture,
+        "onPointerEnterCapture");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerMove,
+        "onPointerMove");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerMoveCapture,
+        "onPointerMoveCapture");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerLeave,
+        "onPointerLeave");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerLeaveCapture,
+        "onPointerLeaveCapture");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerOver,
+        "onPointerOver");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::PointerOut,
+        "onPointerOut");
+    updateEventProp(
+        result, events, oldProps->events, ViewEvents::Offset::Click, "onClick");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::MoveShouldSetResponder,
+        "onMoveShouldSetResponder");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::MoveShouldSetResponderCapture,
+        "onMoveShouldSetResponderCapture");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::StartShouldSetResponder,
+        "onStartShouldSetResponder");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::StartShouldSetResponderCapture,
+        "onStartShouldSetResponderCapture");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ResponderGrant,
+        "onResponderGrant");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ResponderReject,
+        "onResponderReject");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ResponderStart,
+        "onResponderStart");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ResponderEnd,
+        "onResponderEnd");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ResponderRelease,
+        "onResponderRelease");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ResponderMove,
+        "onResponderMove");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ResponderTerminate,
+        "onResponderTerminate");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ResponderTerminationRequest,
+        "onResponderTerminationRequest");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::ShouldBlockNativeResponder,
+        "onShouldBlockNativeResponder");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::TouchStart,
+        "onTouchStart");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::TouchMove,
+        "onTouchMove");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::TouchEnd,
+        "onTouchEnd");
+    updateEventProp(
+        result,
+        events,
+        oldProps->events,
+        ViewEvents::Offset::TouchCancel,
+        "onTouchCancel");
   }
 
   return result;
