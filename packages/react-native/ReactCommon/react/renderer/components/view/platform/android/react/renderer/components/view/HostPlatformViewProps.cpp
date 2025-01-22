@@ -333,6 +333,69 @@ static void updateBorderColorsProps(
       oldBorderColor.blockStart);
 }
 
+inline static void updateTransformOperationValue(
+    const std::string& operationName,
+    const ValueUnit& valueUnit,
+    folly::dynamic& resultTranslateArray) {
+  folly::dynamic resultTranslate = folly::dynamic::object();
+  if (valueUnit.unit == UnitType::Percent) {
+    resultTranslate[operationName] = std::to_string(valueUnit.value) + "%";
+  } else {
+    resultTranslate[operationName] = valueUnit.value;
+  }
+  resultTranslateArray.push_back(std::move(resultTranslate));
+}
+
+inline static void updateTransformProps(
+    const Transform& transform,
+    const TransformOperation& operation,
+    folly::dynamic& resultTranslateArray) {
+  // See serialization rules in:
+  // react-native-github/packages/react-native/ReactCommon/react/renderer/components/view/conversions.h?lines=592
+  std::string operationName;
+  switch (operation.type) {
+    case TransformOperationType::Scale:
+      operationName = "scale";
+      if (operation.x == operation.y && operation.x == operation.z) {
+        updateTransformOperationValue(
+            operationName, operation.x, resultTranslateArray);
+        return;
+      }
+      break;
+    case TransformOperationType::Translate:
+      operationName = "translate";
+      break;
+    case TransformOperationType::Rotate:
+      operationName = "rotate";
+      break;
+    case TransformOperationType::Perspective:
+      operationName = "perspective";
+      break;
+    case TransformOperationType::Arbitrary:
+      operationName = "matrix";
+      resultTranslateArray[operationName] = transform;
+      break;
+    case TransformOperationType::Identity:
+      // Do nothing
+      break;
+    case TransformOperationType::Skew:
+      operationName = "skew";
+      break;
+  }
+  if (operation.x.value != 0) {
+    updateTransformOperationValue(
+        operationName + "X", operation.x, resultTranslateArray);
+  }
+  if (operation.y.value != 0) {
+    updateTransformOperationValue(
+        operationName + "Y", operation.y, resultTranslateArray);
+  }
+  if (operation.z.value != 0) {
+    updateTransformOperationValue(
+        operationName + "Z", operation.z, resultTranslateArray);
+  }
+}
+
 folly::dynamic HostPlatformViewProps::getDiffProps(
     const Props* prevProps) const {
   folly::dynamic result = folly::dynamic::object();
@@ -627,6 +690,20 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
 
   if (borderRadii != oldProps->borderRadii) {
     updateBorderRadiusProps(result, borderRadii, oldProps->borderRadii);
+  }
+
+  // Transforms
+  if (transform != oldProps->transform ||
+      transformOrigin != oldProps->transformOrigin) {
+    folly::dynamic resultTranslateArray = folly::dynamic::array();
+    for (const auto& operation : transform.operations) {
+      updateTransformProps(transform, operation, resultTranslateArray);
+    }
+    result["transform"] = std::move(resultTranslateArray);
+  }
+
+  if (transformOrigin != oldProps->transformOrigin) {
+    result["transformOrigin"] = transformOrigin;
   }
 
   return result;
