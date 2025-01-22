@@ -1961,8 +1961,7 @@ declare export default typeof PullToRefreshViewNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/RefreshControl/RefreshControl.js 1`] = `
-"declare const React: $FlowFixMe;
-type IOSProps = $ReadOnly<{
+"type IOSProps = $ReadOnly<{
   tintColor?: ?ColorValue,
   titleColor?: ?ColorValue,
   title?: ?string,
@@ -1986,7 +1985,7 @@ declare class RefreshControl extends React.Component<RefreshControlProps> {
     | typeof PullToRefreshViewNativeComponent
     | typeof AndroidSwipeRefreshLayoutNativeComponent,
   >;
-  _lastNativeRefreshing: $FlowFixMe;
+  _lastNativeRefreshing: boolean;
   componentDidMount(): void;
   componentDidUpdate(prevProps: RefreshControlProps): void;
   render(): React.Node;
