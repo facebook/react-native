@@ -24,8 +24,6 @@ import {
   useCallback,
   useEffect,
   useInsertionEffect,
-  useLayoutEffect,
-  useMemo,
   useReducer,
   useRef,
 } from 'react';
@@ -44,11 +42,6 @@ type AnimatedValueListeners = Array<{
   listenerId: string,
 }>;
 
-const useMemoOrAnimatedPropsMemo =
-  ReactNativeFeatureFlags.enableAnimatedPropsMemo()
-    ? useAnimatedPropsMemo
-    : useMemo;
-
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
   allowlist?: ?AnimatedPropsAllowlist,
@@ -57,27 +50,13 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   const onUpdateRef = useRef<UpdateCallback | null>(null);
   const timerRef = useRef<TimeoutID | null>(null);
 
-  const allowlistIfEnabled = ReactNativeFeatureFlags.enableAnimatedAllowlist()
-    ? allowlist
-    : null;
-
-  const node = useMemoOrAnimatedPropsMemo(
-    () =>
-      new AnimatedProps(
-        props,
-        () => onUpdateRef.current?.(),
-        allowlistIfEnabled,
-      ),
-    [allowlistIfEnabled, props],
+  const node = useAnimatedPropsMemo(
+    () => new AnimatedProps(props, () => onUpdateRef.current?.(), allowlist),
+    [allowlist, props],
   );
 
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
-
-  const useAnimatedPropsLifecycle =
-    ReactNativeFeatureFlags.useInsertionEffectsForAnimations()
-      ? useAnimatedPropsLifecycle_insertionEffects
-      : useAnimatedPropsLifecycle_layoutEffects;
 
   useAnimatedPropsLifecycle(node);
 
@@ -208,9 +187,7 @@ function reduceAnimatedProps<TProps>(
   // Force `collapsable` to be false so that the native view is not flattened.
   // Flattened views cannot be accurately referenced by the native driver.
   return {
-    ...(ReactNativeFeatureFlags.enableAnimatedPropsMemo()
-      ? node.__getValueWithStaticProps(props)
-      : node.__getValue()),
+    ...node.__getValueWithStaticProps(props),
     collapsable: false,
   };
 }
@@ -251,66 +228,7 @@ function addAnimatedValuesListenersToProps(
  * nodes. So in order to optimize this, we avoid detaching until the next attach
  * unless we are unmounting.
  */
-function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
-  const prevNodeRef = useRef<?AnimatedProps>(null);
-  const isUnmountingRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    // It is ok for multiple components to call `flushQueue` because it noops
-    // if the queue is empty. When multiple animated components are mounted at
-    // the same time. Only first component flushes the queue and the others will noop.
-    NativeAnimatedHelper.API.flushQueue();
-    let drivenAnimationEndedListener: ?EventSubscription = null;
-    if (node.__isNative) {
-      drivenAnimationEndedListener =
-        NativeAnimatedHelper.nativeEventEmitter.addListener(
-          'onUserDrivenAnimationEnded',
-          data => {
-            node.update();
-          },
-        );
-    }
-
-    return () => {
-      drivenAnimationEndedListener?.remove();
-    };
-  });
-
-  useLayoutEffect(() => {
-    isUnmountingRef.current = false;
-    return () => {
-      isUnmountingRef.current = true;
-    };
-  }, []);
-
-  useLayoutEffect(() => {
-    node.__attach();
-    if (prevNodeRef.current != null) {
-      const prevNode = prevNodeRef.current;
-      // TODO: Stop restoring default values (unless `reset` is called).
-      prevNode.__restoreDefaultValues();
-      prevNode.__detach();
-      prevNodeRef.current = null;
-    }
-    return () => {
-      if (isUnmountingRef.current) {
-        // NOTE: Do not restore default values on unmount, see D18197735.
-        node.__detach();
-      } else {
-        prevNodeRef.current = node;
-      }
-    };
-  }, [node]);
-}
-
-/**
- * Manages the lifecycle of the supplied `AnimatedProps` by invoking `__attach`
- * and `__detach`. However, this is more complicated because `AnimatedProps`
- * uses reference counting to determine when to recursively detach its children
- * nodes. So in order to optimize this, we avoid detaching until the next attach
- * unless we are unmounting.
- */
-function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
+function useAnimatedPropsLifecycle(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
 
