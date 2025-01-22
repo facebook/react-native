@@ -31,7 +31,7 @@ async function buildRNTypes() {
   console.log('Building RN types...');
   for (const file of files) {
     // Don't build tests
-    if (/\/__tests__\//.test(file)) {
+    if (/(\/__tests__\/|\/__mocks__\/)/.test(file)) {
       continue;
     }
 
