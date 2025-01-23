@@ -22,7 +22,7 @@ import {
   runWorkLoop,
 } from '..';
 import * as React from 'react';
-import {Text, TextInput, View} from 'react-native';
+import {ScrollView, Text, TextInput, View} from 'react-native';
 import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -442,5 +442,59 @@ describe('Fantom', () => {
     expect(onChange).toHaveBeenCalledTimes(1);
     const [entry] = onChange.mock.lastCall;
     expect(entry.text).toEqual('Hello World');
+  });
+
+  it('it batches events with isUnique option', () => {
+    const root = createRoot();
+    let maybeNode;
+    const onScroll = jest.fn();
+
+    runTask(() => {
+      root.render(
+        <ScrollView
+          onScroll={event => {
+            onScroll(event.nativeEvent);
+          }}
+          ref={node => {
+            maybeNode = node;
+          }}
+        />,
+      );
+    });
+
+    const element = ensureInstance(maybeNode, ReactNativeElement);
+
+    runOnUIThread(() => {
+      dispatchNativeEvent(element, 'scroll', {
+        contentOffset: {
+          x: 0,
+          y: 1,
+        },
+      });
+      dispatchNativeEvent(
+        element,
+        'scroll',
+        {
+          contentOffset: {
+            x: 0,
+            y: 2,
+          },
+        },
+        {
+          isUnique: true,
+        },
+      );
+    });
+
+    runWorkLoop();
+
+    expect(onScroll).toHaveBeenCalledTimes(1);
+    const [entry] = onScroll.mock.lastCall;
+    expect(entry.contentOffset).toEqual({
+      x: 0,
+      y: 2,
+    });
+
+    root.destroy();
   });
 });
