@@ -29,7 +29,7 @@ import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
 import {
   getPublicInstanceFromInternalInstanceHandle,
   getShadowNode,
-} from '../../dom/nodes/ReadOnlyNode';
+} from '../../dom/nodes/internals/NodeInternals';
 import {createMutationRecord} from '../MutationRecord';
 import NativeMutationObserver from '../specs/NativeMutationObserver';
 

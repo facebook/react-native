@@ -14,13 +14,10 @@ import type HTMLCollection from '../oldstylecollections/HTMLCollection';
 
 import DOMRect from '../geometry/DOMRect';
 import {createHTMLCollection} from '../oldstylecollections/HTMLCollection';
-import ReadOnlyNode, {
-  getChildNodes,
-  getInstanceHandle,
-  getShadowNode,
-} from './ReadOnlyNode';
+import {getInstanceHandle, getShadowNode} from './internals/NodeInternals';
+import {getElementSibling} from './internals/Traversal';
+import ReadOnlyNode, {getChildNodes} from './ReadOnlyNode';
 import NativeDOM from './specs/NativeDOM';
-import {getElementSibling} from './utilities/Traversal';
 
 export default class ReadOnlyElement extends ReadOnlyNode {
   get childElementCount(): number {

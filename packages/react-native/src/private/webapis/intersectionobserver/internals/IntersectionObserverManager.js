@@ -26,7 +26,10 @@ import type IntersectionObserverEntry from '../IntersectionObserverEntry';
 
 import * as Systrace from '../../../../../Libraries/Performance/Systrace';
 import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
-import {getInstanceHandle, getShadowNode} from '../../dom/nodes/ReadOnlyNode';
+import {
+  getInstanceHandle,
+  getShadowNode,
+} from '../../dom/nodes/internals/NodeInternals';
 import {createIntersectionObserverEntry} from '../IntersectionObserverEntry';
 import NativeIntersectionObserver from '../specs/NativeIntersectionObserver';
 
