@@ -26,7 +26,7 @@ object PropertyUtils {
   const val INCLUDE_JITPACK_REPOSITORY = "includeJitpackRepository"
   const val SCOPED_INCLUDE_JITPACK_REPOSITORY = "react.includeJitpackRepository"
 
-  /** By default we include JitPack till React Native 0.80 where this is going to become false */
+  /** By default we include JitPack to avoid breaking user builds */
   internal const val INCLUDE_JITPACK_REPOSITORY_DEFAULT = true
 
   /**
