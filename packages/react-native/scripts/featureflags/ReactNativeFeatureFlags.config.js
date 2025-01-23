@@ -66,6 +66,16 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    disableEventLoopOnBridgeless: {
+      defaultValue: false,
+      metadata: {
+        description:
+          'The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+      skipNativeAPI: true,
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {
