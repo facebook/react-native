@@ -38,19 +38,24 @@ bool PerformanceTracer::startTracing() {
   return true;
 }
 
-bool PerformanceTracer::stopTracingAndCollectEvents(
-    const std::function<void(const folly::dynamic& eventsChunk)>&
-        resultCallback) {
+bool PerformanceTracer::stopTracing() {
   std::lock_guard lock(mutex_);
-
   if (!tracing_) {
     return false;
   }
-
   tracing_ = false;
+  return true;
+}
+
+void PerformanceTracer::collectEvents(
+    const std::function<void(const folly::dynamic& eventsChunk)>&
+        resultCallback,
+    uint16_t chunkSize) {
+  std::lock_guard lock(mutex_);
+
   if (buffer_.empty()) {
     customTrackIdMap_.clear();
-    return true;
+    return;
   }
 
   // Register "Main" process
@@ -91,24 +96,21 @@ bool PerformanceTracer::stopTracingAndCollectEvents(
   }
 
   auto traceEvents = folly::dynamic::array();
-
   for (auto event : buffer_) {
     // Emit trace events
     traceEvents.push_back(serializeTraceEvent(event));
 
-    if (traceEvents.size() >= 1000) {
+    if (traceEvents.size() == chunkSize) {
       resultCallback(traceEvents);
       traceEvents = folly::dynamic::array();
     }
   }
-  customTrackIdMap_.clear();
-  buffer_.clear();
-
-  if (traceEvents.size() >= 1) {
+  if (!traceEvents.empty()) {
     resultCallback(traceEvents);
   }
 
-  return true;
+  customTrackIdMap_.clear();
+  buffer_.clear();
 }
 
 void PerformanceTracer::reportMark(
