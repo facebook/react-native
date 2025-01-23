@@ -170,6 +170,9 @@ void PerformanceTracer::reportMeasure(
 folly::dynamic PerformanceTracer::serializeTraceEvent(TraceEvent event) const {
   folly::dynamic result = folly::dynamic::object;
 
+  if (event.id.has_value()) {
+    result["id"] = folly::sformat("0x{:X}", event.id.value());
+  }
   result["name"] = event.name;
   result["cat"] = event.cat;
   result["ph"] = std::string(1, event.ph);
