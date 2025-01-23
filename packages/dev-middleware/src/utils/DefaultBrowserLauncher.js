@@ -15,6 +15,8 @@ const {spawn} = require('child_process');
 const ChromeLauncher = require('chrome-launcher');
 const {Launcher: EdgeLauncher} = require('chromium-edge-launcher');
 const open = require('open');
+const os = require('os');
+const path = require('path');
 
 /**
  * Default `BrowserLauncher` implementation which opens URLs on the host
@@ -43,7 +45,18 @@ const DefaultBrowserLauncher: BrowserLauncher = {
       return;
     }
 
-    const chromeFlags = [`--app=${url}`, '--window-size=1200,600'];
+    const userDataDir = path.join(
+      os.tmpdir(),
+      'react-native-devtools-data-dir',
+    );
+
+    const chromeFlags = [
+      `--app=${url}`,
+      '--window-size=1200,600',
+      `--user-data-dir=${userDataDir}`,
+      '--no-first-run',
+      '--no-default-browser-check',
+    ];
 
     return new Promise((resolve, reject) => {
       const childProcess = spawn(chromePath, chromeFlags, {
