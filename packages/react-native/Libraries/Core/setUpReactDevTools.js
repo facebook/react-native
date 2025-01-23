@@ -14,6 +14,22 @@ import type {Domain} from '../../src/private/debugging/setUpFuseboxReactDevTools
 import type {Spec as NativeReactDevToolsRuntimeSettingsModuleSpec} from '../../src/private/fusebox/specs/NativeReactDevToolsRuntimeSettingsModule';
 
 if (__DEV__) {
+  if (typeof global.queueMicrotask !== 'function') {
+    console.error(
+      'queueMicrotask should exist before setting up React DevTools.',
+    );
+  }
+
+  // Keep in sync with ExceptionsManager/installConsoleErrorReporter
+  // $FlowExpectedError[prop-missing]
+  if (console._errorOriginal != null) {
+    console.error(
+      'ExceptionsManager should be set up after React DevTools to avoid console.error arguments mutation',
+    );
+  }
+}
+
+if (__DEV__) {
   // Register dispatcher on global, which can be used later by Chrome DevTools frontend
   require('../../src/private/debugging/setUpFuseboxReactDevToolsDispatcher');
   const {
