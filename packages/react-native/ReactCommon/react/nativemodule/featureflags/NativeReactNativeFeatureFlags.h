@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3aadd0d890f3dac9fee5bc465d759203>>
+ * @generated SignedSource<<7bbb853b7a88f1f8005a4e22851d1a42>>
  */
 
 /**
@@ -118,8 +118,6 @@ class NativeReactNativeFeatureFlags
   bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
-
-  bool useOptimisedViewPreallocationOnAndroid(jsi::Runtime& runtime);
 
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 

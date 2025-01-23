@@ -436,16 +436,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    useOptimisedViewPreallocationOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-23',
-        description:
-          'Moves more of the work in view preallocation to the main thread to free up JS thread.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-    },
     useOptimizedEventBatchingOnAndroid: {
       defaultValue: false,
       metadata: {

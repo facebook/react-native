@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<43c428552b2f180bccddcfe62fc36697>>
+ * @generated SignedSource<<63caac24bb939309397700f7069338da>>
  * @flow strict
  */
 
@@ -88,7 +88,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useFabricInterop: Getter<boolean>,
   useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
-  useOptimisedViewPreallocationOnAndroid: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
   useRawPropsJsiValue: Getter<boolean>,
   useRuntimeShadowNodeReferenceUpdate: Getter<boolean>,
@@ -329,10 +328,6 @@ export const useImmediateExecutorInAndroidBridgeless: Getter<boolean> = createNa
  * When enabled, the native view configs are used in bridgeless mode.
  */
 export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativeFlagGetter('useNativeViewConfigsInBridgelessMode', false);
-/**
- * Moves more of the work in view preallocation to the main thread to free up JS thread.
- */
-export const useOptimisedViewPreallocationOnAndroid: Getter<boolean> = createNativeFlagGetter('useOptimisedViewPreallocationOnAndroid', false);
 /**
  * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
  */

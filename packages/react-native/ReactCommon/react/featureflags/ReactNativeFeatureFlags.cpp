@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<da2936de884dd9d85e80652fe76d66ca>>
+ * @generated SignedSource<<994393402f91f4410ecfb7c616579764>>
  */
 
 /**
@@ -184,10 +184,6 @@ bool ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless() {
 
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {
   return getAccessor().useNativeViewConfigsInBridgelessMode();
-}
-
-bool ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid() {
-  return getAccessor().useOptimisedViewPreallocationOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid() {

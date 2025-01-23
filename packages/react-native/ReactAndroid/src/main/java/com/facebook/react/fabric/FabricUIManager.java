@@ -1374,7 +1374,7 @@ public class FabricUIManager
         mBinding.driveCxxAnimations();
       }
 
-      if (ReactNativeFeatureFlags.useOptimisedViewPreallocationOnAndroid() && mBinding != null) {
+      if (mBinding != null) {
         mBinding.drainPreallocateViewsQueue();
       }
 

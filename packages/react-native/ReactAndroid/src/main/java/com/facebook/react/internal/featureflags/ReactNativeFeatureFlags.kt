@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<82b69f7d6a2b7155fadbc47832bcf032>>
+ * @generated SignedSource<<c507081db2e279d6342b92c99b7bd934>>
  */
 
 /**
@@ -267,12 +267,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useNativeViewConfigsInBridgelessMode(): Boolean = accessor.useNativeViewConfigsInBridgelessMode()
-
-  /**
-   * Moves more of the work in view preallocation to the main thread to free up JS thread.
-   */
-  @JvmStatic
-  public fun useOptimisedViewPreallocationOnAndroid(): Boolean = accessor.useOptimisedViewPreallocationOnAndroid()
 
   /**
    * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
