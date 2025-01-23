@@ -25,7 +25,7 @@
 const babel = require('@babel/core');
 const chalk = require('chalk');
 const fs = require('fs');
-const glob = require('glob');
+const {globSync} = require('glob');
 const micromatch = require('micromatch');
 const path = require('path');
 const prettier = require('prettier');
@@ -105,7 +105,7 @@ function buildFile(file, silent) {
 
 const srcDir = path.resolve(__dirname, '..', SRC_DIR);
 const pattern = path.resolve(srcDir, '**/*');
-const files = glob.sync(pattern, {nodir: true});
+const files = globSync(pattern, {nodir: true});
 
 process.stdout.write(fixedWidth(`${path.basename(PACKAGE_DIR)}\n`));
 

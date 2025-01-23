@@ -13,7 +13,7 @@
   "private": true,
   "dependencies": {
     "chalk": "^4.0.0",
-    "glob": "^7.1.1",
+    "glob": "^10.4.5",
     "ini": "^5.0.0"
   }
 }

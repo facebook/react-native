@@ -21,7 +21,7 @@ const babel = require('@babel/core');
 const chalk = require('chalk');
 const translate = require('flow-api-translator');
 const {promises: fs} = require('fs');
-const glob = require('glob');
+const {globSync} = require('glob');
 const micromatch = require('micromatch');
 const path = require('path');
 const prettier = require('prettier');
@@ -123,15 +123,15 @@ async function buildPackage(packageName /*: string */) {
   const {emitTypeScriptDefs} = getBuildOptions(packageName);
   const entryPoints = await getEntryPoints(packageName);
 
-  const files = glob
-    .sync(path.resolve(PACKAGES_DIR, packageName, SRC_DIR, '**/*'), {
-      nodir: true,
-    })
-    .filter(
-      file =>
-        !entryPoints.has(file) &&
-        !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
-    );
+  const files = globSync('**/*', {
+    nodir: true,
+    absolute: true,
+    cwd: path.resolve(PACKAGES_DIR, packageName, SRC_DIR),
+  }).filter(
+    file =>
+      !entryPoints.has(file) &&
+      !entryPoints.has(file.replace(/\.js$/, '.flow.js')),
+  );
 
   process.stdout.write(
     `${packageName} ${chalk.dim('.').repeat(72 - packageName.length)} `,
@@ -411,9 +411,10 @@ function normalizeExportsTarget(target /*: string */) /*: string */ {
 }
 
 function validateTypeScriptDefs(packageName /*: string */) {
-  const files = glob.sync(
-    path.resolve(PACKAGES_DIR, packageName, BUILD_DIR, '**/*.d.ts'),
-  );
+  const files = globSync('**/*.d.ts', {
+    absolute: true,
+    cwd: path.resolve(PACKAGES_DIR, packageName, BUILD_DIR),
+  });
   const compilerOptions = {
     ...getTypeScriptCompilerOptions(packageName),
     noEmit: true,

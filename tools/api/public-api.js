@@ -12,7 +12,7 @@
 const chalk = require('chalk');
 const {execSync} = require('child_process');
 const fs = require('fs');
-const glob = require('glob');
+const {globSync} = require('glob');
 const ini = require('ini');
 const path = require('path');
 
@@ -180,16 +180,11 @@ function main() {
 
   let start = performance.now();
 
-  let files /*: string[]*/ = [];
-  for (const searchGlob of config.include) {
-    // glob 7 doesn't support searchGlob as a string[]
-    files = files.concat(
-      glob.sync(searchGlob, {
-        ignore: config.exclude,
-        root: GLOB_PROJECT_ROOT,
-      }),
-    );
-  }
+  let files = globSync(config.include, {
+    ignore: config.exclude,
+    cwd: GLOB_PROJECT_ROOT,
+    absolute: true,
+  });
   files = Array.from(new Set(files));
 
   // Sort the files to make the output deterministic

@@ -15,7 +15,7 @@ const {FlowParser} = require('../../parsers/flow/parser');
 const {TypeScriptParser} = require('../../parsers/typescript/parser');
 const {filterJSFile} = require('./combine-utils');
 const fs = require('fs');
-const glob = require('glob');
+const {globSync} = require('glob');
 const path = require('path');
 
 const flowParser = new FlowParser();
@@ -58,13 +58,10 @@ function expandDirectoriesIntoFiles(
       if (!fs.lstatSync(file).isDirectory()) {
         return [file];
       }
-      const filePattern = path.sep === '\\' ? file.replace(/\\/g, '/') : file;
-      return glob.sync(`${filePattern}/**/*.{js,ts,tsx}`, {
+      return globSync('**/*.{js,ts,tsx}', {
         nodir: true,
-        // TODO: This will remove the need of slash substitution above for Windows,
-        // but it requires glob@v9+; with the package currenlty relying on
-        // glob@7.1.1; and flow-typed repo not having definitions for glob@9+.
-        // windowsPathsNoEscape: true,
+        absolute: true,
+        cwd: file,
       });
     })
     .filter(element => filterJSFile(element, platform, exclude));
