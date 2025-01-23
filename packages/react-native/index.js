@@ -192,16 +192,19 @@ module.exports = {
     return require('./Libraries/Components/Touchable/Touchable').default;
   },
   get TouchableHighlight(): TouchableHighlight {
-    return require('./Libraries/Components/Touchable/TouchableHighlight');
+    return require('./Libraries/Components/Touchable/TouchableHighlight')
+      .default;
   },
   get TouchableNativeFeedback(): TouchableNativeFeedback {
-    return require('./Libraries/Components/Touchable/TouchableNativeFeedback');
+    return require('./Libraries/Components/Touchable/TouchableNativeFeedback')
+      .default;
   },
   get TouchableOpacity(): TouchableOpacity {
-    return require('./Libraries/Components/Touchable/TouchableOpacity');
+    return require('./Libraries/Components/Touchable/TouchableOpacity').default;
   },
   get TouchableWithoutFeedback(): TouchableWithoutFeedback {
-    return require('./Libraries/Components/Touchable/TouchableWithoutFeedback');
+    return require('./Libraries/Components/Touchable/TouchableWithoutFeedback')
+      .default;
   },
   get View(): View {
     return require('./Libraries/Components/View/View');

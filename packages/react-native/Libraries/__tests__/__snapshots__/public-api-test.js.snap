@@ -3573,7 +3573,7 @@ declare module.exports: ToastAndroid;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/BoundingDimensions.js 1`] = `
 "declare function BoundingDimensions(width: number, height: number): void;
-declare module.exports: BoundingDimensions;
+declare export default typeof BoundingDimensions;
 "
 `;
 
@@ -3594,13 +3594,13 @@ declare const PooledClass: {
   threeArgumentPooler: Pooler,
   fourArgumentPooler: Pooler,
 };
-declare module.exports: PooledClass;
+declare export default typeof PooledClass;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/Position.js 1`] = `
 "declare function Position(left: number, top: number): void;
-declare module.exports: Position;
+declare export default typeof Position;
 "
 `;
 
@@ -3712,7 +3712,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   style?: ?ViewStyleProp,
   hostRef: React.RefSetter<React.ElementRef<typeof Animated.View>>,
 }>;
-declare module.exports: component(
+declare export default component(
   ref: React.RefSetter<mixed>,
   ...props: $ReadOnly<$Diff<Props, { hostRef: mixed }>>
 );
@@ -3746,7 +3746,7 @@ declare const Touchable: component(
   ref: React.RefSetter<React.ElementRef<typeof View>>,
   ...props: $ReadOnly<$Diff<Props, { +hostRef: mixed }>>
 );
-declare module.exports: Touchable;
+declare export default typeof Touchable;
 "
 `;
 
@@ -3810,7 +3810,7 @@ declare class TouchableNativeFeedback extends React.Component<Props, State> {
   componentDidMount(): mixed;
   componentWillUnmount(): void;
 }
-declare module.exports: TouchableNativeFeedback;
+declare export default typeof TouchableNativeFeedback;
 "
 `;
 
@@ -3834,7 +3834,7 @@ declare const Touchable: component(
   ref: React.RefSetter<React.ElementRef<typeof Animated.View>>,
   ...props: Props
 );
-declare module.exports: Touchable;
+declare export default typeof Touchable;
 "
 `;
 
@@ -3888,7 +3888,9 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   testID?: ?string,
   touchSoundDisabled?: ?boolean,
 }>;
-declare module.exports: (props: Props) => React.Node;
+declare export default function TouchableWithoutFeedback(
+  props: Props
+): React.Node;
 "
 `;
 

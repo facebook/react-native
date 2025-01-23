@@ -15,7 +15,8 @@ import type {RenderItemProps} from '@react-native/virtualized-lists';
 import ScrollView from '../Components/ScrollView/ScrollView';
 import React from 'react';
 
-const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+const TouchableHighlight =
+  require('../Components/Touchable/TouchableHighlight').default;
 const View = require('../Components/View/View');
 const FlatList = require('../Lists/FlatList');
 const XHRInterceptor = require('../Network/XHRInterceptor');

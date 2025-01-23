@@ -16,7 +16,8 @@ import SafeAreaView from '../Components/SafeAreaView/SafeAreaView';
 import React from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView').default;
-const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+const TouchableHighlight =
+  require('../Components/Touchable/TouchableHighlight').default;
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
