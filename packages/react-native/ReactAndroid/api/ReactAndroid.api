@@ -460,10 +460,6 @@ public abstract interface class com/facebook/react/animated/AnimatedNodeValueLis
 	public abstract fun onValueUpdate (D)V
 }
 
-public abstract interface class com/facebook/react/animated/AnimatedNodeWithUpdateableConfig {
-	public abstract fun onUpdateConfig (Lcom/facebook/react/bridge/ReadableMap;)V
-}
-
 public final class com/facebook/react/animated/InterpolationAnimatedNode : com/facebook/react/animated/ValueAnimatedNode {
 	public static final field Companion Lcom/facebook/react/animated/InterpolationAnimatedNode$Companion;
 	public static final field EXTRAPOLATE_TYPE_CLAMP Ljava/lang/String;
