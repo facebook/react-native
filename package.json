@@ -8,6 +8,7 @@
     "android": "cd packages/rn-tester && npm run android",
     "build-android": "./gradlew :packages:react-native:ReactAndroid:build",
     "build": "node ./scripts/build/build.js",
+    "build-types": "node ./scripts/build/build-types.js",
     "clang-format": "clang-format -i --glob=*/**/*.{h,cpp,m,mm}",
     "clean": "node ./scripts/build/clean.js",
     "flow-check": "flow check",
