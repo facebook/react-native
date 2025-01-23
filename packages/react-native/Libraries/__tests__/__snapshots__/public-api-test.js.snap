@@ -1475,7 +1475,7 @@ declare export class URL {
   _searchParamsInstance: ?URLSearchParams;
   static createObjectURL(blob: Blob): string;
   static revokeObjectURL(url: string): void;
-  constructor(url: string, base: string | URL): void;
+  constructor(url: string, base?: string | URL): void;
   get hash(): string;
   get host(): string;
   get hostname(): string;
