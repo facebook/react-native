@@ -92,6 +92,12 @@ module.exports = {
       },
     },
     {
+      files: ['**/__tests__/**/*-test.js', '**/__tests__/**/*-itest.js'],
+      rules: {
+        'jest/no-disabled-tests': 'off',
+      },
+    },
+    {
       files: ['**/*.{ts,tsx}'],
       parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint/eslint-plugin'],
