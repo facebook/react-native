@@ -21,7 +21,7 @@ jest.setMock('../../BatchedBridge/NativeModules', {
   },
 });
 
-const WebSocket = require('../WebSocket');
+const WebSocket = require('../WebSocket').default;
 
 describe('WebSocket', function () {
   it('should have connection lifecycle constants defined on the class', () => {

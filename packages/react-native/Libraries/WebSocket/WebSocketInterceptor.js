@@ -244,4 +244,4 @@ const WebSocketInterceptor = {
   },
 };
 
-module.exports = WebSocketInterceptor;
+export default WebSocketInterceptor;
