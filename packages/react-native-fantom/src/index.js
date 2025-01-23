@@ -155,9 +155,7 @@ export function dispatchNativeEvent(
   node: ReactNativeElement,
   type: string,
   payload?: {[key: string]: mixed},
-  options?: {
-    category?: NativeEventCategory,
-  },
+  options?: {category?: NativeEventCategory, isUnique?: boolean},
 ) {
   const shadowNode = getShadowNode(node);
   NativeFantom.dispatchNativeEvent(
@@ -165,6 +163,7 @@ export function dispatchNativeEvent(
     type,
     payload,
     options?.category,
+    options?.isUnique,
   );
 }
 

@@ -64,6 +64,7 @@ interface Spec extends TurboModule {
     type: string,
     payload?: mixed,
     category?: NativeEventCategory,
+    isUnique?: boolean,
   ) => void;
   getMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;
