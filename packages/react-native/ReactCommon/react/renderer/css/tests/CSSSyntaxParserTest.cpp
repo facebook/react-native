@@ -579,4 +579,31 @@ TEST(CSSSyntaxParser, solidus_or_whitespace) {
   EXPECT_FALSE(delimValue1);
 }
 
+TEST(CSSSyntaxParser, delimeter_not_consumed_when_no_component_value) {
+  CSSSyntaxParser parser{"foo ,"};
+
+  auto identValue = parser.consumeComponentValue<std::string_view>(
+      [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Ident);
+        EXPECT_EQ(token.stringValue(), "foo");
+        return token.stringValue();
+      });
+
+  EXPECT_EQ(identValue, "foo");
+
+  auto identValue2 = parser.consumeComponentValue<bool>(
+      CSSDelimiter::Comma,
+      [](const CSSPreservedToken& /*token*/) { return true; });
+
+  EXPECT_FALSE(identValue2);
+
+  auto hasComma = parser.consumeComponentValue<bool>(
+      CSSDelimiter::Whitespace, [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Comma);
+        return true;
+      });
+
+  EXPECT_TRUE(hasComma);
+}
+
 } // namespace facebook::react
