@@ -9480,7 +9480,7 @@ declare class WebSocket extends EventTarget {
   _unregisterEvents(): void;
   _registerEvents(): void;
 }
-declare module.exports: WebSocket;
+declare export default typeof WebSocket;
 "
 `;
 
@@ -9489,7 +9489,7 @@ exports[`public API should not change unintentionally Libraries/WebSocket/WebSoc
   type: string;
   constructor(type: string, eventInitDict: ?{ ... }): void;
 }
-declare module.exports: WebSocketEvent;
+declare export default typeof WebSocketEvent;
 "
 `;
 
@@ -9509,7 +9509,7 @@ exports[`public API should not change unintentionally Libraries/WebSocket/WebSoc
   _arrayBufferToString(data: string): ArrayBuffer | string,
   disableInterception(): void,
 };
-declare module.exports: WebSocketInterceptor;
+declare export default typeof WebSocketInterceptor;
 "
 `;
 

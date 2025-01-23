@@ -155,7 +155,7 @@ if (__DEV__) {
           ? window.__REACT_DEVTOOLS_PORT__
           : 8097;
 
-      const WebSocket = require('../WebSocket/WebSocket');
+      const WebSocket = require('../WebSocket/WebSocket').default;
       ws = new WebSocket('ws://' + host + ':' + port);
       ws.addEventListener('close', event => {
         isWebSocketOpen = false;

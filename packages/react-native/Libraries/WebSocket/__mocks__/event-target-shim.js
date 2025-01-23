@@ -24,4 +24,4 @@ function EventTarget() {
   }
 }
 
-module.exports = EventTarget;
+export default EventTarget;

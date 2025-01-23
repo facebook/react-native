@@ -21,7 +21,8 @@ const FlatList = require('../Lists/FlatList');
 const XHRInterceptor = require('../Network/XHRInterceptor');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
-const WebSocketInterceptor = require('../WebSocket/WebSocketInterceptor');
+const WebSocketInterceptor =
+  require('../WebSocket/WebSocketInterceptor').default;
 
 const LISTVIEW_CELL_HEIGHT = 15;
 

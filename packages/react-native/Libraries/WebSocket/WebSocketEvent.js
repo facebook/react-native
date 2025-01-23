@@ -27,4 +27,4 @@ class WebSocketEvent {
   }
 }
 
-module.exports = WebSocketEvent;
+export default WebSocketEvent;
