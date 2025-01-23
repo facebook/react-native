@@ -12,7 +12,7 @@
 
 const {create} = require('../../../../jest/renderer');
 const Text = require('../../../Text/Text');
-const TouchableOpacity = require('../TouchableOpacity');
+const TouchableOpacity = require('../TouchableOpacity').default;
 const React = require('react');
 
 describe('TouchableOpacity', () => {

@@ -15,8 +15,10 @@ import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
 import React from 'react';
 
-const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
-const TouchableWithoutFeedback = require('../Components/Touchable/TouchableWithoutFeedback');
+const TouchableHighlight =
+  require('../Components/Touchable/TouchableHighlight').default;
+const TouchableWithoutFeedback =
+  require('../Components/Touchable/TouchableWithoutFeedback').default;
 const View = require('../Components/View/View');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');

@@ -336,4 +336,4 @@ const Touchable: component(
 
 Touchable.displayName = 'TouchableOpacity';
 
-module.exports = Touchable;
+export default Touchable;
