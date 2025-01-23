@@ -54,8 +54,8 @@ const DefaultBrowserLauncher: BrowserLauncher = {
       `--app=${url}`,
       '--window-size=1200,600',
       `--user-data-dir=${userDataDir}`,
-      '--no-first-run',
       '--no-default-browser-check',
+      '--no-first-run',
     ];
 
     return new Promise((resolve, reject) => {
