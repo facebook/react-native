@@ -54,8 +54,7 @@ struct CSSDataTypeParser<CSSRatio> {
     // If either number in the <ratio> is 0 or infinite, it represents a
     // degenerate ratio (and, generally, won’t do anything).
     // https://www.w3.org/TR/css-values-4/#ratios
-    return value > 0.0f && value != +std::numeric_limits<float>::infinity() &&
-        value != -std::numeric_limits<float>::infinity();
+    return value > 0.0f && value != +std::numeric_limits<float>::infinity();
   }
 };
 
