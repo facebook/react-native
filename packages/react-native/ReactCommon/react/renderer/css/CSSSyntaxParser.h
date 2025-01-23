@@ -233,11 +233,14 @@ struct CSSComponentValueVisitorDispatcher {
   constexpr ReturnT consumeComponentValue(
       CSSDelimiter delimiter,
       const VisitorsT&... visitors) {
+    auto originalParser = parser;
     if (!consumeDelimiter(delimiter)) {
+      parser = originalParser;
       return {};
     }
 
     if (parser.peek().type() == parser.terminator_) {
+      parser = originalParser;
       return {};
     }
 
