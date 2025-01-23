@@ -10,8 +10,8 @@
  */
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
+const translateSourceFile = require('./build-types/translateSourceFile');
 const chalk = require('chalk');
-const translate = require('flow-api-translator');
 const {promises: fs} = require('fs');
 const glob = require('glob');
 const micromatch = require('micromatch');
@@ -62,38 +62,35 @@ async function main() {
       '\n',
   );
 
-  for (const file of files) {
-    if (micromatch.isMatch(file, IGNORE_PATTERN)) {
-      continue;
-    }
-
-    const buildPath = getBuildPath(file);
-    const source = await fs.readFile(file, 'utf-8');
-    const prettierConfig = {parser: 'babel'};
-
-    await fs.mkdir(path.dirname(buildPath), {recursive: true});
-
-    try {
-      const typescriptDef = await translate.translateFlowToTSDef(
-        source,
-        prettierConfig,
-      );
-
-      if (
-        /Unsupported feature: Translating ".*" is currently not supported/.test(
-          typescriptDef,
-        )
-      ) {
-        throw new Error(
-          'Syntax unsupported by flow-api-translator used in ' + file,
-        );
+  await Promise.all(
+    files.map(async file => {
+      if (micromatch.isMatch(file, IGNORE_PATTERN)) {
+        return;
       }
 
-      await fs.writeFile(buildPath, typescriptDef);
-    } catch (e) {
-      console.error(`Failed to build ${path.relative(REPO_ROOT, file)}`);
-    }
-  }
+      const buildPath = getBuildPath(file);
+      const source = await fs.readFile(file, 'utf-8');
+      await fs.mkdir(path.dirname(buildPath), {recursive: true});
+
+      try {
+        const typescriptDef = await translateSourceFile(source);
+
+        if (
+          /Unsupported feature: Translating ".*" is currently not supported/.test(
+            typescriptDef,
+          )
+        ) {
+          throw new Error(
+            'Syntax unsupported by flow-api-translator used in ' + file,
+          );
+        }
+
+        await fs.writeFile(buildPath, typescriptDef);
+      } catch (e) {
+        console.error(`Failed to build ${path.relative(REPO_ROOT, file)}`);
+      }
+    }),
+  );
 }
 
 function getPackageName(file /*: string */) /*: string */ {
