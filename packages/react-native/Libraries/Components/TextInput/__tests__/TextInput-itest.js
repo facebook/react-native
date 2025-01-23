@@ -147,3 +147,71 @@ describe('focus and blur event', () => {
     expect(blurEvent).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('onChange', () => {
+  it('delivers onChange event', () => {
+    const root = Fantom.createRoot();
+    let maybeNode;
+    const onChange = jest.fn();
+
+    Fantom.runTask(() => {
+      root.render(
+        <TextInput
+          onChange={event => {
+            onChange(event.nativeEvent);
+          }}
+          ref={node => {
+            maybeNode = node;
+          }}
+        />,
+      );
+    });
+
+    const element = ensureInstance(maybeNode, ReactNativeElement);
+
+    Fantom.runOnUIThread(() => {
+      Fantom.dispatchNativeEvent(element, 'change', {
+        text: 'Hello World',
+      });
+    });
+
+    Fantom.runWorkLoop();
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const [entry] = onChange.mock.lastCall;
+    expect(entry.text).toEqual('Hello World');
+  });
+});
+
+describe('onChangeText', () => {
+  it('delivers onChangeText event', () => {
+    const root = Fantom.createRoot();
+    let maybeNode;
+    const onChangeText = jest.fn();
+
+    Fantom.runTask(() => {
+      root.render(
+        <TextInput
+          onChangeText={onChangeText}
+          ref={node => {
+            maybeNode = node;
+          }}
+        />,
+      );
+    });
+
+    const element = ensureInstance(maybeNode, ReactNativeElement);
+
+    Fantom.runOnUIThread(() => {
+      Fantom.dispatchNativeEvent(element, 'change', {
+        text: 'Hello World',
+      });
+    });
+
+    Fantom.runWorkLoop();
+
+    expect(onChangeText).toHaveBeenCalledTimes(1);
+    const [entry] = onChangeText.mock.lastCall;
+    expect(entry).toEqual('Hello World');
+  });
+});
