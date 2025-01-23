@@ -89,11 +89,13 @@ concept CSSUniqueComponentValueVisitors =
 /**
  * Describes the delimeter to expect before the next component value.
  */
-enum class CSSComponentValueDelimiter {
-  Comma,
+enum class CSSDelimiter {
   Whitespace,
-  CommaOrWhitespace,
+  OptionalWhitespace,
   Solidus,
+  Comma,
+  CommaOrWhitespace,
+  CommaOrWhitespaceOrSolidus,
   None,
 };
 
@@ -142,7 +144,7 @@ class CSSSyntaxParser {
    */
   template <typename ReturnT = std::nullptr_t>
   constexpr ReturnT consumeComponentValue(
-      CSSComponentValueDelimiter delimiter,
+      CSSDelimiter delimiter,
       const CSSComponentValueVisitor<ReturnT> auto&... visitors)
     requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>);
 
@@ -172,7 +174,7 @@ class CSSSyntaxParser {
    */
   template <typename ReturnT = std::nullptr_t>
   constexpr ReturnT peekComponentValue(
-      CSSComponentValueDelimiter delimiter,
+      CSSDelimiter delimiter,
       const CSSComponentValueVisitor<ReturnT> auto&... visitors)
     requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>);
 
@@ -229,38 +231,10 @@ struct CSSComponentValueVisitorDispatcher {
   CSSSyntaxParser& parser;
 
   constexpr ReturnT consumeComponentValue(
-      CSSComponentValueDelimiter delimiter,
+      CSSDelimiter delimiter,
       const VisitorsT&... visitors) {
-    switch (delimiter) {
-      case CSSComponentValueDelimiter::Comma:
-        parser.consumeWhitespace();
-        if (parser.peek().type() != CSSTokenType::Comma) {
-          return ReturnT{};
-        }
-        parser.consumeToken();
-        parser.consumeWhitespace();
-        break;
-      case CSSComponentValueDelimiter::Whitespace:
-        parser.consumeWhitespace();
-        break;
-      case CSSComponentValueDelimiter::CommaOrWhitespace:
-        parser.consumeWhitespace();
-        if (parser.peek().type() == CSSTokenType::Comma) {
-          parser.consumeToken();
-        }
-        parser.consumeWhitespace();
-        break;
-      case CSSComponentValueDelimiter::Solidus:
-        parser.consumeWhitespace();
-        if (parser.peek().type() != CSSTokenType::Delim ||
-            parser.peek().stringValue() != "/") {
-          return ReturnT{};
-        }
-        parser.consumeToken();
-        parser.consumeWhitespace();
-        break;
-      case CSSComponentValueDelimiter::None:
-        break;
+    if (!consumeDelimiter(delimiter)) {
+      return {};
     }
 
     if (parser.peek().type() == parser.terminator_) {
@@ -301,8 +275,62 @@ struct CSSComponentValueVisitorDispatcher {
     return ReturnT{};
   }
 
+  /**
+   * Consume a delimiter, returning false if a required delimiter is not found.
+   */
+  constexpr bool consumeDelimiter(CSSDelimiter delimiter) {
+    if (delimiter == CSSDelimiter::None) {
+      return true;
+    }
+
+    bool hasWhiteSpace = parser.peek().type() == CSSTokenType::WhiteSpace;
+    parser.consumeWhitespace();
+
+    switch (delimiter) {
+      case CSSDelimiter::Comma:
+        if (parser.peek().type() == CSSTokenType::Comma) {
+          parser.consumeToken();
+          parser.consumeWhitespace();
+          return true;
+        }
+        return false;
+      case CSSDelimiter::Whitespace:
+        return hasWhiteSpace;
+      case CSSDelimiter::OptionalWhitespace:
+        return true;
+      case CSSDelimiter::CommaOrWhitespace:
+        if (parser.peek().type() == CSSTokenType::Comma) {
+          parser.consumeToken();
+          parser.consumeWhitespace();
+          return true;
+        }
+        return hasWhiteSpace;
+      case CSSDelimiter::Solidus:
+        if (parser.peek().type() == CSSTokenType::Delim &&
+            parser.peek().stringValue() == "/") {
+          parser.consumeToken();
+          parser.consumeWhitespace();
+          return true;
+        }
+        return false;
+      case CSSDelimiter::CommaOrWhitespaceOrSolidus:
+        if (parser.peek().type() == CSSTokenType::Comma ||
+            (parser.peek().type() == CSSTokenType::Delim &&
+             parser.peek().stringValue() == "/")) {
+          parser.consumeToken();
+          parser.consumeWhitespace();
+          return true;
+        }
+        return hasWhiteSpace;
+      case CSSDelimiter::None:
+        return true;
+    }
+
+    return false;
+  }
+
   constexpr ReturnT peekComponentValue(
-      CSSComponentValueDelimiter delimiter,
+      CSSDelimiter delimiter,
       const VisitorsT&... visitors) {
     auto originalParser = parser;
     auto ret = consumeComponentValue(delimiter, visitors...);
@@ -393,7 +421,7 @@ struct CSSComponentValueVisitorDispatcher {
 
 template <typename ReturnT>
 constexpr ReturnT CSSSyntaxParser::consumeComponentValue(
-    CSSComponentValueDelimiter delimiter,
+    CSSDelimiter delimiter,
     const CSSComponentValueVisitor<ReturnT> auto&... visitors)
   requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>)
 {
@@ -407,13 +435,12 @@ constexpr ReturnT CSSSyntaxParser::consumeComponentValue(
     const CSSComponentValueVisitor<ReturnT> auto&... visitors)
   requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>)
 {
-  return consumeComponentValue<ReturnT>(
-      CSSComponentValueDelimiter::None, visitors...);
+  return consumeComponentValue<ReturnT>(CSSDelimiter::None, visitors...);
 }
 
 template <typename ReturnT>
 constexpr ReturnT CSSSyntaxParser::peekComponentValue(
-    CSSComponentValueDelimiter delimiter,
+    CSSDelimiter delimiter,
     const CSSComponentValueVisitor<ReturnT> auto&... visitors)
   requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>)
 {
@@ -427,8 +454,7 @@ constexpr ReturnT CSSSyntaxParser::peekComponentValue(
     const CSSComponentValueVisitor<ReturnT> auto&... visitors)
   requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>)
 {
-  return peekComponentValue<ReturnT>(
-      CSSComponentValueDelimiter::None, visitors...);
+  return peekComponentValue<ReturnT>(CSSDelimiter::None, visitors...);
 }
 
 } // namespace facebook::react
