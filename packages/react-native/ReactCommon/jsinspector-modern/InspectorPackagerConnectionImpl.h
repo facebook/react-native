@@ -87,6 +87,7 @@ class InspectorPackagerConnection::Impl
   virtual void didFailWithError(std::optional<int> posixCode, std::string error)
       override;
   virtual void didReceiveMessage(std::string_view message) override;
+  virtual void didOpen() override;
   virtual void didClose() override;
 
   // IPageStatusListener methods
@@ -99,6 +100,7 @@ class InspectorPackagerConnection::Impl
 
   std::unordered_map<std::string, Session> inspectorSessions_;
   std::unique_ptr<IWebSocket> webSocket_;
+  bool connected_{false};
   bool closed_{false};
   bool suppressConnectionErrors_{false};
 
