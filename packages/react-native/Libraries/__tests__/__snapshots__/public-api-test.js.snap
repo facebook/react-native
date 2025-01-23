@@ -10463,6 +10463,13 @@ exports[`public API should not change unintentionally src/private/specs/modules/
   includeRoot: boolean,
   includeLayoutMetrics: boolean,
 };
+export enum NativeEventCategory {
+  ContinuousStart = 0,
+  ContinuousEnd = 1,
+  Unspecified = 2,
+  Discrete = 3,
+  Continuous = 4,
+}
 interface Spec extends TurboModule {
   startSurface: (
     surfaceId: number,
@@ -10474,7 +10481,8 @@ interface Spec extends TurboModule {
   dispatchNativeEvent: (
     shadowNode: mixed,
     type: string,
-    payload?: mixed
+    payload?: mixed,
+    category?: NativeEventCategory
   ) => void;
   getMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;

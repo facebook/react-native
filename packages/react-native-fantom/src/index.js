@@ -19,7 +19,9 @@ import {getShadowNode} from '../../react-native/src/private/webapis/dom/nodes/Re
 import * as Benchmark from './Benchmark';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
-import NativeFantom from 'react-native/src/private/specs/modules/NativeFantom';
+import NativeFantom, {
+  NativeEventCategory,
+} from 'react-native/src/private/specs/modules/NativeFantom';
 
 let globalSurfaceIdCounter = 1;
 
@@ -153,9 +155,17 @@ export function dispatchNativeEvent(
   node: ReactNativeElement,
   type: string,
   payload?: {[key: string]: mixed},
+  options?: {
+    category?: NativeEventCategory,
+  },
 ) {
   const shadowNode = getShadowNode(node);
-  NativeFantom.dispatchNativeEvent(shadowNode, type, payload);
+  NativeFantom.dispatchNativeEvent(
+    shadowNode,
+    type,
+    payload,
+    options?.category,
+  );
 }
 
 export const unstable_benchmark = Benchmark;
