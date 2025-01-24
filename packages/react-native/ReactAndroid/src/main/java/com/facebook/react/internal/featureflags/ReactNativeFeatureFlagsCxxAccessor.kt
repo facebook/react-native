@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fd907106b0178d0416bcce98a3f57b25>>
+ * @generated SignedSource<<abef684a503f04c2af679c9a0d71fb94>>
  */
 
 /**
@@ -19,7 +19,7 @@
 
 package com.facebook.react.internal.featureflags
 
-public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
+internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
   private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
