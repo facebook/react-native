@@ -5113,7 +5113,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/Border
   style?: ViewStyleProp,
 }>;
 declare function BorderBox(Props): React.Node;
-declare module.exports: BorderBox;
+declare export default typeof BorderBox;
 "
 `;
 
@@ -5123,7 +5123,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/BoxIns
   frame: ?InspectedElementFrame,
 }>;
 declare function BoxInspector(BoxInspectorProps): React.Node;
-declare module.exports: BoxInspector;
+declare export default typeof BoxInspector;
 "
 `;
 
@@ -5133,7 +5133,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/Elemen
   style?: ?ViewStyleProp,
 }>;
 declare function ElementBox(Props): React.Node;
-declare module.exports: ElementBox;
+declare export default typeof ElementBox;
 "
 `;
 
@@ -5148,7 +5148,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/Elemen
 declare class ElementProperties extends React.Component<Props> {
   render(): React.Node;
 }
-declare module.exports: ElementProperties;
+declare export default typeof ElementProperties;
 "
 `;
 
@@ -5165,7 +5165,7 @@ type Props = {
   reactDevToolsAgent?: ReactDevToolsAgent,
 };
 declare function Inspector(Props): React.Node;
-declare module.exports: Inspector;
+declare export default typeof Inspector;
 "
 `;
 
@@ -5175,7 +5175,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/Inspec
   onTouchPoint: (locationX: number, locationY: number) => void,
 }>;
 declare function InspectorOverlay(Props): React.Node;
-declare module.exports: InspectorOverlay;
+declare export default typeof InspectorOverlay;
 "
 `;
 
@@ -5199,7 +5199,7 @@ declare class InspectorPanel extends React.Component<Props> {
   renderWaiting(): React.Node;
   render(): React.Node;
 }
-declare module.exports: InspectorPanel;
+declare export default typeof InspectorPanel;
 "
 `;
 
@@ -5256,7 +5256,7 @@ declare class NetworkOverlay extends React.Component<Props, State> {
   _getRequestIndexByXHRID(index: number): number;
   render(): React.Node;
 }
-declare module.exports: NetworkOverlay;
+declare export default typeof NetworkOverlay;
 "
 `;
 
@@ -5264,7 +5264,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/Perfor
 "declare class PerformanceOverlay extends React.Component<{ ... }> {
   render(): React.Node;
 }
-declare module.exports: PerformanceOverlay;
+declare export default typeof PerformanceOverlay;
 "
 `;
 
@@ -5282,7 +5282,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/StyleI
   style?: ?____FlattenStyleProp_Internal<ViewStyleProp>,
 }>;
 declare function StyleInspector(Props): React.Node;
-declare module.exports: StyleInspector;
+declare export default typeof StyleInspector;
 "
 `;
 
@@ -5298,12 +5298,13 @@ exports[`public API should not change unintentionally Libraries/Inspector/getIns
     ...
   },
 };
-declare module.exports: (
+declare function getInspectorDataForViewAtPoint(
   inspectedView: ?HostInstance,
   locationX: number,
   locationY: number,
   callback: (viewData: TouchedViewDataAtPoint) => boolean
-) => void;
+): void;
+declare export default typeof getInspectorDataForViewAtPoint;
 "
 `;
 
@@ -5317,7 +5318,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/resolv
   right: number,
   top: number,
 }>;
-declare module.exports: resolveBoxStyle;
+declare export default typeof resolveBoxStyle;
 "
 `;
 

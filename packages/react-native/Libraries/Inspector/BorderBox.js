@@ -41,4 +41,4 @@ function BorderBox({children, box, style}: Props): React.Node {
   return <View style={[borderStyle, style]}>{children}</View>;
 }
 
-module.exports = BorderBox;
+export default BorderBox;

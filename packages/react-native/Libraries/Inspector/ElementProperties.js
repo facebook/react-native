@@ -24,8 +24,8 @@ const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
 const mapWithSeparator = require('../Utilities/mapWithSeparator');
-const BoxInspector = require('./BoxInspector');
-const StyleInspector = require('./StyleInspector');
+const BoxInspector = require('./BoxInspector').default;
+const StyleInspector = require('./StyleInspector').default;
 
 type Props = $ReadOnly<{
   hierarchy: ?InspectorData['hierarchy'],
@@ -120,4 +120,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ElementProperties;
+export default ElementProperties;

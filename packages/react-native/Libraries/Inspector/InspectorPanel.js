@@ -21,9 +21,9 @@ const TouchableHighlight =
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
-const ElementProperties = require('./ElementProperties');
-const NetworkOverlay = require('./NetworkOverlay');
-const PerformanceOverlay = require('./PerformanceOverlay');
+const ElementProperties = require('./ElementProperties').default;
+const NetworkOverlay = require('./NetworkOverlay').default;
+const PerformanceOverlay = require('./PerformanceOverlay').default;
 
 type Props = $ReadOnly<{
   devtoolsIsOpen: boolean,
@@ -162,4 +162,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = InspectorPanel;
+export default InspectorPanel;

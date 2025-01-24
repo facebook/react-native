@@ -611,4 +611,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = NetworkOverlay;
+export default NetworkOverlay;

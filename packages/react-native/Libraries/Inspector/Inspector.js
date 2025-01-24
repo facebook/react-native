@@ -27,9 +27,10 @@ const {findNodeHandle} = require('../ReactNative/RendererProxy');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Dimensions = require('../Utilities/Dimensions').default;
 const Platform = require('../Utilities/Platform');
-const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
-const InspectorOverlay = require('./InspectorOverlay');
-const InspectorPanel = require('./InspectorPanel');
+const getInspectorDataForViewAtPoint =
+  require('./getInspectorDataForViewAtPoint').default;
+const InspectorOverlay = require('./InspectorOverlay').default;
+const InspectorPanel = require('./InspectorPanel').default;
 
 const {useState} = React;
 
@@ -203,4 +204,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = Inspector;
+export default Inspector;

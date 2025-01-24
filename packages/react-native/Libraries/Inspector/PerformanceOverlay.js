@@ -61,4 +61,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = PerformanceOverlay;
+export default PerformanceOverlay;

@@ -18,7 +18,7 @@ import React from 'react';
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
-const resolveBoxStyle = require('./resolveBoxStyle');
+const resolveBoxStyle = require('./resolveBoxStyle').default;
 
 const blank = {
   top: 0,
@@ -124,4 +124,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = BoxInspector;
+export default BoxInspector;
