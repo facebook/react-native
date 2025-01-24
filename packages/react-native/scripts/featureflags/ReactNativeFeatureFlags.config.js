@@ -333,15 +333,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    initEagerTurboModulesOnNativeModulesQueueAndroid: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Construct modules that requires eager init on the dedicate native modules thread',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
     lazyAnimationCallbacks: {
       defaultValue: false,
       metadata: {

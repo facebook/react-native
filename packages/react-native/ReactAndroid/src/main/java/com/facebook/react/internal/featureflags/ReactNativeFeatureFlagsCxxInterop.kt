@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<de387611b8d57f9c468a641c1eec6e09>>
+ * @generated SignedSource<<6390e3da6c736f01254531394b566e39>>
  */
 
 /**
@@ -85,8 +85,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun fixMountingCoordinatorReportedPendingTransactionsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fuseboxEnabledRelease(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun lazyAnimationCallbacks(): Boolean
 

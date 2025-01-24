@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<255740c94e6ff49fee95a54f7e4b0375>>
+ * @generated SignedSource<<506909b1ceaa8b29b0649014d1f24894>>
  * @flow strict
  */
 
@@ -54,7 +54,6 @@ export interface Spec extends TurboModule {
   +fixMappingOfEventPrioritiesBetweenFabricAndReact?: () => boolean;
   +fixMountingCoordinatorReportedPendingTransactionsOnAndroid?: () => boolean;
   +fuseboxEnabledRelease?: () => boolean;
-  +initEagerTurboModulesOnNativeModulesQueueAndroid?: () => boolean;
   +lazyAnimationCallbacks?: () => boolean;
   +loadVectorDrawablesOnImages?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ea4436bf1a65e580a085fbbd093f2b59>>
+ * @generated SignedSource<<7a6083ca926d6cdef5a840b1feff4913>>
  * @flow strict
  */
 
@@ -77,7 +77,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
   fuseboxEnabledRelease: Getter<boolean>,
-  initEagerTurboModulesOnNativeModulesQueueAndroid: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
   loadVectorDrawablesOnImages: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
@@ -282,10 +281,6 @@ export const fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<
  * Flag determining if the React Native DevTools (Fusebox) CDP backend should be enabled in release builds. This flag is global and should not be changed across React Host lifetimes.
  */
 export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fuseboxEnabledRelease', false);
-/**
- * Construct modules that requires eager init on the dedicate native modules thread
- */
-export const initEagerTurboModulesOnNativeModulesQueueAndroid: Getter<boolean> = createNativeFlagGetter('initEagerTurboModulesOnNativeModulesQueueAndroid', true);
 /**
  * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
  */
