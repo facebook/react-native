@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ExceptionsManager = require('../ExceptionsManager');
+const ExceptionsManager = require('../ExceptionsManager').default;
 const NativeExceptionsManager = require('../NativeExceptionsManager').default;
 const ReactFiberErrorDialog = require('../ReactFiberErrorDialog').default;
 const fs = require('fs');
@@ -71,13 +71,12 @@ function runExceptionsManagerTests() {
         };
       });
       // Make symbolication a no-op.
-      jest.mock(
-        '../Devtools/symbolicateStackTrace',
-        () =>
-          async function symbolicateStackTrace(stack) {
-            return {stack};
-          },
-      );
+      jest.mock('../Devtools/symbolicateStackTrace', () => ({
+        __esModule: true,
+        default: async function symbolicateStackTrace(stack) {
+          return {stack};
+        },
+      }));
       jest.spyOn(console, 'error').mockReturnValue(undefined);
       nativeReportException = NativeExceptionsManager.reportException;
     });

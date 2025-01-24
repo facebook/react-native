@@ -13,7 +13,7 @@
 import type {ExtendedError} from './ExtendedError';
 import type {ExceptionData} from './NativeExceptionsManager';
 
-class SyntheticError extends Error {
+export class SyntheticError extends Error {
   name: string = '';
 }
 
@@ -62,7 +62,7 @@ function reportException(
   isFatal: boolean,
   reportToConsole: boolean, // only true when coming from handleException; the error has not yet been logged
 ) {
-  const parseErrorStack = require('./Devtools/parseErrorStack');
+  const parseErrorStack = require('./Devtools/parseErrorStack').default;
   const stack = parseErrorStack(e?.stack);
   const currentExceptionID = ++exceptionID;
   const originalMessage = e.message || '';
@@ -273,10 +273,12 @@ function installConsoleErrorReporter() {
   }
 }
 
-module.exports = {
+const ExceptionsManager = {
   decoratedExtraDataKey,
   handleException,
   installConsoleErrorReporter,
-  SyntheticError,
+  SyntheticError, // <- for backwards compatibility
   unstable_setExceptionDecorator,
 };
+
+export default ExceptionsManager;

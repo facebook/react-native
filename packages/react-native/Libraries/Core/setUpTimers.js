@@ -49,7 +49,7 @@ if (global.RN$Bridgeless !== true) {
       | 'setInterval'
       | 'setTimeout',
   ) => {
-    polyfillGlobal(name, () => require('./Timers/JSTimers')[name]);
+    polyfillGlobal(name, () => require('./Timers/JSTimers').default[name]);
   };
   defineLazyTimer('setTimeout');
   defineLazyTimer('clearTimeout');
@@ -115,11 +115,11 @@ if (isEventLoopEnabled) {
   if (global.RN$Bridgeless !== true) {
     polyfillGlobal(
       'setImmediate',
-      () => require('./Timers/JSTimers').queueReactNativeMicrotask,
+      () => require('./Timers/JSTimers').default.queueReactNativeMicrotask,
     );
     polyfillGlobal(
       'clearImmediate',
-      () => require('./Timers/JSTimers').clearReactNativeMicrotask,
+      () => require('./Timers/JSTimers').default.clearReactNativeMicrotask,
     );
   }
 }

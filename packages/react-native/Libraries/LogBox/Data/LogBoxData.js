@@ -105,7 +105,7 @@ export function reportLogBoxError(
   error: ExtendedError,
   componentStack?: string,
 ): void {
-  const ExceptionsManager = require('../../Core/ExceptionsManager');
+  const ExceptionsManager = require('../../Core/ExceptionsManager').default;
 
   error.message = `${LOGBOX_ERROR_MESSAGE}\n\n${error.message}`;
   if (componentStack != null) {

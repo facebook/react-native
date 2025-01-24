@@ -131,7 +131,7 @@ if (__DEV__) {
     // TODO(t12832058) This check is broken
     if (!window.document) {
       const AppState = require('../AppState/AppState').default;
-      const getDevServer = require('./Devtools/getDevServer');
+      const getDevServer = require('./Devtools/getDevServer').default;
 
       // Don't steal the DevTools from currently active app.
       // Note: if you add any AppState subscriptions to this file,

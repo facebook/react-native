@@ -484,4 +484,4 @@ BatchedBridge.setReactNativeMicrotasksCallback(
   JSTimers.callReactNativeMicrotasks,
 );
 
-module.exports = ExportedJSTimers;
+export default ExportedJSTimers;
