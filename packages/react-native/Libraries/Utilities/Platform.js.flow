@@ -10,4 +10,4 @@
 
 import type {Platform} from './Platform.flow';
 
-declare module.exports: Platform;
+declare export default Platform;

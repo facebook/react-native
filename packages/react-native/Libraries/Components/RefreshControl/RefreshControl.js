@@ -19,7 +19,7 @@ import PullToRefreshViewNativeComponent, {
 } from './PullToRefreshViewNativeComponent';
 import React from 'react';
 
-const Platform = require('../../Utilities/Platform');
+const Platform = require('../../Utilities/Platform').default;
 
 type IOSProps = $ReadOnly<{
   /**

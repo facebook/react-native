@@ -98,4 +98,4 @@ const deepDiffer = function (
 };
 
 deepDiffer.unstable_setLogListeners = unstable_setLogListeners;
-module.exports = deepDiffer;
+export default deepDiffer;

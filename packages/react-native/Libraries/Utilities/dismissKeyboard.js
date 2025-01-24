@@ -18,4 +18,4 @@ function dismissKeyboard() {
   TextInputState.blurTextInput(TextInputState.currentlyFocusedInput());
 }
 
-module.exports = dismissKeyboard;
+export default dismissKeyboard;

@@ -38,7 +38,7 @@ if (__DEV__) {
     global.navigator.appName === 'Netscape'; // Any real browser
 
   if (!Platform.isTesting) {
-    const HMRClient = require('../Utilities/HMRClient');
+    const HMRClient = require('../Utilities/HMRClient').default;
 
     if (global.__FUSEBOX_HAS_FULL_CONSOLE_SUPPORT__) {
       HMRClient.unstable_notifyFuseboxConsoleEnabled();

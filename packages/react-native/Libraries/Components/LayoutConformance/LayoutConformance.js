@@ -37,7 +37,7 @@ function LayoutConformance(props: Props): React.Node {
 
 function UnimplementedLayoutConformance(props: Props): React.Node {
   if (__DEV__) {
-    const warnOnce = require('../../Utilities/warnOnce');
+    const warnOnce = require('../../Utilities/warnOnce').default;
 
     warnOnce(
       'layoutconformance-unsupported',

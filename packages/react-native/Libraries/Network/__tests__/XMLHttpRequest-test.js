@@ -12,12 +12,19 @@
 
 const createPerformanceLogger =
   require('../../Utilities/createPerformanceLogger').default;
-const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
-const Platform = require('../../Utilities/Platform');
+const GlobalPerformanceLogger =
+  require('../../Utilities/GlobalPerformanceLogger').default;
+const Platform = require('../../Utilities/Platform').default;
 const XMLHttpRequest = require('../XMLHttpRequest');
 
 jest.unmock('../../Utilities/Platform');
-jest.mock('../../Utilities/GlobalPerformanceLogger');
+jest
+  .spyOn(GlobalPerformanceLogger, 'startTimespan')
+  .mockImplementation(() => {});
+jest
+  .spyOn(GlobalPerformanceLogger, 'stopTimespan')
+  .mockImplementation(() => {});
+
 let requestId = 1;
 function setRequestId(id) {
   if (Platform.OS === 'ios') {

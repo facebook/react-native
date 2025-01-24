@@ -28,7 +28,7 @@ const {
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 const {Alert, FlatList, StyleSheet, Text, View} = require('react-native');
-const infoLog = require('react-native/Libraries/Utilities/infoLog');
+const infoLog = require('react-native/Libraries/Utilities/infoLog').default;
 
 class MultiColumnExample extends React.PureComponent<
   $FlowFixMeProps,
