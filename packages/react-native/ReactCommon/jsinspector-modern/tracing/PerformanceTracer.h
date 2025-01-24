@@ -77,7 +77,6 @@ class PerformanceTracer {
 
   bool tracing_{false};
   uint32_t performanceMeasureCount_{0};
-  std::unordered_map<std::string, uint64_t> customTrackIdMap_;
   std::vector<TraceEvent> buffer_;
   std::mutex mutex_;
 };
