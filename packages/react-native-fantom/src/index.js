@@ -167,6 +167,16 @@ function dispatchNativeEvent(
   );
 }
 
+function scrollTo(
+  node: ReactNativeElement,
+  options: {x: number, y: number, zoomScale?: number},
+) {
+  const shadowNode = getShadowNode(node);
+  NativeFantom.scrollTo(shadowNode, options);
+}
+
+export const unstable_benchmark = Benchmark;
+
 type FantomConstants = $ReadOnly<{
   isRunningFromCI: boolean,
 }>;
@@ -255,4 +265,5 @@ export default {
   createRoot,
   dispatchNativeEvent,
   unstable_benchmark: Benchmark,
+  scrollTo,
 };
