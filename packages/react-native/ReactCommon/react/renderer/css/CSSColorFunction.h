@@ -53,15 +53,15 @@ constexpr std::optional<CSSColor> parseRgbFunction(CSSSyntaxParser& parser) {
   if (std::holds_alternative<CSSNumber>(firstValue)) {
     redNumber = std::get<CSSNumber>(firstValue).value;
 
-    auto green = parseNextCSSValue<CSSNumber>(
-        parser, CSSComponentValueDelimiter::CommaOrWhitespace);
+    auto green =
+        parseNextCSSValue<CSSNumber>(parser, CSSDelimiter::CommaOrWhitespace);
     if (!std::holds_alternative<CSSNumber>(green)) {
       return {};
     }
     greenNumber = std::get<CSSNumber>(green).value;
 
-    auto blue = parseNextCSSValue<CSSNumber>(
-        parser, CSSComponentValueDelimiter::CommaOrWhitespace);
+    auto blue =
+        parseNextCSSValue<CSSNumber>(parser, CSSDelimiter::CommaOrWhitespace);
     if (!std::holds_alternative<CSSNumber>(blue)) {
       return {};
     }
@@ -70,31 +70,22 @@ constexpr std::optional<CSSColor> parseRgbFunction(CSSSyntaxParser& parser) {
     redNumber = std::get<CSSPercentage>(firstValue).value * 2.55f;
 
     auto green = parseNextCSSValue<CSSPercentage>(
-        parser, CSSComponentValueDelimiter::CommaOrWhitespace);
+        parser, CSSDelimiter::CommaOrWhitespace);
     if (!std::holds_alternative<CSSPercentage>(green)) {
       return {};
     }
     greenNumber = std::get<CSSPercentage>(green).value * 2.55f;
 
     auto blue = parseNextCSSValue<CSSPercentage>(
-        parser, CSSComponentValueDelimiter::CommaOrWhitespace);
+        parser, CSSDelimiter::CommaOrWhitespace);
     if (!std::holds_alternative<CSSPercentage>(blue)) {
       return {};
     }
     blueNumber = std::get<CSSPercentage>(blue).value * 2.55f;
   }
 
-  auto alphaValue = peekNextCSSValue<CSSNumber, CSSPercentage>(
-      parser, CSSComponentValueDelimiter::CommaOrWhitespace);
-  if (!std::holds_alternative<std::monostate>(alphaValue)) {
-    parser.consumeComponentValue(CSSComponentValueDelimiter::CommaOrWhitespace);
-  } else {
-    alphaValue = peekNextCSSValue<CSSNumber, CSSPercentage>(
-        parser, CSSComponentValueDelimiter::Solidus);
-    if (!std::holds_alternative<std::monostate>(alphaValue)) {
-      parser.consumeComponentValue(CSSComponentValueDelimiter::Solidus);
-    }
-  }
+  auto alphaValue = parseNextCSSValue<CSSNumber, CSSPercentage>(
+      parser, CSSDelimiter::CommaOrWhitespaceOrSolidus);
 
   float alphaNumber = std::holds_alternative<std::monostate>(alphaValue) ? 1.0f
       : std::holds_alternative<CSSNumber>(alphaValue)
