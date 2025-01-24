@@ -104,6 +104,31 @@ hslToRgb(float h, float s, float l) {
   };
 }
 
+inline std::tuple<uint8_t, uint8_t, uint8_t>
+hwbToRgb(float h, float w, float b) {
+  w = std::clamp(w / 100.0f, 0.0f, 1.0f);
+  b = std::clamp(b / 100.0f, 0.0f, 1.0f);
+
+  if (w + b >= 1.0f) {
+    auto gray = w / (w + b);
+    return {
+        static_cast<uint8_t>(std::round(gray * 255.0f)),
+        static_cast<uint8_t>(std::round(gray * 255.0f)),
+        static_cast<uint8_t>(std::round(gray * 255.0f)),
+    };
+  }
+
+  auto red = hueToRgb(0.0f, 1.0f, h + 1.0f / 3.0f) * (1.0f - w - b) + w;
+  auto green = hueToRgb(0.0f, 1.0f, h) * (1.0f - w - b) + w;
+  auto blue = hueToRgb(0.0f, 1.0f, h - 1.0f / 3.0f) * (1.0f - w - b) + w;
+
+  return {
+      static_cast<uint8_t>(std::round(red * 255.0f)),
+      static_cast<uint8_t>(std::round(green * 255.0f)),
+      static_cast<uint8_t>(std::round(blue * 255.0f)),
+  };
+}
+
 template <typename... ComponentT>
   requires(
       (std::is_same_v<CSSNumber, ComponentT> ||
@@ -269,6 +294,7 @@ inline std::optional<CSSColor> parseLegacyHslFunction(CSSSyntaxParser& parser) {
   if (!l.has_value()) {
     return {};
   }
+
   auto a = normalizeComponent(
       parseNextCSSValue<CSSNumber, CSSPercentage>(parser, CSSDelimiter::Comma),
       1.0f);
@@ -310,6 +336,7 @@ inline std::optional<CSSColor> parseModernHslFunction(CSSSyntaxParser& parser) {
   if (!l.has_value()) {
     return {};
   }
+
   auto a = normalizeComponent(
       parseNextCSSValue<CSSNumber, CSSPercentage>(
           parser, CSSDelimiter::SolidusOrWhitespace),
@@ -337,6 +364,50 @@ inline std::optional<CSSColor> parseHslFunction(CSSSyntaxParser& parser) {
     return parseModernHslFunction<CSSColor>(parser);
   }
 }
+
+/**
+ * Parses an hwb() function and returns a CSSColor if it is valid.
+ * https://www.w3.org/TR/css-color-4/#funcdef-hwb
+ */
+template <typename CSSColor>
+inline std::optional<CSSColor> parseHwbFunction(CSSSyntaxParser& parser) {
+  auto h =
+      normalizeHueComponent(parseNextCSSValue<CSSNumber, CSSAngle>(parser));
+  if (!h.has_value()) {
+    return {};
+  }
+
+  auto w = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(
+          parser, CSSDelimiter::Whitespace),
+      100.0f);
+  if (!w.has_value()) {
+    return {};
+  }
+
+  auto b = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(
+          parser, CSSDelimiter::Whitespace),
+      100.0f);
+  if (!b.has_value()) {
+    return {};
+  }
+
+  auto a = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(
+          parser, CSSDelimiter::SolidusOrWhitespace),
+      1.0f);
+
+  auto [red, green, blue] = hwbToRgb(*h, *w, *b);
+
+  return CSSColor{
+      .r = red,
+      .g = green,
+      .b = blue,
+      .a = clampAlpha(a),
+  };
+}
+
 } // namespace detail
 
 /**
@@ -360,20 +431,11 @@ constexpr std::optional<CSSColor> parseCSSColorFunction(
       return detail::parseHslFunction<CSSColor>(parser);
       break;
     case fnv1a("hwb"):
-    case fnv1a("hwba"):
-      // TODO
+      return detail::parseHwbFunction<CSSColor>(parser);
       break;
-    case fnv1a("lab"):
-      break;
-    case fnv1a("lch"):
-      break;
-    case fnv1a("oklab"):
-      break;
-    case fnv1a("oklch"):
-      break;
-    case fnv1a("color"):
-      // TODO T213000437: Support `color()` functions and wide-gamut colors.
-      break;
+
+    // TODO T213000437: support lab(), lch(), oklab(), oklch(), color(),
+    // color-mix()
     default:
       return {};
   }
