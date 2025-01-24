@@ -57,15 +57,6 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
-    completeReactInstanceCreationOnBgThreadOnAndroid: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
     disableEventLoopOnBridgeless: {
       defaultValue: false,
       metadata: {
@@ -403,15 +394,6 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         description:
           'Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
-    useImmediateExecutorInAndroidBridgeless: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
         expectedReleaseValue: true,
         purpose: 'release',
       },
