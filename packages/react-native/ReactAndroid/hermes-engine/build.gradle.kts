@@ -282,7 +282,7 @@ android {
 
   sourceSets.getByName("main") {
     manifest.srcFile("$hermesDir/android/hermes/src/main/AndroidManifest.xml")
-    java.srcDir("$hermesDir/lib/Platform/Intl/java")
+    java.srcDirs("$hermesDir/lib/Platform/Intl/java", "$hermesDir/lib/Platform/Unicode/java")
   }
 
   buildFeatures {
