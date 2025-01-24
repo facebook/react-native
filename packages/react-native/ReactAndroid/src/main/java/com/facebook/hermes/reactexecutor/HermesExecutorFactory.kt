@@ -13,9 +13,7 @@ import com.facebook.hermes.instrumentation.HermesSamplingProfiler.enable
 import com.facebook.react.bridge.JavaScriptExecutor
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 
-public class HermesExecutorFactory
-@JvmOverloads
-public constructor(private val config: RuntimeConfig? = null) : JavaScriptExecutorFactory {
+public class HermesExecutorFactory : JavaScriptExecutorFactory {
   private var enableDebugger = true
   private var debuggerName = ""
 
@@ -27,7 +25,7 @@ public constructor(private val config: RuntimeConfig? = null) : JavaScriptExecut
     this.debuggerName = debuggerName
   }
 
-  override fun create(): JavaScriptExecutor = HermesExecutor(config, enableDebugger, debuggerName)
+  override fun create(): JavaScriptExecutor = HermesExecutor(enableDebugger, debuggerName)
 
   override fun startSamplingProfiler() {
     enable()
