@@ -19,4 +19,4 @@ const TextAncestorContext: React$Context<boolean> = React.createContext(false);
 if (__DEV__) {
   TextAncestorContext.displayName = 'TextAncestorContext';
 }
-module.exports = TextAncestorContext;
+export default TextAncestorContext;

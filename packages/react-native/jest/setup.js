@@ -120,9 +120,14 @@ jest
   .mock('../Libraries/Image/Image', () =>
     mockComponent('../Libraries/Image/Image'),
   )
-  .mock('../Libraries/Text/Text', () =>
-    mockComponent('../Libraries/Text/Text', MockNativeMethods),
-  )
+  .mock('../Libraries/Text/Text', () => ({
+    __esModule: true,
+    default: mockComponent(
+      '../Libraries/Text/Text',
+      MockNativeMethods,
+      /* isESModule */ true,
+    ),
+  }))
   .mock('../Libraries/Components/TextInput/TextInput', () =>
     mockComponent('../Libraries/Components/TextInput/TextInput', {
       ...MockNativeMethods,

@@ -20,7 +20,7 @@ const TouchableHighlight =
   require('../Components/Touchable/TouchableHighlight').default;
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text');
+const Text = require('../Text/Text').default;
 const ElementProperties = require('./ElementProperties');
 const NetworkOverlay = require('./NetworkOverlay');
 const PerformanceOverlay = require('./PerformanceOverlay');

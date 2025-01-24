@@ -183,7 +183,7 @@ module.exports = {
     return require('./Libraries/Components/Switch/Switch').default;
   },
   get Text(): Text {
-    return require('./Libraries/Text/Text');
+    return require('./Libraries/Text/Text').default;
   },
   get TextInput(): TextInput {
     return require('./Libraries/Components/TextInput/TextInput');
@@ -315,10 +315,10 @@ module.exports = {
     return require('./Libraries/PushNotificationIOS/PushNotificationIOS');
   },
   get Settings(): Settings {
-    return require('./Libraries/Settings/Settings');
+    return require('./Libraries/Settings/Settings').default;
   },
   get Share(): Share {
-    return require('./Libraries/Share/Share');
+    return require('./Libraries/Share/Share').default;
   },
   get StyleSheet(): StyleSheet {
     return require('./Libraries/StyleSheet/StyleSheet');

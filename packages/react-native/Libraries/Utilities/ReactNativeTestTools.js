@@ -20,7 +20,7 @@ import ReactTestRenderer from 'react-test-renderer';
 const Switch = require('../Components/Switch/Switch').default;
 const TextInput = require('../Components/TextInput/TextInput');
 const View = require('../Components/View/View');
-const Text = require('../Text/Text');
+const Text = require('../Text/Text').default;
 const {VirtualizedList} = require('@react-native/virtualized-lists');
 
 export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;

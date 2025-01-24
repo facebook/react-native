@@ -7725,7 +7725,7 @@ exports[`public API should not change unintentionally Libraries/Settings/Setting
   watchKeys(keys: string | Array<string>, callback: Function): number,
   clearWatch(watchId: number): void,
 };
-declare module.exports: Settings;
+declare export default typeof Settings;
 "
 `;
 
@@ -7762,7 +7762,7 @@ declare class Share {
   static sharedAction: \\"sharedAction\\";
   static dismissedAction: \\"dismissedAction\\";
 }
-declare module.exports: Share;
+declare export default typeof Share;
 "
 `;
 
@@ -8448,13 +8448,13 @@ declare const Text: component(
   ref: React.RefSetter<TextForwardRef>,
   ...props: TextProps
 );
-declare module.exports: Text;
+declare export default typeof Text;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/TextAncestor.js 1`] = `
 "declare const TextAncestorContext: React$Context<boolean>;
-declare module.exports: TextAncestorContext;
+declare export default typeof TextAncestorContext;
 "
 `;
 
