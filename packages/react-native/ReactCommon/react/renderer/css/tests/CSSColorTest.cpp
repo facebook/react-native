@@ -245,6 +245,155 @@ TEST(CSSColor, rgb_rgba_values) {
   EXPECT_TRUE(std::holds_alternative<std::monostate>(valueEndingWithComma));
 }
 
+TEST(CSSColor, hsl_hsla_values) {
+  auto simpleValue = parseCSSProperty<CSSColor>("hsl(180, 50%, 50%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(simpleValue));
+  EXPECT_EQ(std::get<CSSColor>(simpleValue).r, 64);
+  EXPECT_EQ(std::get<CSSColor>(simpleValue).g, 191);
+  EXPECT_EQ(std::get<CSSColor>(simpleValue).b, 191);
+  EXPECT_EQ(std::get<CSSColor>(simpleValue).a, 255);
+
+  auto modernSyntaxValue = parseCSSProperty<CSSColor>("hsl(180 50% 50%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(modernSyntaxValue));
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxValue).r, 64);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxValue).g, 191);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxValue).b, 191);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxValue).a, 255);
+
+  auto degreesValue = parseCSSProperty<CSSColor>("hsl(180deg, 50%, 50%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(degreesValue));
+  EXPECT_EQ(std::get<CSSColor>(degreesValue).r, 64);
+  EXPECT_EQ(std::get<CSSColor>(degreesValue).g, 191);
+  EXPECT_EQ(std::get<CSSColor>(degreesValue).b, 191);
+  EXPECT_EQ(std::get<CSSColor>(degreesValue).a, 255);
+
+  auto turnValue = parseCSSProperty<CSSColor>("hsl(0.5turn, 50%, 50%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(turnValue));
+  EXPECT_EQ(std::get<CSSColor>(turnValue).r, 64);
+  EXPECT_EQ(std::get<CSSColor>(turnValue).g, 191);
+  EXPECT_EQ(std::get<CSSColor>(turnValue).b, 191);
+  EXPECT_EQ(std::get<CSSColor>(turnValue).a, 255);
+
+  auto legacySyntaxAlphaValue =
+      parseCSSProperty<CSSColor>("hsl(70, 190%, 75%, 0.5)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(legacySyntaxAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(legacySyntaxAlphaValue).r, 234);
+  EXPECT_EQ(std::get<CSSColor>(legacySyntaxAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(legacySyntaxAlphaValue).b, 128);
+  EXPECT_EQ(std::get<CSSColor>(legacySyntaxAlphaValue).a, 128);
+
+  auto modernSyntaxAlphaValue =
+      parseCSSProperty<CSSColor>("hsl(70 190% 75% 0.5)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(modernSyntaxAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxAlphaValue).r, 234);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxAlphaValue).b, 128);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxAlphaValue).a, 128);
+
+  auto modernSyntaxWithSolidusAlphaValue =
+      parseCSSProperty<CSSColor>("hsl(70 190% 75% 0.5)");
+  EXPECT_TRUE(
+      std::holds_alternative<CSSColor>(modernSyntaxWithSolidusAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxWithSolidusAlphaValue).r, 234);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxWithSolidusAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxWithSolidusAlphaValue).b, 128);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxWithSolidusAlphaValue).a, 128);
+
+  auto percentageAlphaValue =
+      parseCSSProperty<CSSColor>("hsl(70 190% 75% 50%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(percentageAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(percentageAlphaValue).r, 234);
+  EXPECT_EQ(std::get<CSSColor>(percentageAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(percentageAlphaValue).b, 128);
+  EXPECT_EQ(std::get<CSSColor>(percentageAlphaValue).a, 128);
+
+  auto hslaWithSolidusAlphaValue =
+      parseCSSProperty<CSSColor>("hsla(70 190% 75% / 0.5)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(hslaWithSolidusAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(hslaWithSolidusAlphaValue).r, 234);
+  EXPECT_EQ(std::get<CSSColor>(hslaWithSolidusAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(hslaWithSolidusAlphaValue).b, 128);
+  EXPECT_EQ(std::get<CSSColor>(hslaWithSolidusAlphaValue).a, 128);
+
+  auto rgbLegacySyntaxWithSolidusAlphaValue =
+      parseCSSProperty<CSSColor>("hsl(1, 4, 5 / 0.5)");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(
+      rgbLegacySyntaxWithSolidusAlphaValue));
+
+  auto hslaWithoutAlphaValue = parseCSSProperty<CSSColor>("hsla(70 190% 75%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(hslaWithoutAlphaValue));
+  EXPECT_EQ(std::get<CSSColor>(hslaWithoutAlphaValue).r, 234);
+  EXPECT_EQ(std::get<CSSColor>(hslaWithoutAlphaValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(hslaWithoutAlphaValue).b, 128);
+  EXPECT_EQ(std::get<CSSColor>(hslaWithoutAlphaValue).a, 255);
+
+  auto surroundingWhitespaceValue =
+      parseCSSProperty<CSSColor>("  hsl(180, 50%, 50%) ");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(surroundingWhitespaceValue));
+  EXPECT_EQ(std::get<CSSColor>(surroundingWhitespaceValue).r, 64);
+  EXPECT_EQ(std::get<CSSColor>(surroundingWhitespaceValue).g, 191);
+  EXPECT_EQ(std::get<CSSColor>(surroundingWhitespaceValue).b, 191);
+  EXPECT_EQ(std::get<CSSColor>(surroundingWhitespaceValue).a, 255);
+
+  auto modernSyntaxWithNumberComponent =
+      parseCSSProperty<CSSColor>("hsl(180 50 50%)");
+  EXPECT_TRUE(
+      std::holds_alternative<CSSColor>(modernSyntaxWithNumberComponent));
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxWithNumberComponent).r, 64);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxWithNumberComponent).g, 191);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxWithNumberComponent).b, 191);
+  EXPECT_EQ(std::get<CSSColor>(modernSyntaxWithNumberComponent).a, 255);
+
+  auto legacySyntaxWithNumberComponent =
+      parseCSSProperty<CSSColor>("hsl(180, 50, 50%)");
+  EXPECT_TRUE(
+      std::holds_alternative<std::monostate>(legacySyntaxWithNumberComponent));
+
+  auto clampedComponentValue =
+      parseCSSProperty<CSSColor>("hsl(360, -100%, 120%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(clampedComponentValue));
+  EXPECT_EQ(std::get<CSSColor>(clampedComponentValue).r, 255);
+  EXPECT_EQ(std::get<CSSColor>(clampedComponentValue).g, 255);
+  EXPECT_EQ(std::get<CSSColor>(clampedComponentValue).b, 255);
+  EXPECT_EQ(std::get<CSSColor>(clampedComponentValue).a, 255);
+
+  auto manyDegreesValue = parseCSSProperty<CSSColor>("hsl(540deg, 50%, 50%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(manyDegreesValue));
+  EXPECT_EQ(std::get<CSSColor>(manyDegreesValue).r, 64);
+  EXPECT_EQ(std::get<CSSColor>(manyDegreesValue).g, 191);
+  EXPECT_EQ(std::get<CSSColor>(manyDegreesValue).b, 191);
+  EXPECT_EQ(std::get<CSSColor>(manyDegreesValue).a, 255);
+
+  auto negativeDegreesValue =
+      parseCSSProperty<CSSColor>("hsl(-180deg, 50%, 50%)");
+  EXPECT_TRUE(std::holds_alternative<CSSColor>(negativeDegreesValue));
+  EXPECT_EQ(std::get<CSSColor>(negativeDegreesValue).r, 64);
+  EXPECT_EQ(std::get<CSSColor>(negativeDegreesValue).g, 191);
+  EXPECT_EQ(std::get<CSSColor>(negativeDegreesValue).b, 191);
+  EXPECT_EQ(std::get<CSSColor>(negativeDegreesValue).a, 255);
+
+  auto valueWithSingleComponent = parseCSSProperty<CSSColor>("hsl(180deg)");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(valueWithSingleComponent));
+
+  auto valueWithTooFewComponents =
+      parseCSSProperty<CSSColor>("hsl(180deg, 50%)");
+  EXPECT_TRUE(
+      std::holds_alternative<std::monostate>(valueWithTooFewComponents));
+
+  auto valueWithTooManyComponents =
+      parseCSSProperty<CSSColor>("hsl(70 190% 75% 0.5 0.5)");
+  EXPECT_TRUE(
+      std::holds_alternative<std::monostate>(valueWithTooManyComponents));
+
+  auto valueStartingWithComma =
+      parseCSSProperty<CSSColor>("hsl(,540deg, 50%, 50%)");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(valueStartingWithComma));
+
+  auto valueEndingWithComma =
+      parseCSSProperty<CSSColor>("hsl(540deg, 50%, 50%,)");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(valueEndingWithComma));
+}
+
 TEST(CSSColor, constexpr_values) {
   [[maybe_unused]] constexpr auto emptyValue = parseCSSProperty<CSSColor>("");
 
