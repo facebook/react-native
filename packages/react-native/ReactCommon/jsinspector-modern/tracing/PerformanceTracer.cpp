@@ -122,6 +122,15 @@ void PerformanceTracer::reportMeasure(
     return;
   }
 
+  folly::dynamic beginEventArgs = folly::dynamic::object();
+  if (trackMetadata.has_value()) {
+    folly::dynamic devtoolsObject = folly::dynamic::object(
+        "devtools",
+        folly::dynamic::object("track", trackMetadata.value().track));
+    beginEventArgs =
+        folly::dynamic::object("detail", folly::toJson(devtoolsObject));
+  }
+
   ++performanceMeasureCount_;
   buffer_.push_back(TraceEvent{
       .id = performanceMeasureCount_,
@@ -132,6 +141,7 @@ void PerformanceTracer::reportMeasure(
       .pid = PID, // FIXME: This should be the real process ID.
       .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
                                          // thread ID.
+      .args = beginEventArgs,
   });
   buffer_.push_back(TraceEvent{
       .id = performanceMeasureCount_,
