@@ -5239,7 +5239,7 @@ declare class NetworkOverlay extends React.Component<Props, State> {
     offset: number,
     visibleLength: number,
   };
-  _socketIdMap: { [string]: number };
+  _socketIdMap: { [number]: number };
   _xhrIdMap: { [key: number]: number, ... };
   state: State;
   _enableXHRInterception(): void;
@@ -9487,13 +9487,19 @@ declare export default typeof WebSocketEvent;
 
 exports[`public API should not change unintentionally Libraries/WebSocket/WebSocketInterceptor.js 1`] = `
 "declare const WebSocketInterceptor: {
-  setCloseCallback(callback: $FlowFixMe): void,
-  setSendCallback(callback: $FlowFixMe): void,
-  setConnectCallback(callback: $FlowFixMe): void,
-  setOnOpenCallback(callback: $FlowFixMe): void,
-  setOnMessageCallback(callback: $FlowFixMe): void,
-  setOnErrorCallback(callback: $FlowFixMe): void,
-  setOnCloseCallback(callback: $FlowFixMe): void,
+  setCloseCallback(
+    callback: ?(number | null, string | null, number) => void
+  ): void,
+  setSendCallback(callback: ?(string | ArrayBuffer, number) => void): void,
+  setConnectCallback(
+    callback: ?(string, Array<string> | null, Array<string>, number) => void
+  ): void,
+  setOnOpenCallback(callback: ?(number) => void): void,
+  setOnMessageCallback(callback: ?(string | ArrayBuffer, number) => void): void,
+  setOnErrorCallback(callback: ?({ message: string }, number) => void): void,
+  setOnCloseCallback(
+    callback: ?({ code: number, reason: ?string }, number) => void
+  ): void,
   isInterceptorEnabled(): boolean,
   _unregisterEvents(): void,
   _registerEvents(): void,
