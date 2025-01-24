@@ -14,8 +14,7 @@ TEST(CSSSyntaxParser, simple) {
   CSSSyntaxParser parser{"1px solid black"};
 
   auto pxValue = parser.consumeComponentValue<float>(
-      CSSComponentValueDelimiter::Whitespace,
-      [](const CSSPreservedToken& token) {
+      CSSDelimiter::OptionalWhitespace, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Dimension);
         EXPECT_EQ(token.numericValue(), 1.0f);
         EXPECT_EQ(token.unit(), "px");
@@ -24,9 +23,7 @@ TEST(CSSSyntaxParser, simple) {
   EXPECT_EQ(pxValue, 1.0f);
 
   auto identValue = parser.consumeComponentValue<std::string_view>(
-      CSSComponentValueDelimiter::Whitespace,
-
-      [](const CSSPreservedToken& token) {
+      CSSDelimiter::OptionalWhitespace, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Ident);
         EXPECT_EQ(token.stringValue(), "solid");
         return token.stringValue();
@@ -34,8 +31,7 @@ TEST(CSSSyntaxParser, simple) {
   EXPECT_EQ(identValue, "solid");
 
   auto identValue2 = parser.consumeComponentValue<std::string_view>(
-      CSSComponentValueDelimiter::Whitespace,
-      [](const CSSPreservedToken& token) {
+      CSSDelimiter::OptionalWhitespace, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Ident);
         EXPECT_EQ(token.stringValue(), "black");
         return token.stringValue();
@@ -52,7 +48,6 @@ TEST(CSSSyntaxParser, single_function_no_args) {
         return function.name;
 
         auto hasMoreTokens = blockParser.consumeComponentValue<bool>(
-            CSSComponentValueDelimiter::Whitespace,
             [](const CSSPreservedToken& /*token*/) { return true; });
 
         EXPECT_FALSE(hasMoreTokens);
@@ -70,7 +65,7 @@ TEST(CSSSyntaxParser, single_function_with_whitespace_delimited_args) {
         std::vector<std::string> args;
 
         args.emplace_back(blockParser.consumeComponentValue<std::string_view>(
-            CSSComponentValueDelimiter::Whitespace,
+            CSSDelimiter::OptionalWhitespace,
 
             [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Ident);
@@ -79,7 +74,7 @@ TEST(CSSSyntaxParser, single_function_with_whitespace_delimited_args) {
             }));
 
         args.emplace_back(blockParser.consumeComponentValue<std::string_view>(
-            CSSComponentValueDelimiter::Whitespace,
+            CSSDelimiter::Whitespace,
 
             [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Ident);
@@ -88,7 +83,7 @@ TEST(CSSSyntaxParser, single_function_with_whitespace_delimited_args) {
             }));
 
         args.emplace_back(blockParser.consumeComponentValue<std::string_view>(
-            CSSComponentValueDelimiter::Whitespace,
+            CSSDelimiter::Whitespace,
 
             [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Ident);
@@ -97,7 +92,7 @@ TEST(CSSSyntaxParser, single_function_with_whitespace_delimited_args) {
             }));
 
         auto hasMoreTokens = blockParser.consumeComponentValue<bool>(
-            CSSComponentValueDelimiter::Whitespace,
+            CSSDelimiter::Whitespace,
             [](const CSSPreservedToken& /*token*/) { return true; });
 
         EXPECT_FALSE(hasMoreTokens);
@@ -119,7 +114,7 @@ TEST(CSSSyntaxParser, single_function_with_comma_delimited_args) {
         std::array<uint8_t, 3> rgb{};
 
         rgb[0] = blockParser.consumeComponentValue<uint8_t>(
-            CSSComponentValueDelimiter::Whitespace,
+            CSSDelimiter::OptionalWhitespace,
             [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Number);
               EXPECT_EQ(token.numericValue(), 100);
@@ -127,23 +122,21 @@ TEST(CSSSyntaxParser, single_function_with_comma_delimited_args) {
             });
 
         rgb[1] = blockParser.consumeComponentValue<uint8_t>(
-            CSSComponentValueDelimiter::Comma,
-            [](const CSSPreservedToken& token) {
+            CSSDelimiter::Comma, [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Number);
               EXPECT_EQ(token.numericValue(), 200);
               return static_cast<uint8_t>(token.numericValue());
             });
 
         rgb[2] = blockParser.consumeComponentValue<uint8_t>(
-            CSSComponentValueDelimiter::Comma,
-            [](const CSSPreservedToken& token) {
+            CSSDelimiter::Comma, [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Number);
               EXPECT_EQ(token.numericValue(), 50);
               return static_cast<uint8_t>(token.numericValue());
             });
 
         auto hasMoreTokens = blockParser.consumeComponentValue<bool>(
-            CSSComponentValueDelimiter::Whitespace,
+            CSSDelimiter::Whitespace,
             [](const CSSPreservedToken& /*token*/) { return true; });
 
         EXPECT_FALSE(hasMoreTokens);
@@ -165,15 +158,14 @@ TEST(CSSSyntaxParser, single_function_with_mixed_delimited_args) {
         std::array<uint8_t, 3> rgb{};
 
         rgb[0] = blockParser.consumeComponentValue<uint8_t>(
-            CSSComponentValueDelimiter::None,
-            [](const CSSPreservedToken& token) {
+            CSSDelimiter::None, [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Number);
               EXPECT_EQ(token.numericValue(), 100);
               return static_cast<uint8_t>(token.numericValue());
             });
 
         rgb[1] = blockParser.consumeComponentValue<uint8_t>(
-            CSSComponentValueDelimiter::CommaOrWhitespace,
+            CSSDelimiter::CommaOrWhitespace,
             [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Number);
               EXPECT_EQ(token.numericValue(), 200);
@@ -181,7 +173,7 @@ TEST(CSSSyntaxParser, single_function_with_mixed_delimited_args) {
             });
 
         rgb[2] = blockParser.consumeComponentValue<uint8_t>(
-            CSSComponentValueDelimiter::CommaOrWhitespace,
+            CSSDelimiter::CommaOrWhitespace,
             [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Number);
               EXPECT_EQ(token.numericValue(), 50);
@@ -189,7 +181,7 @@ TEST(CSSSyntaxParser, single_function_with_mixed_delimited_args) {
             });
 
         auto hasMoreTokens = blockParser.consumeComponentValue<bool>(
-            CSSComponentValueDelimiter::Whitespace,
+            CSSDelimiter::Whitespace,
             [](const CSSPreservedToken& /*token*/) { return true; });
 
         EXPECT_FALSE(hasMoreTokens);
@@ -208,7 +200,7 @@ TEST(CSSSyntaxParser, complex) {
       [&](const CSSFunctionBlock& function, CSSSyntaxParser& blockParser) {
         EXPECT_EQ(function.name, "foo");
         auto identArg = blockParser.consumeComponentValue<std::string_view>(
-            CSSComponentValueDelimiter::Whitespace,
+            CSSDelimiter::OptionalWhitespace,
             [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Ident);
               EXPECT_EQ(token.stringValue(), "a");
@@ -217,13 +209,13 @@ TEST(CSSSyntaxParser, complex) {
         EXPECT_EQ(identArg, "a");
 
         auto barFunc = blockParser.consumeComponentValue<std::string_view>(
-            CSSComponentValueDelimiter::Whitespace,
+            CSSDelimiter::Whitespace,
             [&](const CSSFunctionBlock& function,
                 CSSSyntaxParser& nestedBlockParser) {
               EXPECT_EQ(function.name, "bar");
               auto hasMoreTokens =
                   nestedBlockParser.consumeComponentValue<bool>(
-                      CSSComponentValueDelimiter::Whitespace,
+                      CSSDelimiter::Whitespace,
                       [](const CSSPreservedToken& /*token*/) { return true; });
               EXPECT_FALSE(hasMoreTokens);
 
@@ -232,7 +224,7 @@ TEST(CSSSyntaxParser, complex) {
         EXPECT_EQ(barFunc, "bar");
 
         auto hasMoreTokens = blockParser.consumeComponentValue<bool>(
-            CSSComponentValueDelimiter::Whitespace,
+            CSSDelimiter::Whitespace,
             [](const CSSPreservedToken& /*token*/) { return true; });
         EXPECT_FALSE(hasMoreTokens);
 
@@ -248,8 +240,7 @@ TEST(CSSSyntaxParser, complex) {
   EXPECT_EQ(bazFunc, "baz");
 
   auto pxValue = parser.consumeComponentValue<float>(
-      CSSComponentValueDelimiter::Whitespace,
-      [](const CSSPreservedToken& token) {
+      CSSDelimiter::Whitespace, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Dimension);
         EXPECT_EQ(token.numericValue(), 12.0f);
         EXPECT_EQ(token.unit(), "px");
@@ -366,8 +357,7 @@ TEST(CSSSyntaxParser, whitespace_surrounding_function_args) {
         EXPECT_EQ(function.name, "foo");
 
         auto identArg = blockParser.consumeComponentValue<std::string_view>(
-            CSSComponentValueDelimiter::None,
-            [](const CSSPreservedToken& token) {
+            CSSDelimiter::None, [](const CSSPreservedToken& token) {
               EXPECT_EQ(token.type(), CSSTokenType::Ident);
               EXPECT_EQ(token.stringValue(), "a");
               return token.stringValue();
@@ -435,8 +425,7 @@ TEST(CSSSyntaxParser, preserved_token_without_visitor_consumed) {
   parser.consumeComponentValue();
 
   auto identValue = parser.consumeComponentValue<std::string_view>(
-      CSSComponentValueDelimiter::Whitespace,
-      [](const CSSPreservedToken& token) {
+      CSSDelimiter::Whitespace, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Ident);
         EXPECT_EQ(token.stringValue(), "bar");
         return token.stringValue();
@@ -451,8 +440,7 @@ TEST(CSSSyntaxParser, function_without_visitor_consumed) {
   parser.consumeComponentValue();
 
   auto identValue = parser.consumeComponentValue<std::string_view>(
-      CSSComponentValueDelimiter::Whitespace,
-      [](const CSSPreservedToken& token) {
+      CSSDelimiter::Whitespace, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Ident);
         EXPECT_EQ(token.stringValue(), "bar");
         return token.stringValue();
@@ -467,8 +455,7 @@ TEST(CSSSyntaxParser, simple_block_without_visitor_consumed) {
   parser.consumeComponentValue();
 
   auto identValue = parser.consumeComponentValue<std::string_view>(
-      CSSComponentValueDelimiter::Whitespace,
-      [](const CSSPreservedToken& token) {
+      CSSDelimiter::Whitespace, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Ident);
         EXPECT_EQ(token.stringValue(), "bar");
         return token.stringValue();
@@ -490,7 +477,7 @@ TEST(CSSSyntaxParser, solidus_delimiter) {
   EXPECT_EQ(identValue, "foo");
 
   auto identValue2 = parser.consumeComponentValue<std::string_view>(
-      CSSComponentValueDelimiter::Solidus, [](const CSSPreservedToken& token) {
+      CSSDelimiter::Solidus, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Ident);
         EXPECT_EQ(token.stringValue(), "bar");
         return token.stringValue();
@@ -512,10 +499,87 @@ TEST(CSSSyntaxParser, solidus_delimiter_not_present) {
   EXPECT_EQ(identValue, "foo");
 
   auto identValue2 = parser.consumeComponentValue<bool>(
-      CSSComponentValueDelimiter::Solidus,
+      CSSDelimiter::Solidus,
       [](const CSSPreservedToken& /*token*/) { return true; });
 
   EXPECT_FALSE(identValue2);
+}
+
+TEST(CSSSyntaxParser, required_whitespace_not_present) {
+  CSSSyntaxParser parser{"foo/"};
+
+  auto identValue = parser.consumeComponentValue<std::string_view>(
+      [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Ident);
+        EXPECT_EQ(token.stringValue(), "foo");
+        return token.stringValue();
+      });
+
+  EXPECT_EQ(identValue, "foo");
+
+  auto delimValue1 = parser.consumeComponentValue<bool>(
+      CSSDelimiter::Whitespace,
+      [](const CSSPreservedToken& /*token*/) { return true; });
+
+  EXPECT_FALSE(delimValue1);
+
+  auto delimValue2 = parser.consumeComponentValue<std::string_view>(
+      CSSDelimiter::OptionalWhitespace, [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Delim);
+        EXPECT_EQ(token.stringValue(), "/");
+        return token.stringValue();
+      });
+
+  EXPECT_EQ(delimValue2, "/");
+}
+
+TEST(CSSSyntaxParser, comma_or_whitespace_or_solidus) {
+  CSSSyntaxParser parser{"foo, bar / baz potato%"};
+
+  auto identValue1 = parser.consumeComponentValue<std::string_view>(
+      CSSDelimiter::OptionalWhitespace, [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Ident);
+        EXPECT_EQ(token.stringValue(), "foo");
+        return token.stringValue();
+      });
+
+  EXPECT_EQ(identValue1, "foo");
+
+  auto identValue2 = parser.consumeComponentValue<std::string_view>(
+      CSSDelimiter::CommaOrWhitespaceOrSolidus,
+      [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Ident);
+        EXPECT_EQ(token.stringValue(), "bar");
+        return token.stringValue();
+      });
+
+  EXPECT_EQ(identValue2, "bar");
+
+  auto identValue3 = parser.consumeComponentValue<std::string_view>(
+      CSSDelimiter::CommaOrWhitespaceOrSolidus,
+      [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Ident);
+        EXPECT_EQ(token.stringValue(), "baz");
+        return token.stringValue();
+      });
+
+  EXPECT_EQ(identValue3, "baz");
+
+  auto identValue4 = parser.consumeComponentValue<std::string_view>(
+      CSSDelimiter::CommaOrWhitespaceOrSolidus,
+      [](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.type(), CSSTokenType::Ident);
+        EXPECT_EQ(token.stringValue(), "potato");
+        return token.stringValue();
+      });
+
+  EXPECT_EQ(identValue4, "potato");
+
+  auto delimValue1 = parser.consumeComponentValue<bool>(
+      CSSDelimiter::CommaOrWhitespaceOrSolidus,
+      [](const CSSPreservedToken& token) { return true; });
+
+  EXPECT_FALSE(delimValue1);
 }
 
 } // namespace facebook::react

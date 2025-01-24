@@ -32,7 +32,7 @@ class CSSValueParser {
    */
   template <CSSDataType... AllowedTypesT>
   constexpr std::variant<std::monostate, AllowedTypesT...> consumeValue(
-      CSSComponentValueDelimiter delimeter = CSSComponentValueDelimiter::None) {
+      CSSDelimiter delimeter = CSSDelimiter::None) {
     using ReturnT = std::variant<std::monostate, AllowedTypesT...>;
 
     return parser_.consumeComponentValue<ReturnT>(
@@ -174,7 +174,7 @@ constexpr auto parseCSSProperty(std::string_view css)
 template <CSSDataType... AllowedTypesT>
 constexpr auto parseNextCSSValue(
     CSSSyntaxParser& syntaxParser,
-    CSSComponentValueDelimiter delimeter = CSSComponentValueDelimiter::None)
+    CSSDelimiter delimeter = CSSDelimiter::None)
     -> std::variant<std::monostate, AllowedTypesT...> {
   detail::CSSValueParser valueParser(syntaxParser);
   return valueParser.consumeValue<AllowedTypesT...>(delimeter);
@@ -187,7 +187,7 @@ constexpr auto parseNextCSSValue(
 template <CSSDataType... AllowedTypesT>
 constexpr auto peekNextCSSValue(
     CSSSyntaxParser& syntaxParser,
-    CSSComponentValueDelimiter delimeter = CSSComponentValueDelimiter::None)
+    CSSDelimiter delimeter = CSSDelimiter::None)
     -> std::variant<std::monostate, AllowedTypesT...> {
   auto savedParser = syntaxParser;
   detail::CSSValueParser valueParser(syntaxParser);
