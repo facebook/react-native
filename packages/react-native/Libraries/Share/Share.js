@@ -168,4 +168,4 @@ class Share {
   static dismissedAction: 'dismissedAction' = 'dismissedAction';
 }
 
-module.exports = Share;
+export default Share;

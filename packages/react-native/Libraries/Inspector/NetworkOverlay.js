@@ -21,7 +21,7 @@ const View = require('../Components/View/View');
 const FlatList = require('../Lists/FlatList');
 const XHRInterceptor = require('../Network/XHRInterceptor');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text');
+const Text = require('../Text/Text').default;
 const WebSocketInterceptor =
   require('../WebSocket/WebSocketInterceptor').default;
 

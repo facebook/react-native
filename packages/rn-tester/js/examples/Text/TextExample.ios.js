@@ -26,7 +26,8 @@ const {
   TextInput,
   View,
 } = require('react-native');
-const TextAncestor = require('react-native/Libraries/Text/TextAncestor');
+const TextAncestor =
+  require('react-native/Libraries/Text/TextAncestor').default;
 
 // TODO: Is there a cleaner way to flip the TextAncestor value to false? I
 //   suspect apps won't even be able to leverage this workaround because

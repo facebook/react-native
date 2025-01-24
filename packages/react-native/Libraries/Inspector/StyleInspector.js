@@ -17,7 +17,7 @@ import React from 'react';
 
 const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text');
+const Text = require('../Text/Text').default;
 
 type Props = $ReadOnly<{
   style?: ?____FlattenStyleProp_Internal<ViewStyleProp>,
