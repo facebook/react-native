@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a52e542f52e9570338bf11c6182cf16c>>
+ * @generated SignedSource<<3bf74cbd626df283429e270fe45ff5b4>>
  */
 
 /**
@@ -141,10 +141,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool fuseboxEnabledRelease() override {
     return false;
-  }
-
-  bool initEagerTurboModulesOnNativeModulesQueueAndroid() override {
-    return true;
   }
 
   bool lazyAnimationCallbacks() override {

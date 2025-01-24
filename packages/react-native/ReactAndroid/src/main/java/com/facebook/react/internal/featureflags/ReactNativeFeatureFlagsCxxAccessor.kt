@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5aa2f74189fc30b58fd62fb588d70a0b>>
+ * @generated SignedSource<<b95bff0f0534eded5f6d147f3e6c41fc>>
  */
 
 /**
@@ -49,7 +49,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
   private var fuseboxEnabledReleaseCache: Boolean? = null
-  private var initEagerTurboModulesOnNativeModulesQueueAndroidCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
@@ -321,15 +320,6 @@ public class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccesso
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.fuseboxEnabledRelease()
       fuseboxEnabledReleaseCache = cached
-    }
-    return cached
-  }
-
-  override fun initEagerTurboModulesOnNativeModulesQueueAndroid(): Boolean {
-    var cached = initEagerTurboModulesOnNativeModulesQueueAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.initEagerTurboModulesOnNativeModulesQueueAndroid()
-      initEagerTurboModulesOnNativeModulesQueueAndroidCache = cached
     }
     return cached
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55065c8f506e80d82183546c6f8bb886>>
+ * @generated SignedSource<<c751e39a2a924bf55d5529a4e86ad99b>>
  */
 
 /**
@@ -115,9 +115,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fuseboxEnabledRelease(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool initEagerTurboModulesOnNativeModulesQueueAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool lazyAnimationCallbacks(
