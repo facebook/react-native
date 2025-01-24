@@ -41,7 +41,7 @@ module.exports = {
     return require('../BatchedBridge/BatchedBridge').default;
   },
   get ExceptionsManager(): ExceptionsManager {
-    return require('../Core/ExceptionsManager');
+    return require('../Core/ExceptionsManager').default;
   },
   get Platform(): Platform {
     return require('../Utilities/Platform');

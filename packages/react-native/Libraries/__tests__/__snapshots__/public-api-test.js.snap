@@ -4258,31 +4258,34 @@ exports[`public API should not change unintentionally Libraries/Core/Devtools/ge
   bundleLoadedFromServer: boolean,
   ...
 };
-declare function getDevServer(): DevServerInfo;
-declare module.exports: getDevServer;
+declare export default function getDevServer(): DevServerInfo;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/Devtools/loadBundleFromServer.js 1`] = `
-"declare module.exports: (bundlePathAndQuery: string) => Promise<void>;
+"declare export default function loadBundleFromServer(
+  bundlePathAndQuery: string
+): Promise<void>;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/Devtools/openFileInEditor.js 1`] = `
-"declare function openFileInEditor(file: string, lineNumber: number): void;
-declare module.exports: openFileInEditor;
+"declare export default function openFileInEditor(
+  file: string,
+  lineNumber: number
+): void;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/Devtools/openURLInBrowser.js 1`] = `
-"declare function openURLInBrowser(url: string): void;
-declare module.exports: openURLInBrowser;
+"declare export default function openURLInBrowser(url: string): void;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/Devtools/parseErrorStack.js 1`] = `
-"declare function parseErrorStack(errorStack?: string): Array<StackFrame>;
-declare module.exports: parseErrorStack;
+"declare export default function parseErrorStack(
+  errorStack?: string
+): Array<StackFrame>;
 "
 `;
 
@@ -4327,7 +4330,9 @@ export type HermesParsedStack = $ReadOnly<{
   message: string,
   entries: $ReadOnlyArray<HermesStackEntry>,
 }>;
-declare module.exports: (stack: string) => HermesParsedStack;
+declare export default function parseHermesStack(
+  stack: string
+): HermesParsedStack;
 "
 `;
 
@@ -4345,16 +4350,15 @@ export type SymbolicatedStackTrace = $ReadOnly<{
   stack: Array<StackFrame>,
   codeFrame: ?CodeFrame,
 }>;
-declare function symbolicateStackTrace(
+declare export default function symbolicateStackTrace(
   stack: Array<StackFrame>,
   extraData?: mixed
 ): Promise<SymbolicatedStackTrace>;
-declare module.exports: symbolicateStackTrace;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/ExceptionsManager.js 1`] = `
-"declare class SyntheticError extends Error {
+"declare export class SyntheticError extends Error {
   name: string;
 }
 type ExceptionDecorator = (ExceptionData) => ExceptionData;
@@ -4364,13 +4368,14 @@ declare function unstable_setExceptionDecorator(
 ): void;
 declare function handleException(e: mixed, isFatal: boolean): void;
 declare function installConsoleErrorReporter(): void;
-declare module.exports: {
+declare const ExceptionsManager: {
   decoratedExtraDataKey: decoratedExtraDataKey,
   handleException: handleException,
   installConsoleErrorReporter: installConsoleErrorReporter,
   SyntheticError: SyntheticError,
   unstable_setExceptionDecorator: unstable_setExceptionDecorator,
 };
+declare export default typeof ExceptionsManager;
 "
 `;
 
@@ -4439,8 +4444,7 @@ exports[`public API should not change unintentionally Libraries/Core/ReactNative
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/ReactNativeVersionCheck.js 1`] = `
-"declare const checkVersions: () => void;
-declare module.exports: { checkVersions: checkVersions };
+"declare export function checkVersions(): void;
 "
 `;
 
@@ -4473,7 +4477,7 @@ declare let ExportedJSTimers: {
   setInterval: (func: any, duration: number, ...args: any) => number,
   setTimeout: (func: any, duration: number, ...args: any) => number,
 };
-declare module.exports: ExportedJSTimers;
+declare export default typeof ExportedJSTimers;
 "
 `;
 
@@ -4484,13 +4488,8 @@ declare export default typeof NativeTiming;
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/Timers/immediateShim.js 1`] = `
-"declare function setImmediate(callback: Function, ...args: any): number;
-declare function clearImmediate(immediateID: number): void;
-declare const immediateShim: {
-  setImmediate: setImmediate,
-  clearImmediate: clearImmediate,
-};
-declare module.exports: immediateShim;
+"declare export function setImmediate(callback: Function, ...args: any): number;
+declare export function clearImmediate(immediateID: number): void;
 "
 `;
 

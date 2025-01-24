@@ -75,7 +75,6 @@ if (__DEV__) {
 
   require('./setUpReactRefresh');
 
-  global[
-    `${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`
-  ] = require('./Devtools/loadBundleFromServer');
+  global[`${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] =
+    require('./Devtools/loadBundleFromServer').default;
 }
