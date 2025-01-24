@@ -19,6 +19,12 @@ namespace {
  * https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview?pli=1&tab=t.0#heading=h.yr4qxyxotyw
  */
 struct TraceEvent {
+  /**
+   * Optional. Serialized as a string, usually is hexadecimal number.
+   * https://github.com/ChromeDevTools/devtools-frontend/blob/99a9104ae974f8caa63927e356800f6762cdbf25/front_end/models/trace/helpers/Trace.ts#L198-L201
+   */
+  std::optional<uint32_t> id;
+
   /** The name of the event, as displayed in the Trace Viewer. */
   std::string name;
 
