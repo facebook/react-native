@@ -11,7 +11,7 @@
 
 import '../../../Core/InitializeCore.js';
 
-import * as Fantom from '@react-native/fantom';
+import Fantom from '@react-native/fantom';
 import * as React from 'react';
 
 const View = require('../View');

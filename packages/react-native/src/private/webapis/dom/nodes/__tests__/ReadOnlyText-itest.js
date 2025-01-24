@@ -17,7 +17,7 @@ import ensureInstance from '../../../../utilities/ensureInstance';
 import ReactNativeElement from '../ReactNativeElement';
 import ReadOnlyNode from '../ReadOnlyNode';
 import ReadOnlyText from '../ReadOnlyText';
-import * as Fantom from '@react-native/fantom';
+import Fantom from '@react-native/fantom';
 import invariant from 'invariant';
 import * as React from 'react';
 
