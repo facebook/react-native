@@ -8,9 +8,11 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <optional>
 #include <string_view>
+#include <tuple>
 
 #include <react/renderer/css/CSSAngle.h>
 #include <react/renderer/css/CSSNumber.h>
@@ -41,6 +43,65 @@ constexpr std::optional<float> normalizeNumberComponent(
   }
 
   return {};
+}
+
+constexpr uint8_t clampAlpha(std::optional<float> alpha) {
+  return alpha.has_value() ? clamp255Component(*alpha * 255.0f)
+                           : static_cast<uint8_t>(255u);
+}
+
+inline float normalizeHue(float hue) {
+  auto rem = std::remainder(hue, 360.0f);
+  return (rem < 0 ? rem + 360 : rem) / 360.0f;
+}
+
+inline std::optional<float> normalizeHueComponent(
+    const std::variant<std::monostate, CSSNumber, CSSAngle>& component) {
+  if (std::holds_alternative<CSSNumber>(component)) {
+    return normalizeHue(std::get<CSSNumber>(component).value);
+  } else if (std::holds_alternative<CSSAngle>(component)) {
+    return normalizeHue(std::get<CSSAngle>(component).degrees);
+  }
+
+  return {};
+}
+
+constexpr float hueToRgb(float p, float q, float t) {
+  if (t < 0.0f) {
+    t += 1.0f;
+  }
+  if (t > 1.0f) {
+    t -= 1.0f;
+  }
+  if (t < 1.0f / 6.0f) {
+    return p + (q - p) * 6 * t;
+  }
+  if (t < 1.0f / 2.0f) {
+    return q;
+  }
+  if (t < 2.0f / 3.0f) {
+    return p + (q - p) * (2.0f / 3.0f - t) * 6.0f;
+  }
+  return p;
+}
+
+inline std::tuple<uint8_t, uint8_t, uint8_t>
+hslToRgb(float h, float s, float l) {
+  s = std::clamp(s / 100.0f, 0.0f, 1.0f);
+  l = std::clamp(l / 100.0f, 0.0f, 1.0f);
+
+  auto q = l < 0.5f ? l * (1.0f + s) : l + s - l * s;
+  auto p = 2.0f * l - q;
+
+  auto r = hueToRgb(p, q, h + 1.0f / 3.0f);
+  auto g = hueToRgb(p, q, h);
+  auto b = hueToRgb(p, q, h - 1.0f / 3.0f);
+
+  return {
+      static_cast<uint8_t>(std::round(r * 255.0f)),
+      static_cast<uint8_t>(std::round(g * 255.0f)),
+      static_cast<uint8_t>(std::round(b * 255.0f)),
+  };
 }
 
 template <typename... ComponentT>
@@ -124,8 +185,7 @@ constexpr std::optional<CSSColor> parseLegacyRgbFunction(
       .r = clamp255Component(*red),
       .g = clamp255Component(*green),
       .b = clamp255Component(*blue),
-      .a = alpha.has_value() ? clamp255Component(*alpha * 255.0f)
-                             : static_cast<uint8_t>(255u),
+      .a = clampAlpha(alpha),
   };
 }
 
@@ -168,8 +228,7 @@ constexpr std::optional<CSSColor> parseModernRgbFunction(
       .r = clamp255Component(*red),
       .g = clamp255Component(*green),
       .b = clamp255Component(*blue),
-      .a = alpha.has_value() ? clamp255Component(*alpha * 255.0f)
-                             : static_cast<uint8_t>(255u),
+      .a = clampAlpha(alpha),
   };
 }
 
@@ -183,6 +242,99 @@ constexpr std::optional<CSSColor> parseRgbFunction(CSSSyntaxParser& parser) {
     return parseLegacyRgbFunction<CSSColor>(parser);
   } else {
     return parseModernRgbFunction<CSSColor>(parser);
+  }
+}
+
+/**
+ * Parses a legacy syntax hsl() or hsla() function and returns a CSSColor if it
+ * is valid.
+ * https://www.w3.org/TR/css-color-4/#typedef-legacy-hsl-syntax
+ */
+template <typename CSSColor>
+inline std::optional<CSSColor> parseLegacyHslFunction(CSSSyntaxParser& parser) {
+  auto h =
+      normalizeHueComponent(parseNextCSSValue<CSSNumber, CSSAngle>(parser));
+  if (!h.has_value()) {
+    return {};
+  }
+
+  auto s = normalizeComponent(
+      parseNextCSSValue<CSSPercentage>(parser, CSSDelimiter::Comma), 100.0f);
+  if (!s.has_value()) {
+    return {};
+  }
+
+  auto l = normalizeComponent(
+      parseNextCSSValue<CSSPercentage>(parser, CSSDelimiter::Comma), 100.0f);
+  if (!l.has_value()) {
+    return {};
+  }
+  auto a = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(parser, CSSDelimiter::Comma),
+      1.0f);
+
+  auto [r, g, b] = hslToRgb(*h, *s, *l);
+
+  return CSSColor{
+      .r = r,
+      .g = g,
+      .b = b,
+      .a = clampAlpha(a),
+  };
+}
+
+/**
+ * Parses a modern syntax hsl() or hsla() function and returns a CSSColor if
+ * it is valid. https://www.w3.org/TR/css-color-4/#typedef-modern-hsl-syntax
+ */
+template <typename CSSColor>
+inline std::optional<CSSColor> parseModernHslFunction(CSSSyntaxParser& parser) {
+  auto h =
+      normalizeHueComponent(parseNextCSSValue<CSSNumber, CSSAngle>(parser));
+  if (!h.has_value()) {
+    return {};
+  }
+
+  auto s = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(
+          parser, CSSDelimiter::Whitespace),
+      100.0f);
+  if (!s.has_value()) {
+    return {};
+  }
+
+  auto l = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(
+          parser, CSSDelimiter::Whitespace),
+      100.0f);
+  if (!l.has_value()) {
+    return {};
+  }
+  auto a = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(
+          parser, CSSDelimiter::SolidusOrWhitespace),
+      1.0f);
+
+  auto [r, g, b] = hslToRgb(*h, *s, *l);
+
+  return CSSColor{
+      .r = r,
+      .g = g,
+      .b = b,
+      .a = clampAlpha(a),
+  };
+}
+
+/**
+ * Parses an hsl() or hsla() function and returns a CSSColor if it is valid.
+ * https://www.w3.org/TR/css-color-4/#funcdef-hsl
+ */
+template <typename CSSColor>
+inline std::optional<CSSColor> parseHslFunction(CSSSyntaxParser& parser) {
+  if (isLegacyColorFunction<CSSNumber, CSSAngle>(parser)) {
+    return parseLegacyHslFunction<CSSColor>(parser);
+  } else {
+    return parseModernHslFunction<CSSColor>(parser);
   }
 }
 } // namespace detail
@@ -205,7 +357,7 @@ constexpr std::optional<CSSColor> parseCSSColorFunction(
       break;
     case fnv1a("hsl"):
     case fnv1a("hsla"):
-      // TODO
+      return detail::parseHslFunction<CSSColor>(parser);
       break;
     case fnv1a("hwb"):
     case fnv1a("hwba"):
