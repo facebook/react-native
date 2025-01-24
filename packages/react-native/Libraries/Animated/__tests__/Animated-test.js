@@ -793,7 +793,8 @@ describe('Animated', () => {
     beforeEach(() => {
       jest.mock('../../Interaction/InteractionManager');
       Animated = require('../Animated').default;
-      InteractionManager = require('../../Interaction/InteractionManager');
+      InteractionManager =
+        require('../../Interaction/InteractionManager').default;
     });
 
     afterEach(() => {

@@ -179,4 +179,4 @@ const TouchHistoryMath = {
   noCentroid: number,
 };
 
-module.exports = TouchHistoryMath;
+export default TouchHistoryMath;

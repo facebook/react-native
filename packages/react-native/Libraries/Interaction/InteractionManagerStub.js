@@ -173,4 +173,4 @@ const InteractionManagerStub = {
   },
 };
 
-module.exports = InteractionManagerStub;
+export default InteractionManagerStub;
