@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<64272d425ecd02e71d1a59170ad942cd>>
+ * @generated SignedSource<<35a44d924111dbbb305ede64ae34d9c9>>
  */
 
 /**
@@ -72,12 +72,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableCppPropsIteratorSetter() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableCppPropsIteratorSetter");
-    return method(javaProvider_);
-  }
-
-  bool enableDeletionOfUnmountedViews() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableDeletionOfUnmountedViews");
     return method(javaProvider_);
   }
 
@@ -349,11 +343,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter(
   return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableDeletionOfUnmountedViews(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableDeletionOfUnmountedViews();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
@@ -598,9 +587,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableCppPropsIteratorSetter",
         JReactNativeFeatureFlagsCxxInterop::enableCppPropsIteratorSetter),
-      makeNativeMethod(
-        "enableDeletionOfUnmountedViews",
-        JReactNativeFeatureFlagsCxxInterop::enableDeletionOfUnmountedViews),
       makeNativeMethod(
         "enableEagerRootViewAttachment",
         JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment),

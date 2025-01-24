@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fd9bd691bde2694db1c0401930e275b3>>
+ * @generated SignedSource<<592c874bdb2eb8ace8dd0f95ccb0024a>>
  */
 
 /**
@@ -68,11 +68,6 @@ class ReactNativeFeatureFlags {
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
   RN_EXPORT static bool enableCppPropsIteratorSetter();
-
-  /**
-   * Deletes views that were pre-allocated but never mounted on the screen.
-   */
-  RN_EXPORT static bool enableDeletionOfUnmountedViews();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.

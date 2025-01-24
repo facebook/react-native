@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3aadd0d890f3dac9fee5bc465d759203>>
+ * @generated SignedSource<<6339f7995b2e2d11ad363194daf85ddf>>
  */
 
 /**
@@ -50,8 +50,6 @@ class NativeReactNativeFeatureFlags
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
-
-  bool enableDeletionOfUnmountedViews(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 

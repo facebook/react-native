@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a84fe2f37a8afbd6d2015a0d28f2c878>>
+ * @generated SignedSource<<1561312f88deb1ecd0d103138b524c0a>>
  */
 
 /**
@@ -48,10 +48,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableCppPropsIteratorSetter() override {
-    return false;
-  }
-
-  bool enableDeletionOfUnmountedViews() override {
     return false;
   }
 

@@ -115,16 +115,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableDeletionOfUnmountedViews: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-13',
-        description:
-          'Deletes views that were pre-allocated but never mounted on the screen.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-    },
     enableEagerRootViewAttachment: {
       defaultValue: false,
       metadata: {

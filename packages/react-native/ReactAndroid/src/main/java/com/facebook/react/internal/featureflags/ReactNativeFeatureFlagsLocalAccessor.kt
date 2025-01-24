@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c74fd40b5988929440b157ea5437d65b>>
+ * @generated SignedSource<<e7f9212c5a070020842476d19cfcf882>>
  */
 
 /**
@@ -30,7 +30,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
-  private var enableDeletionOfUnmountedViewsCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
   private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
@@ -127,16 +126,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.enableCppPropsIteratorSetter()
       accessedFeatureFlags.add("enableCppPropsIteratorSetter")
       enableCppPropsIteratorSetterCache = cached
-    }
-    return cached
-  }
-
-  override fun enableDeletionOfUnmountedViews(): Boolean {
-    var cached = enableDeletionOfUnmountedViewsCache
-    if (cached == null) {
-      cached = currentProvider.enableDeletionOfUnmountedViews()
-      accessedFeatureFlags.add("enableDeletionOfUnmountedViews")
-      enableDeletionOfUnmountedViewsCache = cached
     }
     return cached
   }

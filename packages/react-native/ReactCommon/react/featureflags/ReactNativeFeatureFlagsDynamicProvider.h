@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<32058afdbd4cfbd28a1c21405ae3107d>>
+ * @generated SignedSource<<a75e261b0b9536b96ec3c0189484a4ea>>
  */
 
 /**
@@ -97,15 +97,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableCppPropsIteratorSetter();
-  }
-
-  bool enableDeletionOfUnmountedViews() override {
-    auto value = values_["enableDeletionOfUnmountedViews"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableDeletionOfUnmountedViews();
   }
 
   bool enableEagerRootViewAttachment() override {
