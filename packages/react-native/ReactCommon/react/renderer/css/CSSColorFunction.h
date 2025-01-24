@@ -17,6 +17,7 @@
 #include <react/renderer/css/CSSPercentage.h>
 #include <react/renderer/css/CSSSyntaxParser.h>
 #include <react/renderer/css/CSSValueParser.h>
+#include <react/utils/PackTraits.h>
 #include <react/utils/fnv1a.h>
 
 namespace facebook::react {
@@ -33,71 +34,156 @@ constexpr uint8_t clamp255Component(float f) {
   return static_cast<uint8_t>(std::clamp(ceiled, 0, 255));
 }
 
+constexpr std::optional<float> normalizeNumberComponent(
+    const std::variant<std::monostate, CSSNumber>& component) {
+  if (std::holds_alternative<CSSNumber>(component)) {
+    return std::get<CSSNumber>(component).value;
+  }
+
+  return {};
+}
+
+template <typename... ComponentT>
+  requires(
+      (std::is_same_v<CSSNumber, ComponentT> ||
+       std::is_same_v<CSSPercentage, ComponentT>) &&
+      ...)
+constexpr std::optional<float> normalizeComponent(
+    const std::variant<std::monostate, ComponentT...>& component,
+    float baseValue) {
+  if constexpr (traits::containsType<CSSPercentage, ComponentT...>()) {
+    if (std::holds_alternative<CSSPercentage>(component)) {
+      return std::get<CSSPercentage>(component).value / 100.0f * baseValue;
+    }
+  }
+
+  if constexpr (traits::containsType<CSSNumber, ComponentT...>()) {
+    if (std::holds_alternative<CSSNumber>(component)) {
+      return std::get<CSSNumber>(component).value;
+    }
+  }
+
+  return {};
+}
+
+template <CSSDataType... FirstComponentAllowedTypesT>
+constexpr bool isLegacyColorFunction(CSSSyntaxParser& parser) {
+  auto lookahead = parser;
+  auto next = parseNextCSSValue<FirstComponentAllowedTypesT...>(lookahead);
+  if (std::holds_alternative<std::monostate>(next)) {
+    return false;
+  }
+
+  return lookahead.consumeComponentValue<bool>(
+      CSSDelimiter::OptionalWhitespace, [](CSSPreservedToken token) {
+        return token.type() == CSSTokenType::Comma;
+      });
+}
+
+/**
+ * Parses a legacy syntax rgb() or rgba() function and returns a CSSColor if it
+ * is valid.
+ * https://www.w3.org/TR/css-color-4/#typedef-legacy-rgb-syntax
+ */
+template <typename CSSColor>
+constexpr std::optional<CSSColor> parseLegacyRgbFunction(
+    CSSSyntaxParser& parser) {
+  auto rawRed = parseNextCSSValue<CSSNumber, CSSPercentage>(parser);
+  bool usesNumber = std::holds_alternative<CSSNumber>(rawRed);
+
+  auto red = normalizeComponent(rawRed, 255.0f);
+  if (!red.has_value()) {
+    return {};
+  }
+
+  auto green = usesNumber
+      ? normalizeNumberComponent(
+            parseNextCSSValue<CSSNumber>(parser, CSSDelimiter::Comma))
+      : normalizeComponent(
+            parseNextCSSValue<CSSPercentage>(parser, CSSDelimiter::Comma),
+            255.0f);
+  if (!green.has_value()) {
+    return {};
+  }
+
+  auto blue = usesNumber
+      ? normalizeNumberComponent(
+            parseNextCSSValue<CSSNumber>(parser, CSSDelimiter::Comma))
+      : normalizeComponent(
+            parseNextCSSValue<CSSPercentage>(parser, CSSDelimiter::Comma),
+            255.0f);
+  if (!blue.has_value()) {
+    return {};
+  }
+
+  auto alpha = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(parser, CSSDelimiter::Comma),
+      1.0f);
+
+  return CSSColor{
+      .r = clamp255Component(*red),
+      .g = clamp255Component(*green),
+      .b = clamp255Component(*blue),
+      .a = alpha.has_value() ? clamp255Component(*alpha * 255.0f)
+                             : static_cast<uint8_t>(255u),
+  };
+}
+
+/**
+ * Parses a modern syntax rgb() or rgba() function and returns a CSSColor if it
+ * is valid.
+ * https://www.w3.org/TR/css-color-4/#typedef-modern-rgb-syntax
+ */
+template <typename CSSColor>
+constexpr std::optional<CSSColor> parseModernRgbFunction(
+    CSSSyntaxParser& parser) {
+  auto red = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(parser), 255.0f);
+  if (!red.has_value()) {
+    return {};
+  }
+
+  auto green = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(
+          parser, CSSDelimiter::Whitespace),
+      255.0f);
+  if (!green.has_value()) {
+    return {};
+  }
+
+  auto blue = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(
+          parser, CSSDelimiter::Whitespace),
+      255.0f);
+  if (!blue.has_value()) {
+    return {};
+  }
+
+  auto alpha = normalizeComponent(
+      parseNextCSSValue<CSSNumber, CSSPercentage>(
+          parser, CSSDelimiter::SolidusOrWhitespace),
+      1.0f);
+
+  return CSSColor{
+      .r = clamp255Component(*red),
+      .g = clamp255Component(*green),
+      .b = clamp255Component(*blue),
+      .a = alpha.has_value() ? clamp255Component(*alpha * 255.0f)
+                             : static_cast<uint8_t>(255u),
+  };
+}
+
 /**
  * Parses an rgb() or rgba() function and returns a CSSColor if it is valid.
- * Some invalid syntax (like mixing commas and whitespace) are allowed for
- * backwards compatibility with normalize-color.
  * https://www.w3.org/TR/css-color-4/#funcdef-rgb
  */
 template <typename CSSColor>
 constexpr std::optional<CSSColor> parseRgbFunction(CSSSyntaxParser& parser) {
-  auto firstValue = parseNextCSSValue<CSSNumber, CSSPercentage>(parser);
-  if (std::holds_alternative<std::monostate>(firstValue)) {
-    return {};
-  }
-
-  float redNumber = 0;
-  float greenNumber = 0;
-  float blueNumber = 0;
-
-  if (std::holds_alternative<CSSNumber>(firstValue)) {
-    redNumber = std::get<CSSNumber>(firstValue).value;
-
-    auto green =
-        parseNextCSSValue<CSSNumber>(parser, CSSDelimiter::CommaOrWhitespace);
-    if (!std::holds_alternative<CSSNumber>(green)) {
-      return {};
-    }
-    greenNumber = std::get<CSSNumber>(green).value;
-
-    auto blue =
-        parseNextCSSValue<CSSNumber>(parser, CSSDelimiter::CommaOrWhitespace);
-    if (!std::holds_alternative<CSSNumber>(blue)) {
-      return {};
-    }
-    blueNumber = std::get<CSSNumber>(blue).value;
+  if (isLegacyColorFunction<CSSNumber, CSSPercentage>(parser)) {
+    return parseLegacyRgbFunction<CSSColor>(parser);
   } else {
-    redNumber = std::get<CSSPercentage>(firstValue).value * 2.55f;
-
-    auto green = parseNextCSSValue<CSSPercentage>(
-        parser, CSSDelimiter::CommaOrWhitespace);
-    if (!std::holds_alternative<CSSPercentage>(green)) {
-      return {};
-    }
-    greenNumber = std::get<CSSPercentage>(green).value * 2.55f;
-
-    auto blue = parseNextCSSValue<CSSPercentage>(
-        parser, CSSDelimiter::CommaOrWhitespace);
-    if (!std::holds_alternative<CSSPercentage>(blue)) {
-      return {};
-    }
-    blueNumber = std::get<CSSPercentage>(blue).value * 2.55f;
+    return parseModernRgbFunction<CSSColor>(parser);
   }
-
-  auto alphaValue = parseNextCSSValue<CSSNumber, CSSPercentage>(
-      parser, CSSDelimiter::CommaOrWhitespaceOrSolidus);
-
-  float alphaNumber = std::holds_alternative<std::monostate>(alphaValue) ? 1.0f
-      : std::holds_alternative<CSSNumber>(alphaValue)
-      ? std::get<CSSNumber>(alphaValue).value
-      : std::get<CSSPercentage>(alphaValue).value / 100.0f;
-
-  return CSSColor{
-      .r = clamp255Component(redNumber),
-      .g = clamp255Component(greenNumber),
-      .b = clamp255Component(blueNumber),
-      .a = clamp255Component(alphaNumber * 255.0f),
-  };
 }
 } // namespace detail
 

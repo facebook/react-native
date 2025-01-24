@@ -533,8 +533,8 @@ TEST(CSSSyntaxParser, required_whitespace_not_present) {
   EXPECT_EQ(delimValue2, "/");
 }
 
-TEST(CSSSyntaxParser, comma_or_whitespace_or_solidus) {
-  CSSSyntaxParser parser{"foo, bar / baz potato%"};
+TEST(CSSSyntaxParser, solidus_or_whitespace) {
+  CSSSyntaxParser parser{"foo bar / baz potato, papaya"};
 
   auto identValue1 = parser.consumeComponentValue<std::string_view>(
       CSSDelimiter::OptionalWhitespace, [](const CSSPreservedToken& token) {
@@ -546,8 +546,7 @@ TEST(CSSSyntaxParser, comma_or_whitespace_or_solidus) {
   EXPECT_EQ(identValue1, "foo");
 
   auto identValue2 = parser.consumeComponentValue<std::string_view>(
-      CSSDelimiter::CommaOrWhitespaceOrSolidus,
-      [](const CSSPreservedToken& token) {
+      CSSDelimiter::SolidusOrWhitespace, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Ident);
         EXPECT_EQ(token.stringValue(), "bar");
         return token.stringValue();
@@ -556,8 +555,7 @@ TEST(CSSSyntaxParser, comma_or_whitespace_or_solidus) {
   EXPECT_EQ(identValue2, "bar");
 
   auto identValue3 = parser.consumeComponentValue<std::string_view>(
-      CSSDelimiter::CommaOrWhitespaceOrSolidus,
-      [](const CSSPreservedToken& token) {
+      CSSDelimiter::SolidusOrWhitespace, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Ident);
         EXPECT_EQ(token.stringValue(), "baz");
         return token.stringValue();
@@ -566,8 +564,7 @@ TEST(CSSSyntaxParser, comma_or_whitespace_or_solidus) {
   EXPECT_EQ(identValue3, "baz");
 
   auto identValue4 = parser.consumeComponentValue<std::string_view>(
-      CSSDelimiter::CommaOrWhitespaceOrSolidus,
-      [](const CSSPreservedToken& token) {
+      CSSDelimiter::SolidusOrWhitespace, [](const CSSPreservedToken& token) {
         EXPECT_EQ(token.type(), CSSTokenType::Ident);
         EXPECT_EQ(token.stringValue(), "potato");
         return token.stringValue();
@@ -576,7 +573,7 @@ TEST(CSSSyntaxParser, comma_or_whitespace_or_solidus) {
   EXPECT_EQ(identValue4, "potato");
 
   auto delimValue1 = parser.consumeComponentValue<bool>(
-      CSSDelimiter::CommaOrWhitespaceOrSolidus,
+      CSSDelimiter::SolidusOrWhitespace,
       [](const CSSPreservedToken& token) { return true; });
 
   EXPECT_FALSE(delimValue1);
