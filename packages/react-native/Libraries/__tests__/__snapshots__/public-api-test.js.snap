@@ -8373,7 +8373,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "declare function processColorArray(
   colors: ?$ReadOnlyArray<ColorValue>
 ): ?$ReadOnlyArray<ProcessedColorValue>;
-declare module.exports: processColorArray;
+declare export default typeof processColorArray;
 "
 `;
 

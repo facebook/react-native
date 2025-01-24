@@ -91,7 +91,7 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
         switch (typeAnnotation.elementType.name) {
           case 'ColorPrimitive':
             return j.template
-              .expression`{ process: require('react-native/Libraries/StyleSheet/processColorArray') }`;
+              .expression`{ process: require('react-native/Libraries/StyleSheet/processColorArray').default }`;
           case 'ImageSourcePrimitive':
           case 'PointPrimitive':
           case 'EdgeInsetsPrimitive':
