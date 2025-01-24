@@ -13,7 +13,7 @@
 import setUpPerformanceObserver from '../../../setup/setUpPerformanceObserver';
 import ensureInstance from '../../../utilities/ensureInstance';
 import {PerformanceMark} from '../UserTiming';
-import {runWorkLoop} from '@react-native/fantom';
+import Fantom from '@react-native/fantom';
 
 import '../../../../../Libraries/Core/InitializeCore.js';
 
@@ -43,7 +43,7 @@ describe('User Timing API', () => {
 
       expect(callback).not.toHaveBeenCalled();
 
-      runWorkLoop();
+      Fantom.runWorkLoop();
 
       expect(callback).toHaveBeenCalledTimes(1);
 

@@ -11,7 +11,7 @@
 
 import '../../Core/InitializeCore.js';
 import View from '../../Components/View/View';
-import * as Fantom from '@react-native/fantom';
+import Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Suspense, startTransition} from 'react';
 

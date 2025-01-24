@@ -97,7 +97,7 @@ const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
  * If the work loop is running, it will be executed according to its priority.
  * Otherwise, it will wait in the queue until the work loop runs.
  */
-export function scheduleTask(task: () => void | Promise<void>) {
+function scheduleTask(task: () => void | Promise<void>) {
   nativeRuntimeScheduler.unstable_scheduleCallback(DEFAULT_TASK_PRIORITY, task);
 }
 
@@ -108,7 +108,7 @@ let flushingQueue = false;
  *
  * React must run inside of event loop to ensure scheduling environment is closer to production.
  */
-export function runTask(task: () => void | Promise<void>) {
+function runTask(task: () => void | Promise<void>) {
   if (flushingQueue) {
     throw new Error(
       'Nested `runTask` calls are not allowed. If you want to schedule a task from inside another task, use `scheduleTask` instead.',
@@ -122,7 +122,7 @@ export function runTask(task: () => void | Promise<void>) {
 /*
  * Simmulates running a task on the UI thread and forces side effect to drain the event queue, dispatching events to JavaScript.
  */
-export function runOnUIThread(task: () => void) {
+function runOnUIThread(task: () => void) {
   task();
   NativeFantom.flushEventQueue();
 }
@@ -130,7 +130,7 @@ export function runOnUIThread(task: () => void) {
 /**
  * Runs the event loop until all tasks are executed.
  */
-export function runWorkLoop(): void {
+function runWorkLoop(): void {
   if (flushingQueue) {
     throw new Error(
       'Cannot start the work loop because it is already running. If you want to schedule a task from inside another task, use `scheduleTask` instead.',
@@ -147,11 +147,11 @@ export function runWorkLoop(): void {
 
 // TODO: Add option to define surface props and pass it to startSurface
 // Surfacep rops: concurrentRoot, surfaceWidth, surfaceHeight, layoutDirection, pointScaleFactor.
-export function createRoot(rootConfig?: RootConfig): Root {
+function createRoot(rootConfig?: RootConfig): Root {
   return new Root(rootConfig);
 }
 
-export function dispatchNativeEvent(
+function dispatchNativeEvent(
   node: ReactNativeElement,
   type: string,
   payload?: {[key: string]: mixed},
@@ -166,8 +166,6 @@ export function dispatchNativeEvent(
     options?.isUnique,
   );
 }
-
-export const unstable_benchmark = Benchmark;
 
 type FantomConstants = $ReadOnly<{
   isRunningFromCI: boolean,
@@ -248,3 +246,13 @@ if (typeof global.EventTarget === 'undefined') {
     'The global Event class is already defined. If this API is already defined by React Native, you might want to remove this logic.',
   );
 }
+
+export default {
+  scheduleTask,
+  runTask,
+  runOnUIThread,
+  runWorkLoop,
+  createRoot,
+  dispatchNativeEvent,
+  unstable_benchmark: Benchmark,
+};
