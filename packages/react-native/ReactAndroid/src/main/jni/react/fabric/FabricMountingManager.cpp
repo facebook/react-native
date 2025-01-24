@@ -229,13 +229,13 @@ jni::local_ref<jobject> getProps(
   }
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
     if (oldProps == nullptr) {
-      return ReadableNativeMap::newObjectCxxArgs(newProps->rawProps);
+      return ReadableNativeMap::newObjectCxxArgs(newProps->dynamicProps);
     } else {
       return ReadableNativeMap::newObjectCxxArgs(
-          diffDynamicProps(oldProps->rawProps, newProps->rawProps));
+          diffDynamicProps(oldProps->dynamicProps, newProps->dynamicProps));
     }
   }
-  return ReadableNativeMap::newObjectCxxArgs(newProps->rawProps);
+  return ReadableNativeMap::newObjectCxxArgs(newProps->dynamicProps);
 }
 
 struct InstructionBuffer {

@@ -33,13 +33,13 @@ void Props::initialize(
       : convertRawProp(context, rawProps, "nativeID", sourceProps.nativeId, {});
 #ifdef ANDROID
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
-    auto& oldRawProps = sourceProps.rawProps;
-    auto newRawProps = rawProps.toDynamic(filterObjectKeys);
-    auto mergedRawProps = mergeDynamicProps(
-        oldRawProps, newRawProps, NullValueStrategy::Override);
-    this->rawProps = mergedRawProps;
+    auto& oldDynamicProps = sourceProps.dynamicProps;
+    auto newDynamicProps = rawProps.toDynamic(filterObjectKeys);
+    auto mergedDynamicProps = mergeDynamicProps(
+        oldDynamicProps, newDynamicProps, NullValueStrategy::Override);
+    this->dynamicProps = mergedDynamicProps;
   } else {
-    this->rawProps = rawProps.toDynamic(filterObjectKeys);
+    this->dynamicProps = rawProps.toDynamic(filterObjectKeys);
   }
 #endif
 }

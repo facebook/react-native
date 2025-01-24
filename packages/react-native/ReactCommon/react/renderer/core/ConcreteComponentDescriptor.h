@@ -120,7 +120,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     if (ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
       auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
 #ifdef ANDROID
-      const auto& dynamic = shadowNodeProps->rawProps;
+      const auto& dynamic = shadowNodeProps->dynamicProps;
 #else
       const auto& dynamic = static_cast<folly::dynamic>(rawProps);
 #endif

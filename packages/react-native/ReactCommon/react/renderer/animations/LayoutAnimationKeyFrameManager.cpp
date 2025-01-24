@@ -1621,7 +1621,7 @@ Props::Shared LayoutAnimationKeyFrameManager::interpolateProps(
   Props::Shared interpolatedPropsShared =
       (newProps != nullptr
            ? componentDescriptor.cloneProps(
-                 context, newProps, RawProps(newProps->rawProps))
+                 context, newProps, RawProps(newProps->dynamicProps))
            : componentDescriptor.cloneProps(context, newProps, {}));
 #else
   Props::Shared interpolatedPropsShared =
