@@ -11382,20 +11382,9 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   static DOCUMENT_POSITION_CONTAINED_BY: number;
   static DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: number;
 }
-declare export function getInstanceHandle(
-  node: ReadOnlyNode
-): InternalInstanceHandle;
-declare export function setInstanceHandle(
-  node: ReadOnlyNode,
-  instanceHandle: InternalInstanceHandle
-): void;
-declare export function getShadowNode(node: ReadOnlyNode): ?ShadowNode;
 declare export function getChildNodes(
   node: ReadOnlyNode
 ): $ReadOnlyArray<ReadOnlyNode>;
-declare export function getPublicInstanceFromInternalInstanceHandle(
-  instanceHandle: InternalInstanceHandle
-): ?ReadOnlyNode;
 "
 `;
 

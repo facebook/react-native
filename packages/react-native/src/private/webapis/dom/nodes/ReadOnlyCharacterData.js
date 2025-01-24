@@ -12,9 +12,10 @@
 
 import type ReadOnlyElement from './ReadOnlyElement';
 
-import ReadOnlyNode, {getShadowNode} from './ReadOnlyNode';
+import {getShadowNode} from './internals/NodeInternals';
+import {getElementSibling} from './internals/Traversal';
+import ReadOnlyNode from './ReadOnlyNode';
 import NativeDOM from './specs/NativeDOM';
-import {getElementSibling} from './utilities/Traversal';
 
 export default class ReadOnlyCharacterData extends ReadOnlyNode {
   get nextElementSibling(): ReadOnlyElement | null {

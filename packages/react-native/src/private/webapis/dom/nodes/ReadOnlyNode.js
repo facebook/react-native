@@ -10,14 +10,16 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {
-  InternalInstanceHandle,
-  Node as ShadowNode,
-} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {InternalInstanceHandle} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type NodeList from '../oldstylecollections/NodeList';
 import type ReadOnlyElement from './ReadOnlyElement';
 
 import {createNodeList} from '../oldstylecollections/NodeList';
+import {
+  getPublicInstanceFromInternalInstanceHandle,
+  getShadowNode,
+  setInstanceHandle,
+} from './internals/NodeInternals';
 import NativeDOM from './specs/NativeDOM';
 
 // We initialize this lazily to avoid a require cycle
@@ -288,37 +290,6 @@ export default class ReadOnlyNode {
   static DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: number = 32;
 }
 
-const INSTANCE_HANDLE_KEY = Symbol('internalInstanceHandle');
-
-export function getInstanceHandle(node: ReadOnlyNode): InternalInstanceHandle {
-  // $FlowExpectedError[prop-missing]
-  return node[INSTANCE_HANDLE_KEY];
-}
-
-export function setInstanceHandle(
-  node: ReadOnlyNode,
-  instanceHandle: InternalInstanceHandle,
-): void {
-  // $FlowExpectedError[prop-missing]
-  node[INSTANCE_HANDLE_KEY] = instanceHandle;
-}
-
-let RendererProxy;
-function getRendererProxy() {
-  if (RendererProxy == null) {
-    // Lazy import Fabric here to avoid DOM Node APIs classes from having side-effects.
-    // With a static import we can't use these classes for Paper-only variants.
-    RendererProxy = require('../../../../../Libraries/ReactNative/RendererProxy');
-  }
-  return RendererProxy;
-}
-
-export function getShadowNode(node: ReadOnlyNode): ?ShadowNode {
-  return getRendererProxy().getNodeFromInternalInstanceHandle(
-    getInstanceHandle(node),
-  );
-}
-
 export function getChildNodes(
   node: ReadOnlyNode,
 ): $ReadOnlyArray<ReadOnlyNode> {
@@ -353,15 +324,4 @@ function getNodeSiblingsAndPosition(
   }
 
   return [siblings, position];
-}
-
-export function getPublicInstanceFromInternalInstanceHandle(
-  instanceHandle: InternalInstanceHandle,
-): ?ReadOnlyNode {
-  const mixedPublicInstance =
-    getRendererProxy().getPublicInstanceFromInternalInstanceHandle(
-      instanceHandle,
-    );
-  // $FlowExpectedError[incompatible-return] React defines public instances as "mixed" because it can't access the definition from React Native.
-  return mixedPublicInstance;
 }

@@ -15,13 +15,13 @@ import type {
 import type {MixedElement} from 'react';
 
 import ReactNativeElement from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
-import {getShadowNode} from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import * as Benchmark from './Benchmark';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import NativeFantom, {
   NativeEventCategory,
 } from 'react-native/src/private/specs/modules/NativeFantom';
+import {getShadowNode} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
 
 let globalSurfaceIdCounter = 1;
 
