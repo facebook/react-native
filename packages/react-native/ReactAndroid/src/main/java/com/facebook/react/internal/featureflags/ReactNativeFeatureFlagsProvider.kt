@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2c72645e0cfcb38493bc9daddfb8cd06>>
+ * @generated SignedSource<<8c953d87b8fb25b0d52ddd916312a1d9>>
  */
 
 /**
@@ -24,8 +24,6 @@ import com.facebook.proguard.annotations.DoNotStrip
 @DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
-
-  @DoNotStrip public fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
@@ -96,8 +94,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useEditTextStockAndroidFocusBehavior(): Boolean
 
   @DoNotStrip public fun useFabricInterop(): Boolean
-
-  @DoNotStrip public fun useImmediateExecutorInAndroidBridgeless(): Boolean
 
   @DoNotStrip public fun useNativeViewConfigsInBridgelessMode(): Boolean
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1561312f88deb1ecd0d103138b524c0a>>
+ * @generated SignedSource<<a52e542f52e9570338bf11c6182cf16c>>
  */
 
 /**
@@ -29,10 +29,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool commonTestFlag() override {
     return false;
-  }
-
-  bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
-    return true;
   }
 
   bool disableMountItemReorderingAndroid() override {
@@ -173,10 +169,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useFabricInterop() override {
     return false;
-  }
-
-  bool useImmediateExecutorInAndroidBridgeless() override {
-    return true;
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
