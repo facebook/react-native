@@ -34,6 +34,7 @@ bool PerformanceTracer::startTracing() {
   if (tracing_) {
     return false;
   }
+
   tracing_ = true;
   return true;
 }
@@ -43,6 +44,8 @@ bool PerformanceTracer::stopTracing() {
   if (!tracing_) {
     return false;
   }
+
+  performanceMeasureCount_ = 0;
   tracing_ = false;
   return true;
 }
@@ -158,14 +161,24 @@ void PerformanceTracer::reportMeasure(
     }
   }
 
+  ++performanceMeasureCount_;
   buffer_.push_back(TraceEvent{
+      .id = performanceMeasureCount_,
       .name = std::string(name),
       .cat = "blink.user_timing",
-      .ph = 'X',
+      .ph = 'b',
       .ts = start,
       .pid = PID, // FIXME: This should be the real process ID.
       .tid = threadId, // FIXME: This should be the real thread ID.
-      .dur = duration,
+  });
+  buffer_.push_back(TraceEvent{
+      .id = performanceMeasureCount_,
+      .name = std::string(name),
+      .cat = "blink.user_timing",
+      .ph = 'e',
+      .ts = start + duration,
+      .pid = PID, // FIXME: This should be the real process ID.
+      .tid = threadId, // FIXME: This should be the real thread ID.
   });
 }
 
