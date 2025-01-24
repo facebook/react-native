@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d9e44ddbf1972707fbf74659c41fe151>>
+ * @generated SignedSource<<ea4436bf1a65e580a085fbbd093f2b59>>
  * @flow strict
  */
 
@@ -48,7 +48,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
-  completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean>,
   disableEventLoopOnBridgeless: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
@@ -85,7 +84,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useEditTextStockAndroidFocusBehavior: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
-  useImmediateExecutorInAndroidBridgeless: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useOptimisedViewPreallocationOnAndroid: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
@@ -168,10 +166,6 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  * Common flag for testing (without native implementation). Do NOT modify.
  */
 export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
-/**
- * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
- */
-export const completeReactInstanceCreationOnBgThreadOnAndroid: Getter<boolean> = createNativeFlagGetter('completeReactInstanceCreationOnBgThreadOnAndroid', true);
 /**
  * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
  */
@@ -316,10 +310,6 @@ export const useEditTextStockAndroidFocusBehavior: Getter<boolean> = createNativ
  * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
  */
 export const useFabricInterop: Getter<boolean> = createNativeFlagGetter('useFabricInterop', false);
-/**
- * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
- */
-export const useImmediateExecutorInAndroidBridgeless: Getter<boolean> = createNativeFlagGetter('useImmediateExecutorInAndroidBridgeless', true);
 /**
  * When enabled, the native view configs are used in bridgeless mode.
  */

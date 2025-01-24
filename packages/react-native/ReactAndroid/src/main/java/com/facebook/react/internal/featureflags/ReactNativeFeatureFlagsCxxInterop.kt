@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e78c96fa240965844d5b9142e58e448e>>
+ * @generated SignedSource<<de387611b8d57f9c468a641c1eec6e09>>
  */
 
 /**
@@ -29,8 +29,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   }
 
   @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableMountItemReorderingAndroid(): Boolean
 
@@ -101,8 +99,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useEditTextStockAndroidFocusBehavior(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useImmediateExecutorInAndroidBridgeless(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
 

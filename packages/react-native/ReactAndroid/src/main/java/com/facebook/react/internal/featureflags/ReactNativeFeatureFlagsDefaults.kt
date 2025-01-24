@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2d28a6cd8bce4cb845511749e46a6695>>
+ * @generated SignedSource<<60faf8d807eeec68261bffb84bb3794b>>
  */
 
 /**
@@ -24,8 +24,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   // but that is more expensive than just duplicating the defaults here.
 
   override fun commonTestFlag(): Boolean = false
-
-  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean = true
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 
@@ -96,8 +94,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useEditTextStockAndroidFocusBehavior(): Boolean = true
 
   override fun useFabricInterop(): Boolean = false
-
-  override fun useImmediateExecutorInAndroidBridgeless(): Boolean = true
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
 

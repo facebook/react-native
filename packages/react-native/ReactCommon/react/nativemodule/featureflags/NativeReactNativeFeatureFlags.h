@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6339f7995b2e2d11ad363194daf85ddf>>
+ * @generated SignedSource<<ae16dfe1e65d5acbd38e3c405d932c63>>
  */
 
 /**
@@ -38,8 +38,6 @@ class NativeReactNativeFeatureFlags
   bool commonTestFlag(jsi::Runtime& runtime);
 
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
-
-  bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
 
   bool disableEventLoopOnBridgeless(jsi::Runtime& runtime);
 
@@ -112,8 +110,6 @@ class NativeReactNativeFeatureFlags
   bool useEditTextStockAndroidFocusBehavior(jsi::Runtime& runtime);
 
   bool useFabricInterop(jsi::Runtime& runtime);
-
-  bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
 
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
 

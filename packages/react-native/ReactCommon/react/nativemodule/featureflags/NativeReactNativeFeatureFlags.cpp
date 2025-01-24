@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<46dda28edd6e2354c572df6d36a7300a>>
+ * @generated SignedSource<<32bb00f45e56fa422c0e611b14809e22>>
  */
 
 /**
@@ -47,11 +47,6 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
   // This flag is configured with `skipNativeAPI: true`.
   // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
   return false;
-}
-
-bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::disableEventLoopOnBridgeless(
@@ -234,11 +229,6 @@ bool NativeReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior(
 bool NativeReactNativeFeatureFlags::useFabricInterop(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useFabricInterop();
-}
-
-bool NativeReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
 }
 
 bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e7f9212c5a070020842476d19cfcf882>>
+ * @generated SignedSource<<0ce261b0d8568667cebc8213b9325b91>>
  */
 
 /**
@@ -25,7 +25,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private val accessedFeatureFlags = mutableSetOf<String>()
 
   private var commonTestFlagCache: Boolean? = null
-  private var completeReactInstanceCreationOnBgThreadOnAndroidCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -61,7 +60,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
-  private var useImmediateExecutorInAndroidBridgelessCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
@@ -76,16 +74,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.commonTestFlag()
       accessedFeatureFlags.add("commonTestFlag")
       commonTestFlagCache = cached
-    }
-    return cached
-  }
-
-  override fun completeReactInstanceCreationOnBgThreadOnAndroid(): Boolean {
-    var cached = completeReactInstanceCreationOnBgThreadOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.completeReactInstanceCreationOnBgThreadOnAndroid()
-      accessedFeatureFlags.add("completeReactInstanceCreationOnBgThreadOnAndroid")
-      completeReactInstanceCreationOnBgThreadOnAndroidCache = cached
     }
     return cached
   }
@@ -436,16 +424,6 @@ public class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcces
       cached = currentProvider.useFabricInterop()
       accessedFeatureFlags.add("useFabricInterop")
       useFabricInteropCache = cached
-    }
-    return cached
-  }
-
-  override fun useImmediateExecutorInAndroidBridgeless(): Boolean {
-    var cached = useImmediateExecutorInAndroidBridgelessCache
-    if (cached == null) {
-      cached = currentProvider.useImmediateExecutorInAndroidBridgeless()
-      accessedFeatureFlags.add("useImmediateExecutorInAndroidBridgeless")
-      useImmediateExecutorInAndroidBridgelessCache = cached
     }
     return cached
   }

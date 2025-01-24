@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a75e261b0b9536b96ec3c0189484a4ea>>
+ * @generated SignedSource<<d5ddf2e383134f63d850e727261b985f>>
  */
 
 /**
@@ -52,15 +52,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::commonTestFlag();
-  }
-
-  bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
-    auto value = values_["completeReactInstanceCreationOnBgThreadOnAndroid"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::completeReactInstanceCreationOnBgThreadOnAndroid();
   }
 
   bool disableMountItemReorderingAndroid() override {
@@ -376,15 +367,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useFabricInterop();
-  }
-
-  bool useImmediateExecutorInAndroidBridgeless() override {
-    auto value = values_["useImmediateExecutorInAndroidBridgeless"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::useImmediateExecutorInAndroidBridgeless();
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {
