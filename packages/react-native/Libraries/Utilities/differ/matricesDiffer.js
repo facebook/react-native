@@ -48,4 +48,4 @@ const matricesDiffer = function (
   );
 };
 
-module.exports = matricesDiffer;
+export default matricesDiffer;

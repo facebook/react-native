@@ -23,7 +23,7 @@ const View = require('../Components/View/View');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text');
-const mapWithSeparator = require('../Utilities/mapWithSeparator');
+const mapWithSeparator = require('../Utilities/mapWithSeparator').default;
 const BoxInspector = require('./BoxInspector');
 const StyleInspector = require('./StyleInspector');
 

@@ -26,7 +26,7 @@ const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
 const {RootTagContext} = require('../ReactNative/RootTag');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Platform = require('../Utilities/Platform');
+const Platform = require('../Utilities/Platform').default;
 
 type ModalEventDefinitions = {
   modalDismissed: [{modalID: number}],

@@ -143,7 +143,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         validAttributes: {
           blurRadius: true,
           capInsets: {
-            diff: require('../Utilities/differ/insetsDiffer'),
+            diff: require('../Utilities/differ/insetsDiffer').default,
           },
           defaultSource: {
             process: require('./resolveAssetSource'),

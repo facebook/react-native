@@ -85,4 +85,4 @@ const Platform: PlatformType = {
     'ios' in spec ? spec.ios : 'native' in spec ? spec.native : spec.default,
 };
 
-module.exports = Platform;
+export default Platform;

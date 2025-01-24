@@ -8,7 +8,8 @@
  * @oncall react_native
  */
 
-const deepFreezeAndThrowOnMutationInDev = require('../deepFreezeAndThrowOnMutationInDev');
+const deepFreezeAndThrowOnMutationInDev =
+  require('../deepFreezeAndThrowOnMutationInDev').default;
 
 describe('deepFreezeAndThrowOnMutationInDev', function () {
   it('should be a noop on non object values', () => {

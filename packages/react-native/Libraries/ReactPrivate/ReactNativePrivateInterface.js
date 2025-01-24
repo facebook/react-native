@@ -44,7 +44,7 @@ module.exports = {
     return require('../Core/ExceptionsManager').default;
   },
   get Platform(): Platform {
-    return require('../Utilities/Platform');
+    return require('../Utilities/Platform').default;
   },
   get RCTEventEmitter(): RCTEventEmitter {
     return require('../EventEmitter/RCTEventEmitter');
@@ -60,12 +60,12 @@ module.exports = {
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get deepDiffer(): deepDiffer {
-    return require('../Utilities/differ/deepDiffer');
+    return require('../Utilities/differ/deepDiffer').default;
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
     {...} | Array<mixed>,
   > {
-    return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
+    return require('../Utilities/deepFreezeAndThrowOnMutationInDev').default;
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {

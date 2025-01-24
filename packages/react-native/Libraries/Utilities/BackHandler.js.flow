@@ -20,4 +20,4 @@ type TBackHandler = {
   ) => {remove: () => void, ...},
 };
 
-declare module.exports: TBackHandler;
+declare export default TBackHandler;
