@@ -177,8 +177,6 @@ describe('Fantom', () => {
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <rn-view height="100.000000" width="100.000000" />,
         );
-
-        root.destroy();
       });
 
       it('default config, list of children', () => {
@@ -207,8 +205,6 @@ describe('Fantom', () => {
             <rn-view key="1" width="100.000000" height="100.000000" />
           </>,
         );
-
-        root.destroy();
       });
 
       it('include root', () => {
@@ -225,8 +221,6 @@ describe('Fantom', () => {
             <rn-view width="100.000000" height="100.000000" />
           </rn-rootView>,
         );
-
-        root.destroy();
       });
 
       it('include layout metrics', () => {
@@ -253,8 +247,6 @@ describe('Fantom', () => {
             width="100.000000"
           />,
         );
-
-        root.destroy();
       });
 
       it('take props', () => {
@@ -273,8 +265,6 @@ describe('Fantom', () => {
             })
             .toJSX(),
         ).toEqual(<rn-view width="100.000000" />);
-
-        root.destroy();
       });
 
       it('skip props', () => {
@@ -293,8 +283,6 @@ describe('Fantom', () => {
             })
             .toJSX(),
         ).toEqual(<rn-view height="100.000000" />);
-
-        root.destroy();
       });
 
       it('filter out all props', () => {
@@ -325,8 +313,6 @@ describe('Fantom', () => {
             <rn-view key="2" />
           </>,
         );
-
-        root.destroy();
       });
     });
 
@@ -370,8 +356,6 @@ describe('Fantom', () => {
           },
           type: 'Paragraph',
         });
-
-        root.destroy();
       });
     });
   });
@@ -494,7 +478,5 @@ describe('Fantom', () => {
       x: 0,
       y: 2,
     });
-
-    root.destroy();
   });
 });

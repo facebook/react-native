@@ -62,8 +62,6 @@ describe('onScroll', () => {
       x: 0,
       y: 1,
     });
-
-    root.destroy();
   });
 
   it('batches onScroll event per UI tick', () => {
@@ -116,7 +114,5 @@ describe('onScroll', () => {
       x: 0,
       y: 2,
     });
-
-    root.destroy();
   });
 });

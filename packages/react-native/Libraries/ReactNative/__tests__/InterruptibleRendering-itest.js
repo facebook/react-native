@@ -140,8 +140,6 @@ describe('discrete event category', () => {
     expect(deferredTextNativeElement.textContent).toBe(
       'Deferred text: transition',
     );
-
-    root.destroy();
   });
 });
 
@@ -253,7 +251,5 @@ describe('continuous event category', () => {
     expect(deferredTextNativeElement.textContent).toBe(
       'Deferred text: transition',
     );
-
-    root.destroy();
   });
 });
