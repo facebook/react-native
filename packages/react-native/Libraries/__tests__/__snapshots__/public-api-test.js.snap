@@ -10465,6 +10465,11 @@ export enum NativeEventCategory {
   Discrete = 3,
   Continuous = 4,
 }
+export type ScrollOptions = {
+  x: number,
+  y: number,
+  zoomScale?: number,
+};
 interface Spec extends TurboModule {
   startSurface: (
     surfaceId: number,
@@ -10480,6 +10485,7 @@ interface Spec extends TurboModule {
     category?: NativeEventCategory,
     isUnique?: boolean
   ) => void;
+  scrollTo: (shadowNode: mixed, options: ScrollOptions) => void;
   getMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;
