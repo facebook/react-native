@@ -14,7 +14,7 @@ import '../../../Core/InitializeCore.js';
 import ensureInstance from '../../../../src/private/utilities/ensureInstance';
 import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import ScrollView from '../ScrollView';
-import * as Fantom from '@react-native/fantom';
+import Fantom from '@react-native/fantom';
 import * as React from 'react';
 
 describe('onScroll', () => {

@@ -14,13 +14,7 @@ import 'react-native/Libraries/Core/InitializeCore';
 
 import type {Root} from '..';
 
-import {
-  createRoot,
-  dispatchNativeEvent,
-  runOnUIThread,
-  runTask,
-  runWorkLoop,
-} from '..';
+import Fantom from '..';
 import * as React from 'react';
 import {ScrollView, Text, TextInput, View} from 'react-native';
 import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
@@ -32,7 +26,7 @@ function getActualViewportDimensions(root: Root): {
 } {
   let maybeNode;
 
-  runTask(() => {
+  Fantom.runTask(() => {
     root.render(
       <View
         style={{width: '100%', height: '100%'}}
@@ -57,7 +51,7 @@ describe('Fantom', () => {
     it('should run a task synchronously', () => {
       const task = jest.fn();
 
-      runTask(task);
+      Fantom.runTask(task);
 
       expect(task).toHaveBeenCalledTimes(1);
     });
@@ -66,7 +60,7 @@ describe('Fantom', () => {
     // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should re-throw errors from the task synchronously', () => {
       expect(() => {
-        runTask(() => {
+        Fantom.runTask(() => {
           throw new Error('test error');
         });
       }).toThrow('test error');
@@ -75,7 +69,7 @@ describe('Fantom', () => {
     it('should exhaust the microtask queue synchronously', () => {
       const lastMicrotask = jest.fn();
 
-      runTask(() => {
+      Fantom.runTask(() => {
         queueMicrotask(() => {
           queueMicrotask(() => {
             queueMicrotask(() => {
@@ -92,7 +86,7 @@ describe('Fantom', () => {
     // eslint-disable-next-line jest/no-disabled-tests
     it.skip('should re-throw errors from microtasks synchronously', () => {
       expect(() => {
-        runTask(() => {
+        Fantom.runTask(() => {
           queueMicrotask(() => {
             throw new Error('test error');
           });
@@ -103,7 +97,7 @@ describe('Fantom', () => {
     it('should run async tasks synchronously', () => {
       let completed = false;
 
-      runTask(async () => {
+      Fantom.runTask(async () => {
         await Promise.resolve(6);
         completed = true;
       });
@@ -115,10 +109,10 @@ describe('Fantom', () => {
     it('should throw when running a task inside another task', () => {
       let threw = false;
 
-      runTask(() => {
+      Fantom.runTask(() => {
         // TODO replace with expect(() => { ... }).toThrow() when error handling is fixed
         try {
-          runTask(() => {});
+          Fantom.runTask(() => {});
         } catch {
           threw = true;
         }
@@ -127,10 +121,10 @@ describe('Fantom', () => {
 
       threw = false;
 
-      runTask(() => {
+      Fantom.runTask(() => {
         queueMicrotask(() => {
           try {
-            runTask(() => {});
+            Fantom.runTask(() => {});
           } catch {
             threw = true;
           }
@@ -142,14 +136,14 @@ describe('Fantom', () => {
 
   describe('createRoot', () => {
     it('allows creating a root with specific dimensions', () => {
-      const rootWithDefaults = createRoot();
+      const rootWithDefaults = Fantom.createRoot();
 
       expect(getActualViewportDimensions(rootWithDefaults)).toEqual({
         viewportWidth: 390,
         viewportHeight: 844,
       });
 
-      const rootWithCustomWidthAndHeight = createRoot({
+      const rootWithCustomWidthAndHeight = Fantom.createRoot({
         viewportWidth: 200,
         viewportHeight: 600,
       });
@@ -166,9 +160,9 @@ describe('Fantom', () => {
   describe('getRenderedOutput', () => {
     describe('toJSX', () => {
       it('default config', () => {
-        const root = createRoot();
+        const root = Fantom.createRoot();
 
-        runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View style={{width: 100, height: 100}} collapsable={false} />,
           );
@@ -180,9 +174,9 @@ describe('Fantom', () => {
       });
 
       it('default config, list of children', () => {
-        const root = createRoot();
+        const root = Fantom.createRoot();
 
-        runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <>
               <View
@@ -208,9 +202,9 @@ describe('Fantom', () => {
       });
 
       it('include root', () => {
-        const root = createRoot();
+        const root = Fantom.createRoot();
 
-        runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View style={{width: 100, height: 100}} collapsable={false} />,
           );
@@ -224,9 +218,9 @@ describe('Fantom', () => {
       });
 
       it('include layout metrics', () => {
-        const root = createRoot();
+        const root = Fantom.createRoot();
 
-        runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View style={{width: 100, height: 100}} collapsable={false} />,
           );
@@ -250,9 +244,9 @@ describe('Fantom', () => {
       });
 
       it('take props', () => {
-        const root = createRoot();
+        const root = Fantom.createRoot();
 
-        runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View style={{width: 100, height: 100}} collapsable={false} />,
           );
@@ -268,9 +262,9 @@ describe('Fantom', () => {
       });
 
       it('skip props', () => {
-        const root = createRoot();
+        const root = Fantom.createRoot();
 
-        runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <View style={{width: 100, height: 100}} collapsable={false} />,
           );
@@ -286,9 +280,9 @@ describe('Fantom', () => {
       });
 
       it('filter out all props', () => {
-        const root = createRoot();
+        const root = Fantom.createRoot();
 
-        runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <>
               <View
@@ -318,9 +312,9 @@ describe('Fantom', () => {
 
     describe('toJSON', () => {
       it('nested text', () => {
-        const root = createRoot();
+        const root = Fantom.createRoot();
 
-        runTask(() => {
+        Fantom.runTask(() => {
           root.render(
             <Text>
               Testing native{' '}
@@ -362,12 +356,12 @@ describe('Fantom', () => {
 
   describe('runOnUIThread + dispatchNativeEvent', () => {
     it('sends event without payload', () => {
-      const root = createRoot();
+      const root = Fantom.createRoot();
       let maybeNode;
 
       let focusEvent = jest.fn();
 
-      runTask(() => {
+      Fantom.runTask(() => {
         root.render(
           <TextInput
             onFocus={focusEvent}
@@ -382,25 +376,25 @@ describe('Fantom', () => {
 
       expect(focusEvent).toHaveBeenCalledTimes(0);
 
-      runOnUIThread(() => {
-        dispatchNativeEvent(element, 'focus');
+      Fantom.runOnUIThread(() => {
+        Fantom.dispatchNativeEvent(element, 'focus');
       });
 
       // The tasks have not run.
       expect(focusEvent).toHaveBeenCalledTimes(0);
 
-      runWorkLoop();
+      Fantom.runWorkLoop();
 
       expect(focusEvent).toHaveBeenCalledTimes(1);
     });
   });
 
   it('sends event with payload', () => {
-    const root = createRoot();
+    const root = Fantom.createRoot();
     let maybeNode;
     const onChange = jest.fn();
 
-    runTask(() => {
+    Fantom.runTask(() => {
       root.render(
         <TextInput
           onChange={event => {
@@ -415,13 +409,13 @@ describe('Fantom', () => {
 
     const element = ensureInstance(maybeNode, ReactNativeElement);
 
-    runOnUIThread(() => {
-      dispatchNativeEvent(element, 'change', {
+    Fantom.runOnUIThread(() => {
+      Fantom.dispatchNativeEvent(element, 'change', {
         text: 'Hello World',
       });
     });
 
-    runWorkLoop();
+    Fantom.runWorkLoop();
 
     expect(onChange).toHaveBeenCalledTimes(1);
     const [entry] = onChange.mock.lastCall;
@@ -429,11 +423,11 @@ describe('Fantom', () => {
   });
 
   it('it batches events with isUnique option', () => {
-    const root = createRoot();
+    const root = Fantom.createRoot();
     let maybeNode;
     const onScroll = jest.fn();
 
-    runTask(() => {
+    Fantom.runTask(() => {
       root.render(
         <ScrollView
           onScroll={event => {
@@ -448,14 +442,14 @@ describe('Fantom', () => {
 
     const element = ensureInstance(maybeNode, ReactNativeElement);
 
-    runOnUIThread(() => {
-      dispatchNativeEvent(element, 'scroll', {
+    Fantom.runOnUIThread(() => {
+      Fantom.dispatchNativeEvent(element, 'scroll', {
         contentOffset: {
           x: 0,
           y: 1,
         },
       });
-      dispatchNativeEvent(
+      Fantom.dispatchNativeEvent(
         element,
         'scroll',
         {
@@ -470,7 +464,7 @@ describe('Fantom', () => {
       );
     });
 
-    runWorkLoop();
+    Fantom.runWorkLoop();
 
     expect(onScroll).toHaveBeenCalledTimes(1);
     const [entry] = onScroll.mock.lastCall;

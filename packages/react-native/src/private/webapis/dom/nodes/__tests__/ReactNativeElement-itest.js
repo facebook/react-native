@@ -24,7 +24,7 @@ import NodeList from '../../oldstylecollections/NodeList';
 import ReactNativeElement from '../ReactNativeElement';
 import ReadOnlyElement from '../ReadOnlyElement';
 import ReadOnlyNode from '../ReadOnlyNode';
-import * as Fantom from '@react-native/fantom';
+import Fantom from '@react-native/fantom';
 import * as React from 'react';
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {

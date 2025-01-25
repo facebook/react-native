@@ -14,7 +14,7 @@
 import type IntersectionObserverType from '../IntersectionObserver';
 
 import DOMRectReadOnly from '../../dom/geometry/DOMRectReadOnly';
-import * as Fantom from '@react-native/fantom';
+import Fantom from '@react-native/fantom';
 import setUpIntersectionObserver from '../../../setup/setUpIntersectionObserver';
 import ReactNativeElement from '../../dom/nodes/ReactNativeElement';
 import IntersectionObserverEntry from '../IntersectionObserverEntry';
