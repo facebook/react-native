@@ -24,6 +24,7 @@ import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager;
 import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.internal.ChoreographerProvider;
+import com.facebook.react.runtime.JSRuntimeFactory;
 import java.util.List;
 
 /**
@@ -133,6 +134,11 @@ public abstract class ReactNativeHost {
 
   /** Get the {@link JavaScriptExecutorFactory}. Override this to use a custom Executor. */
   protected @Nullable JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
+    return null;
+  }
+
+  /** Get the {@link JSRuntimeFactory}. Override this to use a custom Runtime. */
+  protected @Nullable JSRuntimeFactory getJSRuntimeFactory() {
     return null;
   }
 

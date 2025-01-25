@@ -17,10 +17,9 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.runtime.BindingsInstaller
-import com.facebook.react.runtime.JSCInstance
+import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
-import com.facebook.react.runtime.hermes.HermesInstance
 import java.lang.Exception
 
 /**
@@ -45,7 +44,7 @@ public object DefaultReactHost {
    *   composed in a `asset://...` URL
    * @param jsBundleFilePath the path to the JS bundle on the filesystem. Will be composed in a
    *   `file://...` URL
-   * @param isHermesEnabled whether to use Hermes as the JS engine, default to true.
+   * @param jsRuntimeFactory the instance of JavaScript runtime.
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
    *   modules)
@@ -60,7 +59,7 @@ public object DefaultReactHost {
       jsMainModulePath: String = "index",
       jsBundleAssetPath: String = "index",
       jsBundleFilePath: String? = null,
-      isHermesEnabled: Boolean = true,
+      jsRuntimeFactory: JSRuntimeFactory,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
   ): ReactHost =
@@ -70,7 +69,7 @@ public object DefaultReactHost {
           jsMainModulePath,
           jsBundleAssetPath,
           jsBundleFilePath,
-          isHermesEnabled,
+          jsRuntimeFactory,
           useDevSupport,
           cxxReactPackageProviders,
           { throw it },
@@ -88,7 +87,7 @@ public object DefaultReactHost {
    *   composed in a `asset://...` URL
    * @param jsBundleFilePath the path to the JS bundle on the filesystem. Will be composed in a
    *   `file://...` URL
-   * @param isHermesEnabled whether to use Hermes as the JS engine, default to true.
+   * @param jsRuntimeFactory the instance of JavaScript runtime.
    * @param useDevSupport whether to enable dev support, default to ReactBuildConfig.DEBUG.
    * @param cxxReactPackageProviders a list of cxxreactpackage providers (to register c++ turbo
    *   modules)
@@ -106,7 +105,7 @@ public object DefaultReactHost {
       jsMainModulePath: String = "index",
       jsBundleAssetPath: String = "index",
       jsBundleFilePath: String? = null,
-      isHermesEnabled: Boolean = true,
+      jsRuntimeFactory: JSRuntimeFactory,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
       exceptionHandler: (Exception) -> Unit = { throw it },
@@ -124,7 +123,6 @@ public object DefaultReactHost {
           } else {
             JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
           }
-      val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
       val defaultTmmDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       cxxReactPackageProviders.forEach { defaultTmmDelegateBuilder.addCxxReactPackage(it) }
       val defaultReactHostDelegate =

@@ -20,6 +20,9 @@ import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.ViewManagerResolver
+import com.facebook.react.runtime.hermes.HermesInstance
+import com.facebook.react.runtime.JSCInstance
+import com.facebook.react.runtime.JSRuntimeFactory
 
 /**
  * A utility class that allows you to simplify the setup of a [ReactNativeHost] for new apps in Open
@@ -103,6 +106,16 @@ protected constructor(
     get() = null
 
   /**
+   * Returns default instance of JavaScript Runtime.
+   *
+   * If isHermesEnabled is true, the app will load the Hermes engine, and fail if not found. If
+   * false or null, the app will load the JSC engine, and fail if not found.
+   */
+  override fun getJSRuntimeFactory(): JSRuntimeFactory =
+    if (isHermesEnabled == true) HermesInstance()
+    else JSCInstance()
+
+  /**
    * Converts this [ReactNativeHost] (bridge-mode) to a [ReactHost] (bridgeless-mode).
    *
    * @param context the Android [Context] to use for creating the [ReactHost]
@@ -115,7 +128,7 @@ protected constructor(
           jsMainModuleName,
           bundleAssetName ?: "index",
           jsBundleFile,
-          isHermesEnabled ?: true,
+          getJSRuntimeFactory(),
           useDeveloperSupport,
       )
 }
