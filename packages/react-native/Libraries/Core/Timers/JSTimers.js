@@ -48,10 +48,11 @@ let hasEmittedTimeDriftWarning = false;
 
 // Returns a free index if one is available, and the next consecutive index otherwise.
 function _getFreeIndex(): number {
-  if (freeIdxs.length === 0) {
+  const freeIdx = freeIdxs.pop();
+  if (freeIdx === undefined) {
     return timerIDs.length;
   }
-  return freeIdxs.pop();
+  return freeIdx;
 }
 
 function _allocateCallback(func: Function, type: JSTimerType): number {
