@@ -633,6 +633,12 @@ const textInputExamples: Array<RNTesterModuleExample> = [
             style={styles.multiline}
             dataDetectorTypes="phoneNumber"
           />
+          <ExampleTextInput
+            dataDetectorTypes={["link", "phoneNumber"]}
+            defaultValue={"link: http://reactnative.dev, photo number: 88888888"}
+            multiline
+            editable={false}
+          />
         </View>
       );
     },
