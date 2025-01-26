@@ -12,14 +12,14 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type ReactNativeVersionAndroid = {|
+export type ReactNativeVersionAndroid = {
   major: number,
   minor: number,
   patch: number,
   prerelease: ?string,
-|};
+};
 
-export type PlatformConstantsAndroid = {|
+export type PlatformConstantsAndroid = {
   isTesting: boolean,
   isDisableAnimations?: boolean,
   reactNativeVersion: ReactNativeVersionAndroid,
@@ -32,7 +32,7 @@ export type PlatformConstantsAndroid = {|
   uiMode: string,
   Brand: string,
   Manufacturer: string,
-|};
+};
 
 export interface Spec extends TurboModule {
   +getConstants: () => PlatformConstantsAndroid;

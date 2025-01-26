@@ -85,16 +85,18 @@ def use_react_native! (
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
   relative_path_from_current = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   react_native_version = NewArchitectureHelper.extract_react_native_version(File.join(relative_path_from_current, path))
-  ENV['RCT_NEW_ARCH_ENABLED'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
   fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
 
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
   ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
+  ENV["RCT_NEW_ARCH_ENABLED"] = new_arch_enabled ? "1" : "0"
 
   prefix = path
 
   ReactNativePodsUtils.warn_if_not_on_arm64()
+
+  Pod::UI.puts "Configuring the target with the #{new_arch_enabled ? "New" : "Legacy"} Architecture\n"
 
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"

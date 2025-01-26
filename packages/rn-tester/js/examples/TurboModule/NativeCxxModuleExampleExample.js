@@ -26,7 +26,7 @@ import {
   View,
 } from 'react-native';
 
-type State = {|
+type State = {
   testResults: {
     [string]: {
       type: string,
@@ -35,7 +35,7 @@ type State = {|
     },
     ...
   },
-|};
+};
 
 type Examples =
   | 'callback'
@@ -71,7 +71,7 @@ type ErrorExamples =
   | 'getObjectAssert'
   | 'promiseAssert';
 
-class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
+class NativeCxxModuleExampleExample extends React.Component<{}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
   eventSubscriptions: EventSubscription[] = [];
 

@@ -18,8 +18,7 @@
     "install-android-jsc": "../../gradlew :packages:rn-tester:android:app:installJscDebug",
     "install-android-hermes": "../../gradlew :packages:rn-tester:android:app:installHermesDebug",
     "clean-android": "rm -rf android/app/build",
-    "setup-ios-jsc": "bundle install && USE_HERMES=0 bundle exec pod install",
-    "setup-ios-hermes": "bundle install && USE_HERMES=1 bundle exec pod install",
+    "prepare-ios": "node ./cli.js bootstrap ios",
     "clean-ios": "rm -rf build/generated/ios Pods Podfile.lock",
     "e2e-build-android": "../../gradlew :packages:rn-tester:android:app:installHermesRelease -PreactNativeArchitectures=arm64-v8a",
     "e2e-build-ios": "./scripts/maestro-build-ios.sh",
@@ -53,6 +52,9 @@
   "devDependencies": {
     "@react-native-community/cli": "15.0.0-alpha.2",
     "@react-native-community/cli-platform-android": "15.0.0-alpha.2",
-    "@react-native-community/cli-platform-ios": "15.0.0-alpha.2"
+    "@react-native-community/cli-platform-ios": "15.0.0-alpha.2",
+    "commander": "^12.0.0",
+    "listr2": "^6.4.1",
+    "rxjs": "npm:@react-native-community/rxjs@6.5.4-custom"
   }
 }

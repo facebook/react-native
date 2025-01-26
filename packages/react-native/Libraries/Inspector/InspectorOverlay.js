@@ -19,10 +19,10 @@ const View = require('../Components/View/View');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const ElementBox = require('./ElementBox');
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   inspected?: ?InspectedElement,
   onTouchPoint: (locationX: number, locationY: number) => void,
-|}>;
+}>;
 
 function InspectorOverlay({inspected, onTouchPoint}: Props): React.Node {
   const findViewForTouchEvent = (e: PressEvent) => {

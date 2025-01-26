@@ -97,8 +97,9 @@ const RCTTextInputViewConfig = {
     fontSize: true,
     fontWeight: true,
     fontVariant: true,
-    // flowlint-next-line untyped-import:off
-    textShadowOffset: {diff: require('../../Utilities/differ/sizesDiffer')},
+    textShadowOffset: {
+      diff: require('../../Utilities/differ/sizesDiffer').default,
+    },
     allowFontScaling: true,
     fontStyle: true,
     textTransform: true,

@@ -12,12 +12,19 @@
 
 const createPerformanceLogger =
   require('../../Utilities/createPerformanceLogger').default;
-const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
-const Platform = require('../../Utilities/Platform');
+const GlobalPerformanceLogger =
+  require('../../Utilities/GlobalPerformanceLogger').default;
+const Platform = require('../../Utilities/Platform').default;
 const XMLHttpRequest = require('../XMLHttpRequest');
 
 jest.unmock('../../Utilities/Platform');
-jest.mock('../../Utilities/GlobalPerformanceLogger');
+jest
+  .spyOn(GlobalPerformanceLogger, 'startTimespan')
+  .mockImplementation(() => {});
+jest
+  .spyOn(GlobalPerformanceLogger, 'stopTimespan')
+  .mockImplementation(() => {});
+
 let requestId = 1;
 function setRequestId(id) {
   if (Platform.OS === 'ios') {
@@ -28,20 +35,23 @@ function setRequestId(id) {
 jest
   .dontMock('event-target-shim')
   .setMock('../../BatchedBridge/NativeModules', {
-    Networking: {
-      addListener: function () {},
-      removeListeners: function () {},
-      sendRequest(options, callback) {
-        if (typeof callback === 'function') {
-          // android does not pass a callback
-          callback(requestId);
-        }
+    __esModule: true,
+    default: {
+      Networking: {
+        addListener: function () {},
+        removeListeners: function () {},
+        sendRequest(options, callback) {
+          if (typeof callback === 'function') {
+            // android does not pass a callback
+            callback(requestId);
+          }
+        },
+        abortRequest: function () {},
       },
-      abortRequest: function () {},
-    },
-    PlatformConstants: {
-      getConstants() {
-        return {};
+      PlatformConstants: {
+        getConstants() {
+          return {};
+        },
       },
     },
   });

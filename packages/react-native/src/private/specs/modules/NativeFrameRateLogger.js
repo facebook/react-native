@@ -13,7 +13,7 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +setGlobalOptions: (options: {|+debug?: ?boolean|}) => void;
+  +setGlobalOptions: (options: {+debug?: ?boolean}) => void;
   +setContext: (context: string) => void;
   +beginScroll: () => void;
   +endScroll: () => void;

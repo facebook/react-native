@@ -23,7 +23,7 @@ describe('resolveAssetSource', () => {
     resolveAssetSource = require('../resolveAssetSource');
     NativeSourceCode =
       require('../../NativeModules/specs/NativeSourceCode').default;
-    Platform = require('../../Utilities/Platform');
+    Platform = require('../../Utilities/Platform').default;
   });
 
   it('returns same source for simple static and network images', () => {

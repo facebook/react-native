@@ -13,9 +13,9 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {|
+  +getConstants: () => {
     settings: Object,
-  |};
+  };
   +setValues: (values: Object) => void;
   +deleteValues: (values: Array<string>) => void;
 }

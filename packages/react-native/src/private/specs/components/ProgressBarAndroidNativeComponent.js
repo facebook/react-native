@@ -18,7 +18,7 @@ import type {
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   //Props
@@ -29,7 +29,7 @@ type NativeProps = $ReadOnly<{|
   animating?: WithDefault<boolean, true>,
   color?: ?ColorValue,
   testID?: WithDefault<string, ''>,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>('AndroidProgressBar', {
   interfaceOnly: true,

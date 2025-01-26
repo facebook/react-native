@@ -90,21 +90,22 @@ val prefabHeadersDir = File("$buildDir/prefab-headers")
 // We inject the JSI directory used inside the Hermes build with the -DJSI_DIR config.
 val jsiDir = File(reactNativeRootDir, "ReactCommon/jsi")
 
+val downloadHermesDest = File(downloadsDir, "hermes.tar.gz")
 val downloadHermes by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
       onlyIfModified(true)
       overwrite(true)
       quiet(true)
       useETag("all")
       retries(5)
-      dest(File(downloadsDir, "hermes.tar.gz"))
+      dest(downloadHermesDest)
     }
 
 val unzipHermes by
     tasks.registering(Copy::class) {
       dependsOn(downloadHermes)
-      from(tarTree(downloadHermes.dest)) {
+      from(tarTree(downloadHermesDest)) {
         eachFile {
           // We flatten the unzip as the tarball contains a `facebook-hermes-<SHA>`
           // folder at the top level.
@@ -281,7 +282,7 @@ android {
 
   sourceSets.getByName("main") {
     manifest.srcFile("$hermesDir/android/hermes/src/main/AndroidManifest.xml")
-    java.srcDir("$hermesDir/lib/Platform/Intl/java")
+    java.srcDirs("$hermesDir/lib/Platform/Intl/java", "$hermesDir/lib/Platform/Unicode/java")
   }
 
   buildFeatures {

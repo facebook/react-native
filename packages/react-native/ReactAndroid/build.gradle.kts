@@ -249,8 +249,9 @@ val createNativeDepsDirectories by
       thirdPartyNdkDir.mkdirs()
     }
 
+val downloadBoostDest = File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz")
 val downloadBoost by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src(
           "https://archives.boost.io/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
@@ -258,19 +259,22 @@ val downloadBoost by
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
+      dest(downloadBoostDest)
     }
 
 val prepareBoost by
     tasks.registering(PrepareBoostTask::class) {
       dependsOn(if (boostPathOverride != null) emptyList() else listOf(downloadBoost))
-      boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(downloadBoost.dest))
+      boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(downloadBoostDest))
+      boostThirdPartyJniPath.set(project.file("src/main/jni/third-party/boost"))
       boostVersion.set(BOOST_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "boost"))
     }
 
+val downloadDoubleConversionDest =
+    File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz")
 val downloadDoubleConversion by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src(
           "https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz")
@@ -278,13 +282,13 @@ val downloadDoubleConversion by
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
+      dest(downloadDoubleConversionDest)
     }
 
 val prepareDoubleConversion by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadDoubleConversion))
-      from(dependenciesPath ?: tarTree(downloadDoubleConversion.dest))
+      from(dependenciesPath ?: tarTree(downloadDoubleConversionDest))
       from("src/main/jni/third-party/double-conversion/")
       include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "CMakeLists.txt")
       filesMatching("*/src/**/*") { this.path = "double-conversion/${this.name}" }
@@ -292,20 +296,21 @@ val prepareDoubleConversion by
       into("$thirdPartyNdkDir/double-conversion")
     }
 
+val downloadFollyDest = File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz")
 val downloadFolly by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       src("https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
+      dest(downloadFollyDest)
     }
 
 val prepareFolly by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFolly))
-      from(dependenciesPath ?: tarTree(downloadFolly.dest))
+      from(dependenciesPath ?: tarTree(downloadFollyDest))
       from("src/main/jni/third-party/folly/")
       include("folly-${FOLLY_VERSION}/folly/**/*", "CMakeLists.txt")
       eachFile { this.path = this.path.removePrefix("folly-${FOLLY_VERSION}/") }
@@ -313,21 +318,22 @@ val prepareFolly by
       into("$thirdPartyNdkDir/folly")
     }
 
+val downloadFastFloatDest = File(downloadsDir, "fast_float-${FAST_FLOAT_VERSION}.tar.gz")
 val downloadFastFloat by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/fastfloat/fast_float/archive/v${FAST_FLOAT_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "fast_float-${FAST_FLOAT_VERSION}.tar.gz"))
+      dest(downloadFastFloatDest)
     }
 
 val prepareFastFloat by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFastFloat))
-      from(dependenciesPath ?: tarTree(downloadFastFloat.dest))
+      from(dependenciesPath ?: tarTree(downloadFastFloatDest))
       from("src/main/jni/third-party/fast_float/")
       include("fast_float-${FAST_FLOAT_VERSION}/include/**/*", "CMakeLists.txt")
       eachFile { this.path = this.path.removePrefix("fast_float-${FAST_FLOAT_VERSION}/") }
@@ -335,21 +341,22 @@ val prepareFastFloat by
       into("$thirdPartyNdkDir/fast_float")
     }
 
+val downloadFmtDest = File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz")
 val downloadFmt by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/fmtlib/fmt/archive/${FMT_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
+      dest(downloadFmtDest)
     }
 
 val prepareFmt by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFmt))
-      from(dependenciesPath ?: tarTree(downloadFmt.dest))
+      from(dependenciesPath ?: tarTree(downloadFmtDest))
       from("src/main/jni/third-party/fmt/")
       include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "CMakeLists.txt")
       eachFile { this.path = this.path.removePrefix("fmt-${FMT_VERSION}/") }
@@ -357,32 +364,34 @@ val prepareFmt by
       into("$thirdPartyNdkDir/fmt")
     }
 
+val downloadGlogDest = File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz")
 val downloadGlog by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
+      dest(downloadGlogDest)
     }
 
+val downloadGtestDest = File(downloadsDir, "gtest.tar.gz")
 val downloadGtest by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/google/googletest/archive/refs/tags/release-${GTEST_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "gtest.tar.gz"))
+      dest(downloadGtestDest)
     }
 
 val prepareGtest by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGtest))
-      from(dependenciesPath ?: tarTree(downloadGtest.dest))
+      from(dependenciesPath ?: tarTree(downloadGtestDest))
       eachFile { this.path = (this.path.removePrefix("googletest-release-${GTEST_VERSION}/")) }
       into(File(thirdPartyNdkDir, "googletest"))
     }
@@ -390,7 +399,8 @@ val prepareGtest by
 val prepareGlog by
     tasks.registering(PrepareGlogTask::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGlog))
-      glogPath.setFrom(dependenciesPath ?: tarTree(downloadGlog.dest))
+      glogPath.setFrom(dependenciesPath ?: tarTree(downloadGlogDest))
+      glogThirdPartyJniPath.set(project.file("src/main/jni/third-party/glog/"))
       glogVersion.set(GLOG_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "glog"))
     }

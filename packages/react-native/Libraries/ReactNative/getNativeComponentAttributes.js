@@ -17,12 +17,12 @@ const resolveAssetSource = require('../Image/resolveAssetSource');
 const processBackgroundImage =
   require('../StyleSheet/processBackgroundImage').default;
 const processColor = require('../StyleSheet/processColor').default;
-const processColorArray = require('../StyleSheet/processColorArray').default;
+const processColorArray = require('../StyleSheet/processColorArray');
 const processFilter = require('../StyleSheet/processFilter').default;
-const insetsDiffer = require('../Utilities/differ/insetsDiffer');
-const matricesDiffer = require('../Utilities/differ/matricesDiffer');
-const pointsDiffer = require('../Utilities/differ/pointsDiffer');
-const sizesDiffer = require('../Utilities/differ/sizesDiffer');
+const insetsDiffer = require('../Utilities/differ/insetsDiffer').default;
+const matricesDiffer = require('../Utilities/differ/matricesDiffer').default;
+const pointsDiffer = require('../Utilities/differ/pointsDiffer').default;
+const sizesDiffer = require('../Utilities/differ/sizesDiffer').default;
 const UIManager = require('./UIManager');
 const nullthrows = require('nullthrows');
 

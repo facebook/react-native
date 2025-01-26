@@ -16,9 +16,9 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 import * as React from 'react';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
-|}>;
+}>;
 export type DebuggingOverlayNativeComponentType = HostComponent<NativeProps>;
 
 export type TraceUpdate = {

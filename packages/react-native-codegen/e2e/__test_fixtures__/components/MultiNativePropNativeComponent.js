@@ -16,7 +16,7 @@ import type {PointValue} from 'react-native/Libraries/StyleSheet/StyleSheetTypes
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
@@ -24,7 +24,7 @@ type NativeProps = $ReadOnly<{|
   color?: ColorValue,
   thumbTintColor?: ColorValue,
   point?: PointValue,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'MultiNativePropNativeComponentView',

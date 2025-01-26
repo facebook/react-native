@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d301656072183649246db8fa738fc4d>>
+ * @generated SignedSource<<097c771aa1ff769709f7d08a75da50b6>>
  */
 
 /**
@@ -30,14 +30,6 @@ bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
 }
 
-bool ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid() {
-  return getAccessor().completeReactInstanceCreationOnBgThreadOnAndroid();
-}
-
-bool ReactNativeFeatureFlags::disableEventLoopOnBridgeless() {
-  return getAccessor().disableEventLoopOnBridgeless();
-}
-
 bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
   return getAccessor().disableMountItemReorderingAndroid();
 }
@@ -52,10 +44,6 @@ bool ReactNativeFeatureFlags::enableBridgelessArchitecture() {
 
 bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {
   return getAccessor().enableCppPropsIteratorSetter();
-}
-
-bool ReactNativeFeatureFlags::enableDeletionOfUnmountedViews() {
-  return getAccessor().enableDeletionOfUnmountedViews();
 }
 
 bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
@@ -88,6 +76,10 @@ bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
 
 bool ReactNativeFeatureFlags::enableImagePrefetchingAndroid() {
   return getAccessor().enableImagePrefetchingAndroid();
+}
+
+bool ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS() {
+  return getAccessor().enableJSRuntimeGCOnMemoryPressureOnIOS();
 }
 
 bool ReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid() {
@@ -150,10 +142,6 @@ bool ReactNativeFeatureFlags::fuseboxEnabledRelease() {
   return getAccessor().fuseboxEnabledRelease();
 }
 
-bool ReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid() {
-  return getAccessor().initEagerTurboModulesOnNativeModulesQueueAndroid();
-}
-
 bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
   return getAccessor().lazyAnimationCallbacks();
 }
@@ -170,12 +158,12 @@ bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
   return getAccessor().useAlwaysAvailableJSErrorHandling();
 }
 
-bool ReactNativeFeatureFlags::useFabricInterop() {
-  return getAccessor().useFabricInterop();
+bool ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior() {
+  return getAccessor().useEditTextStockAndroidFocusBehavior();
 }
 
-bool ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless() {
-  return getAccessor().useImmediateExecutorInAndroidBridgeless();
+bool ReactNativeFeatureFlags::useFabricInterop() {
+  return getAccessor().useFabricInterop();
 }
 
 bool ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode() {

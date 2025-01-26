@@ -183,4 +183,4 @@ class FileReader extends (EventTarget(...READER_EVENTS): typeof EventTarget) {
   }
 }
 
-module.exports = FileReader;
+export default FileReader;

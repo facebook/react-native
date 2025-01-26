@@ -28,7 +28,7 @@ type Event = $ReadOnly<{
   doubles: $ReadOnlyArray<Double>,
   yesNos: $ReadOnlyArray<'yep' | 'nope'>,
   strings: $ReadOnlyArray<string>,
-  latLons: $ReadOnlyArray<{|lat: Double, lon: Double|}>,
+  latLons: $ReadOnlyArray<{lat: Double, lon: Double}>,
   multiArrays: $ReadOnlyArray<$ReadOnlyArray<Int32>>,
 }>;
 
@@ -36,7 +36,7 @@ type LegacyStyleEvent = $ReadOnly<{
   string: string,
 }>;
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
   opacity?: Float,
   values: $ReadOnlyArray<Int32>,
@@ -47,7 +47,7 @@ type NativeProps = $ReadOnly<{|
     LegacyStyleEvent,
     'alternativeLegacyName',
   >,
-|}>;
+}>;
 
 export type MyNativeViewType = HostComponent<NativeProps>;
 

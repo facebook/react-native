@@ -174,13 +174,13 @@ const LayoutAnimation = {
     easeIn: 'easeIn',
     easeOut: 'easeOut',
     keyboard: 'keyboard',
-  }),
+  }) as $ReadOnly<{[K in LayoutAnimationType]: K}>,
   Properties: Object.freeze({
     opacity: 'opacity',
     scaleX: 'scaleX',
     scaleY: 'scaleY',
     scaleXY: 'scaleXY',
-  }),
+  }) as $ReadOnly<{[K in LayoutAnimationProperty]: K}>,
   checkConfig(...args: Array<mixed>) {
     console.error('LayoutAnimation.checkConfig(...) has been disabled.');
   },

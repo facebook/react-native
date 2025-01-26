@@ -11,10 +11,11 @@
 'use strict';
 
 const Systrace = require('../Performance/Systrace');
-const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
+const deepFreezeAndThrowOnMutationInDev =
+  require('../Utilities/deepFreezeAndThrowOnMutationInDev').default;
 const stringifySafe = require('../Utilities/stringifySafe').default;
-const warnOnce = require('../Utilities/warnOnce');
-const ErrorUtils = require('../vendor/core/ErrorUtils');
+const warnOnce = require('../Utilities/warnOnce').default;
+const ErrorUtils = require('../vendor/core/ErrorUtils').default;
 const invariant = require('invariant');
 
 export type SpyData = {
@@ -489,4 +490,4 @@ class MessageQueue {
   }
 }
 
-module.exports = MessageQueue;
+export default MessageQueue;

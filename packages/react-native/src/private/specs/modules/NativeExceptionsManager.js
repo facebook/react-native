@@ -12,15 +12,15 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-const Platform = require('../../../../Libraries/Utilities/Platform');
+const Platform = require('../../../../Libraries/Utilities/Platform').default;
 
-export type StackFrame = {|
+export type StackFrame = {
   column: ?number,
   file: ?string,
   lineNumber: ?number,
   methodName: string,
   collapse?: boolean,
-|};
+};
 export type ExceptionData = {
   message: string,
   originalMessage: ?string,

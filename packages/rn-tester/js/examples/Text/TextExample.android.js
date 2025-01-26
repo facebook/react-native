@@ -27,7 +27,7 @@ const {
   View,
 } = require('react-native');
 
-class Entity extends React.Component<{|children: React.Node|}> {
+class Entity extends React.Component<{children: React.Node}> {
   render(): React.Node {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
@@ -84,12 +84,12 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{||}>;
+type AdjustingFontSizeProps = $ReadOnly<{}>;
 
-type AdjustingFontSizeState = {|
+type AdjustingFontSizeState = {
   dynamicText: string,
   shouldRender: boolean,
-|};
+};
 
 class AdjustingFontSize extends React.Component<
   AdjustingFontSizeProps,

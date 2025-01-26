@@ -34,10 +34,13 @@ describe('Native Animated', () => {
     jest
       .clearAllMocks()
       .mock('../../../../Libraries/BatchedBridge/NativeModules', () => ({
-        NativeAnimatedModule: {},
-        PlatformConstants: {
-          getConstants() {
-            return {};
+        __esModule: true,
+        default: {
+          NativeAnimatedModule: {},
+          PlatformConstants: {
+            getConstants() {
+              return {};
+            },
           },
         },
       }))
@@ -208,21 +211,15 @@ describe('Native Animated', () => {
 
       const value1 = new Animated.Value(0);
       value1.__makeNative();
-      const nativeTag = value1.__getNativeTag();
-
-      value1.__attach();
       const listener = jest.fn();
       const id = value1.addListener(listener);
       expect(
         NativeAnimatedModule.startListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        NativeAnimatedModule.startListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledWith(nativeTag);
+      ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
         value: 42,
-        tag: nativeTag,
+        tag: value1.__getNativeTag(),
       });
       expect(listener).toHaveBeenCalledTimes(1);
       expect(listener).toBeCalledWith({value: 42});
@@ -230,24 +227,20 @@ describe('Native Animated', () => {
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
         value: 7,
-        tag: nativeTag,
+        tag: value1.__getNativeTag(),
       });
       expect(listener).toHaveBeenCalledTimes(2);
       expect(listener).toBeCalledWith({value: 7});
       expect(value1.__getValue()).toBe(7);
 
       value1.removeListener(id);
-      value1.__detach();
       expect(
         NativeAnimatedModule.stopListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        NativeAnimatedModule.stopListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledWith(nativeTag);
+      ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
         value: 1492,
-        tag: nativeTag,
+        tag: value1.__getNativeTag(),
       });
       expect(listener).toHaveBeenCalledTimes(2);
       expect(value1.__getValue()).toBe(7);
@@ -258,37 +251,27 @@ describe('Native Animated', () => {
 
       const value1 = new Animated.Value(0);
       value1.__makeNative();
-      const nativeTag = value1.__getNativeTag();
-
-      value1.__attach();
       const listener = jest.fn();
       [1, 2, 3, 4].forEach(() => value1.addListener(listener));
       expect(
         NativeAnimatedModule.startListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        NativeAnimatedModule.startListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledWith(nativeTag);
+      ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
         value: 42,
-        tag: nativeTag,
+        tag: value1.__getNativeTag(),
       });
       expect(listener).toHaveBeenCalledTimes(4);
       expect(listener).toBeCalledWith({value: 42});
 
       value1.removeAllListeners();
-      value1.__detach();
       expect(
         NativeAnimatedModule.stopListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledTimes(1);
-      expect(
-        NativeAnimatedModule.stopListeningToAnimatedNodeValue,
-      ).toHaveBeenCalledWith(nativeTag);
+      ).toHaveBeenCalledWith(value1.__getNativeTag());
 
       NativeAnimatedHelper.nativeEventEmitter.emit('onAnimatedValueUpdate', {
         value: 7,
-        tag: nativeTag,
+        tag: value1.__getNativeTag(),
       });
       expect(listener).toHaveBeenCalledTimes(4);
     });
@@ -1379,9 +1362,6 @@ describe('Native Animated', () => {
 
   describe('Animated Components', () => {
     it('preserves current values on update and unmount', async () => {
-      const {ReactNativeFeatureFlags} = importModules();
-      ReactNativeFeatureFlags.override({enableAnimatedPropsMemo: () => true});
-
       const {Animated} = importModules();
 
       const opacity = new Animated.Value(0);
@@ -1399,9 +1379,6 @@ describe('Native Animated', () => {
     });
 
     it('restores defaults when receiving new animated values', async () => {
-      const {ReactNativeFeatureFlags} = importModules();
-      ReactNativeFeatureFlags.override({enableAnimatedPropsMemo: () => true});
-
       const {Animated} = importModules();
 
       const opacityA = new Animated.Value(0);
@@ -1415,30 +1392,6 @@ describe('Native Animated', () => {
       await update(root, <Animated.View style={{opacity: opacityB}} />);
       expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
         1,
-      );
-
-      await unmount(root);
-      // Make sure it doesn't get called on unmount.
-      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
-        1,
-      );
-    });
-
-    it('should restore default values on prop updates only', async () => {
-      const {ReactNativeFeatureFlags} = importModules();
-      ReactNativeFeatureFlags.override({enableAnimatedPropsMemo: () => false});
-
-      const {Animated} = importModules();
-
-      const opacity = new Animated.Value(0);
-      opacity.__makeNative();
-
-      const root = await create(<Animated.View style={{opacity}} />);
-      expect(NativeAnimatedModule.restoreDefaultValues).not.toHaveBeenCalled();
-
-      await update(root, <Animated.View style={{opacity}} />);
-      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledWith(
-        expect.any(Number),
       );
 
       await unmount(root);

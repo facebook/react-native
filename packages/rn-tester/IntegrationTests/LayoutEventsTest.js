@@ -18,7 +18,8 @@ import type {
 
 const React = require('react');
 const ReactNative = require('react-native');
-const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer');
+const deepDiffer =
+  require('react-native/Libraries/Utilities/differ/deepDiffer').default;
 
 const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
@@ -26,7 +27,7 @@ function debug(...args: Array<void | Layout | string>) {
   // console.log.apply(null, arguments);
 }
 
-type Props = $ReadOnly<{||}>;
+type Props = $ReadOnly<{}>;
 
 type State = {
   didAnimation: boolean,

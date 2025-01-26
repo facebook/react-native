@@ -14,13 +14,14 @@ import type {ReactTestRenderer as ReactTestRendererType} from 'react-test-render
 
 import TouchableWithoutFeedback from '../Components/Touchable/TouchableWithoutFeedback';
 
+import React from 'react';
+import ReactTestRenderer from 'react-test-renderer';
+
 const Switch = require('../Components/Switch/Switch').default;
 const TextInput = require('../Components/TextInput/TextInput');
 const View = require('../Components/View/View');
-const Text = require('../Text/Text');
+const Text = require('../Text/Text').default;
 const {VirtualizedList} = require('@react-native/virtualized-lists');
-const React = require('react');
-const ReactTestRenderer = require('react-test-renderer');
 
 export type ReactTestInstance = $PropertyType<ReactTestRendererType, 'root'>;
 export type Predicate = (node: ReactTestInstance) => boolean;

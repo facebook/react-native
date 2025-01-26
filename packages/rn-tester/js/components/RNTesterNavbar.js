@@ -115,11 +115,11 @@ const APITab = ({
   />
 );
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   handleNavBarPress: NavBarOnPressHandler,
   screen: string,
   isExamplePageOpen: boolean,
-|}>;
+}>;
 
 const RNTesterNavbar = ({
   handleNavBarPress,

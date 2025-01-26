@@ -10,7 +10,9 @@
 
 'use strict';
 
-const MessageQueue = require('./MessageQueue');
+import typeof MessageQueueT from './MessageQueue';
+
+const MessageQueue: MessageQueueT = require('./MessageQueue').default;
 
 const BatchedBridge: MessageQueue = new MessageQueue();
 
@@ -25,4 +27,4 @@ Object.defineProperty(global, '__fbBatchedBridge', {
   value: BatchedBridge,
 });
 
-module.exports = BatchedBridge;
+export default BatchedBridge;

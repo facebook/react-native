@@ -1576,7 +1576,7 @@ TEST_P(JSITest, UTF8ExceptionTest) {
   }
 }
 
-TEST_P(JSITest, UTF16Test) {
+TEST_P(JSITest, UTF16ConversionTest) {
   // This Runtime Decorator is used to test the conversion from UTF-8 to UTF-16
   // in the default utf16 method for runtimes that do not provide their own
   // utf16 implementation.
@@ -1601,14 +1601,19 @@ TEST_P(JSITest, UTF16Test) {
   rd.utf8Str = "foobar";
   EXPECT_EQ(str.utf16(rd), u"foobar");
 
-  rd.utf8Str = "你好";
-  EXPECT_EQ(str.utf16(rd), u"你好");
+  // 你 in UTF-8 encoding is 0xe4 0xbd 0xa0 and 好 is 0xe5 0xa5 0xbd
+  // 你 in UTF-16 encoding is 0x4f60 and 好 is 0x597d
+  rd.utf8Str = "\xe4\xbd\xa0\xe5\xa5\xbd";
+  EXPECT_EQ(str.utf16(rd), u"\x4f60\x597d");
 
-  rd.utf8Str = "👍";
-  EXPECT_EQ(str.utf16(rd), u"👍");
+  // 👍 in UTF-8 encoding is 0xf0 0x9f 0x91 0x8d
+  // 👍 in UTF-16 encoding is 0xd83d 0xdc4d
+  rd.utf8Str = "\xf0\x9f\x91\x8d";
+  EXPECT_EQ(str.utf16(rd), u"\xd83d\xdc4d");
 
-  rd.utf8Str = "foobar👍你好";
-  EXPECT_EQ(str.utf16(rd), u"foobar👍你好");
+  // String is foobar👍你好
+  rd.utf8Str = "foobar\xf0\x9f\x91\x8d\xe4\xbd\xa0\xe5\xa5\xbd";
+  EXPECT_EQ(str.utf16(rd), u"foobar\xd83d\xdc4d\x4f60\x597d");
 
   // String ended before second byte of the encoding
   rd.utf8Str = "\xcf";
@@ -1635,6 +1640,50 @@ TEST_P(JSITest, UTF16Test) {
   EXPECT_EQ(str.utf16(rd), u"\uFFFD\u007A");
 }
 
+TEST_P(JSITest, CreateFromUtf16Test) {
+  // This Runtime Decorator is used to test the default createStringFromUtf16
+  // and createPropNameIDFromUtf16 implementation for VMs that do not provide
+  // their own implementation
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    String createStringFromUtf16(const char16_t* utf16, size_t length)
+        override {
+      return Runtime::createStringFromUtf16(utf16, length);
+    }
+
+    PropNameID createPropNameIDFromUtf16(const char16_t* utf16, size_t length)
+        override {
+      return Runtime::createPropNameIDFromUtf16(utf16, length);
+    }
+  };
+
+  RD rd = RD(rt);
+  std::u16string utf16 = u"foobar";
+
+  auto jsString = String::createFromUtf16(rd, utf16);
+  EXPECT_EQ(jsString.utf16(rd), utf16);
+  auto prop = PropNameID::forUtf16(rd, utf16);
+  EXPECT_EQ(prop.utf16(rd), utf16);
+
+  // 👋 in UTF-16 encoding is 0xd83d 0xdc4b
+  utf16 = u"hello!\xd83d\xdc4b";
+  jsString = String::createFromUtf16(rd, utf16.data(), utf16.length());
+  EXPECT_EQ(jsString.utf16(rd), utf16);
+  prop = PropNameID::forUtf16(rd, utf16);
+  EXPECT_EQ(prop.utf16(rd), utf16);
+
+  utf16 = u"\xd83d";
+  jsString = String::createFromUtf16(rd, utf16.data(), utf16.length());
+  /// We need to use charCodeAt instead of UTF16 because the default
+  /// implementation of UTF16 converts to UTF8, then to UTF16, so we will lose
+  /// the lone surrogate value.
+  rd.global().setProperty(rd, "loneSurrogate", jsString);
+  auto cp = eval("loneSurrogate.charCodeAt(0)").getNumber();
+  EXPECT_EQ(cp, 55357); // 0xD83D in decimal
+}
+
 TEST_P(JSITest, GetStringDataTest) {
   // This Runtime Decorator is used to test the default getStringData
   // implementation for VMs that do not provide their own implementation
@@ -1652,7 +1701,8 @@ TEST_P(JSITest, GetStringDataTest) {
   };
 
   RD rd = RD(rt);
-  String str = String::createFromUtf8(rd, "hello👋");
+  // 👋 in UTF8 encoding is 0xf0 0x9f 0x91 0x8b
+  String str = String::createFromUtf8(rd, "hello\xf0\x9f\x91\x8b");
 
   std::u16string buf;
   auto cb = [&buf](bool ascii, const void* data, size_t num) {

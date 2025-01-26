@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "data-uri-to-buffer": "^6.0.1",
-    "undici": "^5.27.2",
+    "undici": "^5.28.5",
     "wait-for-expect": "^3.0.2"
   }
 }

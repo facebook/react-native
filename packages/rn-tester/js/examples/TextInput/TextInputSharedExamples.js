@@ -498,10 +498,10 @@ class TokenizedTextExample extends React.Component<
 }
 
 type SelectionExampleState = {
-  selection: $ReadOnly<{|
+  selection: $ReadOnly<{
     start: number,
     end: number,
-  |}>,
+  }>,
   value: string,
   ...
 };

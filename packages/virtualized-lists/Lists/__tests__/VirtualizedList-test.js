@@ -1526,8 +1526,7 @@ it('adjusts render area with non-zero initialScrollIndex', async () => {
     simulateScroll(component, {x: 0, y: 10}); // simulate scroll offset for initialScrollIndex
 
     // TODO: Rewrite test to tolerate subtle timing changes.
-    performNextBatch();
-    performNextBatch();
+    jest.advanceTimersToNextTimer(3);
   });
 
   // We should expand the render area after receiving a message indcating we
@@ -2542,5 +2541,5 @@ function performAllBatches() {
 }
 
 function performNextBatch() {
-  jest.runOnlyPendingTimers();
+  jest.advanceTimersToNextTimer(1);
 }

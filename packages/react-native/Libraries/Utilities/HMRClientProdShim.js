@@ -28,4 +28,4 @@ const HMRClientProdShim: HMRClientNativeInterface = {
   unstable_notifyFuseboxConsoleEnabled() {},
 };
 
-module.exports = HMRClientProdShim;
+export default HMRClientProdShim;

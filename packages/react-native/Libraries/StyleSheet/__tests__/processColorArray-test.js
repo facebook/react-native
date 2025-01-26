@@ -10,14 +10,14 @@
 
 'use strict';
 
-const {OS} = require('../../Utilities/Platform');
+const {OS} = require('../../Utilities/Platform').default;
 const PlatformColorAndroid =
   require('../PlatformColorValueTypes.android').PlatformColor;
 const PlatformColorIOS =
   require('../PlatformColorValueTypes.ios').PlatformColor;
 const DynamicColorIOS =
   require('../PlatformColorValueTypesIOS.ios').DynamicColorIOS;
-const processColorArray = require('../processColorArray').default;
+const processColorArray = require('../processColorArray');
 
 const platformSpecific =
   OS === 'android'

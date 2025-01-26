@@ -28,4 +28,4 @@ function setNormalizedColorAlpha(input: number, alpha: number): number {
   return ((input & 0xffffff00) | alpha) >>> 0;
 }
 
-export default setNormalizedColorAlpha;
+module.exports = setNormalizedColorAlpha;

@@ -10,8 +10,10 @@
 
 'use strict';
 
-const Blob = require('../Blob/Blob');
-const binaryToBase64 = require('../Utilities/binaryToBase64');
+import typeof BlobT from '../Blob/Blob';
+
+const Blob: BlobT = require('../Blob/Blob').default;
+const binaryToBase64 = require('../Utilities/binaryToBase64').default;
 const FormData = require('./FormData');
 
 export type RequestBody =
