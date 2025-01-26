@@ -269,3 +269,28 @@ UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::
       ? (*smartInsertDelete ? UITextSmartInsertDeleteTypeYes : UITextSmartInsertDeleteTypeNo)
       : UITextSmartInsertDeleteTypeDefault;
 }
+
+
+UIDataDetectorTypes RCTUITextViewDataDetectorTypesFromStringVector(const std::vector<std::string> &dataDetectorTypes) {
+  UIDataDetectorTypes ret = UIDataDetectorTypeNone;
+  for (const auto& dataType : dataDetectorTypes) {
+    if (dataType == "link") {
+      ret |= UIDataDetectorTypeLink;
+    } else if (dataType == "phoneNumber") {
+      ret |= UIDataDetectorTypePhoneNumber;
+    } else if (dataType == "address") {
+      ret |= UIDataDetectorTypeAddress;
+    } else if (dataType == "calendarEvent") {
+      ret |= UIDataDetectorTypeCalendarEvent;
+    } else if (dataType == "trackingNumber") {
+      ret |= UIDataDetectorTypeShipmentTrackingNumber;
+    } else if (dataType == "flightNumber") {
+      ret |= UIDataDetectorTypeFlightNumber;
+    } else if (dataType == "lookupSuggestion") {
+      ret |= UIDataDetectorTypeLookupSuggestion;
+    } else if (dataType == "all") {
+      ret |= UIDataDetectorTypeAll;
+    }
+  }
+  return ret;
+}

@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 // The `clearButtonMode` property actually is not supported yet;
 // it's declared here only to conform to the interface.
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
+@property (nonatomic, assign) UIDataDetectorTypes dataDetectorTypes;
 
 @property (nonatomic, assign) BOOL caretHidden;
 
