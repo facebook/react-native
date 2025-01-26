@@ -272,24 +272,27 @@ UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::
 
 
 UIDataDetectorTypes RCTUITextViewDataDetectorTypesFromStringVector(const std::vector<std::string> &dataDetectorTypes) {
+  static dispatch_once_t onceToken;
+  static NSDictionary<NSString *, NSNumber *> *dataDetectorTypesMap = nil;
+
+  dispatch_once(&onceToken, ^{
+      dataDetectorTypesMap = @{
+          @"link": @(UIDataDetectorTypeLink),
+          @"phoneNumber": @(UIDataDetectorTypePhoneNumber),
+          @"address": @(UIDataDetectorTypeAddress),
+          @"calendarEvent": @(UIDataDetectorTypeCalendarEvent),
+          @"trackingNumber": @(UIDataDetectorTypeShipmentTrackingNumber),
+          @"flightNumber": @(UIDataDetectorTypeFlightNumber),
+          @"lookupSuggestion": @(UIDataDetectorTypeLookupSuggestion),
+          @"all": @(UIDataDetectorTypeAll)
+      };
+  });
+
   UIDataDetectorTypes ret = UIDataDetectorTypeNone;
   for (const auto& dataType : dataDetectorTypes) {
-    if (dataType == "link") {
-      ret |= UIDataDetectorTypeLink;
-    } else if (dataType == "phoneNumber") {
-      ret |= UIDataDetectorTypePhoneNumber;
-    } else if (dataType == "address") {
-      ret |= UIDataDetectorTypeAddress;
-    } else if (dataType == "calendarEvent") {
-      ret |= UIDataDetectorTypeCalendarEvent;
-    } else if (dataType == "trackingNumber") {
-      ret |= UIDataDetectorTypeShipmentTrackingNumber;
-    } else if (dataType == "flightNumber") {
-      ret |= UIDataDetectorTypeFlightNumber;
-    } else if (dataType == "lookupSuggestion") {
-      ret |= UIDataDetectorTypeLookupSuggestion;
-    } else if (dataType == "all") {
-      ret |= UIDataDetectorTypeAll;
+    NSNumber *val = dataDetectorTypesMap[RCTNSStringFromString(dataType)];
+    if (val) {
+      ret |= (UIDataDetectorTypes)val.unsignedIntValue;
     }
   }
   return ret;
