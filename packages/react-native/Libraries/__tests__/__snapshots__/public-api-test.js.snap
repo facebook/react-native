@@ -5328,13 +5328,13 @@ exports[`public API should not change unintentionally Libraries/Interaction/Fram
   beginScroll(): void,
   endScroll(): void,
 };
-declare module.exports: FrameRateLogger;
+declare export default typeof FrameRateLogger;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Interaction/InteractionManager.js 1`] = `
 "export type Handle = number;
-declare const InteractionManager: {
+declare const InteractionManagerImpl: {
   Events: {
     interactionStart: \\"interactionStart\\",
     interactionComplete: \\"interactionComplete\\",
@@ -5352,7 +5352,8 @@ declare const InteractionManager: {
   addListener: Function,
   setDeadline(deadline: number): void,
 };
-declare module.exports: typeof InteractionManager;
+declare const InteractionManager: typeof InteractionManagerImpl;
+declare export default typeof InteractionManager;
 "
 `;
 
@@ -5386,7 +5387,7 @@ declare const InteractionManagerStub: {
   addListener(): EventSubscription,
   setDeadline(deadline: number): void,
 };
-declare module.exports: InteractionManagerStub;
+declare export default typeof InteractionManagerStub;
 "
 `;
 
@@ -5402,7 +5403,7 @@ declare const JSEventLoopWatchdog: {
   addHandler: (handler: Handler) => void,
   install: ({ thresholdMS: number, ... }) => void,
 };
-declare module.exports: JSEventLoopWatchdog;
+declare export default typeof JSEventLoopWatchdog;
 "
 `;
 
@@ -5502,7 +5503,7 @@ declare class TaskQueue {
   _getCurrentQueue(): Array<Task>;
   _genPromise(task: PromiseTask): void;
 }
-declare module.exports: TaskQueue;
+declare export default typeof TaskQueue;
 "
 `;
 
@@ -5534,7 +5535,7 @@ exports[`public API should not change unintentionally Libraries/Interaction/Touc
   currentCentroidY: (touchHistory: TouchHistoryMath) => number,
   noCentroid: number,
 };
-declare module.exports: TouchHistoryMath;
+declare export default typeof TouchHistoryMath;
 "
 `;
 

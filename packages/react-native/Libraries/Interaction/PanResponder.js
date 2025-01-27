@@ -12,8 +12,8 @@
 
 import type {PressEvent} from '../Types/CoreEventTypes';
 
-const InteractionManager = require('./InteractionManager');
-const TouchHistoryMath = require('./TouchHistoryMath');
+const InteractionManager = require('./InteractionManager').default;
+const TouchHistoryMath = require('./TouchHistoryMath').default;
 
 const currentCentroidXOfTouchesChangedAfter =
   TouchHistoryMath.currentCentroidXOfTouchesChangedAfter;

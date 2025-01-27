@@ -272,7 +272,7 @@ module.exports = {
     return require('./Libraries/ReactNative/I18nManager');
   },
   get InteractionManager(): InteractionManager {
-    return require('./Libraries/Interaction/InteractionManager');
+    return require('./Libraries/Interaction/InteractionManager').default;
   },
   get Keyboard(): Keyboard {
     return require('./Libraries/Components/Keyboard/Keyboard').default;
