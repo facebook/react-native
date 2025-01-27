@@ -29,10 +29,10 @@ internal class CompositeBackgroundDrawable(
      * Any non-react-managed background already part of the view, like one set as Android style on a
      * TextInput
      */
-    public val originalBackground: Drawable? = null,
+    val originalBackground: Drawable? = null,
 
     /** Non-inset box shadows */
-    public val outerShadows: List<Drawable> = emptyList(),
+    val outerShadows: List<Drawable> = emptyList(),
 
     /**
      * CSS background layer and border rendering
@@ -40,28 +40,28 @@ internal class CompositeBackgroundDrawable(
      * TODO: we should extract path logic from here, and fast-path to using simpler drawables like
      *   ColorDrawable in the common cases
      */
-    public val cssBackground: CSSBackgroundDrawable? = null,
+    val cssBackground: CSSBackgroundDrawable? = null,
 
     /** Background rendering Layer */
-    public val background: BackgroundDrawable? = null,
+    val background: BackgroundDrawable? = null,
 
     /** Border rendering Layer */
-    public val border: BorderDrawable? = null,
+    val border: BorderDrawable? = null,
 
     /** TouchableNativeFeeback set selection background, like "SelectableBackground" */
-    public val feedbackUnderlay: Drawable? = null,
+    val feedbackUnderlay: Drawable? = null,
 
     /** Inset box-shadows */
-    public val innerShadows: List<Drawable> = emptyList(),
+    val innerShadows: List<Drawable> = emptyList(),
 
     /** Outline */
-    public val outline: OutlineDrawable? = null,
+    val outline: OutlineDrawable? = null,
 
     // Holder value for currently set insets
-    public var borderInsets: BorderInsets? = null,
+    var borderInsets: BorderInsets? = null,
 
     // Holder value for currently set border radius
-    public var borderRadius: BorderRadiusStyle? = null,
+    var borderRadius: BorderRadiusStyle? = null,
 ) :
     LayerDrawable(
         createLayersArray(
@@ -81,9 +81,7 @@ internal class CompositeBackgroundDrawable(
     setPaddingMode(LayerDrawable.PADDING_MODE_STACK)
   }
 
-  public fun withNewCssBackground(
-      cssBackground: CSSBackgroundDrawable?
-  ): CompositeBackgroundDrawable {
+  fun withNewCssBackground(cssBackground: CSSBackgroundDrawable?): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
         context,
         originalBackground,
@@ -99,7 +97,7 @@ internal class CompositeBackgroundDrawable(
     )
   }
 
-  public fun withNewBackground(background: BackgroundDrawable?): CompositeBackgroundDrawable {
+  fun withNewBackground(background: BackgroundDrawable?): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
         context,
         originalBackground,
@@ -115,7 +113,7 @@ internal class CompositeBackgroundDrawable(
     )
   }
 
-  public fun withNewShadows(
+  fun withNewShadows(
       outerShadows: List<Drawable>,
       innerShadows: List<Drawable>
   ): CompositeBackgroundDrawable {
@@ -134,7 +132,7 @@ internal class CompositeBackgroundDrawable(
     )
   }
 
-  public fun withNewBorder(border: BorderDrawable): CompositeBackgroundDrawable {
+  fun withNewBorder(border: BorderDrawable): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
         context,
         originalBackground,
@@ -150,7 +148,7 @@ internal class CompositeBackgroundDrawable(
     )
   }
 
-  public fun withNewOutline(outline: OutlineDrawable): CompositeBackgroundDrawable {
+  fun withNewOutline(outline: OutlineDrawable): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
         context,
         originalBackground,
@@ -166,7 +164,7 @@ internal class CompositeBackgroundDrawable(
     )
   }
 
-  public fun withNewFeedbackUnderlay(newUnderlay: Drawable?): CompositeBackgroundDrawable {
+  fun withNewFeedbackUnderlay(newUnderlay: Drawable?): CompositeBackgroundDrawable {
     return CompositeBackgroundDrawable(
         context,
         originalBackground,

@@ -14,9 +14,9 @@ package com.facebook.react.modules.network
  * error as 401 could be handled to invalidate the wrong token in the client code.
  */
 internal class HeaderUtil {
-  public companion object {
+  companion object {
     @JvmStatic
-    public fun stripHeaderName(name: String): String {
+    fun stripHeaderName(name: String): String {
       val builder = StringBuilder(name.length)
       var modified = false
       for (i in 0 until name.length) {
