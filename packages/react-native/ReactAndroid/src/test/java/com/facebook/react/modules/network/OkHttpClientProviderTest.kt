@@ -9,6 +9,7 @@ package com.facebook.react.modules.network
 
 import android.content.Context
 import java.io.File
+import java.lang.reflect.Field
 import okhttp3.OkHttpClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -20,18 +21,27 @@ import org.mockito.kotlin.whenever
 
 class OkHttpClientProviderTest {
 
+  private lateinit var sClientField: Field
+  private lateinit var sFactoryField: Field
+
   @Before
   fun setUp() {
     OkHttpClientProvider.setOkHttpClientFactory(null)
-    val field = OkHttpClientProvider::class.java.getDeclaredField("sClient").apply {
-      isAccessible = true
-      set(null, null)
-    }
+    sClientField =
+            OkHttpClientProvider::class.java.getDeclaredField("sClient").apply {
+              isAccessible = true
+            }
+    sFactoryField =
+            OkHttpClientProvider::class.java.getDeclaredField("sFactory").apply {
+              isAccessible = true
+            }
   }
 
   @After
   fun tearDown() {
     OkHttpClientProvider.setOkHttpClientFactory(null)
+    sClientField.set(null, null)
+    sFactoryField.set(null, null)
   }
 
   @Test
@@ -40,9 +50,7 @@ class OkHttpClientProviderTest {
 
     OkHttpClientProvider.setOkHttpClientFactory(mockFactory)
 
-    val field = OkHttpClientProvider::class.java.getDeclaredField("sFactory")
-    field.isAccessible = true
-    val factory = field.get(null) as OkHttpClientFactory?
+    val factory = sFactoryField.get(null)
 
     assertThat(factory).isNotNull
     assertThat(factory).isSameAs(mockFactory)
@@ -50,22 +58,16 @@ class OkHttpClientProviderTest {
 
   @Test
   fun testGetOkHttpClientCreatesClientIfNull() {
-    val field = OkHttpClientProvider::class.java.getDeclaredField("sClient")
-    field.isAccessible = true
-    field.set(null, null)
-
     val client = OkHttpClientProvider.getOkHttpClient()
 
     assertThat(client).isNotNull
-    assertThat(field.get(null) as OkHttpClient?).isSameAs(client)
+    assertThat(sClientField.get(null)).isSameAs(client)
   }
 
   @Test
   fun testGetOkHttpClientDoesNotCreateNewClientIfAlreadyExists() {
     val existingClient = OkHttpClient()
-    val field = OkHttpClientProvider::class.java.getDeclaredField("sClient")
-    field.isAccessible = true
-    field.set(null, existingClient)
+    sClientField.set(null, existingClient)
 
     val client = OkHttpClientProvider.getOkHttpClient()
 
