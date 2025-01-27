@@ -421,7 +421,6 @@ struct RCTInstanceCallback : public InstanceCallback {
   [self registerExtraModules];
   // Initialize all native modules that cannot be loaded lazily
   (void)[self _initializeModules:RCTGetModuleClasses() withDispatchGroup:prepareBridge lazilyDiscovered:NO];
-  [self registerExtraLazyModules];
 
   [_performanceLogger markStopForTag:RCTPLNativeModuleInit];
 
@@ -873,63 +872,6 @@ struct RCTInstanceCallback : public InstanceCallback {
     [_moduleDataByID addObject:moduleData];
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
-}
-
-- (void)registerExtraLazyModules
-{
-#if RCT_DEBUG
-  // This is debug-only and only when Chrome is attached, since it expects all modules to be already
-  // available on start up. Otherwise, we can let the lazy module discovery to load them on demand.
-  Class executorClass = [_parentBridge executorClass];
-  if (executorClass && [NSStringFromClass(executorClass) isEqualToString:@"RCTWebSocketExecutor"]) {
-    NSDictionary<NSString *, Class> *moduleClasses = nil;
-    if ([self.delegate respondsToSelector:@selector(extraLazyModuleClassesForBridge:)]) {
-      moduleClasses = [self.delegate extraLazyModuleClassesForBridge:_parentBridge];
-    }
-
-    if (!moduleClasses) {
-      return;
-    }
-
-    // This logic is mostly copied from `registerModulesForClasses:`, but with one difference:
-    // we must use the names provided by the delegate method here.
-    for (NSString *moduleName in moduleClasses) {
-      Class moduleClass = moduleClasses[moduleName];
-      if (RCTTurboModuleEnabled() && [moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
-        continue;
-      }
-
-      // Check for module name collisions
-      RCTModuleData *moduleData = _moduleDataByName[moduleName];
-      if (moduleData) {
-        if (moduleData.hasInstance) {
-          // Existing module was preregistered, so it takes precedence
-          continue;
-        } else if ([moduleClass new] == nil) {
-          // The new module returned nil from init, so use the old module
-          continue;
-        } else if ([moduleData.moduleClass new] != nil) {
-          // Use existing module since it was already loaded but not yet instantiated.
-          continue;
-        }
-      }
-
-      int32_t moduleDataId = getUniqueId();
-      BridgeNativeModulePerfLogger::moduleDataCreateStart([moduleName UTF8String], moduleDataId);
-      moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
-                                                       bridge:self
-                                               moduleRegistry:_objCModuleRegistry
-                                      viewRegistry_DEPRECATED:_viewRegistry_DEPRECATED
-                                                bundleManager:_bundleManager
-                                            callableJSModules:_callableJSModules];
-      BridgeNativeModulePerfLogger::moduleDataCreateEnd([moduleName UTF8String], moduleDataId);
-
-      _moduleDataByName[moduleName] = moduleData;
-      [_moduleClassesByID addObject:moduleClass];
-      [_moduleDataByID addObject:moduleData];
-    }
-  }
-#endif
 }
 
 - (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules

@@ -32,10 +32,6 @@ public class DevMenuModule(
     }
   }
 
-  override fun debugRemotely(enableDebug: Boolean) {
-    devSupportManager.setRemoteJSDebugEnabled(enableDebug)
-  }
-
   override fun setProfilingEnabled(enabled: Boolean) {
     // iOS only
   }
