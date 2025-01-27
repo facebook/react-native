@@ -23,9 +23,10 @@ class OkHttpClientProviderTest {
   @Before
   fun setUp() {
     OkHttpClientProvider.setOkHttpClientFactory(null)
-    val field = OkHttpClientProvider::class.java.getDeclaredField("sClient")
-    field.isAccessible = true
-    field.set(null, null)
+    val field = OkHttpClientProvider::class.java.getDeclaredField("sClient").apply {
+      isAccessible = true
+      set(null, null)
+    }
   }
 
   @After
