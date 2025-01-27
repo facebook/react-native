@@ -985,5 +985,53 @@ describe('EventTarget', () => {
         expect(listenerThatWillBeRemoved).not.toHaveBeenCalled();
       });
     });
+
+    describe('re-attaching a previous listener with a pending signal', () => {
+      // This is a regression test for https://github.com/whatwg/dom/issues/1346
+      it('should NOT remove the new subscription when the signal for the old subscription is aborted', () => {
+        const [node] = createEventTargetHierarchyWithDepth(1);
+
+        // Listener setup
+
+        resetListenerCallOrder();
+
+        const listener = createListener();
+
+        const abortController = new AbortController();
+
+        node.addEventListener('custom', listener, {
+          signal: abortController.signal,
+        });
+
+        // Dispatch
+
+        const event = new Event('custom');
+
+        node.dispatchEvent(event);
+
+        expect(listener).toHaveBeenCalledTimes(1);
+
+        node.removeEventListener('custom', listener);
+
+        node.dispatchEvent(event);
+
+        expect(listener).toHaveBeenCalledTimes(1);
+
+        // Added without a signal
+        node.addEventListener('custom', listener);
+
+        node.dispatchEvent(event);
+
+        // Listener is called
+        expect(listener).toHaveBeenCalledTimes(2);
+
+        abortController.abort();
+
+        node.dispatchEvent(event);
+
+        // Listener is called
+        expect(listener).toHaveBeenCalledTimes(3);
+      });
+    });
   });
 });
