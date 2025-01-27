@@ -37,4 +37,4 @@ Position.prototype.destructor = function () {
 
 PooledClass.addPoolingTo(Position as $FlowFixMe, twoArgumentPooler);
 
-module.exports = Position;
+export default Position;

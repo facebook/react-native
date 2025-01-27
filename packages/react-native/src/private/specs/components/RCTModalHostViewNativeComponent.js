@@ -18,11 +18,11 @@ import type {
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 
-type OrientationChangeEvent = $ReadOnly<{|
+type OrientationChangeEvent = $ReadOnly<{
   orientation: 'portrait' | 'landscape',
-|}>;
+}>;
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -139,7 +139,7 @@ type NativeProps = $ReadOnly<{|
    * The `identifier` is the unique number for identifying Modal components.
    */
   identifier?: WithDefault<Int32, 0>,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>('ModalHostView', {
   interfaceOnly: true,

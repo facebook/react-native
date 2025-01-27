@@ -10,5 +10,6 @@
 
 'use strict';
 
-module.exports =
-  require('../UnimplementedViews/UnimplementedView') as $FlowFixMe;
+import typeof DrawerLayoutAndroid from './DrawerLayoutAndroid.android';
+
+export default require('../UnimplementedViews/UnimplementedView') as $FlowFixMe as DrawerLayoutAndroid;

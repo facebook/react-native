@@ -10,7 +10,6 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/TraceSection.h>
-#include <fb/assert.h>
 #include <folly/json.h>
 
 #include <memory>

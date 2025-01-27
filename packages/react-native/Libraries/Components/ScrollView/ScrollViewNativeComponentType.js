@@ -13,7 +13,7 @@
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {PointProp} from '../../StyleSheet/PointPropType';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {ScrollEvent} from '../../Types/CoreEventTypes';
+import type {PressEvent, ScrollEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 export type ScrollViewNativeProps = $ReadOnly<{
@@ -76,6 +76,6 @@ export type ScrollViewNativeProps = $ReadOnly<{
   snapToStart?: ?boolean,
   zoomScale?: ?number,
   // Overrides
-  onResponderGrant?: ?(e: $FlowFixMe) => void | boolean,
+  onResponderGrant?: ?(e: PressEvent) => void | boolean,
   ...
 }>;

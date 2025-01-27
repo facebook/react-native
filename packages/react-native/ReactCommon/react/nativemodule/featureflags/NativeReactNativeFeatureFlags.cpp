@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f39f57b7aafbbea465790baac247f548>>
+ * @generated SignedSource<<fdf7adf85d57448b5c86154ec035b8c8>>
  */
 
 /**
@@ -49,14 +49,11 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
   return false;
 }
 
-bool NativeReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::completeReactInstanceCreationOnBgThreadOnAndroid();
-}
-
 bool NativeReactNativeFeatureFlags::disableEventLoopOnBridgeless(
     jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::disableEventLoopOnBridgeless();
+  // This flag is configured with `skipNativeAPI: true`.
+  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
+  return false;
 }
 
 bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
@@ -69,16 +66,6 @@ bool NativeReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid(
   return ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid();
 }
 
-bool NativeReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableAlignItemsBaselineOnFabricIOS();
-}
-
-bool NativeReactNativeFeatureFlags::enableAndroidLineHeightCentering(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableAndroidLineHeightCentering();
-}
-
 bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableBridgelessArchitecture();
@@ -87,11 +74,6 @@ bool NativeReactNativeFeatureFlags::enableBridgelessArchitecture(
 bool NativeReactNativeFeatureFlags::enableCppPropsIteratorSetter(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableCppPropsIteratorSetter();
-}
-
-bool NativeReactNativeFeatureFlags::enableDeletionOfUnmountedViews(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableDeletionOfUnmountedViews();
 }
 
 bool NativeReactNativeFeatureFlags::enableEagerRootViewAttachment(
@@ -132,6 +114,11 @@ bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
 bool NativeReactNativeFeatureFlags::enableImagePrefetchingAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableImagePrefetchingAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS();
 }
 
 bool NativeReactNativeFeatureFlags::enableLayoutAnimationsOnAndroid(
@@ -209,11 +196,6 @@ bool NativeReactNativeFeatureFlags::fuseboxEnabledRelease(
   return ReactNativeFeatureFlags::fuseboxEnabledRelease();
 }
 
-bool NativeReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::initEagerTurboModulesOnNativeModulesQueueAndroid();
-}
-
 bool NativeReactNativeFeatureFlags::lazyAnimationCallbacks(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::lazyAnimationCallbacks();
@@ -234,14 +216,14 @@ bool NativeReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling(
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
 }
 
+bool NativeReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior();
+}
+
 bool NativeReactNativeFeatureFlags::useFabricInterop(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useFabricInterop();
-}
-
-bool NativeReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::useImmediateExecutorInAndroidBridgeless();
 }
 
 bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(

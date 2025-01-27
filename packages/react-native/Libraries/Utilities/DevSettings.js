@@ -69,4 +69,4 @@ if (__DEV__) {
   };
 }
 
-module.exports = DevSettings;
+export default DevSettings;

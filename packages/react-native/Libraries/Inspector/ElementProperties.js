@@ -13,24 +13,27 @@
 import type {InspectorData} from '../Renderer/shims/ReactNativeTypes';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
-const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
-const TouchableWithoutFeedback = require('../Components/Touchable/TouchableWithoutFeedback');
+import React from 'react';
+
+const TouchableHighlight =
+  require('../Components/Touchable/TouchableHighlight').default;
+const TouchableWithoutFeedback =
+  require('../Components/Touchable/TouchableWithoutFeedback').default;
 const View = require('../Components/View/View');
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text');
-const mapWithSeparator = require('../Utilities/mapWithSeparator');
+const Text = require('../Text/Text').default;
+const mapWithSeparator = require('../Utilities/mapWithSeparator').default;
 const BoxInspector = require('./BoxInspector');
 const StyleInspector = require('./StyleInspector');
-const React = require('react');
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   hierarchy: ?InspectorData['hierarchy'],
   style?: ?ViewStyleProp,
   frame?: ?Object,
   selection?: ?number,
   setSelection?: number => mixed,
-|}>;
+}>;
 
 class ElementProperties extends React.Component<Props> {
   render(): React.Node {

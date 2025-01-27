@@ -118,6 +118,7 @@ function _defineCheckVersionTests() {
 
 function _mockJsVersion(major = 0, minor = 0, patch = 0, prerelease = null) {
   jest.doMock('../ReactNativeVersion', () => ({
+    __esModule: true,
     version: {major, minor, patch, prerelease},
   }));
 }

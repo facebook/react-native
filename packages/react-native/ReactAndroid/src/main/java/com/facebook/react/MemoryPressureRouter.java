@@ -10,13 +10,15 @@ package com.facebook.react;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.res.Configuration;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.MemoryPressureListener;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /** Translates and routes memory pressure events. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class MemoryPressureRouter implements ComponentCallbacks2 {
   private final CopyOnWriteArrayList<MemoryPressureListener> mListeners =
-      new CopyOnWriteArrayList();
+      new CopyOnWriteArrayList<>();
 
   public MemoryPressureRouter(Context context) {
     context.getApplicationContext().registerComponentCallbacks(this);

@@ -14,10 +14,10 @@ import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
 import {StyleSheet, View} from 'react-native';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   children?: ?React.Node,
   testID?: string,
-|}>;
+}>;
 
 /**
  * Container view for a block of configuration options for an example.

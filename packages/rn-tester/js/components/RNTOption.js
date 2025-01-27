@@ -17,7 +17,7 @@ import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   testID?: ?string,
   label: string,
   onPress?: ?(event: PressEvent) => mixed,
@@ -25,7 +25,7 @@ type Props = $ReadOnly<{|
   multiSelect?: ?boolean,
   disabled?: ?boolean,
   style?: ViewStyleProp,
-|}>;
+}>;
 
 /**
  * A reusable toggle button component for RNTester. Highlights when selected.

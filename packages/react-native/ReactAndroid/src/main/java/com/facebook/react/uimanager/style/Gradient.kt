@@ -10,9 +10,7 @@ package com.facebook.react.uimanager.style
 import android.content.Context
 import android.graphics.Rect
 import android.graphics.Shader
-import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.ReadableType
 
 internal class Gradient(gradient: ReadableMap?, context: Context) {
   private enum class GradientType {
@@ -40,22 +38,7 @@ internal class Gradient(gradient: ReadableMap?, context: Context) {
         gradient.getArray("colorStops")
             ?: throw IllegalArgumentException("Invalid colorStops array")
 
-    val size = colorStops.size()
-    val colors = IntArray(size)
-    val positions = FloatArray(size)
-
-    for (i in 0 until size) {
-      val colorStop = colorStops.getMap(i) ?: continue
-      colors[i] =
-          if (colorStop.getType("color") == ReadableType.Map) {
-            ColorPropConverter.getColor(colorStop.getMap("color"), context)
-          } else {
-            colorStop.getInt("color")
-          }
-      positions[i] = colorStop.getDouble("position").toFloat()
-    }
-
-    linearGradient = LinearGradient(directionMap, colors, positions)
+    linearGradient = LinearGradient(directionMap, colorStops, context)
   }
 
   public fun getShader(bounds: Rect): Shader? {

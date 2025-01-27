@@ -47,6 +47,7 @@ export default class AnimatedModulo extends AnimatedWithChildren {
 
   __attach(): void {
     this._a.__addChild(this);
+    super.__attach();
   }
 
   __detach(): void {

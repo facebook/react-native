@@ -24,12 +24,13 @@ import TextInputState from '../../../../../Libraries/Components/TextInput/TextIn
 import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIManager';
 import {create as createAttributePayload} from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
-import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
-import ReadOnlyNode, {setInstanceHandle} from './ReadOnlyNode';
 import {
   getPublicInstanceFromInternalInstanceHandle,
   getShadowNode,
-} from './ReadOnlyNode';
+  setInstanceHandle,
+} from './internals/NodeInternals';
+import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
+import ReadOnlyNode from './ReadOnlyNode';
 import NativeDOM from './specs/NativeDOM';
 import nullthrows from 'nullthrows';
 

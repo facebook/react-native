@@ -14,7 +14,8 @@ import {beginEvent, endEvent} from '../Performance/Systrace';
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
 // FIXME: use typed events
-type RCTDeviceEventDefinitions = $FlowFixMe;
+/* $FlowFixMe[unclear-type] unclear type of events */
+type RCTDeviceEventDefinitions = {[name: string]: Array<any>};
 
 /**
  * Global EventEmitter used by the native platform to emit events to JavaScript.

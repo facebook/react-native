@@ -12,9 +12,9 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type SourceCodeConstants = {|
+export type SourceCodeConstants = {
   scriptURL: string,
-|};
+};
 
 export interface Spec extends TurboModule {
   +getConstants: () => SourceCodeConstants;

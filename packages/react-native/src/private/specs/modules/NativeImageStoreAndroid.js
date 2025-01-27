@@ -13,7 +13,7 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {||};
+  +getConstants: () => {};
   +getBase64ForTag: (
     uri: string,
     successCallback: (base64ImageData: string) => void,

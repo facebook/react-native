@@ -68,6 +68,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
@@ -255,29 +256,6 @@ public class FabricUIManager
     }
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     return rootTag;
-  }
-
-  /**
-   * This API returns metadata associated to the React Component that rendered the Android View
-   * received as a parameter.
-   *
-   * @param surfaceId {@link int} that represents the surfaceId for the View received as a
-   *     parameter. In practice surfaceId can be retrieved calling the {@link View#getId()} method
-   *     on the {@link ReactRoot} that holds the View received as a second parameter.
-   * @param view {@link View} view that will be used to retrieve the React view hierarchy metadata.
-   * @return a {@link ReadableMap} that contains metadata associated to the React Component that
-   *     rendered the Android View received as a parameter. For more details about the keys stored
-   *     in the {@link ReadableMap} refer to the "getInspectorDataForInstance" method from
-   *     jni/react/fabric/Binding.cpp file.
-   */
-  @UiThread
-  @ThreadConfined(UI)
-  public ReadableMap getInspectorDataForInstance(final int surfaceId, final View view) {
-    UiThreadUtil.assertOnUiThread();
-    int reactTag = view.getId();
-
-    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
-    return mBinding.getInspectorDataForInstance(eventEmitter);
   }
 
   @Override
@@ -631,6 +609,7 @@ public class FabricUIManager
    *     padding used by RN Android TextInput.
    * @return if theme data is available in the output parameters.
    */
+  @SuppressWarnings("unused")
   public boolean getThemeData(int surfaceId, float[] defaultTextInputPadding) {
     SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
     Context context = surfaceMountingManager != null ? surfaceMountingManager.getContext() : null;
@@ -890,7 +869,7 @@ public class FabricUIManager
         mReactApplicationContext, componentName, surfaceId, reactTag, params);
   }
 
-  public void setBinding(FabricUIManagerBinding binding) {
+  void setBinding(FabricUIManagerBinding binding) {
     mBinding = binding;
   }
 
@@ -1007,7 +986,7 @@ public class FabricUIManager
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
     if (eventEmitter == null) {
       if (mMountingManager.getViewExists(reactTag)) {
-        // The view is preallocated and created. However, it hasn't been mounted yet. We will have
+        // The view is pre-allocated and created. However, it hasn't been mounted yet. We will have
         // access to the event emitter later when the view is mounted. For now just save the event
         // in the view state and trigger it later.
         mMountingManager.enqueuePendingEvent(

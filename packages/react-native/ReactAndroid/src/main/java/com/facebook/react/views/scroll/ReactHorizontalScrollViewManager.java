@@ -109,7 +109,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
   }
 
   @ReactProp(name = "snapToAlignment")
-  public void setSnapToAlignment(ReactHorizontalScrollView view, String alignment) {
+  public void setSnapToAlignment(ReactHorizontalScrollView view, @Nullable String alignment) {
     view.setSnapToAlignment(ReactScrollViewHelper.parseSnapToAlignment(alignment));
   }
 
@@ -166,7 +166,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
    * @param scrollPerfTag
    */
   @ReactProp(name = "scrollPerfTag")
-  public void setScrollPerfTag(ReactHorizontalScrollView view, String scrollPerfTag) {
+  public void setScrollPerfTag(ReactHorizontalScrollView view, @Nullable String scrollPerfTag) {
     view.setScrollPerfTag(scrollPerfTag);
   }
 
@@ -177,7 +177,7 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
 
   /** Controls overScroll behaviour */
   @ReactProp(name = "overScrollMode")
-  public void setOverScrollMode(ReactHorizontalScrollView view, String value) {
+  public void setOverScrollMode(ReactHorizontalScrollView view, @Nullable String value) {
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
   }
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<243cad39bb9ef10ee4c7941a64c553fb>>
+ * @generated SignedSource<<3bf74cbd626df283429e270fe45ff5b4>>
  */
 
 /**
@@ -31,14 +31,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
-    return true;
-  }
-
-  bool disableEventLoopOnBridgeless() override {
-    return false;
-  }
-
   bool disableMountItemReorderingAndroid() override {
     return false;
   }
@@ -47,23 +39,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableAlignItemsBaselineOnFabricIOS() override {
-    return true;
-  }
-
-  bool enableAndroidLineHeightCentering() override {
-    return true;
-  }
-
   bool enableBridgelessArchitecture() override {
     return false;
   }
 
   bool enableCppPropsIteratorSetter() override {
-    return false;
-  }
-
-  bool enableDeletionOfUnmountedViews() override {
     return false;
   }
 
@@ -96,6 +76,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableImagePrefetchingAndroid() override {
+    return false;
+  }
+
+  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
     return false;
   }
 
@@ -159,10 +143,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool initEagerTurboModulesOnNativeModulesQueueAndroid() override {
-    return true;
-  }
-
   bool lazyAnimationCallbacks() override {
     return false;
   }
@@ -179,12 +159,12 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool useFabricInterop() override {
-    return false;
+  bool useEditTextStockAndroidFocusBehavior() override {
+    return true;
   }
 
-  bool useImmediateExecutorInAndroidBridgeless() override {
-    return true;
+  bool useFabricInterop() override {
+    return false;
   }
 
   bool useNativeViewConfigsInBridgelessMode() override {

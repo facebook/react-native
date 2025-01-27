@@ -24,7 +24,6 @@ import type {
   ScrollEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
 
-import Batchinator from '../Interaction/Batchinator';
 import clamp from '../Utilities/clamp';
 import infoLog from '../Utilities/infoLog';
 import {CellRenderMask} from './CellRenderMask';
@@ -375,10 +374,6 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this._checkProps(props);
 
     this._fillRateHelper = new FillRateHelper(this._listMetrics);
-    this._updateCellsToRenderBatcher = new Batchinator(
-      this._updateCellsToRender,
-      this.props.updateCellsBatchingPeriod ?? 50,
-    );
 
     if (this.props.viewabilityConfigCallbackPairs) {
       this._viewabilityTuples = this.props.viewabilityConfigCallbackPairs.map(
@@ -687,7 +682,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     if (this._isNestedWithSameOrientation()) {
       this.context.unregisterAsNestedChild({ref: this});
     }
-    this._updateCellsToRenderBatcher.dispose();
+    clearTimeout(this._updateCellsToRenderTimeoutID);
     this._viewabilityTuples.forEach(tuple => {
       tuple.viewabilityHelper.dispose();
     });
@@ -1228,7 +1223,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _scrollRef: ?React.ElementRef<any> = null;
   _sentStartForContentLength = 0;
   _sentEndForContentLength = 0;
-  _updateCellsToRenderBatcher: Batchinator;
+  _updateCellsToRenderTimeoutID: ?TimeoutID = null;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
 
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
@@ -1763,11 +1758,19 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       this._hiPriInProgress = true;
       // Don't worry about interactions when scrolling quickly; focus on filling content as fast
       // as possible.
-      this._updateCellsToRenderBatcher.dispose();
+      if (this._updateCellsToRenderTimeoutID != null) {
+        clearTimeout(this._updateCellsToRenderTimeoutID);
+        this._updateCellsToRenderTimeoutID = null;
+      }
       this._updateCellsToRender();
       return;
     } else {
-      this._updateCellsToRenderBatcher.schedule();
+      if (this._updateCellsToRenderTimeoutID == null) {
+        this._updateCellsToRenderTimeoutID = setTimeout(() => {
+          this._updateCellsToRenderTimeoutID = null;
+          this._updateCellsToRender();
+        }, this.props.updateCellsBatchingPeriod ?? 50);
+      }
     }
   }
 

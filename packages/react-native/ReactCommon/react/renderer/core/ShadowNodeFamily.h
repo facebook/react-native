@@ -196,12 +196,6 @@ class ShadowNodeFamily final {
    * Determines if the ShadowNodeFamily was ever mounted on the screen.
    */
   mutable bool hasBeenMounted_{false};
-
-  /*
-   * Determines if Views that were never mounted on the screen should be deleted
-   * when the shadow node family is destroyed.
-   */
-  const bool isDeletionOfUnmountedViewsEnabled_;
 };
 
 } // namespace facebook::react

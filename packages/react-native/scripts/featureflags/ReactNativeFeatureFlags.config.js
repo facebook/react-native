@@ -57,15 +57,6 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
-    completeReactInstanceCreationOnBgThreadOnAndroid: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
     disableEventLoopOnBridgeless: {
       defaultValue: false,
       metadata: {
@@ -74,6 +65,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'release',
       },
+      skipNativeAPI: true,
     },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
@@ -95,25 +87,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    enableAlignItemsBaselineOnFabricIOS: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-07-10',
-        description:
-          'Kill-switch to turn off support for aling-items:baseline on Fabric iOS.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-    },
-    enableAndroidLineHeightCentering: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'When enabled, custom line height calculation will be centered from top to bottom.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
     enableBridgelessArchitecture: {
       defaultValue: false,
       metadata: {
@@ -129,16 +102,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-09-13',
         description:
           'Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-    },
-    enableDeletionOfUnmountedViews: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-13',
-        description:
-          'Deletes views that were pre-allocated but never mounted on the screen.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -216,6 +179,14 @@ const definitions: FeatureFlagDefinitions = {
           'When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout',
         expectedReleaseValue: true,
         purpose: 'experimentation',
+      },
+    },
+    enableJSRuntimeGCOnMemoryPressureOnIOS: {
+      defaultValue: false,
+      metadata: {
+        description: 'Trigger JS runtime GC on memory pressure event on iOS',
+        expectedReleaseValue: true,
+        purpose: 'release',
       },
     },
     enableLayoutAnimationsOnAndroid: {
@@ -362,15 +333,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
-    initEagerTurboModulesOnNativeModulesQueueAndroid: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Construct modules that requires eager init on the dedicate native modules thread',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
     lazyAnimationCallbacks: {
       defaultValue: false,
       metadata: {
@@ -409,20 +371,20 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    useEditTextStockAndroidFocusBehavior: {
+      defaultValue: true,
+      metadata: {
+        description:
+          'If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.',
+        expectedReleaseValue: true,
+        purpose: 'release',
+      },
+    },
     useFabricInterop: {
       defaultValue: false,
       metadata: {
         description:
           'Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
-    useImmediateExecutorInAndroidBridgeless: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -531,30 +493,11 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    disableInteractionManagerInBatchinator: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-11-18',
-        description:
-          'Skips InteractionManager in `Batchinator` and invokes callbacks synchronously.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-    },
     enableAccessToHostTreeInFabric: {
       defaultValue: false,
       metadata: {
         description:
           'Enables access to the host tree in Fabric using DOM-compatible APIs.',
-        expectedReleaseValue: true,
-        purpose: 'release',
-      },
-    },
-    enableAnimatedAllowlist: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Enables Animated to skip non-allowlisted props and styles.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -567,15 +510,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-    },
-    enableAnimatedPropsMemo: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Enables Animated to analyze props to minimize invalidating `AnimatedProps`.',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
     },
     fixVirtualizeListCollapseWindowSize: {
@@ -634,15 +568,6 @@ const definitions: FeatureFlagDefinitions = {
         description: 'Enables use of setNativeProps in JS driven animations.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
-      },
-    },
-    useInsertionEffectsForAnimations: {
-      defaultValue: true,
-      metadata: {
-        description:
-          'Changes construction of the animation graph to `useInsertionEffect` instead of `useLayoutEffect`.',
-        expectedReleaseValue: true,
-        purpose: 'release',
       },
     },
     useRefsForTextInputState: {

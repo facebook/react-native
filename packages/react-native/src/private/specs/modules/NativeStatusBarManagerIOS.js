@@ -13,13 +13,13 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {|
+  +getConstants: () => {
     +HEIGHT: number,
     +DEFAULT_BACKGROUND_COLOR?: number,
-  |};
+  };
 
   // TODO(T47754272) Can we remove this method?
-  +getHeight: (callback: (result: {|height: number|}) => void) => void;
+  +getHeight: (callback: (result: {height: number}) => void) => void;
   +setNetworkActivityIndicatorVisible: (visible: boolean) => void;
   +addListener: (eventType: string) => void;
   +removeListeners: (count: number) => void;
@@ -41,10 +41,10 @@ const NativeModule = TurboModuleRegistry.getEnforcing<Spec>('StatusBarManager');
 let constants = null;
 
 const NativeStatusBarManager = {
-  getConstants(): {|
+  getConstants(): {
     +HEIGHT: number,
     +DEFAULT_BACKGROUND_COLOR?: number,
-  |} {
+  } {
     if (constants == null) {
       constants = NativeModule.getConstants();
     }
@@ -52,7 +52,7 @@ const NativeStatusBarManager = {
   },
 
   // TODO(T47754272) Can we remove this method?
-  getHeight(callback: (result: {|height: number|}) => void): void {
+  getHeight(callback: (result: {height: number}) => void): void {
     NativeModule.getHeight(callback);
   },
 

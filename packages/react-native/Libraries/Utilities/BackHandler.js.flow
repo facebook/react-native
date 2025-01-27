@@ -12,12 +12,12 @@
 
 type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
-type TBackHandler = {|
+type TBackHandler = {
   +exitApp: () => void,
   +addEventListener: (
     eventName: BackPressEventName,
     handler: () => ?boolean,
   ) => {remove: () => void, ...},
-|};
+};
 
-declare module.exports: TBackHandler;
+declare export default TBackHandler;

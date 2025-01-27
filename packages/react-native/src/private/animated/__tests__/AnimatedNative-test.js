@@ -34,10 +34,13 @@ describe('Native Animated', () => {
     jest
       .clearAllMocks()
       .mock('../../../../Libraries/BatchedBridge/NativeModules', () => ({
-        NativeAnimatedModule: {},
-        PlatformConstants: {
-          getConstants() {
-            return {};
+        __esModule: true,
+        default: {
+          NativeAnimatedModule: {},
+          PlatformConstants: {
+            getConstants() {
+              return {};
+            },
           },
         },
       }))
@@ -1359,9 +1362,6 @@ describe('Native Animated', () => {
 
   describe('Animated Components', () => {
     it('preserves current values on update and unmount', async () => {
-      const {ReactNativeFeatureFlags} = importModules();
-      ReactNativeFeatureFlags.override({enableAnimatedPropsMemo: () => true});
-
       const {Animated} = importModules();
 
       const opacity = new Animated.Value(0);
@@ -1379,9 +1379,6 @@ describe('Native Animated', () => {
     });
 
     it('restores defaults when receiving new animated values', async () => {
-      const {ReactNativeFeatureFlags} = importModules();
-      ReactNativeFeatureFlags.override({enableAnimatedPropsMemo: () => true});
-
       const {Animated} = importModules();
 
       const opacityA = new Animated.Value(0);
@@ -1395,30 +1392,6 @@ describe('Native Animated', () => {
       await update(root, <Animated.View style={{opacity: opacityB}} />);
       expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
         1,
-      );
-
-      await unmount(root);
-      // Make sure it doesn't get called on unmount.
-      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledTimes(
-        1,
-      );
-    });
-
-    it('should restore default values on prop updates only', async () => {
-      const {ReactNativeFeatureFlags} = importModules();
-      ReactNativeFeatureFlags.override({enableAnimatedPropsMemo: () => false});
-
-      const {Animated} = importModules();
-
-      const opacity = new Animated.Value(0);
-      opacity.__makeNative();
-
-      const root = await create(<Animated.View style={{opacity}} />);
-      expect(NativeAnimatedModule.restoreDefaultValues).not.toHaveBeenCalled();
-
-      await update(root, <Animated.View style={{opacity}} />);
-      expect(NativeAnimatedModule.restoreDefaultValues).toHaveBeenCalledWith(
-        expect.any(Number),
       );
 
       await unmount(root);

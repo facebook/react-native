@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8af906cf2c1799274d66979fd2532c57>>
+ * @generated SignedSource<<25afc05f79ba873b70a39019ca245c39>>
  */
 
 /**
@@ -45,16 +45,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool commonTestFlag();
 
   /**
-   * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
-   */
-  RN_EXPORT static bool completeReactInstanceCreationOnBgThreadOnAndroid();
-
-  /**
-   * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
-   */
-  RN_EXPORT static bool disableEventLoopOnBridgeless();
-
-  /**
    * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
@@ -65,16 +55,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
   /**
-   * Kill-switch to turn off support for aling-items:baseline on Fabric iOS.
-   */
-  RN_EXPORT static bool enableAlignItemsBaselineOnFabricIOS();
-
-  /**
-   * When enabled, custom line height calculation will be centered from top to bottom.
-   */
-  RN_EXPORT static bool enableAndroidLineHeightCentering();
-
-  /**
    * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
@@ -83,11 +63,6 @@ class ReactNativeFeatureFlags {
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
   RN_EXPORT static bool enableCppPropsIteratorSetter();
-
-  /**
-   * Deletes views that were pre-allocated but never mounted on the screen.
-   */
-  RN_EXPORT static bool enableDeletionOfUnmountedViews();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
@@ -128,6 +103,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
    */
   RN_EXPORT static bool enableImagePrefetchingAndroid();
+
+  /**
+   * Trigger JS runtime GC on memory pressure event on iOS
+   */
+  RN_EXPORT static bool enableJSRuntimeGCOnMemoryPressureOnIOS();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -205,11 +185,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxEnabledRelease();
 
   /**
-   * Construct modules that requires eager init on the dedicate native modules thread
-   */
-  RN_EXPORT static bool initEagerTurboModulesOnNativeModulesQueueAndroid();
-
-  /**
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
   RN_EXPORT static bool lazyAnimationCallbacks();
@@ -230,14 +205,14 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useAlwaysAvailableJSErrorHandling();
 
   /**
+   * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.
+   */
+  RN_EXPORT static bool useEditTextStockAndroidFocusBehavior();
+
+  /**
    * Should this application enable the Fabric Interop Layer for Android? If yes, the application will behave so that it can accept non-Fabric components and render them on Fabric. This toggle is controlling extra logic such as custom event dispatching that are needed for the Fabric Interop Layer to work correctly.
    */
   RN_EXPORT static bool useFabricInterop();
-
-  /**
-   * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
-   */
-  RN_EXPORT static bool useImmediateExecutorInAndroidBridgeless();
 
   /**
    * When enabled, the native view configs are used in bridgeless mode.

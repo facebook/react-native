@@ -10,8 +10,8 @@
  */
 
 const LayoutAnimation = require('../../../LayoutAnimation/LayoutAnimation');
-const dismissKeyboard = require('../../../Utilities/dismissKeyboard');
-const Keyboard = require('../Keyboard');
+const dismissKeyboard = require('../../../Utilities/dismissKeyboard').default;
+const Keyboard = require('../Keyboard').default;
 
 jest.mock('../../../LayoutAnimation/LayoutAnimation');
 jest.mock('../../../Utilities/dismissKeyboard');

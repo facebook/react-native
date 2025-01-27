@@ -99,7 +99,7 @@ import typeof Vibration from './Libraries/Vibration/Vibration';
 import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
 import typeof DevMenu from './src/private/devmenu/DevMenu';
 
-const warnOnce = require('./Libraries/Utilities/warnOnce');
+const warnOnce = require('./Libraries/Utilities/warnOnce').default;
 const invariant = require('invariant');
 
 export type {HostComponent, HostInstance};
@@ -122,7 +122,8 @@ module.exports = {
   },
   // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
-    return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
+    return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid')
+      .default;
   },
   get FlatList(): FlatList {
     return require('./Libraries/Lists/FlatList');
@@ -159,28 +160,30 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/progress-bar-android' instead of 'react-native'. " +
         'See https://github.com/react-native-progress-view/progress-bar-android',
     );
-    return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
+    return require('./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid')
+      .default;
   },
   get RefreshControl(): RefreshControl {
-    return require('./Libraries/Components/RefreshControl/RefreshControl');
+    return require('./Libraries/Components/RefreshControl/RefreshControl')
+      .default;
   },
   get SafeAreaView(): SafeAreaView {
     return require('./Libraries/Components/SafeAreaView/SafeAreaView').default;
   },
   get ScrollView(): ScrollView {
-    return require('./Libraries/Components/ScrollView/ScrollView');
+    return require('./Libraries/Components/ScrollView/ScrollView').default;
   },
   get SectionList(): SectionList {
     return require('./Libraries/Lists/SectionList').default;
   },
   get StatusBar(): StatusBar {
-    return require('./Libraries/Components/StatusBar/StatusBar');
+    return require('./Libraries/Components/StatusBar/StatusBar').default;
   },
   get Switch(): Switch {
     return require('./Libraries/Components/Switch/Switch').default;
   },
   get Text(): Text {
-    return require('./Libraries/Text/Text');
+    return require('./Libraries/Text/Text').default;
   },
   get TextInput(): TextInput {
     return require('./Libraries/Components/TextInput/TextInput');
@@ -189,16 +192,19 @@ module.exports = {
     return require('./Libraries/Components/Touchable/Touchable').default;
   },
   get TouchableHighlight(): TouchableHighlight {
-    return require('./Libraries/Components/Touchable/TouchableHighlight');
+    return require('./Libraries/Components/Touchable/TouchableHighlight')
+      .default;
   },
   get TouchableNativeFeedback(): TouchableNativeFeedback {
-    return require('./Libraries/Components/Touchable/TouchableNativeFeedback');
+    return require('./Libraries/Components/Touchable/TouchableNativeFeedback')
+      .default;
   },
   get TouchableOpacity(): TouchableOpacity {
-    return require('./Libraries/Components/Touchable/TouchableOpacity');
+    return require('./Libraries/Components/Touchable/TouchableOpacity').default;
   },
   get TouchableWithoutFeedback(): TouchableWithoutFeedback {
-    return require('./Libraries/Components/Touchable/TouchableWithoutFeedback');
+    return require('./Libraries/Components/Touchable/TouchableWithoutFeedback')
+      .default;
   },
   get View(): View {
     return require('./Libraries/Components/View/View');
@@ -212,10 +218,10 @@ module.exports = {
 
   // APIs
   get ActionSheetIOS(): ActionSheetIOS {
-    return require('./Libraries/ActionSheetIOS/ActionSheetIOS');
+    return require('./Libraries/ActionSheetIOS/ActionSheetIOS').default;
   },
   get Alert(): Alert {
-    return require('./Libraries/Alert/Alert');
+    return require('./Libraries/Alert/Alert').default;
   },
   // Include any types exported in the Animated module together with its default export, so
   // you can references types such as Animated.Numeric
@@ -230,10 +236,10 @@ module.exports = {
     return require('./Libraries/ReactNative/AppRegistry');
   },
   get AppState(): AppState {
-    return require('./Libraries/AppState/AppState');
+    return require('./Libraries/AppState/AppState').default;
   },
   get BackHandler(): BackHandler {
-    return require('./Libraries/Utilities/BackHandler');
+    return require('./Libraries/Utilities/BackHandler').default;
   },
   get Clipboard(): Clipboard {
     warnOnce(
@@ -242,16 +248,16 @@ module.exports = {
         "It can now be installed and imported from '@react-native-clipboard/clipboard' instead of 'react-native'. " +
         'See https://github.com/react-native-clipboard/clipboard',
     );
-    return require('./Libraries/Components/Clipboard/Clipboard');
+    return require('./Libraries/Components/Clipboard/Clipboard').default;
   },
   get DeviceInfo(): DeviceInfo {
-    return require('./Libraries/Utilities/DeviceInfo');
+    return require('./Libraries/Utilities/DeviceInfo').default;
   },
   get DevMenu(): DevMenu {
     return require('./src/private/devmenu/DevMenu');
   },
   get DevSettings(): DevSettings {
-    return require('./Libraries/Utilities/DevSettings');
+    return require('./Libraries/Utilities/DevSettings').default;
   },
   get Dimensions(): Dimensions {
     return require('./Libraries/Utilities/Dimensions').default;
@@ -269,7 +275,7 @@ module.exports = {
     return require('./Libraries/Interaction/InteractionManager');
   },
   get Keyboard(): Keyboard {
-    return require('./Libraries/Components/Keyboard/Keyboard');
+    return require('./Libraries/Components/Keyboard/Keyboard').default;
   },
   get LayoutAnimation(): LayoutAnimation {
     return require('./Libraries/LayoutAnimation/LayoutAnimation');
@@ -309,10 +315,10 @@ module.exports = {
     return require('./Libraries/PushNotificationIOS/PushNotificationIOS');
   },
   get Settings(): Settings {
-    return require('./Libraries/Settings/Settings');
+    return require('./Libraries/Settings/Settings').default;
   },
   get Share(): Share {
-    return require('./Libraries/Share/Share');
+    return require('./Libraries/Share/Share').default;
   },
   get StyleSheet(): StyleSheet {
     return require('./Libraries/StyleSheet/StyleSheet');
@@ -350,10 +356,10 @@ module.exports = {
     return require('./Libraries/UTFSequence').default;
   },
   get Vibration(): Vibration {
-    return require('./Libraries/Vibration/Vibration');
+    return require('./Libraries/Vibration/Vibration').default;
   },
   get YellowBox(): YellowBox {
-    return require('./Libraries/YellowBox/YellowBoxDeprecated');
+    return require('./Libraries/YellowBox/YellowBoxDeprecated').default;
   },
 
   // Plugins
@@ -368,10 +374,10 @@ module.exports = {
     return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter');
   },
   get NativeModules(): NativeModules {
-    return require('./Libraries/BatchedBridge/NativeModules');
+    return require('./Libraries/BatchedBridge/NativeModules').default;
   },
   get Platform(): Platform {
-    return require('./Libraries/Utilities/Platform');
+    return require('./Libraries/Utilities/Platform').default;
   },
   get PlatformColor(): PlatformColor {
     return require('./Libraries/StyleSheet/PlatformColorValueTypes')

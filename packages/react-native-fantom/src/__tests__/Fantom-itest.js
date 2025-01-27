@@ -14,9 +14,15 @@ import 'react-native/Libraries/Core/InitializeCore';
 
 import type {Root} from '..';
 
-import {createRoot, runTask} from '..';
+import {
+  createRoot,
+  dispatchNativeEvent,
+  runOnUIThread,
+  runTask,
+  runWorkLoop,
+} from '..';
 import * as React from 'react';
-import {Text, View} from 'react-native';
+import {ScrollView, Text, TextInput, View} from 'react-native';
 import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -171,8 +177,6 @@ describe('Fantom', () => {
         expect(root.getRenderedOutput().toJSX()).toEqual(
           <rn-view height="100.000000" width="100.000000" />,
         );
-
-        root.destroy();
       });
 
       it('default config, list of children', () => {
@@ -201,8 +205,6 @@ describe('Fantom', () => {
             <rn-view key="1" width="100.000000" height="100.000000" />
           </>,
         );
-
-        root.destroy();
       });
 
       it('include root', () => {
@@ -219,8 +221,6 @@ describe('Fantom', () => {
             <rn-view width="100.000000" height="100.000000" />
           </rn-rootView>,
         );
-
-        root.destroy();
       });
 
       it('include layout metrics', () => {
@@ -247,8 +247,6 @@ describe('Fantom', () => {
             width="100.000000"
           />,
         );
-
-        root.destroy();
       });
 
       it('take props', () => {
@@ -267,8 +265,6 @@ describe('Fantom', () => {
             })
             .toJSX(),
         ).toEqual(<rn-view width="100.000000" />);
-
-        root.destroy();
       });
 
       it('skip props', () => {
@@ -287,8 +283,6 @@ describe('Fantom', () => {
             })
             .toJSX(),
         ).toEqual(<rn-view height="100.000000" />);
-
-        root.destroy();
       });
 
       it('filter out all props', () => {
@@ -319,8 +313,6 @@ describe('Fantom', () => {
             <rn-view key="2" />
           </>,
         );
-
-        root.destroy();
       });
     });
 
@@ -364,9 +356,127 @@ describe('Fantom', () => {
           },
           type: 'Paragraph',
         });
-
-        root.destroy();
       });
+    });
+  });
+
+  describe('runOnUIThread + dispatchNativeEvent', () => {
+    it('sends event without payload', () => {
+      const root = createRoot();
+      let maybeNode;
+
+      let focusEvent = jest.fn();
+
+      runTask(() => {
+        root.render(
+          <TextInput
+            onFocus={focusEvent}
+            ref={node => {
+              maybeNode = node;
+            }}
+          />,
+        );
+      });
+
+      const element = ensureInstance(maybeNode, ReactNativeElement);
+
+      expect(focusEvent).toHaveBeenCalledTimes(0);
+
+      runOnUIThread(() => {
+        dispatchNativeEvent(element, 'focus');
+      });
+
+      // The tasks have not run.
+      expect(focusEvent).toHaveBeenCalledTimes(0);
+
+      runWorkLoop();
+
+      expect(focusEvent).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('sends event with payload', () => {
+    const root = createRoot();
+    let maybeNode;
+    const onChange = jest.fn();
+
+    runTask(() => {
+      root.render(
+        <TextInput
+          onChange={event => {
+            onChange(event.nativeEvent);
+          }}
+          ref={node => {
+            maybeNode = node;
+          }}
+        />,
+      );
+    });
+
+    const element = ensureInstance(maybeNode, ReactNativeElement);
+
+    runOnUIThread(() => {
+      dispatchNativeEvent(element, 'change', {
+        text: 'Hello World',
+      });
+    });
+
+    runWorkLoop();
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const [entry] = onChange.mock.lastCall;
+    expect(entry.text).toEqual('Hello World');
+  });
+
+  it('it batches events with isUnique option', () => {
+    const root = createRoot();
+    let maybeNode;
+    const onScroll = jest.fn();
+
+    runTask(() => {
+      root.render(
+        <ScrollView
+          onScroll={event => {
+            onScroll(event.nativeEvent);
+          }}
+          ref={node => {
+            maybeNode = node;
+          }}
+        />,
+      );
+    });
+
+    const element = ensureInstance(maybeNode, ReactNativeElement);
+
+    runOnUIThread(() => {
+      dispatchNativeEvent(element, 'scroll', {
+        contentOffset: {
+          x: 0,
+          y: 1,
+        },
+      });
+      dispatchNativeEvent(
+        element,
+        'scroll',
+        {
+          contentOffset: {
+            x: 0,
+            y: 2,
+          },
+        },
+        {
+          isUnique: true,
+        },
+      );
+    });
+
+    runWorkLoop();
+
+    expect(onScroll).toHaveBeenCalledTimes(1);
+    const [entry] = onScroll.mock.lastCall;
+    expect(entry.contentOffset).toEqual({
+      x: 0,
+      y: 2,
     });
   });
 });

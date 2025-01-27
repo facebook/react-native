@@ -22,6 +22,13 @@ object PropertyUtils {
   const val REACT_NATIVE_ARCHITECTURES = "reactNativeArchitectures"
   const val SCOPED_REACT_NATIVE_ARCHITECTURES = "react.nativeArchitectures"
 
+  /** Public property that allows to control whether the JitPack repository is included or not */
+  const val INCLUDE_JITPACK_REPOSITORY = "includeJitpackRepository"
+  const val SCOPED_INCLUDE_JITPACK_REPOSITORY = "react.includeJitpackRepository"
+
+  /** By default we include JitPack to avoid breaking user builds */
+  internal const val INCLUDE_JITPACK_REPOSITORY_DEFAULT = true
+
   /**
    * Internal Property that acts as a killswitch to configure the JDK version and align it for app
    * and all the libraries.

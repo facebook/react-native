@@ -28,7 +28,7 @@ const {
 const RNTesterPage = require('../../components/RNTesterPage');
 const React = require('react');
 const {Alert, FlatList, StyleSheet, Text, View} = require('react-native');
-const infoLog = require('react-native/Libraries/Utilities/infoLog');
+const infoLog = require('react-native/Libraries/Utilities/infoLog').default;
 
 class MultiColumnExample extends React.PureComponent<
   $FlowFixMeProps,
@@ -36,14 +36,14 @@ class MultiColumnExample extends React.PureComponent<
 > {
   state:
     | any
-    | {|
+    | {
         data: Array<Item>,
         filterText: string,
         fixedHeight: boolean,
         logViewable: boolean,
         numColumns: number,
         virtualized: boolean,
-      |} = {
+      } = {
     data: genNewerItems(1000),
     filterText: '',
     fixedHeight: true,

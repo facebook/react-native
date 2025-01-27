@@ -76,6 +76,11 @@ protected constructor(
         null -> null
       }
 
+  override fun clear() {
+    super.clear()
+    DefaultReactHost.invalidate()
+  }
+
   /**
    * Returns whether the user wants to use the New Architecture or not.
    *

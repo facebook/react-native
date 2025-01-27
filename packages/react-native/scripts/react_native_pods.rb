@@ -41,9 +41,9 @@ end
 # This function prepares the project for React Native, before processing
 # all the target exposed by the framework.
 def prepare_react_native_project!
-  # Temporary solution to suppress duplicated GUID error.
+  # Temporary solution to suppress duplicated GUID error & master specs repo warning.
   # Can be removed once we move to generate files outside pod install.
-  install! 'cocoapods', :deterministic_uuids => false
+  install! 'cocoapods', :deterministic_uuids => false, :warn_for_unused_master_specs_repo => false
 
   ReactNativePodsUtils.create_xcode_env_if_missing
 end
@@ -85,18 +85,18 @@ def use_react_native! (
   # Better to rely and enable this environment flag if the new architecture is turned on using flags.
   relative_path_from_current = Pod::Config.instance.installation_root.relative_path_from(Pathname.pwd)
   react_native_version = NewArchitectureHelper.extract_react_native_version(File.join(relative_path_from_current, path))
-  ENV['RCT_NEW_ARCH_ENABLED'] = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, react_native_version)
   fabric_enabled = fabric_enabled || NewArchitectureHelper.new_arch_enabled
 
   ENV['RCT_FABRIC_ENABLED'] = fabric_enabled ? "1" : "0"
   ENV['USE_HERMES'] = hermes_enabled ? "1" : "0"
   ENV['RCT_AGGREGATE_PRIVACY_FILES'] = privacy_file_aggregation_enabled ? "1" : "0"
+  ENV["RCT_NEW_ARCH_ENABLED"] = new_arch_enabled ? "1" : "0"
 
   prefix = path
 
   ReactNativePodsUtils.warn_if_not_on_arm64()
 
-  build_codegen!(prefix, relative_path_from_current)
+  Pod::UI.puts "Configuring the target with the #{new_arch_enabled ? "New" : "Legacy"} Architecture\n"
 
   # The Pods which should be included in all projects
   pod 'FBLazyVector', :path => "#{prefix}/Libraries/FBLazyVector"

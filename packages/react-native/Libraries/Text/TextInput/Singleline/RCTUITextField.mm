@@ -121,6 +121,7 @@
 
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
+#if TARGET_OS_IOS
   // Initialize the initial values only once
   if (_initialValueLeadingBarButtonGroups == nil) {
     // Capture initial values of leading and trailing button groups
@@ -137,6 +138,7 @@
     self.inputAssistantItem.trailingBarButtonGroups = _initialValueTrailingBarButtonGroups;
   }
   _disableKeyboardShortcuts = disableKeyboardShortcuts;
+#endif
 }
 
 #pragma mark - Placeholder

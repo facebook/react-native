@@ -10,7 +10,7 @@
  */
 
 // eslint-disable-next-line lint/sort-imports
-import {performanceEntryTypeToRaw} from '../RawPerformanceEntry';
+import {performanceEntryTypeToRaw} from '../internals/RawPerformanceEntry';
 import {reportEntry} from '../specs/__mocks__/NativePerformanceMock';
 
 jest.mock('../specs/NativePerformance', () =>

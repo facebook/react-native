@@ -13,8 +13,8 @@ import type {Task} from './TaskQueue';
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
-const BatchedBridge = require('../BatchedBridge/BatchedBridge');
-const infoLog = require('../Utilities/infoLog');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
+const infoLog = require('../Utilities/infoLog').default;
 const TaskQueue = require('./TaskQueue');
 const invariant = require('invariant');
 
@@ -138,8 +138,9 @@ const InteractionManager = {
     _deleteInteractionSet.add(handle);
   },
 
+  // $FlowFixMe[unclear-type] unclear type of _emitter
   // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-  addListener: (_emitter.addListener.bind(_emitter): $FlowFixMe),
+  addListener: _emitter.addListener.bind(_emitter) as Function,
 
   /**
    * A positive number will use setTimeout to schedule any tasks after the

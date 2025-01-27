@@ -18,7 +18,6 @@ target_merge_so(reactnativeblob)
 
 target_link_libraries(reactnativeblob
         jsireact
-        fb
         fbjni
         folly_runtime
         jsi

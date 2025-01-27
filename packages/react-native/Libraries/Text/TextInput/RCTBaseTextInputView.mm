@@ -400,6 +400,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
 
 - (void)setDisableKeyboardShortcuts:(BOOL)disableKeyboardShortcuts
 {
+#if TARGET_OS_IOS
   // Initialize the initial values only once
   if (_initialValueLeadingBarButtonGroups == nil) {
     // Capture initial values of leading and trailing button groups
@@ -415,6 +416,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
     self.backedTextInputView.inputAssistantItem.leadingBarButtonGroups = _initialValueLeadingBarButtonGroups;
     self.backedTextInputView.inputAssistantItem.trailingBarButtonGroups = _initialValueTrailingBarButtonGroups;
   }
+#endif
 }
 
 #pragma mark - RCTBackedTextInputDelegate

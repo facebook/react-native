@@ -32,14 +32,12 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.MapBuffer;
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.Role;
 import com.facebook.react.views.text.internal.span.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.internal.span.CustomLineHeightSpan;
 import com.facebook.react.views.text.internal.span.CustomStyleSpan;
-import com.facebook.react.views.text.internal.span.LegacyLineHeightSpan;
 import com.facebook.react.views.text.internal.span.ReactAbsoluteSizeSpan;
 import com.facebook.react.views.text.internal.span.ReactBackgroundColorSpan;
 import com.facebook.react.views.text.internal.span.ReactClickableSpan;
@@ -319,15 +317,9 @@ public class TextLayoutManager {
                       textAttributes.mTextShadowColor)));
         }
         if (!Float.isNaN(textAttributes.getEffectiveLineHeight())) {
-          if (ReactNativeFeatureFlags.enableAndroidLineHeightCentering()) {
-            ops.add(
-                new SetSpanOperation(
-                    start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
-          } else {
-            ops.add(
-                new SetSpanOperation(
-                    start, end, new LegacyLineHeightSpan(textAttributes.getEffectiveLineHeight())));
-          }
+          ops.add(
+              new SetSpanOperation(
+                  start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
         }
 
         ops.add(new SetSpanOperation(start, end, new ReactTagSpan(reactTag)));

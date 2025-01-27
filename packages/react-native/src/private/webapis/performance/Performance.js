@@ -18,15 +18,15 @@ import type {
 import type {DetailType, PerformanceMarkOptions} from './UserTiming';
 
 import {EventCounts} from './EventTiming';
-import MemoryInfo from './MemoryInfo';
 import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
-} from './RawPerformanceEntry';
+} from './internals/RawPerformanceEntry';
+import {warnNoNativePerformance} from './internals/Utilities';
+import MemoryInfo from './MemoryInfo';
 import ReactNativeStartupTiming from './ReactNativeStartupTiming';
 import NativePerformance from './specs/NativePerformance';
 import {PerformanceMark, PerformanceMeasure} from './UserTiming';
-import {warnNoNativePerformance} from './Utilities';
 
 declare var global: {
   // This value is defined directly via JSI, if available.

@@ -68,6 +68,7 @@ local.properties
 *.iml
 /packages/react-native/android/*
 !/packages/react-native/android/README.md
+.kotlin/
 
 # Node
 node_modules
@@ -158,3 +159,6 @@ vendor/
 
 # Jest Integration
 /packages/react-native-fantom/build/
+
+# [Experimental] Generated TS type definitions
+/packages/react-native/types_generated/

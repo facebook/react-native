@@ -69,11 +69,11 @@ export default async function getInfo(options: CliOptions, ctx: Config) {
     if (ctx.project.android?.sourceDir) {
       platforms.Android.hermesEnabled = fileContains('hermesEnabled=true', [
         ctx.project.Android.sourceDir,
-        'Podfile.lock',
+        'gradle.properties',
       ]);
       platforms.Android.newArchEnabled = fileContains('newArchEnabled=true', [
         ctx.project.Android.sourceDir,
-        'Podfile.lock',
+        'gradle.properties',
       ]);
     }
 

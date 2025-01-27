@@ -17,10 +17,10 @@ type EndResult = {finished: boolean, value?: number, ...};
 type EndCallback = (result: EndResult) => void;
 type SaveValueCallback = (value: number) => void;
 
-export type EventMapping = {|
+export type EventMapping = {
   nativeEventPath: Array<string>,
   animatedValueTag: ?number,
-|};
+};
 
 // The config has different keys depending on the type of the Node
 // TODO(T54896888): Make these types strict

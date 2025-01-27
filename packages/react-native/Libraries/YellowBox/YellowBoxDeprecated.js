@@ -12,10 +12,11 @@
 
 import type {IgnorePattern} from '../LogBox/Data/LogBoxData';
 
-const LogBox = require('../LogBox/LogBox').default;
-const React = require('react');
+import React from 'react';
 
-type Props = $ReadOnly<{||}>;
+const LogBox = require('../LogBox/LogBox').default;
+
+type Props = $ReadOnly<{}>;
 
 let YellowBox;
 if (__DEV__) {
@@ -67,7 +68,7 @@ if (__DEV__) {
 }
 
 // $FlowFixMe[method-unbinding]
-module.exports = (YellowBox: Class<React.Component<Props>> & {
+export default (YellowBox: Class<React.Component<Props>> & {
   ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
   install(): void,
   uninstall(): void,

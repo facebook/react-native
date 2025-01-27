@@ -52,9 +52,6 @@ class Scheduler final : public UIManagerDelegate {
   void registerSurface(const SurfaceHandler& surfaceHandler) const noexcept;
   void unregisterSurface(const SurfaceHandler& surfaceHandler) const noexcept;
 
-  InspectorData getInspectorDataForInstance(
-      const EventEmitter& eventEmitter) const noexcept;
-
   /*
    * This is broken. Please do not use.
    * `ComponentDescriptor`s are not designed to be used outside of `UIManager`,

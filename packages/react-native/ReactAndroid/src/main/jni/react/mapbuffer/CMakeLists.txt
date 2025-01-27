@@ -25,7 +25,6 @@ target_include_directories(mapbufferjni
 target_merge_so(mapbufferjni)
 
 target_link_libraries(mapbufferjni
-        fb
         fbjni
         folly_runtime
         glog

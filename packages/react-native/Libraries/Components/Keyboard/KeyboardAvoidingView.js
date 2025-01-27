@@ -27,7 +27,7 @@ import View from '../View/View';
 import Keyboard from './Keyboard';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -51,11 +51,11 @@ type Props = $ReadOnly<{|
    * may be non-zero in some cases. Defaults to 0.
    */
   keyboardVerticalOffset?: number,
-|}>;
+}>;
 
-type State = {|
+type State = {
   bottom: number,
-|};
+};
 
 /**
  * View that moves out of the way when the keyboard appears by automatically

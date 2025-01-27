@@ -12,21 +12,21 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type PlatformConstantsIOS = {|
+export type PlatformConstantsIOS = {
   isTesting: boolean,
   isDisableAnimations?: boolean,
-  reactNativeVersion: {|
+  reactNativeVersion: {
     major: number,
     minor: number,
     patch: number,
     prerelease: ?string,
-  |},
+  },
   forceTouchAvailable: boolean,
   osVersion: string,
   systemName: string,
   interfaceIdiom: string,
   isMacCatalyst?: boolean,
-|};
+};
 
 export interface Spec extends TurboModule {
   +getConstants: () => PlatformConstantsIOS;

@@ -18,16 +18,16 @@ import StyleSheet from '../../StyleSheet/StyleSheet';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
-  backgroundColor: $ReadOnly<{|
+type Props = $ReadOnly<{
+  backgroundColor: $ReadOnly<{
     default: string,
     pressed: string,
-  |}>,
+  }>,
   children?: React.Node,
   hitSlop?: ?EdgeInsetsProp,
   onPress?: ?(event: PressEvent) => void,
   style?: ViewStyleProp,
-|}>;
+}>;
 
 function LogBoxButton(props: Props): React.Node {
   const [pressed, setPressed] = React.useState(false);

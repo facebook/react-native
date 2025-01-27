@@ -16,7 +16,7 @@ import {
 } from './__fixtures__/ReactWarningFixtures';
 import * as React from 'react';
 
-const ExceptionsManager = require('../../Core/ExceptionsManager.js');
+const ExceptionsManager = require('../../Core/ExceptionsManager.js').default;
 const LogBoxData = require('../Data/LogBoxData');
 const TestRenderer = require('react-test-renderer');
 

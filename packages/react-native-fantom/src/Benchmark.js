@@ -120,10 +120,14 @@ function printBenchmarkResults(bench: Bench) {
     (maxLength, task) => Math.max(maxLength, task.name.length),
     0,
   );
-  const separatorWidth = 121 + longestTaskNameLength - 'Task name'.length;
+  const separatorWidth = 137 + longestTaskNameLength - 'Task name'.length;
+  const benchmarkName = bench.name ?? 'Benchmark';
 
   console.log('-'.repeat(separatorWidth));
-  console.log(bench.name);
+  console.log(
+    `| ${benchmarkName}${' '.repeat(separatorWidth - (4 + benchmarkName.length))} |`,
+  );
+  console.log('-'.repeat(separatorWidth));
   console.table(nullthrows(bench.table()));
   console.log('-'.repeat(separatorWidth) + '\n');
 }

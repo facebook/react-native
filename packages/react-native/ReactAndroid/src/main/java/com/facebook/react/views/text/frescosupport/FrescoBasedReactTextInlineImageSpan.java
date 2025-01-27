@@ -15,14 +15,15 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
-import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeHolder;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.PixelUtil;
@@ -40,6 +41,7 @@ import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
  * <p>Note: It borrows code from DynamicDrawableSpan and if that code updates how it computes size
  * or draws, we need to update this as well.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
 
   private @Nullable Drawable mDrawable;
@@ -51,8 +53,8 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
   private int mTintColor;
   private Uri mUri;
   private int mWidth;
-  private ReadableMap mHeaders;
-  private String mResizeMode;
+  private @Nullable ReadableMap mHeaders;
+  private @Nullable String mResizeMode;
 
   private @Nullable TextView mTextView;
 
@@ -62,10 +64,10 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
       int width,
       int tintColor,
       @Nullable Uri uri,
-      ReadableMap headers,
+      @Nullable ReadableMap headers,
       AbstractDraweeControllerBuilder draweeControllerBuilder,
       @Nullable Object callerContext,
-      String resizeMode) {
+      @Nullable String resizeMode) {
     mDraweeHolder = new DraweeHolder(GenericDraweeHierarchyBuilder.newInstance(resources).build());
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
@@ -116,7 +118,8 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     return mWidth;
   }
 
-  public void setTextView(TextView textView) {
+  @Override
+  public void setTextView(@Nullable TextView textView) {
     mTextView = textView;
   }
 
@@ -135,18 +138,20 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
       ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(mUri);
       ImageRequest imageRequest =
           ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, mHeaders);
-      mDraweeHolder.getHierarchy().setActualImageScaleType(getResizeMode(mResizeMode));
-      DraweeController draweeController =
-          mDraweeControllerBuilder
-              .reset()
-              .setOldController(mDraweeHolder.getController())
-              .setCallerContext(mCallerContext)
-              .setImageRequest(imageRequest)
-              .build();
+      mDraweeHolder
+          .getHierarchy()
+          .setActualImageScaleType(ImageResizeMode.toScaleType(mResizeMode));
+      mDraweeControllerBuilder.reset();
+      mDraweeControllerBuilder.setOldController(mDraweeHolder.getController());
+      if (mCallerContext != null) {
+        mDraweeControllerBuilder.setCallerContext(mCallerContext);
+      }
+      mDraweeControllerBuilder.setImageRequest(imageRequest);
+      DraweeController draweeController = mDraweeControllerBuilder.build();
       mDraweeHolder.setController(draweeController);
       mDraweeControllerBuilder.reset();
 
-      mDrawable = mDraweeHolder.getTopLevelDrawable();
+      mDrawable = Preconditions.checkNotNull(mDraweeHolder.getTopLevelDrawable());
       mDrawable.setBounds(0, 0, mWidth, mHeight);
       if (mTintColor != 0) {
         mDrawable.setColorFilter(mTintColor, PorterDuff.Mode.SRC_IN);
@@ -166,10 +171,6 @@ class FrescoBasedReactTextInlineImageSpan extends TextInlineImageSpan {
     canvas.translate(x, transY);
     mDrawable.draw(canvas);
     canvas.restore();
-  }
-
-  private ScalingUtils.ScaleType getResizeMode(String resizeMode) {
-    return ImageResizeMode.toScaleType(resizeMode);
   }
 
   @Override

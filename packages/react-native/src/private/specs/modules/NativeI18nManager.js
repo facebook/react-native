@@ -12,11 +12,11 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-export type I18nManagerConstants = {|
+export type I18nManagerConstants = {
   doLeftAndRightSwapInRTL: boolean,
   isRTL: boolean,
   localeIdentifier?: ?string,
-|};
+};
 
 export interface Spec extends TurboModule {
   +getConstants: () => I18nManagerConstants;

@@ -14,7 +14,7 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +getConstants: () => {||};
+  +getConstants: () => {};
   // Return [width, height] of image uri
   +getSize: (uri: string) => Promise<$ReadOnlyArray<number>>;
   +getSizeWithHeaders: (

@@ -184,8 +184,6 @@ describe('Suspense', () => {
     );
 
     expect(resolveFunction).toBeNull();
-
-    root.destroy();
   });
 
   // TODO(T207868872): this test only succeeds with enableFabricCompleteRootInCommitPhase enabled.
@@ -239,7 +237,5 @@ describe('Suspense', () => {
     expect(mountingLogs[0]).toBe(
       'create view type: `View` nativeId: `square with data: red`',
     );
-
-    root.destroy();
   });
 });

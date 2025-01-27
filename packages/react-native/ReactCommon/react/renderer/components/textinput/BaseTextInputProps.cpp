@@ -234,17 +234,6 @@ TextAttributes BaseTextInputProps::getEffectiveTextAttributes(
   return result;
 }
 
-ParagraphAttributes BaseTextInputProps::getEffectiveParagraphAttributes()
-    const {
-  auto result = paragraphAttributes;
-
-  if (!multiline) {
-    result.maximumNumberOfLines = 1;
-  }
-
-  return result;
-}
-
 SubmitBehavior BaseTextInputProps::getNonDefaultSubmitBehavior() const {
   if (submitBehavior == SubmitBehavior::Default) {
     return multiline ? SubmitBehavior::Newline : SubmitBehavior::BlurAndSubmit;

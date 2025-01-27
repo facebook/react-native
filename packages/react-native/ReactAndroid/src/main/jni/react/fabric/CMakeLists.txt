@@ -21,11 +21,9 @@ target_merge_so(fabricjni)
 
 target_link_libraries(
         fabricjni
-        fb
         fbjni
         folly_runtime
         glog
-        glog_init
         jsi
         mapbufferjni
         react_codegen_rncore
