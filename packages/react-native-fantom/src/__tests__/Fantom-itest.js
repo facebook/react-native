@@ -577,4 +577,27 @@ describe('Fantom', () => {
       root.destroy();
     });
   });
+
+  describe('flushAllNativeEvents', () => {
+    it('calls events in the event queue', () => {
+      const root = Fantom.createRoot();
+      const onLayout = jest.fn();
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            style={{width: 100, height: 100}}
+            onLayout={event => {
+              onLayout(event.nativeEvent);
+            }}
+          />,
+        );
+      });
+
+      expect(onLayout).toHaveBeenCalledTimes(0);
+
+      Fantom.flushAllNativeEvents();
+
+      expect(onLayout).toHaveBeenCalledTimes(1);
+    });
+  });
 });
