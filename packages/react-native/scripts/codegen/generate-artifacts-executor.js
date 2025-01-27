@@ -908,7 +908,9 @@ function generateReactCodegenPodspec(
     .replace(/{react-native-version}/, packageJson.version)
     .replace(/{input-files}/, inputFiles)
     .replace(/{codegen-script}/, codegenScript);
-  fs.writeFileSync(path.join(outputPath, 'ReactCodegen.podspec'), finalPodspec);
+  const finalPathPodspec = path.join(outputPath, 'ReactCodegen.podspec');
+  fs.writeFileSync(finalPathPodspec, finalPodspec);
+  codegenLog(`Generated podspec: ${finalPathPodspec}`);
 }
 
 function getInputFiles(appPath, appPkgJSon) {
