@@ -73,6 +73,10 @@ def use_react_native! (
   ENV['APP_PATH'] = app_path
   ENV['REACT_NATIVE_PATH'] = path
 
+  # We set RCT_SKIP_CODEGEN to true, if the user wants to skip the running Codegen step from Cocoapods.
+  # This is needed as part of our migration away from cocoapods
+  ENV['RCT_SKIP_CODEGEN'] = ENV['RCT_SKIP_CODEGEN'] == '1' || ENV['RCT_IGNORE_PODS_DEPRECATION'] == '1' ? '1' : '0'
+
   ReactNativePodsUtils.check_minimum_required_xcode()
 
   # Current target definition is provided by Cocoapods and it refers to the target
