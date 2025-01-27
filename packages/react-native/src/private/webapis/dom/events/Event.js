@@ -43,10 +43,15 @@ type EventInit = {
 };
 
 export default class Event {
-  static NONE: 0 = 0;
-  static CAPTURING_PHASE: 1 = 1;
-  static AT_TARGET: 2 = 2;
-  static BUBBLING_PHASE: 3 = 3;
+  static +NONE: 0;
+  static +CAPTURING_PHASE: 1;
+  static +AT_TARGET: 2;
+  static +BUBBLING_PHASE: 3;
+
+  +NONE: 0;
+  +CAPTURING_PHASE: 1;
+  +AT_TARGET: 2;
+  +BUBBLING_PHASE: 3;
 
   _bubbles: boolean;
   _cancelable: boolean;
@@ -175,6 +180,54 @@ export default class Event {
     setStopPropagationFlag(this, true);
   }
 }
+
+// $FlowExpectedError[cannot-write]
+Object.defineProperty(Event, 'NONE', {
+  enumerable: true,
+  value: 0,
+});
+
+// $FlowExpectedError[cannot-write]
+Object.defineProperty(Event.prototype, 'NONE', {
+  enumerable: true,
+  value: 0,
+});
+
+// $FlowExpectedError[cannot-write]
+Object.defineProperty(Event, 'CAPTURING_PHASE', {
+  enumerable: true,
+  value: 1,
+});
+
+// $FlowExpectedError[cannot-write]
+Object.defineProperty(Event.prototype, 'CAPTURING_PHASE', {
+  enumerable: true,
+  value: 1,
+});
+
+// $FlowExpectedError[cannot-write]
+Object.defineProperty(Event, 'AT_TARGET', {
+  enumerable: true,
+  value: 2,
+});
+
+// $FlowExpectedError[cannot-write]
+Object.defineProperty(Event.prototype, 'AT_TARGET', {
+  enumerable: true,
+  value: 2,
+});
+
+// $FlowExpectedError[cannot-write]
+Object.defineProperty(Event, 'BUBBLING_PHASE', {
+  enumerable: true,
+  value: 3,
+});
+
+// $FlowExpectedError[cannot-write]
+Object.defineProperty(Event.prototype, 'BUBBLING_PHASE', {
+  enumerable: true,
+  value: 3,
+});
 
 export type EventPhase =
   | (typeof Event)['NONE']
