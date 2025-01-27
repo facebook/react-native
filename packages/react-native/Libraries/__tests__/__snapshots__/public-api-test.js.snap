@@ -8863,11 +8863,6 @@ declare module.exports: TBackHandler;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Utilities/DebugEnvironment.js 1`] = `
-"declare export let isAsyncDebugging: boolean;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Utilities/DevLoadingView.js 1`] = `
 "declare module.exports: {
   showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
@@ -10307,7 +10302,6 @@ exports[`public API should not change unintentionally src/private/specs/modules/
 "export interface Spec extends TurboModule {
   +show: () => void;
   +reload: () => void;
-  +debugRemotely: (enableDebug: boolean) => void;
   +setProfilingEnabled: (enabled: boolean) => void;
   +setHotLoadingEnabled: (enabled: boolean) => void;
 }
@@ -10321,7 +10315,6 @@ exports[`public API should not change unintentionally src/private/specs/modules/
   +reloadWithReason?: (reason: string) => void;
   +onFastRefresh?: () => void;
   +setHotLoadingEnabled: (isHotLoadingEnabled: boolean) => void;
-  +setIsDebuggingRemotely: (isDebuggingRemotelyEnabled: boolean) => void;
   +setProfilingEnabled: (isProfilingEnabled: boolean) => void;
   +toggleElementInspector: () => void;
   +addMenuItem: (title: string) => void;

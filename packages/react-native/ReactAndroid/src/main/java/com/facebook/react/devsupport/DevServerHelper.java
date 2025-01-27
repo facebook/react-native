@@ -60,8 +60,6 @@ import okio.Sink;
  * </ul>
  */
 public class DevServerHelper {
-  public static final String RELOAD_APP_EXTRA_JS_PROXY = "jsproxy";
-
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
 
   private static final String DEBUGGER_MSG_DISABLE = "{ \"id\":1,\"method\":\"Debugger.disable\" }";
@@ -460,13 +458,6 @@ public class DevServerHelper {
 
   public String getSourceUrl(String mainModuleName) {
     return createBundleURL(mainModuleName, BundleType.BUNDLE);
-  }
-
-  public String getJSBundleURLForRemoteDebugging(String mainModuleName) {
-    // The host we use when connecting to the JS bundle server from the emulator is not the
-    // same as the one needed to connect to the same server from the JavaScript proxy running on the
-    // host itself.
-    return createBundleURL(mainModuleName, BundleType.BUNDLE, getHostForJSProxy());
   }
 
   /**
