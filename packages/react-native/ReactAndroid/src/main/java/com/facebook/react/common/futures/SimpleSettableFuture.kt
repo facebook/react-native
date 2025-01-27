@@ -27,7 +27,7 @@ internal class SimpleSettableFuture<T> : Future<T> {
    * Sets the result. If another thread has called [get], they will immediately receive the value.
    * set or setException must only be called once.
    */
-  public fun set(result: T?): Unit {
+  fun set(result: T?): Unit {
     checkNotSet()
     this.result = result
     readyLatch.countDown()
@@ -37,7 +37,7 @@ internal class SimpleSettableFuture<T> : Future<T> {
    * Sets the exception. If another thread has called [get], they will immediately receive the
    * exception. set or setException must only be called once.
    */
-  public fun setException(exception: Exception): Unit {
+  fun setException(exception: Exception): Unit {
     checkNotSet()
     this.exception = exception
     readyLatch.countDown()
@@ -79,7 +79,7 @@ internal class SimpleSettableFuture<T> : Future<T> {
   }
 
   /** Convenience wrapper for [get()] that re-throws get()'s Exceptions as RuntimeExceptions. */
-  public fun getOrThrow(): T? =
+  fun getOrThrow(): T? =
       try {
         get()
       } catch (e: InterruptedException) {
@@ -92,7 +92,7 @@ internal class SimpleSettableFuture<T> : Future<T> {
    * Convenience wrapper for [get(long, TimeUnit)] that re-throws get()'s Exceptions as
    * RuntimeExceptions.
    */
-  public fun getOrThrow(timeout: Long, unit: TimeUnit): T? =
+  fun getOrThrow(timeout: Long, unit: TimeUnit): T? =
       try {
         get(timeout, unit)
       } catch (e: InterruptedException) {

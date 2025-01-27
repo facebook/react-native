@@ -41,7 +41,7 @@ internal class Gradient(gradient: ReadableMap?, context: Context) {
     linearGradient = LinearGradient(directionMap, colorStops, context)
   }
 
-  public fun getShader(bounds: Rect): Shader? {
+  fun getShader(bounds: Rect): Shader? {
     return when (type) {
       GradientType.LINEAR_GRADIENT ->
           linearGradient.getShader(bounds.width().toFloat(), bounds.height().toFloat())
