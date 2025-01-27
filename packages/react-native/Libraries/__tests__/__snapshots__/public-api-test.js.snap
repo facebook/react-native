@@ -3770,6 +3770,8 @@ type State = $ReadOnly<{
   pressability: Pressability,
 }>;
 declare class TouchableNativeFeedback extends React.Component<Props, State> {
+  hostRef: { current: React.ElementRef<typeof View> | null, ... };
+  constructor(props: Props): void;
   static SelectableBackground: (rippleRadius: ?number) => $ReadOnly<{
     attribute: \\"selectableItemBackground\\",
     type: \\"ThemeAttrAndroid\\",
