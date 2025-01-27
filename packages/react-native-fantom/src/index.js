@@ -120,11 +120,20 @@ function runTask(task: () => void | Promise<void>) {
 }
 
 /*
- * Simmulates running a task on the UI thread and forces side effect to drain the event queue, dispatching events to JavaScript.
+ * Simmulates running a task on the UI thread and forces side effect to drain the event queue, scheduling events to be dispatched to JavaScript.
  */
 function runOnUIThread(task: () => void) {
   task();
   NativeFantom.flushEventQueue();
+}
+
+/*
+ * Runs a side effect to drain the event queue and dispatches events to JavaScript.
+ * Useful to flash out all tasks.
+ */
+function flushAllNativeEvents() {
+  NativeFantom.flushEventQueue();
+  runWorkLoop();
 }
 
 /**
@@ -264,6 +273,7 @@ export default {
   runWorkLoop,
   createRoot,
   dispatchNativeEvent,
+  flushAllNativeEvents,
   unstable_benchmark: Benchmark,
   scrollTo,
 };
