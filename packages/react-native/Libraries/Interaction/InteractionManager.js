@@ -14,7 +14,7 @@ import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNa
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
 const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
-const infoLog = require('../Utilities/infoLog').default;
+const infoLog = require('../Utilities/infoLog');
 const TaskQueue = require('./TaskQueue').default;
 const invariant = require('invariant');
 

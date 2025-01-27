@@ -29,4 +29,4 @@ function warnOnce(key: string, message: string) {
   warnedKeys[key] = true;
 }
 
-export default warnOnce;
+module.exports = warnOnce;

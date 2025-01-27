@@ -17,7 +17,7 @@ import NativeDialogManagerAndroid from '../NativeModules/specs/NativeDialogManag
 import NativePermissionsAndroid from './NativePermissionsAndroid';
 import invariant from 'invariant';
 
-const Platform = require('../Utilities/Platform').default;
+const Platform = require('../Utilities/Platform');
 
 export type Rationale = {
   title: string,

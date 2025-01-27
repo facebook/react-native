@@ -10,7 +10,7 @@
 
 'use strict';
 
-const infoLog = require('../Utilities/infoLog').default;
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 
 type SimpleTask = {

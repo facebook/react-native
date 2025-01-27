@@ -11,7 +11,7 @@
 
 import NativeVibration from './NativeVibration';
 
-const Platform = require('../Utilities/Platform').default;
+const Platform = require('../Utilities/Platform');
 
 /**
  * Vibration API

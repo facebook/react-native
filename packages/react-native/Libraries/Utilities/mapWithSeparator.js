@@ -25,4 +25,4 @@ function mapWithSeparator<TFrom, TTo>(
   return mapped;
 }
 
-export default mapWithSeparator;
+module.exports = mapWithSeparator;

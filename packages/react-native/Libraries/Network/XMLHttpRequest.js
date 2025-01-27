@@ -16,8 +16,7 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import EventTarget from 'event-target-shim';
 
 const BlobManager = require('../Blob/BlobManager').default;
-const GlobalPerformanceLogger =
-  require('../Utilities/GlobalPerformanceLogger').default;
+const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
 const RCTNetworking = require('./RCTNetworking').default;
 const base64 = require('base64-js');
 const invariant = require('invariant');

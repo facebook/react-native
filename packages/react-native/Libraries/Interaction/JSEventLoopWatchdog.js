@@ -10,7 +10,7 @@
 
 'use strict';
 
-const infoLog = require('../Utilities/infoLog').default;
+const infoLog = require('../Utilities/infoLog');
 
 type Handler = {
   onIterate?: () => void,

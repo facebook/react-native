@@ -87,4 +87,4 @@ function identity(value: mixed) {
   return value;
 }
 
-export default deepFreezeAndThrowOnMutationInDev;
+module.exports = deepFreezeAndThrowOnMutationInDev;
