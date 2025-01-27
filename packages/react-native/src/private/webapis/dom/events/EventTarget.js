@@ -33,11 +33,11 @@ import {
   INTERNAL_DISPATCH_METHOD_KEY,
 } from './internals/EventTargetInternals';
 
-export type EventListener =
-  | ((event: Event) => void)
-  | interface {
-      handleEvent(event: Event): void,
-    };
+export type EventCallback = (event: Event) => void;
+export type EventHandler = interface {
+  handleEvent(event: Event): void,
+};
+export type EventListener = EventCallback | EventHandler;
 
 export type EventListenerOptions = {
   capture?: boolean,
