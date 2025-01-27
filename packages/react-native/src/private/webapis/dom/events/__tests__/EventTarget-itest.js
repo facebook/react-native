@@ -14,10 +14,8 @@ import '../../../../../../Libraries/Core/InitializeCore.js';
 
 import Event from '../Event';
 import EventTarget from '../EventTarget';
-import {
-  EVENT_TARGET_GET_THE_PARENT_KEY,
-  dispatchTrustedEvent,
-} from '../internals/EventTargetInternals';
+import {dispatchTrustedEvent} from '../internals/EventTargetInternals';
+import createEventTargetHierarchyWithDepth from './createEventTargetHierarchyWithDepth';
 
 let listenerCallOrder = 0;
 
@@ -55,24 +53,6 @@ function createListener(
   });
 
   return listener;
-}
-
-function createEventTargetHierarchyWithDepth(
-  depth: number,
-): Array<EventTarget> {
-  const targets = [];
-
-  for (let i = 0; i < depth; i++) {
-    const target = new EventTarget();
-    const parentTarget = targets[targets.length - 1];
-
-    // $FlowExpectedError[prop-missing]
-    target[EVENT_TARGET_GET_THE_PARENT_KEY] = () => parentTarget;
-
-    targets.push(target);
-  }
-
-  return targets;
 }
 
 describe('EventTarget', () => {
