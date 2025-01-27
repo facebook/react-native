@@ -59,16 +59,6 @@ type EventListenerRegistration = {
 
 type ListenersMap = Map<string, Array<EventListenerRegistration>>;
 
-const CAPTURING_LISTENERS_KEY = Symbol('capturingListeners');
-const BUBBLING_LISTENERS_KEY = Symbol('bubblingListeners');
-
-function getDefaultPassiveValue(
-  type: string,
-  eventTarget: EventTarget,
-): boolean {
-  return false;
-}
-
 export default class EventTarget {
   addEventListener(
     type: string,
@@ -122,12 +112,12 @@ export default class EventTarget {
       return;
     }
 
-    let listenersMap = this._getListenersMap(capture);
+    let listenersMap = getListenersMap(this, capture);
     let listenerList = listenersMap?.get(processedType);
     if (listenerList == null) {
       if (listenersMap == null) {
         listenersMap = new Map();
-        this._setListenersMap(capture, listenersMap);
+        setListenersMap(this, capture, listenersMap);
       }
       listenerList = [];
       listenersMap.set(processedType, listenerList);
@@ -153,7 +143,7 @@ export default class EventTarget {
       signal.addEventListener(
         'abort',
         () => {
-          this._removeEventListenerRegistration(listener, nonNullListenerList);
+          removeEventListenerRegistration(listener, nonNullListenerList);
         },
         {
           once: true,
@@ -186,7 +176,7 @@ export default class EventTarget {
         ? optionsOrUseCapture
         : Boolean(optionsOrUseCapture.capture);
 
-    const listenersMap = this._getListenersMap(capture);
+    const listenersMap = getListenersMap(this, capture);
     const listenerList = listenersMap?.get(processedType);
     if (listenerList == null) {
       return;
@@ -218,182 +208,9 @@ export default class EventTarget {
 
     setIsTrusted(event, false);
 
-    this._dispatch(event);
+    dispatch(this, event);
 
     return !event.defaultPrevented;
-  }
-
-  /**
-   * This internal version of `dispatchEvent` does not validate the input and
-   * does not reset the `isTrusted` flag, so it can be used for both trusted
-   * and not trusted events.
-   *
-   * Implements the "event dispatch" concept
-   * (see https://dom.spec.whatwg.org/#concept-event-dispatch).
-   */
-  _dispatch(event: Event): void {
-    setEventDispatchFlag(event, true);
-
-    const eventPath = this._getEventPath(event);
-    setComposedPath(event, eventPath);
-    setTarget(event, this);
-
-    for (let i = eventPath.length - 1; i >= 0; i--) {
-      if (getStopPropagationFlag(event)) {
-        break;
-      }
-
-      const target = eventPath[i];
-      setEventPhase(
-        event,
-        target === this ? Event.AT_TARGET : Event.CAPTURING_PHASE,
-      );
-      target._invoke(event, Event.CAPTURING_PHASE);
-    }
-
-    for (const target of eventPath) {
-      if (getStopPropagationFlag(event)) {
-        break;
-      }
-
-      // If the event does NOT bubble, we only dispatch the event to the
-      // target in the bubbling phase.
-      if (!event.bubbles && target !== this) {
-        break;
-      }
-
-      setEventPhase(
-        event,
-        target === this ? Event.AT_TARGET : Event.BUBBLING_PHASE,
-      );
-      target._invoke(event, Event.BUBBLING_PHASE);
-    }
-
-    setEventPhase(event, Event.NONE);
-    setCurrentTarget(event, null);
-    setComposedPath(event, []);
-
-    setEventDispatchFlag(event, false);
-    setStopImmediatePropagationFlag(event, false);
-    setStopPropagationFlag(event, false);
-  }
-
-  /**
-   * Builds the event path for an event about to be dispatched in this target
-   * (see https://dom.spec.whatwg.org/#event-path).
-   *
-   * The return value is also set as `composedPath` for the event.
-   */
-  _getEventPath(event: Event): $ReadOnlyArray<EventTarget> {
-    const path = [];
-    // eslint-disable-next-line consistent-this
-    let target: EventTarget | null = this;
-
-    while (target != null) {
-      path.push(target);
-      // $FlowExpectedError[prop-missing]
-      target = target[EVENT_TARGET_GET_THE_PARENT_KEY]();
-    }
-
-    return path;
-  }
-
-  /**
-   * Implements the event listener invoke concept
-   * (see https://dom.spec.whatwg.org/#concept-event-listener-invoke).
-   */
-  _invoke(event: Event, eventPhase: EventPhase) {
-    const listenersMap = this._getListenersMap(
-      eventPhase === Event.CAPTURING_PHASE,
-    );
-
-    setCurrentTarget(event, this);
-
-    // This is a copy so listeners added during dispatch are NOT executed.
-    const listenerList = listenersMap?.get(event.type)?.slice();
-    if (listenerList == null) {
-      return;
-    }
-
-    setCurrentTarget(event, this);
-
-    for (const listener of listenerList) {
-      if (listener.removed) {
-        continue;
-      }
-
-      if (listener.once) {
-        this.removeEventListener(
-          event.type,
-          listener.callback,
-          eventPhase === Event.CAPTURING_PHASE,
-        );
-      }
-
-      if (listener.passive) {
-        setInPassiveListenerFlag(event, true);
-      }
-
-      const currentEvent = global.event;
-      global.event = event;
-
-      const callback = listener.callback;
-
-      try {
-        if (typeof callback === 'function') {
-          callback.call(this, event);
-          // $FlowExpectedError[method-unbinding]
-        } else if (typeof callback.handleEvent === 'function') {
-          callback.handleEvent(event);
-        }
-      } catch (error) {
-        // TODO: replace with `reportError` when it's available.
-        console.error(error);
-      }
-
-      if (listener.passive) {
-        setInPassiveListenerFlag(event, false);
-      }
-
-      global.event = currentEvent;
-
-      if (getStopImmediatePropagationFlag(event)) {
-        break;
-      }
-    }
-  }
-
-  _removeEventListenerRegistration(
-    registration: EventListenerRegistration,
-    listenerList: Array<EventListenerRegistration>,
-  ): void {
-    for (let i = 0; i < listenerList.length; i++) {
-      const listener = listenerList[i];
-
-      if (listener === registration) {
-        listener.removed = true;
-        listenerList.splice(i, 1);
-        return;
-      }
-    }
-  }
-
-  _getListenersMap(isCapture: boolean): ?ListenersMap {
-    return isCapture
-      ? // $FlowExpectedError[prop-missing]
-        this[CAPTURING_LISTENERS_KEY]
-      : // $FlowExpectedError[prop-missing]
-        this[BUBBLING_LISTENERS_KEY];
-  }
-
-  _setListenersMap(isCapture: boolean, listenersMap: ListenersMap): void {
-    if (isCapture) {
-      // $FlowExpectedError[prop-missing]
-      this[CAPTURING_LISTENERS_KEY] = listenersMap;
-    } else {
-      // $FlowExpectedError[prop-missing]
-      this[BUBBLING_LISTENERS_KEY] = listenersMap;
-    }
   }
 
   /**
@@ -413,7 +230,7 @@ export default class EventTarget {
    */
   // $FlowExpectedError[unsupported-syntax]
   [INTERNAL_DISPATCH_METHOD_KEY](event: Event): void {
-    this._dispatch(event);
+    dispatch(this, event);
   }
 }
 
@@ -422,6 +239,203 @@ function validateCallback(callback: EventListener, methodName: string): void {
     throw new TypeError(
       `Failed to execute '${methodName}' on 'EventTarget': parameter 2 is not of type 'Object'.`,
     );
+  }
+}
+
+function getDefaultPassiveValue(
+  type: string,
+  eventTarget: EventTarget,
+): boolean {
+  return false;
+}
+
+/**
+ * This internal version of `dispatchEvent` does not validate the input and
+ * does not reset the `isTrusted` flag, so it can be used for both trusted
+ * and not trusted events.
+ *
+ * Implements the "event dispatch" concept
+ * (see https://dom.spec.whatwg.org/#concept-event-dispatch).
+ */
+function dispatch(eventTarget: EventTarget, event: Event): void {
+  setEventDispatchFlag(event, true);
+
+  const eventPath = getEventPath(eventTarget, event);
+  setComposedPath(event, eventPath);
+  setTarget(event, eventTarget);
+
+  for (let i = eventPath.length - 1; i >= 0; i--) {
+    if (getStopPropagationFlag(event)) {
+      break;
+    }
+
+    const target = eventPath[i];
+    setEventPhase(
+      event,
+      target === eventTarget ? Event.AT_TARGET : Event.CAPTURING_PHASE,
+    );
+    invoke(target, event, Event.CAPTURING_PHASE);
+  }
+
+  for (const target of eventPath) {
+    if (getStopPropagationFlag(event)) {
+      break;
+    }
+
+    // If the event does NOT bubble, we only dispatch the event to the
+    // target in the bubbling phase.
+    if (!event.bubbles && target !== eventTarget) {
+      break;
+    }
+
+    setEventPhase(
+      event,
+      target === eventTarget ? Event.AT_TARGET : Event.BUBBLING_PHASE,
+    );
+    invoke(target, event, Event.BUBBLING_PHASE);
+  }
+
+  setEventPhase(event, Event.NONE);
+  setCurrentTarget(event, null);
+  setComposedPath(event, []);
+
+  setEventDispatchFlag(event, false);
+  setStopImmediatePropagationFlag(event, false);
+  setStopPropagationFlag(event, false);
+}
+
+/**
+ * Builds the event path for an event about to be dispatched in this target
+ * (see https://dom.spec.whatwg.org/#event-path).
+ *
+ * The return value is also set as `composedPath` for the event.
+ */
+function getEventPath(
+  eventTarget: EventTarget,
+  event: Event,
+): $ReadOnlyArray<EventTarget> {
+  const path = [];
+  let target: EventTarget | null = eventTarget;
+
+  while (target != null) {
+    path.push(target);
+    // $FlowExpectedError[prop-missing]
+    target = target[EVENT_TARGET_GET_THE_PARENT_KEY]();
+  }
+
+  return path;
+}
+
+/**
+ * Implements the event listener invoke concept
+ * (see https://dom.spec.whatwg.org/#concept-event-listener-invoke).
+ */
+function invoke(
+  eventTarget: EventTarget,
+  event: Event,
+  eventPhase: EventPhase,
+) {
+  const listenersMap = getListenersMap(
+    eventTarget,
+    eventPhase === Event.CAPTURING_PHASE,
+  );
+
+  setCurrentTarget(event, eventTarget);
+
+  // This is a copy so listeners added during dispatch are NOT executed.
+  const listenerList = listenersMap?.get(event.type)?.slice();
+  if (listenerList == null) {
+    return;
+  }
+
+  setCurrentTarget(event, eventTarget);
+
+  for (const listener of listenerList) {
+    if (listener.removed) {
+      continue;
+    }
+
+    if (listener.once) {
+      eventTarget.removeEventListener(
+        event.type,
+        listener.callback,
+        eventPhase === Event.CAPTURING_PHASE,
+      );
+    }
+
+    if (listener.passive) {
+      setInPassiveListenerFlag(event, true);
+    }
+
+    const currentEvent = global.event;
+    global.event = event;
+
+    const callback = listener.callback;
+
+    try {
+      if (typeof callback === 'function') {
+        callback.call(eventTarget, event);
+        // $FlowExpectedError[method-unbinding]
+      } else if (typeof callback.handleEvent === 'function') {
+        callback.handleEvent(event);
+      }
+    } catch (error) {
+      // TODO: replace with `reportError` when it's available.
+      console.error(error);
+    }
+
+    if (listener.passive) {
+      setInPassiveListenerFlag(event, false);
+    }
+
+    global.event = currentEvent;
+
+    if (getStopImmediatePropagationFlag(event)) {
+      break;
+    }
+  }
+}
+
+function removeEventListenerRegistration(
+  registration: EventListenerRegistration,
+  listenerList: Array<EventListenerRegistration>,
+): void {
+  for (let i = 0; i < listenerList.length; i++) {
+    const listener = listenerList[i];
+
+    if (listener === registration) {
+      listener.removed = true;
+      listenerList.splice(i, 1);
+      return;
+    }
+  }
+}
+
+const CAPTURING_LISTENERS_KEY = Symbol('capturingListeners');
+const BUBBLING_LISTENERS_KEY = Symbol('bubblingListeners');
+
+function getListenersMap(
+  eventTarget: EventTarget,
+  isCapture: boolean,
+): ?ListenersMap {
+  return isCapture
+    ? // $FlowExpectedError[prop-missing]
+      eventTarget[CAPTURING_LISTENERS_KEY]
+    : // $FlowExpectedError[prop-missing]
+      eventTarget[BUBBLING_LISTENERS_KEY];
+}
+
+function setListenersMap(
+  eventTarget: EventTarget,
+  isCapture: boolean,
+  listenersMap: ListenersMap,
+): void {
+  if (isCapture) {
+    // $FlowExpectedError[prop-missing]
+    eventTarget[CAPTURING_LISTENERS_KEY] = listenersMap;
+  } else {
+    // $FlowExpectedError[prop-missing]
+    eventTarget[BUBBLING_LISTENERS_KEY] = listenersMap;
   }
 }
 
