@@ -16,6 +16,73 @@ import Event from '../Event';
 import {setInPassiveListenerFlag} from '../internals/EventInternals';
 
 describe('Event', () => {
+  it('provides read-only constants for event phases', () => {
+    'use strict';
+    // use strict mode to throw an error instead of silently failing
+
+    expect(Event.NONE).toBe(0);
+    expect(Event.CAPTURING_PHASE).toBe(1);
+    expect(Event.AT_TARGET).toBe(2);
+    expect(Event.BUBBLING_PHASE).toBe(3);
+
+    expect(() => {
+      // $FlowExpectedError[incompatible-type]
+      // $FlowExpectedError[cannot-write]
+      Event.NONE = 'NONE';
+    }).toThrow();
+
+    expect(() => {
+      // $FlowExpectedError[incompatible-type]
+      // $FlowExpectedError[cannot-write]
+      Event.CAPTURING_PHASE = 'CAPTURING_PHASE';
+    }).toThrow();
+
+    expect(() => {
+      // $FlowExpectedError[incompatible-type]
+      // $FlowExpectedError[cannot-write]
+      Event.AT_TARGET = 'AT_TARGET';
+    }).toThrow();
+
+    expect(() => {
+      // $FlowExpectedError[incompatible-type]
+      // $FlowExpectedError[cannot-write]
+      Event.BUBBLING_PHASE = 'BUBBLING_PHASE';
+    }).toThrow();
+
+    // Also accessible through instances (via the Event prototype).
+
+    const event = new Event('custom');
+
+    expect(event.NONE).toBe(0);
+    expect(event.CAPTURING_PHASE).toBe(1);
+    expect(event.AT_TARGET).toBe(2);
+    expect(event.BUBBLING_PHASE).toBe(3);
+
+    expect(() => {
+      // $FlowExpectedError[incompatible-type]
+      // $FlowExpectedError[cannot-write]
+      event.NONE = 'NONE';
+    }).toThrow();
+
+    expect(() => {
+      // $FlowExpectedError[incompatible-type]
+      // $FlowExpectedError[cannot-write]
+      event.CAPTURING_PHASE = 'CAPTURING_PHASE';
+    }).toThrow();
+
+    expect(() => {
+      // $FlowExpectedError[incompatible-type]
+      // $FlowExpectedError[cannot-write]
+      event.AT_TARGET = 'AT_TARGET';
+    }).toThrow();
+
+    expect(() => {
+      // $FlowExpectedError[incompatible-type]
+      // $FlowExpectedError[cannot-write]
+      event.BUBBLING_PHASE = 'BUBBLING_PHASE';
+    }).toThrow();
+  });
+
   it('should throw an error if type is not passed', () => {
     expect(() => {
       // $FlowExpectedError[incompatible-call]
