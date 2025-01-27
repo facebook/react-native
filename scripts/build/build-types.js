@@ -21,11 +21,20 @@ const {parseArgs} = require('util');
 const TYPES_DIR = 'types_generated';
 const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 
+// Files matching these patterns will be translated to TypeScript
 const SOURCE_PATTERNS = [
   // Start with Animated only
-  path.join(PACKAGES_DIR, 'react-native/Libraries/Animated/**/*.js'),
+  'react-native/Libraries/Animated/**/*.js',
   // TODO(T210505412): Include input packages, e.g. virtualized-lists
 ];
+
+// Files matching these patterns will not be translated to TypeScript,
+// instead their explicit TypeScript definitions will be copied over
+const SUBPATH_OVERRIDES /*: Record<string, $ReadOnlyArray<string>>*/ = {
+  '**/react-native/Libraries/Animated/**/*.js': [
+    'react-native/Libraries/Animated/*.d.ts',
+  ],
+};
 
 const config = {
   options: {
@@ -49,7 +58,7 @@ async function main() {
   }
 
   const files = SOURCE_PATTERNS.flatMap(srcPath =>
-    glob.sync(path.join(srcPath, ''), {
+    glob.sync(path.join(PACKAGES_DIR, srcPath), {
       nodir: true,
     }),
   );
@@ -62,9 +71,15 @@ async function main() {
       '\n',
   );
 
+  const subpathsToOverride = Object.keys(SUBPATH_OVERRIDES);
+
   await Promise.all(
     files.map(async file => {
-      if (micromatch.isMatch(file, IGNORE_PATTERN)) {
+      // Ignore files that are explicitly excluded and those with the explicitly defined types
+      if (
+        micromatch.isMatch(file, IGNORE_PATTERN) ||
+        subpathsToOverride.some(subpath => micromatch.isMatch(file, subpath))
+      ) {
         return;
       }
 
@@ -89,6 +104,21 @@ async function main() {
       } catch (e) {
         console.error(`Failed to build ${path.relative(REPO_ROOT, file)}`);
       }
+    }),
+  );
+
+  const typeDefinitions = Object.values(SUBPATH_OVERRIDES)
+    .flatMap(typePaths => typePaths)
+    .flatMap(srcPath =>
+      glob.sync(path.join(PACKAGES_DIR, srcPath), {nodir: true}),
+    );
+
+  await Promise.all(
+    typeDefinitions.map(async file => {
+      const buildPath = getBuildPath(file);
+      const source = await fs.readFile(file, 'utf-8');
+      await fs.mkdir(path.dirname(buildPath), {recursive: true});
+      await fs.writeFile(buildPath, source);
     }),
   );
 }
