@@ -665,12 +665,10 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         URL sourceUrl = new URL(getSourceUrl());
         String path = sourceUrl.getPath().substring(1); // strip initial slash in path
         String host = sourceUrl.getHost();
-        String scheme = sourceUrl.getProtocol();
         int port = sourceUrl.getPort() != -1 ? sourceUrl.getPort() : sourceUrl.getDefaultPort();
         mCurrentReactContext
             .getJSModule(HMRClient.class)
-            .setup(
-                "android", path, host, port, mDevSettings.isHotModuleReplacementEnabled(), scheme);
+            .setup("android", path, host, port, mDevSettings.isHotModuleReplacementEnabled());
       } catch (MalformedURLException e) {
         showNewJavaError(e.getMessage(), e);
       }
