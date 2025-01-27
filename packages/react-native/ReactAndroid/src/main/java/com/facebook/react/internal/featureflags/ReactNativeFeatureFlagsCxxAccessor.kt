@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<735455b25aae2fa07a5e36e478b78f0f>>
+ * @generated SignedSource<<e6816ffbe4d790d219c6aced5b3c695c>>
  */
 
 /**
@@ -56,7 +56,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
-  private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
@@ -383,15 +382,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useNativeViewConfigsInBridgelessMode()
       useNativeViewConfigsInBridgelessModeCache = cached
-    }
-    return cached
-  }
-
-  override fun useOptimisedViewPreallocationOnAndroid(): Boolean {
-    var cached = useOptimisedViewPreallocationOnAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.useOptimisedViewPreallocationOnAndroid()
-      useOptimisedViewPreallocationOnAndroidCache = cached
     }
     return cached
   }

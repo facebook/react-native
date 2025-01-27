@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<25afc05f79ba873b70a39019ca245c39>>
+ * @generated SignedSource<<88118789d97156c16a7ab691ca181d00>>
  */
 
 /**
@@ -218,11 +218,6 @@ class ReactNativeFeatureFlags {
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
-
-  /**
-   * Moves more of the work in view preallocation to the main thread to free up JS thread.
-   */
-  RN_EXPORT static bool useOptimisedViewPreallocationOnAndroid();
 
   /**
    * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.

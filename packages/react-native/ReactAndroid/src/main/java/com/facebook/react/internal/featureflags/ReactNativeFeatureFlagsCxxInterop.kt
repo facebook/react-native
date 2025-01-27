@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6390e3da6c736f01254531394b566e39>>
+ * @generated SignedSource<<fa884f44a3f1e00a3853393bb3e8dff7>>
  */
 
 /**
@@ -99,8 +99,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useFabricInterop(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useNativeViewConfigsInBridgelessMode(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useOptimisedViewPreallocationOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useOptimizedEventBatchingOnAndroid(): Boolean
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<beae68d0e22b526be999edf3e2e6d39c>>
+ * @generated SignedSource<<29ce7fa71b300ff721db97d622c29e6a>>
  */
 
 /**
@@ -68,7 +68,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool useEditTextStockAndroidFocusBehavior();
   bool useFabricInterop();
   bool useNativeViewConfigsInBridgelessMode();
-  bool useOptimisedViewPreallocationOnAndroid();
   bool useOptimizedEventBatchingOnAndroid();
   bool useRawPropsJsiValue();
   bool useRuntimeShadowNodeReferenceUpdate();
@@ -85,7 +84,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 41> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -123,7 +122,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useEditTextStockAndroidFocusBehavior_;
   std::atomic<std::optional<bool>> useFabricInterop_;
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
-  std::atomic<std::optional<bool>> useOptimisedViewPreallocationOnAndroid_;
   std::atomic<std::optional<bool>> useOptimizedEventBatchingOnAndroid_;
   std::atomic<std::optional<bool>> useRawPropsJsiValue_;
   std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdate_;

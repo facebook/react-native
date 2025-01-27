@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<94797dc944ce9355aeffc4b1c5825708>>
+ * @generated SignedSource<<c714697c946be59c84fa2bb68cc91644>>
  */
 
 /**
@@ -367,15 +367,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useNativeViewConfigsInBridgelessMode();
-  }
-
-  bool useOptimisedViewPreallocationOnAndroid() override {
-    auto value = values_["useOptimisedViewPreallocationOnAndroid"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::useOptimisedViewPreallocationOnAndroid();
   }
 
   bool useOptimizedEventBatchingOnAndroid() override {

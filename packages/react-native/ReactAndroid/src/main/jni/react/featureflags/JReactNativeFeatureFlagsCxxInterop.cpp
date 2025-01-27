@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0252081684dcdb8295018b34980fcac2>>
+ * @generated SignedSource<<f09ad92744f524ede76f699f3188288f>>
  */
 
 /**
@@ -255,12 +255,6 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool useOptimisedViewPreallocationOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useOptimisedViewPreallocationOnAndroid");
-    return method(javaProvider_);
-  }
-
   bool useOptimizedEventBatchingOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useOptimizedEventBatchingOnAndroid");
@@ -475,11 +469,6 @@ bool JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode(
   return ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::useOptimisedViewPreallocationOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::useOptimizedEventBatchingOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid();
@@ -644,9 +633,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useNativeViewConfigsInBridgelessMode",
         JReactNativeFeatureFlagsCxxInterop::useNativeViewConfigsInBridgelessMode),
-      makeNativeMethod(
-        "useOptimisedViewPreallocationOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::useOptimisedViewPreallocationOnAndroid),
       makeNativeMethod(
         "useOptimizedEventBatchingOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::useOptimizedEventBatchingOnAndroid),

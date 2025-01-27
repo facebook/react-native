@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c751e39a2a924bf55d5529a4e86ad99b>>
+ * @generated SignedSource<<94c5db58f8b59d4ccc16e4983d3c6f2e>>
  */
 
 /**
@@ -136,9 +136,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useNativeViewConfigsInBridgelessMode(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool useOptimisedViewPreallocationOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool useOptimizedEventBatchingOnAndroid(
