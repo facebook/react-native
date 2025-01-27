@@ -521,6 +521,16 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    scheduleAnimatedCleanupInMicrotask: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-01-22',
+        description:
+          'Changes the cleanup of`AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
     shouldSkipStateUpdatesForLoopingAnimations: {
       defaultValue: true,
       metadata: {

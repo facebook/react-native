@@ -42,6 +42,11 @@ type AnimatedValueListeners = Array<{
   listenerId: string,
 }>;
 
+const useAnimatedPropsLifecycle =
+  ReactNativeFeatureFlags.scheduleAnimatedCleanupInMicrotask()
+    ? useAnimatedPropsLifecycleWithCleanupInMicrotask
+    : useAnimatedPropsLifecycleWithPrevNodeRef;
+
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
   allowlist?: ?AnimatedPropsAllowlist,
@@ -248,7 +253,7 @@ function addAnimatedValuesListenersToProps(
  * nodes. So in order to optimize this, we avoid detaching until the next attach
  * unless we are unmounting.
  */
-function useAnimatedPropsLifecycle(node: AnimatedProps): void {
+function useAnimatedPropsLifecycleWithPrevNodeRef(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
 
@@ -275,6 +280,43 @@ function useAnimatedPropsLifecycle(node: AnimatedProps): void {
       } else {
         prevNodeRef.current = node;
       }
+    };
+  }, [node]);
+}
+
+/**
+ * Manages the lifecycle of the supplied `AnimatedProps` by invoking `__attach`
+ * and `__detach`. However, `__detach` occurs in a microtask for these reasons:
+ *
+ *   1. Optimizes detaching and attaching `AnimatedNode` instances that rely on
+ *      reference counting to cleanup state, by causing detach to be scheduled
+ *      after any subsequent attach.
+ *   2. Avoids calling `detach` during the insertion effect phase (which
+ *      occurs during the commit phase), which may invoke completion callbacks.
+ *
+ * We should avoid invoking completion callbacks during the commit phase because
+ * callbacks may update state, which is unsupported and will force synchronous
+ * updates.
+ */
+function useAnimatedPropsLifecycleWithCleanupInMicrotask(
+  node: AnimatedProps,
+): void {
+  const isMounted = useRef<boolean>(false);
+
+  useInsertionEffect(() => {
+    isMounted.current = true;
+    node.__attach();
+
+    return () => {
+      isMounted.current = false;
+      queueMicrotask(() => {
+        // NOTE: Do not restore default values on unmount, see D18197735.
+        if (isMounted.current) {
+          // TODO: Stop restoring default values (unless `reset` is called).
+          node.__restoreDefaultValues();
+        }
+        node.__detach();
+      });
     };
   }, [node]);
 }
