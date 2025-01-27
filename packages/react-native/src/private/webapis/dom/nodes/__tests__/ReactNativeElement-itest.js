@@ -254,6 +254,7 @@ describe('ReactNativeElement', () => {
 
     describe('getRootNode()', () => {
       // This is the desired implementation (not implemented yet).
+      // eslint-disable-next-line jest/no-disabled-tests
       it.skip('returns a root node representing the document', () => {
         let lastParentANode;
         let lastParentBNode;
