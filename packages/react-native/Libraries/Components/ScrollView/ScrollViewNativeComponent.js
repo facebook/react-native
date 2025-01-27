@@ -42,7 +42,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         },
         validAttributes: {
           contentOffset: {
-            diff: require('../../Utilities/differ/pointsDiffer').default,
+            diff: require('../../Utilities/differ/pointsDiffer'),
           },
           decelerationRate: true,
           disableIntervalMomentum: true,
@@ -126,10 +126,10 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           canCancelContentTouches: true,
           centerContent: true,
           contentInset: {
-            diff: require('../../Utilities/differ/insetsDiffer').default,
+            diff: require('../../Utilities/differ/insetsDiffer'),
           },
           contentOffset: {
-            diff: require('../../Utilities/differ/pointsDiffer').default,
+            diff: require('../../Utilities/differ/pointsDiffer'),
           },
           contentInsetAdjustmentBehavior: true,
           decelerationRate: true,
@@ -147,7 +147,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           scrollEnabled: true,
           scrollEventThrottle: true,
           scrollIndicatorInsets: {
-            diff: require('../../Utilities/differ/insetsDiffer').default,
+            diff: require('../../Utilities/differ/insetsDiffer'),
           },
           scrollToOverflowEnabled: true,
           scrollsToTop: true,
@@ -159,7 +159,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           snapToOffsets: true,
           snapToStart: true,
           verticalScrollIndicatorInsets: {
-            diff: require('../../Utilities/differ/insetsDiffer').default,
+            diff: require('../../Utilities/differ/insetsDiffer'),
           },
           zoomScale: true,
           ...ConditionallyIgnoredEventHandlers({

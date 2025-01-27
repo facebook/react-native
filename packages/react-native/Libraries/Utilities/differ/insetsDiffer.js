@@ -37,4 +37,4 @@ const insetsDiffer = function (one: Inset, two: Inset): boolean {
   );
 };
 
-export default insetsDiffer;
+module.exports = insetsDiffer;

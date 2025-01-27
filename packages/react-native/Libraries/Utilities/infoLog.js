@@ -17,4 +17,4 @@ function infoLog(...args: Array<mixed>): void {
   return console.log(...args);
 }
 
-export default infoLog;
+module.exports = infoLog;

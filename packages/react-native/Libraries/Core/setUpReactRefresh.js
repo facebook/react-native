@@ -11,7 +11,7 @@
 'use strict';
 
 if (__DEV__) {
-  const DevSettings = require('../Utilities/DevSettings').default;
+  const DevSettings = require('../Utilities/DevSettings');
 
   if (typeof DevSettings.reload !== 'function') {
     throw new Error('Could not find the reload() implementation.');

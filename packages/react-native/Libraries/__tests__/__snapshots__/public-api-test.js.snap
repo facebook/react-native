@@ -8859,7 +8859,7 @@ type TBackHandler = {
     handler: () => ?boolean
   ) => { remove: () => void, ... },
 };
-declare export default TBackHandler;
+declare module.exports: TBackHandler;
 "
 `;
 
@@ -8869,7 +8869,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/DebugE
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/DevLoadingView.js 1`] = `
-"declare export default {
+"declare module.exports: {
   showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
   hide(): void,
 };
@@ -8882,12 +8882,12 @@ exports[`public API should not change unintentionally Libraries/Utilities/DevSet
   reload(reason?: string): void,
   onFastRefresh(): void,
 };
-declare export default typeof DevSettings;
+declare module.exports: DevSettings;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/DeviceInfo.js 1`] = `
-"declare export default typeof NativeDeviceInfo;
+"declare module.exports: NativeDeviceInfo;
 "
 `;
 
@@ -8902,17 +8902,18 @@ declare export default typeof Dimensions;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/FeatureDetection.js 1`] = `
-"declare export function isNativeFunction(f: Function): boolean;
-declare export function hasNativeConstructor(
-  o: Object,
-  expectedName: string
-): boolean;
+"declare function isNativeFunction(f: Function): boolean;
+declare function hasNativeConstructor(o: Object, expectedName: string): boolean;
+declare module.exports: {
+  isNativeFunction: isNativeFunction,
+  hasNativeConstructor: hasNativeConstructor,
+};
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/GlobalPerformanceLogger.js 1`] = `
 "declare const GlobalPerformanceLogger: IPerformanceLogger;
-declare export default typeof GlobalPerformanceLogger;
+declare module.exports: GlobalPerformanceLogger;
 "
 `;
 
@@ -8943,13 +8944,13 @@ export type HMRClientNativeInterface = {
   unstable_notifyFuseboxConsoleEnabled(): void,
 };
 declare const HMRClient: HMRClientNativeInterface;
-declare export default typeof HMRClient;
+declare module.exports: HMRClient;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/HMRClientProdShim.js 1`] = `
 "declare const HMRClientProdShim: HMRClientNativeInterface;
-declare export default typeof HMRClientProdShim;
+declare module.exports: HMRClientProdShim;
 "
 `;
 
@@ -9110,20 +9111,21 @@ export type Platform = IOSPlatform | AndroidPlatform;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/Platform.js.flow 1`] = `
-"declare export default Platform;
+"declare module.exports: Platform;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/PolyfillFunctions.js 1`] = `
-"declare export function polyfillObjectProperty<T>(
+"declare function polyfillObjectProperty<T>(
   object: { ... },
   name: string,
   getValue: () => T
 ): void;
-declare export function polyfillGlobal<T>(
-  name: string,
-  getValue: () => T
-): void;
+declare function polyfillGlobal<T>(name: string, getValue: () => T): void;
+declare module.exports: {
+  polyfillObjectProperty: polyfillObjectProperty,
+  polyfillGlobal: polyfillGlobal,
+};
 "
 `;
 
@@ -9134,7 +9136,7 @@ declare const RCTLog: {
   logToConsole(level: string, ...args: Array<mixed>): void,
   setWarningHandler(handler: typeof warningHandler): void,
 };
-declare export default typeof RCTLog;
+declare module.exports: RCTLog;
 "
 `;
 
@@ -9192,13 +9194,13 @@ declare const SceneTracker: {
     ...
   },
 };
-declare export default typeof SceneTracker;
+declare module.exports: SceneTracker;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/binaryToBase64.js 1`] = `
 "declare function binaryToBase64(data: ArrayBuffer | $ArrayBufferView): string;
-declare export default typeof binaryToBase64;
+declare module.exports: binaryToBase64;
 "
 `;
 
@@ -9240,7 +9242,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/deepFr
 "declare function deepFreezeAndThrowOnMutationInDev<T: { ... } | Array<mixed>>(
   object: T
 ): T;
-declare export default typeof deepFreezeAndThrowOnMutationInDev;
+declare module.exports: deepFreezeAndThrowOnMutationInDev;
 "
 `;
 
@@ -9255,7 +9257,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/define
     ...
   }
 ): void;
-declare export default typeof defineLazyObjectProperty;
+declare module.exports: defineLazyObjectProperty;
 "
 `;
 
@@ -9267,7 +9269,7 @@ declare const deepDiffer: (
   maxDepthOrOptions: Options | number,
   maybeOptions?: Options
 ) => boolean;
-declare export default typeof deepDiffer;
+declare module.exports: deepDiffer;
 "
 `;
 
@@ -9280,7 +9282,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
   ...
 };
 declare const insetsDiffer: (one: Inset, two: Inset) => boolean;
-declare export default typeof insetsDiffer;
+declare module.exports: insetsDiffer;
 "
 `;
 
@@ -9289,7 +9291,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
   one: ?Array<number>,
   two: ?Array<number>
 ) => boolean;
-declare export default typeof matricesDiffer;
+declare module.exports: matricesDiffer;
 "
 `;
 
@@ -9300,32 +9302,32 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
   ...
 };
 declare const pointsDiffer: (one: ?Point, two: ?Point) => boolean;
-declare export default typeof pointsDiffer;
+declare module.exports: pointsDiffer;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/differ/sizesDiffer.js 1`] = `
 "type Size = { width: ?number, height: ?number };
 declare const sizesDiffer: (one: Size, two: Size) => boolean;
-declare export default typeof sizesDiffer;
+declare module.exports: sizesDiffer;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/dismissKeyboard.js 1`] = `
 "declare function dismissKeyboard(): void;
-declare export default typeof dismissKeyboard;
+declare module.exports: dismissKeyboard;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/infoLog.js 1`] = `
 "declare function infoLog(...args: Array<mixed>): void;
-declare export default typeof infoLog;
+declare module.exports: infoLog;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/logError.js 1`] = `
-"declare export function logError(...args: $ReadOnlyArray<mixed>): void;
-declare export default typeof logError;
+"declare const logError: (...args: $ReadOnlyArray<mixed>) => void;
+declare module.exports: logError;
 "
 `;
 
@@ -9335,7 +9337,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/mapWit
   itemRenderer: (item: TFrom, index: number, items: Array<TFrom>) => TTo,
   spacerRenderer: (index: number) => TTo
 ): Array<TTo>;
-declare export default typeof mapWithSeparator;
+declare module.exports: mapWithSeparator;
 "
 `;
 
@@ -9385,7 +9387,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/useWin
 
 exports[`public API should not change unintentionally Libraries/Utilities/warnOnce.js 1`] = `
 "declare function warnOnce(key: string, message: string): void;
-declare export default typeof warnOnce;
+declare module.exports: warnOnce;
 "
 `;
 

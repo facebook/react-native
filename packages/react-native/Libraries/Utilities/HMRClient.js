@@ -14,8 +14,8 @@ import getDevServer from '../Core/Devtools/getDevServer';
 import LogBox from '../LogBox/LogBox';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
-const DevSettings = require('./DevSettings').default;
-const Platform = require('./Platform').default;
+const DevSettings = require('./DevSettings');
+const Platform = require('./Platform');
 const invariant = require('invariant');
 const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
 const prettyFormat = require('pretty-format');
@@ -70,7 +70,7 @@ const HMRClient: HMRClientNativeInterface = {
     }
 
     invariant(hmrClient, 'Expected HMRClient.setup() call at startup.');
-    const DevLoadingView = require('./DevLoadingView').default;
+    const DevLoadingView = require('./DevLoadingView');
 
     // We use this for internal logging only.
     // It doesn't affect the logic.
@@ -181,7 +181,7 @@ const HMRClient: HMRClientNativeInterface = {
     invariant(!hmrClient, 'Cannot initialize hmrClient twice');
 
     // Moving to top gives errors due to NativeModules not being initialized
-    const DevLoadingView = require('./DevLoadingView').default;
+    const DevLoadingView = require('./DevLoadingView');
 
     const serverHost = port !== null && port !== '' ? `${host}:${port}` : host;
 
@@ -387,4 +387,4 @@ function showCompileError() {
   throw error;
 }
 
-export default HMRClient;
+module.exports = HMRClient;

@@ -24,4 +24,4 @@ const pointsDiffer = function (one: ?Point, two: ?Point): boolean {
   return one !== two && (one.x !== two.x || one.y !== two.y);
 };
 
-export default pointsDiffer;
+module.exports = pointsDiffer;

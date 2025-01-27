@@ -13,7 +13,7 @@
 import typeof BlobT from '../Blob/Blob';
 
 const Blob: BlobT = require('../Blob/Blob').default;
-const binaryToBase64 = require('../Utilities/binaryToBase64').default;
+const binaryToBase64 = require('../Utilities/binaryToBase64');
 const FormData = require('./FormData');
 
 export type RequestBody =
