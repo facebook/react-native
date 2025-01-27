@@ -130,6 +130,7 @@ export const tasks = {
         RCT_NEW_ARCH_ENABLED: options.newArchitecture ? '1' : '0',
         USE_FRAMEWORKS: options.frameworks,
         USE_HERMES: options.hermes ? '1' : '0',
+        RCT_IGNORE_PODS_DEPRECATION: '1',
       };
       if (options.frameworks == null) {
         delete env.USE_FRAMEWORKS;
