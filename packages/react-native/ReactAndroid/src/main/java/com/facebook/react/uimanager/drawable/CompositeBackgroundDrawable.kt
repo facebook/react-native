@@ -16,6 +16,7 @@ import android.graphics.drawable.LayerDrawable
 import android.os.Build
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
+import com.facebook.react.uimanager.PixelUtil.dpToPx
 import com.facebook.react.uimanager.style.BorderInsets
 import com.facebook.react.uimanager.style.BorderRadiusStyle
 
@@ -200,14 +201,14 @@ internal class CompositeBackgroundDrawable(
         pathForOutline.addRoundRect(
             RectF(bounds),
             floatArrayOf(
-                it.topLeft.horizontal + (computedBorderInsets?.left ?: 0f),
-                it.topLeft.vertical + (computedBorderInsets?.top ?: 0f),
-                it.topRight.horizontal + (computedBorderInsets?.right ?: 0f),
-                it.topRight.vertical + (computedBorderInsets?.top ?: 0f),
-                it.bottomRight.horizontal + (computedBorderInsets?.right ?: 0f),
-                it.bottomRight.vertical + (computedBorderInsets?.bottom ?: 0f),
-                it.bottomLeft.horizontal + (computedBorderInsets?.left ?: 0f),
-                it.bottomLeft.vertical) + (computedBorderInsets?.bottom ?: 0f),
+                (it.topLeft.horizontal + (computedBorderInsets?.left ?: 0f)).dpToPx(),
+                (it.topLeft.vertical + (computedBorderInsets?.top ?: 0f)).dpToPx(),
+                (it.topRight.horizontal + (computedBorderInsets?.right ?: 0f)).dpToPx(),
+                (it.topRight.vertical + (computedBorderInsets?.top ?: 0f)).dpToPx(),
+                (it.bottomRight.horizontal + (computedBorderInsets?.right ?: 0f)).dpToPx(),
+                (it.bottomRight.vertical + (computedBorderInsets?.bottom ?: 0f)).dpToPx(),
+                (it.bottomLeft.horizontal + (computedBorderInsets?.left ?: 0f)).dpToPx(),
+                (it.bottomLeft.vertical + (computedBorderInsets?.bottom ?: 0f)).dpToPx()),
             Path.Direction.CW)
       }
 
