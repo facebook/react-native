@@ -111,4 +111,4 @@ function resolveBoxStyle(
   return hasParts ? result : null;
 }
 
-module.exports = resolveBoxStyle;
+export default resolveBoxStyle;

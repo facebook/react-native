@@ -73,4 +73,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = StyleInspector;
+export default StyleInspector;
