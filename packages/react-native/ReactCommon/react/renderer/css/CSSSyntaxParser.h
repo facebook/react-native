@@ -81,7 +81,7 @@ concept CSSComponentValueVisitor = CSSFunctionVisitor<T, ReturnT> ||
  */
 template <typename ReturnT, typename... VisitorsT>
 concept CSSUniqueComponentValueVisitors =
-    (CSSComponentValueVisitor<VisitorsT, ReturnT> && ... && true) &&
+    (CSSComponentValueVisitor<VisitorsT, ReturnT> && ...) &&
     ((CSSFunctionVisitor<VisitorsT, ReturnT> ? 1 : 0) + ... + 0) <= 1 &&
     ((CSSPreservedTokenVisitor<VisitorsT, ReturnT> ? 1 : 0) + ... + 0) <= 1 &&
     ((CSSSimpleBlockVisitor<VisitorsT, ReturnT> ? 1 : 0) + ... + 0) <= 1;
@@ -130,35 +130,9 @@ class CSSSyntaxParser {
    * higher-level data structure, and continue parsing within its scope using
    * the same underlying CSSSyntaxParser.
    *
-   * https://www.w3.org/TR/css-syntax-3/#consume-component-value
-   *
-   * @param <ReturnT> caller-specified return type of visitors. This type will
-   * be set to its default constructed state if consuming a component value with
-   * no matching visitors, or syntax error
-   * @param visitors A unique list of CSSComponentValueVisitor to be called on a
-   * match
-   * @param delimiter The expected delimeter to occur before the next component
-   * value
-   * @returns the visitor returned value, or a default constructed value if no
-   * visitor was matched, or a syntax error occurred.
-   */
-  template <typename ReturnT = std::nullptr_t>
-  constexpr ReturnT consumeComponentValue(
-      CSSDelimiter delimiter,
-      const CSSComponentValueVisitor<ReturnT> auto&... visitors)
-    requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>);
-
-  template <typename ReturnT = std::nullptr_t>
-  constexpr ReturnT consumeComponentValue(
-      const CSSComponentValueVisitor<ReturnT> auto&... visitors)
-    requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>);
-
-  /**
-   * Peek at the next component value without consuming it. The component value
-   * is provided to a passed in "visitor", typically a lambda which accepts the
-   * component value in a new scope. The visitor may read this component
-   * parameter into a higher-level data structure, and continue parsing within
-   * its scope using the same underlying CSSSyntaxParser.
+   * The state of the parser is reset if a visitor returns a falsish value, even
+   * if it previously adanced the parser. If no visitor returns a truthy value,
+   * the component value will not be consumed.
    *
    * https://www.w3.org/TR/css-syntax-3/#consume-component-value
    *
@@ -172,17 +146,16 @@ class CSSSyntaxParser {
    * @returns the visitor returned value, or a default constructed value if no
    * visitor was matched, or a syntax error occurred.
    */
-  template <typename ReturnT = std::nullptr_t>
-  constexpr ReturnT peekComponentValue(
+  template <typename ReturnT>
+  constexpr ReturnT consumeComponentValue(
       CSSDelimiter delimiter,
       const CSSComponentValueVisitor<ReturnT> auto&... visitors)
     requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>);
 
-  template <typename ReturnT = std::nullptr_t>
-  constexpr ReturnT peekComponentValue(
+  template <typename ReturnT>
+  constexpr ReturnT consumeComponentValue(
       const CSSComponentValueVisitor<ReturnT> auto&... visitors)
     requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>);
-
   /**
    * The parser is considered finished when there are no more remaining tokens
    * to be processed
@@ -275,6 +248,7 @@ struct CSSComponentValueVisitorDispatcher {
         break;
     }
 
+    parser = originalParser;
     return ReturnT{};
   }
 
@@ -331,15 +305,6 @@ struct CSSComponentValueVisitorDispatcher {
     return false;
   }
 
-  constexpr ReturnT peekComponentValue(
-      CSSDelimiter delimiter,
-      const VisitorsT&... visitors) {
-    auto originalParser = parser;
-    auto ret = consumeComponentValue(delimiter, visitors...);
-    parser = originalParser;
-    return ret;
-  }
-
   constexpr std::optional<ReturnT> visitFunction(
       const CSSComponentValueVisitor<ReturnT> auto& visitor,
       const CSSComponentValueVisitor<ReturnT> auto&... rest) {
@@ -357,7 +322,8 @@ struct CSSComponentValueVisitorDispatcher {
       auto functionValue = visitor({name}, blockParser);
       parser.advanceToBlockParser(blockParser);
       parser.consumeWhitespace();
-      if (parser.peek().type() == CSSTokenType::CloseParen) {
+      if (parser.peek().type() == CSSTokenType::CloseParen &&
+          functionValue != ReturnT{}) {
         parser.consumeToken();
         return functionValue;
       }
@@ -369,11 +335,6 @@ struct CSSComponentValueVisitorDispatcher {
   }
 
   constexpr std::optional<ReturnT> visitFunction() {
-    while (parser.peek().type() != CSSTokenType::CloseParen) {
-      parser.consumeToken();
-    }
-    parser.consumeToken();
-
     return {};
   }
 
@@ -388,7 +349,7 @@ struct CSSComponentValueVisitorDispatcher {
       auto blockValue = visitor({openBracketType}, blockParser);
       parser.advanceToBlockParser(blockParser);
       parser.consumeWhitespace();
-      if (parser.peek().type() == endToken) {
+      if (parser.peek().type() == endToken && blockValue != ReturnT{}) {
         parser.consumeToken();
         return blockValue;
       }
@@ -399,10 +360,6 @@ struct CSSComponentValueVisitorDispatcher {
   }
 
   constexpr std::optional<ReturnT> visitSimpleBlock(CSSTokenType endToken) {
-    while (parser.peek().type() != endToken) {
-      parser.consumeToken();
-    }
-    parser.consumeToken();
     return {};
   }
 
@@ -410,13 +367,15 @@ struct CSSComponentValueVisitorDispatcher {
       const CSSComponentValueVisitor<ReturnT> auto& visitor,
       const CSSComponentValueVisitor<ReturnT> auto&... rest) {
     if constexpr (CSSPreservedTokenVisitor<decltype(visitor), ReturnT>) {
-      return visitor(parser.consumeToken());
+      auto ret = visitor(parser.consumeToken());
+      if (ret != ReturnT{}) {
+        return ret;
+      }
     }
     return visitPreservedToken(rest...);
   }
 
   constexpr std::optional<ReturnT> visitPreservedToken() {
-    parser.consumeToken();
     return {};
   }
 };
@@ -438,25 +397,6 @@ constexpr ReturnT CSSSyntaxParser::consumeComponentValue(
   requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>)
 {
   return consumeComponentValue<ReturnT>(CSSDelimiter::None, visitors...);
-}
-
-template <typename ReturnT>
-constexpr ReturnT CSSSyntaxParser::peekComponentValue(
-    CSSDelimiter delimiter,
-    const CSSComponentValueVisitor<ReturnT> auto&... visitors)
-  requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>)
-{
-  return CSSComponentValueVisitorDispatcher<ReturnT, decltype(visitors)...>{
-      *this}
-      .peekComponentValue(delimiter, visitors...);
-}
-
-template <typename ReturnT>
-constexpr ReturnT CSSSyntaxParser::peekComponentValue(
-    const CSSComponentValueVisitor<ReturnT> auto&... visitors)
-  requires(CSSUniqueComponentValueVisitors<ReturnT, decltype(visitors)...>)
-{
-  return peekComponentValue<ReturnT>(CSSDelimiter::None, visitors...);
 }
 
 } // namespace facebook::react
