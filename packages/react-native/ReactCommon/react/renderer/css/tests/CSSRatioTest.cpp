@@ -35,6 +35,17 @@ TEST(CSSRatio, ratio_values) {
   EXPECT_EQ(std::get<CSSRatio>(fractionalNumber).numerator, 16.5f);
   EXPECT_EQ(std::get<CSSRatio>(fractionalNumber).denominator, 1.0f);
 
+  auto fractionalNumerator = parseCSSProperty<CSSRatio>("16.5/9");
+  EXPECT_TRUE(std::holds_alternative<CSSRatio>(fractionalNumerator));
+  EXPECT_EQ(std::get<CSSRatio>(fractionalNumerator).numerator, 16.5f);
+  EXPECT_EQ(std::get<CSSRatio>(fractionalNumerator).denominator, 9.0f);
+
+  auto fractionalDenominator = parseCSSProperty<CSSRatio>("16/9.5");
+  EXPECT_TRUE(std::holds_alternative<CSSRatio>(fractionalDenominator));
+  EXPECT_EQ(std::get<CSSRatio>(fractionalDenominator).numerator, 16.0f);
+}
+
+TEST(CSSRatio, invalid_values) {
   auto negativeNumber = parseCSSProperty<CSSRatio>("-16");
   EXPECT_TRUE(std::holds_alternative<std::monostate>(negativeNumber));
 
@@ -46,18 +57,12 @@ TEST(CSSRatio, ratio_values) {
 
   auto negativeDenominator = parseCSSProperty<CSSRatio>("16/-9");
   EXPECT_TRUE(std::holds_alternative<std::monostate>(negativeDenominator));
+}
 
-  auto fractionalNumerator = parseCSSProperty<CSSRatio>("16.5/9");
-  EXPECT_TRUE(std::holds_alternative<CSSRatio>(fractionalNumerator));
-  EXPECT_EQ(std::get<CSSRatio>(fractionalNumerator).numerator, 16.5f);
-  EXPECT_EQ(std::get<CSSRatio>(fractionalNumerator).denominator, 9.0f);
-
-  auto fractionalDenominator = parseCSSProperty<CSSRatio>("16/9.5");
-  EXPECT_TRUE(std::holds_alternative<CSSRatio>(fractionalDenominator));
-  EXPECT_EQ(std::get<CSSRatio>(fractionalDenominator).numerator, 16.0f);
-
+TEST(CSSRatio, degenerate_values) {
   auto degenerateRatio = parseCSSProperty<CSSRatio>("0");
-  EXPECT_TRUE(std::holds_alternative<std::monostate>(degenerateRatio));
+  EXPECT_TRUE(std::holds_alternative<CSSRatio>(degenerateRatio));
+  EXPECT_TRUE(std::get<CSSRatio>(degenerateRatio).isDegenerate());
 }
 
 } // namespace facebook::react
