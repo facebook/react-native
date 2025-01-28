@@ -12,7 +12,5 @@
 
 import {typeof VirtualizedListContextResetter as VirtualizedListContextResetterType} from '@react-native/virtualized-lists';
 
-const VirtualizedListContextResetter: VirtualizedListContextResetterType =
+export const VirtualizedListContextResetter: VirtualizedListContextResetterType =
   require('@react-native/virtualized-lists').VirtualizedListContextResetter;
-
-module.exports = {VirtualizedListContextResetter};

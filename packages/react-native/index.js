@@ -126,7 +126,7 @@ module.exports = {
       .default;
   },
   get FlatList(): FlatList {
-    return require('./Libraries/Lists/FlatList');
+    return require('./Libraries/Lists/FlatList').default;
   },
   get Image(): Image {
     return require('./Libraries/Image/Image');
@@ -210,10 +210,10 @@ module.exports = {
     return require('./Libraries/Components/View/View').default;
   },
   get VirtualizedList(): VirtualizedList {
-    return require('./Libraries/Lists/VirtualizedList');
+    return require('./Libraries/Lists/VirtualizedList').default;
   },
   get VirtualizedSectionList(): VirtualizedSectionList {
-    return require('./Libraries/Lists/VirtualizedSectionList');
+    return require('./Libraries/Lists/VirtualizedSectionList').default;
   },
 
   // APIs

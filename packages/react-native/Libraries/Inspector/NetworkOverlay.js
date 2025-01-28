@@ -18,7 +18,7 @@ import React from 'react';
 const TouchableHighlight =
   require('../Components/Touchable/TouchableHighlight').default;
 const View = require('../Components/View/View').default;
-const FlatList = require('../Lists/FlatList');
+const FlatList = require('../Lists/FlatList').default;
 const XHRInterceptor = require('../Network/XHRInterceptor');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text').default;
