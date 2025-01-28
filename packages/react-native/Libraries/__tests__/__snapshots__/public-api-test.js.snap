@@ -1792,12 +1792,11 @@ declare class KeyboardAvoidingView extends React.Component<Props, State> {
   viewRef: { current: React.ElementRef<typeof View> | null, ... };
   _initialFrameHeight: number;
   _bottom: number;
-  _windowWidth: number;
   constructor(props: Props): void;
   _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics): Promise<number>;
   _onKeyboardChange: $FlowFixMe;
+  _onKeyboardHide: $FlowFixMe;
   _onLayout: $FlowFixMe;
-  _onDimensionsChange: $FlowFixMe;
   _setBottom: $FlowFixMe;
   _updateBottomIfNecessary: $FlowFixMe;
   componentDidUpdate(_: Props, prevState: State): void;
@@ -2796,7 +2795,7 @@ exports[`public API should not change unintentionally Libraries/Components/TextI
   PartialViewConfig,
   { uiViewClassName: string },
 >;
-declare module.exports: PartialViewConfigWithoutName;
+declare export default PartialViewConfigWithoutName;
 "
 `;
 
@@ -3485,7 +3484,7 @@ export type TextInputComponentStatics = $ReadOnly<{
     blurTextInput: typeof TextInputState.blurTextInput,
   }>,
 }>;
-declare module.exports: TextInputType;
+declare export default TextInputType;
 "
 `;
 
@@ -3518,7 +3517,7 @@ declare function blurTextInput(textField: ?HostInstance): void;
 declare function registerInput(textField: HostInstance): void;
 declare function unregisterInput(textField: HostInstance): void;
 declare function isTextInput(textField: HostInstance): boolean;
-declare module.exports: {
+declare const TextInputState: {
   currentlyFocusedInput: currentlyFocusedInput,
   focusInput: focusInput,
   blurInput: blurInput,
@@ -3531,6 +3530,7 @@ declare module.exports: {
   unregisterInput: unregisterInput,
   isTextInput: isTextInput,
 };
+declare export default typeof TextInputState;
 "
 `;
 
@@ -3557,7 +3557,7 @@ exports[`public API should not change unintentionally Libraries/Components/Toast
     yOffset: number
   ) => void,
 };
-declare module.exports: ToastAndroid;
+declare export default typeof ToastAndroid;
 "
 `;
 
@@ -3899,13 +3899,13 @@ exports[`public API should not change unintentionally Libraries/Components/Unimp
 declare class UnimplementedView extends React.Component<Props> {
   render(): React.Node;
 }
-declare module.exports: UnimplementedView;
+declare export default typeof UnimplementedView;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/ReactNativeStyleAttributes.js 1`] = `
 "declare const ReactNativeStyleAttributes: { [string]: AnyAttributeType, ... };
-declare module.exports: ReactNativeStyleAttributes;
+declare export default typeof ReactNativeStyleAttributes;
 "
 `;
 
@@ -3941,7 +3941,7 @@ exports[`public API should not change unintentionally Libraries/Components/View/
 };
 declare const RCTView: { ...UIView, removeClippedSubviews: true };
 declare const ReactNativeViewAttributes: { UIView: UIView, RCTView: RCTView };
-declare module.exports: ReactNativeViewAttributes;
+declare export default typeof ReactNativeViewAttributes;
 "
 `;
 
@@ -3951,7 +3951,7 @@ declare const View: component(
   ref: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 );
-declare module.exports: View;
+declare export default typeof View;
 "
 `;
 
@@ -5113,7 +5113,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/Border
   style?: ViewStyleProp,
 }>;
 declare function BorderBox(Props): React.Node;
-declare module.exports: BorderBox;
+declare export default typeof BorderBox;
 "
 `;
 
@@ -5123,7 +5123,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/BoxIns
   frame: ?InspectedElementFrame,
 }>;
 declare function BoxInspector(BoxInspectorProps): React.Node;
-declare module.exports: BoxInspector;
+declare export default typeof BoxInspector;
 "
 `;
 
@@ -5133,7 +5133,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/Elemen
   style?: ?ViewStyleProp,
 }>;
 declare function ElementBox(Props): React.Node;
-declare module.exports: ElementBox;
+declare export default typeof ElementBox;
 "
 `;
 
@@ -5148,7 +5148,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/Elemen
 declare class ElementProperties extends React.Component<Props> {
   render(): React.Node;
 }
-declare module.exports: ElementProperties;
+declare export default typeof ElementProperties;
 "
 `;
 
@@ -5165,7 +5165,7 @@ type Props = {
   reactDevToolsAgent?: ReactDevToolsAgent,
 };
 declare function Inspector(Props): React.Node;
-declare module.exports: Inspector;
+declare export default typeof Inspector;
 "
 `;
 
@@ -5175,7 +5175,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/Inspec
   onTouchPoint: (locationX: number, locationY: number) => void,
 }>;
 declare function InspectorOverlay(Props): React.Node;
-declare module.exports: InspectorOverlay;
+declare export default typeof InspectorOverlay;
 "
 `;
 
@@ -5199,7 +5199,7 @@ declare class InspectorPanel extends React.Component<Props> {
   renderWaiting(): React.Node;
   render(): React.Node;
 }
-declare module.exports: InspectorPanel;
+declare export default typeof InspectorPanel;
 "
 `;
 
@@ -5256,7 +5256,7 @@ declare class NetworkOverlay extends React.Component<Props, State> {
   _getRequestIndexByXHRID(index: number): number;
   render(): React.Node;
 }
-declare module.exports: NetworkOverlay;
+declare export default typeof NetworkOverlay;
 "
 `;
 
@@ -5264,7 +5264,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/Perfor
 "declare class PerformanceOverlay extends React.Component<{ ... }> {
   render(): React.Node;
 }
-declare module.exports: PerformanceOverlay;
+declare export default typeof PerformanceOverlay;
 "
 `;
 
@@ -5282,7 +5282,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/StyleI
   style?: ?____FlattenStyleProp_Internal<ViewStyleProp>,
 }>;
 declare function StyleInspector(Props): React.Node;
-declare module.exports: StyleInspector;
+declare export default typeof StyleInspector;
 "
 `;
 
@@ -5298,12 +5298,13 @@ exports[`public API should not change unintentionally Libraries/Inspector/getIns
     ...
   },
 };
-declare module.exports: (
+declare function getInspectorDataForViewAtPoint(
   inspectedView: ?HostInstance,
   locationX: number,
   locationY: number,
   callback: (viewData: TouchedViewDataAtPoint) => boolean
-) => void;
+): void;
+declare export default typeof getInspectorDataForViewAtPoint;
 "
 `;
 
@@ -5317,7 +5318,7 @@ exports[`public API should not change unintentionally Libraries/Inspector/resolv
   right: number,
   top: number,
 }>;
-declare module.exports: resolveBoxStyle;
+declare export default typeof resolveBoxStyle;
 "
 `;
 
@@ -5328,13 +5329,13 @@ exports[`public API should not change unintentionally Libraries/Interaction/Fram
   beginScroll(): void,
   endScroll(): void,
 };
-declare module.exports: FrameRateLogger;
+declare export default typeof FrameRateLogger;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Interaction/InteractionManager.js 1`] = `
 "export type Handle = number;
-declare const InteractionManager: {
+declare const InteractionManagerImpl: {
   Events: {
     interactionStart: \\"interactionStart\\",
     interactionComplete: \\"interactionComplete\\",
@@ -5352,7 +5353,8 @@ declare const InteractionManager: {
   addListener: Function,
   setDeadline(deadline: number): void,
 };
-declare module.exports: typeof InteractionManager;
+declare const InteractionManager: typeof InteractionManagerImpl;
+declare export default typeof InteractionManager;
 "
 `;
 
@@ -5386,7 +5388,7 @@ declare const InteractionManagerStub: {
   addListener(): EventSubscription,
   setDeadline(deadline: number): void,
 };
-declare module.exports: InteractionManagerStub;
+declare export default typeof InteractionManagerStub;
 "
 `;
 
@@ -5402,7 +5404,7 @@ declare const JSEventLoopWatchdog: {
   addHandler: (handler: Handler) => void,
   install: ({ thresholdMS: number, ... }) => void,
 };
-declare module.exports: JSEventLoopWatchdog;
+declare export default typeof JSEventLoopWatchdog;
 "
 `;
 
@@ -5502,7 +5504,7 @@ declare class TaskQueue {
   _getCurrentQueue(): Array<Task>;
   _genPromise(task: PromiseTask): void;
 }
-declare module.exports: TaskQueue;
+declare export default typeof TaskQueue;
 "
 `;
 
@@ -5534,7 +5536,7 @@ exports[`public API should not change unintentionally Libraries/Interaction/Touc
   currentCentroidY: (touchHistory: TouchHistoryMath) => number,
   noCentroid: number,
 };
-declare module.exports: TouchHistoryMath;
+declare export default typeof TouchHistoryMath;
 "
 `;
 
@@ -7292,7 +7294,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/AppC
   internal_excludeInspector?: boolean,
 }>;
 declare const AppContainer: component(...Props);
-declare module.exports: AppContainer;
+declare export default typeof AppContainer;
 "
 `;
 
@@ -7392,13 +7394,13 @@ declare const AppRegistry: {
   startHeadlessTask(taskId: number, taskKey: string, data: any): void,
   cancelHeadlessTask(taskId: number, taskKey: string): void,
 };
-declare module.exports: AppRegistry;
+declare export default typeof AppRegistry;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/BridgelessUIManager.js 1`] = `
 "declare const UIManagerJS: UIManagerJSInterface & { [string]: any };
-declare module.exports: UIManagerJS;
+declare export default typeof UIManagerJS;
 "
 `;
 
@@ -7475,7 +7477,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Head
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/I18nManager.js 1`] = `
-"declare module.exports: {
+"declare export default {
   getConstants: () => I18nManagerConstants,
   allowRTL: (shouldAllow: boolean) => void,
   forceRTL: (shouldForce: boolean) => void,
@@ -7506,7 +7508,7 @@ declare export default typeof NativeUIManager;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/PaperUIManager.js 1`] = `
 "declare const UIManagerJS: UIManagerJSInterface;
-declare module.exports: UIManagerJS;
+declare export default typeof UIManagerJS;
 "
 `;
 
@@ -7590,7 +7592,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
   shouldPressibilityUseW3CPointerEventsForHover: () => boolean,
 };
 declare const ReactNativeFeatureFlags: FeatureFlags;
-declare module.exports: ReactNativeFeatureFlags;
+declare export default typeof ReactNativeFeatureFlags;
 "
 `;
 
@@ -7601,7 +7603,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
 };
 export type RuntimeDiagnosticFlag = \\"early_js_errors\\" | \\"all\\";
 declare const ReactNativeRuntimeDiagnostics: RuntimeDiagnostics;
-declare module.exports: ReactNativeRuntimeDiagnostics;
+declare export default typeof ReactNativeRuntimeDiagnostics;
 "
 `;
 
@@ -7662,13 +7664,13 @@ declare export function createRootTag(rootTag: number | RootTag): RootTag;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/UIManager.js 1`] = `
 "declare const UIManager: UIManagerJSInterface;
-declare module.exports: UIManager;
+declare export default typeof UIManager;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/UIManagerProperties.js 1`] = `
 "declare const UIManagerProperties: $ReadOnlyArray<string>;
-declare module.exports: UIManagerProperties;
+declare export default typeof UIManagerProperties;
 "
 `;
 
@@ -7682,7 +7684,7 @@ declare export default function getCachedComponentWithDisplayName(
 
 exports[`public API should not change unintentionally Libraries/ReactNative/getNativeComponentAttributes.js 1`] = `
 "declare function getNativeComponentAttributes(uiViewClassName: string): any;
-declare module.exports: getNativeComponentAttributes;
+declare export default typeof getNativeComponentAttributes;
 "
 `;
 
@@ -8372,7 +8374,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "declare function processColorArray(
   colors: ?$ReadOnlyArray<ColorValue>
 ): ?$ReadOnlyArray<ProcessedColorValue>;
-declare module.exports: processColorArray;
+declare export default typeof processColorArray;
 "
 `;
 
@@ -8859,17 +8861,12 @@ type TBackHandler = {
     handler: () => ?boolean
   ) => { remove: () => void, ... },
 };
-declare export default TBackHandler;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/DebugEnvironment.js 1`] = `
-"declare export let isAsyncDebugging: boolean;
+declare module.exports: TBackHandler;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/DevLoadingView.js 1`] = `
-"declare export default {
+"declare module.exports: {
   showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
   hide(): void,
 };
@@ -8882,12 +8879,12 @@ exports[`public API should not change unintentionally Libraries/Utilities/DevSet
   reload(reason?: string): void,
   onFastRefresh(): void,
 };
-declare export default typeof DevSettings;
+declare module.exports: DevSettings;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/DeviceInfo.js 1`] = `
-"declare export default typeof NativeDeviceInfo;
+"declare module.exports: NativeDeviceInfo;
 "
 `;
 
@@ -8902,17 +8899,18 @@ declare export default typeof Dimensions;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/FeatureDetection.js 1`] = `
-"declare export function isNativeFunction(f: Function): boolean;
-declare export function hasNativeConstructor(
-  o: Object,
-  expectedName: string
-): boolean;
+"declare function isNativeFunction(f: Function): boolean;
+declare function hasNativeConstructor(o: Object, expectedName: string): boolean;
+declare module.exports: {
+  isNativeFunction: isNativeFunction,
+  hasNativeConstructor: hasNativeConstructor,
+};
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/GlobalPerformanceLogger.js 1`] = `
 "declare const GlobalPerformanceLogger: IPerformanceLogger;
-declare export default typeof GlobalPerformanceLogger;
+declare module.exports: GlobalPerformanceLogger;
 "
 `;
 
@@ -8943,13 +8941,13 @@ export type HMRClientNativeInterface = {
   unstable_notifyFuseboxConsoleEnabled(): void,
 };
 declare const HMRClient: HMRClientNativeInterface;
-declare export default typeof HMRClient;
+declare module.exports: HMRClient;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/HMRClientProdShim.js 1`] = `
 "declare const HMRClientProdShim: HMRClientNativeInterface;
-declare export default typeof HMRClientProdShim;
+declare module.exports: HMRClientProdShim;
 "
 `;
 
@@ -9110,20 +9108,21 @@ export type Platform = IOSPlatform | AndroidPlatform;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/Platform.js.flow 1`] = `
-"declare export default Platform;
+"declare module.exports: Platform;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/PolyfillFunctions.js 1`] = `
-"declare export function polyfillObjectProperty<T>(
+"declare function polyfillObjectProperty<T>(
   object: { ... },
   name: string,
   getValue: () => T
 ): void;
-declare export function polyfillGlobal<T>(
-  name: string,
-  getValue: () => T
-): void;
+declare function polyfillGlobal<T>(name: string, getValue: () => T): void;
+declare module.exports: {
+  polyfillObjectProperty: polyfillObjectProperty,
+  polyfillGlobal: polyfillGlobal,
+};
 "
 `;
 
@@ -9134,7 +9133,7 @@ declare const RCTLog: {
   logToConsole(level: string, ...args: Array<mixed>): void,
   setWarningHandler(handler: typeof warningHandler): void,
 };
-declare export default typeof RCTLog;
+declare module.exports: RCTLog;
 "
 `;
 
@@ -9192,13 +9191,13 @@ declare const SceneTracker: {
     ...
   },
 };
-declare export default typeof SceneTracker;
+declare module.exports: SceneTracker;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/binaryToBase64.js 1`] = `
 "declare function binaryToBase64(data: ArrayBuffer | $ArrayBufferView): string;
-declare export default typeof binaryToBase64;
+declare module.exports: binaryToBase64;
 "
 `;
 
@@ -9240,7 +9239,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/deepFr
 "declare function deepFreezeAndThrowOnMutationInDev<T: { ... } | Array<mixed>>(
   object: T
 ): T;
-declare export default typeof deepFreezeAndThrowOnMutationInDev;
+declare module.exports: deepFreezeAndThrowOnMutationInDev;
 "
 `;
 
@@ -9255,7 +9254,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/define
     ...
   }
 ): void;
-declare export default typeof defineLazyObjectProperty;
+declare module.exports: defineLazyObjectProperty;
 "
 `;
 
@@ -9267,7 +9266,7 @@ declare const deepDiffer: (
   maxDepthOrOptions: Options | number,
   maybeOptions?: Options
 ) => boolean;
-declare export default typeof deepDiffer;
+declare module.exports: deepDiffer;
 "
 `;
 
@@ -9280,7 +9279,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
   ...
 };
 declare const insetsDiffer: (one: Inset, two: Inset) => boolean;
-declare export default typeof insetsDiffer;
+declare module.exports: insetsDiffer;
 "
 `;
 
@@ -9289,7 +9288,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
   one: ?Array<number>,
   two: ?Array<number>
 ) => boolean;
-declare export default typeof matricesDiffer;
+declare module.exports: matricesDiffer;
 "
 `;
 
@@ -9300,32 +9299,32 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
   ...
 };
 declare const pointsDiffer: (one: ?Point, two: ?Point) => boolean;
-declare export default typeof pointsDiffer;
+declare module.exports: pointsDiffer;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/differ/sizesDiffer.js 1`] = `
 "type Size = { width: ?number, height: ?number };
 declare const sizesDiffer: (one: Size, two: Size) => boolean;
-declare export default typeof sizesDiffer;
+declare module.exports: sizesDiffer;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/dismissKeyboard.js 1`] = `
 "declare function dismissKeyboard(): void;
-declare export default typeof dismissKeyboard;
+declare module.exports: dismissKeyboard;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/infoLog.js 1`] = `
 "declare function infoLog(...args: Array<mixed>): void;
-declare export default typeof infoLog;
+declare module.exports: infoLog;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/logError.js 1`] = `
-"declare export function logError(...args: $ReadOnlyArray<mixed>): void;
-declare export default typeof logError;
+"declare const logError: (...args: $ReadOnlyArray<mixed>) => void;
+declare module.exports: logError;
 "
 `;
 
@@ -9335,7 +9334,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/mapWit
   itemRenderer: (item: TFrom, index: number, items: Array<TFrom>) => TTo,
   spacerRenderer: (index: number) => TTo
 ): Array<TTo>;
-declare export default typeof mapWithSeparator;
+declare module.exports: mapWithSeparator;
 "
 `;
 
@@ -9385,7 +9384,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/useWin
 
 exports[`public API should not change unintentionally Libraries/Utilities/warnOnce.js 1`] = `
 "declare function warnOnce(key: string, message: string): void;
-declare export default typeof warnOnce;
+declare module.exports: warnOnce;
 "
 `;
 
@@ -10305,7 +10304,6 @@ exports[`public API should not change unintentionally src/private/specs/modules/
 "export interface Spec extends TurboModule {
   +show: () => void;
   +reload: () => void;
-  +debugRemotely: (enableDebug: boolean) => void;
   +setProfilingEnabled: (enabled: boolean) => void;
   +setHotLoadingEnabled: (enabled: boolean) => void;
 }
@@ -10319,7 +10317,6 @@ exports[`public API should not change unintentionally src/private/specs/modules/
   +reloadWithReason?: (reason: string) => void;
   +onFastRefresh?: () => void;
   +setHotLoadingEnabled: (isHotLoadingEnabled: boolean) => void;
-  +setIsDebuggingRemotely: (isDebuggingRemotelyEnabled: boolean) => void;
   +setProfilingEnabled: (isProfilingEnabled: boolean) => void;
   +toggleElementInspector: () => void;
   +addMenuItem: (title: string) => void;
@@ -10465,6 +10462,11 @@ export enum NativeEventCategory {
   Discrete = 3,
   Continuous = 4,
 }
+export type ScrollOptions = {
+  x: number,
+  y: number,
+  zoomScale?: number,
+};
 interface Spec extends TurboModule {
   startSurface: (
     surfaceId: number,
@@ -10480,6 +10482,7 @@ interface Spec extends TurboModule {
     category?: NativeEventCategory,
     isUnique?: boolean
   ) => void;
+  scrollTo: (shadowNode: mixed, options: ScrollOptions) => void;
   getMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;

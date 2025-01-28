@@ -64,8 +64,6 @@ public open class ReleaseDevSupportManager : DevSupportManager {
   override public fun setHotModuleReplacementEnabled(isHotModuleReplacementEnabled: Boolean): Unit =
       Unit
 
-  override public fun setRemoteJSDebugEnabled(isRemoteJSDebugEnabled: Boolean): Unit = Unit
-
   override public fun setFpsDebugEnabled(isFpsDebugEnabled: Boolean): Unit = Unit
 
   override public fun toggleElementInspector(): Unit = Unit
@@ -88,9 +86,6 @@ public open class ReleaseDevSupportManager : DevSupportManager {
     get() = null
 
   override public val sourceUrl: String?
-    get() = null
-
-  override public val jSBundleURLForRemoteDebugging: String?
     get() = null
 
   override public val downloadedJSBundleFile: String?

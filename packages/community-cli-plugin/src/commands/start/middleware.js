@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import type {NextHandleFunction, Server} from 'connect';
+import type {Server} from 'connect';
 import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
 
 const debug = require('debug')('ReactNative:CommunityCliPlugin');
@@ -30,10 +30,6 @@ type MiddlewareReturn = {
   ...
 };
 
-const noopNextHandle: NextHandleFunction = (req, res, next) => {
-  next();
-};
-
 // $FlowFixMe
 const unusedStubWSServer: ws$WebSocketServer = {};
 // $FlowFixMe
@@ -45,6 +41,12 @@ const communityMiddlewareFallback = {
     port: number,
     watchFolders: $ReadOnlyArray<string>,
   }): MiddlewareReturn => ({
+    // FIXME: Several features will break without community middleware and
+    // should be migrated into core.
+    // e.g. used by Libraries/Core/Devtools:
+    // - /open-stack-frame
+    // - /open-url
+    // - /symbolicate
     middleware: unusedMiddlewareStub,
     websocketEndpoints: {},
     messageSocketEndpoint: {
@@ -59,15 +61,12 @@ const communityMiddlewareFallback = {
       reportEvent: (event: TerminalReportableEvent) => {},
     },
   }),
-  indexPageMiddleware: noopNextHandle,
 };
 
 // Attempt to use the community middleware if it exists, but fallback to
 // the stubs if it doesn't.
 try {
   const community = require('@react-native-community/cli-server-api');
-  communityMiddlewareFallback.indexPageMiddleware =
-    community.indexPageMiddleware;
   communityMiddlewareFallback.createDevServerMiddleware =
     community.createDevServerMiddleware;
 } catch {
@@ -77,5 +76,3 @@ Starting the server without the community middleware.`);
 
 export const createDevServerMiddleware =
   communityMiddlewareFallback.createDevServerMiddleware;
-export const indexPageMiddleware =
-  communityMiddlewareFallback.indexPageMiddleware;

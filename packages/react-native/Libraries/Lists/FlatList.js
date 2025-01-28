@@ -28,8 +28,8 @@ import memoizeOne from 'memoize-one';
 import React from 'react';
 
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const deepDiffer = require('../Utilities/differ/deepDiffer').default;
-const Platform = require('../Utilities/Platform').default;
+const deepDiffer = require('../Utilities/differ/deepDiffer');
+const Platform = require('../Utilities/Platform');
 const invariant = require('invariant');
 
 type RequiredProps<ItemT> = {

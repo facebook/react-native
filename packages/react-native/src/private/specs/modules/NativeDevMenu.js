@@ -15,7 +15,6 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +show: () => void;
   +reload: () => void;
-  +debugRemotely: (enableDebug: boolean) => void;
   +setProfilingEnabled: (enabled: boolean) => void;
   +setHotLoadingEnabled: (enabled: boolean) => void;
 }

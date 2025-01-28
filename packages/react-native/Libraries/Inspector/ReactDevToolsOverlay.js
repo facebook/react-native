@@ -20,7 +20,8 @@ import StyleSheet from '../StyleSheet/StyleSheet';
 import ElementBox from './ElementBox';
 import * as React from 'react';
 
-const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
+const getInspectorDataForViewAtPoint =
+  require('./getInspectorDataForViewAtPoint').default;
 
 const {useEffect, useState, useCallback} = React;
 

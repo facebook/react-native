@@ -15,7 +15,7 @@ import type {____FlattenStyleProp_Internal} from '../StyleSheet/StyleSheetTypes'
 
 import React from 'react';
 
-const View = require('../Components/View/View');
+const View = require('../Components/View/View').default;
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text').default;
 
@@ -73,4 +73,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = StyleInspector;
+export default StyleInspector;

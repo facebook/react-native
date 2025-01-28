@@ -65,4 +65,4 @@ const ReactNativeRuntimeDiagnostics: RuntimeDiagnostics = {
   },
 };
 
-module.exports = ReactNativeRuntimeDiagnostics;
+export default ReactNativeRuntimeDiagnostics;

@@ -5,11 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.modules.network;
+#pragma once
 
-import okhttp3.OkHttpClient;
+#import <UIKit/UIKit.h>
 
-public interface OkHttpClientFactory {
-  OkHttpClient createNewNetworkModuleClient();
-}
-;
+NS_ASSUME_NONNULL_BEGIN
+
+@interface UIColor (Graphics)
+@property (nonatomic, assign) int32_t reactHash;
+@end
+
+NS_ASSUME_NONNULL_END

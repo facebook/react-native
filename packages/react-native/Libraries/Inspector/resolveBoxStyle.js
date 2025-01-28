@@ -10,7 +10,7 @@
 
 'use strict';
 
-const I18nManager = require('../ReactNative/I18nManager');
+const I18nManager = require('../ReactNative/I18nManager').default;
 
 /**
  * Resolve a style property into its component parts.
@@ -111,4 +111,4 @@ function resolveBoxStyle(
   return hasParts ? result : null;
 }
 
-module.exports = resolveBoxStyle;
+export default resolveBoxStyle;

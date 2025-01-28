@@ -23,4 +23,4 @@ const sizesDiffer = function (one: Size, two: Size): boolean {
   );
 };
 
-export default sizesDiffer;
+module.exports = sizesDiffer;

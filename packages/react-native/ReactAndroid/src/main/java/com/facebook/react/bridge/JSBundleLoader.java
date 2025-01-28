@@ -92,21 +92,6 @@ public abstract class JSBundleLoader {
     };
   }
 
-  /**
-   * This loader is used when proxy debugging is enabled. In that case there is no point in fetching
-   * the bundle from device as remote executor will have to do it anyway.
-   */
-  public static JSBundleLoader createRemoteDebuggerBundleLoader(
-      final String proxySourceURL, final String realSourceURL) {
-    return new JSBundleLoader() {
-      @Override
-      public String loadScript(JSBundleLoaderDelegate delegate) {
-        delegate.setSourceURLs(realSourceURL, proxySourceURL);
-        return realSourceURL;
-      }
-    };
-  }
-
   /** Loads the script, returning the URL of the source it loaded. */
   public abstract String loadScript(JSBundleLoaderDelegate delegate);
 }

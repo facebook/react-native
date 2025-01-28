@@ -21,6 +21,10 @@ def run_codegen!(
   codegen_utils: CodegenUtils.new()
   )
 
+  if ENV["RCT_SKIP_CODEGEN"] == "1"
+    return
+  end
+
   codegen_utils.use_react_native_codegen_discovery!(
     disable_codegen,
     app_path,

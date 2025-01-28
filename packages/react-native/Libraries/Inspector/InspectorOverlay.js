@@ -15,9 +15,9 @@ import type {InspectedElement} from './Inspector';
 
 import React from 'react';
 
-const View = require('../Components/View/View');
+const View = require('../Components/View/View').default;
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const ElementBox = require('./ElementBox');
+const ElementBox = require('./ElementBox').default;
 
 type Props = $ReadOnly<{
   inspected?: ?InspectedElement,
@@ -63,4 +63,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = InspectorOverlay;
+export default InspectorOverlay;

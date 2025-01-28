@@ -29,7 +29,7 @@ describe('InteractionManager', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    InteractionManager = require('../InteractionManager');
+    InteractionManager = require('../InteractionManager').default;
 
     interactionStart = jest.fn();
     interactionComplete = jest.fn();
@@ -166,7 +166,7 @@ describe('promise tasks', () => {
   }
   beforeEach(() => {
     jest.resetModules();
-    InteractionManager = require('../InteractionManager');
+    InteractionManager = require('../InteractionManager').default;
     sequenceId = 0;
   });
 

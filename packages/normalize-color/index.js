@@ -216,6 +216,10 @@ function call(...args) {
   return '\\(\\s*(' + args.join(')\\s*,?\\s*(') + ')\\s*\\)';
 }
 
+function callModern(...args) {
+  return '\\(\\s*(' + args.join(')\\s*(') + ')\\s*\\)';
+}
+
 function callWithSlashSeparator(...args) {
   return (
     '\\(\\s*(' +
@@ -251,7 +255,7 @@ function getMatchers() {
           callWithSlashSeparator(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER) +
           ')',
       ),
-      hwb: new RegExp('hwb' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
+      hwb: new RegExp('hwb' + callModern(NUMBER, PERCENTAGE, PERCENTAGE)),
       hex3: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
       hex4: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
       hex6: /^#([0-9a-fA-F]{6})$/,

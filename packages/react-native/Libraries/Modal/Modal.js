@@ -21,12 +21,12 @@ import {VirtualizedListContextResetter} from '@react-native/virtualized-lists';
 import React from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView').default;
-const View = require('../Components/View/View');
-const AppContainer = require('../ReactNative/AppContainer');
-const I18nManager = require('../ReactNative/I18nManager');
+const View = require('../Components/View/View').default;
+const AppContainer = require('../ReactNative/AppContainer').default;
+const I18nManager = require('../ReactNative/I18nManager').default;
 const {RootTagContext} = require('../ReactNative/RootTag');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const Platform = require('../Utilities/Platform').default;
+const Platform = require('../Utilities/Platform');
 
 type ModalEventDefinitions = {
   modalDismissed: [{modalID: number}],

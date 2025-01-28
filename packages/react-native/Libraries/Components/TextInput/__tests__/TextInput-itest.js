@@ -15,7 +15,7 @@ import '../../../Core/InitializeCore.js';
 import ensureInstance from '../../../../src/private/utilities/ensureInstance';
 import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import TextInput from '../TextInput';
-import * as Fantom from '@react-native/fantom';
+import Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {useEffect, useLayoutEffect, useRef} from 'react';
 

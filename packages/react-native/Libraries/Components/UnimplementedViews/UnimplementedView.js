@@ -27,7 +27,7 @@ type Props = $ReadOnly<{
 class UnimplementedView extends React.Component<Props> {
   render(): React.Node {
     // Workaround require cycle from requireNativeComponent
-    const View = require('../View/View');
+    const View = require('../View/View').default;
     return (
       <View style={[styles.unimplementedView, this.props.style]}>
         {this.props.children}
@@ -46,4 +46,4 @@ const styles = StyleSheet.create({
     : {},
 });
 
-module.exports = UnimplementedView;
+export default UnimplementedView;

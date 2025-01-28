@@ -114,11 +114,11 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     rawProps.parse(rawPropsParser_);
 
+    auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
     // Use the new-style iterator
     // Note that we just check if `Props` has this flag set, no matter
     // the type of ShadowNode; it acts as the single global flag.
     if (ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
-      auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
 #ifdef ANDROID
       const auto& dynamic = shadowNodeProps->rawProps;
 #else
@@ -132,11 +132,8 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
             name.c_str(),
             RawValue(pair.second));
       }
-      return shadowNodeProps;
-    } else {
-      // Call old-style constructor
-      return ShadowNodeT::Props(context, rawProps, props);
     }
+    return shadowNodeProps;
   };
 
   virtual State::Shared createInitialState(

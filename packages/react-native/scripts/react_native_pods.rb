@@ -73,6 +73,10 @@ def use_react_native! (
   ENV['APP_PATH'] = app_path
   ENV['REACT_NATIVE_PATH'] = path
 
+  # We set RCT_SKIP_CODEGEN to true, if the user wants to skip the running Codegen step from Cocoapods.
+  # This is needed as part of our migration away from cocoapods
+  ENV['RCT_SKIP_CODEGEN'] = ENV['RCT_SKIP_CODEGEN'] == '1' || ENV['RCT_IGNORE_PODS_DEPRECATION'] == '1' ? '1' : '0'
+
   ReactNativePodsUtils.check_minimum_required_xcode()
 
   # Current target definition is provided by Cocoapods and it refers to the target
@@ -363,6 +367,25 @@ def rct_cxx_language_standard()
   return Helpers::Constants.cxx_language_standard
 end
 
+def print_cocoapods_deprecation_message()
+  if ENV["RCT_IGNORE_PODS_DEPRECATION"] == "1"
+    return
+  end
+
+  puts ''
+  puts '==================== DEPRECATION NOTICE ====================='.yellow
+  puts 'Calling `pod install` directly is deprecated in React Native'.yellow
+  puts 'because we are moving away from Cocoapods toward alternative'.yellow
+  puts 'solutions to build the project.'.yellow
+  puts '* If you are using Expo, please run:'.yellow
+  puts '`npx expo run:ios`'.yellow
+  puts '* If you are using the Community CLI, please run:'.yellow
+  puts '`yarn ios`'.yellow
+  puts '============================================================='.yellow
+  puts ''
+
+end
+
 # Function that executes after React Native has been installed to configure some flags and build settings.
 #
 # Parameters
@@ -412,6 +435,6 @@ def react_native_post_install(
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)
 
-
+  print_cocoapods_deprecation_message
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green
 end

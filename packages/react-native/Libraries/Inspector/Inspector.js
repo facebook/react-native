@@ -21,15 +21,16 @@ import type {ReactDevToolsAgent} from '../Types/ReactDevToolsTypes';
 import SafeAreaView from '../../src/private/components/SafeAreaView_INTERNAL_DO_NOT_USE';
 import React from 'react';
 
-const View = require('../Components/View/View');
+const View = require('../Components/View/View').default;
 const PressabilityDebug = require('../Pressability/PressabilityDebug');
 const {findNodeHandle} = require('../ReactNative/RendererProxy');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Dimensions = require('../Utilities/Dimensions').default;
-const Platform = require('../Utilities/Platform').default;
-const getInspectorDataForViewAtPoint = require('./getInspectorDataForViewAtPoint');
-const InspectorOverlay = require('./InspectorOverlay');
-const InspectorPanel = require('./InspectorPanel');
+const Platform = require('../Utilities/Platform');
+const getInspectorDataForViewAtPoint =
+  require('./getInspectorDataForViewAtPoint').default;
+const InspectorOverlay = require('./InspectorOverlay').default;
+const InspectorPanel = require('./InspectorPanel').default;
 
 const {useState} = React;
 
@@ -203,4 +204,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = Inspector;
+export default Inspector;

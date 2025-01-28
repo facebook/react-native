@@ -908,7 +908,9 @@ function generateReactCodegenPodspec(
     .replace(/{react-native-version}/, packageJson.version)
     .replace(/{input-files}/, inputFiles)
     .replace(/{codegen-script}/, codegenScript);
-  fs.writeFileSync(path.join(outputPath, 'ReactCodegen.podspec'), finalPodspec);
+  const finalPathPodspec = path.join(outputPath, 'ReactCodegen.podspec');
+  fs.writeFileSync(finalPathPodspec, finalPodspec);
+  codegenLog(`Generated podspec: ${finalPathPodspec}`);
 }
 
 function getInputFiles(appPath, appPkgJSon) {
@@ -969,11 +971,12 @@ SCRIPT`;
  * @parameter projectRoot: the directory with the app source code, where the package.json lives.
  * @parameter baseOutputPath: the base output path for the CodeGen.
  * @parameter targetPlatform: the target platform. Supported values: 'android', 'ios', 'all'.
+ * @parameter source: the source that is invoking codegen. Supported values: 'app', 'library'.
  * @throws If it can't find a config file for react-native.
  * @throws If it can't find a CodeGen configuration in the file.
  * @throws If it can't find a cli for the CodeGen.
  */
-function execute(projectRoot, targetPlatform, baseOutputPath) {
+function execute(projectRoot, targetPlatform, baseOutputPath, source) {
   try {
     codegenLog(`Analyzing ${path.join(projectRoot, 'package.json')}`);
 
@@ -1021,9 +1024,12 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
         platform,
       );
 
-      generateRCTThirdPartyComponents(libraries, outputPath);
-      generateCustomURLHandlers(libraries, outputPath);
-      generateAppDependencyProvider(outputPath);
+      if (source === 'app') {
+        // These components are only required by apps, not by libraries
+        generateRCTThirdPartyComponents(libraries, outputPath);
+        generateCustomURLHandlers(libraries, outputPath);
+        generateAppDependencyProvider(outputPath);
+      }
       generateReactCodegenPodspec(
         projectRoot,
         pkgJson,

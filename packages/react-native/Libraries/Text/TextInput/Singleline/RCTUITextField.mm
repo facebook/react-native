@@ -19,6 +19,10 @@
   NSArray<UIBarButtonItemGroup *> *_initialValueTrailingBarButtonGroups;
 }
 
+// This should not be needed but internal build were failing without it.
+// This variable is unused.
+@synthesize dataDetectorTypes;
+
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {

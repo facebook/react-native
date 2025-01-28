@@ -13,7 +13,7 @@
 jest.disableAutomock();
 
 const {create} = require('../../../jest/renderer');
-const View = require('../../Components/View/View');
+const View = require('../../Components/View/View').default;
 const Image = require('../Image');
 const React = require('react');
 

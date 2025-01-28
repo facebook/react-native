@@ -399,16 +399,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    useOptimisedViewPreallocationOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-23',
-        description:
-          'Moves more of the work in view preallocation to the main thread to free up JS thread.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-    },
     useOptimizedEventBatchingOnAndroid: {
       defaultValue: false,
       metadata: {
@@ -529,6 +519,16 @@ const definitions: FeatureFlagDefinitions = {
           'Function used to enable / disabled Layout Animations in React Native.',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+    },
+    scheduleAnimatedCleanupInMicrotask: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-01-22',
+        description:
+          'Changes the cleanup of`AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
     },
     shouldSkipStateUpdatesForLoopingAnimations: {

@@ -99,7 +99,7 @@ import typeof Vibration from './Libraries/Vibration/Vibration';
 import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
 import typeof DevMenu from './src/private/devmenu/DevMenu';
 
-const warnOnce = require('./Libraries/Utilities/warnOnce').default;
+const warnOnce = require('./Libraries/Utilities/warnOnce');
 const invariant = require('invariant');
 
 export type {HostComponent, HostInstance};
@@ -186,7 +186,7 @@ module.exports = {
     return require('./Libraries/Text/Text').default;
   },
   get TextInput(): TextInput {
-    return require('./Libraries/Components/TextInput/TextInput');
+    return require('./Libraries/Components/TextInput/TextInput').default;
   },
   get Touchable(): Touchable {
     return require('./Libraries/Components/Touchable/Touchable').default;
@@ -207,7 +207,7 @@ module.exports = {
       .default;
   },
   get View(): View {
-    return require('./Libraries/Components/View/View');
+    return require('./Libraries/Components/View/View').default;
   },
   get VirtualizedList(): VirtualizedList {
     return require('./Libraries/Lists/VirtualizedList');
@@ -233,13 +233,13 @@ module.exports = {
     return require('./Libraries/Utilities/Appearance');
   },
   get AppRegistry(): AppRegistry {
-    return require('./Libraries/ReactNative/AppRegistry');
+    return require('./Libraries/ReactNative/AppRegistry').default;
   },
   get AppState(): AppState {
     return require('./Libraries/AppState/AppState').default;
   },
   get BackHandler(): BackHandler {
-    return require('./Libraries/Utilities/BackHandler').default;
+    return require('./Libraries/Utilities/BackHandler');
   },
   get Clipboard(): Clipboard {
     warnOnce(
@@ -251,13 +251,13 @@ module.exports = {
     return require('./Libraries/Components/Clipboard/Clipboard').default;
   },
   get DeviceInfo(): DeviceInfo {
-    return require('./Libraries/Utilities/DeviceInfo').default;
+    return require('./Libraries/Utilities/DeviceInfo');
   },
   get DevMenu(): DevMenu {
     return require('./src/private/devmenu/DevMenu');
   },
   get DevSettings(): DevSettings {
-    return require('./Libraries/Utilities/DevSettings').default;
+    return require('./Libraries/Utilities/DevSettings');
   },
   get Dimensions(): Dimensions {
     return require('./Libraries/Utilities/Dimensions').default;
@@ -269,10 +269,10 @@ module.exports = {
     return require('./Libraries/ReactNative/RendererProxy').findNodeHandle;
   },
   get I18nManager(): I18nManager {
-    return require('./Libraries/ReactNative/I18nManager');
+    return require('./Libraries/ReactNative/I18nManager').default;
   },
   get InteractionManager(): InteractionManager {
-    return require('./Libraries/Interaction/InteractionManager');
+    return require('./Libraries/Interaction/InteractionManager').default;
   },
   get Keyboard(): Keyboard {
     return require('./Libraries/Components/Keyboard/Keyboard').default;
@@ -328,13 +328,13 @@ module.exports = {
   },
   // $FlowFixMe[value-as-type]
   get ToastAndroid(): ToastAndroid {
-    return require('./Libraries/Components/ToastAndroid/ToastAndroid');
+    return require('./Libraries/Components/ToastAndroid/ToastAndroid').default;
   },
   get TurboModuleRegistry(): TurboModuleRegistry {
     return require('./Libraries/TurboModule/TurboModuleRegistry');
   },
   get UIManager(): UIManager {
-    return require('./Libraries/ReactNative/UIManager');
+    return require('./Libraries/ReactNative/UIManager').default;
   },
   get unstable_batchedUpdates(): $PropertyType<
     ReactNative,
@@ -377,7 +377,7 @@ module.exports = {
     return require('./Libraries/BatchedBridge/NativeModules').default;
   },
   get Platform(): Platform {
-    return require('./Libraries/Utilities/Platform').default;
+    return require('./Libraries/Utilities/Platform');
   },
   get PlatformColor(): PlatformColor {
     return require('./Libraries/StyleSheet/PlatformColorValueTypes')

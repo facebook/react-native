@@ -5,9 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.hermes.reactexecutor
+package com.facebook.react.modules.network
 
-/** Holds runtime configuration for a Hermes VM instance (master or snapshot). */
-public class RuntimeConfig {
-  public var heapSizeMB: Long = 0L
+import okhttp3.OkHttpClient
+
+public fun interface OkHttpClientFactory {
+  public fun createNewNetworkModuleClient(): OkHttpClient
 }

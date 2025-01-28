@@ -716,7 +716,7 @@ public class com/facebook/react/bridge/ColorPropConverter {
 	public static fun resolveResourcePath (Landroid/content/Context;Ljava/lang/String;)Ljava/lang/Integer;
 }
 
-public class com/facebook/react/bridge/CxxCallbackImpl : com/facebook/jni/HybridClassBase, com/facebook/react/bridge/Callback {
+public final class com/facebook/react/bridge/CxxCallbackImpl : com/facebook/jni/HybridClassBase, com/facebook/react/bridge/Callback {
 	public fun invoke ([Ljava/lang/Object;)V
 }
 
@@ -831,7 +831,6 @@ public abstract class com/facebook/react/bridge/JSBundleLoader {
 	public static fun createCachedSplitBundleFromNetworkLoader (Ljava/lang/String;Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
 	public static fun createFileLoader (Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
 	public static fun createFileLoader (Ljava/lang/String;Ljava/lang/String;Z)Lcom/facebook/react/bridge/JSBundleLoader;
-	public static fun createRemoteDebuggerBundleLoader (Ljava/lang/String;Ljava/lang/String;)Lcom/facebook/react/bridge/JSBundleLoader;
 	public abstract fun loadScript (Lcom/facebook/react/bridge/JSBundleLoaderDelegate;)Ljava/lang/String;
 }
 
@@ -856,21 +855,6 @@ public class com/facebook/react/bridge/JSONArguments {
 	public static fun fromJSONArrayString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableArray;
 	public static fun fromJSONObject (Lorg/json/JSONObject;)Lcom/facebook/react/bridge/ReadableMap;
 	public static fun fromJSONObjectString (Ljava/lang/String;)Lcom/facebook/react/bridge/ReadableMap;
-}
-
-public abstract interface class com/facebook/react/bridge/JavaJSExecutor {
-	public abstract fun close ()V
-	public abstract fun executeJSCall (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-	public abstract fun loadBundle (Ljava/lang/String;)V
-	public abstract fun setGlobalVariable (Ljava/lang/String;Ljava/lang/String;)V
-}
-
-public abstract interface class com/facebook/react/bridge/JavaJSExecutor$Factory {
-	public abstract fun create ()Lcom/facebook/react/bridge/JavaJSExecutor;
-}
-
-public final class com/facebook/react/bridge/JavaJSExecutor$ProxyExecutorException : java/lang/Exception {
-	public fun <init> (Ljava/lang/Throwable;)V
 }
 
 public final class com/facebook/react/bridge/JavaOnlyArray : com/facebook/react/bridge/ReadableArray, com/facebook/react/bridge/WritableArray {
@@ -1105,19 +1089,6 @@ public class com/facebook/react/bridge/PromiseImpl : com/facebook/react/bridge/P
 	public fun reject (Ljava/lang/Throwable;)V
 	public fun reject (Ljava/lang/Throwable;Lcom/facebook/react/bridge/WritableMap;)V
 	public fun resolve (Ljava/lang/Object;)V
-}
-
-public class com/facebook/react/bridge/ProxyJavaScriptExecutor : com/facebook/react/bridge/JavaScriptExecutor {
-	public fun <init> (Lcom/facebook/react/bridge/JavaJSExecutor;)V
-	public fun close ()V
-	public fun getName ()Ljava/lang/String;
-}
-
-public class com/facebook/react/bridge/ProxyJavaScriptExecutor$Factory : com/facebook/react/bridge/JavaScriptExecutorFactory {
-	public fun <init> (Lcom/facebook/react/bridge/JavaJSExecutor$Factory;)V
-	public fun create ()Lcom/facebook/react/bridge/JavaScriptExecutor;
-	public fun startSamplingProfiler ()V
-	public fun stopSamplingProfiler (Ljava/lang/String;)V
 }
 
 public abstract class com/facebook/react/bridge/ReactApplicationContext : com/facebook/react/bridge/ReactContext {
@@ -2111,7 +2082,6 @@ public final class com/facebook/react/devsupport/DefaultDevSupportManagerFactory
 }
 
 public class com/facebook/react/devsupport/DevServerHelper {
-	public static final field RELOAD_APP_EXTRA_JS_PROXY Ljava/lang/String;
 	public fun <init> (Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;Landroid/content/Context;Lcom/facebook/react/packagerconnection/PackagerConnectionSettings;)V
 	public fun closeInspectorConnection ()V
 	public fun closePackagerConnection ()V
@@ -2121,12 +2091,10 @@ public class com/facebook/react/devsupport/DevServerHelper {
 	public fun downloadBundleResourceFromUrlSync (Ljava/lang/String;Ljava/io/File;)Ljava/io/File;
 	public fun getDevServerBundleURL (Ljava/lang/String;)Ljava/lang/String;
 	public fun getDevServerSplitBundleURL (Ljava/lang/String;)Ljava/lang/String;
-	public fun getJSBundleURLForRemoteDebugging (Ljava/lang/String;)Ljava/lang/String;
 	public fun getSourceMapUrl (Ljava/lang/String;)Ljava/lang/String;
 	public fun getSourceUrl (Ljava/lang/String;)Ljava/lang/String;
 	public fun getWebsocketProxyURL ()Ljava/lang/String;
 	public fun isPackagerRunning (Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
-	public fun launchJSDevtools ()V
 	public fun openDebugger (Lcom/facebook/react/bridge/ReactContext;Ljava/lang/String;)V
 	public fun openInspectorConnection ()V
 	public fun openPackagerConnection (Ljava/lang/String;Lcom/facebook/react/devsupport/DevServerHelper$PackagerCommandListener;)V
@@ -2164,7 +2132,6 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun getDevSupportEnabled ()Z
 	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
 	public fun getJSAppBundleName ()Ljava/lang/String;
-	public fun getJSBundleURLForRemoteDebugging ()Ljava/lang/String;
 	public fun getLastErrorCookie ()I
 	public fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public fun getLastErrorTitle ()Ljava/lang/String;
@@ -2192,7 +2159,6 @@ public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/
 	public fun setFpsDebugEnabled (Z)V
 	public fun setHotModuleReplacementEnabled (Z)V
 	public fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
-	public fun setRemoteJSDebugEnabled (Z)V
 	protected fun showDevLoadingViewForRemoteJSEnabled ()V
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
@@ -2222,7 +2188,7 @@ public abstract interface class com/facebook/react/devsupport/HMRClient : com/fa
 	public abstract fun disable ()V
 	public abstract fun enable ()V
 	public abstract fun registerBundle (Ljava/lang/String;)V
-	public abstract fun setup (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZ)V
+	public abstract fun setup (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZLjava/lang/String;)V
 }
 
 public final class com/facebook/react/devsupport/InspectorFlags {
@@ -2282,7 +2248,6 @@ public abstract interface class com/facebook/react/devsupport/ReactInstanceDevHe
 	public abstract fun getJavaScriptExecutorFactory ()Lcom/facebook/react/bridge/JavaScriptExecutorFactory;
 	public abstract fun loadBundle (Lcom/facebook/react/bridge/JSBundleLoader;)Lcom/facebook/react/interfaces/TaskInterface;
 	public abstract fun onJSBundleLoadedFromServer ()V
-	public abstract fun onReloadWithJSDebugger (Lcom/facebook/react/bridge/JavaJSExecutor$Factory;)V
 	public abstract fun reload (Ljava/lang/String;)V
 	public abstract fun toggleElementInspector ()V
 }
@@ -2310,7 +2275,6 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
 	public fun getDevSupportEnabled ()Z
 	public fun getDownloadedJSBundleFile ()Ljava/lang/String;
-	public fun getJSBundleURLForRemoteDebugging ()Ljava/lang/String;
 	public fun getLastErrorCookie ()I
 	public fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public fun getLastErrorTitle ()Ljava/lang/String;
@@ -2337,7 +2301,6 @@ public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebo
 	public fun setFpsDebugEnabled (Z)V
 	public fun setHotModuleReplacementEnabled (Z)V
 	public fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
-	public fun setRemoteJSDebugEnabled (Z)V
 	public fun showDevOptionsDialog ()V
 	public fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -2378,24 +2341,6 @@ public class com/facebook/react/devsupport/StackTraceHelper$StackFrameImpl : com
 	public fun getMethod ()Ljava/lang/String;
 	public fun isCollapsed ()Z
 	public fun toJSON ()Lorg/json/JSONObject;
-}
-
-public class com/facebook/react/devsupport/WebsocketJavaScriptExecutor : com/facebook/react/bridge/JavaJSExecutor {
-	public fun <init> ()V
-	public fun close ()V
-	public fun connect (Ljava/lang/String;Lcom/facebook/react/devsupport/WebsocketJavaScriptExecutor$JSExecutorConnectCallback;)V
-	public fun executeJSCall (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-	public fun loadBundle (Ljava/lang/String;)V
-	public fun setGlobalVariable (Ljava/lang/String;Ljava/lang/String;)V
-}
-
-public abstract interface class com/facebook/react/devsupport/WebsocketJavaScriptExecutor$JSExecutorConnectCallback {
-	public abstract fun onFailure (Ljava/lang/Throwable;)V
-	public abstract fun onSuccess ()V
-}
-
-public class com/facebook/react/devsupport/WebsocketJavaScriptExecutor$WebsocketExecutorTimeoutException : java/lang/Exception {
-	public fun <init> (Ljava/lang/String;)V
 }
 
 public class com/facebook/react/devsupport/inspector/InspectorNetworkHelper {
@@ -2447,7 +2392,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
 	public abstract fun getDevSupportEnabled ()Z
 	public abstract fun getDownloadedJSBundleFile ()Ljava/lang/String;
-	public abstract fun getJSBundleURLForRemoteDebugging ()Ljava/lang/String;
 	public abstract fun getLastErrorCookie ()I
 	public abstract fun getLastErrorStack ()[Lcom/facebook/react/devsupport/interfaces/StackFrame;
 	public abstract fun getLastErrorTitle ()Ljava/lang/String;
@@ -2473,7 +2417,6 @@ public abstract interface class com/facebook/react/devsupport/interfaces/DevSupp
 	public abstract fun setFpsDebugEnabled (Z)V
 	public abstract fun setHotModuleReplacementEnabled (Z)V
 	public abstract fun setPackagerLocationCustomizer (Lcom/facebook/react/devsupport/interfaces/DevSupportManager$PackagerLocationCustomizer;)V
-	public abstract fun setRemoteJSDebugEnabled (Z)V
 	public abstract fun showDevOptionsDialog ()V
 	public abstract fun showNewJSError (Ljava/lang/String;Lcom/facebook/react/bridge/ReadableArray;I)V
 	public abstract fun showNewJavaError (Ljava/lang/String;Ljava/lang/Throwable;)V
@@ -3143,7 +3086,6 @@ public final class com/facebook/react/modules/core/TimingModule$Companion {
 
 public final class com/facebook/react/modules/debug/DevMenuModule : com/facebook/fbreact/specs/NativeDevMenuSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Lcom/facebook/react/devsupport/interfaces/DevSupportManager;)V
-	public fun debugRemotely (Z)V
 	public fun reload ()V
 	public fun setHotLoadingEnabled (Z)V
 	public fun setProfilingEnabled (Z)V
@@ -3160,7 +3102,6 @@ public final class com/facebook/react/modules/debug/DevSettingsModule : com/face
 	public fun reloadWithReason (Ljava/lang/String;)V
 	public fun removeListeners (D)V
 	public fun setHotLoadingEnabled (Z)V
-	public fun setIsDebuggingRemotely (Z)V
 	public fun setIsShakeToShowDevMenuEnabled (Z)V
 	public fun setProfilingEnabled (Z)V
 	public fun toggleElementInspector ()V
@@ -3210,7 +3151,6 @@ public abstract interface class com/facebook/react/modules/debug/interfaces/Deve
 	public abstract fun isHotModuleReplacementEnabled ()Z
 	public abstract fun isJSDevModeEnabled ()Z
 	public abstract fun isJSMinifyEnabled ()Z
-	public abstract fun isRemoteJSDebugEnabled ()Z
 	public abstract fun isStartSamplingProfilerOnInit ()Z
 	public abstract fun setAnimationFpsDebugEnabled (Z)V
 	public abstract fun setDeviceDebugEnabled (Z)V
@@ -3219,7 +3159,6 @@ public abstract interface class com/facebook/react/modules/debug/interfaces/Deve
 	public abstract fun setHotModuleReplacementEnabled (Z)V
 	public abstract fun setJSDevModeEnabled (Z)V
 	public abstract fun setJSMinifyEnabled (Z)V
-	public abstract fun setRemoteJSDebugEnabled (Z)V
 	public abstract fun setStartSamplingProfilerOnInit (Z)V
 }
 

@@ -44,7 +44,7 @@ internal class TransformAnimatedNode(
             }
   }
 
-  public fun collectViewUpdates(propsMap: JavaOnlyMap) {
+  fun collectViewUpdates(propsMap: JavaOnlyMap) {
     val transforms =
         List<JavaOnlyMap>(transformConfigs.size) { i ->
           val transformConfig = transformConfigs[i]

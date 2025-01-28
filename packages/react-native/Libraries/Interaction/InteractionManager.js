@@ -14,8 +14,8 @@ import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNa
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
 const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
-const infoLog = require('../Utilities/infoLog').default;
-const TaskQueue = require('./TaskQueue');
+const infoLog = require('../Utilities/infoLog');
+const TaskQueue = require('./TaskQueue').default;
 const invariant = require('invariant');
 
 export type Handle = number;
@@ -77,7 +77,7 @@ const DEBUG: false = false;
  * allowing events such as touches to start interactions and block queued tasks
  * from executing, making apps more responsive.
  */
-const InteractionManager = {
+const InteractionManagerImpl = {
   Events: {
     interactionStart: 'interactionStart',
     interactionComplete: 'interactionComplete',
@@ -210,8 +210,10 @@ function _processUpdate() {
   _deleteInteractionSet.clear();
 }
 
-module.exports = (
+const InteractionManager = (
   ReactNativeFeatureFlags.disableInteractionManager()
-    ? require('./InteractionManagerStub')
-    : InteractionManager
-) as typeof InteractionManager;
+    ? require('./InteractionManagerStub').default
+    : InteractionManagerImpl
+) as typeof InteractionManagerImpl;
+
+export default InteractionManager;

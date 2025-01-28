@@ -19,13 +19,13 @@ const TouchableHighlight =
   require('../Components/Touchable/TouchableHighlight').default;
 const TouchableWithoutFeedback =
   require('../Components/Touchable/TouchableWithoutFeedback').default;
-const View = require('../Components/View/View');
+const View = require('../Components/View/View').default;
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text').default;
-const mapWithSeparator = require('../Utilities/mapWithSeparator').default;
-const BoxInspector = require('./BoxInspector');
-const StyleInspector = require('./StyleInspector');
+const mapWithSeparator = require('../Utilities/mapWithSeparator');
+const BoxInspector = require('./BoxInspector').default;
+const StyleInspector = require('./StyleInspector').default;
 
 type Props = $ReadOnly<{
   hierarchy: ?InspectorData['hierarchy'],
@@ -120,4 +120,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ElementProperties;
+export default ElementProperties;

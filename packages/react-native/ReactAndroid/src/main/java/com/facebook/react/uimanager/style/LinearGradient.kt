@@ -34,7 +34,7 @@ internal class LinearGradient(
     private val context: Context
 ) {
   private sealed class Direction {
-    public data class Angle(val value: Double) : Direction()
+    data class Angle(val value: Double) : Direction()
 
     enum class Keywords {
       TO_TOP_RIGHT,
@@ -43,7 +43,7 @@ internal class LinearGradient(
       TO_BOTTOM_LEFT
     }
 
-    public data class Keyword(val value: Keywords) : Direction()
+    data class Keyword(val value: Keywords) : Direction()
   }
 
   private val direction: Direction =
@@ -92,7 +92,7 @@ internal class LinearGradient(
     stops
   }
 
-  public fun getShader(width: Float, height: Float): Shader {
+  fun getShader(width: Float, height: Float): Shader {
     val angle =
         when (direction) {
           is Direction.Angle -> direction.value

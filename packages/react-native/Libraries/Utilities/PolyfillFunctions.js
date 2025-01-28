@@ -10,7 +10,7 @@
 
 'use strict';
 
-const defineLazyObjectProperty = require('./defineLazyObjectProperty').default;
+const defineLazyObjectProperty = require('./defineLazyObjectProperty');
 
 /**
  * Sets an object's property. If a property with the same name exists, this will
@@ -25,7 +25,7 @@ const defineLazyObjectProperty = require('./defineLazyObjectProperty').default;
  *
  * @see https://github.com/facebook/react-native/issues/934
  */
-export function polyfillObjectProperty<T>(
+function polyfillObjectProperty<T>(
   object: {...},
   name: string,
   getValue: () => T,
@@ -49,6 +49,8 @@ export function polyfillObjectProperty<T>(
   });
 }
 
-export function polyfillGlobal<T>(name: string, getValue: () => T): void {
+function polyfillGlobal<T>(name: string, getValue: () => T): void {
   polyfillObjectProperty(global, name, getValue);
 }
+
+module.exports = {polyfillObjectProperty, polyfillGlobal};

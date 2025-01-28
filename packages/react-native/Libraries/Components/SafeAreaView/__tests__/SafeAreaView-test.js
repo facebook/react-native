@@ -15,7 +15,7 @@ import SafeAreaView from '../SafeAreaView';
 
 const Text = require('../../../Text/Text').default;
 const ReactNativeTestTools = require('../../../Utilities/ReactNativeTestTools');
-const View = require('../../View/View');
+const View = require('../../View/View').default;
 const React = require('react');
 
 describe('<SafeAreaView />', () => {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<588a6c3434cdf6ccb470cd8bb914fae0>>
+ * @generated SignedSource<<71ea4cd62cc16ed718fdc764ec97d0e8>>
  */
 
 /**
@@ -94,8 +94,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun useFabricInterop(): Boolean = false
 
   override fun useNativeViewConfigsInBridgelessMode(): Boolean = false
-
-  override fun useOptimisedViewPreallocationOnAndroid(): Boolean = false
 
   override fun useOptimizedEventBatchingOnAndroid(): Boolean = false
 

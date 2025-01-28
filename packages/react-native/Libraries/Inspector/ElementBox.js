@@ -15,12 +15,12 @@ import type {InspectedElementFrame} from './Inspector';
 
 import React from 'react';
 
-const View = require('../Components/View/View');
+const View = require('../Components/View/View').default;
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Dimensions = require('../Utilities/Dimensions').default;
-const BorderBox = require('./BorderBox');
-const resolveBoxStyle = require('./resolveBoxStyle');
+const BorderBox = require('./BorderBox').default;
+const resolveBoxStyle = require('./resolveBoxStyle').default;
 
 type Props = $ReadOnly<{
   frame: InspectedElementFrame,
@@ -147,4 +147,4 @@ function resolveSizeInPlace(
   }
 }
 
-module.exports = ElementBox;
+export default ElementBox;

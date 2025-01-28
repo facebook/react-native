@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5d69e428af96cdbb839db2d22920c7fc>>
+ * @generated SignedSource<<2896efd81aed8e0100d61e739cb2ba04>>
  */
 
 /**
@@ -60,7 +60,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
-  private var useOptimisedViewPreallocationOnAndroidCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
   private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
@@ -423,16 +422,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useNativeViewConfigsInBridgelessMode()
       accessedFeatureFlags.add("useNativeViewConfigsInBridgelessMode")
       useNativeViewConfigsInBridgelessModeCache = cached
-    }
-    return cached
-  }
-
-  override fun useOptimisedViewPreallocationOnAndroid(): Boolean {
-    var cached = useOptimisedViewPreallocationOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.useOptimisedViewPreallocationOnAndroid()
-      accessedFeatureFlags.add("useOptimisedViewPreallocationOnAndroid")
-      useOptimisedViewPreallocationOnAndroidCache = cached
     }
     return cached
   }

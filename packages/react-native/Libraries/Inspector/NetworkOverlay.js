@@ -17,7 +17,7 @@ import React from 'react';
 
 const TouchableHighlight =
   require('../Components/Touchable/TouchableHighlight').default;
-const View = require('../Components/View/View');
+const View = require('../Components/View/View').default;
 const FlatList = require('../Lists/FlatList');
 const XHRInterceptor = require('../Network/XHRInterceptor');
 const StyleSheet = require('../StyleSheet/StyleSheet');
@@ -611,4 +611,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = NetworkOverlay;
+export default NetworkOverlay;

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const matricesDiffer = require('../matricesDiffer').default;
+const matricesDiffer = require('../matricesDiffer');
 
 describe('matricesDiffer', function () {
   it('diffs matrices with single element', () => {

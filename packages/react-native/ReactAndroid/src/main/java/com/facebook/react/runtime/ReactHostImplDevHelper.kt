@@ -11,7 +11,6 @@ import android.app.Activity
 import android.os.Bundle
 import android.view.View
 import com.facebook.react.bridge.JSBundleLoader
-import com.facebook.react.bridge.JavaJSExecutor
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.ReactInstanceDevHelper
@@ -26,10 +25,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
  */
 internal class ReactHostImplDevHelper(private val delegate: ReactHostImpl) :
     ReactInstanceDevHelper {
-
-  override fun onReloadWithJSDebugger(proxyExecutorFactory: JavaJSExecutor.Factory) {
-    // Not implemented, only used by BridgeDevSupportManager to reload with proxy executor
-  }
 
   override fun onJSBundleLoadedFromServer() {
     // Not implemented, only referenced by BridgeDevSupportManager

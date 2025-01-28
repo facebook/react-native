@@ -93,4 +93,4 @@ const BackHandler: TBackHandler = {
   },
 };
 
-export default BackHandler;
+module.exports = BackHandler;

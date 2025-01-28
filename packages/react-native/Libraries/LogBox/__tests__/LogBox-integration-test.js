@@ -63,6 +63,7 @@ describe('LogBox', () => {
   // and testing the react-test-renderer instead of the real one.
   // The react test renderer is now deprecated, so there is no value in keeping this test
   // as it is.
+  // eslint-disable-next-line jest/no-disabled-tests
   it.skip('integrates with React and handles a key error in LogBox', () => {
     const spy = jest.spyOn(LogBoxData, 'addLog');
     installLogBox();
@@ -124,6 +125,7 @@ describe('LogBox', () => {
   // and testing the react-test-renderer instead of the real one.
   // The react test renderer is now deprecated, so there is no value in keeping this test
   // as it is.
+  // eslint-disable-next-line jest/no-disabled-tests
   it.skip('integrates with React and handles a fragment warning in LogBox', () => {
     const spy = jest.spyOn(LogBoxData, 'addLog');
     installLogBox();

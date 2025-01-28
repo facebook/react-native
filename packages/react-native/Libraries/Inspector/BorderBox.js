@@ -14,7 +14,7 @@ import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 
 import React from 'react';
 
-const View = require('../Components/View/View');
+const View = require('../Components/View/View').default;
 
 type Props = $ReadOnly<{
   children: React.Node,
@@ -41,4 +41,4 @@ function BorderBox({children, box, style}: Props): React.Node {
   return <View style={[borderStyle, style]}>{children}</View>;
 }
 
-module.exports = BorderBox;
+export default BorderBox;

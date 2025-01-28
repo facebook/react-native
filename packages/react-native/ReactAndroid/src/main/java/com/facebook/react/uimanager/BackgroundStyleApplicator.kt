@@ -105,15 +105,10 @@ public object BackgroundStyleApplicator {
 
     composite.borderInsets = composite.borderInsets ?: BorderInsets()
     composite.borderInsets?.setBorderWidth(edge, width)
-    if (Build.VERSION.SDK_INT >= MIN_OUTSET_BOX_SHADOW_SDK_VERSION) {
-      for (shadow in composite.outerShadows.filterIsInstance<OutsetBoxShadowDrawable>()) {
-        shadow.borderRadius = composite.borderRadius
-      }
-    }
 
     if (Build.VERSION.SDK_INT >= MIN_INSET_BOX_SHADOW_SDK_VERSION) {
       for (shadow in composite.innerShadows.filterIsInstance<InsetBoxShadowDrawable>()) {
-        shadow.borderRadius = composite.borderRadius
+        shadow.borderInsets = composite.borderInsets
       }
     }
   }
@@ -182,7 +177,7 @@ public object BackgroundStyleApplicator {
 
     if (Build.VERSION.SDK_INT >= MIN_INSET_BOX_SHADOW_SDK_VERSION) {
       for (shadow in
-          compositeBackgroundDrawable.outerShadows.filterIsInstance<InsetBoxShadowDrawable>()) {
+          compositeBackgroundDrawable.innerShadows.filterIsInstance<InsetBoxShadowDrawable>()) {
         shadow.borderRadius = compositeBackgroundDrawable.borderRadius
       }
     }

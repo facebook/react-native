@@ -70,51 +70,54 @@ jest
   .mock('../Libraries/Core/InitializeCore', () => {})
   .mock('../Libraries/Core/NativeExceptionsManager')
   .mock('../Libraries/ReactNative/UIManager', () => ({
-    AndroidViewPager: {
-      Commands: {
-        setPage: jest.fn(),
-        setPageWithoutAnimation: jest.fn(),
-      },
-    },
-    blur: jest.fn(),
-    createView: jest.fn(),
-    customBubblingEventTypes: {},
-    customDirectEventTypes: {},
-    dispatchViewManagerCommand: jest.fn(),
-    focus: jest.fn(),
-    getViewManagerConfig: jest.fn(name => {
-      if (name === 'AndroidDrawerLayout') {
-        return {
-          Constants: {
-            DrawerPosition: {
-              Left: 10,
-            },
-          },
-        };
-      }
-    }),
-    hasViewManagerConfig: jest.fn(name => {
-      return name === 'AndroidDrawerLayout';
-    }),
-    measure: jest.fn(),
-    manageChildren: jest.fn(),
-    setChildren: jest.fn(),
-    updateView: jest.fn(),
-    AndroidDrawerLayout: {
-      Constants: {
-        DrawerPosition: {
-          Left: 10,
+    __esModule: true,
+    default: {
+      AndroidViewPager: {
+        Commands: {
+          setPage: jest.fn(),
+          setPageWithoutAnimation: jest.fn(),
         },
       },
-    },
-    AndroidTextInput: {
-      Commands: {},
-    },
-    ScrollView: {
-      Constants: {},
-    },
-    View: {
-      Constants: {},
+      blur: jest.fn(),
+      createView: jest.fn(),
+      customBubblingEventTypes: {},
+      customDirectEventTypes: {},
+      dispatchViewManagerCommand: jest.fn(),
+      focus: jest.fn(),
+      getViewManagerConfig: jest.fn(name => {
+        if (name === 'AndroidDrawerLayout') {
+          return {
+            Constants: {
+              DrawerPosition: {
+                Left: 10,
+              },
+            },
+          };
+        }
+      }),
+      hasViewManagerConfig: jest.fn(name => {
+        return name === 'AndroidDrawerLayout';
+      }),
+      measure: jest.fn(),
+      manageChildren: jest.fn(),
+      setChildren: jest.fn(),
+      updateView: jest.fn(),
+      AndroidDrawerLayout: {
+        Constants: {
+          DrawerPosition: {
+            Left: 10,
+          },
+        },
+      },
+      AndroidTextInput: {
+        Commands: {},
+      },
+      ScrollView: {
+        Constants: {},
+      },
+      View: {
+        Constants: {},
+      },
     },
   }))
   .mock('../Libraries/Image/Image', () =>
@@ -128,22 +131,32 @@ jest
       /* isESModule */ true,
     ),
   }))
-  .mock('../Libraries/Components/TextInput/TextInput', () =>
-    mockComponent('../Libraries/Components/TextInput/TextInput', {
-      ...MockNativeMethods,
-      isFocused: jest.fn(),
-      clear: jest.fn(),
-      getNativeRef: jest.fn(),
-    }),
-  )
+  .mock('../Libraries/Components/TextInput/TextInput', () => ({
+    __esModule: true,
+    default: mockComponent(
+      '../Libraries/Components/TextInput/TextInput',
+      /* instanceMethods */ {
+        ...MockNativeMethods,
+        isFocused: jest.fn(),
+        clear: jest.fn(),
+        getNativeRef: jest.fn(),
+      },
+      /* isESModule */ true,
+    ),
+  }))
   .mock('../Libraries/Modal/Modal', () => {
     const baseComponent = mockComponent('../Libraries/Modal/Modal');
     const mockModal = jest.requireActual('./mockModal');
     return mockModal(baseComponent);
   })
-  .mock('../Libraries/Components/View/View', () =>
-    mockComponent('../Libraries/Components/View/View', MockNativeMethods),
-  )
+  .mock('../Libraries/Components/View/View', () => ({
+    __esModule: true,
+    default: mockComponent(
+      '../Libraries/Components/View/View',
+      /* instanceMethods */ MockNativeMethods,
+      /* isESModule */ true,
+    ),
+  }))
   .mock('../Libraries/Components/AccessibilityInfo/AccessibilityInfo', () => ({
     __esModule: true,
     default: {

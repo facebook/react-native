@@ -28,4 +28,4 @@ const ReactNativeFeatureFlags: FeatureFlags = {
   shouldPressibilityUseW3CPointerEventsForHover: () => false,
 };
 
-module.exports = ReactNativeFeatureFlags;
+export default ReactNativeFeatureFlags;

@@ -84,12 +84,18 @@ const codegenCommand = {
       name: '--outputPath <path>',
       description: 'Path where generated artifacts will be output to.',
     },
+    {
+      name: '--source <string>',
+      description: 'Whether the script is invoked from an `app` or a `library`',
+      default: 'app',
+    },
   ],
   func: (argv, config, args) =>
     require('./scripts/codegen/generate-artifacts-executor').execute(
       args.path,
       args.platform,
       args.outputPath,
+      args.source,
     ),
 };
 

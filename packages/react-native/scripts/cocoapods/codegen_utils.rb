@@ -76,6 +76,10 @@ class CodegenUtils
     end
 
     def self.clean_up_build_folder(rn_path, codegen_dir, dir_manager: Dir, file_manager: File)
+      if ENV["RCT_SKIP_CODEGEN"] == "1"
+        return
+      end
+
       return if CodegenUtils.cleanup_done()
       CodegenUtils.set_cleanup_done(true)
 
