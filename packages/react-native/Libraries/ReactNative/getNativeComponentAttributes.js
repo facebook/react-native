@@ -23,7 +23,7 @@ const insetsDiffer = require('../Utilities/differ/insetsDiffer');
 const matricesDiffer = require('../Utilities/differ/matricesDiffer');
 const pointsDiffer = require('../Utilities/differ/pointsDiffer');
 const sizesDiffer = require('../Utilities/differ/sizesDiffer');
-const UIManager = require('./UIManager');
+const UIManager = require('./UIManager').default;
 const nullthrows = require('nullthrows');
 
 function getNativeComponentAttributes(uiViewClassName: string): any {
@@ -209,4 +209,4 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
   return null;
 }
 
-module.exports = getNativeComponentAttributes;
+export default getNativeComponentAttributes;

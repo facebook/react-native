@@ -233,7 +233,7 @@ module.exports = {
     return require('./Libraries/Utilities/Appearance');
   },
   get AppRegistry(): AppRegistry {
-    return require('./Libraries/ReactNative/AppRegistry');
+    return require('./Libraries/ReactNative/AppRegistry').default;
   },
   get AppState(): AppState {
     return require('./Libraries/AppState/AppState').default;
@@ -269,7 +269,7 @@ module.exports = {
     return require('./Libraries/ReactNative/RendererProxy').findNodeHandle;
   },
   get I18nManager(): I18nManager {
-    return require('./Libraries/ReactNative/I18nManager');
+    return require('./Libraries/ReactNative/I18nManager').default;
   },
   get InteractionManager(): InteractionManager {
     return require('./Libraries/Interaction/InteractionManager').default;
@@ -334,7 +334,7 @@ module.exports = {
     return require('./Libraries/TurboModule/TurboModuleRegistry');
   },
   get UIManager(): UIManager {
-    return require('./Libraries/ReactNative/UIManager');
+    return require('./Libraries/ReactNative/UIManager').default;
   },
   get unstable_batchedUpdates(): $PropertyType<
     ReactNative,

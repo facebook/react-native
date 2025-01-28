@@ -20,7 +20,7 @@ import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNa
 import {getFabricUIManager} from '../ReactNative/FabricUIManager';
 import Platform from '../Utilities/Platform';
 
-const UIManager = require('../ReactNative/UIManager');
+const UIManager = require('../ReactNative/UIManager').default;
 
 // Reexport type
 export type LayoutAnimationConfig = LayoutAnimationConfig_;

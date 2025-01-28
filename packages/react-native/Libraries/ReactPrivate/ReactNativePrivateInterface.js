@@ -56,7 +56,7 @@ module.exports = {
     return require('../Components/TextInput/TextInputState');
   },
   get UIManager(): UIManager {
-    return require('../ReactNative/UIManager');
+    return require('../ReactNative/UIManager').default;
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get deepDiffer(): deepDiffer {

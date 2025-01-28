@@ -28,4 +28,4 @@ const AppContainer: component(...Props) = __DEV__
   ? require('./AppContainer-dev').default
   : require('./AppContainer-prod').default;
 
-module.exports = AppContainer;
+export default AppContainer;
