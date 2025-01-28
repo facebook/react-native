@@ -5,12 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.packagerconnection;
-
-import androidx.annotation.Nullable;
+package com.facebook.react.packagerconnection
 
 public interface RequestHandler {
-  void onRequest(@Nullable Object params, Responder responder);
+  public fun onRequest(params: Any?, responder: Responder)
 
-  void onNotification(@Nullable Object params);
+  public fun onNotification(params: Any?)
 }
