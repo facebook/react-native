@@ -31,11 +31,11 @@ internal class DevLoadingModule(reactContext: ReactApplicationContext) :
   }
 
   override fun showMessage(message: String, color: Double?, backgroundColor: Double?) {
-    UiThreadUtil.runOnUiThread(Runnable { devLoadingViewManager?.showMessage(message) })
+    UiThreadUtil.runOnUiThread { devLoadingViewManager?.showMessage(message) }
   }
 
   override fun hide() {
-    UiThreadUtil.runOnUiThread(Runnable { devLoadingViewManager?.hide() })
+    UiThreadUtil.runOnUiThread { devLoadingViewManager?.hide() }
   }
 
   companion object {
