@@ -155,6 +155,22 @@ describe('Fantom', () => {
         },
       );
     });
+
+    it('throws when trying to render a root outside of a task', () => {
+      const root = Fantom.createRoot();
+
+      expect(() => {
+        root.render(<View />);
+      }).toThrow(
+        'Unexpected call to `render` outside of the event loop. Please call `render` within a `runTask` callback.',
+      );
+
+      expect(() => {
+        Fantom.runTask(() => {
+          root.render(<View />);
+        });
+      }).not.toThrow();
+    });
   });
 
   describe('getRenderedOutput', () => {
