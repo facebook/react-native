@@ -19,5 +19,5 @@ package com.facebook.react.uimanager.layoutanimation
    * @param width the new width value for the view
    * @param height the new height value for the view
    */
-  public fun onLayoutUpdate(x: Int, y: Int, width: Int, height: Int)
+  fun onLayoutUpdate(x: Int, y: Int, width: Int, height: Int)
 }
