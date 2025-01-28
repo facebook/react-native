@@ -19,7 +19,7 @@ const TouchableHighlight =
   require('../Components/Touchable/TouchableHighlight').default;
 const TouchableWithoutFeedback =
   require('../Components/Touchable/TouchableWithoutFeedback').default;
-const View = require('../Components/View/View');
+const View = require('../Components/View/View').default;
 const flattenStyle = require('../StyleSheet/flattenStyle');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text').default;

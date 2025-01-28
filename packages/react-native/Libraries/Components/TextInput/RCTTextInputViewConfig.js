@@ -166,4 +166,4 @@ const RCTTextInputViewConfig = {
   },
 };
 
-module.exports = (RCTTextInputViewConfig: PartialViewConfigWithoutName);
+export default RCTTextInputViewConfig as PartialViewConfigWithoutName;

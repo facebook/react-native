@@ -2795,7 +2795,7 @@ exports[`public API should not change unintentionally Libraries/Components/TextI
   PartialViewConfig,
   { uiViewClassName: string },
 >;
-declare module.exports: PartialViewConfigWithoutName;
+declare export default PartialViewConfigWithoutName;
 "
 `;
 
@@ -3484,7 +3484,7 @@ export type TextInputComponentStatics = $ReadOnly<{
     blurTextInput: typeof TextInputState.blurTextInput,
   }>,
 }>;
-declare module.exports: TextInputType;
+declare export default TextInputType;
 "
 `;
 
@@ -3517,7 +3517,7 @@ declare function blurTextInput(textField: ?HostInstance): void;
 declare function registerInput(textField: HostInstance): void;
 declare function unregisterInput(textField: HostInstance): void;
 declare function isTextInput(textField: HostInstance): boolean;
-declare module.exports: {
+declare const TextInputState: {
   currentlyFocusedInput: currentlyFocusedInput,
   focusInput: focusInput,
   blurInput: blurInput,
@@ -3530,6 +3530,7 @@ declare module.exports: {
   unregisterInput: unregisterInput,
   isTextInput: isTextInput,
 };
+declare export default typeof TextInputState;
 "
 `;
 
@@ -3556,7 +3557,7 @@ exports[`public API should not change unintentionally Libraries/Components/Toast
     yOffset: number
   ) => void,
 };
-declare module.exports: ToastAndroid;
+declare export default typeof ToastAndroid;
 "
 `;
 
@@ -3898,13 +3899,13 @@ exports[`public API should not change unintentionally Libraries/Components/Unimp
 declare class UnimplementedView extends React.Component<Props> {
   render(): React.Node;
 }
-declare module.exports: UnimplementedView;
+declare export default typeof UnimplementedView;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/ReactNativeStyleAttributes.js 1`] = `
 "declare const ReactNativeStyleAttributes: { [string]: AnyAttributeType, ... };
-declare module.exports: ReactNativeStyleAttributes;
+declare export default typeof ReactNativeStyleAttributes;
 "
 `;
 
@@ -3940,7 +3941,7 @@ exports[`public API should not change unintentionally Libraries/Components/View/
 };
 declare const RCTView: { ...UIView, removeClippedSubviews: true };
 declare const ReactNativeViewAttributes: { UIView: UIView, RCTView: RCTView };
-declare module.exports: ReactNativeViewAttributes;
+declare export default typeof ReactNativeViewAttributes;
 "
 `;
 
@@ -3950,7 +3951,7 @@ declare const View: component(
   ref: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 );
-declare module.exports: View;
+declare export default typeof View;
 "
 `;
 
