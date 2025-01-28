@@ -35,6 +35,14 @@ class CSSValueParser {
       CSSDelimiter delimeter = CSSDelimiter::None) {
     using ReturnT = std::variant<std::monostate, AllowedTypesT...>;
 
+    auto consumedValue =
+        tryConsumeParser<ReturnT, CSSDataTypeParser<AllowedTypesT>...>(
+            delimeter);
+
+    if (!std::holds_alternative<std::monostate>(consumedValue)) {
+      return consumedValue;
+    }
+
     return parser_.consumeComponentValue<ReturnT>(
         delimeter,
         [&](const CSSPreservedToken& token) {
@@ -75,14 +83,6 @@ class CSSValueParser {
       CSSValidDataTypeParser... RestParserT>
   constexpr ReturnT tryConsumePreservedToken(const CSSPreservedToken& token) {
     if constexpr (CSSPreservedTokenSink<ParserT>) {
-      auto currentParser = parser_;
-      if (auto ret = ParserT::consumePreservedToken(token, parser_)) {
-        return *ret;
-      }
-      parser_ = currentParser;
-    }
-
-    if constexpr (CSSSimplePreservedTokenSink<ParserT>) {
       if (auto ret = ParserT::consumePreservedToken(token)) {
         return *ret;
       }
@@ -139,6 +139,29 @@ class CSSValueParser {
     }
 
     return tryConsumeFunctionBlock<ReturnT, RestParserT...>(func, blockParser);
+  }
+
+  template <typename ReturnT>
+  constexpr ReturnT tryConsumeParser(CSSDelimiter /*delimeter*/) {
+    return {};
+  }
+
+  template <
+      typename ReturnT,
+      CSSValidDataTypeParser ParserT,
+      CSSValidDataTypeParser... RestParserT>
+  constexpr ReturnT tryConsumeParser(CSSDelimiter delimeter) {
+    if constexpr (CSSParserSink<ParserT>) {
+      auto currentParser = parser_;
+      if (parser_.consumeDelimiter(delimeter)) {
+        if (auto ret = ParserT::consume(parser_)) {
+          return *ret;
+        }
+      }
+      parser_ = currentParser;
+    }
+
+    return tryConsumeParser<ReturnT, RestParserT...>(delimeter);
   }
 
   CSSSyntaxParser& parser_;
