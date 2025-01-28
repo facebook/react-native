@@ -48,8 +48,7 @@ export class URLSearchParams {
   }
 
   // $FlowFixMe[unsupported-syntax]
-  // $FlowFixMe[missing-local-annot]
-  [Symbol.iterator]() {
+  [Symbol.iterator](): Iterator<Array<string>> {
     return this._searchParams[Symbol.iterator]();
   }
 
