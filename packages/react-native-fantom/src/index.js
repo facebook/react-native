@@ -57,7 +57,13 @@ class Root {
     globalSurfaceIdCounter += 10;
   }
 
-  render(element: MixedElement) {
+  render(element: MixedElement): void {
+    if (!flushingQueue) {
+      throw new Error(
+        'Unexpected call to `render` outside of the event loop. Please call `render` within a `runTask` callback.',
+      );
+    }
+
     if (!this.#hasRendered) {
       NativeFantom.startSurface(
         this.#surfaceId,
