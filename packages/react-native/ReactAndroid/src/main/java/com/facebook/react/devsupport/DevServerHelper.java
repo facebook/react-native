@@ -426,32 +426,6 @@ public class DevServerHelper {
     }
   }
 
-  private String createLaunchJSDevtoolsCommandUrl() {
-    return String.format(
-        Locale.US,
-        "http://%s/launch-js-devtools",
-        mPackagerConnectionSettings.getDebugServerHost());
-  }
-
-  public void launchJSDevtools() {
-    Request request = new Request.Builder().url(createLaunchJSDevtoolsCommandUrl()).build();
-    mClient
-        .newCall(request)
-        .enqueue(
-            new Callback() {
-              @Override
-              public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                // ignore HTTP call response, this is just to open a debugger page and there is no
-                // reason to report failures from here
-              }
-
-              @Override
-              public void onResponse(@NonNull Call call, @NonNull Response response) {
-                // ignore HTTP call response - see above
-              }
-            });
-  }
-
   public String getSourceMapUrl(String mainModuleName) {
     return createBundleURL(mainModuleName, BundleType.MAP);
   }
