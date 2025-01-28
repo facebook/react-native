@@ -18,7 +18,7 @@ const resolveAssetSource = require('../Image/resolveAssetSource');
 const processBackgroundImage =
   require('../StyleSheet/processBackgroundImage').default;
 const processColor = require('../StyleSheet/processColor').default;
-const processColorArray = require('../StyleSheet/processColorArray');
+const processColorArray = require('../StyleSheet/processColorArray').default;
 const processFilter = require('../StyleSheet/processFilter').default;
 const insetsDiffer = require('../Utilities/differ/insetsDiffer');
 const matricesDiffer = require('../Utilities/differ/matricesDiffer');
