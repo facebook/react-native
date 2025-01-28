@@ -186,7 +186,7 @@ module.exports = {
     return require('./Libraries/Text/Text').default;
   },
   get TextInput(): TextInput {
-    return require('./Libraries/Components/TextInput/TextInput');
+    return require('./Libraries/Components/TextInput/TextInput').default;
   },
   get Touchable(): Touchable {
     return require('./Libraries/Components/Touchable/Touchable').default;
@@ -207,7 +207,7 @@ module.exports = {
       .default;
   },
   get View(): View {
-    return require('./Libraries/Components/View/View');
+    return require('./Libraries/Components/View/View').default;
   },
   get VirtualizedList(): VirtualizedList {
     return require('./Libraries/Lists/VirtualizedList');
@@ -328,7 +328,7 @@ module.exports = {
   },
   // $FlowFixMe[value-as-type]
   get ToastAndroid(): ToastAndroid {
-    return require('./Libraries/Components/ToastAndroid/ToastAndroid');
+    return require('./Libraries/Components/ToastAndroid/ToastAndroid').default;
   },
   get TurboModuleRegistry(): TurboModuleRegistry {
     return require('./Libraries/TurboModule/TurboModuleRegistry');

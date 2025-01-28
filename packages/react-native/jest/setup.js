@@ -128,22 +128,32 @@ jest
       /* isESModule */ true,
     ),
   }))
-  .mock('../Libraries/Components/TextInput/TextInput', () =>
-    mockComponent('../Libraries/Components/TextInput/TextInput', {
-      ...MockNativeMethods,
-      isFocused: jest.fn(),
-      clear: jest.fn(),
-      getNativeRef: jest.fn(),
-    }),
-  )
+  .mock('../Libraries/Components/TextInput/TextInput', () => ({
+    __esModule: true,
+    default: mockComponent(
+      '../Libraries/Components/TextInput/TextInput',
+      /* instanceMethods */ {
+        ...MockNativeMethods,
+        isFocused: jest.fn(),
+        clear: jest.fn(),
+        getNativeRef: jest.fn(),
+      },
+      /* isESModule */ true,
+    ),
+  }))
   .mock('../Libraries/Modal/Modal', () => {
     const baseComponent = mockComponent('../Libraries/Modal/Modal');
     const mockModal = jest.requireActual('./mockModal');
     return mockModal(baseComponent);
   })
-  .mock('../Libraries/Components/View/View', () =>
-    mockComponent('../Libraries/Components/View/View', MockNativeMethods),
-  )
+  .mock('../Libraries/Components/View/View', () => ({
+    __esModule: true,
+    default: mockComponent(
+      '../Libraries/Components/View/View',
+      /* instanceMethods */ MockNativeMethods,
+      /* isESModule */ true,
+    ),
+  }))
   .mock('../Libraries/Components/AccessibilityInfo/AccessibilityInfo', () => ({
     __esModule: true,
     default: {

@@ -18,7 +18,7 @@ import React from 'react';
 const ScrollView = require('../Components/ScrollView/ScrollView').default;
 const TouchableHighlight =
   require('../Components/Touchable/TouchableHighlight').default;
-const View = require('../Components/View/View');
+const View = require('../Components/View/View').default;
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Text = require('../Text/Text').default;
 const ElementProperties = require('./ElementProperties');

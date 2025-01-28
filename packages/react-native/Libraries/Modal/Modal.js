@@ -21,7 +21,7 @@ import {VirtualizedListContextResetter} from '@react-native/virtualized-lists';
 import React from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView').default;
-const View = require('../Components/View/View');
+const View = require('../Components/View/View').default;
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
 const {RootTagContext} = require('../ReactNative/RootTag');

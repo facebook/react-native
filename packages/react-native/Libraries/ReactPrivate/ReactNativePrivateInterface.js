@@ -53,7 +53,7 @@ module.exports = {
     return require('../Renderer/shims/ReactNativeViewConfigRegistry');
   },
   get TextInputState(): TextInputState {
-    return require('../Components/TextInput/TextInputState');
+    return require('../Components/TextInput/TextInputState').default;
   },
   get UIManager(): UIManager {
     return require('../ReactNative/UIManager');

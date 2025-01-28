@@ -15,6 +15,6 @@ import typeof ProgressBarAndroidNativeComponentType from './ProgressBarAndroidNa
 
 export type {ProgressBarAndroidProps} from './ProgressBarAndroid.android';
 
-export default (require('../UnimplementedViews/UnimplementedView'):
+export default require('../UnimplementedViews/UnimplementedView').default as
   | UnimplementedViewType
-  | ProgressBarAndroidNativeComponentType);
+  | ProgressBarAndroidNativeComponentType;

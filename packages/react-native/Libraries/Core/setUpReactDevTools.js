@@ -70,7 +70,8 @@ if (__DEV__) {
   const reactDevToolsFuseboxGlobalBindingName =
     fuseboxReactDevToolsDispatcher.BINDING_NAME;
 
-  const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+  const ReactNativeStyleAttributes =
+    require('../Components/View/ReactNativeStyleAttributes').default;
   const resolveRNStyle = require('../StyleSheet/flattenStyle');
 
   function handleReactDevToolsSettingsUpdate(settings: Object) {
