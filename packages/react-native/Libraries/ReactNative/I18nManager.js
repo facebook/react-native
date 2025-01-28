@@ -27,7 +27,7 @@ function getI18nManagerConstants(): I18nManagerConstants {
   };
 }
 
-module.exports = {
+export default {
   getConstants: (): I18nManagerConstants => {
     return i18nConstants;
   },

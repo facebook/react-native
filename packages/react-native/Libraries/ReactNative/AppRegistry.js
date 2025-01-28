@@ -357,4 +357,4 @@ global.RN$SurfaceRegistry = {
 
 registerCallableModule('AppRegistry', AppRegistry);
 
-module.exports = AppRegistry;
+export default AppRegistry;

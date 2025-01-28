@@ -411,4 +411,4 @@ if (getUIManagerConstants) {
   }
 }
 
-module.exports = UIManagerJS;
+export default UIManagerJS;

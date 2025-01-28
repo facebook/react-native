@@ -7294,7 +7294,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/AppC
   internal_excludeInspector?: boolean,
 }>;
 declare const AppContainer: component(...Props);
-declare module.exports: AppContainer;
+declare export default typeof AppContainer;
 "
 `;
 
@@ -7394,13 +7394,13 @@ declare const AppRegistry: {
   startHeadlessTask(taskId: number, taskKey: string, data: any): void,
   cancelHeadlessTask(taskId: number, taskKey: string): void,
 };
-declare module.exports: AppRegistry;
+declare export default typeof AppRegistry;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/BridgelessUIManager.js 1`] = `
 "declare const UIManagerJS: UIManagerJSInterface & { [string]: any };
-declare module.exports: UIManagerJS;
+declare export default typeof UIManagerJS;
 "
 `;
 
@@ -7477,7 +7477,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Head
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/I18nManager.js 1`] = `
-"declare module.exports: {
+"declare export default {
   getConstants: () => I18nManagerConstants,
   allowRTL: (shouldAllow: boolean) => void,
   forceRTL: (shouldForce: boolean) => void,
@@ -7508,7 +7508,7 @@ declare export default typeof NativeUIManager;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/PaperUIManager.js 1`] = `
 "declare const UIManagerJS: UIManagerJSInterface;
-declare module.exports: UIManagerJS;
+declare export default typeof UIManagerJS;
 "
 `;
 
@@ -7592,7 +7592,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
   shouldPressibilityUseW3CPointerEventsForHover: () => boolean,
 };
 declare const ReactNativeFeatureFlags: FeatureFlags;
-declare module.exports: ReactNativeFeatureFlags;
+declare export default typeof ReactNativeFeatureFlags;
 "
 `;
 
@@ -7603,7 +7603,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
 };
 export type RuntimeDiagnosticFlag = \\"early_js_errors\\" | \\"all\\";
 declare const ReactNativeRuntimeDiagnostics: RuntimeDiagnostics;
-declare module.exports: ReactNativeRuntimeDiagnostics;
+declare export default typeof ReactNativeRuntimeDiagnostics;
 "
 `;
 
@@ -7664,13 +7664,13 @@ declare export function createRootTag(rootTag: number | RootTag): RootTag;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/UIManager.js 1`] = `
 "declare const UIManager: UIManagerJSInterface;
-declare module.exports: UIManager;
+declare export default typeof UIManager;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/UIManagerProperties.js 1`] = `
 "declare const UIManagerProperties: $ReadOnlyArray<string>;
-declare module.exports: UIManagerProperties;
+declare export default typeof UIManagerProperties;
 "
 `;
 
@@ -7684,7 +7684,7 @@ declare export default function getCachedComponentWithDisplayName(
 
 exports[`public API should not change unintentionally Libraries/ReactNative/getNativeComponentAttributes.js 1`] = `
 "declare function getNativeComponentAttributes(uiViewClassName: string): any;
-declare module.exports: getNativeComponentAttributes;
+declare export default typeof getNativeComponentAttributes;
 "
 `;
 
