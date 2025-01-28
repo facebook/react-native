@@ -362,6 +362,16 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'operational',
       },
     },
+    useAccumulatedRawPropsUpdatesOnlyInViewAndroid: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-01-22',
+        description:
+          'Works together with enableAccumulatedUpdatesInRawPropsAndroid. Restricts its effect only to instances of View.',
+        expectedReleaseValue: false,
+        purpose: 'experimentation',
+      },
+    },
     useAlwaysAvailableJSErrorHandling: {
       defaultValue: false,
       metadata: {

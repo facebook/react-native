@@ -116,7 +116,10 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     rawProps.parse(rawPropsParser_);
 
 #ifdef ANDROID
-    if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+    if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid() ||
+        (ReactNativeFeatureFlags::
+             useAccumulatedRawPropsUpdatesOnlyInViewAndroid() &&
+         strcmp(getComponentName(), "View") == 0)) {
       auto& oldDynamicProps = props->rawProps;
       auto newDynamicProps = rawProps.toDynamic();
       auto mergedDynamicProps = mergeDynamicProps(

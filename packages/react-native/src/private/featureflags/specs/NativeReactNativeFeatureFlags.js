@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c23785c59894d331228bece04fe3a868>>
+ * @generated SignedSource<<8832888b0f86cc7ea59546b8abaf2d74>>
  * @flow strict
  */
 
@@ -57,6 +57,7 @@ export interface Spec extends TurboModule {
   +lazyAnimationCallbacks?: () => boolean;
   +loadVectorDrawablesOnImages?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
+  +useAccumulatedRawPropsUpdatesOnlyInViewAndroid?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useEditTextStockAndroidFocusBehavior?: () => boolean;
   +useFabricInterop?: () => boolean;
