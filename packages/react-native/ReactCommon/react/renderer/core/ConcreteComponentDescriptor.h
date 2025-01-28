@@ -13,6 +13,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -113,6 +114,16 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     }
 
     rawProps.parse(rawPropsParser_);
+
+#ifdef ANDROID
+    if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+      auto& oldDynamicProps = props->rawProps;
+      auto newDynamicProps = rawProps.toDynamic();
+      auto mergedDynamicProps = mergeDynamicProps(
+          oldDynamicProps, newDynamicProps, NullValueStrategy::Override);
+      rawProps = RawProps{mergedDynamicProps};
+    }
+#endif
 
     auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
     // Use the new-style iterator
