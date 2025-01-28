@@ -16,4 +16,4 @@ import com.facebook.proguard.annotations.DoNotStrip
  */
 @DoNotStrip
 internal class ObjectAlreadyConsumedException @DoNotStrip constructor(detailMessage: String) :
-    RuntimeException(detailMessage) {}
+    RuntimeException(detailMessage)

@@ -19,10 +19,7 @@ internal class DestroyUnmountedViewMountItem(
 ) : MountItem {
 
   override fun execute(mountingManager: MountingManager) {
-    val surfaceMountingManager = mountingManager.getSurfaceManager(_surfaceId)
-    if (surfaceMountingManager == null) {
-      return
-    }
+    val surfaceMountingManager = mountingManager.getSurfaceManager(_surfaceId) ?: return
     surfaceMountingManager.deleteView(reactTag)
   }
 
