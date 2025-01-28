@@ -136,6 +136,13 @@ static TextInputTraits convertRawProp(
       sourceTraits.smartInsertDelete,
       defaultTraits.smartInsertDelete);
 
+  traits.dataDetectorTypes = convertRawProp(
+      context,
+      rawProps,
+      "dataDetectorTypes",
+      sourceTraits.dataDetectorTypes,
+      defaultTraits.dataDetectorTypes);
+
   return traits;
 }
 
