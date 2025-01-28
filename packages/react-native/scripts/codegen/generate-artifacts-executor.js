@@ -899,11 +899,12 @@ function generateFBReactNativeSpecIOS(projectRoot /*: string */) /*: void*/ {
  * @parameter projectRoot: the directory with the app source code, where the package.json lives.
  * @parameter baseOutputPath: the base output path for the CodeGen.
  * @parameter targetPlatform: the target platform. Supported values: 'android', 'ios', 'all'.
+ * @parameter source: the source that is invoking codegen. Supported values: 'app', 'library'.
  * @throws If it can't find a config file for react-native.
  * @throws If it can't find a CodeGen configuration in the file.
  * @throws If it can't find a cli for the CodeGen.
  */
-function execute(projectRoot, targetPlatform, baseOutputPath) {
+function execute(projectRoot, targetPlatform, baseOutputPath, source) {
   try {
     codegenLog(`Analyzing ${path.join(projectRoot, 'package.json')}`);
 
@@ -951,9 +952,12 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
         platform,
       );
 
-      generateRCTThirdPartyComponents(libraries, outputPath);
-      generateCustomURLHandlers(libraries, outputPath);
-      generateAppDependencyProvider(outputPath);
+      if (source === 'app') {
+        // These components are only required by apps, not by libraries
+        generateRCTThirdPartyComponents(libraries, outputPath);
+        generateCustomURLHandlers(libraries, outputPath);
+        generateAppDependencyProvider(outputPath);
+      }
 
       cleanupEmptyFilesAndFolders(outputPath);
     }
