@@ -21,6 +21,8 @@ namespace facebook::react {
 struct CSSLength {
   float value{};
   CSSLengthUnit unit{CSSLengthUnit::Px};
+
+  constexpr bool operator==(const CSSLength& rhs) const = default;
 };
 
 template <>
