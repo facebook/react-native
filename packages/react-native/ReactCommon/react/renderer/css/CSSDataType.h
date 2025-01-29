@@ -73,10 +73,11 @@ concept CSSValidDataTypeParser = CSSFunctionBlockSink<T, ReturnT> ||
     CSSSimplePreservedTokenSink<T, ReturnT>;
 
 /**
- * Concrete representation for a CSS data type, or keywords
+ * Concrete representation for a CSS data type
  */
 template <typename T>
 concept CSSDataType =
-    CSSValidDataTypeParser<CSSDataTypeParser<T>, std::optional<T>>;
+    CSSValidDataTypeParser<CSSDataTypeParser<T>, std::optional<T>> &&
+    std::equality_comparable<T>;
 
 } // namespace facebook::react
