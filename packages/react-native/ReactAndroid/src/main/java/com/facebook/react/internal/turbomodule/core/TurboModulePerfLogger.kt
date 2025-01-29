@@ -19,14 +19,6 @@ internal object TurboModulePerfLogger {
     maybeLoadSoLibrary()
   }
 
-  fun moduleDataCreateStart(moduleName: String?, id: Int) {
-    nativeModulePerfLogger?.moduleDataCreateStart(checkNotNull(moduleName), id)
-  }
-
-  fun moduleDataCreateEnd(moduleName: String?, id: Int) {
-    nativeModulePerfLogger?.moduleDataCreateEnd(checkNotNull(moduleName), id)
-  }
-
   @JvmStatic
   fun moduleCreateStart(moduleName: String?, id: Int) {
     nativeModulePerfLogger?.moduleCreateStart(checkNotNull(moduleName), id)
