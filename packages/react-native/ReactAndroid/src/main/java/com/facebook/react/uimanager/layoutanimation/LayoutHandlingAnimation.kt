@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager.layoutanimation;
+package com.facebook.react.uimanager.layoutanimation
 
 /** Interface for an animation type that takes care of updating the view layout. */
-/* package */ interface LayoutHandlingAnimation {
+internal interface LayoutHandlingAnimation {
   /**
    * Notifies the animation of a layout update in case one occurs during the animation. This avoids
    * animating the view to the old layout since it's no longer correct; instead the animation should
@@ -19,5 +19,5 @@ package com.facebook.react.uimanager.layoutanimation;
    * @param width the new width value for the view
    * @param height the new height value for the view
    */
-  void onLayoutUpdate(int x, int y, int width, int height);
+  fun onLayoutUpdate(x: Int, y: Int, width: Int, height: Int)
 }

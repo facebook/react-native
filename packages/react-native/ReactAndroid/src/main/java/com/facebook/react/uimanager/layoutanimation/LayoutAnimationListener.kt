@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager.layoutanimation;
+package com.facebook.react.uimanager.layoutanimation
 
 /** Listener invoked when a layout animation has completed. */
-public interface LayoutAnimationListener {
-  void onAnimationEnd();
+public fun interface LayoutAnimationListener {
+  public fun onAnimationEnd()
 }
