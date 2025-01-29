@@ -56,10 +56,12 @@ async function main() {
     return;
   }
 
-  const files = SOURCE_PATTERNS.flatMap(srcPath =>
-    glob.sync(path.join(srcPath, ''), {
-      nodir: true,
-    }),
+  const files = ignoreShadowedFiles(
+    SOURCE_PATTERNS.flatMap(srcPath =>
+      glob.sync(path.join(srcPath, ''), {
+        nodir: true,
+      }),
+    ),
   );
 
   console.log(
@@ -115,6 +117,28 @@ function getBuildPath(file /*: string */) /*: string */ {
       .replace(/\.flow\.js$/, '.js')
       .replace(/\.js$/, '.d.ts'),
   );
+}
+
+function ignoreShadowedFiles(files /*: Array<string> */) /*: Array<string> */ {
+  const shadowedPrefixes /*: Record<string, boolean> */ = {};
+  const result /*: Array<string> */ = [];
+
+  // Find all flow definition files that shadow other files
+  for (const file of files) {
+    if (/\.flow\.js$/.test(file)) {
+      shadowedPrefixes[file.substring(0, file.length - 8)] = true;
+    }
+  }
+
+  // Filter out all files shadowed by flow definition files
+  for (const file of files) {
+    const prefix = file.split('.')[0];
+    if (/\.flow\.js$/.test(file) || !shadowedPrefixes[prefix]) {
+      result.push(file);
+    }
+  }
+
+  return result;
 }
 
 if (require.main === module) {
