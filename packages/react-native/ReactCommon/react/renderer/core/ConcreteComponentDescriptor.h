@@ -13,6 +13,7 @@
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ComponentDescriptor.h>
+#include <react/renderer/core/DynamicPropsUtilities.h>
 #include <react/renderer/core/EventDispatcher.h>
 #include <react/renderer/core/Props.h>
 #include <react/renderer/core/PropsParserContext.h>
@@ -114,16 +115,23 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
     rawProps.parse(rawPropsParser_);
 
-    auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);
+    std::optional<RawProps> mergedRawProps = std::nullopt;
+#ifdef ANDROID
+    if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+      mergedRawProps.emplace(RawProps{mergeDynamicProps(
+          props->rawProps, rawProps.toDynamic(), NullValueStrategy::Override)});
+    }
+#endif
+    auto shadowNodeProps = ShadowNodeT::Props(
+        context,
+        mergedRawProps.has_value() ? *mergedRawProps : rawProps,
+        props);
+
     // Use the new-style iterator
     // Note that we just check if `Props` has this flag set, no matter
     // the type of ShadowNode; it acts as the single global flag.
     if (ReactNativeFeatureFlags::enableCppPropsIteratorSetter()) {
-#ifdef ANDROID
-      const auto& dynamic = shadowNodeProps->rawProps;
-#else
-      const auto& dynamic = static_cast<folly::dynamic>(rawProps);
-#endif
+      const auto& dynamic = rawProps.toDynamic();
       for (const auto& pair : dynamic.items()) {
         const auto& name = pair.first.getString();
         shadowNodeProps->setProp(
