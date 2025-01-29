@@ -7,4 +7,18 @@
  * @flow strict
  */
 
-declare module.exports: (color: ?(string | number)) => null | number;
+enum ColorSpace {
+  SRGB = 'srgb',
+  DisplayP3 = 'display-p3',
+}
+
+export type RgbaValue = {
+  +space?: ColorSpace,
+  +r: number,
+  +g: number,
+  +b: number,
+  +a: number,
+  ...
+};
+
+declare module.exports: (color: ?(string | number | RgbaValue)) => null | number | RgbaValue;
