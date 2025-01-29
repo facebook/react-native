@@ -10,6 +10,9 @@
 
 'use strict';
 
+const Blob = require('../Blob').default;
+const FileReader = require('../FileReader').default;
+
 jest.unmock('event-target-shim').setMock('../../BatchedBridge/NativeModules', {
   __esModule: true,
   default: {
@@ -18,39 +21,43 @@ jest.unmock('event-target-shim').setMock('../../BatchedBridge/NativeModules', {
   },
 });
 
-const Blob = require('../Blob').default;
-const FileReader = require('../FileReader').default;
-
-describe('FileReader', function () {
-  it('should read blob as text', async () => {
-    const e = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = resolve;
-      reader.onerror = reject;
-      reader.readAsText(new Blob());
+[false, true].forEach(enableModern => {
+  describe(`FileReader (${enableModern ? 'modern' : 'legacy'})`, function () {
+    beforeAll(() => {
+      jest.resetModules();
+      global.RN$useBuiltInEventTarget = () => enableModern;
     });
-    expect(e.target.result).toBe('');
-  });
 
-  it('should read blob as data URL', async () => {
-    const e = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = resolve;
-      reader.onerror = reject;
-      reader.readAsDataURL(new Blob());
+    it('should read blob as text', async () => {
+      const e = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = resolve;
+        reader.onerror = reject;
+        reader.readAsText(new Blob());
+      });
+      expect(e.target.result).toBe('');
     });
-    expect(e.target.result).toBe('data:text/plain;base64,NDI=');
-  });
 
-  it('should read blob as ArrayBuffer', async () => {
-    const e = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = resolve;
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(new Blob());
+    it('should read blob as data URL', async () => {
+      const e = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = resolve;
+        reader.onerror = reject;
+        reader.readAsDataURL(new Blob());
+      });
+      expect(e.target.result).toBe('data:text/plain;base64,NDI=');
     });
-    const ab = e.target.result;
-    expect(ab.byteLength).toBe(2);
-    expect(new TextDecoder().decode(ab)).toBe('42');
+
+    it('should read blob as ArrayBuffer', async () => {
+      const e = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = resolve;
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(new Blob());
+      });
+      const ab = e.target.result;
+      expect(ab.byteLength).toBe(2);
+      expect(new TextDecoder().decode(ab)).toBe('42');
+    });
   });
 });

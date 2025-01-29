@@ -1453,6 +1453,52 @@ declare export default typeof File;
 `;
 
 exports[`public API should not change unintentionally Libraries/Blob/FileReader.js 1`] = `
+"declare export default FileReader;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Blob/FileReader_new.js 1`] = `
+"type ReadyState = 0 | 1 | 2;
+type ReaderResult = string | ArrayBuffer;
+declare class FileReader extends EventTarget {
+  static EMPTY: number;
+  static LOADING: number;
+  static DONE: number;
+  EMPTY: number;
+  LOADING: number;
+  DONE: number;
+  _readyState: ReadyState;
+  _error: ?Error;
+  _result: ?ReaderResult;
+  _aborted: boolean;
+  constructor(): void;
+  _reset(): void;
+  _setReadyState(newState: ReadyState): void;
+  readAsArrayBuffer(blob: ?Blob): void;
+  readAsDataURL(blob: ?Blob): void;
+  readAsText(blob: ?Blob, encoding: string): void;
+  abort(): void;
+  get readyState(): ReadyState;
+  get error(): ?Error;
+  get result(): ?ReaderResult;
+  get onabort(): EventCallback | null;
+  set onabort(listener: ?EventCallback): void;
+  get onerror(): EventCallback | null;
+  set onerror(listener: ?EventCallback): void;
+  get onload(): EventCallback | null;
+  set onload(listener: ?EventCallback): void;
+  get onloadstart(): EventCallback | null;
+  set onloadstart(listener: ?EventCallback): void;
+  get onloadend(): EventCallback | null;
+  set onloadend(listener: ?EventCallback): void;
+  get onprogress(): EventCallback | null;
+  set onprogress(listener: ?EventCallback): void;
+}
+declare export default typeof FileReader;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Blob/FileReader_old.js 1`] = `
 "type ReadyState = 0 | 1 | 2;
 type ReaderResult = string | ArrayBuffer;
 declare class FileReader extends EventTarget {
@@ -6529,6 +6575,155 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest.js 1`] = `
+"export type * from \\"./XMLHttpRequest_old\\";
+declare module.exports: XMLHttpRequest;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest_new.js 1`] = `
+"export type NativeResponseType = \\"base64\\" | \\"blob\\" | \\"text\\";
+export type ResponseType =
+  | \\"\\"
+  | \\"arraybuffer\\"
+  | \\"blob\\"
+  | \\"document\\"
+  | \\"json\\"
+  | \\"text\\";
+export type Response = ?Object | string;
+type XHRInterceptor = interface {
+  requestSent(id: number, url: string, method: string, headers: Object): void,
+  responseReceived(
+    id: number,
+    url: string,
+    status: number,
+    headers: Object
+  ): void,
+  dataReceived(id: number, data: string): void,
+  loadingFinished(id: number, encodedDataLength: number): void,
+  loadingFailed(id: number, error: string): void,
+};
+declare class XMLHttpRequestEventTarget extends EventTarget {
+  get onload(): EventCallback | null;
+  set onload(listener: ?EventCallback): void;
+  get onloadstart(): EventCallback | null;
+  set onloadstart(listener: ?EventCallback): void;
+  get onprogress(): EventCallback | null;
+  set onprogress(listener: ?EventCallback): void;
+  get ontimeout(): EventCallback | null;
+  set ontimeout(listener: ?EventCallback): void;
+  get onerror(): EventCallback | null;
+  set onerror(listener: ?EventCallback): void;
+  get onabort(): EventCallback | null;
+  set onabort(listener: ?EventCallback): void;
+  get onloadend(): EventCallback | null;
+  set onloadend(listener: ?EventCallback): void;
+}
+declare class XMLHttpRequest extends EventTarget {
+  static UNSENT: number;
+  static OPENED: number;
+  static HEADERS_RECEIVED: number;
+  static LOADING: number;
+  static DONE: number;
+  static _interceptor: ?XHRInterceptor;
+  static _profiling: boolean;
+  UNSENT: number;
+  OPENED: number;
+  HEADERS_RECEIVED: number;
+  LOADING: number;
+  DONE: number;
+  readyState: number;
+  responseHeaders: ?Object;
+  status: number;
+  timeout: number;
+  responseURL: ?string;
+  withCredentials: boolean;
+  upload: XMLHttpRequestEventTarget;
+  _requestId: ?number;
+  _subscriptions: Array<EventSubscription>;
+  _aborted: boolean;
+  _cachedResponse: Response;
+  _hasError: boolean;
+  _headers: Object;
+  _lowerCaseResponseHeaders: Object;
+  _method: ?string;
+  _perfKey: ?string;
+  _responseType: ResponseType;
+  _response: string;
+  _sent: boolean;
+  _url: ?string;
+  _timedOut: boolean;
+  _trackingName: string;
+  _incrementalEvents: boolean;
+  _startTime: ?number;
+  _performanceLogger: IPerformanceLogger;
+  static setInterceptor(interceptor: ?XHRInterceptor): void;
+  static enableProfiling(enableProfiling: boolean): void;
+  constructor(): void;
+  _reset(): void;
+  get responseType(): ResponseType;
+  set responseType(responseType: ResponseType): void;
+  get responseText(): string;
+  get response(): Response;
+  __didCreateRequest(requestId: number): void;
+  __didUploadProgress(requestId: number, progress: number, total: number): void;
+  __didReceiveResponse(
+    requestId: number,
+    status: number,
+    responseHeaders: ?Object,
+    responseURL: ?string
+  ): void;
+  __didReceiveData(requestId: number, response: string): void;
+  __didReceiveIncrementalData(
+    requestId: number,
+    responseText: string,
+    progress: number,
+    total: number
+  ): void;
+  __didReceiveDataProgress(
+    requestId: number,
+    loaded: number,
+    total: number
+  ): void;
+  __didCompleteResponse(
+    requestId: number,
+    error: string,
+    timeOutError: boolean
+  ): void;
+  _clearSubscriptions(): void;
+  getAllResponseHeaders(): ?string;
+  getResponseHeader(header: string): ?string;
+  setRequestHeader(header: string, value: any): void;
+  setTrackingName(trackingName: string): XMLHttpRequest;
+  setPerformanceLogger(performanceLogger: IPerformanceLogger): XMLHttpRequest;
+  open(method: string, url: string, async: ?boolean): void;
+  send(data: any): void;
+  abort(): void;
+  setResponseHeaders(responseHeaders: ?Object): void;
+  setReadyState(newState: number): void;
+  addEventListener(type: string, listener: EventListener | null): void;
+  _getMeasureURL(): string;
+  get onabort(): EventCallback | null;
+  set onabort(listener: ?EventCallback): void;
+  get onerror(): EventCallback | null;
+  set onerror(listener: ?EventCallback): void;
+  get onload(): EventCallback | null;
+  set onload(listener: ?EventCallback): void;
+  get onloadstart(): EventCallback | null;
+  set onloadstart(listener: ?EventCallback): void;
+  get onprogress(): EventCallback | null;
+  set onprogress(listener: ?EventCallback): void;
+  get ontimeout(): EventCallback | null;
+  set ontimeout(listener: ?EventCallback): void;
+  get onloadend(): EventCallback | null;
+  set onloadend(listener: ?EventCallback): void;
+  get onreadystatechange(): EventCallback | null;
+  set onreadystatechange(listener: ?EventCallback): void;
+}
+declare module.exports: XMLHttpRequest;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest_old.js 1`] = `
 "export type NativeResponseType = \\"base64\\" | \\"blob\\" | \\"text\\";
 export type ResponseType =
   | \\"\\"
@@ -9189,6 +9384,78 @@ declare export default typeof NativeWebSocketModule;
 `;
 
 exports[`public API should not change unintentionally Libraries/WebSocket/WebSocket.js 1`] = `
+"declare export default WebSocket;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/WebSocket/WebSocket_new.js 1`] = `
+"type ArrayBufferView =
+  | Int8Array
+  | Uint8Array
+  | Uint8ClampedArray
+  | Int16Array
+  | Uint16Array
+  | Int32Array
+  | Uint32Array
+  | Float32Array
+  | Float64Array
+  | DataView;
+type BinaryType = \\"blob\\" | \\"arraybuffer\\";
+type WebSocketEventDefinitions = {
+  websocketOpen: [{ id: number, protocol: string }],
+  websocketClosed: [{ id: number, code: number, reason: string }],
+  websocketMessage: [
+    | { type: \\"binary\\", id: number, data: string }
+    | { type: \\"text\\", id: number, data: string }
+    | { type: \\"blob\\", id: number, data: BlobData },
+  ],
+  websocketFailed: [{ id: number, message: string }],
+};
+declare class WebSocket extends EventTarget {
+  static CONNECTING: number;
+  static OPEN: number;
+  static CLOSING: number;
+  static CLOSED: number;
+  CONNECTING: number;
+  OPEN: number;
+  CLOSING: number;
+  CLOSED: number;
+  _socketId: number;
+  _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
+  _subscriptions: Array<EventSubscription>;
+  _binaryType: ?BinaryType;
+  bufferedAmount: number;
+  extension: ?string;
+  protocol: ?string;
+  readyState: number;
+  url: ?string;
+  constructor(
+    url: string,
+    protocols: ?string | ?Array<string>,
+    options: ?{ headers?: { origin?: string, ... }, ... }
+  ): void;
+  get binaryType(): ?BinaryType;
+  set binaryType(binaryType: BinaryType): void;
+  close(code?: number, reason?: string): void;
+  send(data: string | ArrayBuffer | ArrayBufferView | Blob): void;
+  ping(): void;
+  _close(code?: number, reason?: string): void;
+  _unregisterEvents(): void;
+  _registerEvents(): void;
+  get onclose(): EventCallback | null;
+  set onclose(listener: ?EventCallback): void;
+  get onerror(): EventCallback | null;
+  set onerror(listener: ?EventCallback): void;
+  get onmessage(): EventCallback | null;
+  set onmessage(listener: ?EventCallback): void;
+  get onopen(): EventCallback | null;
+  set onopen(listener: ?EventCallback): void;
+}
+declare export default typeof WebSocket;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/WebSocket/WebSocket_old.js 1`] = `
 "type ArrayBufferView =
   | Int8Array
   | Uint8Array
