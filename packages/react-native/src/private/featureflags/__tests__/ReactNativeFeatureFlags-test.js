@@ -26,6 +26,15 @@ describe('ReactNativeFeatureFlags', () => {
     );
   });
 
+  it('should provide default values for common flags and NOT log an error if the native module is NOT available and `skipNativeAPI` is used', () => {
+    const ReactNativeFeatureFlags = require('../ReactNativeFeatureFlags');
+    expect(
+      ReactNativeFeatureFlags.commonTestFlagWithoutNativeImplementation(),
+    ).toBe(false);
+
+    expect(console.error).toHaveBeenCalledTimes(0);
+  });
+
   it('should provide default values for common flags and log an error if the method in the native module is NOT available', () => {
     jest.doMock('../specs/NativeReactNativeFeatureFlags', () => ({
       __esModule: true,
