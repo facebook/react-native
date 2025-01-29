@@ -15,7 +15,7 @@ import RNTesterText from '../../components/RNTesterText';
 import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-import {useCallback, useState} from 'react';
+import {useCallback, useRef, useState} from 'react';
 import {
   Platform,
   RefreshControl,
@@ -855,11 +855,21 @@ const OnScrollOptions = () => {
 };
 
 const OnMomentumScroll = () => {
+  const ref = useRef<?React.ElementRef<typeof ScrollView>>(null);
   const [scroll, setScroll] = useState('none');
   return (
     <View>
       <RNTesterText>Scroll State: {scroll}</RNTesterText>
+      <Button
+        label="scrollTo top (animated)"
+        onPress={() => ref.current?.scrollTo({x: 0, y: 0, animated: true})}
+      />
+      <Button
+        label="scrollTo top (not animated)"
+        onPress={() => ref.current?.scrollTo({x: 0, y: 0, animated: false})}
+      />
       <ScrollView
+        ref={ref}
         style={[styles.scrollView, {height: 200}]}
         onMomentumScrollBegin={() => setScroll('onMomentumScrollBegin')}
         onMomentumScrollEnd={() => setScroll('onMomentumScrollEnd')}
