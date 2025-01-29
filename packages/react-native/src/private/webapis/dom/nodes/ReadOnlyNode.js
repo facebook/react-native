@@ -16,8 +16,8 @@ import type ReadOnlyElement from './ReadOnlyElement';
 
 import {createNodeList} from '../oldstylecollections/NodeList';
 import {
+  getNativeNodeReference,
   getPublicInstanceFromInternalInstanceHandle,
-  getShadowNode,
   setInstanceHandle,
 } from './internals/NodeInternals';
 import NativeDOM from './specs/NativeDOM';
@@ -49,7 +49,7 @@ export default class ReadOnlyNode {
   }
 
   get isConnected(): boolean {
-    const shadowNode = getShadowNode(this);
+    const shadowNode = getNativeNodeReference(this);
 
     if (shadowNode == null) {
       return false;
@@ -122,7 +122,7 @@ export default class ReadOnlyNode {
   }
 
   get parentNode(): ReadOnlyNode | null {
-    const shadowNode = getShadowNode(this);
+    const shadowNode = getNativeNodeReference(this);
 
     if (shadowNode == null) {
       return null;
@@ -165,8 +165,8 @@ export default class ReadOnlyNode {
       return 0;
     }
 
-    const shadowNode = getShadowNode(this);
-    const otherShadowNode = getShadowNode(otherNode);
+    const shadowNode = getNativeNodeReference(this);
+    const otherShadowNode = getNativeNodeReference(otherNode);
 
     if (shadowNode == null || otherShadowNode == null) {
       return ReadOnlyNode.DOCUMENT_POSITION_DISCONNECTED;
@@ -293,7 +293,7 @@ export default class ReadOnlyNode {
 export function getChildNodes(
   node: ReadOnlyNode,
 ): $ReadOnlyArray<ReadOnlyNode> {
-  const shadowNode = getShadowNode(node);
+  const shadowNode = getNativeNodeReference(node);
 
   if (shadowNode == null) {
     return [];

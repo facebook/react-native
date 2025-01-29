@@ -21,7 +21,7 @@ import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import NativeFantom, {
   NativeEventCategory,
 } from 'react-native/src/private/specs/modules/NativeFantom';
-import {getShadowNode} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
+import {getNativeNodeReference} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
 
 let globalSurfaceIdCounter = 1;
 
@@ -172,7 +172,7 @@ function dispatchNativeEvent(
   payload?: {[key: string]: mixed},
   options?: {category?: NativeEventCategory, isUnique?: boolean},
 ) {
-  const shadowNode = getShadowNode(node);
+  const shadowNode = getNativeNodeReference(node);
   NativeFantom.dispatchNativeEvent(
     shadowNode,
     type,
@@ -186,7 +186,7 @@ function scrollTo(
   node: ReactNativeElement,
   options: {x: number, y: number, zoomScale?: number},
 ) {
-  const shadowNode = getShadowNode(node);
+  const shadowNode = getNativeNodeReference(node);
   NativeFantom.scrollTo(shadowNode, options);
 }
 
