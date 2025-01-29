@@ -6493,51 +6493,6 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Network/XHRInterceptor.js 1`] = `
-"type XHRInterceptorOpenCallback = (
-  method: string,
-  url: string,
-  request: XMLHttpRequest
-) => void;
-type XHRInterceptorSendCallback = (
-  data: string,
-  request: XMLHttpRequest
-) => void;
-type XHRInterceptorRequestHeaderCallback = (
-  header: string,
-  value: string,
-  request: XMLHttpRequest
-) => void;
-type XHRInterceptorHeaderReceivedCallback = (
-  responseContentType: string | void,
-  responseSize: number | void,
-  allHeaders: string,
-  request: XMLHttpRequest
-) => void;
-type XHRInterceptorResponseCallback = (
-  status: number,
-  timeout: number,
-  response: string,
-  responseURL: string,
-  responseType: string,
-  request: XMLHttpRequest
-) => void;
-declare const XHRInterceptor: {
-  setOpenCallback(callback: XHRInterceptorOpenCallback): void,
-  setSendCallback(callback: XHRInterceptorSendCallback): void,
-  setHeaderReceivedCallback(
-    callback: XHRInterceptorHeaderReceivedCallback
-  ): void,
-  setResponseCallback(callback: XHRInterceptorResponseCallback): void,
-  setRequestHeaderCallback(callback: XHRInterceptorRequestHeaderCallback): void,
-  isInterceptorEnabled(): boolean,
-  enableInterception(): void,
-  disableInterception(): void,
-};
-declare module.exports: XHRInterceptor;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest.js 1`] = `
 "export type NativeResponseType = \\"base64\\" | \\"blob\\" | \\"text\\";
 export type ResponseType =

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const XMLHttpRequest = require('./XMLHttpRequest');
+const XMLHttpRequest = require('../../../Libraries/Network/XMLHttpRequest');
 // $FlowFixMe[method-unbinding]
 const originalXHROpen = XMLHttpRequest.prototype.open;
 // $FlowFixMe[method-unbinding]
