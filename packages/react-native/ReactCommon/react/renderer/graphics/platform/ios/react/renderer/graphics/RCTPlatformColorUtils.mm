@@ -9,7 +9,6 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <react/renderer/graphics/HostPlatformColor.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
 #include <string>
