@@ -21,4 +21,4 @@ import {typeof ViewabilityHelper as ViewabilityHelperType} from '@react-native/v
 const ViewabilityHelper: ViewabilityHelperType =
   require('@react-native/virtualized-lists').ViewabilityHelper;
 
-module.exports = ViewabilityHelper;
+export default ViewabilityHelper;

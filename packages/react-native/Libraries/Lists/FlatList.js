@@ -713,4 +713,4 @@ const styles = StyleSheet.create({
   row: {flexDirection: 'row'},
 });
 
-module.exports = FlatList;
+export default FlatList;

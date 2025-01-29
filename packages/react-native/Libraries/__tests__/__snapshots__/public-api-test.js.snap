@@ -5685,7 +5685,7 @@ declare export default typeof NativeLinkingManager;
 exports[`public API should not change unintentionally Libraries/Lists/FillRateHelper.js 1`] = `
 "declare const FillRateHelper: FillRateHelperType;
 export type { FillRateInfo } from \\"@react-native/virtualized-lists\\";
-declare module.exports: FillRateHelper;
+declare export default typeof FillRateHelper;
 "
 `;
 
@@ -5782,7 +5782,7 @@ declare class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   _memoizedRenderer: ReturnType<typeof memoizeOne>;
   render(): React.Node;
 }
-declare module.exports: FlatList;
+declare export default typeof FlatList;
 "
 `;
 
@@ -5916,13 +5916,12 @@ exports[`public API should not change unintentionally Libraries/Lists/Viewabilit
   ViewabilityConfigCallbackPair,
 } from \\"@react-native/virtualized-lists\\";
 declare const ViewabilityHelper: ViewabilityHelperType;
-declare module.exports: ViewabilityHelper;
+declare export default typeof ViewabilityHelper;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizeUtils.js 1`] = `
-"declare const keyExtractor: KeyExtractorType;
-declare module.exports: { keyExtractor: keyExtractor };
+"declare export const keyExtractor: KeyExtractorType;
 "
 `;
 
@@ -5933,15 +5932,12 @@ export type {
   RenderItemType,
   Separators,
 } from \\"@react-native/virtualized-lists\\";
-declare module.exports: VirtualizedList;
+declare export default typeof VirtualizedList;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizedListContext.js 1`] = `
-"declare const VirtualizedListContextResetter: VirtualizedListContextResetterType;
-declare module.exports: {
-  VirtualizedListContextResetter: VirtualizedListContextResetter,
-};
+"declare export const VirtualizedListContextResetter: VirtualizedListContextResetterType;
 "
 `;
 
@@ -5951,7 +5947,7 @@ export type {
   SectionBase,
   ScrollToLocationParamsType,
 } from \\"@react-native/virtualized-lists\\";
-declare module.exports: VirtualizedSectionList;
+declare export default typeof VirtualizedSectionList;
 "
 `;
 
