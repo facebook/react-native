@@ -9,6 +9,7 @@
 
 #include <folly/dynamic.h>
 #include <react/renderer/core/EventPayload.h>
+#include <react/renderer/debug/DebugStringConvertible.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/renderer/graphics/Size.h>
 
