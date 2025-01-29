@@ -10529,7 +10529,7 @@ interface Spec extends TurboModule {
     isUnique?: boolean
   ) => void;
   scrollTo: (shadowNode: mixed, options: ScrollOptions) => void;
-  getMountingManagerLogs: (surfaceId: number) => Array<string>;
+  takeMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;
   validateEmptyMessageQueue: () => void;

@@ -35,7 +35,7 @@ describe('focus view command', () => {
       );
     });
 
-    const mountingLogs = root.getMountingLogs();
+    const mountingLogs = root.takeMountingManagerLogs();
 
     expect(mountingLogs.length).toBe(2);
     expect(mountingLogs[0]).toBe('create view type: `AndroidTextInput`');
@@ -62,7 +62,7 @@ describe('focus view command', () => {
       root.render(<Component />);
     });
 
-    const mountingLogs = root.getMountingLogs();
+    const mountingLogs = root.takeMountingManagerLogs();
 
     expect(mountingLogs.length).toBe(2);
     expect(mountingLogs[0]).toBe('create view type: `AndroidTextInput`');
@@ -89,7 +89,7 @@ describe('focus view command', () => {
       root.render(<Component />);
     });
 
-    const mountingLogs = root.getMountingLogs();
+    const mountingLogs = root.takeMountingManagerLogs();
 
     expect(mountingLogs.length).toBe(2);
     expect(mountingLogs[0]).toBe('create view type: `AndroidTextInput`');

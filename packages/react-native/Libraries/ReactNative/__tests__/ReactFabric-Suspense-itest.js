@@ -120,7 +120,7 @@ describe('Suspense', () => {
       );
     });
 
-    let mountingLogs = root.getMountingLogs();
+    let mountingLogs = root.takeMountingManagerLogs();
 
     expect(mountingLogs.length).toBe(1);
     expect(mountingLogs[0]).toBe(
@@ -133,7 +133,7 @@ describe('Suspense', () => {
       resolveFunction = null;
     });
 
-    mountingLogs = root.getMountingLogs();
+    mountingLogs = root.takeMountingManagerLogs();
 
     expect(mountingLogs.length).toBe(1);
     expect(mountingLogs[0]).toBe(
@@ -148,7 +148,7 @@ describe('Suspense', () => {
       );
     });
 
-    mountingLogs = root.getMountingLogs();
+    mountingLogs = root.takeMountingManagerLogs();
 
     expect(mountingLogs.length).toBe(1);
     expect(mountingLogs[0]).toBe(
@@ -161,7 +161,7 @@ describe('Suspense', () => {
       resolveFunction = null;
     });
 
-    mountingLogs = root.getMountingLogs();
+    mountingLogs = root.takeMountingManagerLogs();
 
     expect(mountingLogs.length).toBe(1);
     expect(mountingLogs[0]).toBe(
@@ -176,7 +176,7 @@ describe('Suspense', () => {
       );
     });
 
-    mountingLogs = root.getMountingLogs();
+    mountingLogs = root.takeMountingManagerLogs();
 
     expect(mountingLogs.length).toBe(1);
     expect(mountingLogs[0]).toBe(
@@ -206,7 +206,7 @@ describe('Suspense', () => {
       root.render(<App color="green" />);
     });
 
-    let mountingLogs = root.getMountingLogs();
+    let mountingLogs = root.takeMountingManagerLogs();
 
     expect(mountingLogs.length).toBe(1);
     expect(mountingLogs[0]).toBe(
@@ -220,7 +220,7 @@ describe('Suspense', () => {
       });
     });
 
-    mountingLogs = root.getMountingLogs();
+    mountingLogs = root.takeMountingManagerLogs();
 
     // Green square is still mounted. Fallback is not shown to the user.
     expect(mountingLogs.length).toBe(0);
@@ -231,7 +231,7 @@ describe('Suspense', () => {
       resolveFunction = null;
     });
 
-    mountingLogs = root.getMountingLogs();
+    mountingLogs = root.takeMountingManagerLogs();
 
     expect(mountingLogs.length).toBe(1);
     expect(mountingLogs[0]).toBe(
