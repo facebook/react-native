@@ -23,6 +23,16 @@ namespace facebook::react {
 struct CSSRatio {
   float numerator{};
   float denominator{};
+
+  constexpr bool isDegenerate() const {
+    // If either number in the <ratio> is 0 or infinite, it represents a
+    // degenerate ratio (and, generally, won’t do anything).
+    // https://www.w3.org/TR/css-values-4/#ratios
+    return numerator == 0.0f ||
+        numerator == std::numeric_limits<float>::infinity() ||
+        denominator == 0.0f ||
+        denominator == std::numeric_limits<float>::infinity();
+  }
 };
 
 template <>
@@ -32,14 +42,14 @@ struct CSSDataTypeParser<CSSRatio> {
       CSSSyntaxParser& parser) -> std::optional<CSSRatio> {
     // <ratio> = <number [0,∞]> [ / <number [0,∞]> ]?
     // https://www.w3.org/TR/css-values-4/#ratio
-    if (isValidRatioPart(token.numericValue())) {
+    if (token.numericValue() >= 0) {
       float numerator = token.numericValue();
 
       auto denominator =
           peekNextCSSValue<CSSNumber>(parser, CSSDelimiter::Solidus);
       if (std::holds_alternative<CSSNumber>(denominator) &&
-          isValidRatioPart(std::get<CSSNumber>(denominator).value)) {
-        parser.consumeComponentValue(CSSDelimiter::Solidus);
+          std::get<CSSNumber>(denominator).value >= 0) {
+        parseNextCSSValue<CSSNumber>(parser, CSSDelimiter::Solidus);
         return CSSRatio{numerator, std::get<CSSNumber>(denominator).value};
       }
 
@@ -47,14 +57,6 @@ struct CSSDataTypeParser<CSSRatio> {
     }
 
     return {};
-  }
-
- private:
-  static constexpr bool isValidRatioPart(float value) {
-    // If either number in the <ratio> is 0 or infinite, it represents a
-    // degenerate ratio (and, generally, won’t do anything).
-    // https://www.w3.org/TR/css-values-4/#ratios
-    return value > 0.0f && value != +std::numeric_limits<float>::infinity();
   }
 };
 
