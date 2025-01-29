@@ -18,13 +18,18 @@ import com.facebook.react.uimanager.events.Event;
 
   private static final String EVENT_NAME = "topBlur";
 
+  private String mText;
+  private int mEventCount;
+
   @Deprecated
-  public ReactTextInputBlurEvent(int viewId) {
-    this(ViewUtil.NO_SURFACE_ID, viewId);
+  public ReactTextInputBlurEvent(int viewId, String text, int eventCount) {
+    this(ViewUtil.NO_SURFACE_ID, viewId, text, eventCount);
   }
 
-  public ReactTextInputBlurEvent(int surfaceId, int viewId) {
+  public ReactTextInputBlurEvent(int surfaceId, int viewId, String text, int eventCount) {
     super(surfaceId, viewId);
+    mText = text;
+    mEventCount = eventCount;
   }
 
   @Override
@@ -42,6 +47,8 @@ import com.facebook.react.uimanager.events.Event;
   protected WritableMap getEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putInt("target", getViewTag());
+    eventData.putString("text", mText);
+    eventData.putInt("eventCount", mEventCount);
     return eventData;
   }
 }
