@@ -70,7 +70,7 @@ const rootContext: Context = {
   beforeAllHooks: [],
   beforeEachHooks: [],
   afterAllHooks: [],
-  afterEachHooks: [],
+  afterEachHooks: [validateEmptyMessageQueue],
   children: [],
   focused: false,
   skipped: false,
@@ -93,8 +93,8 @@ const globalDescribe = (global.describe = (
     beforeAllHooks: [],
     beforeEachHooks: [],
     children: [],
-    focused: focused,
-    skipped: skipped,
+    focused,
+    skipped,
   };
   currentContext.children.push(childContext);
   currentContext = childContext;
@@ -137,8 +137,8 @@ const globalIt =
         title,
         parentContext: currentContext,
         implementation,
-        focused: focused,
-        skipped: skipped,
+        focused,
+        skipped,
       });
     });
 
@@ -386,6 +386,10 @@ function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
       ...testSuiteResult,
     }),
   );
+}
+
+function validateEmptyMessageQueue(): void {
+  NativeFantom.validateEmptyMessageQueue();
 }
 
 global.$$RunTests$$ = () => {

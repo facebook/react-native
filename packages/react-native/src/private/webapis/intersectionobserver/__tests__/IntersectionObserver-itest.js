@@ -1507,16 +1507,18 @@ describe('IntersectionObserver', () => {
 
       const node = ensureReactNativeElement(maybeNode);
 
-      observer1 = new IntersectionObserver(() => {});
-      observer2 = new IntersectionObserver(() => {});
+      Fantom.runTask(() => {
+        observer1 = new IntersectionObserver(() => {});
+        observer2 = new IntersectionObserver(() => {});
 
-      observer1.observe(node);
-      observer2.observe(node);
+        observer1.observe(node);
+        observer2.observe(node);
 
-      observer1.unobserve(node);
+        observer1.unobserve(node);
 
-      // The second call shouldn't log errors (that would make the test fail).
-      observer2.unobserve(node);
+        // The second call shouldn't log errors (that would make the test fail).
+        observer2.unobserve(node);
+      });
     });
   });
 
