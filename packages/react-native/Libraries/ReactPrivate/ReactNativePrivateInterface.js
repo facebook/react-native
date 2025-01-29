@@ -18,6 +18,7 @@ import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
 import typeof CustomEvent from '../Events/CustomEvent';
 import typeof {
   createPublicInstance,
+  createPublicRootInstance,
   createPublicTextInstance,
   getInternalInstanceHandleFromPublicInstance,
   getNativeTagFromPublicInstance,
@@ -93,6 +94,10 @@ module.exports = {
   get diffAttributePayloads(): diffAttributePayloads {
     return require('../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload')
       .diff;
+  },
+  get createPublicRootInstance(): createPublicRootInstance {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+      .createPublicRootInstance;
   },
   get createPublicInstance(): createPublicInstance {
     return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
