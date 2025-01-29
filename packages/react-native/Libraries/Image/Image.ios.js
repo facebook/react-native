@@ -72,7 +72,7 @@ function getSizeWithHeaders(
 
 function prefetchWithMetadata(
   url: string,
-  queryRootName: string,
+  queryRootName: ?string,
   rootTag?: ?RootTag,
 ): Promise<boolean> {
   if (NativeImageLoaderIOS.prefetchImageWithMetadata) {
