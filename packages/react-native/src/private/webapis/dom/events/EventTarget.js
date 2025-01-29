@@ -39,16 +39,16 @@ export type EventHandler = interface {
 };
 export type EventListener = EventCallback | EventHandler;
 
-export type EventListenerOptions = {
+export type EventListenerOptions = $ReadOnly<{
   capture?: boolean,
-};
+}>;
 
-export type AddEventListenerOptions = {
+export type AddEventListenerOptions = $ReadOnly<{
   ...EventListenerOptions,
   passive?: boolean,
   once?: boolean,
   signal?: AbortSignal,
-};
+}>;
 
 type EventListenerRegistration = {
   +callback: EventListener,
