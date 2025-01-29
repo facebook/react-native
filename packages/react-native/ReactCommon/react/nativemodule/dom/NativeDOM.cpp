@@ -64,10 +64,42 @@ getArrayOfInstanceHandlesFromShadowNodes(
 NativeDOM::NativeDOM(std::shared_ptr<CallInvoker> jsInvoker)
     : NativeDOMCxxSpec(std::move(jsInvoker)) {}
 
+#pragma mark - Methods from the `Node` interface (for `ReadOnlyNode`).
+
+double NativeDOM::compareDocumentPosition(
+    jsi::Runtime& rt,
+    jsi::Value nativeNodeReference,
+    jsi::Value otherNativeNodeReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
+  auto otherShadowNode = shadowNodeFromValue(rt, otherNativeNodeReference);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (otherShadowNode == nullptr || currentRevision == nullptr) {
+    return 0;
+  }
+
+  return dom::compareDocumentPosition(
+      currentRevision, *shadowNode, *otherShadowNode);
+}
+
+std::vector<jsi::Value> NativeDOM::getChildNodes(
+    jsi::Runtime& rt,
+    jsi::Value nativeNodeReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    return std::vector<jsi::Value>{};
+  }
+
+  auto childNodes = dom::getChildNodes(currentRevision, *shadowNode);
+  return getArrayOfInstanceHandlesFromShadowNodes(childNodes, rt);
+}
+
 jsi::Value NativeDOM::getParentNode(
     jsi::Runtime& rt,
-    jsi::Value shadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+    jsi::Value nativeNodeReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
@@ -82,22 +114,8 @@ jsi::Value NativeDOM::getParentNode(
   return parentShadowNode->getInstanceHandle(rt);
 }
 
-std::vector<jsi::Value> NativeDOM::getChildNodes(
-    jsi::Runtime& rt,
-    jsi::Value shadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-  auto currentRevision =
-      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
-  if (currentRevision == nullptr) {
-    return std::vector<jsi::Value>{};
-  }
-
-  auto childNodes = dom::getChildNodes(currentRevision, *shadowNode);
-  return getArrayOfInstanceHandlesFromShadowNodes(childNodes, rt);
-}
-
-bool NativeDOM::isConnected(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+bool NativeDOM::isConnected(jsi::Runtime& rt, jsi::Value nativeNodeReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
@@ -107,33 +125,24 @@ bool NativeDOM::isConnected(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
   return dom::isConnected(currentRevision, *shadowNode);
 }
 
-double NativeDOM::compareDocumentPosition(
-    jsi::Runtime& rt,
-    jsi::Value shadowNodeValue,
-    jsi::Value otherShadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-  auto otherShadowNode = shadowNodeFromValue(rt, otherShadowNodeValue);
-  auto currentRevision =
-      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
-  if (otherShadowNode == nullptr || currentRevision == nullptr) {
-    return 0;
-  }
+#pragma mark - Methods from the `Element` interface (for `ReactNativeElement`).
 
-  return dom::compareDocumentPosition(
-      currentRevision, *shadowNode, *otherShadowNode);
-}
-
-std::string NativeDOM::getTextContent(
-    jsi::Runtime& rt,
-    jsi::Value shadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+std::tuple<
+    /* topWidth: */ int,
+    /* rightWidth: */ int,
+    /* bottomWidth: */ int,
+    /* leftWidth: */ int>
+NativeDOM::getBorderWidth(jsi::Runtime& rt, jsi::Value nativeElementReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeElementReference);
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
-    return "";
+    return {0, 0, 0, 0};
   }
 
-  return dom::getTextContent(currentRevision, *shadowNode);
+  auto borderWidth = dom::getBorderWidth(currentRevision, *shadowNode);
+  return std::tuple{
+      borderWidth.top, borderWidth.right, borderWidth.bottom, borderWidth.left};
 }
 
 std::tuple<
@@ -143,9 +152,9 @@ std::tuple<
     /* height: */ double>
 NativeDOM::getBoundingClientRect(
     jsi::Runtime& rt,
-    jsi::Value shadowNodeValue,
+    jsi::Value nativeElementReference,
     bool includeTransform) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto shadowNode = shadowNodeFromValue(rt, nativeElementReference);
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
@@ -158,12 +167,101 @@ NativeDOM::getBoundingClientRect(
   return std::tuple{domRect.x, domRect.y, domRect.width, domRect.height};
 }
 
+std::tuple</* width: */ int, /* height: */ int> NativeDOM::getInnerSize(
+    jsi::Runtime& rt,
+    jsi::Value nativeElementReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeElementReference);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    return {0, 0};
+  }
+
+  auto innerSize = dom::getInnerSize(currentRevision, *shadowNode);
+  return std::tuple{innerSize.width, innerSize.height};
+}
+
+std::tuple</* scrollLeft: */ double, /* scrollTop: */ double>
+NativeDOM::getScrollPosition(
+    jsi::Runtime& rt,
+    jsi::Value nativeElementReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeElementReference);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    return {0, 0};
+  }
+
+  auto domPoint = dom::getScrollPosition(currentRevision, *shadowNode);
+  return std::tuple{domPoint.x, domPoint.y};
+}
+
+std::tuple</* scrollWidth: */ int, /* scrollHeight */ int>
+NativeDOM::getScrollSize(jsi::Runtime& rt, jsi::Value nativeElementReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeElementReference);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    return {0, 0};
+  }
+
+  auto scrollSize = dom::getScrollSize(currentRevision, *shadowNode);
+  return std::tuple{scrollSize.width, scrollSize.height};
+}
+
+std::string NativeDOM::getTagName(
+    jsi::Runtime& rt,
+    jsi::Value nativeElementReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeElementReference);
+  return dom::getTagName(*shadowNode);
+}
+
+std::string NativeDOM::getTextContent(
+    jsi::Runtime& rt,
+    jsi::Value nativeNodeReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
+  auto currentRevision =
+      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  if (currentRevision == nullptr) {
+    return "";
+  }
+
+  return dom::getTextContent(currentRevision, *shadowNode);
+}
+
+bool NativeDOM::hasPointerCapture(
+    jsi::Runtime& rt,
+    jsi::Value nativeElementReference,
+    double pointerId) {
+  bool isCapturing = getPointerEventsProcessorFromRuntime(rt).hasPointerCapture(
+      pointerId, shadowNodeFromValue(rt, nativeElementReference).get());
+  return isCapturing;
+}
+
+void NativeDOM::releasePointerCapture(
+    jsi::Runtime& rt,
+    jsi::Value nativeElementReference,
+    double pointerId) {
+  getPointerEventsProcessorFromRuntime(rt).releasePointerCapture(
+      pointerId, shadowNodeFromValue(rt, nativeElementReference).get());
+}
+
+void NativeDOM::setPointerCapture(
+    jsi::Runtime& rt,
+    jsi::Value nativeElementReference,
+    double pointerId) {
+  getPointerEventsProcessorFromRuntime(rt).setPointerCapture(
+      pointerId, shadowNodeFromValue(rt, nativeElementReference));
+}
+
+#pragma mark - Methods from the `HTMLElement` interface (for `ReactNativeElement`).
+
 std::tuple<
     /* offsetParent: */ jsi::Value,
     /* top: */ double,
     /* left: */ double>
-NativeDOM::getOffset(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+NativeDOM::getOffset(jsi::Runtime& rt, jsi::Value nativeElementReference) {
+  auto shadowNode = shadowNodeFromValue(rt, nativeElementReference);
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
@@ -180,105 +278,13 @@ NativeDOM::getOffset(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
       domOffset.left};
 }
 
-std::tuple</* scrollLeft: */ double, /* scrollTop: */ double>
-NativeDOM::getScrollPosition(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-  auto currentRevision =
-      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
-  if (currentRevision == nullptr) {
-    return {0, 0};
-  }
-
-  auto domPoint = dom::getScrollPosition(currentRevision, *shadowNode);
-  return std::tuple{domPoint.x, domPoint.y};
-}
-
-std::tuple</* scrollWidth: */ int, /* scrollHeight */ int>
-NativeDOM::getScrollSize(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-  auto currentRevision =
-      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
-  if (currentRevision == nullptr) {
-    return {0, 0};
-  }
-
-  auto scrollSize = dom::getScrollSize(currentRevision, *shadowNode);
-  return std::tuple{scrollSize.width, scrollSize.height};
-}
-
-std::tuple</* width: */ int, /* height: */ int> NativeDOM::getInnerSize(
-    jsi::Runtime& rt,
-    jsi::Value shadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-  auto currentRevision =
-      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
-  if (currentRevision == nullptr) {
-    return {0, 0};
-  }
-
-  auto innerSize = dom::getInnerSize(currentRevision, *shadowNode);
-  return std::tuple{innerSize.width, innerSize.height};
-}
-
-std::tuple<
-    /* topWidth: */ int,
-    /* rightWidth: */ int,
-    /* bottomWidth: */ int,
-    /* leftWidth: */ int>
-NativeDOM::getBorderWidth(jsi::Runtime& rt, jsi::Value shadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-  auto currentRevision =
-      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
-  if (currentRevision == nullptr) {
-    return {0, 0, 0, 0};
-  }
-
-  auto borderWidth = dom::getBorderWidth(currentRevision, *shadowNode);
-  return std::tuple{
-      borderWidth.top, borderWidth.right, borderWidth.bottom, borderWidth.left};
-}
-
-std::string NativeDOM::getTagName(
-    jsi::Runtime& rt,
-    jsi::Value shadowNodeValue) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
-  return dom::getTagName(*shadowNode);
-}
-
-#pragma mark - Pointer events
-
-bool NativeDOM::hasPointerCapture(
-    jsi::Runtime& rt,
-    jsi::Value shadowNodeValue,
-    double pointerId) {
-  bool isCapturing = getPointerEventsProcessorFromRuntime(rt).hasPointerCapture(
-      pointerId, shadowNodeFromValue(rt, shadowNodeValue).get());
-  return isCapturing;
-}
-
-void NativeDOM::setPointerCapture(
-    jsi::Runtime& rt,
-    jsi::Value shadowNodeValue,
-    double pointerId) {
-  getPointerEventsProcessorFromRuntime(rt).setPointerCapture(
-      pointerId, shadowNodeFromValue(rt, shadowNodeValue));
-}
-
-void NativeDOM::releasePointerCapture(
-    jsi::Runtime& rt,
-    jsi::Value shadowNodeValue,
-    double pointerId) {
-  getPointerEventsProcessorFromRuntime(rt).releasePointerCapture(
-      pointerId, shadowNodeFromValue(rt, shadowNodeValue).get());
-}
-
-#pragma mark - Legacy RN layout APIs
+#pragma mark - Legacy layout APIs (for `ReactNativeElement`).
 
 void NativeDOM::measure(
     jsi::Runtime& rt,
-    jsi::Value shadowNodeValue,
+    jsi::Value nativeElementReference,
     jsi::Function callback) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto shadowNode = shadowNodeFromValue(rt, nativeElementReference);
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
@@ -300,9 +306,9 @@ void NativeDOM::measure(
 
 void NativeDOM::measureInWindow(
     jsi::Runtime& rt,
-    jsi::Value shadowNodeValue,
+    jsi::Value nativeElementReference,
     jsi::Function callback) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto shadowNode = shadowNodeFromValue(rt, nativeElementReference);
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
@@ -321,13 +327,13 @@ void NativeDOM::measureInWindow(
 
 void NativeDOM::measureLayout(
     jsi::Runtime& rt,
-    jsi::Value shadowNodeValue,
-    jsi::Value relativeToShadowNodeValue,
+    jsi::Value nativeElementReference,
+    jsi::Value relativeToNativeElementReference,
     jsi::Function onFail,
     jsi::Function onSuccess) {
-  auto shadowNode = shadowNodeFromValue(rt, shadowNodeValue);
+  auto shadowNode = shadowNodeFromValue(rt, nativeElementReference);
   auto relativeToShadowNode =
-      shadowNodeFromValue(rt, relativeToShadowNodeValue);
+      shadowNodeFromValue(rt, relativeToNativeElementReference);
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {

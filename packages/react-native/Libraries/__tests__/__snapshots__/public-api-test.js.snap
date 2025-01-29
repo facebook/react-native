@@ -7462,14 +7462,17 @@ export interface Spec {
   +appendChild: (parentNode: Node, child: Node) => Node;
   +appendChildToSet: (childSet: NodeSet, child: Node) => void;
   +completeRoot: (rootTag: RootTag, childSet: NodeSet) => void;
-  +measure: (node: Node, callback: MeasureOnSuccessCallback) => void;
+  +measure: (
+    node: Node | NativeElementReference,
+    callback: MeasureOnSuccessCallback
+  ) => void;
   +measureInWindow: (
-    node: Node,
+    node: Node | NativeElementReference,
     callback: MeasureInWindowOnSuccessCallback
   ) => void;
   +measureLayout: (
-    node: Node,
-    relativeNode: Node,
+    node: Node | NativeElementReference,
+    relativeNode: Node | NativeElementReference,
     onFail: () => void,
     onSuccess: MeasureLayoutOnSuccessCallback
   ) => void;
@@ -7480,7 +7483,10 @@ export interface Spec {
   ) => void;
   +sendAccessibilityEvent: (node: Node, eventType: string) => void;
   +findShadowNodeByTag_DEPRECATED: (reactTag: number) => ?Node;
-  +setNativeProps: (node: Node, newProps: NodeProps) => void;
+  +setNativeProps: (
+    node: Node | NativeElementReference,
+    newProps: NodeProps
+  ) => void;
   +dispatchCommand: (
     node: Node,
     commandName: string,
@@ -7492,9 +7498,12 @@ export interface Spec {
     locationY: number,
     callback: (instanceHandle: ?InternalInstanceHandle) => void
   ) => void;
-  +compareDocumentPosition: (node: Node, otherNode: Node) => number;
+  +compareDocumentPosition: (
+    node: Node | NativeElementReference,
+    otherNode: Node | NativeElementReference
+  ) => number;
   +getBoundingClientRect: (
-    node: Node,
+    node: Node | NativeElementReference,
     includeTransform: boolean
   ) => ?[number, number, number, number];
 }
@@ -11376,7 +11385,7 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   releasePointerCapture(pointerId: number): void;
 }
 declare export function getBoundingClientRect(
-  node: ReadOnlyElement,
+  element: ReadOnlyElement,
   { includeTransform: boolean }
 ): DOMRect;
 "

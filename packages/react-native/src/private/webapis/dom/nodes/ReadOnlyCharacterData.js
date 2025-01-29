@@ -12,7 +12,7 @@
 
 import type ReadOnlyElement from './ReadOnlyElement';
 
-import {getShadowNode} from './internals/NodeInternals';
+import {getNativeNodeReference} from './internals/NodeInternals';
 import {getElementSibling} from './internals/Traversal';
 import ReadOnlyNode from './ReadOnlyNode';
 import NativeDOM from './specs/NativeDOM';
@@ -27,10 +27,10 @@ export default class ReadOnlyCharacterData extends ReadOnlyNode {
   }
 
   get data(): string {
-    const shadowNode = getShadowNode(this);
+    const node = getNativeNodeReference(this);
 
-    if (shadowNode != null) {
-      return NativeDOM.getTextContent(shadowNode);
+    if (node != null) {
+      return NativeDOM.getTextContent(node);
     }
 
     return '';
