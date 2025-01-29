@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.78.0-rc.2
+
+### Fixed
+
+#### iOS specific
+
+- Load images even when the extension is implicit ([b9f418e9bc](https://github.com/facebook/react-native/commit/b9f418e9bc35372438a34934254db985b7ad1840) by [@cipolleschi](https://github.com/cipolleschi))
+
+
 ## v0.78.0-rc.1
 
 ### Changed
