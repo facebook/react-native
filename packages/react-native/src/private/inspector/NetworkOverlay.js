@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type XMLHttpRequest from '../Network/XMLHttpRequest';
 import type {RenderItemProps} from '@react-native/virtualized-lists';
 
 import ScrollView from '../../../Libraries/Components/ScrollView/ScrollView';
@@ -87,6 +88,18 @@ function keyExtractor(request: NetworkRequestInfo): string {
   return String(request.id);
 }
 
+const XHR_ID_KEY = Symbol('XHR_ID');
+
+function getXHRId(xhr: XMLHttpRequest): number {
+  // $FlowExpectedError[prop-missing]
+  return xhr[XHR_ID_KEY];
+}
+
+function setXHRId(xhr: XMLHttpRequest, id: number) {
+  // $FlowExpectedError[prop-missing]
+  xhr[XHR_ID_KEY] = id;
+}
+
 /**
  * Show all the intercepted network requests over the InspectorPanel.
  */
@@ -110,7 +123,7 @@ class NetworkOverlay extends React.Component<Props, State> {
 
   // Map of `socketId` -> `index in `this.state.requests`.
   _socketIdMap: {[number]: number} = {};
-  // Map of `xhr._index` -> `index in `this.state.requests`.
+  // Map of `xhr[XHR_ID_KEY]` -> `index in `this.state.requests`.
   _xhrIdMap: {[key: number]: number, ...} = {};
 
   state: State = {
@@ -127,9 +140,9 @@ class NetworkOverlay extends React.Component<Props, State> {
       // Generate a global id for each intercepted xhr object, add this id
       // to the xhr object as a private `_index` property to identify it,
       // so that we can distinguish different xhr objects in callbacks.
-      xhr._index = nextXHRId++;
+      setXHRId(xhr, nextXHRId++);
       const xhrIndex = this.state.requests.length;
-      this._xhrIdMap[xhr._index] = xhrIndex;
+      this._xhrIdMap[getXHRId(xhr)] = xhrIndex;
 
       const _xhr: NetworkRequestInfo = {
         id: xhrIndex,
@@ -147,7 +160,7 @@ class NetworkOverlay extends React.Component<Props, State> {
 
     XHRInterceptor.setRequestHeaderCallback((header, value, xhr) => {
       // $FlowFixMe[prop-missing]
-      const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
+      const xhrIndex = this._getRequestIndexByXHRID(getXHRId(xhr));
       if (xhrIndex === -1) {
         return;
       }
@@ -164,7 +177,7 @@ class NetworkOverlay extends React.Component<Props, State> {
 
     XHRInterceptor.setSendCallback((data, xhr) => {
       // $FlowFixMe[prop-missing]
-      const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
+      const xhrIndex = this._getRequestIndexByXHRID(getXHRId(xhr));
       if (xhrIndex === -1) {
         return;
       }
@@ -179,7 +192,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     XHRInterceptor.setHeaderReceivedCallback(
       (type, size, responseHeaders, xhr) => {
         // $FlowFixMe[prop-missing]
-        const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
+        const xhrIndex = this._getRequestIndexByXHRID(getXHRId(xhr));
         if (xhrIndex === -1) {
           return;
         }
@@ -197,7 +210,7 @@ class NetworkOverlay extends React.Component<Props, State> {
     XHRInterceptor.setResponseCallback(
       (status, timeout, response, responseURL, responseType, xhr) => {
         // $FlowFixMe[prop-missing]
-        const xhrIndex = this._getRequestIndexByXHRID(xhr._index);
+        const xhrIndex = this._getRequestIndexByXHRID(getXHRId(xhr));
         if (xhrIndex === -1) {
           return;
         }
