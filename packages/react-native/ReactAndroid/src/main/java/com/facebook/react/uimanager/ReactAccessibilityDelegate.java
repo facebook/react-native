@@ -442,7 +442,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
     // state is changeable.
     final ReadableMap accessibilityState = (ReadableMap) host.getTag(R.id.accessibility_state);
-    if (accessibilityState != null) {
+    if (accessibilityState != null && accessibilityState.keySetIterator().hasNextKey()) {
       setState(info, accessibilityState, host.getContext());
     }
     final ReadableArray accessibilityActions =
