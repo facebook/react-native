@@ -21,6 +21,7 @@ import type {
   Node,
   ViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
+import type {RootTag} from '../RootTag';
 import type ReactFabricHostComponent from './ReactFabricHostComponent';
 
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
@@ -34,10 +35,19 @@ let ReadOnlyTextClass: Class<ReadOnlyText>;
 // Lazy loaded to avoid evaluating the module when using the legacy renderer.
 let RendererProxy: RendererProxyT;
 
+// This is just a temporary placeholder so ReactFabric doesn't crash when synced.
+type PublicRootInstance = null;
+
+export function createPublicRootInstance(rootTag: RootTag): PublicRootInstance {
+  // This is just a placeholder so ReactFabric doesn't crash when synced.
+  return null;
+}
+
 export function createPublicInstance(
   tag: number,
   viewConfig: ViewConfig,
   internalInstanceHandle: InternalInstanceHandle,
+  ownerDocument: PublicRootInstance,
 ): ReactFabricHostComponent | ReactNativeElement {
   if (PublicInstanceClass == null) {
     // We don't use inline requires in react-native, so this forces lazy loading
@@ -55,6 +65,7 @@ export function createPublicInstance(
 
 export function createPublicTextInstance(
   internalInstanceHandle: InternalInstanceHandle,
+  ownerDocument: PublicRootInstance,
 ): ReadOnlyText {
   if (ReadOnlyTextClass == null) {
     ReadOnlyTextClass =

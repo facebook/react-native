@@ -7580,13 +7580,19 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance.js 1`] = `
-"declare export function createPublicInstance(
+"type PublicRootInstance = null;
+declare export function createPublicRootInstance(
+  rootTag: RootTag
+): PublicRootInstance;
+declare export function createPublicInstance(
   tag: number,
   viewConfig: ViewConfig,
-  internalInstanceHandle: InternalInstanceHandle
+  internalInstanceHandle: InternalInstanceHandle,
+  ownerDocument: PublicRootInstance
 ): ReactFabricHostComponent | ReactNativeElement;
 declare export function createPublicTextInstance(
-  internalInstanceHandle: InternalInstanceHandle
+  internalInstanceHandle: InternalInstanceHandle,
+  ownerDocument: PublicRootInstance
 ): ReadOnlyText;
 declare export function getNativeTagFromPublicInstance(
   publicInstance: ReactFabricHostComponent | ReactNativeElement
