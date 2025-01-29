@@ -718,6 +718,61 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     },
   },
   {
+    title: 'allowFontScaling attribute',
+    render: function (): React.Node {
+      return (
+        <View>
+          <Text>
+            By default, text will respect Text Size accessibility setting on
+            iOS. It means that all font sizes will be increased or decreased
+            depending on the value of Text Size setting in{' '}
+            <Text style={{fontWeight: 'bold'}}>
+              Settings.app - Display & Brightness - Text Size
+            </Text>
+          </Text>
+          <ExampleTextInput
+            placeholder="allowFontScaling = false"
+            allowFontScaling={false}
+          />
+          <ExampleTextInput
+            style={{marginTop: 10}}
+            placeholder="allowFontScaling = false"
+            allowFontScaling={true}
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'maxFontSizeMultiplier attribute',
+    name: 'maxFontSizeMultiplier',
+    render(): React.Node {
+      return (
+        <View testID={'max-font-size-multiplier'}>
+          <Text>
+            When allowFontScaling is enabled, you can use the
+            maxFontSizeMultiplier prop to set an upper limit on how much the
+            font size will be scaled.
+          </Text>
+          <ExampleTextInput
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1}
+            placeholder="This text will not scale up (max 1x)"
+            style={{marginTop: 10}}
+            testID={'non-scalable-text-input'}
+          />
+          <ExampleTextInput
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.5}
+            placeholder="This text will scale up (max 1.5x)"
+            style={{marginTop: 10}}
+            testID={'scalable-text-input'}
+          />
+        </View>
+      );
+    },
+  },
+  {
     title: 'Auto-expanding',
     render: function (): React.Node {
       return (

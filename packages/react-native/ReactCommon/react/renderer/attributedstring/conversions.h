@@ -910,6 +910,7 @@ constexpr static MapBuffer::Key TA_KEY_LINE_BREAK_STRATEGY = 25;
 constexpr static MapBuffer::Key TA_KEY_ROLE = 26;
 constexpr static MapBuffer::Key TA_KEY_TEXT_TRANSFORM = 27;
 constexpr static MapBuffer::Key TA_KEY_ALIGNMENT_VERTICAL = 28;
+constexpr static MapBuffer::Key TA_KEY_MAX_FONT_SIZE_MULTIPLIER = 29;
 
 // constants for ParagraphAttributes serialization
 constexpr static MapBuffer::Key PA_KEY_MAX_NUMBER_OF_LINES = 0;
@@ -1003,6 +1004,10 @@ inline MapBuffer toMapBuffer(const TextAttributes& textAttributes) {
   if (textAttributes.allowFontScaling.has_value()) {
     builder.putBool(
         TA_KEY_ALLOW_FONT_SCALING, *textAttributes.allowFontScaling);
+  }
+  if (!std::isnan(textAttributes.maxFontSizeMultiplier)) {
+    builder.putDouble(
+        TA_KEY_MAX_FONT_SIZE_MULTIPLIER, textAttributes.maxFontSizeMultiplier);
   }
   if (!std::isnan(textAttributes.letterSpacing)) {
     builder.putDouble(TA_KEY_LETTER_SPACING, textAttributes.letterSpacing);
