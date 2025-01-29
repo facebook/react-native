@@ -8,11 +8,15 @@
  * @flow strict-local
  */
 
-import type {
-  InternalInstanceHandle,
-  Node as ShadowNode,
-} from '../../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {InternalInstanceHandle} from '../../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type ReadOnlyCharacterData from '../ReadOnlyCharacterData';
+import type ReadOnlyElement from '../ReadOnlyElement';
 import type ReadOnlyNode from '../ReadOnlyNode';
+import type {
+  NativeElementReference,
+  NativeNodeReference,
+  NativeTextReference,
+} from '../specs/NativeDOM';
 
 let RendererProxy;
 function getRendererProxy() {
@@ -39,10 +43,27 @@ export function setInstanceHandle(
   node[INSTANCE_HANDLE_KEY] = instanceHandle;
 }
 
-export function getShadowNode(node: ReadOnlyNode): ?ShadowNode {
+export function getNativeNodeReference(
+  node: ReadOnlyNode,
+): ?NativeNodeReference {
+  // $FlowExpectedError[incompatible-return]
   return getRendererProxy().getNodeFromInternalInstanceHandle(
     getInstanceHandle(node),
   );
+}
+
+export function getNativeElementReference(
+  node: ReadOnlyElement,
+): ?NativeElementReference {
+  // $FlowExpectedError[incompatible-return]
+  return getNativeNodeReference(node);
+}
+
+export function getNativeTextReference(
+  node: ReadOnlyCharacterData,
+): ?NativeTextReference {
+  // $FlowExpectedError[incompatible-return]
+  return getNativeNodeReference(node);
 }
 
 export function getPublicInstanceFromInternalInstanceHandle(
