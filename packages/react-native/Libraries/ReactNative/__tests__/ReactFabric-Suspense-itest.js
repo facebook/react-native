@@ -92,7 +92,7 @@ function Square(props: {squareId: SquareId}) {
   if (data == null) {
     data = use(fetchData(props.squareId));
   }
-  return <View key={data.color} nativeID={'square with data: ' + data.color} />;
+  return <View key={data.color} nativeID={`square-with-data-${data.color}`} />;
 }
 
 function GreenSquare() {
@@ -104,7 +104,7 @@ function RedSquare() {
 }
 
 function Fallback() {
-  return <View nativeID="suspense fallback" />;
+  return <View nativeID="suspense-fallback" />;
 }
 
 describe('Suspense', () => {
@@ -120,12 +120,11 @@ describe('Suspense', () => {
       );
     });
 
-    let mountingLogs = root.takeMountingManagerLogs();
-
-    expect(mountingLogs.length).toBe(1);
-    expect(mountingLogs[0]).toBe(
-      'create view type: `View` nativeId: `suspense fallback`',
-    );
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "View", nativeID: "suspense-fallback"}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "suspense-fallback"}',
+    ]);
 
     expect(resolveFunction).not.toBeNull();
     Fantom.runTask(() => {
@@ -133,12 +132,12 @@ describe('Suspense', () => {
       resolveFunction = null;
     });
 
-    mountingLogs = root.takeMountingManagerLogs();
-
-    expect(mountingLogs.length).toBe(1);
-    expect(mountingLogs[0]).toBe(
-      'create view type: `View` nativeId: `square with data: green`',
-    );
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: "suspense-fallback"}',
+      'Delete {type: "View", nativeID: "suspense-fallback"}',
+      'Create {type: "View", nativeID: "square-with-data-green"}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "square-with-data-green"}',
+    ]);
 
     Fantom.runTask(() => {
       root.render(
@@ -148,12 +147,12 @@ describe('Suspense', () => {
       );
     });
 
-    mountingLogs = root.takeMountingManagerLogs();
-
-    expect(mountingLogs.length).toBe(1);
-    expect(mountingLogs[0]).toBe(
-      'create view type: `View` nativeId: `suspense fallback`',
-    );
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: "square-with-data-green"}',
+      'Delete {type: "View", nativeID: "square-with-data-green"}',
+      'Create {type: "View", nativeID: "suspense-fallback"}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "suspense-fallback"}',
+    ]);
 
     expect(resolveFunction).not.toBeNull();
     Fantom.runTask(() => {
@@ -161,12 +160,12 @@ describe('Suspense', () => {
       resolveFunction = null;
     });
 
-    mountingLogs = root.takeMountingManagerLogs();
-
-    expect(mountingLogs.length).toBe(1);
-    expect(mountingLogs[0]).toBe(
-      'create view type: `View` nativeId: `square with data: red`',
-    );
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: "suspense-fallback"}',
+      'Delete {type: "View", nativeID: "suspense-fallback"}',
+      'Create {type: "View", nativeID: "square-with-data-red"}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "square-with-data-red"}',
+    ]);
 
     Fantom.runTask(() => {
       root.render(
@@ -176,12 +175,12 @@ describe('Suspense', () => {
       );
     });
 
-    mountingLogs = root.takeMountingManagerLogs();
-
-    expect(mountingLogs.length).toBe(1);
-    expect(mountingLogs[0]).toBe(
-      'create view type: `View` nativeId: `square with data: green`',
-    );
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: "square-with-data-red"}',
+      'Delete {type: "View", nativeID: "square-with-data-red"}',
+      'Create {type: "View", nativeID: "square-with-data-green"}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "square-with-data-green"}',
+    ]);
 
     expect(resolveFunction).toBeNull();
   });
@@ -206,12 +205,11 @@ describe('Suspense', () => {
       root.render(<App color="green" />);
     });
 
-    let mountingLogs = root.takeMountingManagerLogs();
-
-    expect(mountingLogs.length).toBe(1);
-    expect(mountingLogs[0]).toBe(
-      'create view type: `View` nativeId: `square with data: green`',
-    );
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "View", nativeID: "square-with-data-green"}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "square-with-data-green"}',
+    ]);
 
     expect(resolveFunction).toBeNull();
     Fantom.runTask(() => {
@@ -220,10 +218,8 @@ describe('Suspense', () => {
       });
     });
 
-    mountingLogs = root.takeMountingManagerLogs();
-
     // Green square is still mounted. Fallback is not shown to the user.
-    expect(mountingLogs.length).toBe(0);
+    expect(root.takeMountingManagerLogs()).toEqual([]);
 
     expect(resolveFunction).not.toBeNull();
     Fantom.runTask(() => {
@@ -231,11 +227,11 @@ describe('Suspense', () => {
       resolveFunction = null;
     });
 
-    mountingLogs = root.takeMountingManagerLogs();
-
-    expect(mountingLogs.length).toBe(1);
-    expect(mountingLogs[0]).toBe(
-      'create view type: `View` nativeId: `square with data: red`',
-    );
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: "square-with-data-green"}',
+      'Delete {type: "View", nativeID: "square-with-data-green"}',
+      'Create {type: "View", nativeID: "square-with-data-red"}',
+      'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "square-with-data-red"}',
+    ]);
   });
 });
