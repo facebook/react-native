@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3b3ce0cfc8578f517393b89dc76a9aac>>
+ * @generated SignedSource<<410d80345815d506c1adfda660cdcfcc>>
  */
 
 /**
@@ -102,6 +102,8 @@ class NativeReactNativeFeatureFlags
   bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
+
+  bool useAccumulatedRawPropsUpdatesOnlyInViewAndroid(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
 

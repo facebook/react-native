@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e6816ffbe4d790d219c6aced5b3c695c>>
+ * @generated SignedSource<<9e9041983707511e02dfc8c5bbe54b90>>
  */
 
 /**
@@ -52,6 +52,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var lazyAnimationCallbacksCache: Boolean? = null
   private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
+  private var useAccumulatedRawPropsUpdatesOnlyInViewAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
@@ -346,6 +347,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.traceTurboModulePromiseRejectionsOnAndroid()
       traceTurboModulePromiseRejectionsOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun useAccumulatedRawPropsUpdatesOnlyInViewAndroid(): Boolean {
+    var cached = useAccumulatedRawPropsUpdatesOnlyInViewAndroidCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.useAccumulatedRawPropsUpdatesOnlyInViewAndroid()
+      useAccumulatedRawPropsUpdatesOnlyInViewAndroidCache = cached
     }
     return cached
   }

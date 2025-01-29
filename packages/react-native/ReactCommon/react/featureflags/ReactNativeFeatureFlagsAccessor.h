@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29ce7fa71b300ff721db97d622c29e6a>>
+ * @generated SignedSource<<126221f92020798d0a3d94ec94413233>>
  */
 
 /**
@@ -64,6 +64,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool lazyAnimationCallbacks();
   bool loadVectorDrawablesOnImages();
   bool traceTurboModulePromiseRejectionsOnAndroid();
+  bool useAccumulatedRawPropsUpdatesOnlyInViewAndroid();
   bool useAlwaysAvailableJSErrorHandling();
   bool useEditTextStockAndroidFocusBehavior();
   bool useFabricInterop();
@@ -84,7 +85,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 41> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -118,6 +119,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
   std::atomic<std::optional<bool>> loadVectorDrawablesOnImages_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
+  std::atomic<std::optional<bool>> useAccumulatedRawPropsUpdatesOnlyInViewAndroid_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useEditTextStockAndroidFocusBehavior_;
   std::atomic<std::optional<bool>> useFabricInterop_;

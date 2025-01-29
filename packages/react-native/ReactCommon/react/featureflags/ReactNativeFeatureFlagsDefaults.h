@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3a526f2dc57cf7ace4597660e4b809c4>>
+ * @generated SignedSource<<685137ef1fbb3bf96628a5f393ee2286>>
  */
 
 /**
@@ -152,6 +152,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
+    return false;
+  }
+
+  bool useAccumulatedRawPropsUpdatesOnlyInViewAndroid() override {
     return false;
   }
 
