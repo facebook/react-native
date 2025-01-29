@@ -161,6 +161,6 @@ class NewArchitectureHelper
     end
 
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == 0 ? false : true
+        return ENV["RCT_NEW_ARCH_ENABLED"] != "0"
     end
 end
