@@ -42,6 +42,9 @@ export default async function symbolicateStackTrace(
   const fetch = global.fetch ?? require('../../Network/fetch');
   const response = await fetch(devServer.url + 'symbolicate', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({stack, extraData}),
   });
   return await response.json();
