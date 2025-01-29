@@ -19,10 +19,10 @@ import type {EventInit} from './Event';
 
 import Event from './Event';
 
-export type CustomEventInit = {
+export type CustomEventInit = $ReadOnly<{
   ...EventInit,
   detail?: mixed,
-};
+}>;
 
 export default class CustomEvent extends Event {
   _detail: mixed;
