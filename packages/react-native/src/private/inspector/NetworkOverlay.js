@@ -19,11 +19,11 @@ const TouchableHighlight =
   require('../../../Libraries/Components/Touchable/TouchableHighlight').default;
 const View = require('../../../Libraries/Components/View/View').default;
 const FlatList = require('../../../Libraries/Lists/FlatList').default;
-const XHRInterceptor = require('../../../Libraries/Network/XHRInterceptor');
 const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
 const Text = require('../../../Libraries/Text/Text').default;
 const WebSocketInterceptor =
   require('../../../Libraries/WebSocket/WebSocketInterceptor').default;
+const XHRInterceptor = require('./XHRInterceptor');
 
 const LISTVIEW_CELL_HEIGHT = 15;
 
