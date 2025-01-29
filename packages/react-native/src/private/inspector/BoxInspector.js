@@ -10,14 +10,17 @@
 
 'use strict';
 
-import type {TextStyleProp, ViewStyleProp} from '../StyleSheet/StyleSheet';
+import type {
+  TextStyleProp,
+  ViewStyleProp,
+} from '../../../Libraries/StyleSheet/StyleSheet';
 import type {InspectedElementFrame} from './Inspector';
 
 import React from 'react';
 
-const View = require('../Components/View/View').default;
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text').default;
+const View = require('../../../Libraries/Components/View/View').default;
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const Text = require('../../../Libraries/Text/Text').default;
 const resolveBoxStyle = require('./resolveBoxStyle').default;
 
 const blank = {

@@ -10,23 +10,25 @@
 
 'use strict';
 
-import type {InspectedViewRef} from '../ReactNative/AppContainer-dev';
+import type {InspectedViewRef} from '../../../Libraries/ReactNative/AppContainer-dev';
 import type {
   InspectorData,
   TouchedViewDataAtPoint,
-} from '../Renderer/shims/ReactNativeTypes';
-import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
-import type {ReactDevToolsAgent} from '../Types/ReactDevToolsTypes';
+} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {ViewStyleProp} from '../../../Libraries/StyleSheet/StyleSheet';
+import type {ReactDevToolsAgent} from '../../../Libraries/Types/ReactDevToolsTypes';
 
-import SafeAreaView from '../../src/private/components/SafeAreaView_INTERNAL_DO_NOT_USE';
+import SafeAreaView from '../components/SafeAreaView_INTERNAL_DO_NOT_USE';
 import React from 'react';
 
-const View = require('../Components/View/View').default;
-const PressabilityDebug = require('../Pressability/PressabilityDebug');
-const {findNodeHandle} = require('../ReactNative/RendererProxy');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Dimensions = require('../Utilities/Dimensions').default;
-const Platform = require('../Utilities/Platform');
+const View = require('../../../Libraries/Components/View/View').default;
+const PressabilityDebug = require('../../../Libraries/Pressability/PressabilityDebug');
+const {
+  findNodeHandle,
+} = require('../../../Libraries/ReactNative/RendererProxy');
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const Dimensions = require('../../../Libraries/Utilities/Dimensions').default;
+const Platform = require('../../../Libraries/Utilities/Platform');
 const getInspectorDataForViewAtPoint =
   require('./getInspectorDataForViewAtPoint').default;
 const InspectorOverlay = require('./InspectorOverlay').default;

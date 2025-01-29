@@ -10,7 +10,8 @@
 
 'use strict';
 
-const I18nManager = require('../ReactNative/I18nManager').default;
+const I18nManager =
+  require('../../../Libraries/ReactNative/I18nManager').default;
 
 /**
  * Resolve a style property into its component parts.

@@ -12,10 +12,10 @@
 
 import React from 'react';
 
-const View = require('../Components/View/View').default;
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text').default;
-const PerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
+const View = require('../../../Libraries/Components/View/View').default;
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const Text = require('../../../Libraries/Text/Text').default;
+const PerformanceLogger = require('../../../Libraries/Utilities/GlobalPerformanceLogger');
 
 class PerformanceOverlay extends React.Component<{...}> {
   render(): React.Node {
