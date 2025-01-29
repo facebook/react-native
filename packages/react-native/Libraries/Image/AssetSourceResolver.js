@@ -36,9 +36,9 @@ const invariant = require('invariant');
 /**
  * Returns a path like 'assets/AwesomeModule/icon@2x.png'
  */
-function getScaledAssetPath(asset: PackagerAsset): string {
-  const scale = pickScale(asset.scales, PixelRatio.get());
-  const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
+function getScaledAssetPath(asset: PackagerAsset, scale?: number): string {
+  const resolvedScale = scale ?? pickScale(asset.scales, PixelRatio.get());
+  const scaleSuffix = resolvedScale === 1 ? '' : '@' + resolvedScale + 'x';
   const assetDir = getBasePath(asset);
   return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
 }
@@ -138,15 +138,16 @@ class AssetSourceResolver {
    * Returns an absolute URL which can be used to fetch the asset
    * from the devserver
    */
-  assetServerURL(): ResolvedAssetSource {
+  assetServerURL(scale?: number): ResolvedAssetSource {
     invariant(this.serverUrl != null, 'need server to load from');
     return this.fromSource(
       this.serverUrl +
-        getScaledAssetPath(this.asset) +
+        getScaledAssetPath(this.asset, scale) +
         '?platform=' +
         Platform.OS +
         '&hash=' +
         this.asset.hash,
+      scale,
     );
   }
 
@@ -162,13 +163,14 @@ class AssetSourceResolver {
    * Resolves to where the bundle is running from, with a scaled asset filename
    * E.g. 'file:///sdcard/bundle/assets/AwesomeModule/icon@2x.png'
    */
-  scaledAssetURLNearBundle(): ResolvedAssetSource {
+  scaledAssetURLNearBundle(scale?: number): ResolvedAssetSource {
     const path = this.jsbundleUrl ?? 'file://';
     return this.fromSource(
       // Assets can have relative paths outside of the project root.
       // When bundling them we replace `../` with `_` to make sure they
       // don't end up outside of the expected assets directory.
-      path + getScaledAssetPath(this.asset).replace(/\.\.\//g, '_'),
+      path + getScaledAssetPath(this.asset, scale).replace(/\.\.\//g, '_'),
+      scale,
     );
   }
 
@@ -196,13 +198,13 @@ class AssetSourceResolver {
     return this.fromSource(path + getAssetPathInDrawableFolder(this.asset));
   }
 
-  fromSource(source: string): ResolvedAssetSource {
+  fromSource(source: string, scale?: number): ResolvedAssetSource {
     return {
       __packager_asset: true,
       width: this.asset.width,
       height: this.asset.height,
       uri: source,
-      scale: pickScale(this.asset.scales, PixelRatio.get()),
+      scale: scale ?? pickScale(this.asset.scales, PixelRatio.get()),
     };
   }
 
