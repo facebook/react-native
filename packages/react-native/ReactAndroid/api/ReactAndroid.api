@@ -3954,6 +3954,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setPointerOver (Landroid/view/View;Z)V
 	public fun setPointerOverCapture (Landroid/view/View;Z)V
 	public fun setRenderToHardwareTexture (Landroid/view/View;Z)V
+	public fun setTooltipText (Landroid/view/View;Z)V
 	public fun setResponderEnd (Landroid/view/View;Z)V
 	public fun setResponderGrant (Landroid/view/View;Z)V
 	public fun setResponderMove (Landroid/view/View;Z)V
@@ -5354,6 +5355,7 @@ public final class com/facebook/react/uimanager/ViewProps {
 	public static final field POINTER_EVENTS Ljava/lang/String;
 	public static final field POSITION Ljava/lang/String;
 	public static final field RENDER_TO_HARDWARE_TEXTURE Ljava/lang/String;
+	public static final field TOOLTIP_TEXT Ljava/lang/String;
 	public static final field RESIZE_METHOD Ljava/lang/String;
 	public static final field RESIZE_MODE Ljava/lang/String;
 	public static final field RIGHT Ljava/lang/String;

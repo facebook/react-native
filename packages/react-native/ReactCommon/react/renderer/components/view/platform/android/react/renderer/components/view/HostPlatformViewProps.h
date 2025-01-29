@@ -47,6 +47,7 @@ class HostPlatformViewProps : public BaseViewProps {
   bool hasTVPreferredFocus{false};
   bool needsOffscreenAlphaCompositing{false};
   bool renderToHardwareTextureAndroid{false};
+  std::string tooltipTextAndroid{};
 
 #pragma mark - Convenience Methods
 

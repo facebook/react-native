@@ -100,6 +100,11 @@ export interface ViewPropsAndroid {
   renderToHardwareTextureAndroid?: boolean | undefined;
 
   /**
+   * Displays a small descriptive message that appears near a view when users long press the view or hover their mouse over it
+   */
+  tooltipTextAndroid?: string | undefined;
+
+  /**
    * Whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
    */
   focusable?: boolean | undefined;

@@ -147,6 +147,7 @@ public object ViewProps {
   public const val SHADOW_COLOR: String = "shadowColor"
   public const val Z_INDEX: String = "zIndex"
   public const val RENDER_TO_HARDWARE_TEXTURE: String = "renderToHardwareTextureAndroid"
+  public const val TOOLTIP_TEXT: String = "tooltipTextAndroid"
   public const val ACCESSIBILITY_LABEL: String = "accessibilityLabel"
   public const val ACCESSIBILITY_COLLECTION: String = "accessibilityCollection"
   public const val ACCESSIBILITY_COLLECTION_ITEM: String = "accessibilityCollectionItem"

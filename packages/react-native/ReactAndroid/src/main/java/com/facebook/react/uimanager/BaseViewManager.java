@@ -271,6 +271,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setTag(R.id.use_hardware_layer, useHWTexture);
   }
 
+  @ReactProp(name = ViewProps.TOOLTIP_TEXT)
+  public void setTooltipText(@NonNull T view, String tooltipText) {
+    view.setTooltipText(tooltipText);
+  }
+
   @ReactProp(name = ViewProps.TEST_ID)
   public void setTestId(@NonNull T view, @Nullable String testId) {
     view.setTag(R.id.react_test_id, testId);
