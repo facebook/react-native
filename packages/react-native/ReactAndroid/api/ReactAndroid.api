@@ -768,11 +768,6 @@ public class com/facebook/react/bridge/DynamicFromObject : com/facebook/react/br
 	public fun recycle ()V
 }
 
-public final class com/facebook/react/bridge/FallbackJSBundleLoader : com/facebook/react/bridge/JSBundleLoader {
-	public fun <init> (Ljava/util/List;)V
-	public fun loadScript (Lcom/facebook/react/bridge/JSBundleLoaderDelegate;)Ljava/lang/String;
-}
-
 public abstract class com/facebook/react/bridge/GuardedAsyncTask : android/os/AsyncTask {
 	protected fun <init> (Lcom/facebook/react/bridge/JSExceptionHandler;)V
 	protected fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
