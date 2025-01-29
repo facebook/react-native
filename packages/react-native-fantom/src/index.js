@@ -77,8 +77,8 @@ class Root {
     ReactFabric.render(element, this.#surfaceId, null, true);
   }
 
-  getMountingLogs(): Array<string> {
-    return NativeFantom.getMountingManagerLogs(this.#surfaceId);
+  takeMountingManagerLogs(): Array<string> {
+    return NativeFantom.takeMountingManagerLogs(this.#surfaceId);
   }
 
   destroy() {
