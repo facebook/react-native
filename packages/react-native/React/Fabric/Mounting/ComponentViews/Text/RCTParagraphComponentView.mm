@@ -8,7 +8,7 @@
 #import "RCTParagraphComponentView.h"
 #import "RCTParagraphComponentAccessibilityProvider.h"
 
-#import <MobileCoreServices/UTCoreTypes.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <react/renderer/components/text/ParagraphComponentDescriptor.h>
 #import <react/renderer/components/text/ParagraphProps.h>
 #import <react/renderer/components/text/ParagraphState.h>
@@ -299,17 +299,17 @@ using namespace facebook::react;
 {
   NSAttributedString *attributedText = self.attributedText;
 
-  NSMutableDictionary *item = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, id> *item = [NSMutableDictionary new];
 
   NSData *rtf = [attributedText dataFromRange:NSMakeRange(0, attributedText.length)
                            documentAttributes:@{NSDocumentTypeDocumentAttribute : NSRTFDTextDocumentType}
                                         error:nil];
 
   if (rtf) {
-    [item setObject:rtf forKey:(id)kUTTypeFlatRTFD];
+    [item setObject:rtf forKey:UTTypeFlatRTFD.identifier];
   }
 
-  [item setObject:attributedText.string forKey:(id)kUTTypeUTF8PlainText];
+  [item setObject:attributedText.string forKey:UTTypeUTF8PlainText.identifier];
 
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
   pasteboard.items = @[ item ];
