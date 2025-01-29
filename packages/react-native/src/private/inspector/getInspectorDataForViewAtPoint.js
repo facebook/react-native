@@ -11,7 +11,7 @@
 import type {
   HostInstance,
   TouchedViewDataAtPoint,
-} from '../Renderer/shims/ReactNativeTypes';
+} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
 
 const invariant = require('invariant');
 

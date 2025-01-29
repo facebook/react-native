@@ -12,15 +12,16 @@
 
 import type {ElementsHierarchy, InspectedElement} from './Inspector';
 
-import SafeAreaView from '../Components/SafeAreaView/SafeAreaView';
+import SafeAreaView from '../../../Libraries/Components/SafeAreaView/SafeAreaView';
 import React from 'react';
 
-const ScrollView = require('../Components/ScrollView/ScrollView').default;
+const ScrollView =
+  require('../../../Libraries/Components/ScrollView/ScrollView').default;
 const TouchableHighlight =
-  require('../Components/Touchable/TouchableHighlight').default;
-const View = require('../Components/View/View').default;
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text').default;
+  require('../../../Libraries/Components/Touchable/TouchableHighlight').default;
+const View = require('../../../Libraries/Components/View/View').default;
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const Text = require('../../../Libraries/Text/Text').default;
 const ElementProperties = require('./ElementProperties').default;
 const NetworkOverlay = require('./NetworkOverlay').default;
 const PerformanceOverlay = require('./PerformanceOverlay').default;

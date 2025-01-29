@@ -12,18 +12,18 @@
 
 import type {RenderItemProps} from '@react-native/virtualized-lists';
 
-import ScrollView from '../Components/ScrollView/ScrollView';
+import ScrollView from '../../../Libraries/Components/ScrollView/ScrollView';
 import React from 'react';
 
 const TouchableHighlight =
-  require('../Components/Touchable/TouchableHighlight').default;
-const View = require('../Components/View/View').default;
-const FlatList = require('../Lists/FlatList').default;
-const XHRInterceptor = require('../Network/XHRInterceptor');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const Text = require('../Text/Text').default;
+  require('../../../Libraries/Components/Touchable/TouchableHighlight').default;
+const View = require('../../../Libraries/Components/View/View').default;
+const FlatList = require('../../../Libraries/Lists/FlatList').default;
+const XHRInterceptor = require('../../../Libraries/Network/XHRInterceptor');
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const Text = require('../../../Libraries/Text/Text').default;
 const WebSocketInterceptor =
-  require('../WebSocket/WebSocketInterceptor').default;
+  require('../../../Libraries/WebSocket/WebSocketInterceptor').default;
 
 const LISTVIEW_CELL_HEIGHT = 15;
 
