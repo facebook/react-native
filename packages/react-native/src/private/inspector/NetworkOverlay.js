@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type XMLHttpRequest from '../Network/XMLHttpRequest';
+import type XMLHttpRequest from '../../../Libraries/Network/XMLHttpRequest';
 import type {RenderItemProps} from '@react-native/virtualized-lists';
 
 import ScrollView from '../../../Libraries/Components/ScrollView/ScrollView';
