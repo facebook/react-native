@@ -19,17 +19,20 @@ export type AlertType =
   | 'secure-text'
   | 'login-password';
 export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
-export type Buttons = Array<{
+export type AlertButton = {
   text?: string,
   onPress?: ?Function,
   isPreferred?: boolean,
   style?: AlertButtonStyle,
   ...
-}>;
+};
+export type Buttons = Array<AlertButton>;
 
 type Options = {
+  /** @platform android */
   cancelable?: ?boolean,
   userInterfaceStyle?: 'unspecified' | 'light' | 'dark',
+  /** @platform android */
   onDismiss?: ?() => void,
   ...
 };
