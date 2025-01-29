@@ -41,4 +41,58 @@ describe('URL', function () {
     const k = new URL('en-US/docs', 'https://developer.mozilla.org');
     expect(k.href).toBe('https://developer.mozilla.org/en-US/docs');
   });
+   describe('URL with search parameters', () => {
+    it('should add query parameters using URLSearchParams', () => {
+      const url = new URL('https://example.com');
+      url.searchParams.append('name', 'test');
+      url.searchParams.append('age', '30');
+      expect(url.href).toBe('https://example.com/?name=test&age=30');
+    });
+
+    it('should retrieve a query parameter by name', () => {
+      const url = new URL('https://example.com?name=test&age=30');
+      expect(url.searchParams.get('name')).toBe('test');
+      expect(url.searchParams.get('age')).toBe('30');
+      expect(url.searchParams.get('nonexistent')).toBe(null);
+    });
+
+    it('should check if a query parameter exists', () => {
+      const url = new URL('https://example.com?name=test&age=30');
+      expect(url.searchParams.has('name')).toBe(true);
+      expect(url.searchParams.has('age')).toBe(true);
+      expect(url.searchParams.has('nonexistent')).toBe(false);
+    });
+
+    it('should delete a query parameter', () => {
+      const url = new URL('https://example.com?name=test&age=30');
+      url.searchParams.delete('age');
+      expect(url.href).toBe('https://example.com/?name=test');
+    });
+
+    it('should set a query parameter, replacing existing value', () => {
+      const url = new URL('https://example.com?name=test');
+      url.searchParams.set('name', 'newvalue');
+      expect(url.href).toBe('https://example.com/?name=newvalue');
+      url.searchParams.set('age', '30');
+      expect(url.href).toBe('https://example.com/?name=newvalue&age=30');
+    });
+
+    it('should retrieve all values of a query parameter', () => {
+      const url = new URL('https://example.com?name=test&name=duplicate');
+      expect(url.searchParams.getAll('name')).toEqual(['test', 'duplicate']);
+    });
+
+    it('should sort query parameters by name', () => {
+      const url = new URL('https://example.com?b=2&a=1&c=3');
+      url.searchParams.sort();
+      expect(url.href).toBe('https://example.com/?a=1&b=2&c=3');
+    });
+
+    it('should convert search parameters to string', () => {
+      const url = new URL('https://example.com');
+      url.searchParams.append('param1', 'value1');
+      url.searchParams.append('param2', 'value2');
+      expect(url.searchParams.toString()).toBe('param1=value1&param2=value2');
+    });
+  });
 });
