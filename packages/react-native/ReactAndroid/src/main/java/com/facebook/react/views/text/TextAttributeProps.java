@@ -61,6 +61,7 @@ public class TextAttributeProps {
   public static final short TA_KEY_LINE_BREAK_STRATEGY = 25;
   public static final short TA_KEY_ROLE = 26;
   public static final short TA_KEY_TEXT_TRANSFORM = 27;
+  public static final short TA_KEY_MAX_FONT_SIZE_MULTIPLIER = 29;
 
   public static final int UNSET = -1;
 
@@ -81,6 +82,7 @@ public class TextAttributeProps {
   protected float mLineHeight = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
+  protected float mMaxFontSizeMultiplier = Float.NaN;
   protected int mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
@@ -227,6 +229,9 @@ public class TextAttributeProps {
         case TA_KEY_TEXT_TRANSFORM:
           result.setTextTransform(entry.getStringValue());
           break;
+        case TA_KEY_MAX_FONT_SIZE_MULTIPLIER:
+          result.setMaxFontSizeMultiplier((float) entry.getDoubleValue());
+          break;
       }
     }
 
@@ -243,6 +248,8 @@ public class TextAttributeProps {
     result.setLineHeight(getFloatProp(props, ViewProps.LINE_HEIGHT, ReactConstants.UNSET));
     result.setLetterSpacing(getFloatProp(props, ViewProps.LETTER_SPACING, Float.NaN));
     result.setAllowFontScaling(getBooleanProp(props, ViewProps.ALLOW_FONT_SCALING, true));
+    result.setMaxFontSizeMultiplier(
+        getFloatProp(props, ViewProps.MAX_FONT_SIZE_MULTIPLIER, Float.NaN));
     result.setFontSize(getFloatProp(props, ViewProps.FONT_SIZE, ReactConstants.UNSET));
     result.setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
     result.setColor(
@@ -411,7 +418,14 @@ public class TextAttributeProps {
       mAllowFontScaling = allowFontScaling;
       setFontSize(mFontSizeInput);
       setLineHeight(mLineHeightInput);
-      setLetterSpacing(mLetterSpacingInput);
+    }
+  }
+
+  private void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
+    if (maxFontSizeMultiplier != mMaxFontSizeMultiplier) {
+      mMaxFontSizeMultiplier = maxFontSizeMultiplier;
+      setFontSize(mFontSizeInput);
+      setLineHeight(mLineHeightInput);
     }
   }
 
@@ -420,7 +434,7 @@ public class TextAttributeProps {
     if (fontSize != ReactConstants.UNSET) {
       fontSize =
           mAllowFontScaling
-              ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
+              ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize, mMaxFontSizeMultiplier))
               : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
     }
     mFontSize = (int) fontSize;

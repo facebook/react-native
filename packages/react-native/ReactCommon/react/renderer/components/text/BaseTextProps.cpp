@@ -73,6 +73,12 @@ static TextAttributes convertRawProp(
       "allowFontScaling",
       sourceTextAttributes.allowFontScaling,
       defaultTextAttributes.allowFontScaling);
+  textAttributes.maxFontSizeMultiplier = convertRawProp(
+      context,
+      rawProps,
+      "maxFontSizeMultiplier",
+      sourceTextAttributes.maxFontSizeMultiplier,
+      defaultTextAttributes.maxFontSizeMultiplier);
   textAttributes.dynamicTypeRamp = convertRawProp(
       context,
       rawProps,
@@ -266,6 +272,12 @@ void BaseTextProps::setProp(
         defaults, value, textAttributes, fontVariant, "fontVariant");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, allowFontScaling, "allowFontScaling");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        maxFontSizeMultiplier,
+        "maxFontSizeMultiplier");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, letterSpacing, "letterSpacing");
     REBUILD_FIELD_SWITCH_CASE(
