@@ -80,6 +80,30 @@ describe('ReactNativeDocument', () => {
     expect(element.parentNode).toBe(document.documentElement);
   });
 
+  it('allows traversal through document-specific methods', () => {
+    let lastNode;
+
+    const root = Fantom.createRoot();
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          ref={node => {
+            lastNode = node;
+          }}
+        />,
+      );
+    });
+
+    const element = ensureInstance(lastNode, ReactNativeElement);
+    const document = ensureInstance(element.ownerDocument, ReactNativeDocument);
+
+    expect(document.childElementCount).toBe(1);
+    expect(document.firstElementChild).toBe(document.documentElement);
+    expect(document.lastElementChild).toBe(document.documentElement);
+    expect(document.children).toBeInstanceOf(HTMLCollection);
+    expect([...document.children]).toEqual([document.documentElement]);
+  });
+
   it('implements the abstract methods from ReadOnlyNode', () => {
     let lastNode;
 

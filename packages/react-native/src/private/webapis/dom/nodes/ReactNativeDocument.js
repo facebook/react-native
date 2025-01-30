@@ -12,8 +12,11 @@
 
 import type {RootTag} from '../../../../../Libraries/ReactNative/RootTag';
 import type {ViewConfig} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type HTMLCollection from '../oldstylecollections/HTMLCollection';
 import type {ReactNativeDocumentInstanceHandle} from './internals/ReactNativeDocumentInstanceHandle';
+import type ReadOnlyElement from './ReadOnlyElement';
 
+import {createHTMLCollection} from '../oldstylecollections/HTMLCollection';
 import {
   createReactNativeDocumentElementInstanceHandle,
   setNativeElementReferenceForReactNativeDocumentElementInstanceHandle,
@@ -35,8 +38,25 @@ export default class ReactNativeDocument extends ReadOnlyNode {
     this._documentElement = createDocumentElement(rootTag, this);
   }
 
+  get childElementCount(): number {
+    // just `documentElement`.
+    return 1;
+  }
+
+  get children(): HTMLCollection<ReadOnlyElement> {
+    return createHTMLCollection([this.documentElement]);
+  }
+
   get documentElement(): ReactNativeElement {
     return this._documentElement;
+  }
+
+  get firstElementChild(): ReadOnlyElement | null {
+    return this.documentElement;
+  }
+
+  get lastElementChild(): ReadOnlyElement | null {
+    return this.documentElement;
   }
 
   get nodeName(): string {
