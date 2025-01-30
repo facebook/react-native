@@ -96,7 +96,6 @@ import typeof Platform from './Libraries/Utilities/Platform';
 import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof Vibration from './Libraries/Vibration/Vibration';
-import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
 import typeof DevMenu from './src/private/devmenu/DevMenu';
 
 const warnOnce = require('./Libraries/Utilities/warnOnce');
@@ -357,9 +356,6 @@ module.exports = {
   },
   get Vibration(): Vibration {
     return require('./Libraries/Vibration/Vibration').default;
-  },
-  get YellowBox(): YellowBox {
-    return require('./Libraries/YellowBox/YellowBoxDeprecated').default;
   },
 
   // Plugins

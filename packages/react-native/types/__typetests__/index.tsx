@@ -111,7 +111,6 @@ import {
   View,
   ViewStyle,
   VirtualizedList,
-  YellowBox,
   findNodeHandle,
   requireNativeComponent,
   useColorScheme,
@@ -1967,9 +1966,6 @@ const PushNotificationTest = () => {
     },
   });
 };
-
-// YellowBox
-const YellowBoxTest = () => <YellowBox />;
 
 // Appearance
 const DarkMode = () => {
