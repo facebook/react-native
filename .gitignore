@@ -159,3 +159,6 @@ vendor/
 
 # Jest Integration
 /packages/react-native-fantom/build/
+
+# [Experimental] Generated TS type definitions
+/packages/react-native/types_generated/

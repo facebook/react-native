@@ -1900,4 +1900,4 @@ const verticalAlignToTextAlignVerticalMap = {
 };
 
 // $FlowFixMe[unclear-type] Unclear type. Using `any` type is not safe.
-module.exports = ((ExportedForwardRef: any): TextInputType);
+export default ExportedForwardRef as any as TextInputType;

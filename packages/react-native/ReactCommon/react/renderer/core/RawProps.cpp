@@ -104,10 +104,6 @@ inline bool isYogaStyleProp(const std::string& prop) {
 }
 } // namespace
 
-RawProps::RawProps() {
-  mode_ = Mode::Empty;
-}
-
 /*
  * Creates an object with given `runtime` and `value`.
  */
@@ -147,18 +143,6 @@ RawProps::RawProps(const RawProps& other) noexcept {
     dynamic_ = other.dynamic_;
   }
   ignoreYogaStyleProps_ = other.ignoreYogaStyleProps_;
-}
-
-RawProps& RawProps::operator=(const RawProps& other) noexcept {
-  mode_ = other.mode_;
-  if (mode_ == Mode::JSI) {
-    runtime_ = other.runtime_;
-    value_ = jsi::Value(*runtime_, other.value_);
-  } else if (mode_ == Mode::Dynamic) {
-    dynamic_ = other.dynamic_;
-  }
-  ignoreYogaStyleProps_ = other.ignoreYogaStyleProps_;
-  return *this;
 }
 
 void RawProps::parse(const RawPropsParser& parser) noexcept {

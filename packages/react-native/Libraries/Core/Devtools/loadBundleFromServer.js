@@ -103,7 +103,9 @@ function buildUrlForBundle(bundlePathAndQuery: string) {
   );
 }
 
-module.exports = function (bundlePathAndQuery: string): Promise<void> {
+export default function loadBundleFromServer(
+  bundlePathAndQuery: string,
+): Promise<void> {
   const requestUrl = buildUrlForBundle(bundlePathAndQuery);
   let loadPromise = cachedPromisesByUrl.get(requestUrl);
 
@@ -149,4 +151,4 @@ module.exports = function (bundlePathAndQuery: string): Promise<void> {
 
   cachedPromisesByUrl.set(requestUrl, loadPromise);
   return loadPromise;
-};
+}

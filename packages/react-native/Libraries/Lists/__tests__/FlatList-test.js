@@ -11,7 +11,7 @@
 'use strict';
 
 const {create} = require('../../../jest/renderer');
-const FlatList = require('../FlatList');
+const FlatList = require('../FlatList').default;
 const React = require('react');
 
 describe('FlatList', () => {

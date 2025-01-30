@@ -12,7 +12,7 @@
 
 import type {ExtendedError} from '../Core/ExtendedError';
 
-const BatchedBridge = require('./BatchedBridge');
+const BatchedBridge = require('./BatchedBridge').default;
 const invariant = require('invariant');
 
 export type ModuleConfig = [
@@ -176,7 +176,8 @@ function updateErrorWithErrorData(
   return Object.assign(error, errorData || {});
 }
 
-let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
+/* $FlowFixMe[unclear-type] unclear type of NativeModules */
+let NativeModules: {[moduleName: string]: any, ...} = {};
 if (global.nativeModuleProxy) {
   NativeModules = global.nativeModuleProxy;
 } else {
@@ -209,4 +210,4 @@ if (global.nativeModuleProxy) {
   );
 }
 
-module.exports = NativeModules;
+export default NativeModules;

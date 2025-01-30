@@ -56,7 +56,7 @@ async function main() {
   the given release version. This does not update package.json.
 
   Options:
-    --build-type       One of ['dry-run', 'nightly', 'release', 'prealpha'].
+    --build-type       One of ['dry-run', 'nightly', 'release'].
     --to-version       The new version string.
     `);
     return;

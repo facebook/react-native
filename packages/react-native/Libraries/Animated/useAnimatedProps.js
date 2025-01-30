@@ -17,13 +17,13 @@ import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNa
 import {isPublicInstance as isFabricPublicInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../Utilities/useRefEffect';
 import {AnimatedEvent} from './AnimatedEvent';
+import AnimatedNode from './nodes/AnimatedNode';
 import AnimatedProps from './nodes/AnimatedProps';
+import AnimatedValue from './nodes/AnimatedValue';
 import {
   useCallback,
   useEffect,
   useInsertionEffect,
-  useLayoutEffect,
-  useMemo,
   useReducer,
   useRef,
 } from 'react';
@@ -37,10 +37,15 @@ type CallbackRef<T> = T => mixed;
 
 type UpdateCallback = () => void;
 
-const useMemoOrAnimatedPropsMemo =
-  ReactNativeFeatureFlags.enableAnimatedPropsMemo()
-    ? useAnimatedPropsMemo
-    : useMemo;
+type AnimatedValueListeners = Array<{
+  propValue: AnimatedValue,
+  listenerId: string,
+}>;
+
+const useAnimatedPropsLifecycle =
+  ReactNativeFeatureFlags.scheduleAnimatedCleanupInMicrotask()
+    ? useAnimatedPropsLifecycleWithCleanupInMicrotask
+    : useAnimatedPropsLifecycleWithPrevNodeRef;
 
 export default function useAnimatedProps<TProps: {...}, TInstance>(
   props: TProps,
@@ -50,27 +55,33 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
   const onUpdateRef = useRef<UpdateCallback | null>(null);
   const timerRef = useRef<TimeoutID | null>(null);
 
-  const allowlistIfEnabled = ReactNativeFeatureFlags.enableAnimatedAllowlist()
-    ? allowlist
-    : null;
-
-  const node = useMemoOrAnimatedPropsMemo(
-    () =>
-      new AnimatedProps(
-        props,
-        () => onUpdateRef.current?.(),
-        allowlistIfEnabled,
-      ),
-    [allowlistIfEnabled, props],
+  const node = useAnimatedPropsMemo(
+    () => new AnimatedProps(props, () => onUpdateRef.current?.(), allowlist),
+    [allowlist, props],
   );
 
   const useNativePropsInFabric =
     ReactNativeFeatureFlags.shouldUseSetNativePropsInFabric();
 
-  const useAnimatedPropsLifecycle =
-    ReactNativeFeatureFlags.useInsertionEffectsForAnimations()
-      ? useAnimatedPropsLifecycle_insertionEffects
-      : useAnimatedPropsLifecycle_layoutEffects;
+  useEffect(() => {
+    // If multiple components call `flushQueue`, the first one will flush the
+    // queue and subsequent ones will do nothing.
+    NativeAnimatedHelper.API.flushQueue();
+    let drivenAnimationEndedListener: ?EventSubscription = null;
+    if (node.__isNative) {
+      drivenAnimationEndedListener =
+        NativeAnimatedHelper.nativeEventEmitter.addListener(
+          'onUserDrivenAnimationEnded',
+          data => {
+            node.update();
+          },
+        );
+    }
+
+    return () => {
+      drivenAnimationEndedListener?.remove();
+    };
+  });
 
   useAnimatedPropsLifecycle(node);
 
@@ -162,6 +173,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 
       const target = getEventTarget(instance);
       const events = [];
+      const animatedValueListeners: AnimatedValueListeners = [];
 
       for (const propName in props) {
         // $FlowFixMe[invalid-computed-prop]
@@ -169,6 +181,8 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
         if (propValue instanceof AnimatedEvent && propValue.__isNative) {
           propValue.__attach(target, propName);
           events.push([propName, propValue]);
+          // $FlowFixMe[incompatible-call] - the `addListenersToPropsValue` drills down the propValue.
+          addListenersToPropsValue(propValue, animatedValueListeners);
         }
       }
 
@@ -177,6 +191,10 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
 
         for (const [propName, propValue] of events) {
           propValue.__detach(target, propName);
+        }
+
+        for (const {propValue, listenerId} of animatedValueListeners) {
+          propValue.removeListener(listenerId);
         }
       };
     },
@@ -194,11 +212,38 @@ function reduceAnimatedProps<TProps>(
   // Force `collapsable` to be false so that the native view is not flattened.
   // Flattened views cannot be accurately referenced by the native driver.
   return {
-    ...(ReactNativeFeatureFlags.enableAnimatedPropsMemo()
-      ? node.__getValueWithStaticProps(props)
-      : node.__getValue()),
+    ...node.__getValueWithStaticProps(props),
     collapsable: false,
   };
+}
+
+function addListenersToPropsValue(
+  propValue: AnimatedValue,
+  accumulator: AnimatedValueListeners,
+) {
+  // propValue can be a scalar value, an array or an object.
+  if (propValue instanceof AnimatedValue) {
+    const listenerId = propValue.addListener(() => {});
+    accumulator.push({propValue, listenerId});
+  } else if (Array.isArray(propValue)) {
+    // An array can be an array of scalar values, arrays of arrays, or arrays of objects
+    for (const prop of propValue) {
+      addListenersToPropsValue(prop, accumulator);
+    }
+  } else if (propValue instanceof Object) {
+    addAnimatedValuesListenersToProps(propValue, accumulator);
+  }
+}
+
+function addAnimatedValuesListenersToProps(
+  props: AnimatedNode,
+  accumulator: AnimatedValueListeners,
+) {
+  for (const propName in props) {
+    // $FlowFixMe[prop-missing] - This is an object contained in a prop, but we don't know the exact type.
+    const propValue = props[propName];
+    addListenersToPropsValue(propValue, accumulator);
+  }
 }
 
 /**
@@ -208,39 +253,18 @@ function reduceAnimatedProps<TProps>(
  * nodes. So in order to optimize this, we avoid detaching until the next attach
  * unless we are unmounting.
  */
-function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
+function useAnimatedPropsLifecycleWithPrevNodeRef(node: AnimatedProps): void {
   const prevNodeRef = useRef<?AnimatedProps>(null);
   const isUnmountingRef = useRef<boolean>(false);
 
-  useEffect(() => {
-    // It is ok for multiple components to call `flushQueue` because it noops
-    // if the queue is empty. When multiple animated components are mounted at
-    // the same time. Only first component flushes the queue and the others will noop.
-    NativeAnimatedHelper.API.flushQueue();
-    let drivenAnimationEndedListener: ?EventSubscription = null;
-    if (node.__isNative) {
-      drivenAnimationEndedListener =
-        NativeAnimatedHelper.nativeEventEmitter.addListener(
-          'onUserDrivenAnimationEnded',
-          data => {
-            node.update();
-          },
-        );
-    }
-
-    return () => {
-      drivenAnimationEndedListener?.remove();
-    };
-  });
-
-  useLayoutEffect(() => {
+  useInsertionEffect(() => {
     isUnmountingRef.current = false;
     return () => {
       isUnmountingRef.current = true;
     };
   }, []);
 
-  useLayoutEffect(() => {
+  useInsertionEffect(() => {
     node.__attach();
     if (prevNodeRef.current != null) {
       const prevNode = prevNodeRef.current;
@@ -262,59 +286,37 @@ function useAnimatedPropsLifecycle_layoutEffects(node: AnimatedProps): void {
 
 /**
  * Manages the lifecycle of the supplied `AnimatedProps` by invoking `__attach`
- * and `__detach`. However, this is more complicated because `AnimatedProps`
- * uses reference counting to determine when to recursively detach its children
- * nodes. So in order to optimize this, we avoid detaching until the next attach
- * unless we are unmounting.
+ * and `__detach`. However, `__detach` occurs in a microtask for these reasons:
+ *
+ *   1. Optimizes detaching and attaching `AnimatedNode` instances that rely on
+ *      reference counting to cleanup state, by causing detach to be scheduled
+ *      after any subsequent attach.
+ *   2. Avoids calling `detach` during the insertion effect phase (which
+ *      occurs during the commit phase), which may invoke completion callbacks.
+ *
+ * We should avoid invoking completion callbacks during the commit phase because
+ * callbacks may update state, which is unsupported and will force synchronous
+ * updates.
  */
-function useAnimatedPropsLifecycle_insertionEffects(node: AnimatedProps): void {
-  const prevNodeRef = useRef<?AnimatedProps>(null);
-  const isUnmountingRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    // It is ok for multiple components to call `flushQueue` because it noops
-    // if the queue is empty. When multiple animated components are mounted at
-    // the same time. Only first component flushes the queue and the others will noop.
-    NativeAnimatedHelper.API.flushQueue();
-    let drivenAnimationEndedListener: ?EventSubscription = null;
-    if (node.__isNative) {
-      drivenAnimationEndedListener =
-        NativeAnimatedHelper.nativeEventEmitter.addListener(
-          'onUserDrivenAnimationEnded',
-          data => {
-            node.update();
-          },
-        );
-    }
-
-    return () => {
-      drivenAnimationEndedListener?.remove();
-    };
-  });
+function useAnimatedPropsLifecycleWithCleanupInMicrotask(
+  node: AnimatedProps,
+): void {
+  const isMounted = useRef<boolean>(false);
 
   useInsertionEffect(() => {
-    isUnmountingRef.current = false;
-    return () => {
-      isUnmountingRef.current = true;
-    };
-  }, []);
-
-  useInsertionEffect(() => {
+    isMounted.current = true;
     node.__attach();
-    if (prevNodeRef.current != null) {
-      const prevNode = prevNodeRef.current;
-      // TODO: Stop restoring default values (unless `reset` is called).
-      prevNode.__restoreDefaultValues();
-      prevNode.__detach();
-      prevNodeRef.current = null;
-    }
+
     return () => {
-      if (isUnmountingRef.current) {
+      isMounted.current = false;
+      queueMicrotask(() => {
         // NOTE: Do not restore default values on unmount, see D18197735.
+        if (isMounted.current) {
+          // TODO: Stop restoring default values (unless `reset` is called).
+          node.__restoreDefaultValues();
+        }
         node.__detach();
-      } else {
-        prevNodeRef.current = node;
-      }
+      });
     };
   }, [node]);
 }

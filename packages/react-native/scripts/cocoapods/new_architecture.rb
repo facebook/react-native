@@ -134,11 +134,13 @@ class NewArchitectureHelper
         spec.dependency "React-rendererdebug"
         # This dependency is required for the cases when the pod includes generated sources, specifically Props.cpp.
         spec.dependency "DoubleConversion"
+        spec.dependency 'React-jsi'
 
         if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
             spec.dependency "hermes-engine"
+            spec.dependency 'React-hermes'
         else
-            spec.dependency "React-jsi"
+            spec.dependency "React-jsc"
         end
 
         spec.pod_target_xcconfig = current_config
@@ -159,6 +161,6 @@ class NewArchitectureHelper
     end
 
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == nil || ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+        return ENV["RCT_NEW_ARCH_ENABLED"] == 0 ? false : true
     end
 end

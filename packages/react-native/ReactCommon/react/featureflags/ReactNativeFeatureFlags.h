@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f2dbbbd4b39a83d9855045aec135bee8>>
+ * @generated SignedSource<<a01cac77b59efaca8c67d314cea41862>>
  */
 
 /**
@@ -45,16 +45,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool commonTestFlag();
 
   /**
-   * Do not wait for a main-thread dispatch to complete init to start executing work on the JS thread on Android
-   */
-  RN_EXPORT static bool completeReactInstanceCreationOnBgThreadOnAndroid();
-
-  /**
-   * The bridgeless architecture enables the event loop by default. This feature flag allows us to force disabling it in specific instances.
-   */
-  RN_EXPORT static bool disableEventLoopOnBridgeless();
-
-  /**
    * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
    */
   RN_EXPORT static bool disableMountItemReorderingAndroid();
@@ -73,11 +63,6 @@ class ReactNativeFeatureFlags {
    * Enable prop iterator setter-style construction of Props in C++ (this flag is not used in Java).
    */
   RN_EXPORT static bool enableCppPropsIteratorSetter();
-
-  /**
-   * Deletes views that were pre-allocated but never mounted on the screen.
-   */
-  RN_EXPORT static bool enableDeletionOfUnmountedViews();
 
   /**
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
@@ -118,6 +103,11 @@ class ReactNativeFeatureFlags {
    * When enabled, Andoid will build and initiate image prefetch requests on ImageShadowNode::layout
    */
   RN_EXPORT static bool enableImagePrefetchingAndroid();
+
+  /**
+   * Trigger JS runtime GC on memory pressure event on iOS
+   */
+  RN_EXPORT static bool enableJSRuntimeGCOnMemoryPressureOnIOS();
 
   /**
    * When enabled, LayoutAnimations API will animate state changes on Android.
@@ -200,11 +190,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxEnabledRelease();
 
   /**
-   * Construct modules that requires eager init on the dedicate native modules thread
-   */
-  RN_EXPORT static bool initEagerTurboModulesOnNativeModulesQueueAndroid();
-
-  /**
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
   RN_EXPORT static bool lazyAnimationCallbacks();
@@ -235,19 +220,9 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool useFabricInterop();
 
   /**
-   * Invoke callbacks immediately on the ReactInstance rather than going through a background thread for synchronization
-   */
-  RN_EXPORT static bool useImmediateExecutorInAndroidBridgeless();
-
-  /**
    * When enabled, the native view configs are used in bridgeless mode.
    */
   RN_EXPORT static bool useNativeViewConfigsInBridgelessMode();
-
-  /**
-   * Moves more of the work in view preallocation to the main thread to free up JS thread.
-   */
-  RN_EXPORT static bool useOptimisedViewPreallocationOnAndroid();
 
   /**
    * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.

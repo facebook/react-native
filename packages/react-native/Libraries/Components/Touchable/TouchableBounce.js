@@ -214,7 +214,7 @@ class TouchableBounce extends React.Component<Props, State> {
   }
 }
 
-module.exports = (React.forwardRef((props, hostRef) => (
+export default (React.forwardRef((props, hostRef) => (
   <TouchableBounce {...props} hostRef={hostRef} />
 )): component(
   ref: React.RefSetter<mixed>,

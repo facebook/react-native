@@ -12,5 +12,5 @@
 
 import typeof DrawerLayoutAndroid from './DrawerLayoutAndroid.android';
 
-module.exports =
-  require('../UnimplementedViews/UnimplementedView') as $FlowFixMe as DrawerLayoutAndroid;
+export default require('../UnimplementedViews/UnimplementedView')
+  .default as $FlowFixMe as DrawerLayoutAndroid;

@@ -1345,11 +1345,18 @@ inline void fromRawValue(
             auto positionIt = stopMap.find("position");
             auto colorIt = stopMap.find("color");
 
-            if (positionIt != stopMap.end() && colorIt != stopMap.end() &&
-                positionIt->second.hasType<Float>()) {
+            if (positionIt != stopMap.end() && colorIt != stopMap.end()) {
               ColorStop colorStop;
-              colorStop.position = (Float)(positionIt->second);
-              fromRawValue(context, colorIt->second, colorStop.color);
+              if (positionIt->second.hasValue()) {
+                fromRawValue(context, positionIt->second, colorStop.position);
+              }
+              if (colorIt->second.hasValue()) {
+                fromRawValue(
+                    context.contextContainer,
+                    context.surfaceId,
+                    colorIt->second,
+                    colorStop.color);
+              }
               linearGradient.colorStops.push_back(colorStop);
             }
           }

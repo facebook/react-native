@@ -41,7 +41,6 @@ class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   addEventListener<K: $Keys<LinkingEventDefinitions>>(
     eventType: K,
     listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
-    context: $FlowFixMe,
   ): EventSubscription {
     return this.addListener(eventType, listener);
   }

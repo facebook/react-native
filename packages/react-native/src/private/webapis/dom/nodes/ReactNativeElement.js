@@ -24,12 +24,13 @@ import TextInputState from '../../../../../Libraries/Components/TextInput/TextIn
 import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIManager';
 import {create as createAttributePayload} from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload';
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
-import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
-import ReadOnlyNode, {setInstanceHandle} from './ReadOnlyNode';
 import {
+  getNativeElementReference,
   getPublicInstanceFromInternalInstanceHandle,
-  getShadowNode,
-} from './ReadOnlyNode';
+  setInstanceHandle,
+} from './internals/NodeInternals';
+import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
+import ReadOnlyNode from './ReadOnlyNode';
 import NativeDOM from './specs/NativeDOM';
 import nullthrows from 'nullthrows';
 
@@ -85,7 +86,7 @@ class ReactNativeElementMethods
   }
 
   get offsetLeft(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const offset = NativeDOM.getOffset(node);
@@ -96,7 +97,7 @@ class ReactNativeElementMethods
   }
 
   get offsetParent(): ReadOnlyElement | null {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const offset = NativeDOM.getOffset(node);
@@ -118,7 +119,7 @@ class ReactNativeElementMethods
   }
 
   get offsetTop(): number {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null) {
       const offset = NativeDOM.getOffset(node);
@@ -149,14 +150,14 @@ class ReactNativeElementMethods
   }
 
   measure(callback: MeasureOnSuccessCallback) {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
     if (node != null) {
       nullthrows(getFabricUIManager()).measure(node, callback);
     }
   }
 
   measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
     if (node != null) {
       nullthrows(getFabricUIManager()).measureInWindow(node, callback);
     }
@@ -177,8 +178,8 @@ class ReactNativeElementMethods
       return;
     }
 
-    const toStateNode = getShadowNode(this);
-    const fromStateNode = getShadowNode(relativeToNativeNode);
+    const toStateNode = getNativeElementReference(this);
+    const fromStateNode = getNativeElementReference(relativeToNativeNode);
 
     if (toStateNode != null && fromStateNode != null) {
       nullthrows(getFabricUIManager()).measureLayout(
@@ -200,7 +201,7 @@ class ReactNativeElementMethods
       this.__viewConfig.validAttributes,
     );
 
-    const node = getShadowNode(this);
+    const node = getNativeElementReference(this);
 
     if (node != null && updatePayload != null) {
       nullthrows(getFabricUIManager()).setNativeProps(node, updatePayload);

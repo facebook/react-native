@@ -22,6 +22,12 @@ const uint64_t PID = 1000;
 /** Default/starting track ID for the "Timings" track. */
 const uint64_t USER_TIMINGS_DEFAULT_TRACK = 1000;
 
+uint64_t getUnixTimestampOfNow() {
+  return std::chrono::duration_cast<std::chrono::microseconds>(
+             std::chrono::steady_clock::now().time_since_epoch())
+      .count();
+}
+
 } // namespace
 
 PerformanceTracer& PerformanceTracer::getInstance() {
@@ -34,81 +40,57 @@ bool PerformanceTracer::startTracing() {
   if (tracing_) {
     return false;
   }
+
+  buffer_.push_back(TraceEvent{
+      .name = "TracingStartedInPage",
+      .cat = "disabled-by-default-devtools.timeline",
+      .ph = 'I',
+      .ts = getUnixTimestampOfNow(),
+      .pid = PID, // FIXME: This should be the real process ID.
+      .tid = 0, // FIXME: This should be the real thread ID.
+      .args = folly::dynamic::object("data", folly::dynamic::object()),
+  });
+
   tracing_ = true;
   return true;
 }
 
-bool PerformanceTracer::stopTracingAndCollectEvents(
-    const std::function<void(const folly::dynamic& eventsChunk)>&
-        resultCallback) {
+bool PerformanceTracer::stopTracing() {
   std::lock_guard lock(mutex_);
-
   if (!tracing_) {
     return false;
   }
 
+  performanceMeasureCount_ = 0;
   tracing_ = false;
+  return true;
+}
+
+void PerformanceTracer::collectEvents(
+    const std::function<void(const folly::dynamic& eventsChunk)>&
+        resultCallback,
+    uint16_t chunkSize) {
+  std::lock_guard lock(mutex_);
+
   if (buffer_.empty()) {
-    customTrackIdMap_.clear();
-    return true;
-  }
-
-  // Register "Main" process
-  buffer_.push_back(TraceEvent{
-      .name = "process_name",
-      .cat = "__metadata",
-      .ph = 'M',
-      .ts = 0,
-      .pid = PID,
-      .tid = 0,
-      .args = folly::dynamic::object("name", "Main"),
-  });
-  // Register "Timings" track
-  // NOTE: This is a hack to make the Trace Viewer show a "Timings" track
-  // adjacent to custom tracks in our current build of Chrome DevTools.
-  // In future, we should align events exactly.
-  buffer_.push_back(TraceEvent{
-      .name = "thread_name",
-      .cat = "__metadata",
-      .ph = 'M',
-      .ts = 0,
-      .pid = PID,
-      .tid = USER_TIMINGS_DEFAULT_TRACK,
-      .args = folly::dynamic::object("name", "Timings"),
-  });
-
-  for (const auto& [trackName, trackId] : customTrackIdMap_) {
-    // Register custom tracks
-    buffer_.push_back(TraceEvent{
-        .name = "thread_name",
-        .cat = "__metadata",
-        .ph = 'M',
-        .ts = 0,
-        .pid = PID,
-        .tid = trackId,
-        .args = folly::dynamic::object("name", trackName),
-    });
+    return;
   }
 
   auto traceEvents = folly::dynamic::array();
-
   for (auto event : buffer_) {
     // Emit trace events
     traceEvents.push_back(serializeTraceEvent(event));
 
-    if (traceEvents.size() >= 1000) {
+    if (traceEvents.size() == chunkSize) {
       resultCallback(traceEvents);
       traceEvents = folly::dynamic::array();
     }
   }
-  customTrackIdMap_.clear();
-  buffer_.clear();
-
-  if (traceEvents.size() >= 1) {
+  if (!traceEvents.empty()) {
     resultCallback(traceEvents);
   }
 
-  return true;
+  buffer_.clear();
 }
 
 void PerformanceTracer::reportMark(
@@ -140,36 +122,45 @@ void PerformanceTracer::reportMeasure(
     return;
   }
 
-  // NOTE: We synthetically create custom tracks as a hack to render them in
-  // our current build of Chrome DevTools frontend.
-  // TODO: Remove and align with web.
-  uint64_t threadId = USER_TIMINGS_DEFAULT_TRACK;
+  folly::dynamic beginEventArgs = folly::dynamic::object();
   if (trackMetadata.has_value()) {
-    std::string trackName = trackMetadata.value().track;
-
-    if (!customTrackIdMap_.contains(trackName)) {
-      uint64_t trackId =
-          USER_TIMINGS_DEFAULT_TRACK + customTrackIdMap_.size() + 1;
-      threadId = trackId;
-
-      customTrackIdMap_.emplace(trackName, trackId);
-    }
+    folly::dynamic devtoolsObject = folly::dynamic::object(
+        "devtools",
+        folly::dynamic::object("track", trackMetadata.value().track));
+    beginEventArgs =
+        folly::dynamic::object("detail", folly::toJson(devtoolsObject));
   }
 
+  ++performanceMeasureCount_;
   buffer_.push_back(TraceEvent{
+      .id = performanceMeasureCount_,
       .name = std::string(name),
       .cat = "blink.user_timing",
-      .ph = 'X',
+      .ph = 'b',
       .ts = start,
       .pid = PID, // FIXME: This should be the real process ID.
-      .tid = threadId, // FIXME: This should be the real thread ID.
-      .dur = duration,
+      .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
+                                         // thread ID.
+      .args = beginEventArgs,
+  });
+  buffer_.push_back(TraceEvent{
+      .id = performanceMeasureCount_,
+      .name = std::string(name),
+      .cat = "blink.user_timing",
+      .ph = 'e',
+      .ts = start + duration,
+      .pid = PID, // FIXME: This should be the real process ID.
+      .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
+                                         // thread ID.
   });
 }
 
 folly::dynamic PerformanceTracer::serializeTraceEvent(TraceEvent event) const {
   folly::dynamic result = folly::dynamic::object;
 
+  if (event.id.has_value()) {
+    result["id"] = folly::sformat("0x{:X}", event.id.value());
+  }
   result["name"] = event.name;
   result["cat"] = event.cat;
   result["ph"] = std::string(1, event.ph);

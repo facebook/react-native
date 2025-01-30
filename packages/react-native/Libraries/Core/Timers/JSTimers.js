@@ -10,7 +10,7 @@
 
 import NativeTiming from './NativeTiming';
 
-const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
+const BatchedBridge = require('../../BatchedBridge/BatchedBridge').default;
 const Systrace = require('../../Performance/Systrace');
 const invariant = require('invariant');
 
@@ -484,4 +484,4 @@ BatchedBridge.setReactNativeMicrotasksCallback(
   JSTimers.callReactNativeMicrotasks,
 );
 
-module.exports = ExportedJSTimers;
+export default ExportedJSTimers;

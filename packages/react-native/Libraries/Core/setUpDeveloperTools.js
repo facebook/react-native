@@ -17,8 +17,6 @@ declare var console: {[string]: $FlowFixMe};
  * You can use this module directly, or just require InitializeCore.
  */
 if (__DEV__) {
-  require('./setUpReactDevTools');
-
   // Set up inspector
   const JSInspector = require('../JSInspector/JSInspector');
   JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
@@ -77,7 +75,6 @@ if (__DEV__) {
 
   require('./setUpReactRefresh');
 
-  global[
-    `${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`
-  ] = require('./Devtools/loadBundleFromServer');
+  global[`${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] =
+    require('./Devtools/loadBundleFromServer').default;
 }

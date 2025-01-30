@@ -41,4 +41,6 @@ UITextInputPasswordRules *RCTUITextInputPasswordRulesFromString(const std::strin
 
 UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::optional<bool> smartInsertDelete);
 
+UIDataDetectorTypes RCTUITextViewDataDetectorTypesFromStringVector(const std::vector<std::string> &dataDetectorTypes);
+
 NS_ASSUME_NONNULL_END

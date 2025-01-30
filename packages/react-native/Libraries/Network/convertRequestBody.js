@@ -10,7 +10,9 @@
 
 'use strict';
 
-const Blob = require('../Blob/Blob');
+import typeof BlobT from '../Blob/Blob';
+
+const Blob: BlobT = require('../Blob/Blob').default;
 const binaryToBase64 = require('../Utilities/binaryToBase64');
 const FormData = require('./FormData');
 

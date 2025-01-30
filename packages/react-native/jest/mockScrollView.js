@@ -12,7 +12,7 @@
 
 'use strict';
 
-const View = require('../Libraries/Components/View/View');
+const View = require('../Libraries/Components/View/View').default;
 const requireNativeComponent =
   require('../Libraries/ReactNative/requireNativeComponent').default;
 const React = require('react');

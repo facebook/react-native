@@ -53,4 +53,4 @@ class File extends Blob {
   }
 }
 
-module.exports = File;
+export default File;

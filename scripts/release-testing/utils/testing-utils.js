@@ -29,7 +29,7 @@ const path = require('path');
 const {cp, exec} = require('shelljs');
 
 /*::
-type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+type BuildType = 'dry-run' | 'release' | 'nightly';
 */
 
 /*

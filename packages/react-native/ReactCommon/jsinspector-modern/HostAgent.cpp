@@ -144,6 +144,20 @@ void HostAgent::handleRequest(const cdp::PreparsedRequest& req) {
 
     shouldSendOKResponse = true;
     isFinishedHandlingRequest = true;
+  } else if (req.method == "Tracing.start") {
+    if (sessionState_.isDebuggerDomainEnabled) {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Debugger domain is expected to be disabled before starting Tracing"));
+
+      return;
+    }
+
+    // We delegate handling of this request to TracingAgent. If not handled,
+    // then something unexpected happened - don't send an OK response.
+    shouldSendOKResponse = false;
+    isFinishedHandlingRequest = false;
   }
 
   if (!isFinishedHandlingRequest &&

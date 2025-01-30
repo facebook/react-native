@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a8acfd65ad09126802c6731825b93957>>
+ * @generated SignedSource<<89479360fb1880898630d5182edf37fc>>
  */
 
 /**
@@ -31,14 +31,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool completeReactInstanceCreationOnBgThreadOnAndroid() override {
-    return true;
-  }
-
-  bool disableEventLoopOnBridgeless() override {
-    return false;
-  }
-
   bool disableMountItemReorderingAndroid() override {
     return false;
   }
@@ -52,10 +44,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableCppPropsIteratorSetter() override {
-    return false;
-  }
-
-  bool enableDeletionOfUnmountedViews() override {
     return false;
   }
 
@@ -88,6 +76,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableImagePrefetchingAndroid() override {
+    return false;
+  }
+
+  bool enableJSRuntimeGCOnMemoryPressureOnIOS() override {
     return false;
   }
 
@@ -155,10 +147,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool initEagerTurboModulesOnNativeModulesQueueAndroid() override {
-    return true;
-  }
-
   bool lazyAnimationCallbacks() override {
     return false;
   }
@@ -183,15 +171,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool useImmediateExecutorInAndroidBridgeless() override {
-    return true;
-  }
-
   bool useNativeViewConfigsInBridgelessMode() override {
-    return false;
-  }
-
-  bool useOptimisedViewPreallocationOnAndroid() override {
     return false;
   }
 

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const UIManager = require('../../ReactNative/UIManager');
+const UIManager = require('../../ReactNative/UIManager').default;
 const codegenNativeComponent = require('../codegenNativeComponent').default;
 
 // We need to unmock requireNativeComponent since it's under test.

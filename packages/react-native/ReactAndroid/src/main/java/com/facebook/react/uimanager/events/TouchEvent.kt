@@ -64,7 +64,8 @@ public class TouchEvent private constructor() : Event<TouchEvent>() {
           coalescingKey = touchEventCoalescingKeyHelper.getCoalescingKey(gestureStartTime)
       MotionEvent.ACTION_CANCEL ->
           touchEventCoalescingKeyHelper.removeCoalescingKey(gestureStartTime)
-      else -> throw RuntimeException("Unhandled MotionEvent action: $action")
+      else ->
+          Unit // Passthrough for other actions (such as ACTION_SCROLL), coalescing is not applied
     }
 
     motionEvent = MotionEvent.obtain(motionEventToCopy)

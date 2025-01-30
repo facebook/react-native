@@ -17,9 +17,9 @@ import AndroidSwipeRefreshLayoutNativeComponent, {
 import PullToRefreshViewNativeComponent, {
   Commands as PullToRefreshCommands,
 } from './PullToRefreshViewNativeComponent';
+import React from 'react';
 
 const Platform = require('../../Utilities/Platform');
-const React = require('react');
 
 type IOSProps = $ReadOnly<{
   /**
@@ -126,7 +126,7 @@ class RefreshControl extends React.Component<RefreshControlProps> {
     | typeof PullToRefreshViewNativeComponent
     | typeof AndroidSwipeRefreshLayoutNativeComponent,
   >;
-  _lastNativeRefreshing = false;
+  _lastNativeRefreshing: boolean = false;
 
   componentDidMount() {
     this._lastNativeRefreshing = this.props.refreshing;
@@ -201,4 +201,4 @@ class RefreshControl extends React.Component<RefreshControlProps> {
   };
 }
 
-module.exports = RefreshControl;
+export default RefreshControl;

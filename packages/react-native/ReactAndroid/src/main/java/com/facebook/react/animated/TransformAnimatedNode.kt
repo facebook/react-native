@@ -26,7 +26,7 @@ internal class TransformAnimatedNode(
     transformConfigs =
         if (transforms == null) emptyList()
         else
-            List<TransformConfig>(transforms.size()) { i ->
+            List(transforms.size()) { i ->
               val transformConfigMap = checkNotNull(transforms.getMap(i))
               val property = transformConfigMap.getString("property")
               val type = transformConfigMap.getString("type")
@@ -44,9 +44,9 @@ internal class TransformAnimatedNode(
             }
   }
 
-  public fun collectViewUpdates(propsMap: JavaOnlyMap) {
+  fun collectViewUpdates(propsMap: JavaOnlyMap) {
     val transforms =
-        List<JavaOnlyMap>(transformConfigs.size) { i ->
+        List(transformConfigs.size) { i ->
           val transformConfig = transformConfigs[i]
           val transform =
               if (transformConfig is AnimatedTransformConfig) {

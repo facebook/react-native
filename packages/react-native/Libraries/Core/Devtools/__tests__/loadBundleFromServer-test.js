@@ -16,8 +16,9 @@ jest.useFakeTimers({legacyFakeTimers: true});
 
 jest.mock('react-native/Libraries/Utilities/HMRClient');
 
-jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () =>
-  jest.fn(() => ({
+jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
     url: 'localhost:8042/',
     fullBundleUrl:
       'http://localhost:8042/EntryPoint.bundle?platform=' +
@@ -25,7 +26,7 @@ jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () =>
       '&dev=true&minify=false&unusedExtraParam=42',
     bundleLoadedFromServer: true,
   })),
-);
+}));
 
 const loadingViewMock = {
   showMessage: jest.fn(),
@@ -78,7 +79,7 @@ let mockDataResponse;
 beforeEach(() => {
   jest.resetModules();
   jest.clearAllMocks();
-  loadBundleFromServer = require('../loadBundleFromServer');
+  loadBundleFromServer = require('../loadBundleFromServer').default;
 });
 
 test('loadBundleFromServer will throw for JSON responses', async () => {

@@ -27,7 +27,7 @@ static constexpr std::array kTextMIMETypePrefixes{
 namespace {
 
 struct InitStreamResult {
-  int httpStatusCode;
+  uint32_t httpStatusCode;
   Headers headers;
   std::shared_ptr<Stream> stream;
 };
@@ -113,7 +113,7 @@ class Stream : public NetworkRequestListener,
     processPending();
   }
 
-  void onHeaders(int httpStatusCode, const Headers& headers) override {
+  void onHeaders(uint32_t httpStatusCode, const Headers& headers) override {
     // Find content-type through case-insensitive search of headers.
     for (const auto& [name, value] : headers) {
       std::string lowerName = name;

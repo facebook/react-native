@@ -110,7 +110,7 @@ const PASSTHROUGH_PROPS = [
   'testID',
 ];
 
-module.exports = function TouchableWithoutFeedback(props: Props): React.Node {
+export default function TouchableWithoutFeedback(props: Props): React.Node {
   const {
     disabled,
     rejectResponderTermination,
@@ -231,4 +231,4 @@ module.exports = function TouchableWithoutFeedback(props: Props): React.Node {
 
   // $FlowFixMe[incompatible-call]
   return React.cloneElement(element, elementProps, ...children);
-};
+}

@@ -391,4 +391,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = DrawerLayoutAndroid;
+export default DrawerLayoutAndroid;

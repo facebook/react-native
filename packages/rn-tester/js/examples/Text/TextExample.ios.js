@@ -26,7 +26,8 @@ const {
   TextInput,
   View,
 } = require('react-native');
-const TextAncestor = require('react-native/Libraries/Text/TextAncestor');
+const TextAncestor =
+  require('react-native/Libraries/Text/TextAncestor').default;
 
 // TODO: Is there a cleaner way to flip the TextAncestor value to false? I
 //   suspect apps won't even be able to leverage this workaround because
@@ -1176,6 +1177,62 @@ const examples = [
     },
   },
   {
+    title: 'maxFontSizeMultiplier attribute',
+    name: 'maxFontSizeMultiplier',
+    render(): React.Node {
+      return (
+        <View testID={'max-font-size-multiplier'}>
+          <Text>
+            When allowFontScaling is enabled, you can use the
+            maxFontSizeMultiplier prop to set an upper limit on how much the
+            font size will be scaled.
+          </Text>
+          <Text
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1}
+            style={{marginTop: 10}}>
+            This text will not scale up (max 1x)
+          </Text>
+          <Text allowFontScaling={true} maxFontSizeMultiplier={1.5}>
+            This text will scale up (max 1.5x)
+          </Text>
+          <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+            <Text>Inherit max (max 1x)</Text>
+          </Text>
+          <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+            <Text maxFontSizeMultiplier={1.5}>
+              Override inherited max (max 1.5x)
+            </Text>
+          </Text>
+          <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+            <Text maxFontSizeMultiplier={0}>Ignore inherited max (no max)</Text>
+          </Text>
+          <Text
+            allowFontScaling={true}
+            style={{fontSize: 22}}
+            dynamicTypeRamp="title2">
+            This text will scale with 'title2' dynamic type ramp (no max)
+          </Text>
+          <Text
+            allowFontScaling={true}
+            style={{fontSize: 22}}
+            dynamicTypeRamp="title2"
+            maxFontSizeMultiplier={1.2}>
+            This text will scale with 'title2' dynamic type ramp (max 1.2x)
+          </Text>
+          <Text
+            allowFontScaling={true}
+            style={{fontSize: 22}}
+            dynamicTypeRamp="title2"
+            maxFontSizeMultiplier={1}>
+            This text uses 'title2' dynamic type ramp but will not scale up (max
+            1x)
+          </Text>
+        </View>
+      );
+    },
+  },
+  {
     title: 'Inline views',
     render: (): React.Node => <TextInlineView.Basic />,
   },
@@ -1440,8 +1497,26 @@ const examples = [
             <Text style={{fontSize: 20}} dynamicTypeRamp="title3">
               Title 3
             </Text>
+            <Text style={{fontSize: 17}} dynamicTypeRamp="headline">
+              Headline
+            </Text>
             <Text style={{fontSize: 17}} dynamicTypeRamp="body">
               Body
+            </Text>
+            <Text style={{fontSize: 16}} dynamicTypeRamp="callout">
+              Callout
+            </Text>
+            <Text style={{fontSize: 15}} dynamicTypeRamp="subheadline">
+              Subheadline
+            </Text>
+            <Text style={{fontSize: 13}} dynamicTypeRamp="footnote">
+              Footnote
+            </Text>
+            <Text style={{fontSize: 12}} dynamicTypeRamp="caption1">
+              Caption
+            </Text>
+            <Text style={{fontSize: 11}} dynamicTypeRamp="caption2">
+              Caption 2
             </Text>
           </View>
           <View style={boxStyle}>
@@ -1450,7 +1525,13 @@ const examples = [
             <Text style={{fontSize: 28}}>Title</Text>
             <Text style={{fontSize: 22}}>Title 2</Text>
             <Text style={{fontSize: 20}}>Title 3</Text>
+            <Text style={{fontSize: 17}}>Headline</Text>
             <Text style={{fontSize: 17}}>Body</Text>
+            <Text style={{fontSize: 16}}>Callout</Text>
+            <Text style={{fontSize: 15}}>Subheadline</Text>
+            <Text style={{fontSize: 13}}>Footnote</Text>
+            <Text style={{fontSize: 12}}>Caption</Text>
+            <Text style={{fontSize: 11}}>Caption 2</Text>
           </View>
         </View>
       );

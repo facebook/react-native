@@ -10,7 +10,7 @@
 
 'use strict';
 
-const React = require('react');
+import React from 'react';
 
 type Props = $ReadOnly<{
   /**
@@ -34,4 +34,4 @@ class StaticRenderer extends React.Component<Props> {
   }
 }
 
-module.exports = StaticRenderer;
+export default StaticRenderer;

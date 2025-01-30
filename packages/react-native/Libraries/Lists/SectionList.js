@@ -261,9 +261,7 @@ export default class SectionList<
   }
 
   _wrapperListRef: ?React.ElementRef<typeof VirtualizedSectionList>;
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  _captureRef = ref => {
+  _captureRef = (ref: ?React.RefOf<VirtualizedSectionList>) => {
     this._wrapperListRef = ref;
   };
 }

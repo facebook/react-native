@@ -390,9 +390,6 @@ public class CSSBackgroundDrawable extends Drawable {
     updatePath();
     canvas.save();
 
-    // Clip outer border
-    canvas.clipPath(Preconditions.checkNotNull(mOuterClipPathForBorderRadius), Region.Op.INTERSECT);
-
     // Draws the View without its border first (with background color fill)
     int useColor = ColorUtils.setAlphaComponent(mColor, (Color.alpha(mColor) * mAlpha) >> 8);
     if (Color.alpha(useColor) != 0) {
@@ -433,6 +430,10 @@ public class CSSBackgroundDrawable extends Drawable {
         || borderWidth.bottom > 0
         || borderWidth.left > 0
         || borderWidth.right > 0) {
+
+      // Clip outer border
+      canvas.clipPath(
+          Preconditions.checkNotNull(mOuterClipPathForBorderRadius), Region.Op.INTERSECT);
 
       // If it's a full and even border draw inner rect path with stroke
       final float fullBorderWidth = getFullBorderWidth();

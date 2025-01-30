@@ -15,7 +15,7 @@ jest.useFakeTimers({legacyFakeTimers: true});
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {PressabilityConfig} from '../Pressability';
 
-const UIManager = require('../../ReactNative/UIManager');
+const UIManager = require('../../ReactNative/UIManager').default;
 const Platform = require('../../Utilities/Platform');
 const HoverState = require('../HoverState');
 const Pressability = require('../Pressability').default;
