@@ -17,6 +17,8 @@
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #endif
 
+#include <react/renderer/core/ShadowNodeFamily.h>
+
 namespace facebook::react {
 
 class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
@@ -94,6 +96,13 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
       /* top: */ double,
       /* left: */ double>
   getOffset(jsi::Runtime& rt, jsi::Value nativeElementReference);
+
+#pragma mark - Special methods to handle the root node.
+
+  jsi::Value linkRootNode(
+      jsi::Runtime& rt,
+      SurfaceId surfaceId,
+      jsi::Value instanceHandle);
 
 #pragma mark - Legacy layout APIs (for `ReactNativeElement`).
 

@@ -25,11 +25,9 @@ import type MutationObserver, {
 import type MutationRecord from '../MutationRecord';
 
 import * as Systrace from '../../../../../Libraries/Performance/Systrace';
+import {getPublicInstanceFromInternalInstanceHandle} from '../../../../../Libraries/ReactNative/RendererProxy';
 import warnOnce from '../../../../../Libraries/Utilities/warnOnce';
-import {
-  getNativeNodeReference,
-  getPublicInstanceFromInternalInstanceHandle,
-} from '../../dom/nodes/internals/NodeInternals';
+import {getNativeNodeReference} from '../../dom/nodes/internals/NodeInternals';
 import {createMutationRecord} from '../MutationRecord';
 import NativeMutationObserver from '../specs/NativeMutationObserver';
 

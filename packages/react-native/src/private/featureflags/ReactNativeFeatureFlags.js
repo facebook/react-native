@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3c609bd4ace6147f8f32af07a5e3cc05>>
+ * @generated SignedSource<<fdb43dd2f218d9e7d30946ee2f895619>>
  * @flow strict
  */
 
@@ -33,6 +33,7 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
   enableAnimatedClearImmediateFix: Getter<boolean>,
+  enableDOMDocumentAPI: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   scheduleAnimatedCleanupInMicrotask: Getter<boolean>,
@@ -121,6 +122,11 @@ export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptF
  * Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.
  */
 export const enableAnimatedClearImmediateFix: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedClearImmediateFix', true);
+
+/**
+ * Enables the DOM Document API, exposing instaces of document through `getRootNode` and `ownerDocument`, and providing access to the `documentElement` representing the root node. This flag will be short-lived, only to test the Document API specifically, and then it will be collapsed into the enableAccessToHostTreeInFabric flag.
+ */
+export const enableDOMDocumentAPI: Getter<boolean> = createJavaScriptFlagGetter('enableDOMDocumentAPI', false);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements

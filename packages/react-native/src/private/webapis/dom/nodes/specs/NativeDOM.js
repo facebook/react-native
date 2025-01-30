@@ -4,22 +4,25 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict
+ * @flow strict-local
  * @format
  */
 
-import type {
-  InternalInstanceHandle as InstanceHandle,
-  Node as ShadowNode,
-} from '../../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {RootTag} from '../../../../../../Libraries/ReactNative/RootTag';
+import type {Node as ShadowNode} from '../../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {TurboModule} from '../../../../../../Libraries/TurboModule/RCTExport';
+import type {InstanceHandle} from '../internals/NodeInternals';
 
 import * as TurboModuleRegistry from '../../../../../../Libraries/TurboModule/TurboModuleRegistry';
 import nullthrows from 'nullthrows';
 
 export opaque type NativeElementReference = ShadowNode;
 export opaque type NativeTextReference = ShadowNode;
-export type NativeNodeReference = NativeElementReference | NativeTextReference;
+
+export type NativeNodeReference =
+  | NativeElementReference
+  | NativeTextReference
+  | RootTag;
 
 export type MeasureInWindowOnSuccessCallback = (
   x: number,
@@ -121,6 +124,15 @@ export interface Spec extends TurboModule {
   +getOffset: (
     nativeElementReference: mixed /* NativeElementReference */,
   ) => $ReadOnlyArray<mixed> /* [offsetParent: ?InstanceHandle, top: number, left: number] */;
+
+  /*
+   * Special methods to handle the root node.
+   */
+
+  +linkRootNode?: (
+    rootTag: number /* RootTag */,
+    instanceHandle: mixed /* InstanceHandle */,
+  ) => mixed /* ?NativeElementReference */;
 
   /**
    * Legacy layout APIs (for `ReactNativeElement`).
@@ -353,6 +365,29 @@ export interface RefinedSpec {
     ],
   >;
 
+  /*
+   * Special methods to handle the root node.
+   */
+
+  /**
+   * In React Native, surfaces that represent trees (similar to a `Document` on
+   * Web) are created in native first, and then populated from JavaScript.
+   *
+   * Because React does not create this special node, we need a way to link
+   * the JavaScript instance with that node, which is what this method allows.
+   *
+   * It also allows the implementation of `Node.prototype.ownerDocument` and
+   * `Node.prototype.getRootNode`
+   * (see https://developer.mozilla.org/en-US/docs/Web/API/Node/ownerDocument and
+   * https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode).
+   *
+   * Returns a shadow node representing the root node if it is still mounted.
+   */
+  +linkRootNode: (
+    rootTag: RootTag,
+    instanceHandle: InstanceHandle,
+  ) => ?NativeElementReference;
+
   /**
    * Legacy layout APIs
    */
@@ -501,6 +536,19 @@ const NativeDOM: RefinedSpec = {
         /* left: */ number,
       ],
     >);
+  },
+
+  /*
+   * Special methods to handle the root node.
+   */
+
+  linkRootNode(rootTag, instanceHandle) {
+    // $FlowExpectedError[incompatible-cast]
+    return (nullthrows(RawNativeDOM?.linkRootNode)(
+      // $FlowExpectedError[incompatible-call]
+      rootTag,
+      instanceHandle,
+    ): ?NativeElementReference);
   },
 
   /**

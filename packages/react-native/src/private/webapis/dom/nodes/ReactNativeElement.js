@@ -17,8 +17,11 @@ import type {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
+  Node as ShadowNode,
   ViewConfig,
 } from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {InstanceHandle} from './internals/NodeInternals';
+import type ReactNativeDocument from './ReactNativeDocument';
 
 import TextInputState from '../../../../../Libraries/Components/TextInput/TextInputState';
 import {getFabricUIManager} from '../../../../../Libraries/ReactNative/FabricUIManager';
@@ -26,11 +29,11 @@ import {create as createAttributePayload} from '../../../../../Libraries/ReactNa
 import warnForStyleProps from '../../../../../Libraries/ReactNative/ReactFabricPublicInstance/warnForStyleProps';
 import {
   getNativeElementReference,
-  getPublicInstanceFromInternalInstanceHandle,
+  getPublicInstanceFromInstanceHandle,
   setInstanceHandle,
+  setOwnerDocument,
 } from './internals/NodeInternals';
 import ReadOnlyElement, {getBoundingClientRect} from './ReadOnlyElement';
-import ReadOnlyNode from './ReadOnlyNode';
 import NativeDOM from './specs/NativeDOM';
 import nullthrows from 'nullthrows';
 
@@ -61,7 +64,7 @@ class ReactNativeElementMethods
 {
   // These need to be accessible from `ReactFabricPublicInstanceUtils`.
   __nativeTag: number;
-  __internalInstanceHandle: InternalInstanceHandle;
+  __internalInstanceHandle: InstanceHandle;
 
   __viewConfig: ViewConfig;
 
@@ -70,12 +73,13 @@ class ReactNativeElementMethods
   constructor(
     tag: number,
     viewConfig: ViewConfig,
-    internalInstanceHandle: InternalInstanceHandle,
+    instanceHandle: InstanceHandle,
+    ownerDocument: ReactNativeDocument,
   ) {
-    super(internalInstanceHandle);
+    super(instanceHandle, ownerDocument);
 
     this.__nativeTag = tag;
-    this.__internalInstanceHandle = internalInstanceHandle;
+    this.__internalInstanceHandle = instanceHandle;
     this.__viewConfig = viewConfig;
   }
 
@@ -106,7 +110,7 @@ class ReactNativeElementMethods
       // in JavaScript yet.
       if (offset[0] != null) {
         const offsetParentInstanceHandle = offset[0];
-        const offsetParent = getPublicInstanceFromInternalInstanceHandle(
+        const offsetParent = getPublicInstanceFromInstanceHandle(
           offsetParentInstanceHandle,
         );
         // $FlowExpectedError[incompatible-type] The value returned by `getOffset` is always an instance handle for `ReadOnlyElement`.
@@ -152,14 +156,18 @@ class ReactNativeElementMethods
   measure(callback: MeasureOnSuccessCallback) {
     const node = getNativeElementReference(this);
     if (node != null) {
-      nullthrows(getFabricUIManager()).measure(node, callback);
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const shadowNode: ShadowNode = node;
+      nullthrows(getFabricUIManager()).measure(shadowNode, callback);
     }
   }
 
   measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
     const node = getNativeElementReference(this);
     if (node != null) {
-      nullthrows(getFabricUIManager()).measureInWindow(node, callback);
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const shadowNode: ShadowNode = node;
+      nullthrows(getFabricUIManager()).measureInWindow(shadowNode, callback);
     }
   }
 
@@ -168,7 +176,7 @@ class ReactNativeElementMethods
     onSuccess: MeasureLayoutOnSuccessCallback,
     onFail?: () => void /* currently unused */,
   ) {
-    if (!(relativeToNativeNode instanceof ReadOnlyNode)) {
+    if (!(relativeToNativeNode instanceof ReactNativeElement)) {
       if (__DEV__) {
         console.error(
           'Warning: ref.measureLayout must be called with a ref to a native component.',
@@ -182,9 +190,14 @@ class ReactNativeElementMethods
     const fromStateNode = getNativeElementReference(relativeToNativeNode);
 
     if (toStateNode != null && fromStateNode != null) {
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const toStateShadowNode: ShadowNode = toStateNode;
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const fromStateShadowNode: ShadowNode = fromStateNode;
+
       nullthrows(getFabricUIManager()).measureLayout(
-        toStateNode,
-        fromStateNode,
+        toStateShadowNode,
+        fromStateShadowNode,
         onFail != null ? onFail : noop,
         onSuccess != null ? onSuccess : noop,
       );
@@ -204,7 +217,12 @@ class ReactNativeElementMethods
     const node = getNativeElementReference(this);
 
     if (node != null && updatePayload != null) {
-      nullthrows(getFabricUIManager()).setNativeProps(node, updatePayload);
+      // $FlowExpectedError[incompatible-type] This is an element instance so the native node reference is always a shadow node.
+      const shadowNode: ShadowNode = node;
+      nullthrows(getFabricUIManager()).setNativeProps(
+        shadowNode,
+        updatePayload,
+      );
     }
   }
 }
@@ -216,11 +234,15 @@ function ReactNativeElement(
   tag: number,
   viewConfig: ViewConfig,
   internalInstanceHandle: InternalInstanceHandle,
+  ownerDocument: ReactNativeDocument,
 ) {
+  // Inlined from `ReadOnlyNode`
+  setOwnerDocument(this, ownerDocument);
+  setInstanceHandle(this, internalInstanceHandle);
+
   this.__nativeTag = tag;
   this.__internalInstanceHandle = internalInstanceHandle;
   this.__viewConfig = viewConfig;
-  setInstanceHandle(this, internalInstanceHandle);
 }
 
 ReactNativeElement.prototype = Object.create(
