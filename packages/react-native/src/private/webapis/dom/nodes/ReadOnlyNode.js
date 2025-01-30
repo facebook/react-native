@@ -10,27 +10,32 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {InternalInstanceHandle} from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type NodeList from '../oldstylecollections/NodeList';
+import type {InstanceHandle} from './internals/NodeInternals';
+import type ReactNativeDocument from './ReactNativeDocument';
 import type ReadOnlyElement from './ReadOnlyElement';
 
+import * as ReactNativeFeatureFlags from '../../../featureflags/ReactNativeFeatureFlags';
 import {createNodeList} from '../oldstylecollections/NodeList';
 import {
   getNativeNodeReference,
-  getPublicInstanceFromInternalInstanceHandle,
+  getOwnerDocument,
+  getPublicInstanceFromInstanceHandle,
   setInstanceHandle,
+  setOwnerDocument,
 } from './internals/NodeInternals';
 import NativeDOM from './specs/NativeDOM';
 
-// We initialize this lazily to avoid a require cycle
-// (`ReadOnlyElement` also depends on `ReadOnlyNode`).
-let ReadOnlyElementClass: Class<ReadOnlyElement>;
-
 export default class ReadOnlyNode {
-  constructor(internalInstanceHandle: InternalInstanceHandle) {
+  constructor(
+    instanceHandle: InstanceHandle,
+    // This will be null for the document node itself.
+    ownerDocument: ReactNativeDocument | null,
+  ) {
     // This constructor is inlined in `ReactNativeElement` so if you modify
     // this make sure that their implementation stays in sync.
-    setInstanceHandle(this, internalInstanceHandle);
+    setOwnerDocument(this, ownerDocument);
+    setInstanceHandle(this, instanceHandle);
   }
 
   get childNodes(): NodeList<ReadOnlyNode> {
@@ -106,15 +111,14 @@ export default class ReadOnlyNode {
     );
   }
 
+  get ownerDocument(): ReactNativeDocument | null {
+    return getOwnerDocument(this);
+  }
+
   get parentElement(): ReadOnlyElement | null {
     const parentNode = this.parentNode;
 
-    if (ReadOnlyElementClass == null) {
-      // We initialize this lazily to avoid a require cycle.
-      ReadOnlyElementClass = require('./ReadOnlyElement').default;
-    }
-
-    if (parentNode instanceof ReadOnlyElementClass) {
+    if (parentNode instanceof getReadOnlyElementClass()) {
       return parentNode;
     }
 
@@ -134,9 +138,7 @@ export default class ReadOnlyNode {
       return null;
     }
 
-    return (
-      getPublicInstanceFromInternalInstanceHandle(parentInstanceHandle) ?? null
-    );
+    return getPublicInstanceFromInstanceHandle(parentInstanceHandle) ?? null;
   }
 
   get previousSibling(): ReadOnlyNode | null {
@@ -186,16 +188,25 @@ export default class ReadOnlyNode {
   }
 
   getRootNode(): ReadOnlyNode {
-    // eslint-disable-next-line consistent-this
-    let lastKnownParent: ReadOnlyNode = this;
-    let nextPossibleParent: ?ReadOnlyNode = this.parentNode;
+    if (ReactNativeFeatureFlags.enableDOMDocumentAPI()) {
+      if (this.isConnected) {
+        // If this is the document node, then the root node is itself.
+        return this.ownerDocument ?? this;
+      }
 
-    while (nextPossibleParent != null) {
-      lastKnownParent = nextPossibleParent;
-      nextPossibleParent = nextPossibleParent.parentNode;
+      return this;
+    } else {
+      // eslint-disable-next-line consistent-this
+      let lastKnownParent: ReadOnlyNode = this;
+      let nextPossibleParent: ?ReadOnlyNode = this.parentNode;
+
+      while (nextPossibleParent != null) {
+        lastKnownParent = nextPossibleParent;
+        nextPossibleParent = nextPossibleParent.parentNode;
+      }
+
+      return lastKnownParent;
     }
-
-    return lastKnownParent;
   }
 
   hasChildNodes(): boolean {
@@ -239,7 +250,7 @@ export default class ReadOnlyNode {
    */
   static COMMENT_NODE: number = 8;
   /**
-   * @deprecated Unused in React Native.
+   * Document nodes.
    */
   static DOCUMENT_NODE: number = 9;
   /**
@@ -301,9 +312,7 @@ export function getChildNodes(
 
   const childNodeInstanceHandles = NativeDOM.getChildNodes(shadowNode);
   return childNodeInstanceHandles
-    .map(instanceHandle =>
-      getPublicInstanceFromInternalInstanceHandle(instanceHandle),
-    )
+    .map(instanceHandle => getPublicInstanceFromInstanceHandle(instanceHandle))
     .filter(Boolean);
 }
 
@@ -324,4 +333,13 @@ function getNodeSiblingsAndPosition(
   }
 
   return [siblings, position];
+}
+
+let ReadOnlyElementClass;
+function getReadOnlyElementClass(): Class<ReadOnlyElement> {
+  if (ReadOnlyElementClass == null) {
+    // We initialize this lazily to avoid a require cycle.
+    ReadOnlyElementClass = require('./ReadOnlyElement').default;
+  }
+  return ReadOnlyElementClass;
 }

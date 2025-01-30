@@ -7509,28 +7509,27 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance.js 1`] = `
-"type PublicRootInstance = null;
-declare export function createPublicRootInstance(
+"declare export function createPublicRootInstance(
   rootTag: RootTag
 ): PublicRootInstance;
 declare export function createPublicInstance(
   tag: number,
   viewConfig: ViewConfig,
   internalInstanceHandle: InternalInstanceHandle,
-  ownerDocument: PublicRootInstance
-): ReactFabricHostComponent | ReactNativeElement;
+  ownerDocument: ReactNativeDocumentT
+): ReactFabricHostComponentT | ReactNativeElementT;
 declare export function createPublicTextInstance(
   internalInstanceHandle: InternalInstanceHandle,
-  ownerDocument: PublicRootInstance
-): ReadOnlyText;
+  ownerDocument: ReactNativeDocumentT
+): ReadOnlyTextT;
 declare export function getNativeTagFromPublicInstance(
-  publicInstance: ReactFabricHostComponent | ReactNativeElement
+  publicInstance: ReactFabricHostComponentT | ReactNativeElementT
 ): number;
 declare export function getNodeFromPublicInstance(
-  publicInstance: ReactFabricHostComponent | ReactNativeElement
+  publicInstance: ReactFabricHostComponentT | ReactNativeElementT
 ): ?Node;
 declare export function getInternalInstanceHandleFromPublicInstance(
-  publicInstance: ReactFabricHostComponent | ReactNativeElement
+  publicInstance: ReactFabricHostComponentT | ReactNativeElementT
 ): InternalInstanceHandle;
 "
 `;
@@ -11306,18 +11305,38 @@ declare export default class DOMRectReadOnly {
 "
 `;
 
+exports[`public API should not change unintentionally src/private/webapis/dom/nodes/ReactNativeDocument.js 1`] = `
+"declare export default class ReactNativeDocument extends ReadOnlyNode {
+  _documentElement: ReactNativeElement;
+  constructor(
+    rootTag: RootTag,
+    instanceHandle: ReactNativeDocumentInstanceHandle
+  ): void;
+  get documentElement(): ReactNativeElement;
+  get nodeName(): string;
+  get nodeType(): number;
+  get nodeValue(): null;
+  get textContent(): null;
+}
+declare export function createReactNativeDocument(
+  rootTag: RootTag
+): ReactNativeDocument;
+"
+`;
+
 exports[`public API should not change unintentionally src/private/webapis/dom/nodes/ReactNativeElement.js 1`] = `
 "declare class ReactNativeElementMethods
   extends ReadOnlyElement
   implements INativeMethods
 {
   __nativeTag: number;
-  __internalInstanceHandle: InternalInstanceHandle;
+  __internalInstanceHandle: InstanceHandle;
   __viewConfig: ViewConfig;
   constructor(
     tag: number,
     viewConfig: ViewConfig,
-    internalInstanceHandle: InternalInstanceHandle
+    instanceHandle: InstanceHandle,
+    ownerDocument: ReactNativeDocument
   ): void;
   get offsetHeight(): number;
   get offsetLeft(): number;
@@ -11389,7 +11408,10 @@ declare export function getBoundingClientRect(
 
 exports[`public API should not change unintentionally src/private/webapis/dom/nodes/ReadOnlyNode.js 1`] = `
 "declare export default class ReadOnlyNode {
-  constructor(internalInstanceHandle: InternalInstanceHandle): void;
+  constructor(
+    instanceHandle: InstanceHandle,
+    ownerDocument: ReactNativeDocument | null
+  ): void;
   get childNodes(): NodeList<ReadOnlyNode>;
   get firstChild(): ReadOnlyNode | null;
   get isConnected(): boolean;
@@ -11398,6 +11420,7 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   get nodeName(): string;
   get nodeType(): number;
   get nodeValue(): string | null;
+  get ownerDocument(): ReactNativeDocument | null;
   get parentElement(): ReadOnlyElement | null;
   get parentNode(): ReadOnlyNode | null;
   get previousSibling(): ReadOnlyNode | null;

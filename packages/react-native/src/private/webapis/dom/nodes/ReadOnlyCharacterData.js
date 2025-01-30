@@ -12,7 +12,7 @@
 
 import type ReadOnlyElement from './ReadOnlyElement';
 
-import {getNativeNodeReference} from './internals/NodeInternals';
+import {getNativeTextReference} from './internals/NodeInternals';
 import {getElementSibling} from './internals/Traversal';
 import ReadOnlyNode from './ReadOnlyNode';
 import NativeDOM from './specs/NativeDOM';
@@ -27,7 +27,7 @@ export default class ReadOnlyCharacterData extends ReadOnlyNode {
   }
 
   get data(): string {
-    const node = getNativeNodeReference(this);
+    const node = getNativeTextReference(this);
 
     if (node != null) {
       return NativeDOM.getTextContent(node);
