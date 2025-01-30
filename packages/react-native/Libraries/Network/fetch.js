@@ -8,12 +8,13 @@
  * @format
  */
 
-/* globals Headers, Request, Response */
-
 'use strict';
 
 // side-effectful require() to put fetch,
 // Headers, Request, Response in global scope
 require('whatwg-fetch');
 
-module.exports = {fetch, Headers, Request, Response};
+export const fetch = global.fetch;
+export const Headers = global.Headers;
+export const Request = global.Request;
+export const Response = global.Response;

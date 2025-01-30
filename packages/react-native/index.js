@@ -146,7 +146,7 @@ module.exports = {
       .default;
   },
   get Modal(): Modal {
-    return require('./Libraries/Modal/Modal');
+    return require('./Libraries/Modal/Modal').default;
   },
   get Pressable(): Pressable {
     return require('./Libraries/Components/Pressable/Pressable').default;

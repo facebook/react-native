@@ -788,4 +788,4 @@ class XMLHttpRequest extends EventTarget {
   }
 }
 
-module.exports = XMLHttpRequest;
+export default XMLHttpRequest;
