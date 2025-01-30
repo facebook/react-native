@@ -14,7 +14,7 @@ import processBoxShadow from '../StyleSheet/processBoxShadow';
 
 const ReactNativeStyleAttributes =
   require('../Components/View/ReactNativeStyleAttributes').default;
-const resolveAssetSource = require('../Image/resolveAssetSource');
+const resolveAssetSource = require('../Image/resolveAssetSource').default;
 const processBackgroundImage =
   require('../StyleSheet/processBackgroundImage').default;
 const processColor = require('../StyleSheet/processColor').default;

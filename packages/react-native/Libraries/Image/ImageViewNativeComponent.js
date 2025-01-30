@@ -83,7 +83,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         validAttributes: {
           blurRadius: true,
           defaultSource: {
-            process: require('./resolveAssetSource'),
+            process: require('./resolveAssetSource').default,
           },
           internal_analyticTag: true,
           resizeMethod: true,
@@ -146,7 +146,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
             diff: require('../Utilities/differ/insetsDiffer'),
           },
           defaultSource: {
-            process: require('./resolveAssetSource'),
+            process: require('./resolveAssetSource').default,
           },
           internal_analyticTag: true,
           resizeMode: true,

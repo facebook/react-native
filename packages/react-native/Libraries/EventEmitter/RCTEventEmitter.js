@@ -18,4 +18,4 @@ const RCTEventEmitter = {
   },
 };
 
-module.exports = RCTEventEmitter;
+export default RCTEventEmitter;

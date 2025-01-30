@@ -120,9 +120,14 @@ jest
       },
     },
   }))
-  .mock('../Libraries/Image/Image', () =>
-    mockComponent('../Libraries/Image/Image'),
-  )
+  .mock('../Libraries/Image/Image', () => ({
+    __esModule: true,
+    default: mockComponent(
+      '../Libraries/Image/Image',
+      /* instanceMethods */ null,
+      /* isESModule */ true,
+    ),
+  }))
   .mock('../Libraries/Text/Text', () => ({
     __esModule: true,
     default: mockComponent(

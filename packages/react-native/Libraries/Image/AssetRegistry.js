@@ -12,7 +12,9 @@
 
 import type {PackagerAsset} from '@react-native/assets-registry/registry';
 
-module.exports = require('@react-native/assets-registry/registry') as {
+const AssetRegistry = require('@react-native/assets-registry/registry') as {
   registerAsset: (asset: PackagerAsset) => number,
   getAssetByID: (assetId: number) => PackagerAsset,
 };
+
+module.exports = AssetRegistry;

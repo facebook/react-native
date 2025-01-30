@@ -4710,13 +4710,13 @@ declare export default IEventEmitter<RCTDeviceEventDefinitions>;
 
 exports[`public API should not change unintentionally Libraries/EventEmitter/RCTEventEmitter.js 1`] = `
 "declare const RCTEventEmitter: { register(eventEmitter: any): void };
-declare module.exports: RCTEventEmitter;
+declare export default typeof RCTEventEmitter;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/EventEmitter/RCTNativeAppEventEmitter.js 1`] = `
 "declare const RCTNativeAppEventEmitter: typeof RCTDeviceEventEmitter;
-declare module.exports: RCTNativeAppEventEmitter;
+declare export default typeof RCTNativeAppEventEmitter;
 "
 `;
 
@@ -4799,10 +4799,11 @@ declare export default typeof EventPolyfill;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/AssetRegistry.js 1`] = `
-"declare module.exports: {
+"declare const AssetRegistry: {
   registerAsset: (asset: PackagerAsset) => number,
   getAssetByID: (assetId: number) => PackagerAsset,
 };
+declare module.exports: AssetRegistry;
 "
 `;
 
@@ -4835,7 +4836,7 @@ declare class AssetSourceResolver {
   fromSource(source: string): ResolvedAssetSource;
   static pickScale: (scales: Array<number>, deviceScale?: number) => number;
 }
-declare module.exports: AssetSourceResolver;
+declare export default typeof AssetSourceResolver;
 "
 `;
 
@@ -4850,7 +4851,7 @@ declare export function getUrlCacheBreaker(): string;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/Image.js.flow 1`] = `
-"declare module.exports: Image;
+"declare export default Image;
 "
 `;
 
@@ -4868,7 +4869,7 @@ exports[`public API should not change unintentionally Libraries/Image/ImageBackg
   _captureRef: $FlowFixMe;
   render(): React.Node;
 }
-declare module.exports: ImageBackground;
+declare export default typeof ImageBackground;
 "
 `;
 
@@ -5144,7 +5145,8 @@ declare export default typeof NativeImageStoreIOS;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/RelativeImageStub.js 1`] = `
-"declare module.exports: number;
+"declare const RelativeImageStub: number;
+declare module.exports: RelativeImageStub;
 "
 `;
 
@@ -5171,13 +5173,13 @@ exports[`public API should not change unintentionally Libraries/Image/nativeImag
   width: number,
 }>;
 declare function nativeImageSource(spec: NativeImageSourceSpec): ImageURISource;
-declare module.exports: nativeImageSource;
+declare export default typeof nativeImageSource;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/resolveAssetSource.js 1`] = `
 "declare function resolveAssetSource(source: ?ImageSource): ?ResolvedAssetSource;
-declare module.exports: resolveAssetSource;
+declare export default typeof resolveAssetSource;
 "
 `;
 

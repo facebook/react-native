@@ -48,7 +48,7 @@ module.exports = {
     return require('../Utilities/Platform');
   },
   get RCTEventEmitter(): RCTEventEmitter {
-    return require('../EventEmitter/RCTEventEmitter');
+    return require('../EventEmitter/RCTEventEmitter').default;
   },
   get ReactNativeViewConfigRegistry(): ReactNativeViewConfigRegistry {
     return require('../Renderer/shims/ReactNativeViewConfigRegistry');

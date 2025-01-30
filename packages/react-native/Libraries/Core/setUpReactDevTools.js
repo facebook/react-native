@@ -209,7 +209,8 @@ if (__DEV__) {
   );
 
   // 3. Fallback to attempting to connect WS-based RDT frontend
-  const RCTNativeAppEventEmitter = require('../EventEmitter/RCTNativeAppEventEmitter');
+  const RCTNativeAppEventEmitter =
+    require('../EventEmitter/RCTNativeAppEventEmitter').default;
   RCTNativeAppEventEmitter.addListener(
     'RCTDevMenuShown',
     connectToWSBasedReactDevToolsFrontend,
