@@ -28,6 +28,7 @@
     "chromium-edge-launcher": "^0.2.0",
     "connect": "^3.6.5",
     "debug": "^2.2.0",
+    "invariant": "^2.2.4",
     "nullthrows": "^1.1.1",
     "open": "^7.0.3",
     "selfsigned": "^2.4.1",
