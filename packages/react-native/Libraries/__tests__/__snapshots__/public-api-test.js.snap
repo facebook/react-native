@@ -7622,6 +7622,7 @@ declare export function getNodeFromInternalInstanceHandle(
 declare export function getPublicInstanceFromInternalInstanceHandle(
   internalInstanceHandle: InternalInstanceHandle
 ): mixed;
+declare export function getPublicInstanceFromRootTag(rootTag: number): mixed;
 "
 `;
 
