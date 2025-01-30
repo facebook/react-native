@@ -24,4 +24,4 @@ class InspectorAgent {
   }
 }
 
-module.exports = InspectorAgent;
+export default InspectorAgent;

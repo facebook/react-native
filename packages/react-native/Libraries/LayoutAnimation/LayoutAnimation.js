@@ -197,4 +197,4 @@ const LayoutAnimation = {
   setEnabled,
 };
 
-module.exports = LayoutAnimation;
+export default LayoutAnimation;

@@ -5406,7 +5406,7 @@ declare class InspectorAgent {
   constructor(eventSender: EventSender): void;
   sendEvent(name: string, params: mixed): void;
 }
-declare module.exports: InspectorAgent;
+declare export default typeof InspectorAgent;
 "
 `;
 
@@ -5461,7 +5461,7 @@ declare class NetworkAgent extends InspectorAgent {
   };
   interceptor(): Interceptor;
 }
-declare module.exports: NetworkAgent;
+declare export default typeof NetworkAgent;
 "
 `;
 
@@ -5497,7 +5497,7 @@ declare const LayoutAnimation: {
   spring: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
   setEnabled: setEnabled,
 };
-declare module.exports: LayoutAnimation;
+declare export default typeof LayoutAnimation;
 "
 `;
 
@@ -5505,7 +5505,7 @@ exports[`public API should not change unintentionally Libraries/Linking/Linking.
 "type LinkingEventDefinitions = {
   url: [{ url: string }],
 };
-declare class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
+declare class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
   constructor(): void;
   addEventListener<K: $Keys<LinkingEventDefinitions>>(
     eventType: K,
@@ -5525,7 +5525,8 @@ declare class Linking extends NativeEventEmitter<LinkingEventDefinitions> {
   ): Promise<void>;
   _validateURL(url: string): void;
 }
-declare module.exports: Linking;
+declare const Linking: LinkingImpl;
+declare export default typeof Linking;
 "
 `;
 
