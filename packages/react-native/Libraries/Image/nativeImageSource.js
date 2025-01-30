@@ -61,4 +61,4 @@ function nativeImageSource(spec: NativeImageSourceSpec): ImageURISource {
   };
 }
 
-module.exports = nativeImageSource;
+export default nativeImageSource;

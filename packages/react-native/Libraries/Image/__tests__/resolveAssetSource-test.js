@@ -20,7 +20,7 @@ describe('resolveAssetSource', () => {
     jest.resetModules();
 
     AssetRegistry = require('@react-native/assets-registry/registry');
-    resolveAssetSource = require('../resolveAssetSource');
+    resolveAssetSource = require('../resolveAssetSource').default;
     NativeSourceCode =
       require('../../NativeModules/specs/NativeSourceCode').default;
     Platform = require('../../Utilities/Platform');
@@ -434,7 +434,7 @@ describe('resolveAssetSource', () => {
 });
 
 describe('resolveAssetSource.pickScale', () => {
-  const resolveAssetSource = require('../resolveAssetSource');
+  const resolveAssetSource = require('../resolveAssetSource').default;
 
   it('picks matching scale', () => {
     expect(resolveAssetSource.pickScale([1], 2)).toBe(1);

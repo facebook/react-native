@@ -21,8 +21,9 @@ registerModule(
   'RCTDeviceEventEmitter',
   () => require('../EventEmitter/RCTDeviceEventEmitter').default,
 );
-registerModule('RCTNativeAppEventEmitter', () =>
-  require('../EventEmitter/RCTNativeAppEventEmitter'),
+registerModule(
+  'RCTNativeAppEventEmitter',
+  () => require('../EventEmitter/RCTNativeAppEventEmitter').default,
 );
 registerModule('GlobalPerformanceLogger', () =>
   require('../Utilities/GlobalPerformanceLogger'),

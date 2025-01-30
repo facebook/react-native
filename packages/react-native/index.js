@@ -128,10 +128,10 @@ module.exports = {
     return require('./Libraries/Lists/FlatList').default;
   },
   get Image(): Image {
-    return require('./Libraries/Image/Image');
+    return require('./Libraries/Image/Image').default;
   },
   get ImageBackground(): ImageBackground {
-    return require('./Libraries/Image/ImageBackground');
+    return require('./Libraries/Image/ImageBackground').default;
   },
   get InputAccessoryView(): InputAccessoryView {
     return require('./Libraries/Components/TextInput/InputAccessoryView')
@@ -367,7 +367,7 @@ module.exports = {
       .DynamicColorIOS;
   },
   get NativeAppEventEmitter(): RCTNativeAppEventEmitter {
-    return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter');
+    return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter').default;
   },
   get NativeModules(): NativeModules {
     return require('./Libraries/BatchedBridge/NativeModules').default;
