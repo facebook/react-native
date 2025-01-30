@@ -11312,7 +11312,11 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
     rootTag: RootTag,
     instanceHandle: ReactNativeDocumentInstanceHandle
   ): void;
+  get childElementCount(): number;
+  get children(): HTMLCollection<ReadOnlyElement>;
   get documentElement(): ReactNativeElement;
+  get firstElementChild(): ReadOnlyElement | null;
+  get lastElementChild(): ReadOnlyElement | null;
   get nodeName(): string;
   get nodeType(): number;
   get nodeValue(): null;
