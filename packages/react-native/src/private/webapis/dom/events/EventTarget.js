@@ -57,7 +57,7 @@ type EventListenerRegistration = {
   removed: boolean,
 };
 
-type ListenersMap = Map<string, Array<EventListenerRegistration>>;
+type ListenersMap = Map<string, Map<EventListener, EventListenerRegistration>>;
 
 export default class EventTarget {
   addEventListener(
@@ -112,21 +112,17 @@ export default class EventTarget {
       return;
     }
 
-    let listenersMap = getListenersMap(this, capture);
-    let listenerList = listenersMap?.get(processedType);
-    if (listenerList == null) {
-      if (listenersMap == null) {
-        listenersMap = new Map();
-        setListenersMap(this, capture, listenersMap);
+    let listenersByType = getListenersForPhase(this, capture);
+    let listeners = listenersByType?.get(processedType);
+    if (listeners == null) {
+      if (listenersByType == null) {
+        listenersByType = new Map();
+        setListenersMap(this, capture, listenersByType);
       }
-      listenerList = [];
-      listenersMap.set(processedType, listenerList);
-    } else {
-      for (const listener of listenerList) {
-        if (listener.callback === callback) {
-          return;
-        }
-      }
+      listeners = new Map();
+      listenersByType.set(processedType, listeners);
+    } else if (listeners.has(callback)) {
+      return;
     }
 
     const listener: EventListenerRegistration = {
@@ -135,15 +131,18 @@ export default class EventTarget {
       once,
       removed: false,
     };
-    listenerList.push(listener);
+    listeners.set(callback, listener);
 
-    const nonNullListenerList = listenerList;
+    const nonNullListeners = listeners;
 
     if (signal != null) {
       signal.addEventListener(
         'abort',
         () => {
-          removeEventListenerRegistration(listener, nonNullListenerList);
+          listener.removed = true;
+          if (nonNullListeners.get(callback) === listener) {
+            nonNullListeners.delete(callback);
+          }
         },
         {
           once: true,
@@ -176,20 +175,16 @@ export default class EventTarget {
         ? optionsOrUseCapture
         : Boolean(optionsOrUseCapture.capture);
 
-    const listenersMap = getListenersMap(this, capture);
-    const listenerList = listenersMap?.get(processedType);
-    if (listenerList == null) {
+    const listenersByType = getListenersForPhase(this, capture);
+    const listeners = listenersByType?.get(processedType);
+    if (listeners == null) {
       return;
     }
 
-    for (let i = 0; i < listenerList.length; i++) {
-      const listener = listenerList[i];
-
-      if (listener.callback === callback) {
-        listener.removed = true;
-        listenerList.splice(i, 1);
-        return;
-      }
+    const listener = listeners.get(callback);
+    if (listener != null) {
+      listener.removed = true;
+      listeners.delete(callback);
     }
   }
 
@@ -335,22 +330,26 @@ function invoke(
   event: Event,
   eventPhase: EventPhase,
 ) {
-  const listenersMap = getListenersMap(
+  const listenersByType = getListenersForPhase(
     eventTarget,
     eventPhase === Event.CAPTURING_PHASE,
   );
 
   setCurrentTarget(event, eventTarget);
 
-  // This is a copy so listeners added during dispatch are NOT executed.
-  const listenerList = listenersMap?.get(event.type)?.slice();
-  if (listenerList == null) {
+  const maybeListeners = listenersByType?.get(event.type);
+  if (maybeListeners == null) {
     return;
   }
 
+  // This is a copy so listeners added during dispatch are NOT executed.
+  // Note that `maybeListeners.values()` is a live view of the map instead of an
+  // immutable copy.
+  const listeners = Array.from(maybeListeners.values());
+
   setCurrentTarget(event, eventTarget);
 
-  for (const listener of listenerList) {
+  for (const listener of listeners) {
     if (listener.removed) {
       continue;
     }
@@ -396,25 +395,10 @@ function invoke(
   }
 }
 
-function removeEventListenerRegistration(
-  registration: EventListenerRegistration,
-  listenerList: Array<EventListenerRegistration>,
-): void {
-  for (let i = 0; i < listenerList.length; i++) {
-    const listener = listenerList[i];
-
-    if (listener === registration) {
-      listener.removed = true;
-      listenerList.splice(i, 1);
-      return;
-    }
-  }
-}
-
 const CAPTURING_LISTENERS_KEY = Symbol('capturingListeners');
 const BUBBLING_LISTENERS_KEY = Symbol('bubblingListeners');
 
-function getListenersMap(
+function getListenersForPhase(
   eventTarget: EventTarget,
   isCapture: boolean,
 ): ?ListenersMap {
