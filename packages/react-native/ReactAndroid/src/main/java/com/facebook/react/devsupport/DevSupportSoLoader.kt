@@ -14,7 +14,7 @@ internal object DevSupportSoLoader {
 
   @JvmStatic
   @Synchronized
-  public fun staticInit() {
+  fun staticInit() {
     if (didInit) {
       return
     }
