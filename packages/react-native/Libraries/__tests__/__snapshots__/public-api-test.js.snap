@@ -4594,44 +4594,6 @@ declare export default typeof registerCallableModule;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Core/setUpAlert.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpBatchedBridge.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpDeveloperTools.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpErrorHandling.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpGlobals.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpNavigator.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpPerformance.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpReactDevTools.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpReactRefresh.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpRegeneratorRuntime.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpSegmentFetcher.js 1`] = `
-"export type FetchSegmentFunction = typeof __fetchSegment;
-declare function __fetchSegment(
-  segmentId: number,
-  options: $ReadOnly<{
-    otaBuildNumber: ?string,
-    requestedModuleName: string,
-    segmentHash: string,
-  }>,
-  callback: (?Error) => void
-): void;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpTimers.js 1`] = `""`;
-
-exports[`public API should not change unintentionally Libraries/Core/setUpXHR.js 1`] = `""`;
-
 exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlay.js 1`] = `
 "type DebuggingOverlayHandle = {
   highlightTraceUpdates(updates: TraceUpdate[]): void,
@@ -5398,72 +5360,6 @@ exports[`public API should not change unintentionally Libraries/Interaction/Touc
   noCentroid: number,
 };
 declare export default typeof TouchHistoryMath;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/JSInspector/InspectorAgent.js 1`] = `
-"export type EventSender = (name: string, params: mixed) => void;
-declare class InspectorAgent {
-  _eventSender: EventSender;
-  constructor(eventSender: EventSender): void;
-  sendEvent(name: string, params: mixed): void;
-}
-declare export default typeof InspectorAgent;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/JSInspector/JSInspector.js 1`] = `
-"interface Agent {
-  constructor(eventSender: EventSender): void;
-}
-type AgentClass = Class<Agent> & { DOMAIN: string, ... };
-declare const JSInspector: {
-  registerAgent(type: AgentClass): void,
-  getTimestamp(): number,
-};
-declare module.exports: JSInspector;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/JSInspector/NetworkAgent.js 1`] = `
-"type RequestId = string;
-type Headers = { [string]: string };
-declare class Interceptor {
-  _agent: NetworkAgent;
-  _requests: Map<string, string>;
-  constructor(agent: NetworkAgent): void;
-  getData(requestId: string): ?string;
-  requestSent(id: number, url: string, method: string, headers: Headers): void;
-  responseReceived(
-    id: number,
-    url: string,
-    status: number,
-    headers: Headers
-  ): void;
-  dataReceived(id: number, data: string): void;
-  loadingFinished(id: number, encodedDataLength: number): void;
-  loadingFailed(id: number, error: string): void;
-  _getMimeType(headers: Headers): string;
-}
-type EnableArgs = {
-  maxResourceBufferSize?: number,
-  maxTotalBufferSize?: number,
-  ...
-};
-declare class NetworkAgent extends InspectorAgent {
-  static DOMAIN: string;
-  _sendEvent: EventSender;
-  _interceptor: ?Interceptor;
-  enable(EnableArgs): void;
-  disable(): void;
-  getResponseBody({ requestId: RequestId, ... }): {
-    body: ?string,
-    base64Encoded: boolean,
-    ...
-  };
-  interceptor(): Interceptor;
-}
-declare export default typeof NetworkAgent;
 "
 `;
 
@@ -6593,18 +6489,6 @@ export type ResponseType =
   | \\"json\\"
   | \\"text\\";
 export type Response = ?Object | string;
-type XHRInterceptor = interface {
-  requestSent(id: number, url: string, method: string, headers: Object): void,
-  responseReceived(
-    id: number,
-    url: string,
-    status: number,
-    headers: Object
-  ): void,
-  dataReceived(id: number, data: string): void,
-  loadingFinished(id: number, encodedDataLength: number): void,
-  loadingFailed(id: number, error: string): void,
-};
 declare class XMLHttpRequestEventTarget extends EventTarget {
   get onload(): EventCallback | null;
   set onload(listener: ?EventCallback): void;
@@ -6627,7 +6511,6 @@ declare class XMLHttpRequest extends EventTarget {
   static HEADERS_RECEIVED: number;
   static LOADING: number;
   static DONE: number;
-  static _interceptor: ?XHRInterceptor;
   static _profiling: boolean;
   UNSENT: number;
   OPENED: number;
@@ -6659,7 +6542,6 @@ declare class XMLHttpRequest extends EventTarget {
   _incrementalEvents: boolean;
   _startTime: ?number;
   _performanceLogger: IPerformanceLogger;
-  static setInterceptor(interceptor: ?XHRInterceptor): void;
   static enableProfiling(enableProfiling: boolean): void;
   constructor(): void;
   _reset(): void;
@@ -6736,18 +6618,6 @@ export type ResponseType =
   | \\"json\\"
   | \\"text\\";
 export type Response = ?Object | string;
-type XHRInterceptor = interface {
-  requestSent(id: number, url: string, method: string, headers: Object): void,
-  responseReceived(
-    id: number,
-    url: string,
-    status: number,
-    headers: Object
-  ): void,
-  dataReceived(id: number, data: string): void,
-  loadingFinished(id: number, encodedDataLength: number): void,
-  loadingFailed(id: number, error: string): void,
-};
 declare class XMLHttpRequestEventTarget extends EventTarget {
   onload: ?Function;
   onloadstart: ?Function;
@@ -6763,7 +6633,6 @@ declare class XMLHttpRequest extends EventTarget {
   static HEADERS_RECEIVED: number;
   static LOADING: number;
   static DONE: number;
-  static _interceptor: ?XHRInterceptor;
   static _profiling: boolean;
   UNSENT: number;
   OPENED: number;
@@ -6803,7 +6672,6 @@ declare class XMLHttpRequest extends EventTarget {
   _incrementalEvents: boolean;
   _startTime: ?number;
   _performanceLogger: IPerformanceLogger;
-  static setInterceptor(interceptor: ?XHRInterceptor): void;
   static enableProfiling(enableProfiling: boolean): void;
   constructor(): void;
   _reset(): void;
