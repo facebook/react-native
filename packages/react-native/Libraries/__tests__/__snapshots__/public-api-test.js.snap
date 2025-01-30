@@ -8248,7 +8248,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/norma
 "declare function normalizeColor(
   color: ?(ColorValue | ProcessedColorValue)
 ): ?ProcessedColorValue;
-declare module.exports: normalizeColor;
+declare export default typeof normalizeColor;
 "
 `;
 
@@ -8296,7 +8296,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/priva
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/processAspectRatio.js 1`] = `
 "declare function processAspectRatio(aspectRatio?: number | string): ?number;
-declare module.exports: processAspectRatio;
+declare export default typeof processAspectRatio;
 "
 `;
 
@@ -8380,7 +8380,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "declare function processFontVariant(
   fontVariant: ____FontVariantArray_Internal | string
 ): ?____FontVariantArray_Internal;
-declare module.exports: processFontVariant;
+declare export default typeof processFontVariant;
 "
 `;
 
@@ -8388,7 +8388,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "declare function processTransform(
   transform: Array<Object> | string
 ): Array<Object> | Array<number>;
-declare module.exports: processTransform;
+declare export default typeof processTransform;
 "
 `;
 
@@ -8401,7 +8401,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/setNormalizedColorAlpha.js 1`] = `
 "declare function setNormalizedColorAlpha(input: number, alpha: number): number;
-declare module.exports: setNormalizedColorAlpha;
+declare export default typeof setNormalizedColorAlpha;
 "
 `;
 

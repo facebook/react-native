@@ -10,7 +10,7 @@
 
 'use strict';
 
-const processTransform = require('../processTransform');
+import processTransform from '../processTransform';
 
 describe('processTransform', () => {
   describe('validation', () => {
