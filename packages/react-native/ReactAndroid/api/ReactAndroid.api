@@ -1090,14 +1090,6 @@ public abstract class com/facebook/react/bridge/ReactApplicationContext : com/fa
 	public fun <init> (Landroid/content/Context;)V
 }
 
-public final class com/facebook/react/bridge/ReactBridge {
-	public static final field INSTANCE Lcom/facebook/react/bridge/ReactBridge;
-	public static final fun getLoadEndTime ()J
-	public static final fun getLoadStartTime ()J
-	public static final fun isInitialized ()Z
-	public static final fun staticInit ()V
-}
-
 public abstract class com/facebook/react/bridge/ReactContext : android/content/ContextWrapper {
 	protected field mInteropModuleRegistry Lcom/facebook/react/bridge/interop/InteropModuleRegistry;
 	public fun <init> (Landroid/content/Context;)V
