@@ -14,7 +14,7 @@ import type EventSender from './InspectorAgent';
 
 import InspectorAgent from './InspectorAgent';
 
-const XMLHttpRequest = require('../Network/XMLHttpRequest');
+const XMLHttpRequest = require('../Network/XMLHttpRequest').default;
 const JSInspector = require('./JSInspector');
 
 type RequestId = string;

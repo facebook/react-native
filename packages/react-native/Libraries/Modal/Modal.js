@@ -364,4 +364,4 @@ const styles = StyleSheet.create({
 const ExportedModal: React.ComponentType<React.ElementConfig<typeof Modal>> =
   ModalInjection.unstable_Modal ?? Modal;
 
-module.exports = ExportedModal;
+export default ExportedModal;

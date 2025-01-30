@@ -695,4 +695,4 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
   }
 }
 
-module.exports = XMLHttpRequest;
+export default XMLHttpRequest;

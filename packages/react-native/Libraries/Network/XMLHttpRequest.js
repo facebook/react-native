@@ -16,9 +16,8 @@ export type * from './XMLHttpRequest_old';
 // be read before apps have a chance to set overrides.
 const useBuiltInEventTarget = global.RN$useBuiltInEventTarget?.();
 
-module.exports = (
-  useBuiltInEventTarget
-    ? // $FlowExpectedError[incompatible-cast]
-      require('./XMLHttpRequest_new')
-    : require('./XMLHttpRequest_old')
-) as XMLHttpRequest;
+export default (useBuiltInEventTarget
+  ? // $FlowExpectedError[incompatible-cast]
+    require('./XMLHttpRequest_new').default
+  : // $FlowExpectedError[incompatible-cast]
+    require('./XMLHttpRequest_old').default) as XMLHttpRequest;
