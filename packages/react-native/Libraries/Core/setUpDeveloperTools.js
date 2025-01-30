@@ -19,7 +19,7 @@ declare var console: {[string]: $FlowFixMe};
 if (__DEV__) {
   // Set up inspector
   const JSInspector = require('../JSInspector/JSInspector');
-  JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
+  JSInspector.registerAgent(require('../JSInspector/NetworkAgent').default);
 
   // Note we can't check if console is "native" because it would appear "native" in JSC and Hermes.
   // We also can't check any properties that don't exist in the Chrome worker environment.

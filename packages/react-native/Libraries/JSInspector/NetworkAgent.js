@@ -293,4 +293,4 @@ class NetworkAgent extends InspectorAgent {
   }
 }
 
-module.exports = NetworkAgent;
+export default NetworkAgent;

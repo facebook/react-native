@@ -277,10 +277,10 @@ module.exports = {
     return require('./Libraries/Components/Keyboard/Keyboard').default;
   },
   get LayoutAnimation(): LayoutAnimation {
-    return require('./Libraries/LayoutAnimation/LayoutAnimation');
+    return require('./Libraries/LayoutAnimation/LayoutAnimation').default;
   },
   get Linking(): Linking {
-    return require('./Libraries/Linking/Linking');
+    return require('./Libraries/Linking/Linking').default;
   },
   get LogBox(): LogBox {
     return require('./Libraries/LogBox/LogBox').default;
