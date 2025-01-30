@@ -9553,17 +9553,6 @@ declare export default typeof WebSocketInterceptor;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/YellowBox/YellowBoxDeprecated.js 1`] = `
-"type Props = $ReadOnly<{}>;
-declare export default Class<React.Component<Props>> & {
-  ignoreWarnings($ReadOnlyArray<IgnorePattern>): void,
-  install(): void,
-  uninstall(): void,
-  ...
-};
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/promiseRejectionTrackingOptions.js 1`] = `
 "declare let rejectionTrackingOptions: $NonMaybeType<Parameters<enable>[0]>;
 declare export default typeof rejectionTrackingOptions;
@@ -9686,7 +9675,6 @@ declare module.exports: {
   get useWindowDimensions(): useWindowDimensions,
   get UTFSequence(): UTFSequence,
   get Vibration(): Vibration,
-  get YellowBox(): YellowBox,
   get DeviceEventEmitter(): RCTDeviceEventEmitter,
   get DynamicColorIOS(): DynamicColorIOS,
   get NativeAppEventEmitter(): RCTNativeAppEventEmitter,
