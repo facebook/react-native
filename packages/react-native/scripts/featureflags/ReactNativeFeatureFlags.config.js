@@ -502,6 +502,17 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
+    enableDOMDocumentAPI: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-01-28',
+        description:
+          'Enables the DOM Document API, exposing instaces of document through `getRootNode` and `ownerDocument`, and providing access to the `documentElement` representing the root node. ' +
+          'This flag will be short-lived, only to test the Document API specifically, and then it will be collapsed into the enableAccessToHostTreeInFabric flag.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
     fixVirtualizeListCollapseWindowSize: {
       defaultValue: false,
       metadata: {

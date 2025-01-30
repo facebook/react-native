@@ -34,6 +34,19 @@ static RootShadowNode::Shared getCurrentShadowTreeRevision(
   return shadowTreeRevisionProvider->getCurrentRevision(surfaceId);
 }
 
+static RootShadowNode::Shared getCurrentShadowTreeRevision(
+    facebook::jsi::Runtime& runtime,
+    jsi::Value& nativeNodeReference) {
+  if (nativeNodeReference.isNumber()) {
+    return getCurrentShadowTreeRevision(
+        runtime, static_cast<SurfaceId>(nativeNodeReference.asNumber()));
+  }
+
+  return getCurrentShadowTreeRevision(
+      runtime,
+      shadowNodeFromValue(runtime, nativeNodeReference)->getSurfaceId());
+}
+
 static facebook::react::PointerEventsProcessor&
 getPointerEventsProcessorFromRuntime(facebook::jsi::Runtime& runtime) {
   return facebook::react::UIManagerBinding::getBinding(runtime)
@@ -59,6 +72,10 @@ getArrayOfInstanceHandlesFromShadowNodes(
   return nonNullInstanceHandles;
 }
 
+static bool isRootShadowNode(const ShadowNode& shadowNode) {
+  return shadowNode.getTraits().check(ShadowNodeTraits::Trait::RootNodeKind);
+}
+
 #pragma mark - NativeDOM
 
 NativeDOM::NativeDOM(std::shared_ptr<CallInvoker> jsInvoker)
@@ -70,12 +87,56 @@ double NativeDOM::compareDocumentPosition(
     jsi::Runtime& rt,
     jsi::Value nativeNodeReference,
     jsi::Value otherNativeNodeReference) {
-  auto shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
-  auto otherShadowNode = shadowNodeFromValue(rt, otherNativeNodeReference);
-  auto currentRevision =
-      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
-  if (otherShadowNode == nullptr || currentRevision == nullptr) {
-    return 0;
+  auto currentRevision = getCurrentShadowTreeRevision(rt, nativeNodeReference);
+  if (currentRevision == nullptr) {
+    return dom::DOCUMENT_POSITION_DISCONNECTED;
+  }
+
+  ShadowNode::Shared shadowNode;
+  ShadowNode::Shared otherShadowNode;
+
+  // Check if document references are used
+  if (nativeNodeReference.isNumber() || otherNativeNodeReference.isNumber()) {
+    if (nativeNodeReference.isNumber() && otherNativeNodeReference.isNumber()) {
+      // Both are documents (and equality is handled in JS directly).
+      return dom::DOCUMENT_POSITION_DISCONNECTED;
+    } else if (nativeNodeReference.isNumber()) {
+      // Only the first is a document
+      auto surfaceId = nativeNodeReference.asNumber();
+      shadowNode = currentRevision;
+      otherShadowNode = shadowNodeFromValue(rt, otherNativeNodeReference);
+
+      if (isRootShadowNode(*otherShadowNode)) {
+        // If the other is a root node, we just need to check if it is its
+        // `documentElement`
+        return (surfaceId == otherShadowNode->getSurfaceId())
+            ? dom::DOCUMENT_POSITION_CONTAINED_BY |
+                dom::DOCUMENT_POSITION_FOLLOWING
+            : dom::DOCUMENT_POSITION_DISCONNECTED;
+      } else {
+        // Otherwise, we'll use the root node to represent the document
+        // (the result should be the same)
+      }
+    } else {
+      // Only the second is a document
+      auto otherSurfaceId = otherNativeNodeReference.asNumber();
+      shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
+      otherShadowNode = getCurrentShadowTreeRevision(rt, otherSurfaceId);
+
+      if (isRootShadowNode(*shadowNode)) {
+        // If this is a root node, we just need to check if the other is its
+        // document.
+        return (otherSurfaceId == shadowNode->getSurfaceId())
+            ? dom::DOCUMENT_POSITION_CONTAINS | dom::DOCUMENT_POSITION_PRECEDING
+            : dom::DOCUMENT_POSITION_DISCONNECTED;
+      } else {
+        // Otherwise, we'll use the root node to represent the document
+        // (the result should be the same)
+      }
+    }
+  } else {
+    shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
+    otherShadowNode = shadowNodeFromValue(rt, otherNativeNodeReference);
   }
 
   return dom::compareDocumentPosition(
@@ -85,21 +146,35 @@ double NativeDOM::compareDocumentPosition(
 std::vector<jsi::Value> NativeDOM::getChildNodes(
     jsi::Runtime& rt,
     jsi::Value nativeNodeReference) {
-  auto shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
-  auto currentRevision =
-      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  auto currentRevision = getCurrentShadowTreeRevision(rt, nativeNodeReference);
   if (currentRevision == nullptr) {
     return std::vector<jsi::Value>{};
   }
 
-  auto childNodes = dom::getChildNodes(currentRevision, *shadowNode);
+  // The only child node of the document is the root node.
+  if (nativeNodeReference.isNumber()) {
+    return getArrayOfInstanceHandlesFromShadowNodes({currentRevision}, rt);
+  }
+
+  auto childNodes = dom::getChildNodes(
+      currentRevision, *shadowNodeFromValue(rt, nativeNodeReference));
   return getArrayOfInstanceHandlesFromShadowNodes(childNodes, rt);
 }
 
 jsi::Value NativeDOM::getParentNode(
     jsi::Runtime& rt,
     jsi::Value nativeNodeReference) {
+  // The document does not have a parent node.
+  if (nativeNodeReference.isNumber()) {
+    return jsi::Value::undefined();
+  }
+
   auto shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
+  if (isRootShadowNode(*shadowNode)) {
+    // The parent of the root node is the document.
+    return jsi::Value{shadowNode->getSurfaceId()};
+  }
+
   auto currentRevision =
       getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
   if (currentRevision == nullptr) {
@@ -115,13 +190,17 @@ jsi::Value NativeDOM::getParentNode(
 }
 
 bool NativeDOM::isConnected(jsi::Runtime& rt, jsi::Value nativeNodeReference) {
-  auto shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
-  auto currentRevision =
-      getCurrentShadowTreeRevision(rt, shadowNode->getSurfaceId());
+  auto currentRevision = getCurrentShadowTreeRevision(rt, nativeNodeReference);
   if (currentRevision == nullptr) {
     return false;
   }
 
+  // The document is connected because we got a value for current revision.
+  if (nativeNodeReference.isNumber()) {
+    return true;
+  }
+
+  auto shadowNode = shadowNodeFromValue(rt, nativeNodeReference);
   return dom::isConnected(currentRevision, *shadowNode);
 }
 
@@ -276,6 +355,24 @@ NativeDOM::getOffset(jsi::Runtime& rt, jsi::Value nativeElementReference) {
           : domOffset.offsetParent->getInstanceHandle(rt),
       domOffset.top,
       domOffset.left};
+}
+
+#pragma mark - Special methods to handle the root node.
+
+jsi::Value NativeDOM::linkRootNode(
+    jsi::Runtime& rt,
+    SurfaceId surfaceId,
+    jsi::Value instanceHandle) {
+  auto currentRevision = getCurrentShadowTreeRevision(rt, surfaceId);
+  if (currentRevision == nullptr) {
+    return jsi::Value::undefined();
+  }
+
+  auto instanceHandleWrapper =
+      std::make_shared<InstanceHandle>(rt, instanceHandle, surfaceId);
+  currentRevision->setInstanceHandle(instanceHandleWrapper);
+
+  return valueFromShadowNode(rt, currentRevision);
 }
 
 #pragma mark - Legacy layout APIs (for `ReactNativeElement`).
