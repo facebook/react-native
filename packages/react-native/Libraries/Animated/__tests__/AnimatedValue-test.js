@@ -48,6 +48,7 @@ describe('AnimatedValue', () => {
 
     jest.spyOn(NativeAnimatedHelper.API, 'createAnimatedNode');
     jest.spyOn(NativeAnimatedHelper.API, 'dropAnimatedNode');
+    jest.spyOn(NativeAnimatedHelper.API, 'startListeningToAnimatedNodeValue');
   });
 
   it('emits update events for listeners added', () => {
@@ -111,5 +112,33 @@ describe('AnimatedValue', () => {
     emitMockUpdate(node, 456);
     expect(callbackA).toBeCalledTimes(1);
     expect(callbackB).toBeCalledTimes(1);
+  });
+
+  it('does not start listening to native node when not attached', () => {
+    const node = new AnimatedValue(0, {useNativeDriver: false});
+
+    node.__makeNative();
+    expect(
+      NativeAnimatedHelper.API.startListeningToAnimatedNodeValue,
+    ).toBeCalledTimes(0);
+
+    node.__attach();
+    expect(
+      NativeAnimatedHelper.API.startListeningToAnimatedNodeValue,
+    ).toBeCalledTimes(1);
+  });
+
+  it('does not start listening to native node when not native', () => {
+    const node = new AnimatedValue(0, {useNativeDriver: false});
+
+    node.__attach();
+    expect(
+      NativeAnimatedHelper.API.startListeningToAnimatedNodeValue,
+    ).toBeCalledTimes(0);
+
+    node.__makeNative();
+    expect(
+      NativeAnimatedHelper.API.startListeningToAnimatedNodeValue,
+    ).toBeCalledTimes(1);
   });
 });
