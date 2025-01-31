@@ -9,8 +9,8 @@
  * @oncall react_native
  */
 
-import DOMRectReadOnly from '../../geometry/DOMRectReadOnly';
 import {createDOMRectList} from '../DOMRectList';
+import DOMRectReadOnly from '../DOMRectReadOnly';
 
 const domRectA = new DOMRectReadOnly();
 const domRectB = new DOMRectReadOnly();
