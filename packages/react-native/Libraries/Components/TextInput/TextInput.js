@@ -66,13 +66,13 @@ if (Platform.OS === 'android') {
     require('./RCTMultilineTextInputNativeComponent').Commands;
 }
 
-export type ChangeEvent = SyntheticEvent<
-  $ReadOnly<{
-    eventCount: number,
-    target: number,
-    text: string,
-  }>,
->;
+export type TextInputChangeEventData = $ReadOnly<{
+  eventCount: number,
+  target: number,
+  text: string,
+}>;
+
+export type TextInputChangeEvent = SyntheticEvent<TextInputChangeEventData>;
 
 export type TextInputEvent = SyntheticEvent<
   $ReadOnly<{
@@ -87,52 +87,56 @@ export type TextInputEvent = SyntheticEvent<
   }>,
 >;
 
-export type ContentSizeChangeEvent = SyntheticEvent<
-  $ReadOnly<{
-    target: number,
-    contentSize: $ReadOnly<{
-      width: number,
-      height: number,
-    }>,
+export type TextInputContentSizeChangeEventData = $ReadOnly<{
+  target: number,
+  contentSize: $ReadOnly<{
+    width: number,
+    height: number,
   }>,
->;
+}>;
 
-type TargetEvent = SyntheticEvent<
-  $ReadOnly<{
-    target: number,
-  }>,
->;
+export type TextInputContentSizeChangeEvent =
+  SyntheticEvent<TextInputContentSizeChangeEventData>;
 
-export type BlurEvent = TargetEvent;
-export type FocusEvent = TargetEvent;
+export type TargetEvent = $ReadOnly<{
+  target: number,
+}>;
+
+export type TextInputFocusEventData = TargetEvent;
+
+export type TextInputBlurEvent = SyntheticEvent<TextInputFocusEventData>;
+export type TextInputFocusEvent = SyntheticEvent<TextInputFocusEventData>;
 
 type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
 
-export type SelectionChangeEvent = SyntheticEvent<
-  $ReadOnly<{
-    selection: Selection,
-    target: number,
-  }>,
->;
+export type TextInputSelectionChangeEventData = $ReadOnly<{
+  ...TargetEvent,
+  selection: Selection,
+}>;
 
-export type KeyPressEvent = SyntheticEvent<
-  $ReadOnly<{
-    key: string,
-    target?: ?number,
-    eventCount?: ?number,
-  }>,
->;
+export type TextInputSelectionChangeEvent =
+  SyntheticEvent<TextInputSelectionChangeEventData>;
 
-export type EditingEvent = SyntheticEvent<
-  $ReadOnly<{
-    eventCount: number,
-    text: string,
-    target: number,
-  }>,
->;
+type TextInputKeyPressEventData = $ReadOnly<{
+  ...TargetEvent,
+  key: string,
+  target?: ?number,
+  eventCount?: ?number,
+}>;
+
+export type TextInputKeyPressEvent = SyntheticEvent<TextInputKeyPressEventData>;
+
+export type TextInputEndEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
+
+export type TextInputEditingEvent =
+  SyntheticEvent<TextInputEndEditingEventData>;
 
 type DataDetectorTypesType =
   | 'phoneNumber'
@@ -766,12 +770,12 @@ export type Props = $ReadOnly<{
   /**
    * Callback that is called when the text input is blurred.
    */
-  onBlur?: ?(e: BlurEvent) => mixed,
+  onBlur?: ?(e: TextInputBlurEvent) => mixed,
 
   /**
    * Callback that is called when the text input's text changes.
    */
-  onChange?: ?(e: ChangeEvent) => mixed,
+  onChange?: ?(e: TextInputChangeEvent) => mixed,
 
   /**
    * Callback that is called when the text input's text changes.
@@ -786,17 +790,17 @@ export type Props = $ReadOnly<{
    *
    * Only called for multiline text inputs.
    */
-  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
+  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
 
   /**
    * Callback that is called when text input ends.
    */
-  onEndEditing?: ?(e: EditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
 
   /**
    * Callback that is called when the text input is focused.
    */
-  onFocus?: ?(e: FocusEvent) => mixed,
+  onFocus?: ?(e: TextInputFocusEvent) => mixed,
 
   /**
    * Callback that is called when a key is pressed.
@@ -805,7 +809,7 @@ export type Props = $ReadOnly<{
    * the typed-in character otherwise including `' '` for space.
    * Fires before `onChange` callbacks.
    */
-  onKeyPress?: ?(e: KeyPressEvent) => mixed,
+  onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
 
   /**
    * Called when a single tap gesture is detected.
@@ -827,13 +831,13 @@ export type Props = $ReadOnly<{
    * This will be called with
    * `{ nativeEvent: { selection: { start, end } } }`.
    */
-  onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
+  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
 
   /**
    * Callback that is called when the text input's submit button is pressed.
    * Invalid if `multiline={true}` is specified.
    */
-  onSubmitEditing?: ?(e: EditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
 
   /**
    * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
@@ -1419,7 +1423,7 @@ function InternalTextInput(props: Props): React.Node {
 
   const ref = useMergeRefs<TextInputInstance>(setLocalRef, props.forwardedRef);
 
-  const _onChange = (event: ChangeEvent) => {
+  const _onChange = (event: TextInputChangeEvent) => {
     const currentText = event.nativeEvent.text;
     props.onChange && props.onChange(event);
     props.onChangeText && props.onChangeText(currentText);
@@ -1438,7 +1442,7 @@ function InternalTextInput(props: Props): React.Node {
     setMostRecentEventCount(event.nativeEvent.eventCount);
   };
 
-  const _onSelectionChange = (event: SelectionChangeEvent) => {
+  const _onSelectionChange = (event: TextInputSelectionChangeEvent) => {
     props.onSelectionChange && props.onSelectionChange(event);
 
     if (inputRef.current == null) {
@@ -1453,14 +1457,14 @@ function InternalTextInput(props: Props): React.Node {
     });
   };
 
-  const _onFocus = (event: FocusEvent) => {
+  const _onFocus = (event: TextInputFocusEvent) => {
     TextInputState.focusInput(inputRef.current);
     if (props.onFocus) {
       props.onFocus(event);
     }
   };
 
-  const _onBlur = (event: BlurEvent) => {
+  const _onBlur = (event: TextInputBlurEvent) => {
     TextInputState.blurInput(inputRef.current);
     if (props.onBlur) {
       props.onBlur(event);
