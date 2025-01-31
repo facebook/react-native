@@ -30,6 +30,19 @@ inline void fromRawValue(
   }
 }
 
+inline void fromRawValue(
+    const PropsParserContext& /*context*/,
+    const RawValue& value,
+    TextInputMaxLength& result) {
+  auto length = static_cast<std::int64_t>(value);
+
+  if (length < INT32_MIN || length > INT32_MAX) {
+    result = 0;
+  } else {
+    result = length;
+  }
+}
+
 inline folly::dynamic toDynamic(const SubmitBehavior& value) {
   switch (value) {
     case SubmitBehavior::Newline:

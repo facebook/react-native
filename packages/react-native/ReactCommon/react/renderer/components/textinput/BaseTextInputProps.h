@@ -60,7 +60,7 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
   // TODO: Rename to `tintColor` and make universal.
   SharedColor underlineColorAndroid{};
 
-  int64_t maxLength{};
+  TextInputMaxLength maxLength{};
 
   /*
    * "Private" (only used by TextInput.js) props
