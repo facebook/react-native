@@ -159,18 +159,7 @@ declare export function attachNativeEvent(
   platformConfig: ?PlatformConfig
 ): { detach: () => void };
 declare export class AnimatedEvent {
-  _argMapping: $ReadOnlyArray<?Mapping>;
-  _listeners: Array<Function>;
-  _attachedEvent: ?{ detach: () => void, ... };
-  __isNative: boolean;
-  __platformConfig: ?PlatformConfig;
   constructor(argMapping: $ReadOnlyArray<?Mapping>, config: EventConfig): void;
-  __addListener(callback: Function): void;
-  __removeListener(callback: Function): void;
-  __attach(viewRef: any, eventName: string): void;
-  __detach(viewTag: any, eventName: string): void;
-  __getHandler(): any | ((...args: any) => void);
-  _callListeners: $FlowFixMe;
 }
 "
 `;
@@ -180,8 +169,6 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
   start: (callback?: ?EndCallback, isLooping?: boolean) => void,
   stop: () => void,
   reset: () => void,
-  _startNativeLoop: (iterations?: number) => void,
-  _isUsingNativeDriver: () => boolean,
   ...
 };
 declare const add: (
@@ -300,8 +287,6 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,
-  _startNativeLoop: (iterations?: number) => void,
-  _isUsingNativeDriver: () => boolean,
   ...
 };
 export type { AnimatedNumeric as Numeric };
@@ -393,11 +378,6 @@ export type AnimationConfig = $ReadOnly<{
   ...
 }>;
 declare export default class Animation {
-  __active: boolean;
-  __isInteraction: boolean;
-  __isLooping: ?boolean;
-  __iterations: number;
-  __debugID: ?string;
   constructor(config: AnimationConfig): void;
   start(
     fromValue: number,
@@ -407,14 +387,6 @@ declare export default class Animation {
     animatedValue: AnimatedValue
   ): void;
   stop(): void;
-  __getNativeAnimationConfig(): $ReadOnly<{
-    platformConfig: ?PlatformConfig,
-    ...
-  }>;
-  __findAnimatedPropsNodes(node: AnimatedNode): Array<AnimatedProps>;
-  __startAnimationIfNative(animatedValue: AnimatedValue): boolean;
-  __notifyAnimationEnd(result: EndResult): void;
-  __getDebugID(): ?string;
 }
 "
 `;
@@ -439,23 +411,7 @@ export type DecayAnimationConfigSingle = $ReadOnly<{
   ...
 }>;
 declare export default class DecayAnimation extends Animation {
-  _startTime: number;
-  _lastValue: number;
-  _fromValue: number;
-  _deceleration: number;
-  _velocity: number;
-  _onUpdate: (value: number) => void;
-  _animationFrame: ?AnimationFrameID;
-  _platformConfig: ?PlatformConfig;
   constructor(config: DecayAnimationConfigSingle): void;
-  __getNativeAnimationConfig(): $ReadOnly<{
-    deceleration: number,
-    iterations: number,
-    platformConfig: ?PlatformConfig,
-    type: \\"decay\\",
-    velocity: number,
-    ...
-  }>;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -529,41 +485,7 @@ export type SpringAnimationConfigSingle = $ReadOnly<{
 }>;
 declare opaque type SpringAnimationInternalState;
 declare export default class SpringAnimation extends Animation {
-  _overshootClamping: boolean;
-  _restDisplacementThreshold: number;
-  _restSpeedThreshold: number;
-  _lastVelocity: number;
-  _startPosition: number;
-  _lastPosition: number;
-  _fromValue: number;
-  _toValue: number;
-  _stiffness: number;
-  _damping: number;
-  _mass: number;
-  _initialVelocity: number;
-  _delay: number;
-  _timeout: ?TimeoutID;
-  _startTime: number;
-  _lastTime: number;
-  _frameTime: number;
-  _onUpdate: (value: number) => void;
-  _animationFrame: ?AnimationFrameID;
-  _platformConfig: ?PlatformConfig;
   constructor(config: SpringAnimationConfigSingle): void;
-  __getNativeAnimationConfig(): $ReadOnly<{
-    damping: number,
-    initialVelocity: number,
-    iterations: number,
-    mass: number,
-    platformConfig: ?PlatformConfig,
-    overshootClamping: boolean,
-    restDisplacementThreshold: number,
-    restSpeedThreshold: number,
-    stiffness: number,
-    toValue: number,
-    type: \\"spring\\",
-    ...
-  }>;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -607,25 +529,7 @@ export type TimingAnimationConfigSingle = $ReadOnly<{
   ...
 }>;
 declare export default class TimingAnimation extends Animation {
-  _startTime: number;
-  _fromValue: number;
-  _toValue: number;
-  _duration: number;
-  _delay: number;
-  _easing: (value: number) => number;
-  _onUpdate: (value: number) => void;
-  _animationFrame: ?AnimationFrameID;
-  _timeout: ?TimeoutID;
-  _platformConfig: ?PlatformConfig;
   constructor(config: TimingAnimationConfigSingle): void;
-  __getNativeAnimationConfig(): $ReadOnly<{
-    type: \\"frames\\",
-    frames: $ReadOnlyArray<number>,
-    toValue: number,
-    iterations: number,
-    platformConfig: ?PlatformConfig,
-    ...
-  }>;
   start(
     fromValue: number,
     onUpdate: (value: number) => void,
@@ -736,21 +640,14 @@ declare export function unstable_createAnimatedComponentWithAllowlist<
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedAddition.js 1`] = `
 "declare export default class AnimatedAddition extends AnimatedWithChildren {
-  _a: AnimatedNode;
-  _b: AnimatedNode;
   constructor(
     a: AnimatedNode | number,
     b: AnimatedNode | number,
     config?: ?AnimatedNodeConfig
   ): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getValue(): number;
   interpolate<OutputT: number | string>(
     config: InterpolationConfigType<OutputT>
   ): AnimatedInterpolation<OutputT>;
-  __attach(): void;
-  __detach(): void;
-  __getNativeConfig(): any;
 }
 "
 `;
@@ -782,7 +679,6 @@ declare export default class AnimatedColor extends AnimatedWithChildren {
   b: AnimatedValue;
   a: AnimatedValue;
   nativeColor: ?NativeColorValue;
-  _suspendCallbacks: number;
   constructor(valueIn?: InputValue, config?: ?AnimatedColorConfig): void;
   setValue(value: RgbaValue | ColorValue): void;
   setOffset(offset: RgbaValue): void;
@@ -790,60 +686,35 @@ declare export default class AnimatedColor extends AnimatedWithChildren {
   extractOffset(): void;
   stopAnimation(callback?: ColorListenerCallback): void;
   resetAnimation(callback?: ColorListenerCallback): void;
-  __getValue(): ColorValue;
-  __attach(): void;
-  __detach(): void;
-  _withSuspendedCallbacks(callback: () => void): void;
-  __callListeners(value: number): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getNativeConfig(): { ... };
 }
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedDiffClamp.js 1`] = `
 "declare export default class AnimatedDiffClamp extends AnimatedWithChildren {
-  _a: AnimatedNode;
-  _min: number;
-  _max: number;
-  _value: number;
-  _lastValue: number;
   constructor(
     a: AnimatedNode,
     min: number,
     max: number,
     config?: ?AnimatedNodeConfig
   ): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
   interpolate<OutputT: number | string>(
     config: InterpolationConfigType<OutputT>
   ): AnimatedInterpolation<OutputT>;
-  __getValue(): number;
-  __attach(): void;
-  __detach(): void;
-  __getNativeConfig(): any;
 }
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedDivision.js 1`] = `
 "declare export default class AnimatedDivision extends AnimatedWithChildren {
-  _a: AnimatedNode;
-  _b: AnimatedNode;
-  _warnedAboutDivideByZero: boolean;
   constructor(
     a: AnimatedNode | number,
     b: AnimatedNode | number,
     config?: ?AnimatedNodeConfig
   ): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getValue(): number;
   interpolate<OutputT: number | string>(
     config: InterpolationConfigType<OutputT>
   ): AnimatedInterpolation<OutputT>;
-  __attach(): void;
-  __detach(): void;
-  __getNativeConfig(): any;
 }
 "
 `;
@@ -862,43 +733,27 @@ export type InterpolationConfigType<OutputT: number | string> = $ReadOnly<{
 declare export default class AnimatedInterpolation<OutputT: number | string>
   extends AnimatedWithChildren
 {
-  _parent: AnimatedNode;
-  _config: InterpolationConfigType<OutputT>;
-  _interpolation: ?(input: number) => OutputT;
   constructor(
     parent: AnimatedNode,
     config: InterpolationConfigType<OutputT>
   ): void;
-  _getInterpolation(): (number) => OutputT;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getValue(): OutputT;
   interpolate<NewOutputT: number | string>(
     config: InterpolationConfigType<NewOutputT>
   ): AnimatedInterpolation<NewOutputT>;
-  __attach(): void;
-  __detach(): void;
-  __getNativeConfig(): any;
 }
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedModulo.js 1`] = `
 "declare export default class AnimatedModulo extends AnimatedWithChildren {
-  _a: AnimatedNode;
-  _modulus: number;
   constructor(
     a: AnimatedNode,
     modulus: number,
     config?: ?AnimatedNodeConfig
   ): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getValue(): number;
   interpolate<OutputT: number | string>(
     config: InterpolationConfigType<OutputT>
   ): AnimatedInterpolation<OutputT>;
-  __attach(): void;
-  __detach(): void;
-  __getNativeConfig(): any;
 }
 "
 `;
@@ -907,21 +762,14 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 "declare export default class AnimatedMultiplication
   extends AnimatedWithChildren
 {
-  _a: AnimatedNode;
-  _b: AnimatedNode;
   constructor(
     a: AnimatedNode | number,
     b: AnimatedNode | number,
     config?: ?AnimatedNodeConfig
   ): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getValue(): number;
   interpolate<OutputT: number | string>(
     config: InterpolationConfigType<OutputT>
   ): AnimatedInterpolation<OutputT>;
-  __attach(): void;
-  __detach(): void;
-  __getNativeConfig(): any;
 }
 "
 `;
@@ -931,36 +779,17 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   debugID?: string,
 }>;
 declare export default class AnimatedNode {
-  _platformConfig: ?PlatformConfig;
   constructor(
     config?: ?$ReadOnly<{
       ...AnimatedNodeConfig,
       ...
     }>
   ): void;
-  __attach(): void;
-  __detach(): void;
-  __getValue(): any;
-  __getAnimatedValue(): any;
-  __addChild(child: AnimatedNode): void;
-  __removeChild(child: AnimatedNode): void;
-  __getChildren(): $ReadOnlyArray<AnimatedNode>;
-  __isNative: boolean;
-  __nativeTag: ?number;
-  __makeNative(platformConfig: ?PlatformConfig): void;
   addListener(callback: (value: any) => mixed): string;
   removeListener(id: string): void;
   removeAllListeners(): void;
   hasListeners(): boolean;
-  __onAnimatedValueUpdateReceived(value: number): void;
-  __callListeners(value: number): void;
-  __getNativeTag(): number;
-  __getNativeConfig(): Object;
-  __getPlatformConfig(): ?PlatformConfig;
-  __setPlatformConfig(platformConfig: ?PlatformConfig): void;
   toJSON(): mixed;
-  __debugID: ?string;
-  __getDebugID(): ?string;
 }
 "
 `;
@@ -970,20 +799,12 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
   value: mixed
 ): value is $ReadOnly<{ [string]: mixed }>;
 declare export default class AnimatedObject extends AnimatedWithChildren {
-  _value: mixed;
   static from(value: mixed): ?AnimatedObject;
   constructor(
     nodes: $ReadOnlyArray<AnimatedNode>,
     value: mixed,
     config?: ?AnimatedNodeConfig
   ): void;
-  __getValue(): any;
-  __getValueWithStaticObject(staticObject: mixed): any;
-  __getAnimatedValue(): any;
-  __attach(): void;
-  __detach(): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getNativeConfig(): any;
 }
 "
 `;
@@ -1000,18 +821,8 @@ declare export default class AnimatedProps extends AnimatedNode {
     allowlist?: ?AnimatedPropsAllowlist,
     config?: ?AnimatedNodeConfig
   ): void;
-  __getValue(): Object;
-  __getValueWithStaticProps(staticProps: Object): Object;
-  __getAnimatedValue(): Object;
-  __attach(): void;
-  __detach(): void;
   update(): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
   setNativeView(animatedView: any): void;
-  __connectAnimatedView(): void;
-  __disconnectAnimatedView(): void;
-  __restoreDefaultValues(): void;
-  __getNativeConfig(): Object;
 }
 "
 `;
@@ -1030,46 +841,26 @@ declare export default class AnimatedStyle extends AnimatedWithChildren {
     inputStyle: any,
     config?: ?AnimatedNodeConfig
   ): void;
-  __getValue(): Object | Array<Object>;
-  __getValueWithStaticStyle(staticStyle: Object): Object | Array<Object>;
-  __getAnimatedValue(): Object;
-  __attach(): void;
-  __detach(): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getNativeConfig(): Object;
 }
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedSubtraction.js 1`] = `
 "declare export default class AnimatedSubtraction extends AnimatedWithChildren {
-  _a: AnimatedNode;
-  _b: AnimatedNode;
   constructor(
     a: AnimatedNode | number,
     b: AnimatedNode | number,
     config?: ?AnimatedNodeConfig
   ): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getValue(): number;
   interpolate<OutputT: number | string>(
     config: InterpolationConfigType<OutputT>
   ): AnimatedInterpolation<OutputT>;
-  __attach(): void;
-  __detach(): void;
-  __getNativeConfig(): any;
 }
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedTracking.js 1`] = `
 "declare export default class AnimatedTracking extends AnimatedNode {
-  _value: AnimatedValue;
-  _parent: AnimatedNode;
-  _callback: ?EndCallback;
-  _animationConfig: Object;
-  _animationClass: any;
-  _useNativeDriver: boolean;
   constructor(
     value: AnimatedValue,
     parent: AnimatedNode,
@@ -1078,12 +869,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
     callback?: ?EndCallback,
     config?: ?AnimatedNodeConfig
   ): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getValue(): Object;
-  __attach(): void;
-  __detach(): void;
   update(): void;
-  __getNativeConfig(): any;
 }
 "
 `;
@@ -1098,22 +884,12 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
     | { [string]: number | string | T },
 };
 declare export default class AnimatedTransform extends AnimatedWithChildren {
-  _transforms: $ReadOnlyArray<Transform<>>;
   static from(transforms: $ReadOnlyArray<Transform<>>): ?AnimatedTransform;
   constructor(
     nodes: $ReadOnlyArray<AnimatedNode>,
     transforms: $ReadOnlyArray<Transform<>>,
     config?: ?AnimatedNodeConfig
   ): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __getValue(): $ReadOnlyArray<Transform<any>>;
-  __getValueWithStaticTransforms(
-    staticTransforms: $ReadOnlyArray<Object>
-  ): $ReadOnlyArray<Object>;
-  __getAnimatedValue(): $ReadOnlyArray<Transform<any>>;
-  __attach(): void;
-  __detach(): void;
-  __getNativeConfig(): any;
 }
 "
 `;
@@ -1125,15 +901,7 @@ exports[`public API should not change unintentionally Libraries/Animated/nodes/A
 }>;
 declare export function flushValue(rootNode: AnimatedNode): void;
 declare export default class AnimatedValue extends AnimatedWithChildren {
-  _value: number;
-  _startingValue: number;
-  _offset: number;
-  _animation: ?Animation;
-  _tracking: ?AnimatedTracking;
   constructor(value: number, config?: ?AnimatedValueConfig): void;
-  __detach(): void;
-  __getValue(): number;
-  __makeNative(platformConfig: ?PlatformConfig): void;
   addListener(callback: (value: any) => mixed): string;
   removeListener(id: string): void;
   removeAllListeners(): void;
@@ -1143,15 +911,12 @@ declare export default class AnimatedValue extends AnimatedWithChildren {
   extractOffset(): void;
   stopAnimation(callback?: ?(value: number) => void): void;
   resetAnimation(callback?: ?(value: number) => void): void;
-  __onAnimatedValueUpdateReceived(value: number): void;
   interpolate<OutputT: number | string>(
     config: InterpolationConfigType<OutputT>
   ): AnimatedInterpolation<OutputT>;
   animate(animation: Animation, callback: ?EndCallback): void;
   stopTracking(): void;
   track(tracking: AnimatedTracking): void;
-  _updateValue(value: number, flush: boolean): void;
-  __getNativeConfig(): Object;
 }
 "
 `;
@@ -1165,14 +930,6 @@ type ValueXYListenerCallback = (value: { x: number, y: number, ... }) => mixed;
 declare export default class AnimatedValueXY extends AnimatedWithChildren {
   x: AnimatedValue;
   y: AnimatedValue;
-  _listeners: {
-    [key: string]: {
-      x: string,
-      y: string,
-      ...
-    },
-    ...
-  };
   constructor(
     valueIn?: ?{
       +x: number | AnimatedValue,
@@ -1185,11 +942,6 @@ declare export default class AnimatedValueXY extends AnimatedWithChildren {
   setOffset(offset: { x: number, y: number, ... }): void;
   flattenOffset(): void;
   extractOffset(): void;
-  __getValue(): {
-    x: number,
-    y: number,
-    ...
-  };
   resetAnimation(
     callback?: (value: { x: number, y: number, ... }) => void
   ): void;
@@ -1201,22 +953,12 @@ declare export default class AnimatedValueXY extends AnimatedWithChildren {
   removeAllListeners(): void;
   getLayout(): { [key: string]: AnimatedValue, ... };
   getTranslateTransform(): Array<{ [key: string]: AnimatedValue, ... }>;
-  __attach(): void;
-  __detach(): void;
-  __makeNative(platformConfig: ?PlatformConfig): void;
 }
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/nodes/AnimatedWithChildren.js 1`] = `
-"declare export default class AnimatedWithChildren extends AnimatedNode {
-  _children: Array<AnimatedNode>;
-  __makeNative(platformConfig: ?PlatformConfig): void;
-  __addChild(child: AnimatedNode): void;
-  __removeChild(child: AnimatedNode): void;
-  __getChildren(): $ReadOnlyArray<AnimatedNode>;
-  __callListeners(value: number): void;
-}
+"declare export default class AnimatedWithChildren extends AnimatedNode {}
 "
 `;
 
@@ -1264,7 +1006,6 @@ type NativeAppStateEventDefinitions = {
 declare class AppState {
   currentState: ?string;
   isAvailable: boolean;
-  _emitter: ?NativeEventEmitter<NativeAppStateEventDefinitions>;
   constructor(): void;
   addEventListener<K: $Keys<AppStateEventDefinitions>>(
     type: K,
@@ -1296,18 +1037,6 @@ exports[`public API should not change unintentionally Libraries/BatchedBridge/Me
   ...
 };
 declare class MessageQueue {
-  _lazyCallableModules: { [key: string]: (void) => { ... }, ... };
-  _queue: [number[], number[], mixed[], number];
-  _successCallbacks: Map<number, ?(...mixed[]) => void>;
-  _failureCallbacks: Map<number, ?(...mixed[]) => void>;
-  _callID: number;
-  _lastFlush: number;
-  _eventLoopStartTime: number;
-  _reactNativeMicrotasksCallback: ?() => void;
-  _debugInfo: { [number]: [number, number], ... };
-  _remoteModuleTable: { [number]: string, ... };
-  _remoteMethodTable: { [number]: $ReadOnlyArray<string>, ... };
-  __spy: ?(data: SpyData) => void;
   constructor(): void;
   static spy(spyOrToggle: boolean | ((data: SpyData) => void)): void;
   callFunctionReturnFlushedQueue(
@@ -1354,11 +1083,6 @@ declare class MessageQueue {
     methods: ?$ReadOnlyArray<string>
   ): void;
   setReactNativeMicrotasksCallback(fn: () => void): void;
-  __guard(fn: () => void): void;
-  __shouldPauseOnThrow(): boolean;
-  __callReactNativeMicrotasks(): void;
-  __callFunction(module: string, method: string, args: mixed[]): void;
-  __invokeCallback(cbID: number, args: mixed[]): void;
 }
 declare export default typeof MessageQueue;
 "
@@ -1380,7 +1104,6 @@ declare export default typeof NativeModules;
 
 exports[`public API should not change unintentionally Libraries/Blob/Blob.js 1`] = `
 "declare class Blob {
-  _data: ?BlobData;
   constructor(parts: Array<Blob | string>, options?: BlobOptions): void;
   set data(data: ?BlobData): void;
   get data(): BlobData;
@@ -1427,7 +1150,6 @@ export type BlobData = {
   name?: string,
   type?: string,
   lastModified?: number,
-  __collector?: ?BlobCollector,
   ...
 };
 export type BlobOptions = {
@@ -1467,13 +1189,7 @@ declare class FileReader extends EventTarget {
   EMPTY: number;
   LOADING: number;
   DONE: number;
-  _readyState: ReadyState;
-  _error: ?Error;
-  _result: ?ReaderResult;
-  _aborted: boolean;
   constructor(): void;
-  _reset(): void;
-  _setReadyState(newState: ReadyState): void;
   readAsArrayBuffer(blob: ?Blob): void;
   readAsDataURL(blob: ?Blob): void;
   readAsText(blob: ?Blob, encoding: string): void;
@@ -1508,13 +1224,7 @@ declare class FileReader extends EventTarget {
   EMPTY: number;
   LOADING: number;
   DONE: number;
-  _readyState: ReadyState;
-  _error: ?Error;
-  _result: ?ReaderResult;
-  _aborted: boolean;
   constructor(): void;
-  _reset(): void;
-  _setReadyState(newState: ReadyState): void;
   readAsArrayBuffer(blob: ?Blob): void;
   readAsDataURL(blob: ?Blob): void;
   readAsText(blob: ?Blob, encoding: string): void;
@@ -1542,8 +1252,6 @@ declare export default typeof NativeFileReaderModule;
 exports[`public API should not change unintentionally Libraries/Blob/URL.js 1`] = `
 "export { URLSearchParams } from \\"./URLSearchParams\\";
 declare export class URL {
-  _url: string;
-  _searchParamsInstance: ?URLSearchParams;
   static createObjectURL(blob: Blob): string;
   static revokeObjectURL(url: string): void;
   constructor(url: string, base: string | URL): void;
@@ -1567,7 +1275,6 @@ declare export class URL {
 
 exports[`public API should not change unintentionally Libraries/Blob/URLSearchParams.js.flow 1`] = `
 "declare export class URLSearchParams {
-  _searchParams: Array<Array<string>>;
   constructor(params: any): void;
   append(key: string, value: string): void;
   delete(name: string): void;
@@ -1591,11 +1298,6 @@ type DebugData = {
   ...
 };
 declare class BugReporting {
-  static _extraSources: Map<string, SourceCallback>;
-  static _fileSources: Map<string, SourceCallback>;
-  static _subscription: ?EventSubscription;
-  static _redboxSubscription: ?EventSubscription;
-  static _maybeInit(): void;
   static addSource(
     key: string,
     callback: SourceCallback
@@ -1603,11 +1305,6 @@ declare class BugReporting {
   static addFileSource(
     key: string,
     callback: SourceCallback
-  ): { remove: () => void, ... };
-  static _addSource(
-    key: string,
-    callback: SourceCallback,
-    source: Map<string, SourceCallback>
   ): { remove: () => void, ... };
   static collectExtraData(): DebugData;
 }
@@ -1837,8 +1534,6 @@ type KeyboardEventDefinitions = {
   keyboardDidChangeFrame: [KeyboardEvent],
 };
 declare class Keyboard {
-  _currentlyShowing: ?KeyboardEvent;
-  _emitter: NativeEventEmitter<KeyboardEventDefinitions>;
   constructor(): void;
   addListener<K: $Keys<KeyboardEventDefinitions>>(
     eventType: K,
@@ -1867,19 +1562,8 @@ type State = {
   bottom: number,
 };
 declare class KeyboardAvoidingView extends React.Component<Props, State> {
-  _frame: ?ViewLayout;
-  _keyboardEvent: ?KeyboardEvent;
-  _subscriptions: Array<EventSubscription>;
   viewRef: { current: React.ElementRef<typeof View> | null, ... };
-  _initialFrameHeight: number;
-  _bottom: number;
   constructor(props: Props): void;
-  _relativeKeyboardHeight(keyboardFrame: KeyboardMetrics): Promise<number>;
-  _onKeyboardChange: $FlowFixMe;
-  _onKeyboardHide: $FlowFixMe;
-  _onLayout: $FlowFixMe;
-  _setBottom: $FlowFixMe;
-  _updateBottomIfNecessary: $FlowFixMe;
   componentDidUpdate(_: Props, prevState: State): void;
   componentDidMount(): void;
   componentWillUnmount(): void;
@@ -2051,16 +1735,9 @@ export type RefreshControlProps = $ReadOnly<{
   progressViewOffset?: ?number,
 }>;
 declare class RefreshControl extends React.Component<RefreshControlProps> {
-  _nativeRef: ?React.ElementRef<
-    | typeof PullToRefreshViewNativeComponent
-    | typeof AndroidSwipeRefreshLayoutNativeComponent,
-  >;
-  _lastNativeRefreshing: boolean;
   componentDidMount(): void;
   componentDidUpdate(prevProps: RefreshControlProps): void;
   render(): React.Node;
-  _onRefresh: $FlowFixMe;
-  _setNativeRef: $FlowFixMe;
 }
 declare export default typeof RefreshControl;
 "
@@ -2222,26 +1899,6 @@ export type ScrollViewComponentStatics = $ReadOnly<{
 declare class ScrollView extends React.Component<Props, State> {
   static Context: typeof ScrollViewContext;
   constructor(props: Props): void;
-  _scrollAnimatedValue: AnimatedImplementation.Value;
-  _scrollAnimatedValueAttachment: ?{ detach: () => void, ... };
-  _stickyHeaderRefs: Map<
-    React.Key,
-    React.ElementRef<StickyHeaderComponentType>,
-  >;
-  _headerLayoutYs: Map<React.Key, number>;
-  _keyboardMetrics: ?KeyboardMetrics;
-  _additionalScrollOffset: number;
-  _isTouching: boolean;
-  _lastMomentumScrollBeginTime: number;
-  _lastMomentumScrollEndTime: number;
-  _observedScrollSinceBecomingResponder: boolean;
-  _becameResponderWhileAnimating: boolean;
-  _preventNegativeScrollOffset: ?boolean;
-  _animated: ?boolean;
-  _subscriptionKeyboardWillShow: ?EventSubscription;
-  _subscriptionKeyboardWillHide: ?EventSubscription;
-  _subscriptionKeyboardDidShow: ?EventSubscription;
-  _subscriptionKeyboardDidHide: ?EventSubscription;
   state: State;
   componentDidMount(): void;
   componentDidUpdate(prevProps: Props): void;
@@ -2280,52 +1937,10 @@ declare class ScrollView extends React.Component<Props, State> {
     },
     animated?: boolean
   ) => void;
-  _textInputFocusError(): void;
-  _inputMeasureAndScrollToKeyboard: (
-    left: number,
-    top: number,
-    width: number,
-    height: number
-  ) => void;
-  _getKeyForIndex(index: number, childArray: any): React.Key;
-  _updateAnimatedNodeAttachment(): void;
-  _setStickyHeaderRef(
-    key: string,
-    ref: ?React.ElementRef<StickyHeaderComponentType>
-  ): void;
-  _onStickyHeaderLayout(
-    index: number,
-    event: LayoutEvent,
-    key: React.Key
-  ): void;
-  _handleScroll: $FlowFixMe;
-  _handleLayout: $FlowFixMe;
-  _handleContentOnLayout: $FlowFixMe;
-  _innerView: RefForwarder<InnerViewInstance, InnerViewInstance>;
-  _scrollView: RefForwarder<HostInstance, PublicScrollViewInstance | null>;
   scrollResponderKeyboardWillShow: (e: KeyboardEvent) => void;
   scrollResponderKeyboardWillHide: (e: KeyboardEvent) => void;
   scrollResponderKeyboardDidShow: (e: KeyboardEvent) => void;
   scrollResponderKeyboardDidHide: (e: KeyboardEvent) => void;
-  _handleMomentumScrollBegin: (e: ScrollEvent) => void;
-  _handleMomentumScrollEnd: (e: ScrollEvent) => void;
-  _handleScrollBeginDrag: (e: ScrollEvent) => void;
-  _handleScrollEndDrag: (e: ScrollEvent) => void;
-  _isAnimating: () => boolean;
-  _handleResponderGrant: (e: PressEvent) => void;
-  _handleResponderReject: () => void;
-  _handleResponderRelease: (e: PressEvent) => void;
-  _handleResponderTerminationRequest: () => boolean;
-  _handleScrollShouldSetResponder: () => boolean;
-  _handleStartShouldSetResponder: (e: PressEvent) => boolean;
-  _handleStartShouldSetResponderCapture: (e: PressEvent) => boolean;
-  _keyboardIsDismissible: () => boolean;
-  _softKeyboardIsDetached: () => boolean;
-  _keyboardEventsAreUnreliable: () => boolean;
-  _handleTouchEnd: (e: PressEvent) => void;
-  _handleTouchCancel: (e: PressEvent) => void;
-  _handleTouchStart: (e: PressEvent) => void;
-  _handleTouchMove: (e: PressEvent) => void;
   render(): React.Node;
 }
 type RefForwarder<TNativeInstance, TPublicInstance> = {
@@ -2572,10 +2187,6 @@ type StackProps = {
   networkActivityIndicatorVisible: Props[\\"networkActivityIndicatorVisible\\"],
 };
 declare class StatusBar extends React.Component<Props> {
-  static _propsStack: Array<StackProps>;
-  static _defaultProps: any;
-  static _updateImmediate: ?number;
-  static _currentValues: ?StackProps;
   static currentHeight: ?number;
   static setHidden(hidden: boolean, animation?: StatusBarAnimation): void;
   static setBarStyle(style: StatusBarStyle, animated?: boolean): void;
@@ -2585,11 +2196,9 @@ declare class StatusBar extends React.Component<Props> {
   static pushStackEntry(props: any): any;
   static popStackEntry(entry: any): void;
   static replaceStackEntry(entry: any, props: any): any;
-  _stackEntry: ?StackProps;
   componentDidMount(): void;
   componentWillUnmount(): void;
   componentDidUpdate(): void;
-  static _updatePropsStack: $FlowFixMe;
   render(): React.Node;
 }
 declare export default typeof StatusBar;
@@ -3730,35 +3339,6 @@ declare const TouchableMixin: {
   touchableHandleResponderMove: (e: PressEvent) => void,
   touchableHandleFocus: (e: Event) => void,
   touchableHandleBlur: (e: Event) => void,
-  _remeasureMetricsOnActivation: () => void,
-  _handleQueryLayout: (
-    l: number,
-    t: number,
-    w: number,
-    h: number,
-    globalX: number,
-    globalY: number
-  ) => void,
-  _handleDelay: (e: PressEvent) => void,
-  _handleLongDelay: (e: PressEvent) => void,
-  _receiveSignal: (signal: Signal, e: PressEvent) => void,
-  _cancelLongPressDelayTimeout: () => void,
-  _isHighlight: (state: State) => boolean,
-  _savePressInLocation: (e: PressEvent) => void,
-  _getDistanceBetweenPoints: (
-    aX: number,
-    aY: number,
-    bX: number,
-    bY: number
-  ) => number,
-  _performSideEffectsForTransition: (
-    curState: State,
-    nextState: State,
-    signal: Signal,
-    e: PressEvent
-  ) => void,
-  _startHighlight: (e: PressEvent) => void,
-  _endHighlight: (e: PressEvent) => void,
   withoutDefaultFocusAndBlur: { ... },
 };
 declare const Touchable: {
@@ -3873,9 +3453,6 @@ declare class TouchableNativeFeedback extends React.Component<Props, State> {
   }>;
   static canUseNativeForeground: () => boolean;
   state: State;
-  _createPressabilityConfig(): PressabilityConfig;
-  _dispatchPressedStateChange(pressed: boolean): void;
-  _dispatchHotspotUpdate(event: PressEvent): void;
   render(): React.Node;
   componentDidUpdate(prevProps: Props, prevState: State): void;
   componentDidMount(): mixed;
@@ -4647,7 +4224,6 @@ export type { EventSubscription };
 declare export default class NativeEventEmitter<TEventToArgsMap: { ... }>
   implements IEventEmitter<TEventToArgsMap>
 {
-  _nativeModule: ?NativeModule;
   constructor(nativeModule: ?NativeModule): void;
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
@@ -4747,7 +4323,6 @@ declare class EventPolyfill implements IEvent {
   currentTarget: EventTarget;
   target: EventTarget;
   srcElement: Element;
-  _syntheticEvent: mixed;
   constructor(type: string, eventInitDict?: Event$Init): void;
   composedPath(): Array<EventTarget>;
   preventDefault(): void;
@@ -4771,7 +4346,6 @@ declare module.exports: AssetRegistry;
 
 exports[`public API should not change unintentionally Libraries/Image/AssetSourceResolver.js 1`] = `
 "export type ResolvedAssetSource = {
-  +__packager_asset: boolean,
   +width: ?number,
   +height: ?number,
   +uri: string,
@@ -4827,8 +4401,6 @@ declare export default typeof Context;
 exports[`public API should not change unintentionally Libraries/Image/ImageBackground.js 1`] = `
 "declare class ImageBackground extends React.Component<ImageBackgroundProps> {
   setNativeProps(props: { ... }): void;
-  _viewRef: ?React.ElementRef<typeof View>;
-  _captureRef: $FlowFixMe;
   render(): React.Node;
 }
 declare export default typeof ImageBackground;
@@ -5249,7 +4821,6 @@ exports[`public API should not change unintentionally Libraries/Interaction/PanR
   vx: number,
   vy: number,
   numberActiveTouches: number,
-  _accountsForMovesUpTo: number,
 };
 type ActiveCallback = (
   event: PressEvent,
@@ -5286,11 +4857,6 @@ type PanResponderConfig = $ReadOnly<{
   onShouldBlockNativeResponder?: ?ActiveCallback,
 }>;
 declare const PanResponder: {
-  _initializeGestureState(gestureState: GestureState): void,
-  _updateGestureStateOnMove(
-    gestureState: GestureState,
-    touchHistory: $PropertyType<PressEvent, \\"touchHistory\\">
-  ): void,
   create(config: PanResponderConfig): {
     getInteractionHandle: () => ?number,
     panHandlers: PanHandlers,
@@ -5318,14 +4884,6 @@ declare class TaskQueue {
   cancelTasks(tasksToCancel: Array<Task>): void;
   hasTasksToProcess(): boolean;
   processNext(): void;
-  _queueStack: Array<{
-    tasks: Array<Task>,
-    popable: boolean,
-    ...
-  }>;
-  _onMoreTasks: () => void;
-  _getCurrentQueue(): Array<Task>;
-  _genPromise(task: PromiseTask): void;
 }
 declare export default typeof TaskQueue;
 "
@@ -5421,7 +4979,6 @@ declare class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
       ...
     }>
   ): Promise<void>;
-  _validateURL(url: string): void;
 }
 declare const Linking: LinkingImpl;
 declare export default typeof Linking;
@@ -5521,23 +5078,6 @@ declare class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   setNativeProps(props: { [string]: mixed, ... }): void;
   constructor(props: Props<ItemT>): void;
   componentDidUpdate(prevProps: Props<ItemT>): void;
-  _listRef: ?VirtualizedList;
-  _virtualizedListPairs: Array<ViewabilityConfigCallbackPair>;
-  _captureRef: $FlowFixMe;
-  _checkProps(props: Props<ItemT>): void;
-  _getItem: $FlowFixMe;
-  _getItemCount: $FlowFixMe;
-  _keyExtractor: $FlowFixMe;
-  _pushMultiColumnViewable(arr: Array<ViewToken>, v: ViewToken): void;
-  _createOnViewableItemsChanged(
-    onViewableItemsChanged: ?(info: {
-      viewableItems: Array<ViewToken>,
-      changed: Array<ViewToken>,
-      ...
-    }) => void
-  ): void;
-  _renderer: $FlowFixMe;
-  _memoizedRenderer: ReturnType<typeof memoizeOne>;
   render(): React.Node;
 }
 declare export default typeof FlatList;
@@ -5604,8 +5144,6 @@ declare export default class SectionList<SectionT: SectionBase<any>>
   getScrollableNode(): any;
   setNativeProps(props: Object): void;
   render(): React.Node;
-  _wrapperListRef: ?React.ElementRef<typeof VirtualizedSectionList>;
-  _captureRef: $FlowFixMe;
 }
 "
 `;
@@ -5938,9 +5476,6 @@ exports[`public API should not change unintentionally Libraries/LogBox/LogBoxIns
 }>;
 declare export class _LogBoxInspectorContainer extends React.Component<Props> {
   render(): React.Node;
-  _handleDismiss: $FlowFixMe;
-  _handleMinimize: $FlowFixMe;
-  _handleSetSelectedLog: $FlowFixMe;
 }
 declare export default React.ComponentType<{}>;
 "
@@ -6226,15 +5761,11 @@ type State = {
 declare class Modal extends React.Component<Props, State> {
   static defaultProps: { hardwareAccelerated: boolean, visible: boolean };
   static contextType: React.Context<RootTag>;
-  _identifier: number;
-  _eventSubscription: ?EventSubscription;
   constructor(props: Props): void;
   componentDidMount(): void;
   componentWillUnmount(): void;
   componentDidUpdate(prevProps: Props): void;
-  _shouldShowModal(): boolean;
   render(): React.Node;
-  _shouldSetResponder(): boolean;
 }
 declare const ExportedModal: React.ComponentType<
   React.ElementConfig<typeof Modal>,
@@ -6413,7 +5944,6 @@ type FormDataPart =
       ...
     };
 declare class FormData {
-  _parts: Array<FormDataNameValuePair>;
   constructor(): void;
   append(key: string, value: FormDataValue): void;
   getAll(key: string): Array<FormDataValue>;
@@ -6511,7 +6041,6 @@ declare class XMLHttpRequest extends EventTarget {
   static HEADERS_RECEIVED: number;
   static LOADING: number;
   static DONE: number;
-  static _profiling: boolean;
   UNSENT: number;
   OPENED: number;
   HEADERS_RECEIVED: number;
@@ -6524,57 +6053,12 @@ declare class XMLHttpRequest extends EventTarget {
   responseURL: ?string;
   withCredentials: boolean;
   upload: XMLHttpRequestEventTarget;
-  _requestId: ?number;
-  _subscriptions: Array<EventSubscription>;
-  _aborted: boolean;
-  _cachedResponse: Response;
-  _hasError: boolean;
-  _headers: Object;
-  _lowerCaseResponseHeaders: Object;
-  _method: ?string;
-  _perfKey: ?string;
-  _responseType: ResponseType;
-  _response: string;
-  _sent: boolean;
-  _url: ?string;
-  _timedOut: boolean;
-  _trackingName: string;
-  _incrementalEvents: boolean;
-  _startTime: ?number;
-  _performanceLogger: IPerformanceLogger;
   static enableProfiling(enableProfiling: boolean): void;
   constructor(): void;
-  _reset(): void;
   get responseType(): ResponseType;
   set responseType(responseType: ResponseType): void;
   get responseText(): string;
   get response(): Response;
-  __didCreateRequest(requestId: number): void;
-  __didUploadProgress(requestId: number, progress: number, total: number): void;
-  __didReceiveResponse(
-    requestId: number,
-    status: number,
-    responseHeaders: ?Object,
-    responseURL: ?string
-  ): void;
-  __didReceiveData(requestId: number, response: string): void;
-  __didReceiveIncrementalData(
-    requestId: number,
-    responseText: string,
-    progress: number,
-    total: number
-  ): void;
-  __didReceiveDataProgress(
-    requestId: number,
-    loaded: number,
-    total: number
-  ): void;
-  __didCompleteResponse(
-    requestId: number,
-    error: string,
-    timeOutError: boolean
-  ): void;
-  _clearSubscriptions(): void;
   getAllResponseHeaders(): ?string;
   getResponseHeader(header: string): ?string;
   setRequestHeader(header: string, value: any): void;
@@ -6586,7 +6070,6 @@ declare class XMLHttpRequest extends EventTarget {
   setResponseHeaders(responseHeaders: ?Object): void;
   setReadyState(newState: number): void;
   addEventListener(type: string, listener: EventListener | null): void;
-  _getMeasureURL(): string;
   get onabort(): EventCallback | null;
   set onabort(listener: ?EventCallback): void;
   get onerror(): EventCallback | null;
@@ -6633,7 +6116,6 @@ declare class XMLHttpRequest extends EventTarget {
   static HEADERS_RECEIVED: number;
   static LOADING: number;
   static DONE: number;
-  static _profiling: boolean;
   UNSENT: number;
   OPENED: number;
   HEADERS_RECEIVED: number;
@@ -6654,57 +6136,12 @@ declare class XMLHttpRequest extends EventTarget {
   responseURL: ?string;
   withCredentials: boolean;
   upload: XMLHttpRequestEventTarget;
-  _requestId: ?number;
-  _subscriptions: Array<EventSubscription>;
-  _aborted: boolean;
-  _cachedResponse: Response;
-  _hasError: boolean;
-  _headers: Object;
-  _lowerCaseResponseHeaders: Object;
-  _method: ?string;
-  _perfKey: ?string;
-  _responseType: ResponseType;
-  _response: string;
-  _sent: boolean;
-  _url: ?string;
-  _timedOut: boolean;
-  _trackingName: string;
-  _incrementalEvents: boolean;
-  _startTime: ?number;
-  _performanceLogger: IPerformanceLogger;
   static enableProfiling(enableProfiling: boolean): void;
   constructor(): void;
-  _reset(): void;
   get responseType(): ResponseType;
   set responseType(responseType: ResponseType): void;
   get responseText(): string;
   get response(): Response;
-  __didCreateRequest(requestId: number): void;
-  __didUploadProgress(requestId: number, progress: number, total: number): void;
-  __didReceiveResponse(
-    requestId: number,
-    status: number,
-    responseHeaders: ?Object,
-    responseURL: ?string
-  ): void;
-  __didReceiveData(requestId: number, response: string): void;
-  __didReceiveIncrementalData(
-    requestId: number,
-    responseText: string,
-    progress: number,
-    total: number
-  ): void;
-  __didReceiveDataProgress(
-    requestId: number,
-    loaded: number,
-    total: number
-  ): void;
-  __didCompleteResponse(
-    requestId: number,
-    error: string,
-    timeOutError: boolean
-  ): void;
-  _clearSubscriptions(): void;
   getAllResponseHeaders(): ?string;
   getResponseHeader(header: string): ?string;
   setRequestHeader(header: string, value: any): void;
@@ -6716,7 +6153,6 @@ declare class XMLHttpRequest extends EventTarget {
   setResponseHeaders(responseHeaders: ?Object): void;
   setReadyState(newState: number): void;
   addEventListener(type: string, listener: EventListener): void;
-  _getMeasureURL(): string;
 }
 declare module.exports: XMLHttpRequest;
 "
@@ -6919,59 +6355,11 @@ type TouchState =
   | \\"RESPONDER_ACTIVE_LONG_PRESS_OUT\\"
   | \\"ERROR\\";
 declare export default class Pressability {
-  _config: PressabilityConfig;
-  _eventHandlers: ?EventHandlers;
-  _hoverInDelayTimeout: ?TimeoutID;
-  _hoverOutDelayTimeout: ?TimeoutID;
-  _isHovered: boolean;
-  _longPressDelayTimeout: ?TimeoutID;
-  _pressDelayTimeout: ?TimeoutID;
-  _pressOutDelayTimeout: ?TimeoutID;
-  _responderID: ?number | HostInstance;
-  _responderRegion: ?$ReadOnly<{
-    bottom: number,
-    left: number,
-    right: number,
-    top: number,
-  }>;
-  _touchActivatePosition: ?$ReadOnly<{
-    pageX: number,
-    pageY: number,
-  }>;
-  _touchActivateTime: ?number;
-  _touchState: TouchState;
   constructor(config: PressabilityConfig): void;
   configure(config: PressabilityConfig): void;
   reset(): void;
   getEventHandlers(): EventHandlers;
   static setLongPressDeactivationDistance(distance: number): void;
-  _createEventHandlers(): EventHandlers;
-  _receiveSignal(signal: TouchSignal, event: PressEvent): void;
-  _performTransitionSideEffects(
-    prevState: TouchState,
-    nextState: TouchState,
-    signal: TouchSignal,
-    event: PressEvent
-  ): void;
-  _activate(event: PressEvent): void;
-  _deactivate(event: PressEvent): void;
-  _measureResponderRegion(): void;
-  _measureCallback: $FlowFixMe;
-  _isTouchWithinResponderRegion(
-    touch: $PropertyType<PressEvent, \\"nativeEvent\\">,
-    responderRegion: $ReadOnly<{
-      bottom: number,
-      left: number,
-      right: number,
-      top: number,
-    }>
-  ): boolean;
-  _handleLongPress(event: PressEvent): void;
-  _cancelHoverInDelayTimeout(): void;
-  _cancelHoverOutDelayTimeout(): void;
-  _cancelLongPressDelayTimeout(): void;
-  _cancelPressDelayTimeout(): void;
-  _cancelPressOutDelayTimeout(): void;
 }
 "
 `;
@@ -6995,7 +6383,6 @@ exports[`public API should not change unintentionally Libraries/Pressability/Pre
 export type PressabilityPerformanceEventListener =
   (PressabilityPerformanceEvent) => void;
 declare class PressabilityPerformanceEventEmitter {
-  _listeners: Array<PressabilityPerformanceEventListener>;
   constructor(): void;
   addListener(listener: PressabilityPerformanceEventListener): void;
   removeListener(listener: PressabilityPerformanceEventListener): void;
@@ -7052,16 +6439,6 @@ export type PushNotificationEventName = $Keys<{
   ...
 }>;
 declare class PushNotificationIOS {
-  _data: Object;
-  _alert: string | Object;
-  _sound: string;
-  _category: string;
-  _contentAvailable: ContentAvailable;
-  _badgeCount: number;
-  _notificationId: string;
-  _isRemote: boolean;
-  _remoteNotificationCompleteCallbackCalled: boolean;
-  _threadID: string;
   static FetchResult: FetchResult;
   static presentLocalNotification(details: Object): void;
   static scheduleLocalNotification(details: Object): void;
@@ -7355,9 +6732,6 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
 "declare export default class ReactFabricHostComponent
   implements INativeMethods
 {
-  __nativeTag: number;
-  __internalInstanceHandle: InternalInstanceHandle;
-  _viewConfig: ViewConfig;
   constructor(
     tag: number,
     viewConfig: ViewConfig,
@@ -8893,7 +8267,6 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
   ...
 };
 type IOSPlatform = {
-  __constants: null,
   OS: \\"ios\\",
   get Version(): string,
   get constants(): {
@@ -8920,7 +8293,6 @@ type IOSPlatform = {
   select: <T>(spec: PlatformSelectSpec<T>) => T,
 };
 type AndroidPlatform = {
-  __constants: null,
   OS: \\"android\\",
   get Version(): number,
   get constants(): {
@@ -9291,10 +8663,6 @@ declare class WebSocket extends EventTarget {
   OPEN: number;
   CLOSING: number;
   CLOSED: number;
-  _socketId: number;
-  _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
-  _subscriptions: Array<EventSubscription>;
-  _binaryType: ?BinaryType;
   bufferedAmount: number;
   extension: ?string;
   protocol: ?string;
@@ -9310,9 +8678,6 @@ declare class WebSocket extends EventTarget {
   close(code?: number, reason?: string): void;
   send(data: string | ArrayBuffer | ArrayBufferView | Blob): void;
   ping(): void;
-  _close(code?: number, reason?: string): void;
-  _unregisterEvents(): void;
-  _registerEvents(): void;
   get onclose(): EventCallback | null;
   set onclose(listener: ?EventCallback): void;
   get onerror(): EventCallback | null;
@@ -9358,10 +8723,6 @@ declare class WebSocket extends EventTarget {
   OPEN: number;
   CLOSING: number;
   CLOSED: number;
-  _socketId: number;
-  _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
-  _subscriptions: Array<EventSubscription>;
-  _binaryType: ?BinaryType;
   onclose: ?Function;
   onerror: ?Function;
   onmessage: ?Function;
@@ -9381,9 +8742,6 @@ declare class WebSocket extends EventTarget {
   close(code?: number, reason?: string): void;
   send(data: string | ArrayBuffer | ArrayBufferView | Blob): void;
   ping(): void;
-  _close(code?: number, reason?: string): void;
-  _unregisterEvents(): void;
-  _registerEvents(): void;
 }
 declare export default typeof WebSocket;
 "
@@ -9414,10 +8772,7 @@ exports[`public API should not change unintentionally Libraries/WebSocket/WebSoc
     callback: ?({ code: number, reason: ?string }, number) => void
   ): void,
   isInterceptorEnabled(): boolean,
-  _unregisterEvents(): void,
-  _registerEvents(): void,
   enableInterception(): void,
-  _arrayBufferToString(data: string): ArrayBuffer | string,
   disableInterception(): void,
 };
 declare export default typeof WebSocketInterceptor;
@@ -11163,21 +10518,12 @@ declare export default class DOMRectReadOnly {
     right: number,
   };
   static fromRect(rect?: ?DOMRectInit): DOMRectReadOnly;
-  __getInternalX(): number;
-  __getInternalY(): number;
-  __getInternalWidth(): number;
-  __getInternalHeight(): number;
-  __setInternalX(x: ?number): void;
-  __setInternalY(y: ?number): void;
-  __setInternalWidth(width: ?number): void;
-  __setInternalHeight(height: ?number): void;
 }
 "
 `;
 
 exports[`public API should not change unintentionally src/private/webapis/dom/nodes/ReactNativeDocument.js 1`] = `
 "declare export default class ReactNativeDocument extends ReadOnlyNode {
-  _documentElement: ReactNativeElement;
   constructor(
     rootTag: RootTag,
     instanceHandle: ReactNativeDocumentInstanceHandle
@@ -11203,9 +10549,6 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   extends ReadOnlyElement
   implements INativeMethods
 {
-  __nativeTag: number;
-  __internalInstanceHandle: InstanceHandle;
-  __viewConfig: ViewConfig;
   constructor(
     tag: number,
     viewConfig: ViewConfig,
@@ -11363,11 +10706,6 @@ type IntersectionObserverInit = {
   rnRootThreshold?: number | $ReadOnlyArray<number>,
 };
 declare export default class IntersectionObserver {
-  _callback: IntersectionObserverCallback;
-  _thresholds: $ReadOnlyArray<number>;
-  _observationTargets: Set<ReactNativeElement>;
-  _intersectionObserverId: ?IntersectionObserverId;
-  _rootThresholds: $ReadOnlyArray<number> | null;
   constructor(
     callback: IntersectionObserverCallback,
     options?: IntersectionObserverInit
@@ -11379,16 +10717,12 @@ declare export default class IntersectionObserver {
   observe(target: ReactNativeElement): void;
   unobserve(target: ReactNativeElement): void;
   disconnect(): void;
-  _getOrCreateIntersectionObserverId(): IntersectionObserverId;
-  __getObserverID(): ?IntersectionObserverId;
 }
 "
 `;
 
 exports[`public API should not change unintentionally src/private/webapis/intersectionobserver/IntersectionObserverEntry.js 1`] = `
 "declare export default class IntersectionObserverEntry {
-  _nativeEntry: NativeIntersectionObserverEntry;
-  _target: ReactNativeElement;
   constructor(
     nativeEntry: NativeIntersectionObserverEntry,
     target: ReactNativeElement
@@ -11424,15 +10758,9 @@ type MutationObserverInit = $ReadOnly<{
   characterDataOldValue?: boolean,
 }>;
 declare export default class MutationObserver {
-  _callback: MutationObserverCallback;
-  _observationTargets: Set<ReactNativeElement>;
-  _mutationObserverId: ?MutationObserverId;
   constructor(callback: MutationObserverCallback): void;
   observe(target: ReactNativeElement, options?: MutationObserverInit): void;
-  _unobserve(target: ReactNativeElement): void;
   disconnect(): void;
-  _getOrCreateMutationObserverId(): MutationObserverId;
-  __getObserverID(): ?MutationObserverId;
 }
 "
 `;
@@ -11440,9 +10768,6 @@ declare export default class MutationObserver {
 exports[`public API should not change unintentionally src/private/webapis/mutationobserver/MutationRecord.js 1`] = `
 "export type MutationType = \\"attributes\\" | \\"characterData\\" | \\"childList\\";
 declare export default class MutationRecord {
-  _target: ReactNativeElement;
-  _addedNodes: NodeList<ReadOnlyNode>;
-  _removedNodes: NodeList<ReadOnlyNode>;
   constructor(nativeRecord: NativeMutationRecord): void;
   get addedNodes(): NodeList<ReadOnlyNode>;
   get attributeName(): string | null;
