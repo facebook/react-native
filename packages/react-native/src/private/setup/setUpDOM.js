@@ -21,12 +21,12 @@ export default function setUpDOM() {
 
   polyfillGlobal(
     'DOMRect',
-    () => require('../webapis/dom/geometry/DOMRect').default,
+    () => require('../webapis/geometry/DOMRect').default,
   );
 
   polyfillGlobal(
     'DOMRectReadOnly',
-    () => require('../webapis/dom/geometry/DOMRectReadOnly').default,
+    () => require('../webapis/geometry/DOMRectReadOnly').default,
   );
 
   polyfillGlobal(
