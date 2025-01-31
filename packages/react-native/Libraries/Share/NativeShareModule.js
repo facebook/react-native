@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeShareModule';
-import NativeShareModule from '../../src/private/specs/modules/NativeShareModule';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeShareModule';
+import NativeShareModule from '../../src/private/specs_DEPRECATED/modules/NativeShareModule';
 export default NativeShareModule;

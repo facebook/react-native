@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeAlertManager';
-import NativeAlertManager from '../../src/private/specs/modules/NativeAlertManager';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeAlertManager';
+import NativeAlertManager from '../../src/private/specs_DEPRECATED/modules/NativeAlertManager';
 export default NativeAlertManager;

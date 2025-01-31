@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeLogBox';
-import NativeLogBox from '../../../src/private/specs/modules/NativeLogBox';
+export * from '../../../src/private/specs_DEPRECATED/modules/NativeLogBox';
+import NativeLogBox from '../../../src/private/specs_DEPRECATED/modules/NativeLogBox';
 export default NativeLogBox;

@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeAccessibilityInfo';
-import NativeAccessibilityInfo from '../../../src/private/specs/modules/NativeAccessibilityInfo';
+export * from '../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityInfo';
+import NativeAccessibilityInfo from '../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityInfo';
 export default NativeAccessibilityInfo;

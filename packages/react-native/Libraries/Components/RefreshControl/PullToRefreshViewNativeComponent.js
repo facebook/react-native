@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../../src/private/specs/components/PullToRefreshViewNativeComponent';
-import PullToRefreshViewNativeComponent from '../../../src/private/specs/components/PullToRefreshViewNativeComponent';
+export * from '../../../src/private/specs_DEPRECATED/components/PullToRefreshViewNativeComponent';
+import PullToRefreshViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/PullToRefreshViewNativeComponent';
 export default PullToRefreshViewNativeComponent;
