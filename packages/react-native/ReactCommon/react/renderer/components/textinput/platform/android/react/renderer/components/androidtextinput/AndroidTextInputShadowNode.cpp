@@ -120,19 +120,19 @@ LayoutConstraints AndroidTextInputShadowNode::getTextConstraints(
 
 void AndroidTextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
-
+  const auto& stateData = getStateData();
   auto reactTreeAttributedString = getAttributedString();
-  const auto& state = getStateData();
 
   // Tree is often out of sync with the value of the TextInput.
   // This is by design - don't change the value of the TextInput in the State,
   // and therefore in Java, unless the tree itself changes.
-  if (state.reactTreeAttributedString == reactTreeAttributedString) {
+  if (stateData.reactTreeAttributedString == reactTreeAttributedString) {
     return;
   }
 
   // If props event counter is less than what we already have in state, skip it
-  if (getConcreteProps().mostRecentEventCount < state.mostRecentEventCount) {
+  const auto& props = BaseShadowNode::getConcreteProps();
+  if (props.mostRecentEventCount < stateData.mostRecentEventCount) {
     return;
   }
 
@@ -141,48 +141,43 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   // current attributedString unchanged, and pass in zero for the "event count"
   // so no changes are applied There's no way to prevent a state update from
   // flowing to Java, so we just ensure it's a noop in those cases.
-  auto newEventCount =
-      state.reactTreeAttributedString.isContentEqual(reactTreeAttributedString)
+  auto newEventCount = stateData.reactTreeAttributedString.isContentEqual(
+                           reactTreeAttributedString)
       ? 0
-      : getConcreteProps().mostRecentEventCount;
+      : props.mostRecentEventCount;
   auto newAttributedString = getMostRecentAttributedString();
 
   setStateData(TextInputState{
       AttributedStringBox(newAttributedString),
       reactTreeAttributedString,
-      getConcreteProps().paragraphAttributes,
+      props.paragraphAttributes,
       newEventCount});
 }
 
 AttributedString AndroidTextInputShadowNode::getAttributedString() const {
-  // Use BaseTextShadowNode to get attributed string from children
-  auto childTextAttributes = TextAttributes::defaultTextAttributes();
-  childTextAttributes.apply(getConcreteProps().textAttributes);
+  const auto& props = BaseShadowNode::getConcreteProps();
+
+  auto textAttributes = TextAttributes::defaultTextAttributes();
+  textAttributes.apply(props.textAttributes);
   // Don't propagate the background color of the TextInput onto the attributed
   // string. Android tries to render shadow of the background alongside the
   // shadow of the text which results in weird artifacts.
-  childTextAttributes.backgroundColor = HostPlatformColor::UndefinedColor;
+  textAttributes.backgroundColor = clearColor();
 
-  auto attributedString = AttributedString{};
+  AttributedString attributedString;
   auto attachments = BaseTextShadowNode::Attachments{};
+  // Use BaseTextShadowNode to get attributed string from children
   BaseTextShadowNode::buildAttributedString(
-      childTextAttributes, *this, attributedString, attachments);
-  attributedString.setBaseTextAttributes(childTextAttributes);
+      textAttributes, *this, attributedString, attachments);
+  attributedString.setBaseTextAttributes(textAttributes);
 
   // BaseTextShadowNode only gets children. We must detect and prepend text
   // value attributes manually.
-  if (!getConcreteProps().text.empty()) {
-    auto textAttributes = TextAttributes::defaultTextAttributes();
-    textAttributes.apply(getConcreteProps().textAttributes);
-    auto fragment = AttributedString::Fragment{};
-    fragment.string = getConcreteProps().text;
-    fragment.textAttributes = textAttributes;
-    // If the TextInput opacity is 0 < n < 1, the opacity of the TextInput and
-    // text value's background will stack. This is a hack/workaround to prevent
-    // that effect.
-    fragment.textAttributes.backgroundColor = clearColor();
-    fragment.parentShadowView = ShadowView(*this);
-    attributedString.prependFragment(std::move(fragment));
+  if (!props.text.empty()) {
+    attributedString.appendFragment(AttributedString::Fragment{
+        .string = props.text,
+        .textAttributes = textAttributes,
+        .parentShadowView = ShadowView(*this)});
   }
 
   return attributedString;
