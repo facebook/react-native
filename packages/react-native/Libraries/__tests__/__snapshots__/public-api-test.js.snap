@@ -2445,13 +2445,13 @@ declare export default HostComponent<NativeProps>;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/InputAccessoryView.js 1`] = `
-"type Props = $ReadOnly<{
+"export type InputAccessoryViewProps = $ReadOnly<{
   +children: React.Node,
   nativeID?: ?string,
   style?: ?ViewStyleProp,
   backgroundColor?: ?ColorValue,
 }>;
-declare const InputAccessoryView: React.ComponentType<Props>;
+declare const InputAccessoryView: React.ComponentType<InputAccessoryViewProps>;
 declare export default typeof InputAccessoryView;
 "
 `;
@@ -2493,13 +2493,12 @@ exports[`public API should not change unintentionally Libraries/Components/TextI
 "type ReactRefSetter<T> =
   | { current: null | T, ... }
   | ((ref: null | T) => mixed);
-export type ChangeEvent = SyntheticEvent<
-  $ReadOnly<{
-    eventCount: number,
-    target: number,
-    text: string,
-  }>,
->;
+export type TextInputChangeEventData = $ReadOnly<{
+  eventCount: number,
+  target: number,
+  text: string,
+}>;
+export type TextInputChangeEvent = SyntheticEvent<TextInputChangeEventData>;
 export type TextInputEvent = SyntheticEvent<
   $ReadOnly<{
     eventCount: number,
@@ -2512,46 +2511,45 @@ export type TextInputEvent = SyntheticEvent<
     text: string,
   }>,
 >;
-export type ContentSizeChangeEvent = SyntheticEvent<
-  $ReadOnly<{
-    target: number,
-    contentSize: $ReadOnly<{
-      width: number,
-      height: number,
-    }>,
+export type TextInputContentSizeChangeEventData = $ReadOnly<{
+  target: number,
+  contentSize: $ReadOnly<{
+    width: number,
+    height: number,
   }>,
->;
-type TargetEvent = SyntheticEvent<
-  $ReadOnly<{
-    target: number,
-  }>,
->;
-export type BlurEvent = TargetEvent;
-export type FocusEvent = TargetEvent;
+}>;
+export type TextInputContentSizeChangeEvent =
+  SyntheticEvent<TextInputContentSizeChangeEventData>;
+export type TargetEvent = $ReadOnly<{
+  target: number,
+}>;
+export type TextInputFocusEventData = TargetEvent;
+export type TextInputBlurEvent = SyntheticEvent<TextInputFocusEventData>;
+export type TextInputFocusEvent = SyntheticEvent<TextInputFocusEventData>;
 type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
-export type SelectionChangeEvent = SyntheticEvent<
-  $ReadOnly<{
-    selection: Selection,
-    target: number,
-  }>,
->;
-export type KeyPressEvent = SyntheticEvent<
-  $ReadOnly<{
-    key: string,
-    target?: ?number,
-    eventCount?: ?number,
-  }>,
->;
-export type EditingEvent = SyntheticEvent<
-  $ReadOnly<{
-    eventCount: number,
-    text: string,
-    target: number,
-  }>,
->;
+export type TextInputSelectionChangeEventData = $ReadOnly<{
+  ...TargetEvent,
+  selection: Selection,
+}>;
+export type TextInputSelectionChangeEvent =
+  SyntheticEvent<TextInputSelectionChangeEventData>;
+export type TextInputKeyPressEventData = $ReadOnly<{
+  ...TargetEvent,
+  key: string,
+  target?: ?number,
+  eventCount: number,
+}>;
+export type TextInputKeyPressEvent = SyntheticEvent<TextInputKeyPressEventData>;
+export type TextInputEndEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
+export type TextInputEditingEvent =
+  SyntheticEvent<TextInputEndEditingEventData>;
 type DataDetectorTypesType =
   | \\"phoneNumber\\"
   | \\"link\\"
@@ -2783,21 +2781,21 @@ export type Props = $ReadOnly<{
   maxFontSizeMultiplier?: ?number,
   maxLength?: ?number,
   multiline?: ?boolean,
-  onBlur?: ?(e: BlurEvent) => mixed,
-  onChange?: ?(e: ChangeEvent) => mixed,
-  unstable_onChangeSync?: ?(e: ChangeEvent) => mixed,
+  onBlur?: ?(e: TextInputBlurEvent) => mixed,
+  onChange?: ?(e: TextInputChangeEvent) => mixed,
+  unstable_onChangeSync?: ?(e: TextInputChangeEvent) => mixed,
   onChangeText?: ?(text: string) => mixed,
   unstable_onChangeTextSync?: ?(text: string) => mixed,
-  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
-  onEndEditing?: ?(e: EditingEvent) => mixed,
-  onFocus?: ?(e: FocusEvent) => mixed,
-  onKeyPress?: ?(e: KeyPressEvent) => mixed,
-  unstable_onKeyPressSync?: ?(e: KeyPressEvent) => mixed,
+  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onFocus?: ?(e: TextInputFocusEvent) => mixed,
+  onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
+  unstable_onKeyPressSync?: ?(e: TextInputKeyPressEvent) => mixed,
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
-  onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
-  onSubmitEditing?: ?(e: EditingEvent) => mixed,
+  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
@@ -2847,13 +2845,12 @@ type TextInputInstance = HostInstance & {
   +getNativeRef: () => ?HostInstance,
   +setSelection: (start: number, end: number) => void,
 };
-export type ChangeEvent = SyntheticEvent<
-  $ReadOnly<{
-    eventCount: number,
-    target: number,
-    text: string,
-  }>,
->;
+export type TextInputChangeEventData = $ReadOnly<{
+  eventCount: number,
+  target: number,
+  text: string,
+}>;
+export type TextInputChangeEvent = SyntheticEvent<TextInputChangeEventData>;
 export type TextInputEvent = SyntheticEvent<
   $ReadOnly<{
     eventCount: number,
@@ -2866,46 +2863,45 @@ export type TextInputEvent = SyntheticEvent<
     text: string,
   }>,
 >;
-export type ContentSizeChangeEvent = SyntheticEvent<
-  $ReadOnly<{
-    target: number,
-    contentSize: $ReadOnly<{
-      width: number,
-      height: number,
-    }>,
+export type TextInputContentSizeChangeEventData = $ReadOnly<{
+  target: number,
+  contentSize: $ReadOnly<{
+    width: number,
+    height: number,
   }>,
->;
-type TargetEvent = SyntheticEvent<
-  $ReadOnly<{
-    target: number,
-  }>,
->;
-export type BlurEvent = TargetEvent;
-export type FocusEvent = TargetEvent;
+}>;
+export type TextInputContentSizeChangeEvent =
+  SyntheticEvent<TextInputContentSizeChangeEventData>;
+export type TargetEvent = $ReadOnly<{
+  target: number,
+}>;
+export type TextInputFocusEventData = TargetEvent;
+export type TextInputBlurEvent = SyntheticEvent<TextInputFocusEventData>;
+export type TextInputFocusEvent = SyntheticEvent<TextInputFocusEventData>;
 type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
-export type SelectionChangeEvent = SyntheticEvent<
-  $ReadOnly<{
-    selection: Selection,
-    target: number,
-  }>,
->;
-export type KeyPressEvent = SyntheticEvent<
-  $ReadOnly<{
-    key: string,
-    target?: ?number,
-    eventCount?: ?number,
-  }>,
->;
-export type EditingEvent = SyntheticEvent<
-  $ReadOnly<{
-    eventCount: number,
-    text: string,
-    target: number,
-  }>,
->;
+export type TextInputSelectionChangeEventData = $ReadOnly<{
+  ...TargetEvent,
+  selection: Selection,
+}>;
+export type TextInputSelectionChangeEvent =
+  SyntheticEvent<TextInputSelectionChangeEventData>;
+type TextInputKeyPressEventData = $ReadOnly<{
+  ...TargetEvent,
+  key: string,
+  target?: ?number,
+  eventCount?: ?number,
+}>;
+export type TextInputKeyPressEvent = SyntheticEvent<TextInputKeyPressEventData>;
+export type TextInputEndEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
+export type TextInputEditingEvent =
+  SyntheticEvent<TextInputEndEditingEventData>;
 type DataDetectorTypesType =
   | \\"phoneNumber\\"
   | \\"link\\"
@@ -3136,18 +3132,18 @@ export type Props = $ReadOnly<{
   maxFontSizeMultiplier?: ?number,
   maxLength?: ?number,
   multiline?: ?boolean,
-  onBlur?: ?(e: BlurEvent) => mixed,
-  onChange?: ?(e: ChangeEvent) => mixed,
+  onBlur?: ?(e: TextInputBlurEvent) => mixed,
+  onChange?: ?(e: TextInputChangeEvent) => mixed,
   onChangeText?: ?(text: string) => mixed,
-  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
-  onEndEditing?: ?(e: EditingEvent) => mixed,
-  onFocus?: ?(e: FocusEvent) => mixed,
-  onKeyPress?: ?(e: KeyPressEvent) => mixed,
+  onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onFocus?: ?(e: TextInputFocusEvent) => mixed,
+  onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
   onPressOut?: ?(event: PressEvent) => mixed,
-  onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
-  onSubmitEditing?: ?(e: EditingEvent) => mixed,
+  onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
@@ -7964,11 +7960,13 @@ export type ScrollEvent = SyntheticEvent<
 export type BlurEvent = SyntheticEvent<
   $ReadOnly<{
     target: number,
+    ...
   }>,
 >;
 export type FocusEvent = SyntheticEvent<
   $ReadOnly<{
     target: number,
+    ...
   }>,
 >;
 export type MouseEvent = SyntheticEvent<
