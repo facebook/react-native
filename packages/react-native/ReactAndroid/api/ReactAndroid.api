@@ -1868,6 +1868,7 @@ public final class com/facebook/react/common/assets/ReactFontManager$TypefaceSty
 
 public final class com/facebook/react/common/build/ReactBuildConfig {
 	public static final field DEBUG Z
+	public static final field ENABLE_PERFETTO Z
 	public static final field EXOPACKAGE_FLAGS I
 	public static final field INSTANCE Lcom/facebook/react/common/build/ReactBuildConfig;
 	public static final field IS_INTERNAL_BUILD Z
