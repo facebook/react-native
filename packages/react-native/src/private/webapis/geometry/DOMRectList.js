@@ -10,10 +10,10 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type DOMRectReadOnly from '../geometry/DOMRectReadOnly';
-import type {ArrayLike} from './ArrayLikeUtils';
+import type {ArrayLike} from '../utils/ArrayLikeUtils';
+import type DOMRectReadOnly from './DOMRectReadOnly';
 
-import {createValueIterator} from './ArrayLikeUtils';
+import {createValueIterator} from '../utils/ArrayLikeUtils';
 
 // IMPORTANT: The Flow type definition for this module is defined in `DOMRectList.js.flow`
 // because Flow only supports indexers in classes in declaration files.

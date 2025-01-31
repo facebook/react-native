@@ -8,9 +8,9 @@
  * @format
  */
 
-import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
+import type {TurboModule} from '../../../../../Libraries/TurboModule/RCTExport';
 
-import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
+import * as TurboModuleRegistry from '../../../../../Libraries/TurboModule/TurboModuleRegistry';
 
 /**
  * This is an internal native module meant to be used for performance

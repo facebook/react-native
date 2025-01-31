@@ -8,8 +8,8 @@
  * @format
  */
 
-import type DOMRectReadOnly from 'react-native/src/private/webapis/dom/geometry/DOMRectReadOnly';
 import type ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
+import type DOMRectReadOnly from 'react-native/src/private/webapis/geometry/DOMRectReadOnly';
 
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 import IntersectionObserver from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserver';
