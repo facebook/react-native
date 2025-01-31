@@ -11,6 +11,9 @@
 
 import type {TransformVisitor} from 'hermes-transform';
 
+const {
+  visitors: stripPrivateProperties,
+} = require('../../../../scripts/build/build-types/transforms/stripPrivateProperties');
 const translate = require('flow-api-translator');
 const {existsSync, promises: fs} = require('fs');
 const glob = require('glob');
@@ -116,19 +119,22 @@ async function translateFlowToExportedAPI(source: string): Promise<string> {
   const typeDefSource = await translate.translateFlowToFlowDef(source);
 
   // Remove comments and import declarations
-  const visitors: TransformVisitor = context => ({
-    Program(node) {
-      // $FlowFixMe[cannot-write]
-      delete node.docblock;
+  const visitors: TransformVisitor = context => {
+    return {
+      ...stripPrivateProperties(context),
+      Program(node) {
+        // $FlowFixMe[cannot-write]
+        delete node.docblock;
 
-      for (const comment of node.comments) {
-        context.removeComments(comment);
-      }
-    },
-    ImportDeclaration(node) {
-      context.removeNode(node);
-    },
-  });
+        for (const comment of node.comments) {
+          context.removeComments(comment);
+        }
+      },
+      ImportDeclaration(node) {
+        context.removeNode(node);
+      },
+    };
+  };
 
   const result = await transform(typeDefSource, visitors);
 
