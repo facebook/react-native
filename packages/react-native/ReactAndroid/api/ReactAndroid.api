@@ -2325,16 +2325,17 @@ public class com/facebook/react/devsupport/StackTraceHelper$StackFrameImpl : com
 	public fun toJSON ()Lorg/json/JSONObject;
 }
 
-public class com/facebook/react/devsupport/inspector/InspectorNetworkHelper {
-	public static fun loadNetworkResource (Ljava/lang/String;Lcom/facebook/react/devsupport/inspector/InspectorNetworkRequestListener;)V
+public final class com/facebook/react/devsupport/inspector/InspectorNetworkHelper {
+	public static final field INSTANCE Lcom/facebook/react/devsupport/inspector/InspectorNetworkHelper;
+	public static final fun loadNetworkResource (Ljava/lang/String;Lcom/facebook/react/devsupport/inspector/InspectorNetworkRequestListener;)V
 }
 
-public class com/facebook/react/devsupport/inspector/InspectorNetworkRequestListener {
+public final class com/facebook/react/devsupport/inspector/InspectorNetworkRequestListener {
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
-	public fun onCompletion ()V
-	public fun onData (Ljava/lang/String;)V
-	public fun onError (Ljava/lang/String;)V
-	public fun onHeaders (ILjava/util/Map;)V
+	public final fun onCompletion ()V
+	public final fun onData (Ljava/lang/String;)V
+	public final fun onError (Ljava/lang/String;)V
+	public final fun onHeaders (ILjava/util/Map;)V
 }
 
 public abstract interface class com/facebook/react/devsupport/interfaces/BundleLoadCallback {
