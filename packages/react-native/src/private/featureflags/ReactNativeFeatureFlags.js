@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d66477e7b024c551085f068a6445014>>
+ * @generated SignedSource<<c72379b205c8a6a38d6be9c428872211>>
  * @flow strict
  */
 
@@ -50,6 +50,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
+  disableAndroidLegacyPropsHacks: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -175,6 +176,10 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  * Common flag for testing (without native implementation). Do NOT modify.
  */
 export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false, true);
+/**
+ * Disables hacks that were added tu support legacy props on Fabric Android
+ */
+export const disableAndroidLegacyPropsHacks: Getter<boolean> = createNativeFlagGetter('disableAndroidLegacyPropsHacks', false);
 /**
  * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
  */

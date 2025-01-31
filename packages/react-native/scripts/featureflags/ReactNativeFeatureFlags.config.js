@@ -57,6 +57,16 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
+    disableAndroidLegacyPropsHacks: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-01-31',
+        description:
+          'Disables hacks that were added tu support legacy props on Fabric Android',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {

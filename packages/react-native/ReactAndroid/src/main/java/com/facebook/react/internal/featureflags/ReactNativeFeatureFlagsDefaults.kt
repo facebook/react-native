@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71ea4cd62cc16ed718fdc764ec97d0e8>>
+ * @generated SignedSource<<2ca3fc350993a4b79562d83e44ecb4e3>>
  */
 
 /**
@@ -24,6 +24,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   // but that is more expensive than just duplicating the defaults here.
 
   override fun commonTestFlag(): Boolean = false
+
+  override fun disableAndroidLegacyPropsHacks(): Boolean = false
 
   override fun disableMountItemReorderingAndroid(): Boolean = false
 

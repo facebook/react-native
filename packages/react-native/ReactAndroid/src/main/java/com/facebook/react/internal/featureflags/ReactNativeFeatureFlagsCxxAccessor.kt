@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e6816ffbe4d790d219c6aced5b3c695c>>
+ * @generated SignedSource<<fb97be4e3aa2eaef4c88d3c96b39e087>>
  */
 
 /**
@@ -21,6 +21,7 @@ package com.facebook.react.internal.featureflags
 
 internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
+  private var disableAndroidLegacyPropsHacksCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -67,6 +68,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.commonTestFlag()
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun disableAndroidLegacyPropsHacks(): Boolean {
+    var cached = disableAndroidLegacyPropsHacksCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.disableAndroidLegacyPropsHacks()
+      disableAndroidLegacyPropsHacksCache = cached
     }
     return cached
   }
