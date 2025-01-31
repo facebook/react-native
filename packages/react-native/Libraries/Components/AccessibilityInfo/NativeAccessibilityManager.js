@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeAccessibilityManager';
-import NativeAccessibilityManager from '../../../src/private/specs/modules/NativeAccessibilityManager';
+export * from '../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityManager';
+import NativeAccessibilityManager from '../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityManager';
 export default NativeAccessibilityManager;

@@ -44,7 +44,7 @@ describe('Native Animated', () => {
           },
         },
       }))
-      .mock('../../specs/modules/NativeAnimatedModule')
+      .mock('../../specs_DEPRECATED/modules/NativeAnimatedModule')
       .mock('../../../../Libraries/EventEmitter/NativeEventEmitter')
       // findNodeHandle is imported from RendererProxy so mock that whole module.
       .setMock('../../../../Libraries/ReactNative/RendererProxy', {
@@ -52,7 +52,7 @@ describe('Native Animated', () => {
       });
 
     NativeAnimatedModule =
-      require('../../specs/modules/NativeAnimatedModule').default;
+      require('../../specs_DEPRECATED/modules/NativeAnimatedModule').default;
     Object.assign(NativeAnimatedModule, {
       getValue: jest.fn(),
       addAnimatedEventToView: jest.fn(),

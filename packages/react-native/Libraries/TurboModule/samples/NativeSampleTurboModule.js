@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeSampleTurboModule';
-import NativeSampleTurboModule from '../../../src/private/specs/modules/NativeSampleTurboModule';
+export * from '../../../src/private/specs_DEPRECATED/modules/NativeSampleTurboModule';
+import NativeSampleTurboModule from '../../../src/private/specs_DEPRECATED/modules/NativeSampleTurboModule';
 export default NativeSampleTurboModule;

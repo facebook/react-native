@@ -30,7 +30,7 @@ const SOURCE_PATTERNS = [
   path.join(PACKAGES_DIR, 'react-native/Libraries/Utilities/Platform.js'),
   path.join(
     PACKAGES_DIR,
-    'react-native/src/private/specs/modules/NativeAlertManager.js',
+    'react-native/src/private/specs_DEPRECATED/modules/NativeAlertManager.js',
   ),
   // TODO(T210505412): Include input packages, e.g. virtualized-lists
 ];
