@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  EventSubscription,
+  EmitterSubscription,
   IEventEmitter,
 } from '../vendor/emitter/EventEmitter';
 
@@ -24,7 +24,7 @@ interface NativeModule {
   removeListeners(count: number): void;
 }
 
-export type {EventSubscription};
+export type {EmitterSubscription};
 
 // $FlowFixMe[unclear-type] unclear type of events
 type UnsafeObject = Object;
@@ -82,9 +82,9 @@ export default class NativeEventEmitter<
     eventType: TEvent,
     listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
     context?: mixed,
-  ): EventSubscription {
+  ): EmitterSubscription {
     this._nativeModule?.addListener(eventType);
-    let subscription: ?EventSubscription = RCTDeviceEventEmitter.addListener(
+    let subscription: ?EmitterSubscription = RCTDeviceEventEmitter.addListener(
       eventType,
       listener,
       context,

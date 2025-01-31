@@ -10,7 +10,7 @@
 
 import type {EventCallback} from '../../src/private/webapis/dom/events/EventTarget';
 import type {BlobData} from '../Blob/BlobTypes';
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 
 import Event from '../../src/private/webapis/dom/events/Event';
 import {
@@ -86,7 +86,7 @@ class WebSocket extends EventTarget {
 
   _socketId: number;
   _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
-  _subscriptions: Array<EventSubscription>;
+  _subscriptions: Array<EmitterSubscription>;
   _binaryType: ?BinaryType;
 
   bufferedAmount: number;

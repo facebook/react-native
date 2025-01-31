@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {EventSubscription} from '../EventEmitter/NativeEventEmitter';
+import type {EmitterSubscription} from '../EventEmitter/NativeEventEmitter';
 import type {AnimatedPropsAllowlist} from './nodes/AnimatedProps';
 
 import NativeAnimatedHelper from '../../src/private/animated/NativeAnimatedHelper';
@@ -67,7 +67,7 @@ export default function useAnimatedProps<TProps: {...}, TInstance>(
     // If multiple components call `flushQueue`, the first one will flush the
     // queue and subsequent ones will do nothing.
     NativeAnimatedHelper.API.flushQueue();
-    let drivenAnimationEndedListener: ?EventSubscription = null;
+    let drivenAnimationEndedListener: ?EmitterSubscription = null;
     if (node.__isNative) {
       drivenAnimationEndedListener =
         NativeAnimatedHelper.nativeEventEmitter.addListener(

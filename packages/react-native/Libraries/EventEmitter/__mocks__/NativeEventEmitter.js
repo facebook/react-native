@@ -9,7 +9,7 @@
  */
 
 import type {
-  EventSubscription,
+  EmitterSubscription,
   IEventEmitter,
 } from '../../vendor/emitter/EventEmitter';
 
@@ -26,7 +26,7 @@ export default class NativeEventEmitter<
     eventType: TEvent,
     listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
     context?: mixed,
-  ): EventSubscription {
+  ): EmitterSubscription {
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
   }
 

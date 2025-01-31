@@ -8,7 +8,7 @@
  * @flow
  */
 
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 import type {RequestBody} from './convertRequestBody';
 import type {RCTNetworkingEventDefinitions} from './RCTNetworkingEventDefinitions.flow';
 import type {NativeResponseType} from './XMLHttpRequest';
@@ -52,7 +52,7 @@ const RCTNetworking = {
     eventType: K,
     listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
     context?: mixed,
-  ): EventSubscription {
+  ): EmitterSubscription {
     // $FlowFixMe[incompatible-call]
     return emitter.addListener(eventType, listener, context);
   },

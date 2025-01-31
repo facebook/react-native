@@ -9,7 +9,7 @@
  */
 
 import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
-import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 import NativeCxxModuleExample, {
   EnumInt,
@@ -73,7 +73,7 @@ type ErrorExamples =
 
 class NativeCxxModuleExampleExample extends React.Component<{}, State> {
   static contextType: React$Context<RootTag> = RootTagContext;
-  eventSubscriptions: EventSubscription[] = [];
+  eventSubscriptions: EmitterSubscription[] = [];
 
   state: State = {
     testResults: {},

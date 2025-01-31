@@ -10,7 +10,7 @@
 
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
 import EventEmitter, {
-  type EventSubscription,
+  type EmitterSubscription,
 } from '../vendor/emitter/EventEmitter';
 import NativeDeviceInfo, {
   type DimensionsPayload,
@@ -101,7 +101,7 @@ class Dimensions {
   static addEventListener(
     type: 'change',
     handler: Function,
-  ): EventSubscription {
+  ): EmitterSubscription {
     invariant(
       type === 'change',
       'Trying to subscribe to unknown event: "%s"',

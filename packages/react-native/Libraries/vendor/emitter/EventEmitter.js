@@ -11,7 +11,7 @@
 // $FlowFixMe[unclear-type] unclear type of events
 type UnsafeObject = Object;
 
-export interface EventSubscription {
+export interface EmitterSubscription {
   remove(): void;
 }
 
@@ -22,7 +22,7 @@ export interface IEventEmitter<
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => mixed,
     context?: mixed,
-  ): EventSubscription;
+  ): EmitterSubscription;
 
   emit<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
@@ -83,7 +83,7 @@ export default class EventEmitter<
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => mixed,
     context: mixed,
-  ): EventSubscription {
+  ): EmitterSubscription {
     if (typeof listener !== 'function') {
       throw new TypeError(
         'EventEmitter.addListener(...): 2nd argument must be a function.',

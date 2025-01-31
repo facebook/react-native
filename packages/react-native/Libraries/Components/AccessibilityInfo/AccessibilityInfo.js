@@ -9,7 +9,7 @@
  */
 
 import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
-import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../../vendor/emitter/EventEmitter';
 
 import RCTDeviceEventEmitter from '../../EventEmitter/RCTDeviceEventEmitter';
 import {sendAccessibilityEvent} from '../../ReactNative/RendererProxy';
@@ -398,7 +398,7 @@ const AccessibilityInfo = {
     eventName: K,
     // $FlowIssue[incompatible-type] - Flow bug with unions and generics (T128099423)
     handler: (...$ElementType<AccessibilityEventDefinitions, K>) => void,
-  ): EventSubscription {
+  ): EmitterSubscription {
     const deviceEventName = EventNames.get(eventName);
     return deviceEventName == null
       ? {remove(): void {}}

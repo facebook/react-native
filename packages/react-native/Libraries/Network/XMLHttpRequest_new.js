@@ -24,7 +24,7 @@ import {
 import EventTarget from '../../src/private/webapis/dom/events/EventTarget';
 import {dispatchTrustedEvent} from '../../src/private/webapis/dom/events/internals/EventTargetInternals';
 import ProgressEvent from '../../src/private/webapis/xhr/events/ProgressEvent';
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import {type EmitterSubscription} from '../vendor/emitter/EventEmitter';
 
 const BlobManager = require('../Blob/BlobManager').default;
 const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
@@ -138,7 +138,7 @@ class XMLHttpRequest extends EventTarget {
   upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
   _requestId: ?number;
-  _subscriptions: Array<EventSubscription>;
+  _subscriptions: Array<EmitterSubscription>;
 
   _aborted: boolean = false;
   _cachedResponse: Response;

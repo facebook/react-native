@@ -17,7 +17,7 @@ import type {
   AnimatedNodeConfig,
   EventMapping,
 } from '../../../Libraries/Animated/NativeAnimatedModule';
-import type {EventSubscription} from '../../../Libraries/vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../../../Libraries/vendor/emitter/EventEmitter';
 
 import NativeAnimatedNonTurboModule from '../../../Libraries/Animated/NativeAnimatedModule';
 import NativeAnimatedTurboModule from '../../../Libraries/Animated/NativeAnimatedTurboModule';
@@ -54,8 +54,8 @@ const eventListenerGetValueCallbacks: {
 const eventListenerAnimationFinishedCallbacks: {
   [number]: EndCallback,
 } = {};
-let globalEventEmitterGetValueListener: ?EventSubscription = null;
-let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
+let globalEventEmitterGetValueListener: ?EmitterSubscription = null;
+let globalEventEmitterAnimationFinishedListener: ?EmitterSubscription = null;
 
 function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
   const methodNames = [

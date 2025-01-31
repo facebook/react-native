@@ -11,7 +11,7 @@
 'use strict';
 
 import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
-import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 import RNTesterBlock from '../../components/RNTesterBlock';
 import RNTesterText from '../../components/RNTesterText';
@@ -1444,7 +1444,7 @@ class EnabledExample extends React.Component<
   state: {isEnabled: boolean} = {
     isEnabled: false,
   };
-  _subscription: EventSubscription;
+  _subscription: EmitterSubscription;
   componentDidMount(): null | Promise<mixed> {
     this._subscription = AccessibilityInfo.addEventListener(
       this.props.eventListener,

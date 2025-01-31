@@ -18,7 +18,7 @@ import type {
   PressEvent,
   ScrollEvent,
 } from '../../Types/CoreEventTypes';
-import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../../vendor/emitter/EventEmitter';
 import type {KeyboardEvent, KeyboardMetrics} from '../Keyboard/Keyboard';
 import typeof View from '../View/View';
 import type {ViewProps} from '../View/ViewPropTypes';
@@ -735,10 +735,10 @@ class ScrollView extends React.Component<Props, State> {
 
   _animated: ?boolean = null;
 
-  _subscriptionKeyboardWillShow: ?EventSubscription = null;
-  _subscriptionKeyboardWillHide: ?EventSubscription = null;
-  _subscriptionKeyboardDidShow: ?EventSubscription = null;
-  _subscriptionKeyboardDidHide: ?EventSubscription = null;
+  _subscriptionKeyboardWillShow: ?EmitterSubscription = null;
+  _subscriptionKeyboardWillHide: ?EmitterSubscription = null;
+  _subscriptionKeyboardDidShow: ?EmitterSubscription = null;
+  _subscriptionKeyboardDidHide: ?EmitterSubscription = null;
 
   state: State = {
     layoutHeight: null,
