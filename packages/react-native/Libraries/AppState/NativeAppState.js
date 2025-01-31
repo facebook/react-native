@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeAppState';
-import NativeAppState from '../../src/private/specs/modules/NativeAppState';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeAppState';
+import NativeAppState from '../../src/private/specs_DEPRECATED/modules/NativeAppState';
 export default NativeAppState;

@@ -10,13 +10,13 @@
 
 // flowlint unsafe-getters-setters:off
 
-import type {ArrayLike} from './ArrayLikeUtils';
+import type {ArrayLike} from '../../utils/ArrayLikeUtils';
 
 import {
   createEntriesIterator,
   createKeyIterator,
   createValueIterator,
-} from './ArrayLikeUtils';
+} from '../../utils/ArrayLikeUtils';
 
 // IMPORTANT: The Flow type definition for this module is defined in `NodeList.js.flow`
 // because Flow only supports indexers in classes in declaration files.

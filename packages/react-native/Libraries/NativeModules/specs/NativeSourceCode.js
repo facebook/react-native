@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeSourceCode';
-import NativeSourceCode from '../../../src/private/specs/modules/NativeSourceCode';
+export * from '../../../src/private/specs_DEPRECATED/modules/NativeSourceCode';
+import NativeSourceCode from '../../../src/private/specs_DEPRECATED/modules/NativeSourceCode';
 export default NativeSourceCode;

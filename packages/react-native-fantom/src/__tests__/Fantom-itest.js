@@ -17,7 +17,7 @@ import type {Root} from '..';
 import Fantom from '..';
 import * as React from 'react';
 import {ScrollView, Text, TextInput, View} from 'react-native';
-import NativeFantom from 'react-native/src/private/specs/modules/NativeFantom';
+import NativeFantom from 'react-native/src/private/specs_DEPRECATED/modules/NativeFantom';
 import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 

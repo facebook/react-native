@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../../src/private/specs/components/AndroidHorizontalScrollContentViewNativeComponent';
-import AndroidHorizontalScrollContentViewNativeComponent from '../../../src/private/specs/components/AndroidHorizontalScrollContentViewNativeComponent';
+export * from '../../../src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent';
+import AndroidHorizontalScrollContentViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent';
 export default AndroidHorizontalScrollContentViewNativeComponent;

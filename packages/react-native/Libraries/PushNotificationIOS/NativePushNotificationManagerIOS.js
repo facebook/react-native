@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativePushNotificationManagerIOS';
-import NativePushNotificationManagerIOS from '../../src/private/specs/modules/NativePushNotificationManagerIOS';
+export * from '../../src/private/specs_DEPRECATED/modules/NativePushNotificationManagerIOS';
+import NativePushNotificationManagerIOS from '../../src/private/specs_DEPRECATED/modules/NativePushNotificationManagerIOS';
 export default NativePushNotificationManagerIOS;

@@ -12,7 +12,7 @@
 
 import type HTMLCollection from '../oldstylecollections/HTMLCollection';
 
-import DOMRect from '../geometry/DOMRect';
+import DOMRect from '../../geometry/DOMRect';
 import {createHTMLCollection} from '../oldstylecollections/HTMLCollection';
 import {
   getInstanceHandle,
