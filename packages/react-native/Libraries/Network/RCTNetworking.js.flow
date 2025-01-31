@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 import type {RequestBody} from './convertRequestBody';
 import type {RCTNetworkingEventDefinitions} from './RCTNetworkingEventDefinitions.flow';
 import type {NativeResponseType} from './XMLHttpRequest';
@@ -21,7 +21,7 @@ declare const RCTNetworking: interface {
     // $FlowFixMe[invalid-computed-prop]
     listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
     context?: mixed,
-  ): EventSubscription,
+  ): EmitterSubscription,
 
   sendRequest(
     method: string,

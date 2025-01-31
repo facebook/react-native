@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 
 const invariant = require('invariant');
 
@@ -155,7 +155,7 @@ const InteractionManagerStub = {
   /**
    * @deprecated
    */
-  addListener(): EventSubscription {
+  addListener(): EmitterSubscription {
     return {
       remove() {},
     };

@@ -9,7 +9,7 @@
  */
 
 import type {
-  EventSubscription,
+  EmitterSubscription,
   IEventEmitter,
 } from '../../vendor/emitter/EventEmitter';
 
@@ -18,14 +18,15 @@ import RCTDeviceEventEmitter from '../RCTDeviceEventEmitter';
 /**
  * Mock `NativeEventEmitter` to ignore Native Modules.
  */
-export default class NativeEventEmitter<TEventToArgsMap: {...}>
-  implements IEventEmitter<TEventToArgsMap>
+export default class NativeEventEmitter<
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<mixed>>>,
+> implements IEventEmitter<TEventToArgsMap>
 {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
     listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
     context?: mixed,
-  ): EventSubscription {
+  ): EmitterSubscription {
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
   }
 

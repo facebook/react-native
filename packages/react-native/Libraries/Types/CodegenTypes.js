@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 import type {SyntheticEvent} from './CoreEventTypes';
 
 // Event types
@@ -45,4 +45,4 @@ export type WithDefault<Type: DefaultTypes, Value: ?Type | string> = ?Type;
 
 export type EventEmitter<T> = (
   handler: (T) => void | Promise<void>,
-) => EventSubscription;
+) => EmitterSubscription;

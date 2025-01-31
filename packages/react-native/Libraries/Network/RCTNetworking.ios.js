@@ -11,7 +11,7 @@
 'use strict';
 
 import RCTDeviceEventEmitter from '../EventEmitter/RCTDeviceEventEmitter';
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import {type EmitterSubscription} from '../vendor/emitter/EventEmitter';
 import convertRequestBody, {type RequestBody} from './convertRequestBody';
 import NativeNetworkingIOS from './NativeNetworkingIOS';
 import {type RCTNetworkingEventDefinitions} from './RCTNetworkingEventDefinitions.flow';
@@ -22,7 +22,7 @@ const RCTNetworking = {
     eventType: K,
     listener: (...$ElementType<RCTNetworkingEventDefinitions, K>) => mixed,
     context?: mixed,
-  ): EventSubscription {
+  ): EmitterSubscription {
     // $FlowFixMe[incompatible-call]
     return RCTDeviceEventEmitter.addListener(eventType, listener, context);
   },

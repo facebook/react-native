@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../../vendor/emitter/EventEmitter';
 
 import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import LayoutAnimation from '../../LayoutAnimation/LayoutAnimation';
@@ -150,7 +150,7 @@ class Keyboard {
     eventType: K,
     listener: (...$ElementType<KeyboardEventDefinitions, K>) => mixed,
     context?: mixed,
-  ): EventSubscription {
+  ): EmitterSubscription {
     return this._emitter.addListener(eventType, listener);
   }
 

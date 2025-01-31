@@ -9,7 +9,7 @@
  */
 
 import type {BlobData} from '../Blob/BlobTypes';
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 
 import Blob from '../Blob/Blob';
 import BlobManager from '../Blob/BlobManager';
@@ -81,7 +81,7 @@ class WebSocket extends (EventTarget(...WEBSOCKET_EVENTS): typeof EventTarget) {
 
   _socketId: number;
   _eventEmitter: NativeEventEmitter<WebSocketEventDefinitions>;
-  _subscriptions: Array<EventSubscription>;
+  _subscriptions: Array<EmitterSubscription>;
   _binaryType: ?BinaryType;
 
   onclose: ?Function;

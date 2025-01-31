@@ -11,7 +11,7 @@
 'use strict';
 
 import type {
-  EventSubscription,
+  EmitterSubscription,
   IEventEmitter,
 } from '../vendor/emitter/EventEmitter';
 
@@ -24,7 +24,10 @@ interface NativeModule {
   removeListeners(count: number): void;
 }
 
-export type {EventSubscription};
+export type {EmitterSubscription};
+
+// $FlowFixMe[unclear-type] unclear type of events
+type UnsafeObject = Object;
 
 /**
  * `NativeEventEmitter` is intended for use by Native Modules to emit events to
@@ -36,8 +39,11 @@ export type {EventSubscription};
  * This means event names must be globally unique, and it means that call sites
  * can theoretically listen to `RCTDeviceEventEmitter` (although discouraged).
  */
-export default class NativeEventEmitter<TEventToArgsMap: {...}>
-  implements IEventEmitter<TEventToArgsMap>
+export default class NativeEventEmitter<
+  TEventToArgsMap: $ReadOnly<
+    Record<string, $ReadOnlyArray<UnsafeObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+> implements IEventEmitter<TEventToArgsMap>
 {
   _nativeModule: ?NativeModule;
 
@@ -76,9 +82,9 @@ export default class NativeEventEmitter<TEventToArgsMap: {...}>
     eventType: TEvent,
     listener: (...args: $ElementType<TEventToArgsMap, TEvent>) => mixed,
     context?: mixed,
-  ): EventSubscription {
+  ): EmitterSubscription {
     this._nativeModule?.addListener(eventType);
-    let subscription: ?EventSubscription = RCTDeviceEventEmitter.addListener(
+    let subscription: ?EmitterSubscription = RCTDeviceEventEmitter.addListener(
       eventType,
       listener,
       context,

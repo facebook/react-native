@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import Platform from '../Utilities/Platform';
@@ -35,7 +35,7 @@ class LinkingImpl extends NativeEventEmitter<LinkingEventDefinitions> {
   addEventListener<K: $Keys<LinkingEventDefinitions>>(
     eventType: K,
     listener: (...$ElementType<LinkingEventDefinitions, K>) => mixed,
-  ): EventSubscription {
+  ): EmitterSubscription {
     return this.addListener(eventType, listener);
   }
 

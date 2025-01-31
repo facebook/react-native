@@ -11,7 +11,7 @@
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
 import logError from '../Utilities/logError';
 import Platform from '../Utilities/Platform';
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import {type EmitterSubscription} from '../vendor/emitter/EventEmitter';
 import NativeAppState from './NativeAppState';
 
 export type AppStateValues = 'inactive' | 'background' | 'active';
@@ -92,7 +92,7 @@ class AppState {
   addEventListener<K: $Keys<AppStateEventDefinitions>>(
     type: K,
     handler: (...$ElementType<AppStateEventDefinitions, K>) => void,
-  ): EventSubscription {
+  ): EmitterSubscription {
     const emitter = this._emitter;
     if (emitter == null) {
       throw new Error('Cannot use AppState when `isAvailable` is false.');

@@ -12,7 +12,7 @@
 
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import {type EmitterSubscription} from '../vendor/emitter/EventEmitter';
 import EventTarget from 'event-target-shim';
 
 const BlobManager = require('../Blob/BlobManager').default;
@@ -116,7 +116,7 @@ class XMLHttpRequest extends (EventTarget(...XHR_EVENTS): typeof EventTarget) {
   upload: XMLHttpRequestEventTarget = new XMLHttpRequestEventTarget();
 
   _requestId: ?number;
-  _subscriptions: Array<EventSubscription>;
+  _subscriptions: Array<EmitterSubscription>;
 
   _aborted: boolean = false;
   _cachedResponse: Response;

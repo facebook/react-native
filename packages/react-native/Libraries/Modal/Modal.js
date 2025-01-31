@@ -13,7 +13,7 @@ import type {RootTag} from '../ReactNative/RootTag';
 import type {DirectEventHandler} from '../Types/CodegenTypes';
 
 import NativeEventEmitter from '../EventEmitter/NativeEventEmitter';
-import {type EventSubscription} from '../vendor/emitter/EventEmitter';
+import {type EmitterSubscription} from '../vendor/emitter/EventEmitter';
 import ModalInjection from './ModalInjection';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
@@ -210,7 +210,7 @@ class Modal extends React.Component<Props, State> {
   static contextType: React.Context<RootTag> = RootTagContext;
 
   _identifier: number;
-  _eventSubscription: ?EventSubscription;
+  _eventSubscription: ?EmitterSubscription;
 
   constructor(props: Props) {
     super(props);

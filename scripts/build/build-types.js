@@ -24,6 +24,8 @@ const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 const SOURCE_PATTERNS = [
   // Start with Animated only
   path.join(PACKAGES_DIR, 'react-native/Libraries/Alert/**/*.js'),
+  path.join(PACKAGES_DIR, 'react-native/Libraries/vendor/**/*.js'),
+  path.join(PACKAGES_DIR, 'react-native/Libraries/EventEmitter/**/*.js'),
   path.join(PACKAGES_DIR, 'react-native/Libraries/TurboModule/RCTExport.js'),
   path.join(PACKAGES_DIR, 'react-native/Libraries/Types/RootTagTypes.js'),
   path.join(PACKAGES_DIR, 'react-native/Libraries/ReactNative/RootTag.js'),

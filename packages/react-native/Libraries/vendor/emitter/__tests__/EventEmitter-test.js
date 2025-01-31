@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import type {EventSubscription} from '../EventEmitter';
+import type {EmitterSubscription} from '../EventEmitter';
 
 import EventEmitter from '../EventEmitter';
 
@@ -350,7 +350,7 @@ describe('event emission', () => {
       results.push('C');
     });
     emitter.addListener('A', listenerA);
-    const subscriptionB: EventSubscription = emitter.addListener(
+    const subscriptionB: EmitterSubscription = emitter.addListener(
       'A',
       listenerB,
     );

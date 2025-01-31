@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../../vendor/emitter/EventEmitter';
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
@@ -86,7 +86,7 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  */
 export default class AnimatedValue extends AnimatedWithChildren {
   #listenerCount: number = 0;
-  #updateSubscription: ?EventSubscription = null;
+  #updateSubscription: ?EmitterSubscription = null;
 
   _value: number;
   _startingValue: number;
@@ -159,7 +159,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
     }
     const nativeTag = this.__getNativeTag();
     NativeAnimatedAPI.startListeningToAnimatedNodeValue(nativeTag);
-    const subscription: EventSubscription =
+    const subscription: EmitterSubscription =
       NativeAnimatedHelper.nativeEventEmitter.addListener(
         'onAnimatedValueUpdate',
         data => {

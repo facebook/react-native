@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import type {EventSubscription} from '../vendor/emitter/EventEmitter';
+import type {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 import type {AppearancePreferences, ColorSchemeName} from './NativeAppearance';
 import typeof INativeAppearance from './NativeAppearance';
 
@@ -26,7 +26,7 @@ let lazyState: ?{
   // NOTE: If `NativeAppearance` is null, this will always be null.
   appearance: ?Appearance,
   // NOTE: This is non-nullable to make it easier for `onChangedListener` to
-  // return a non-nullable `EventSubscription` value. This is not the common
+  // return a non-nullable `EmitterSubscription` value. This is not the common
   // path, so we do not have to over-optimize it.
   +eventEmitter: EventEmitter<{change: [Appearance]}>,
 };
@@ -108,7 +108,7 @@ export function setColorScheme(colorScheme: ?ColorSchemeName): void {
  */
 export function addChangeListener(
   listener: ({colorScheme: ?ColorSchemeName}) => void,
-): EventSubscription {
+): EmitterSubscription {
   const {eventEmitter} = getState();
   return eventEmitter.addListener('change', listener);
 }
