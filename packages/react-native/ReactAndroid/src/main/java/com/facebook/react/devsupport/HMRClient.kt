@@ -5,18 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.devsupport;
+package com.facebook.react.devsupport
 
-import com.facebook.react.bridge.JavaScriptModule;
+import com.facebook.react.bridge.JavaScriptModule
 
 /**
  * JS module interface for HMRClient
  *
- * <p>The HMR(Hot Module Replacement)Client allows for the application to receive updates from Metro
+ * The HMR(Hot Module Replacement)Client allows for the application to receive updates from Metro
  * (over a web socket), allowing for injection of JavaScript to the running application (without a
  * refresh).
  */
-public interface HMRClient extends JavaScriptModule {
+public interface HMRClient : JavaScriptModule {
 
   /**
    * Enable the HMRClient so that the client will receive updates from Metro.
@@ -27,20 +27,26 @@ public interface HMRClient extends JavaScriptModule {
    * @param port The port that the HMRClient should communicate with on the host.
    * @param isEnabled Whether HMR is enabled initially.
    * @param scheme The protocol that the HMRClient should communicate with on the host (defaults to
-   *     http).
+   *   http).
    */
-  void setup(
-      String platform, String bundleEntry, String host, int port, boolean isEnabled, String scheme);
+  public fun setup(
+      platform: String?,
+      bundleEntry: String?,
+      host: String?,
+      port: Int,
+      isEnabled: Boolean,
+      scheme: String?
+  )
 
   /** Registers an additional JS bundle with HMRClient. */
-  void registerBundle(String bundleUrl);
+  public fun registerBundle(bundleUrl: String?)
 
   /**
    * Sets up a connection to the packager when called the first time. Ensures code updates received
    * from the packager are applied.
    */
-  void enable();
+  public fun enable()
 
   /** Turns off the HMR client so it doesn't process updates from the packager. */
-  void disable();
+  public fun disable()
 }
