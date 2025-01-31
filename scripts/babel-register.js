@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-const {PACKAGES_DIR, RN_INTEGRATION_TESTS_RUNNER_DIR} = require('../consts');
+const {PACKAGES_DIR, RN_INTEGRATION_TESTS_RUNNER_DIR} = require('./consts');
 
 let isRegisteredForMonorepo = false;
 
@@ -21,9 +21,12 @@ let isRegisteredForMonorepo = false;
  * paths in "exports"), inside a special `if` condition that will be compiled
  * away on build.
  *
- *   if (!process.env.BUILD_EXCLUDE_BABEL_REGISTER) {
- *     require('../../../scripts/build/babel-register').registerForMonorepo();
- *   }
+ * ```js
+ * // Place in a package entry point
+ * if (!process.env.BUILD_EXCLUDE_BABEL_REGISTER) {
+ *   require('../../../scripts/babel-register').registerForMonorepo();
+ * }
+ * ```
  */
 function registerForMonorepo() {
   if (isRegisteredForMonorepo) {
