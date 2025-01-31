@@ -13,6 +13,7 @@
 #include <folly/dynamic.h>
 
 #include <functional>
+#include <mutex>
 #include <optional>
 #include <unordered_map>
 #include <vector>
@@ -67,6 +68,37 @@ class PerformanceTracer {
       uint64_t duration,
       const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
 
+  /**
+   * Record a corresponding Trace Event for OS-level process.
+   */
+  void reportProcess(uint64_t id, const std::string& name);
+
+  /**
+   * Record a corresponding Trace Event for OS-level thread.
+   */
+  void reportThread(uint64_t id, const std::string& name, uint64_t processId);
+
+  /**
+   * Record a corresponding Profile Trace Event.
+   * \return the id of the profile, should be used to linking profile chunks.
+   */
+  uint16_t reportRuntimeProfile(
+      uint64_t processId,
+      uint64_t threadId,
+      uint64_t eventUnixTimestamp,
+      uint64_t tracingStartUnixTimestamp);
+
+  /**
+   * Record a corresponding ProfileChunk Trace Event.
+   */
+  void reportRuntimeProfileChunk(
+      uint16_t profileId,
+      uint64_t processId,
+      uint64_t threadId,
+      uint64_t eventUnixTimestamp,
+      const tracing::CPUProfile& cpuProfile,
+      const tracing::CPUSamplesTimeDeltas& cpuSamplesTimeDeltas);
+
  private:
   PerformanceTracer() = default;
   PerformanceTracer(const PerformanceTracer&) = delete;
@@ -77,6 +109,7 @@ class PerformanceTracer {
 
   bool tracing_{false};
   uint32_t performanceMeasureCount_{0};
+  uint16_t profileCount_{0};
   std::vector<TraceEvent> buffer_;
   std::mutex mutex_;
 };
