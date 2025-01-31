@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.packagerconnection;
+package com.facebook.react.packagerconnection
 
 public interface Responder {
-  void respond(Object result);
+  public fun respond(result: Any)
 
-  void error(Object error);
+  public fun error(error: Any)
 }
