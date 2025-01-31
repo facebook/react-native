@@ -18,9 +18,12 @@ import {unstable_benchmark} from '@react-native/fantom';
 
 let event: Event;
 let eventTarget: EventTarget;
+let eventTargets: $ReadOnlyArray<EventTarget>;
 
 unstable_benchmark
-  .suite('EventTarget')
+  .suite('EventTarget', {
+    minIterations: 1000,
+  })
   .add(
     'dispatchEvent, no bubbling, no listeners',
     () => {
@@ -105,6 +108,71 @@ unstable_benchmark
             target.addEventListener('custom', () => {});
           }
         }
+      },
+    },
+  )
+  .add(
+    'addEventListener, one listener',
+    () => {
+      eventTarget.addEventListener('custom', () => {});
+    },
+    {
+      beforeEach: () => {
+        eventTarget = new EventTarget();
+      },
+    },
+  )
+  .add(
+    'addEventListener, one target, one type, multiple listeners',
+    () => {
+      for (let i = 0; i < 100; i++) {
+        eventTarget.addEventListener('custom', () => {});
+      }
+    },
+    {
+      beforeEach: () => {
+        eventTarget = new EventTarget();
+      },
+    },
+  )
+  .add(
+    'addEventListener, one target, multiple types, one listener per type',
+    () => {
+      for (let i = 0; i < 100; i++) {
+        eventTarget.addEventListener(String(i), () => {});
+      }
+    },
+    {
+      beforeEach: () => {
+        eventTarget = new EventTarget();
+      },
+    },
+  )
+  .add(
+    'addEventListener, one target, multiple types, multiple listeners',
+    () => {
+      for (let i = 0; i < 100; i++) {
+        for (let j = 0; j < 100; j++) {
+          eventTarget.addEventListener(String(i), () => {});
+        }
+      }
+    },
+    {
+      beforeEach: () => {
+        eventTarget = new EventTarget();
+      },
+    },
+  )
+  .add(
+    'addEventListener, multiple targets, one type, one listener',
+    () => {
+      for (const target of eventTargets) {
+        target.addEventListener('custom', () => {});
+      }
+    },
+    {
+      beforeEach: () => {
+        eventTargets = createEventTargetHierarchyWithDepth(100);
       },
     },
   );
