@@ -23,6 +23,10 @@ const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 
 const SOURCE_PATTERNS = [
   path.join(PACKAGES_DIR, 'react-native/Libraries/Alert/**/*.js'),
+  path.join(
+    PACKAGES_DIR,
+    'react-native/Libraries/Components/ToastAndroid/*.js',
+  ),
   path.join(PACKAGES_DIR, 'react-native/Libraries/TurboModule/RCTExport.js'),
   path.join(PACKAGES_DIR, 'react-native/Libraries/Types/RootTagTypes.js'),
   path.join(PACKAGES_DIR, 'react-native/Libraries/ReactNative/RootTag.js'),
@@ -30,6 +34,10 @@ const SOURCE_PATTERNS = [
   path.join(
     PACKAGES_DIR,
     'react-native/src/private/specs/modules/NativeAlertManager.js',
+  ),
+  path.join(
+    PACKAGES_DIR,
+    'react-native/src/private/specs/modules/NativeToastAndroid.js',
   ),
   // TODO(T210505412): Include input packages, e.g. virtualized-lists
 ];
