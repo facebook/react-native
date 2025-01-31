@@ -302,6 +302,22 @@
   return NO;
 }
 
+- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
+{
+  if (_configuration.loadSourceForBridge != nil) {
+    _configuration.loadSourceForBridge(bridge, loadCallback);
+  }
+}
+
+- (void)loadSourceForBridge:(RCTBridge *)bridge
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback
+{
+  if (_configuration.loadSourceForBridgeWithProgress != nil) {
+    _configuration.loadSourceForBridgeWithProgress(bridge, onProgress, loadCallback);
+  }
+}
+
 - (NSURL *)bundleURL
 {
   return self->_configuration.bundleURLBlock();
