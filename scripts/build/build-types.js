@@ -22,7 +22,6 @@ const TYPES_DIR = 'types_generated';
 const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 
 const SOURCE_PATTERNS = [
-  // Start with Animated only
   path.join(PACKAGES_DIR, 'react-native/Libraries/Alert/**/*.js'),
   path.join(PACKAGES_DIR, 'react-native/Libraries/TurboModule/RCTExport.js'),
   path.join(PACKAGES_DIR, 'react-native/Libraries/Types/RootTagTypes.js'),
@@ -119,23 +118,42 @@ function getBuildPath(file /*: string */) /*: string */ {
   );
 }
 
+function splitPathAndExtension(file /*: string */) /*: [string, string] */ {
+  const lastSep = file.lastIndexOf(path.sep);
+  const extensionStart = file.indexOf('.', lastSep);
+  return [
+    file.substring(0, extensionStart),
+    file.substring(extensionStart, file.length),
+  ];
+}
+
 function ignoreShadowedFiles(files /*: Array<string> */) /*: Array<string> */ {
-  const shadowedPrefixes /*: Record<string, boolean> */ = {};
-  const result /*: Array<string> */ = [];
+  let nonShadowedFiles /*: Array<string> */ = [];
+  let result /*: Array<string> */ = files;
+  // extension that can shadow others, in the order of precedence
+  const shadowingExtensions = ['.flow.js', '.js'];
 
-  // Find all flow definition files that shadow other files
-  for (const file of files) {
-    if (/\.flow\.js$/.test(file)) {
-      shadowedPrefixes[file.substring(0, file.length - 8)] = true;
+  for (const currentExtension of shadowingExtensions) {
+    const shadowedPrefixes /*: Record<string, boolean> */ = {};
+    // Find all flow definition files that shadow other files
+    for (const file of result) {
+      if (file.endsWith(currentExtension)) {
+        shadowedPrefixes[
+          file.substring(0, file.length - currentExtension.length)
+        ] = true;
+      }
     }
-  }
 
-  // Filter out all files shadowed by flow definition files
-  for (const file of files) {
-    const prefix = file.split('.')[0];
-    if (/\.flow\.js$/.test(file) || !shadowedPrefixes[prefix]) {
-      result.push(file);
+    // Filter out all files shadowed by flow definition files
+    for (const file of result) {
+      const [prefix, extension] = splitPathAndExtension(file);
+      if (extension === currentExtension || !shadowedPrefixes[prefix]) {
+        nonShadowedFiles.push(file);
+      }
     }
+
+    result = nonShadowedFiles;
+    nonShadowedFiles = [];
   }
 
   return result;
