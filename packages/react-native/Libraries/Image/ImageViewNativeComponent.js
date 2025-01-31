@@ -42,7 +42,7 @@ type Props = $ReadOnly<{
     | ?ResolvedAssetSource
     | ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
   headers?: ?{[string]: string},
-  defaultSrc?: ?string,
+  defaultSource?: ?string,
   loadingIndicatorSrc?: ?string,
 }>;
 
@@ -82,9 +82,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         },
         validAttributes: {
           blurRadius: true,
-          defaultSource: {
-            process: require('./resolveAssetSource').default,
-          },
+          defaultSource: true,
           internal_analyticTag: true,
           resizeMethod: true,
           resizeMode: true,
