@@ -16,13 +16,14 @@ import com.facebook.proguard.annotations.DoNotStripAny
  * callback use on the C++ side.
  */
 @DoNotStripAny
-public class InspectorNetworkRequestListener
-public constructor(@field:DoNotStrip private val mHybridData: HybridData) {
-  public external fun onHeaders(httpStatusCode: Int, headers: Map<String?, String?>?)
+internal class InspectorNetworkRequestListener(
+    @field:DoNotStrip private val mHybridData: HybridData
+) {
+  external fun onHeaders(httpStatusCode: Int, headers: Map<String?, String?>?)
 
-  public external fun onData(data: String?)
+  external fun onData(data: String?)
 
-  public external fun onError(message: String?)
+  external fun onError(message: String?)
 
-  public external fun onCompletion()
+  external fun onCompletion()
 }
