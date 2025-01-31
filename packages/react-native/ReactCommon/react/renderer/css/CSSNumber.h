@@ -19,6 +19,8 @@ namespace facebook::react {
  */
 struct CSSNumber {
   float value{};
+
+  constexpr bool operator==(const CSSNumber& rhs) const = default;
 };
 
 template <>

@@ -25,6 +25,12 @@ struct CSSColor {
   uint8_t g{};
   uint8_t b{};
   uint8_t a{};
+
+  constexpr bool operator==(const CSSColor& rhs) const = default;
+
+  static constexpr CSSColor black() {
+    return {0, 0, 0, 255};
+  }
 };
 
 template <>
