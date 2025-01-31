@@ -15,7 +15,7 @@ import type {TransformASTResult} from 'hermes-transform/dist/transform/transform
 */
 
 const translate = require('flow-api-translator');
-const {parse} = require('hermes-transform');
+const {parse, print} = require('hermes-transform');
 
 /*::
 type TransformFn = (ParseResult) => Promise<TransformASTResult>;
@@ -55,10 +55,14 @@ async function applyTransforms(
   return transforms.reduce((input, transform) => {
     return input.then(async result => {
       const transformed = await transform(result);
+      const code = transformed.astWasMutated
+        ? await print(transformed.ast, transformed.mutatedCode, prettierOptions)
+        : transformed.mutatedCode;
+
       return {
         ...result,
         ast: transformed.ast,
-        code: transformed.mutatedCode,
+        code,
       };
     });
   }, Promise.resolve(source));

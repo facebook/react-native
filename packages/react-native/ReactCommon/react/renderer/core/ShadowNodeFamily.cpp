@@ -76,6 +76,15 @@ Tag ShadowNodeFamily::getTag() const {
   return tag_;
 }
 
+InstanceHandle::Shared ShadowNodeFamily::getInstanceHandle() const {
+  return instanceHandle_;
+}
+
+void ShadowNodeFamily::setInstanceHandle(
+    InstanceHandle::Shared& instanceHandle) const {
+  instanceHandle_ = instanceHandle;
+}
+
 ShadowNodeFamily::~ShadowNodeFamily() {
   if (!hasBeenMounted_ && onUnmountedFamilyDestroyedCallback_ != nullptr) {
     onUnmountedFamilyDestroyedCallback_(*this);

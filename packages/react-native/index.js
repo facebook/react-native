@@ -96,7 +96,6 @@ import typeof Platform from './Libraries/Utilities/Platform';
 import typeof useColorScheme from './Libraries/Utilities/useColorScheme';
 import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimensions';
 import typeof Vibration from './Libraries/Vibration/Vibration';
-import typeof YellowBox from './Libraries/YellowBox/YellowBoxDeprecated';
 import typeof DevMenu from './src/private/devmenu/DevMenu';
 
 const warnOnce = require('./Libraries/Utilities/warnOnce');
@@ -129,10 +128,10 @@ module.exports = {
     return require('./Libraries/Lists/FlatList').default;
   },
   get Image(): Image {
-    return require('./Libraries/Image/Image');
+    return require('./Libraries/Image/Image').default;
   },
   get ImageBackground(): ImageBackground {
-    return require('./Libraries/Image/ImageBackground');
+    return require('./Libraries/Image/ImageBackground').default;
   },
   get InputAccessoryView(): InputAccessoryView {
     return require('./Libraries/Components/TextInput/InputAccessoryView')
@@ -278,10 +277,10 @@ module.exports = {
     return require('./Libraries/Components/Keyboard/Keyboard').default;
   },
   get LayoutAnimation(): LayoutAnimation {
-    return require('./Libraries/LayoutAnimation/LayoutAnimation');
+    return require('./Libraries/LayoutAnimation/LayoutAnimation').default;
   },
   get Linking(): Linking {
-    return require('./Libraries/Linking/Linking');
+    return require('./Libraries/Linking/Linking').default;
   },
   get LogBox(): LogBox {
     return require('./Libraries/LogBox/LogBox').default;
@@ -358,9 +357,6 @@ module.exports = {
   get Vibration(): Vibration {
     return require('./Libraries/Vibration/Vibration').default;
   },
-  get YellowBox(): YellowBox {
-    return require('./Libraries/YellowBox/YellowBoxDeprecated').default;
-  },
 
   // Plugins
   get DeviceEventEmitter(): RCTDeviceEventEmitter {
@@ -371,7 +367,7 @@ module.exports = {
       .DynamicColorIOS;
   },
   get NativeAppEventEmitter(): RCTNativeAppEventEmitter {
-    return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter');
+    return require('./Libraries/EventEmitter/RCTNativeAppEventEmitter').default;
   },
   get NativeModules(): NativeModules {
     return require('./Libraries/BatchedBridge/NativeModules').default;

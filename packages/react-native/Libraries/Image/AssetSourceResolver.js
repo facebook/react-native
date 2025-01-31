@@ -210,4 +210,4 @@ class AssetSourceResolver {
     pickScale;
 }
 
-module.exports = AssetSourceResolver;
+export default AssetSourceResolver;

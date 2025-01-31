@@ -2096,11 +2096,6 @@ public abstract interface class com/facebook/react/devsupport/DevServerHelper$Pa
 	public abstract fun onPackagerReloadCommand ()V
 }
 
-public final class com/facebook/react/devsupport/DevSettingsActivity : android/preference/PreferenceActivity {
-	public fun <init> ()V
-	public fun onCreate (Landroid/os/Bundle;)V
-}
-
 public abstract class com/facebook/react/devsupport/DevSupportManagerBase : com/facebook/react/devsupport/interfaces/DevSupportManager {
 	protected final field mReactInstanceDevHelper Lcom/facebook/react/devsupport/ReactInstanceDevHelper;
 	public fun <init> (Landroid/content/Context;Lcom/facebook/react/devsupport/ReactInstanceDevHelper;Ljava/lang/String;ZLcom/facebook/react/devsupport/interfaces/RedBoxHandler;Lcom/facebook/react/devsupport/interfaces/DevBundleDownloadListener;ILjava/util/Map;Lcom/facebook/react/common/SurfaceDelegateFactory;Lcom/facebook/react/devsupport/interfaces/DevLoadingViewManager;Lcom/facebook/react/devsupport/interfaces/PausedInDebuggerOverlayManager;)V

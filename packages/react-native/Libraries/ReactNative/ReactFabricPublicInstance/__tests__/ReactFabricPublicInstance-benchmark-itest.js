@@ -10,6 +10,7 @@
  */
 
 import '../../../Core/InitializeCore.js';
+import type ReactNativeDocument from '../../../../src/private/webapis/dom/nodes/ReactNativeDocument';
 import type {
   InternalInstanceHandle,
   ViewConfig,
@@ -29,14 +30,20 @@ const viewConfig: ViewConfig = {
 };
 // $FlowExpectedError[incompatible-type]
 const internalInstanceHandle: InternalInstanceHandle = {};
+// $FlowExpectedError[incompatible-type]
+const ownerDocument: ReactNativeDocument = {};
 
+/* eslint-disable no-new */
 Fantom.unstable_benchmark
   .suite('ReactNativeElement vs. ReactFabricHostComponent')
   .add('ReactNativeElement', () => {
-    // eslint-disable-next-line no-new
-    new ReactNativeElement(tag, viewConfig, internalInstanceHandle);
+    new ReactNativeElement(
+      tag,
+      viewConfig,
+      internalInstanceHandle,
+      ownerDocument,
+    );
   })
   .add('ReactFabricHostComponent', () => {
-    // eslint-disable-next-line no-new
     new ReactFabricHostComponent(tag, viewConfig, internalInstanceHandle);
   });

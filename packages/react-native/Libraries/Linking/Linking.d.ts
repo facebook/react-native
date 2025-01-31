@@ -10,7 +10,7 @@
 import {NativeEventEmitter} from '../EventEmitter/NativeEventEmitter';
 import {EmitterSubscription} from '../vendor/emitter/EventEmitter';
 
-export interface LinkingStatic extends NativeEventEmitter {
+export interface LinkingImpl extends NativeEventEmitter {
   /**
    * Add a handler to Linking changes by listening to the `url` event type
    * and providing the handler
@@ -57,5 +57,5 @@ export interface LinkingStatic extends NativeEventEmitter {
   ): Promise<void>;
 }
 
-export const Linking: LinkingStatic;
-export type Linking = LinkingStatic;
+export const Linking: LinkingImpl;
+export type Linking = LinkingImpl;

@@ -162,3 +162,12 @@ export function getPublicInstanceFromInternalInstanceHandle(
     internalInstanceHandle,
   );
 }
+
+export function getPublicInstanceFromRootTag(
+  rootTag: number,
+): mixed /*PublicRootInstance | null*/ {
+  // This is only available in Fabric
+  return require('../Renderer/shims/ReactFabric').default.getPublicInstanceFromRootTag(
+    rootTag,
+  );
+}

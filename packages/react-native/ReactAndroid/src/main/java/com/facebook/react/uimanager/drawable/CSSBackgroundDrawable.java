@@ -648,7 +648,6 @@ public class CSSBackgroundDrawable extends Drawable {
     }
 
     // Clip border ONLY if at least one edge is non-transparent
-    float pathAdjustment = 0f;
     if (Color.alpha(colorLeft) != 0
         || Color.alpha(colorTop) != 0
         || Color.alpha(colorRight) != 0
@@ -659,10 +658,6 @@ public class CSSBackgroundDrawable extends Drawable {
       mInnerClipTempRectForBorderRadius.bottom -= borderWidth.bottom;
       mInnerClipTempRectForBorderRadius.left += borderWidth.left;
       mInnerClipTempRectForBorderRadius.right -= borderWidth.right;
-
-      // only close gap between border and main path if we draw the border, otherwise
-      // we wind up pixelating small pixel-radius curves
-      pathAdjustment = mGapBetweenPaths;
     }
 
     mTempRectForCenterDrawPath.top += borderWidth.top * 0.5f;
@@ -716,11 +711,21 @@ public class CSSBackgroundDrawable extends Drawable {
     // border. mGapBetweenPaths is used to slightly enlarge the rectangle
     // (mInnerClipTempRectForBorderRadius), ensuring the border can be
     // drawn on top without the gap.
+    // only close gap between border and main path if we draw the border, otherwise
+    // we wind up pixelating small pixel-radius curves
     mBackgroundColorRenderPath.addRoundRect(
-        mInnerClipTempRectForBorderRadius.left - pathAdjustment,
-        mInnerClipTempRectForBorderRadius.top - pathAdjustment,
-        mInnerClipTempRectForBorderRadius.right + pathAdjustment,
-        mInnerClipTempRectForBorderRadius.bottom + pathAdjustment,
+        (borderWidth.left > 0)
+            ? mInnerClipTempRectForBorderRadius.left - mGapBetweenPaths
+            : mInnerClipTempRectForBorderRadius.left,
+        (borderWidth.top > 0)
+            ? mInnerClipTempRectForBorderRadius.top - mGapBetweenPaths
+            : mInnerClipTempRectForBorderRadius.top,
+        (borderWidth.right > 0)
+            ? mInnerClipTempRectForBorderRadius.right + mGapBetweenPaths
+            : mInnerClipTempRectForBorderRadius.right,
+        (borderWidth.bottom > 0)
+            ? mInnerClipTempRectForBorderRadius.bottom + mGapBetweenPaths
+            : mInnerClipTempRectForBorderRadius.bottom,
         new float[] {
           innerTopLeftRadiusX,
           innerTopLeftRadiusY,

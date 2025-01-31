@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bd3956237f0a3c9fed0c6bee9bc0aa6d>>
+ * @generated SignedSource<<fcb1f7568ac34e799820b397f79495d1>>
  */
 
 /**
@@ -43,13 +43,6 @@ bool NativeReactNativeFeatureFlags::commonTestFlag(
 }
 
 bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
-    jsi::Runtime& /*runtime*/) {
-  // This flag is configured with `skipNativeAPI: true`.
-  // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
-  return false;
-}
-
-bool NativeReactNativeFeatureFlags::disableEventLoopOnBridgeless(
     jsi::Runtime& /*runtime*/) {
   // This flag is configured with `skipNativeAPI: true`.
   // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.

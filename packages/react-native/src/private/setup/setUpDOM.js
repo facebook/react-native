@@ -30,6 +30,11 @@ export default function setUpDOM() {
   );
 
   polyfillGlobal(
+    'HTMLCollection',
+    () => require('../webapis/dom/oldstylecollections/HTMLCollection').default,
+  );
+
+  polyfillGlobal(
     'NodeList',
     () => require('../webapis/dom/oldstylecollections/NodeList').default,
   );

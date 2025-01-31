@@ -120,9 +120,14 @@ jest
       },
     },
   }))
-  .mock('../Libraries/Image/Image', () =>
-    mockComponent('../Libraries/Image/Image'),
-  )
+  .mock('../Libraries/Image/Image', () => ({
+    __esModule: true,
+    default: mockComponent(
+      '../Libraries/Image/Image',
+      /* instanceMethods */ null,
+      /* isESModule */ true,
+    ),
+  }))
   .mock('../Libraries/Text/Text', () => ({
     __esModule: true,
     default: mockComponent(
@@ -236,14 +241,17 @@ jest
     },
   }))
   .mock('../Libraries/Linking/Linking', () => ({
-    openURL: jest.fn(),
-    canOpenURL: jest.fn(() => Promise.resolve(true)),
-    openSettings: jest.fn(),
-    addEventListener: jest.fn(() => ({
-      remove: jest.fn(),
-    })),
-    getInitialURL: jest.fn(() => Promise.resolve()),
-    sendIntent: jest.fn(),
+    __esModule: true,
+    default: {
+      openURL: jest.fn(),
+      canOpenURL: jest.fn(() => Promise.resolve(true)),
+      openSettings: jest.fn(),
+      addEventListener: jest.fn(() => ({
+        remove: jest.fn(),
+      })),
+      getInitialURL: jest.fn(() => Promise.resolve()),
+      sendIntent: jest.fn(),
+    },
   }))
   // Mock modules defined by the native layer (ex: Objective-C, Java)
   .mock('../Libraries/BatchedBridge/NativeModules', () => ({
