@@ -8,8 +8,8 @@
  * @flow strict
  */
 
-import type DOMRectReadOnly from '../geometry/DOMRectReadOnly';
-import type {ArrayLike} from './ArrayLikeUtils';
+import type {ArrayLike} from '../utils/ArrayLikeUtils';
+import type DOMRectReadOnly from './DOMRectReadOnly';
 
 declare export default class DOMRectList
   implements Iterable<DOMRectReadOnly>, ArrayLike<DOMRectReadOnly>
