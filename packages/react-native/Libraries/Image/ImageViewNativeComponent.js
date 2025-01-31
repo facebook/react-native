@@ -21,6 +21,7 @@ import type {
 } from '../StyleSheet/StyleSheet';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
+import type {ImageSource} from './ImageSource';
 
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
@@ -42,7 +43,7 @@ type Props = $ReadOnly<{
     | ?ResolvedAssetSource
     | ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
   headers?: ?{[string]: string},
-  defaultSource?: ?string,
+  defaultSource?: ?ImageSource | ?string,
   loadingIndicatorSrc?: ?string,
 }>;
 
