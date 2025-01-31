@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<73d10e1985377162b75ee60e5bcad8dd>>
+ * @generated SignedSource<<bbb004ec2a8d60d0d2b619a1664a8d2b>>
  * @flow strict
  */
 
@@ -25,6 +25,7 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 export interface Spec extends TurboModule {
   +commonTestFlag?: () => boolean;
   +commonTestFlagWithoutNativeImplementation?: () => boolean;
+  +disableAndroidLegacyPropsHacks?: () => boolean;
   +disableMountItemReorderingAndroid?: () => boolean;
   +enableAccumulatedUpdatesInRawPropsAndroid?: () => boolean;
   +enableBridgelessArchitecture?: () => boolean;

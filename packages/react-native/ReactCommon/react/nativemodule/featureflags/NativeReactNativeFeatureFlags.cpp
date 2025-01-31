@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0d5df5cac07efb95bfd5f0984f960a0b>>
+ * @generated SignedSource<<91a77d0ab5c2a438839fa80762faa2d2>>
  */
 
 /**
@@ -47,6 +47,11 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
   // This flag is configured with `skipNativeAPI: true`.
   // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
   return false;
+}
+
+bool NativeReactNativeFeatureFlags::disableAndroidLegacyPropsHacks(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::disableAndroidLegacyPropsHacks();
 }
 
 bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(

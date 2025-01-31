@@ -273,6 +273,15 @@ static void sliceChildShadowNodeViewPairsRecursively(
     if (childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
       continue;
     }
+#else
+    // T214109866: Enabling only for Android for Views that are running with
+    // enablePropsUpdateReconciliationAndroid feature flag enabled.
+    if (ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() &&
+        strcmp(shadowNode.getComponentName(), "View") == 0 &&
+        ReactNativeFeatureFlags::disableAndroidLegacyPropsHacks() &&
+        childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
+      continue;
+    }
 #endif
 
     auto shadowView = ShadowView(childShadowNode);

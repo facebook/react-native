@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29ce7fa71b300ff721db97d622c29e6a>>
+ * @generated SignedSource<<8f8efc240d31859a3f433693cf2273a5>>
  */
 
 /**
@@ -33,6 +33,7 @@ class ReactNativeFeatureFlagsAccessor {
   ReactNativeFeatureFlagsAccessor();
 
   bool commonTestFlag();
+  bool disableAndroidLegacyPropsHacks();
   bool disableMountItemReorderingAndroid();
   bool enableAccumulatedUpdatesInRawPropsAndroid();
   bool enableBridgelessArchitecture();
@@ -84,9 +85,10 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 41> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
+  std::atomic<std::optional<bool>> disableAndroidLegacyPropsHacks_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
   std::atomic<std::optional<bool>> enableAccumulatedUpdatesInRawPropsAndroid_;
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;

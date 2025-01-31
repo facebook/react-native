@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3a526f2dc57cf7ace4597660e4b809c4>>
+ * @generated SignedSource<<c2d70b7731a06700bbd4437a8a6be4f0>>
  */
 
 /**
@@ -28,6 +28,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   ReactNativeFeatureFlagsDefaults() = default;
 
   bool commonTestFlag() override {
+    return false;
+  }
+
+  bool disableAndroidLegacyPropsHacks() override {
     return false;
   }
 

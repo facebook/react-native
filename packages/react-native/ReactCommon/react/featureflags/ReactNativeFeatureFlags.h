@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<88118789d97156c16a7ab691ca181d00>>
+ * @generated SignedSource<<a4ff2a2337c1c0df14f584a49575f0b9>>
  */
 
 /**
@@ -43,6 +43,11 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
+
+  /**
+   * Disables hacks that were added tu support legacy props on Fabric Android
+   */
+  RN_EXPORT static bool disableAndroidLegacyPropsHacks();
 
   /**
    * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
