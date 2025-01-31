@@ -109,26 +109,31 @@ type DataDetectorTypesType =
   | 'all';
 
 export type KeyboardType =
-  // Cross Platform
   | 'default'
   | 'email-address'
   | 'numeric'
   | 'phone-pad'
   | 'number-pad'
   | 'decimal-pad'
-  | 'url'
-  // iOS-only
+  | 'url';
+
+export type KeyboardTypeIOS =
   | 'ascii-capable'
   | 'numbers-and-punctuation'
   | 'name-phone-pad'
   | 'twitter'
   | 'web-search'
   // iOS 10+ only
-  | 'ascii-capable-number-pad'
-  // Android-only
-  | 'visible-password';
+  | 'ascii-capable-number-pad';
 
-export type InputMode =
+export type KeyboardTypeAndroid = 'visible-password';
+
+export type KeyboardTypeOptions =
+  | KeyboardType
+  | KeyboardTypeIOS
+  | KeyboardTypeAndroid;
+
+export type InputModeOptions =
   | 'none'
   | 'text'
   | 'decimal'
@@ -138,23 +143,22 @@ export type InputMode =
   | 'email'
   | 'url';
 
-export type ReturnKeyType =
-  // Cross Platform
-  | 'done'
-  | 'go'
-  | 'next'
-  | 'search'
-  | 'send'
-  // Android-only
-  | 'none'
-  | 'previous'
-  // iOS-only
+export type ReturnKeyType = 'done' | 'go' | 'next' | 'search' | 'send';
+
+export type ReturnKeyTypeIOS =
   | 'default'
   | 'emergency-call'
   | 'google'
   | 'join'
   | 'route'
   | 'yahoo';
+
+export type ReturnKeyTypeAndroid = 'none' | 'previous';
+
+export type ReturnKeyTypeOptions =
+  | ReturnKeyType
+  | ReturnKeyTypeIOS
+  | ReturnKeyTypeAndroid;
 
 export type SubmitBehavior = 'submit' | 'blurAndSubmit' | 'newline';
 
@@ -208,18 +212,20 @@ export type TextContentType =
   | 'flightNumber'
   | 'shipmentTrackingNumber';
 
-export type enterKeyHintType =
-  | 'enter'
-  | 'done'
-  | 'go'
-  | 'next'
-  | 'previous'
-  | 'search'
-  | 'send';
+export type EnterKeyHintTypeAndroid = 'previous';
+
+export type EnterKeyHintTypeIOS = 'enter';
+
+export type EnterKeyHintType = 'done' | 'go' | 'next' | 'search' | 'send';
+
+export type EnterKeyHintTypeOptions =
+  | EnterKeyHintType
+  | EnterKeyHintTypeAndroid
+  | EnterKeyHintTypeIOS;
 
 type PasswordRules = string;
 
-type IOSProps = $ReadOnly<{
+export type TextInputIOSProps = $ReadOnly<{
   /**
    * If true, the keyboard shortcuts (undo/redo and copy buttons) are disabled. The default value is false.
    * @platform ios
@@ -356,7 +362,7 @@ type IOSProps = $ReadOnly<{
   smartInsertDelete?: ?boolean,
 }>;
 
-type AndroidProps = $ReadOnly<{
+export type TextInputAndroidProps = $ReadOnly<{
   /**
    * When provided it will set the color of the cursor (or "caret") in the component.
    * Unlike the behavior of `selectionColor` the cursor color will be set independently
@@ -450,10 +456,10 @@ type AndroidProps = $ReadOnly<{
   underlineColorAndroid?: ?ColorValue,
 }>;
 
-export type Props = $ReadOnly<{
+export type TextInputProps = $ReadOnly<{
   ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
-  ...IOSProps,
-  ...AndroidProps,
+  ...TextInputIOSProps,
+  ...TextInputAndroidProps,
 
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.
@@ -656,7 +662,7 @@ export type Props = $ReadOnly<{
    * - `search`
    * - `send`
    */
-  enterKeyHint?: ?enterKeyHintType,
+  enterKeyHint?: ?EnterKeyHintTypeOptions,
 
   /**
    * `inputMode` works like the `inputmode` attribute in HTML, it determines which
@@ -673,7 +679,7 @@ export type Props = $ReadOnly<{
    * - `email`
    * - `url`
    */
-  inputMode?: ?InputMode,
+  inputMode?: ?InputModeOptions,
 
   /**
    * Determines which keyboard to open, e.g.`numeric`.
@@ -705,7 +711,7 @@ export type Props = $ReadOnly<{
    * - `visible-password`
    *
    */
-  keyboardType?: ?KeyboardType,
+  keyboardType?: ?KeyboardTypeOptions,
 
   /**
    * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
@@ -892,7 +898,7 @@ export type Props = $ReadOnly<{
    * - `route`
    * - `yahoo`
    */
-  returnKeyType?: ?ReturnKeyType,
+  returnKeyType?: ?ReturnKeyTypeOptions,
 
   /**
    * If `true`, the text input obscures the text entered so that sensitive text
@@ -1104,7 +1110,7 @@ type ImperativeMethods = $ReadOnly<{
  */
 type InternalTextInput = component(
   ref: React.RefSetter<$ReadOnly<{...HostInstance, ...ImperativeMethods}>>,
-  ...Props
+  ...TextInputProps
 );
 
 export type TextInputComponentStatics = $ReadOnly<{
