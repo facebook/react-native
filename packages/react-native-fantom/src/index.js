@@ -20,7 +20,7 @@ import getFantomRenderedOutput from './getFantomRenderedOutput';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import NativeFantom, {
   NativeEventCategory,
-} from 'react-native/src/private/specs_DEPRECATED/modules/NativeFantom';
+} from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import {getNativeNodeReference} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
 
 let globalSurfaceIdCounter = 1;
