@@ -255,6 +255,32 @@ CommitStatus ShadowTree::commit(
   }
 }
 
+ShadowNode::Unshared dirtyTreeRecursive(const std::shared_ptr<const ShadowNode> node) {
+    ShadowNode::UnsharedListOfShared children = std::make_shared<ShadowNode::ListOfShared>();
+    
+    for (const auto& child : node->getChildren()) {
+        children->push_back(dirtyTreeRecursive(child));
+    }
+    
+    auto newNode = node->ShadowNode::clone({.children = children});
+    if (auto layoutableNode = std::dynamic_pointer_cast<LayoutableShadowNode>(newNode)) {
+        layoutableNode->dirtyLayout();
+    }
+    return newNode;
+}
+
+RootShadowNode::Unshared dirtyTree(RootShadowNode::Unshared root) {
+    ShadowNode::UnsharedListOfShared children = std::make_shared<ShadowNode::ListOfShared>();
+    
+    for (const auto& child : root->getChildren()) {
+        children->push_back(dirtyTreeRecursive(std::static_pointer_cast<const LayoutableShadowNode>(child)));
+    }
+    
+    auto newRoot = std::static_pointer_cast<RootShadowNode>(root->ShadowNode::clone({.children = children}));
+    newRoot->dirtyLayout();
+    return newRoot;
+}
+
 CommitStatus ShadowTree::tryCommit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
@@ -298,6 +324,10 @@ CommitStatus ShadowTree::tryCommit(
 
   if (!newRootShadowNode) {
     return CommitStatus::Cancelled;
+  }
+        
+  if (oldRootShadowNode->getConcreteProps().layoutContext.fontSizeMultiplier != newRootShadowNode->getConcreteProps().layoutContext.fontSizeMultiplier) {
+      newRootShadowNode = dirtyTree(newRootShadowNode);
   }
 
   // Layout nodes.
