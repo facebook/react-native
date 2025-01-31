@@ -20,6 +20,8 @@ namespace facebook::react {
  */
 struct CSSAngle {
   float degrees{};
+
+  constexpr bool operator==(const CSSAngle& rhs) const = default;
 };
 
 template <>
