@@ -2567,15 +2567,20 @@ export type KeyboardType =
   | \\"phone-pad\\"
   | \\"number-pad\\"
   | \\"decimal-pad\\"
-  | \\"url\\"
+  | \\"url\\";
+export type KeyboardTypeIOS =
   | \\"ascii-capable\\"
   | \\"numbers-and-punctuation\\"
   | \\"name-phone-pad\\"
   | \\"twitter\\"
   | \\"web-search\\"
-  | \\"ascii-capable-number-pad\\"
-  | \\"visible-password\\";
-export type InputMode =
+  | \\"ascii-capable-number-pad\\";
+export type KeyboardTypeAndroid = \\"visible-password\\";
+export type KeyboardTypeOptions =
+  | KeyboardType
+  | KeyboardTypeIOS
+  | KeyboardTypeAndroid;
+export type InputModeOptions =
   | \\"none\\"
   | \\"text\\"
   | \\"decimal\\"
@@ -2584,20 +2589,19 @@ export type InputMode =
   | \\"search\\"
   | \\"email\\"
   | \\"url\\";
-export type ReturnKeyType =
-  | \\"done\\"
-  | \\"go\\"
-  | \\"next\\"
-  | \\"search\\"
-  | \\"send\\"
-  | \\"none\\"
-  | \\"previous\\"
+export type ReturnKeyType = \\"done\\" | \\"go\\" | \\"next\\" | \\"search\\" | \\"send\\";
+export type ReturnKeyTypeIOS =
   | \\"default\\"
   | \\"emergency-call\\"
   | \\"google\\"
   | \\"join\\"
   | \\"route\\"
   | \\"yahoo\\";
+export type ReturnKeyTypeAndroid = \\"none\\" | \\"previous\\";
+export type ReturnKeyTypeOptions =
+  | ReturnKeyType
+  | ReturnKeyTypeIOS
+  | ReturnKeyTypeAndroid;
 export type SubmitBehavior = \\"submit\\" | \\"blurAndSubmit\\" | \\"newline\\";
 export type AutoCapitalize = \\"none\\" | \\"sentences\\" | \\"words\\" | \\"characters\\";
 export type TextContentType =
@@ -2647,16 +2651,15 @@ export type TextContentType =
   | \\"dateTime\\"
   | \\"flightNumber\\"
   | \\"shipmentTrackingNumber\\";
-export type enterKeyHintType =
-  | \\"enter\\"
-  | \\"done\\"
-  | \\"go\\"
-  | \\"next\\"
-  | \\"previous\\"
-  | \\"search\\"
-  | \\"send\\";
+export type EnterKeyHintTypeAndroid = \\"previous\\";
+export type EnterKeyHintTypeIOS = \\"enter\\";
+export type EnterKeyHintType = \\"done\\" | \\"go\\" | \\"next\\" | \\"search\\" | \\"send\\";
+export type EnterKeyHintTypeOptions =
+  | EnterKeyHintType
+  | EnterKeyHintTypeAndroid
+  | EnterKeyHintTypeIOS;
 type PasswordRules = string;
-type IOSProps = $ReadOnly<{
+export type TextInputIOSProps = $ReadOnly<{
   disableKeyboardShortcuts?: ?boolean,
   clearButtonMode?: ?(\\"never\\" | \\"while-editing\\" | \\"unless-editing\\" | \\"always\\"),
   clearTextOnFocus?: ?boolean,
@@ -2683,7 +2686,7 @@ type IOSProps = $ReadOnly<{
   ),
   smartInsertDelete?: ?boolean,
 }>;
-type AndroidProps = $ReadOnly<{
+export type TextInputAndroidProps = $ReadOnly<{
   cursorColor?: ?ColorValue,
   selectionHandleColor?: ?ColorValue,
   disableFullscreenUI?: ?boolean,
@@ -2703,10 +2706,10 @@ type AndroidProps = $ReadOnly<{
   textBreakStrategy?: ?(\\"simple\\" | \\"highQuality\\" | \\"balanced\\"),
   underlineColorAndroid?: ?ColorValue,
 }>;
-export type Props = $ReadOnly<{
+export type TextInputProps = $ReadOnly<{
   ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
-  ...IOSProps,
-  ...AndroidProps,
+  ...TextInputIOSProps,
+  ...TextInputAndroidProps,
   autoCapitalize?: ?AutoCapitalize,
   autoComplete?: ?(
     | \\"additional-name\\"
@@ -2775,9 +2778,9 @@ export type Props = $ReadOnly<{
   defaultValue?: ?Stringish,
   editable?: ?boolean,
   forwardedRef?: ?ReactRefSetter<HostInstance & ImperativeMethods>,
-  enterKeyHint?: ?enterKeyHintType,
-  inputMode?: ?InputMode,
-  keyboardType?: ?KeyboardType,
+  enterKeyHint?: ?EnterKeyHintTypeOptions,
+  inputMode?: ?InputModeOptions,
+  keyboardType?: ?KeyboardTypeOptions,
   maxFontSizeMultiplier?: ?number,
   maxLength?: ?number,
   multiline?: ?boolean,
@@ -2800,7 +2803,7 @@ export type Props = $ReadOnly<{
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
   readOnly?: ?boolean,
-  returnKeyType?: ?ReturnKeyType,
+  returnKeyType?: ?ReturnKeyTypeOptions,
   secureTextEntry?: ?boolean,
   selection?: ?$ReadOnly<{
     start: number,
@@ -2821,7 +2824,7 @@ type ImperativeMethods = $ReadOnly<{
 }>;
 type InternalTextInput = component(
   ref: React.RefSetter<$ReadOnly<{ ...HostInstance, ...ImperativeMethods }>>,
-  ...Props
+  ...TextInputProps
 );
 export type TextInputComponentStatics = $ReadOnly<{
   State: $ReadOnly<{
@@ -2919,15 +2922,20 @@ export type KeyboardType =
   | \\"phone-pad\\"
   | \\"number-pad\\"
   | \\"decimal-pad\\"
-  | \\"url\\"
+  | \\"url\\";
+export type KeyboardTypeIOS =
   | \\"ascii-capable\\"
   | \\"numbers-and-punctuation\\"
   | \\"name-phone-pad\\"
   | \\"twitter\\"
   | \\"web-search\\"
-  | \\"ascii-capable-number-pad\\"
-  | \\"visible-password\\";
-export type InputMode =
+  | \\"ascii-capable-number-pad\\";
+export type KeyboardTypeAndroid = \\"visible-password\\";
+export type KeyboardTypeOptions =
+  | KeyboardType
+  | KeyboardTypeIOS
+  | KeyboardTypeAndroid;
+export type InputModeOptions =
   | \\"none\\"
   | \\"text\\"
   | \\"decimal\\"
@@ -2936,20 +2944,19 @@ export type InputMode =
   | \\"search\\"
   | \\"email\\"
   | \\"url\\";
-export type ReturnKeyType =
-  | \\"done\\"
-  | \\"go\\"
-  | \\"next\\"
-  | \\"search\\"
-  | \\"send\\"
-  | \\"none\\"
-  | \\"previous\\"
+export type ReturnKeyType = \\"done\\" | \\"go\\" | \\"next\\" | \\"search\\" | \\"send\\";
+export type ReturnKeyTypeIOS =
   | \\"default\\"
   | \\"emergency-call\\"
   | \\"google\\"
   | \\"join\\"
   | \\"route\\"
   | \\"yahoo\\";
+export type ReturnKeyTypeAndroid = \\"none\\" | \\"previous\\";
+export type ReturnKeyTypeOptions =
+  | ReturnKeyType
+  | ReturnKeyTypeIOS
+  | ReturnKeyTypeAndroid;
 export type SubmitBehavior = \\"submit\\" | \\"blurAndSubmit\\" | \\"newline\\";
 export type AutoCapitalize = \\"none\\" | \\"sentences\\" | \\"words\\" | \\"characters\\";
 export type TextContentType =
@@ -2999,16 +3006,15 @@ export type TextContentType =
   | \\"dateTime\\"
   | \\"flightNumber\\"
   | \\"shipmentTrackingNumber\\";
-export type enterKeyHintType =
-  | \\"done\\"
-  | \\"go\\"
-  | \\"next\\"
-  | \\"search\\"
-  | \\"send\\"
-  | \\"previous\\"
-  | \\"enter\\";
+export type EnterKeyHintTypeAndroid = \\"previous\\";
+export type EnterKeyHintTypeIOS = \\"enter\\";
+export type EnterKeyHintType = \\"done\\" | \\"go\\" | \\"next\\" | \\"search\\" | \\"send\\";
+export type EnterKeyHintTypeOptions =
+  | EnterKeyHintType
+  | EnterKeyHintTypeAndroid
+  | EnterKeyHintTypeIOS;
 type PasswordRules = string;
-type IOSProps = $ReadOnly<{
+export type TextInputIOSProps = $ReadOnly<{
   disableKeyboardShortcuts?: ?boolean,
   clearButtonMode?: ?(\\"never\\" | \\"while-editing\\" | \\"unless-editing\\" | \\"always\\"),
   clearTextOnFocus?: ?boolean,
@@ -3035,7 +3041,7 @@ type IOSProps = $ReadOnly<{
   ),
   smartInsertDelete?: ?boolean,
 }>;
-type AndroidProps = $ReadOnly<{
+export type TextInputAndroidProps = $ReadOnly<{
   cursorColor?: ?ColorValue,
   disableFullscreenUI?: ?boolean,
   importantForAutofill?: ?(
@@ -3054,10 +3060,10 @@ type AndroidProps = $ReadOnly<{
   textBreakStrategy?: ?(\\"simple\\" | \\"highQuality\\" | \\"balanced\\"),
   underlineColorAndroid?: ?ColorValue,
 }>;
-export type Props = $ReadOnly<{
+export type TextInputProps = $ReadOnly<{
   ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
-  ...IOSProps,
-  ...AndroidProps,
+  ...TextInputIOSProps,
+  ...TextInputAndroidProps,
   autoCapitalize?: ?AutoCapitalize,
   autoComplete?: ?(
     | \\"additional-name\\"
@@ -3126,9 +3132,9 @@ export type Props = $ReadOnly<{
   defaultValue?: ?Stringish,
   editable?: ?boolean,
   forwardedRef?: ?ReactRefSetter<TextInputInstance>,
-  enterKeyHint?: ?enterKeyHintType,
-  inputMode?: ?InputMode,
-  keyboardType?: ?KeyboardType,
+  enterKeyHint?: ?EnterKeyHintTypeOptions,
+  inputMode?: ?InputModeOptions,
+  keyboardType?: ?KeyboardTypeOptions,
   maxFontSizeMultiplier?: ?number,
   maxLength?: ?number,
   multiline?: ?boolean,
@@ -3148,7 +3154,7 @@ export type Props = $ReadOnly<{
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
   readOnly?: ?boolean,
-  returnKeyType?: ?ReturnKeyType,
+  returnKeyType?: ?ReturnKeyTypeOptions,
   secureTextEntry?: ?boolean,
   selection?: ?$ReadOnly<{
     start: number,
