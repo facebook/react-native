@@ -17,11 +17,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 
-public object InspectorNetworkHelper {
+internal object InspectorNetworkHelper {
   private lateinit var client: OkHttpClient
 
   @JvmStatic
-  public fun loadNetworkResource(url: String, listener: InspectorNetworkRequestListener) {
+  fun loadNetworkResource(url: String, listener: InspectorNetworkRequestListener) {
     if (!::client.isInitialized) {
       client =
           OkHttpClient.Builder()
