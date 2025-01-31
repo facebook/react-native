@@ -59,6 +59,7 @@ bool PerformanceTracer::stopTracing() {
   }
 
   performanceMeasureCount_ = 0;
+  profileCount_ = 0;
   tracing_ = false;
 
   return true;
@@ -187,6 +188,61 @@ void PerformanceTracer::reportThread(
       .pid = processId,
       .tid = id,
       .args = folly::dynamic::object("name", name),
+  });
+}
+
+uint16_t PerformanceTracer::reportRuntimeProfile(
+    uint64_t processId,
+    uint64_t threadId,
+    uint64_t eventUnixTimestamp,
+    uint64_t tracingStartUnixTimestamp) {
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    throw std::runtime_error(
+        "Runtime Profile should only be reported when Tracing is enabled");
+  }
+
+  ++profileCount_;
+  buffer_.push_back(TraceEvent{
+      .id = profileCount_,
+      .name = "Profile",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = eventUnixTimestamp,
+      .pid = processId,
+      .tid = threadId,
+      .args = folly::dynamic::object(
+          "data",
+          folly ::dynamic::object("startTime", tracingStartUnixTimestamp)),
+  });
+
+  return profileCount_;
+}
+
+void PerformanceTracer::reportRuntimeProfileChunk(
+    uint16_t profileId,
+    uint64_t processId,
+    uint64_t threadId,
+    uint64_t eventUnixTimestamp,
+    const tracing::CPUProfile& cpuProfile,
+    const tracing::CPUSamplesTimeDeltas& cpuSamplesTimeDeltas) {
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .id = profileId,
+      .name = "ProfileChunk",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = eventUnixTimestamp,
+      .pid = processId,
+      .tid = threadId,
+      .args = folly::dynamic::object(
+          "data",
+          folly::dynamic::object("cpuProfile", cpuProfile.asDynamic())(
+              "timeDeltas", cpuSamplesTimeDeltas.asDynamic())),
   });
 }
 

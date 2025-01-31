@@ -62,4 +62,120 @@ struct TraceEvent {
 
 } // namespace
 
+namespace tracing {
+
+struct CPUSamplesTimeDeltas {
+ public:
+  explicit CPUSamplesTimeDeltas(std::vector<long long> deltas)
+      : deltas_(std::move(deltas)) {}
+
+  folly::dynamic asDynamic() const {
+    folly::dynamic value = folly::dynamic::array();
+    for (auto delta : deltas_) {
+      value.push_back(delta);
+    }
+
+    return value;
+  }
+
+ private:
+  std::vector<long long> deltas_;
+};
+
+struct CPUProfileNodeCallFrame {
+ public:
+  CPUProfileNodeCallFrame(
+      std::string codeType,
+      uint32_t scriptId,
+      std::string functionName,
+      std::optional<std::string> url = std::nullopt,
+      std::optional<uint32_t> lineNumber = std::nullopt,
+      std::optional<uint32_t> columnNumber = std::nullopt)
+      : codeType_(std::move(codeType)),
+        scriptId_(scriptId),
+        functionName_(std::move(functionName)),
+        url_(std::move(url)),
+        lineNumber_(lineNumber),
+        columnNumber_(columnNumber) {}
+
+  folly::dynamic asDynamic() const {
+    folly::dynamic dynamicCallFrame = folly::dynamic::object();
+    dynamicCallFrame["codeType"] = codeType_;
+    dynamicCallFrame["scriptId"] = scriptId_;
+    dynamicCallFrame["functionName"] = functionName_;
+    if (url_.has_value()) {
+      dynamicCallFrame["url"] = url_.value();
+    }
+    if (lineNumber_.has_value()) {
+      dynamicCallFrame["lineNumber"] = lineNumber_.value();
+    }
+    if (columnNumber_.has_value()) {
+      dynamicCallFrame["columnNumber"] = columnNumber_.value();
+    }
+
+    return dynamicCallFrame;
+  }
+
+ private:
+  std::string codeType_;
+  uint32_t scriptId_;
+  std::string functionName_;
+  std::optional<std::string> url_;
+  std::optional<uint32_t> lineNumber_;
+  std::optional<uint32_t> columnNumber_;
+};
+
+struct CPUProfileNode {
+ public:
+  CPUProfileNode(
+      uint32_t id,
+      CPUProfileNodeCallFrame callFrame,
+      std::optional<uint32_t> parentId = std::nullopt)
+      : id_(id), callFrame_(std::move(callFrame)), parentId_(parentId) {}
+
+  folly::dynamic asDynamic() const {
+    folly::dynamic dynamicNode = folly::dynamic::object();
+
+    dynamicNode["callFrame"] = callFrame_.asDynamic();
+    dynamicNode["id"] = id_;
+    if (parentId_.has_value()) {
+      dynamicNode["parent"] = parentId_.value();
+    }
+
+    return dynamicNode;
+  }
+
+ private:
+  uint32_t id_;
+  CPUProfileNodeCallFrame callFrame_;
+  std::optional<uint32_t> parentId_;
+};
+
+struct CPUProfile {
+ public:
+  CPUProfile(std::vector<CPUProfileNode> nodes, std::vector<uint32_t> samples)
+      : nodes_(std::move(nodes)), samples_(std::move(samples)) {}
+
+  folly::dynamic asDynamic() const {
+    folly::dynamic dynamicNodes = folly::dynamic::array();
+    for (const auto& node : nodes_) {
+      dynamicNodes.push_back(node.asDynamic());
+    }
+
+    folly::dynamic dynamicSamples = folly::dynamic::array();
+    for (auto sample : samples_) {
+      dynamicSamples.push_back(sample);
+    }
+
+    return folly::dynamic::object("nodes", dynamicNodes)(
+        "samples", dynamicSamples);
+  }
+
+ private:
+  std::vector<CPUProfileNode> nodes_;
+  std::vector<uint32_t> samples_;
+};
+
+} // namespace tracing
+
 } // namespace facebook::react::jsinspector_modern
