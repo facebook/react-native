@@ -120,19 +120,19 @@ LayoutConstraints AndroidTextInputShadowNode::getTextConstraints(
 
 void AndroidTextInputShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
-
+  const auto& stateData = getStateData();
   auto reactTreeAttributedString = getAttributedString();
-  const auto& state = getStateData();
 
   // Tree is often out of sync with the value of the TextInput.
   // This is by design - don't change the value of the TextInput in the State,
   // and therefore in Java, unless the tree itself changes.
-  if (state.reactTreeAttributedString == reactTreeAttributedString) {
+  if (stateData.reactTreeAttributedString == reactTreeAttributedString) {
     return;
   }
 
   // If props event counter is less than what we already have in state, skip it
-  if (getConcreteProps().mostRecentEventCount < state.mostRecentEventCount) {
+  const auto& props = BaseShadowNode::getConcreteProps();
+  if (props.mostRecentEventCount < stateData.mostRecentEventCount) {
     return;
   }
 
@@ -141,16 +141,16 @@ void AndroidTextInputShadowNode::updateStateIfNeeded() {
   // current attributedString unchanged, and pass in zero for the "event count"
   // so no changes are applied There's no way to prevent a state update from
   // flowing to Java, so we just ensure it's a noop in those cases.
-  auto newEventCount =
-      state.reactTreeAttributedString.isContentEqual(reactTreeAttributedString)
+  auto newEventCount = stateData.reactTreeAttributedString.isContentEqual(
+                           reactTreeAttributedString)
       ? 0
-      : getConcreteProps().mostRecentEventCount;
+      : props.mostRecentEventCount;
   auto newAttributedString = getMostRecentAttributedString();
 
   setStateData(TextInputState{
       AttributedStringBox(newAttributedString),
       reactTreeAttributedString,
-      getConcreteProps().paragraphAttributes,
+      props.paragraphAttributes,
       newEventCount});
 }
 
