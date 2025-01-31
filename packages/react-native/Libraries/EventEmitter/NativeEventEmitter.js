@@ -26,6 +26,9 @@ interface NativeModule {
 
 export type {EventSubscription};
 
+// $FlowFixMe[unclear-type] unclear type of events
+type UnsafeObject = Object;
+
 /**
  * `NativeEventEmitter` is intended for use by Native Modules to emit events to
  * JavaScript listeners. If a `NativeModule` is supplied to the constructor, it
@@ -36,8 +39,11 @@ export type {EventSubscription};
  * This means event names must be globally unique, and it means that call sites
  * can theoretically listen to `RCTDeviceEventEmitter` (although discouraged).
  */
-export default class NativeEventEmitter<TEventToArgsMap: {...}>
-  implements IEventEmitter<TEventToArgsMap>
+export default class NativeEventEmitter<
+  TEventToArgsMap: $ReadOnly<
+    Record<string, $ReadOnlyArray<UnsafeObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+> implements IEventEmitter<TEventToArgsMap>
 {
   _nativeModule: ?NativeModule;
 
