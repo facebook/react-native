@@ -286,6 +286,10 @@ public final class NetworkingModule extends NativeNetworkingAndroidSpec {
       for (UriHandler handler : mUriHandlers) {
         if (handler.supports(uri, responseType)) {
           WritableMap res = handler.fetch(uri);
+          //fix: UriHandlers which are not using file:// scheme fail in whatwg-fetch at this line  https://github.com/JakeChampion/fetch/blob/main/fetch.js#L547
+          if ("content".equals(uri.getScheme())){
+            ResponseUtil.onResponseReceived(reactApplicationContext, requestId, 200, Arguments.createMap(), url);
+          }
           ResponseUtil.onDataReceived(reactApplicationContext, requestId, res);
           ResponseUtil.onRequestSuccess(reactApplicationContext, requestId);
           return;
