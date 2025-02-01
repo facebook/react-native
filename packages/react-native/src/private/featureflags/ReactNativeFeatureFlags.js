@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7d66477e7b024c551085f068a6445014>>
+ * @generated SignedSource<<a195c912e2c110b890531df133179524>>
  * @flow strict
  */
 
@@ -65,6 +65,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
+  enableLineHeightCenteringOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
   enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean>,
@@ -235,6 +236,10 @@ export const enableLayoutAnimationsOnAndroid: Getter<boolean> = createNativeFlag
  * When enabled, LayoutAnimations API will animate state changes on iOS.
  */
 export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGetter('enableLayoutAnimationsOnIOS', true);
+/**
+ * When enabled, custom line height calculation will be centered from top to bottom.
+ */
+export const enableLineHeightCenteringOnIOS: Getter<boolean> = createNativeFlagGetter('enableLineHeightCenteringOnIOS', false);
 /**
  * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
  */

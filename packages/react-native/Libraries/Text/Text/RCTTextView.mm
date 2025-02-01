@@ -11,6 +11,7 @@
 
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
 
 #import <React/RCTTextShadowView.h>
 
@@ -98,6 +99,42 @@
   [self setNeedsDisplay];
 }
 
+- (CGPoint)calculateDrawingPointWithTextStorage:(NSTextStorage *)textStorage
+                                   contentFrame:(CGRect)contentFrame {
+  if ([textStorage length] == 0) {
+    return contentFrame.origin;
+  }
+
+  UIFont *font = [textStorage attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+  if (!font) {
+      font = [UIFont systemFontOfSize:14];
+  }
+
+  NSParagraphStyle *paragraphStyle = [textStorage attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
+
+  CGFloat lineHeight = font.lineHeight;
+  if (paragraphStyle && paragraphStyle.minimumLineHeight > 0) {
+      lineHeight = paragraphStyle.minimumLineHeight;
+  }
+
+  CGFloat ascent = font.ascender;
+  CGFloat descent = fabs(font.descender);
+  CGFloat textHeight = ascent + descent;
+
+  CGFloat verticalOffset = 0;
+  // Adjust vertical offset to ensure text is vertically centered relative to the line height.
+  // Positive offset when text height exceeds line height, negative when line height exceeds text height.
+  if (textHeight > lineHeight) {
+      CGFloat difference = textHeight - lineHeight;
+      verticalOffset = difference / 2.0;
+  } else if (textHeight < lineHeight) {
+      CGFloat difference = lineHeight - textHeight;
+      verticalOffset = -(difference / 2.0);
+  }
+
+  return CGPointMake(contentFrame.origin.x, contentFrame.origin.y + verticalOffset);
+}
+
 - (void)drawRect:(CGRect)rect
 {
   [super drawRect:rect];
@@ -118,8 +155,15 @@
 #endif
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
-  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
-  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
+
+  if (facebook::react::ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS()) {
+    CGPoint drawingPoint = [self calculateDrawingPointWithTextStorage:_textStorage contentFrame:_contentFrame];
+    [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:drawingPoint];
+    [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:drawingPoint];
+  } else {
+    [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
+    [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
+  }
 
   __block UIBezierPath *highlightPath = nil;
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];

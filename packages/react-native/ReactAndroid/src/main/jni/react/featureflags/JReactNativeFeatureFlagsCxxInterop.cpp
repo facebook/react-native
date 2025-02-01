@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f09ad92744f524ede76f699f3188288f>>
+ * @generated SignedSource<<b33942d5af97bd1f17ba37b4ebf8cf9f>>
  */
 
 /**
@@ -132,6 +132,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableLayoutAnimationsOnIOS() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLayoutAnimationsOnIOS");
+    return method(javaProvider_);
+  }
+
+  bool enableLineHeightCenteringOnIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableLineHeightCenteringOnIOS");
     return method(javaProvider_);
   }
 
@@ -369,6 +375,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS(
   return ReactNativeFeatureFlags::enableLayoutAnimationsOnIOS();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableLineHeightCenteringOnIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableLongTaskAPI();
@@ -573,6 +584,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableLayoutAnimationsOnIOS",
         JReactNativeFeatureFlagsCxxInterop::enableLayoutAnimationsOnIOS),
+      makeNativeMethod(
+        "enableLineHeightCenteringOnIOS",
+        JReactNativeFeatureFlagsCxxInterop::enableLineHeightCenteringOnIOS),
       makeNativeMethod(
         "enableLongTaskAPI",
         JReactNativeFeatureFlagsCxxInterop::enableLongTaskAPI),

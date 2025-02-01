@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<69be45d967e3883a960c49d760fc2ca1>>
+ * @generated SignedSource<<4712d7a31ed7d6a5804bb381ffa77191>>
  */
 
 /**
@@ -123,6 +123,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLayoutAnimationsOnIOS(): Boolean = accessor.enableLayoutAnimationsOnIOS()
+
+  /**
+   * When enabled, custom line height calculation will be centered from top to bottom.
+   */
+  @JvmStatic
+  public fun enableLineHeightCenteringOnIOS(): Boolean = accessor.enableLineHeightCenteringOnIOS()
 
   /**
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.

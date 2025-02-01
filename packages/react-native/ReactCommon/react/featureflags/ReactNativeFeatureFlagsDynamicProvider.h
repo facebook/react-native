@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c714697c946be59c84fa2bb68cc91644>>
+ * @generated SignedSource<<65c3fc7d7098b4b752c320459002a4e7>>
  */
 
 /**
@@ -187,6 +187,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableLayoutAnimationsOnIOS();
+  }
+
+  bool enableLineHeightCenteringOnIOS() override {
+    auto value = values_["enableLineHeightCenteringOnIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableLineHeightCenteringOnIOS();
   }
 
   bool enableLongTaskAPI() override {

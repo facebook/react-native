@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2896efd81aed8e0100d61e739cb2ba04>>
+ * @generated SignedSource<<5977cd6aab8dcebeeab91d741574b63c>>
  */
 
 /**
@@ -40,6 +40,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
+  private var enableLineHeightCenteringOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
   private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
@@ -222,6 +223,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableLayoutAnimationsOnIOS()
       accessedFeatureFlags.add("enableLayoutAnimationsOnIOS")
       enableLayoutAnimationsOnIOSCache = cached
+    }
+    return cached
+  }
+
+  override fun enableLineHeightCenteringOnIOS(): Boolean {
+    var cached = enableLineHeightCenteringOnIOSCache
+    if (cached == null) {
+      cached = currentProvider.enableLineHeightCenteringOnIOS()
+      accessedFeatureFlags.add("enableLineHeightCenteringOnIOS")
+      enableLineHeightCenteringOnIOSCache = cached
     }
     return cached
   }
