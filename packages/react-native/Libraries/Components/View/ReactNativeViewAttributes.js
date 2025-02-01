@@ -28,6 +28,7 @@ const UIView = {
   nativeID: true,
   testID: true,
   renderToHardwareTextureAndroid: true,
+  tooltipTextAndroid: true,
   shouldRasterizeIOS: true,
   onLayout: true,
   onAccessibilityAction: true,

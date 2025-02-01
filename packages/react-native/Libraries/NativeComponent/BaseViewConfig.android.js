@@ -182,6 +182,7 @@ const validAttributesForNonEventProps = {
   shadowColor: {process: require('../StyleSheet/processColor').default},
   zIndex: true,
   renderToHardwareTextureAndroid: true,
+  tooltipTextAndroid: true,
   testID: true,
   nativeID: true,
   accessibilityLabelledBy: true,
