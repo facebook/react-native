@@ -1347,8 +1347,8 @@ public class ReactEditText extends AppCompatEditText {
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
       if (!mIsSettingTextFromJS && mListeners != null) {
         final ArrayList<TextWatcher> list = mListeners;
-        final int count = list.size();
-        for (int i = 0; i < count; i++) {
+        final int n = list.size();
+        for (int i = 0; i < n; i++) {
           list.get(i).beforeTextChanged(s, start, count, after);
         }
       }
@@ -1363,8 +1363,8 @@ public class ReactEditText extends AppCompatEditText {
 
       if (!mIsSettingTextFromJS && mListeners != null) {
         final ArrayList<TextWatcher> list = mListeners;
-        final int count = list.size();
-        for (int i = 0; i < count; i++) {
+        final int n = list.size();
+        for (int i = 0; i < n; i++) {
           list.get(i).onTextChanged(s, start, before, count);
         }
       }
@@ -1378,8 +1378,8 @@ public class ReactEditText extends AppCompatEditText {
     public void afterTextChanged(Editable s) {
       if (!mIsSettingTextFromJS && mListeners != null) {
         final ArrayList<TextWatcher> list = mListeners;
-        final int count = list.size();
-        for (int i = 0; i < count; i++) {
+        final int n = list.size();
+        for (int i = 0; i < n; i++) {
           list.get(i).afterTextChanged(s);
         }
       }
