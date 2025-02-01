@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/element/ComponentBuilder.h>
@@ -33,14 +32,14 @@ TEST(RootShadowNodeTest, cloneWithLayoutConstraints) {
   builder.build(element);
 
   EXPECT_FALSE(rootShadowNode->getIsLayoutClean());
-  EXPECT_TRUE(rootShadowNode->layoutIfNeeded());
+  rootShadowNode->layoutIfNeeded();
   EXPECT_TRUE(rootShadowNode->getIsLayoutClean());
 
   auto clonedWithDifferentLayoutConstraints = rootShadowNode->clone(
       parserContext, LayoutConstraints{{0, 0}, {10, 10}}, {});
 
   EXPECT_FALSE(clonedWithDifferentLayoutConstraints->getIsLayoutClean());
-  EXPECT_TRUE(clonedWithDifferentLayoutConstraints->layoutIfNeeded());
+  clonedWithDifferentLayoutConstraints->layoutIfNeeded();
 }
 
 } // namespace facebook::react
