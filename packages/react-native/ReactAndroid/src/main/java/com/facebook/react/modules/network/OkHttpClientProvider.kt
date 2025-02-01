@@ -19,10 +19,10 @@ import okhttp3.OkHttpClient
  */
 public object OkHttpClientProvider {
   // Centralized OkHttpClient for all networking requests.
-  private var sClient: OkHttpClient? = null
+  internal var sClient: OkHttpClient? = null
 
   // User-provided OkHttpClient factory
-  private var sFactory: OkHttpClientFactory? = null
+  internal var sFactory: OkHttpClientFactory? = null
 
   public fun setOkHttpClientFactory(factory: OkHttpClientFactory?) {
     sFactory = factory
