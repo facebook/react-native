@@ -29,6 +29,10 @@ bool InspectorFlags::getIsProfilingBuild() const {
   return loadFlagsAndAssertUnchanged().isProfilingBuild;
 }
 
+bool InspectorFlags::getNetworkInspectionEnabled() const {
+  return loadFlagsAndAssertUnchanged().networkInspectionEnabled;
+}
+
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
 }
@@ -64,6 +68,8 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
 #else
           false,
 #endif
+      .networkInspectionEnabled =
+          ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(),
   };
 
   if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {
