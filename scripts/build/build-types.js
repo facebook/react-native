@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+require('../babel-register').registerForScript();
+
 const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
 const translateSourceFile = require('./build-types/translateSourceFile');
 const chalk = require('chalk');
@@ -103,11 +105,11 @@ async function main() {
   );
 }
 
-function getPackageName(file /*: string */) /*: string */ {
+function getPackageName(file: string): string {
   return path.relative(PACKAGES_DIR, file).split(path.sep)[0];
 }
 
-function getBuildPath(file /*: string */) /*: string */ {
+function getBuildPath(file: string): string {
   const packageDir = path.join(PACKAGES_DIR, getPackageName(file));
 
   return path.join(
@@ -119,9 +121,9 @@ function getBuildPath(file /*: string */) /*: string */ {
   );
 }
 
-function ignoreShadowedFiles(files /*: Array<string> */) /*: Array<string> */ {
-  const shadowedPrefixes /*: Record<string, boolean> */ = {};
-  const result /*: Array<string> */ = [];
+function ignoreShadowedFiles(files: Array<string>): Array<string> {
+  const shadowedPrefixes: Record<string, boolean> = {};
+  const result: Array<string> = [];
 
   // Find all flow definition files that shadow other files
   for (const file of files) {

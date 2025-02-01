@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+require('../babel-register').registerForScript();
+
 const {BUILD_DIR, PACKAGES_DIR} = require('./build');
 const {buildConfig} = require('./config');
 const fs = require('fs');

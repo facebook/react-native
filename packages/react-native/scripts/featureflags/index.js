@@ -8,7 +8,7 @@
  */
 
 if (require.main === module) {
-  require('../../../../scripts/build/babel-register').registerForMonorepo();
+  require('../../../../scripts/babel-register').registerForMonorepo();
 
   let command;
 
