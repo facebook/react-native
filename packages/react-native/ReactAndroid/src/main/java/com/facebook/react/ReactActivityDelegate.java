@@ -22,6 +22,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
+import com.facebook.react.views.view.WindowUtilKt;
 import com.facebook.systrace.Systrace;
 
 /**
@@ -120,6 +121,9 @@ public class ReactActivityDelegate {
         () -> {
           String mainComponentName = getMainComponentName();
           final Bundle launchOptions = composeLaunchOptions();
+          if (mActivity != null && BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+            WindowUtilKt.enableEdgeToEdge(mActivity.getWindow());
+          }
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isWideColorGamutEnabled()) {
             mActivity.getWindow().setColorMode(ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT);
           }

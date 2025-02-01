@@ -17,6 +17,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.facebook.common.logging.FLog
 import com.facebook.fbreact.specs.NativeStatusBarManagerAndroidSpec
+import com.facebook.react.BuildConfig
+import com.facebook.react.ReactActivity
 import com.facebook.react.bridge.GuardedRunnable
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
@@ -67,6 +69,12 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
           "StatusBarModule: Ignored status bar change, current activity is null.")
       return
     }
+    if (BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+      FLog.w(
+        ReactConstants.TAG,
+        "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.")
+      return
+    }
     UiThreadUtil.runOnUiThread(
         object : GuardedRunnable(reactApplicationContext) {
           override fun runGuarded() {
@@ -94,6 +102,12 @@ public class StatusBarModule(reactContext: ReactApplicationContext?) :
       FLog.w(
           ReactConstants.TAG,
           "StatusBarModule: Ignored status bar change, current activity is null.")
+      return
+    }
+    if (BuildConfig.IS_EDGE_TO_EDGE_ENABLED) {
+      FLog.w(
+        ReactConstants.TAG,
+        "StatusBarModule: Ignored status bar change, current activity is edge-to-edge.")
       return
     }
     UiThreadUtil.runOnUiThread(
