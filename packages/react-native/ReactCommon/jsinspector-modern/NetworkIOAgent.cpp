@@ -6,9 +6,12 @@
  */
 
 #include "NetworkIOAgent.h"
-#include <utility>
+#include "InspectorFlags.h"
+
 #include "Base64.h"
 #include "Utf8.h"
+
+#include <utility>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -262,6 +265,14 @@ bool NetworkIOAgent::handleRequest(
     handleIoClose(req);
     return true;
   }
+
+  if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
+    if (req.method == "Network.enable") {
+      frontendChannel_(cdp::jsonResult(req.id));
+      return true;
+    }
+  }
+
   return false;
 }
 
