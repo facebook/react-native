@@ -41,7 +41,7 @@ RCT_EXPORT_MODULE();
 
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-    _rootView = (RCTRootView *)[appDelegate.rootViewFactory viewWithModuleName:@"SetPropertiesExampleApp"
+    _rootView = (RCTRootView *)[appDelegate.reactNativeFactory.rootViewFactory viewWithModuleName:@"SetPropertiesExampleApp"
                                                              initialProperties:@{@"color" : @"beige"}];
 
     _button = [UIButton buttonWithType:UIButtonTypeRoundedRect];

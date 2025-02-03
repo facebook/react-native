@@ -5,9 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <RCTAppDelegate.h>
+#import <RCTReactNativeFactory.h>
+#import <RCTDefaultReactNativeFactoryDelegate.h>
 #import <UIKit/UIKit.h>
 
-@interface AppDelegate : RCTAppDelegate
+@interface AppDelegate : RCTDefaultReactNativeFactoryDelegate <UIApplicationDelegate, UISceneDelegate>
+
+@property(nonatomic, strong, nonnull) UIWindow *window;
+@property(nonatomic, strong, nonnull) RCTReactNativeFactory *reactNativeFactory;
 
 @end
