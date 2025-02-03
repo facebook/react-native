@@ -1109,6 +1109,52 @@ public class ReactScrollView extends ScrollView
     }
   }
 
+  public void setContentInset(ReadableMap insets) {
+    int left = 0;
+    int top = 0;
+    int right = 0;
+    int bottom = 0;
+    if (insets != null) {
+      if (insets.hasKey("left")) {
+        left = (int) PixelUtil.toPixelFromDIP(insets.getDouble("left"));
+      }
+      if (insets.hasKey("top")) {
+        top = (int) PixelUtil.toPixelFromDIP(insets.getDouble("top"));
+      }
+      if (insets.hasKey("right")) {
+        right = (int) PixelUtil.toPixelFromDIP(insets.getDouble("right"));
+      }
+      if (insets.hasKey("bottom")) {
+        bottom = (int) PixelUtil.toPixelFromDIP(insets.getDouble("bottom"));
+      }
+    }
+
+    setPadding(left, top, right, bottom);
+
+    // If clipping of subviews is enabled, update the clipping rect
+    if (mRemoveClippedSubviews) {
+      updateClippingRect();
+    }
+
+    // Force a layout pass to ensure the new padding is applied.
+    requestLayout();
+    invalidate();
+
+    // Post a runnable to adjust the scroll position if needed.
+    // (Using post() ensures this happens after the layout pass.)
+    post(new Runnable() {
+      @Override
+      public void run() {
+        int maxScrollY = getMaxScrollY();
+        // If the current scroll offset is now beyond the new maximum,
+        // adjust it to the new maximum.
+        if (getScrollY() > maxScrollY) {
+          scrollTo(getScrollX(), maxScrollY);
+        }
+      }
+    });
+  }
+
   /**
    * Calls `smoothScrollTo` and updates state.
    *
