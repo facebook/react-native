@@ -9,8 +9,6 @@
  * @oncall react_native
  */
 
-require('../babel-register').registerForScript();
-
 import type {BabelCoreOptions} from '@babel/core';
 
 const {ModuleResolutionKind} = require('typescript');
