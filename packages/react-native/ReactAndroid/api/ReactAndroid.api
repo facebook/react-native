@@ -3214,20 +3214,6 @@ public final class com/facebook/react/modules/fresco/ReactNetworkImageRequest$Co
 	public static synthetic fun fromBuilderWithHeaders$default (Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest$Companion;Lcom/facebook/imagepipeline/request/ImageRequestBuilder;Lcom/facebook/react/bridge/ReadableMap;Lcom/facebook/react/modules/fresco/ImageCacheControl;ILjava/lang/Object;)Lcom/facebook/react/modules/fresco/ReactNetworkImageRequest;
 }
 
-public final class com/facebook/react/modules/fresco/SystraceRequestListener : com/facebook/imagepipeline/listener/BaseRequestListener {
-	public fun <init> ()V
-	public fun onProducerEvent (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public fun onProducerFinishWithCancellation (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
-	public fun onProducerFinishWithFailure (Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;Ljava/util/Map;)V
-	public fun onProducerFinishWithSuccess (Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)V
-	public fun onProducerStart (Ljava/lang/String;Ljava/lang/String;)V
-	public fun onRequestCancellation (Ljava/lang/String;)V
-	public fun onRequestFailure (Lcom/facebook/imagepipeline/request/ImageRequest;Ljava/lang/String;Ljava/lang/Throwable;Z)V
-	public fun onRequestStart (Lcom/facebook/imagepipeline/request/ImageRequest;Ljava/lang/Object;Ljava/lang/String;Z)V
-	public fun onRequestSuccess (Lcom/facebook/imagepipeline/request/ImageRequest;Ljava/lang/String;Z)V
-	public fun requiresExtraMap (Ljava/lang/String;)Z
-}
-
 public final class com/facebook/react/modules/i18nmanager/I18nManagerModule : com/facebook/fbreact/specs/NativeI18nManagerSpec {
 	public static final field Companion Lcom/facebook/react/modules/i18nmanager/I18nManagerModule$Companion;
 	public static final field NAME Ljava/lang/String;

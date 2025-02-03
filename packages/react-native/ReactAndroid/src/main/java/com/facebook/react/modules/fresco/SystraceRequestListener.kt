@@ -13,7 +13,7 @@ import com.facebook.imagepipeline.request.ImageRequest
 import com.facebook.systrace.Systrace
 
 /** Logs requests to Systrace */
-public class SystraceRequestListener : BaseRequestListener() {
+internal class SystraceRequestListener : BaseRequestListener() {
   private var currentId: Int = 0
   private val producerId: MutableMap<String, Pair<Int, String>> = mutableMapOf()
   private val requestsId: MutableMap<String, Pair<Int, String>> = mutableMapOf()
