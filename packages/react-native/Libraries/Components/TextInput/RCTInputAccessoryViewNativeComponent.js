@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../../src/private/specs/components/RCTInputAccessoryViewNativeComponent';
-import RCTInputAccessoryViewNativeComponent from '../../../src/private/specs/components/RCTInputAccessoryViewNativeComponent';
+export * from '../../../src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent';
+import RCTInputAccessoryViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent';
 export default RCTInputAccessoryViewNativeComponent;

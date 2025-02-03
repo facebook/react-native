@@ -10,7 +10,7 @@
 
 import {getConstants} from './index';
 import nullthrows from 'nullthrows';
-import NativeCPUTime from 'react-native/src/private/specs/modules/NativeCPUTime';
+import NativeCPUTime from 'react-native/src/private/specs_DEPRECATED/modules/NativeCPUTime';
 import {
   Bench,
   type BenchOptions,

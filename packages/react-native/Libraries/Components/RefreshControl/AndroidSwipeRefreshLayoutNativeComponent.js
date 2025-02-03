@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../../src/private/specs/components/AndroidSwipeRefreshLayoutNativeComponent';
-import AndroidSwipeRefreshLayoutNativeComponent from '../../../src/private/specs/components/AndroidSwipeRefreshLayoutNativeComponent';
+export * from '../../../src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent';
+import AndroidSwipeRefreshLayoutNativeComponent from '../../../src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent';
 export default AndroidSwipeRefreshLayoutNativeComponent;
