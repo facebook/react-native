@@ -335,12 +335,12 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
   }
 
   NSParagraphStyle *paragraphStyle = [attributedText attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
-  CGFloat lineHeight = font.lineHeight;
 
-  if (paragraphStyle && paragraphStyle.minimumLineHeight > 0) {
-      lineHeight = paragraphStyle.minimumLineHeight;
+  if (!paragraphStyle || paragraphStyle.minimumLineHeight == 0) {
+    return frame;
   }
-
+  
+  CGFloat lineHeight = paragraphStyle.minimumLineHeight;
   CGFloat ascent = font.ascender;
   CGFloat descent = fabs(font.descender);
   CGFloat textHeight = ascent + descent;

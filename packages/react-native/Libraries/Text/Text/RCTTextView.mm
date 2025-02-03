@@ -112,11 +112,11 @@
 
   NSParagraphStyle *paragraphStyle = [textStorage attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
 
-  CGFloat lineHeight = font.lineHeight;
-  if (paragraphStyle && paragraphStyle.minimumLineHeight > 0) {
-      lineHeight = paragraphStyle.minimumLineHeight;
+  if (!paragraphStyle || paragraphStyle.minimumLineHeight == 0) {
+    return CGPointMake(contentFrame.origin.x, contentFrame.origin.y);
   }
 
+  CGFloat lineHeight = paragraphStyle.minimumLineHeight;
   CGFloat ascent = font.ascender;
   CGFloat descent = fabs(font.descender);
   CGFloat textHeight = ascent + descent;
