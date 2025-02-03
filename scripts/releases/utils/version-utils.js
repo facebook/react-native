@@ -11,16 +11,15 @@
 
 const VERSION_REGEX = /^v?((\d+)\.(\d+)\.(\d+)(?:-(.+))?)$/;
 
-/*::
 export type BuildType = 'dry-run' | 'release' | 'nightly';
 export type Version = {
-    version: string,
-    major: string,
-    minor: string,
-    patch: string,
-    prerelease: ?string,
-}
-*/
+  version: string,
+  major: string,
+  minor: string,
+  patch: string,
+  prerelease: ?string,
+};
+
 /**
  * Parses a version string and performs some checks to verify its validity.
  * A valid version is in the format vX.Y.Z[-KKK] where X, Y, Z are numbers and KKK can be something else.
@@ -34,10 +33,7 @@ export type Version = {
  * - nightly: X.Y.Z-20221116-0bc4547fc
  * - dryrun: 1000.0.0
  */
-function parseVersion(
-  versionStr /*: string */,
-  buildType /*: ?BuildType */,
-) /*: Version */ {
+function parseVersion(versionStr: string, buildType: ?BuildType): Version {
   const match = extractMatchIfValid(versionStr);
   const [, version, major, minor, patch, prerelease] = match;
 
@@ -60,16 +56,16 @@ function parseVersion(
 }
 
 function validateBuildType(
-  buildType /*: string */,
+  buildType: string,
   // $FlowFixMe[incompatible-type-guard]
-) /*: buildType is BuildType */ {
+): buildType is BuildType {
   const validBuildTypes = new Set(['release', 'dry-run', 'nightly']);
 
   // $FlowFixMe[incompatible-return]
   return validBuildTypes.has(buildType);
 }
 
-function extractMatchIfValid(versionStr /*: string */) {
+function extractMatchIfValid(versionStr: string) {
   const match = versionStr.match(VERSION_REGEX);
   if (!match) {
     throw new Error(
@@ -79,10 +75,7 @@ function extractMatchIfValid(versionStr /*: string */) {
   return match;
 }
 
-function validateVersion(
-  versionObject /*: Version */,
-  buildType /*: BuildType */,
-) {
+function validateVersion(versionObject: Version, buildType: BuildType) {
   const map = {
     release: validateRelease,
     'dry-run': validateDryRun,
@@ -96,14 +89,14 @@ function validateVersion(
 /**
  * Releases are in the form of 0.Y.Z[-RC.0]
  */
-function validateRelease(version /*: Version */) {
+function validateRelease(version: Version) {
   const validRelease = isStableRelease(version) || isStablePrerelease(version);
   if (!validRelease) {
     throw new Error(`Version ${version.version} is not valid for Release`);
   }
 }
 
-function validateDryRun(version /*: Version */) {
+function validateDryRun(version: Version) {
   if (
     !isMain(version) &&
     !isNightly(version) &&
@@ -114,14 +107,14 @@ function validateDryRun(version /*: Version */) {
   }
 }
 
-function validateNightly(version /*: Version */) {
+function validateNightly(version: Version) {
   // a valid nightly is a prerelease
   if (!isNightly(version)) {
     throw new Error(`Version ${version.version} is not valid for nightlies`);
   }
 }
 
-function isStableRelease(version /*: Version */) /*: boolean */ {
+function isStableRelease(version: Version): boolean {
   return (
     version.major === '0' &&
     !!version.minor.match(/^\d+$/) &&
@@ -130,7 +123,7 @@ function isStableRelease(version /*: Version */) /*: boolean */ {
   );
 }
 
-function isStablePrerelease(version /*: Version */) /*: boolean */ {
+function isStablePrerelease(version: Version): boolean {
   return !!(
     version.major === '0' &&
     version.minor.match(/^\d+$/) &&
@@ -141,7 +134,7 @@ function isStablePrerelease(version /*: Version */) /*: boolean */ {
   );
 }
 
-function isNightly(version /*: Version */) /*: boolean */ {
+function isNightly(version: Version): boolean {
   // Check if older nightly version
   if (version.major === '0' && version.minor === '0' && version.patch === '0') {
     return true;
@@ -150,13 +143,13 @@ function isNightly(version /*: Version */) /*: boolean */ {
   return version.version.includes('nightly');
 }
 
-function isMain(version /*: Version */) /*: boolean */ {
+function isMain(version: Version): boolean {
   return (
     version.major === '1000' && version.minor === '0' && version.patch === '0'
   );
 }
 
-function isReleaseBranch(branch /*:string */) /*: boolean */ {
+function isReleaseBranch(branch: string): boolean {
   return branch.endsWith('-stable');
 }
 

@@ -8,7 +8,7 @@
  * @format
  */
 
-'use strict';
+import type {ExecOptsSync, ShellString} from 'shelljs';
 
 const {parseVersion} = require('./releases/utils/version-utils');
 const {
@@ -18,27 +18,16 @@ const {
 } = require('./scm-utils');
 const {exec} = require('shelljs');
 
-/*::
-import type { ExecOptsSync, ShellString } from 'shelljs';
-
 type BuildType = 'dry-run' | 'release' | 'nightly';
 type NpmInfo = {
   version: string,
   tag: ?string,
-}
-type PackageJSON = {
-  name: string,
-  version: string,
-  dependencies: {[string]: string},
-  devDependencies: {[string]: string},
-  ...
-}
+};
 type NpmPackageOptions = {
   tags: ?Array<string> | ?Array<?string>,
   otp: ?string,
-  access?: ?('public' | 'restricted')
-}
-*/
+  access?: ?('public' | 'restricted'),
+};
 
 // Get `next` version from npm and +1 on the minor for `main` version
 function getMainVersion() {
@@ -47,7 +36,7 @@ function getMainVersion() {
   return `${major}.${parseInt(minor, 10) + 1}.0`;
 }
 
-function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
+function getNpmInfo(buildType: BuildType): NpmInfo {
   const currentCommit = getCurrentCommit();
   const shortCommit = currentCommit.slice(0, 9);
 
@@ -71,7 +60,7 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
   }
 
   if (buildType === 'release') {
-    let versionTag /*: string*/ = '';
+    let versionTag: string = '';
     if (process.env.CIRCLE_TAG != null && process.env.CIRCLE_TAG !== '') {
       versionTag = process.env.CIRCLE_TAG;
     } else if (
@@ -128,10 +117,10 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
 }
 
 function publishPackage(
-  packagePath /*: string */,
-  packageOptions /*: NpmPackageOptions */,
-  execOptions /*: ?ExecOptsSync */,
-) /*: ShellString */ {
+  packagePath: string,
+  packageOptions: NpmPackageOptions,
+  execOptions: ?ExecOptsSync,
+): ShellString {
   const {otp, tags, access} = packageOptions;
 
   let tagsFlag = '';
@@ -159,10 +148,7 @@ function publishPackage(
  *
  * This will fetch version of `packageName` with npm tag specified
  */
-function getPackageVersionStrByTag(
-  packageName /*: string */,
-  tag /*: ?string */,
-) /*: string */ {
+function getPackageVersionStrByTag(packageName: string, tag: ?string): string {
   const npmString =
     tag != null
       ? `npm view ${packageName}@${tag} version`
@@ -181,10 +167,7 @@ function getPackageVersionStrByTag(
  *
  * Return an array of versions of the specified spec range or throw an error
  */
-function getVersionsBySpec(
-  packageName /*: string */,
-  spec /*: string */,
-) /*: Array<string> */ {
+function getVersionsBySpec(packageName: string, spec: string): Array<string> {
   const npmString = `npm view ${packageName}@'${spec}' version --json`;
   const result = exec(npmString, {silent: true});
 

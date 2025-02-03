@@ -11,6 +11,8 @@
 
 'use strict';
 
+require('../babel-register').registerForScript();
+
 /*::
 import type {BuildType} from '../releases/utils/version-utils';
 */

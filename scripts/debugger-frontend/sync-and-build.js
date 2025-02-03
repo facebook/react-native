@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+require('../babel-register').registerForScript();
+
 const {PACKAGES_DIR} = require('../consts');
 // $FlowFixMe[untyped-import]: TODO type ansi-styles
 const ansiStyles = require('ansi-styles');

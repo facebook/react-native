@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+require('../babel-register').registerForScript();
+
 const {setVersion} = require('../releases/set-version');
 const {getBranchName} = require('../scm-utils');
 const {parseVersion} = require('./utils/version-utils');

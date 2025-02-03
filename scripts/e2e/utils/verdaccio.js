@@ -26,7 +26,7 @@ const VERDACCIO_SERVER_URL = 'http://127.0.0.1:4873';
  * used with `npm publish` and `npm install`, configured in
  * `scripts/e2e/verdaccio.yml`.
  */
-function setupVerdaccio() /*: number */ {
+function setupVerdaccio(): number {
   const {host} = new URL(VERDACCIO_SERVER_URL);
 
   // NOTE: Reading from/writing to an .npmrc in a workspaces project root is

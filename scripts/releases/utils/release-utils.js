@@ -16,11 +16,9 @@ const {
 } = require('../../../packages/react-native/scripts/hermes/hermes-utils');
 const {echo, exec, exit, popd, pushd, test} = require('shelljs');
 
-/*::
 type BuildType = 'dry-run' | 'release' | 'nightly';
-*/
 
-function generateAndroidArtifacts(releaseVersion /*: string */) {
+function generateAndroidArtifacts(releaseVersion: string) {
   // -------- Generating Android Artifacts
   echo('Generating Android artifacts inside /tmp/maven-local');
   if (exec('./gradlew publishAllToMavenTempLocal').code) {
@@ -59,8 +57,8 @@ function generateAndroidArtifacts(releaseVersion /*: string */) {
 }
 
 function publishAndroidArtifactsToMaven(
-  releaseVersion /*: string */,
-  buildType /*: BuildType */,
+  releaseVersion: string,
+  buildType: BuildType,
 ) {
   // We want to gate ourselves against accidentally publishing a 1.x or a 1000.x on
   // maven central which will break the semver for our artifacts.
@@ -86,8 +84,8 @@ function publishAndroidArtifactsToMaven(
 }
 
 function publishExternalArtifactsToMaven(
-  releaseVersion /*: string */,
-  buildType /*: BuildType */,
+  releaseVersion: string,
+  buildType: BuildType,
 ) {
   // We want to gate ourselves against accidentally publishing a 1.x or a 1000.x on
   // maven central which will break the semver for our artifacts.
@@ -122,11 +120,11 @@ function publishExternalArtifactsToMaven(
 }
 
 function generateiOSArtifacts(
-  jsiFolder /*: string */,
-  hermesCoreSourceFolder /*: string */,
-  buildType /*: 'Debug' | string */,
-  targetFolder /*: string */,
-) /*: string */ {
+  jsiFolder: string,
+  hermesCoreSourceFolder: string,
+  buildType: 'Debug' | string,
+  targetFolder: string,
+): string {
   pushd(`${hermesCoreSourceFolder}`);
 
   //Generating iOS Artifacts
@@ -150,7 +148,7 @@ function generateiOSArtifacts(
   return tarballOutputPath;
 }
 
-function failIfTagExists(version /*: string */, buildType /*: BuildType */) {
+function failIfTagExists(version: string, buildType: BuildType) {
   // When dry-run in stable branch, the tag already exists.
   // We are bypassing the tag-existence check when in a dry-run to have the CI pass
   if (buildType === 'dry-run') {
@@ -165,7 +163,7 @@ function failIfTagExists(version /*: string */, buildType /*: BuildType */) {
   }
 }
 
-function checkIfTagExists(version /*: string */) {
+function checkIfTagExists(version: string) {
   const {code, stdout} = exec('git tag -l', {silent: true});
   if (code !== 0) {
     throw new Error('Failed to retrieve the list of tags');

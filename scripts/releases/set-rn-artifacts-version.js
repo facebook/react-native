@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+require('../babel-register').registerForScript();
+
 /*::
 import type {BuildType, Version} from './utils/version-utils';
 */
@@ -84,7 +86,7 @@ async function updateReactNativeArtifacts(
 
 function updateSourceFiles(
   versionInfo /*: Version */,
-) /*: Promise<Array<void>>*/ {
+) /*: Promise<Array<void>> */ {
   const templateData = {version: versionInfo};
 
   return Promise.all([

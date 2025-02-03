@@ -7,6 +7,8 @@
  * @format
  */
 
+require('../../babel-register').registerForScript();
+
 const {getVersionsBySpec} = require('../../npm-utils');
 const {getPackages} = require('../../utils/monorepo');
 const {exit} = require('shelljs');

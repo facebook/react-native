@@ -11,6 +11,8 @@
 
 'use strict';
 
+require('../babel-register').registerForScript();
+
 /*:: import type {ProjectInfo} from '../utils/monorepo'; */
 
 const {retry} = require('../circleci/retry');

@@ -10,6 +10,8 @@
 
 'use strict';
 
+require('../babel-register').registerForScript();
+
 /*
  * This script is a re-interpretation of the old test-manual.e2e.sh script.
  * the idea is to provide a better DX for the manual testing.

@@ -10,6 +10,8 @@
 
 'use strict';
 
+require('../babel-register').registerForScript();
+
 /*
  * This script, paired with test-e2e-local.js, is the full suite of
  * tooling needed for a successful local testing experience.

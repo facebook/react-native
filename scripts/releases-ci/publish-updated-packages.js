@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+require('../babel-register').registerForScript();
+
 const {publishPackage} = require('../npm-utils');
 const {getPackages} = require('../utils/monorepo');
 const {execSync} = require('child_process');

@@ -11,6 +11,8 @@
 
 'use strict';
 
+require('../babel-register').registerForScript();
+
 /*::
 import type {PackageJson} from '../utils/monorepo';
 */

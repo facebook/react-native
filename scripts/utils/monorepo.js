@@ -16,7 +16,6 @@ const path = require('path');
 
 const WORKSPACES_CONFIG = 'packages/*';
 
-/*::
 export type PackageJson = {
   name: string,
   version: string,
@@ -45,15 +44,12 @@ export type PackageInfo = {
 export type ProjectInfo = {
   [packageName: string]: PackageInfo,
 };
-*/
 
 /**
  * Locates monrepo packages and returns a mapping of package names to their
  * metadata. Considers Yarn workspaces under `packages/`.
  */
-async function getPackages(
-  filter /*: PackagesFilter */,
-) /*: Promise<ProjectInfo> */ {
+async function getPackages(filter: PackagesFilter): Promise<ProjectInfo> {
   const {includeReactNative, includePrivate = false} = filter;
 
   const packagesEntries = await Promise.all(
@@ -78,7 +74,7 @@ async function getPackages(
 /**
  * Get the parsed package metadata for the workspace root.
  */
-async function getWorkspaceRoot() /*: Promise<PackageInfo> */ {
+async function getWorkspaceRoot(): Promise<PackageInfo> {
   const [, packageInfo] = await parsePackageInfo(
     path.join(REPO_ROOT, 'package.json'),
   );
@@ -87,10 +83,10 @@ async function getWorkspaceRoot() /*: Promise<PackageInfo> */ {
 }
 
 async function parsePackageInfo(
-  packageJsonPath /*: string */,
-) /*: Promise<[string, PackageInfo]> */ {
+  packageJsonPath: string,
+): Promise<[string, PackageInfo]> {
   const packagePath = path.dirname(packageJsonPath);
-  const packageJson /*: PackageJson */ = JSON.parse(
+  const packageJson: PackageJson = JSON.parse(
     await fs.readFile(packageJsonPath, 'utf-8'),
   );
 
@@ -108,9 +104,9 @@ async function parsePackageInfo(
  * Update a given package with the package versions.
  */
 async function updatePackageJson(
-  {path: packagePath, packageJson} /*: PackageInfo */,
-  newPackageVersions /*: $ReadOnly<{[string]: string}> */,
-) /*: Promise<void> */ {
+  {path: packagePath, packageJson}: PackageInfo,
+  newPackageVersions: $ReadOnly<{[string]: string}>,
+): Promise<void> {
   const packageName = packageJson.name;
 
   if (packageName in newPackageVersions) {
@@ -138,9 +134,9 @@ async function updatePackageJson(
  * Write a `package.json` file to disk.
  */
 async function writePackageJson(
-  packageJsonPath /*: string */,
-  packageJson /*: PackageJson */,
-) /*: Promise<void> */ {
+  packageJsonPath: string,
+  packageJson: PackageJson,
+): Promise<void> {
   return fs.writeFile(
     packageJsonPath,
     JSON.stringify(packageJson, null, 2) + '\n',
