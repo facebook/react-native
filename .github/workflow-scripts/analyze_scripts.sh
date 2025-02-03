@@ -15,8 +15,7 @@ if [ -x "$(command -v shellcheck)" ]; then
   if [ -n "$CIRCLE_CI" ]; then
     results=( "$(find . -type f -not -path "*node_modules*" -not -path "*third-party*" -name '*.sh' -exec sh -c  'shellcheck "$1" -f json' -- {} \;)" )
 
-    cat <(echo shellcheck; printf '%s\n' "${results[@]}" | jq .,[] | jq -s . | jq --compact-output --raw-output '[ (.[] | .[] | . ) ]') | GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" node scripts/circleci/code-analysis-bot.js
-
+    cat <(echo shellcheck; printf '%s\n' "${results[@]}" | jq .,[] | jq -s . | jq --compact-output --raw-output '[ (.[] | .[] | . ) ]') | GITHUB_PR_NUMBER="$GITHUB_PR_NUMBER" node packages/react-native-bots/code-analysis-bot.js
     # check status
     STATUS=$?
     if [ $STATUS == 0 ]; then
@@ -38,4 +37,3 @@ else
   echo 'shellcheck is not installed. See https://github.com/facebook/react-native/wiki/Development-Dependencies#shellcheck for instructions.'
   exit 1
 fi
-
