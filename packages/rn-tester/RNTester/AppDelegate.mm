@@ -39,17 +39,35 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  self.moduleName = @"RNTesterApp";
+  self.reactNativeFactory = [[RCTReactNativeFactory alloc] initWithDelegate:self];
 #if USE_OSS_CODEGEN
   self.dependencyProvider = [RCTAppDependencyProvider new];
 #endif
-  // You can add your custom initial props in the dictionary below.
-  // They will be passed down to the ViewController used by React Native.
-  self.initialProps = [self prepareInitialProps];
+  
+  UIView *rootView = [self.reactNativeFactory.rootViewFactory viewWithModuleName:@"RNTesterApp"
+                                                               initialProperties:[self prepareInitialProps]
+                                                                   launchOptions:launchOptions];
 
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  UIViewController *rootViewController = [UIViewController new];
+  rootViewController.view = rootView;
+  _window.windowScene.delegate = self;
+  _window.rootViewController = rootViewController;
+  [_window makeKeyAndVisible];
+  
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
 
-  return [super application:application didFinishLaunchingWithOptions:launchOptions];
+  return YES;
+}
+
+#pragma mark - UISceneDelegate
+
+- (void)windowScene:(UIWindowScene *)windowScene
+    didUpdateCoordinateSpace:(id<UICoordinateSpace>)previousCoordinateSpace
+        interfaceOrientation:(UIInterfaceOrientation)previousInterfaceOrientation
+             traitCollection:(UITraitCollection *)previousTraitCollection API_AVAILABLE(ios(13.0))
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTWindowFrameDidChangeNotification object:self];
 }
 
 - (NSDictionary *)prepareInitialProps

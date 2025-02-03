@@ -47,7 +47,7 @@ RCT_EXPORT_MODULE();
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
     _resizableRootView =
-        (RCTRootView *)[appDelegate.rootViewFactory viewWithModuleName:@"RootViewSizeFlexibilityExampleApp"];
+        (RCTRootView *)[appDelegate.reactNativeFactory.rootViewFactory viewWithModuleName:@"RootViewSizeFlexibilityExampleApp"];
 
     [_resizableRootView setSizeFlexibility:RCTRootViewSizeFlexibilityHeight];
 
