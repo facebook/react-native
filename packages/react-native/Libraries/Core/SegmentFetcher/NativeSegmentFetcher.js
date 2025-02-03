@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../../src/private/specs/modules/NativeSegmentFetcher';
-import NativeSegmentFetcher from '../../../src/private/specs/modules/NativeSegmentFetcher';
+export * from '../../../src/private/specs_DEPRECATED/modules/NativeSegmentFetcher';
+import NativeSegmentFetcher from '../../../src/private/specs_DEPRECATED/modules/NativeSegmentFetcher';
 export default NativeSegmentFetcher;

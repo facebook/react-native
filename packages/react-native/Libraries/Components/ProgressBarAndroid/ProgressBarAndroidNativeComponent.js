@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../../src/private/specs/components/ProgressBarAndroidNativeComponent';
-import ProgressBarAndroidNativeComponent from '../../../src/private/specs/components/ProgressBarAndroidNativeComponent';
+export * from '../../../src/private/specs_DEPRECATED/components/ProgressBarAndroidNativeComponent';
+import ProgressBarAndroidNativeComponent from '../../../src/private/specs_DEPRECATED/components/ProgressBarAndroidNativeComponent';
 export default ProgressBarAndroidNativeComponent;
