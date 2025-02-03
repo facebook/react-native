@@ -13,7 +13,7 @@
 import type ReactNativeElement from '../dom/nodes/ReactNativeElement';
 import type {NativeIntersectionObserverEntry} from './specs/NativeIntersectionObserver';
 
-import DOMRectReadOnly from '../dom/geometry/DOMRectReadOnly';
+import DOMRectReadOnly from '../geometry/DOMRectReadOnly';
 
 /**
  * The [`IntersectionObserverEntry`](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserverEntry)

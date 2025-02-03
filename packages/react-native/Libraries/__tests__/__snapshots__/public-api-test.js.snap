@@ -10497,53 +10497,6 @@ declare export default Spec;
 "
 `;
 
-exports[`public API should not change unintentionally src/private/webapis/dom/geometry/DOMRect.js 1`] = `
-"declare export default class DOMRect extends DOMRectReadOnly {
-  get x(): number;
-  set x(x: ?number): void;
-  get y(): number;
-  set y(y: ?number): void;
-  get width(): number;
-  set width(width: ?number): void;
-  get height(): number;
-  set height(height: ?number): void;
-  static fromRect(rect?: ?DOMRectInit): DOMRect;
-}
-"
-`;
-
-exports[`public API should not change unintentionally src/private/webapis/dom/geometry/DOMRectReadOnly.js 1`] = `
-"export interface DOMRectInit {
-  x?: ?number;
-  y?: ?number;
-  width?: ?number;
-  height?: ?number;
-}
-declare export default class DOMRectReadOnly {
-  constructor(x: ?number, y: ?number, width: ?number, height: ?number): void;
-  get x(): number;
-  get y(): number;
-  get width(): number;
-  get height(): number;
-  get top(): number;
-  get right(): number;
-  get bottom(): number;
-  get left(): number;
-  toJSON(): {
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    top: number,
-    left: number,
-    bottom: number,
-    right: number,
-  };
-  static fromRect(rect?: ?DOMRectInit): DOMRectReadOnly;
-}
-"
-`;
-
 exports[`public API should not change unintentionally src/private/webapis/dom/nodes/ReactNativeDocument.js 1`] = `
 "declare export default class ReactNativeDocument extends ReadOnlyNode {
   constructor(
@@ -10698,23 +10651,6 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   get nodeName(): string;
   get nodeType(): number;
 }
-"
-`;
-
-exports[`public API should not change unintentionally src/private/webapis/dom/oldstylecollections/ArrayLikeUtils.js 1`] = `
-"export interface ArrayLike<T> extends Iterable<T> {
-  [indexer: number]: T;
-  +length: number;
-}
-declare export function createValueIterator<T>(
-  arrayLike: ArrayLike<T>
-): Iterator<T>;
-declare export function createKeyIterator<T>(
-  arrayLike: ArrayLike<T>
-): Iterator<number>;
-declare export function createEntriesIterator<T>(
-  arrayLike: ArrayLike<T>
-): Iterator<[number, T]>;
 "
 `;
 
