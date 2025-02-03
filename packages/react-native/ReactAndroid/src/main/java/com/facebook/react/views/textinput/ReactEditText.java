@@ -80,8 +80,8 @@ import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -111,7 +111,7 @@ public class ReactEditText extends AppCompatEditText {
   /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
 
-  private @Nullable ArrayList<TextWatcher> mListeners;
+  private @Nullable CopyOnWriteArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   protected boolean mContainsImages;
@@ -390,7 +390,7 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   public void addTextChangedListener(TextWatcher watcher) {
     if (mListeners == null) {
-      mListeners = new ArrayList<>();
+      mListeners = new CopyOnWriteArrayList<>();
       super.addTextChangedListener(getTextWatcherDelegator());
     }
 
@@ -1346,10 +1346,8 @@ public class ReactEditText extends AppCompatEditText {
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
       if (!mIsSettingTextFromJS && mListeners != null) {
-        final ArrayList<TextWatcher> list = mListeners;
-        final int n = list.size();
-        for (int i = 0; i < n; i++) {
-          list.get(i).beforeTextChanged(s, start, count, after);
+        for (TextWatcher listener : mListeners) {
+          listener.beforeTextChanged(s, start, count, after);
         }
       }
     }
@@ -1362,10 +1360,8 @@ public class ReactEditText extends AppCompatEditText {
       }
 
       if (!mIsSettingTextFromJS && mListeners != null) {
-        final ArrayList<TextWatcher> list = mListeners;
-        final int n = list.size();
-        for (int i = 0; i < n; i++) {
-          list.get(i).onTextChanged(s, start, before, count);
+        for (TextWatcher listener : mListeners) {
+          listener.onTextChanged(s, start, before, count);
         }
       }
 
@@ -1377,10 +1373,8 @@ public class ReactEditText extends AppCompatEditText {
     @Override
     public void afterTextChanged(Editable s) {
       if (!mIsSettingTextFromJS && mListeners != null) {
-        final ArrayList<TextWatcher> list = mListeners;
-        final int n = list.size();
-        for (int i = 0; i < n; i++) {
-          list.get(i).afterTextChanged(s);
+        for (TextWatcher listener : mListeners) {
+          listener.afterTextChanged(s);
         }
       }
     }
