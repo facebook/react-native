@@ -331,7 +331,7 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
                                              frame:(CGRect)frame {
   UIFont *font = [attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
   if (!font) {
-      font = [UIFont systemFontOfSize:14];
+      font = [UIFontMetrics.defaultMetrics scaledFontForFont:[UIFont systemFontOfSize:14]];
   }
 
   NSParagraphStyle *paragraphStyle = [attributedText attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
