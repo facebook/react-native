@@ -275,6 +275,10 @@ class RCTAppDelegateBridgelessFeatureFlags : public ReactNativeFeatureFlagsDefau
   {
     return true;
   }
+  bool enableFixForViewCommandRace() override
+  {
+    return true;
+  }
 };
 
 - (void)_setUpFeatureFlags
