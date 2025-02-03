@@ -6,10 +6,10 @@
  */
 
 #import "HostPlatformColor.h"
-#import "UIColor+Graphics.h"
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
 #import <react/renderer/graphics/RCTPlatformColorUtils.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import <string>
@@ -17,6 +17,20 @@
 using namespace facebook::react;
 
 NS_ASSUME_NONNULL_BEGIN
+
+@implementation UIColor (React_Graphics)
+
+- (int32_t)reactHash
+{
+  return [objc_getAssociatedObject(self, _cmd) intValue];
+}
+
+- (void)setReactHash:(int32_t)reactHash
+{
+  objc_setAssociatedObject(self, @selector(reactHash), @(reactHash), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+@end
 
 namespace facebook::react {
 
