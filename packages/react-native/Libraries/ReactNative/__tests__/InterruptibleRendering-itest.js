@@ -10,7 +10,7 @@
  * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
-import {NativeEventCategory} from '../../../src/private/specs_DEPRECATED/modules/NativeFantom';
+import {NativeEventCategory} from '../../../src/private/testing/fantom/specs/NativeFantom';
 import ensureInstance from '../../../src/private/utilities/ensureInstance';
 import ReactNativeElement from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
 import TextInput from '../../Components/TextInput/TextInput';
