@@ -210,7 +210,7 @@ SurfaceHandler::getMountingCoordinator() const noexcept {
 
 Size SurfaceHandler::measure(
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) const noexcept {
+    const LayoutContext& layoutContext) const {
   std::shared_lock lock(linkMutex_);
 
   if (link_.status != Status::Running) {
@@ -234,7 +234,7 @@ Size SurfaceHandler::measure(
 
 void SurfaceHandler::constraintLayout(
     const LayoutConstraints& layoutConstraints,
-    const LayoutContext& layoutContext) const noexcept {
+    const LayoutContext& layoutContext) const {
   TraceSection s("SurfaceHandler::constraintLayout");
   {
     std::unique_lock lock(parametersMutex_);
@@ -281,7 +281,7 @@ LayoutContext SurfaceHandler::getLayoutContext() const noexcept {
 
 #pragma mark - Private
 
-void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const noexcept {
+void SurfaceHandler::applyDisplayMode(DisplayMode displayMode) const {
   TraceSection s("SurfaceHandler::applyDisplayMode");
   react_native_assert(
       link_.status == Status::Running && "Surface must be running.");
