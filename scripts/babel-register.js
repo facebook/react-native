@@ -16,7 +16,6 @@ const {
 } = require('./consts');
 
 let isRegisteredForMonorepo = false;
-let isRegisteredForScriptsDir = false;
 
 /**
  * Calling this function enables all Node.js packages to run from source when
@@ -44,6 +43,7 @@ function registerForMonorepo() {
   } else {
     require('metro-babel-register')([
       PACKAGES_DIR,
+      SCRIPTS_DIR,
       RN_INTEGRATION_TESTS_RUNNER_DIR,
     ]);
   }
@@ -60,13 +60,7 @@ function registerForMonorepo() {
  * ```
  */
 function registerForScript() {
-  if (isRegisteredForScriptsDir) {
-    return;
-  }
-
-  require('metro-babel-register')([SCRIPTS_DIR]);
-
-  isRegisteredForScriptsDir = true;
+  registerForMonorepo();
 }
 
 module.exports = {
