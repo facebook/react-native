@@ -987,16 +987,7 @@ declare export default typeof shouldUseTurboAnimatedModule;
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/useAnimatedProps.js 1`] = `
-"type ReducedProps<TProps> = {
-  ...TProps,
-  collapsable: boolean,
-  ...
-};
-type CallbackRef<T> = (T) => mixed;
-declare export default function useAnimatedProps<TProps: { ... }, TInstance>(
-  props: TProps,
-  allowlist?: ?AnimatedPropsAllowlist
-): [ReducedProps<TProps>, CallbackRef<TInstance | null>];
+"declare export default AnimatedPropsHook;
 "
 `;
 
