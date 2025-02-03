@@ -48,43 +48,50 @@ type $ReadOnlyCompositeKeyComponent =
   | $ReadOnlyArray<$ReadOnlyCompositeKeyComponent | null>
   | $ReadOnly<{[string]: $ReadOnlyCompositeKeyComponent}>;
 
+type AnimatedPropsMemoHook = (
+  () => AnimatedProps,
+  props: $ReadOnly<{[string]: mixed}>,
+) => AnimatedProps;
+
 /**
- * A hook that returns an `AnimatedProps` object that is memoized based on the
- * subset of `props` that are instances of `AnimatedNode` or `AnimatedEvent`.
+ * Creates a hook that returns an `AnimatedProps` object that is memoized based
+ * on the subset of `props` that are instances of `AnimatedNode` or
+ * `AnimatedEvent`.
  */
-export function useAnimatedPropsMemo(
-  create: () => AnimatedProps,
-  // TODO: Make this two separate arguments after the experiment is over. This
-  // is only an array-like structure to make it easier to experiment with this
-  // and `useMemo`.
-  [allowlist, props]: [?AnimatedPropsAllowlist, {[string]: mixed}],
-): AnimatedProps {
-  const compositeKey = useMemo(
-    () => createCompositeKeyForProps(props, allowlist),
-    [allowlist, props],
-  );
+export function createAnimatedPropsMemoHook(
+  allowlist: ?AnimatedPropsAllowlist,
+): AnimatedPropsMemoHook {
+  return function useAnimatedPropsMemo(
+    create: () => AnimatedProps,
+    props: $ReadOnly<{[string]: mixed}>,
+  ): AnimatedProps {
+    const compositeKey = useMemo(
+      () => createCompositeKeyForProps(props, allowlist),
+      [props],
+    );
 
-  const [state, setState] = useState<{
-    allowlist: ?AnimatedPropsAllowlist,
-    compositeKey: $ReadOnlyCompositeKey | null,
-    value: AnimatedProps,
-  }>(() => ({
-    allowlist,
-    compositeKey,
-    value: create(),
-  }));
-
-  if (
-    state.allowlist !== allowlist ||
-    !areCompositeKeysEqual(state.compositeKey, compositeKey)
-  ) {
-    setState({
+    const [state, setState] = useState<{
+      allowlist: ?AnimatedPropsAllowlist,
+      compositeKey: $ReadOnlyCompositeKey | null,
+      value: AnimatedProps,
+    }>(() => ({
       allowlist,
       compositeKey,
       value: create(),
-    });
-  }
-  return state.value;
+    }));
+
+    if (
+      state.allowlist !== allowlist ||
+      !areCompositeKeysEqual(state.compositeKey, compositeKey)
+    ) {
+      setState({
+        allowlist,
+        compositeKey,
+        value: create(),
+      });
+    }
+    return state.value;
+  };
 }
 
 /**

@@ -18,8 +18,8 @@ import AnimatedValue from '../../../Libraries/Animated/nodes/AnimatedValue';
 import {isPublicInstance as isFabricPublicInstance} from '../../../Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
 import useRefEffect from '../../../Libraries/Utilities/useRefEffect';
 import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
+import {createAnimatedPropsMemoHook} from './createAnimatedPropsMemoHook';
 import NativeAnimatedHelper from './NativeAnimatedHelper';
-import {useAnimatedPropsMemo} from './useAnimatedPropsMemo';
 import {
   useCallback,
   useEffect,
@@ -49,6 +49,8 @@ type AnimatedValueListeners = Array<{
 export default function createAnimatedPropsHook(
   allowlist: ?AnimatedPropsAllowlist,
 ): AnimatedPropsHook {
+  const useAnimatedPropsMemo = createAnimatedPropsMemoHook(allowlist);
+
   return function useAnimatedProps<TProps: {...}, TInstance>(
     props: TProps,
   ): [ReducedProps<TProps>, CallbackRef<TInstance | null>] {
@@ -58,7 +60,7 @@ export default function createAnimatedPropsHook(
 
     const node = useAnimatedPropsMemo(
       () => new AnimatedProps(props, () => onUpdateRef.current?.(), allowlist),
-      [allowlist, props],
+      props,
     );
 
     const useNativePropsInFabric =

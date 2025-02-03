@@ -14,7 +14,7 @@ import AnimatedValue from '../../../../Libraries/Animated/nodes/AnimatedValue';
 import {
   areCompositeKeysEqual,
   createCompositeKeyForProps,
-} from '../useAnimatedPropsMemo';
+} from '../createAnimatedPropsMemoHook';
 
 describe('createCompositeKeyForProps', () => {
   describe('with allowlist', () => {
