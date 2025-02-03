@@ -20,10 +20,10 @@ const exported: component(
   ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...ViewProps
 ) = Platform.select({
-  ios: require('../../../src/private/specs/components/RCTSafeAreaViewNativeComponent')
+  ios: require('../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent')
     .default,
   android: UIManager.hasViewManagerConfig('RCTSafeAreaView')
-    ? require('../../../src/private/specs/components/RCTSafeAreaViewNativeComponent')
+    ? require('../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent')
         .default
     : View,
   default: View,

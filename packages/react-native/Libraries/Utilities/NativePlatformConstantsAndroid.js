@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativePlatformConstantsAndroid';
-import NativePlatformConstantsAndroid from '../../src/private/specs/modules/NativePlatformConstantsAndroid';
+export * from '../../src/private/specs_DEPRECATED/modules/NativePlatformConstantsAndroid';
+import NativePlatformConstantsAndroid from '../../src/private/specs_DEPRECATED/modules/NativePlatformConstantsAndroid';
 export default NativePlatformConstantsAndroid;
