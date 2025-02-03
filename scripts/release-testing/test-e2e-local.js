@@ -72,7 +72,7 @@ const argv = yargs
  * Start the test for RNTester on iOS.
  *
  * Parameters:
- * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
+ * - @ciArtifacts manager object to manage all the download of ciArtifacts. If null, it will fallback not to use them.
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTesterIOS(
@@ -151,7 +151,7 @@ async function testRNTesterIOS(
  * Start the test for RNTester on Android.
  *
  * Parameters:
- * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
+ * - @ciArtifacts manager object to manage all the download of ciArtifacts. If null, it will fallback not to use them.
  */
 async function testRNTesterAndroid(
   ciArtifacts /*: Unwrap<ReturnType<typeof setupGHAArtifacts>> */,
@@ -217,7 +217,7 @@ async function testRNTesterAndroid(
  * Function that start testing on RNTester.
  *
  * Parameters:
- * - @circleCIArtifacts manager object to manage all the download of CircleCIArtifacts. If null, it will fallback not to use them.
+ * - @ciArtifacts manager object to manage all the download of ciArtifacts. If null, it will fallback not to use them.
  * - @onReleaseBranch whether we are on a release branch or not
  */
 async function testRNTester(
