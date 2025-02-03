@@ -95,7 +95,7 @@ async function publishMonorepoPackages(tag /*: ?string */) {
 async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   const {version, tag} = getNpmInfo(buildType);
 
-  // For stable releases, CircleCI job `prepare_package_for_release` handles this
+  // For stable releases, ci job `prepare_package_for_release` handles this
   if (['dry-run', 'nightly'].includes(buildType)) {
     if (buildType === 'nightly') {
       // Set same version for all monorepo packages

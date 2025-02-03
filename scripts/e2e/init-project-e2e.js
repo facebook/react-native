@@ -13,9 +13,9 @@
 
 /*:: import type {ProjectInfo} from '../utils/monorepo'; */
 
-const {retry} = require('../circleci/retry');
 const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
 const {getPackages} = require('../utils/monorepo');
+const {retry} = require('./utils/retry');
 const {
   VERDACCIO_SERVER_URL,
   VERDACCIO_STORAGE_PATH,
