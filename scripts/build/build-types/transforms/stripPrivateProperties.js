@@ -46,4 +46,7 @@ async function stripPrivateProperties(
   return transformAST(source, visitors);
 }
 
+// Exported for reuse in public-api-test
+stripPrivateProperties.visitors = visitors;
+
 module.exports = stripPrivateProperties;

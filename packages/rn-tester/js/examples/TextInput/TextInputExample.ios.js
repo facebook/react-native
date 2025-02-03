@@ -14,7 +14,7 @@ import type {
   RNTesterModule,
   RNTesterModuleExample,
 } from '../../types/RNTesterTypes';
-import type {KeyboardType} from 'react-native/Libraries/Components/TextInput/TextInput';
+import type {KeyboardTypeOptions} from 'react-native/Libraries/Components/TextInput/TextInput';
 
 import RNTesterText from '../../components/RNTesterText';
 import ExampleTextInput from './ExampleTextInput';
@@ -124,11 +124,11 @@ class TextInputAccessoryViewChangeKeyboardExample extends React.Component<
 
 class TextInputAccessoryViewDefaultDoneButtonExample extends React.Component<
   $ReadOnly<{
-    keyboardType: KeyboardType,
+    keyboardType: KeyboardTypeOptions,
   }>,
   {text: string},
 > {
-  constructor(props: void | $ReadOnly<{keyboardType: KeyboardType}>) {
+  constructor(props: void | $ReadOnly<{keyboardType: KeyboardTypeOptions}>) {
     // $FlowFixMe[incompatible-call]
     super(props);
     this.state = {text: ''};

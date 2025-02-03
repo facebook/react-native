@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4712d7a31ed7d6a5804bb381ffa77191>>
+ * @generated SignedSource<<f6d74c2fba92471a960b8d5ab8a5f38e>>
  */
 
 /**
@@ -207,6 +207,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun fuseboxEnabledRelease(): Boolean = accessor.fuseboxEnabledRelease()
+
+  /**
+   * Enable network inspection support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   */
+  @JvmStatic
+  public fun fuseboxNetworkInspectionEnabled(): Boolean = accessor.fuseboxNetworkInspectionEnabled()
 
   /**
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.

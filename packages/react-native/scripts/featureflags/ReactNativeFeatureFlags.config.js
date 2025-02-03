@@ -333,6 +333,16 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
     },
+    fuseboxNetworkInspectionEnabled: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-01-31',
+        description:
+          'Enable network inspection support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
     lazyAnimationCallbacks: {
       defaultValue: false,
       metadata: {

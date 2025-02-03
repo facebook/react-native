@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bfe984db15c6de5682b3aba3a8868448>>
+ * @generated SignedSource<<046753af76465b6f8a4da02bc14c3b4f>>
  */
 
 /**
@@ -96,6 +96,8 @@ class NativeReactNativeFeatureFlags
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
 
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
+
+  bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
 
