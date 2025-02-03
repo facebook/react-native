@@ -9,19 +9,15 @@
  * @oncall react_native
  */
 
-/*::
 import type {ParseResult} from 'hermes-transform/dist/transform/parse';
 import type {TransformASTResult} from 'hermes-transform/dist/transform/transformAST';
-*/
 
 const translate = require('flow-api-translator');
 const {parse, print} = require('hermes-transform');
 
-/*::
-type TransformFn = (ParseResult) => Promise<TransformASTResult>;
-*/
+type TransformFn = ParseResult => Promise<TransformASTResult>;
 
-const preTransforms /*: Array<TransformFn> */ = [
+const preTransforms: Array<TransformFn> = [
   require('./transforms/stripPrivateProperties'),
 ];
 const prettierOptions = {parser: 'babel'};
@@ -32,9 +28,7 @@ const prettierOptions = {parser: 'babel'};
  * This uses [flow-api-translator](https://www.npmjs.com/package/flow-api-translator),
  * and applies extra transformations such as stripping private properties.
  */
-async function translateSourceFile(
-  source /*: string */,
-) /*: Promise<string> */ {
+async function translateSourceFile(source: string): Promise<string> {
   // Parse Flow source
   const parsed = await parse(source);
 
@@ -49,9 +43,9 @@ async function translateSourceFile(
 }
 
 async function applyTransforms(
-  source /*: ParseResult */,
-  transforms /*: $ReadOnlyArray<TransformFn> */,
-) /*: Promise<ParseResult> */ {
+  source: ParseResult,
+  transforms: $ReadOnlyArray<TransformFn>,
+): Promise<ParseResult> {
   return transforms.reduce((input, transform) => {
     return input.then(async result => {
       const transformed = await transform(result);

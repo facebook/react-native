@@ -9,13 +9,12 @@
  * @oncall react_native
  */
 
-/*::
+require('../babel-register').registerForScript();
+
 import type {BabelCoreOptions} from '@babel/core';
-*/
 
 const {ModuleResolutionKind} = require('typescript');
 
-/*::
 export type BuildOptions = $ReadOnly<{
   // The target runtime to compile for.
   target: 'node',
@@ -31,7 +30,6 @@ export type BuildConfig = $ReadOnly<{
   // The packages to include for build and their build options.
   packages: $ReadOnly<{[packageName: string]: BuildOptions}>,
 }>;
-*/
 
 /**
  * - BUILD CONFIG -
@@ -40,7 +38,7 @@ export type BuildConfig = $ReadOnly<{
  * setup. These must use a consistent package structure and (today) target
  * Node.js packages only.
  */
-const buildConfig /*: BuildConfig */ = {
+const buildConfig: BuildConfig = {
   /* eslint sort-keys: "error" */
   packages: {
     'community-cli-plugin': {
@@ -67,8 +65,8 @@ const defaultBuildOptions = {
 };
 
 function getBuildOptions(
-  packageName /*: $Keys<BuildConfig['packages']> */,
-) /*: Required<BuildOptions> */ {
+  packageName: $Keys<BuildConfig['packages']>,
+): Required<BuildOptions> {
   return {
     ...defaultBuildOptions,
     ...buildConfig.packages[packageName],
@@ -76,8 +74,8 @@ function getBuildOptions(
 }
 
 function getBabelConfig(
-  packageName /*: $Keys<BuildConfig['packages']> */,
-) /*: BabelCoreOptions */ {
+  packageName: $Keys<BuildConfig['packages']>,
+): BabelCoreOptions {
   const {target} = getBuildOptions(packageName);
 
   switch (target) {
@@ -87,8 +85,8 @@ function getBabelConfig(
 }
 
 function getTypeScriptCompilerOptions(
-  packageName /*: $Keys<BuildConfig['packages']> */,
-) /*: Object */ {
+  packageName: $Keys<BuildConfig['packages']>,
+): Object {
   const {target} = getBuildOptions(packageName);
 
   switch (target) {

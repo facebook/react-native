@@ -9,9 +9,14 @@
  * @oncall react_native
  */
 
-const {PACKAGES_DIR, RN_INTEGRATION_TESTS_RUNNER_DIR} = require('./consts');
+const {
+  PACKAGES_DIR,
+  RN_INTEGRATION_TESTS_RUNNER_DIR,
+  SCRIPTS_DIR,
+} = require('./consts');
 
 let isRegisteredForMonorepo = false;
+let isRegisteredForScriptsDir = false;
 
 /**
  * Calling this function enables all Node.js packages to run from source when
@@ -46,4 +51,25 @@ function registerForMonorepo() {
   isRegisteredForMonorepo = true;
 }
 
-module.exports = {registerForMonorepo};
+/**
+ * Calling this function enables entry points under scripts/ to run from source.
+ *
+ * ```js
+ * // Place in a script entry point
+ * require('../babel-register').registerForScript();
+ * ```
+ */
+function registerForScript() {
+  if (isRegisteredForScriptsDir) {
+    return;
+  }
+
+  require('metro-babel-register')([SCRIPTS_DIR]);
+
+  isRegisteredForScriptsDir = true;
+}
+
+module.exports = {
+  registerForMonorepo,
+  registerForScript,
+};
