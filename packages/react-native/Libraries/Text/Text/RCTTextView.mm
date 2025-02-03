@@ -121,16 +121,10 @@
   CGFloat descent = fabs(font.descender);
   CGFloat textHeight = ascent + descent;
 
-  CGFloat verticalOffset = 0;
   // Adjust vertical offset to ensure text is vertically centered relative to the line height.
   // Positive offset when text height exceeds line height, negative when line height exceeds text height.
-  if (textHeight > lineHeight) {
-      CGFloat difference = textHeight - lineHeight;
-      verticalOffset = difference / 2.0;
-  } else if (textHeight < lineHeight) {
-      CGFloat difference = lineHeight - textHeight;
-      verticalOffset = -(difference / 2.0);
-  }
+  CGFloat difference = textHeight - lineHeight;
+  CGFloat verticalOffset = difference / 2.0;
 
   return CGPointMake(contentFrame.origin.x, contentFrame.origin.y + verticalOffset);
 }
