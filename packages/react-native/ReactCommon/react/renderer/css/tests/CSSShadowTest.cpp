@@ -6,7 +6,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <react/renderer/css/CSSCommaSeparatedList.h>
+#include <react/renderer/css/CSSList.h>
 #include <react/renderer/css/CSSShadow.h>
 #include <react/renderer/css/CSSValueParser.h>
 
