@@ -48,11 +48,15 @@
 
 /**
  * RCT_REMOTE_PROFILE: RCT_PROFILE + RCT_ENABLE_INSPECTOR + enable the
- * connectivity functionality to control the profiler remotely, such as via Chrome DevTools or
- * Flipper.
+ * connectivity functionality to control the profiler remotely, such as via Chrome DevTools.
+ * If Fusebox is enabled for release builds, enable the remote profile mode, fall back to RCT_DEV by default.
  */
 #ifndef RCT_REMOTE_PROFILE
+#ifdef REACT_NATIVE_ENABLE_FUSEBOX_RELEASE
+#define RCT_REMOTE_PROFILE REACT_NATIVE_ENABLE_FUSEBOX_RELEASE
+#else
 #define RCT_REMOTE_PROFILE RCT_DEV
+#endif
 #endif
 
 /**
