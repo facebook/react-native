@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.78.0-rc.3
+
+### Added
+
+#### iOS specific
+
+- Add the `source` parameter to generate-codegen-artifacts to avoid generating files not needed by libraries. ([98b8f17811](https://github.com/facebook/react-native/commit/98b8f178110472e5fed97de80766c03b0b5e988c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- Add missing `invariant` dependency ([ee8088b615](https://github.com/facebook/react-native/commit/ee8088b6157837c239db47ac5bd3a8603ceefc3c) by [@tido64](https://github.com/tido64))
+- Fix `maxFontSizeMultiplier` prop on `Text` and `TextInput` components in Fabric / New Architecture ([ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32](https://github.com/facebook/react-native/commit/ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32) by [@RickardZrinski](https://github.com/RickardZrinski))
+
+#### Android specific
+
+- Pass the bundle URL protocol when setting up HMR client on Android ([32fe244744](https://github.com/facebook/react-native/commit/32fe24474495f09f985a2c92e11103dd386f5fe3) by [@byCedric](https://github.com/byCedric))
+
 ## v0.78.0-rc.2
 
 ### Fixed
