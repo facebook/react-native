@@ -27,7 +27,7 @@
  * from release builds to improve performance and reduce binary size.
  */
 #ifndef RCT_DEBUG
-#if DEBUG
+#ifdef DEBUG
 #define RCT_DEBUG 1
 #else
 #define RCT_DEBUG 0
@@ -39,7 +39,7 @@
  * such as the debug executors, dev menu, red box, etc.
  */
 #ifndef RCT_DEV
-#if DEBUG
+#ifdef DEBUG
 #define RCT_DEV 1
 #else
 #define RCT_DEV 0
