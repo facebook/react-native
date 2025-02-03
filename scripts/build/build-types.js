@@ -25,15 +25,14 @@ const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 
 const SOURCE_PATTERNS = [
   // Start with Animated only
-  path.join(PACKAGES_DIR, 'react-native/Libraries/Alert/**/*.js'),
-  path.join(PACKAGES_DIR, 'react-native/Libraries/TurboModule/RCTExport.js'),
-  path.join(PACKAGES_DIR, 'react-native/Libraries/Types/RootTagTypes.js'),
-  path.join(PACKAGES_DIR, 'react-native/Libraries/ReactNative/RootTag.js'),
-  path.join(PACKAGES_DIR, 'react-native/Libraries/Utilities/Platform.js'),
-  path.join(
-    PACKAGES_DIR,
-    'react-native/src/private/specs/modules/NativeAlertManager.js',
-  ),
+  'react-native/Libraries/Alert/**/*.js',
+  'react-native/Libraries/ActionSheetIOS/**/*.js',
+  'react-native/Libraries/TurboModule/RCTExport.js',
+  'react-native/Libraries/Types/RootTagTypes.js',
+  'react-native/Libraries/ReactNative/RootTag.js',
+  'react-native/Libraries/Utilities/Platform.js',
+  'react-native/src/private/specs/modules/NativeAlertManager.js',
+  'react-native/src/private/specs/modules/NativeActionSheetManager.js',
   // TODO(T210505412): Include input packages, e.g. virtualized-lists
 ];
 
@@ -60,7 +59,7 @@ async function main() {
 
   const files = ignoreShadowedFiles(
     SOURCE_PATTERNS.flatMap(srcPath =>
-      glob.sync(path.join(srcPath, ''), {
+      glob.sync(path.join(PACKAGES_DIR, srcPath), {
         nodir: true,
       }),
     ),
