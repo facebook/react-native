@@ -1130,6 +1130,8 @@ public class ReactScrollView extends ScrollView
     }
 
     setPadding(left, top, right, bottom);
+    // simulate iOS behavior
+    setClipToPadding(false);
 
     // If clipping of subviews is enabled, update the clipping rect
     if (mRemoveClippedSubviews) {
