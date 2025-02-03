@@ -217,8 +217,8 @@ class PathUtilsTest {
 
   @Test
   fun getBuiltHermescFile_withOverride() {
-    assertThat(getBuiltHermescFile(tempFolder.root, "/home/circleci/hermes"))
-        .isEqualTo(File("/home/circleci/hermes/build/bin/hermesc"))
+    assertThat(getBuiltHermescFile(tempFolder.root, "/home/ci/hermes"))
+        .isEqualTo(File("/home/ci/hermes/build/bin/hermesc"))
   }
 
   @Test
