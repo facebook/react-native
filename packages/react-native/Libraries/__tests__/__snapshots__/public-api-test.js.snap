@@ -6039,6 +6039,18 @@ export type ResponseType =
   | \\"json\\"
   | \\"text\\";
 export type Response = ?Object | string;
+type XHRInterceptor = interface {
+  requestSent(id: number, url: string, method: string, headers: Object): void,
+  responseReceived(
+    id: number,
+    url: string,
+    status: number,
+    headers: Object
+  ): void,
+  dataReceived(id: number, data: string): void,
+  loadingFinished(id: number, encodedDataLength: number): void,
+  loadingFailed(id: number, error: string): void,
+};
 declare class XMLHttpRequestEventTarget extends EventTarget {
   get onload(): EventCallback | null;
   set onload(listener: ?EventCallback): void;
@@ -6121,6 +6133,18 @@ export type ResponseType =
   | \\"json\\"
   | \\"text\\";
 export type Response = ?Object | string;
+type XHRInterceptor = interface {
+  requestSent(id: number, url: string, method: string, headers: Object): void,
+  responseReceived(
+    id: number,
+    url: string,
+    status: number,
+    headers: Object
+  ): void,
+  dataReceived(id: number, data: string): void,
+  loadingFinished(id: number, encodedDataLength: number): void,
+  loadingFailed(id: number, error: string): void,
+};
 declare class XMLHttpRequestEventTarget extends EventTarget {
   onload: ?Function;
   onloadstart: ?Function;
