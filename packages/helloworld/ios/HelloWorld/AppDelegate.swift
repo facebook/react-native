@@ -10,19 +10,49 @@ import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import UIKit
 
+
 @main
-class AppDelegate: RCTAppDelegate {
-  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-    self.moduleName = "HelloWorld"
-    self.dependencyProvider = RCTAppDependencyProvider()
+class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate {
+  var window: UIWindow?
+  
+  var reactNativeFactory: RCTReactNativeFactory!
+  var reactNativeDelegate: ReactNativeDelegate!
+  
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    reactNativeDelegate = ReactNativeDelegate()
+    reactNativeFactory = RCTReactNativeFactory(delegate: reactNativeDelegate)
+    reactNativeDelegate.dependencyProvider = RCTAppDependencyProvider()
 
-    // You can add your custom initial props in the dictionary below.
-    // They will be passed down to the ViewController used by React Native.
-    self.initialProps = [:]
+    let rootView = reactNativeFactory.rootViewFactory.view(
+      withModuleName: "HelloWorld",
+      initialProperties: [:],
+      launchOptions: launchOptions
+    )
+    
+    window = UIWindow(frame: UIScreen.main.bounds)
+    window?.windowScene?.delegate = self
+    let rootViewController = UIViewController()
+    rootViewController.view = rootView
+    window?.rootViewController = rootViewController
+    window?.makeKeyAndVisible()
 
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    return true
   }
+  
+  func windowScene(
+    _ windowScene: UIWindowScene,
+    didUpdate previousCoordinateSpace: any UICoordinateSpace,
+    interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation,
+    traitCollection previousTraitCollection: UITraitCollection
+  ) {
+    NotificationCenter.default.post(name: .RCTWindowFrameDidChange, object: self)
+  }
+}
 
+class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
   }
