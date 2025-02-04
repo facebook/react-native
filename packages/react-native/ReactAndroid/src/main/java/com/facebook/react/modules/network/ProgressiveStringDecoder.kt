@@ -22,16 +22,16 @@ import java.nio.charset.CharsetDecoder
  * given encoding. Otherwise some parts of the data won't be decoded.
  */
 internal class ProgressiveStringDecoder(charset: Charset) {
-  private val mDecoder: CharsetDecoder = charset.newDecoder()
-
+  private val decoder: CharsetDecoder = charset.newDecoder()
   private var remainder: ByteArray? = null
 
   /**
    * Parses data to String If there is a partial multi-byte symbol on the edge of the String it get
    * saved to the reminder and added to the string on the decodeNext call.
    *
-   * @param data
-   * @return
+   * @param data The byte array containing the encoded string data.
+   * @param initialLength The number of valid bytes in the provided data array that should be decoded.
+   * @return The decoded string. If decoding fails, an empty string is returned.
    */
   fun decodeNext(data: ByteArray, initialLength: Int): String {
     var length = initialLength
@@ -50,7 +50,7 @@ internal class ProgressiveStringDecoder(charset: Charset) {
     var remainderLength = 0
     while (!decoded && (remainderLength < 4)) {
       try {
-        result = mDecoder.decode(decodeBuffer)
+        result = decoder.decode(decodeBuffer)
         decoded = true
       } catch (e: CharacterCodingException) {
         remainderLength++
@@ -71,13 +71,7 @@ internal class ProgressiveStringDecoder(charset: Charset) {
       FLog.w(ReactConstants.TAG, "failed to decode string from byte array")
       return EMPTY_STRING
     } else {
-      return result.let {
-        if (it != null) {
-          String(it.array(), 0, it.length)
-        } else {
-          EMPTY_STRING
-        }
-      }
+      return result?.let { String(it.array(), 0, it.length) } ?: EMPTY_STRING
     }
   }
 
