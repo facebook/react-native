@@ -359,7 +359,8 @@ TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationEnable) {
                                           "method": "ReactNativeApplication.metadataUpdated",
                                           "params": {
                                             "integrationName": "JsiIntegrationTest",
-                                            "unstable_isProfilingBuild": false
+                                            "unstable_isProfilingBuild": false,
+                                            "unstable_networkInspectionEnabled": false
                                           }
                                         })"));
 

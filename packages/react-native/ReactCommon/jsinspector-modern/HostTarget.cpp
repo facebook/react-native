@@ -238,12 +238,15 @@ namespace {
 
 struct StaticHostTargetMetadata {
   std::optional<bool> isProfilingBuild;
+  std::optional<bool> networkInspectionEnabled;
 };
 
 StaticHostTargetMetadata getStaticHostMetadata() {
   auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
 
-  return {.isProfilingBuild = inspectorFlags.getIsProfilingBuild()};
+  return {
+      .isProfilingBuild = inspectorFlags.getIsProfilingBuild(),
+      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled()};
 }
 
 } // namespace
@@ -273,6 +276,10 @@ folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
   if (staticMetadata.isProfilingBuild) {
     result["unstable_isProfilingBuild"] =
         staticMetadata.isProfilingBuild.value();
+  }
+  if (staticMetadata.networkInspectionEnabled) {
+    result["unstable_networkInspectionEnabled"] =
+        staticMetadata.networkInspectionEnabled.value();
   }
 
   return result;
