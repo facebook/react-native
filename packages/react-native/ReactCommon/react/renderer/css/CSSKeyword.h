@@ -307,6 +307,11 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::InlineGrid;
       }
       break;
+    case fnv1a("inset"):
+      if constexpr (detail::hasInset<KeywordT>) {
+        return KeywordT::Inset;
+      }
+      break;
     case fnv1a("ltr"):
       if constexpr (detail::hasLtr<KeywordT>) {
         return KeywordT::Ltr;
