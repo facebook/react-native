@@ -41,8 +41,7 @@ RCT_EXPORT_MODULE()
 
 - (instancetype)init {
   if (self = [super init]) {
-    UIWindow *mainWindow = RCTKeyWindow();
-    [mainWindow addObserver:self
+    [RCTKeyWindow() addObserver:self
                  forKeyPath:kFrameKeyPath
                     options:NSKeyValueObservingOptionNew
                     context:nil];
