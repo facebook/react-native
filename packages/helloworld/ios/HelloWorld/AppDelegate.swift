@@ -15,7 +15,9 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate {
   var window: UIWindow?
   
+  // swiftlint:disable:next
   var reactNativeFactory: RCTReactNativeFactory!
+  // swiftlint:disable:next
   var reactNativeDelegate: ReactNativeDelegate!
   
   func application(
@@ -26,29 +28,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate {
     reactNativeFactory = RCTReactNativeFactory(delegate: reactNativeDelegate)
     reactNativeDelegate.dependencyProvider = RCTAppDependencyProvider()
 
-    let rootView = reactNativeFactory.rootViewFactory.view(
+    window = UIWindow(frame: UIScreen.main.bounds)
+    
+    reactNativeFactory.startReactNative(
       withModuleName: "HelloWorld",
-      initialProperties: [:],
+      in: window,
       launchOptions: launchOptions
     )
     
-    window = UIWindow(frame: UIScreen.main.bounds)
-    window?.windowScene?.delegate = self
-    let rootViewController = UIViewController()
-    rootViewController.view = rootView
-    window?.rootViewController = rootViewController
-    window?.makeKeyAndVisible()
-
     return true
-  }
-  
-  func windowScene(
-    _ windowScene: UIWindowScene,
-    didUpdate previousCoordinateSpace: any UICoordinateSpace,
-    interfaceOrientation previousInterfaceOrientation: UIInterfaceOrientation,
-    traitCollection previousTraitCollection: UITraitCollection
-  ) {
-    NotificationCenter.default.post(name: .RCTWindowFrameDidChange, object: self)
   }
 }
 

@@ -44,30 +44,16 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   self.dependencyProvider = [RCTAppDependencyProvider new];
 #endif
   
-  UIView *rootView = [self.reactNativeFactory.rootViewFactory viewWithModuleName:@"RNTesterApp"
-                                                               initialProperties:[self prepareInitialProps]
-                                                                   launchOptions:launchOptions];
-
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
-  _window.windowScene.delegate = self;
-  _window.rootViewController = rootViewController;
-  [_window makeKeyAndVisible];
+  
+  [self.reactNativeFactory startReactNativeWithModuleName:@"RNTesterApp"
+                                                 inWindow:self.window
+                                        initialProperties:[self prepareInitialProps]
+                                            launchOptions:launchOptions];
   
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
 
   return YES;
-}
-
-#pragma mark - UISceneDelegate
-
-- (void)windowScene:(UIWindowScene *)windowScene
-    didUpdateCoordinateSpace:(id<UICoordinateSpace>)previousCoordinateSpace
-        interfaceOrientation:(UIInterfaceOrientation)previousInterfaceOrientation
-             traitCollection:(UITraitCollection *)previousTraitCollection API_AVAILABLE(ios(13.0))
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTWindowFrameDidChangeNotification object:self];
 }
 
 - (NSDictionary *)prepareInitialProps
