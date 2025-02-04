@@ -100,6 +100,9 @@ static NSString *getInspectorDeviceId()
 
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  BOOL isProfilingBuild = inspectorFlags.getIsProfilingBuild();
+
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name]
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
   NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier]
@@ -108,11 +111,13 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
   NSString *escapedInspectorDeviceId = [getInspectorDeviceId()
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@&device=%@",
-                                                         getServerHost(bundleURL),
-                                                         escapedDeviceName,
-                                                         escapedAppName,
-                                                         escapedInspectorDeviceId]];
+  return [NSURL
+      URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@&device=%@&profiling=%@",
+                                               getServerHost(bundleURL),
+                                               escapedDeviceName,
+                                               escapedAppName,
+                                               escapedInspectorDeviceId,
+                                               isProfilingBuild ? @"true" : @"false"]];
 }
 
 @implementation RCTInspectorDevServerHelper
