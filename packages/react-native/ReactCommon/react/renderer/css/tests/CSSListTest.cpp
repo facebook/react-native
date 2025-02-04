@@ -6,13 +6,13 @@
  */
 
 #include <gtest/gtest.h>
-#include <react/renderer/css/CSSCommaSeparatedList.h>
+#include <react/renderer/css/CSSList.h>
 #include <react/renderer/css/CSSNumber.h>
 #include <react/renderer/css/CSSValueParser.h>
 
 namespace facebook::react {
 
-TEST(CSSCommaSeparatedList, empty_values) {
+TEST(CSSList, empty_values) {
   auto emptyValue = parseCSSProperty<CSSCommaSeparatedList<CSSNumber>>("");
   EXPECT_TRUE(std::holds_alternative<std::monostate>(emptyValue));
 
@@ -23,7 +23,7 @@ TEST(CSSCommaSeparatedList, empty_values) {
   auto commaValue = parseCSSProperty<CSSCommaSeparatedList<CSSNumber>>(",");
 }
 
-TEST(CSSCommaSeparatedList, single_value) {
+TEST(CSSList, single_value) {
   auto simpleValue = parseCSSProperty<CSSCommaSeparatedList<CSSNumber>>("20");
   EXPECT_TRUE(
       std::holds_alternative<CSSCommaSeparatedList<CSSNumber>>(simpleValue));
@@ -41,12 +41,12 @@ TEST(CSSCommaSeparatedList, single_value) {
       std::get<CSSCommaSeparatedList<CSSNumber>>(whitespaceValue)[0].value, 20);
 }
 
-TEST(CSSCommaSeparatedList, wrong_type) {
+TEST(CSSList, wrong_type) {
   auto simpleValue = parseCSSProperty<CSSCommaSeparatedList<CSSNumber>>("20px");
   EXPECT_TRUE(std::holds_alternative<std::monostate>(simpleValue));
 }
 
-TEST(CSSCommaSeparatedList, multiple_values) {
+TEST(CSSList, multiple_comma_values) {
   auto simpleValue =
       parseCSSProperty<CSSCommaSeparatedList<CSSNumber>>("20, 30, 40");
   EXPECT_TRUE(
@@ -73,13 +73,54 @@ TEST(CSSCommaSeparatedList, multiple_values) {
       std::get<CSSCommaSeparatedList<CSSNumber>>(whitespaceValue)[2].value, 40);
 }
 
-TEST(CSSCommaSeparatedList, extra_tokens) {
+TEST(CSSList, multiple_space_values) {
+  auto simpleValue =
+      parseCSSProperty<CSSWhitespaceSeparatedList<CSSNumber>>("20 30 40");
+  EXPECT_TRUE(std::holds_alternative<CSSWhitespaceSeparatedList<CSSNumber>>(
+      simpleValue));
+  EXPECT_EQ(
+      std::get<CSSWhitespaceSeparatedList<CSSNumber>>(simpleValue).size(), 3);
+  EXPECT_EQ(
+      std::get<CSSWhitespaceSeparatedList<CSSNumber>>(simpleValue)[0].value,
+      20);
+  EXPECT_EQ(
+      std::get<CSSWhitespaceSeparatedList<CSSNumber>>(simpleValue)[1].value,
+      30);
+  EXPECT_EQ(
+      std::get<CSSWhitespaceSeparatedList<CSSNumber>>(simpleValue)[2].value,
+      40);
+
+  auto whitespaceValue =
+      parseCSSProperty<CSSWhitespaceSeparatedList<CSSNumber>>(" 20 \n 30  40 ");
+  EXPECT_TRUE(std::holds_alternative<CSSWhitespaceSeparatedList<CSSNumber>>(
+      whitespaceValue));
+  EXPECT_EQ(
+      std::get<CSSWhitespaceSeparatedList<CSSNumber>>(whitespaceValue).size(),
+      3);
+  EXPECT_EQ(
+      std::get<CSSWhitespaceSeparatedList<CSSNumber>>(whitespaceValue)[0].value,
+      20);
+  EXPECT_EQ(
+      std::get<CSSWhitespaceSeparatedList<CSSNumber>>(whitespaceValue)[1].value,
+      30);
+  EXPECT_EQ(
+      std::get<CSSWhitespaceSeparatedList<CSSNumber>>(whitespaceValue)[2].value,
+      40);
+}
+
+TEST(CSSList, extra_comma_tokens) {
   auto extraTokensValue =
       parseCSSProperty<CSSCommaSeparatedList<CSSNumber>>("20, 30, 40 50");
   EXPECT_TRUE(std::holds_alternative<std::monostate>(extraTokensValue));
 }
 
-TEST(CSSCommaSeparatedList, extra_commas) {
+TEST(CSSList, extra_space_tokens) {
+  auto extraTokensValue =
+      parseCSSProperty<CSSWhitespaceSeparatedList<CSSNumber>>("20 30 40 ,50");
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(extraTokensValue));
+}
+
+TEST(CSSList, extra_commas) {
   auto prefixCommaValue =
       parseCSSProperty<CSSCommaSeparatedList<CSSNumber>>(",20");
   EXPECT_TRUE(std::holds_alternative<std::monostate>(prefixCommaValue));
