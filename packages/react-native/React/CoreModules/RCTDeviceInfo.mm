@@ -19,6 +19,7 @@
 #import <atomic>
 
 #import "CoreModulesPlugins.h"
+#import <UIKit/UIKit.h>
 
 using namespace facebook::react;
 
@@ -32,9 +33,33 @@ using namespace facebook::react;
   std::atomic<BOOL> _invalidated;
 }
 
+static NSString *const kFrameKeyPath = @"frame";
+
 @synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
+
+- (instancetype)init {
+  if (self = [super init]) {
+    UIWindow *mainWindow = RCTKeyWindow();
+    [mainWindow addObserver:self
+                 forKeyPath:kFrameKeyPath
+                    options:NSKeyValueObservingOptionNew
+                    context:nil];
+  }
+  return self;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
+  if ([keyPath isEqualToString:kFrameKeyPath]) {
+    [self interfaceFrameDidChange];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTWindowFrameDidChangeNotification object:self];
+  }
+}
+
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -65,10 +90,6 @@ RCT_EXPORT_MODULE()
                                                name:RCTUserInterfaceStyleDidChangeNotification
                                              object:nil];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(interfaceFrameDidChange)
-                                               name:RCTWindowFrameDidChangeNotification
-                                             object:nil];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
                                                name:UIApplicationDidBecomeActiveNotification
@@ -112,8 +133,6 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTUserInterfaceStyleDidChangeNotification object:nil];
-
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTWindowFrameDidChangeNotification object:nil];
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
 
