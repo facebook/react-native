@@ -148,69 +148,73 @@ describe('expect', () => {
     }).toThrow();
   });
 
-  test('toHaveBeenCalled', () => {
-    const fn = jest.fn();
+  ['toBeCalled', 'toHaveBeenCalled'].map(toHaveBeenCalledAlias =>
+    test(toHaveBeenCalledAlias, () => {
+      const fn = jest.fn();
 
-    expect(fn).not.toHaveBeenCalled();
+      expect(fn).not[toHaveBeenCalledAlias]();
 
-    expect(() => {
-      expect(fn).toHaveBeenCalled();
-    }).toThrow();
+      expect(() => {
+        expect(fn)[toHaveBeenCalledAlias]();
+      }).toThrow();
 
-    fn();
+      fn();
 
-    expect(fn).toHaveBeenCalled();
+      expect(fn)[toHaveBeenCalledAlias]();
 
-    expect(() => {
-      expect(fn).not.toHaveBeenCalled();
-    }).toThrow();
+      expect(() => {
+        expect(fn).not[toHaveBeenCalledAlias]();
+      }).toThrow();
 
-    // Passing functions that aren't mocks should always fail
-    expect(() => {
-      expect(() => {}).toHaveBeenCalled();
-    }).toThrow();
+      // Passing functions that aren't mocks should always fail
+      expect(() => {
+        expect(() => {})[toHaveBeenCalledAlias]();
+      }).toThrow();
 
-    expect(() => {
-      expect(() => {}).not.toHaveBeenCalled();
-    }).toThrow();
-  });
+      expect(() => {
+        expect(() => {}).not[toHaveBeenCalledAlias]();
+      }).toThrow();
+    }),
+  );
 
-  test('toHaveBeenCalledTimes', () => {
-    const fn = jest.fn();
+  ['toBeCalledTimes', 'toHaveBeenCalledTimes'].map(toHaveBeenCalledTimesAlias =>
+    test(toHaveBeenCalledTimesAlias, () => {
+      const fn = jest.fn();
 
-    expect(fn).toHaveBeenCalledTimes(0);
-    expect(fn).not.toHaveBeenCalledTimes(1);
+      expect(fn)[toHaveBeenCalledTimesAlias](0);
+      expect(fn).not[toHaveBeenCalledTimesAlias](1);
 
-    expect(() => {
-      expect(fn).not.toHaveBeenCalledTimes(0);
-    }).toThrow();
+      expect(() => {
+        expect(fn).not[toHaveBeenCalledTimesAlias](0);
+      }).toThrow();
 
-    expect(() => {
-      expect(fn).toHaveBeenCalledTimes(1);
-    }).toThrow();
+      expect(() => {
+        expect(fn)[toHaveBeenCalledTimesAlias](1);
+      }).toThrow();
 
-    fn();
+      fn();
 
-    expect(fn).not.toHaveBeenCalledTimes(0);
-    expect(fn).toHaveBeenCalledTimes(1);
+      expect(fn).not[toHaveBeenCalledTimesAlias](0);
+      expect(fn)[toHaveBeenCalledTimesAlias](1);
 
-    expect(() => {
-      expect(fn).toHaveBeenCalledTimes(0);
-    }).toThrow();
+      expect(() => {
+        expect(fn)[toHaveBeenCalledTimesAlias](0);
+      }).toThrow();
 
-    expect(() => {
-      expect(fn).not.toHaveBeenCalledTimes(1);
-    }).toThrow();
+      expect(() => {
+        expect(fn).not[toHaveBeenCalledTimesAlias](1);
+      }).toThrow();
 
-    // Passing functions that aren't mocks should always fail
-    expect(() => {
-      expect(() => {}).toHaveBeenCalledTimes(0);
-    }).toThrow();
+      // Passing functions that aren't mocks should always fail
+      expect(() => {
+        expect(() => {})[toHaveBeenCalledTimesAlias](0);
+      }).toThrow();
 
-    expect(() => {
-      expect(() => {}).not.toHaveBeenCalledTimes(1);
-    }).toThrow();
-  });
+      expect(() => {
+        expect(() => {}).not[toHaveBeenCalledTimesAlias](1);
+      }).toThrow();
+    }),
+  );
 
   describe('jest.fn()', () => {
     it('tracks execution of functions without implementations', () => {
