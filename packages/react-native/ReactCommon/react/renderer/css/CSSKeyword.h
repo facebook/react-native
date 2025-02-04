@@ -30,9 +30,12 @@ enum class CSSKeyword : uint8_t {
   Clip,
   Column,
   ColumnReverse,
+  CommonLigatures,
   Content,
   Contents,
+  Contextual,
   Dashed,
+  DiscretionaryLigatures,
   Dotted,
   Double,
   End,
@@ -43,6 +46,7 @@ enum class CSSKeyword : uint8_t {
   Grid,
   Groove,
   Hidden,
+  HistoricalLigatures,
   Inherit,
   Initial,
   Inline,
@@ -50,20 +54,28 @@ enum class CSSKeyword : uint8_t {
   InlineFlex,
   InlineGrid,
   Inset,
+  LiningNums,
   Ltr,
   MaxContent,
   Medium,
   MinContent,
+  NoCommonLigatures,
+  NoContextual,
+  NoDiscretionaryLigatures,
+  NoHistoricalLigatures,
   None,
   Normal,
   NoWrap,
+  OldstyleNums,
   Outset,
+  ProportionalNums,
   Relative,
   Ridge,
   Row,
   RowReverse,
   Rtl,
   Scroll,
+  SmallCaps,
   Solid,
   SpaceAround,
   SpaceBetween,
@@ -72,6 +84,27 @@ enum class CSSKeyword : uint8_t {
   Static,
   Sticky,
   Stretch,
+  StylisticEight,
+  StylisticEighteen,
+  StylisticEleven,
+  StylisticFifteen,
+  StylisticFive,
+  StylisticFour,
+  StylisticFourteen,
+  StylisticNine,
+  StylisticNineteen,
+  StylisticOne,
+  StylisticSeven,
+  StylisticSeventeen,
+  StylisticSix,
+  StylisticSixteen,
+  StylisticTen,
+  StylisticThirteen,
+  StylisticThree,
+  StylisticTwelve,
+  StylisticTwenty,
+  StylisticTwo,
+  TabularNums,
   Thick,
   Thin,
   Unset,
@@ -119,9 +152,12 @@ CSS_DEFINE_KEYWORD_CONEPTS(Center)
 CSS_DEFINE_KEYWORD_CONEPTS(Clip)
 CSS_DEFINE_KEYWORD_CONEPTS(Column)
 CSS_DEFINE_KEYWORD_CONEPTS(ColumnReverse)
+CSS_DEFINE_KEYWORD_CONEPTS(CommonLigatures)
 CSS_DEFINE_KEYWORD_CONEPTS(Content)
 CSS_DEFINE_KEYWORD_CONEPTS(Contents)
+CSS_DEFINE_KEYWORD_CONEPTS(Contextual)
 CSS_DEFINE_KEYWORD_CONEPTS(Dashed)
+CSS_DEFINE_KEYWORD_CONEPTS(DiscretionaryLigatures)
 CSS_DEFINE_KEYWORD_CONEPTS(Dotted)
 CSS_DEFINE_KEYWORD_CONEPTS(Double)
 CSS_DEFINE_KEYWORD_CONEPTS(End)
@@ -132,6 +168,7 @@ CSS_DEFINE_KEYWORD_CONEPTS(FlexStart)
 CSS_DEFINE_KEYWORD_CONEPTS(Grid)
 CSS_DEFINE_KEYWORD_CONEPTS(Groove)
 CSS_DEFINE_KEYWORD_CONEPTS(Hidden)
+CSS_DEFINE_KEYWORD_CONEPTS(HistoricalLigatures)
 CSS_DEFINE_KEYWORD_CONEPTS(Inherit)
 CSS_DEFINE_KEYWORD_CONEPTS(Initial)
 CSS_DEFINE_KEYWORD_CONEPTS(Inline)
@@ -139,20 +176,28 @@ CSS_DEFINE_KEYWORD_CONEPTS(InlineBlock)
 CSS_DEFINE_KEYWORD_CONEPTS(InlineFlex)
 CSS_DEFINE_KEYWORD_CONEPTS(InlineGrid)
 CSS_DEFINE_KEYWORD_CONEPTS(Inset)
+CSS_DEFINE_KEYWORD_CONEPTS(LiningNums)
 CSS_DEFINE_KEYWORD_CONEPTS(Ltr)
 CSS_DEFINE_KEYWORD_CONEPTS(MaxContent)
 CSS_DEFINE_KEYWORD_CONEPTS(Medium)
 CSS_DEFINE_KEYWORD_CONEPTS(MinContent)
+CSS_DEFINE_KEYWORD_CONEPTS(NoCommonLigatures)
+CSS_DEFINE_KEYWORD_CONEPTS(NoContextual)
+CSS_DEFINE_KEYWORD_CONEPTS(NoDiscretionaryLigatures)
+CSS_DEFINE_KEYWORD_CONEPTS(NoHistoricalLigatures)
 CSS_DEFINE_KEYWORD_CONEPTS(None)
 CSS_DEFINE_KEYWORD_CONEPTS(Normal)
 CSS_DEFINE_KEYWORD_CONEPTS(NoWrap)
+CSS_DEFINE_KEYWORD_CONEPTS(OldstyleNums)
 CSS_DEFINE_KEYWORD_CONEPTS(Outset)
+CSS_DEFINE_KEYWORD_CONEPTS(ProportionalNums)
 CSS_DEFINE_KEYWORD_CONEPTS(Relative)
 CSS_DEFINE_KEYWORD_CONEPTS(Ridge)
 CSS_DEFINE_KEYWORD_CONEPTS(Row)
 CSS_DEFINE_KEYWORD_CONEPTS(RowReverse)
 CSS_DEFINE_KEYWORD_CONEPTS(Rtl)
 CSS_DEFINE_KEYWORD_CONEPTS(Scroll)
+CSS_DEFINE_KEYWORD_CONEPTS(SmallCaps)
 CSS_DEFINE_KEYWORD_CONEPTS(Solid)
 CSS_DEFINE_KEYWORD_CONEPTS(SpaceAround)
 CSS_DEFINE_KEYWORD_CONEPTS(SpaceBetween)
@@ -161,6 +206,27 @@ CSS_DEFINE_KEYWORD_CONEPTS(Start)
 CSS_DEFINE_KEYWORD_CONEPTS(Static)
 CSS_DEFINE_KEYWORD_CONEPTS(Sticky)
 CSS_DEFINE_KEYWORD_CONEPTS(Stretch)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticEight)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticEighteen)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticEleven)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticFifteen)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticFive)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticFour)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticFourteen)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticNine)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticNineteen)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticOne)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticSeven)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticSeventeen)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticSix)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticSixteen)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticTen)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticThirteen)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticThree)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticTwelve)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticTwenty)
+CSS_DEFINE_KEYWORD_CONEPTS(StylisticTwo)
+CSS_DEFINE_KEYWORD_CONEPTS(TabularNums)
 CSS_DEFINE_KEYWORD_CONEPTS(Thick)
 CSS_DEFINE_KEYWORD_CONEPTS(Thin)
 CSS_DEFINE_KEYWORD_CONEPTS(Unset)
@@ -217,6 +283,11 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::ColumnReverse;
       }
       break;
+    case fnv1a("common-ligatures"):
+      if constexpr (detail::hasCommonLigatures<KeywordT>) {
+        return KeywordT::CommonLigatures;
+      }
+      break;
     case fnv1a("content"):
       if constexpr (detail::hasContent<KeywordT>) {
         return KeywordT::Content;
@@ -227,9 +298,19 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::Contents;
       }
       break;
+    case fnv1a("contextual"):
+      if constexpr (detail::hasContextual<KeywordT>) {
+        return KeywordT::Contextual;
+      }
+      break;
     case fnv1a("dashed"):
       if constexpr (detail::hasDashed<KeywordT>) {
         return KeywordT::Dashed;
+      }
+      break;
+    case fnv1a("discretionary-ligatures"):
+      if constexpr (detail::hasDiscretionaryLigatures<KeywordT>) {
+        return KeywordT::DiscretionaryLigatures;
       }
       break;
     case fnv1a("dotted"):
@@ -282,6 +363,11 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::Hidden;
       }
       break;
+    case fnv1a("historical-ligatures"):
+      if constexpr (detail::hasHistoricalLigatures<KeywordT>) {
+        return KeywordT::HistoricalLigatures;
+      }
+      break;
     case fnv1a("inherit"):
       if constexpr (detail::hasInherit<KeywordT>) {
         return KeywordT::Inherit;
@@ -312,6 +398,11 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::Inset;
       }
       break;
+    case fnv1a("lining-nums"):
+      if constexpr (detail::hasLiningNums<KeywordT>) {
+        return KeywordT::LiningNums;
+      }
+      break;
     case fnv1a("ltr"):
       if constexpr (detail::hasLtr<KeywordT>) {
         return KeywordT::Ltr;
@@ -332,6 +423,26 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::MinContent;
       }
       break;
+    case fnv1a("no-common-ligatures"):
+      if constexpr (detail::hasNoCommonLigatures<KeywordT>) {
+        return KeywordT::NoCommonLigatures;
+      }
+      break;
+    case fnv1a("no-contextual"):
+      if constexpr (detail::hasNoContextual<KeywordT>) {
+        return KeywordT::NoContextual;
+      }
+      break;
+    case fnv1a("no-discretionary-ligatures"):
+      if constexpr (detail::hasNoDiscretionaryLigatures<KeywordT>) {
+        return KeywordT::NoDiscretionaryLigatures;
+      }
+      break;
+    case fnv1a("no-historical-ligatures"):
+      if constexpr (detail::hasNoHistoricalLigatures<KeywordT>) {
+        return KeywordT::NoHistoricalLigatures;
+      }
+      break;
     case fnv1a("none"):
       if constexpr (detail::hasNone<KeywordT>) {
         return KeywordT::None;
@@ -347,9 +458,19 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::NoWrap;
       }
       break;
+    case fnv1a("oldstyle-nums"):
+      if constexpr (detail::hasOldstyleNums<KeywordT>) {
+        return KeywordT::OldstyleNums;
+      }
+      break;
     case fnv1a("outset"):
       if constexpr (detail::hasOutset<KeywordT>) {
         return KeywordT::Outset;
+      }
+      break;
+    case fnv1a("proportional-nums"):
+      if constexpr (detail::hasProportionalNums<KeywordT>) {
+        return KeywordT::ProportionalNums;
       }
       break;
     case fnv1a("relative"):
@@ -397,6 +518,11 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
         return KeywordT::Scroll;
       }
       break;
+    case fnv1a("small-caps"):
+      if constexpr (detail::hasSmallCaps<KeywordT>) {
+        return KeywordT::SmallCaps;
+      }
+      break;
     case fnv1a("solid"):
       if constexpr (detail::hasSolid<KeywordT>) {
         return KeywordT::Solid;
@@ -420,6 +546,110 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
     case fnv1a("stretch"):
       if constexpr (detail::hasStretch<KeywordT>) {
         return KeywordT::Stretch;
+      }
+      break;
+    case fnv1a("stylistic-eight"):
+      if constexpr (detail::hasStylisticEight<KeywordT>) {
+        return KeywordT::StylisticEight;
+      }
+      break;
+    case fnv1a("stylistic-eighteen"):
+      if constexpr (detail::hasStylisticEighteen<KeywordT>) {
+        return KeywordT::StylisticEighteen;
+      }
+      break;
+    case fnv1a("stylistic-eleven"):
+      if constexpr (detail::hasStylisticEleven<KeywordT>) {
+        return KeywordT::StylisticEleven;
+      }
+      break;
+    case fnv1a("stylistic-fifteen"):
+      if constexpr (detail::hasStylisticFifteen<KeywordT>) {
+        return KeywordT::StylisticFifteen;
+      }
+      break;
+    case fnv1a("stylistic-five"):
+      if constexpr (detail::hasStylisticFive<KeywordT>) {
+        return KeywordT::StylisticFive;
+      }
+      break;
+    case fnv1a("stylistic-four"):
+      if constexpr (detail::hasStylisticFour<KeywordT>) {
+        return KeywordT::StylisticFour;
+      }
+      break;
+    case fnv1a("stylistic-fourteen"):
+      if constexpr (detail::hasStylisticFourteen<KeywordT>) {
+        return KeywordT::StylisticFourteen;
+      }
+      break;
+    case fnv1a("stylistic-nine"):
+      if constexpr (detail::hasStylisticNine<KeywordT>) {
+        return KeywordT::StylisticNine;
+      }
+      break;
+    case fnv1a("stylistic-nineteen"):
+      if constexpr (detail::hasStylisticNineteen<KeywordT>) {
+        return KeywordT::StylisticNineteen;
+      }
+      break;
+    case fnv1a("stylistic-one"):
+      if constexpr (detail::hasStylisticOne<KeywordT>) {
+        return KeywordT::StylisticOne;
+      }
+      break;
+    case fnv1a("stylistic-seven"):
+      if constexpr (detail::hasStylisticSeven<KeywordT>) {
+        return KeywordT::StylisticSeven;
+      }
+      break;
+    case fnv1a("stylistic-seventeen"):
+      if constexpr (detail::hasStylisticSeventeen<KeywordT>) {
+        return KeywordT::StylisticSeventeen;
+      }
+      break;
+    case fnv1a("stylistic-six"):
+      if constexpr (detail::hasStylisticSix<KeywordT>) {
+        return KeywordT::StylisticSix;
+      }
+      break;
+    case fnv1a("stylistic-sixteen"):
+      if constexpr (detail::hasStylisticSixteen<KeywordT>) {
+        return KeywordT::StylisticSixteen;
+      }
+      break;
+    case fnv1a("stylistic-ten"):
+      if constexpr (detail::hasStylisticTen<KeywordT>) {
+        return KeywordT::StylisticTen;
+      }
+      break;
+    case fnv1a("stylistic-thirteen"):
+      if constexpr (detail::hasStylisticThirteen<KeywordT>) {
+        return KeywordT::StylisticThirteen;
+      }
+      break;
+    case fnv1a("stylistic-three"):
+      if constexpr (detail::hasStylisticThree<KeywordT>) {
+      }
+      break;
+    case fnv1a("stylistic-twelve"):
+      if constexpr (detail::hasStylisticTwelve<KeywordT>) {
+        return KeywordT::StylisticTwelve;
+      }
+      break;
+    case fnv1a("stylistic-twenty"):
+      if constexpr (detail::hasStylisticTwenty<KeywordT>) {
+        return KeywordT::StylisticTwenty;
+      }
+      break;
+    case fnv1a("stylistic-two"):
+      if constexpr (detail::hasStylisticTwo<KeywordT>) {
+        return KeywordT::StylisticTwo;
+      }
+      break;
+    case fnv1a("tabular-nums"):
+      if constexpr (detail::hasTabularNums<KeywordT>) {
+        return KeywordT::TabularNums;
       }
       break;
     case fnv1a("thick"):
