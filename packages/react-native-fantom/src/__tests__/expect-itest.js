@@ -178,6 +178,45 @@ describe('expect', () => {
     }).toThrow();
   });
 
+  test('toBeFalsy', () => {
+    expect(false).toBeFalsy();
+    expect(0).toBeFalsy();
+    expect('').toBeFalsy();
+    expect(null).toBeFalsy();
+    expect(undefined).toBeFalsy();
+    expect(NaN).toBeFalsy();
+    expect([]).not.toBeFalsy();
+    expect(['']).not.toBeFalsy();
+
+    expect(() => {
+      expect(true).toBeFalsy();
+    }).toThrow();
+
+    expect(() => {
+      expect(false).not.toBeFalsy();
+    }).toThrow();
+  });
+
+  test('toBeTruthy', () => {
+    expect(true).toBeTruthy();
+    expect([]).toBeTruthy();
+    expect('a').toBeTruthy();
+    expect(false).not.toBeTruthy();
+    expect(0).not.toBeTruthy();
+    expect('').not.toBeTruthy();
+    expect(null).not.toBeTruthy();
+    expect(undefined).not.toBeTruthy();
+    expect(NaN).not.toBeTruthy();
+
+    expect(() => {
+      expect(false).toBeTruthy();
+    }).toThrow();
+
+    expect(() => {
+      expect(true).not.toBeTruthy();
+    }).toThrow();
+  });
+
   ['toBeCalled', 'toHaveBeenCalled'].map(toHaveBeenCalledAlias =>
     test(toHaveBeenCalledAlias, () => {
       const fn = jest.fn();
