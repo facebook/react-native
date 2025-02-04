@@ -13,9 +13,9 @@ import com.facebook.react.bridge.WritableMap
 import java.net.SocketTimeoutException
 
 /** Util methods to send network responses to JS. */
-public object ResponseUtil {
+internal object ResponseUtil {
   @JvmStatic
-  public fun onDataSend(
+  fun onDataSend(
       reactContext: ReactApplicationContext?,
       requestId: Int,
       progress: Long,
@@ -32,7 +32,7 @@ public object ResponseUtil {
   }
 
   @JvmStatic
-  public fun onIncrementalDataReceived(
+  fun onIncrementalDataReceived(
       reactContext: ReactApplicationContext?,
       requestId: Int,
       data: String?,
@@ -51,7 +51,7 @@ public object ResponseUtil {
   }
 
   @JvmStatic
-  public fun onDataReceivedProgress(
+  fun onDataReceivedProgress(
       reactContext: ReactApplicationContext?,
       requestId: Int,
       progress: Long,
@@ -68,7 +68,7 @@ public object ResponseUtil {
   }
 
   @JvmStatic
-  public fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: String?) {
+  fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: String?) {
     val args =
         Arguments.createArray().apply {
           pushInt(requestId)
@@ -79,11 +79,7 @@ public object ResponseUtil {
   }
 
   @JvmStatic
-  public fun onDataReceived(
-      reactContext: ReactApplicationContext?,
-      requestId: Int,
-      data: WritableMap?
-  ) {
+  fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: WritableMap?) {
     val args =
         Arguments.createArray().apply {
           pushInt(requestId)
@@ -94,7 +90,7 @@ public object ResponseUtil {
   }
 
   @JvmStatic
-  public fun onRequestError(
+  fun onRequestError(
       reactContext: ReactApplicationContext?,
       requestId: Int,
       error: String?,
@@ -114,7 +110,7 @@ public object ResponseUtil {
   }
 
   @JvmStatic
-  public fun onRequestSuccess(reactContext: ReactApplicationContext?, requestId: Int) {
+  fun onRequestSuccess(reactContext: ReactApplicationContext?, requestId: Int) {
     val args =
         Arguments.createArray().apply {
           pushInt(requestId)
@@ -125,7 +121,7 @@ public object ResponseUtil {
   }
 
   @JvmStatic
-  public fun onResponseReceived(
+  fun onResponseReceived(
       reactContext: ReactApplicationContext?,
       requestId: Int,
       statusCode: Int,
