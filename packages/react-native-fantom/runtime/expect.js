@@ -144,6 +144,24 @@ class Expect {
     }
   }
 
+  toBeFalsy(): void {
+    const pass = Boolean(this.#received) === false;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be falsy`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toBeTruthy(): void {
+    const pass = Boolean(this.#received);
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be truthy`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   toThrow(expected?: string): void {
     if (expected != null && typeof expected !== 'string') {
       throw new ErrorWithCustomBlame(
