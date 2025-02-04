@@ -49,7 +49,7 @@ let hasEmittedTimeDriftWarning = false;
 // Returns a free index if one is available, and the next consecutive index otherwise.
 function _getFreeIndex(): number {
   const freeIdx = freeIdxs.pop();
-  if (freeIdx === undefined) {
+  if (freeIdx === undefined || freeIdx === null) {
     return timerIDs.length;
   }
   return freeIdx;
