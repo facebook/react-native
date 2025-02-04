@@ -166,6 +166,10 @@ class Expect {
     }
   }
 
+  toBeCalled(): void {
+    return this.toHaveBeenCalled();
+  }
+
   toHaveBeenCalled(): void {
     const mock = this.#requireMock();
     const pass = mock.calls.length > 0;
@@ -174,6 +178,10 @@ class Expect {
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called, but it was${this.#isNot ? '' : "n't"}`,
       ).blameToPreviousFrame();
     }
+  }
+
+  toBeCalledTimes(times: number): void {
+    return this.toHaveBeenCalledTimes(times);
   }
 
   toHaveBeenCalledTimes(times: number): void {
