@@ -5706,61 +5706,6 @@ public final class com/facebook/react/uimanager/style/BorderRadiusProp : java/la
 	public static fun values ()[Lcom/facebook/react/uimanager/style/BorderRadiusProp;
 }
 
-public final class com/facebook/react/uimanager/style/BorderRadiusStyle {
-	public fun <init> ()V
-	public fun <init> (Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public synthetic fun <init> (Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun <init> (Ljava/util/List;)V
-	public final fun component1 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component10 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component11 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component12 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component13 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component2 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component3 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component4 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component5 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component6 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component7 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component8 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun component9 ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun copy (Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;)Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
-	public static synthetic fun copy$default (Lcom/facebook/react/uimanager/style/BorderRadiusStyle;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;Lcom/facebook/react/uimanager/LengthPercentage;ILjava/lang/Object;)Lcom/facebook/react/uimanager/style/BorderRadiusStyle;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun get (Lcom/facebook/react/uimanager/style/BorderRadiusProp;)Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getBottomEnd ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getBottomLeft ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getBottomRight ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getBottomStart ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getEndEnd ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getEndStart ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getStartEnd ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getStartStart ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getTopEnd ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getTopLeft ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getTopRight ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getTopStart ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun getUniform ()Lcom/facebook/react/uimanager/LengthPercentage;
-	public final fun hasRoundedBorders ()Z
-	public fun hashCode ()I
-	public final fun resolve (ILandroid/content/Context;FF)Lcom/facebook/react/uimanager/style/ComputedBorderRadius;
-	public final fun set (Lcom/facebook/react/uimanager/style/BorderRadiusProp;Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setBottomEnd (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setBottomLeft (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setBottomRight (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setBottomStart (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setEndEnd (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setEndStart (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setStartEnd (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setStartStart (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setTopEnd (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setTopLeft (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setTopRight (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setTopStart (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public final fun setUniform (Lcom/facebook/react/uimanager/LengthPercentage;)V
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class com/facebook/react/uimanager/style/BorderStyle : java/lang/Enum {
 	public static final field Companion Lcom/facebook/react/uimanager/style/BorderStyle$Companion;
 	public static final field DASHED Lcom/facebook/react/uimanager/style/BorderStyle;
