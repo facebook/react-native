@@ -62,11 +62,8 @@ class RedBoxDialogSurfaceDelegate implements SurfaceDelegate {
       return;
     }
     // Create a new RedBox when currentActivity get updated
-    mRedBoxContentView = new RedBoxContentView(context);
-    mRedBoxContentView
-        .setDevSupportManager(mDevSupportManager)
-        .setRedBoxHandler(redBoxHandler)
-        .init();
+    mRedBoxContentView = new RedBoxContentView(context, mDevSupportManager, redBoxHandler);
+    mRedBoxContentView.init();
   }
 
   @Override
