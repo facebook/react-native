@@ -19,7 +19,6 @@
 #import <atomic>
 
 #import "CoreModulesPlugins.h"
-#import <UIKit/UIKit.h>
 
 using namespace facebook::react;
 
