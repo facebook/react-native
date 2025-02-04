@@ -21,6 +21,7 @@ import type {
 } from '../StyleSheet/StyleSheet';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
+import type {ImageSource} from './ImageSource';
 
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
@@ -42,7 +43,7 @@ type Props = $ReadOnly<{
     | ?ResolvedAssetSource
     | ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
   headers?: ?{[string]: string},
-  defaultSrc?: ?string,
+  defaultSource?: ?ImageSource | ?string,
   loadingIndicatorSrc?: ?string,
 }>;
 
@@ -82,9 +83,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         },
         validAttributes: {
           blurRadius: true,
-          defaultSource: {
-            process: require('./resolveAssetSource'),
-          },
+          defaultSource: true,
           internal_analyticTag: true,
           resizeMethod: true,
           resizeMode: true,

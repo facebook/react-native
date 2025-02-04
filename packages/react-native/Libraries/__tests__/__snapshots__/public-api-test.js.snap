@@ -5065,7 +5065,7 @@ exports[`public API should not change unintentionally Libraries/Image/ImageViewN
     | ?ResolvedAssetSource
     | ?$ReadOnlyArray<?$ReadOnly<{ uri?: ?string, ... }>>,
   headers?: ?{ [string]: string },
-  defaultSrc?: ?string,
+  defaultSource?: ?ImageSource | ?string,
   loadingIndicatorSrc?: ?string,
 }>;
 interface NativeCommands {
