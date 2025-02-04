@@ -89,6 +89,31 @@ class Expect {
     }
   }
 
+  toStrictEqual(expected: mixed): void {
+    let expectedType: mixed =
+      typeof expected === 'object' && expected !== null
+        ? Object.getPrototypeOf(expected)
+        : null;
+    let receivedType: mixed =
+      typeof this.#received === 'object' && this.#received !== null
+        ? Object.getPrototypeOf(this.#received)
+        : null;
+    const pass =
+      deepEqual(this.#received, expected, {strict: true}) &&
+      expectedType === receivedType;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected${this.#maybeNotLabel()} to strictly equal:\n${
+          diff(expected, this.#received, {
+            contextLines: 1,
+            expand: false,
+            omitAnnotationLines: true,
+          }) ?? 'Failed to compare outputs'
+        }`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   toBe(expected: mixed): void {
     const pass = this.#received === expected;
     if (!this.#isExpectedResult(pass)) {

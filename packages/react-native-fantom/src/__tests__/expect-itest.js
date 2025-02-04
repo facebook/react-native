@@ -111,6 +111,38 @@ describe('expect', () => {
     }).toThrow();
   });
 
+  test('toStrictEqual', () => {
+    class LaCroix {
+      flavor: string;
+      constructor(flavor: string) {
+        this.flavor = flavor;
+      }
+    }
+
+    expect({a: undefined, b: 2}).not.toStrictEqual({b: 2});
+    expect([2, undefined]).not.toStrictEqual([2]);
+    expect([2]).not.toStrictEqual([2, undefined]);
+    // This is part of spec https://jestjs.io/docs/expect#tostrictequalvalue
+    // eslint-disable-next-line no-sparse-arrays
+    expect([, 2]).not.toStrictEqual([undefined, 2]);
+    expect(new LaCroix('lemon')).not.toStrictEqual({flavor: 'lemon'});
+
+    expect({a: 1}).toStrictEqual({a: 1});
+    expect([2, undefined]).toStrictEqual([2, undefined]);
+    // This is part of spec https://jestjs.io/docs/expect#tostrictequalvalue
+    // eslint-disable-next-line no-sparse-arrays
+    expect([, 1]).toStrictEqual([, 1]);
+    expect(new LaCroix('lemon')).toStrictEqual(new LaCroix('lemon'));
+
+    expect(() => {
+      expect(new LaCroix('lemon')).toStrictEqual({flavor: 'lemon'});
+    }).toThrow();
+
+    expect(() => {
+      expect(new LaCroix('lemon')).not.toStrictEqual(new LaCroix('lemon'));
+    }).toThrow();
+  });
+
   test('toBeInstanceOf', () => {
     class Class {}
 
