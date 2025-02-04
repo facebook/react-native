@@ -161,6 +161,13 @@ class MockRuntimeTargetDelegate : public RuntimeTargetDelegate {
       captureStackTrace,
       (jsi::Runtime & runtime, size_t framesToSkip),
       (override));
+  MOCK_METHOD(void, enableSamplingProfiler, (), (override));
+  MOCK_METHOD(void, disableSamplingProfiler, (), (override));
+  MOCK_METHOD(
+      tracing::RuntimeSamplingProfile,
+      collectSamplingProfile,
+      (),
+      (override));
 };
 
 class MockRuntimeAgentDelegate : public RuntimeAgentDelegate {
