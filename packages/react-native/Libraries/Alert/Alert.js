@@ -9,12 +9,10 @@
  */
 
 import type {DialogOptions} from '../NativeModules/specs/NativeDialogManagerAndroid';
-import type {AlertOptions, AlertType, Buttons} from './Alert.flow';
+import type {AlertOptions, AlertType, Buttons} from './AlertTypes.flow';
 
 import Platform from '../Utilities/Platform';
 import RCTAlertManager from './RCTAlertManager';
-
-export type * from './Alert.flow';
 
 class Alert {
   static alert(

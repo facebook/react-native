@@ -53,7 +53,52 @@ declare export default typeof NativeActionSheetManager;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Alert/Alert.flow.js 1`] = `
+exports[`public API should not change unintentionally Libraries/Alert/Alert.js 1`] = `
+"declare class Alert {
+  static alert(
+    title: ?string,
+    message?: ?string,
+    buttons?: Buttons,
+    options?: AlertOptions
+  ): void;
+  static prompt(
+    title: ?string,
+    message?: ?string,
+    callbackOrButtons?: ?(((text: string) => void) | Buttons),
+    type?: ?AlertType,
+    defaultValue?: string,
+    keyboardType?: string,
+    options?: AlertOptions
+  ): void;
+}
+declare export default typeof Alert;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Alert/Alert.js.flow 1`] = `
+"export type * from \\"./AlertTypes.flow\\";
+declare class Alert {
+  static alert(
+    title: ?string,
+    message?: ?string,
+    buttons?: Buttons,
+    options?: AlertOptions
+  ): void;
+  static prompt(
+    title: ?string,
+    message?: ?string,
+    callbackOrButtons?: ?(((text: string) => void) | Buttons),
+    type?: ?AlertType,
+    defaultValue?: string,
+    keyboardType?: string,
+    options?: AlertOptions
+  ): void;
+}
+declare export default typeof Alert;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Alert/AlertTypes.flow.js 1`] = `
 "export type AlertType =
   | \\"default\\"
   | \\"plain-text\\"
@@ -74,64 +119,12 @@ export type AlertOptions = {
   onDismiss?: ?() => void,
   ...
 };
-declare class Alert {
-  static alert(
-    title: ?string,
-    message?: ?string,
-    buttons?: Buttons,
-    options?: AlertOptions
-  ): void;
-  static prompt(
-    title: ?string,
-    message?: ?string,
-    callbackOrButtons?: ?(((text: string) => void) | Buttons),
-    type?: ?AlertType,
-    defaultValue?: string,
-    keyboardType?: string,
-    options?: AlertOptions
-  ): void;
-}
-declare export default typeof Alert;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Alert/Alert.js 1`] = `
-"export type * from \\"./Alert.flow\\";
-declare class Alert {
-  static alert(
-    title: ?string,
-    message?: ?string,
-    buttons?: Buttons,
-    options?: AlertOptions
-  ): void;
-  static prompt(
-    title: ?string,
-    message?: ?string,
-    callbackOrButtons?: ?(((text: string) => void) | Buttons),
-    type?: ?AlertType,
-    defaultValue?: string,
-    keyboardType?: string,
-    options?: AlertOptions
-  ): void;
-}
-declare export default typeof Alert;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/NativeAlertManager.js 1`] = `
 "export * from \\"../../src/private/specs_DEPRECATED/modules/NativeAlertManager\\";
 declare export default typeof NativeAlertManager;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.flow.js 1`] = `
-"declare const RCTAlertManager: {
-  alertWithArgs(
-    args: Args,
-    callback: (id: number, value: string) => void
-  ): void,
-};
-declare export default typeof RCTAlertManager;
 "
 `;
 

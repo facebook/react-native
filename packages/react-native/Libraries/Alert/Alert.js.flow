@@ -8,32 +8,9 @@
  * @flow
  */
 
-export type AlertType =
-  | 'default'
-  | 'plain-text'
-  | 'secure-text'
-  | 'login-password';
+import type {AlertOptions, AlertType, Buttons} from './AlertTypes.flow';
 
-export type AlertButtonStyle = 'default' | 'cancel' | 'destructive';
-
-export type AlertButton = {
-  text?: string,
-  onPress?: ?((value?: string) => any) | ?Function,
-  isPreferred?: boolean,
-  style?: AlertButtonStyle,
-  ...
-};
-
-export type Buttons = Array<AlertButton>;
-
-export type AlertOptions = {
-  /** @platform android */
-  cancelable?: ?boolean,
-  userInterfaceStyle?: 'unspecified' | 'light' | 'dark',
-  /** @platform android */
-  onDismiss?: ?() => void,
-  ...
-};
+export type * from './AlertTypes.flow';
 
 /**
  * Launches an alert dialog with the specified title and message.
