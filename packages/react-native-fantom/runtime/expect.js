@@ -117,6 +117,24 @@ class Expect {
     }
   }
 
+  toBeDefined(): void {
+    const pass = this.#received !== undefined;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be defined`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toBeUndefined(): void {
+    const pass = this.#received === undefined;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be undefined`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   toBeNull(): void {
     const pass = this.#received == null;
     if (!this.#isExpectedResult(pass)) {

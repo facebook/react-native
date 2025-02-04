@@ -148,6 +148,36 @@ describe('expect', () => {
     }).toThrow();
   });
 
+  test('toBeDefined', () => {
+    expect(null).toBeDefined();
+    expect(false).toBeDefined();
+    expect('value').toBeDefined();
+    expect(undefined).not.toBeDefined();
+
+    expect(() => {
+      expect({}).not.toBeDefined();
+    }).toThrow();
+
+    expect(() => {
+      expect(undefined).toBeDefined();
+    }).toThrow();
+  });
+
+  test('toBeUndefined', () => {
+    expect(undefined).toBeUndefined();
+    expect(null).not.toBeUndefined();
+    expect(false).not.toBeUndefined();
+    expect('value').not.toBeUndefined();
+
+    expect(() => {
+      expect(undefined).not.toBeUndefined();
+    }).toThrow();
+
+    expect(() => {
+      expect({}).toBeUndefined();
+    }).toThrow();
+  });
+
   ['toBeCalled', 'toHaveBeenCalled'].map(toHaveBeenCalledAlias =>
     test(toHaveBeenCalledAlias, () => {
       const fn = jest.fn();
