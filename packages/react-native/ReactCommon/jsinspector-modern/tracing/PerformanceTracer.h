@@ -13,6 +13,7 @@
 #include <folly/dynamic.h>
 
 #include <functional>
+#include <mutex>
 #include <optional>
 #include <unordered_map>
 #include <vector>
@@ -66,6 +67,16 @@ class PerformanceTracer {
       uint64_t start,
       uint64_t duration,
       const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
+
+  /**
+   * Record a corresponding Trace Event for OS-level process.
+   */
+  void reportProcess(uint64_t id, const std::string& name);
+
+  /**
+   * Record a corresponding Trace Event for OS-level thread.
+   */
+  void reportThread(uint64_t id, const std::string& name, uint64_t processId);
 
  private:
   PerformanceTracer() = default;
