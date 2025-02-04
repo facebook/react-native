@@ -5985,7 +5985,7 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
   ): EventSubscription,
   sendRequest(
     method: string,
-    trackingName: string,
+    trackingName: ?string,
     url: string,
     headers: { ... },
     data: RequestBody,
@@ -6073,7 +6073,7 @@ declare class XMLHttpRequest extends EventTarget {
   getAllResponseHeaders(): ?string;
   getResponseHeader(header: string): ?string;
   setRequestHeader(header: string, value: any): void;
-  setTrackingName(trackingName: string): XMLHttpRequest;
+  setTrackingName(trackingName: ?string): XMLHttpRequest;
   setPerformanceLogger(performanceLogger: IPerformanceLogger): XMLHttpRequest;
   open(method: string, url: string, async: ?boolean): void;
   send(data: any): void;
@@ -6156,7 +6156,7 @@ declare class XMLHttpRequest extends EventTarget {
   getAllResponseHeaders(): ?string;
   getResponseHeader(header: string): ?string;
   setRequestHeader(header: string, value: any): void;
-  setTrackingName(trackingName: string): XMLHttpRequest;
+  setTrackingName(trackingName: ?string): XMLHttpRequest;
   setPerformanceLogger(performanceLogger: IPerformanceLogger): XMLHttpRequest;
   open(method: string, url: string, async: ?boolean): void;
   send(data: any): void;
