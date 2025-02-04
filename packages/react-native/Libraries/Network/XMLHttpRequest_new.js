@@ -152,7 +152,7 @@ class XMLHttpRequest extends EventTarget {
   _sent: boolean;
   _url: ?string = null;
   _timedOut: boolean = false;
-  _trackingName: string = 'unknown';
+  _trackingName: ?string = null;
   _incrementalEvents: boolean = false;
   _startTime: ?number = null;
   _performanceLogger: IPerformanceLogger = GlobalPerformanceLogger;
@@ -478,7 +478,7 @@ class XMLHttpRequest extends EventTarget {
   /**
    * Custom extension for tracking origins of request.
    */
-  setTrackingName(trackingName: string): XMLHttpRequest {
+  setTrackingName(trackingName: ?string): XMLHttpRequest {
     this._trackingName = trackingName;
     return this;
   }
@@ -560,8 +560,7 @@ class XMLHttpRequest extends EventTarget {
     }
 
     const doSend = () => {
-      const friendlyName =
-        this._trackingName !== 'unknown' ? this._trackingName : this._url;
+      const friendlyName = this._trackingName ?? this._url;
       this._perfKey = 'network_XMLHttpRequest_' + String(friendlyName);
       this._performanceLogger.startTimespan(this._perfKey);
       this._startTime = performance.now();
