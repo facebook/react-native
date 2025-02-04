@@ -15,6 +15,9 @@ import deepEqual from 'deep-equal';
 import {diff} from 'jest-diff';
 import {format, plugins} from 'pretty-format';
 
+const stringify = (data: mixed): string =>
+  format(data, {min: true, plugins: [plugins.ReactElement]});
+
 class ErrorWithCustomBlame extends Error {
   // Initially 5 to ignore all the frames from Babel helpers to instantiate this
   // custom error class.
@@ -251,6 +254,22 @@ class Expect {
     if (!this.#isExpectedResult(pass)) {
       throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called ${times} times, but it was called ${mock.calls.length} times`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toBeCalledWith(...args: mixed[]): void {
+    return this.toHaveBeenCalledWith(...args);
+  }
+
+  toHaveBeenCalledWith(...args: mixed[]): void {
+    const mock = this.#requireMock();
+    const pass = mock.calls.some(callArgs =>
+      deepEqual(callArgs, args, {strict: true}),
+    );
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called with ${stringify(args)}, but it was called with ${stringify(mock.calls)}`,
       ).blameToPreviousFrame();
     }
   }
