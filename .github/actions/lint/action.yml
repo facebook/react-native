@@ -15,9 +15,8 @@ runs:
       uses: ./.github/actions/setup-node
       with:
         node-version: ${{ inputs.node-version }}
-    - name: Yarn install
-      shell: bash
-      run: yarn install --non-interactive --frozen-lockfile
+    - name: Run yarn install
+      uses: ./.github/actions/yarn-install
     - name: Run linters against modified files (analysis-bot)
       shell: bash
       run: yarn lint-ci
