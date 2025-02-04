@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
  *   - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
  */
 __attribute__((deprecated("RCTAppDelegate is deprecated and will be removed in a future version of React Native. Use `RCTReactNativeFactory` instead.")))
-@interface RCTAppDelegate : RCTDefaultReactNativeFactoryDelegate <UIApplicationDelegate, UISceneDelegate>
+@interface RCTAppDelegate : RCTDefaultReactNativeFactoryDelegate <UIApplicationDelegate>
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong, nonnull) UIWindow *window;
