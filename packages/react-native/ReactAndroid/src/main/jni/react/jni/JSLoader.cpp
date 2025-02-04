@@ -88,10 +88,13 @@ loadScriptFromAssets(AAssetManager* manager, const std::string& assetName) {
   }
 
   throw std::runtime_error(folly::to<std::string>(
-      "Unable to load script. Make sure you're "
-      "either running Metro (run 'npx react-native start') or that your bundle '",
-      assetName,
-      "' is packaged correctly for release."));
+      "Unable to load script.\n\n"
+      "Make sure you're running Metro ('npx react-native start') or that your "
+      "bundle '", assetName, "' is packaged correctly for release.\n\n"
+      "The device must be on the same WiFi as your laptop to connect to Metro.\n\n"
+      "To use USB instead, shake the device to open the dev menu and set "
+      "the bundler location to \"localhost:8081\" and run:\n"
+      "  adb reverse tcp:8081 tcp:8081"));
 }
 
 } // namespace facebook::react

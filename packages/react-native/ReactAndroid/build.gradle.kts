@@ -12,6 +12,8 @@ import com.facebook.react.tasks.internal.utils.*
 import de.undercouch.gradle.tasks.download.Download
 import java.nio.file.Paths
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.NetworkInterface
+import java.net.Inet4Address
 
 plugins {
   id("maven-publish")
@@ -467,6 +469,14 @@ fun enableWarningsAsErrors(): Boolean {
   return value?.toString()?.toBoolean() ?: false
 }
 
+fun getHostIpAddress(): String =
+    NetworkInterface.getNetworkInterfaces().asSequence()
+        .filter { it.isUp && !it.isLoopback }
+        .flatMap { it.inetAddresses.asSequence() }
+        .filter { it is Inet4Address && !it.isLoopbackAddress }
+        .map { it.hostAddress }
+        .firstOrNull() ?: "127.0.0.1"
+
 val packageReactNdkLibsForBuck by
     tasks.registering(Copy::class) {
       dependsOn("mergeDebugNativeLibs")
@@ -523,6 +533,7 @@ android {
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
     buildConfigField("boolean", "UNSTABLE_ENABLE_FUSEBOX_RELEASE", "false")
     buildConfigField("boolean", "ENABLE_PERFETTO", "false")
+    buildConfigField("String", "REACT_NATIVE_DEV_SERVER_IP", "\"${getHostIpAddress()}\"")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
 

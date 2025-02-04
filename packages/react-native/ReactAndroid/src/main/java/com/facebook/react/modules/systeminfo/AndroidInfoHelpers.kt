@@ -10,6 +10,7 @@ package com.facebook.react.modules.systeminfo
 import android.content.Context
 import android.os.Build
 import com.facebook.common.logging.FLog
+import com.facebook.react.BuildConfig
 import com.facebook.react.R
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -92,7 +93,7 @@ public object AndroidInfoHelpers {
           getMetroHostPropValue().isNotEmpty() -> getMetroHostPropValue()
           isRunningOnGenymotion() -> GENYMOTION_LOCALHOST
           isRunningOnStockEmulator() -> EMULATOR_LOCALHOST
-          else -> DEVICE_LOCALHOST
+          else -> BuildConfig.REACT_NATIVE_DEV_SERVER_IP
         }
     return String.format(Locale.US, "%s:%d", ipAddress, port)
   }

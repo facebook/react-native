@@ -20,11 +20,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.text.InputType;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -62,6 +64,8 @@ import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
+import com.facebook.react.packagerconnection.PackagerConnectionSettings;
 import com.facebook.react.packagerconnection.RequestHandler;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -376,24 +380,91 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             return;
           }
 
-          final EditText input = new EditText(context);
-          input.setHint("localhost:8081");
+          PackagerConnectionSettings settings = mDevSettings.getPackagerConnectionSettings();
+          final String currentHost = settings.getDebugServerHost();
+          settings.setDebugServerHost("");
+          final String defaultHost = settings.getDebugServerHost();
+          settings.setDebugServerHost(currentHost);
 
-          AlertDialog bundleLocationDialog =
+          LinearLayout layout = new LinearLayout(context);
+          layout.setOrientation(LinearLayout.VERTICAL);
+          int paddingSmall = (int) (4 * context.getResources().getDisplayMetrics().density);
+          int paddingLarge = (int) (16 * context.getResources().getDisplayMetrics().density);
+          layout.setPadding(paddingLarge, paddingLarge, paddingLarge, paddingLarge);
+
+          final TextView label = new TextView(context);
+          label.setText(mApplicationContext.getString(R.string.catalyst_change_bundle_location_input_label));
+          label.setLayoutParams(new LinearLayout.LayoutParams(
+              LinearLayout.LayoutParams.MATCH_PARENT,
+              LinearLayout.LayoutParams.WRAP_CONTENT));
+
+          final EditText input = new EditText(context);
+          // This makes it impossible to enter a newline in the input field
+          input.setInputType(InputType.TYPE_CLASS_TEXT); 
+          input.setHint(mApplicationContext.getString(R.string.catalyst_change_bundle_location_input_hint));
+          input.setBackgroundResource(android.R.drawable.edit_text);
+          input.setHintTextColor(0xFFCCCCCC);
+          input.setTextColor(0xFF000000);
+          input.setText(currentHost);
+
+          final Button defaultHostSuggestion = new Button(context);
+          defaultHostSuggestion.setText(defaultHost);
+          defaultHostSuggestion.setTextSize(12);
+          defaultHostSuggestion.setAllCaps(false);
+          defaultHostSuggestion.setOnClickListener(v -> input.setText(defaultHost));
+              
+          final Button localhostSuggestion = new Button(context);
+          localhostSuggestion.setText("localhost:8081");
+          localhostSuggestion.setTextSize(12);
+          localhostSuggestion.setAllCaps(false);
+          localhostSuggestion.setOnClickListener(v -> input.setText("localhost:8081"));
+
+          LinearLayout suggestionRow = new LinearLayout(context);
+          suggestionRow.setOrientation(LinearLayout.HORIZONTAL);
+          suggestionRow.setLayoutParams(new LinearLayout.LayoutParams(
+              LinearLayout.LayoutParams.MATCH_PARENT,
+              LinearLayout.LayoutParams.WRAP_CONTENT
+          ));
+          suggestionRow.addView(defaultHostSuggestion);
+          suggestionRow.addView(localhostSuggestion);
+
+          final TextView instructions = new TextView(context);
+          instructions.setText(mApplicationContext.getString(R.string.catalyst_change_bundle_location_instructions, AndroidInfoHelpers.getAdbReverseTcpCommand(mApplicationContext)));
+          final LinearLayout.LayoutParams instructionsParams = new LinearLayout.LayoutParams(
+              LinearLayout.LayoutParams.MATCH_PARENT,
+              LinearLayout.LayoutParams.WRAP_CONTENT);
+          instructionsParams.setMargins(0, paddingSmall, 0, paddingLarge);
+          instructions.setLayoutParams(instructionsParams);
+
+          final Button applyChangesButton = new Button(context);
+          applyChangesButton.setText(mApplicationContext.getString(R.string.catalyst_change_bundle_location_apply));
+
+          final Button cancelButton = new Button(context);
+          cancelButton.setText(mApplicationContext.getString(R.string.catalyst_change_bundle_location_cancel));
+
+          layout.addView(label);
+          layout.addView(input);
+          layout.addView(suggestionRow);
+          layout.addView(instructions);
+          layout.addView(applyChangesButton);
+          layout.addView(cancelButton);
+
+          final AlertDialog bundleLocationDialog =
               new AlertDialog.Builder(context)
                   .setTitle(mApplicationContext.getString(R.string.catalyst_change_bundle_location))
-                  .setView(input)
-                  .setPositiveButton(
-                      android.R.string.ok,
-                      new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                          String host = input.getText().toString();
-                          mDevSettings.getPackagerConnectionSettings().setDebugServerHost(host);
-                          handleReloadJS();
-                        }
-                      })
+                  .setView(layout)
                   .create();
+
+          applyChangesButton.setOnClickListener(v -> {
+            String host = input.getText().toString();
+            mDevSettings.getPackagerConnectionSettings().setDebugServerHost(host);
+            handleReloadJS();
+            bundleLocationDialog.dismiss();
+          });
+          cancelButton.setOnClickListener(v -> {
+            bundleLocationDialog.dismiss();
+          });
+          
           bundleLocationDialog.show();
         });
 
