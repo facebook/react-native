@@ -272,6 +272,14 @@ if (typeof global.EventTarget === 'undefined') {
   );
 }
 
+function saveJSMemoryHeapSnapshot(filePath: string): void {
+  if (getConstants().isRunningFromCI) {
+    throw new Error('Unexpected call to `saveJSMemoryHeapSnapshot` from CI');
+  }
+
+  NativeFantom.saveJSMemoryHeapSnapshot(filePath);
+}
+
 export default {
   scheduleTask,
   runTask,
@@ -282,4 +290,5 @@ export default {
   flushAllNativeEvents,
   unstable_benchmark: Benchmark,
   scrollTo,
+  saveJSMemoryHeapSnapshot,
 };

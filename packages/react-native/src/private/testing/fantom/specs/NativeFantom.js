@@ -82,6 +82,7 @@ interface Spec extends TurboModule {
   validateEmptyMessageQueue: () => void;
   getRenderedOutput: (surfaceId: number, config: RenderFormatOptions) => string;
   reportTestSuiteResultsJSON: (results: string) => void;
+  saveJSMemoryHeapSnapshot: (filePath: string) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>(
