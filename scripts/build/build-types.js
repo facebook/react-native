@@ -21,11 +21,11 @@ const path = require('path');
 const {parseArgs} = require('util');
 
 const TYPES_DIR = 'types_generated';
-const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
+const IGNORE_PATTERN = '**/__{tests,mocks,fixtures,flowtests}__/**';
 
 const SOURCE_PATTERNS = [
   // Start with Animated only
-  'react-native/Libraries/Alert/**/*.js',
+  'react-native/Libraries/Alert/**/*.{js,flow}',
   'react-native/Libraries/ActionSheetIOS/**/*.js',
   'react-native/Libraries/TurboModule/RCTExport.js',
   'react-native/Libraries/Types/RootTagTypes.js',
@@ -115,7 +115,7 @@ function getBuildPath(file /*: string */) /*: string */ {
     packageDir,
     file
       .replace(packageDir, TYPES_DIR)
-      .replace(/\.flow\.js$/, '.js')
+      .replace(/\.js\.flow$/, '.js')
       .replace(/\.js$/, '.d.ts'),
   );
 }
@@ -126,7 +126,7 @@ function ignoreShadowedFiles(files /*: Array<string> */) /*: Array<string> */ {
 
   // Find all flow definition files that shadow other files
   for (const file of files) {
-    if (/\.flow\.js$/.test(file)) {
+    if (/\.js\.flow$/.test(file)) {
       shadowedPrefixes[file.substring(0, file.length - 8)] = true;
     }
   }
@@ -134,7 +134,7 @@ function ignoreShadowedFiles(files /*: Array<string> */) /*: Array<string> */ {
   // Filter out all files shadowed by flow definition files
   for (const file of files) {
     const prefix = file.split('.')[0];
-    if (/\.flow\.js$/.test(file) || !shadowedPrefixes[prefix]) {
+    if (/\.js\.flow$/.test(file) || !shadowedPrefixes[prefix]) {
       result.push(file);
     }
   }
