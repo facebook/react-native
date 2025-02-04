@@ -18,20 +18,6 @@ using namespace facebook::react;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation UIColor (React_Graphics)
-
-- (int32_t)reactHash
-{
-  return [objc_getAssociatedObject(self, _cmd) intValue];
-}
-
-- (void)setReactHash:(int32_t)reactHash
-{
-  objc_setAssociatedObject(self, @selector(reactHash), @(reactHash), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-@end
-
 namespace facebook::react {
 
 namespace {
@@ -58,7 +44,6 @@ UIColor *_Nullable UIColorFromInt32(int32_t intColor)
   CGFloat b = CGFloat(intColor & 0xFF) / 255.0;
 
   UIColor *color = [UIColor colorWithRed:r green:g blue:b alpha:a];
-  color.reactHash = facebook::react::hash_combine(intColor, 0);
   return color;
 }
 
@@ -90,7 +75,6 @@ UIColor *_Nullable UIColorFromDynamicColor(const facebook::react::DynamicColor &
         }
       }
     }];
-    color.reactHash = facebook::react::hash_combine(dark, light, highContrastDark, highContrastLight, 0);
     return color;
   } else {
     return nil;
@@ -145,9 +129,6 @@ UIColor *_Nullable UIColorFromComponentsColor(const facebook::react::ColorCompon
     uiColor = [UIColor colorWithRed:components.red green:components.green blue:components.blue alpha:components.alpha];
   }
 
-  auto color = ColorFromColorComponents(components);
-  uiColor.reactHash = facebook::react::hash_combine(color, components.colorSpace == ColorSpace::DisplayP3);
-
   return uiColor;
 }
 
@@ -193,24 +174,33 @@ int32_t hashFromUIColor(const std::shared_ptr<void> &uiColor)
 Color::Color(int32_t color)
 {
   uiColor_ = wrapManagedObject(UIColorFromInt32(color));
+  uiColorHashValue_ = facebook::react::hash_combine(color, 0);
 }
 
 Color::Color(const DynamicColor &dynamicColor)
 {
   uiColor_ = wrapManagedObject(UIColorFromDynamicColor(dynamicColor));
+  uiColorHashValue_ = facebook::react::hash_combine(
+      dynamicColor.darkColor,
+      dynamicColor.lightColor,
+      dynamicColor.highContrastDarkColor,
+      dynamicColor.highContrastLightColor,
+      0);
 }
 
 Color::Color(const ColorComponents &components)
 {
   uiColor_ = wrapManagedObject(UIColorFromComponentsColor(components));
+  uiColorHashValue_ = facebook::react::hash_combine(
+      ColorFromColorComponents(components), components.colorSpace == ColorSpace::DisplayP3);
 }
 
 Color::Color(std::shared_ptr<void> uiColor)
 {
   UIColor *color = ((UIColor *)unwrapManagedObject(uiColor));
-  if (color && color.reactHash == 0) {
+  if (color) {
     auto colorHash = hashFromUIColor(uiColor);
-    color.reactHash = colorHash;
+    uiColorHashValue_ = colorHash;
   }
   uiColor_ = std::move(uiColor);
 }
@@ -218,9 +208,7 @@ Color::Color(std::shared_ptr<void> uiColor)
 bool Color::operator==(const Color &other) const
 {
   return (!uiColor_ && !other.uiColor_) ||
-      (uiColor_ && other.uiColor_ &&
-       ((UIColor *)unwrapManagedObject(getUIColor())).reactHash ==
-           ((UIColor *)unwrapManagedObject(other.getUIColor())).reactHash);
+      (uiColor_ && other.uiColor_ && (uiColorHashValue_ == other.uiColorHashValue_));
 }
 
 bool Color::operator!=(const Color &other) const
@@ -243,7 +231,7 @@ float Color::getChannel(int channelId) const
 
 int32_t Color::getUIColorHash() const
 {
-  return [(UIColor *)unwrapManagedObject(uiColor_) reactHash];
+  return uiColorHashValue_;
 }
 
 Color Color::createSemanticColor(std::vector<std::string> &semanticItems)
