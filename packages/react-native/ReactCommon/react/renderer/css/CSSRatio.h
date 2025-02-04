@@ -24,6 +24,8 @@ struct CSSRatio {
   float numerator{};
   float denominator{};
 
+  constexpr bool operator==(const CSSRatio& rhs) const = default;
+
   constexpr bool isDegenerate() const {
     // If either number in the <ratio> is 0 or infinite, it represents a
     // degenerate ratio (and, generally, won’t do anything).
