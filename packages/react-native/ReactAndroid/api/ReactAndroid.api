@@ -7654,9 +7654,3 @@ public final class com/facebook/react/views/view/ViewGroupClickEvent : com/faceb
 	public fun getEventName ()Ljava/lang/String;
 }
 
-public final class com/facebook/react/views/view/WindowUtilKt {
-	public static final fun setStatusBarTranslucency (Landroid/view/Window;Z)V
-	public static final fun setStatusBarVisibility (Landroid/view/Window;Z)V
-	public static final fun setSystemBarsTranslucency (Landroid/view/Window;Z)V
-}
-
