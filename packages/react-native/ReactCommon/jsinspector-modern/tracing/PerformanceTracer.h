@@ -9,6 +9,7 @@
 
 #include "CdpTracing.h"
 #include "TraceEvent.h"
+#include "TraceEventProfile.h"
 
 #include <folly/dynamic.h>
 
@@ -78,6 +79,25 @@ class PerformanceTracer {
    */
   void reportThread(uint64_t id, const std::string& name, uint64_t processId);
 
+  /**
+   * Record a corresponding Profile Trace Event.
+   * \return the id of the profile, should be used to linking profile chunks.
+   */
+  uint16_t reportRuntimeProfile(
+      uint64_t processId,
+      uint64_t threadId,
+      uint64_t eventUnixTimestamp);
+
+  /**
+   * Record a corresponding ProfileChunk Trace Event.
+   */
+  void reportRuntimeProfileChunk(
+      uint16_t profileId,
+      uint64_t processId,
+      uint64_t threadId,
+      uint64_t eventUnixTimestamp,
+      const tracing::TraceEventProfileChunk& traceEventProfileChunk);
+
  private:
   PerformanceTracer() = default;
   PerformanceTracer(const PerformanceTracer&) = delete;
@@ -88,6 +108,7 @@ class PerformanceTracer {
 
   bool tracing_{false};
   uint32_t performanceMeasureCount_{0};
+  uint16_t profileCount_{0};
   std::vector<TraceEvent> buffer_;
   std::mutex mutex_;
 };
