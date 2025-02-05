@@ -5585,10 +5585,6 @@ public abstract interface class com/facebook/react/uimanager/events/RCTModernEve
 	public abstract fun receiveTouches (Lcom/facebook/react/uimanager/events/TouchEvent;)V
 }
 
-public abstract interface class com/facebook/react/uimanager/events/SynchronousEventReceiver {
-	public abstract fun receiveEvent (IILjava/lang/String;ZLcom/facebook/react/bridge/WritableMap;IZ)V
-}
-
 public final class com/facebook/react/uimanager/events/TouchEvent : com/facebook/react/uimanager/events/Event {
 	public static final field Companion Lcom/facebook/react/uimanager/events/TouchEvent$Companion;
 	public static final field UNSET J
