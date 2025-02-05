@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a73d250c74505693246cd3309ef1d08a>>
+ * @generated SignedSource<<5d3aa805cfedaf97ef3e6229046dc288>>
  */
 
 /**
@@ -213,12 +213,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
-
-  /**
-   * Adds support for loading vector drawable assets in the Image component (only on Android)
-   */
-  @JvmStatic
-  public fun loadVectorDrawablesOnImages(): Boolean = accessor.loadVectorDrawablesOnImages()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<47adc632fa375677571527241406f11f>>
+ * @generated SignedSource<<131d8b1f15548b67a91a80f9cdb06d15>>
  */
 
 /**
@@ -149,10 +149,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool lazyAnimationCallbacks() override {
     return false;
-  }
-
-  bool loadVectorDrawablesOnImages() override {
-    return true;
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

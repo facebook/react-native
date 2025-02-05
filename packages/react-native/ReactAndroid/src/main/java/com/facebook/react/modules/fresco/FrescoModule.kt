@@ -20,7 +20,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.common.ReactConstants
-import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.common.ModuleDataCleaner
 import com.facebook.react.modules.network.ForwardingCookieHandler
@@ -164,9 +163,7 @@ constructor(
               .setNetworkFetcher(ReactOkHttpNetworkFetcher(client))
               .setDownsampleMode(DownsampleMode.AUTO)
               .setRequestListeners(requestListeners)
-      builder
-          .experiment()
-          .setBinaryXmlEnabled(ReactNativeFeatureFlags.loadVectorDrawablesOnImages())
+      builder.experiment().setBinaryXmlEnabled(true)
       return builder
     }
   }

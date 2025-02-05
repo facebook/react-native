@@ -343,16 +343,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
     },
-    loadVectorDrawablesOnImages: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-07-12',
-        description:
-          'Adds support for loading vector drawable assets in the Image component (only on Android)',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {
