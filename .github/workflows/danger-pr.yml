@@ -18,9 +18,8 @@ jobs:
     if: github.repository == 'facebook/react-native'
     steps:
       - uses: actions/checkout@v4
-      - name: Run Yarn Install on Root
-        run: yarn install
-        working-directory: .
+      - name: Run yarn install
+        uses: ./.github/actions/yarn-install
       - name: Danger
         run: yarn danger ci --use-github-checks --failOnErrors
         working-directory: packages/react-native-bots
