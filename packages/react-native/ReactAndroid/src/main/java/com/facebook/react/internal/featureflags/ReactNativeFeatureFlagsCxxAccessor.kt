@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0effb773b4902465909432a2f5576bdf>>
+ * @generated SignedSource<<001f61b20e3bacb67e4145a257cb92b1>>
  */
 
 /**
@@ -51,7 +51,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
-  private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
@@ -338,15 +337,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.lazyAnimationCallbacks()
       lazyAnimationCallbacksCache = cached
-    }
-    return cached
-  }
-
-  override fun loadVectorDrawablesOnImages(): Boolean {
-    var cached = loadVectorDrawablesOnImagesCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.loadVectorDrawablesOnImages()
-      loadVectorDrawablesOnImagesCache = cached
     }
     return cached
   }

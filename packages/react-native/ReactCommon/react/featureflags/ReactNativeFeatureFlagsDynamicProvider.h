@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a13143c2a57e025cd93795bbc3eb4425>>
+ * @generated SignedSource<<116b4e314131a58cdc2138c6a780e41d>>
  */
 
 /**
@@ -322,15 +322,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::lazyAnimationCallbacks();
-  }
-
-  bool loadVectorDrawablesOnImages() override {
-    auto value = values_["loadVectorDrawablesOnImages"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::loadVectorDrawablesOnImages();
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

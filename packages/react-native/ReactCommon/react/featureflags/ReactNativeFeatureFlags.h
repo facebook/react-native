@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<231b8c29c1bfcd58603dd0faef78730a>>
+ * @generated SignedSource<<be7f92f605d34575519e7c8b2937ac5d>>
  */
 
 /**
@@ -193,11 +193,6 @@ class ReactNativeFeatureFlags {
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
   RN_EXPORT static bool lazyAnimationCallbacks();
-
-  /**
-   * Adds support for loading vector drawable assets in the Image component (only on Android)
-   */
-  RN_EXPORT static bool loadVectorDrawablesOnImages();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

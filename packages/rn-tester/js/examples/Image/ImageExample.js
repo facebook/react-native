@@ -579,10 +579,8 @@ class OnPartialLoadExample extends React.Component<
 }
 
 const VectorDrawableExample = () => {
-  const isEnabled = ReactNativeFeatureFlags.loadVectorDrawablesOnImages();
   return (
     <View style={styles.flex} testID="vector-drawable-example">
-      <RNTesterText>Enabled: {isEnabled ? 'true' : 'false'}</RNTesterText>
       <View style={styles.horizontal}>
         <Image
           source={require('../../assets/ic_android.xml')}

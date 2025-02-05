@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bf4fee68309fdc7f9270f44ab5535c14>>
+ * @generated SignedSource<<e592fe3140fb310638240a84bd3f3e8f>>
  */
 
 /**
@@ -84,8 +84,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
-
-  @DoNotStrip public fun loadVectorDrawablesOnImages(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

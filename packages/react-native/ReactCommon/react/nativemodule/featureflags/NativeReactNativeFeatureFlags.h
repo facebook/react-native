@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<931f83bf669c9ed8490e5895df26dfb0>>
+ * @generated SignedSource<<8a136ebe8a7df3fa2283683a69f778fb>>
  */
 
 /**
@@ -98,8 +98,6 @@ class NativeReactNativeFeatureFlags
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
-
-  bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
