@@ -10,6 +10,12 @@
 #import "RCTAppSetupUtils.h"
 #import "RCTDependencyProvider.h"
 
+#if USE_HERMES
+#import <ReactCommon/RCTHermesInstance.h>
+#else
+#import <ReactCommon/RCTJscInstance.h>
+#endif
+
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
 @implementation RCTDefaultReactNativeFactoryDelegate
@@ -116,6 +122,19 @@
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return nullptr;
+}
+
+#pragma mark - RCTJSRuntimeFactoryDelegate
+
+- (NSValue *)createJSRuntimeFactory
+{
+  facebook::react::JSRuntimeFactory *runtimeFactory;
+#if USE_HERMES
+  runtimeFactory = new facebook::react::RCTHermesInstance(nullptr, /* allocInOldGenBeforeTTI */ false);
+#else
+  runtimeFactory = new facebook::react::RCTJscInstance();
+#endif
+  return [NSValue valueWithPointer:runtimeFactory];
 }
 
 @end
