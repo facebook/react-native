@@ -15,9 +15,16 @@ export type FeatureFlagDefinitions = $ReadOnly<{
   jsOnly: JsOnlyFeatureFlagList,
 }>;
 
+export type OSSReleaseStageValue =
+  | 'none'
+  | 'experimental'
+  | 'canary'
+  | 'stable';
+
 export type CommonFeatureFlagConfig = $ReadOnly<{
   defaultValue: FeatureFlagValue,
   metadata: FeatureFlagMetadata,
+  ossReleaseStage: OSSReleaseStageValue,
   // Indicates if this API should only be defined in JavaScript, only to
   // preserve backwards compatibility with existing native code temporarily.
   skipNativeAPI?: true,
@@ -30,6 +37,7 @@ export type CommonFeatureFlagList = $ReadOnly<{
 export type JsOnlyFeatureFlagConfig = $ReadOnly<{
   defaultValue: FeatureFlagValue,
   metadata: FeatureFlagMetadata,
+  ossReleaseStage: OSSReleaseStageValue,
 }>;
 
 export type JsOnlyFeatureFlagList = $ReadOnly<{
