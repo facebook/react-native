@@ -25,6 +25,7 @@ type SuiteOptions = $ReadOnly<{
   minWarmupDuration?: number,
   minWarmupIterations?: number,
   disableOptimizedBuildCheck?: boolean,
+  testOnly?: boolean,
 }>;
 
 type SuiteResults = Array<$ReadOnly<TaskResult>>;
@@ -56,7 +57,9 @@ export function suite(
     // no point in running the benchmark.
     // We still run a single iteration of each test just to make sure that the
     // logic in the benchmark doesn't break.
-    const isTestOnly = isRunningFromCI && verifyFns.length === 0;
+    const isTestOnly =
+      suiteOptions.testOnly === true ||
+      (isRunningFromCI && verifyFns.length === 0);
 
     const benchOptions: BenchOptions = isTestOnly
       ? {
