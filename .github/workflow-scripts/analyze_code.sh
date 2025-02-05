@@ -4,8 +4,8 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-GITHUB_OWNER=${CIRCLE_PROJECT_USERNAME:-facebook}
-GITHUB_REPO=${CIRCLE_PROJECT_REPONAME:-react-native}
+GITHUB_OWNER=-facebook
+GITHUB_REPO=-react-native
 export GITHUB_OWNER
 export GITHUB_REPO
 
