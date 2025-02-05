@@ -60,8 +60,7 @@ export function suite(
 
     const benchOptions: BenchOptions = isTestOnly
       ? {
-          warmupIterations: 1,
-          warmupTime: 0,
+          warmup: false,
           iterations: 1,
           time: 0,
         }
@@ -71,24 +70,26 @@ export function suite(
     benchOptions.throws = true;
     benchOptions.now = () => NativeCPUTime.getCPUTimeNanos() / 1000000;
 
-    if (suiteOptions.minIterations != null) {
-      benchOptions.iterations = suiteOptions.minIterations;
-    }
+    if (!isTestOnly) {
+      if (suiteOptions.minIterations != null) {
+        benchOptions.iterations = suiteOptions.minIterations;
+      }
 
-    if (suiteOptions.minDuration != null) {
-      benchOptions.time = suiteOptions.minDuration;
-    }
+      if (suiteOptions.minDuration != null) {
+        benchOptions.time = suiteOptions.minDuration;
+      }
 
-    if (suiteOptions.warmup != null) {
-      benchOptions.warmup = suiteOptions.warmup;
-    }
+      if (suiteOptions.warmup != null) {
+        benchOptions.warmup = suiteOptions.warmup;
+      }
 
-    if (suiteOptions.minWarmupDuration != null) {
-      benchOptions.warmupTime = suiteOptions.minWarmupDuration;
-    }
+      if (suiteOptions.minWarmupDuration != null) {
+        benchOptions.warmupTime = suiteOptions.minWarmupDuration;
+      }
 
-    if (suiteOptions.minWarmupIterations != null) {
-      benchOptions.warmupIterations = suiteOptions.minWarmupIterations;
+      if (suiteOptions.minWarmupIterations != null) {
+        benchOptions.warmupIterations = suiteOptions.minWarmupIterations;
+      }
     }
 
     const bench = new Bench(benchOptions);
