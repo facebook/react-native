@@ -149,4 +149,16 @@ RuntimeAgent::~RuntimeAgent() {
   sessionState_.lastRuntimeAgentExportedState = getExportedState();
 }
 
+void RuntimeAgent::enableSamplingProfiler() {
+  targetController_.enableSamplingProfiler();
+}
+
+void RuntimeAgent::disableSamplingProfiler() {
+  targetController_.disableSamplingProfiler();
+}
+
+tracing::RuntimeSamplingProfile RuntimeAgent::collectSamplingProfile() {
+  return targetController_.collectSamplingProfile();
+}
+
 } // namespace facebook::react::jsinspector_modern
