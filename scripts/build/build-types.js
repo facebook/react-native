@@ -24,9 +24,8 @@ const TYPES_DIR = 'types_generated';
 const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 
 const SOURCE_PATTERNS = [
-  // Start with Animated only
-  'react-native/Libraries/Alert/**/*.js',
-  'react-native/Libraries/ActionSheetIOS/**/*.js',
+  'react-native/Libraries/Alert/**/*.{js,flow}',
+  'react-native/Libraries/ActionSheetIOS/**/*.{js,flow}',
   'react-native/Libraries/TurboModule/RCTExport.js',
   'react-native/Libraries/Types/RootTagTypes.js',
   'react-native/Libraries/ReactNative/RootTag.js',
@@ -115,28 +114,51 @@ function getBuildPath(file /*: string */) /*: string */ {
     packageDir,
     file
       .replace(packageDir, TYPES_DIR)
-      .replace(/\.flow\.js$/, '.js')
+      .replace(/\.js\.flow$/, '.js')
       .replace(/\.js$/, '.d.ts'),
   );
 }
 
+function splitPathAndExtension(file /*: string */) /*: [string, string] */ {
+  const lastSep = file.lastIndexOf(path.sep);
+  const extensionStart = file.indexOf('.', lastSep);
+  return [
+    file.substring(0, extensionStart),
+    file.substring(extensionStart, file.length),
+  ];
+}
+
 function ignoreShadowedFiles(files /*: Array<string> */) /*: Array<string> */ {
-  const shadowedPrefixes /*: Record<string, boolean> */ = {};
+  const commonInterfaceFiles /*: Set<string> */ = new Set();
   const result /*: Array<string> */ = [];
 
-  // Find all flow definition files that shadow other files
+  // Find all common interface files
   for (const file of files) {
-    if (/\.flow\.js$/.test(file)) {
-      shadowedPrefixes[file.substring(0, file.length - 8)] = true;
+    const [pathWithoutExt, extension] = splitPathAndExtension(file);
+    if (/(\.js|\.flow)$/.test(extension)) {
+      commonInterfaceFiles.add(pathWithoutExt);
     }
   }
 
-  // Filter out all files shadowed by flow definition files
   for (const file of files) {
-    const prefix = file.split('.')[0];
-    if (/\.flow\.js$/.test(file) || !shadowedPrefixes[prefix]) {
-      result.push(file);
+    const [pathWithoutExt, extension] = splitPathAndExtension(file);
+
+    // Skip android and ios files from being generated and enforce that they
+    // have a common interface file, either in the form of .js.flow or .js file
+    if (/(\.android\.js|\.ios\.js)$/.test(extension)) {
+      if (!commonInterfaceFiles.has(pathWithoutExt)) {
+        throw new Error(`No common interface found for ${file}`);
+      }
+      continue;
     }
+
+    // Skip desktop files and don't enforce common interface for them as they
+    // are entirely ignored by the current flow config
+    if (/(\.windows\.js|\.macos\.js)$/.test(extension)) {
+      continue;
+    }
+
+    result.push(file);
   }
 
   return result;
