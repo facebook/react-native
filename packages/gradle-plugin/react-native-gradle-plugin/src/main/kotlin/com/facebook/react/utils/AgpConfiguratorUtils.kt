@@ -13,6 +13,8 @@ import com.facebook.react.ReactExtension
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import java.io.File
+import java.net.NetworkInterface
+import java.net.Inet4Address
 import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import org.gradle.api.Action
@@ -34,6 +36,8 @@ internal object AgpConfiguratorUtils {
                 project.isNewArchEnabled(extension).toString())
             ext.defaultConfig.buildConfigField(
                 "boolean", "IS_HERMES_ENABLED", project.isHermesEnabled.toString())
+            ext.defaultConfig.buildConfigField(
+                "String", "REACT_NATIVE_DEV_SERVER_IP", "\"${getHostIpAddress()}\"")
           }
         }
     project.pluginManager.withPlugin("com.android.application", action)
@@ -104,3 +108,11 @@ fun getPackageNameFromManifest(manifest: File): String? {
     return null
   }
 }
+
+fun getHostIpAddress(): String =
+  NetworkInterface.getNetworkInterfaces().asSequence()
+    .filter { it.isUp && !it.isLoopback }
+    .flatMap { it.inetAddresses.asSequence() }
+    .filter { it is Inet4Address && !it.isLoopbackAddress }
+    .map { it.hostAddress }
+    .firstOrNull() ?: "127.0.0.1"
