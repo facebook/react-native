@@ -358,6 +358,53 @@ describe('expect', () => {
     }),
   );
 
+  ['lastCalledWith', 'toHaveBeenLastCalledWith'].map(
+    toHaveBeenLastCalledWithAlias =>
+      test(toHaveBeenLastCalledWithAlias, () => {
+        const fn = jest.fn();
+
+        expect(fn).not[toHaveBeenLastCalledWithAlias]();
+        expect(fn).not[toHaveBeenLastCalledWithAlias]({});
+
+        expect(() => {
+          expect(fn)[toHaveBeenLastCalledWithAlias]();
+        }).toThrow();
+
+        fn('happy');
+        expect(fn)[toHaveBeenLastCalledWithAlias]('happy');
+        expect(fn).not[toHaveBeenLastCalledWithAlias]();
+
+        fn();
+        expect(fn)[toHaveBeenLastCalledWithAlias]();
+        expect(fn).not[toHaveBeenLastCalledWithAlias]('happy');
+
+        fn({a: 1}, 2);
+
+        expect(fn)[toHaveBeenLastCalledWithAlias]({a: 1}, 2);
+        expect(fn).not[toHaveBeenLastCalledWithAlias]();
+        expect(fn).not[toHaveBeenLastCalledWithAlias]({a: 1});
+        expect(fn).not[toHaveBeenLastCalledWithAlias]({a: 2}, 2);
+        expect(fn).not[toHaveBeenLastCalledWithAlias]({a: 1}, 2, undefined);
+
+        expect(() => {
+          expect(fn).not[toHaveBeenLastCalledWithAlias]({a: 1}, 2);
+        }).toThrow();
+
+        expect(() => {
+          expect(fn)[toHaveBeenLastCalledWithAlias](1);
+        }).toThrow();
+
+        // Passing functions that aren't mocks should always fail
+        expect(() => {
+          expect(() => {})[toHaveBeenLastCalledWithAlias]();
+        }).toThrow();
+
+        expect(() => {
+          expect(() => {}).not[toHaveBeenLastCalledWithAlias]();
+        }).toThrow();
+      }),
+  );
+
   describe('jest.fn()', () => {
     it('tracks execution of functions without implementations', () => {
       const fn = jest.fn();

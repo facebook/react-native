@@ -267,6 +267,27 @@ class Expect {
     }
   }
 
+  lastCalledWith: (...args: Array<mixed>) => void;
+  toHaveBeenLastCalledWith(...args: mixed[]): void {
+    const mock = this.#requireMock();
+    if (mock.calls.length === 0) {
+      if (this.#isNot) {
+        return;
+      }
+
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to have been last called with ${stringify(args)}, but it was not called a single time.`,
+      );
+    }
+
+    const pass = deepEqual(mock.lastCall, args, {strict: true});
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been last called with ${stringify(args)}, but it was last called with ${stringify(mock.lastCall)}.`,
+      );
+    }
+  }
+
   toBeGreaterThan(expected: number): void {
     if (typeof this.#received !== 'number') {
       throw new ErrorWithCustomBlame(
@@ -466,6 +487,8 @@ Expect.prototype.toBeCalled = Expect.prototype.toHaveBeenCalled;
 Expect.prototype.toBeCalledTimes = Expect.prototype.toHaveBeenCalledTimes;
 // $FlowExpectedError[method-unbinding]
 Expect.prototype.toBeCalledWith = Expect.prototype.toHaveBeenCalledWith;
+// $FlowExpectedError[method-unbinding]
+Expect.prototype.lastCalledWith = Expect.prototype.toHaveBeenLastCalledWith;
 
 const expect: mixed => Expect = (received: mixed) => new Expect(received);
 
