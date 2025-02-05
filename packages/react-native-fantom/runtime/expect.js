@@ -15,6 +15,9 @@ import deepEqual from 'deep-equal';
 import {diff} from 'jest-diff';
 import {format, plugins} from 'pretty-format';
 
+const stringify = (data: mixed): string =>
+  format(data, {min: true, plugins: [plugins.ReactElement]});
+
 class ErrorWithCustomBlame extends Error {
   // Initially 5 to ignore all the frames from Babel helpers to instantiate this
   // custom error class.
@@ -249,6 +252,21 @@ class Expect {
     }
   }
 
+  toBeCalledWith: (...args: Array<mixed>) => void;
+  toHaveBeenCalledWith(...args: Array<mixed>): void {
+    const mock = this.#requireMock();
+    const pass = mock.calls.some(callArgs =>
+      deepEqual(callArgs, args, {strict: true}),
+    );
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called with ${stringify(
+          args,
+        )}, but it was called with ${stringify(mock.calls)}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   toBeGreaterThan(expected: number): void {
     if (typeof this.#received !== 'number') {
       throw new ErrorWithCustomBlame(
@@ -446,6 +464,8 @@ class Expect {
 Expect.prototype.toBeCalled = Expect.prototype.toHaveBeenCalled;
 // $FlowExpectedError[method-unbinding]
 Expect.prototype.toBeCalledTimes = Expect.prototype.toHaveBeenCalledTimes;
+// $FlowExpectedError[method-unbinding]
+Expect.prototype.toBeCalledWith = Expect.prototype.toHaveBeenCalledWith;
 
 const expect: mixed => Expect = (received: mixed) => new Expect(received);
 
