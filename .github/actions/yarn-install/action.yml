@@ -5,7 +5,7 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        MAX_ATTEMPTS=6
+        MAX_ATTEMPTS=2
         ATTEMPT=0
         WAIT_TIME=20
         while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
