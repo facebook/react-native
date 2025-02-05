@@ -217,10 +217,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem("allowFontScaling", allowFontScaling),
       debugStringConvertibleItem("dynamicTypeRamp", dynamicTypeRamp),
       debugStringConvertibleItem("letterSpacing", letterSpacing),
-      debugStringConvertibleItem(
-          "maxFontSizeMultiplier",
-          maxFontSizeMultiplier,
-          textAttributes.maxFontSizeMultiplier),
+      debugStringConvertibleItem("maxFontSizeMultiplier", maxFontSizeMultiplier)
 
       // Paragraph Styles
       debugStringConvertibleItem("lineHeight", lineHeight),
