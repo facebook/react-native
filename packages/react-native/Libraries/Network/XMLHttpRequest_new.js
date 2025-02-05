@@ -45,6 +45,19 @@ export type ResponseType =
   | 'text';
 export type Response = ?Object | string;
 
+type XHRInterceptor = interface {
+  requestSent(id: number, url: string, method: string, headers: Object): void,
+  responseReceived(
+    id: number,
+    url: string,
+    status: number,
+    headers: Object,
+  ): void,
+  dataReceived(id: number, data: string): void,
+  loadingFinished(id: number, encodedDataLength: number): void,
+  loadingFailed(id: number, error: string): void,
+};
+
 // The native blob module is optional so inject it here if available.
 if (BlobManager.isAvailable) {
   BlobManager.addNetworkingHandler();
@@ -120,6 +133,7 @@ class XMLHttpRequest extends EventTarget {
   static LOADING: number = LOADING;
   static DONE: number = DONE;
 
+  static _interceptor: ?XHRInterceptor = null;
   static _profiling: boolean = false;
 
   UNSENT: number = UNSENT;
@@ -156,6 +170,10 @@ class XMLHttpRequest extends EventTarget {
   _incrementalEvents: boolean = false;
   _startTime: ?number = null;
   _performanceLogger: IPerformanceLogger = GlobalPerformanceLogger;
+
+  static __setInterceptor_DO_NOT_USE(interceptor: ?XHRInterceptor) {
+    XMLHttpRequest._interceptor = interceptor;
+  }
 
   static enableProfiling(enableProfiling: boolean): void {
     XMLHttpRequest._profiling = enableProfiling;
@@ -283,10 +301,20 @@ class XMLHttpRequest extends EventTarget {
     return this._cachedResponse;
   }
 
+  // exposed for testing
   __didCreateRequest(requestId: number): void {
     this._requestId = requestId;
+
+    XMLHttpRequest._interceptor &&
+      XMLHttpRequest._interceptor.requestSent(
+        requestId,
+        this._url || '',
+        this._method || 'GET',
+        this._headers,
+      );
   }
 
+  // exposed for testing
   __didUploadProgress(
     requestId: number,
     progress: number,
@@ -321,6 +349,14 @@ class XMLHttpRequest extends EventTarget {
       } else {
         delete this.responseURL;
       }
+
+      XMLHttpRequest._interceptor &&
+        XMLHttpRequest._interceptor.responseReceived(
+          requestId,
+          responseURL || this._url || '',
+          status,
+          responseHeaders || {},
+        );
     }
   }
 
@@ -331,6 +367,9 @@ class XMLHttpRequest extends EventTarget {
     this._response = response;
     this._cachedResponse = undefined; // force lazy recomputation
     this.setReadyState(this.LOADING);
+
+    XMLHttpRequest._interceptor &&
+      XMLHttpRequest._interceptor.dataReceived(requestId, response);
   }
 
   __didReceiveIncrementalData(
@@ -353,6 +392,8 @@ class XMLHttpRequest extends EventTarget {
         'Track:XMLHttpRequest:Incremental Data: ' + this._getMeasureURL(),
       );
     }
+    XMLHttpRequest._interceptor &&
+      XMLHttpRequest._interceptor.dataReceived(requestId, responseText);
 
     this.setReadyState(this.LOADING);
     this.__didReceiveDataProgress(requestId, progress, total);
@@ -376,6 +417,7 @@ class XMLHttpRequest extends EventTarget {
     );
   }
 
+  // exposed for testing
   __didCompleteResponse(
     requestId: number,
     error: string,
@@ -400,6 +442,16 @@ class XMLHttpRequest extends EventTarget {
           start,
           end: performance.now(),
         });
+      }
+      if (error) {
+        XMLHttpRequest._interceptor &&
+          XMLHttpRequest._interceptor.loadingFailed(requestId, error);
+      } else {
+        XMLHttpRequest._interceptor &&
+          XMLHttpRequest._interceptor.loadingFinished(
+            requestId,
+            this._response.length,
+          );
       }
     }
   }
