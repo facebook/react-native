@@ -6,27 +6,30 @@
  */
 
 #include <gtest/gtest.h>
-#include <react/renderer/css/CSSLength.h>
-#include <react/renderer/css/CSSPercentage.h>
+#include <react/renderer/css/CSSLengthPercentage.h>
 #include <react/renderer/css/CSSValueParser.h>
 
 namespace facebook::react {
 
 TEST(CSSLengthPercentage, length_percentage_values) {
-  auto emptyValue = parseCSSProperty<CSSLength, CSSPercentage>("");
+  auto emptyValue = parseCSSProperty<CSSLengthPercentage>("");
   EXPECT_TRUE(std::holds_alternative<std::monostate>(emptyValue));
 
-  auto autoValue =
-      parseCSSProperty<CSSKeyword, CSSLength, CSSPercentage>("auto");
+  auto autoValue = parseCSSProperty<CSSKeyword, CSSLengthPercentage>("auto");
   EXPECT_TRUE(std::holds_alternative<CSSKeyword>(autoValue));
   EXPECT_EQ(std::get<CSSKeyword>(autoValue), CSSKeyword::Auto);
 
-  auto pxValue = parseCSSProperty<CSSLength, CSSPercentage>("20px");
+  auto autoValueReordered =
+      parseCSSProperty<CSSLengthPercentage, CSSKeyword>("auto");
+  EXPECT_TRUE(std::holds_alternative<CSSKeyword>(autoValueReordered));
+  EXPECT_EQ(std::get<CSSKeyword>(autoValueReordered), CSSKeyword::Auto);
+
+  auto pxValue = parseCSSProperty<CSSLengthPercentage>("20px");
   EXPECT_TRUE(std::holds_alternative<CSSLength>(pxValue));
   EXPECT_EQ(std::get<CSSLength>(pxValue).value, 20.0f);
   EXPECT_EQ(std::get<CSSLength>(pxValue).unit, CSSLengthUnit::Px);
 
-  auto pctValue = parseCSSProperty<CSSLength, CSSPercentage>("-40%");
+  auto pctValue = parseCSSProperty<CSSLengthPercentage>("-40%");
   EXPECT_TRUE(std::holds_alternative<CSSPercentage>(pctValue));
   EXPECT_EQ(std::get<CSSPercentage>(pctValue).value, -40.0f);
 }

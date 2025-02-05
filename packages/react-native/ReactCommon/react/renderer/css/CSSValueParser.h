@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <variant>
 
+#include <react/renderer/css/CSSCompoundDataType.h>
 #include <react/renderer/css/CSSDataType.h>
 #include <react/renderer/css/CSSKeyword.h>
 #include <react/renderer/css/CSSSyntaxParser.h>
@@ -32,7 +33,8 @@ class CSSValueParser {
    */
   template <CSSDataType... AllowedTypesT>
   constexpr std::variant<std::monostate, AllowedTypesT...> consumeValue(
-      CSSDelimiter delimeter = CSSDelimiter::None) {
+      CSSDelimiter delimeter,
+      CSSCompoundDataType<AllowedTypesT...>) {
     using ReturnT = std::variant<std::monostate, AllowedTypesT...>;
 
     auto consumedValue =
@@ -173,14 +175,18 @@ class CSSValueParser {
  * Parse a single CSS property value. Returns a variant holding std::monostate
  * on syntax error.
  */
-template <CSSDataType... AllowedTypesT>
+template <CSSMaybeCompoundDataType... AllowedTypesT>
 constexpr auto parseCSSProperty(std::string_view css)
-    -> std::variant<std::monostate, CSSWideKeyword, AllowedTypesT...> {
+    -> CSSVariantWithTypes<
+        CSSMergedDataTypes<CSSWideKeyword, AllowedTypesT...>,
+        std::monostate> {
   CSSSyntaxParser syntaxParser(css);
   detail::CSSValueParser parser(syntaxParser);
 
   parser.consumeWhitespace();
-  auto value = parser.consumeValue<CSSWideKeyword, AllowedTypesT...>();
+  auto value = parser.consumeValue(
+      CSSDelimiter::None,
+      CSSMergedDataTypes<CSSWideKeyword, AllowedTypesT...>{});
   parser.consumeWhitespace();
 
   if (parser.isFinished()) {
@@ -194,27 +200,33 @@ constexpr auto parseCSSProperty(std::string_view css)
  * Attempts to parse the next CSS value of a given set of data types, at the
  * current location of the syntax parser, advancing the syntax parser
  */
-template <CSSDataType... AllowedTypesT>
+template <CSSMaybeCompoundDataType... AllowedTypesT>
 constexpr auto parseNextCSSValue(
     CSSSyntaxParser& syntaxParser,
     CSSDelimiter delimeter = CSSDelimiter::None)
-    -> std::variant<std::monostate, AllowedTypesT...> {
+    -> CSSVariantWithTypes<
+        CSSMergedDataTypes<AllowedTypesT...>,
+        std::monostate> {
   detail::CSSValueParser valueParser(syntaxParser);
-  return valueParser.consumeValue<AllowedTypesT...>(delimeter);
+  return valueParser.consumeValue(
+      delimeter, CSSMergedDataTypes<AllowedTypesT...>{});
 }
 
 /**
  * Attempts to parse the next CSS value of a given set of data types, at the
  * current location of the syntax parser, without advancing the syntax parser
  */
-template <CSSDataType... AllowedTypesT>
+template <CSSMaybeCompoundDataType... AllowedTypesT>
 constexpr auto peekNextCSSValue(
     CSSSyntaxParser& syntaxParser,
     CSSDelimiter delimeter = CSSDelimiter::None)
-    -> std::variant<std::monostate, AllowedTypesT...> {
+    -> CSSVariantWithTypes<
+        CSSMergedDataTypes<AllowedTypesT...>,
+        std::monostate> {
   auto savedParser = syntaxParser;
   detail::CSSValueParser valueParser(syntaxParser);
-  auto ret = valueParser.consumeValue<AllowedTypesT...>(delimeter);
+  auto ret = valueParser.consumeValue(
+      delimeter, CSSMergedDataTypes<AllowedTypesT...>{});
   syntaxParser = savedParser;
   return ret;
 }
