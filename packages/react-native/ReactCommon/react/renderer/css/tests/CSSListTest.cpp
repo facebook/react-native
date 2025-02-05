@@ -6,6 +6,8 @@
  */
 
 #include <gtest/gtest.h>
+#include <react/renderer/css/CSSCompoundDataType.h>
+#include <react/renderer/css/CSSLength.h>
 #include <react/renderer/css/CSSList.h>
 #include <react/renderer/css/CSSNumber.h>
 #include <react/renderer/css/CSSValueParser.h>
@@ -128,6 +130,24 @@ TEST(CSSList, extra_commas) {
   auto suffixCommaValue =
       parseCSSProperty<CSSCommaSeparatedList<CSSNumber>>("20,");
   EXPECT_TRUE(std::holds_alternative<std::monostate>(suffixCommaValue));
+}
+
+TEST(CSSList, compound_data_type) {
+  using NumberLengthList =
+      CSSCommaSeparatedList<CSSCompoundDataType<CSSNumber, CSSLength>>;
+
+  auto compoundType = parseCSSProperty<NumberLengthList>("10px,20");
+
+  EXPECT_TRUE(std::holds_alternative<NumberLengthList>(compoundType));
+  auto& list = std::get<NumberLengthList>(compoundType);
+
+  EXPECT_EQ(list.size(), 2);
+  EXPECT_TRUE(std::holds_alternative<CSSLength>(list[0]));
+  EXPECT_EQ(std::get<CSSLength>(list[0]).value, 10);
+  EXPECT_EQ(std::get<CSSLength>(list[0]).unit, CSSLengthUnit::Px);
+
+  EXPECT_TRUE(std::holds_alternative<CSSNumber>(list[1]));
+  EXPECT_EQ(std::get<CSSNumber>(list[1]).value, 20);
 }
 
 } // namespace facebook::react

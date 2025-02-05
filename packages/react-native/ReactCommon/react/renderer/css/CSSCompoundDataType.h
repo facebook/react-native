@@ -21,13 +21,17 @@ struct CSSCompoundDataTypeMarker {};
 template <CSSDataType... AllowedTypesT>
 struct CSSCompoundDataType : public detail::CSSCompoundDataTypeMarker {};
 
+template <typename T>
+concept CSSValidCompoundDataType =
+    std::is_base_of_v<detail::CSSCompoundDataTypeMarker, T>;
+
 /**
  * A concrete data type, or a compound data type which represents multiple other
  * data types.
  */
 template <typename T>
 concept CSSMaybeCompoundDataType =
-    CSSDataType<T> || std::is_base_of_v<detail::CSSCompoundDataTypeMarker, T>;
+    CSSDataType<T> || CSSValidCompoundDataType<T>;
 
 namespace detail {
 
