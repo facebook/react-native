@@ -620,6 +620,46 @@ describe('expect', () => {
     }).toThrow();
   });
 
+  test('toContain', () => {
+    expect('hello').toContain('he');
+    expect('hello').not.toContain('lol');
+    expect([1, 2, 3]).toContain(1);
+    expect([1, 2, 3]).not.toContain(4);
+
+    const obj = {a: 1};
+    expect([obj, {a: 2}, {a: 3}]).toContain(obj);
+    expect([obj]).not.toContain({a: 1});
+
+    expect(() => {
+      expect([]).toContain(obj);
+    }).toThrow();
+
+    expect(() => {
+      expect('hello').not.toContain('e');
+    }).toThrow();
+  });
+
+  test('toContainEqual', () => {
+    expect('hello').toContainEqual('he');
+    expect('hello').not.toContainEqual('lol');
+    expect([1, 2, 3]).toContainEqual(1);
+    expect([1, 2, 3]).not.toContainEqual(4);
+
+    const obj = {a: 1};
+    expect([obj, {a: 2}, {a: 3}]).toContainEqual(obj);
+    expect([obj]).toContainEqual({a: 1});
+    expect([[obj]]).toContainEqual([{a: 1}]);
+    expect([obj]).not.toContainEqual({a: 2});
+
+    expect(() => {
+      expect([]).toContainEqual(obj);
+    }).toThrow();
+
+    expect(() => {
+      expect([{a: 1}]).not.toContainEqual({a: 1});
+    }).toThrow();
+  });
+
   describe('toMatchSnapshot()', () => {
     test('primitive types', () => {
       expect(undefined).toMatchSnapshot();

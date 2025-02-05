@@ -339,6 +339,70 @@ class Expect {
     }
   }
 
+  toContain(item: mixed): void {
+    if (typeof this.#received === 'string') {
+      if (typeof item !== 'string') {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(item)} to be a string but it was a ${typeof item}`,
+        ).blameToPreviousFrame();
+      }
+
+      const pass = this.#received.includes(item);
+      if (!this.#isExpectedResult(pass)) {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(this.#received)}${this.#maybeNotLabel()} to contain ${item}`,
+        ).blameToPreviousFrame();
+      }
+      return;
+    }
+
+    if (!Array.isArray(this.#received)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be an array`,
+      ).blameToPreviousFrame();
+    }
+
+    const pass = this.#received.includes(item);
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to contain ${String(item)}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toContainEqual(item: mixed): void {
+    if (typeof this.#received === 'string') {
+      if (typeof item !== 'string') {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(item)} to be a string but it was a ${typeof item}`,
+        ).blameToPreviousFrame();
+      }
+
+      const pass = this.#received.includes(item);
+      if (!this.#isExpectedResult(pass)) {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(this.#received)}${this.#maybeNotLabel()} to contain ${item}`,
+        ).blameToPreviousFrame();
+      }
+      return;
+    }
+
+    if (!Array.isArray(this.#received)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be an array`,
+      ).blameToPreviousFrame();
+    }
+
+    const pass = this.#received.some(value =>
+      deepEqual(value, item, {strict: true}),
+    );
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to contain item equal to ${String(item)}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   toMatchSnapshot(expected?: string): void {
     if (this.#isNot) {
       throw new ErrorWithCustomBlame(
