@@ -227,10 +227,7 @@ class Expect {
     }
   }
 
-  toBeCalled(): void {
-    return this.toHaveBeenCalled();
-  }
-
+  toBeCalled: () => void;
   toHaveBeenCalled(): void {
     const mock = this.#requireMock();
     const pass = mock.calls.length > 0;
@@ -241,10 +238,7 @@ class Expect {
     }
   }
 
-  toBeCalledTimes(times: number): void {
-    return this.toHaveBeenCalledTimes(times);
-  }
-
+  toBeCalledTimes: (times: number) => void;
   toHaveBeenCalledTimes(times: number): void {
     const mock = this.#requireMock();
     const pass = mock.calls.length === times;
@@ -379,6 +373,15 @@ class Expect {
     }
   }
 }
+
+/**
+ * Base methods can't be implemented as an arrow function because they
+ * will not be added to the prototype.
+ */
+// $FlowExpectedError[method-unbinding]
+Expect.prototype.toBeCalled = Expect.prototype.toHaveBeenCalled;
+// $FlowExpectedError[method-unbinding]
+Expect.prototype.toBeCalledTimes = Expect.prototype.toHaveBeenCalledTimes;
 
 const expect: mixed => Expect = (received: mixed) => new Expect(received);
 
