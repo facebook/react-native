@@ -72,9 +72,7 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
 
   if (buildType === 'release') {
     let versionTag /*: string*/ = '';
-    if (process.env.CIRCLE_TAG != null && process.env.CIRCLE_TAG !== '') {
-      versionTag = process.env.CIRCLE_TAG;
-    } else if (
+    if (
       process.env.GITHUB_REF != null &&
       process.env.GITHUB_REF.includes('/tags/') &&
       process.env.GITHUB_REF_NAME != null &&
@@ -87,7 +85,7 @@ function getNpmInfo(buildType /*: BuildType */) /*: NpmInfo */ {
 
     if (versionTag === '') {
       throw new Error(
-        'No version tag found in CI. It looks like this script is running in release mode, but the CIRCLE_TAG or the GITHUB_REF_NAME are missing.',
+        'No version tag found in CI. It looks like this script is running in release mode, but the GITHUB_REF_NAME are missing.',
       );
     }
 
