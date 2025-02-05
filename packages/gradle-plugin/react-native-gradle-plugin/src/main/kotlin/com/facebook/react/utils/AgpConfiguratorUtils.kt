@@ -36,8 +36,6 @@ internal object AgpConfiguratorUtils {
                 project.isNewArchEnabled(extension).toString())
             ext.defaultConfig.buildConfigField(
                 "boolean", "IS_HERMES_ENABLED", project.isHermesEnabled.toString())
-            ext.defaultConfig.buildConfigField(
-                "String", "REACT_NATIVE_DEV_SERVER_IP", "\"${getHostIpAddress()}\"")
           }
         }
     project.pluginManager.withPlugin("com.android.application", action)
@@ -54,13 +52,14 @@ internal object AgpConfiguratorUtils {
     }
   }
 
-  fun configureDevPorts(project: Project) {
+  fun configureDevIpAndPorts(project: Project) {
     val devServerPort =
         project.properties["reactNativeDevServerPort"]?.toString() ?: DEFAULT_DEV_SERVER_PORT
 
     val action =
         Action<AppliedPlugin> {
           project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+            ext.defaultConfig.resValue("string", "react_native_dev_server_ip", getHostIpAddress())
             ext.defaultConfig.resValue("integer", "react_native_dev_server_port", devServerPort)
           }
         }
@@ -115,4 +114,4 @@ fun getHostIpAddress(): String =
     .flatMap { it.inetAddresses.asSequence() }
     .filter { it is Inet4Address && !it.isLoopbackAddress }
     .map { it.hostAddress }
-    .firstOrNull() ?: "127.0.0.1"
+    .firstOrNull() ?: "localhost"

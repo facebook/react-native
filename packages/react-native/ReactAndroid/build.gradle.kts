@@ -525,6 +525,7 @@ android {
     buildConfigField("boolean", "ENABLE_PERFETTO", "false")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
+    resValue("string", "react_native_dev_server_ip", "localhost")
 
     testApplicationId = "com.facebook.react.tests.gradle"
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
