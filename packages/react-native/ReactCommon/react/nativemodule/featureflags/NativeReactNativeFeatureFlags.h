@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8a136ebe8a7df3fa2283683a69f778fb>>
+ * @generated SignedSource<<c82c36c2a0850b5d73b844c10913da8f>>
  */
 
 /**
@@ -112,8 +112,6 @@ class NativeReactNativeFeatureFlags
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRawPropsJsiValue(jsi::Runtime& runtime);
-
-  bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 
