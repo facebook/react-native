@@ -27,16 +27,18 @@ class GenerateCodegenSchemaTaskTest {
     val jsRootDir =
         tempFolder.newFolder("js").apply {
           File(this, "file.js").createNewFile()
+          File(this, "file.jsx").createNewFile()
           File(this, "file.ts").createNewFile()
+          File(this, "file.tsx").createNewFile()
           File(this, "ignore.txt").createNewFile()
         }
 
     val task = createTestTask<GenerateCodegenSchemaTask> { it.jsRootDir.set(jsRootDir) }
 
     assertThat(task.jsInputFiles.dir).isEqualTo(jsRootDir)
-    assertThat(task.jsInputFiles.includes).isEqualTo(setOf("**/*.js", "**/*.ts"))
+    assertThat(task.jsInputFiles.includes).isEqualTo(setOf("**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"))
     assertThat(task.jsInputFiles.files)
-        .containsExactlyInAnyOrder(File(jsRootDir, "file.js"), File(jsRootDir, "file.ts"))
+        .containsExactlyInAnyOrder(File(jsRootDir, "file.js"), File(jsRootDir, "file.jsx"), File(jsRootDir, "file.ts"), File(jsRootDir, "file.tsx"))
   }
 
   @Test
@@ -60,12 +62,16 @@ class GenerateCodegenSchemaTaskTest {
               .createFileAndPath()
           File(this, "afolder/build/intermediates/sourcemaps/react/anotherfolder/excludedfile.js")
               .createFileAndPath()
+          File(this, "node_modules/excludedfile.js")
+              .createFileAndPath()
+          File(this, "node_modules/excludedfile.d.ts")
+              .createFileAndPath()
         }
 
     val task = createTestTask<GenerateCodegenSchemaTask> { it.jsRootDir.set(jsRootDir) }
 
     assertThat(task.jsInputFiles.dir).isEqualTo(jsRootDir)
-    assertThat(task.jsInputFiles.excludes).isEqualTo(setOf("**/build/**/*"))
+    assertThat(task.jsInputFiles.excludes).isEqualTo(setOf("node_modules/**/*", "**/*.d.ts", "**/build/**/*"))
     assertThat(task.jsInputFiles.files).containsExactly(File(jsRootDir, "afolder/includedfile.js"))
   }
 
