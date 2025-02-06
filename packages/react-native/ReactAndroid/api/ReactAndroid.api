@@ -6231,19 +6231,6 @@ public final class com/facebook/react/views/image/ImageResizeMode {
 	public static final fun toTileMode (Ljava/lang/String;)Landroid/graphics/Shader$TileMode;
 }
 
-public final class com/facebook/react/views/image/MultiPostprocessor : com/facebook/imagepipeline/request/Postprocessor {
-	public static final field Companion Lcom/facebook/react/views/image/MultiPostprocessor$Companion;
-	public synthetic fun <init> (Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public static final fun from (Ljava/util/List;)Lcom/facebook/imagepipeline/request/Postprocessor;
-	public fun getName ()Ljava/lang/String;
-	public fun getPostprocessorCacheKey ()Lcom/facebook/cache/common/CacheKey;
-	public fun process (Landroid/graphics/Bitmap;Lcom/facebook/imagepipeline/bitmaps/PlatformBitmapFactory;)Lcom/facebook/common/references/CloseableReference;
-}
-
-public final class com/facebook/react/views/image/MultiPostprocessor$Companion {
-	public final fun from (Ljava/util/List;)Lcom/facebook/imagepipeline/request/Postprocessor;
-}
-
 public abstract interface class com/facebook/react/views/image/ReactCallerContextFactory {
 	public abstract fun getOrCreateCallerContext (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
 }
