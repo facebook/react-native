@@ -21,6 +21,8 @@ const preTransforms: Array<TransformFn> = [
   require('./transforms/stripPrivateProperties'),
 ];
 const prettierOptions = {parser: 'babel'};
+const unsupportedFeatureRegex =
+  /Unsupported feature: Translating ".*" is currently not supported/;
 
 /**
  * Translate the public API of a Flow source file to TypeScript definition.
@@ -36,10 +38,17 @@ async function translateSourceFile(source: string): Promise<string> {
   const preTransformResult = await applyTransforms(parsed, preTransforms);
 
   // Translate to TypeScript defs
-  return await translate.translateFlowToTSDef(
+  const result = await translate.translateFlowToTSDef(
     preTransformResult.code,
     prettierOptions,
   );
+
+  const unsupportedFeatureMatch = result.match(unsupportedFeatureRegex);
+  if (unsupportedFeatureMatch != null) {
+    throw new Error(`Error: ${unsupportedFeatureMatch[0]}`);
+  }
+
+  return result;
 }
 
 async function applyTransforms(

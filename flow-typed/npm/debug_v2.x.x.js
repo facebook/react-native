@@ -12,5 +12,9 @@
 // https://www.npmjs.com/package/debug
 
 declare module 'debug' {
-  declare module.exports: (namespace: string) => (...Array<mixed>) => void;
+  declare module.exports: {
+    (namespace: string): (...Array<mixed>) => void,
+    enable(match: string): void,
+    disable(): void,
+  };
 }
