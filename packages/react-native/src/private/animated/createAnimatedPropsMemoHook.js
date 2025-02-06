@@ -17,8 +17,9 @@ import {AnimatedEvent} from '../../../Libraries/Animated/AnimatedEvent';
 import AnimatedNode from '../../../Libraries/Animated/nodes/AnimatedNode';
 import {isPlainObject} from '../../../Libraries/Animated/nodes/AnimatedObject';
 import flattenStyle from '../../../Libraries/StyleSheet/flattenStyle';
+import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
 import nullthrows from 'nullthrows';
-import {useMemo, useState} from 'react';
+import {useInsertionEffect, useMemo, useRef, useState} from 'react';
 
 type CompositeKey = {
   style?: {[string]: CompositeKeyComponent},
@@ -65,6 +66,50 @@ export function createAnimatedPropsMemoHook(
     create: () => AnimatedProps,
     props: $ReadOnly<{[string]: mixed}>,
   ): AnimatedProps {
+    // NOTE: This feature flag must be evaluated inside the hook because this
+    // module factory can be evaluated much sooner, before overrides are set.
+    const useAnimatedPropsImpl =
+      ReactNativeFeatureFlags.avoidStateUpdateInAnimatedPropsMemo()
+        ? useAnimatedPropsMemo_ref
+        : useAnimatedPropsMemo_state;
+    return useAnimatedPropsImpl(create, props);
+  };
+
+  function useAnimatedPropsMemo_ref(
+    create: () => AnimatedProps,
+    props: $ReadOnly<{[string]: mixed}>,
+  ): AnimatedProps {
+    const compositeKey = useMemo(
+      () => createCompositeKeyForProps(props, allowlist),
+      [props],
+    );
+
+    const prevRef = useRef<?$ReadOnly<{
+      compositeKey: typeof compositeKey,
+      node: AnimatedProps,
+    }>>();
+    const prev = prevRef.current;
+
+    const next =
+      prev != null &&
+      areCompositeKeysEqual(prev.compositeKey, compositeKey, allowlist)
+        ? prev
+        : {
+            compositeKey,
+            node: create(),
+          };
+
+    useInsertionEffect(() => {
+      prevRef.current = next;
+    }, [next]);
+
+    return next.node;
+  }
+
+  function useAnimatedPropsMemo_state(
+    create: () => AnimatedProps,
+    props: $ReadOnly<{[string]: mixed}>,
+  ): AnimatedProps {
     const compositeKey = useMemo(
       () => createCompositeKeyForProps(props, allowlist),
       [props],
@@ -91,7 +136,7 @@ export function createAnimatedPropsMemoHook(
       });
     }
     return state.value;
-  };
+  }
 }
 
 /**

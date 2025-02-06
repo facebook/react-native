@@ -508,6 +508,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    avoidStateUpdateInAnimatedPropsMemo: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-02-05',
+        description:
+          'Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableInteractionManager: {
       defaultValue: false,
       metadata: {
