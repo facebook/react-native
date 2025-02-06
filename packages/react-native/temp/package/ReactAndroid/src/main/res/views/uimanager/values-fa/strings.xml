@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- See fburl.com/140690840 for information about i18n on Android -->
+<!-- @generated -->
+<!-- FB Locale: fa_IR -->
+<resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">پیوند</string>
+    <string name="image_description" gender="unknown">تصویر</string>
+    <string name="imagebutton_description" gender="unknown">دکمه، تصویر</string>
+    <string name="header_description" gender="unknown">سر‌صفحه</string>
+    <string name="alert_description" gender="unknown">هشدار</string>
+    <string name="combobox_description" gender="unknown">جعبه گفتگو</string>
+    <string name="menu_description" gender="unknown">منو</string>
+    <string name="menubar_description" gender="unknown">نوار منو</string>
+    <string name="menuitem_description" gender="unknown">مورد منو</string>
+    <string name="progressbar_description" gender="unknown">نوار پیشرفت</string>
+    <string name="radiogroup_description" gender="unknown">گروه رادیویی</string>
+    <string name="scrollbar_description" gender="unknown">نوار پیمایش</string>
+    <string name="spinbutton_description" gender="unknown">دکمه چرخش</string>
+    <string name="rn_tab_description" gender="unknown">برگه</string>
+    <string name="tablist_description" gender="unknown">فهرست برگه</string>
+    <string name="timer_description" gender="unknown">زمان‌سنج</string>
+    <string name="toolbar_description" gender="unknown">نوار ابزار</string>
+    <string name="summary_description" gender="unknown">خلاصه</string>
+    <string name="state_busy_description" gender="unknown">مشغول</string>
+    <string name="state_expanded_description" gender="unknown">بزرگ‌شده</string>
+    <string name="state_collapsed_description" gender="unknown">کوچک‌شده</string>
+    <string name="state_unselected_description" gender="unknown">لغو انتخاب شد</string>
+    <string name="state_on_description" gender="unknown">روشن</string>
+    <string name="state_off_description" gender="unknown">خاموش</string>
+    <string name="state_mixed_description" gender="unknown">ترکیب‌شده</string>
+</resources>
