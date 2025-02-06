@@ -21,7 +21,7 @@ let thousandViews: React.MixedElement;
 
 Fantom.unstable_benchmark
   .suite('View')
-  .add(
+  .test(
     'render 100 uncollapsable views',
     () => {
       Fantom.runTask(() => root.render(thousandViews));
@@ -51,7 +51,7 @@ Fantom.unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'render 1000 uncollapsable views',
     () => {
       Fantom.runTask(() => root.render(thousandViews));
