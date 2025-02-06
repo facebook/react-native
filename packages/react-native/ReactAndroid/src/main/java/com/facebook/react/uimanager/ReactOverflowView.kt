@@ -17,5 +17,5 @@ public interface ReactOverflowView {
    * Gets the overflow state of a view. If set, this should be one of [ViewProps#HIDDEN],
    * [ViewProps#VISIBLE] or [ViewProps#SCROLL].
    */
-  public fun getOverflow(): String?
+  public val overflow: String?
 }
