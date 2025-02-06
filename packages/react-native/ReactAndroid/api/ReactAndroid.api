@@ -1643,7 +1643,7 @@ public final class com/facebook/react/bridge/queue/MessageQueueThreadImpl$Compan
 	public final fun create (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;
 }
 
-public class com/facebook/react/bridge/queue/MessageQueueThreadPerfStats {
+public final class com/facebook/react/bridge/queue/MessageQueueThreadPerfStats {
 	public field cpuTime J
 	public field wallTime J
 	public fun <init> ()V

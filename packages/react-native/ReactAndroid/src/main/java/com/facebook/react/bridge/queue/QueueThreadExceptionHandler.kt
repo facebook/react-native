@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge.queue;
+package com.facebook.react.bridge.queue
 
 /**
  * Interface for a class that knows how to handle an Exception thrown while executing a Runnable
- * submitted via {@link MessageQueueThread#runOnQueue}.
+ * submitted via [MessageQueueThread.runOnQueue].
  */
-public interface QueueThreadExceptionHandler {
-
-  void handleException(Exception e);
+public fun interface QueueThreadExceptionHandler {
+  public fun handleException(e: Exception)
 }
