@@ -31,7 +31,7 @@ type SuiteOptions = $ReadOnly<{
 type SuiteResults = Array<$ReadOnly<TaskResult>>;
 
 interface SuiteAPI {
-  add(name: string, fn: () => void, options?: FnOptions): SuiteAPI;
+  test(name: string, fn: () => void, options?: FnOptions): SuiteAPI;
   verify(fn: (results: SuiteResults) => void): SuiteAPI;
 }
 
@@ -123,7 +123,7 @@ export function suite(
   });
 
   const suiteAPI = {
-    add(name: string, fn: () => void, options?: FnOptions): SuiteAPI {
+    test(name: string, fn: () => void, options?: FnOptions): SuiteAPI {
       tasks.push({name, fn, options});
       return suiteAPI;
     },

@@ -30,6 +30,6 @@ Fantom.unstable_benchmark
     minDuration: 1000,
     minWarmupDuration: 1000,
   })
-  .add('test', () => {
+  .test('test', () => {
     runs++;
   });

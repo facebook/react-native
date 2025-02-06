@@ -36,7 +36,7 @@ const ownerDocument: ReactNativeDocument = {};
 /* eslint-disable no-new */
 Fantom.unstable_benchmark
   .suite('ReactNativeElement vs. ReactFabricHostComponent')
-  .add('ReactNativeElement', () => {
+  .test('ReactNativeElement', () => {
     new ReactNativeElement(
       tag,
       viewConfig,
@@ -44,6 +44,6 @@ Fantom.unstable_benchmark
       ownerDocument,
     );
   })
-  .add('ReactFabricHostComponent', () => {
+  .test('ReactFabricHostComponent', () => {
     new ReactFabricHostComponent(tag, viewConfig, internalInstanceHandle);
   });
