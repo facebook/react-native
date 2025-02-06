@@ -288,6 +288,27 @@ class Expect {
     }
   }
 
+  nthCalledWith: (index: number, ...args: mixed[]) => void;
+  toHaveBeenNthCalledWith(index: number, ...args: mixed[]): void {
+    if (index < 1) {
+      throw new ErrorWithCustomBlame(
+        `Expected index to be positive number, got ${index}.`,
+      ).blameToPreviousFrame();
+    }
+
+    const mock = this.#requireMock();
+    if (this.#isNot && mock.calls.length < index) {
+      return;
+    }
+
+    const pass = deepEqual(mock.calls[index - 1], args, {strict: true});
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been nth(${index}) called with ${stringify(args)}, but it was called with ${stringify(mock.calls[index - 1])}.`,
+      );
+    }
+  }
+
   toBeGreaterThan(expected: number): void {
     if (typeof this.#received !== 'number') {
       throw new ErrorWithCustomBlame(
@@ -489,6 +510,8 @@ Expect.prototype.toBeCalledTimes = Expect.prototype.toHaveBeenCalledTimes;
 Expect.prototype.toBeCalledWith = Expect.prototype.toHaveBeenCalledWith;
 // $FlowExpectedError[method-unbinding]
 Expect.prototype.lastCalledWith = Expect.prototype.toHaveBeenLastCalledWith;
+// $FlowExpectedError[method-unbinding]
+Expect.prototype.nthCalledWith = Expect.prototype.toHaveBeenNthCalledWith;
 
 const expect: mixed => Expect = (received: mixed) => new Expect(received);
 
