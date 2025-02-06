@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5d3aa805cfedaf97ef3e6229046dc288>>
+ * @generated SignedSource<<d7e150b5b7f7b62f347bc417f542f2ba>>
  */
 
 /**
@@ -171,6 +171,18 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableViewRecycling(): Boolean = accessor.enableViewRecycling()
+
+  /**
+   * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.
+   */
+  @JvmStatic
+  public fun enableViewRecyclingForText(): Boolean = accessor.enableViewRecyclingForText()
+
+  /**
+   * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
+   */
+  @JvmStatic
+  public fun enableViewRecyclingForView(): Boolean = accessor.enableViewRecyclingForView()
 
   /**
    * When enabled, rawProps in Props will not include Yoga specific props.

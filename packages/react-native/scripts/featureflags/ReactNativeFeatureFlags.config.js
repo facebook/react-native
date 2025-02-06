@@ -301,6 +301,28 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableViewRecyclingForText: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-02-05',
+        description:
+          'Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableViewRecyclingForView: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-02-05',
+        description:
+          'Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     excludeYogaFromRawProps: {
       defaultValue: false,
       metadata: {
