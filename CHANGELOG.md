@@ -49,7 +49,7 @@
 #### Android specific
 
 - Changed visibility of FrescoBasedReactTextInlineImageViewManager to internal ([d5f33c19cb](https://github.com/facebook/react-native/commit/d5f33c19cb33e2f2c7d2470cc90872c1f065f20d) by [@alanleedev](https://github.com/alanleedev))
-- Mikgrating pointerEvents API breaks compatibility for kotlin usages of this api as a val ([45e4a3afce](https://github.com/facebook/react-native/commit/45e4a3afceb4be3047cd01a60ec2c9f806ed30fe) by [@mdvacca](https://github.com/mdvacca))
+- Migrating pointerEvents API breaks compatibility for kotlin usages of this api as a val ([45e4a3afce](https://github.com/facebook/react-native/commit/45e4a3afceb4be3047cd01a60ec2c9f806ed30fe) by [@mdvacca](https://github.com/mdvacca))
 - Convert RootView to Kotlin ([21c9491926](https://github.com/facebook/react-native/commit/21c94919260a68409f82081740169d0409e78933) by [@fabriziocucci](https://github.com/fabriziocucci))
 - Delete unused abstract class GuardedResultAsyncTask ([67bff8734f](https://github.com/facebook/react-native/commit/67bff8734f4b92fe399910eecad5b67511a749c1) by [@mdvacca](https://github.com/mdvacca))
 - Delete deprecated class FabricViewStateManager ([b25b65ba19](https://github.com/facebook/react-native/commit/b25b65ba19f3c674fd2efe5c01123ccc0ae55cbf) by [@mdvacca](https://github.com/mdvacca))
