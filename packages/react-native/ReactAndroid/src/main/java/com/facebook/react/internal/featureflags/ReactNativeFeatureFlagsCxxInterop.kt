@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5292a5f705fc3587ee9d81cc83a79c05>>
+ * @generated SignedSource<<e25f474cab98b16f9816544bf1a92072>>
  */
 
 /**
@@ -107,8 +107,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useRawPropsJsiValue(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 

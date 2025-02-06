@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae7503526759f8b9f1ef56207ee1cab5>>
+ * @generated SignedSource<<f6b847d35e9cb5660c7a2de052d4ebf5>>
  */
 
 /**
@@ -60,7 +60,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
-  private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
 
@@ -420,15 +419,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useRawPropsJsiValue()
       useRawPropsJsiValueCache = cached
-    }
-    return cached
-  }
-
-  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean {
-    var cached = useRuntimeShadowNodeReferenceUpdateCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.useRuntimeShadowNodeReferenceUpdate()
-      useRuntimeShadowNodeReferenceUpdateCache = cached
     }
     return cached
   }

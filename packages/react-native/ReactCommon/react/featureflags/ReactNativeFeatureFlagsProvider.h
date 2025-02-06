@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f60b7ae1cc777ad7d6249665603ee63a>>
+ * @generated SignedSource<<e7a3ffaed474345d2f52ba50cf9c1261>>
  */
 
 /**
@@ -65,7 +65,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;
   virtual bool useRawPropsJsiValue() = 0;
-  virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;
   virtual bool useTurboModuleInterop() = 0;
   virtual bool useTurboModules() = 0;
 };

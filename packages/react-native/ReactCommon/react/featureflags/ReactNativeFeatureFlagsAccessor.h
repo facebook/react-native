@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a3dd66b0308eb48a76db0c022008c431>>
+ * @generated SignedSource<<c9b36f185334a694bb5f210aeb297fdb>>
  */
 
 /**
@@ -72,7 +72,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool useNativeViewConfigsInBridgelessMode();
   bool useOptimizedEventBatchingOnAndroid();
   bool useRawPropsJsiValue();
-  bool useRuntimeShadowNodeReferenceUpdate();
   bool useTurboModuleInterop();
   bool useTurboModules();
 
@@ -86,7 +85,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 43> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -128,7 +127,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> useNativeViewConfigsInBridgelessMode_;
   std::atomic<std::optional<bool>> useOptimizedEventBatchingOnAndroid_;
   std::atomic<std::optional<bool>> useRawPropsJsiValue_;
-  std::atomic<std::optional<bool>> useRuntimeShadowNodeReferenceUpdate_;
   std::atomic<std::optional<bool>> useTurboModuleInterop_;
   std::atomic<std::optional<bool>> useTurboModules_;
 };

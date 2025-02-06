@@ -471,17 +471,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    useRuntimeShadowNodeReferenceUpdate: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-06-03',
-        description:
-          'When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     useTurboModuleInterop: {
       defaultValue: false,
       metadata: {

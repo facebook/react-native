@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ba638fd2dba475cb03191963f38692b4>>
+ * @generated SignedSource<<f38ee9e79b92ea5928702891a69b115e>>
  */
 
 /**
@@ -238,11 +238,6 @@ class ReactNativeFeatureFlags {
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
    */
   RN_EXPORT static bool useRawPropsJsiValue();
-
-  /**
-   * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
-   */
-  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?
