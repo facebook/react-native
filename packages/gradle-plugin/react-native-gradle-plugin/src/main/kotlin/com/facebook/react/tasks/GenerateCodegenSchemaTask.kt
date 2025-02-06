@@ -34,7 +34,12 @@ abstract class GenerateCodegenSchemaTask : Exec() {
   val jsInputFiles =
       project.fileTree(jsRootDir) {
         it.include("**/*.js")
+        it.include("**/*.jsx")
         it.include("**/*.ts")
+        it.include("**/*.tsx")
+
+        it.exclude("node_modules/**/*")
+        it.exclude("**/*.d.ts")
         // We want to exclude the build directory, to don't pick them up for execution avoidance.
         it.exclude("**/build/**/*")
       }
