@@ -31,9 +31,11 @@ const SOURCE_PATTERNS = [
   'react-native/Libraries/Types/RootTagTypes.js',
   'react-native/Libraries/ReactNative/RootTag.js',
   'react-native/Libraries/Utilities/Platform.js',
+  'react-native/Libraries/Settings/**/*.js',
   'react-native/src/private/specs_DEPRECATED/modules/NativeAlertManager.js',
   'react-native/src/private/specs_DEPRECATED/modules/NativeActionSheetManager.js',
   'react-native/src/private/specs/modules/NativeToastAndroid.js',
+  'react-native/src/private/specs_DEPRECATED/modules/NativeSettingsManager.js',
   // TODO(T210505412): Include input packages, e.g. virtualized-lists
 ];
 
