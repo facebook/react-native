@@ -6040,11 +6040,6 @@ public final class com/facebook/react/views/common/ContextUtils {
 	public static final fun findContextOfType (Landroid/content/Context;Ljava/lang/Class;)Ljava/lang/Object;
 }
 
-public final class com/facebook/react/views/common/ViewUtils {
-	public static final field INSTANCE Lcom/facebook/react/views/common/ViewUtils;
-	public static final fun getTestId (Landroid/view/View;)Ljava/lang/String;
-}
-
 public final class com/facebook/react/views/debuggingoverlay/DebuggingOverlay : android/view/View {
 	public fun <init> (Landroid/content/Context;)V
 	public final fun clearElementsHighlights ()V
