@@ -21,7 +21,7 @@ const path = require('path');
 const {parseArgs} = require('util');
 
 const TYPES_DIR = 'types_generated';
-const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
+const IGNORE_PATTERN = '**/__{tests,mocks,fixtures,flowtests}__/**';
 
 const SOURCE_PATTERNS = [
   'react-native/Libraries/Alert/**/*.{js,flow}',
