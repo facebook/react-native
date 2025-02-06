@@ -978,6 +978,40 @@ created on the mqt_native thread. ([c4a6bbc8fd](https://github.com/facebook/reac
 - **infra:** Update ws from 7.5.1 to 7.5.10 (CVE-2024-37890) ([13f1b9e10f](https://github.com/facebook/react-native/commit/13f1b9e10f6045421808714f7e62aa17bfb3e891) by [@GijsWeterings](https://github.com/GijsWeterings))
 - **infra:** Update ws from 6.2.2 to 6.2.3 (CVE-2024-37890) ([80cfacef78](https://github.com/facebook/react-native/commit/80cfacef78f34d3786d955084a8bf4d42ea37f1b) by [@GijsWeterings](https://github.com/GijsWeterings))
 
+## v0.75.5
+
+### Added
+
+- **Hermes:** Implement more missing methods on WithRuntimeDecorator ([80f67ca03c](https://github.com/facebook/react-native/commit/80f67ca03c99c688e2a3127e9b3dddd02625848e) by [@neildhar](https://github.com/neildhar))
+
+
+### Changed
+
+#### Android specific
+
+- **Deps:** Bump Kotlin to 1.9.25 to mitigate [#49115](https://github.com/facebook/react-native/issues/49115) ([25e76a2717](https://github.com/facebook/react-native/commit/25e76a271781b3ffe8002108d8b12aa3d47442b5) by [@riteshshukla04](https://github.com/riteshshukla04))
+
+#### iOS specific
+
+- **Deps:** Pin Xcodeproj to < 1.26.0 ([2922af2e7e](https://github.com/facebook/react-native/commit/2922af2e7e8527a93c7956b10ddb314f25c334fa) by [@cipolleschi](https://github.com/cipolleschi))
+- **Deps:** Pin concurrent-ruby to <= 1.3.4 ([794bf34e60](https://github.com/facebook/react-native/commit/794bf34e60cea8146aebad1fefe051d4140fc28b) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **FormData:** fix: FormData filename in content-disposition ([78ef1e2bc2](https://github.com/facebook/react-native/commit/78ef1e2bc2ed30321745e2505713915b9015d920) by [@foyarash](https://github.com/@foyarash))
+
+
+#### Android specific
+
+- **TextInput:** Set TextInput selection correctly when attached to window in Android ([1656394bae](https://github.com/facebook/react-native/commit/1656394bae16cc54fb38687d38bcbf85138c98a2) by [@QichenZhu](https://github.com/QichenZhu))
+
+#### iOS specific
+
+- **Animation:** Fabric: Fixes animations strict weak ordering sorted check failed ([ea0bc54115](https://github.com/facebook/react-native/commit/ea0bc541155700e0973d960c94d01918d6b28c6b) by [@zhongwuzw](https://github.com/zhongwuzw))
+- **Hermes** Exclude dSYM from the archive ([fdb2631b5e](https://github.com/facebook/react-native/commit/fdb2631b5ea27765663046b94f84956d30ebaaeb) by [@cipolleschi](https://github.com/cipolleschi))
+- **Image** Fix images not displayed when extension is implicit ([b6ed0d351e](https://github.com/facebook/react-native/commit/b6ed0d351e246c431bdc88a6c3d154ba35220c25) by [@cipolleschi](https://github.com/cipolleschi))
+- **Xcode:** Fix the generation of .xcode.env.local ([dbffbf72d7](https://github.com/facebook/react-native/commit/dbffbf72d7287e021e965b6639e455e8555bbf2e) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.75.4
 
 ### Fixed
