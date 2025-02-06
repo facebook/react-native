@@ -349,11 +349,6 @@ public abstract interface class com/facebook/react/ReactPackage {
 	public fun getModule (Ljava/lang/String;Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/NativeModule;
 }
 
-public abstract interface class com/facebook/react/ReactPackageLogger {
-	public abstract fun endProcessPackage ()V
-	public abstract fun startProcessPackage ()V
-}
-
 public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate : com/facebook/react/internal/turbomodule/core/TurboModuleManagerDelegate {
 	protected fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)V
 	protected fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;Lcom/facebook/jni/HybridData;)V
