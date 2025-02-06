@@ -547,6 +547,32 @@ github.com/robhogan))
 - **TextInput:** Workaround for Mac Catalyst TextInput crash due to serialization attempt of WeakEventEmitter ([e04738b7ec](https://github.com/facebook/react-native/commit/e04738b7ecec9e7da3aab49bb24a6336b9496b94) by [@rozele](https://github.com/rozele))
 - **TextInput:** Fix `maxLength` not working in old arch ([4b3ef3b00c](https://github.com/facebook/react-native/commit/4b3ef3b00ce0026c0d1e1f2a5546fcec249255d8) by [@mateoguzmana](https://github.com/mateoguzmana))
 
+## v0.76.7
+
+### Changed
+
+#### iOS specific
+
+- **Deps:** Pin 'concurrent-ruby' to a working version ([198adb47af](https://github.com/facebook/react-native/commit/198adb47af3676c85b35adb308c110c1d87120c8) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **Text** Fix `maxFontSizeMultiplier` prop on `Text` and `TextInput` components in Fabric / New Architecture ([ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32](https://github.com/facebook/react-native/commit/ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32) by [@RickardZrinski](https://github.com/RickardZrinski))
+- **Appearance:** Fix `Appearance.setColorScheme(null)` not resetting color scheme value ([7d63235086](https://github.com/facebook/react-native/commit/7d63235086352d8c424d634c7039551f0a5025dc) by [@sangonz193](https://github.com/sangonz193))
+
+#### Android specific
+
+- **Deps:** Add missing `invariant` dependency ([ee8088b615](https://github.com/facebook/react-native/commit/ee8088b6157837c239db47ac5bd3a8603ceefc3c) by [@tido64](https://github.com/tido64))
+- **Turbomodule** Fix execution of early InteropEvents ([4ed2b35bf6](https://github.com/facebook/react-native/commit/4ed2b35bf61426c81c9f8b30a142d77b44988fdb) by [@mdvacca](https://github.com/mdvacca))
+- **Deps:** Bump Kotlin to 1.9.25 to mitigate #49115 ([f8857ba3b5](https://github.com/facebook/react-native/commit/f8857ba3b51f26871d0a0b82b9581a0c35b6273d) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- **runtime:** `RCTSurfaceHostingProxyRootView` no longer has different behavior (whether it calls `start` on the provided *surface*) depending on which initializer is used.  Call `start` yourself on the *surface* instead. ([13b93cfdda](https://github.com/facebook/react-native/commit/13b93cfddaa559697968ac1c19e55f7aaa053070) by Nolan O'Brien)
+- Be less strict with method parsing of TurboModule Interop Layer
+- **Turbomodule:** Avoid crashing the app when the InteropLayer can't find some methods in the native implementation. ([3bd3f101b9](https://github.com/facebook/react-native/commit/3bd3f101b9dcff8551a2f8259ddeed9843fd69b8) by [@cipolleschi](https://github.com/cipolleschi))
+- **Runtime:** Fix applicationDidEnterBackground not being called ([adaceba546](https://github.com/facebook/react-native/commit/adaceba5462b4ad8676745f34e0be2bf5bb25166) by [@alextoudic](https://github.com/alextoudic))
+
 ## v0.76.6
 
 ### Fixed
