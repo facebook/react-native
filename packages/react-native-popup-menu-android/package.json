@@ -6,6 +6,7 @@
   "files": [
     "js",
     "android",
+    "react-native.config.js",
     "!android/build",
     "!**/__tests__",
     "!**/__fixtures__",
@@ -15,6 +16,9 @@
     "react-native",
     "android"
   ],
+  "scripts": {
+    "prepublishOnly": "node ./scripts/prepublish-popup-menu-android.js"
+  },
   "license": "MIT",
   "devDependencies": {
     "@react-native/codegen": "0.76.7"
