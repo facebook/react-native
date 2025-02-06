@@ -14,40 +14,46 @@ require('../babel-register').registerForScript();
 const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
 const translateSourceFile = require('./build-types/translateSourceFile');
 const chalk = require('chalk');
-const {promises: fs} = require('fs');
+const debugModule = require('debug');
+const debug = require('debug')('build-types');
+const {existsSync, promises: fs} = require('fs');
 const glob = require('glob');
-const micromatch = require('micromatch');
 const path = require('path');
 const {parseArgs} = require('util');
 
-const TYPES_DIR = 'types_generated';
-const IGNORE_PATTERN = '**/__{tests,mocks,fixtures,flowtests}__/**';
+const OUTPUT_DIR = 'types_generated';
+
+const IGNORE_PATTERNS = [
+  '**/__{tests,mocks,fixtures,flowtests}__/**',
+  '**/*.{macos,windows}.js',
+];
 
 const SOURCE_PATTERNS = [
-  'react-native/Libraries/Alert/**/*.{js,flow}',
-  'react-native/Libraries/ActionSheetIOS/**/*.{js,flow}',
-  'react-native/Libraries/Components/ToastAndroid/*.{js,flow}',
+  'react-native/Libraries/ActionSheetIOS/**/*.js',
+  'react-native/Libraries/Alert/**/*.js',
+  'react-native/Libraries/Components/ToastAndroid/*.js',
+  'react-native/Libraries/ReactNative/RootTag.js',
+  'react-native/Libraries/Settings/**/*.js',
   'react-native/Libraries/TurboModule/RCTExport.js',
   'react-native/Libraries/Types/RootTagTypes.js',
-  'react-native/Libraries/ReactNative/RootTag.js',
   'react-native/Libraries/Utilities/Platform.js',
-  'react-native/Libraries/Settings/**/*.js',
-  'react-native/src/private/specs_DEPRECATED/modules/NativeAlertManager.js',
   'react-native/src/private/specs_DEPRECATED/modules/NativeActionSheetManager.js',
-  'react-native/src/private/specs/modules/NativeToastAndroid.js',
+  'react-native/src/private/specs_DEPRECATED/modules/NativeAlertManager.js',
   'react-native/src/private/specs_DEPRECATED/modules/NativeSettingsManager.js',
+  'react-native/src/private/specs/modules/NativeToastAndroid.js',
   // TODO(T210505412): Include input packages, e.g. virtualized-lists
 ];
 
 const config = {
   options: {
+    debug: {type: 'boolean'},
     help: {type: 'boolean'},
   },
 };
 
 async function main() {
   const {
-    values: {help},
+    values: {debug: debugEnabled, help},
   } = parseArgs(config);
 
   if (help) {
@@ -60,13 +66,9 @@ async function main() {
     return;
   }
 
-  const files = ignoreShadowedFiles(
-    SOURCE_PATTERNS.flatMap(srcPath =>
-      glob.sync(path.join(PACKAGES_DIR, srcPath), {
-        nodir: true,
-      }),
-    ),
-  );
+  if (debugEnabled) {
+    debugModule.enable('build-types');
+  }
 
   console.log(
     '\n' +
@@ -76,32 +78,66 @@ async function main() {
       '\n',
   );
 
-  await Promise.all(
-    files.map(async file => {
-      if (micromatch.isMatch(file, IGNORE_PATTERN)) {
-        return;
+  const files /*: Set<string> */ = new Set(
+    SOURCE_PATTERNS.flatMap(srcPath =>
+      glob.sync(path.join(PACKAGES_DIR, srcPath), {
+        nodir: true,
+        ignore: IGNORE_PATTERNS,
+      }),
+    ),
+  );
+
+  // Require common interface file (js.flow) or base implementation (.js) for
+  // platform-specific files (.android.js or .ios.js)
+  for (const file of files) {
+    const [pathWithoutExt, extension] = splitPathAndExtension(file);
+
+    if (/(\.android\.js|\.ios\.js)$/.test(extension)) {
+      files.delete(file);
+
+      let resolved = false;
+
+      for (const ext of ['.js.flow', '.js']) {
+        let interfaceFile = pathWithoutExt + ext;
+
+        if (files.has(interfaceFile)) {
+          resolved = true;
+          break;
+        }
+
+        if (existsSync(interfaceFile)) {
+          files.add(interfaceFile);
+          resolved = true;
+          debug(
+            'Resolved %s to %s',
+            path.relative(REPO_ROOT, file),
+            path.relative(REPO_ROOT, interfaceFile),
+          );
+          break;
+        }
       }
 
+      if (!resolved) {
+        throw new Error(
+          `No common interface found for ${file}.[android|ios].js. This ` +
+            'should either be a base .js implementation or a .js.flow interface file.',
+        );
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from(files).map(async file => {
       const buildPath = getBuildPath(file);
       const source = await fs.readFile(file, 'utf-8');
-      await fs.mkdir(path.dirname(buildPath), {recursive: true});
 
       try {
         const typescriptDef = await translateSourceFile(source);
 
-        if (
-          /Unsupported feature: Translating ".*" is currently not supported/.test(
-            typescriptDef,
-          )
-        ) {
-          throw new Error(
-            'Syntax unsupported by flow-api-translator used in ' + file,
-          );
-        }
-
+        await fs.mkdir(path.dirname(buildPath), {recursive: true});
         await fs.writeFile(buildPath, typescriptDef);
       } catch (e) {
-        console.error(`Failed to build ${path.relative(REPO_ROOT, file)}`);
+        console.error(`Failed to build ${path.relative(REPO_ROOT, file)}\n`, e);
       }
     }),
   );
@@ -117,7 +153,7 @@ function getBuildPath(file /*: string */) /*: string */ {
   return path.join(
     packageDir,
     file
-      .replace(packageDir, TYPES_DIR)
+      .replace(packageDir, OUTPUT_DIR)
       .replace(/\.js\.flow$/, '.js')
       .replace(/\.js$/, '.d.ts'),
   );
@@ -130,42 +166,6 @@ function splitPathAndExtension(file /*: string */) /*: [string, string] */ {
     file.substring(0, extensionStart),
     file.substring(extensionStart, file.length),
   ];
-}
-
-function ignoreShadowedFiles(files /*: Array<string> */) /*: Array<string> */ {
-  const commonInterfaceFiles /*: Set<string> */ = new Set();
-  const result /*: Array<string> */ = [];
-
-  // Find all common interface files
-  for (const file of files) {
-    const [pathWithoutExt, extension] = splitPathAndExtension(file);
-    if (/(\.js|\.flow)$/.test(extension)) {
-      commonInterfaceFiles.add(pathWithoutExt);
-    }
-  }
-
-  for (const file of files) {
-    const [pathWithoutExt, extension] = splitPathAndExtension(file);
-
-    // Skip android and ios files from being generated and enforce that they
-    // have a common interface file, either in the form of .js.flow or .js file
-    if (/(\.android\.js|\.ios\.js)$/.test(extension)) {
-      if (!commonInterfaceFiles.has(pathWithoutExt)) {
-        throw new Error(`No common interface found for ${file}`);
-      }
-      continue;
-    }
-
-    // Skip desktop files and don't enforce common interface for them as they
-    // are entirely ignored by the current flow config
-    if (/(\.windows\.js|\.macos\.js)$/.test(extension)) {
-      continue;
-    }
-
-    result.push(file);
-  }
-
-  return result;
 }
 
 if (require.main === module) {
