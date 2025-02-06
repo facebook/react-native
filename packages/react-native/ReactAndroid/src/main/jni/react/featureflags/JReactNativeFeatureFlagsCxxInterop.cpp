@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<89691e6748ef791ca022f1289304046d>>
+ * @generated SignedSource<<b04123b022b1f120895d027f8bc12a4e>>
  */
 
 /**
@@ -180,6 +180,18 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableViewRecycling() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableViewRecycling");
+    return method(javaProvider_);
+  }
+
+  bool enableViewRecyclingForText() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableViewRecyclingForText");
+    return method(javaProvider_);
+  }
+
+  bool enableViewRecyclingForView() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableViewRecyclingForView");
     return method(javaProvider_);
   }
 
@@ -409,6 +421,16 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecycling(
   return ReactNativeFeatureFlags::enableViewRecycling();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForText(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableViewRecyclingForText();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableViewRecyclingForView();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::excludeYogaFromRawProps(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::excludeYogaFromRawProps();
@@ -597,6 +619,12 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableViewRecycling",
         JReactNativeFeatureFlagsCxxInterop::enableViewRecycling),
+      makeNativeMethod(
+        "enableViewRecyclingForText",
+        JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForText),
+      makeNativeMethod(
+        "enableViewRecyclingForView",
+        JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView),
       makeNativeMethod(
         "excludeYogaFromRawProps",
         JReactNativeFeatureFlagsCxxInterop::excludeYogaFromRawProps),

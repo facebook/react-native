@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d807507f5d26ccb2ba6849d40ed88e7a>>
+ * @generated SignedSource<<859998da4a85446385dea62a781f3811>>
  * @flow strict
  */
 
@@ -73,6 +73,8 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableSynchronousStateUpdates: Getter<boolean>,
   enableUIConsistency: Getter<boolean>,
   enableViewRecycling: Getter<boolean>,
+  enableViewRecyclingForText: Getter<boolean>,
+  enableViewRecyclingForView: Getter<boolean>,
   excludeYogaFromRawProps: Getter<boolean>,
   fixDifferentiatorEmittingUpdatesWithWrongParentTag: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
@@ -267,6 +269,14 @@ export const enableUIConsistency: Getter<boolean> = createNativeFlagGetter('enab
  * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
  */
 export const enableViewRecycling: Getter<boolean> = createNativeFlagGetter('enableViewRecycling', false);
+/**
+ * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.
+ */
+export const enableViewRecyclingForText: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForText', true);
+/**
+ * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
+ */
+export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForView', true);
 /**
  * When enabled, rawProps in Props will not include Yoga specific props.
  */

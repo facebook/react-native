@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<001f61b20e3bacb67e4145a257cb92b1>>
+ * @generated SignedSource<<ae7503526759f8b9f1ef56207ee1cab5>>
  */
 
 /**
@@ -44,6 +44,8 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
+  private var enableViewRecyclingForTextCache: Boolean? = null
+  private var enableViewRecyclingForViewCache: Boolean? = null
   private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fixDifferentiatorEmittingUpdatesWithWrongParentTagCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
@@ -274,6 +276,24 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecycling()
       enableViewRecyclingCache = cached
+    }
+    return cached
+  }
+
+  override fun enableViewRecyclingForText(): Boolean {
+    var cached = enableViewRecyclingForTextCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecyclingForText()
+      enableViewRecyclingForTextCache = cached
+    }
+    return cached
+  }
+
+  override fun enableViewRecyclingForView(): Boolean {
+    var cached = enableViewRecyclingForViewCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecyclingForView()
+      enableViewRecyclingForViewCache = cached
     }
     return cached
   }
