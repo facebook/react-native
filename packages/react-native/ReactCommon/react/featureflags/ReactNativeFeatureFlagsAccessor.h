@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c9b36f185334a694bb5f210aeb297fdb>>
+ * @generated SignedSource<<13d834955b12d1660fa4f64d5454a136>>
  */
 
 /**
@@ -55,6 +55,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableReportEventPaintTime();
   bool enableSynchronousStateUpdates();
   bool enableUIConsistency();
+  bool enableViewCulling();
   bool enableViewRecycling();
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
@@ -85,7 +86,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 43> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -110,6 +111,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableReportEventPaintTime_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;
   std::atomic<std::optional<bool>> enableUIConsistency_;
+  std::atomic<std::optional<bool>> enableViewCulling_;
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
