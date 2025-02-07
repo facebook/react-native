@@ -5480,6 +5480,7 @@ exports[`public API should not change unintentionally Libraries/LogBox/UI/AnsiHi
 
 exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBoxButton.js 1`] = `
 "type Props = $ReadOnly<{
+  id?: string,
   backgroundColor: $ReadOnly<{
     default: string,
     pressed: string,
