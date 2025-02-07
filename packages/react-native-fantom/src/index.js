@@ -170,6 +170,8 @@ function createRoot(rootConfig?: RootConfig): Root {
  * This is a low level method to enqueue a native event to a node.
  * It does not wait for it to be flushed in the UI thread or for it to be
  * processed by JS.
+ *
+ * For a higher level API, use `dispatchNativeEvent`.
  */
 function enqueueNativeEvent(
   node: ReactNativeElement,
@@ -185,6 +187,19 @@ function enqueueNativeEvent(
     options?.category,
     options?.isUnique,
   );
+}
+
+function dispatchNativeEvent(
+  node: ReactNativeElement,
+  type: string,
+  payload?: {[key: string]: mixed},
+  options?: {category?: NativeEventCategory, isUnique?: boolean},
+) {
+  runOnUIThread(() => {
+    enqueueNativeEvent(node, type, payload, options);
+  });
+
+  runWorkLoop();
 }
 
 function scrollTo(
@@ -291,6 +306,7 @@ export default {
   runOnUIThread,
   runWorkLoop,
   createRoot,
+  dispatchNativeEvent,
   enqueueNativeEvent,
   flushAllNativeEvents,
   unstable_benchmark: Benchmark,
