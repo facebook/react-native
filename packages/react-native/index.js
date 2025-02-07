@@ -311,7 +311,8 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " +
         'See https://github.com/react-native-push-notification/ios',
     );
-    return require('./Libraries/PushNotificationIOS/PushNotificationIOS');
+    return require('./Libraries/PushNotificationIOS/PushNotificationIOS')
+      .default;
   },
   get Settings(): Settings {
     return require('./Libraries/Settings/Settings').default;
