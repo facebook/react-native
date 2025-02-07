@@ -157,8 +157,7 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
 
     // We do not support percentage border radii on Paper in order to be consistent with iOS (to
     // avoid developer surprise if it works on one platform but not another).
-    if (ViewUtil.getUIManagerType(view) != UIManagerType.FABRIC &&
-        borderRadius != null &&
+    if ( borderRadius != null &&
         borderRadius.type == LengthPercentageType.PERCENT) {
       borderRadius = null
     }
