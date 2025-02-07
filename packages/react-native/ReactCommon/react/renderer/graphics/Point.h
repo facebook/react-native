@@ -33,6 +33,13 @@ struct Point {
     return *this;
   }
 
+  Point operator-() noexcept {
+    return {
+        .x = -x,
+        .y = -y,
+    };
+  }
+
   Point& operator*=(const Point& point) noexcept {
     x *= point.x;
     y *= point.y;
