@@ -26,6 +26,7 @@ enum class CSSKeyword : uint8_t {
   Auto,
   Baseline,
   Block,
+  Bottom,
   Center,
   Clip,
   Column,
@@ -54,6 +55,7 @@ enum class CSSKeyword : uint8_t {
   InlineFlex,
   InlineGrid,
   Inset,
+  Left,
   LiningNums,
   Ltr,
   MaxContent,
@@ -71,6 +73,7 @@ enum class CSSKeyword : uint8_t {
   ProportionalNums,
   Relative,
   Ridge,
+  Right,
   Row,
   RowReverse,
   Rtl,
@@ -107,6 +110,7 @@ enum class CSSKeyword : uint8_t {
   TabularNums,
   Thick,
   Thin,
+  Top,
   Unset,
   Visible,
   Wrap,
@@ -143,6 +147,7 @@ CSS_DEFINE_KEYWORD(Absolute, "absolute")
 CSS_DEFINE_KEYWORD(Auto, "auto")
 CSS_DEFINE_KEYWORD(Baseline, "baseline")
 CSS_DEFINE_KEYWORD(Block, "block")
+CSS_DEFINE_KEYWORD(Bottom, "bottom")
 CSS_DEFINE_KEYWORD(Center, "center")
 CSS_DEFINE_KEYWORD(Clip, "clip")
 CSS_DEFINE_KEYWORD(Column, "column")
@@ -171,6 +176,7 @@ CSS_DEFINE_KEYWORD(InlineBlock, "inline-block")
 CSS_DEFINE_KEYWORD(InlineFlex, "inline-flex")
 CSS_DEFINE_KEYWORD(InlineGrid, "inline-grid")
 CSS_DEFINE_KEYWORD(Inset, "inset")
+CSS_DEFINE_KEYWORD(Left, "left")
 CSS_DEFINE_KEYWORD(LiningNums, "lining-nums")
 CSS_DEFINE_KEYWORD(Ltr, "ltr")
 CSS_DEFINE_KEYWORD(MaxContent, "max-content")
@@ -188,6 +194,7 @@ CSS_DEFINE_KEYWORD(Outset, "outset")
 CSS_DEFINE_KEYWORD(ProportionalNums, "proportional-nums")
 CSS_DEFINE_KEYWORD(Relative, "relative")
 CSS_DEFINE_KEYWORD(Ridge, "ridge")
+CSS_DEFINE_KEYWORD(Right, "right")
 CSS_DEFINE_KEYWORD(Row, "row")
 CSS_DEFINE_KEYWORD(RowReverse, "row-reverse")
 CSS_DEFINE_KEYWORD(Rtl, "rtl")
@@ -224,6 +231,7 @@ CSS_DEFINE_KEYWORD(StylisticTwo, "stylistic-two")
 CSS_DEFINE_KEYWORD(TabularNums, "tabular-nums")
 CSS_DEFINE_KEYWORD(Thick, "thick")
 CSS_DEFINE_KEYWORD(Thin, "thin")
+CSS_DEFINE_KEYWORD(Top, "top")
 CSS_DEFINE_KEYWORD(Unset, "unset")
 CSS_DEFINE_KEYWORD(Visible, "visible")
 CSS_DEFINE_KEYWORD(Wrap, "wrap")
@@ -249,6 +257,7 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
     CSS_HANDLE_KEYWORD(Auto)
     CSS_HANDLE_KEYWORD(Baseline)
     CSS_HANDLE_KEYWORD(Block)
+    CSS_HANDLE_KEYWORD(Bottom)
     CSS_HANDLE_KEYWORD(Center)
     CSS_HANDLE_KEYWORD(Clip)
     CSS_HANDLE_KEYWORD(Column)
@@ -277,6 +286,7 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
     CSS_HANDLE_KEYWORD(InlineFlex)
     CSS_HANDLE_KEYWORD(InlineGrid)
     CSS_HANDLE_KEYWORD(Inset)
+    CSS_HANDLE_KEYWORD(Left)
     CSS_HANDLE_KEYWORD(LiningNums)
     CSS_HANDLE_KEYWORD(Ltr)
     CSS_HANDLE_KEYWORD(MaxContent)
@@ -294,6 +304,7 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
     CSS_HANDLE_KEYWORD(ProportionalNums)
     CSS_HANDLE_KEYWORD(Relative)
     CSS_HANDLE_KEYWORD(Ridge)
+    CSS_HANDLE_KEYWORD(Right)
     CSS_HANDLE_KEYWORD(Row)
     CSS_HANDLE_KEYWORD(RowReverse)
     CSS_HANDLE_KEYWORD(Rtl)
@@ -330,6 +341,7 @@ constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
     CSS_HANDLE_KEYWORD(TabularNums)
     CSS_HANDLE_KEYWORD(Thick)
     CSS_HANDLE_KEYWORD(Thin)
+    CSS_HANDLE_KEYWORD(Top)
     CSS_HANDLE_KEYWORD(Unset)
     CSS_HANDLE_KEYWORD(Visible)
     CSS_HANDLE_KEYWORD(Wrap)
