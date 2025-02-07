@@ -39,6 +39,7 @@ export default function LogBoxNotification(props: Props): React.Node {
   return (
     <View style={styles.container}>
       <LogBoxButton
+        id={`logbox_button_${level}`}
         onPress={props.onPressOpen}
         style={styles.press}
         backgroundColor={{
