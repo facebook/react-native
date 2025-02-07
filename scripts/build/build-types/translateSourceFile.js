@@ -46,12 +46,21 @@ async function translateSourceFile(
   // Apply pre-transforms
   const preTransformResult = await applyTransforms(parsed, preTransforms);
 
+  // Translate to Flow defs (prunes non-type imports)
+  const flowDefResult = await translate.translateFlowToFlowDef(
+    preTransformResult.code,
+    prettierOptions,
+  );
+
   // Resolve dependencies
-  const dependencies = await getDependencies(preTransformResult, filePath);
+  const dependencies = await getDependencies(
+    await parse(flowDefResult),
+    filePath,
+  );
 
   // Translate to TypeScript defs
   const result = await translate.translateFlowToTSDef(
-    preTransformResult.code,
+    flowDefResult,
     prettierOptions,
   );
 
