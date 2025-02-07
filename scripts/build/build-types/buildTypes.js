@@ -10,6 +10,7 @@
  */
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../../consts');
+const translatedModuleTemplate = require('./templates/translatedModule.d.ts-template');
 const translateSourceFile = require('./translateSourceFile');
 const debug = require('debug')('build-types:main');
 const {existsSync, promises: fs} = require('fs');
@@ -120,7 +121,13 @@ async function translateSourceFiles(
         }
 
         await fs.mkdir(path.dirname(buildPath), {recursive: true});
-        await fs.writeFile(buildPath, typescriptDef);
+        await fs.writeFile(
+          buildPath,
+          translatedModuleTemplate({
+            originalFileName: path.relative(REPO_ROOT, file),
+            source: stripDocblock(typescriptDef),
+          }),
+        );
       } catch (e) {
         console.error(`Failed to build ${path.relative(REPO_ROOT, file)}\n`, e);
       }
@@ -153,6 +160,10 @@ function splitPathAndExtension(file: string): [string, string] {
     file.substring(0, extensionStart),
     file.substring(extensionStart, file.length),
   ];
+}
+
+function stripDocblock(source: string): string {
+  return source.replace(/\/\*\*[\s\S]*?\*\/\n/, '');
 }
 
 module.exports = buildTypes;
