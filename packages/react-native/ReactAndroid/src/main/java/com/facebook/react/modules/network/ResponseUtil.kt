@@ -21,14 +21,13 @@ internal object ResponseUtil {
       progress: Long,
       total: Long
   ) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didSendNetworkData",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushInt(progress.toInt())
           pushInt(total.toInt())
-        }
-
-    reactContext?.emitDeviceEvent("didSendNetworkData", args)
+        })
   }
 
   @JvmStatic
@@ -39,15 +38,14 @@ internal object ResponseUtil {
       progress: Long,
       total: Long
   ) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didReceiveNetworkIncrementalData",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushString(data)
           pushInt(progress.toInt())
           pushInt(total.toInt())
-        }
-
-    reactContext?.emitDeviceEvent("didReceiveNetworkIncrementalData", args)
+        })
   }
 
   @JvmStatic
@@ -57,36 +55,33 @@ internal object ResponseUtil {
       progress: Long,
       total: Long
   ) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didReceiveNetworkDataProgress",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushInt(progress.toInt())
           pushInt(total.toInt())
-        }
-
-    reactContext?.emitDeviceEvent("didReceiveNetworkDataProgress", args)
+        })
   }
 
   @JvmStatic
   fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: String?) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didReceiveNetworkData",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushString(data)
-        }
-
-    reactContext?.emitDeviceEvent("didReceiveNetworkData", args)
+        })
   }
 
   @JvmStatic
   fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: WritableMap?) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didReceiveNetworkData",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushMap(data)
-        }
-
-    reactContext?.emitDeviceEvent("didReceiveNetworkData", args)
+        })
   }
 
   @JvmStatic
@@ -96,28 +91,25 @@ internal object ResponseUtil {
       error: String?,
       e: Throwable?
   ) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didCompleteNetworkResponse",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushString(error)
-        }
-
-    if ((e != null) && (e.javaClass == SocketTimeoutException::class.java)) {
-      args.pushBoolean(true) // last argument is a time out boolean
-    }
-
-    reactContext?.emitDeviceEvent("didCompleteNetworkResponse", args)
+          if (e?.javaClass == SocketTimeoutException::class.java) {
+            pushBoolean(true) // last argument is a time out boolean
+          }
+        })
   }
 
   @JvmStatic
   fun onRequestSuccess(reactContext: ReactApplicationContext?, requestId: Int) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didCompleteNetworkResponse",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushNull()
-        }
-
-    reactContext?.emitDeviceEvent("didCompleteNetworkResponse", args)
+        })
   }
 
   @JvmStatic
@@ -128,14 +120,13 @@ internal object ResponseUtil {
       headers: WritableMap?,
       url: String?
   ) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didReceiveNetworkResponse",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushInt(statusCode)
           pushMap(headers)
           pushString(url)
-        }
-
-    reactContext?.emitDeviceEvent("didReceiveNetworkResponse", args)
+        })
   }
 }
