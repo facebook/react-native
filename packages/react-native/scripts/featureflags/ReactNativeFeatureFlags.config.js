@@ -290,6 +290,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableViewCulling: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-01-27',
+        description:
+          'Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableViewRecycling: {
       defaultValue: false,
       metadata: {

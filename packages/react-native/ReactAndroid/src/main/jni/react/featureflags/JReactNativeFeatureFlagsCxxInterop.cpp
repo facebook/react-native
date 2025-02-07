@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6ccc0a90005733d3a3782e58fd901f67>>
+ * @generated SignedSource<<d3f7aa01d4ce24cf3acc006376bd4205>>
  */
 
 /**
@@ -174,6 +174,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableUIConsistency() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableUIConsistency");
+    return method(javaProvider_);
+  }
+
+  bool enableViewCulling() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableViewCulling");
     return method(javaProvider_);
   }
 
@@ -410,6 +416,11 @@ bool JReactNativeFeatureFlagsCxxInterop::enableUIConsistency(
   return ReactNativeFeatureFlags::enableUIConsistency();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::enableViewCulling(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::enableViewCulling();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::enableViewRecycling(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableViewRecycling();
@@ -605,6 +616,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableUIConsistency",
         JReactNativeFeatureFlagsCxxInterop::enableUIConsistency),
+      makeNativeMethod(
+        "enableViewCulling",
+        JReactNativeFeatureFlagsCxxInterop::enableViewCulling),
       makeNativeMethod(
         "enableViewRecycling",
         JReactNativeFeatureFlagsCxxInterop::enableViewRecycling),
