@@ -370,24 +370,24 @@ TEST(CSSTransform, scale_y_length) {
 
 TEST(CSSTransform, rotate_basic) {
   auto val = parseCSSProperty<CSSTransformFunction>("rotate(90deg)");
-  EXPECT_TRUE(std::holds_alternative<CSSRotateZ>(val));
-  auto& rotate = std::get<CSSRotateZ>(val);
+  EXPECT_TRUE(std::holds_alternative<CSSRotate>(val));
+  auto& rotate = std::get<CSSRotate>(val);
 
   EXPECT_EQ(rotate.degrees, 90.0f);
 }
 
 TEST(CSSTransform, rotate_turn) {
   auto val = parseCSSProperty<CSSTransformFunction>("rotate(1turn)");
-  EXPECT_TRUE(std::holds_alternative<CSSRotateZ>(val));
-  auto& rotate = std::get<CSSRotateZ>(val);
+  EXPECT_TRUE(std::holds_alternative<CSSRotate>(val));
+  auto& rotate = std::get<CSSRotate>(val);
 
   EXPECT_EQ(rotate.degrees, 360.0f);
 }
 
 TEST(CSSTransform, rotate_zero) {
   auto val = parseCSSProperty<CSSTransformFunction>("rotate(0)");
-  EXPECT_TRUE(std::holds_alternative<CSSRotateZ>(val));
-  auto& rotate = std::get<CSSRotateZ>(val);
+  EXPECT_TRUE(std::holds_alternative<CSSRotate>(val));
+  auto& rotate = std::get<CSSRotate>(val);
 
   EXPECT_EQ(rotate.degrees, 0.0f);
 }
@@ -402,8 +402,8 @@ TEST(CSSTransform, rotate_z) {
 
 TEST(CSSTransform, rotate_funky) {
   auto val = parseCSSProperty<CSSTransformFunction>("roTate(90deg)");
-  EXPECT_TRUE(std::holds_alternative<CSSRotateZ>(val));
-  auto& rotate = std::get<CSSRotateZ>(val);
+  EXPECT_TRUE(std::holds_alternative<CSSRotate>(val));
+  auto& rotate = std::get<CSSRotate>(val);
 
   EXPECT_EQ(rotate.degrees, 90.0f);
 }
@@ -667,7 +667,7 @@ TEST(CSSTransform, transform_list) {
 
   EXPECT_EQ(transformList.size(), 3);
   EXPECT_TRUE(std::holds_alternative<CSSTranslate>(transformList[0]));
-  EXPECT_TRUE(std::holds_alternative<CSSRotateZ>(transformList[1]));
+  EXPECT_TRUE(std::holds_alternative<CSSRotate>(transformList[1]));
   EXPECT_TRUE(std::holds_alternative<CSSScale>(transformList[2]));
 
   auto& translate = std::get<CSSTranslate>(transformList[0]);
@@ -679,7 +679,7 @@ TEST(CSSTransform, transform_list) {
   EXPECT_EQ(std::get<CSSLength>(translate.x).unit, CSSLengthUnit::Px);
   EXPECT_EQ(std::get<CSSLength>(translate.y).unit, CSSLengthUnit::Px);
 
-  auto& rotate = std::get<CSSRotateZ>(transformList[1]);
+  auto& rotate = std::get<CSSRotate>(transformList[1]);
   EXPECT_EQ(rotate.degrees, 90.0f);
 
   auto& scale = std::get<CSSScale>(transformList[2]);
