@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f3fb08caf703b20a589c241a6eab323b>>
+ * @generated SignedSource<<10a32b4596137205dcfa9324064fd337>>
  * @flow strict
  */
 
@@ -47,6 +47,7 @@ export interface Spec extends TurboModule {
   +enableReportEventPaintTime?: () => boolean;
   +enableSynchronousStateUpdates?: () => boolean;
   +enableUIConsistency?: () => boolean;
+  +enableViewCulling?: () => boolean;
   +enableViewRecycling?: () => boolean;
   +enableViewRecyclingForText?: () => boolean;
   +enableViewRecyclingForView?: () => boolean;
