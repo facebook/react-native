@@ -166,14 +166,19 @@ function createRoot(rootConfig?: RootConfig): Root {
   return new Root(rootConfig);
 }
 
-function dispatchNativeEvent(
+/**
+ * This is a low level method to enqueue a native event to a node.
+ * It does not wait for it to be flushed in the UI thread or for it to be
+ * processed by JS.
+ */
+function enqueueNativeEvent(
   node: ReactNativeElement,
   type: string,
   payload?: {[key: string]: mixed},
   options?: {category?: NativeEventCategory, isUnique?: boolean},
 ) {
   const shadowNode = getNativeNodeReference(node);
-  NativeFantom.dispatchNativeEvent(
+  NativeFantom.enqueueNativeEvent(
     shadowNode,
     type,
     payload,
@@ -286,7 +291,7 @@ export default {
   runOnUIThread,
   runWorkLoop,
   createRoot,
-  dispatchNativeEvent,
+  enqueueNativeEvent,
   flushAllNativeEvents,
   unstable_benchmark: Benchmark,
   scrollTo,
