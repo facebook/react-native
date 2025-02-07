@@ -37,9 +37,11 @@ const SOURCE_PATTERNS = [
   'react-native/Libraries/TurboModule/RCTExport.js',
   'react-native/Libraries/Types/RootTagTypes.js',
   'react-native/Libraries/Utilities/Platform.js',
-  'react-native/src/private/specs_DEPRECATED/modules/NativeActionSheetManager.js',
+  'react-native/Libraries/Share/**/*.js',
   'react-native/src/private/specs_DEPRECATED/modules/NativeAlertManager.js',
+  'react-native/src/private/specs_DEPRECATED/modules/NativeActionSheetManager.js',
   'react-native/src/private/specs_DEPRECATED/modules/NativeSettingsManager.js',
+  'react-native/src/private/specs_DEPRECATED/modules/NativeShareModule.js',
   'react-native/src/private/specs/modules/NativeToastAndroid.js',
   // TODO(T210505412): Include input packages, e.g. virtualized-lists
 ];

@@ -8,6 +8,8 @@
  * @flow strict-local
  */
 
+import type {ColorValue} from '../StyleSheet/StyleSheet';
+
 import NativeActionSheetManager from '../ActionSheetIOS/NativeActionSheetManager';
 import NativeShareModule from './NativeShareModule';
 
@@ -29,9 +31,14 @@ export type ShareContent =
 export type ShareOptions = {
   dialogTitle?: string,
   excludedActivityTypes?: Array<string>,
-  tintColor?: string,
+  tintColor?: ColorValue,
   subject?: string,
   anchor?: number,
+};
+
+export type ShareAction = {
+  action: 'sharedAction' | 'dismissedAction',
+  activityType?: string | null,
 };
 
 class Share {
@@ -73,7 +80,7 @@ class Share {
    */
   static share(
     content: ShareContent,
-    options: ShareOptions = {},
+    options?: ShareOptions = {},
   ): Promise<{action: string, activityType: ?string}> {
     invariant(
       typeof content === 'object' && content !== null,
