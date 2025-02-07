@@ -13,10 +13,12 @@ import type {
   RenderOutputConfig,
 } from './getFantomRenderedOutput';
 import type {MixedElement} from 'react';
+import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 
 import ReactNativeElement from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import * as Benchmark from './Benchmark';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
+import {createRootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import NativeFantom, {
   NativeEventCategory,
@@ -89,6 +91,10 @@ class Root {
 
   getRenderedOutput(config: RenderOutputConfig = {}): FantomRenderedOutput {
     return getFantomRenderedOutput(this.#surfaceId, config);
+  }
+
+  getRootTag(): RootTag {
+    return createRootTag(this.#surfaceId);
   }
 
   // TODO: add an API to check if all surfaces were deallocated when tests are finished.
