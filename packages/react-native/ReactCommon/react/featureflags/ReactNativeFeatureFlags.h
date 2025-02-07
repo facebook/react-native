@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f38ee9e79b92ea5928702891a69b115e>>
+ * @generated SignedSource<<67e89ba7eb0c5c16cd4ac556f203aee6>>
  */
 
 /**
@@ -153,6 +153,11 @@ class ReactNativeFeatureFlags {
    * Ensures that JavaScript always has a consistent view of the state of the UI (e.g.: commits done in other threads are not immediately propagated to JS during its execution).
    */
   RN_EXPORT static bool enableUIConsistency();
+
+  /**
+   * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
+   */
+  RN_EXPORT static bool enableViewCulling();
 
   /**
    * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
