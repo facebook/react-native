@@ -381,7 +381,7 @@ describe('Fantom', () => {
     });
   });
 
-  describe('runOnUIThread + dispatchNativeEvent', () => {
+  describe('runOnUIThread + enqueueNativeEvent', () => {
     it('sends event without payload', () => {
       const root = Fantom.createRoot();
       let maybeNode;
@@ -404,7 +404,7 @@ describe('Fantom', () => {
       expect(focusEvent).toHaveBeenCalledTimes(0);
 
       Fantom.runOnUIThread(() => {
-        Fantom.dispatchNativeEvent(element, 'focus');
+        Fantom.enqueueNativeEvent(element, 'focus');
       });
 
       // The tasks have not run.
@@ -437,7 +437,7 @@ describe('Fantom', () => {
     const element = ensureInstance(maybeNode, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
-      Fantom.dispatchNativeEvent(element, 'change', {
+      Fantom.enqueueNativeEvent(element, 'change', {
         text: 'Hello World',
       });
     });
@@ -470,13 +470,13 @@ describe('Fantom', () => {
     const element = ensureInstance(maybeNode, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
-      Fantom.dispatchNativeEvent(element, 'scroll', {
+      Fantom.enqueueNativeEvent(element, 'scroll', {
         contentOffset: {
           x: 0,
           y: 1,
         },
       });
-      Fantom.dispatchNativeEvent(
+      Fantom.enqueueNativeEvent(
         element,
         'scroll',
         {
