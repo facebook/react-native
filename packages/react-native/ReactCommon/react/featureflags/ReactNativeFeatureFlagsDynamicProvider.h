@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b777f67e92432fb53ce5340448ccd8b6>>
+ * @generated SignedSource<<f5bab68186eed5790ec534bc52fa2ca9>>
  */
 
 /**
@@ -250,6 +250,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableUIConsistency();
+  }
+
+  bool enableViewCulling() override {
+    auto value = values_["enableViewCulling"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableViewCulling();
   }
 
   bool enableViewRecycling() override {
