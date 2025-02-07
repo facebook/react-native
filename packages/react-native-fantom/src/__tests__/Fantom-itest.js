@@ -501,6 +501,34 @@ describe('Fantom', () => {
     });
   });
 
+  describe('dispatchNativeEvent', () => {
+    it('flushes the event and runs the work loop', () => {
+      const root = Fantom.createRoot();
+      let maybeNode;
+
+      let focusEvent = jest.fn();
+
+      Fantom.runTask(() => {
+        root.render(
+          <TextInput
+            onFocus={focusEvent}
+            ref={node => {
+              maybeNode = node;
+            }}
+          />,
+        );
+      });
+
+      const element = ensureInstance(maybeNode, ReactNativeElement);
+
+      expect(focusEvent).toHaveBeenCalledTimes(0);
+
+      Fantom.dispatchNativeEvent(element, 'focus');
+
+      expect(focusEvent).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('scrollTo', () => {
     it('throws error if called on node that is not scroll view', () => {
       const root = Fantom.createRoot();
