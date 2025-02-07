@@ -11,40 +11,10 @@
 
 require('../babel-register').registerForScript();
 
-const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
-const translateSourceFile = require('./build-types/translateSourceFile');
+const buildTypes = require('./build-types/buildTypes');
 const chalk = require('chalk');
-const debugModule = require('debug');
-const debug = require('debug')('build-types');
-const {existsSync, promises: fs} = require('fs');
-const glob = require('glob');
-const path = require('path');
+const debug = require('debug');
 const {parseArgs} = require('util');
-
-const OUTPUT_DIR = 'types_generated';
-
-const IGNORE_PATTERNS = [
-  '**/__{tests,mocks,fixtures,flowtests}__/**',
-  '**/*.{macos,windows}.js',
-];
-
-const SOURCE_PATTERNS = [
-  'react-native/Libraries/ActionSheetIOS/**/*.js',
-  'react-native/Libraries/Alert/**/*.js',
-  'react-native/Libraries/Components/ToastAndroid/*.js',
-  'react-native/Libraries/ReactNative/RootTag.js',
-  'react-native/Libraries/Settings/**/*.js',
-  'react-native/Libraries/TurboModule/RCTExport.js',
-  'react-native/Libraries/Types/RootTagTypes.js',
-  'react-native/Libraries/Utilities/Platform.js',
-  'react-native/Libraries/Share/**/*.js',
-  'react-native/src/private/specs_DEPRECATED/modules/NativeAlertManager.js',
-  'react-native/src/private/specs_DEPRECATED/modules/NativeActionSheetManager.js',
-  'react-native/src/private/specs_DEPRECATED/modules/NativeSettingsManager.js',
-  'react-native/src/private/specs_DEPRECATED/modules/NativeShareModule.js',
-  'react-native/src/private/specs/modules/NativeToastAndroid.js',
-  // TODO(T210505412): Include input packages, e.g. virtualized-lists
-];
 
 const config = {
   options: {
@@ -69,7 +39,7 @@ async function main() {
   }
 
   if (debugEnabled) {
-    debugModule.enable('build-types');
+    debug.enable('build-types:*');
   }
 
   console.log(
@@ -80,94 +50,7 @@ async function main() {
       '\n',
   );
 
-  const files /*: Set<string> */ = new Set(
-    SOURCE_PATTERNS.flatMap(srcPath =>
-      glob.sync(path.join(PACKAGES_DIR, srcPath), {
-        nodir: true,
-        ignore: IGNORE_PATTERNS,
-      }),
-    ),
-  );
-
-  // Require common interface file (js.flow) or base implementation (.js) for
-  // platform-specific files (.android.js or .ios.js)
-  for (const file of files) {
-    const [pathWithoutExt, extension] = splitPathAndExtension(file);
-
-    if (/(\.android\.js|\.ios\.js)$/.test(extension)) {
-      files.delete(file);
-
-      let resolved = false;
-
-      for (const ext of ['.js.flow', '.js']) {
-        let interfaceFile = pathWithoutExt + ext;
-
-        if (files.has(interfaceFile)) {
-          resolved = true;
-          break;
-        }
-
-        if (existsSync(interfaceFile)) {
-          files.add(interfaceFile);
-          resolved = true;
-          debug(
-            'Resolved %s to %s',
-            path.relative(REPO_ROOT, file),
-            path.relative(REPO_ROOT, interfaceFile),
-          );
-          break;
-        }
-      }
-
-      if (!resolved) {
-        throw new Error(
-          `No common interface found for ${file}.[android|ios].js. This ` +
-            'should either be a base .js implementation or a .js.flow interface file.',
-        );
-      }
-    }
-  }
-
-  await Promise.all(
-    Array.from(files).map(async file => {
-      const buildPath = getBuildPath(file);
-      const source = await fs.readFile(file, 'utf-8');
-
-      try {
-        const typescriptDef = await translateSourceFile(source);
-
-        await fs.mkdir(path.dirname(buildPath), {recursive: true});
-        await fs.writeFile(buildPath, typescriptDef);
-      } catch (e) {
-        console.error(`Failed to build ${path.relative(REPO_ROOT, file)}\n`, e);
-      }
-    }),
-  );
-}
-
-function getPackageName(file /*: string */) /*: string */ {
-  return path.relative(PACKAGES_DIR, file).split(path.sep)[0];
-}
-
-function getBuildPath(file /*: string */) /*: string */ {
-  const packageDir = path.join(PACKAGES_DIR, getPackageName(file));
-
-  return path.join(
-    packageDir,
-    file
-      .replace(packageDir, OUTPUT_DIR)
-      .replace(/\.js\.flow$/, '.js')
-      .replace(/\.js$/, '.d.ts'),
-  );
-}
-
-function splitPathAndExtension(file /*: string */) /*: [string, string] */ {
-  const lastSep = file.lastIndexOf(path.sep);
-  const extensionStart = file.indexOf('.', lastSep);
-  return [
-    file.substring(0, extensionStart),
-    file.substring(extensionStart, file.length),
-  ];
+  await buildTypes();
 }
 
 if (require.main === module) {
