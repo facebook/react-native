@@ -12,6 +12,7 @@
 import type {ParseResult} from 'hermes-transform/dist/transform/parse';
 import type {TransformASTResult} from 'hermes-transform/dist/transform/transformAST';
 
+const getDependencies = require('./resolution/getDependencies');
 const translate = require('flow-api-translator');
 const {parse, print} = require('hermes-transform');
 
@@ -24,18 +25,29 @@ const prettierOptions = {parser: 'babel'};
 const unsupportedFeatureRegex =
   /Unsupported feature: Translating ".*" is currently not supported/;
 
+type TranslateSourceFileResult = {
+  result: string,
+  dependencies: Set<string>,
+};
+
 /**
  * Translate the public API of a Flow source file to TypeScript definition.
  *
  * This uses [flow-api-translator](https://www.npmjs.com/package/flow-api-translator),
  * and applies extra transformations such as stripping private properties.
  */
-async function translateSourceFile(source: string): Promise<string> {
+async function translateSourceFile(
+  source: string,
+  filePath: string,
+): Promise<TranslateSourceFileResult> {
   // Parse Flow source
   const parsed = await parse(source);
 
   // Apply pre-transforms
   const preTransformResult = await applyTransforms(parsed, preTransforms);
+
+  // Resolve dependencies
+  const dependencies = await getDependencies(preTransformResult, filePath);
 
   // Translate to TypeScript defs
   const result = await translate.translateFlowToTSDef(
@@ -48,7 +60,10 @@ async function translateSourceFile(source: string): Promise<string> {
     throw new Error(`Error: ${unsupportedFeatureMatch[0]}`);
   }
 
-  return result;
+  return {
+    result,
+    dependencies,
+  };
 }
 
 async function applyTransforms(
