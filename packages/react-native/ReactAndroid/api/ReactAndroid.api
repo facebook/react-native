@@ -3482,6 +3482,14 @@ public class com/facebook/react/modules/network/ResponseUtil {
 	public static fun onResponseReceived (Lcom/facebook/react/bridge/ReactApplicationContext;IILcom/facebook/react/bridge/WritableMap;Ljava/lang/String;)V
 }
 
+public final class com/facebook/react/modules/network/ReactCookieJarContainer : com/facebook/react/modules/network/CookieJarContainer {
+	public fun <init> ()V
+	public fun loadForRequest (Lokhttp3/HttpUrl;)Ljava/util/List;
+	public fun removeCookieJar ()V
+	public fun saveFromResponse (Lokhttp3/HttpUrl;Ljava/util/List;)V
+	public fun setCookieJar (Lokhttp3/CookieJar;)V
+}
+
 public class com/facebook/react/modules/network/TLSSocketFactory : javax/net/ssl/SSLSocketFactory {
 	public fun <init> ()V
 	public fun createSocket (Ljava/lang/String;I)Ljava/net/Socket;
@@ -7825,4 +7833,3 @@ public final class com/facebook/react/views/view/WindowUtilKt {
 	public static final fun setStatusBarVisibility (Landroid/view/Window;Z)V
 	public static final fun setSystemBarsTranslucency (Landroid/view/Window;Z)V
 }
-
