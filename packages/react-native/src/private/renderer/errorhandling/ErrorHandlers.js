@@ -9,6 +9,7 @@
  */
 
 import type {ExtendedError} from '../../../../Libraries/Core/ExtendedError';
+import type {Component as ReactComponent} from 'react';
 
 import ExceptionsManager, {
   SyntheticError,
@@ -17,7 +18,7 @@ import ExceptionsManager, {
 type ErrorInfo = {
   +componentStack?: ?string,
   // $FlowFixMe[unclear-type] unknown props and state.
-  +errorBoundary?: ?React$Component<any, any>,
+  +errorBoundary?: ?ReactComponent<any, any>,
 };
 
 function getExtendedError(

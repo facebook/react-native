@@ -30,11 +30,11 @@ export type TaskProvider = () => Task;
 type TaskCanceller = () => void;
 type TaskCancelProvider = () => TaskCanceller;
 
-export type ComponentProvider = () => React$ComponentType<any>;
+export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component_: ComponentProvider,
   scopedPerformanceLogger: IPerformanceLogger,
-) => React$ComponentType<any>;
+) => React.ComponentType<any>;
 export type AppConfig = {
   appKey: string,
   component?: ComponentProvider,
@@ -59,7 +59,7 @@ export type Registry = {
 };
 export type WrapperComponentProvider = (
   appParameters: Object,
-) => React$ComponentType<any>;
+) => React.ComponentType<any>;
 export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 
 const runnables: Runnables = {};

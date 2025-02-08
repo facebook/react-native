@@ -6533,11 +6533,11 @@ exports[`public API should not change unintentionally Libraries/ReactNative/AppR
 export type TaskProvider = () => Task;
 type TaskCanceller = () => void;
 type TaskCancelProvider = () => TaskCanceller;
-export type ComponentProvider = () => React$ComponentType<any>;
+export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component_: ComponentProvider,
   scopedPerformanceLogger: IPerformanceLogger
-) => React$ComponentType<any>;
+) => React.ComponentType<any>;
 export type AppConfig = {
   appKey: string,
   component?: ComponentProvider,
@@ -6562,7 +6562,7 @@ export type Registry = {
 };
 export type WrapperComponentProvider = (
   appParameters: Object
-) => React$ComponentType<any>;
+) => React.ComponentType<any>;
 export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 declare const AppRegistry: {
   setWrapperComponentProvider(provider: WrapperComponentProvider): void,
@@ -6878,7 +6878,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Rend
 
 exports[`public API should not change unintentionally Libraries/ReactNative/RootTag.js 1`] = `
 "declare export opaque type RootTag;
-declare export const RootTagContext: React$Context<RootTag>;
+declare export const RootTagContext: React.Context<RootTag>;
 declare export function createRootTag(rootTag: number | RootTag): RootTag;
 "
 `;
@@ -7679,7 +7679,8 @@ declare export default typeof Text;
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/TextAncestor.js 1`] = `
-"declare const TextAncestorContext: React$Context<boolean>;
+"declare const React: $FlowFixMe;
+declare const TextAncestorContext: React.Context<boolean>;
 declare export default typeof TextAncestorContext;
 "
 `;
