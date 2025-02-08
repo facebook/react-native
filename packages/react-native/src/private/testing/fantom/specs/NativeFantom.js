@@ -65,7 +65,7 @@ interface Spec extends TurboModule {
     devicePixelRatio: number,
   ) => void;
   stopSurface: (surfaceId: number) => void;
-  dispatchNativeEvent: (
+  enqueueNativeEvent: (
     shadowNode: mixed /* ShadowNode */,
     type: string,
     payload?: mixed,

@@ -44,6 +44,11 @@ TEST(CSSLength, length_values) {
 
   auto pctValue = parseCSSProperty<CSSLength>("-40%");
   EXPECT_TRUE(std::holds_alternative<std::monostate>(pctValue));
+
+  auto negativeValue = parseCSSProperty<CSSLength>("-20em");
+  EXPECT_TRUE(std::holds_alternative<CSSLength>(negativeValue));
+  EXPECT_EQ(std::get<CSSLength>(negativeValue).value, -20.0f);
+  EXPECT_EQ(std::get<CSSLength>(negativeValue).unit, CSSLengthUnit::Em);
 }
 
 TEST(CSSLength, parse_constexpr) {

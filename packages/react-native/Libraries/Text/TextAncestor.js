@@ -15,7 +15,7 @@ const React = require('react');
 /**
  * Whether the current element is the descendant of a <Text> element.
  */
-const TextAncestorContext: React$Context<boolean> = React.createContext(false);
+const TextAncestorContext: React.Context<boolean> = React.createContext(false);
 if (__DEV__) {
   TextAncestorContext.displayName = 'TextAncestorContext';
 }

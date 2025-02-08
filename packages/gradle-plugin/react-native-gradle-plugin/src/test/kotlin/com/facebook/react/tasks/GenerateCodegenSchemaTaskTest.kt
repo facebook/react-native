@@ -68,7 +68,7 @@ class GenerateCodegenSchemaTaskTest {
           File(this, "afolder/build/intermediates/sourcemaps/react/anotherfolder/excludedfile.js")
               .createFileAndPath()
           File(this, "node_modules/excludedfile.js").createFileAndPath()
-          File(this, "node_modules/excludedfile.d.ts").createFileAndPath()
+          File(this, "afolder/excludedfile.d.ts").createFileAndPath()
         }
 
     val task = createTestTask<GenerateCodegenSchemaTask> { it.jsRootDir.set(jsRootDir) }

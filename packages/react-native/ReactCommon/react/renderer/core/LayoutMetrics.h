@@ -13,6 +13,7 @@
 #include <react/renderer/graphics/Rect.h>
 #include <react/renderer/graphics/RectangleEdges.h>
 #include <react/utils/hash_combine.h>
+#include <algorithm>
 
 namespace facebook::react {
 
@@ -53,6 +54,21 @@ struct LayoutMetrics {
         Size{
             frame.size.width - contentInsets.left - contentInsets.right,
             frame.size.height - contentInsets.top - contentInsets.bottom}};
+  }
+
+  // Calculates the frame of the node including overflow insets.
+  // If the frame was drawn on screen, it would include all the children of the
+  // node (and their children, recursively).
+  Rect getOverflowInsetFrame() const {
+    return Rect{
+        Point{
+            frame.origin.x + std::min(Float{0}, overflowInset.left),
+            frame.origin.y + std::min(Float{0}, overflowInset.top)},
+        Size{
+            frame.size.width - std::min(Float{0}, overflowInset.left) +
+                -std::min(Float{0}, overflowInset.right),
+            frame.size.height - std::min(Float{0}, overflowInset.top) +
+                -std::min(Float{0}, overflowInset.bottom)}};
   }
 
   // Origin: the outer border of the node.

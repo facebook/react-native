@@ -42,7 +42,7 @@ describe('discrete event category', () => {
         interruptRendering = false;
         const element = ensureReactNativeElement(maybeTextInputNode);
         Fantom.runOnUIThread(() => {
-          Fantom.dispatchNativeEvent(
+          Fantom.enqueueNativeEvent(
             element,
             'change',
             {
@@ -161,7 +161,7 @@ describe('continuous event category', () => {
         interruptRendering = false;
         const element = ensureReactNativeElement(maybeTextInputNode);
         Fantom.runOnUIThread(() => {
-          Fantom.dispatchNativeEvent(
+          Fantom.enqueueNativeEvent(
             element,
             'selectionChange',
             {

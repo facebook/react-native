@@ -112,6 +112,11 @@ TEST(CSSTokenizer, dimension_values) {
       ".3xyz",
       CSSToken{CSSTokenType::Dimension, 0.3, "xyz"},
       CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "-0.5em",
+      CSSToken{CSSTokenType::Dimension, -0.5, "em"},
+      CSSToken{CSSTokenType::EndOfFile});
 }
 
 TEST(CSSTokenizer, percent_values) {

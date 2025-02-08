@@ -63,7 +63,7 @@ type ErrorExamples =
   | 'promiseAssert';
 
 class SampleTurboModuleExample extends React.Component<{}, State> {
-  static contextType: React$Context<RootTag> = RootTagContext;
+  static contextType: React.Context<RootTag> = RootTagContext;
   eventSubscriptions: EventSubscription[] = [];
 
   state: State = {

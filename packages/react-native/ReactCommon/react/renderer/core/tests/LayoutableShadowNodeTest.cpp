@@ -9,7 +9,7 @@
 #include <react/renderer/element/Element.h>
 #include <react/renderer/element/testUtils.h>
 
-using namespace facebook::react;
+namespace facebook::react {
 
 /*
  * ┌────────┐
@@ -309,6 +309,285 @@ TEST(LayoutableShadowNodeTest, relativeLayoutMetricsOnTransformedNode) {
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 70);
   EXPECT_EQ(relativeLayoutMetrics.frame.size.width, 50);
   EXPECT_EQ(relativeLayoutMetrics.frame.size.height, 100);
+}
+
+/*
+ * View B is child of View A.
+ * In this example, there is no overflow and view B is completely within view A.
+ *
+ * ┌──────────────┐
+ * │<View A />    │
+ * │ ┌───────────┐│
+ * │ │<View B /> ││
+ * │ │           ││
+ * │ └───────────┘│
+ * └──────────────┘
+ */
+TEST(LayoutableShadowNodeTest, noOverflow) {
+  auto builder = simpleComponentBuilder();
+  auto shadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<RootShadowNode>()
+      .props([] {
+        auto sharedProps = std::make_shared<RootProps>();
+        auto &props = *sharedProps;
+        props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
+        auto &yogaStyle = props.yogaStyle;
+        yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(500));
+        yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(500));
+        return sharedProps;
+      }).children({
+        Element<ViewShadowNode>()
+        .props([=] {
+          auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+          auto &props = *sharedProps;
+          auto &yogaStyle = props.yogaStyle;
+          yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(100));
+          yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(200));
+          return sharedProps;
+        })
+        .reference(shadowNode)
+        .children({
+          Element<ViewShadowNode>()
+          .props([] {
+            auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+            auto &props = *sharedProps;
+            auto &yogaStyle = props.yogaStyle;
+            yogaStyle.setPositionType(yoga::PositionType::Absolute);
+            yogaStyle.setPosition(yoga::Edge::Left, yoga::StyleLength::points(50));
+            yogaStyle.setPosition(yoga::Edge::Top, yoga::StyleLength::points(100));
+            yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(25));
+            yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(50));
+            return sharedProps;
+          })
+      })
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  parentShadowNode->layoutIfNeeded();
+
+  auto overflowInsetFrame =
+      shadowNode->getLayoutMetrics().getOverflowInsetFrame();
+  EXPECT_EQ(overflowInsetFrame.origin.x, 0);
+  EXPECT_EQ(overflowInsetFrame.origin.y, 0);
+  EXPECT_EQ(overflowInsetFrame.size.width, 100);
+  EXPECT_EQ(overflowInsetFrame.size.height, 200);
+}
+
+/*
+ * View B is child of view A.
+ * In this example, view B overflows from view A to the right and down.
+ *
+ * ┌─────────────┐
+ * │<View A />   │
+ * │     ┌───────┴─────┐
+ * └─────┤<View B />   │
+ *       │             │
+ *       └─────────────┘
+ */
+TEST(LayoutableShadowNodeTest, overflowInsetFrameToRightAndDown) {
+  auto builder = simpleComponentBuilder();
+  auto shadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<RootShadowNode>()
+      .props([] {
+        auto sharedProps = std::make_shared<RootProps>();
+        auto &props = *sharedProps;
+        props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
+        auto &yogaStyle = props.yogaStyle;
+        yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(500));
+        yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(500));
+        return sharedProps;
+      }).children({
+        Element<ViewShadowNode>()
+        .props([=] {
+          auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+          auto &props = *sharedProps;
+          auto &yogaStyle = props.yogaStyle;
+          yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(100));
+          yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(200));
+          return sharedProps;
+        })
+        .reference(shadowNode)
+        .children({
+          Element<ViewShadowNode>()
+          .props([] {
+            auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+            auto &props = *sharedProps;
+            auto &yogaStyle = props.yogaStyle;
+            yogaStyle.setPositionType(yoga::PositionType::Absolute);
+            yogaStyle.setPosition(yoga::Edge::Left, yoga::StyleLength::points(50));
+            yogaStyle.setPosition(yoga::Edge::Top, yoga::StyleLength::points(100));
+            yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(75));
+            yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(125));
+            return sharedProps;
+          })
+      })
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  parentShadowNode->layoutIfNeeded();
+
+  auto overflowInsetFrame =
+      shadowNode->getLayoutMetrics().getOverflowInsetFrame();
+  EXPECT_EQ(overflowInsetFrame.origin.x, 0);
+  EXPECT_EQ(overflowInsetFrame.origin.y, 0);
+  EXPECT_EQ(overflowInsetFrame.size.width, 125);
+  EXPECT_EQ(overflowInsetFrame.size.height, 225);
+}
+
+/*
+ * View B is child of View A.
+ * In this example, view B overflows from view A to the left and top.
+ *
+ * ┌─────────────┐
+ * │<View B />   │
+ * │             ├───────────┐
+ * └───────┬─────┘           │
+ *         │    <View A />   │
+ *         │                 │
+ *         └─────────────────┘
+ */
+TEST(LayoutableShadowNodeTest, overflowInsetFrameToLeftAndTop) {
+  auto builder = simpleComponentBuilder();
+  auto shadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<RootShadowNode>()
+      .props([] {
+        auto sharedProps = std::make_shared<RootProps>();
+        auto &props = *sharedProps;
+        props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
+        auto &yogaStyle = props.yogaStyle;
+        yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(500));
+        yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(500));
+        return sharedProps;
+      }).children({
+        Element<ViewShadowNode>()
+        .props([=] {
+          auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+          auto &props = *sharedProps;
+          auto &yogaStyle = props.yogaStyle;
+          yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(100));
+          yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(200));
+          return sharedProps;
+        })
+        .reference(shadowNode)
+        .children({
+          Element<ViewShadowNode>()
+          .props([] {
+            auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+            auto &props = *sharedProps;
+            auto &yogaStyle = props.yogaStyle;
+            yogaStyle.setPositionType(yoga::PositionType::Absolute);
+            yogaStyle.setPosition(yoga::Edge::Left, yoga::StyleLength::points(-50));
+            yogaStyle.setPosition(yoga::Edge::Top, yoga::StyleLength::points(-100));
+            yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(75));
+            yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(125));
+            return sharedProps;
+          })
+      })
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  parentShadowNode->layoutIfNeeded();
+
+  auto overflowInsetFrame =
+      shadowNode->getLayoutMetrics().getOverflowInsetFrame();
+  EXPECT_EQ(overflowInsetFrame.origin.x, -50);
+  EXPECT_EQ(overflowInsetFrame.origin.y, -100);
+  EXPECT_EQ(overflowInsetFrame.size.width, 150);
+  EXPECT_EQ(overflowInsetFrame.size.height, 300);
+}
+
+/*
+ * View B and view C are children of View A.
+ * In this example, view B overflows from view A to the left and top and view C
+ * overflows from view A to the right and down.
+ *
+ * ┌─────────────┐
+ * │<View B />   │
+ * │             ├───────────┐
+ * └───────┬─────┘           │
+ *         │    <View A />   │
+ *         │                 │
+ *         │     ┌───────────┴─┐
+ *         └─────┤<View C />   │
+ *               │             │
+ *               └─────────────┘
+ */
+TEST(LayoutableShadowNodeTest, overflowInsetFrameToAllSides) {
+  auto builder = simpleComponentBuilder();
+  auto shadowNode = std::shared_ptr<ViewShadowNode>{};
+  // clang-format off
+  auto element =
+    Element<RootShadowNode>()
+      .props([] {
+        auto sharedProps = std::make_shared<RootProps>();
+        auto &props = *sharedProps;
+        props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
+        auto &yogaStyle = props.yogaStyle;
+        yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(500));
+        yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(500));
+        return sharedProps;
+      }).children({
+        Element<ViewShadowNode>()
+        .props([=] {
+          auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+          auto &props = *sharedProps;
+          auto &yogaStyle = props.yogaStyle;
+          yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(100));
+          yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(200));
+          return sharedProps;
+        })
+        .reference(shadowNode)
+        .children({
+          Element<ViewShadowNode>()
+          .props([] {
+            auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+            auto &props = *sharedProps;
+            auto &yogaStyle = props.yogaStyle;
+            yogaStyle.setPositionType(yoga::PositionType::Absolute);
+            yogaStyle.setPosition(yoga::Edge::Left, yoga::StyleLength::points(-50));
+            yogaStyle.setPosition(yoga::Edge::Top, yoga::StyleLength::points(-100));
+            yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(75));
+            yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(125));
+            return sharedProps;
+          }),
+          Element<ViewShadowNode>()
+          .props([] {
+            auto sharedProps = std::make_shared<ViewShadowNodeProps>();
+            auto &props = *sharedProps;
+            auto &yogaStyle = props.yogaStyle;
+            yogaStyle.setPositionType(yoga::PositionType::Absolute);
+            yogaStyle.setPosition(yoga::Edge::Left, yoga::StyleLength::points(50));
+            yogaStyle.setPosition(yoga::Edge::Top, yoga::StyleLength::points(100));
+            yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(75));
+            yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(125));
+            return sharedProps;
+          })
+      })
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  parentShadowNode->layoutIfNeeded();
+
+  auto overflowInsetFrame =
+      shadowNode->getLayoutMetrics().getOverflowInsetFrame();
+  EXPECT_EQ(overflowInsetFrame.origin.x, -50);
+  EXPECT_EQ(overflowInsetFrame.origin.y, -100);
+  EXPECT_EQ(overflowInsetFrame.size.width, 175);
+  EXPECT_EQ(overflowInsetFrame.size.height, 325);
 }
 
 /*
@@ -1146,3 +1425,5 @@ TEST(LayoutableShadowNodeTest, inversedContentOriginOffset) {
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.x, 180);
   EXPECT_EQ(relativeLayoutMetrics.frame.origin.y, 130);
 }
+
+} // namespace facebook::react

@@ -163,7 +163,9 @@ class CSSTokenizer {
 
     int32_t exponentSign = 1.0;
     int32_t exponentPart = 0;
-    if (peek() == 'e' || peek() == 'E') {
+    if ((peek() == 'e' || peek() == 'E') &&
+        (isDigit(peek(1)) ||
+         ((peek(1) == '+' || peek(1) == '-') && isDigit(peek(2))))) {
       advance();
       if (peek() == '+' || peek() == '-') {
         if (peek() == '-') {

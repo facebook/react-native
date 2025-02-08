@@ -36,7 +36,9 @@ export default function LogBoxInspectorHeader(props: Props): React.Node {
       <LogBoxInspectorHeaderSafeArea style={styles[props.level]}>
         <View style={styles.header}>
           <View style={styles.title}>
-            <Text style={styles.titleText}>Failed to compile</Text>
+            <Text style={styles.titleText} id="logbox_header_title_text">
+              Failed to compile
+            </Text>
           </View>
         </View>
       </LogBoxInspectorHeaderSafeArea>
@@ -60,7 +62,9 @@ export default function LogBoxInspectorHeader(props: Props): React.Node {
           onPress={() => props.onSelectIndex(prevIndex)}
         />
         <View style={styles.title}>
-          <Text style={styles.titleText}>{titleText}</Text>
+          <Text style={styles.titleText} id="logbox_header_title_text">
+            {titleText}
+          </Text>
         </View>
         <LogBoxInspectorHeaderButton
           disabled={props.total <= 1}

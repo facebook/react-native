@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f9d245ca964067e18f6f1b2cb1a9e2da>>
+ * @generated SignedSource<<ae55a0a7badfc9d80453d2737f0f87fd>>
  */
 
 /**
@@ -165,6 +165,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
+
+  /**
+   * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
+   */
+  @JvmStatic
+  public fun enableViewCulling(): Boolean = accessor.enableViewCulling()
 
   /**
    * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.

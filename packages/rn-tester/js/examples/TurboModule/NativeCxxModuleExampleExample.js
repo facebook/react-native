@@ -72,7 +72,7 @@ type ErrorExamples =
   | 'promiseAssert';
 
 class NativeCxxModuleExampleExample extends React.Component<{}, State> {
-  static contextType: React$Context<RootTag> = RootTagContext;
+  static contextType: React.Context<RootTag> = RootTagContext;
   eventSubscriptions: EventSubscription[] = [];
 
   state: State = {

@@ -19,6 +19,7 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
 type Props = $ReadOnly<{
+  id?: string,
   backgroundColor: $ReadOnly<{
     default: string,
     pressed: string,
@@ -42,6 +43,7 @@ function LogBoxButton(props: Props): React.Node {
 
   const content = (
     <View
+      id={props.id}
       style={StyleSheet.compose(
         {
           backgroundColor: pressed

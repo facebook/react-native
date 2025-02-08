@@ -15,6 +15,13 @@ export type FeatureFlagDefinitions = $ReadOnly<{
   jsOnly: JsOnlyFeatureFlagList,
 }>;
 
+/**
+ * OSSReleaseStageValue is used to determine the value of a feature flag in different release stages:
+ * - none: the value of the feature flag will be `defaultValue` on all releases.
+ * - experimental: the value of the feature flag will be `expectedReleaseValue` on experimental releases and `defaultValue` on canaray and stable releases.
+ * - canary: the value of the feature flag will be `expectedReleaseValue` on experimental and canary releases and `defaultValue` on stable releases.
+ * - stable: the value of the feature flag will be `expectedReleaseValue` on all releases.
+ */
 export type OSSReleaseStageValue =
   | 'none'
   | 'experimental'

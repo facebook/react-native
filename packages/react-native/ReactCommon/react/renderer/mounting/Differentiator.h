@@ -95,7 +95,8 @@ ShadowViewMutation::List calculateShadowViewMutations(
 std::vector<ShadowViewNodePair*> sliceChildShadowNodeViewPairs(
     const ShadowViewNodePair& shadowNodePair,
     ViewNodePairScope& viewNodePairScope,
-    bool allowFlattened = false,
-    Point layoutOffset = {0, 0});
+    bool allowFlattened,
+    Point layoutOffset,
+    Rect cullingFrame = {});
 
 } // namespace facebook::react

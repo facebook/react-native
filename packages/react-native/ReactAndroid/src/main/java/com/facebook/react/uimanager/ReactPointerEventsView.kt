@@ -13,6 +13,6 @@ package com.facebook.react.uimanager
  */
 public interface ReactPointerEventsView {
 
-  /** Return the PointerEvents of the View. */
-  public fun getPointerEvents(): PointerEvents
+  /** The PointerEvents of the View. */
+  public val pointerEvents: PointerEvents
 }
