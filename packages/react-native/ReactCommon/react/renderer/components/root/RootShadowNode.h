@@ -42,9 +42,8 @@ class RootShadowNode final
 
   /*
    * Layouts the shadow tree if needed.
-   * Returns `false` if the three is already laid out.
    */
-  bool layoutIfNeeded(
+  void layoutIfNeeded(
       std::vector<const LayoutableShadowNode*>* affectedNodes = {});
 
   /*
