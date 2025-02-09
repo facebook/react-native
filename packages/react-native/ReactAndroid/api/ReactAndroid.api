@@ -1874,6 +1874,7 @@ public final class com/facebook/react/common/build/ReactBuildConfig {
 	public static final field INSTANCE Lcom/facebook/react/common/build/ReactBuildConfig;
 	public static final field IS_INTERNAL_BUILD Z
 	public static final field UNSTABLE_ENABLE_FUSEBOX_RELEASE Z
+	public static final field UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE Z
 }
 
 public abstract interface class com/facebook/react/common/mapbuffer/MapBuffer : java/lang/Iterable, kotlin/jvm/internal/markers/KMappedMarker {
