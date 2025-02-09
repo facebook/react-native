@@ -18,7 +18,7 @@ import * as React from 'react';
 
 const ExceptionsManager = require('../../Core/ExceptionsManager.js').default;
 const LogBoxData = require('../Data/LogBoxData');
-const TestRenderer = require('react-test-renderer');
+import { create } from 'react-native-fantom';
 
 const installLogBox = () => {
   const LogBox = require('../LogBox').default;
@@ -41,10 +41,8 @@ describe('LogBox', () => {
     jest.resetModules();
     jest.restoreAllMocks();
     jest.spyOn(console, 'error').mockImplementation(() => {});
-
     mockError.mockClear();
     mockWarn.mockClear();
-    // Reset ExceptionManager patching.
     if (console._errorOriginal) {
       console._errorOriginal = null;
     }
@@ -66,16 +64,14 @@ describe('LogBox', () => {
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip('integrates with React and handles a key error in LogBox', () => {
     const spy = jest.spyOn(LogBoxData, 'addLog');
-    installLogBox();
+    
 
     // Spy console.error after LogBox is installed
     // so we can assert on what React logs.
     jest.spyOn(console, 'error');
-
+    installLogBox();
     let output;
-    TestRenderer.act(() => {
-      output = TestRenderer.create(<DoesNotUseKey />);
-    });
+    create(<DoesNotUseKey />);
 
     // The key error should always be the highest severity.
     // In LogBox, we expect these errors to:
@@ -128,16 +124,14 @@ describe('LogBox', () => {
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip('integrates with React and handles a fragment warning in LogBox', () => {
     const spy = jest.spyOn(LogBoxData, 'addLog');
-    installLogBox();
+    
 
     // Spy console.error after LogBox is installed
     // so we can assert on what React logs.
     jest.spyOn(console, 'error');
-
+    installLogBox();
     let output;
-    TestRenderer.act(() => {
-      output = TestRenderer.create(<FragmentWithProp />);
-    });
+    create(<FragmentWithProp />);
 
     // The fragment warning is not as severe. For this warning we don't want to
     // pop open a dialog, so we show a collapsed error UI.
@@ -190,9 +184,7 @@ describe('LogBox', () => {
     jest.spyOn(console, 'error');
 
     let output;
-    TestRenderer.act(() => {
-      output = TestRenderer.create(<ManualConsoleError />);
-    });
+    create(<ManualConsoleError />);
 
     // Manual console errors should show a collapsed error dialog.
     // When there is no component stack, we expect these errors to:
@@ -232,9 +224,8 @@ describe('LogBox', () => {
     jest.spyOn(console, 'error');
 
     let output;
-    TestRenderer.act(() => {
-      output = TestRenderer.create(<ManualConsoleErrorWithStack />);
-    });
+    create(<ManualConsoleErrorWithStack />);
+
 
     // Manual console errors should show a collapsed error dialog.
     // When there is a component stack, we expect these errors to:
