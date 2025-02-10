@@ -5436,7 +5436,7 @@ interface ILogBox {
   uninstall(): void;
   isInstalled(): boolean;
   ignoreLogs($ReadOnlyArray<IgnorePattern>): void;
-  ignoreAllLogs(?boolean): void;
+  ignoreAllLogs(value?: boolean): void;
   clearAllLogs(): void;
   addLog(log: LogData): void;
   addException(error: ExtendedExceptionData): void;

@@ -31,6 +31,8 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
   'packages/react-native/Libraries/Settings/Settings.js',
   'packages/react-native/Libraries/Share/Share.js',
+  'packages/react-native/Libraries/Performance/Systrace.js',
+  'packages/react-native/Libraries/LogBox/LogBox.js',
 ];
 
 /**
