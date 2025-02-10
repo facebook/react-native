@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<67e89ba7eb0c5c16cd4ac556f203aee6>>
+ * @generated SignedSource<<7f535343ebc3c6e77c1ff9efce3541c7>>
  */
 
 /**
@@ -88,11 +88,6 @@ class ReactNativeFeatureFlags {
    * Synchronise the view command dispatching with mounting of new transaction
    */
   RN_EXPORT static bool enableFixForViewCommandRace();
-
-  /**
-   * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
-   */
-  RN_EXPORT static bool enableGranularShadowTreeStateReconciliation();
 
   /**
    * iOS Views will clip to their padding box vs border box

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<959e1f4818fbbf4bd7176638e6e4107d>>
+ * @generated SignedSource<<e4bc97d5e5af04b0b600d6ec6ff3c2da>>
  * @flow strict
  */
 
@@ -60,7 +60,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
   enableFixForViewCommandRace: Getter<boolean>,
-  enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableImagePrefetchingAndroid: Getter<boolean>,
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
@@ -219,10 +218,6 @@ export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('ena
  * Synchronise the view command dispatching with mounting of new transaction
  */
 export const enableFixForViewCommandRace: Getter<boolean> = createNativeFlagGetter('enableFixForViewCommandRace', false);
-/**
- * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
- */
-export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = createNativeFlagGetter('enableGranularShadowTreeStateReconciliation', false);
 /**
  * iOS Views will clip to their padding box vs border box
  */
