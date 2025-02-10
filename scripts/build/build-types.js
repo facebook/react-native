@@ -50,6 +50,18 @@ async function main() {
       '\n',
   );
 
+  try {
+    // $FlowIgnore[cannot-resolve-module]
+    const prepareFlowApiTranslator = require('./prepare-flow-api-translator');
+    await prepareFlowApiTranslator();
+  } catch (e) {
+    console.warn(
+      chalk.yellow(
+        'WARNING: Failed to build flow-api-translator from source. Using npm version (may be out of date).',
+      ),
+    );
+  }
+
   await buildTypes();
 }
 
