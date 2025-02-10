@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL caretHidden;
 @property (nonatomic, assign) BOOL enablesReturnKeyAutomatically;
 @property (nonatomic, assign) UITextFieldViewMode clearButtonMode;
+@property (nonatomic, assign) UIDataDetectorTypes dataDetectorTypes;
 @property (nonatomic, getter=isScrollEnabled) BOOL scrollEnabled;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewID;
 @property (nonatomic, strong, nullable) NSString *inputAccessoryViewButtonLabel;
@@ -51,6 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 // unwise usage of it can break the `attributeText` behavior.
 // Use `attributedText.string` instead.
 @property (nonatomic, copy, nullable) NSString *text NS_UNAVAILABLE;
+
+@property (nonatomic, assign) BOOL disableKeyboardShortcuts;
 
 @end
 

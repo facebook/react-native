@@ -22,9 +22,9 @@ import {
   View,
 } from 'react-native';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   url?: ?string,
-|}>;
+}>;
 
 class OpenURLButton extends React.Component<Props> {
   handleClick = () => {

@@ -14,7 +14,7 @@ import flattenStyle from '../../StyleSheet/flattenStyle';
 import React from 'react';
 
 const render = require('../../../jest/renderer');
-const Text = require('../Text');
+const Text = require('../Text').default;
 
 jest.unmock('../Text');
 jest.unmock('../TextNativeComponent');

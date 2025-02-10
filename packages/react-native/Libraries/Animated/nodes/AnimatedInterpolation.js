@@ -376,6 +376,7 @@ export default class AnimatedInterpolation<
 
   __attach(): void {
     this._parent.__addChild(this);
+    super.__attach();
   }
 
   __detach(): void {

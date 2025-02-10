@@ -12,13 +12,16 @@
 
 jest.mock('../../EventEmitter/NativeEventEmitter');
 jest.setMock('../../BatchedBridge/NativeModules', {
-  WebSocketModule: {
-    connect: () => {},
+  __esModule: true,
+  default: {
+    WebSocketModule: {
+      connect: () => {},
+    },
+    PlatformConstants: {},
   },
-  PlatformConstants: {},
 });
 
-const WebSocket = require('../WebSocket');
+const WebSocket = require('../WebSocket').default;
 
 describe('WebSocket', function () {
   it('should have connection lifecycle constants defined on the class', () => {

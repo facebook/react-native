@@ -25,7 +25,12 @@ const argv = yargs
     alias: 'outputPath',
     description: 'Path where generated artifacts will be output to.',
   })
+  .option('s', {
+    alias: 'source',
+    description: 'Whether the script is invoked from an `app` or a `library`',
+    default: 'app',
+  })
   .usage('Usage: $0 -p [path to app] -t [target platform] -o [output path]')
   .demandOption(['p', 't']).argv;
 
-executor.execute(argv.path, argv.targetPlatform, argv.outputPath);
+executor.execute(argv.path, argv.targetPlatform, argv.outputPath, argv.source);

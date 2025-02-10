@@ -17,8 +17,8 @@ void ImageEventEmitter::onLoad(const ImageSource& source) const {
   dispatchEvent("load", [source](jsi::Runtime& runtime) {
     auto src = jsi::Object(runtime);
     src.setProperty(runtime, "uri", source.uri);
-    src.setProperty(runtime, "width", source.size.width);
-    src.setProperty(runtime, "height", source.size.height);
+    src.setProperty(runtime, "width", source.size.width * source.scale);
+    src.setProperty(runtime, "height", source.size.height * source.scale);
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, "source", src);
     return payload;

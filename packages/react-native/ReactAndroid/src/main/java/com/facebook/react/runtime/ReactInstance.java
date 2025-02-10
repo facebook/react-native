@@ -288,21 +288,18 @@ final class ReactInstance {
   }
 
   void initializeEagerTurboModules() {
-    Runnable task =
-        () -> {
-          Systrace.beginSection(
-              Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeEagerTurboModules");
-          // Eagerly initialize TurboModules
-          for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
-            mTurboModuleManager.getModule(moduleName);
-          }
-          Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-        };
-    if (ReactNativeFeatureFlags.initEagerTurboModulesOnNativeModulesQueueAndroid()) {
-      mQueueConfiguration.getNativeModulesQueueThread().runOnQueue(task);
-    } else {
-      task.run();
-    }
+    mQueueConfiguration
+        .getNativeModulesQueueThread()
+        .runOnQueue(
+            () -> {
+              Systrace.beginSection(
+                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "initializeEagerTurboModules");
+              // Eagerly initialize TurboModules
+              for (String moduleName : mTurboModuleManager.getEagerInitModuleNames()) {
+                mTurboModuleManager.getModule(moduleName);
+              }
+              Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+            });
   }
 
   private static synchronized void loadLibraryIfNeeded() {
@@ -324,8 +321,8 @@ final class ReactInstance {
     }
 
     @Override
-    public void reportJsException(ParsedError error) {
-      JavaOnlyMap data = StackTraceHelper.convertParsedError(error);
+    public void reportJsException(ProcessedError error) {
+      JavaOnlyMap data = StackTraceHelper.convertProcessedError(error);
 
       try {
         NativeExceptionsManagerSpec exceptionsManager =

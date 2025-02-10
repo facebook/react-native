@@ -153,8 +153,8 @@ Pod::Spec.new do |s|
     ss.subspec "iostextinput" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/textinput/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/textinput/platform/android"
+      sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}",
+                                 "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/iostextinput"
 
     end
@@ -193,6 +193,7 @@ Pod::Spec.new do |s|
     {
       :name => '[RN]Check rncore',
       :execution_position => :before_compile,
+      :always_out_of_date => '1',
       :script => <<-EOS
 echo "Checking whether Codegen has run..."
 rncorePath="$REACT_NATIVE_PATH/ReactCommon/react/renderer/components/rncore"

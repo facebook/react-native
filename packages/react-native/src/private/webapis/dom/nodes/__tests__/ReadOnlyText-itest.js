@@ -13,41 +13,24 @@
 import '../../../../../../Libraries/Core/InitializeCore.js';
 
 import {NativeText} from '../../../../../../Libraries/Text/TextNativeComponent';
+import ensureInstance from '../../../../utilities/ensureInstance';
 import ReactNativeElement from '../ReactNativeElement';
 import ReadOnlyNode from '../ReadOnlyNode';
 import ReadOnlyText from '../ReadOnlyText';
-import * as Fantom from '@react-native/fantom';
+import Fantom from '@react-native/fantom';
 import invariant from 'invariant';
 import * as React from 'react';
 
 function ensureReadOnlyText(value: mixed): ReadOnlyText {
-  if (!(value instanceof ReadOnlyText)) {
-    throw new Error(
-      `Expected instance of ReactOnlyNode but got ${String(value)}`,
-    );
-  }
-
-  return value;
+  return ensureInstance(value, ReadOnlyText);
 }
 
 function ensureReadOnlyNode(value: mixed): ReadOnlyNode {
-  if (!(value instanceof ReadOnlyNode)) {
-    throw new Error(
-      `Expected instance of ReactOnlyNode but got ${String(value)}`,
-    );
-  }
-
-  return value;
+  return ensureInstance(value, ReadOnlyNode);
 }
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {
-  if (!(value instanceof ReactNativeElement)) {
-    throw new Error(
-      `Expected instance of ReactNativeElement but got ${String(value)}`,
-    );
-  }
-
-  return value;
+  return ensureInstance(value, ReactNativeElement);
 }
 
 describe('ReadOnlyText', () => {

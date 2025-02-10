@@ -8,6 +8,7 @@
 #pragma once
 
 #include <react/renderer/graphics/Float.h>
+#include <react/renderer/graphics/ValueUnit.h>
 #include <string>
 #include <variant>
 #include <vector>
@@ -35,7 +36,13 @@ struct GradientDirection {
 struct ColorStop {
   bool operator==(const ColorStop& other) const = default;
   SharedColor color;
-  Float position = 0.0f;
+  ValueUnit position;
+};
+
+struct ProcessedColorStop {
+  bool operator==(const ProcessedColorStop& other) const = default;
+  SharedColor color;
+  std::optional<Float> position;
 };
 
 struct LinearGradient {

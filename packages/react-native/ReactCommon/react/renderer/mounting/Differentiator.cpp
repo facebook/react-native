@@ -7,9 +7,10 @@
 
 #include "Differentiator.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <react/renderer/components/scrollview/ScrollViewShadowNode.h>
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <algorithm>
 
@@ -233,6 +234,23 @@ static bool shouldFirstPairComesBeforeSecondOne(
   return lhs->shadowNode->getOrderIndex() < rhs->shadowNode->getOrderIndex();
 }
 
+static Rect adjustCullingFrameIfNeeded(
+    Rect cullingFrame,
+    const ShadowViewNodePair& pair) {
+  if (ReactNativeFeatureFlags::enableViewCulling()) {
+    if (auto scrollViewShadowNode =
+            dynamic_cast<const ScrollViewShadowNode*>(pair.shadowNode)) {
+      cullingFrame.origin = -scrollViewShadowNode->getContentOriginOffset(
+          /* includeTransform */ true);
+      cullingFrame.size = scrollViewShadowNode->getLayoutMetrics().frame.size;
+    } else {
+      cullingFrame.origin -= pair.shadowView.layoutMetrics.frame.origin;
+    }
+  }
+
+  return cullingFrame;
+}
+
 /*
  * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
  */
@@ -263,10 +281,10 @@ static void sliceChildShadowNodeViewPairsRecursively(
     size_t& startOfStaticIndex,
     ViewNodePairScope& scope,
     Point layoutOffset,
-    const ShadowNode& shadowNode) {
+    const ShadowNode& shadowNode,
+    Rect cullingFrame) {
   for (const auto& sharedChildShadowNode : shadowNode.getChildren()) {
     auto& childShadowNode = *sharedChildShadowNode;
-
 #ifndef ANDROID
     // T153547836: Disabled on Android because the mounting infrastructure
     // is not fully ready yet.
@@ -274,9 +292,28 @@ static void sliceChildShadowNodeViewPairsRecursively(
       continue;
     }
 #endif
-
     auto shadowView = ShadowView(childShadowNode);
+
+    if (ReactNativeFeatureFlags::enableViewCulling()) {
+      auto isCullingFrameValid =
+          cullingFrame.size.width != 0 && cullingFrame.size.height != 0;
+      if (isCullingFrameValid &&
+          shadowView.layoutMetrics != EmptyLayoutMetrics) {
+        auto doesIntersect =
+            Rect::intersect(
+                cullingFrame,
+                shadowView.layoutMetrics.getOverflowInsetFrame()) != Rect{};
+        if (!doesIntersect) {
+          continue; // Culling.
+        }
+      }
+    }
+
     auto origin = layoutOffset;
+    auto cullingFrameCopy = adjustCullingFrameIfNeeded(
+        cullingFrame,
+        {.shadowView = shadowView, .shadowNode = &childShadowNode});
+
     if (shadowView.layoutMetrics != EmptyLayoutMetrics) {
       origin += shadowView.layoutMetrics.frame.origin;
       shadowView.layoutMetrics.frame.origin += layoutOffset;
@@ -303,28 +340,42 @@ static void sliceChildShadowNodeViewPairsRecursively(
     if (areChildrenFlattened) {
       storedOrigin = origin;
     }
-    scope.push_back(
-        {shadowView,
-         &childShadowNode,
-         areChildrenFlattened,
-         isConcreteView,
-         storedOrigin});
 
-    if (shadowView.layoutMetrics.positionType == PositionType::Static) {
+    auto isPositionStatic =
+        shadowView.layoutMetrics.positionType == PositionType::Static;
+
+    scope.push_back(
+        {.shadowView = std::move(shadowView),
+         .shadowNode = &childShadowNode,
+         .flattened = areChildrenFlattened,
+         .isConcreteView = isConcreteView,
+         .contextOrigin = storedOrigin});
+
+    if (isPositionStatic) {
       auto it = pairList.begin();
       std::advance(it, startOfStaticIndex);
       pairList.insert(it, &scope.back());
       startOfStaticIndex++;
       if (areChildrenFlattened) {
         sliceChildShadowNodeViewPairsRecursively(
-            pairList, startOfStaticIndex, scope, origin, childShadowNode);
+            pairList,
+            startOfStaticIndex,
+            scope,
+            origin,
+            childShadowNode,
+            cullingFrameCopy);
       }
     } else {
       pairList.push_back(&scope.back());
       if (areChildrenFlattened) {
         size_t pairListSize = pairList.size();
         sliceChildShadowNodeViewPairsRecursively(
-            pairList, pairListSize, scope, origin, childShadowNode);
+            pairList,
+            pairListSize,
+            scope,
+            origin,
+            childShadowNode,
+            cullingFrameCopy);
       }
     }
   }
@@ -334,7 +385,8 @@ std::vector<ShadowViewNodePair*> sliceChildShadowNodeViewPairs(
     const ShadowViewNodePair& shadowNodePair,
     ViewNodePairScope& scope,
     bool allowFlattened,
-    Point layoutOffset) {
+    Point layoutOffset,
+    Rect cullingFrame) {
   const auto& shadowNode = *shadowNodePair.shadowNode;
   auto pairList = std::vector<ShadowViewNodePair*>{};
 
@@ -346,7 +398,12 @@ std::vector<ShadowViewNodePair*> sliceChildShadowNodeViewPairs(
   size_t startOfStaticIndex = 0;
 
   sliceChildShadowNodeViewPairsRecursively(
-      pairList, startOfStaticIndex, scope, layoutOffset, shadowNode);
+      pairList,
+      startOfStaticIndex,
+      scope,
+      layoutOffset,
+      shadowNode,
+      cullingFrame);
 
   // Sorting pairs based on `orderIndex` if needed.
   reorderInPlaceIfNeeded(pairList);
@@ -369,12 +426,14 @@ static std::vector<ShadowViewNodePair*>
 sliceChildShadowNodeViewPairsFromViewNodePair(
     const ShadowViewNodePair& shadowViewNodePair,
     ViewNodePairScope& scope,
-    bool allowFlattened = false) {
+    bool allowFlattened,
+    Rect cullingFrame) {
   return sliceChildShadowNodeViewPairs(
       shadowViewNodePair,
       scope,
       allowFlattened,
-      shadowViewNodePair.contextOrigin);
+      shadowViewNodePair.contextOrigin,
+      cullingFrame);
 }
 
 /*
@@ -409,7 +468,9 @@ static void calculateShadowViewMutations(
     ShadowViewMutation::List& mutations,
     Tag parentTag,
     std::vector<ShadowViewNodePair*>&& oldChildPairs,
-    std::vector<ShadowViewNodePair*>&& newChildPairs);
+    std::vector<ShadowViewNodePair*>&& newChildPairs,
+    Rect oldCullingFrame = {},
+    Rect newCullingFrame = {});
 
 struct OrderedMutationInstructionContainer {
   ShadowViewMutation::List createMutations{};
@@ -428,7 +489,9 @@ static void updateMatchedPairSubtrees(
     std::vector<ShadowViewNodePair*>& oldChildPairs,
     Tag parentTag,
     const ShadowViewNodePair& oldPair,
-    const ShadowViewNodePair& newPair);
+    const ShadowViewNodePair& newPair,
+    Rect oldCullingFrame,
+    Rect newCullingFrame);
 
 static void updateMatchedPair(
     OrderedMutationInstructionContainer& mutationContainer,
@@ -446,8 +509,10 @@ static void calculateShadowViewMutationsFlattener(
     TinyMap<Tag, ShadowViewNodePair*>& unvisitedOtherNodes,
     const ShadowViewNodePair& node,
     Tag parentTagForUpdate,
-    TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes = nullptr,
-    TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes = nullptr);
+    TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
+    TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
+    Rect oldCullingFrame,
+    Rect newCullingFrame);
 
 /**
  * Updates the subtrees of any matched ShadowViewNodePair. This handles
@@ -464,7 +529,9 @@ static void updateMatchedPairSubtrees(
     std::vector<ShadowViewNodePair*>& oldChildPairs,
     Tag parentTag,
     const ShadowViewNodePair& oldPair,
-    const ShadowViewNodePair& newPair) {
+    const ShadowViewNodePair& newPair,
+    Rect oldCullingFrame,
+    Rect newCullingFrame) {
   // Are we flattening or unflattening either one? If node was
   // flattened in both trees, there's no change, just continue.
   if (oldPair.flattened && newPair.flattened) {
@@ -493,7 +560,11 @@ static void updateMatchedPairSubtrees(
           parentTag,
           newRemainingPairs,
           oldPair,
-          oldPair.shadowView.tag);
+          oldPair.shadowView.tag,
+          nullptr,
+          nullptr,
+          oldCullingFrame,
+          newCullingFrame);
     }
     // Unflattening
     else {
@@ -504,8 +575,8 @@ static void updateMatchedPairSubtrees(
       // relative order. The reason for this is because of flattening
       // + zIndex: the children could be listed before the parent,
       // interwoven with children from other nodes, etc.
-      auto oldFlattenedNodes =
-          sliceChildShadowNodeViewPairsFromViewNodePair(oldPair, scope, true);
+      auto oldFlattenedNodes = sliceChildShadowNodeViewPairsFromViewNodePair(
+          oldPair, scope, true, oldCullingFrame);
       for (size_t i = 0, j = 0;
            i < oldChildPairs.size() && j < oldFlattenedNodes.size();
            i++) {
@@ -524,7 +595,11 @@ static void updateMatchedPairSubtrees(
           parentTag,
           unvisitedOldChildPairs,
           newPair,
-          parentTag);
+          parentTag,
+          nullptr,
+          nullptr,
+          oldCullingFrame,
+          newCullingFrame);
 
       // If old nodes were not visited, we know that we can delete
       // them now. They will be removed from the hierarchy by the
@@ -551,13 +626,18 @@ static void updateMatchedPairSubtrees(
 
   // Update subtrees if View is not flattened, and if node addresses
   // are not equal
-  if (oldPair.shadowNode != newPair.shadowNode) {
+  if (oldPair.shadowNode != newPair.shadowNode ||
+      oldCullingFrame != newCullingFrame) {
+    oldCullingFrame = adjustCullingFrameIfNeeded(oldCullingFrame, oldPair);
+    newCullingFrame = adjustCullingFrameIfNeeded(newCullingFrame, newPair);
+
     ViewNodePairScope innerScope{};
-    auto oldGrandChildPairs =
-        sliceChildShadowNodeViewPairsFromViewNodePair(oldPair, innerScope);
-    auto newGrandChildPairs =
-        sliceChildShadowNodeViewPairsFromViewNodePair(newPair, innerScope);
+    auto oldGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
+        oldPair, innerScope, false, oldCullingFrame);
+    auto newGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
+        newPair, innerScope, false, newCullingFrame);
     const size_t newGrandChildPairsSize = newGrandChildPairs.size();
+
     calculateShadowViewMutations(
         innerScope,
         *(newGrandChildPairsSize != 0u
@@ -565,7 +645,9 @@ static void updateMatchedPairSubtrees(
               : &mutationContainer.destructiveDownwardMutations),
         oldPair.shadowView.tag,
         std::move(oldGrandChildPairs),
-        std::move(newGrandChildPairs));
+        std::move(newGrandChildPairs),
+        oldCullingFrame,
+        newCullingFrame);
   }
 }
 
@@ -679,10 +761,13 @@ static void calculateShadowViewMutationsFlattener(
     const ShadowViewNodePair& node,
     Tag parentTagForUpdate,
     TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherNewNodes,
-    TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes) {
+    TinyMap<Tag, ShadowViewNodePair*>* parentSubVisitedOtherOldNodes,
+    Rect oldCullingFrame,
+    Rect newCullingFrame) {
   // Step 1: iterate through entire tree
   std::vector<ShadowViewNodePair*> treeChildren =
-      sliceChildShadowNodeViewPairsFromViewNodePair(node, scope);
+      sliceChildShadowNodeViewPairsFromViewNodePair(
+          node, scope, false, newCullingFrame);
 
   DEBUG_LOGS({
     LOG(ERROR) << "Differ Flattener: "
@@ -885,9 +970,11 @@ static void calculateShadowViewMutationsFlattener(
               mutationContainer.downwardMutations,
               newTreeNodePair.shadowView.tag,
               sliceChildShadowNodeViewPairsFromViewNodePair(
-                  oldTreeNodePair, innerScope),
+                  oldTreeNodePair, innerScope, false, oldCullingFrame),
               sliceChildShadowNodeViewPairsFromViewNodePair(
-                  newTreeNodePair, innerScope));
+                  newTreeNodePair, innerScope, false, newCullingFrame),
+              oldCullingFrame,
+              newCullingFrame);
         }
       } else if (oldTreeNodePair.flattened != newTreeNodePair.flattened) {
         // We need to handle one of the children being flattened or
@@ -912,14 +999,18 @@ static void calculateShadowViewMutationsFlattener(
                    ? oldTreeNodePair.shadowView.tag
                    : parentTag),
               subVisitedNewMap,
-              subVisitedOldMap);
+              subVisitedOldMap,
+              oldCullingFrame,
+              newCullingFrame);
         } else {
           // Get flattened nodes from either new or old tree
           auto flattenedNodes = sliceChildShadowNodeViewPairsFromViewNodePair(
               (childReparentMode == ReparentMode::Flatten ? newTreeNodePair
                                                           : oldTreeNodePair),
               scope,
-              true);
+              true,
+              childReparentMode == ReparentMode::Flatten ? newCullingFrame
+                                                         : oldCullingFrame);
           // Construct unvisited nodes map
           auto unvisitedRecursiveChildPairs =
               TinyMap<Tag, ShadowViewNodePair*>{};
@@ -956,7 +1047,9 @@ static void calculateShadowViewMutationsFlattener(
                      ? oldTreeNodePair.shadowView.tag
                      : parentTag),
                 subVisitedNewMap,
-                subVisitedOldMap);
+                subVisitedOldMap,
+                oldCullingFrame,
+                newCullingFrame);
           }
           // Flatten parent, unflatten child
           else {
@@ -974,7 +1067,9 @@ static void calculateShadowViewMutationsFlattener(
                      ? oldTreeNodePair.shadowView.tag
                      : parentTag),
                 subVisitedNewMap,
-                subVisitedOldMap);
+                subVisitedOldMap,
+                oldCullingFrame,
+                newCullingFrame);
 
             // If old nodes were not visited, we know that we can delete them
             // now. They will be removed from the hierarchy by the outermost
@@ -1070,8 +1165,10 @@ static void calculateShadowViewMutationsFlattener(
             mutationContainer.destructiveDownwardMutations,
             treeChildPair.shadowView.tag,
             sliceChildShadowNodeViewPairsFromViewNodePair(
-                treeChildPair, innerScope),
-            {});
+                treeChildPair, innerScope, false, newCullingFrame),
+            {},
+            oldCullingFrame,
+            newCullingFrame);
       }
     } else {
       mutationContainer.createMutations.push_back(
@@ -1085,7 +1182,9 @@ static void calculateShadowViewMutationsFlattener(
             treeChildPair.shadowView.tag,
             {},
             sliceChildShadowNodeViewPairsFromViewNodePair(
-                treeChildPair, innerScope));
+                treeChildPair, innerScope, false, newCullingFrame),
+            oldCullingFrame,
+            newCullingFrame);
       }
     }
   }
@@ -1096,7 +1195,9 @@ static void calculateShadowViewMutations(
     ShadowViewMutation::List& mutations,
     Tag parentTag,
     std::vector<ShadowViewNodePair*>&& oldChildPairs,
-    std::vector<ShadowViewNodePair*>&& newChildPairs) {
+    std::vector<ShadowViewNodePair*>&& newChildPairs,
+    Rect oldCullingFrame,
+    Rect newCullingFrame) {
   if (oldChildPairs.empty() && newChildPairs.empty()) {
     return;
   }
@@ -1152,13 +1253,21 @@ static void calculateShadowViewMutations(
 
     // Recursively update tree if ShadowNode pointers are not equal
     if (!oldChildPair.flattened &&
-        oldChildPair.shadowNode != newChildPair.shadowNode) {
+        (oldChildPair.shadowNode != newChildPair.shadowNode ||
+         oldCullingFrame != newCullingFrame)) {
+      auto oldCullingFrameCopy =
+          adjustCullingFrameIfNeeded(oldCullingFrame, oldChildPair);
+      auto newCullingFrameCopy =
+          adjustCullingFrameIfNeeded(newCullingFrame, newChildPair);
+
       ViewNodePairScope innerScope{};
       auto oldGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
-          oldChildPair, innerScope);
+          oldChildPair, innerScope, false, oldCullingFrameCopy);
       auto newGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
-          newChildPair, innerScope);
+          newChildPair, innerScope, false, newCullingFrameCopy);
+
       const size_t newGrandChildPairsSize = newGrandChildPairs.size();
+
       calculateShadowViewMutations(
           innerScope,
           *(newGrandChildPairsSize != 0u
@@ -1166,7 +1275,9 @@ static void calculateShadowViewMutations(
                 : &mutationContainer.destructiveDownwardMutations),
           oldChildPair.shadowView.tag,
           std::move(oldGrandChildPairs),
-          std::move(newGrandChildPairs));
+          std::move(newGrandChildPairs),
+          oldCullingFrameCopy,
+          newCullingFrameCopy);
     }
   }
 
@@ -1194,6 +1305,8 @@ static void calculateShadowViewMutations(
               parentTag,
               oldChildPair.shadowView,
               static_cast<int>(oldChildPair.mountIndex)));
+      auto oldCullingFrameCopy =
+          adjustCullingFrameIfNeeded(oldCullingFrame, oldChildPair);
 
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
@@ -1203,8 +1316,10 @@ static void calculateShadowViewMutations(
           mutationContainer.destructiveDownwardMutations,
           oldChildPair.shadowView.tag,
           sliceChildShadowNodeViewPairsFromViewNodePair(
-              oldChildPair, innerScope),
-          {});
+              oldChildPair, innerScope, false, oldCullingFrameCopy),
+          {},
+          oldCullingFrameCopy,
+          newCullingFrame);
     }
   } else if (index == oldChildPairs.size()) {
     // If we don't have any more existing children we can choose a fast path
@@ -1228,6 +1343,8 @@ static void calculateShadowViewMutations(
               static_cast<int>(newChildPair.mountIndex)));
       mutationContainer.createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
+      auto newCullingFrameCopy =
+          adjustCullingFrameIfNeeded(newCullingFrame, newChildPair);
 
       ViewNodePairScope innerScope{};
       calculateShadowViewMutations(
@@ -1236,7 +1353,9 @@ static void calculateShadowViewMutations(
           newChildPair.shadowView.tag,
           {},
           sliceChildShadowNodeViewPairsFromViewNodePair(
-              newChildPair, innerScope));
+              newChildPair, innerScope, false, newCullingFrameCopy),
+          oldCullingFrame,
+          newCullingFrameCopy);
     }
   } else {
     // Collect map of tags in the new list
@@ -1290,7 +1409,9 @@ static void calculateShadowViewMutations(
               oldChildPairs,
               parentTag,
               oldChildPair,
-              newChildPair);
+              newChildPair,
+              oldCullingFrame,
+              newCullingFrame);
 
           newIndex++;
           oldIndex++;
@@ -1334,7 +1455,9 @@ static void calculateShadowViewMutations(
               oldChildPairs,
               parentTag,
               oldChildPair,
-              newChildPair);
+              newChildPair,
+              oldCullingFrame,
+              newCullingFrame);
 
           newInsertedPairs.erase(insertedIt);
           oldIndex++;
@@ -1456,17 +1579,23 @@ static void calculateShadowViewMutations(
       if (!oldChildPair.inOtherTree() && oldChildPair.isConcreteView) {
         mutationContainer.deleteMutations.push_back(
             ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
+        auto oldCullingFrameCopy =
+            adjustCullingFrameIfNeeded(oldCullingFrame, oldChildPair);
 
         // We also have to call the algorithm recursively to clean up the
         // entire subtree starting from the removed view.
         ViewNodePairScope innerScope{};
+
+        auto newGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
+            oldChildPair, innerScope, false, oldCullingFrameCopy);
         calculateShadowViewMutations(
             innerScope,
             mutationContainer.destructiveDownwardMutations,
             oldChildPair.shadowView.tag,
-            sliceChildShadowNodeViewPairsFromViewNodePair(
-                oldChildPair, innerScope),
-            {});
+            std::move(newGrandChildPairs),
+            {},
+            oldCullingFrameCopy,
+            newCullingFrame);
       }
     }
 
@@ -1501,14 +1630,20 @@ static void calculateShadowViewMutations(
       mutationContainer.createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
+      auto newCullingFrameCopy =
+          adjustCullingFrameIfNeeded(newCullingFrame, newChildPair);
+
       ViewNodePairScope innerScope{};
+
       calculateShadowViewMutations(
           innerScope,
           mutationContainer.downwardMutations,
           newChildPair.shadowView.tag,
           {},
           sliceChildShadowNodeViewPairsFromViewNodePair(
-              newChildPair, innerScope));
+              newChildPair, innerScope, false, newCullingFrameCopy),
+          oldCullingFrame,
+          newCullingFrameCopy);
     }
   }
 
@@ -1546,7 +1681,7 @@ static void calculateShadowViewMutations(
 ShadowViewMutation::List calculateShadowViewMutations(
     const ShadowNode& oldRootShadowNode,
     const ShadowNode& newRootShadowNode) {
-  SystraceSection s("calculateShadowViewMutations");
+  TraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.
   react_native_assert(
@@ -1567,16 +1702,22 @@ ShadowViewMutation::List calculateShadowViewMutations(
         oldRootShadowView, newRootShadowView, {}));
   }
 
+  auto sliceOne = sliceChildShadowNodeViewPairs(
+      ShadowViewNodePair{.shadowNode = &oldRootShadowNode},
+      viewNodePairScope,
+      false,
+      {});
+  auto sliceTwo = sliceChildShadowNodeViewPairs(
+      ShadowViewNodePair{.shadowNode = &newRootShadowNode},
+      viewNodePairScope,
+      false,
+      {});
   calculateShadowViewMutations(
       innerViewNodePairScope,
       mutations,
       oldRootShadowNode.getTag(),
-      sliceChildShadowNodeViewPairs(
-          ShadowViewNodePair{.shadowNode = &oldRootShadowNode},
-          viewNodePairScope),
-      sliceChildShadowNodeViewPairs(
-          ShadowViewNodePair{.shadowNode = &newRootShadowNode},
-          viewNodePairScope));
+      std::move(sliceOne),
+      std::move(sliceTwo));
 
   DEBUG_LOGS({
     LOG(ERROR) << "Differ Completed: " << mutations.size() << " mutations";

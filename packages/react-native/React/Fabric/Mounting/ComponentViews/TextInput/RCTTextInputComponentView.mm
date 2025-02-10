@@ -194,6 +194,12 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _backedTextInputView.editable = newTextInputProps.traits.editable;
   }
 
+  if (newTextInputProps.multiline &&
+      newTextInputProps.traits.dataDetectorTypes != oldTextInputProps.traits.dataDetectorTypes) {
+    _backedTextInputView.dataDetectorTypes =
+        RCTUITextViewDataDetectorTypesFromStringVector(newTextInputProps.traits.dataDetectorTypes);
+  }
+
   if (newTextInputProps.traits.enablesReturnKeyAutomatically !=
       oldTextInputProps.traits.enablesReturnKeyAutomatically) {
     _backedTextInputView.enablesReturnKeyAutomatically = newTextInputProps.traits.enablesReturnKeyAutomatically;
@@ -285,6 +291,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
     _backedTextInputView.inputAccessoryViewButtonLabel =
         RCTNSStringFromString(newTextInputProps.inputAccessoryViewButtonLabel);
   }
+
+  if (newTextInputProps.disableKeyboardShortcuts != oldTextInputProps.disableKeyboardShortcuts) {
+    _backedTextInputView.disableKeyboardShortcuts = newTextInputProps.disableKeyboardShortcuts;
+  }
+
   [super updateProps:props oldProps:oldProps];
 
   [self setDefaultInputAccessoryView];

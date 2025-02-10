@@ -115,10 +115,11 @@ function extractArrayElementType(
       };
     case 'UnionTypeAnnotation':
       return {
-        type: 'StringEnumTypeAnnotation',
-        options: typeAnnotation.types.map(option =>
-          parser.getLiteralValue(option),
-        ),
+        type: 'StringLiteralUnionTypeAnnotation',
+        types: typeAnnotation.types.map(option => ({
+          type: 'StringLiteralTypeAnnotation',
+          value: parser.getLiteralValue(option),
+        })),
       };
     case 'UnsafeMixed':
       return {type: 'MixedTypeAnnotation'};

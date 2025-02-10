@@ -68,6 +68,7 @@ export default class AnimatedDivision extends AnimatedWithChildren {
   __attach(): void {
     this._a.__addChild(this);
     this._b.__addChild(this);
+    super.__attach();
   }
 
   __detach(): void {

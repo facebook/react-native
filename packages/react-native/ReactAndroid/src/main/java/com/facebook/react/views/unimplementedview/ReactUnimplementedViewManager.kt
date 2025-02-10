@@ -26,18 +26,17 @@ internal class ReactUnimplementedViewManager :
 
   public override fun getDelegate(): ViewManagerDelegate<ReactUnimplementedView> = delegate
 
-  protected override fun createViewInstance(
-      reactContext: ThemedReactContext
-  ): ReactUnimplementedView = ReactUnimplementedView(reactContext)
+  override fun createViewInstance(reactContext: ThemedReactContext): ReactUnimplementedView =
+      ReactUnimplementedView(reactContext)
 
-  public override fun getName(): String = REACT_CLASS
+  override fun getName(): String = REACT_CLASS
 
   @ReactProp(name = "name")
-  public override fun setName(view: ReactUnimplementedView, name: String?): Unit {
+  override fun setName(view: ReactUnimplementedView, name: String?): Unit {
     view.setName(name ?: "<null component name>")
   }
 
   internal companion object {
-    public const val REACT_CLASS: String = "UnimplementedNativeView"
+    const val REACT_CLASS: String = "UnimplementedNativeView"
   }
 }

@@ -18,6 +18,10 @@ InspectorFlags& InspectorFlags::getInstance() {
 }
 
 bool InspectorFlags::getFuseboxEnabled() const {
+  if (fuseboxDisabledForTest_) {
+    return false;
+  }
+
   return loadFlagsAndAssertUnchanged().fuseboxEnabled;
 }
 
@@ -25,8 +29,16 @@ bool InspectorFlags::getIsProfilingBuild() const {
   return loadFlagsAndAssertUnchanged().isProfilingBuild;
 }
 
+bool InspectorFlags::getNetworkInspectionEnabled() const {
+  return loadFlagsAndAssertUnchanged().networkInspectionEnabled;
+}
+
 void InspectorFlags::dangerouslyResetFlags() {
   *this = InspectorFlags{};
+}
+
+void InspectorFlags::dangerouslyDisableFuseboxForTest() {
+  fuseboxDisabledForTest_ = true;
 }
 
 #if defined(REACT_NATIVE_FORCE_ENABLE_FUSEBOX) && \
@@ -43,11 +55,8 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
           true,
 #elif defined(REACT_NATIVE_FORCE_DISABLE_FUSEBOX)
           false,
-#elif defined(HERMES_ENABLE_DEBUGGER) && \
-    defined(REACT_NATIVE_ENABLE_FUSEBOX_DEBUG)
-          true,
 #elif defined(HERMES_ENABLE_DEBUGGER)
-          ReactNativeFeatureFlags::fuseboxEnabledDebug(),
+          true,
 #elif defined(REACT_NATIVE_ENABLE_FUSEBOX_RELEASE)
           true,
 #else
@@ -59,6 +68,8 @@ const InspectorFlags::Values& InspectorFlags::loadFlagsAndAssertUnchanged()
 #else
           false,
 #endif
+      .networkInspectionEnabled =
+          ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled(),
   };
 
   if (cachedValues_.has_value() && !inconsistentFlagsStateLogged_) {

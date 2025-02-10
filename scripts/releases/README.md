@@ -10,10 +10,6 @@ For information on command arguments, run `node <command> --help`.
 
 Creates a release commit to trigger a new release.
 
-### `remove-new-arch-flags`
-
-Updates native build files to disable the New Architecture.
-
 ### `set-version`
 
 Bump the version of all packages.

@@ -29,7 +29,8 @@ export type DirectEventHandler<
 export type Double = number;
 export type Float = number;
 export type Int32 = number;
-export type UnsafeObject = $FlowFixMe; // Object is forbidden in strict mode
+/* $FlowFixMe[unclear-type] Object is forbidden in strict mode */
+export type UnsafeObject = Object;
 export type UnsafeMixed = mixed;
 
 type DefaultTypes = number | boolean | string | $ReadOnlyArray<string>;

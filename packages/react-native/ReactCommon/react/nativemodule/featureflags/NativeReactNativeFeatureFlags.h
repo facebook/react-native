@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<864803698ff070ce22a4b2f121acbbc0>>
+ * @generated SignedSource<<388b3ed59d34f964d667ed641f270738>>
  */
 
 /**
@@ -39,23 +39,13 @@ class NativeReactNativeFeatureFlags
 
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
 
-  bool completeReactInstanceCreationOnBgThreadOnAndroid(jsi::Runtime& runtime);
-
-  bool disableEventLoopOnBridgeless(jsi::Runtime& runtime);
-
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
   bool enableAccumulatedUpdatesInRawPropsAndroid(jsi::Runtime& runtime);
 
-  bool enableAlignItemsBaselineOnFabricIOS(jsi::Runtime& runtime);
-
-  bool enableAndroidLineHeightCentering(jsi::Runtime& runtime);
-
   bool enableBridgelessArchitecture(jsi::Runtime& runtime);
 
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
-
-  bool enableDeletionOfUnmountedViews(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
@@ -72,6 +62,8 @@ class NativeReactNativeFeatureFlags
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
+
+  bool enableJSRuntimeGCOnMemoryPressureOnIOS(jsi::Runtime& runtime);
 
   bool enableLayoutAnimationsOnAndroid(jsi::Runtime& runtime);
 
@@ -91,7 +83,13 @@ class NativeReactNativeFeatureFlags
 
   bool enableUIConsistency(jsi::Runtime& runtime);
 
+  bool enableViewCulling(jsi::Runtime& runtime);
+
   bool enableViewRecycling(jsi::Runtime& runtime);
+
+  bool enableViewRecyclingForText(jsi::Runtime& runtime);
+
+  bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
 
@@ -101,33 +99,25 @@ class NativeReactNativeFeatureFlags
 
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid(jsi::Runtime& runtime);
 
-  bool fuseboxEnabledDebug(jsi::Runtime& runtime);
-
   bool fuseboxEnabledRelease(jsi::Runtime& runtime);
 
-  bool initEagerTurboModulesOnNativeModulesQueueAndroid(jsi::Runtime& runtime);
+  bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
-
-  bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
 
+  bool useEditTextStockAndroidFocusBehavior(jsi::Runtime& runtime);
+
   bool useFabricInterop(jsi::Runtime& runtime);
 
-  bool useImmediateExecutorInAndroidBridgeless(jsi::Runtime& runtime);
-
   bool useNativeViewConfigsInBridgelessMode(jsi::Runtime& runtime);
-
-  bool useOptimisedViewPreallocationOnAndroid(jsi::Runtime& runtime);
 
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRawPropsJsiValue(jsi::Runtime& runtime);
-
-  bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 

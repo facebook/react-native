@@ -208,8 +208,7 @@ inline bool operator==(
   return areAttributedStringsEquivalentLayoutWise(
              lhs.attributedString, rhs.attributedString) &&
       lhs.paragraphAttributes == rhs.paragraphAttributes &&
-      lhs.layoutConstraints.maximumSize.width ==
-      rhs.layoutConstraints.maximumSize.width;
+      lhs.layoutConstraints == rhs.layoutConstraints;
 }
 
 inline bool operator!=(
@@ -243,7 +242,7 @@ struct hash<facebook::react::TextMeasureCacheKey> {
     return facebook::react::hash_combine(
         attributedStringHashLayoutWise(key.attributedString),
         key.paragraphAttributes,
-        key.layoutConstraints.maximumSize.width);
+        key.layoutConstraints);
   }
 };
 

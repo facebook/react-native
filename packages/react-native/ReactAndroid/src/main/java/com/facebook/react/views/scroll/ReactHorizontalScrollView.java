@@ -71,6 +71,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     implements ReactClippingViewGroup,
         ViewGroup.OnHierarchyChangeListener,
         View.OnLayoutChangeListener,
+        ReactAccessibleScrollView,
         ReactOverflowViewWithInset,
         HasScrollState,
         HasStateWrapper,
@@ -456,6 +457,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   }
 
   /** Returns whether the given descendent is partially scrolled in view */
+  @Override
   public boolean isPartiallyScrolledInView(View descendent) {
     int scrollDelta = getScrollDelta(descendent);
     descendent.getDrawingRect(mTempRect);

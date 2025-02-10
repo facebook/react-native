@@ -46,6 +46,9 @@ const DEFAULT_MODE: FantomTestConfigMode =
 
 const FANTOM_FLAG_FORMAT = /^(\w+):(\w+)$/;
 
+const FANTOM_BENCHMARK_FILENAME_RE = /[Bb]enchmark-itest\./g;
+const FANTOM_BENCHMARK_SUITE_RE = /\nFantom\.unstable_benchmark(\s*)\.suite\(/g;
+
 /**
  * Extracts the Fantom configuration from the test file, specified as part of
  * the docblock comment. E.g.:
@@ -69,7 +72,9 @@ const FANTOM_FLAG_FORMAT = /^(\w+):(\w+)$/;
 export default function getFantomTestConfig(
   testPath: string,
 ): FantomTestConfig {
-  const docblock = extract(fs.readFileSync(testPath, 'utf8'));
+  const testContents = fs.readFileSync(testPath, 'utf8');
+
+  const docblock = extract(testContents);
   const pragmas = parse(docblock) as DocblockPragmas;
 
   const config: FantomTestConfig = {
@@ -101,6 +106,13 @@ export default function getFantomTestConfig(
         break;
       default:
         throw new Error(`Invalid Fantom mode: ${mode}`);
+    }
+  } else {
+    if (
+      FANTOM_BENCHMARK_FILENAME_RE.test(testPath) ||
+      FANTOM_BENCHMARK_SUITE_RE.test(testContents)
+    ) {
+      config.mode = FantomTestConfigMode.Optimized;
     }
   }
 

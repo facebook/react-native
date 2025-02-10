@@ -15,13 +15,13 @@ version =
     parent?.extraProperties?.get("publishing_version")
         ?: error("publishing_version not set for external-artifacts")
 
-configurations.maybeCreate("default")
+configurations.maybeCreate("externalArtifacts")
 
 // Those artifacts should be placed inside the `artifacts/hermes-ios-*.tar.gz` location.
 val hermesiOSDebugArtifactFile: RegularFile =
     layout.projectDirectory.file("artifacts/hermes-ios-debug.tar.gz")
 val hermesiOSDebugArtifact: PublishArtifact =
-    artifacts.add("default", hermesiOSDebugArtifactFile) {
+    artifacts.add("externalArtifacts", hermesiOSDebugArtifactFile) {
       type = "tgz"
       extension = "tar.gz"
       classifier = "hermes-ios-debug"
@@ -29,7 +29,7 @@ val hermesiOSDebugArtifact: PublishArtifact =
 val hermesiOSReleaseArtifactFile: RegularFile =
     layout.projectDirectory.file("artifacts/hermes-ios-release.tar.gz")
 val hermesiOSReleaseArtifact: PublishArtifact =
-    artifacts.add("default", hermesiOSReleaseArtifactFile) {
+    artifacts.add("externalArtifacts", hermesiOSReleaseArtifactFile) {
       type = "tgz"
       extension = "tar.gz"
       classifier = "hermes-ios-release"
@@ -39,7 +39,7 @@ val hermesiOSReleaseArtifact: PublishArtifact =
 val hermesDSYMDebugArtifactFile: RegularFile =
     layout.projectDirectory.file("artifacts/hermes-framework-dSYM-debug.tar.gz")
 val hermesDSYMDebugArtifact: PublishArtifact =
-    artifacts.add("default", hermesDSYMDebugArtifactFile) {
+    artifacts.add("externalArtifacts", hermesDSYMDebugArtifactFile) {
       type = "tgz"
       extension = "tar.gz"
       classifier = "hermes-framework-dSYM-debug"
@@ -47,7 +47,7 @@ val hermesDSYMDebugArtifact: PublishArtifact =
 val hermesDSYMReleaseArtifactFile: RegularFile =
     layout.projectDirectory.file("artifacts/hermes-framework-dSYM-release.tar.gz")
 val hermesDSYMReleaseArtifact: PublishArtifact =
-    artifacts.add("default", hermesDSYMReleaseArtifactFile) {
+    artifacts.add("externalArtifacts", hermesDSYMReleaseArtifactFile) {
       type = "tgz"
       extension = "tar.gz"
       classifier = "hermes-framework-dSYM-release"

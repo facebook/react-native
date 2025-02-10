@@ -7,8 +7,8 @@
 
 plugins {
   id("com.facebook.react")
-  alias(libs.plugins.android.library)
-  alias(libs.plugins.kotlin.android)
+  id("com.android.library")
+  id("org.jetbrains.kotlin.android")
 }
 
 android {

@@ -20,11 +20,11 @@ type SnapshotReadyEvent = SyntheticEvent<
   $ReadOnly<{testIdentifier: string, ...}>,
 >;
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
   onSnapshotReady?: ?(event: SnapshotReadyEvent) => mixed,
   testIdentifier?: ?string,
-|}>;
+}>;
 
 const RCTSnapshotNativeComponent: HostComponent<NativeProps> =
   requireNativeComponent<NativeProps>('RCTSnapshot');

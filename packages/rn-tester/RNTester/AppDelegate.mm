@@ -9,7 +9,6 @@
 
 #import <UserNotifications/UserNotifications.h>
 
-#import <RCTAppDelegate+Protected.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
@@ -51,11 +50,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-  [super applicationDidEnterBackground:application];
 }
 
 - (NSDictionary *)prepareInitialProps

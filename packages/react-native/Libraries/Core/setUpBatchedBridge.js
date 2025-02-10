@@ -14,15 +14,16 @@ import registerModule from './registerCallableModule';
 
 registerModule('Systrace', () => require('../Performance/Systrace'));
 if (!(global.RN$Bridgeless === true)) {
-  registerModule('JSTimers', () => require('./Timers/JSTimers'));
+  registerModule('JSTimers', () => require('./Timers/JSTimers').default);
 }
 registerModule('RCTLog', () => require('../Utilities/RCTLog'));
 registerModule(
   'RCTDeviceEventEmitter',
   () => require('../EventEmitter/RCTDeviceEventEmitter').default,
 );
-registerModule('RCTNativeAppEventEmitter', () =>
-  require('../EventEmitter/RCTNativeAppEventEmitter'),
+registerModule(
+  'RCTNativeAppEventEmitter',
+  () => require('../EventEmitter/RCTNativeAppEventEmitter').default,
 );
 registerModule('GlobalPerformanceLogger', () =>
   require('../Utilities/GlobalPerformanceLogger'),

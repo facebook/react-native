@@ -17,12 +17,6 @@ declare var console: {[string]: $FlowFixMe};
  * You can use this module directly, or just require InitializeCore.
  */
 if (__DEV__) {
-  require('./setUpReactDevTools');
-
-  // Set up inspector
-  const JSInspector = require('../JSInspector/JSInspector');
-  JSInspector.registerAgent(require('../JSInspector/NetworkAgent'));
-
   // Note we can't check if console is "native" because it would appear "native" in JSC and Hermes.
   // We also can't check any properties that don't exist in the Chrome worker environment.
   // So we check a navigator property that's set to a particular value ("Netscape") in all real browsers.
@@ -77,7 +71,6 @@ if (__DEV__) {
 
   require('./setUpReactRefresh');
 
-  global[
-    `${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`
-  ] = require('./Devtools/loadBundleFromServer');
+  global[`${global.__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`] =
+    require('./Devtools/loadBundleFromServer').default;
 }

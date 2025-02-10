@@ -21,10 +21,10 @@
 class WebSocketEvent {
   type: string;
 
-  constructor(type: string, eventInitDict: $FlowFixMe) {
+  constructor(type: string, eventInitDict: ?{...}) {
     this.type = type.toString();
     Object.assign(this, eventInitDict);
   }
 }
 
-module.exports = WebSocketEvent;
+export default WebSocketEvent;

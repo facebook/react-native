@@ -14,7 +14,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "flags.h"
+#include <react/renderer/debug/flags.h>
 
 namespace facebook::react {
 

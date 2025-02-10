@@ -20,4 +20,4 @@ export type {
   RenderItemType,
   Separators,
 } from '@react-native/virtualized-lists';
-module.exports = VirtualizedList;
+export default VirtualizedList;

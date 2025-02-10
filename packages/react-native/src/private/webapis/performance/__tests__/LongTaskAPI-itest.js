@@ -14,7 +14,7 @@ import type {PerformanceObserverCallbackOptions} from '../PerformanceObserver';
 
 import setUpPerformanceObserver from '../../../setup/setUpPerformanceObserver';
 import {PerformanceLongTaskTiming} from '../LongTasks';
-import * as Fantom from '@react-native/fantom';
+import Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 
 import '../../../../../Libraries/Core/InitializeCore.js';

@@ -15,7 +15,7 @@ import com.facebook.imagepipeline.bitmaps.PlatformBitmapFactory
 import com.facebook.imagepipeline.request.Postprocessor
 import java.util.LinkedList
 
-public class MultiPostprocessor private constructor(postprocessors: List<Postprocessor>) :
+internal class MultiPostprocessor private constructor(postprocessors: List<Postprocessor>) :
     Postprocessor {
 
   private val postprocessors: List<Postprocessor> = LinkedList(postprocessors)
@@ -25,7 +25,7 @@ public class MultiPostprocessor private constructor(postprocessors: List<Postpro
   override fun getPostprocessorCacheKey(): CacheKey =
       MultiCacheKey(postprocessors.map { it.postprocessorCacheKey })
 
-  public override fun process(
+  override fun process(
       sourceBitmap: Bitmap,
       bitmapFactory: PlatformBitmapFactory
   ): CloseableReference<Bitmap> {
@@ -48,9 +48,9 @@ public class MultiPostprocessor private constructor(postprocessors: List<Postpro
     }
   }
 
-  public companion object {
+  companion object {
     @JvmStatic
-    public fun from(postprocessors: List<Postprocessor>): Postprocessor? {
+    fun from(postprocessors: List<Postprocessor>): Postprocessor? {
       return when (postprocessors.size) {
         0 -> null
         1 -> postprocessors[0]

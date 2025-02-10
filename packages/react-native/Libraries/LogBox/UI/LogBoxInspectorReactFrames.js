@@ -20,9 +20,9 @@ import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   log: LogBoxLog,
-|}>;
+}>;
 
 const BEFORE_SLASH_RE = /^(.*)[\\/]/;
 

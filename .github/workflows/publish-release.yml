@@ -167,7 +167,7 @@ jobs:
       env:
         TERM: "dumb"
         GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-        # By default we only build ARM64 to save time/resources. For release/nightlies/prealpha, we override this value to build all archs.
+        # By default we only build ARM64 to save time/resources. For release/nightlies, we override this value to build all archs.
         ORG_GRADLE_PROJECT_reactNativeArchitectures: "arm64-v8a"
     env:
       HERMES_WS_DIR: /tmp/hermes
@@ -214,3 +214,13 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer $REACT_NATIVE_BOT_GITHUB_TOKEN" \
             -d "{\"event_type\": \"publish\", \"client_payload\": { \"version\": \"${{ github.ref_name }}\" }}"
+      - name: Verify Release is on NPM
+        timeout-minutes: 3
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
+          script: |
+            const {verifyReleaseOnNpm} = require('./.github/workflow-scripts/verifyReleaseOnNpm.js');
+            const {isLatest()} = require('./.github/workflow-scripts/publishTemplate.js');
+            const version = "${{ github.ref_name }}";
+            await verifyReleaseOnNpm(version, isLatest());

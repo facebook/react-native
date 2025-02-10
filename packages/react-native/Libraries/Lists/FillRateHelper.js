@@ -16,4 +16,4 @@ const FillRateHelper: FillRateHelperType =
   require('@react-native/virtualized-lists').FillRateHelper;
 
 export type {FillRateInfo} from '@react-native/virtualized-lists';
-module.exports = FillRateHelper;
+export default FillRateHelper;

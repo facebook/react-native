@@ -11,9 +11,9 @@ import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 
-public abstract class ProcessorBase : AbstractProcessor() {
+internal abstract class ProcessorBase : AbstractProcessor() {
 
-  public fun process(annotations: Set<TypeElement?>?, roundEnv: RoundEnvironment?): Boolean =
+  fun process(annotations: Set<TypeElement?>?, roundEnv: RoundEnvironment?): Boolean =
       processImpl(annotations, roundEnv)
 
   protected abstract fun processImpl(

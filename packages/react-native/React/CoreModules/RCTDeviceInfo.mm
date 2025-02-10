@@ -16,6 +16,7 @@
 #import <React/RCTInvalidating.h>
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
+#import <atomic>
 
 #import "CoreModulesPlugins.h"
 
@@ -28,7 +29,7 @@ using namespace facebook::react;
   UIInterfaceOrientation _currentInterfaceOrientation;
   NSDictionary *_currentInterfaceDimensions;
   BOOL _isFullscreen;
-  BOOL _invalidated;
+  std::atomic<BOOL> _invalidated;
 }
 
 @synthesize moduleRegistry = _moduleRegistry;
@@ -68,6 +69,10 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTWindowFrameDidChangeNotification
                                              object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(interfaceFrameDidChange)
+                                               name:UIApplicationDidBecomeActiveNotification
+                                             object:nil];
 
 #if TARGET_OS_IOS
 
@@ -92,10 +97,9 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  if (_invalidated) {
+  if (_invalidated.exchange(YES)) {
     return;
   }
-  _invalidated = YES;
   [self _cleanupObservers];
 }
 

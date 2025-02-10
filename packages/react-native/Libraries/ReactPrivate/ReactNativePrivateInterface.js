@@ -18,6 +18,7 @@ import typeof RCTEventEmitter from '../EventEmitter/RCTEventEmitter';
 import typeof CustomEvent from '../Events/CustomEvent';
 import typeof {
   createPublicInstance,
+  createPublicRootInstance,
   createPublicTextInstance,
   getInternalInstanceHandleFromPublicInstance,
   getNativeTagFromPublicInstance,
@@ -38,25 +39,25 @@ import typeof Platform from '../Utilities/Platform';
 // flowlint unsafe-getters-setters:off
 module.exports = {
   get BatchedBridge(): BatchedBridge {
-    return require('../BatchedBridge/BatchedBridge');
+    return require('../BatchedBridge/BatchedBridge').default;
   },
   get ExceptionsManager(): ExceptionsManager {
-    return require('../Core/ExceptionsManager');
+    return require('../Core/ExceptionsManager').default;
   },
   get Platform(): Platform {
     return require('../Utilities/Platform');
   },
   get RCTEventEmitter(): RCTEventEmitter {
-    return require('../EventEmitter/RCTEventEmitter');
+    return require('../EventEmitter/RCTEventEmitter').default;
   },
   get ReactNativeViewConfigRegistry(): ReactNativeViewConfigRegistry {
     return require('../Renderer/shims/ReactNativeViewConfigRegistry');
   },
   get TextInputState(): TextInputState {
-    return require('../Components/TextInput/TextInputState');
+    return require('../Components/TextInput/TextInputState').default;
   },
   get UIManager(): UIManager {
-    return require('../ReactNative/UIManager');
+    return require('../ReactNative/UIManager').default;
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get deepDiffer(): deepDiffer {
@@ -77,7 +78,8 @@ module.exports = {
     return require('../Core/ReactFiberErrorDialog').default;
   },
   get legacySendAccessibilityEvent(): legacySendAccessibilityEvent {
-    return require('../Components/AccessibilityInfo/legacySendAccessibilityEvent');
+    return require('../Components/AccessibilityInfo/legacySendAccessibilityEvent')
+      .default;
   },
   get RawEventEmitter(): RawEventEmitter {
     return require('../Core/RawEventEmitter').default;
@@ -92,6 +94,10 @@ module.exports = {
   get diffAttributePayloads(): diffAttributePayloads {
     return require('../ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload')
       .diff;
+  },
+  get createPublicRootInstance(): createPublicRootInstance {
+    return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')
+      .createPublicRootInstance;
   },
   get createPublicInstance(): createPublicInstance {
     return require('../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance')

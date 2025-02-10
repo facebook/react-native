@@ -16,123 +16,20 @@ import type {
 } from '../../types/RNTesterTypes';
 
 import ExampleTextInput from './ExampleTextInput';
+import TextInputSharedExamples from './TextInputSharedExamples';
+import React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 
-const TextInputSharedExamples = require('./TextInputSharedExamples.js');
-const React = require('react');
-const {StyleSheet, Switch, Text, View} = require('react-native');
+const ToggleDefaultPaddingExample = (): React.Node => {
+  const [hasPadding, setHasPadding] = React.useState(false);
 
-class ToggleDefaultPaddingExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  constructor(props) {
-    super(props);
-    this.state = {hasPadding: false};
-  }
-  render(): React.Node {
-    return (
-      <View>
-        <ExampleTextInput style={this.state.hasPadding ? {padding: 0} : null} />
-        <Text
-          onPress={() => this.setState({hasPadding: !this.state.hasPadding})}>
-          Toggle padding
-        </Text>
-      </View>
-    );
-  }
-}
-
-class AutogrowingTextInputExample extends React.Component<{...}> {
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  constructor(props) {
-    super(props);
-
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
-    this.state = {
-      multiline: true,
-      fullWidth: true,
-      text: '',
-      contentSize: {
-        width: 0,
-        height: 0,
-      },
-    };
-  }
-
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  UNSAFE_componentWillReceiveProps(props) {
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
-    this.setState({
-      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-       * when making Flow check .android.js files. */
-      multiline: props.multiline,
-    });
-  }
-
-  render(): React.Node {
-    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-     * when making Flow check .android.js files. */
-    const {style, multiline, ...props} = this.props;
-    return (
-      <View>
-        <Text>Full width:</Text>
-        <Switch
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          value={this.state.fullWidth}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          onValueChange={value => this.setState({fullWidth: value})}
-        />
-
-        <Text>Multiline:</Text>
-        <Switch
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          value={this.state.multiline}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          onValueChange={value => this.setState({multiline: value})}
-        />
-
-        <Text>TextInput:</Text>
-        {/* $FlowFixMe(>=0.122.0 site=react_native_android_fb) This comment
-         * suppresses an error found when Flow v0.122.0 was deployed. To see
-         * the error, delete this comment and run Flow. */}
-        <ExampleTextInput
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          multiline={this.state.multiline}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          style={[style, {width: this.state.fullWidth ? '100%' : '50%'}]}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
-          onChangeText={value => this.setState({text: value})}
-          onContentSizeChange={event =>
-            /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-             * found when making Flow check .android.js files. */
-            this.setState({contentSize: event.nativeEvent.contentSize})
-          }
-          {...props}
-        />
-        <Text>Plain text value representation:</Text>
-        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-         * found when making Flow check .android.js files. */}
-        <Text>{this.state.text}</Text>
-        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-         * found when making Flow check .android.js files. */}
-        <Text>Content Size: {JSON.stringify(this.state.contentSize)}</Text>
-      </View>
-    );
-  }
-}
+  return (
+    <View>
+      <ExampleTextInput style={hasPadding ? {padding: 0} : null} />
+      <Text onPress={() => setHasPadding(!hasPadding)}>Toggle padding</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   multiline: {
@@ -409,25 +306,54 @@ const examples: Array<RNTesterModuleExample> = [
     },
   },
   {
-    title: 'Auto-expanding',
+    title: 'allowFontScaling attribute',
     render: function (): React.Node {
       return (
-        <View style={styles.wrappedText}>
-          <AutogrowingTextInputExample
-            enablesReturnKeyAutomatically={true}
-            returnKeyType="done"
-            multiline={true}
-            style={{maxHeight: 400, minHeight: 20, backgroundColor: '#eeeeee'}}>
-            generic generic generic
-            <Text style={{fontSize: 6, color: 'red'}}>
-              small small small small small small
-            </Text>
-            <Text>regular regular</Text>
-            <Text style={{fontSize: 30, color: 'green'}}>
-              huge huge huge huge huge
-            </Text>
-            generic generic generic
-          </AutogrowingTextInputExample>
+        <View>
+          <Text>
+            By default, text will respect Text Size accessibility setting on
+            Android. It means that all font sizes will be increased or decreased
+            depending on the value of the Text Size setting in the OS's Settings
+            app.
+          </Text>
+          <ExampleTextInput
+            placeholder="allowFontScaling = false"
+            allowFontScaling={false}
+          />
+          <ExampleTextInput
+            style={{marginTop: 10}}
+            placeholder="allowFontScaling = false"
+            allowFontScaling={true}
+          />
+        </View>
+      );
+    },
+  },
+  {
+    title: 'maxFontSizeMultiplier attribute',
+    name: 'maxFontSizeMultiplier',
+    render(): React.Node {
+      return (
+        <View testID={'max-font-size-multiplier'}>
+          <Text>
+            When allowFontScaling is enabled, you can use the
+            maxFontSizeMultiplier prop to set an upper limit on how much the
+            font size will be scaled.
+          </Text>
+          <ExampleTextInput
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1}
+            placeholder="This text will not scale up (max 1x)"
+            style={{marginTop: 10}}
+            testID={'non-scalable-text-input'}
+          />
+          <ExampleTextInput
+            allowFontScaling={true}
+            maxFontSizeMultiplier={1.5}
+            placeholder="This text will scale up (max 1.5x)"
+            style={{marginTop: 10}}
+            testID={'scalable-text-input'}
+          />
         </View>
       );
     },

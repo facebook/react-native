@@ -38,8 +38,6 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
    */
   TextAttributes getEffectiveTextAttributes(Float fontSizeMultiplier) const;
 
-  ParagraphAttributes getEffectiveParagraphAttributes() const;
-
 #pragma mark - Props
 
   /*
@@ -80,6 +78,8 @@ class BaseTextInputProps : public ViewProps, public BaseTextProps {
   SubmitBehavior submitBehavior{SubmitBehavior::Default};
 
   bool multiline{false};
+
+  bool disableKeyboardShortcuts{false};
 };
 
 } // namespace facebook::react

@@ -215,4 +215,4 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   objectFit: true,
 };
 
-module.exports = ReactNativeStyleAttributes;
+export default ReactNativeStyleAttributes;

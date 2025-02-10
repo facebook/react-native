@@ -21,7 +21,7 @@ const clearedImmediates: Set<number> = new Set();
  * @param {function} func Callback to be invoked before the end of the
  * current JavaScript execution loop.
  */
-function setImmediate(callback: Function, ...args: any): number {
+export function setImmediate(callback: Function, ...args: any): number {
   if (arguments.length < 1) {
     throw new TypeError(
       'setImmediate must be called with at least one argument (a function to call)',
@@ -56,13 +56,6 @@ function setImmediate(callback: Function, ...args: any): number {
 /**
  * @param {number} immediateID The ID of the immediate to be clearred.
  */
-function clearImmediate(immediateID: number) {
+export function clearImmediate(immediateID: number) {
   clearedImmediates.add(immediateID);
 }
-
-const immediateShim = {
-  setImmediate: setImmediate,
-  clearImmediate: clearImmediate,
-};
-
-module.exports = immediateShim;

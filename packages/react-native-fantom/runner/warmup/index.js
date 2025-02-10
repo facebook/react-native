@@ -8,6 +8,6 @@
  * @oncall react_native
  */
 
-require('../../../../scripts/build/babel-register').registerForMonorepo();
+require('../../../../scripts/babel-register').registerForMonorepo();
 
 module.exports = require('./warmup');

@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../../src/private/specs/components/SwitchNativeComponent';
-import SwitchNativeComponent from '../../../src/private/specs/components/SwitchNativeComponent';
+export * from '../../../src/private/specs_DEPRECATED/components/SwitchNativeComponent';
+import SwitchNativeComponent from '../../../src/private/specs_DEPRECATED/components/SwitchNativeComponent';
 export default SwitchNativeComponent;

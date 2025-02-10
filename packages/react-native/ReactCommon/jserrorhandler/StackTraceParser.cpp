@@ -37,12 +37,12 @@ std::optional<int> toInt(std::string_view input) {
   return out;
 }
 
-JsErrorHandler::ParsedError::StackFrame parseStackFrame(
+JsErrorHandler::ProcessedError::StackFrame parseStackFrame(
     std::string_view file,
     std::string_view methodName,
     std::string_view lineStr,
     std::string_view columnStr) {
-  JsErrorHandler::ParsedError::StackFrame frame;
+  JsErrorHandler::ProcessedError::StackFrame frame;
   frame.file = file.empty() ? std::nullopt : std::optional(file);
   frame.methodName = !methodName.empty() ? methodName : UNKNOWN_FUNCTION;
   frame.lineNumber = !lineStr.empty() ? toInt(lineStr) : std::nullopt;
@@ -51,7 +51,7 @@ JsErrorHandler::ParsedError::StackFrame parseStackFrame(
   return frame;
 }
 
-std::optional<JsErrorHandler::ParsedError::StackFrame> parseChrome(
+std::optional<JsErrorHandler::ProcessedError::StackFrame> parseChrome(
     const std::string& line) {
   static const std::regex chromeRe(
       R"(^\s*at (.*?) ?\(((?:file|https?|blob|chrome-extension|native|eval|webpack|<anonymous>|\/|[a-z]:\\|\\\\).*?)(?::(\d+))?(?::(\d+))?\)?\s*$)",
@@ -84,7 +84,7 @@ std::optional<JsErrorHandler::ParsedError::StackFrame> parseChrome(
   return parseStackFrame(actualFile, methodName, lineStr, columnStr);
 }
 
-std::optional<JsErrorHandler::ParsedError::StackFrame> parseWinjs(
+std::optional<JsErrorHandler::ProcessedError::StackFrame> parseWinjs(
     const std::string& line) {
   static const std::regex winjsRe(
       R"(^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$)",
@@ -100,7 +100,7 @@ std::optional<JsErrorHandler::ParsedError::StackFrame> parseWinjs(
   return parseStackFrame(file, methodName, lineStr, columnStr);
 }
 
-std::optional<JsErrorHandler::ParsedError::StackFrame> parseGecko(
+std::optional<JsErrorHandler::ProcessedError::StackFrame> parseGecko(
     const std::string& line) {
   static const std::regex geckoRe(
       R"(^\s*(.*?)(?:\((.*?)\))?(?:^|@)((?:file|https?|blob|chrome|webpack|resource|\[native).*?|[^@]*bundle)(?::(\d+))?(?::(\d+))?\s*$)",
@@ -129,7 +129,7 @@ std::optional<JsErrorHandler::ParsedError::StackFrame> parseGecko(
   return parseStackFrame(file, methodName, lineStr, columnStr);
 }
 
-std::optional<JsErrorHandler::ParsedError::StackFrame> parseJSC(
+std::optional<JsErrorHandler::ProcessedError::StackFrame> parseJSC(
     const std::string& line) {
   static const std::regex javaScriptCoreRe(
       R"(^\s*(?:([^@]*)(?:\((.*?)\))?@)?(\S.*?):(\d+)(?::(\d+))?\s*$)",
@@ -147,7 +147,7 @@ std::optional<JsErrorHandler::ParsedError::StackFrame> parseJSC(
   return parseStackFrame(file, methodName, lineStr, columnStr);
 }
 
-std::optional<JsErrorHandler::ParsedError::StackFrame> parseNode(
+std::optional<JsErrorHandler::ProcessedError::StackFrame> parseNode(
     const std::string& line) {
   static const std::regex nodeRe(
       R"(^\s*at (?:((?:\[object object\])?[^\\/]+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$)",
@@ -163,14 +163,14 @@ std::optional<JsErrorHandler::ParsedError::StackFrame> parseNode(
   return parseStackFrame(file, methodName, lineStr, columnStr);
 }
 
-std::vector<JsErrorHandler::ParsedError::StackFrame> parseOthers(
+std::vector<JsErrorHandler::ProcessedError::StackFrame> parseOthers(
     const std::string& stackString) {
-  std::vector<JsErrorHandler::ParsedError::StackFrame> stack;
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> stack;
   std::istringstream iss(stackString);
   std::string line;
 
   while (std::getline(iss, line)) {
-    std::optional<JsErrorHandler::ParsedError::StackFrame> frame =
+    std::optional<JsErrorHandler::ProcessedError::StackFrame> frame =
         parseChrome(line);
 
     if (!frame) {
@@ -219,9 +219,9 @@ bool isInternalBytecodeSourceUrl(const std::string& sourceUrl) {
   return sourceUrl == "InternalBytecode.js";
 }
 
-std::vector<JsErrorHandler::ParsedError::StackFrame> convertHermesStack(
+std::vector<JsErrorHandler::ProcessedError::StackFrame> convertHermesStack(
     const std::vector<HermesStackEntry>& stack) {
-  std::vector<JsErrorHandler::ParsedError::StackFrame> frames;
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> frames;
   for (const auto& entry : stack) {
     if (entry.type != "FRAME") {
       continue;
@@ -230,7 +230,7 @@ std::vector<JsErrorHandler::ParsedError::StackFrame> convertHermesStack(
         entry.location.type == "INTERNAL_BYTECODE") {
       continue;
     }
-    JsErrorHandler::ParsedError::StackFrame frame;
+    JsErrorHandler::ProcessedError::StackFrame frame;
     frame.methodName = entry.functionName;
     frame.file = entry.location.sourceUrl;
     frame.lineNumber = entry.location.line1Based;
@@ -282,7 +282,7 @@ HermesStackEntry parseLine(const std::string& line) {
   return entry;
 }
 
-std::vector<JsErrorHandler::ParsedError::StackFrame> parseHermes(
+std::vector<JsErrorHandler::ProcessedError::StackFrame> parseHermes(
     const std::string& stack) {
   static const std::regex RE_COMPONENT_NO_STACK(R"(^ {4}at .*?$)");
   std::istringstream stream(stack);
@@ -308,10 +308,10 @@ std::vector<JsErrorHandler::ParsedError::StackFrame> parseHermes(
 }
 } // namespace
 
-std::vector<JsErrorHandler::ParsedError::StackFrame> StackTraceParser::parse(
+std::vector<JsErrorHandler::ProcessedError::StackFrame> StackTraceParser::parse(
     const bool isHermes,
     const std::string& stackString) {
-  std::vector<JsErrorHandler::ParsedError::StackFrame> stackFrames =
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> stackFrames =
       isHermes ? parseHermes(stackString) : parseOthers(stackString);
   return stackFrames;
 }

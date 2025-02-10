@@ -306,6 +306,9 @@ class JSI_EXPORT Runtime {
   virtual PropNameID createPropNameIDFromUtf8(
       const uint8_t* utf8,
       size_t length) = 0;
+  virtual PropNameID createPropNameIDFromUtf16(
+      const char16_t* utf16,
+      size_t length);
   virtual PropNameID createPropNameIDFromString(const String& str) = 0;
   virtual PropNameID createPropNameIDFromSymbol(const Symbol& sym) = 0;
   virtual std::string utf8(const PropNameID&) = 0;
@@ -322,6 +325,7 @@ class JSI_EXPORT Runtime {
 
   virtual String createStringFromAscii(const char* str, size_t length) = 0;
   virtual String createStringFromUtf8(const uint8_t* utf8, size_t length) = 0;
+  virtual String createStringFromUtf16(const char16_t* utf16, size_t length);
   virtual std::string utf8(const String&) = 0;
 
   // \return a \c Value created from a utf8-encoded JSON string. The default
@@ -515,6 +519,21 @@ class JSI_EXPORT PropNameID : public Pointer {
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.size());
   }
 
+  /// Given a series of UTF-16 encoded code units, create a PropNameId. The
+  /// input may contain unpaired surrogates, which will be interpreted as a code
+  /// point of the same value.
+  static PropNameID
+  forUtf16(Runtime& runtime, const char16_t* utf16, size_t length) {
+    return runtime.createPropNameIDFromUtf16(utf16, length);
+  }
+
+  /// Given a series of UTF-16 encoded code units stored inside std::u16string,
+  /// create a PropNameId.  The input may contain unpaired surrogates, which
+  /// will be interpreted as a code point of the same value.
+  static PropNameID forUtf16(Runtime& runtime, const std::u16string& str) {
+    return runtime.createPropNameIDFromUtf16(str.data(), str.size());
+  }
+
   /// Create a PropNameID from a JS string.
   static PropNameID forString(Runtime& runtime, const jsi::String& str) {
     return runtime.createPropNameIDFromString(str);
@@ -697,6 +716,21 @@ class JSI_EXPORT String : public Pointer {
   static String createFromUtf8(Runtime& runtime, const std::string& utf8) {
     return runtime.createStringFromUtf8(
         reinterpret_cast<const uint8_t*>(utf8.data()), utf8.length());
+  }
+
+  /// Given a series of UTF-16 encoded code units, create a JS String. The input
+  /// may contain unpaired surrogates, which will be interpreted as a code point
+  /// of the same value.
+  static String
+  createFromUtf16(Runtime& runtime, const char16_t* utf16, size_t length) {
+    return runtime.createStringFromUtf16(utf16, length);
+  }
+
+  /// Given a series of UTF-16 encoded code units stored inside std::u16string,
+  /// create a JS String. The input may contain unpaired surrogates, which will
+  /// be interpreted as a code point of the same value.
+  static String createFromUtf16(Runtime& runtime, const std::u16string& utf16) {
+    return runtime.createStringFromUtf16(utf16.data(), utf16.length());
   }
 
   /// \return whether a and b contain the same characters.

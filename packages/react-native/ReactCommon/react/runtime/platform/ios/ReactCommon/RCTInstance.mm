@@ -130,9 +130,25 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     }
     _launchOptions = launchOptions;
 
+    if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(_handleMemoryWarning)
+                                                   name:UIApplicationDidReceiveMemoryWarningNotification
+                                                 object:nil];
+    }
+
     [self _start];
   }
   return self;
+}
+
+- (void)dealloc
+{
+  if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidReceiveMemoryWarningNotification
+                                                  object:nil];
+  }
 }
 
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
@@ -232,7 +248,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
   __weak __typeof(self) weakSelf = self;
-  auto onJsError = [=](jsi::Runtime &runtime, const JsErrorHandler::ParsedError &error) {
+  auto onJsError = [=](jsi::Runtime &runtime, const JsErrorHandler::ProcessedError &error) {
     [weakSelf _handleJSError:error withRuntime:runtime];
   };
 
@@ -302,7 +318,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       "RCTEventDispatcher",
       facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTEventDispatcher"]));
   contextContainer->insert("RCTBridgeModuleDecorator", facebook::react::wrapManagedObject(_bridgeModuleDecorator));
-  contextContainer->insert("RuntimeScheduler", std::weak_ptr<RuntimeScheduler>(_reactInstance->getRuntimeScheduler()));
+  contextContainer->insert(RuntimeSchedulerKey, std::weak_ptr<RuntimeScheduler>(_reactInstance->getRuntimeScheduler()));
   contextContainer->insert("RCTBridgeProxy", facebook::react::wrapManagedObject(bridgeProxy));
 
   _surfacePresenter = [[RCTSurfacePresenter alloc]
@@ -477,7 +493,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   });
 }
 
-- (void)_handleJSError:(const JsErrorHandler::ParsedError &)error withRuntime:(jsi::Runtime &)runtime
+- (void)_handleJSError:(const JsErrorHandler::ProcessedError &)error withRuntime:(jsi::Runtime &)runtime
 {
   NSMutableDictionary<NSString *, id> *errorData = [NSMutableDictionary new];
   errorData[@"message"] = @(error.message.c_str());
@@ -492,7 +508,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 
   NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (const JsErrorHandler::ParsedError::StackFrame &frame : error.stack) {
+  for (const JsErrorHandler::ProcessedError::StackFrame &frame : error.stack) {
     NSMutableDictionary<NSString *, id> *stackFrame = [NSMutableDictionary new];
     if (frame.file) {
       stackFrame[@"file"] = @(frame.file->c_str());
@@ -529,6 +545,15 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
     id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];
     [exceptionsManager reportException:jsErrorData];
+  }
+}
+
+- (void)_handleMemoryWarning
+{
+  if (_valid) {
+    // Memory Pressure Unloading Level 15 represents TRIM_MEMORY_RUNNING_CRITICAL.
+    static constexpr int unloadLevel = 15;
+    _reactInstance->handleMemoryPressureJs(unloadLevel);
   }
 }
 

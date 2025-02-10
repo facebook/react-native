@@ -15,9 +15,9 @@ import type {
   PerformanceEntryJSON,
 } from './PerformanceEntry';
 
+import {warnNoNativePerformance} from './internals/Utilities';
 import {PerformanceEntry} from './PerformanceEntry';
 import NativePerformance from './specs/NativePerformance';
-import {warnNoNativePerformance} from './Utilities';
 
 export type PerformanceEventTimingJSON = {
   ...PerformanceEntryJSON,

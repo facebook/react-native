@@ -131,13 +131,13 @@ function constructAsyncTestHook(
   };
 }
 
-export type PlatformTestHarnessHookResult = $ReadOnly<{|
+export type PlatformTestHarnessHookResult = $ReadOnly<{
   testKey: number,
   harness: PlatformTestHarness,
   numPending: number,
   reset: () => void,
   results: $ReadOnlyArray<PlatformTestResult>,
-|}>;
+}>;
 
 export default function usePlatformTestHarness(): PlatformTestHarnessHookResult {
   const [testResults, updateTestResults] = useState<

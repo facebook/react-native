@@ -22,12 +22,6 @@ using facebook::react::Point;
 using facebook::react::Rect;
 using facebook::react::Size;
 
-constexpr uint_fast16_t DOCUMENT_POSITION_DISCONNECTED = 1;
-constexpr uint_fast16_t DOCUMENT_POSITION_PRECEDING = 2;
-constexpr uint_fast16_t DOCUMENT_POSITION_FOLLOWING = 4;
-constexpr uint_fast16_t DOCUMENT_POSITION_CONTAINS = 8;
-constexpr uint_fast16_t DOCUMENT_POSITION_CONTAINED_BY = 16;
-
 ShadowNode::Shared getShadowNodeInRevision(
     const RootShadowNode::Shared& currentRevision,
     const ShadowNode& shadowNode) {
@@ -206,12 +200,20 @@ uint_fast16_t compareDocumentPosition(
 
   auto ancestors = shadowNode.getFamily().getAncestors(*currentRevision);
   if (ancestors.empty()) {
+    if (ShadowNode::sameFamily(*currentRevision, shadowNode)) {
+      // shadowNode is the root
+      return DOCUMENT_POSITION_CONTAINED_BY | DOCUMENT_POSITION_FOLLOWING;
+    }
     return DOCUMENT_POSITION_DISCONNECTED;
   }
 
   auto otherAncestors =
       otherShadowNode.getFamily().getAncestors(*currentRevision);
   if (otherAncestors.empty()) {
+    if (ShadowNode::sameFamily(*currentRevision, otherShadowNode)) {
+      // otherShadowNode is the root
+      return DOCUMENT_POSITION_CONTAINS | DOCUMENT_POSITION_PRECEDING;
+    }
     return DOCUMENT_POSITION_DISCONNECTED;
   }
 

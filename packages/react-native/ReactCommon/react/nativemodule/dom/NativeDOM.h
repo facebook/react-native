@@ -17,26 +17,37 @@
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #endif
 
+#include <react/renderer/core/ShadowNodeFamily.h>
+
 namespace facebook::react {
 
 class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
  public:
   NativeDOM(std::shared_ptr<CallInvoker> jsInvoker);
 
-  jsi::Value getParentNode(jsi::Runtime& rt, jsi::Value shadowNodeValue);
-
-  std::vector<jsi::Value> getChildNodes(
-      jsi::Runtime& rt,
-      jsi::Value shadowNodeValue);
-
-  bool isConnected(jsi::Runtime& rt, jsi::Value shadowNodeValue);
+#pragma mark - Methods from the `Node` interface (for `ReadOnlyNode`).
 
   double compareDocumentPosition(
       jsi::Runtime& rt,
-      jsi::Value shadowNodeValue,
-      jsi::Value otherShadowNodeValue);
+      jsi::Value nativeNodeReference,
+      jsi::Value otherNativeNodeReference);
 
-  std::string getTextContent(jsi::Runtime& rt, jsi::Value shadowNodeValue);
+  std::vector<jsi::Value> getChildNodes(
+      jsi::Runtime& rt,
+      jsi::Value nativeNodeReference);
+
+  jsi::Value getParentNode(jsi::Runtime& rt, jsi::Value nativeNodeReference);
+
+  bool isConnected(jsi::Runtime& rt, jsi::Value nativeNodeReference);
+
+#pragma mark - Methods from the `Element` interface (for `ReactNativeElement`).
+
+  std::tuple<
+      /* topWidth: */ int,
+      /* rightWidth: */ int,
+      /* bottomWidth: */ int,
+      /* leftWidth: */ int>
+  getBorderWidth(jsi::Runtime& rt, jsi::Value nativeElementReference);
 
   std::tuple<
       /* x: */ double,
@@ -45,64 +56,70 @@ class NativeDOM : public NativeDOMCxxSpec<NativeDOM> {
       /* height: */ double>
   getBoundingClientRect(
       jsi::Runtime& rt,
-      jsi::Value shadowNodeValue,
+      jsi::Value nativeElementReference,
       bool includeTransform);
+
+  std::tuple</* width: */ int, /* height: */ int> getInnerSize(
+      jsi::Runtime& rt,
+      jsi::Value nativeElementReference);
+
+  std::tuple</* scrollLeft: */ double, /* scrollTop: */ double>
+  getScrollPosition(jsi::Runtime& rt, jsi::Value nativeElementReference);
+
+  std::tuple</* scrollWidth: */ int, /* scrollHeight */ int> getScrollSize(
+      jsi::Runtime& rt,
+      jsi::Value nativeElementReference);
+
+  std::string getTagName(jsi::Runtime& rt, jsi::Value nativeElementReference);
+
+  std::string getTextContent(jsi::Runtime& rt, jsi::Value nativeNodeReference);
+
+  bool hasPointerCapture(
+      jsi::Runtime& rt,
+      jsi::Value nativeElementReference,
+      double pointerId);
+
+  void releasePointerCapture(
+      jsi::Runtime& rt,
+      jsi::Value nativeElementReference,
+      double pointerId);
+
+  void setPointerCapture(
+      jsi::Runtime& rt,
+      jsi::Value nativeElementReference,
+      double pointerId);
+
+#pragma mark - Methods from the `HTMLElement` interface (for `ReactNativeElement`).
 
   std::tuple<
       /* offsetParent: */ jsi::Value,
       /* top: */ double,
       /* left: */ double>
-  getOffset(jsi::Runtime& rt, jsi::Value shadowNodeValue);
+  getOffset(jsi::Runtime& rt, jsi::Value nativeElementReference);
 
-  std::tuple</* scrollLeft: */ double, /* scrollTop: */ double>
-  getScrollPosition(jsi::Runtime& rt, jsi::Value shadowNodeValue);
+#pragma mark - Special methods to handle the root node.
 
-  std::tuple</* scrollWidth: */ int, /* scrollHeight */ int> getScrollSize(
+  jsi::Value linkRootNode(
       jsi::Runtime& rt,
-      jsi::Value shadowNodeValue);
+      SurfaceId surfaceId,
+      jsi::Value instanceHandle);
 
-  std::tuple</* width: */ int, /* height: */ int> getInnerSize(
+#pragma mark - Legacy layout APIs (for `ReactNativeElement`).
+
+  void measure(
       jsi::Runtime& rt,
-      jsi::Value shadowNodeValue);
-
-  std::tuple<
-      /* topWidth: */ int,
-      /* rightWidth: */ int,
-      /* bottomWidth: */ int,
-      /* leftWidth: */ int>
-  getBorderWidth(jsi::Runtime& rt, jsi::Value shadowNodeValue);
-
-  std::string getTagName(jsi::Runtime& rt, jsi::Value shadowNodeValue);
-
-  bool hasPointerCapture(
-      jsi::Runtime& rt,
-      jsi::Value shadowNodeValue,
-      double pointerId);
-
-  void setPointerCapture(
-      jsi::Runtime& rt,
-      jsi::Value shadowNodeValue,
-      double pointerId);
-
-  void releasePointerCapture(
-      jsi::Runtime& rt,
-      jsi::Value shadowNodeValue,
-      double pointerId);
-
-  // Legacy layout APIs
-
-  void
-  measure(jsi::Runtime& rt, jsi::Value shadowNodeValue, jsi::Function callback);
+      jsi::Value nativeElementReference,
+      jsi::Function callback);
 
   void measureInWindow(
       jsi::Runtime& rt,
-      jsi::Value shadowNodeValue,
+      jsi::Value nativeElementReference,
       jsi::Function callback);
 
   void measureLayout(
       jsi::Runtime& rt,
-      jsi::Value shadowNodeValue,
-      jsi::Value relativeToShadowNodeValue,
+      jsi::Value nativeElementReference,
+      jsi::Value relativeToNativeElementReference,
       jsi::Function onFail,
       jsi::Function onSuccess);
 };
