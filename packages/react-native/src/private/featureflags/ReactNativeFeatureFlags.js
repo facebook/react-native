@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<959e1f4818fbbf4bd7176638e6e4107d>>
+ * @generated SignedSource<<c52ca8dfb648e85fdaa147d2af5078d0>>
  * @flow strict
  */
 
@@ -38,7 +38,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   scheduleAnimatedCleanupInMicrotask: Getter<boolean>,
-  shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
@@ -149,11 +148,6 @@ export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGet
  * Changes the cleanup of`AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).
  */
 export const scheduleAnimatedCleanupInMicrotask: Getter<boolean> = createJavaScriptFlagGetter('scheduleAnimatedCleanupInMicrotask', false);
-
-/**
- * If the animation is within Animated.loop, we do not send state updates to React.
- */
-export const shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean> = createJavaScriptFlagGetter('shouldSkipStateUpdatesForLoopingAnimations', true);
 
 /**
  * Enables use of AnimatedObject for animating transform values.

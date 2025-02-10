@@ -617,17 +617,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    shouldSkipStateUpdatesForLoopingAnimations: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-07-25',
-        description:
-          'If the animation is within Animated.loop, we do not send state updates to React.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     shouldUseAnimatedObjectForTransform: {
       defaultValue: false,
       metadata: {
