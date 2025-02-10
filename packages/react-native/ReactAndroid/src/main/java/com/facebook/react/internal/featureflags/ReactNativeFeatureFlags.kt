@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ae55a0a7badfc9d80453d2737f0f87fd>>
+ * @generated SignedSource<<9b03da2a06054bb69a000da22820b3d3>>
  */
 
 /**
@@ -87,12 +87,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFixForViewCommandRace(): Boolean = accessor.enableFixForViewCommandRace()
-
-  /**
-   * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
-   */
-  @JvmStatic
-  public fun enableGranularShadowTreeStateReconciliation(): Boolean = accessor.enableGranularShadowTreeStateReconciliation()
 
   /**
    * iOS Views will clip to their padding box vs border box

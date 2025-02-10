@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f5bab68186eed5790ec534bc52fa2ca9>>
+ * @generated SignedSource<<b031924a95baa03c978541cf376cfb6d>>
  */
 
 /**
@@ -133,15 +133,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableFixForViewCommandRace();
-  }
-
-  bool enableGranularShadowTreeStateReconciliation() override {
-    auto value = values_["enableGranularShadowTreeStateReconciliation"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableGranularShadowTreeStateReconciliation();
   }
 
   bool enableIOSViewClipToPaddingBox() override {
