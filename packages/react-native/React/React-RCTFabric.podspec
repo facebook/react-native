@@ -99,11 +99,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = "Tests/**/*.{mm}"

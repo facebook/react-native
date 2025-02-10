@@ -142,10 +142,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "RCTDeprecation")
 
-  if use_hermes
-    s.dependency 'React-hermes'
-    s.dependency 'hermes-engine'
-  else
-    s.dependency 'React-jsc'
-  end
+  depend_on_js_engine(s)
 end

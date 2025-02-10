@@ -62,12 +62,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/bridging", :additional_framework_paths => ["react/nativemodule/bridging"])
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
-
+  depend_on_js_engine(s)
 
   s.script_phases = [
     {
