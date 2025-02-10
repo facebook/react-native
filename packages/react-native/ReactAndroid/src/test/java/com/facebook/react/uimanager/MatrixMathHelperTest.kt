@@ -12,11 +12,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 /** Test for [MatrixMathHelper] */
-@RunWith(RobolectricTestRunner::class)
 class MatrixMathHelperTest {
 
   @Test
