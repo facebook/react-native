@@ -14,14 +14,14 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_element_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_element OBJECT ${react_render_element_SRC})
+file(GLOB react_renderer_element_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_element OBJECT ${react_renderer_element_SRC})
 
-target_include_directories(react_render_element PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_renderer_element PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_render_element
+target_link_libraries(react_renderer_element
         folly_runtime
         glog
-        react_render_core
-        react_render_componentregistry
+        react_renderer_core
+        react_renderer_componentregistry
 )
