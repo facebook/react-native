@@ -14,7 +14,7 @@ import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 import expect from './expect';
 import {createMockFunction} from './mocks';
 import {setupSnapshotConfig, snapshotContext} from './snapshotContext';
-import NativeFantom from 'react-native/src/private/specs/modules/NativeFantom';
+import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 
 export type TestCaseResult = {
   ancestorTitles: Array<string>,

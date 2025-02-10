@@ -17,7 +17,7 @@ import type {Root} from '..';
 import Fantom from '..';
 import * as React from 'react';
 import {ScrollView, Text, TextInput, View} from 'react-native';
-import NativeFantom from 'react-native/src/private/specs/modules/NativeFantom';
+import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
@@ -381,7 +381,7 @@ describe('Fantom', () => {
     });
   });
 
-  describe('runOnUIThread + dispatchNativeEvent', () => {
+  describe('runOnUIThread + enqueueNativeEvent', () => {
     it('sends event without payload', () => {
       const root = Fantom.createRoot();
       let maybeNode;
@@ -404,7 +404,7 @@ describe('Fantom', () => {
       expect(focusEvent).toHaveBeenCalledTimes(0);
 
       Fantom.runOnUIThread(() => {
-        Fantom.dispatchNativeEvent(element, 'focus');
+        Fantom.enqueueNativeEvent(element, 'focus');
       });
 
       // The tasks have not run.
@@ -437,7 +437,7 @@ describe('Fantom', () => {
     const element = ensureInstance(maybeNode, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
-      Fantom.dispatchNativeEvent(element, 'change', {
+      Fantom.enqueueNativeEvent(element, 'change', {
         text: 'Hello World',
       });
     });
@@ -470,13 +470,13 @@ describe('Fantom', () => {
     const element = ensureInstance(maybeNode, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
-      Fantom.dispatchNativeEvent(element, 'scroll', {
+      Fantom.enqueueNativeEvent(element, 'scroll', {
         contentOffset: {
           x: 0,
           y: 1,
         },
       });
-      Fantom.dispatchNativeEvent(
+      Fantom.enqueueNativeEvent(
         element,
         'scroll',
         {
@@ -498,6 +498,34 @@ describe('Fantom', () => {
     expect(entry.contentOffset).toEqual({
       x: 0,
       y: 2,
+    });
+  });
+
+  describe('dispatchNativeEvent', () => {
+    it('flushes the event and runs the work loop', () => {
+      const root = Fantom.createRoot();
+      let maybeNode;
+
+      let focusEvent = jest.fn();
+
+      Fantom.runTask(() => {
+        root.render(
+          <TextInput
+            onFocus={focusEvent}
+            ref={node => {
+              maybeNode = node;
+            }}
+          />,
+        );
+      });
+
+      const element = ensureInstance(maybeNode, ReactNativeElement);
+
+      expect(focusEvent).toHaveBeenCalledTimes(0);
+
+      Fantom.dispatchNativeEvent(element, 'focus');
+
+      expect(focusEvent).toHaveBeenCalledTimes(1);
     });
   });
 

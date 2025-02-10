@@ -13,7 +13,7 @@
 /* eslint-disable lint/sort-imports */
 import type IntersectionObserverType from '../IntersectionObserver';
 
-import DOMRectReadOnly from '../../dom/geometry/DOMRectReadOnly';
+import DOMRectReadOnly from '../../geometry/DOMRectReadOnly';
 import Fantom from '@react-native/fantom';
 import setUpIntersectionObserver from '../../../setup/setUpIntersectionObserver';
 import ReactNativeElement from '../../dom/nodes/ReactNativeElement';

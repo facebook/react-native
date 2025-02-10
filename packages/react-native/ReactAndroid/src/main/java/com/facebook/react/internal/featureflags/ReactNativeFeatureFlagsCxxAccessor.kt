@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<799f7a30e92878002ba6a8931b84b05e>>
+ * @generated SignedSource<<532268914b15216ef540f5d4014e4542>>
  */
 
 /**
@@ -44,7 +44,10 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
   private var enableUIConsistencyCache: Boolean? = null
+  private var enableViewCullingCache: Boolean? = null
   private var enableViewRecyclingCache: Boolean? = null
+  private var enableViewRecyclingForTextCache: Boolean? = null
+  private var enableViewRecyclingForViewCache: Boolean? = null
   private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fixDifferentiatorEmittingUpdatesWithWrongParentTagCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
@@ -52,7 +55,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
-  private var loadVectorDrawablesOnImagesCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
@@ -60,7 +62,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
-  private var useRuntimeShadowNodeReferenceUpdateCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
 
@@ -280,11 +281,38 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
+  override fun enableViewCulling(): Boolean {
+    var cached = enableViewCullingCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableViewCulling()
+      enableViewCullingCache = cached
+    }
+    return cached
+  }
+
   override fun enableViewRecycling(): Boolean {
     var cached = enableViewRecyclingCache
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecycling()
       enableViewRecyclingCache = cached
+    }
+    return cached
+  }
+
+  override fun enableViewRecyclingForText(): Boolean {
+    var cached = enableViewRecyclingForTextCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecyclingForText()
+      enableViewRecyclingForTextCache = cached
+    }
+    return cached
+  }
+
+  override fun enableViewRecyclingForView(): Boolean {
+    var cached = enableViewRecyclingForViewCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecyclingForView()
+      enableViewRecyclingForViewCache = cached
     }
     return cached
   }
@@ -352,15 +380,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun loadVectorDrawablesOnImages(): Boolean {
-    var cached = loadVectorDrawablesOnImagesCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.loadVectorDrawablesOnImages()
-      loadVectorDrawablesOnImagesCache = cached
-    }
-    return cached
-  }
-
   override fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean {
     var cached = traceTurboModulePromiseRejectionsOnAndroidCache
     if (cached == null) {
@@ -420,15 +439,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.useRawPropsJsiValue()
       useRawPropsJsiValueCache = cached
-    }
-    return cached
-  }
-
-  override fun useRuntimeShadowNodeReferenceUpdate(): Boolean {
-    var cached = useRuntimeShadowNodeReferenceUpdateCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.useRuntimeShadowNodeReferenceUpdate()
-      useRuntimeShadowNodeReferenceUpdateCache = cached
     }
     return cached
   }

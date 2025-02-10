@@ -33,13 +33,6 @@ export type TargetCapabilityFlags = $ReadOnly<{
   nativeSourceCodeFetching?: boolean,
 
   /**
-   * The target supports native network inspection.
-   *
-   * In the proxy, this disables intercepting and storing network requests.
-   */
-  nativeNetworkInspection?: boolean,
-
-  /**
    * The target supports the modern `rn_fusebox.html` entry point.
    *
    * In the launch flow, this controls the Chrome DevTools entrypoint that is used.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f6d74c2fba92471a960b8d5ab8a5f38e>>
+ * @generated SignedSource<<db21ae2102c7315c5e4f57845ec94590>>
  */
 
 /**
@@ -173,10 +173,28 @@ public object ReactNativeFeatureFlags {
   public fun enableUIConsistency(): Boolean = accessor.enableUIConsistency()
 
   /**
+   * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
+   */
+  @JvmStatic
+  public fun enableViewCulling(): Boolean = accessor.enableViewCulling()
+
+  /**
    * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
   @JvmStatic
   public fun enableViewRecycling(): Boolean = accessor.enableViewRecycling()
+
+  /**
+   * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.
+   */
+  @JvmStatic
+  public fun enableViewRecyclingForText(): Boolean = accessor.enableViewRecyclingForText()
+
+  /**
+   * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
+   */
+  @JvmStatic
+  public fun enableViewRecyclingForView(): Boolean = accessor.enableViewRecyclingForView()
 
   /**
    * When enabled, rawProps in Props will not include Yoga specific props.
@@ -221,12 +239,6 @@ public object ReactNativeFeatureFlags {
   public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
 
   /**
-   * Adds support for loading vector drawable assets in the Image component (only on Android)
-   */
-  @JvmStatic
-  public fun loadVectorDrawablesOnImages(): Boolean = accessor.loadVectorDrawablesOnImages()
-
-  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   @JvmStatic
@@ -267,12 +279,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useRawPropsJsiValue(): Boolean = accessor.useRawPropsJsiValue()
-
-  /**
-   * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
-   */
-  @JvmStatic
-  public fun useRuntimeShadowNodeReferenceUpdate(): Boolean = accessor.useRuntimeShadowNodeReferenceUpdate()
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

@@ -229,7 +229,7 @@ void UIManager::startSurface(
     ShadowTree::Unique&& shadowTree,
     const std::string& moduleName,
     const folly::dynamic& props,
-    DisplayMode displayMode) const {
+    DisplayMode displayMode) const noexcept {
   TraceSection s("UIManager::startSurface");
 
   auto surfaceId = shadowTree->getSurfaceId();
@@ -242,7 +242,8 @@ void UIManager::startSurface(
   });
 }
 
-void UIManager::startEmptySurface(ShadowTree::Unique&& shadowTree) const {
+void UIManager::startEmptySurface(
+    ShadowTree::Unique&& shadowTree) const noexcept {
   TraceSection s("UIManager::startEmptySurface");
   shadowTreeRegistry_.add(std::move(shadowTree));
 }
@@ -251,7 +252,7 @@ void UIManager::setSurfaceProps(
     SurfaceId surfaceId,
     const std::string& moduleName,
     const folly::dynamic& props,
-    DisplayMode displayMode) const {
+    DisplayMode displayMode) const noexcept {
   TraceSection s("UIManager::setSurfaceProps");
 
   runtimeExecutor_([=](jsi::Runtime& runtime) {

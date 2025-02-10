@@ -33,4 +33,8 @@ public object ReactBuildConfig {
   /** [Experimental] Enable React Native DevTools in release builds. */
   @JvmField
   public val UNSTABLE_ENABLE_FUSEBOX_RELEASE: Boolean = BuildConfig.UNSTABLE_ENABLE_FUSEBOX_RELEASE
+
+  @JvmField
+  public val UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE: Boolean =
+      BuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE
 }

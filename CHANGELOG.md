@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.78.0-rc.3
+
+### Added
+
+#### iOS specific
+
+- Add the `source` parameter to generate-codegen-artifacts to avoid generating files not needed by libraries. ([98b8f17811](https://github.com/facebook/react-native/commit/98b8f178110472e5fed97de80766c03b0b5e988c) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- Add missing `invariant` dependency ([ee8088b615](https://github.com/facebook/react-native/commit/ee8088b6157837c239db47ac5bd3a8603ceefc3c) by [@tido64](https://github.com/tido64))
+- Fix `maxFontSizeMultiplier` prop on `Text` and `TextInput` components in Fabric / New Architecture ([ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32](https://github.com/facebook/react-native/commit/ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32) by [@RickardZrinski](https://github.com/RickardZrinski))
+
+#### Android specific
+
+- Pass the bundle URL protocol when setting up HMR client on Android ([32fe244744](https://github.com/facebook/react-native/commit/32fe24474495f09f985a2c92e11103dd386f5fe3) by [@byCedric](https://github.com/byCedric))
+
 ## v0.78.0-rc.2
 
 ### Fixed
@@ -32,7 +49,7 @@
 #### Android specific
 
 - Changed visibility of FrescoBasedReactTextInlineImageViewManager to internal ([d5f33c19cb](https://github.com/facebook/react-native/commit/d5f33c19cb33e2f2c7d2470cc90872c1f065f20d) by [@alanleedev](https://github.com/alanleedev))
-- Mikgrating pointerEvents API breaks compatibility for kotlin usages of this api as a val ([45e4a3afce](https://github.com/facebook/react-native/commit/45e4a3afceb4be3047cd01a60ec2c9f806ed30fe) by [@mdvacca](https://github.com/mdvacca))
+- Migrating pointerEvents API breaks compatibility for kotlin usages of this api as a val ([45e4a3afce](https://github.com/facebook/react-native/commit/45e4a3afceb4be3047cd01a60ec2c9f806ed30fe) by [@mdvacca](https://github.com/mdvacca))
 - Convert RootView to Kotlin ([21c9491926](https://github.com/facebook/react-native/commit/21c94919260a68409f82081740169d0409e78933) by [@fabriziocucci](https://github.com/fabriziocucci))
 - Delete unused abstract class GuardedResultAsyncTask ([67bff8734f](https://github.com/facebook/react-native/commit/67bff8734f4b92fe399910eecad5b67511a749c1) by [@mdvacca](https://github.com/mdvacca))
 - Delete deprecated class FabricViewStateManager ([b25b65ba19](https://github.com/facebook/react-native/commit/b25b65ba19f3c674fd2efe5c01123ccc0ae55cbf) by [@mdvacca](https://github.com/mdvacca))
@@ -530,6 +547,32 @@ github.com/robhogan))
 - **TextInput:** Workaround for Mac Catalyst TextInput crash due to serialization attempt of WeakEventEmitter ([e04738b7ec](https://github.com/facebook/react-native/commit/e04738b7ecec9e7da3aab49bb24a6336b9496b94) by [@rozele](https://github.com/rozele))
 - **TextInput:** Fix `maxLength` not working in old arch ([4b3ef3b00c](https://github.com/facebook/react-native/commit/4b3ef3b00ce0026c0d1e1f2a5546fcec249255d8) by [@mateoguzmana](https://github.com/mateoguzmana))
 
+## v0.76.7
+
+### Changed
+
+#### iOS specific
+
+- **Deps:** Pin 'concurrent-ruby' to a working version ([198adb47af](https://github.com/facebook/react-native/commit/198adb47af3676c85b35adb308c110c1d87120c8) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **Text** Fix `maxFontSizeMultiplier` prop on `Text` and `TextInput` components in Fabric / New Architecture ([ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32](https://github.com/facebook/react-native/commit/ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32) by [@RickardZrinski](https://github.com/RickardZrinski))
+- **Appearance:** Fix `Appearance.setColorScheme(null)` not resetting color scheme value ([7d63235086](https://github.com/facebook/react-native/commit/7d63235086352d8c424d634c7039551f0a5025dc) by [@sangonz193](https://github.com/sangonz193))
+
+#### Android specific
+
+- **Deps:** Add missing `invariant` dependency ([ee8088b615](https://github.com/facebook/react-native/commit/ee8088b6157837c239db47ac5bd3a8603ceefc3c) by [@tido64](https://github.com/tido64))
+- **Turbomodule** Fix execution of early InteropEvents ([4ed2b35bf6](https://github.com/facebook/react-native/commit/4ed2b35bf61426c81c9f8b30a142d77b44988fdb) by [@mdvacca](https://github.com/mdvacca))
+- **Deps:** Bump Kotlin to 1.9.25 to mitigate #49115 ([f8857ba3b5](https://github.com/facebook/react-native/commit/f8857ba3b51f26871d0a0b82b9581a0c35b6273d) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- **runtime:** `RCTSurfaceHostingProxyRootView` no longer has different behavior (whether it calls `start` on the provided *surface*) depending on which initializer is used.  Call `start` yourself on the *surface* instead. ([13b93cfdda](https://github.com/facebook/react-native/commit/13b93cfddaa559697968ac1c19e55f7aaa053070) by Nolan O'Brien)
+- Be less strict with method parsing of TurboModule Interop Layer
+- **Turbomodule:** Avoid crashing the app when the InteropLayer can't find some methods in the native implementation. ([3bd3f101b9](https://github.com/facebook/react-native/commit/3bd3f101b9dcff8551a2f8259ddeed9843fd69b8) by [@cipolleschi](https://github.com/cipolleschi))
+- **Runtime:** Fix applicationDidEnterBackground not being called ([adaceba546](https://github.com/facebook/react-native/commit/adaceba5462b4ad8676745f34e0be2bf5bb25166) by [@alextoudic](https://github.com/alextoudic))
+
 ## v0.76.6
 
 ### Fixed
@@ -934,6 +977,40 @@ created on the mqt_native thread. ([c4a6bbc8fd](https://github.com/facebook/reac
 - **infra:** Upgrade braces from 3.0.2 to 3.0.3 (CVE-2024-4068) ([d538879e08](https://github.com/facebook/react-native/commit/d538879e08360b8230410fc893a50489bad5cf60) by [@GijsWeterings](https://github.com/GijsWeterings))
 - **infra:** Update ws from 7.5.1 to 7.5.10 (CVE-2024-37890) ([13f1b9e10f](https://github.com/facebook/react-native/commit/13f1b9e10f6045421808714f7e62aa17bfb3e891) by [@GijsWeterings](https://github.com/GijsWeterings))
 - **infra:** Update ws from 6.2.2 to 6.2.3 (CVE-2024-37890) ([80cfacef78](https://github.com/facebook/react-native/commit/80cfacef78f34d3786d955084a8bf4d42ea37f1b) by [@GijsWeterings](https://github.com/GijsWeterings))
+
+## v0.75.5
+
+### Added
+
+- **Hermes:** Implement more missing methods on WithRuntimeDecorator ([80f67ca03c](https://github.com/facebook/react-native/commit/80f67ca03c99c688e2a3127e9b3dddd02625848e) by [@neildhar](https://github.com/neildhar))
+
+
+### Changed
+
+#### Android specific
+
+- **Deps:** Bump Kotlin to 1.9.25 to mitigate [#49115](https://github.com/facebook/react-native/issues/49115) ([25e76a2717](https://github.com/facebook/react-native/commit/25e76a271781b3ffe8002108d8b12aa3d47442b5) by [@riteshshukla04](https://github.com/riteshshukla04))
+
+#### iOS specific
+
+- **Deps:** Pin Xcodeproj to < 1.26.0 ([2922af2e7e](https://github.com/facebook/react-native/commit/2922af2e7e8527a93c7956b10ddb314f25c334fa) by [@cipolleschi](https://github.com/cipolleschi))
+- **Deps:** Pin concurrent-ruby to <= 1.3.4 ([794bf34e60](https://github.com/facebook/react-native/commit/794bf34e60cea8146aebad1fefe051d4140fc28b) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **FormData:** fix: FormData filename in content-disposition ([78ef1e2bc2](https://github.com/facebook/react-native/commit/78ef1e2bc2ed30321745e2505713915b9015d920) by [@foyarash](https://github.com/@foyarash))
+
+
+#### Android specific
+
+- **TextInput:** Set TextInput selection correctly when attached to window in Android ([1656394bae](https://github.com/facebook/react-native/commit/1656394bae16cc54fb38687d38bcbf85138c98a2) by [@QichenZhu](https://github.com/QichenZhu))
+
+#### iOS specific
+
+- **Animation:** Fabric: Fixes animations strict weak ordering sorted check failed ([ea0bc54115](https://github.com/facebook/react-native/commit/ea0bc541155700e0973d960c94d01918d6b28c6b) by [@zhongwuzw](https://github.com/zhongwuzw))
+- **Hermes** Exclude dSYM from the archive ([fdb2631b5e](https://github.com/facebook/react-native/commit/fdb2631b5ea27765663046b94f84956d30ebaaeb) by [@cipolleschi](https://github.com/cipolleschi))
+- **Image** Fix images not displayed when extension is implicit ([b6ed0d351e](https://github.com/facebook/react-native/commit/b6ed0d351e246c431bdc88a6c3d154ba35220c25) by [@cipolleschi](https://github.com/cipolleschi))
+- **Xcode:** Fix the generation of .xcode.env.local ([dbffbf72d7](https://github.com/facebook/react-native/commit/dbffbf72d7287e021e965b6639e455e8555bbf2e) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.75.4
 

@@ -59,7 +59,7 @@ const RCTNetworking = {
 
   sendRequest(
     method: string,
-    trackingName: string,
+    trackingName: ?string,
     url: string,
     headers: Object,
     data: RequestBody,

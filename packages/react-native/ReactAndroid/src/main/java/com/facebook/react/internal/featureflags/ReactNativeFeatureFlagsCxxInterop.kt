@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4604fe56f9fc9b6d4b06ed6347d9c9e7>>
+ * @generated SignedSource<<f15bfa3cbb1bdddc2e6e7250d825e998>>
  */
 
 /**
@@ -76,7 +76,13 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableUIConsistency(): Boolean
 
+  @DoNotStrip @JvmStatic public external fun enableViewCulling(): Boolean
+
   @DoNotStrip @JvmStatic public external fun enableViewRecycling(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableViewRecyclingForText(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun enableViewRecyclingForView(): Boolean
 
   @DoNotStrip @JvmStatic public external fun excludeYogaFromRawProps(): Boolean
 
@@ -92,8 +98,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun lazyAnimationCallbacks(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun loadVectorDrawablesOnImages(): Boolean
-
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useAlwaysAvailableJSErrorHandling(): Boolean
@@ -107,8 +111,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useRawPropsJsiValue(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useTurboModuleInterop(): Boolean
 

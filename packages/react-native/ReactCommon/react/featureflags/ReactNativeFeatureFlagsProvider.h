@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b436145eb16d6ebd4b93fba68ce4173e>>
+ * @generated SignedSource<<8bf535891e1bd7c176718363a63defba>>
  */
 
 /**
@@ -49,7 +49,10 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableReportEventPaintTime() = 0;
   virtual bool enableSynchronousStateUpdates() = 0;
   virtual bool enableUIConsistency() = 0;
+  virtual bool enableViewCulling() = 0;
   virtual bool enableViewRecycling() = 0;
+  virtual bool enableViewRecyclingForText() = 0;
+  virtual bool enableViewRecyclingForView() = 0;
   virtual bool excludeYogaFromRawProps() = 0;
   virtual bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
@@ -57,7 +60,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;
   virtual bool lazyAnimationCallbacks() = 0;
-  virtual bool loadVectorDrawablesOnImages() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
   virtual bool useAlwaysAvailableJSErrorHandling() = 0;
   virtual bool useEditTextStockAndroidFocusBehavior() = 0;
@@ -65,7 +67,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool useNativeViewConfigsInBridgelessMode() = 0;
   virtual bool useOptimizedEventBatchingOnAndroid() = 0;
   virtual bool useRawPropsJsiValue() = 0;
-  virtual bool useRuntimeShadowNodeReferenceUpdate() = 0;
   virtual bool useTurboModuleInterop() = 0;
   virtual bool useTurboModules() = 0;
 };

@@ -80,8 +80,8 @@ import com.facebook.react.views.text.internal.span.ReactStrikethroughSpan;
 import com.facebook.react.views.text.internal.span.ReactTextPaintHolderSpan;
 import com.facebook.react.views.text.internal.span.ReactUnderlineSpan;
 import com.facebook.react.views.text.internal.span.TextInlineImageSpan;
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets
@@ -111,7 +111,7 @@ public class ReactEditText extends AppCompatEditText {
   /** A count of events sent to JS or C++. */
   protected int mNativeEventCount;
 
-  private @Nullable ArrayList<TextWatcher> mListeners;
+  private @Nullable CopyOnWriteArrayList<TextWatcher> mListeners;
   private @Nullable TextWatcherDelegator mTextWatcherDelegator;
   private int mStagedInputType;
   protected boolean mContainsImages;
@@ -390,7 +390,7 @@ public class ReactEditText extends AppCompatEditText {
   @Override
   public void addTextChangedListener(TextWatcher watcher) {
     if (mListeners == null) {
-      mListeners = new ArrayList<>();
+      mListeners = new CopyOnWriteArrayList<>();
       super.addTextChangedListener(getTextWatcherDelegator());
     }
 

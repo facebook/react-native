@@ -12,7 +12,7 @@
 // $FlowExpectedError[untyped-import]
 import micromatch from 'micromatch';
 import * as React from 'react';
-import NativeFantom from 'react-native/src/private/specs/modules/NativeFantom';
+import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 
 export type RenderOutputConfig = {
   ...FantomRenderedOutputConfig,

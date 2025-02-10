@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../../src/private/specs/components/ActivityIndicatorViewNativeComponent';
-import ActivityIndicatorViewNativeComponent from '../../../src/private/specs/components/ActivityIndicatorViewNativeComponent';
+export * from '../../../src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent';
+import ActivityIndicatorViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent';
 export default ActivityIndicatorViewNativeComponent;

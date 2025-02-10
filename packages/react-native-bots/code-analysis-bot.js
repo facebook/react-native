@@ -198,13 +198,6 @@ async function sendReview(
       return;
     }
 
-    if (process.env.CIRCLE_CI) {
-      console.error(
-        'Code analysis found issues, but the review cannot be posted to GitHub without an access token.',
-      );
-      process.exit(1);
-    }
-
     let results = body + '\n';
     comments.forEach(comment => {
       results +=

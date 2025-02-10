@@ -24,7 +24,7 @@ unstable_benchmark
   .suite('EventTarget', {
     minIterations: 1000,
   })
-  .add(
+  .test(
     'dispatchEvent, no bubbling, no listeners',
     () => {
       eventTarget.dispatchEvent(event);
@@ -36,7 +36,7 @@ unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'dispatchEvent, no bubbling, single listener',
     () => {
       eventTarget.dispatchEvent(event);
@@ -49,7 +49,7 @@ unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'dispatchEvent, no bubbling, multiple listeners',
     () => {
       eventTarget.dispatchEvent(event);
@@ -64,7 +64,7 @@ unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'dispatchEvent, bubbling, no listeners',
     () => {
       eventTarget.dispatchEvent(event);
@@ -77,7 +77,7 @@ unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'dispatchEvent, bubbling, single listener per target',
     () => {
       eventTarget.dispatchEvent(event);
@@ -93,7 +93,7 @@ unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'dispatchEvent, bubbling, multiple listeners per target',
     () => {
       eventTarget.dispatchEvent(event);
@@ -111,7 +111,7 @@ unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'addEventListener, one listener',
     () => {
       eventTarget.addEventListener('custom', () => {});
@@ -122,7 +122,7 @@ unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'addEventListener, one target, one type, multiple listeners',
     () => {
       for (let i = 0; i < 100; i++) {
@@ -135,7 +135,7 @@ unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'addEventListener, one target, multiple types, one listener per type',
     () => {
       for (let i = 0; i < 100; i++) {
@@ -148,7 +148,7 @@ unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'addEventListener, one target, multiple types, multiple listeners',
     () => {
       for (let i = 0; i < 100; i++) {
@@ -163,7 +163,7 @@ unstable_benchmark
       },
     },
   )
-  .add(
+  .test(
     'addEventListener, multiple targets, one type, one listener',
     () => {
       for (const target of eventTargets) {

@@ -1,27 +1,45 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`public API should not change unintentionally Libraries/ActionSheetIOS/ActionSheetIOS.js 1`] = `
-"declare const ActionSheetIOS: {
+"export type ActionSheetIOSOptions = $ReadOnly<{
+  title?: ?string,
+  message?: ?string,
+  options: Array<string>,
+  destructiveButtonIndex?: ?number | ?Array<number>,
+  cancelButtonIndex?: ?number,
+  anchor?: ?number,
+  tintColor?: ColorValue | ProcessedColorValue,
+  cancelButtonTintColor?: ColorValue | ProcessedColorValue,
+  disabledButtonTintColor?: ColorValue | ProcessedColorValue,
+  userInterfaceStyle?: string,
+  disabledButtonIndices?: Array<number>,
+}>;
+export type ShareActionSheetIOSOptions = $ReadOnly<{
+  message?: ?string,
+  url?: ?string,
+  subject?: ?string,
+  anchor?: ?number,
+  tintColor?: ?number,
+  cancelButtonTintColor?: ?number,
+  disabledButtonTintColor?: ?number,
+  excludedActivityTypes?: ?Array<string>,
+  userInterfaceStyle?: ?string,
+}>;
+export type ShareActionSheetError = $ReadOnly<{
+  domain: string,
+  code: string,
+  userInfo?: ?Object,
+  message: string,
+}>;
+declare const ActionSheetIOS: {
   showActionSheetWithOptions(
-    options: {
-      +title?: ?string,
-      +message?: ?string,
-      +options: Array<string>,
-      +destructiveButtonIndex?: ?number | ?Array<number>,
-      +cancelButtonIndex?: ?number,
-      +anchor?: ?number,
-      +tintColor?: ColorValue | ProcessedColorValue,
-      +cancelButtonTintColor?: ColorValue | ProcessedColorValue,
-      +disabledButtonTintColor?: ColorValue | ProcessedColorValue,
-      +userInterfaceStyle?: string,
-      +disabledButtonIndices?: Array<number>,
-    },
+    options: ActionSheetIOSOptions,
     callback: (buttonIndex: number) => void
   ): void,
   showShareActionSheetWithOptions(
-    options: Object,
-    failureCallback: Function,
-    successCallback: Function
+    options: ShareActionSheetIOSOptions,
+    failureCallback: Function | ((error: ShareActionSheetError) => void),
+    successCallback: Function | ((success: boolean, method: ?string) => void)
   ): void,
   dismissActionSheet: () => void,
 };
@@ -30,12 +48,12 @@ declare export default typeof ActionSheetIOS;
 `;
 
 exports[`public API should not change unintentionally Libraries/ActionSheetIOS/NativeActionSheetManager.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeActionSheetManager\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeActionSheetManager\\";
 declare export default typeof NativeActionSheetManager;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Alert/Alert.flow.js 1`] = `
+exports[`public API should not change unintentionally Libraries/Alert/Alert.js 1`] = `
 "export type AlertType =
   | \\"default\\"
   | \\"plain-text\\"
@@ -49,7 +67,7 @@ export type AlertButton = {
   style?: AlertButtonStyle,
   ...
 };
-export type Buttons = Array<AlertButton>;
+export type AlertButtons = Array<AlertButton>;
 export type AlertOptions = {
   cancelable?: ?boolean,
   userInterfaceStyle?: \\"unspecified\\" | \\"light\\" | \\"dark\\",
@@ -60,36 +78,13 @@ declare class Alert {
   static alert(
     title: ?string,
     message?: ?string,
-    buttons?: Buttons,
+    buttons?: AlertButtons,
     options?: AlertOptions
   ): void;
   static prompt(
     title: ?string,
     message?: ?string,
-    callbackOrButtons?: ?(((text: string) => void) | Buttons),
-    type?: ?AlertType,
-    defaultValue?: string,
-    keyboardType?: string,
-    options?: AlertOptions
-  ): void;
-}
-declare export default typeof Alert;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Alert/Alert.js 1`] = `
-"export type * from \\"./Alert.flow\\";
-declare class Alert {
-  static alert(
-    title: ?string,
-    message?: ?string,
-    buttons?: Buttons,
-    options?: AlertOptions
-  ): void;
-  static prompt(
-    title: ?string,
-    message?: ?string,
-    callbackOrButtons?: ?(((text: string) => void) | Buttons),
+    callbackOrButtons?: ?(((text: string) => void) | AlertButtons),
     type?: ?AlertType,
     defaultValue?: string,
     keyboardType?: string,
@@ -101,19 +96,8 @@ declare export default typeof Alert;
 `;
 
 exports[`public API should not change unintentionally Libraries/Alert/NativeAlertManager.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeAlertManager\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeAlertManager\\";
 declare export default typeof NativeAlertManager;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Alert/RCTAlertManager.flow.js 1`] = `
-"declare const RCTAlertManager: {
-  alertWithArgs(
-    args: Args,
-    callback: (id: number, value: string) => void
-  ): void,
-};
-declare export default typeof RCTAlertManager;
 "
 `;
 
@@ -336,13 +320,13 @@ declare export function isSupportedTransformProp(prop: string): boolean;
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/NativeAnimatedModule.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeAnimatedModule\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeAnimatedModule\\";
 declare export default typeof NativeAnimatedModule;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/NativeAnimatedTurboModule.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeAnimatedTurboModule\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeAnimatedTurboModule\\";
 declare export default typeof NativeAnimatedTurboModule;
 "
 `;
@@ -969,16 +953,7 @@ declare export default typeof shouldUseTurboAnimatedModule;
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/useAnimatedProps.js 1`] = `
-"type ReducedProps<TProps> = {
-  ...TProps,
-  collapsable: boolean,
-  ...
-};
-type CallbackRef<T> = (T) => mixed;
-declare export default function useAnimatedProps<TProps: { ... }, TInstance>(
-  props: TProps,
-  allowlist?: ?AnimatedPropsAllowlist
-): [ReducedProps<TProps>, CallbackRef<TInstance | null>];
+"declare export default AnimatedPropsHook;
 "
 `;
 
@@ -1017,7 +992,7 @@ declare export default AppState;
 `;
 
 exports[`public API should not change unintentionally Libraries/AppState/NativeAppState.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeAppState\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeAppState\\";
 declare export default typeof NativeAppState;
 "
 `;
@@ -1238,13 +1213,13 @@ declare export default typeof FileReader;
 `;
 
 exports[`public API should not change unintentionally Libraries/Blob/NativeBlobModule.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeBlobModule\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeBlobModule\\";
 declare export default typeof NativeBlobModule;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Blob/NativeFileReaderModule.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeFileReaderModule\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeFileReaderModule\\";
 declare export default typeof NativeFileReaderModule;
 "
 `;
@@ -1313,7 +1288,7 @@ declare export default typeof BugReporting;
 `;
 
 exports[`public API should not change unintentionally Libraries/BugReporting/NativeBugReporting.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeBugReporting\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeBugReporting\\";
 declare export default typeof NativeBugReporting;
 "
 `;
@@ -1383,13 +1358,13 @@ declare export default typeof AccessibilityInfo;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/NativeAccessibilityInfo.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeAccessibilityInfo\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityInfo\\";
 declare export default typeof NativeAccessibilityInfo;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/AccessibilityInfo/NativeAccessibilityManager.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeAccessibilityManager\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeAccessibilityManager\\";
 declare export default typeof NativeAccessibilityManager;
 "
 `;
@@ -1424,7 +1399,7 @@ declare export default typeof ActivityIndicatorWithRef;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ActivityIndicator/ActivityIndicatorViewNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/ActivityIndicatorViewNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/ActivityIndicatorViewNativeComponent\\";
 declare export default typeof ActivityIndicatorViewNativeComponent;
 "
 `;
@@ -1479,13 +1454,13 @@ exports[`public API should not change unintentionally Libraries/Components/Clipb
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Clipboard/NativeClipboard.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeClipboard\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeClipboard\\";
 declare export default typeof NativeClipboard;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/AndroidDrawerLayoutNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/AndroidDrawerLayoutNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent\\";
 declare export default typeof AndroidDrawerLayoutNativeComponent;
 "
 `;
@@ -1574,7 +1549,7 @@ declare export default typeof KeyboardAvoidingView;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Keyboard/NativeKeyboardObserver.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeKeyboardObserver\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeKeyboardObserver\\";
 declare export default typeof NativeKeyboardObserver;
 "
 `;
@@ -1697,19 +1672,19 @@ declare export default
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroidNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/ProgressBarAndroidNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/ProgressBarAndroidNativeComponent\\";
 declare export default typeof ProgressBarAndroidNativeComponent;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/RefreshControl/AndroidSwipeRefreshLayoutNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/AndroidSwipeRefreshLayoutNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent\\";
 declare export default typeof AndroidSwipeRefreshLayoutNativeComponent;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/RefreshControl/PullToRefreshViewNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/PullToRefreshViewNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/PullToRefreshViewNativeComponent\\";
 declare export default typeof PullToRefreshViewNativeComponent;
 "
 `;
@@ -1744,7 +1719,7 @@ declare export default typeof RefreshControl;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/SafeAreaView/RCTSafeAreaViewNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/RCTSafeAreaViewNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent\\";
 declare export default typeof RCTSafeAreaViewNativeComponent;
 "
 `;
@@ -1759,7 +1734,7 @@ declare export default typeof exported;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/AndroidHorizontalScrollContentViewNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/AndroidHorizontalScrollContentViewNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidHorizontalScrollContentViewNativeComponent\\";
 declare export default typeof AndroidHorizontalScrollContentViewNativeComponent;
 "
 `;
@@ -2105,7 +2080,7 @@ declare export default typeof processDecelerationRate;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Sound/NativeSoundManager.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeSoundManager\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeSoundManager\\";
 declare export default typeof NativeSoundManager;
 "
 `;
@@ -2130,13 +2105,13 @@ declare export default typeof StaticRenderer;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/StatusBar/NativeStatusBarManagerAndroid.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeStatusBarManagerAndroid\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerAndroid\\";
 declare export default typeof NativeStatusBarManagerAndroid;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/StatusBar/NativeStatusBarManagerIOS.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeStatusBarManagerIOS\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeStatusBarManagerIOS\\";
 declare export default typeof NativeStatusBarManagerIOS;
 "
 `;
@@ -2206,7 +2181,7 @@ declare export default typeof StatusBar;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Switch/AndroidSwitchNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/AndroidSwitchNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent\\";
 declare export default typeof AndroidSwitchNativeComponent;
 "
 `;
@@ -2243,7 +2218,7 @@ declare export default typeof SwitchWithForwardedRef;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Switch/SwitchNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/SwitchNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/SwitchNativeComponent\\";
 declare export default typeof SwitchNativeComponent;
 "
 `;
@@ -2457,7 +2432,7 @@ declare export default typeof InputAccessoryView;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/RCTInputAccessoryViewNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/RCTInputAccessoryViewNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/RCTInputAccessoryViewNativeComponent\\";
 declare export default typeof RCTInputAccessoryViewNativeComponent;
 "
 `;
@@ -3227,7 +3202,7 @@ declare export default typeof TextInputState;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ToastAndroid/NativeToastAndroid.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeToastAndroid\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeToastAndroid\\";
 declare export default typeof NativeToastAndroid;
 "
 `;
@@ -3545,7 +3520,7 @@ declare export default function TouchableWithoutFeedback(
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/UnimplementedViews/UnimplementedNativeViewNativeComponent.js 1`] = `
-"export * from \\"../../../src/private/specs/components/UnimplementedNativeViewNativeComponent\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/components/UnimplementedNativeViewNativeComponent\\";
 declare export default typeof UnimplementedNativeViewNativeComponent;
 "
 `;
@@ -4061,7 +4036,7 @@ exports[`public API should not change unintentionally Libraries/Core/ExtendedErr
 exports[`public API should not change unintentionally Libraries/Core/InitializeCore.js 1`] = `""`;
 
 exports[`public API should not change unintentionally Libraries/Core/NativeExceptionsManager.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeExceptionsManager\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeExceptionsManager\\";
 declare export default typeof NativeExceptionsManager;
 "
 `;
@@ -4109,7 +4084,7 @@ exports[`public API should not change unintentionally Libraries/Core/ReactNative
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/SegmentFetcher/NativeSegmentFetcher.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeSegmentFetcher\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeSegmentFetcher\\";
 declare export default typeof NativeSegmentFetcher;
 "
 `;
@@ -4142,7 +4117,7 @@ declare export default typeof ExportedJSTimers;
 `;
 
 exports[`public API should not change unintentionally Libraries/Core/Timers/NativeTiming.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeTiming\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeTiming\\";
 declare export default typeof NativeTiming;
 "
 `;
@@ -4188,7 +4163,7 @@ declare export default typeof DebuggingOverlayWithForwardedRef;
 `;
 
 exports[`public API should not change unintentionally Libraries/Debugging/DebuggingOverlayNativeComponent.js 1`] = `
-"export * from \\"../../src/private/specs/components/DebuggingOverlayNativeComponent\\";
+"export * from \\"../../src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent\\";
 declare export default typeof DebuggingOverlayNativeComponent;
 "
 `;
@@ -4633,7 +4608,7 @@ exports[`public API should not change unintentionally Libraries/Image/ImageViewN
     | ?ResolvedAssetSource
     | ?$ReadOnlyArray<?$ReadOnly<{ uri?: ?string, ... }>>,
   headers?: ?{ [string]: string },
-  defaultSrc?: ?string,
+  defaultSource?: ?ImageSource | ?string,
   loadingIndicatorSrc?: ?string,
 }>;
 interface NativeCommands {
@@ -4651,31 +4626,31 @@ declare export default typeof ImageViewNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/NativeImageEditor.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeImageEditor\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeImageEditor\\";
 declare export default typeof NativeImageEditor;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/NativeImageLoaderAndroid.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeImageLoaderAndroid\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeImageLoaderAndroid\\";
 declare export default typeof NativeImageLoaderAndroid;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/NativeImageLoaderIOS.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeImageLoaderIOS\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeImageLoaderIOS\\";
 declare export default typeof NativeImageLoaderIOS;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/NativeImageStoreAndroid.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeImageStoreAndroid\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeImageStoreAndroid\\";
 declare export default typeof NativeImageStoreAndroid;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/NativeImageStoreIOS.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeImageStoreIOS\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeImageStoreIOS\\";
 declare export default typeof NativeImageStoreIOS;
 "
 `;
@@ -4806,7 +4781,7 @@ declare export default typeof JSEventLoopWatchdog;
 `;
 
 exports[`public API should not change unintentionally Libraries/Interaction/NativeFrameRateLogger.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeFrameRateLogger\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeFrameRateLogger\\";
 declare export default typeof NativeFrameRateLogger;
 "
 `;
@@ -4988,13 +4963,13 @@ declare export default typeof Linking;
 `;
 
 exports[`public API should not change unintentionally Libraries/Linking/NativeIntentAndroid.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeIntentAndroid\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeIntentAndroid\\";
 declare export default typeof NativeIntentAndroid;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Linking/NativeLinkingManager.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeLinkingManager\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeLinkingManager\\";
 declare export default typeof NativeLinkingManager;
 "
 `;
@@ -5505,6 +5480,7 @@ exports[`public API should not change unintentionally Libraries/LogBox/UI/AnsiHi
 
 exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBoxButton.js 1`] = `
 "type Props = $ReadOnly<{
+  id?: string,
   backgroundColor: $ReadOnly<{
     default: string,
     pressed: string,
@@ -5782,13 +5758,13 @@ exports[`public API should not change unintentionally Libraries/Modal/ModalInjec
 `;
 
 exports[`public API should not change unintentionally Libraries/Modal/NativeModalManager.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeModalManager\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeModalManager\\";
 declare export default typeof NativeModalManager;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Modal/RCTModalHostViewNativeComponent.js 1`] = `
-"export * from \\"../../src/private/specs/components/RCTModalHostViewNativeComponent\\";
+"export * from \\"../../src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent\\";
 declare export default typeof RCTModalHostViewNativeComponent;
 "
 `;
@@ -5887,43 +5863,43 @@ declare export function isIgnored(value: mixed): boolean;
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeDevMenu.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeDevMenu\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeDevMenu\\";
 declare export default typeof NativeDevMenu;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeDevSettings.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeDevSettings\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeDevSettings\\";
 declare export default typeof NativeDevSettings;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeDeviceEventManager.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeDeviceEventManager\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeDeviceEventManager\\";
 declare export default typeof NativeDeviceEventManager;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeDialogManagerAndroid.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeDialogManagerAndroid\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeDialogManagerAndroid\\";
 declare export default typeof NativeDialogManagerAndroid;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeLogBox.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeLogBox\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeLogBox\\";
 declare export default typeof NativeLogBox;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeRedBox.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeRedBox\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeRedBox\\";
 declare export default typeof NativeRedBox;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/NativeModules/specs/NativeSourceCode.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeSourceCode\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeSourceCode\\";
 declare export default typeof NativeSourceCode;
 "
 `;
@@ -5956,13 +5932,13 @@ declare module.exports: FormData;
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/NativeNetworkingAndroid.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeNetworkingAndroid\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeNetworkingAndroid\\";
 declare export default typeof NativeNetworkingAndroid;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/NativeNetworkingIOS.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeNetworkingIOS\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeNetworkingIOS\\";
 declare export default typeof NativeNetworkingIOS;
 "
 `;
@@ -5976,7 +5952,7 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
   ): EventSubscription,
   sendRequest(
     method: string,
-    trackingName: string,
+    trackingName: ?string,
     url: string,
     headers: { ... },
     data: RequestBody,
@@ -6021,6 +5997,18 @@ export type ResponseType =
   | \\"json\\"
   | \\"text\\";
 export type Response = ?Object | string;
+type XHRInterceptor = interface {
+  requestSent(id: number, url: string, method: string, headers: Object): void,
+  responseReceived(
+    id: number,
+    url: string,
+    status: number,
+    headers: Object
+  ): void,
+  dataReceived(id: number, data: string): void,
+  loadingFinished(id: number, encodedDataLength: number): void,
+  loadingFailed(id: number, error: string): void,
+};
 declare class XMLHttpRequestEventTarget extends EventTarget {
   get onload(): EventCallback | null;
   set onload(listener: ?EventCallback): void;
@@ -6064,7 +6052,7 @@ declare class XMLHttpRequest extends EventTarget {
   getAllResponseHeaders(): ?string;
   getResponseHeader(header: string): ?string;
   setRequestHeader(header: string, value: any): void;
-  setTrackingName(trackingName: string): XMLHttpRequest;
+  setTrackingName(trackingName: ?string): XMLHttpRequest;
   setPerformanceLogger(performanceLogger: IPerformanceLogger): XMLHttpRequest;
   open(method: string, url: string, async: ?boolean): void;
   send(data: any): void;
@@ -6103,6 +6091,18 @@ export type ResponseType =
   | \\"json\\"
   | \\"text\\";
 export type Response = ?Object | string;
+type XHRInterceptor = interface {
+  requestSent(id: number, url: string, method: string, headers: Object): void,
+  responseReceived(
+    id: number,
+    url: string,
+    status: number,
+    headers: Object
+  ): void,
+  dataReceived(id: number, data: string): void,
+  loadingFinished(id: number, encodedDataLength: number): void,
+  loadingFailed(id: number, error: string): void,
+};
 declare class XMLHttpRequestEventTarget extends EventTarget {
   onload: ?Function;
   onloadstart: ?Function;
@@ -6147,7 +6147,7 @@ declare class XMLHttpRequest extends EventTarget {
   getAllResponseHeaders(): ?string;
   getResponseHeader(header: string): ?string;
   setRequestHeader(header: string, value: any): void;
-  setTrackingName(trackingName: string): XMLHttpRequest;
+  setTrackingName(trackingName: ?string): XMLHttpRequest;
   setPerformanceLogger(performanceLogger: IPerformanceLogger): XMLHttpRequest;
   open(method: string, url: string, async: ?boolean): void;
   send(data: any): void;
@@ -6219,7 +6219,7 @@ declare export function counterEvent(eventName: EventName, value: number): void;
 `;
 
 exports[`public API should not change unintentionally Libraries/PermissionsAndroid/NativePermissionsAndroid.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativePermissionsAndroid\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativePermissionsAndroid\\";
 declare export default typeof NativePermissionsAndroid;
 "
 `;
@@ -6420,7 +6420,7 @@ exports[`public API should not change unintentionally Libraries/Promise.js 1`] =
 `;
 
 exports[`public API should not change unintentionally Libraries/PushNotificationIOS/NativePushNotificationManagerIOS.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativePushNotificationManagerIOS\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativePushNotificationManagerIOS\\";
 declare export default typeof NativePushNotificationManagerIOS;
 "
 `;
@@ -6533,11 +6533,11 @@ exports[`public API should not change unintentionally Libraries/ReactNative/AppR
 export type TaskProvider = () => Task;
 type TaskCanceller = () => void;
 type TaskCancelProvider = () => TaskCanceller;
-export type ComponentProvider = () => React$ComponentType<any>;
+export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component_: ComponentProvider,
   scopedPerformanceLogger: IPerformanceLogger
-) => React$ComponentType<any>;
+) => React.ComponentType<any>;
 export type AppConfig = {
   appKey: string,
   component?: ComponentProvider,
@@ -6562,7 +6562,7 @@ export type Registry = {
 };
 export type WrapperComponentProvider = (
   appParameters: Object
-) => React$ComponentType<any>;
+) => React.ComponentType<any>;
 export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 declare const AppRegistry: {
   setWrapperComponentProvider(provider: WrapperComponentProvider): void,
@@ -6707,19 +6707,19 @@ exports[`public API should not change unintentionally Libraries/ReactNative/I18n
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/NativeHeadlessJsTaskSupport.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeHeadlessJsTaskSupport\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeHeadlessJsTaskSupport\\";
 declare export default typeof NativeHeadlessJsTaskSupport;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/NativeI18nManager.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeI18nManager\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeI18nManager\\";
 declare export default typeof NativeI18nManager;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/NativeUIManager.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeUIManager\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeUIManager\\";
 declare export default typeof NativeUIManager;
 "
 `;
@@ -6878,7 +6878,7 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Rend
 
 exports[`public API should not change unintentionally Libraries/ReactNative/RootTag.js 1`] = `
 "declare export opaque type RootTag;
-declare export const RootTagContext: React$Context<RootTag>;
+declare export const RootTagContext: React.Context<RootTag>;
 declare export function createRootTag(rootTag: number | RootTag): RootTag;
 "
 `;
@@ -6935,16 +6935,16 @@ declare export default typeof requireNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Settings/NativeSettingsManager.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeSettingsManager\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeSettingsManager\\";
 declare export default typeof NativeSettingsManager;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Settings/Settings.js 1`] = `
 "declare const Settings: {
-  get(key: string): mixed,
+  get(key: string): any,
   set(settings: Object): void,
-  watchKeys(keys: string | Array<string>, callback: Function): number,
+  watchKeys(keys: string | Array<string>, callback: () => void): number,
   clearWatch(watchId: number): void,
 };
 declare export default typeof Settings;
@@ -6952,7 +6952,7 @@ declare export default typeof Settings;
 `;
 
 exports[`public API should not change unintentionally Libraries/Share/NativeShareModule.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeShareModule\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeShareModule\\";
 declare export default typeof NativeShareModule;
 "
 `;
@@ -6972,14 +6972,18 @@ exports[`public API should not change unintentionally Libraries/Share/Share.js 1
 export type ShareOptions = {
   dialogTitle?: string,
   excludedActivityTypes?: Array<string>,
-  tintColor?: string,
+  tintColor?: ColorValue,
   subject?: string,
   anchor?: number,
+};
+export type ShareAction = {
+  action: \\"sharedAction\\" | \\"dismissedAction\\",
+  activityType?: string | null,
 };
 declare class Share {
   static share(
     content: ShareContent,
-    options: ShareOptions
+    options?: ShareOptions
   ): Promise<{ action: string, activityType: ?string }>;
   static sharedAction: \\"sharedAction\\";
   static dismissedAction: \\"dismissedAction\\";
@@ -7675,7 +7679,8 @@ declare export default typeof Text;
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/TextAncestor.js 1`] = `
-"declare const TextAncestorContext: React$Context<boolean>;
+"declare const React: $FlowFixMe;
+declare const TextAncestorContext: React.Context<boolean>;
 declare export default typeof TextAncestorContext;
 "
 `;
@@ -7790,7 +7795,7 @@ declare export function getEnforcing<T: TurboModule>(name: string): T;
 `;
 
 exports[`public API should not change unintentionally Libraries/TurboModule/samples/NativeSampleTurboModule.js 1`] = `
-"export * from \\"../../../src/private/specs/modules/NativeSampleTurboModule\\";
+"export * from \\"../../../src/private/specs_DEPRECATED/modules/NativeSampleTurboModule\\";
 declare export default typeof NativeSampleTurboModule;
 "
 `;
@@ -8214,31 +8219,31 @@ export interface IPerformanceLogger {
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/NativeAppearance.js 1`] = `
-"export type * from \\"../../src/private/specs/modules/NativeAppearance\\";
+"export type * from \\"../../src/private/specs_DEPRECATED/modules/NativeAppearance\\";
 declare export default typeof NativeAppearance;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/NativeDevLoadingView.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeDevLoadingView\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeDevLoadingView\\";
 declare export default typeof NativeDevLoadingView;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/NativeDeviceInfo.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeDeviceInfo\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeDeviceInfo\\";
 declare export default typeof NativeDeviceInfo;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/NativePlatformConstantsAndroid.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativePlatformConstantsAndroid\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativePlatformConstantsAndroid\\";
 declare export default typeof NativePlatformConstantsAndroid;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/NativePlatformConstantsIOS.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativePlatformConstantsIOS\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativePlatformConstantsIOS\\";
 declare export default typeof NativePlatformConstantsIOS;
 "
 `;
@@ -8610,7 +8615,7 @@ declare module.exports: warnOnce;
 `;
 
 exports[`public API should not change unintentionally Libraries/Vibration/NativeVibration.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeVibration\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeVibration\\";
 declare export default typeof NativeVibration;
 "
 `;
@@ -8625,7 +8630,7 @@ declare export default typeof Vibration;
 `;
 
 exports[`public API should not change unintentionally Libraries/WebSocket/NativeWebSocketModule.js 1`] = `
-"export * from \\"../../src/private/specs/modules/NativeWebSocketModule\\";
+"export * from \\"../../src/private/specs_DEPRECATED/modules/NativeWebSocketModule\\";
 declare export default typeof NativeWebSocketModule;
 "
 `;
@@ -8941,1591 +8946,6 @@ exports[`public API should not change unintentionally src/private/setup/setUpPer
 "
 `;
 
-exports[`public API should not change unintentionally src/private/specs/components/ActivityIndicatorViewNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  hidesWhenStopped?: WithDefault<boolean, true>,
-  animating?: WithDefault<boolean, true>,
-  color?: ?ColorValue,
-  size?: WithDefault<\\"small\\" | \\"large\\", \\"small\\">,
-}>;
-declare export default HostComponent<NativeProps>;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/AndroidDrawerLayoutNativeComponent.js 1`] = `
-"type DrawerStateEvent = $ReadOnly<{
-  drawerState: Int32,
-}>;
-type DrawerSlideEvent = $ReadOnly<{
-  offset: Float,
-}>;
-type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  keyboardDismissMode?: WithDefault<\\"none\\" | \\"on-drag\\", \\"none\\">,
-  drawerBackgroundColor: ColorValue,
-  drawerPosition?: WithDefault<\\"left\\" | \\"right\\", \\"left\\">,
-  drawerWidth?: WithDefault<Float, null>,
-  drawerLockMode?: WithDefault<
-    \\"unlocked\\" | \\"locked-closed\\" | \\"locked-open\\",
-    \\"unlocked\\",
-  >,
-  onDrawerSlide?: ?DirectEventHandler<DrawerSlideEvent>,
-  onDrawerStateChanged?: ?DirectEventHandler<DrawerStateEvent>,
-  onDrawerOpen?: ?DirectEventHandler<null>,
-  onDrawerClose?: ?DirectEventHandler<null>,
-  statusBarBackgroundColor?: ?ColorValue,
-}>;
-type NativeType = HostComponent<NativeProps>;
-interface NativeCommands {
-  +openDrawer: (viewRef: React.ElementRef<NativeType>) => void;
-  +closeDrawer: (viewRef: React.ElementRef<NativeType>) => void;
-}
-declare export const Commands: NativeCommands;
-declare export default NativeType;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/AndroidHorizontalScrollContentViewNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  removeClippedSubviews?: ?boolean,
-}>;
-type NativeType = HostComponent<NativeProps>;
-declare export default NativeType;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/AndroidSwipeRefreshLayoutNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  enabled?: WithDefault<boolean, true>,
-  colors?: ?$ReadOnlyArray<ColorValue>,
-  progressBackgroundColor?: ?ColorValue,
-  size?: WithDefault<\\"default\\" | \\"large\\", \\"default\\">,
-  progressViewOffset?: WithDefault<Float, 0>,
-  onRefresh?: ?DirectEventHandler<null>,
-  refreshing: boolean,
-}>;
-type NativeType = HostComponent<NativeProps>;
-interface NativeCommands {
-  +setNativeRefreshing: (
-    viewRef: React.ElementRef<NativeType>,
-    value: boolean
-  ) => void;
-}
-declare export const Commands: NativeCommands;
-declare export default NativeType;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/AndroidSwitchNativeComponent.js 1`] = `
-"type SwitchChangeEvent = $ReadOnly<{
-  value: boolean,
-  target: Int32,
-}>;
-type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  disabled?: WithDefault<boolean, false>,
-  enabled?: WithDefault<boolean, true>,
-  thumbColor?: ?ColorValue,
-  trackColorForFalse?: ?ColorValue,
-  trackColorForTrue?: ?ColorValue,
-  value?: WithDefault<boolean, false>,
-  on?: WithDefault<boolean, false>,
-  thumbTintColor?: ?ColorValue,
-  trackTintColor?: ?ColorValue,
-  onChange?: BubblingEventHandler<SwitchChangeEvent>,
-}>;
-type NativeType = HostComponent<NativeProps>;
-interface NativeCommands {
-  +setNativeValue: (
-    viewRef: React.ElementRef<NativeType>,
-    value: boolean
-  ) => void;
-}
-declare export const Commands: NativeCommands;
-declare export default NativeType;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/DebuggingOverlayNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
-  ...ViewProps,
-}>;
-export type DebuggingOverlayNativeComponentType = HostComponent<NativeProps>;
-export type TraceUpdate = {
-  id: number,
-  rectangle: ElementRectangle,
-  color: ?ProcessedColorValue,
-};
-export type ElementRectangle = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-};
-interface NativeCommands {
-  +highlightTraceUpdates: (
-    viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
-    updates: $ReadOnlyArray<TraceUpdate>
-  ) => void;
-  +highlightElements: (
-    viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
-    elements: $ReadOnlyArray<ElementRectangle>
-  ) => void;
-  +clearElementsHighlights: (
-    viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>
-  ) => void;
-}
-declare export const Commands: NativeCommands;
-declare export default HostComponent<NativeProps>;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/ProgressBarAndroidNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  styleAttr?: string,
-  typeAttr?: string,
-  indeterminate: boolean,
-  progress?: WithDefault<Double, 0>,
-  animating?: WithDefault<boolean, true>,
-  color?: ?ColorValue,
-  testID?: WithDefault<string, \\"\\">,
-}>;
-declare export default HostComponent<NativeProps>;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/PullToRefreshViewNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  tintColor?: ?ColorValue,
-  titleColor?: ?ColorValue,
-  title?: WithDefault<string, null>,
-  progressViewOffset?: WithDefault<Float, 0>,
-  onRefresh?: ?DirectEventHandler<null>,
-  refreshing: boolean,
-}>;
-type ComponentType = HostComponent<NativeProps>;
-interface NativeCommands {
-  +setNativeRefreshing: (
-    viewRef: React.ElementRef<ComponentType>,
-    refreshing: boolean
-  ) => void;
-}
-declare export const Commands: NativeCommands;
-declare export default HostComponent<NativeProps>;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/RCTInputAccessoryViewNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  backgroundColor?: ?ColorValue,
-}>;
-declare export default HostComponent<NativeProps>;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/RCTModalHostViewNativeComponent.js 1`] = `
-"type OrientationChangeEvent = $ReadOnly<{
-  orientation: \\"portrait\\" | \\"landscape\\",
-}>;
-type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  animationType?: WithDefault<\\"none\\" | \\"slide\\" | \\"fade\\", \\"none\\">,
-  presentationStyle?: WithDefault<
-    \\"fullScreen\\" | \\"pageSheet\\" | \\"formSheet\\" | \\"overFullScreen\\",
-    \\"fullScreen\\",
-  >,
-  transparent?: WithDefault<boolean, false>,
-  statusBarTranslucent?: WithDefault<boolean, false>,
-  navigationBarTranslucent?: WithDefault<boolean, false>,
-  hardwareAccelerated?: WithDefault<boolean, false>,
-  onRequestClose?: ?DirectEventHandler<null>,
-  onShow?: ?DirectEventHandler<null>,
-  onDismiss?: ?DirectEventHandler<null>,
-  visible?: WithDefault<boolean, false>,
-  animated?: WithDefault<boolean, false>,
-  supportedOrientations?: WithDefault<
-    $ReadOnlyArray<
-      | \\"portrait\\"
-      | \\"portrait-upside-down\\"
-      | \\"landscape\\"
-      | \\"landscape-left\\"
-      | \\"landscape-right\\",
-    >,
-    \\"portrait\\",
-  >,
-  onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
-  identifier?: WithDefault<Int32, 0>,
-}>;
-declare export default HostComponent<NativeProps>;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/RCTSafeAreaViewNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
-  ...ViewProps,
-}>;
-declare export default HostComponent<NativeProps>;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/SwitchNativeComponent.js 1`] = `
-"type SwitchChangeEvent = $ReadOnly<{
-  value: boolean,
-  target: Int32,
-}>;
-type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  disabled?: WithDefault<boolean, false>,
-  value?: WithDefault<boolean, false>,
-  tintColor?: ?ColorValue,
-  onTintColor?: ?ColorValue,
-  thumbTintColor?: ?ColorValue,
-  thumbColor?: ?ColorValue,
-  trackColorForFalse?: ?ColorValue,
-  trackColorForTrue?: ?ColorValue,
-  onChange?: ?BubblingEventHandler<SwitchChangeEvent>,
-}>;
-type ComponentType = HostComponent<NativeProps>;
-interface NativeCommands {
-  +setValue: (viewRef: React.ElementRef<ComponentType>, value: boolean) => void;
-}
-declare export const Commands: NativeCommands;
-declare export default ComponentType;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/components/UnimplementedNativeViewNativeComponent.js 1`] = `
-"type NativeProps = $ReadOnly<{
-  ...ViewProps,
-  name?: WithDefault<string, \\"\\">,
-}>;
-declare export default HostComponent<NativeProps>;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeAccessibilityInfo.js 1`] = `
-"export interface Spec extends TurboModule {
-  +isReduceMotionEnabled: (
-    onSuccess: (isReduceMotionEnabled: boolean) => void
-  ) => void;
-  +isInvertColorsEnabled?: (
-    onSuccess: (isInvertColorsEnabled: boolean) => void
-  ) => void;
-  +isHighTextContrastEnabled?: (
-    onSuccess: (isHighTextContrastEnabled: boolean) => void
-  ) => void;
-  +isTouchExplorationEnabled: (
-    onSuccess: (isScreenReaderEnabled: boolean) => void
-  ) => void;
-  +isAccessibilityServiceEnabled?: ?(
-    onSuccess: (isAccessibilityServiceEnabled: boolean) => void
-  ) => void;
-  +setAccessibilityFocus: (reactTag: number) => void;
-  +announceForAccessibility: (announcement: string) => void;
-  +getRecommendedTimeoutMillis?: (
-    mSec: number,
-    onSuccess: (recommendedTimeoutMillis: number) => void
-  ) => void;
-  +isGrayscaleEnabled?: (
-    onSuccess: (isGrayscaleEnabled: boolean) => void
-  ) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeAccessibilityManager.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getCurrentBoldTextState: (
-    onSuccess: (isBoldTextEnabled: boolean) => void,
-    onError: (error: Object) => void
-  ) => void;
-  +getCurrentGrayscaleState: (
-    onSuccess: (isGrayscaleEnabled: boolean) => void,
-    onError: (error: Object) => void
-  ) => void;
-  +getCurrentInvertColorsState: (
-    onSuccess: (isInvertColorsEnabled: boolean) => void,
-    onError: (error: Object) => void
-  ) => void;
-  +getCurrentReduceMotionState: (
-    onSuccess: (isReduceMotionEnabled: boolean) => void,
-    onError: (error: Object) => void
-  ) => void;
-  +getCurrentDarkerSystemColorsState?: (
-    onSuccess: (isDarkerSystemColorsEnabled: boolean) => void,
-    onError: (error: Object) => void
-  ) => void;
-  +getCurrentPrefersCrossFadeTransitionsState?: (
-    onSuccess: (prefersCrossFadeTransitions: boolean) => void,
-    onError: (error: Object) => void
-  ) => void;
-  +getCurrentReduceTransparencyState: (
-    onSuccess: (isReduceTransparencyEnabled: boolean) => void,
-    onError: (error: Object) => void
-  ) => void;
-  +getCurrentVoiceOverState: (
-    onSuccess: (isScreenReaderEnabled: boolean) => void,
-    onError: (error: Object) => void
-  ) => void;
-  +setAccessibilityContentSizeMultipliers: (JSMultipliers: {
-    +extraSmall?: ?number,
-    +small?: ?number,
-    +medium?: ?number,
-    +large?: ?number,
-    +extraLarge?: ?number,
-    +extraExtraLarge?: ?number,
-    +extraExtraExtraLarge?: ?number,
-    +accessibilityMedium?: ?number,
-    +accessibilityLarge?: ?number,
-    +accessibilityExtraLarge?: ?number,
-    +accessibilityExtraExtraLarge?: ?number,
-    +accessibilityExtraExtraExtraLarge?: ?number,
-  }) => void;
-  +setAccessibilityFocus: (reactTag: number) => void;
-  +announceForAccessibility: (announcement: string) => void;
-  +announceForAccessibilityWithOptions?: (
-    announcement: string,
-    options: { queue?: boolean }
-  ) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeActionSheetManager.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {};
-  +showActionSheetWithOptions: (
-    options: {
-      +title?: ?string,
-      +message?: ?string,
-      +options: ?Array<string>,
-      +destructiveButtonIndices?: ?Array<number>,
-      +cancelButtonIndex?: ?number,
-      +anchor?: ?number,
-      +tintColor?: ?number,
-      +cancelButtonTintColor?: ?number,
-      +disabledButtonTintColor?: ?number,
-      +userInterfaceStyle?: ?string,
-      +disabledButtonIndices?: Array<number>,
-    },
-    callback: (buttonIndex: number) => void
-  ) => void;
-  +showShareActionSheetWithOptions: (
-    options: {
-      +message?: ?string,
-      +url?: ?string,
-      +subject?: ?string,
-      +anchor?: ?number,
-      +tintColor?: ?number,
-      +cancelButtonTintColor?: ?number,
-      +disabledButtonTintColor?: ?number,
-      +excludedActivityTypes?: ?Array<string>,
-      +userInterfaceStyle?: ?string,
-    },
-    failureCallback: (error: {
-      +domain: string,
-      +code: string,
-      +userInfo?: ?Object,
-      +message: string,
-    }) => void,
-    successCallback: (completed: boolean, activityType: ?string) => void
-  ) => void;
-  +dismissActionSheet?: () => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeAlertManager.js 1`] = `
-"export type Args = {
-  title?: string,
-  message?: string,
-  buttons?: Array<Object>,
-  type?: string,
-  defaultValue?: string,
-  cancelButtonKey?: string,
-  destructiveButtonKey?: string,
-  preferredButtonKey?: string,
-  keyboardType?: string,
-  userInterfaceStyle?: string,
-};
-export interface Spec extends TurboModule {
-  +alertWithArgs: (
-    args: Args,
-    callback: (id: number, value: string) => void
-  ) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeAnimatedModule.js 1`] = `
-"type EndResult = { finished: boolean, value?: number, ... };
-type EndCallback = (result: EndResult) => void;
-type SaveValueCallback = (value: number) => void;
-export type EventMapping = {
-  nativeEventPath: Array<string>,
-  animatedValueTag: ?number,
-};
-export type AnimatedNodeConfig = Object;
-export type AnimatingNodeConfig = Object;
-export interface Spec extends TurboModule {
-  +startOperationBatch: () => void;
-  +finishOperationBatch: () => void;
-  +createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void;
-  +updateAnimatedNodeConfig?: (tag: number, config: AnimatedNodeConfig) => void;
-  +getValue: (tag: number, saveValueCallback: SaveValueCallback) => void;
-  +startListeningToAnimatedNodeValue: (tag: number) => void;
-  +stopListeningToAnimatedNodeValue: (tag: number) => void;
-  +connectAnimatedNodes: (parentTag: number, childTag: number) => void;
-  +disconnectAnimatedNodes: (parentTag: number, childTag: number) => void;
-  +startAnimatingNode: (
-    animationId: number,
-    nodeTag: number,
-    config: AnimatingNodeConfig,
-    endCallback: EndCallback
-  ) => void;
-  +stopAnimation: (animationId: number) => void;
-  +setAnimatedNodeValue: (nodeTag: number, value: number) => void;
-  +setAnimatedNodeOffset: (nodeTag: number, offset: number) => void;
-  +flattenAnimatedNodeOffset: (nodeTag: number) => void;
-  +extractAnimatedNodeOffset: (nodeTag: number) => void;
-  +connectAnimatedNodeToView: (nodeTag: number, viewTag: number) => void;
-  +disconnectAnimatedNodeFromView: (nodeTag: number, viewTag: number) => void;
-  +restoreDefaultValues: (nodeTag: number) => void;
-  +dropAnimatedNode: (tag: number) => void;
-  +addAnimatedEventToView: (
-    viewTag: number,
-    eventName: string,
-    eventMapping: EventMapping
-  ) => void;
-  +removeAnimatedEventFromView: (
-    viewTag: number,
-    eventName: string,
-    animatedNodeTag: number
-  ) => void;
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-  +queueAndExecuteBatchedOperations?: (operationsAndArgs: Array<any>) => void;
-}
-declare const NativeModule: ?Spec;
-declare export default typeof NativeModule;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeAnimatedTurboModule.js 1`] = `
-"type EndResult = { finished: boolean, value?: number, ... };
-type EndCallback = (result: EndResult) => void;
-type SaveValueCallback = (value: number) => void;
-export type EventMapping = {
-  nativeEventPath: Array<string>,
-  animatedValueTag: ?number,
-};
-export type AnimatedNodeConfig = Object;
-export type AnimatingNodeConfig = Object;
-export interface Spec extends TurboModule {
-  +startOperationBatch: () => void;
-  +finishOperationBatch: () => void;
-  +createAnimatedNode: (tag: number, config: AnimatedNodeConfig) => void;
-  +updateAnimatedNodeConfig?: (tag: number, config: AnimatedNodeConfig) => void;
-  +getValue: (tag: number, saveValueCallback: SaveValueCallback) => void;
-  +startListeningToAnimatedNodeValue: (tag: number) => void;
-  +stopListeningToAnimatedNodeValue: (tag: number) => void;
-  +connectAnimatedNodes: (parentTag: number, childTag: number) => void;
-  +disconnectAnimatedNodes: (parentTag: number, childTag: number) => void;
-  +startAnimatingNode: (
-    animationId: number,
-    nodeTag: number,
-    config: AnimatingNodeConfig,
-    endCallback: EndCallback
-  ) => void;
-  +stopAnimation: (animationId: number) => void;
-  +setAnimatedNodeValue: (nodeTag: number, value: number) => void;
-  +setAnimatedNodeOffset: (nodeTag: number, offset: number) => void;
-  +flattenAnimatedNodeOffset: (nodeTag: number) => void;
-  +extractAnimatedNodeOffset: (nodeTag: number) => void;
-  +connectAnimatedNodeToView: (nodeTag: number, viewTag: number) => void;
-  +disconnectAnimatedNodeFromView: (nodeTag: number, viewTag: number) => void;
-  +restoreDefaultValues: (nodeTag: number) => void;
-  +dropAnimatedNode: (tag: number) => void;
-  +addAnimatedEventToView: (
-    viewTag: number,
-    eventName: string,
-    eventMapping: EventMapping
-  ) => void;
-  +removeAnimatedEventFromView: (
-    viewTag: number,
-    eventName: string,
-    animatedNodeTag: number
-  ) => void;
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-  +queueAndExecuteBatchedOperations?: (operationsAndArgs: Array<any>) => void;
-}
-declare const NativeModule: ?Spec;
-declare export default typeof NativeModule;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeAppState.js 1`] = `
-"export type AppStateConstants = {
-  initialAppState: string,
-};
-export type AppState = { app_state: string };
-export interface Spec extends TurboModule {
-  +getConstants: () => AppStateConstants;
-  +getCurrentAppState: (
-    success: (appState: AppState) => void,
-    error: (error: Object) => void
-  ) => void;
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeAppearance.js 1`] = `
-"export type ColorSchemeName = \\"light\\" | \\"dark\\" | \\"unspecified\\";
-export type AppearancePreferences = {
-  colorScheme?: ?ColorSchemeName,
-};
-export interface Spec extends TurboModule {
-  +getColorScheme: () => ?ColorSchemeName;
-  +setColorScheme: (colorScheme: ColorSchemeName) => void;
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeBlobModule.js 1`] = `
-"export type Constants = { BLOB_URI_SCHEME: ?string, BLOB_URI_HOST: ?string };
-export interface Spec extends TurboModule {
-  +getConstants: () => Constants;
-  +addNetworkingHandler: () => void;
-  +addWebSocketHandler: (id: number) => void;
-  +removeWebSocketHandler: (id: number) => void;
-  +sendOverSocket: (blob: Object, socketID: number) => void;
-  +createFromParts: (parts: Array<Object>, withId: string) => void;
-  +release: (blobId: string) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeBugReporting.js 1`] = `
-"export interface Spec extends TurboModule {
-  +startReportAProblemFlow: () => void;
-  +setExtraData: (extraData: Object, extraFiles: Object) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeCPUTime.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getCPUTimeNanos: () => number;
-  +hasAccurateCPUTimeNanosForBenchmarks: () => boolean;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeClipboard.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {};
-  +getString: () => Promise<string>;
-  +setString: (content: string) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeDevLoadingView.js 1`] = `
-"export interface Spec extends TurboModule {
-  +showMessage: (
-    message: string,
-    withColor: ?number,
-    withBackgroundColor: ?number
-  ) => void;
-  +hide: () => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeDevMenu.js 1`] = `
-"export interface Spec extends TurboModule {
-  +show: () => void;
-  +reload: () => void;
-  +setProfilingEnabled: (enabled: boolean) => void;
-  +setHotLoadingEnabled: (enabled: boolean) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeDevSettings.js 1`] = `
-"export interface Spec extends TurboModule {
-  +reload: () => void;
-  +reloadWithReason?: (reason: string) => void;
-  +onFastRefresh?: () => void;
-  +setHotLoadingEnabled: (isHotLoadingEnabled: boolean) => void;
-  +setProfilingEnabled: (isProfilingEnabled: boolean) => void;
-  +toggleElementInspector: () => void;
-  +addMenuItem: (title: string) => void;
-  +openDebugger?: () => void;
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-  +setIsShakeToShowDevMenuEnabled: (enabled: boolean) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeDeviceEventManager.js 1`] = `
-"export interface Spec extends TurboModule {
-  +invokeDefaultBackPressHandler: () => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeDeviceInfo.js 1`] = `
-"export type DisplayMetricsAndroid = {
-  width: number,
-  height: number,
-  scale: number,
-  fontScale: number,
-  densityDpi: number,
-};
-export type DisplayMetrics = {
-  width: number,
-  height: number,
-  scale: number,
-  fontScale: number,
-};
-export type DimensionsPayload = {
-  window?: DisplayMetrics,
-  screen?: DisplayMetrics,
-  windowPhysicalPixels?: DisplayMetricsAndroid,
-  screenPhysicalPixels?: DisplayMetricsAndroid,
-};
-export type DeviceInfoConstants = {
-  +Dimensions: DimensionsPayload,
-  +isIPhoneX_deprecated?: boolean,
-};
-export interface Spec extends TurboModule {
-  +getConstants: () => DeviceInfoConstants;
-}
-declare const NativeDeviceInfo: { getConstants(): DeviceInfoConstants };
-declare export default typeof NativeDeviceInfo;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeDialogManagerAndroid.js 1`] = `
-"type DialogAction = string;
-type DialogButtonKey = number;
-export type DialogOptions = {
-  title?: string,
-  message?: string,
-  buttonPositive?: string,
-  buttonNegative?: string,
-  buttonNeutral?: string,
-  items?: Array<string>,
-  cancelable?: boolean,
-};
-export interface Spec extends TurboModule {
-  +getConstants: () => {
-    +buttonClicked: DialogAction,
-    +dismissed: DialogAction,
-    +buttonPositive: DialogButtonKey,
-    +buttonNegative: DialogButtonKey,
-    +buttonNeutral: DialogButtonKey,
-  };
-  +showAlert: (
-    config: DialogOptions,
-    onError: (error: string) => void,
-    onAction: (action: DialogAction, buttonKey?: DialogButtonKey) => void
-  ) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeExceptionsManager.js 1`] = `
-"export type StackFrame = {
-  column: ?number,
-  file: ?string,
-  lineNumber: ?number,
-  methodName: string,
-  collapse?: boolean,
-};
-export type ExceptionData = {
-  message: string,
-  originalMessage: ?string,
-  name: ?string,
-  componentStack: ?string,
-  stack: Array<StackFrame>,
-  id: number,
-  isFatal: boolean,
-  extraData?: Object,
-  ...
-};
-export interface Spec extends TurboModule {
-  +reportFatalException: (
-    message: string,
-    stack: Array<StackFrame>,
-    exceptionId: number
-  ) => void;
-  +reportSoftException: (
-    message: string,
-    stack: Array<StackFrame>,
-    exceptionId: number
-  ) => void;
-  +reportException?: (data: ExceptionData) => void;
-  +dismissRedbox?: () => void;
-}
-declare const ExceptionsManager: {
-  reportFatalException(
-    message: string,
-    stack: Array<StackFrame>,
-    exceptionId: number
-  ): void,
-  reportSoftException(
-    message: string,
-    stack: Array<StackFrame>,
-    exceptionId: number
-  ): void,
-  dismissRedbox(): void,
-  reportException(data: ExceptionData): void,
-};
-declare export default typeof ExceptionsManager;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeFantom.js 1`] = `
-"export type RenderFormatOptions = {
-  includeRoot: boolean,
-  includeLayoutMetrics: boolean,
-};
-export enum NativeEventCategory {
-  ContinuousStart = 0,
-  ContinuousEnd = 1,
-  Unspecified = 2,
-  Discrete = 3,
-  Continuous = 4,
-}
-export type ScrollOptions = {
-  x: number,
-  y: number,
-  zoomScale?: number,
-};
-interface Spec extends TurboModule {
-  startSurface: (
-    surfaceId: number,
-    viewportWidth: number,
-    viewportHeight: number,
-    devicePixelRatio: number
-  ) => void;
-  stopSurface: (surfaceId: number) => void;
-  dispatchNativeEvent: (
-    shadowNode: mixed,
-    type: string,
-    payload?: mixed,
-    category?: NativeEventCategory,
-    isUnique?: boolean
-  ) => void;
-  scrollTo: (shadowNode: mixed, options: ScrollOptions) => void;
-  takeMountingManagerLogs: (surfaceId: number) => Array<string>;
-  flushMessageQueue: () => void;
-  flushEventQueue: () => void;
-  validateEmptyMessageQueue: () => void;
-  getRenderedOutput: (surfaceId: number, config: RenderFormatOptions) => string;
-  reportTestSuiteResultsJSON: (results: string) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeFileReaderModule.js 1`] = `
-"export interface Spec extends TurboModule {
-  +readAsDataURL: (data: Object) => Promise<string>;
-  +readAsText: (data: Object, encoding: string) => Promise<string>;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeFrameRateLogger.js 1`] = `
-"export interface Spec extends TurboModule {
-  +setGlobalOptions: (options: { +debug?: ?boolean }) => void;
-  +setContext: (context: string) => void;
-  +beginScroll: () => void;
-  +endScroll: () => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeHeadlessJsTaskSupport.js 1`] = `
-"export interface Spec extends TurboModule {
-  +notifyTaskFinished: (taskId: number) => void;
-  +notifyTaskRetry: (taskId: number) => Promise<boolean>;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeI18nManager.js 1`] = `
-"export type I18nManagerConstants = {
-  doLeftAndRightSwapInRTL: boolean,
-  isRTL: boolean,
-  localeIdentifier?: ?string,
-};
-export interface Spec extends TurboModule {
-  +getConstants: () => I18nManagerConstants;
-  allowRTL: (allowRTL: boolean) => void;
-  forceRTL: (forceRTL: boolean) => void;
-  swapLeftAndRightInRTL: (flipStyles: boolean) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeImageEditor.js 1`] = `
-"type Options = {
-  +offset: {
-    +x: number,
-    +y: number,
-  },
-  +size: {
-    +width: number,
-    +height: number,
-  },
-  +displaySize?: ?{
-    +width: number,
-    +height: number,
-  },
-  +resizeMode?: ?string,
-  +allowExternalStorage?: boolean,
-};
-export interface Spec extends TurboModule {
-  +getConstants: () => {};
-  +cropImage: (
-    uri: string,
-    cropData: Options,
-    successCallback: (uri: string) => void,
-    errorCallback: (error: string) => void
-  ) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeImageLoaderAndroid.js 1`] = `
-"export type ImageSize = {
-  width: number,
-  height: number,
-  ...
-};
-export interface Spec extends TurboModule {
-  +abortRequest: (requestId: number) => void;
-  +getConstants: () => {};
-  +getSize: (uri: string) => Promise<ImageSize>;
-  +getSizeWithHeaders: (uri: string, headers: Object) => Promise<ImageSize>;
-  +prefetchImage: (uri: string, requestId: number) => Promise<boolean>;
-  +queryCache: (uris: Array<string>) => Promise<Object>;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeImageLoaderIOS.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {};
-  +getSize: (uri: string) => Promise<$ReadOnlyArray<number>>;
-  +getSizeWithHeaders: (
-    uri: string,
-    headers: Object
-  ) => Promise<{
-    width: number,
-    height: number,
-    ...
-  }>;
-  +prefetchImage: (uri: string) => Promise<boolean>;
-  +prefetchImageWithMetadata?: (
-    uri: string,
-    queryRootName: string,
-    rootTag: RootTag
-  ) => Promise<boolean>;
-  +queryCache: (uris: Array<string>) => Promise<Object>;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeImageStoreAndroid.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {};
-  +getBase64ForTag: (
-    uri: string,
-    successCallback: (base64ImageData: string) => void,
-    errorCallback: (error: string) => void
-  ) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeImageStoreIOS.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {};
-  +getBase64ForTag: (
-    uri: string,
-    successCallback: (base64ImageData: string) => void,
-    errorCallback: (error: { message: string }) => void
-  ) => void;
-  +hasImageForTag: (uri: string, callback: (hasImage: boolean) => void) => void;
-  +removeImageForTag: (uri: string) => void;
-  +addImageFromBase64: (
-    base64ImageData: string,
-    successCallback: (uri: string) => void,
-    errorCallback: (error: { message: string }) => void
-  ) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeIntentAndroid.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getInitialURL: () => Promise<string>;
-  +canOpenURL: (url: string) => Promise<boolean>;
-  +openURL: (url: string) => Promise<void>;
-  +openSettings: () => Promise<void>;
-  +sendIntent: (
-    action: string,
-    extras: ?Array<{
-      key: string,
-      value: string | number | boolean,
-      ...
-    }>
-  ) => Promise<void>;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeJSCHeapCapture.js 1`] = `
-"export interface Spec extends TurboModule {
-  +captureComplete: (path: string, error: ?string) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeKeyboardObserver.js 1`] = `
-"export interface Spec extends TurboModule {
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeLinkingManager.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getInitialURL: () => Promise<?string>;
-  +canOpenURL: (url: string) => Promise<boolean>;
-  +openURL: (url: string) => Promise<void>;
-  +openSettings: () => Promise<void>;
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeLogBox.js 1`] = `
-"export interface Spec extends TurboModule {
-  +show: () => void;
-  +hide: () => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeModalManager.js 1`] = `
-"export interface Spec extends TurboModule {
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeNetworkingAndroid.js 1`] = `
-"type Header = [string, string];
-export interface Spec extends TurboModule {
-  +sendRequest: (
-    method: string,
-    url: string,
-    requestId: number,
-    headers: Array<Header>,
-    data: Object,
-    responseType: string,
-    useIncrementalUpdates: boolean,
-    timeout: number,
-    withCredentials: boolean
-  ) => void;
-  +abortRequest: (requestId: number) => void;
-  +clearCookies: (callback: (result: boolean) => void) => void;
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeNetworkingIOS.js 1`] = `
-"export interface Spec extends TurboModule {
-  +sendRequest: (
-    query: {
-      method: string,
-      url: string,
-      data: Object,
-      headers: Object,
-      responseType: string,
-      incrementalUpdates: boolean,
-      timeout: number,
-      withCredentials: boolean,
-    },
-    callback: (requestId: number) => void
-  ) => void;
-  +abortRequest: (requestId: number) => void;
-  +clearCookies: (callback: (result: boolean) => void) => void;
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativePermissionsAndroid.js 1`] = `
-"export type PermissionStatus = string;
-export type PermissionType = string;
-export interface Spec extends TurboModule {
-  +checkPermission: (permission: PermissionType) => Promise<boolean>;
-  +requestPermission: (permission: PermissionType) => Promise<PermissionStatus>;
-  +shouldShowRequestPermissionRationale: (
-    permission: string
-  ) => Promise<boolean>;
-  +requestMultiplePermissions: (
-    permissions: Array<PermissionType>
-  ) => Promise<{ [permission: PermissionType]: PermissionStatus, ... }>;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativePlatformConstantsAndroid.js 1`] = `
-"export type ReactNativeVersionAndroid = {
-  major: number,
-  minor: number,
-  patch: number,
-  prerelease: ?string,
-};
-export type PlatformConstantsAndroid = {
-  isTesting: boolean,
-  isDisableAnimations?: boolean,
-  reactNativeVersion: ReactNativeVersionAndroid,
-  Version: number,
-  Release: string,
-  Serial: string,
-  Fingerprint: string,
-  Model: string,
-  ServerHost?: string,
-  uiMode: string,
-  Brand: string,
-  Manufacturer: string,
-};
-export interface Spec extends TurboModule {
-  +getConstants: () => PlatformConstantsAndroid;
-  +getAndroidID: () => string;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativePlatformConstantsIOS.js 1`] = `
-"export type PlatformConstantsIOS = {
-  isTesting: boolean,
-  isDisableAnimations?: boolean,
-  reactNativeVersion: {
-    major: number,
-    minor: number,
-    patch: number,
-    prerelease: ?string,
-  },
-  forceTouchAvailable: boolean,
-  osVersion: string,
-  systemName: string,
-  interfaceIdiom: string,
-  isMacCatalyst?: boolean,
-};
-export interface Spec extends TurboModule {
-  +getConstants: () => PlatformConstantsIOS;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativePushNotificationManagerIOS.js 1`] = `
-"type Permissions = {
-  alert: boolean,
-  badge: boolean,
-  sound: boolean,
-};
-type Notification = {
-  +alertTitle?: ?string,
-  +alertBody?: ?string,
-  +userInfo?: ?Object,
-  +category?: ?string,
-  +fireDate?: ?number,
-  +fireIntervalSeconds?: ?number,
-  +applicationIconBadgeNumber?: ?number,
-  +isSilent?: ?boolean,
-  +soundName?: ?string,
-};
-export interface Spec extends TurboModule {
-  +getConstants: () => {};
-  +onFinishRemoteNotification: (
-    notificationId: string,
-    fetchResult: string
-  ) => void;
-  +setApplicationIconBadgeNumber: (num: number) => void;
-  +getApplicationIconBadgeNumber: (callback: (num: number) => void) => void;
-  +requestPermissions: (permission: {
-    +alert: boolean,
-    +badge: boolean,
-    +sound: boolean,
-  }) => Promise<Permissions>;
-  +abandonPermissions: () => void;
-  +checkPermissions: (callback: (permissions: Permissions) => void) => void;
-  +presentLocalNotification: (notification: Notification) => void;
-  +scheduleLocalNotification: (notification: Notification) => void;
-  +cancelAllLocalNotifications: () => void;
-  +cancelLocalNotifications: (userInfo: Object) => void;
-  +getInitialNotification: () => Promise<?Notification>;
-  +getScheduledLocalNotifications: (
-    callback: (notification: Notification) => void
-  ) => void;
-  +removeAllDeliveredNotifications: () => void;
-  +removeDeliveredNotifications: (identifiers: Array<string>) => void;
-  +getDeliveredNotifications: (
-    callback: (notification: Array<Notification>) => void
-  ) => void;
-  +getAuthorizationStatus: (
-    callback: (authorizationStatus: number) => void
-  ) => void;
-  +addListener: (eventType: string) => void;
-  +removeListeners: (count: number) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeReactDevToolsSettingsManager.js 1`] = `
-"export interface Spec extends TurboModule {
-  +setGlobalHookSettings: (settings: string) => void;
-  +getGlobalHookSettings: () => ?string;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeRedBox.js 1`] = `
-"export interface Spec extends TurboModule {
-  +setExtraData: (extraData: Object, forIdentifier: string) => void;
-  +dismiss: () => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeSampleTurboModule.js 1`] = `
-"export enum EnumInt {
-  A = 23,
-  B = 42,
-}
-export type ObjectStruct = {
-  a: number,
-  b: string,
-  c?: ?string,
-};
-export interface Spec extends TurboModule {
-  +onPress: EventEmitter<void>;
-  +onClick: EventEmitter<string>;
-  +onChange: EventEmitter<ObjectStruct>;
-  +onSubmit: EventEmitter<ObjectStruct[]>;
-  +getConstants: () => {
-    const1: boolean,
-    const2: number,
-    const3: string,
-  };
-  +voidFunc: () => void;
-  +getBool: (arg: boolean) => boolean;
-  +getEnum?: (arg: EnumInt) => EnumInt;
-  +getNumber: (arg: number) => number;
-  +getString: (arg: string) => string;
-  +getArray: (arg: Array<any>) => Array<any>;
-  +getObject: (arg: Object) => Object;
-  +getUnsafeObject: (arg: UnsafeObject) => UnsafeObject;
-  +getRootTag: (arg: RootTag) => RootTag;
-  +getValue: (x: number, y: string, z: Object) => Object;
-  +getValueWithCallback: (callback: (value: string) => void) => void;
-  +getValueWithPromise: (error: boolean) => Promise<string>;
-  +voidFuncThrows?: () => void;
-  +getObjectThrows?: (arg: Object) => Object;
-  +promiseThrows?: () => Promise<void>;
-  +voidFuncAssert?: () => void;
-  +getObjectAssert?: (arg: Object) => Object;
-  +promiseAssert?: () => Promise<void>;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeSegmentFetcher.js 1`] = `
-"export interface Spec extends TurboModule {
-  +fetchSegment: (
-    segmentId: number,
-    options: Object,
-    callback: (error: ?Object) => void
-  ) => void;
-  +getSegment?: (
-    segmentId: number,
-    options: Object,
-    callback: (error: ?Object, path: ?string) => void
-  ) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeSettingsManager.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {
-    settings: Object,
-  };
-  +setValues: (values: Object) => void;
-  +deleteValues: (values: Array<string>) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeShareModule.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {};
-  +share: (
-    content: { title?: string, message?: string },
-    dialogTitle?: string
-  ) => Promise<{ action: string }>;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeSoundManager.js 1`] = `
-"export interface Spec extends TurboModule {
-  +playTouchSound: () => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeSourceCode.js 1`] = `
-"export type SourceCodeConstants = {
-  scriptURL: string,
-};
-export interface Spec extends TurboModule {
-  +getConstants: () => SourceCodeConstants;
-}
-declare const NativeSourceCode: { getConstants(): SourceCodeConstants };
-declare export default typeof NativeSourceCode;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeStatusBarManagerAndroid.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {
-    +HEIGHT: number,
-    +DEFAULT_BACKGROUND_COLOR: number,
-  };
-  +setColor: (color: number, animated: boolean) => void;
-  +setTranslucent: (translucent: boolean) => void;
-  +setStyle: (statusBarStyle?: ?string) => void;
-  +setHidden: (hidden: boolean) => void;
-}
-declare const NativeStatusBarManager: {
-  getConstants(): {
-    +HEIGHT: number,
-    +DEFAULT_BACKGROUND_COLOR?: number,
-  },
-  setColor(color: number, animated: boolean): void,
-  setTranslucent(translucent: boolean): void,
-  setStyle(statusBarStyle?: ?string): void,
-  setHidden(hidden: boolean): void,
-};
-declare export default typeof NativeStatusBarManager;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeStatusBarManagerIOS.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {
-    +HEIGHT: number,
-    +DEFAULT_BACKGROUND_COLOR?: number,
-  };
-  +getHeight: (callback: (result: { height: number }) => void) => void;
-  +setNetworkActivityIndicatorVisible: (visible: boolean) => void;
-  +addListener: (eventType: string) => void;
-  +removeListeners: (count: number) => void;
-  +setStyle: (statusBarStyle?: ?string, animated: boolean) => void;
-  +setHidden: (hidden: boolean, withAnimation: string) => void;
-}
-declare const NativeStatusBarManager: {
-  getConstants(): {
-    +HEIGHT: number,
-    +DEFAULT_BACKGROUND_COLOR?: number,
-  },
-  getHeight(callback: (result: { height: number }) => void): void,
-  setNetworkActivityIndicatorVisible(visible: boolean): void,
-  addListener(eventType: string): void,
-  removeListeners(count: number): void,
-  setStyle(statusBarStyle?: ?string, animated: boolean): void,
-  setHidden(hidden: boolean, withAnimation: string): void,
-};
-declare export default typeof NativeStatusBarManager;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeTiming.js 1`] = `
-"export interface Spec extends TurboModule {
-  +createTimer: (
-    callbackID: number,
-    duration: number,
-    jsSchedulingTime: number,
-    repeats: boolean
-  ) => void;
-  +deleteTimer: (timerID: number) => void;
-  +setSendIdleEvents: (sendIdleEvents: boolean) => void;
-}
-declare export default ?Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeToastAndroid.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {
-    SHORT: number,
-    LONG: number,
-    TOP: number,
-    BOTTOM: number,
-    CENTER: number,
-  };
-  +show: (message: string, duration: number) => void;
-  +showWithGravity: (
-    message: string,
-    duration: number,
-    gravity: number
-  ) => void;
-  +showWithGravityAndOffset: (
-    message: string,
-    duration: number,
-    gravity: number,
-    xOffset: number,
-    yOffset: number
-  ) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeUIManager.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => Object;
-  +createView: (
-    reactTag: number,
-    viewName: string,
-    rootTag: RootTag,
-    props: Object
-  ) => void;
-  +updateView: (reactTag: number, viewName: string, props: Object) => void;
-  +findSubviewIn: (
-    reactTag: number,
-    point: Array<number>,
-    callback: (
-      nativeViewTag: number,
-      left: number,
-      top: number,
-      width: number,
-      height: number
-    ) => void
-  ) => void;
-  +dispatchViewManagerCommand: (
-    reactTag: number,
-    commandID: number,
-    commandArgs: ?Array<any>
-  ) => void;
-  +measure: (
-    reactTag: number,
-    callback: (
-      left: number,
-      top: number,
-      width: number,
-      height: number,
-      pageX: number,
-      pageY: number
-    ) => void
-  ) => void;
-  +measureInWindow: (
-    reactTag: number,
-    callback: (x: number, y: number, width: number, height: number) => void
-  ) => void;
-  +viewIsDescendantOf: (
-    reactTag: number,
-    ancestorReactTag: number,
-    callback: (result: Array<boolean>) => void
-  ) => void;
-  +measureLayout: (
-    reactTag: number,
-    ancestorReactTag: number,
-    errorCallback: (error: Object) => void,
-    callback: (left: number, top: number, width: number, height: number) => void
-  ) => void;
-  +measureLayoutRelativeToParent: (
-    reactTag: number,
-    errorCallback: (error: Object) => void,
-    callback: (left: number, top: number, width: number, height: number) => void
-  ) => void;
-  +setJSResponder: (reactTag: number, blockNativeResponder: boolean) => void;
-  +clearJSResponder: () => void;
-  +configureNextLayoutAnimation: (
-    config: Object,
-    callback: () => void,
-    errorCallback: (error: Object) => void
-  ) => void;
-  +setChildren: (containerTag: number, reactTags: Array<number>) => void;
-  +manageChildren: (
-    containerTag: number,
-    moveFromIndices: Array<number>,
-    moveToIndices: Array<number>,
-    addChildReactTags: Array<number>,
-    addAtIndices: Array<number>,
-    removeAtIndices: Array<number>
-  ) => void;
-  +getConstantsForViewManager?: (viewManagerName: string) => ?Object;
-  +getDefaultEventTypes?: () => Array<string>;
-  +setLayoutAnimationEnabledExperimental?: (enabled: boolean) => void;
-  +sendAccessibilityEvent?: (reactTag: number, eventType: number) => void;
-  +lazilyLoadView?: (name: string) => Object;
-  +focus?: (reactTag: number) => void;
-  +blur?: (reactTag: number) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeVibration.js 1`] = `
-"export interface Spec extends TurboModule {
-  +getConstants: () => {};
-  +vibrate: (pattern: number) => void;
-  +vibrateByPattern: (pattern: Array<number>, repeat: number) => void;
-  +cancel: () => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/specs/modules/NativeWebSocketModule.js 1`] = `
-"export interface Spec extends TurboModule {
-  +connect: (
-    url: string,
-    protocols: ?Array<string>,
-    options: { headers?: Object },
-    socketID: number
-  ) => void;
-  +send: (message: string, forSocketID: number) => void;
-  +sendBinary: (base64String: string, forSocketID: number) => void;
-  +ping: (socketID: number) => void;
-  +close: (code: number, reason: string, socketID: number) => void;
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
-}
-declare export default Spec;
-"
-`;
-
-exports[`public API should not change unintentionally src/private/webapis/dom/geometry/DOMRect.js 1`] = `
-"declare export default class DOMRect extends DOMRectReadOnly {
-  get x(): number;
-  set x(x: ?number): void;
-  get y(): number;
-  set y(y: ?number): void;
-  get width(): number;
-  set width(width: ?number): void;
-  get height(): number;
-  set height(height: ?number): void;
-  static fromRect(rect?: ?DOMRectInit): DOMRect;
-}
-"
-`;
-
-exports[`public API should not change unintentionally src/private/webapis/dom/geometry/DOMRectReadOnly.js 1`] = `
-"export interface DOMRectInit {
-  x?: ?number;
-  y?: ?number;
-  width?: ?number;
-  height?: ?number;
-}
-declare export default class DOMRectReadOnly {
-  constructor(x: ?number, y: ?number, width: ?number, height: ?number): void;
-  get x(): number;
-  get y(): number;
-  get width(): number;
-  get height(): number;
-  get top(): number;
-  get right(): number;
-  get bottom(): number;
-  get left(): number;
-  toJSON(): {
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    top: number,
-    left: number,
-    bottom: number,
-    right: number,
-  };
-  static fromRect(rect?: ?DOMRectInit): DOMRectReadOnly;
-}
-"
-`;
-
 exports[`public API should not change unintentionally src/private/webapis/dom/nodes/ReactNativeDocument.js 1`] = `
 "declare export default class ReactNativeDocument extends ReadOnlyNode {
   constructor(
@@ -10680,23 +9100,6 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   get nodeName(): string;
   get nodeType(): number;
 }
-"
-`;
-
-exports[`public API should not change unintentionally src/private/webapis/dom/oldstylecollections/ArrayLikeUtils.js 1`] = `
-"export interface ArrayLike<T> extends Iterable<T> {
-  [indexer: number]: T;
-  +length: number;
-}
-declare export function createValueIterator<T>(
-  arrayLike: ArrayLike<T>
-): Iterator<T>;
-declare export function createKeyIterator<T>(
-  arrayLike: ArrayLike<T>
-): Iterator<number>;
-declare export function createEntriesIterator<T>(
-  arrayLike: ArrayLike<T>
-): Iterator<[number, T]>;
 "
 `;
 

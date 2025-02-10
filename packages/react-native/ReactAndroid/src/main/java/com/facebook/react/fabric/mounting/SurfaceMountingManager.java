@@ -21,6 +21,7 @@ import androidx.collection.SparseArrayCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -1033,8 +1034,8 @@ public class SurfaceMountingManager {
 
     if (viewState == null) {
       ReactSoftExceptionLogger.logSoftException(
-          MountingManager.TAG,
-          new IllegalStateException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          new ReactNoCrashSoftException(
               "Unable to find viewState for tag: " + reactTag + " for deleteView"));
       return;
     }

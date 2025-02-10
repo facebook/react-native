@@ -39,7 +39,7 @@ describe('onScroll', () => {
     const element = ensureInstance(maybeNode, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
-      Fantom.dispatchNativeEvent(
+      Fantom.enqueueNativeEvent(
         element,
         'scroll',
         {
@@ -85,13 +85,13 @@ describe('onScroll', () => {
     const element = ensureInstance(maybeNode, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
-      Fantom.dispatchNativeEvent(element, 'scroll', {
+      Fantom.enqueueNativeEvent(element, 'scroll', {
         contentOffset: {
           x: 0,
           y: 1,
         },
       });
-      Fantom.dispatchNativeEvent(
+      Fantom.enqueueNativeEvent(
         element,
         'scroll',
         {

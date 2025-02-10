@@ -13,14 +13,16 @@ import type {
   RenderOutputConfig,
 } from './getFantomRenderedOutput';
 import type {MixedElement} from 'react';
+import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
 
 import ReactNativeElement from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import * as Benchmark from './Benchmark';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
+import {createRootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import NativeFantom, {
   NativeEventCategory,
-} from 'react-native/src/private/specs/modules/NativeFantom';
+} from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import {getNativeNodeReference} from 'react-native/src/private/webapis/dom/nodes/internals/NodeInternals';
 
 let globalSurfaceIdCounter = 1;
@@ -89,6 +91,10 @@ class Root {
 
   getRenderedOutput(config: RenderOutputConfig = {}): FantomRenderedOutput {
     return getFantomRenderedOutput(this.#surfaceId, config);
+  }
+
+  getRootTag(): RootTag {
+    return createRootTag(this.#surfaceId);
   }
 
   // TODO: add an API to check if all surfaces were deallocated when tests are finished.
@@ -166,20 +172,40 @@ function createRoot(rootConfig?: RootConfig): Root {
   return new Root(rootConfig);
 }
 
-function dispatchNativeEvent(
+/**
+ * This is a low level method to enqueue a native event to a node.
+ * It does not wait for it to be flushed in the UI thread or for it to be
+ * processed by JS.
+ *
+ * For a higher level API, use `dispatchNativeEvent`.
+ */
+function enqueueNativeEvent(
   node: ReactNativeElement,
   type: string,
   payload?: {[key: string]: mixed},
   options?: {category?: NativeEventCategory, isUnique?: boolean},
 ) {
   const shadowNode = getNativeNodeReference(node);
-  NativeFantom.dispatchNativeEvent(
+  NativeFantom.enqueueNativeEvent(
     shadowNode,
     type,
     payload,
     options?.category,
     options?.isUnique,
   );
+}
+
+function dispatchNativeEvent(
+  node: ReactNativeElement,
+  type: string,
+  payload?: {[key: string]: mixed},
+  options?: {category?: NativeEventCategory, isUnique?: boolean},
+) {
+  runOnUIThread(() => {
+    enqueueNativeEvent(node, type, payload, options);
+  });
+
+  runWorkLoop();
 }
 
 function scrollTo(
@@ -272,6 +298,14 @@ if (typeof global.EventTarget === 'undefined') {
   );
 }
 
+function saveJSMemoryHeapSnapshot(filePath: string): void {
+  if (getConstants().isRunningFromCI) {
+    throw new Error('Unexpected call to `saveJSMemoryHeapSnapshot` from CI');
+  }
+
+  NativeFantom.saveJSMemoryHeapSnapshot(filePath);
+}
+
 export default {
   scheduleTask,
   runTask,
@@ -279,7 +313,9 @@ export default {
   runWorkLoop,
   createRoot,
   dispatchNativeEvent,
+  enqueueNativeEvent,
   flushAllNativeEvents,
   unstable_benchmark: Benchmark,
   scrollTo,
+  saveJSMemoryHeapSnapshot,
 };

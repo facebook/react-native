@@ -20,6 +20,7 @@ const rnTesterConfig = getDefaultConfig(
 const JS_DIR = process.env.JS_DIR
   ? path.resolve(process.cwd(), process.env.JS_DIR)
   : null;
+const NODE_MODULES = path.sep + 'node_modules' + path.sep;
 
 const config = {
   projectRoot: path.resolve(__dirname, '../../..'),
@@ -28,12 +29,22 @@ const config = {
   },
   resolver: {
     blockList: /\/RendererProxy\.fb\.js$/, // Disable dependency injection for the renderer
-    disableHierarchicalLookup: !!JS_DIR,
     sourceExts: ['fb.js', ...rnTesterConfig.resolver.sourceExts],
     nodeModulesPaths: JS_DIR
       ? [path.join(JS_DIR, 'public', 'node_modules')]
       : [],
     hasteImplModulePath: path.resolve(__dirname, 'hasteImpl.js'),
+    resolveRequest: JS_DIR
+      ? (ctx, dep, platform) =>
+          ctx.originModulePath.includes(NODE_MODULES)
+            ? ctx.resolveRequest(ctx, dep, platform)
+            : // Disable hierarchical node_modules lookup from 1P code.
+              ctx.resolveRequest(
+                {...ctx, disableHierarchicalLookup: true},
+                dep,
+                platform,
+              )
+      : null,
   },
   transformer: {
     // We need to wrap the default transformer so we can run it from source
@@ -43,8 +54,7 @@ const config = {
   watchFolders: JS_DIR
     ? [
         path.join(JS_DIR, 'RKJSModules', 'vendor', 'react'),
-        path.join(JS_DIR, 'tools', 'metro'),
-        path.join(JS_DIR, 'node_modules'),
+        path.join(JS_DIR, 'tools', 'metro', 'packages', 'metro-runtime'),
         path.join(JS_DIR, 'public', 'node_modules'),
       ]
     : [],

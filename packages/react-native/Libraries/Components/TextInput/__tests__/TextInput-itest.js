@@ -124,7 +124,7 @@ describe('focus and blur event', () => {
     expect(blurEvent).toHaveBeenCalledTimes(0);
 
     Fantom.runOnUIThread(() => {
-      Fantom.dispatchNativeEvent(element, 'focus');
+      Fantom.enqueueNativeEvent(element, 'focus');
     });
 
     // The tasks have not run.
@@ -137,7 +137,7 @@ describe('focus and blur event', () => {
     expect(blurEvent).toHaveBeenCalledTimes(0);
 
     Fantom.runOnUIThread(() => {
-      Fantom.dispatchNativeEvent(element, 'blur');
+      Fantom.enqueueNativeEvent(element, 'blur');
     });
 
     Fantom.runWorkLoop();
@@ -169,7 +169,7 @@ describe('onChange', () => {
     const element = ensureInstance(maybeNode, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
-      Fantom.dispatchNativeEvent(element, 'change', {
+      Fantom.enqueueNativeEvent(element, 'change', {
         text: 'Hello World',
       });
     });
@@ -202,7 +202,7 @@ describe('onChangeText', () => {
     const element = ensureInstance(maybeNode, ReactNativeElement);
 
     Fantom.runOnUIThread(() => {
-      Fantom.dispatchNativeEvent(element, 'change', {
+      Fantom.enqueueNativeEvent(element, 'change', {
         text: 'Hello World',
       });
     });

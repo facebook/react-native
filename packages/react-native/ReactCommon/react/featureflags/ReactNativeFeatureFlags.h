@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b5b956f9d6c8249cd4b0039935833ab2>>
+ * @generated SignedSource<<97871f439090ee6939268ec5383f8de2>>
  */
 
 /**
@@ -160,9 +160,24 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableUIConsistency();
 
   /**
+   * Enables View Culling: as soon as a view goes off screen, it can be reused anywhere in the UI and pieced together with other items to create new UI elements.
+   */
+  RN_EXPORT static bool enableViewCulling();
+
+  /**
    * Enables View Recycling. When enabled, individual ViewManagers must still opt-in.
    */
   RN_EXPORT static bool enableViewRecycling();
+
+  /**
+   * Enables View Recycling for <Text> via ReactTextView/ReactTextViewManager.
+   */
+  RN_EXPORT static bool enableViewRecyclingForText();
+
+  /**
+   * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
+   */
+  RN_EXPORT static bool enableViewRecyclingForView();
 
   /**
    * When enabled, rawProps in Props will not include Yoga specific props.
@@ -200,11 +215,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool lazyAnimationCallbacks();
 
   /**
-   * Adds support for loading vector drawable assets in the Image component (only on Android)
-   */
-  RN_EXPORT static bool loadVectorDrawablesOnImages();
-
-  /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
    */
   RN_EXPORT static bool traceTurboModulePromiseRejectionsOnAndroid();
@@ -238,11 +248,6 @@ class ReactNativeFeatureFlags {
    * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
    */
   RN_EXPORT static bool useRawPropsJsiValue();
-
-  /**
-   * When enabled, cloning shadow nodes within react native will update the reference held by the current JS fiber tree.
-   */
-  RN_EXPORT static bool useRuntimeShadowNodeReferenceUpdate();
 
   /**
    * In Bridgeless mode, should legacy NativeModules use the TurboModule system?

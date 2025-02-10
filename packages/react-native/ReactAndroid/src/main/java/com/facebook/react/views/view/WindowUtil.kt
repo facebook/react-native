@@ -17,7 +17,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
 @Suppress("DEPRECATION")
-public fun Window.setStatusBarTranslucency(isTranslucent: Boolean) {
+internal fun Window.setStatusBarTranslucency(isTranslucent: Boolean) {
   // If the status bar is translucent hook into the window insets calculations
   // and consume all the top insets so no padding will be added under the status bar.
   if (isTranslucent) {
@@ -35,7 +35,7 @@ public fun Window.setStatusBarTranslucency(isTranslucent: Boolean) {
   ViewCompat.requestApplyInsets(decorView)
 }
 
-public fun Window.setStatusBarVisibility(isHidden: Boolean) {
+internal fun Window.setStatusBarVisibility(isHidden: Boolean) {
   if (isHidden) {
     this.statusBarHide()
   } else {
@@ -67,7 +67,7 @@ private fun Window.statusBarShow() {
 }
 
 @Suppress("DEPRECATION")
-public fun Window.setSystemBarsTranslucency(isTranslucent: Boolean) {
+internal fun Window.setSystemBarsTranslucency(isTranslucent: Boolean) {
   WindowCompat.setDecorFitsSystemWindows(this, !isTranslucent)
 
   if (isTranslucent) {

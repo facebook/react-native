@@ -13,133 +13,120 @@ import com.facebook.react.bridge.WritableMap
 import java.net.SocketTimeoutException
 
 /** Util methods to send network responses to JS. */
-public object ResponseUtil {
+internal object ResponseUtil {
   @JvmStatic
-  public fun onDataSend(
+  fun onDataSend(
       reactContext: ReactApplicationContext?,
       requestId: Int,
       progress: Long,
       total: Long
   ) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didSendNetworkData",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushInt(progress.toInt())
           pushInt(total.toInt())
-        }
-
-    reactContext?.emitDeviceEvent("didSendNetworkData", args)
+        })
   }
 
   @JvmStatic
-  public fun onIncrementalDataReceived(
+  fun onIncrementalDataReceived(
       reactContext: ReactApplicationContext?,
       requestId: Int,
       data: String?,
       progress: Long,
       total: Long
   ) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didReceiveNetworkIncrementalData",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushString(data)
           pushInt(progress.toInt())
           pushInt(total.toInt())
-        }
-
-    reactContext?.emitDeviceEvent("didReceiveNetworkIncrementalData", args)
+        })
   }
 
   @JvmStatic
-  public fun onDataReceivedProgress(
+  fun onDataReceivedProgress(
       reactContext: ReactApplicationContext?,
       requestId: Int,
       progress: Long,
       total: Long
   ) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didReceiveNetworkDataProgress",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushInt(progress.toInt())
           pushInt(total.toInt())
-        }
-
-    reactContext?.emitDeviceEvent("didReceiveNetworkDataProgress", args)
+        })
   }
 
   @JvmStatic
-  public fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: String?) {
-    val args =
+  fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: String?) {
+    reactContext?.emitDeviceEvent(
+        "didReceiveNetworkData",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushString(data)
-        }
-
-    reactContext?.emitDeviceEvent("didReceiveNetworkData", args)
+        })
   }
 
   @JvmStatic
-  public fun onDataReceived(
-      reactContext: ReactApplicationContext?,
-      requestId: Int,
-      data: WritableMap?
-  ) {
-    val args =
+  fun onDataReceived(reactContext: ReactApplicationContext?, requestId: Int, data: WritableMap?) {
+    reactContext?.emitDeviceEvent(
+        "didReceiveNetworkData",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushMap(data)
-        }
-
-    reactContext?.emitDeviceEvent("didReceiveNetworkData", args)
+        })
   }
 
   @JvmStatic
-  public fun onRequestError(
+  fun onRequestError(
       reactContext: ReactApplicationContext?,
       requestId: Int,
       error: String?,
       e: Throwable?
   ) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didCompleteNetworkResponse",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushString(error)
-        }
-
-    if ((e != null) && (e.javaClass == SocketTimeoutException::class.java)) {
-      args.pushBoolean(true) // last argument is a time out boolean
-    }
-
-    reactContext?.emitDeviceEvent("didCompleteNetworkResponse", args)
+          if (e?.javaClass == SocketTimeoutException::class.java) {
+            pushBoolean(true) // last argument is a time out boolean
+          }
+        })
   }
 
   @JvmStatic
-  public fun onRequestSuccess(reactContext: ReactApplicationContext?, requestId: Int) {
-    val args =
+  fun onRequestSuccess(reactContext: ReactApplicationContext?, requestId: Int) {
+    reactContext?.emitDeviceEvent(
+        "didCompleteNetworkResponse",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushNull()
-        }
-
-    reactContext?.emitDeviceEvent("didCompleteNetworkResponse", args)
+        })
   }
 
   @JvmStatic
-  public fun onResponseReceived(
+  fun onResponseReceived(
       reactContext: ReactApplicationContext?,
       requestId: Int,
       statusCode: Int,
       headers: WritableMap?,
       url: String?
   ) {
-    val args =
+    reactContext?.emitDeviceEvent(
+        "didReceiveNetworkResponse",
         Arguments.createArray().apply {
           pushInt(requestId)
           pushInt(statusCode)
           pushMap(headers)
           pushString(url)
-        }
-
-    reactContext?.emitDeviceEvent("didReceiveNetworkResponse", args)
+        })
   }
 }

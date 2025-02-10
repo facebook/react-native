@@ -9,41 +9,23 @@
  * @oncall react_native
  */
 
-const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
-const translateSourceFile = require('./build-types/translateSourceFile');
+require('../babel-register').registerForScript();
+
+const buildTypes = require('./build-types/buildTypes');
 const chalk = require('chalk');
-const {promises: fs} = require('fs');
-const glob = require('glob');
-const micromatch = require('micromatch');
-const path = require('path');
+const debug = require('debug');
 const {parseArgs} = require('util');
-
-const TYPES_DIR = 'types_generated';
-const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
-
-const SOURCE_PATTERNS = [
-  // Start with Animated only
-  path.join(PACKAGES_DIR, 'react-native/Libraries/Alert/**/*.js'),
-  path.join(PACKAGES_DIR, 'react-native/Libraries/TurboModule/RCTExport.js'),
-  path.join(PACKAGES_DIR, 'react-native/Libraries/Types/RootTagTypes.js'),
-  path.join(PACKAGES_DIR, 'react-native/Libraries/ReactNative/RootTag.js'),
-  path.join(PACKAGES_DIR, 'react-native/Libraries/Utilities/Platform.js'),
-  path.join(
-    PACKAGES_DIR,
-    'react-native/src/private/specs/modules/NativeAlertManager.js',
-  ),
-  // TODO(T210505412): Include input packages, e.g. virtualized-lists
-];
 
 const config = {
   options: {
+    debug: {type: 'boolean'},
     help: {type: 'boolean'},
   },
 };
 
 async function main() {
   const {
-    values: {help},
+    values: {debug: debugEnabled, help},
   } = parseArgs(config);
 
   if (help) {
@@ -56,13 +38,9 @@ async function main() {
     return;
   }
 
-  const files = ignoreShadowedFiles(
-    SOURCE_PATTERNS.flatMap(srcPath =>
-      glob.sync(path.join(srcPath, ''), {
-        nodir: true,
-      }),
-    ),
-  );
+  if (debugEnabled) {
+    debug.enable('build-types:*');
+  }
 
   console.log(
     '\n' +
@@ -72,73 +50,7 @@ async function main() {
       '\n',
   );
 
-  await Promise.all(
-    files.map(async file => {
-      if (micromatch.isMatch(file, IGNORE_PATTERN)) {
-        return;
-      }
-
-      const buildPath = getBuildPath(file);
-      const source = await fs.readFile(file, 'utf-8');
-      await fs.mkdir(path.dirname(buildPath), {recursive: true});
-
-      try {
-        const typescriptDef = await translateSourceFile(source);
-
-        if (
-          /Unsupported feature: Translating ".*" is currently not supported/.test(
-            typescriptDef,
-          )
-        ) {
-          throw new Error(
-            'Syntax unsupported by flow-api-translator used in ' + file,
-          );
-        }
-
-        await fs.writeFile(buildPath, typescriptDef);
-      } catch (e) {
-        console.error(`Failed to build ${path.relative(REPO_ROOT, file)}`);
-      }
-    }),
-  );
-}
-
-function getPackageName(file /*: string */) /*: string */ {
-  return path.relative(PACKAGES_DIR, file).split(path.sep)[0];
-}
-
-function getBuildPath(file /*: string */) /*: string */ {
-  const packageDir = path.join(PACKAGES_DIR, getPackageName(file));
-
-  return path.join(
-    packageDir,
-    file
-      .replace(packageDir, TYPES_DIR)
-      .replace(/\.flow\.js$/, '.js')
-      .replace(/\.js$/, '.d.ts'),
-  );
-}
-
-function ignoreShadowedFiles(files /*: Array<string> */) /*: Array<string> */ {
-  const shadowedPrefixes /*: Record<string, boolean> */ = {};
-  const result /*: Array<string> */ = [];
-
-  // Find all flow definition files that shadow other files
-  for (const file of files) {
-    if (/\.flow\.js$/.test(file)) {
-      shadowedPrefixes[file.substring(0, file.length - 8)] = true;
-    }
-  }
-
-  // Filter out all files shadowed by flow definition files
-  for (const file of files) {
-    const prefix = file.split('.')[0];
-    if (/\.flow\.js$/.test(file) || !shadowedPrefixes[prefix]) {
-      result.push(file);
-    }
-  }
-
-  return result;
+  await buildTypes();
 }
 
 if (require.main === module) {

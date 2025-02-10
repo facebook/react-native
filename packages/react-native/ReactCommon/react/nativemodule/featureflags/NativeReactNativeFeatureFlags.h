@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<046753af76465b6f8a4da02bc14c3b4f>>
+ * @generated SignedSource<<c2070c7e40a85f943bdc304244bc3d2b>>
  */
 
 /**
@@ -85,7 +85,13 @@ class NativeReactNativeFeatureFlags
 
   bool enableUIConsistency(jsi::Runtime& runtime);
 
+  bool enableViewCulling(jsi::Runtime& runtime);
+
   bool enableViewRecycling(jsi::Runtime& runtime);
+
+  bool enableViewRecyclingForText(jsi::Runtime& runtime);
+
+  bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
 
@@ -101,8 +107,6 @@ class NativeReactNativeFeatureFlags
 
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
 
-  bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
-
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
   bool useAlwaysAvailableJSErrorHandling(jsi::Runtime& runtime);
@@ -116,8 +120,6 @@ class NativeReactNativeFeatureFlags
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRawPropsJsiValue(jsi::Runtime& runtime);
-
-  bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 

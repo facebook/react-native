@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3f25404fd708f9dd33f15f331c83a0e7>>
+ * @generated SignedSource<<4dc574a6492a7a0e9804cc5bcb7ba890>>
  */
 
 /**
@@ -122,8 +122,20 @@ bool ReactNativeFeatureFlags::enableUIConsistency() {
   return getAccessor().enableUIConsistency();
 }
 
+bool ReactNativeFeatureFlags::enableViewCulling() {
+  return getAccessor().enableViewCulling();
+}
+
 bool ReactNativeFeatureFlags::enableViewRecycling() {
   return getAccessor().enableViewRecycling();
+}
+
+bool ReactNativeFeatureFlags::enableViewRecyclingForText() {
+  return getAccessor().enableViewRecyclingForText();
+}
+
+bool ReactNativeFeatureFlags::enableViewRecyclingForView() {
+  return getAccessor().enableViewRecyclingForView();
 }
 
 bool ReactNativeFeatureFlags::excludeYogaFromRawProps() {
@@ -154,10 +166,6 @@ bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
   return getAccessor().lazyAnimationCallbacks();
 }
 
-bool ReactNativeFeatureFlags::loadVectorDrawablesOnImages() {
-  return getAccessor().loadVectorDrawablesOnImages();
-}
-
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
   return getAccessor().traceTurboModulePromiseRejectionsOnAndroid();
 }
@@ -184,10 +192,6 @@ bool ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid() {
 
 bool ReactNativeFeatureFlags::useRawPropsJsiValue() {
   return getAccessor().useRawPropsJsiValue();
-}
-
-bool ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate() {
-  return getAccessor().useRuntimeShadowNodeReferenceUpdate();
 }
 
 bool ReactNativeFeatureFlags::useTurboModuleInterop() {

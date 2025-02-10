@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<718d5905d32240c6b9cf9c700b12c34e>>
+ * @generated SignedSource<<17452f7193ac0b4d3a09c71f8f46e915>>
  */
 
 /**
@@ -71,7 +71,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableUIConsistency(): Boolean
 
+  @DoNotStrip public fun enableViewCulling(): Boolean
+
   @DoNotStrip public fun enableViewRecycling(): Boolean
+
+  @DoNotStrip public fun enableViewRecyclingForText(): Boolean
+
+  @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
   @DoNotStrip public fun excludeYogaFromRawProps(): Boolean
 
@@ -87,8 +93,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
 
-  @DoNotStrip public fun loadVectorDrawablesOnImages(): Boolean
-
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip public fun useAlwaysAvailableJSErrorHandling(): Boolean
@@ -102,8 +106,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip public fun useRawPropsJsiValue(): Boolean
-
-  @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 

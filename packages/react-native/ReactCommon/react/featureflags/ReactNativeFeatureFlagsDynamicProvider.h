@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a32655b3352a79eba5e9aad1122b61e4>>
+ * @generated SignedSource<<bf410794b6ee41428e6d632d3d7b3a99>>
  */
 
 /**
@@ -261,6 +261,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableUIConsistency();
   }
 
+  bool enableViewCulling() override {
+    auto value = values_["enableViewCulling"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableViewCulling();
+  }
+
   bool enableViewRecycling() override {
     auto value = values_["enableViewRecycling"];
     if (!value.isNull()) {
@@ -268,6 +277,24 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableViewRecycling();
+  }
+
+  bool enableViewRecyclingForText() override {
+    auto value = values_["enableViewRecyclingForText"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableViewRecyclingForText();
+  }
+
+  bool enableViewRecyclingForView() override {
+    auto value = values_["enableViewRecyclingForView"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableViewRecyclingForView();
   }
 
   bool excludeYogaFromRawProps() override {
@@ -333,15 +360,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::lazyAnimationCallbacks();
   }
 
-  bool loadVectorDrawablesOnImages() override {
-    auto value = values_["loadVectorDrawablesOnImages"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::loadVectorDrawablesOnImages();
-  }
-
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     auto value = values_["traceTurboModulePromiseRejectionsOnAndroid"];
     if (!value.isNull()) {
@@ -403,15 +421,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::useRawPropsJsiValue();
-  }
-
-  bool useRuntimeShadowNodeReferenceUpdate() override {
-    auto value = values_["useRuntimeShadowNodeReferenceUpdate"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::useRuntimeShadowNodeReferenceUpdate();
   }
 
   bool useTurboModuleInterop() override {

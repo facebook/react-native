@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<369dfeb7afd6ccf971cc4f35fe76ead5>>
+ * @generated SignedSource<<9fee14db3238ef942607e84d59166ca5>>
  */
 
 /**
@@ -123,8 +123,20 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
+  bool enableViewCulling() override {
+    return false;
+  }
+
   bool enableViewRecycling() override {
     return false;
+  }
+
+  bool enableViewRecyclingForText() override {
+    return true;
+  }
+
+  bool enableViewRecyclingForView() override {
+    return true;
   }
 
   bool excludeYogaFromRawProps() override {
@@ -155,10 +167,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool loadVectorDrawablesOnImages() override {
-    return true;
-  }
-
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     return false;
   }
@@ -185,10 +193,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool useRawPropsJsiValue() override {
     return false;
-  }
-
-  bool useRuntimeShadowNodeReferenceUpdate() override {
-    return true;
   }
 
   bool useTurboModuleInterop() override {
