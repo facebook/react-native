@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8d7bf5f009dd69371e661b29116eec65>>
+ * @generated SignedSource<<7f675a8e759b564728cfc96c1a3af7b1>>
  * @flow strict
  */
 
@@ -65,6 +65,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLayoutAnimationsOnAndroid: Getter<boolean>,
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
+  enableNativeCSSParsing: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
   enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
@@ -236,6 +237,10 @@ export const enableLayoutAnimationsOnIOS: Getter<boolean> = createNativeFlagGett
  * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
  */
 export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enableLongTaskAPI', false);
+/**
+ * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
+ */
+export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('enableNativeCSSParsing', false);
 /**
  * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<674940401c20b6c88d8616890d8f5116>>
+ * @generated SignedSource<<a3e5efb627b5821c18833184e1399303>>
  */
 
 /**
@@ -40,6 +40,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableLayoutAnimationsOnAndroidCache: Boolean? = null
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
+  private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
   private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
@@ -223,6 +224,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableLongTaskAPI()
       accessedFeatureFlags.add("enableLongTaskAPI")
       enableLongTaskAPICache = cached
+    }
+    return cached
+  }
+
+  override fun enableNativeCSSParsing(): Boolean {
+    var cached = enableNativeCSSParsingCache
+    if (cached == null) {
+      cached = currentProvider.enableNativeCSSParsing()
+      accessedFeatureFlags.add("enableNativeCSSParsing")
+      enableNativeCSSParsingCache = cached
     }
     return cached
   }
