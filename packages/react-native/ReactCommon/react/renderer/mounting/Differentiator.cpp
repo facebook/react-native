@@ -340,14 +340,18 @@ static void sliceChildShadowNodeViewPairsRecursively(
     if (areChildrenFlattened) {
       storedOrigin = origin;
     }
-    scope.push_back(
-        {shadowView,
-         &childShadowNode,
-         areChildrenFlattened,
-         isConcreteView,
-         storedOrigin});
 
-    if (shadowView.layoutMetrics.positionType == PositionType::Static) {
+    auto isPositionStatic =
+        shadowView.layoutMetrics.positionType == PositionType::Static;
+
+    scope.push_back(
+        {.shadowView = std::move(shadowView),
+         .shadowNode = &childShadowNode,
+         .flattened = areChildrenFlattened,
+         .isConcreteView = isConcreteView,
+         .contextOrigin = storedOrigin});
+
+    if (isPositionStatic) {
       auto it = pairList.begin();
       std::advance(it, startOfStaticIndex);
       pairList.insert(it, &scope.back());
