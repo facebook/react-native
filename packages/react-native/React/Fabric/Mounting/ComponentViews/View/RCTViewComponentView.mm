@@ -1047,13 +1047,13 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
     _boxShadowLayer = [CALayer layer];
     [self.layer addSublayer:_boxShadowLayer];
     _boxShadowLayer.zPosition = _borderLayer.zPosition;
-    _boxShadowLayer.frame = RCTGetBoundingRect(_props->boxShadow, self.layer.frame.size);
+    _boxShadowLayer.frame = RCTGetBoundingRect(_props->boxShadow, self.layer.bounds.size);
 
     UIImage *boxShadowImage = RCTGetBoxShadowImage(
         _props->boxShadow,
         RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
         RCTUIEdgeInsetsFromEdgeInsets(borderMetrics.borderWidths),
-        layer);
+        self.layer.bounds.size);
 
     _boxShadowLayer.contents = (id)boxShadowImage.CGImage;
   }
