@@ -111,37 +111,37 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/devtoolsruntimesettings/",
                           "react/devtoolsruntimesettings/"),
-                      // react_render_animations
+                      // react_renderer_animations
                       Pair(
                           "../ReactCommon/react/renderer/animations/",
                           "react/renderer/animations/"),
-                      // react_render_componentregistry
+                      // react_renderer_componentregistry
                       Pair(
                           "../ReactCommon/react/renderer/componentregistry/",
                           "react/renderer/componentregistry/"),
-                      // react_render_consistency
+                      // react_renderer_consistency
                       Pair(
                           "../ReactCommon/react/renderer/consistency/",
                           "react/renderer/consistency/"),
-                      // react_render_core
+                      // react_renderer_core
                       Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
                       // react_debug
                       Pair("../ReactCommon/react/debug/", "react/debug/"),
-                      // react_render_debug
+                      // react_renderer_debug
                       Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
-                      // react_render_graphics
+                      // react_renderer_graphics
                       Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
                       Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
-                      // react_render_imagemanager
+                      // react_renderer_imagemanager
                       Pair(
                           "../ReactCommon/react/renderer/imagemanager/",
                           "react/renderer/imagemanager/"),
                       Pair("../ReactCommon/react/renderer/imagemanager/platform/cxx/", ""),
-                      // react_render_mounting
+                      // react_renderer_mounting
                       Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
-                      // react_render_scheduler
+                      // react_renderer_scheduler
                       Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
-                      // react_render_uimanager
+                      // react_renderer_uimanager
                       Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
                       // react_utils
                       Pair("../ReactCommon/react/utils/", "react/utils/"),
@@ -160,7 +160,7 @@ val preparePrefab by
                           "react/renderer/components/root/"),
                       // runtimeexecutor
                       Pair("../ReactCommon/runtimeexecutor/", ""),
-                      // react_render_textlayoutmanager
+                      // react_renderer_textlayoutmanager
                       Pair(
                           "../ReactCommon/react/renderer/textlayoutmanager/",
                           "react/renderer/textlayoutmanager/"),
@@ -221,7 +221,7 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/performance/timeline/",
                           "react/performance/timeline/"),
-                      // react_render_observers_events
+                      // react_renderer_observers_events
                       Pair(
                           "../ReactCommon/react/renderer/observers/events/",
                           "react/renderer/observers/events/"),

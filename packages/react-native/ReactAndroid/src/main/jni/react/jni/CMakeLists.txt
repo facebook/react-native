@@ -37,7 +37,7 @@ target_link_libraries(reactnativejni
         glog_init
         logger
         react_cxxreact
-        react_render_runtimescheduler
+        react_renderer_runtimescheduler
         runtimeexecutor
         yoga
         )

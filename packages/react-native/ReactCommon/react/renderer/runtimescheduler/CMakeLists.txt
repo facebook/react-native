@@ -14,18 +14,18 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_runtimescheduler_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_runtimescheduler STATIC ${react_render_runtimescheduler_SRC})
+file(GLOB react_renderer_runtimescheduler_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_runtimescheduler STATIC ${react_renderer_runtimescheduler_SRC})
 
-target_include_directories(react_render_runtimescheduler PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_renderer_runtimescheduler PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_render_runtimescheduler
+target_link_libraries(react_renderer_runtimescheduler
         callinvoker
         jsi
         react_debug
         react_performance_timeline
-        react_render_consistency
-        react_render_debug
+        react_renderer_consistency
+        react_renderer_debug
         react_timing
         react_utils
         react_featureflags

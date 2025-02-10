@@ -14,7 +14,7 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_consistency_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_consistency OBJECT ${react_render_consistency_SRC})
+file(GLOB react_renderer_consistency_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_consistency OBJECT ${react_renderer_consistency_SRC})
 
-target_include_directories(react_render_consistency PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_renderer_consistency PUBLIC ${REACT_COMMON_DIR})

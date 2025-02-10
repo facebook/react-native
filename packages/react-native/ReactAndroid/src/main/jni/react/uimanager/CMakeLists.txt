@@ -14,7 +14,7 @@ file(GLOB uimanagerjni_SRC CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_library(uimanagerjni
         OBJECT
             ${uimanagerjni_SRC}
-            $<TARGET_OBJECTS:react_render_graphics>
+            $<TARGET_OBJECTS:react_renderer_graphics>
             $<TARGET_OBJECTS:rrc_legacyviewmanagerinterop>
             $<TARGET_OBJECTS:rrc_view>
 )
@@ -31,7 +31,7 @@ target_link_libraries(uimanagerjni
         glog_init
         jsi
         log
-        react_render_componentregistry
+        react_renderer_componentregistry
         reactnativejni
         rrc_native
         yoga
