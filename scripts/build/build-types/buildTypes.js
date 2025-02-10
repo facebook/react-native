@@ -27,10 +27,10 @@ const IGNORE_PATTERNS = [
 const ENTRY_POINTS = [
   // TODO: Re-include when all deps are translatable
   // 'packages/react-native/Libraries/ActionSheetIOS/ActionSheetIOS.js',
+  // 'packages/react-native/Libraries/Share/Share.js',
   'packages/react-native/Libraries/Alert/Alert.js',
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
   'packages/react-native/Libraries/Settings/Settings.js',
-  'packages/react-native/Libraries/Share/Share.js',
   'packages/react-native/Libraries/Performance/Systrace.js',
   'packages/react-native/Libraries/LogBox/LogBox.js',
 ];
