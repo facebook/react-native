@@ -18,7 +18,6 @@ async function verifyPublishedPackage(
   tag = null,
   retries = MAX_RETRIES,
 ) {
-  debugger;
   log(`🔍 Is ${packageName}@${version} on npm?`);
 
   let count = retries;

@@ -83,7 +83,6 @@ describe('#verifyPublishedPackage', () => {
       .mockImplementation(() => {
         throw new Error('Should not be called again!');
       });
-    debugger;
     await verifyPublishedPackage(REACT_NATIVE_PACKAGE, version, 'next');
 
     expect(mockGetNpmPackageInfo).toHaveBeenCalledWith(
