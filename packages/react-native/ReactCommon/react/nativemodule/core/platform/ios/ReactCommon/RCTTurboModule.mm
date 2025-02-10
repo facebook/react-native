@@ -112,20 +112,20 @@ static NSString *convertJSIStringToNSString(jsi::Runtime &runtime, const jsi::St
 }
 
 static NSArray *
-convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<CallInvoker> jsInvoker)
+convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array &value, std::shared_ptr<CallInvoker> jsInvoker, BOOL useNSNull)
 {
   size_t size = value.size(runtime);
   NSMutableArray *result = [NSMutableArray new];
   for (size_t i = 0; i < size; i++) {
     // Insert kCFNull when it's `undefined` value to preserve the indices.
-    id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker);
+    id convertedObject = convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker, useNSNull);
     [result addObject:convertedObject ? convertedObject : (id)kCFNull];
   }
   return [result copy];
 }
 
 static NSDictionary *
-convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, std::shared_ptr<CallInvoker> jsInvoker)
+convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, std::shared_ptr<CallInvoker> jsInvoker, BOOL useNSNull)
 {
   jsi::Array propertyNames = value.getPropertyNames(runtime);
   size_t size = propertyNames.size(runtime);
@@ -133,7 +133,7 @@ convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const jsi::Object &value, 
   for (size_t i = 0; i < size; i++) {
     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
     NSString *k = convertJSIStringToNSString(runtime, name);
-    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker);
+    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker, useNSNull);
     if (v) {
       result[k] = v;
     }
@@ -159,10 +159,13 @@ convertJSIFunctionToCallback(jsi::Runtime &rt, jsi::Function &&function, std::sh
   };
 }
 
-id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
+id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker, BOOL useNSNull)
 {
-  if (value.isUndefined() || value.isNull()) {
+  if (value.isUndefined() || (value.isNull() && !useNSNull)) {
     return nil;
+  }
+  if (value.isNull() && useNSNull) {
+    return [NSNull null];
   }
   if (value.isBool()) {
     return @(value.getBool());
@@ -176,15 +179,20 @@ id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, s
   if (value.isObject()) {
     jsi::Object o = value.getObject(runtime);
     if (o.isArray(runtime)) {
-      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker);
+      return convertJSIArrayToNSArray(runtime, o.getArray(runtime), jsInvoker, useNSNull);
     }
     if (o.isFunction(runtime)) {
       return convertJSIFunctionToCallback(runtime, o.getFunction(runtime), jsInvoker);
     }
-    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker);
+    return convertJSIObjectToNSDictionary(runtime, o, jsInvoker, useNSNull);
   }
 
   throw std::runtime_error("Unsupported jsi::Value kind");
+}
+
+id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker)
+{
+  return convertJSIValueToObjCObject(runtime, value, jsInvoker, NO);
 }
 
 static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string &message)
