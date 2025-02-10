@@ -6299,7 +6299,7 @@ declare class PermissionsAndroid {
   ): Promise<{ [permission: PermissionType]: PermissionStatus, ... }>;
 }
 declare const PermissionsAndroidInstance: PermissionsAndroid;
-declare module.exports: PermissionsAndroidInstance;
+declare export default typeof PermissionsAndroidInstance;
 "
 `;
 
@@ -6487,7 +6487,7 @@ declare class PushNotificationIOS {
   getData(): ?Object;
   getThreadID(): ?string;
 }
-declare module.exports: PushNotificationIOS;
+declare export default typeof PushNotificationIOS;
 "
 `;
 
