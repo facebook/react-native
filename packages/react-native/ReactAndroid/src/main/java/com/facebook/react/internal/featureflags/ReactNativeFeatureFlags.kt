@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9b03da2a06054bb69a000da22820b3d3>>
+ * @generated SignedSource<<60990f71a42269290b741cd9072d21fe>>
  */
 
 /**
@@ -123,6 +123,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableLongTaskAPI(): Boolean = accessor.enableLongTaskAPI()
+
+  /**
+   * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
+   */
+  @JvmStatic
+  public fun enableNativeCSSParsing(): Boolean = accessor.enableNativeCSSParsing()
 
   /**
    * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
