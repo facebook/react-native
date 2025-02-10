@@ -5748,7 +5748,7 @@ declare class Modal extends React.Component<Props, State> {
 declare const ExportedModal: React.ComponentType<
   React.ElementConfig<typeof Modal>,
 >;
-declare module.exports: ExportedModal;
+declare export default typeof ExportedModal;
 "
 `;
 
@@ -5927,7 +5927,7 @@ declare class FormData {
   getAll(key: string): Array<FormDataValue>;
   getParts(): Array<FormDataPart>;
 }
-declare module.exports: FormData;
+declare export default typeof FormData;
 "
 `;
 
@@ -5983,7 +5983,7 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
 
 exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest.js 1`] = `
 "export type * from \\"./XMLHttpRequest_old\\";
-declare module.exports: XMLHttpRequest;
+declare export default XMLHttpRequest;
 "
 `;
 
@@ -6077,7 +6077,7 @@ declare class XMLHttpRequest extends EventTarget {
   get onreadystatechange(): EventCallback | null;
   set onreadystatechange(listener: ?EventCallback): void;
 }
-declare module.exports: XMLHttpRequest;
+declare export default typeof XMLHttpRequest;
 "
 `;
 
@@ -6156,7 +6156,7 @@ declare class XMLHttpRequest extends EventTarget {
   setReadyState(newState: number): void;
   addEventListener(type: string, listener: EventListener): void;
 }
-declare module.exports: XMLHttpRequest;
+declare export default typeof XMLHttpRequest;
 "
 `;
 
@@ -6169,17 +6169,15 @@ exports[`public API should not change unintentionally Libraries/Network/convertR
   | ArrayBuffer
   | $ArrayBufferView;
 declare function convertRequestBody(body: RequestBody): Object;
-declare module.exports: convertRequestBody;
+declare export default typeof convertRequestBody;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/fetch.js 1`] = `
-"declare module.exports: {
-  fetch: fetch,
-  Headers: Headers,
-  Request: Request,
-  Response: Response,
-};
+"declare export const fetch: $FlowFixMe;
+declare export const Headers: $FlowFixMe;
+declare export const Request: $FlowFixMe;
+declare export const Response: $FlowFixMe;
 "
 `;
 
