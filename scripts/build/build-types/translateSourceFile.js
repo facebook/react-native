@@ -20,6 +20,7 @@ type TransformFn = ParseResult => Promise<TransformASTResult>;
 
 const preTransforms: Array<TransformFn> = [
   require('./transforms/stripPrivateProperties'),
+  require('./transforms/replaceRequiresWithImports'),
 ];
 const prettierOptions = {parser: 'babel'};
 const unsupportedFeatureRegex =
