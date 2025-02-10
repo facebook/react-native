@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7f535343ebc3c6e77c1ff9efce3541c7>>
+ * @generated SignedSource<<7f9d91738a6817bee27c5e0c8ace3686>>
  */
 
 /**
@@ -118,6 +118,11 @@ class ReactNativeFeatureFlags {
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
    */
   RN_EXPORT static bool enableLongTaskAPI();
+
+  /**
+   * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
+   */
+  RN_EXPORT static bool enableNativeCSSParsing();
 
   /**
    * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable

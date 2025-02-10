@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b031924a95baa03c978541cf376cfb6d>>
+ * @generated SignedSource<<ef09e15c51a69db7d3c66fd5f096314e>>
  */
 
 /**
@@ -187,6 +187,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableLongTaskAPI();
+  }
+
+  bool enableNativeCSSParsing() override {
+    auto value = values_["enableNativeCSSParsing"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableNativeCSSParsing();
   }
 
   bool enableNewBackgroundAndBorderDrawables() override {

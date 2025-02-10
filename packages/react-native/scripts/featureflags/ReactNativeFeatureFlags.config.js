@@ -214,6 +214,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableNativeCSSParsing: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-02-07',
+        description:
+          'Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     enableNewBackgroundAndBorderDrawables: {
       defaultValue: false,
       metadata: {
