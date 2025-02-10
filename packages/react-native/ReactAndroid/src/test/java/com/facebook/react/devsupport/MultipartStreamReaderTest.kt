@@ -11,10 +11,7 @@ import okio.Buffer
 import okio.ByteString
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class MultipartStreamReaderTest {
 
   @Test
