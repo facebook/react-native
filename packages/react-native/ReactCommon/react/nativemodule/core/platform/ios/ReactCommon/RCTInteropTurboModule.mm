@@ -346,7 +346,7 @@ void ObjCInteropTurboModule::setInvocationArg(
   SEL selector = selectorForType(argumentType);
 
   if ([RCTConvert respondsToSelector:selector]) {
-    id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+    id objCArg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
 
     if (objCArgType == @encode(char)) {
       char arg = RCTConvertTo<char>(selector, objCArg);
@@ -500,7 +500,7 @@ void ObjCInteropTurboModule::setInvocationArg(
     }
 
     RCTResponseSenderBlock arg =
-        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
     if (arg) {
       [retainedObjectsForInvocation addObject:arg];
     }
@@ -515,7 +515,7 @@ void ObjCInteropTurboModule::setInvocationArg(
     }
 
     RCTResponseSenderBlock senderBlock =
-        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+        (RCTResponseSenderBlock)TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
     RCTResponseErrorBlock arg = ^(NSError *error) {
       senderBlock(@[ RCTJSErrorFromNSError(error) ]);
     };
@@ -545,7 +545,7 @@ void ObjCInteropTurboModule::setInvocationArg(
           runtime, errorPrefix + "JavaScript argument must be a plain object. Got " + getType(runtime, jsiArg));
     }
 
-    id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_);
+    id arg = TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsiArg, jsInvoker_, YES);
 
     RCTManagedPointer *(*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
     RCTManagedPointer *box = convert([RCTCxxConvert class], selector, arg);

@@ -1888,12 +1888,12 @@ EXTERNAL SOURCES:
     :path: "../react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
-  DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
+  boost: 4cb898d0bf20404aab1850c656dcea009429d6c1
+  DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   fast_float: 06eeec4fe712a76acc9376682e4808b05ce978b6
   FBLazyVector: a2db46e659b982d7193563db43dfc90c9a213074
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
-  glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
+  glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
   hermes-engine: d152d4b5b123cb9abbd21183ed7783e067314c76
   MyNativeView: ba8324184f90f76b5051af6716faa458d4d63b51
   NativeCxxModuleExample: ad2c1a2c0def6c6a1bf5f1257e6bc372b806aea5
@@ -1966,4 +1966,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 8591f96a513620a2a83a0b9a125ad3fa32ea1369
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.14.3
