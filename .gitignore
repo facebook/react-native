@@ -140,6 +140,7 @@ vendor/
 /packages/react-native/sdks/hermes
 /packages/react-native/sdks/hermesc
 /packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
+/packages/react-native/third-party/
 
 # Visual Studio Code (config dir - if present, this merges user defined
 # workspace settings on top of react-native.code-workspace)
