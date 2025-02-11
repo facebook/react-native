@@ -37,6 +37,7 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Performance/Systrace.js',
   'packages/react-native/Libraries/LogBox/LogBox.js',
   'packages/react-native/Libraries/vendor/emitter/EventEmitter.js',
+  'packages/react-native/Libraries/ReactNative/UIManager.js',
 ];
 
 /**
