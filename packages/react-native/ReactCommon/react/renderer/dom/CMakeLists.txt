@@ -14,13 +14,13 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_dom_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_dom OBJECT ${react_render_dom_SRC})
+file(GLOB react_renderer_dom_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_dom OBJECT ${react_renderer_dom_SRC})
 
-target_include_directories(react_render_dom PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_renderer_dom PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_render_dom
-        react_render_core
-        react_render_graphics
+target_link_libraries(react_renderer_dom
+        react_renderer_core
+        react_renderer_graphics
         rrc_root
         rrc_text)

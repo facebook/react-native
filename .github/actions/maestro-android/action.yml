@@ -35,7 +35,7 @@ runs:
   steps:
     - name: Installing Maestro
       shell: bash
-      run: export MAESTRO_VERSION=1.39.5; curl -Ls "https://get.maestro.mobile.dev" | bash
+      run: export MAESTRO_VERSION=1.39.7; curl -Ls "https://get.maestro.mobile.dev" | bash
     - name: Set up JDK 17
       if: ${{ inputs.install-java == 'true' }}
       uses: actions/setup-java@v4
@@ -62,7 +62,7 @@ runs:
         api-level: 24
         arch: x86
         ram-size: '8192M'
-        heap-sizze: '4096M'
+        heap-size: '4096M'
         disk-size: '10G'
         cores: '4'
         disable-animations: false

@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeLinkingManager';
-import NativeLinkingManager from '../../src/private/specs/modules/NativeLinkingManager';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeLinkingManager';
+import NativeLinkingManager from '../../src/private/specs_DEPRECATED/modules/NativeLinkingManager';
 export default NativeLinkingManager;

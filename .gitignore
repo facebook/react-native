@@ -68,6 +68,7 @@ local.properties
 *.iml
 /packages/react-native/android/*
 !/packages/react-native/android/README.md
+.kotlin/
 
 # Node
 node_modules
@@ -153,8 +154,8 @@ vendor/
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
 
-# CircleCI
-.circleci/generated_config.yml
-
 # Jest Integration
 /packages/react-native-fantom/build/
+
+# [Experimental] Generated TS type definitions
+/packages/react-native/types_generated/

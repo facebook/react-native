@@ -38,10 +38,10 @@ const EVENT_DEFINITION = `
   int32_optional_value: Int32 | null | undefined;
   int32_optional_both?: Int32 | null | undefined;
 
-  enum_required: 'small' | 'large';
-  enum_optional_key?: 'small' | 'large';
-  enum_optional_value: ('small' | 'large') | null | undefined;
-  enum_optional_both?: ('small' | 'large') | null | undefined;
+  union_required: 'small' | 'large';
+  union_optional_key?: 'small' | 'large';
+  union_optional_value: ('small' | 'large') | null | undefined;
+  union_optional_both?: ('small' | 'large') | null | undefined;
 
   object_required: {
     boolean_required: boolean;
@@ -110,10 +110,10 @@ const EVENT_DEFINITION = `
   int32_array_optional_value: Int32[] | null | undefined;
   int32_array_optional_both?: Int32[] | null | undefined;
 
-  enum_array_required: ('small' | 'large')[];
-  enum_array_optional_key?: ('small' | 'large')[];
-  enum_array_optional_value: ('small' | 'large')[] | null | undefined;
-  enum_array_optional_both?: ('small' | 'large')[] | null | undefined;
+  union_array_required: ('small' | 'large')[];
+  union_array_optional_key?: ('small' | 'large')[];
+  union_array_optional_value: ('small' | 'large')[] | null | undefined;
+  union_array_optional_both?: ('small' | 'large')[] | null | undefined;
 
   object_array_required: {
     boolean_required: boolean;
@@ -1065,10 +1065,18 @@ type NativeType = HostComponent<ModuleProps>;
      z: Double,
      animated: boolean,
    ): void;
+   readonly arrayArgs: (
+    viewRef: React.ElementRef<NativeType>,
+    booleanArray: ReadOnlyArray<boolean>,
+    stringArray: ReadOnlyArray<string>,
+    floatArray: ReadOnlyArray<Float>,
+    intArray: ReadOnlyArray<Int32>,
+    doubleArray: ReadOnlyArray<Double>,
+  ) => void;
  }
 
  export const Commands = codegenNativeCommands<NativeCommands>({
-   supportedCommands: ['handleRootTag', 'hotspotUpdate', 'scrollTo'],
+   supportedCommands: ['handleRootTag', 'hotspotUpdate', 'scrollTo', 'arrayArgs'],
  });
 
 export default codegenNativeComponent<ModuleProps>(
@@ -1096,6 +1104,10 @@ import type {HostComponent} from 'react-native';
 export type Boolean = boolean;
 export type Int = Int32;
 export type Void = void;
+export type Locations = {
+  x: number,
+  y: number,
+}
 
 export interface ModuleProps extends ViewProps {
   // No props or events
@@ -1113,6 +1125,7 @@ export type AddOverlays = (
   overlayColorsReadOnly: ReadOnlyArray<string>,
   overlayColorsArray: Array<string>,
   overlayColorsArrayAnnotation: string[],
+  overlayLocations: ReadOnlyArray<Locations>,
 ) => Void;
 
 interface NativeCommands {

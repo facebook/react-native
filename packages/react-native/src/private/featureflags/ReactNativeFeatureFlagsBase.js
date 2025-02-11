@@ -62,12 +62,13 @@ type NativeFeatureFlags = $NonMaybeType<typeof NativeReactNativeFeatureFlags>;
 export function createNativeFlagGetter<K: $Keys<NativeFeatureFlags>>(
   configName: K,
   defaultValue: ReturnType<$NonMaybeType<NativeFeatureFlags[K]>>,
+  skipUnavailableNativeModuleError: boolean = false,
 ): Getter<ReturnType<$NonMaybeType<NativeFeatureFlags[K]>>> {
   return createGetter(
     configName,
     () => {
       const valueFromNative = NativeReactNativeFeatureFlags?.[configName]?.();
-      if (valueFromNative == null) {
+      if (valueFromNative == null && !skipUnavailableNativeModuleError) {
         logUnavailableNativeModuleError(configName);
       }
       return valueFromNative;

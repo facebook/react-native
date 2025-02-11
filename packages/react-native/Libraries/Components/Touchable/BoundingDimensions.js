@@ -50,4 +50,4 @@ BoundingDimensions.getPooledFromElement = function (
 
 PooledClass.addPoolingTo(BoundingDimensions as $FlowFixMe, twoArgumentPooler);
 
-module.exports = BoundingDimensions;
+export default BoundingDimensions;

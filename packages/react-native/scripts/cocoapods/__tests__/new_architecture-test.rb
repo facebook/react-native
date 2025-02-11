@@ -11,10 +11,6 @@ require_relative "./test_utils/PodMock.rb"
 require_relative "./test_utils/SpecMock.rb"
 require_relative "./test_utils/FileMock.rb"
 
-def get_folly_config()
-    return Helpers::Constants.folly_config
-end
-
 ## Monkey patching to reset properly static props of the Helper.
 class NewArchitectureHelper
     def self.reset
@@ -211,160 +207,6 @@ class NewArchitectureTests < Test::Unit::TestCase
         )
     end
 
-    # =============================== #
-    # Test - Compute New Arch Enabled #
-    # =============================== #
-
-    def test_computeNewArchEnabled_whenOnMainAndFlagTrueAndEnvVarNil_returnTrueWithNoWarning
-        version = '1000.0.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = nil
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnMainAndFlagTrueAndEnvVar1_returnTrueWithNoWarning
-        version = '1000.0.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = "1"
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnMainAndFlagFalseAndEnvVarNil_returnFalseWithNoWarning
-        version = '1000.0.0'
-        new_arch_enabled = false
-        ENV['RCT_NEW_ARCH_ENABLED'] = nil
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("0", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnMainAndFlagFalseAndEnvVar0_returnFalseWithNoWarning
-        version = '1000.0.0'
-        new_arch_enabled = false
-        ENV['RCT_NEW_ARCH_ENABLED'] = "0"
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("0", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnStableAndFlagTrueAndEnvNil_returnTrueWithNoWarning
-        version = '0.73.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = nil
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnStableAndFlagTrueAndEnv1_returnTrueWithNoWarning
-        version = '0.73.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = "1"
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnStableAndFlagFalseAndEnvNil_returnFalseWithNoWarning
-        version = '0.73.0'
-        new_arch_enabled = false
-        ENV['RCT_NEW_ARCH_ENABLED'] = nil
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("0", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOnStableAndFlagFalseAndEnv0_returnFalseWithNoWarning
-        version = '0.73.0'
-        new_arch_enabled = false
-        ENV['RCT_NEW_ARCH_ENABLED'] = "0"
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("0", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOn100AndFlagTrueAndEnvNil_returnTrueWithNoWarning
-        version = '0.0.0-prealpha.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = nil
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal([], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOn100AndFlagTrueAndEnv1_returnTrueWithWarning
-        version = '0.0.0-prealpha.0'
-        new_arch_enabled = true
-        ENV['RCT_NEW_ARCH_ENABLED'] = "1"
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal(["[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
-            "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."], Pod::UI.collected_warns)
-    end
-
-
-    def test_computeNewArchEnabled_whenOn100PrealphaWithDotsAndFlagFalseAndEnv0_returnTrueWithWarning
-        version = '0.0.0-prealpha.0'
-        new_arch_enabled = false
-        ENV['RCT_NEW_ARCH_ENABLED'] = "0"
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-        assert_equal(["[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
-            "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."], Pod::UI.collected_warns)
-    end
-
-    def test_computeNewArchEnabled_whenOn100PrealphaWithDashAndFlagFalse_returnTrue
-        version = '0.0.0-prealpha-0'
-        new_arch_enabled = false
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-    end
-
-    def test_computeNewArchEnabled_whenOn100PrealphaOnlyWordsAndFlagFalse_returnTrue
-        version = '0.0.0-prealpha0'
-        new_arch_enabled = false
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("1", isEnabled)
-    end
-
-    def test_computeNewArchEnabled_whenOnGreaterThan100AndFlagFalse_returnTrue
-        version = '3.2.1'
-        new_arch_enabled = false
-
-        isEnabled = NewArchitectureHelper.compute_new_arch_enabled(new_arch_enabled, version)
-
-        assert_equal("0", isEnabled)
-        assert_equal([], Pod::UI.collected_warns);
-    end
-
     # =================================== #
     # Test - Extract React Native Version #
     # =================================== #
@@ -381,7 +223,7 @@ class NewArchitectureTests < Test::Unit::TestCase
     def test_extractReactNativeVersion_whenFileExists_returnTheRightVersion()
         react_native_path = "./node_modules/react-native/"
         full_path = File.join(react_native_path, "package.json")
-        json = "{\"version\": \"1.0.0-prealpha.0\"}"
+        json = "{\"version\": \"1.2.3-prerelease.4\"}"
         FileMock.mocked_existing_files([full_path])
         FileMock.files_to_read({
             full_path => json
@@ -389,7 +231,7 @@ class NewArchitectureTests < Test::Unit::TestCase
 
         version = NewArchitectureHelper.extract_react_native_version(react_native_path, :file_manager => FileMock)
 
-        assert_equal("1.0.0-prealpha.0", version)
+        assert_equal("1.2.3-prerelease.4", version)
     end
 
     # =============================== #

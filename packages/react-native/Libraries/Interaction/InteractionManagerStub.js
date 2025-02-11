@@ -25,6 +25,14 @@ type Task =
     }
   | (() => void);
 
+// NOTE: The original implementation of `InteractionManager` never rejected
+// the returned promise. This preserves that behavior in the stub.
+function reject(error: Error): void {
+  setTimeout(() => {
+    throw error;
+  }, 0);
+}
+
 /**
  * InteractionManager allows long-running work to be scheduled after any
  * interactions/animations have completed. In particular, this allows JavaScript
@@ -97,7 +105,7 @@ const InteractionManagerStub = {
     ...
   } {
     let immediateID: ?$FlowIssue;
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise(resolve => {
       immediateID = setImmediate(() => {
         if (typeof task === 'object' && task !== null) {
           if (typeof task.gen === 'function') {
@@ -173,4 +181,4 @@ const InteractionManagerStub = {
   },
 };
 
-module.exports = InteractionManagerStub;
+export default InteractionManagerStub;

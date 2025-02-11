@@ -262,37 +262,37 @@ TEST(StackTraceParser, nodeWithSpaceInPath) {
       StackTraceParser::parse(false, CapturedExceptions["NODE_SPACE"]);
   EXPECT_EQ(actualStackFrames.size(), 9);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {R"(C:\project files\spect\src\index.js)", "Spect.get", 161, 25},
-      {R"(C:\project files\spect\src\index.js)", "Object.get", 43, 35},
-      {R"(C:\project files\spect\src\index.js)",
-       "(anonymous function).then",
-       165,
-       32},
-      {"internal/process/task_queues.js",
-       "process.runNextTicks [as _tickCallback]",
-       52,
-       4},
-      {R"(C:\project files\spect\node_modules\esm\esm.js)",
-       "<unknown>",
-       1,
-       34534},
-      {R"(C:\project files\spect\node_modules\esm\esm.js)",
-       "<unknown>",
-       1,
-       34175},
-      {R"(C:\project files\spect\node_modules\esm\esm.js)",
-       "process.<anonymous>",
-       1,
-       34505},
-      {R"(C:\project files\spect\node_modules\esm\esm.js)",
-       "Function.<anonymous>",
-       1,
-       296855},
-      {R"(C:\project files\spect\node_modules\esm\esm.js)",
-       "Function.<anonymous>",
-       1,
-       296554}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{R"(C:\project files\spect\src\index.js)", "Spect.get", 161, 25},
+       {R"(C:\project files\spect\src\index.js)", "Object.get", 43, 35},
+       {R"(C:\project files\spect\src\index.js)",
+        "(anonymous function).then",
+        165,
+        32},
+       {"internal/process/task_queues.js",
+        "process.runNextTicks [as _tickCallback]",
+        52,
+        4},
+       {R"(C:\project files\spect\node_modules\esm\esm.js)",
+        "<unknown>",
+        1,
+        34534},
+       {R"(C:\project files\spect\node_modules\esm\esm.js)",
+        "<unknown>",
+        1,
+        34175},
+       {R"(C:\project files\spect\node_modules\esm\esm.js)",
+        "process.<anonymous>",
+        1,
+        34505},
+       {R"(C:\project files\spect\node_modules\esm\esm.js)",
+        "Function.<anonymous>",
+        1,
+        296855},
+       {R"(C:\project files\spect\node_modules\esm\esm.js)",
+        "Function.<anonymous>",
+        1,
+        296554}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -309,7 +309,7 @@ TEST(StackTraceParser, javaScriptCore) {
       StackTraceParser::parse(false, CapturedExceptions["IOS_REACT_NATIVE_1"]);
   EXPECT_EQ(actualStackFrames.size(), 4);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames = {
       {"/home/test/project/App.js", "_exampleFunction", 125, 12},
       {"/home/test/project/node_modules/dep/index.js",
        "_depRunCallbacks",
@@ -339,18 +339,18 @@ TEST(StackTraceParser, errorInReactNative) {
       StackTraceParser::parse(false, CapturedExceptions["IOS_REACT_NATIVE_2"]);
   EXPECT_EQ(actualStackFrames.size(), 11);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"33.js", "s", 1, 530},
-      {"1959.js", "b", 1, 1468},
-      {"2932.js", "onSocketClose", 1, 726},
-      {"81.js", "value", 1, 1504},
-      {"102.js", "<unknown>", 1, 2955},
-      {"89.js", "value", 1, 1246},
-      {"42.js", "value", 1, 3310},
-      {"42.js", "<unknown>", 1, 821},
-      {"42.js", "value", 1, 2564},
-      {"42.js", "value", 1, 793},
-      {"[native code]", "value", std::nullopt, std::nullopt}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"33.js", "s", 1, 530},
+       {"1959.js", "b", 1, 1468},
+       {"2932.js", "onSocketClose", 1, 726},
+       {"81.js", "value", 1, 1504},
+       {"102.js", "<unknown>", 1, 2955},
+       {"89.js", "value", 1, 1246},
+       {"42.js", "value", 1, 3310},
+       {"42.js", "<unknown>", 1, 821},
+       {"42.js", "value", 1, 2564},
+       {"42.js", "value", 1, 793},
+       {"[native code]", "value", std::nullopt, std::nullopt}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -367,8 +367,8 @@ TEST(StackTraceParser, simpleJavaScriptCoreErrors) {
       StackTraceParser::parse(false, "global code@stack_traces/test:83:55");
   EXPECT_EQ(actualStackFrames.size(), 1);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"stack_traces/test", "global code", 83, 54}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"stack_traces/test", "global code", 83, 54}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -385,11 +385,11 @@ TEST(StackTraceParser, safari6Error) {
       StackTraceParser::parse(false, CapturedExceptions["SAFARI_6"]);
   EXPECT_EQ(actualStackFrames.size(), 4);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://path/to/file.js", "<unknown>", 48, std::nullopt},
-      {"http://path/to/file.js", "dumpException3", 52, std::nullopt},
-      {"http://path/to/file.js", "onclick", 82, std::nullopt},
-      {"[native code]", "<unknown>", std::nullopt, std::nullopt}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://path/to/file.js", "<unknown>", 48, std::nullopt},
+       {"http://path/to/file.js", "dumpException3", 52, std::nullopt},
+       {"http://path/to/file.js", "onclick", 82, std::nullopt},
+       {"[native code]", "<unknown>", std::nullopt, std::nullopt}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -406,10 +406,10 @@ TEST(StackTraceParser, safari7Error) {
       StackTraceParser::parse(false, CapturedExceptions["SAFARI_7"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://path/to/file.js", "<unknown>", 48, 21},
-      {"http://path/to/file.js", "foo", 52, 14},
-      {"http://path/to/file.js", "bar", 108, 106}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://path/to/file.js", "<unknown>", 48, 21},
+       {"http://path/to/file.js", "foo", 52, 14},
+       {"http://path/to/file.js", "bar", 108, 106}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -426,10 +426,10 @@ TEST(StackTraceParser, safari8Error) {
       StackTraceParser::parse(false, CapturedExceptions["SAFARI_8"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://path/to/file.js", "<unknown>", 47, 21},
-      {"http://path/to/file.js", "foo", 52, 14},
-      {"http://path/to/file.js", "bar", 108, 22}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://path/to/file.js", "<unknown>", 47, 21},
+       {"http://path/to/file.js", "foo", 52, 14},
+       {"http://path/to/file.js", "bar", 108, 22}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -446,10 +446,10 @@ TEST(StackTraceParser, safari8EvalError) {
       StackTraceParser::parse(false, CapturedExceptions["SAFARI_8_EVAL"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"[native code]", "eval", std::nullopt, std::nullopt},
-      {"http://path/to/file.js", "foo", 58, 20},
-      {"http://path/to/file.js", "bar", 109, 90}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"[native code]", "eval", std::nullopt, std::nullopt},
+       {"http://path/to/file.js", "foo", 58, 20},
+       {"http://path/to/file.js", "bar", 109, 90}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -466,17 +466,23 @@ TEST(StackTraceParser, firefox3Error) {
       StackTraceParser::parse(false, CapturedExceptions["FIREFOX_3"]);
   EXPECT_EQ(actualStackFrames.size(), 7);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://127.0.0.1:8000/js/stacktrace.js", "<unknown>", 44, std::nullopt},
-      {"http://127.0.0.1:8000/js/stacktrace.js", "<unknown>", 31, std::nullopt},
-      {"http://127.0.0.1:8000/js/stacktrace.js",
-       "printStackTrace",
-       18,
-       std::nullopt},
-      {"http://127.0.0.1:8000/js/file.js", "bar", 13, std::nullopt},
-      {"http://127.0.0.1:8000/js/file.js", "bar", 16, std::nullopt},
-      {"http://127.0.0.1:8000/js/file.js", "foo", 20, std::nullopt},
-      {"http://127.0.0.1:8000/js/file.js", "<unknown>", 24, std::nullopt}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://127.0.0.1:8000/js/stacktrace.js",
+        "<unknown>",
+        44,
+        std::nullopt},
+       {"http://127.0.0.1:8000/js/stacktrace.js",
+        "<unknown>",
+        31,
+        std::nullopt},
+       {"http://127.0.0.1:8000/js/stacktrace.js",
+        "printStackTrace",
+        18,
+        std::nullopt},
+       {"http://127.0.0.1:8000/js/file.js", "bar", 13, std::nullopt},
+       {"http://127.0.0.1:8000/js/file.js", "bar", 16, std::nullopt},
+       {"http://127.0.0.1:8000/js/file.js", "foo", 20, std::nullopt},
+       {"http://127.0.0.1:8000/js/file.js", "<unknown>", 24, std::nullopt}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -493,14 +499,14 @@ TEST(StackTraceParser, firefox7Error) {
       StackTraceParser::parse(false, CapturedExceptions["FIREFOX_7"]);
   EXPECT_EQ(actualStackFrames.size(), 7);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"file:///G:/js/stacktrace.js", "<unknown>", 44, std::nullopt},
-      {"file:///G:/js/stacktrace.js", "<unknown>", 31, std::nullopt},
-      {"file:///G:/js/stacktrace.js", "printStackTrace", 18, std::nullopt},
-      {"file:///G:/js/file.js", "bar", 13, std::nullopt},
-      {"file:///G:/js/file.js", "bar", 16, std::nullopt},
-      {"file:///G:/js/file.js", "foo", 20, std::nullopt},
-      {"file:///G:/js/file.js", "<unknown>", 24, std::nullopt}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"file:///G:/js/stacktrace.js", "<unknown>", 44, std::nullopt},
+       {"file:///G:/js/stacktrace.js", "<unknown>", 31, std::nullopt},
+       {"file:///G:/js/stacktrace.js", "printStackTrace", 18, std::nullopt},
+       {"file:///G:/js/file.js", "bar", 13, std::nullopt},
+       {"file:///G:/js/file.js", "bar", 16, std::nullopt},
+       {"file:///G:/js/file.js", "foo", 20, std::nullopt},
+       {"file:///G:/js/file.js", "<unknown>", 24, std::nullopt}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -517,10 +523,10 @@ TEST(StackTraceParser, firefox14Error) {
       StackTraceParser::parse(false, CapturedExceptions["FIREFOX_14"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://path/to/file.js", "<unknown>", 48, std::nullopt},
-      {"http://path/to/file.js", "dumpException3", 52, std::nullopt},
-      {"http://path/to/file.js", "onclick", 1, std::nullopt}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://path/to/file.js", "<unknown>", 48, std::nullopt},
+       {"http://path/to/file.js", "dumpException3", 52, std::nullopt},
+       {"http://path/to/file.js", "onclick", 1, std::nullopt}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -537,10 +543,10 @@ TEST(StackTraceParser, firefox31Error) {
       StackTraceParser::parse(false, CapturedExceptions["FIREFOX_31"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://path/to/file.js", "foo", 41, 12},
-      {"http://path/to/file.js", "bar", 1, 0},
-      {"http://path/to/file.js", ".plugin/e.fn[c]/<", 1, 0}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://path/to/file.js", "foo", 41, 12},
+       {"http://path/to/file.js", "bar", 1, 0},
+       {"http://path/to/file.js", ".plugin/e.fn[c]/<", 1, 0}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -557,11 +563,11 @@ TEST(StackTraceParser, firefox44) {
       false, CapturedExceptions["FIREFOX_44_NS_EXCEPTION"]);
   EXPECT_EQ(actualStackFrames.size(), 4);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://path/to/file.js", "[2]</Bar.prototype._baz/</<", 703, 27},
-      {"file:///path/to/file.js", "App.prototype.foo", 15, 1},
-      {"file:///path/to/file.js", "bar", 20, 2},
-      {"file:///path/to/index.html", "<unknown>", 23, 0}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://path/to/file.js", "[2]</Bar.prototype._baz/</<", 703, 27},
+       {"file:///path/to/file.js", "App.prototype.foo", 15, 1},
+       {"file:///path/to/file.js", "bar", 20, 2},
+       {"file:///path/to/index.html", "<unknown>", 23, 0}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -578,8 +584,8 @@ TEST(StackTraceParser, chromeErrorWithNoLocation) {
       StackTraceParser::parse(false, "error\n at Array.forEach (native)");
   EXPECT_EQ(actualStackFrames.size(), 1);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {std::nullopt, "Array.forEach", std::nullopt, std::nullopt}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{std::nullopt, "Array.forEach", std::nullopt, std::nullopt}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -596,11 +602,11 @@ TEST(StackTraceParser, chrome15Error) {
       StackTraceParser::parse(false, CapturedExceptions["CHROME_15"]);
   EXPECT_EQ(actualStackFrames.size(), 4);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://path/to/file.js", "bar", 13, 16},
-      {"http://path/to/file.js", "bar", 16, 4},
-      {"http://path/to/file.js", "foo", 20, 4},
-      {"http://path/to/file.js", "<unknown>", 24, 3}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://path/to/file.js", "bar", 13, 16},
+       {"http://path/to/file.js", "bar", 16, 4},
+       {"http://path/to/file.js", "foo", 20, 4},
+       {"http://path/to/file.js", "<unknown>", 24, 3}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -617,13 +623,13 @@ TEST(StackTraceParser, chrome36Error) {
       StackTraceParser::parse(false, CapturedExceptions["CHROME_36"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://localhost:8080/file.js", "dumpExceptionError", 41, 26},
-      {"http://localhost:8080/file.js", "HTMLButtonElement.onclick", 107, 145},
-      {"http://localhost:8080/file.js",
-       "I.e.fn.(anonymous function) [as index]",
-       10,
-       3650}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://localhost:8080/file.js", "dumpExceptionError", 41, 26},
+       {"http://localhost:8080/file.js", "HTMLButtonElement.onclick", 107, 145},
+       {"http://localhost:8080/file.js",
+        "I.e.fn.(anonymous function) [as index]",
+        10,
+        3650}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -640,8 +646,8 @@ TEST(StackTraceParser, chrome76Error) {
       StackTraceParser::parse(false, CapturedExceptions["CHROME_76"]);
   EXPECT_EQ(actualStackFrames.size(), 2);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"<anonymous>", "bar", 8, 8}, {"<anonymous>", "async foo", 2, 2}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"<anonymous>", "bar", 8, 8}, {"<anonymous>", "async foo", 2, 2}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -658,27 +664,27 @@ TEST(StackTraceParser, chromeErrorWithWebpackURLS) {
       StackTraceParser::parse(false, CapturedExceptions["CHROME_XX_WEBPACK"]);
   EXPECT_EQ(actualStackFrames.size(), 5);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"webpack:///./src/components/test/test.jsx?",
-       "TESTTESTTEST.eval",
-       295,
-       107},
-      {"webpack:///./src/components/test/test.jsx?",
-       "TESTTESTTEST.render",
-       272,
-       31},
-      {"webpack:///./~/react-transform-catch-errors/lib/index.js?",
-       "TESTTESTTEST.tryRender",
-       34,
-       30},
-      {"webpack:///./~/react-proxy/modules/createPrototypeProxy.js?",
-       "TESTTESTTEST.proxiedMethod",
-       44,
-       29},
-      {R"(C:\root\server\development\pages\index.js)",
-       "Module../pages/index.js",
-       182,
-       6}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"webpack:///./src/components/test/test.jsx?",
+        "TESTTESTTEST.eval",
+        295,
+        107},
+       {"webpack:///./src/components/test/test.jsx?",
+        "TESTTESTTEST.render",
+        272,
+        31},
+       {"webpack:///./~/react-transform-catch-errors/lib/index.js?",
+        "TESTTESTTEST.tryRender",
+        34,
+        30},
+       {"webpack:///./~/react-proxy/modules/createPrototypeProxy.js?",
+        "TESTTESTTEST.proxiedMethod",
+        44,
+        29},
+       {R"(C:\root\server\development\pages\index.js)",
+        "Module../pages/index.js",
+        182,
+        6}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -695,12 +701,12 @@ TEST(StackTraceParser, nestedEvalsFromChrome) {
       StackTraceParser::parse(false, CapturedExceptions["CHROME_48_EVAL"]);
   EXPECT_EQ(actualStackFrames.size(), 5);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://localhost:8080/file.js", "baz", 21, 16},
-      {"http://localhost:8080/file.js", "foo", 21, 16},
-      {"http://localhost:8080/file.js", "eval", 21, 16},
-      {"http://localhost:8080/file.js", "Object.speak", 21, 16},
-      {"http://localhost:8080/file.js", "<unknown>", 31, 12}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://localhost:8080/file.js", "baz", 21, 16},
+       {"http://localhost:8080/file.js", "foo", 21, 16},
+       {"http://localhost:8080/file.js", "eval", 21, 16},
+       {"http://localhost:8080/file.js", "Object.speak", 21, 16},
+       {"http://localhost:8080/file.js", "<unknown>", 31, 12}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -717,32 +723,32 @@ TEST(StackTraceParser, chromeErrorWithBlobURLs) {
       StackTraceParser::parse(false, CapturedExceptions["CHROME_48_BLOB"]);
   EXPECT_EQ(actualStackFrames.size(), 7);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {std::nullopt, "Error", std::nullopt, std::nullopt},
-      {"blob:http%3A//localhost%3A8080/abfc40e9-4742-44ed-9dcd-af8f99a29379",
-       "s",
-       31,
-       29145},
-      {"blob:http%3A//localhost%3A8080/abfc40e9-4742-44ed-9dcd-af8f99a29379",
-       "Object.d [as add]",
-       31,
-       30038},
-      {"blob:http%3A//localhost%3A8080/d4eefe0f-361a-4682-b217-76587d9f712a",
-       "<unknown>",
-       15,
-       10977},
-      {"blob:http%3A//localhost%3A8080/abfc40e9-4742-44ed-9dcd-af8f99a29379",
-       "<unknown>",
-       1,
-       6910},
-      {"blob:http%3A//localhost%3A8080/abfc40e9-4742-44ed-9dcd-af8f99a29379",
-       "n.fire",
-       7,
-       3018},
-      {"blob:http%3A//localhost%3A8080/abfc40e9-4742-44ed-9dcd-af8f99a29379",
-       "n.handle",
-       7,
-       2862}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{std::nullopt, "Error", std::nullopt, std::nullopt},
+       {"blob:http%3A//localhost%3A8080/abfc40e9-4742-44ed-9dcd-af8f99a29379",
+        "s",
+        31,
+        29145},
+       {"blob:http%3A//localhost%3A8080/abfc40e9-4742-44ed-9dcd-af8f99a29379",
+        "Object.d [as add]",
+        31,
+        30038},
+       {"blob:http%3A//localhost%3A8080/d4eefe0f-361a-4682-b217-76587d9f712a",
+        "<unknown>",
+        15,
+        10977},
+       {"blob:http%3A//localhost%3A8080/abfc40e9-4742-44ed-9dcd-af8f99a29379",
+        "<unknown>",
+        1,
+        6910},
+       {"blob:http%3A//localhost%3A8080/abfc40e9-4742-44ed-9dcd-af8f99a29379",
+        "n.fire",
+        7,
+        3018},
+       {"blob:http%3A//localhost%3A8080/abfc40e9-4742-44ed-9dcd-af8f99a29379",
+        "n.handle",
+        7,
+        2862}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -759,10 +765,10 @@ TEST(StackTraceParser, ie10Error) {
       StackTraceParser::parse(false, CapturedExceptions["IE_10"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://path/to/file.js", "Anonymous function", 48, 12},
-      {"http://path/to/file.js", "foo", 46, 8},
-      {"http://path/to/file.js", "bar", 82, 0}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://path/to/file.js", "Anonymous function", 48, 12},
+       {"http://path/to/file.js", "foo", 46, 8},
+       {"http://path/to/file.js", "bar", 82, 0}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -779,10 +785,10 @@ TEST(StackTraceParser, ie11Error) {
       StackTraceParser::parse(false, CapturedExceptions["IE_11"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
 
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://path/to/file.js", "Anonymous function", 47, 20},
-      {"http://path/to/file.js", "foo", 45, 12},
-      {"http://path/to/file.js", "bar", 108, 0}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://path/to/file.js", "Anonymous function", 47, 20},
+       {"http://path/to/file.js", "foo", 45, 12},
+       {"http://path/to/file.js", "bar", 108, 0}};
 
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -798,10 +804,10 @@ TEST(StackTraceParser, ie11EvalError) {
   auto actualStackFrames =
       StackTraceParser::parse(false, CapturedExceptions["IE_11_EVAL"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"eval code", "eval code", 1, 0},
-      {"http://path/to/file.js", "foo", 58, 16},
-      {"http://path/to/file.js", "bar", 109, 0}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"eval code", "eval code", 1, 0},
+       {"http://path/to/file.js", "foo", 58, 16},
+       {"http://path/to/file.js", "bar", 109, 0}};
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);
@@ -816,10 +822,10 @@ TEST(StackTraceParser, Opera25Error) {
   auto actualStackFrames =
       StackTraceParser::parse(false, CapturedExceptions["OPERA_25"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://path/to/file.js", "<unknown>", 47, 21},
-      {"http://path/to/file.js", "foo", 52, 14},
-      {"http://path/to/file.js", "bar", 108, 167}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://path/to/file.js", "<unknown>", 47, 21},
+       {"http://path/to/file.js", "foo", 52, 14},
+       {"http://path/to/file.js", "bar", 108, 167}};
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);
@@ -834,10 +840,10 @@ TEST(StackTraceParser, PhantomJS119Error) {
   auto actualStackFrames =
       StackTraceParser::parse(false, CapturedExceptions["PHANTOMJS_1_19"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"file:///path/to/file.js", "<unknown>", 878, std::nullopt},
-      {"http://path/to/file.js", "foo", 4283, std::nullopt},
-      {"http://path/to/file.js", "<unknown>", 4287, std::nullopt}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"file:///path/to/file.js", "<unknown>", 878, std::nullopt},
+       {"http://path/to/file.js", "foo", 4283, std::nullopt},
+       {"http://path/to/file.js", "<unknown>", 4287, std::nullopt}};
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);
@@ -852,8 +858,8 @@ TEST(StackTraceParser, FirefoxResourceUrlError) {
   auto actualStackFrames = StackTraceParser::parse(
       false, CapturedExceptions["FIREFOX_50_RESOURCE_URL"]);
   EXPECT_EQ(actualStackFrames.size(), 3);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"resource://path/data/content/bundle.js", "render", 5529, 15}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"resource://path/data/content/bundle.js", "render", 5529, 15}};
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);
@@ -868,12 +874,12 @@ TEST(StackTraceParser, FirefoxEvalUrlError) {
   auto actualStackFrames =
       StackTraceParser::parse(false, CapturedExceptions["FIREFOX_43_EVAL"]);
   EXPECT_EQ(actualStackFrames.size(), 5);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://localhost:8080/file.js", "baz", 26, std::nullopt},
-      {"http://localhost:8080/file.js", "foo", 26, std::nullopt},
-      {"http://localhost:8080/file.js", "<unknown>", 26, std::nullopt},
-      {"http://localhost:8080/file.js", "speak", 26, 16},
-      {"http://localhost:8080/file.js", "<unknown>", 33, 8}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://localhost:8080/file.js", "baz", 26, std::nullopt},
+       {"http://localhost:8080/file.js", "foo", 26, std::nullopt},
+       {"http://localhost:8080/file.js", "<unknown>", 26, std::nullopt},
+       {"http://localhost:8080/file.js", "speak", 26, 16},
+       {"http://localhost:8080/file.js", "<unknown>", 33, 8}};
   for (auto i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);
@@ -888,7 +894,7 @@ TEST(StackTraceParser, ReactNativeAndroidError) {
   auto actualStackFrames = StackTraceParser::parse(
       false, CapturedExceptions["ANDROID_REACT_NATIVE"]);
   EXPECT_EQ(actualStackFrames.size(), 8);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames = {
       {"/home/username/sample-workspace/sampleapp.collect.react/src/components/GpsMonitorScene.js",
        "render",
        78,
@@ -913,10 +919,10 @@ TEST(StackTraceParser, ReactNativeAndroidProdError) {
   auto actualStackFrames = StackTraceParser::parse(
       false, CapturedExceptions["ANDROID_REACT_NATIVE_PROD"]);
   EXPECT_EQ(actualStackFrames.size(), 37);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"index.android.bundle", "value", 12, 1916},
-      {"index.android.bundle", "value", 29, 926},
-      {"[native code]", "<unknown>", std::nullopt, std::nullopt}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"index.android.bundle", "value", 12, 1916},
+       {"index.android.bundle", "value", 29, 926},
+       {"[native code]", "<unknown>", std::nullopt, std::nullopt}};
   EXPECT_EQ(actualStackFrames[0].column, expectedStackFrames[0].column);
   EXPECT_EQ(actualStackFrames[0].file, expectedStackFrames[0].file);
   EXPECT_EQ(actualStackFrames[0].lineNumber, expectedStackFrames[0].lineNumber);
@@ -941,9 +947,9 @@ TEST(StackTraceParser, NodeJsAsyncErrorsVersion12) {
   auto actualStackFrames =
       StackTraceParser::parse(false, CapturedExceptions["NODE_12"]);
   EXPECT_EQ(actualStackFrames.size(), 2);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"/home/xyz/hack/asyncnode.js", "promiseMe", 11, 8},
-      {"/home/xyz/hack/asyncnode.js", "async main", 15, 12}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"/home/xyz/hack/asyncnode.js", "promiseMe", 11, 8},
+       {"/home/xyz/hack/asyncnode.js", "async main", 15, 12}};
 
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -959,17 +965,17 @@ TEST(StackTraceParser, NodeJsErrorsWithAnonymousCalls) {
   auto actualStackFrames =
       StackTraceParser::parse(false, CapturedExceptions["NODE_ANONYM"]);
   EXPECT_EQ(actualStackFrames.size(), 9);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {R"(C:\projects\spect\src\index.js)", "Spect.get", 161, 25},
-      {R"(C:\projects\spect\src\index.js)",
-       "(anonymous function).then",
-       165,
-       32},
-      {R"(C:\projects\spect\node_modules\esm\esm.js)", "<unknown>", 1, 34534},
-      {R"(C:\projects\spect\node_modules\esm\esm.js)",
-       "process.<anonymous>",
-       1,
-       34505}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{R"(C:\projects\spect\src\index.js)", "Spect.get", 161, 25},
+       {R"(C:\projects\spect\src\index.js)",
+        "(anonymous function).then",
+        165,
+        32},
+       {R"(C:\projects\spect\node_modules\esm\esm.js)", "<unknown>", 1, 34534},
+       {R"(C:\projects\spect\node_modules\esm\esm.js)",
+        "process.<anonymous>",
+        1,
+        34505}};
   // Check specific stack frames as per the JavaScript test
   EXPECT_EQ(actualStackFrames[0].column, expectedStackFrames[0].column);
   EXPECT_EQ(actualStackFrames[0].file, expectedStackFrames[0].file);
@@ -996,9 +1002,9 @@ TEST(StackTraceParser, AnonymousSources) {
   auto actualStackFrames =
       StackTraceParser::parse(false, CapturedExceptions["ANONYMOUS_SOURCES"]);
   EXPECT_EQ(actualStackFrames.size(), 2);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"http://www.example.com/test.js", "new <anonymous>", 2, 0},
-      {"<anonymous>", "<unknown>", 1, 1}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"http://www.example.com/test.js", "new <anonymous>", 2, 0},
+       {"<anonymous>", "<unknown>", 1, 1}};
 
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -1014,12 +1020,12 @@ TEST(StackTraceParser, NodeJsTest1) {
   auto actualStackFrames =
       StackTraceParser::parse(false, CapturedExceptions["NODE_JS_TEST_1"]);
   EXPECT_EQ(actualStackFrames.size(), 5);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"repl", "<unknown>", 1, 1},
-      {"repl.js", "REPLServer.self.eval", 110, 20},
-      {"repl.js", "Interface.<anonymous>", 239, 11},
-      {"events.js", "Interface.EventEmitter.emit", 95, 16},
-      {"readline.js", "emitKey", 1095, 11}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"repl", "<unknown>", 1, 1},
+       {"repl.js", "REPLServer.self.eval", 110, 20},
+       {"repl.js", "Interface.<anonymous>", 239, 11},
+       {"events.js", "Interface.EventEmitter.emit", 95, 16},
+       {"readline.js", "emitKey", 1095, 11}};
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);
@@ -1034,9 +1040,9 @@ TEST(StackTraceParser, NodeJsTest2) {
   auto actualStackFrames =
       StackTraceParser::parse(false, CapturedExceptions["NODE_JS_TEST_2"]);
   EXPECT_EQ(actualStackFrames.size(), 2);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"repl", "null._onTimeout", 1, 24},
-      {"timers.js", "Timer.listOnTimeout [as ontimeout]", 110, 14}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"repl", "null._onTimeout", 1, 24},
+       {"timers.js", "Timer.listOnTimeout [as ontimeout]", 110, 14}};
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);
@@ -1051,17 +1057,17 @@ TEST(StackTraceParser, IoJs) {
   auto actualStackFrames =
       StackTraceParser::parse(false, CapturedExceptions["IO_JS"]);
   EXPECT_EQ(actualStackFrames.size(), 10);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"repl", "<unknown>", 1, 0},
-      {"repl.js", "REPLServer.defaultEval", 154, 26},
-      {"domain.js", "bound", 254, 13},
-      {"domain.js", "REPLServer.runBound [as eval]", 267, 11},
-      {"repl.js", "REPLServer.<anonymous>", 308, 11},
-      {"events.js", "emitOne", 77, 12},
-      {"events.js", "REPLServer.emit", 169, 6},
-      {"readline.js", "REPLServer.Interface._onLine", 210, 9},
-      {"readline.js", "REPLServer.Interface._line", 549, 7},
-      {"readline.js", "REPLServer.Interface._ttyWrite", 826, 13}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"repl", "<unknown>", 1, 0},
+       {"repl.js", "REPLServer.defaultEval", 154, 26},
+       {"domain.js", "bound", 254, 13},
+       {"domain.js", "REPLServer.runBound [as eval]", 267, 11},
+       {"repl.js", "REPLServer.<anonymous>", 308, 11},
+       {"events.js", "emitOne", 77, 12},
+       {"events.js", "REPLServer.emit", 169, 6},
+       {"readline.js", "REPLServer.Interface._onLine", 210, 9},
+       {"readline.js", "REPLServer.Interface._line", 549, 7},
+       {"readline.js", "REPLServer.Interface._ttyWrite", 826, 13}};
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);
@@ -1083,8 +1089,8 @@ TEST(StackTraceParser, hermesBytecodeLocation) {
       "    at foo$bar (address at /js/foo.hbc:10:1234)");
 
   EXPECT_EQ(actualStackFrames.size(), 2);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"unknown", "global", 1, 9}, {"/js/foo.hbc", "foo$bar", 10, 1234}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"unknown", "global", 1, 9}, {"/js/foo.hbc", "foo$bar", 10, 1234}};
 
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -1103,8 +1109,8 @@ TEST(StackTraceParser, internalBytecodeLocation) {
       "    at internal (address at InternalBytecode.js:1:9)\n"
       "    at notInternal (address at /js/InternalBytecode.js:10:1234)");
   EXPECT_EQ(actualStackFrames.size(), 1);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"/js/InternalBytecode.js", "notInternal", 10, 1234}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"/js/InternalBytecode.js", "notInternal", 10, 1234}};
 
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -1123,8 +1129,8 @@ TEST(StackTraceParser, sourceLocation) {
       "    at global (unknown:1:9)\n"
       "    at foo$bar (/js/foo.js:10:1234)");
   EXPECT_EQ(actualStackFrames.size(), 2);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"unknown", "global", 1, 8}, {"/js/foo.js", "foo$bar", 10, 1233}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"unknown", "global", 1, 8}, {"/js/foo.js", "foo$bar", 10, 1233}};
 
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
@@ -1143,8 +1149,8 @@ TEST(StackTraceParser, tolerateEmptyFilename) {
       "    at global (unknown:1:9)\n"
       "    at foo$bar (:10:1234)");
   EXPECT_EQ(actualStackFrames.size(), 2);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"unknown", "global", 1, 8}, {"", "foo$bar", 10, 1233}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"unknown", "global", 1, 8}, {"", "foo$bar", 10, 1233}};
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);
@@ -1163,8 +1169,8 @@ TEST(StackTraceParser, skippedFrames) {
       "    ... skipping 50 frames\n"
       "    at foo$bar (/js/foo.js:10:1234)");
   EXPECT_EQ(actualStackFrames.size(), 2);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"unknown", "global", 1, 8}, {"/js/foo.js", "foo$bar", 10, 1233}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"unknown", "global", 1, 8}, {"/js/foo.js", "foo$bar", 10, 1233}};
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);
@@ -1183,8 +1189,8 @@ TEST(StackTraceParser, handleNonStandardLines) {
       "    but the real stack trace follows below.\n"
       "    at foo$bar (/js/foo.js:10:1234)");
   EXPECT_EQ(actualStackFrames.size(), 1);
-  std::vector<JsErrorHandler::ParsedError::StackFrame> expectedStackFrames = {
-      {"/js/foo.js", "foo$bar", 10, 1233}};
+  std::vector<JsErrorHandler::ProcessedError::StackFrame> expectedStackFrames =
+      {{"/js/foo.js", "foo$bar", 10, 1233}};
   for (size_t i = 0; i < expectedStackFrames.size(); i++) {
     EXPECT_EQ(actualStackFrames[i].column, expectedStackFrames[i].column);
     EXPECT_EQ(actualStackFrames[i].file, expectedStackFrames[i].file);

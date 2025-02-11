@@ -17,11 +17,11 @@ import AndroidSwipeRefreshLayoutNativeComponent, {
 import PullToRefreshViewNativeComponent, {
   Commands as PullToRefreshCommands,
 } from './PullToRefreshViewNativeComponent';
+import React from 'react';
 
 const Platform = require('../../Utilities/Platform');
-const React = require('react');
 
-type IOSProps = $ReadOnly<{|
+type IOSProps = $ReadOnly<{
   /**
    * The color of the refresh indicator.
    */
@@ -34,9 +34,9 @@ type IOSProps = $ReadOnly<{|
    * The title displayed under the refresh indicator.
    */
   title?: ?string,
-|}>;
+}>;
 
-type AndroidProps = $ReadOnly<{|
+type AndroidProps = $ReadOnly<{
   /**
    * Whether the pull to refresh functionality is enabled.
    */
@@ -53,9 +53,9 @@ type AndroidProps = $ReadOnly<{|
    * Size of the refresh indicator.
    */
   size?: ?('default' | 'large'),
-|}>;
+}>;
 
-export type RefreshControlProps = $ReadOnly<{|
+export type RefreshControlProps = $ReadOnly<{
   ...ViewProps,
   ...IOSProps,
   ...AndroidProps,
@@ -74,7 +74,7 @@ export type RefreshControlProps = $ReadOnly<{|
    * Progress view top offset
    */
   progressViewOffset?: ?number,
-|}>;
+}>;
 
 /**
  * This component is used inside a ScrollView or ListView to add pull to refresh
@@ -126,7 +126,7 @@ class RefreshControl extends React.Component<RefreshControlProps> {
     | typeof PullToRefreshViewNativeComponent
     | typeof AndroidSwipeRefreshLayoutNativeComponent,
   >;
-  _lastNativeRefreshing = false;
+  _lastNativeRefreshing: boolean = false;
 
   componentDidMount() {
     this._lastNativeRefreshing = this.props.refreshing;
@@ -201,4 +201,4 @@ class RefreshControl extends React.Component<RefreshControlProps> {
   };
 }
 
-module.exports = RefreshControl;
+export default RefreshControl;

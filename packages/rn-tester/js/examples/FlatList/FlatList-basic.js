@@ -55,8 +55,8 @@ const VIEWABILITY_CONFIG = {
   waitForInteraction: true,
 };
 
-type Props = $ReadOnly<{||}>;
-type State = {|
+type Props = $ReadOnly<{}>;
+type State = {
   data: Array<Item>,
   first: number,
   last: number,
@@ -76,7 +76,7 @@ type State = {|
   maintainVisibleContentPosition: boolean,
   previousLoading: boolean,
   nextLoading: boolean,
-|};
+};
 
 const IS_RTL = I18nManager.isRTL;
 

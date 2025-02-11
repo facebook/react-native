@@ -18,7 +18,7 @@ import {FlatList, RootTagContext, TouchableOpacity, View} from 'react-native';
 import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import {EnumInt} from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 
-type State = {|
+type State = {
   testResults: {
     [string]: {
       type: string,
@@ -27,7 +27,7 @@ type State = {|
     },
     ...
   },
-|};
+};
 
 type Examples =
   | 'callback'
@@ -62,8 +62,8 @@ type ErrorExamples =
   | 'getObjectAssert'
   | 'promiseAssert';
 
-class SampleTurboModuleExample extends React.Component<{||}, State> {
-  static contextType: React$Context<RootTag> = RootTagContext;
+class SampleTurboModuleExample extends React.Component<{}, State> {
+  static contextType: React.Context<RootTag> = RootTagContext;
   eventSubscriptions: EventSubscription[] = [];
 
   state: State = {

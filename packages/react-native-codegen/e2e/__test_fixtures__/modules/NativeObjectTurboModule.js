@@ -17,46 +17,46 @@ type AnotherGenericObject = GenericObject;
 
 export interface Spec extends TurboModule {
   +getGenericObject: (arg: Object) => Object;
-  +getGenericObjectReadOnly: (arg: Object) => $ReadOnly<{|a: string|}>;
+  +getGenericObjectReadOnly: (arg: Object) => $ReadOnly<{a: string}>;
   +getGenericObjectWithAlias: (arg: GenericObject) => AnotherGenericObject;
-  +difficultObject: (A: {|
+  +difficultObject: (A: {
     D: boolean,
-    E: {|
+    E: {
       D: boolean,
       E: number,
       F: string,
-    |},
+    },
     F: string,
-  |}) => {|
+  }) => {
     D: boolean,
-    E: {|
+    E: {
       D: boolean,
-      E: {|
+      E: {
         D: boolean,
         E: number,
         F: string,
-      |},
+      },
       F: string,
-    |},
+    },
     F: string,
-  |};
-  +getConstants: () => {|
+  };
+  +getConstants: () => {
     D: boolean,
-    E: {|
+    E: {
       D: boolean,
-      E: {|
+      E: {
         D: boolean,
-        E: {|
+        E: {
           D: boolean,
           E: number,
           F: string,
-        |},
+        },
         F: string,
-      |},
+      },
       F: string,
-    |},
+    },
     F: string,
-  |};
+  };
 }
 
 export default (TurboModuleRegistry.getEnforcing<Spec>(

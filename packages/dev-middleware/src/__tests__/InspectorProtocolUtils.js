@@ -109,15 +109,6 @@ export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
   return receivedMessage.wrappedEvent;
 }
 
-export function parseJsonFromDataUri<T: JSONSerializable>(uri: string): T {
-  expect(uri).toMatch(/^data:/);
-  const parsedUri = dataUriToBuffer(uri);
-  expect(parsedUri.type).toBe('application/json');
-  return JSON.parse(
-    new TextDecoder(parsedUri.charset).decode(parsedUri.buffer),
-  );
-}
-
 export async function createAndConnectTarget(
   serverRef: $ReadOnly<{
     serverBaseUrl: string,

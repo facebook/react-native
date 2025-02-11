@@ -126,6 +126,14 @@ const APP_DEPENDENCY_PROVIDER_PODSPEC_TEMPLATE_PATH = path.join(
   'ReactAppDependencyProvider.podspec.template',
 );
 
+const REACT_CODEGEN_PODSPEC_TEMPLATE_PATH = path.join(
+  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
+  'scripts',
+  'codegen',
+  'templates',
+  'ReactCodegen.podspec.template',
+);
+
 const codegenLog = (text, info = false) => {
   // ANSI escape codes for colors and formatting
   const reset = '\x1b[0m';
@@ -887,6 +895,70 @@ function generateFBReactNativeSpecIOS(projectRoot /*: string */) /*: void*/ {
   generateCode('', fbReactNativeSchemaInfo, false, ios);
 }
 
+function generateReactCodegenPodspec(
+  appPath,
+  appPkgJson,
+  outputPath,
+  baseOutputPath,
+) {
+  const inputFiles = getInputFiles(appPath, appPkgJson);
+  const codegenScript = codegenScripts(appPath, baseOutputPath);
+  const template = fs.readFileSync(REACT_CODEGEN_PODSPEC_TEMPLATE_PATH, 'utf8');
+  const finalPodspec = template
+    .replace(/{react-native-version}/, packageJson.version)
+    .replace(/{input-files}/, inputFiles)
+    .replace(/{codegen-script}/, codegenScript);
+  const finalPathPodspec = path.join(outputPath, 'ReactCodegen.podspec');
+  fs.writeFileSync(finalPathPodspec, finalPodspec);
+  codegenLog(`Generated podspec: ${finalPathPodspec}`);
+}
+
+function getInputFiles(appPath, appPkgJSon) {
+  const jsSrcsDir = appPkgJSon.codegenConfig?.jsSrcsDir;
+  if (!jsSrcsDir) {
+    return '[]';
+  }
+
+  const xcodeproj = String(
+    execSync(`find ${appPath} -type d -name "*.xcodeproj"`),
+  )
+    .trim()
+    .split('\n')
+    .filter(
+      projectPath =>
+        !projectPath.includes('/Pods/') && // exclude Pods/Pods.xcodeproj
+        !projectPath.includes('/node_modules/'), // exclude all the xcodeproj in node_modules of libraries
+    )[0];
+  const jsFiles = '-name "Native*.js" -or -name "*NativeComponent.js"';
+  const tsFiles = '-name "Native*.ts" -or -name "*NativeComponent.ts"';
+  const findCommand = `find ${path.join(appPath, jsSrcsDir)} -type f \\( ${jsFiles} -or ${tsFiles} \\)`;
+  const list = String(execSync(findCommand))
+    .trim()
+    .split('\n')
+    .sort()
+    .map(filepath => `"\${PODS_ROOT}/${path.relative(xcodeproj, filepath)}"`)
+    .join(',\n');
+  return `[${list}]`;
+}
+
+function codegenScripts(appPath, outputPath) {
+  const relativeAppPath = path.relative(outputPath, appPath);
+  return `<<-SCRIPT
+pushd "$PODS_ROOT/../" > /dev/null
+RCT_SCRIPT_POD_INSTALLATION_ROOT=$(pwd)
+popd >/dev/null
+
+export RCT_SCRIPT_RN_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${path.relative(outputPath, REACT_NATIVE_PACKAGE_ROOT_FOLDER)}"
+export RCT_SCRIPT_APP_PATH="$RCT_SCRIPT_POD_INSTALLATION_ROOT/${relativeAppPath.length === 0 ? '.' : relativeAppPath}",
+export RCT_SCRIPT_OUTPUT_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT",
+export RCT_SCRIPT_TYPE="withCodegenDiscovery",
+
+SCRIPT_PHASES_SCRIPT="$RCT_SCRIPT_RN_DIR/scripts/react_native_pods_utils/script_phases.sh"
+WITH_ENVIRONMENT="$RCT_SCRIPT_RN_DIR/scripts/xcode/with-environment.sh"
+/bin/sh -c "$WITH_ENVIRONMENT $SCRIPT_PHASES_SCRIPT"
+SCRIPT`;
+}
+
 // Execute
 
 /**
@@ -899,11 +971,12 @@ function generateFBReactNativeSpecIOS(projectRoot /*: string */) /*: void*/ {
  * @parameter projectRoot: the directory with the app source code, where the package.json lives.
  * @parameter baseOutputPath: the base output path for the CodeGen.
  * @parameter targetPlatform: the target platform. Supported values: 'android', 'ios', 'all'.
+ * @parameter source: the source that is invoking codegen. Supported values: 'app', 'library'.
  * @throws If it can't find a config file for react-native.
  * @throws If it can't find a CodeGen configuration in the file.
  * @throws If it can't find a cli for the CodeGen.
  */
-function execute(projectRoot, targetPlatform, baseOutputPath) {
+function execute(projectRoot, targetPlatform, baseOutputPath, source) {
   try {
     codegenLog(`Analyzing ${path.join(projectRoot, 'package.json')}`);
 
@@ -951,9 +1024,18 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
         platform,
       );
 
-      generateRCTThirdPartyComponents(libraries, outputPath);
-      generateCustomURLHandlers(libraries, outputPath);
-      generateAppDependencyProvider(outputPath);
+      if (source === 'app') {
+        // These components are only required by apps, not by libraries
+        generateRCTThirdPartyComponents(libraries, outputPath);
+        generateCustomURLHandlers(libraries, outputPath);
+        generateAppDependencyProvider(outputPath);
+      }
+      generateReactCodegenPodspec(
+        projectRoot,
+        pkgJson,
+        outputPath,
+        baseOutputPath,
+      );
 
       cleanupEmptyFilesAndFolders(outputPath);
     }

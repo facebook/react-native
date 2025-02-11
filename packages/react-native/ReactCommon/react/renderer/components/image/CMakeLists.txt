@@ -26,11 +26,11 @@ target_link_libraries(rrc_image
         jsi
         react_debug
         react_utils
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_imagemanager
-        react_render_mapbuffer
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_imagemanager
+        react_renderer_mapbuffer
         rrc_view
         yoga
 )

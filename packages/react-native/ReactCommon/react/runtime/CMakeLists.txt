@@ -27,7 +27,6 @@ target_link_libraries(
         fabricjni
         react_featureflagsjni
         turbomodulejsijni
-        fb
         jsi
         jsireact
         react_utils

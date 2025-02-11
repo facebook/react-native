@@ -12,7 +12,7 @@
 
 const render = require('../../../../jest/renderer');
 const React = require('../React');
-const View = require('../View');
+const View = require('../View').default;
 
 jest.unmock('../View');
 jest.unmock('../ViewNativeComponent');

@@ -19,4 +19,4 @@ export type {
   SectionBase,
   ScrollToLocationParamsType,
 } from '@react-native/virtualized-lists';
-module.exports = VirtualizedSectionList;
+export default VirtualizedSectionList;

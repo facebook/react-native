@@ -136,6 +136,7 @@ export default class AnimatedObject extends AnimatedWithChildren {
       const node = nodes[ii];
       node.__addChild(this);
     }
+    super.__attach();
   }
 
   __detach(): void {

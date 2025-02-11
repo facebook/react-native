@@ -20,7 +20,7 @@ import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNa
 import {getFabricUIManager} from '../ReactNative/FabricUIManager';
 import Platform from '../Utilities/Platform';
 
-const UIManager = require('../ReactNative/UIManager');
+const UIManager = require('../ReactNative/UIManager').default;
 
 // Reexport type
 export type LayoutAnimationConfig = LayoutAnimationConfig_;
@@ -174,13 +174,13 @@ const LayoutAnimation = {
     easeIn: 'easeIn',
     easeOut: 'easeOut',
     keyboard: 'keyboard',
-  }),
+  }) as $ReadOnly<{[K in LayoutAnimationType]: K}>,
   Properties: Object.freeze({
     opacity: 'opacity',
     scaleX: 'scaleX',
     scaleY: 'scaleY',
     scaleXY: 'scaleXY',
-  }),
+  }) as $ReadOnly<{[K in LayoutAnimationProperty]: K}>,
   checkConfig(...args: Array<mixed>) {
     console.error('LayoutAnimation.checkConfig(...) has been disabled.');
   },
@@ -197,4 +197,4 @@ const LayoutAnimation = {
   setEnabled,
 };
 
-module.exports = LayoutAnimation;
+export default LayoutAnimation;

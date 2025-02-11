@@ -7,7 +7,7 @@
 
 #import "RCTImageManager.h"
 
-#import <cxxreact/SystraceSection.h>
+#import <cxxreact/TraceSection.h>
 #import <react/utils/ManagedObjectWrapper.h>
 #import <react/utils/SharedFunction.h>
 
@@ -38,7 +38,7 @@ using namespace facebook::react;
 
 - (ImageRequest)requestImage:(ImageSource)imageSource surfaceId:(SurfaceId)surfaceId
 {
-  SystraceSection s("RCTImageManager::requestImage");
+  TraceSection s("RCTImageManager::requestImage");
 
   NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
   std::shared_ptr<ImageTelemetry> telemetry;

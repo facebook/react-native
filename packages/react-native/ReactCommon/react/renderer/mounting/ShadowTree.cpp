@@ -7,9 +7,8 @@
 
 #include "ShadowTree.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -192,8 +191,6 @@ ShadowTree::ShadowTree(
   currentRevision_ = ShadowTreeRevision{
       rootShadowNode, INITIAL_REVISION, TransactionTelemetry{}};
 
-  lastRevisionNumberWithNewState_ = currentRevision_.number;
-
   mountingCoordinator_ =
       std::make_shared<const MountingCoordinator>(currentRevision_);
 }
@@ -258,7 +255,7 @@ CommitStatus ShadowTree::commit(
 CommitStatus ShadowTree::tryCommit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
-  SystraceSection s("ShadowTree::commit");
+  TraceSection s("ShadowTree::commit");
 
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
@@ -266,14 +263,12 @@ CommitStatus ShadowTree::tryCommit(
   CommitMode commitMode;
   auto oldRevision = ShadowTreeRevision{};
   auto newRevision = ShadowTreeRevision{};
-  ShadowTreeRevision::Number lastRevisionNumberWithNewState;
 
   {
     // Reading `currentRevision_` in shared manner.
     std::shared_lock lock(commitMutex_);
     commitMode = commitMode_;
     oldRevision = currentRevision_;
-    lastRevisionNumberWithNewState = lastRevisionNumberWithNewState_;
   }
 
   const auto& oldRootShadowNode = oldRevision.rootShadowNode;
@@ -314,19 +309,8 @@ CommitStatus ShadowTree::tryCommit(
     // Updating `currentRevision_` in unique manner if it hasn't changed.
     std::unique_lock lock(commitMutex_);
 
-    if (ReactNativeFeatureFlags::
-            enableGranularShadowTreeStateReconciliation()) {
-      auto lastRevisionNumberWithNewStateChanged =
-          lastRevisionNumberWithNewState != lastRevisionNumberWithNewState_;
-      // Commit should only fail if we propagated the wrong state.
-      if (commitOptions.enableStateReconciliation &&
-          lastRevisionNumberWithNewStateChanged) {
-        return CommitStatus::Failed;
-      }
-    } else {
-      if (currentRevision_.number != oldRevision.number) {
-        return CommitStatus::Failed;
-      }
+    if (currentRevision_.number != oldRevision.number) {
+      return CommitStatus::Failed;
     }
 
     auto newRevisionNumber = currentRevision_.number + 1;
@@ -349,9 +333,6 @@ CommitStatus ShadowTree::tryCommit(
         std::move(newRootShadowNode), newRevisionNumber, telemetry};
 
     currentRevision_ = newRevision;
-    if (!commitOptions.enableStateReconciliation) {
-      lastRevisionNumberWithNewState_ = newRevisionNumber;
-    }
   }
 
   emitLayoutEvents(affectedLayoutableNodes);
@@ -390,7 +371,7 @@ void ShadowTree::commitEmptyTree() const {
 
 void ShadowTree::emitLayoutEvents(
     std::vector<const LayoutableShadowNode*>& affectedLayoutableNodes) const {
-  SystraceSection s(
+  TraceSection s(
       "ShadowTree::emitLayoutEvents",
       "affectedLayoutableNodes",
       affectedLayoutableNodes.size());

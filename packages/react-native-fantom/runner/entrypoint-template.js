@@ -18,12 +18,14 @@ module.exports = function entrypointTemplate({
   featureFlagsModulePath,
   featureFlags,
   snapshotConfig,
+  isRunningFromCI,
 }: {
   testPath: string,
   setupModulePath: string,
   featureFlagsModulePath: string,
   featureFlags: FantomTestConfigJsOnlyFeatureFlags,
   snapshotConfig: SnapshotConfig,
+  isRunningFromCI: boolean,
 }): string {
   return `/**
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -38,6 +40,7 @@ module.exports = function entrypointTemplate({
  */
 
 import {registerTest} from '${setupModulePath}';
+import {setConstants} from '@react-native/fantom';
 ${
   Object.keys(featureFlags).length > 0
     ? `import * as ReactNativeFeatureFlags from '${featureFlagsModulePath}';
@@ -49,6 +52,10 @@ ${Object.entries(featureFlags)
 });`
     : ''
 }
+
+setConstants({
+  isRunningFromCI: ${String(isRunningFromCI)},
+});
 
 registerTest(() => require('${testPath}'), ${JSON.stringify(snapshotConfig)});
 `;

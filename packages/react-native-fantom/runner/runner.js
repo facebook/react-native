@@ -10,8 +10,10 @@
  */
 
 import type {TestSuiteResult} from '../runtime/setup';
+import type {AsyncCommandResult} from './utils';
 
 import entrypointTemplate from './entrypoint-template';
+import * as EnvironmentOptions from './EnvironmentOptions';
 import getFantomTestConfig from './getFantomTestConfig';
 import {FantomTestConfigMode} from './getFantomTestConfig';
 import {
@@ -22,7 +24,10 @@ import {
   getBuckModesForPlatform,
   getDebugInfoFromCommandResult,
   getShortHash,
+  isRunningFromCI,
+  printConsoleLog,
   runBuck2,
+  runBuck2Sync,
   symbolicateStackTrace,
 } from './utils';
 import fs from 'fs';
@@ -32,6 +37,7 @@ import {SnapshotState, buildSnapshotResolver} from 'jest-snapshot';
 import Metro from 'metro';
 import nullthrows from 'nullthrows';
 import path from 'path';
+import readline from 'readline';
 
 const BUILD_OUTPUT_ROOT = path.resolve(__dirname, '..', 'build');
 fs.mkdirSync(BUILD_OUTPUT_ROOT, {recursive: true});
@@ -39,33 +45,81 @@ const BUILD_OUTPUT_PATH = fs.mkdtempSync(
   path.join(BUILD_OUTPUT_ROOT, `run-${Date.now()}-`),
 );
 
-const PRINT_FANTOM_OUTPUT: false = false;
+async function processRNTesterCommandResult(
+  result: AsyncCommandResult,
+): Promise<TestSuiteResult> {
+  const stdoutChunks = [];
+  const stderrChunks = [];
 
-function parseRNTesterCommandResult(result: ReturnType<typeof runBuck2>): {
-  logs: string,
-  testResult: TestSuiteResult,
-} {
-  const stdout = result.stdout.toString();
+  result.childProcess.stdout.on('data', chunk => {
+    stdoutChunks.push(chunk);
+  });
 
-  const outputArray = stdout
-    .trim()
-    .split('\n')
-    .filter(log => !log.startsWith('Running "')); // remove AppRegistry logs.
-
-  // The last line should be the test output in JSON format
-  const testResultJSON = outputArray.pop();
+  result.childProcess.stderr.on('data', chunk => {
+    stderrChunks.push(chunk);
+  });
 
   let testResult;
-  try {
-    testResult = JSON.parse(nullthrows(testResultJSON));
-  } catch (error) {
+
+  const rl = readline.createInterface({input: result.childProcess.stdout});
+  rl.on('line', (rawLine: string) => {
+    const line = rawLine.trim();
+    if (!line) {
+      return;
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(line);
+    } catch {
+      parsed = {
+        type: 'console-log',
+        level: 'info',
+        message: line,
+      };
+    }
+
+    switch (parsed?.type) {
+      case 'test-result':
+        testResult = parsed;
+        break;
+      case 'console-log':
+        printConsoleLog(parsed);
+        break;
+      default:
+        printConsoleLog({
+          type: 'console-log',
+          level: 'info',
+          message: line,
+        });
+        break;
+    }
+  });
+
+  await result.done;
+
+  const getResultWithOutput = () => ({
+    ...result,
+    stdout: stdoutChunks.join(''),
+    stderr: stderrChunks.join(''),
+  });
+
+  if (result.status !== 0) {
+    throw new Error(getDebugInfoFromCommandResult(getResultWithOutput()));
+  }
+
+  if (EnvironmentOptions.printCLIOutput) {
+    console.log(getDebugInfoFromCommandResult(getResultWithOutput()));
+  }
+
+  if (testResult == null) {
     throw new Error(
-      'Failed to parse test results from RN tester binary result.\n' +
+      'Failed to find test results in RN tester binary output.\n' +
         getDebugInfoFromCommandResult(result),
     );
   }
 
-  return {logs: outputArray.join('\n'), testResult};
+  return testResult;
 }
 
 function generateBytecodeBundle({
@@ -77,7 +131,7 @@ function generateBytecodeBundle({
   bytecodePath: string,
   isOptimizedMode: boolean,
 }): void {
-  const hermesCompilerCommandResult = runBuck2(
+  const hermesCompilerCommandResult = runBuck2Sync(
     [
       'run',
       ...getBuckModesForPlatform(isOptimizedMode),
@@ -145,6 +199,7 @@ module.exports = async function runTest(
       updateSnapshot: snapshotState._updateSnapshot,
       data: getInitialSnapshotData(snapshotState),
     },
+    isRunningFromCI: isRunningFromCI(),
   });
 
   const entrypointPath = path.join(
@@ -180,36 +235,33 @@ module.exports = async function runTest(
     });
   }
 
-  const rnTesterCommandResult = runBuck2([
-    'run',
-    ...getBuckModesForPlatform(
-      testConfig.mode === FantomTestConfigMode.Optimized,
-    ),
-    '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
-    '--',
-    '--bundlePath',
-    testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
-      ? testJSBundlePath
-      : testBytecodeBundlePath,
-    '--featureFlags',
-    JSON.stringify(testConfig.flags.common),
-    '--minLogLevel',
-    PRINT_FANTOM_OUTPUT ? 'info' : 'error',
-  ]);
+  const rnTesterCommandResult = runBuck2(
+    [
+      'run',
+      ...getBuckModesForPlatform(
+        testConfig.mode === FantomTestConfigMode.Optimized,
+      ),
+      '//xplat/ReactNative/react-native-cxx/samples/tester:tester',
+      '--',
+      '--bundlePath',
+      testConfig.mode === FantomTestConfigMode.DevelopmentWithSource
+        ? testJSBundlePath
+        : testBytecodeBundlePath,
+      '--featureFlags',
+      JSON.stringify(testConfig.flags.common),
+      '--minLogLevel',
+      EnvironmentOptions.printCLIOutput ? 'info' : 'error',
+    ],
+    {
+      withFDB: EnvironmentOptions.enableCppDebugging,
+    },
+  );
 
-  if (rnTesterCommandResult.status !== 0) {
-    throw new Error(getDebugInfoFromCommandResult(rnTesterCommandResult));
-  }
-
-  if (PRINT_FANTOM_OUTPUT) {
-    console.log(getDebugInfoFromCommandResult(rnTesterCommandResult));
-  }
-
-  const rnTesterParsedOutput = parseRNTesterCommandResult(
+  const processedResult = await processRNTesterCommandResult(
     rnTesterCommandResult,
   );
 
-  const testResultError = rnTesterParsedOutput.testResult.error;
+  const testResultError = processedResult.error;
   if (testResultError) {
     const error = new Error(testResultError.message);
     error.stack = symbolicateStackTrace(sourceMapPath, testResultError.stack);
@@ -218,12 +270,8 @@ module.exports = async function runTest(
 
   const endTime = Date.now();
 
-  if (process.env.SANDCASTLE == null) {
-    console.log(rnTesterParsedOutput.logs);
-  }
-
   const testResults =
-    nullthrows(rnTesterParsedOutput.testResult.testResults).map(testResult => ({
+    nullthrows(processedResult.testResults).map(testResult => ({
       ancestorTitles: [] as Array<string>,
       failureDetails: [] as Array<string>,
       testFilePath: testPath,
@@ -233,9 +281,9 @@ module.exports = async function runTest(
       ),
     })) ?? [];
 
-  const snapshotResults = nullthrows(
-    rnTesterParsedOutput.testResult.testResults,
-  ).map(testResult => testResult.snapshotResults);
+  const snapshotResults = nullthrows(processedResult.testResults).map(
+    testResult => testResult.snapshotResults,
+  );
 
   const snapshotResult = updateSnapshotsAndGetJestSnapshotResult(
     snapshotState,

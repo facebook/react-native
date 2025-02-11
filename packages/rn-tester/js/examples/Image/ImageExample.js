@@ -31,47 +31,38 @@ const base64Icon =
 const IMAGE_PREFETCH_URL = `${IMAGE1}?r=1&t=${Date.now()}`;
 const prefetchTask = Image.prefetch(IMAGE_PREFETCH_URL);
 
-type ImageSource = $ReadOnly<{|
+type ImageSource = $ReadOnly<{
   uri: string,
-|}>;
+}>;
 
-type BlobImageState = {|
-  objectURL: ?string,
-|};
-
-type BlobImageProps = $ReadOnly<{|
+type BlobImageProps = $ReadOnly<{
   url: string,
-|}>;
+}>;
 
-class BlobImage extends React.Component<BlobImageProps, BlobImageState> {
-  state: BlobImageState = {
-    objectURL: null,
-  };
+const BlobImage = ({url}: BlobImageProps): React.Node => {
+  const [objectURL, setObjectURL] = React.useState<?string>(null);
 
-  UNSAFE_componentWillMount() {
+  React.useEffect(() => {
     // $FlowFixMe[unused-promise]
     (async () => {
-      const result = await fetch(this.props.url);
+      const result = await fetch(url);
       const blob = await result.blob();
-      const objectURL = URL.createObjectURL(blob);
-      this.setState({objectURL});
+      setObjectURL(URL.createObjectURL(blob));
     })();
-  }
+  }, [url]);
 
-  render(): React.Node {
-    return this.state.objectURL !== null ? (
-      <Image source={{uri: this.state.objectURL}} style={styles.base} />
-    ) : (
-      <Text>Object URL not created yet</Text>
-    );
-  }
-}
+  return objectURL !== null ? (
+    <Image source={{uri: objectURL}} style={styles.base} />
+  ) : (
+    <Text>Object URL not created yet</Text>
+  );
+};
 
-type BlobImageExampleState = {||};
+type BlobImageExampleState = {};
 
-type BlobImageExampleProps = $ReadOnly<{|
+type BlobImageExampleProps = $ReadOnly<{
   urls: string[],
-|}>;
+}>;
 
 class BlobImageExample extends React.Component<
   BlobImageExampleProps,
@@ -88,152 +79,127 @@ class BlobImageExample extends React.Component<
   }
 }
 
-type NetworkImageCallbackExampleState = {|
-  events: Array<string>,
-  startLoadPrefetched: boolean,
-  mountTime: number,
-  imageHash: number,
-|};
-
-type NetworkImageCallbackExampleProps = $ReadOnly<{|
+type NetworkImageCallbackExampleProps = $ReadOnly<{
   source: ImageSource,
   prefetchedSource: ImageSource,
-|}>;
+}>;
 
-class NetworkImageCallbackExample extends React.Component<
-  NetworkImageCallbackExampleProps,
-  NetworkImageCallbackExampleState,
-> {
-  state: NetworkImageCallbackExampleState = {
-    events: [],
-    startLoadPrefetched: false,
-    mountTime: Date.now(),
-    imageHash: Date.now(),
+const NetworkImageCallbackExample = ({
+  source,
+  prefetchedSource,
+}: NetworkImageCallbackExampleProps): React.Node => {
+  const [events, setEvents] = React.useState<$ReadOnlyArray<string>>([]);
+  const [startLoadPrefetched, setStartLoadPrefetched] = React.useState(false);
+  const [mountTime, setMountTime] = React.useState(Date.now());
+
+  React.useEffect(() => {
+    setMountTime(Date.now());
+  }, []);
+
+  const _loadEventFired = (event: string) => {
+    setEvents(state => [...state, event]);
   };
 
-  UNSAFE_componentWillMount() {
-    this.setState({mountTime: Date.now()});
-  }
-
-  _loadEventFired = (event: string) => {
-    this.setState(state => ({
-      events: [...state.events, event],
-    }));
-  };
-
-  updateLoadingImageHash = () => {
-    this.setState({imageHash: Date.now()});
-  };
-
-  render(): React.Node {
-    const {mountTime} = this.state;
-    return (
-      <View>
-        <Image
-          source={this.props.source}
-          style={[styles.base, styles.visibleOverflow]}
-          onError={event => {
-            this._loadEventFired(
-              `✘ onError "${event.nativeEvent.error}" (+${Date.now() - mountTime}ms)`,
+  return (
+    <View>
+      <Image
+        source={source}
+        style={[styles.base, styles.visibleOverflow]}
+        onError={event => {
+          _loadEventFired(
+            `✘ onError "${event.nativeEvent.error}" (+${Date.now() - mountTime}ms)`,
+          );
+        }}
+        onLoadStart={() =>
+          _loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
+        }
+        onProgress={event => {
+          const {loaded, total} = event.nativeEvent;
+          const percent = Math.round((loaded / total) * 100);
+          _loadEventFired(
+            `✔ onProgress ${percent}% (+${Date.now() - mountTime}ms)`,
+          );
+        }}
+        onLoad={event => {
+          if (event.nativeEvent.source) {
+            const url = event.nativeEvent.source.uri;
+            _loadEventFired(
+              `✔ onLoad (+${Date.now() - mountTime}ms) for URL ${url}`,
             );
-          }}
-          onLoadStart={() =>
-            this._loadEventFired(`✔ onLoadStart (+${Date.now() - mountTime}ms)`)
+          } else {
+            _loadEventFired(`✔ onLoad (+${Date.now() - mountTime}ms)`);
           }
-          onProgress={event => {
-            const {loaded, total} = event.nativeEvent;
-            const percent = Math.round((loaded / total) * 100);
-            this._loadEventFired(
-              `✔ onProgress ${percent}% (+${Date.now() - mountTime}ms)`,
-            );
-          }}
+        }}
+        onLoadEnd={() => {
+          _loadEventFired(`✔ onLoadEnd (+${Date.now() - mountTime}ms)`);
+          setStartLoadPrefetched(true);
+          prefetchTask.then(
+            () => {
+              _loadEventFired(`✔ prefetch OK (+${Date.now() - mountTime}ms)`);
+              // $FlowFixMe[unused-promise]
+              Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
+                const result = map[IMAGE_PREFETCH_URL];
+                if (result) {
+                  _loadEventFired(
+                    `✔ queryCache "${result}" (+${Date.now() - mountTime}ms)`,
+                  );
+                } else {
+                  _loadEventFired(
+                    `✘ queryCache (+${Date.now() - mountTime}ms)`,
+                  );
+                }
+              });
+            },
+            error => {
+              _loadEventFired(
+                `✘ prefetch failed (+${Date.now() - mountTime}ms)`,
+              );
+            },
+          );
+        }}
+      />
+      {startLoadPrefetched && (
+        <Image
+          source={prefetchedSource}
+          style={[styles.base, styles.visibleOverflow]}
+          onLoadStart={() =>
+            _loadEventFired(
+              `✔ (prefetched) onLoadStart (+${Date.now() - mountTime}ms)`,
+            )
+          }
           onLoad={event => {
             if (event.nativeEvent.source) {
               const url = event.nativeEvent.source.uri;
-              this._loadEventFired(
-                `✔ onLoad (+${Date.now() - mountTime}ms) for URL ${url}`,
+              _loadEventFired(
+                `✔ (prefetched) onLoad (+${
+                  Date.now() - mountTime
+                }ms) for URL ${url}`,
               );
             } else {
-              this._loadEventFired(`✔ onLoad (+${Date.now() - mountTime}ms)`);
-            }
-          }}
-          onLoadEnd={() => {
-            this._loadEventFired(`✔ onLoadEnd (+${Date.now() - mountTime}ms)`);
-            this.setState({startLoadPrefetched: true}, () => {
-              prefetchTask.then(
-                () => {
-                  this._loadEventFired(
-                    `✔ prefetch OK (+${Date.now() - mountTime}ms)`,
-                  );
-                  // $FlowFixMe[unused-promise]
-                  Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
-                    const result = map[IMAGE_PREFETCH_URL];
-                    if (result) {
-                      this._loadEventFired(
-                        `✔ queryCache "${result}" (+${
-                          Date.now() - mountTime
-                        }ms)`,
-                      );
-                    } else {
-                      this._loadEventFired(
-                        `✘ queryCache (+${Date.now() - mountTime}ms)`,
-                      );
-                    }
-                  });
-                },
-                error => {
-                  this._loadEventFired(
-                    `✘ prefetch failed (+${Date.now() - mountTime}ms)`,
-                  );
-                },
+              _loadEventFired(
+                `✔ (prefetched) onLoad (+${Date.now() - mountTime}ms)`,
               );
-            });
+            }
           }}
+          onLoadEnd={() =>
+            _loadEventFired(
+              `✔ (prefetched) onLoadEnd (+${Date.now() - mountTime}ms)`,
+            )
+          }
         />
-        {this.state.startLoadPrefetched ? (
-          <Image
-            source={this.props.prefetchedSource}
-            style={[styles.base, styles.visibleOverflow]}
-            onLoadStart={() =>
-              this._loadEventFired(
-                `✔ (prefetched) onLoadStart (+${Date.now() - mountTime}ms)`,
-              )
-            }
-            onLoad={event => {
-              // Currently this image source feature is only available on iOS.
-              if (event.nativeEvent.source) {
-                const url = event.nativeEvent.source.uri;
-                this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${
-                    Date.now() - mountTime
-                  }ms) for URL ${url}`,
-                );
-              } else {
-                this._loadEventFired(
-                  `✔ (prefetched) onLoad (+${Date.now() - mountTime}ms)`,
-                );
-              }
-            }}
-            onLoadEnd={() =>
-              this._loadEventFired(
-                `✔ (prefetched) onLoadEnd (+${Date.now() - mountTime}ms)`,
-              )
-            }
-          />
-        ) : null}
-        <RNTesterText style={styles.networkImageText} variant="label">
-          {this.state.events.join('\n')}
-        </RNTesterText>
-      </View>
-    );
-  }
-}
+      )}
+      <RNTesterText style={styles.networkImageText}>
+        {events.join('\n')}
+      </RNTesterText>
+    </View>
+  );
+};
 
-type NetworkImageExampleState = {|
+type NetworkImageExampleState = {
   error: ?string,
   loading: boolean,
   progress: $ReadOnlyArray<number>,
-|};
+};
 
 class NetworkImageExample extends React.Component<
   ImageProps,
@@ -277,14 +243,14 @@ class NetworkImageExample extends React.Component<
   }
 }
 
-type ImageSizeExampleState = {|
+type ImageSizeExampleState = {
   width: number,
   height: number,
-|};
+};
 
-type ImageSizeExampleProps = $ReadOnly<{|
+type ImageSizeExampleProps = $ReadOnly<{
   source: ImageSource,
-|}>;
+}>;
 
 class ImageSizeExample extends React.Component<
   ImageSizeExampleProps,
@@ -314,12 +280,12 @@ class ImageSizeExample extends React.Component<
   }
 }
 
-type MultipleSourcesExampleState = {|
+type MultipleSourcesExampleState = {
   width: number,
   height: number,
-|};
+};
 
-type MultipleSourcesExampleProps = $ReadOnly<{||}>;
+type MultipleSourcesExampleProps = $ReadOnly<{}>;
 
 class MultipleSourcesExample extends React.Component<
   MultipleSourcesExampleProps,
@@ -390,11 +356,11 @@ class MultipleSourcesExample extends React.Component<
   }
 }
 
-type LoadingIndicatorSourceExampleState = {|
+type LoadingIndicatorSourceExampleState = {
   imageHash: number,
-|};
+};
 
-type LoadingIndicatorSourceExampleProps = $ReadOnly<{||}>;
+type LoadingIndicatorSourceExampleProps = $ReadOnly<{}>;
 
 class LoadingIndicatorSourceExample extends React.Component<
   LoadingIndicatorSourceExampleProps,
@@ -438,11 +404,11 @@ class LoadingIndicatorSourceExample extends React.Component<
   }
 }
 
-type FadeDurationExampleState = {|
+type FadeDurationExampleState = {
   imageHash: number,
-|};
+};
 
-type FadeDurationExampleProps = $ReadOnly<{||}>;
+type FadeDurationExampleProps = $ReadOnly<{}>;
 
 class FadeDurationExample extends React.Component<
   FadeDurationExampleProps,
@@ -479,13 +445,13 @@ class FadeDurationExample extends React.Component<
   }
 }
 
-type OnLayoutExampleState = {|
+type OnLayoutExampleState = {
   width: number,
   height: number,
   layoutHandlerMessage: string,
-|};
+};
 
-type OnLayoutExampleProps = $ReadOnly<{||}>;
+type OnLayoutExampleProps = $ReadOnly<{}>;
 
 class OnLayoutExample extends React.Component<
   OnLayoutExampleProps,
@@ -574,11 +540,11 @@ class OnLayoutExample extends React.Component<
   }
 }
 
-type OnPartialLoadExampleState = {|
+type OnPartialLoadExampleState = {
   hasLoaded: boolean,
-|};
+};
 
-type OnPartialLoadExampleProps = $ReadOnly<{||}>;
+type OnPartialLoadExampleProps = $ReadOnly<{}>;
 
 class OnPartialLoadExample extends React.Component<
   OnPartialLoadExampleProps,
@@ -612,28 +578,23 @@ class OnPartialLoadExample extends React.Component<
   }
 }
 
-type VectorDrawableExampleState = {||};
-
-type VectorDrawableExampleProps = $ReadOnly<{||}>;
-
-class VectorDrawableExample extends React.Component<
-  VectorDrawableExampleProps,
-  VectorDrawableExampleState,
-> {
-  state: VectorDrawableExampleState = {};
-
-  render(): React.Node {
-    const isEnabled = ReactNativeFeatureFlags.loadVectorDrawablesOnImages();
-    return (
-      <View style={styles.flex}>
-        <RNTesterText>Enabled: {isEnabled ? 'true' : 'false'}</RNTesterText>
-        <View style={styles.vectorDrawableRow}>
-          <Image source={{uri: 'ic_android'}} style={styles.vectorDrawable} />
-        </View>
+const VectorDrawableExample = () => {
+  return (
+    <View style={styles.flex} testID="vector-drawable-example">
+      <View style={styles.horizontal}>
+        <Image
+          source={require('../../assets/ic_android.xml')}
+          style={styles.vectorDrawable}
+        />
+        <Image
+          source={require('../../assets/ic_android.xml')}
+          style={styles.vectorDrawable}
+          tintColor="red"
+        />
       </View>
-    );
-  }
-}
+    </View>
+  );
+};
 
 function CacheControlAndroidExample(): React.Node {
   const [reload, setReload] = React.useState(0);
@@ -933,10 +894,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     boxShadow: '80px 0px 10px 0px hotpink',
     transform: 'rotate(-15deg)',
-  },
-  vectorDrawableRow: {
-    flexDirection: 'row',
-    gap: 8,
   },
   vectorDrawable: {
     height: 64,
@@ -1763,6 +1720,7 @@ exports.examples = [
   },
   {
     title: 'Vector Drawable',
+    name: 'vector-drawable',
     description:
       'Demonstrating an example of loading a vector drawable asset by name',
     render: function (): React.Node {

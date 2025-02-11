@@ -13,7 +13,7 @@
 #include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
@@ -42,33 +42,6 @@ std::shared_ptr<Scheduler> FabricUIManagerBinding::getScheduler() {
   // Need to return a copy of the shared_ptr to make sure this is safe if called
   // concurrently with uninstallFabricUIManager
   return scheduler_;
-}
-
-jni::local_ref<ReadableNativeMap::jhybridobject>
-FabricUIManagerBinding::getInspectorDataForInstance(
-    jni::alias_ref<EventEmitterWrapper::javaobject> eventEmitterWrapper) {
-  auto scheduler = getScheduler();
-  if (!scheduler) {
-    LOG(ERROR) << "FabricUIManagerBinding::startSurface: scheduler disappeared";
-    return ReadableNativeMap::newObjectCxxArgs(folly::dynamic::object());
-  }
-
-  EventEmitterWrapper* cEventEmitter = cthis(eventEmitterWrapper);
-  InspectorData data =
-      scheduler->getInspectorDataForInstance(*cEventEmitter->eventEmitter);
-
-  folly::dynamic result = folly::dynamic::object;
-  result["fileName"] = data.fileName;
-  result["lineNumber"] = data.lineNumber;
-  result["columnNumber"] = data.columnNumber;
-  result["selectedIndex"] = data.selectedIndex;
-  result["props"] = data.props;
-  auto hierarchy = folly::dynamic::array();
-  for (const auto& hierarchyItem : data.hierarchy) {
-    hierarchy.push_back(hierarchyItem);
-  }
-  result["hierarchy"] = hierarchy;
-  return ReadableNativeMap::newObjectCxxArgs(result);
 }
 
 void FabricUIManagerBinding::setPixelDensity(float pointScaleFactor) {
@@ -135,7 +108,7 @@ void FabricUIManagerBinding::startSurfaceWithSurfaceHandler(
     jint surfaceId,
     jni::alias_ref<SurfaceHandlerBinding::jhybridobject> surfaceHandlerBinding,
     jboolean isMountable) {
-  SystraceSection s("FabricUIManagerBinding::startSurfaceWithSurfaceHandler");
+  TraceSection s("FabricUIManagerBinding::startSurfaceWithSurfaceHandler");
   if (enableFabricLogs_) {
     LOG(WARNING)
         << "FabricUIManagerBinding::startSurfaceWithSurfaceHandler() was called (address: "
@@ -180,7 +153,7 @@ void FabricUIManagerBinding::startSurface(
     jint surfaceId,
     jni::alias_ref<jstring> moduleName,
     NativeMap* initialProps) {
-  SystraceSection s("FabricUIManagerBinding::startSurface");
+  TraceSection s("FabricUIManagerBinding::startSurface");
 
   if (enableFabricLogs_) {
     LOG(WARNING)
@@ -235,7 +208,7 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
     jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
-  SystraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
+  TraceSection s("FabricUIManagerBinding::startSurfaceWithConstraints");
 
   if (enableFabricLogs_) {
     LOG(WARNING)
@@ -293,7 +266,7 @@ void FabricUIManagerBinding::startSurfaceWithConstraints(
 
 // Used by non-bridgeless+Fabric
 void FabricUIManagerBinding::stopSurface(jint surfaceId) {
-  SystraceSection s("FabricUIManagerBinding::stopSurface");
+  TraceSection s("FabricUIManagerBinding::stopSurface");
   if (enableFabricLogs_) {
     LOG(WARNING)
         << "FabricUIManagerBinding::stopSurface() was called (address: " << this
@@ -336,7 +309,7 @@ void FabricUIManagerBinding::stopSurface(jint surfaceId) {
 void FabricUIManagerBinding::stopSurfaceWithSurfaceHandler(
     jni::alias_ref<SurfaceHandlerBinding::jhybridobject>
         surfaceHandlerBinding) {
-  SystraceSection s("FabricUIManagerBinding::stopSurfaceWithSurfaceHandler");
+  TraceSection s("FabricUIManagerBinding::stopSurfaceWithSurfaceHandler");
   const auto& surfaceHandler =
       surfaceHandlerBinding->cthis()->getSurfaceHandler();
   if (enableFabricLogs_) {
@@ -377,7 +350,7 @@ void FabricUIManagerBinding::setConstraints(
     jfloat offsetY,
     jboolean isRTL,
     jboolean doLeftAndRightSwapInRTL) {
-  SystraceSection s("FabricUIManagerBinding::setConstraints");
+  TraceSection s("FabricUIManagerBinding::setConstraints");
 
   auto scheduler = getScheduler();
   if (!scheduler) {
@@ -425,7 +398,7 @@ void FabricUIManagerBinding::installFabricUIManager(
     jni::alias_ref<JFabricUIManager::javaobject> javaUIManager,
     EventBeatManager* eventBeatManager,
     ComponentFactory* componentsRegistry) {
-  SystraceSection s("FabricUIManagerBinding::installFabricUIManager");
+  TraceSection s("FabricUIManagerBinding::installFabricUIManager");
 
   enableFabricLogs_ = ReactNativeFeatureFlags::enableFabricLogs();
 
@@ -592,8 +565,7 @@ void FabricUIManagerBinding::schedulerDidRequestPreliminaryViewAllocation(
   // Only the Views of ShadowNode that were pre-allocated (forms views) needs
   // to be destroyed if the ShadowNode is destroyed but it was never mounted
   // on the screen.
-  if (ReactNativeFeatureFlags::enableDeletionOfUnmountedViews() &&
-      shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
+  if (shadowNode.getTraits().check(ShadowNodeTraits::Trait::FormsView)) {
     shadowNode.getFamily().onUnmountedFamilyDestroyed(
         [weakMountingManager =
              std::weak_ptr(mountingManager)](const ShadowNodeFamily& family) {
@@ -661,9 +633,6 @@ void FabricUIManagerBinding::registerNatives() {
           "installFabricUIManager",
           FabricUIManagerBinding::installFabricUIManager),
       makeNativeMethod("startSurface", FabricUIManagerBinding::startSurface),
-      makeNativeMethod(
-          "getInspectorDataForInstance",
-          FabricUIManagerBinding::getInspectorDataForInstance),
       makeNativeMethod(
           "startSurfaceWithConstraints",
           FabricUIManagerBinding::startSurfaceWithConstraints),

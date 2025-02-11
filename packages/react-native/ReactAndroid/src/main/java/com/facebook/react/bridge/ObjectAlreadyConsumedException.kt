@@ -15,5 +15,5 @@ import com.facebook.proguard.annotations.DoNotStrip
  * we reuse the native memory so the underlying array/map is no longer valid.
  */
 @DoNotStrip
-internal class ObjectAlreadyConsumedException
-public @DoNotStrip constructor(detailMessage: String) : RuntimeException(detailMessage) {}
+internal class ObjectAlreadyConsumedException @DoNotStrip constructor(detailMessage: String) :
+    RuntimeException(detailMessage)

@@ -43,6 +43,12 @@ function getImports(
 ): Set<string> {
   const imports: Set<string> = new Set();
 
+  if (type === 'interface') {
+    imports.add(
+      'import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;',
+    );
+  }
+
   component.extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
       case 'ReactNativeBuiltInType':

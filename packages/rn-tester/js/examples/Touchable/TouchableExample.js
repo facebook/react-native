@@ -314,7 +314,7 @@ class TouchableHitSlop extends React.Component<{...}, $FlowFixMeState> {
 
 function TouchableNativeMethodChecker<
   T: component(ref?: React.RefSetter<any>, ...any),
->(props: {|Component: T, name: string|}): React.Node {
+>(props: {Component: T, name: string}): React.Node {
   const [status, setStatus] = useState<?boolean>(null);
   const ref = useRef<any>(null);
 

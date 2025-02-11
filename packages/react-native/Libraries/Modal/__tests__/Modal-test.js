@@ -12,7 +12,7 @@
 'use strict';
 
 const render = require('../../../jest/renderer');
-const View = require('../../Components/View/View');
+const View = require('../../Components/View/View').default;
 const Modal = require('../Modal');
 const React = require('react');
 

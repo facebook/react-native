@@ -14,7 +14,7 @@ const {
   enter,
   expectRendersMatchingSnapshot,
 } = require('../../../Utilities/ReactNativeTestTools');
-const TextInput = require('../TextInput');
+const TextInput = require('../TextInput').default;
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 

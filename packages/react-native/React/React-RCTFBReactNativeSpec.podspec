@@ -73,6 +73,7 @@ Pod::Spec.new do |s|
     {
       :name => '[RN]Check FBReactNativeSpec',
       :execution_position => :before_compile,
+      :always_out_of_date => '1',
       :script => <<-EOS
 echo "Checking whether Codegen has run..."
 fbReactNativeSpecPath="$REACT_NATIVE_PATH/React/FBReactNativeSpec"

@@ -52,6 +52,7 @@ export default class AnimatedAddition extends AnimatedWithChildren {
   __attach(): void {
     this._a.__addChild(this);
     this._b.__addChild(this);
+    super.__attach();
   }
 
   __detach(): void {

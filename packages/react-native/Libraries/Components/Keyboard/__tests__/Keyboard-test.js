@@ -9,9 +9,10 @@
  * @oncall react_native
  */
 
-const LayoutAnimation = require('../../../LayoutAnimation/LayoutAnimation');
+const LayoutAnimation =
+  require('../../../LayoutAnimation/LayoutAnimation').default;
 const dismissKeyboard = require('../../../Utilities/dismissKeyboard');
-const Keyboard = require('../Keyboard');
+const Keyboard = require('../Keyboard').default;
 
 jest.mock('../../../LayoutAnimation/LayoutAnimation');
 jest.mock('../../../Utilities/dismissKeyboard');

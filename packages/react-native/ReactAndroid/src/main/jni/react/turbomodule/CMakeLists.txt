@@ -30,7 +30,6 @@ target_include_directories(callinvokerholder
         )
 
 target_link_libraries(callinvokerholder
-        fb
         fbjni
         runtimeexecutor
         callinvoker
@@ -61,7 +60,6 @@ target_include_directories(
 )
 
 target_link_libraries(turbomodulejsijni
-        fb
         fbjni
         jsi
         react_nativemodule_core

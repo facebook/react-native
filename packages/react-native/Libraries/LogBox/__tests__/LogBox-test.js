@@ -11,7 +11,7 @@
 
 'use strict';
 
-const ExceptionsManager = require('../../Core/ExceptionsManager.js');
+const ExceptionsManager = require('../../Core/ExceptionsManager.js').default;
 const LogBoxData = require('../Data/LogBoxData');
 const LogBox = require('../LogBox').default;
 

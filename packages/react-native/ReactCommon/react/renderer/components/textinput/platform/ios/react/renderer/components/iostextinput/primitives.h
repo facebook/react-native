@@ -10,6 +10,7 @@
 #include <react/renderer/components/textinput/basePrimitives.h>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace facebook::react {
 
@@ -191,6 +192,12 @@ class TextInputTraits final {
    * Default value: `false`.
    */
   bool selectTextOnFocus{false};
+
+  /*
+   * iOS-only
+   * Default value: `empty` (`null`).
+   */
+  std::vector<std::string> dataDetectorTypes{};
 
   /*
    * iOS-only (inherently iOS-specific)

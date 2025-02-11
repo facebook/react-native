@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeIntentAndroid';
-import NativeIntentAndroid from '../../src/private/specs/modules/NativeIntentAndroid';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeIntentAndroid';
+import NativeIntentAndroid from '../../src/private/specs_DEPRECATED/modules/NativeIntentAndroid';
 export default NativeIntentAndroid;

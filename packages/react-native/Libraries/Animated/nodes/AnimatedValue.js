@@ -8,8 +8,8 @@
  * @format
  */
 
-'use strict';
-
+import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
@@ -85,6 +85,9 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  * See https://reactnative.dev/docs/animatedvalue
  */
 export default class AnimatedValue extends AnimatedWithChildren {
+  #listenerCount: number = 0;
+  #updateSubscription: ?EventSubscription = null;
+
   _value: number;
   _startingValue: number;
   _offset: number;
@@ -116,6 +119,67 @@ export default class AnimatedValue extends AnimatedWithChildren {
 
   __getValue(): number {
     return this._value + this._offset;
+  }
+
+  __makeNative(platformConfig: ?PlatformConfig): void {
+    super.__makeNative(platformConfig);
+    if (this.#listenerCount > 0) {
+      this.#ensureUpdateSubscriptionExists();
+    }
+  }
+
+  addListener(callback: (value: any) => mixed): string {
+    const id = super.addListener(callback);
+    this.#listenerCount++;
+    if (this.__isNative) {
+      this.#ensureUpdateSubscriptionExists();
+    }
+    return id;
+  }
+
+  removeListener(id: string): void {
+    super.removeListener(id);
+    this.#listenerCount--;
+    if (this.__isNative && this.#listenerCount === 0) {
+      this.#updateSubscription?.remove();
+    }
+  }
+
+  removeAllListeners(): void {
+    super.removeAllListeners();
+    this.#listenerCount = 0;
+    if (this.__isNative) {
+      this.#updateSubscription?.remove();
+    }
+  }
+
+  #ensureUpdateSubscriptionExists(): void {
+    if (this.#updateSubscription != null) {
+      return;
+    }
+    const nativeTag = this.__getNativeTag();
+    NativeAnimatedAPI.startListeningToAnimatedNodeValue(nativeTag);
+    const subscription: EventSubscription =
+      NativeAnimatedHelper.nativeEventEmitter.addListener(
+        'onAnimatedValueUpdate',
+        data => {
+          if (data.tag === nativeTag) {
+            this.__onAnimatedValueUpdateReceived(data.value);
+          }
+        },
+      );
+
+    this.#updateSubscription = {
+      remove: () => {
+        // Only this function assigns to `this.#updateSubscription`.
+        if (this.#updateSubscription == null) {
+          return;
+        }
+        this.#updateSubscription = null;
+        subscription.remove();
+        NativeAnimatedAPI.stopListeningToAnimatedNodeValue(nativeTag);
+      },
+    };
   }
 
   /**

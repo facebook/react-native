@@ -127,7 +127,7 @@ import * as React from 'react';
  */
 
 // Public methods for ScrollView
-export type ScrollViewImperativeMethods = $ReadOnly<{|
+export type ScrollViewImperativeMethods = $ReadOnly<{
   getScrollResponder: $PropertyType<ScrollView, 'getScrollResponder'>,
   getScrollableNode: $PropertyType<ScrollView, 'getScrollableNode'>,
   getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>,
@@ -141,19 +141,19 @@ export type ScrollViewImperativeMethods = $ReadOnly<{|
     ScrollView,
     'scrollResponderScrollNativeHandleToKeyboard',
   >,
-|}>;
+}>;
 
 export type DecelerationRateType = 'fast' | 'normal' | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
 
-type PublicScrollViewInstance = $ReadOnly<{|
+type PublicScrollViewInstance = $ReadOnly<{
   ...HostInstance,
   ...ScrollViewImperativeMethods,
-|}>;
+}>;
 
 type InnerViewInstance = React.ElementRef<View>;
 
-type IOSProps = $ReadOnly<{|
+type IOSProps = $ReadOnly<{
   /**
    * Controls whether iOS should automatically adjust the content inset
    * for scroll views that are placed behind a navigation bar or
@@ -307,9 +307,9 @@ type IOSProps = $ReadOnly<{|
     | 'never'
     | 'always'
   ),
-|}>;
+}>;
 
-type AndroidProps = $ReadOnly<{|
+type AndroidProps = $ReadOnly<{
   /**
    * Enables nested scrolling for Android API level 21+.
    * Nested scrolling is supported by default on iOS
@@ -364,14 +364,14 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   fadingEdgeLength?: ?number,
-|}>;
+}>;
 
 type StickyHeaderComponentType = component(
   ref?: React.RefSetter<$ReadOnly<interface {setNextHeaderY: number => void}>>,
   ...ScrollViewStickyHeaderProps
 );
 
-export type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{
   ...ViewProps,
   ...IOSProps,
   ...AndroidProps,
@@ -494,10 +494,10 @@ export type Props = $ReadOnly<{|
    * whether content is "visible" or not.
    *
    */
-  maintainVisibleContentPosition?: ?$ReadOnly<{|
+  maintainVisibleContentPosition?: ?$ReadOnly<{
     minIndexForVisible: number,
     autoscrollToTopThreshold?: ?number,
-  |}>,
+  }>,
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
    */
@@ -651,17 +651,17 @@ export type Props = $ReadOnly<{|
    * measure, measureLayout, etc.
    */
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
-|}>;
+}>;
 
-type State = {|
+type State = {
   layoutHeight: ?number,
-|};
+};
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
-export type ScrollViewComponentStatics = $ReadOnly<{|
+export type ScrollViewComponentStatics = $ReadOnly<{
   Context: typeof ScrollViewContext,
-|}>;
+}>;
 
 /**
  * Component that wraps platform ScrollView while providing
@@ -712,9 +712,11 @@ class ScrollView extends React.Component<Props, State> {
 
   _scrollAnimatedValue: AnimatedImplementation.Value;
   _scrollAnimatedValueAttachment: ?{detach: () => void, ...} = null;
-  _stickyHeaderRefs: Map<string, React.ElementRef<StickyHeaderComponentType>> =
-    new Map();
-  _headerLayoutYs: Map<string, number> = new Map();
+  _stickyHeaderRefs: Map<
+    React.Key,
+    React.ElementRef<StickyHeaderComponentType>,
+  > = new Map();
+  _headerLayoutYs: Map<React.Key, number> = new Map();
 
   _keyboardMetrics: ?KeyboardMetrics = null;
   _additionalScrollOffset: number = 0;
@@ -976,22 +978,22 @@ class ScrollView extends React.Component<Props, State> {
    * @platform ios
    */
   scrollResponderZoomTo: (
-    rect: {|
+    rect: {
       x: number,
       y: number,
       width: number,
       height: number,
       animated?: boolean,
-    |},
+    },
     animated?: boolean, // deprecated, put this inside the rect argument instead
   ) => void = (
-    rect: {|
+    rect: {
       x: number,
       y: number,
       width: number,
       height: number,
       animated?: boolean,
-    |},
+    },
     animated?: boolean, // deprecated, put this inside the rect argument instead
   ) => {
     invariant(Platform.OS === 'ios', 'zoomToRect is not implemented');
@@ -1066,7 +1068,11 @@ class ScrollView extends React.Component<Props, State> {
     }
   };
 
-  _getKeyForIndex(index: $FlowFixMe, childArray: $FlowFixMe): $FlowFixMe {
+  _getKeyForIndex(
+    index: number,
+    // $FlowFixMe[unclear-type] - The children and its key is unknown.
+    childArray: any,
+  ): React.Key {
     const child = childArray[index];
     return child && child.key;
   }
@@ -1099,7 +1105,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  _onStickyHeaderLayout(index: $FlowFixMe, event: $FlowFixMe, key: $FlowFixMe) {
+  _onStickyHeaderLayout(index: number, event: LayoutEvent, key: React.Key) {
     const {stickyHeaderIndices} = this.props;
     if (!stickyHeaderIndices) {
       return;
@@ -1913,5 +1919,5 @@ Wrapper.displayName = 'ScrollView';
 // $FlowExpectedError[prop-missing]
 Wrapper.Context = ScrollViewContext;
 
-module.exports = ((Wrapper: $FlowFixMe): typeof Wrapper &
+export default ((Wrapper: $FlowFixMe): typeof Wrapper &
   ScrollViewComponentStatics);

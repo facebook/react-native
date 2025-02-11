@@ -227,7 +227,7 @@ internal class BorderDrawable(
     return borderColors?.edgeColors?.get(position.ordinal) ?: Color.BLACK
   }
 
-  public fun invalidateSelfAndUpdatePath() {
+  fun invalidateSelfAndUpdatePath() {
     needUpdatePath = true
     invalidateSelf()
   }

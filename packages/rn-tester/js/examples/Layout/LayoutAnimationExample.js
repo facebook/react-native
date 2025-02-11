@@ -19,14 +19,14 @@ import {
   View,
 } from 'react-native';
 
-type ExampleViewSpec = {|
+type ExampleViewSpec = {
   key: number,
-|};
+};
 
-type AddRemoveExampleState = {|
+type AddRemoveExampleState = {
   views: Array<ExampleViewSpec>,
   nextKey: number,
-|};
+};
 
 function shuffleArray(array: Array<ExampleViewSpec>) {
   var currentIndex: number = array.length,
@@ -149,9 +149,9 @@ class AddRemoveExample extends React.Component<{...}, AddRemoveExampleState> {
   }
 }
 
-type ReparentingExampleState = {|
+type ReparentingExampleState = {
   hasBorder: boolean,
-|};
+};
 
 class ReparentingExample extends React.Component<
   {...},
@@ -217,9 +217,9 @@ const BlueSquare = () => (
   </View>
 );
 
-type CrossFadeExampleState = {|
+type CrossFadeExampleState = {
   toggled: boolean,
-|};
+};
 
 class CrossFadeExample extends React.Component<{...}, CrossFadeExampleState> {
   state: CrossFadeExampleState = {
@@ -249,10 +249,10 @@ class CrossFadeExample extends React.Component<{...}, CrossFadeExampleState> {
   }
 }
 
-type LayoutUpdateExampleState = {|
+type LayoutUpdateExampleState = {
   width: number,
   height: number,
-|};
+};
 
 class LayoutUpdateExample extends React.Component<
   {...},

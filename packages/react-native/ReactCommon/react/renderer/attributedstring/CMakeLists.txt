@@ -14,21 +14,21 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_attributedstring_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_attributedstring OBJECT ${react_render_attributedstring_SRC})
+file(GLOB react_renderer_attributedstring_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_attributedstring OBJECT ${react_renderer_attributedstring_SRC})
 
-target_include_directories(react_render_attributedstring PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_renderer_attributedstring PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_render_attributedstring
+target_link_libraries(react_renderer_attributedstring
         folly_runtime
         glog
         glog_init
         react_debug
         rrc_view
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_mapbuffer
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_mapbuffer
         react_utils
         rrc_view
         yoga

@@ -41,12 +41,6 @@ class AndroidTextInputShadowNode final
   }
 
   /*
-   * Returns a `AttributedString` which represents text content of the node.
-   */
-  AttributedString getAttributedString() const;
-  AttributedString getPlaceholderAttributedString() const;
-
-  /*
    * Associates a shared TextLayoutManager with the node.
    * `TextInputShadowNode` uses the manager to measure text content
    * and construct `TextInputState` objects.
@@ -54,28 +48,41 @@ class AndroidTextInputShadowNode final
   void setTextLayoutManager(
       std::shared_ptr<const TextLayoutManager> textLayoutManager);
 
-#pragma mark - LayoutableShadowNode
-
+ protected:
   Size measureContent(
       const LayoutContext& layoutContext,
       const LayoutConstraints& layoutConstraints) const override;
+
   void layout(LayoutContext layoutContext) override;
 
   Float baseline(const LayoutContext& layoutContext, Size size) const override;
 
- private:
-  /**
-   * Get the most up-to-date attributed string for measurement and State.
-   */
-  AttributedString getMostRecentAttributedString() const;
+  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 
+  /*
+   * Determines the constraints to use while measure the underlying text
+   */
+  LayoutConstraints getTextConstraints(
+      const LayoutConstraints& layoutConstraints) const;
+
+ private:
   /*
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
   void updateStateIfNeeded();
 
-  std::shared_ptr<const TextLayoutManager> textLayoutManager_;
+  /*
+   * Returns a `AttributedString` which represents text content of the node.
+   */
+  AttributedString getAttributedString() const;
+
+  /**
+   * Get the most up-to-date attributed string for measurement and State.
+   */
+  AttributedString getMostRecentAttributedString() const;
+
+  AttributedString getPlaceholderAttributedString() const;
 };
 
 } // namespace facebook::react

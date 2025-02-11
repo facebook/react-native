@@ -19,7 +19,7 @@ internal class TrackingAnimatedNode(
   private val toValueNode: Int = config.getInt("toValue")
   private val valueNode: Int = config.getInt("value")
 
-  public override fun update() {
+  override fun update() {
     val toValue = nativeAnimatedNodesManager.getNodeById(toValueNode)
     val valAnimatedNode = toValue as? ValueAnimatedNode
     if (valAnimatedNode != null) {
@@ -30,7 +30,7 @@ internal class TrackingAnimatedNode(
     nativeAnimatedNodesManager.startAnimatingNode(animationId, valueNode, animationConfig, null)
   }
 
-  public override fun prettyPrint(): String =
+  override fun prettyPrint(): String =
       "TrackingAnimatedNode[$tag]: animationID: $animationId toValueNode: $toValueNode " +
           "valueNode: $valueNode animationConfig: $animationConfig"
 }

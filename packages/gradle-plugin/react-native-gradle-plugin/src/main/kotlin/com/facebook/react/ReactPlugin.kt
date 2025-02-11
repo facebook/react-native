@@ -27,7 +27,6 @@ import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.NdkConfiguratorUtils.configureReactNativeNdk
 import com.facebook.react.utils.ProjectUtils.isNewArchEnabled
 import com.facebook.react.utils.ProjectUtils.needsCodegenFromPackageJson
-import com.facebook.react.utils.ProjectUtils.shouldWarnIfNewArchFlagIsSetInPrealpha
 import com.facebook.react.utils.findPackageJsonFile
 import java.io.File
 import kotlin.system.exitProcess
@@ -42,7 +41,6 @@ class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     checkJvmVersion(project)
     val extension = project.extensions.create("react", ReactExtension::class.java, project)
-    checkIfNewArchFlagIsSet(project, extension)
 
     // We register a private extension on the rootProject so that project wide configs
     // like codegen config can be propagated from app project to libraries.
@@ -67,7 +65,7 @@ class ReactPlugin : Plugin<Project> {
         val versionString = versionAndGroupStrings.first
         val groupString = versionAndGroupStrings.second
         configureDependencies(project, versionString, groupString)
-        configureRepositories(project, reactNativeDir)
+        configureRepositories(project)
       }
 
       configureReactNativeNdk(project, extension)
@@ -109,23 +107,6 @@ class ReactPlugin : Plugin<Project> {
       """
               .trimIndent())
       exitProcess(1)
-    }
-  }
-
-  private fun checkIfNewArchFlagIsSet(project: Project, extension: ReactExtension) {
-    if (project.shouldWarnIfNewArchFlagIsSetInPrealpha(extension)) {
-      project.logger.warn(
-          """
-
-      ********************************************************************************
-
-      WARNING: This version of React Native is ignoring the `newArchEnabled` flag you set. Please set it to true or remove it to suppress this warning.
-
-
-      ********************************************************************************
-
-      """
-              .trimIndent())
     }
   }
 

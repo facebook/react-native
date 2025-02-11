@@ -68,10 +68,10 @@ class NewArchitectureHelper
         end
     end
 
-    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = get_folly_config()[:version])
+    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = Helpers::Constants.folly_config[:version])
         # Pod::Specification does not have getters so, we have to read
         # the existing values from a hash representation of the object.
-        folly_config = get_folly_config()
+        folly_config = Helpers::Constants.folly_config
         folly_compiler_flags = folly_config[:compiler_flags]
 
         hash = spec.to_hash
@@ -134,18 +134,20 @@ class NewArchitectureHelper
         spec.dependency "React-rendererdebug"
         # This dependency is required for the cases when the pod includes generated sources, specifically Props.cpp.
         spec.dependency "DoubleConversion"
+        spec.dependency 'React-jsi'
 
         if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
             spec.dependency "hermes-engine"
+            spec.dependency 'React-hermes'
         else
-            spec.dependency "React-jsi"
+            spec.dependency "React-jsc"
         end
 
         spec.pod_target_xcconfig = current_config
     end
 
     def self.folly_compiler_flags
-        folly_config = get_folly_config()
+        folly_config = Helpers::Constants.folly_config
         return folly_config[:compiler_flags]
     end
 
@@ -158,37 +160,7 @@ class NewArchitectureHelper
         return package["version"]
     end
 
-    def self.compute_new_arch_enabled(new_arch_enabled, react_native_version)
-        # Regex that identify a version with the syntax `<major>.<minor>.<patch>[-<prerelease>[.-]k]
-        # where
-        # - major is a number
-        # - minor is a number
-        # - patch is a number
-        # - prerelease is a string (can include numbers)
-        # - k is a number
-        version_regex = /^(\d+)\.(\d+)\.(\d+)(?:-(\w+(?:[-.]\d+)?))?$/
-
-        if match_data = react_native_version.match(version_regex)
-
-            prerelease = match_data[4].to_s
-
-            # We want to enforce the new architecture for 1.0.0 and greater,
-            # but not for 1000 as version 1000 is currently main.
-            if prerelease.include?("prealpha")
-                if ENV['RCT_NEW_ARCH_ENABLED'] != nil && !@@NewArchWarningEmitted
-                    warning_message = "[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
-                                      "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."
-                    Pod::UI.warn warning_message
-                    @@NewArchWarningEmitted = true
-                end
-
-                return "1"
-            end
-        end
-        return new_arch_enabled ? "1" : "0"
-    end
-
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == nil || ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+        return ENV["RCT_NEW_ARCH_ENABLED"] == 0 ? false : true
     end
 end

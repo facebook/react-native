@@ -24,8 +24,8 @@ target_link_libraries(rrc_native
         glog_init
         jsi
         react_debug
-        react_render_core
-        react_render_debug
+        react_renderer_core
+        react_renderer_debug
         react_utils
         callinvoker
 )

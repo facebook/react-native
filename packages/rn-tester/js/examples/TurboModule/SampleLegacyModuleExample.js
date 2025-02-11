@@ -22,7 +22,7 @@ import {
   View,
 } from 'react-native';
 
-type State = {|
+type State = {
   testResults: {
     [string]: {
       type: string,
@@ -31,7 +31,7 @@ type State = {|
     },
     ...
   },
-|};
+};
 
 let triedLoadingModuleOnce = false;
 let module = null;
@@ -67,8 +67,8 @@ function stringify(obj: mixed): string {
   return (JSON.stringify(obj, replacer) || '').replace(/"/g, "'");
 }
 
-class SampleLegacyModuleExample extends React.Component<{||}, State> {
-  static contextType: React$Context<RootTag> = RootTagContext;
+class SampleLegacyModuleExample extends React.Component<{}, State> {
+  static contextType: React.Context<RootTag> = RootTagContext;
 
   state: State = {
     testResults: {},

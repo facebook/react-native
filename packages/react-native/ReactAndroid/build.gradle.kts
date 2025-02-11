@@ -111,37 +111,37 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/devtoolsruntimesettings/",
                           "react/devtoolsruntimesettings/"),
-                      // react_render_animations
+                      // react_renderer_animations
                       Pair(
                           "../ReactCommon/react/renderer/animations/",
                           "react/renderer/animations/"),
-                      // react_render_componentregistry
+                      // react_renderer_componentregistry
                       Pair(
                           "../ReactCommon/react/renderer/componentregistry/",
                           "react/renderer/componentregistry/"),
-                      // react_render_consistency
+                      // react_renderer_consistency
                       Pair(
                           "../ReactCommon/react/renderer/consistency/",
                           "react/renderer/consistency/"),
-                      // react_render_core
+                      // react_renderer_core
                       Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
                       // react_debug
                       Pair("../ReactCommon/react/debug/", "react/debug/"),
-                      // react_render_debug
+                      // react_renderer_debug
                       Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
-                      // react_render_graphics
+                      // react_renderer_graphics
                       Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
                       Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
-                      // react_render_imagemanager
+                      // react_renderer_imagemanager
                       Pair(
                           "../ReactCommon/react/renderer/imagemanager/",
                           "react/renderer/imagemanager/"),
                       Pair("../ReactCommon/react/renderer/imagemanager/platform/cxx/", ""),
-                      // react_render_mounting
+                      // react_renderer_mounting
                       Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
-                      // react_render_scheduler
+                      // react_renderer_scheduler
                       Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
-                      // react_render_uimanager
+                      // react_renderer_uimanager
                       Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
                       // react_utils
                       Pair("../ReactCommon/react/utils/", "react/utils/"),
@@ -160,7 +160,7 @@ val preparePrefab by
                           "react/renderer/components/root/"),
                       // runtimeexecutor
                       Pair("../ReactCommon/runtimeexecutor/", ""),
-                      // react_render_textlayoutmanager
+                      // react_renderer_textlayoutmanager
                       Pair(
                           "../ReactCommon/react/renderer/textlayoutmanager/",
                           "react/renderer/textlayoutmanager/"),
@@ -221,7 +221,7 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/performance/timeline/",
                           "react/performance/timeline/"),
-                      // react_render_observers_events
+                      // react_renderer_observers_events
                       Pair(
                           "../ReactCommon/react/renderer/observers/events/",
                           "react/renderer/observers/events/"),
@@ -249,8 +249,9 @@ val createNativeDepsDirectories by
       thirdPartyNdkDir.mkdirs()
     }
 
+val downloadBoostDest = File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz")
 val downloadBoost by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src(
           "https://archives.boost.io/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
@@ -258,19 +259,22 @@ val downloadBoost by
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
+      dest(downloadBoostDest)
     }
 
 val prepareBoost by
     tasks.registering(PrepareBoostTask::class) {
       dependsOn(if (boostPathOverride != null) emptyList() else listOf(downloadBoost))
-      boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(downloadBoost.dest))
+      boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(downloadBoostDest))
+      boostThirdPartyJniPath.set(project.file("src/main/jni/third-party/boost"))
       boostVersion.set(BOOST_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "boost"))
     }
 
+val downloadDoubleConversionDest =
+    File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz")
 val downloadDoubleConversion by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src(
           "https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz")
@@ -278,13 +282,13 @@ val downloadDoubleConversion by
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
+      dest(downloadDoubleConversionDest)
     }
 
 val prepareDoubleConversion by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadDoubleConversion))
-      from(dependenciesPath ?: tarTree(downloadDoubleConversion.dest))
+      from(dependenciesPath ?: tarTree(downloadDoubleConversionDest))
       from("src/main/jni/third-party/double-conversion/")
       include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "CMakeLists.txt")
       filesMatching("*/src/**/*") { this.path = "double-conversion/${this.name}" }
@@ -292,20 +296,21 @@ val prepareDoubleConversion by
       into("$thirdPartyNdkDir/double-conversion")
     }
 
+val downloadFollyDest = File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz")
 val downloadFolly by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       src("https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
+      dest(downloadFollyDest)
     }
 
 val prepareFolly by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFolly))
-      from(dependenciesPath ?: tarTree(downloadFolly.dest))
+      from(dependenciesPath ?: tarTree(downloadFollyDest))
       from("src/main/jni/third-party/folly/")
       include("folly-${FOLLY_VERSION}/folly/**/*", "CMakeLists.txt")
       eachFile { this.path = this.path.removePrefix("folly-${FOLLY_VERSION}/") }
@@ -313,21 +318,22 @@ val prepareFolly by
       into("$thirdPartyNdkDir/folly")
     }
 
+val downloadFastFloatDest = File(downloadsDir, "fast_float-${FAST_FLOAT_VERSION}.tar.gz")
 val downloadFastFloat by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/fastfloat/fast_float/archive/v${FAST_FLOAT_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "fast_float-${FAST_FLOAT_VERSION}.tar.gz"))
+      dest(downloadFastFloatDest)
     }
 
 val prepareFastFloat by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFastFloat))
-      from(dependenciesPath ?: tarTree(downloadFastFloat.dest))
+      from(dependenciesPath ?: tarTree(downloadFastFloatDest))
       from("src/main/jni/third-party/fast_float/")
       include("fast_float-${FAST_FLOAT_VERSION}/include/**/*", "CMakeLists.txt")
       eachFile { this.path = this.path.removePrefix("fast_float-${FAST_FLOAT_VERSION}/") }
@@ -335,21 +341,22 @@ val prepareFastFloat by
       into("$thirdPartyNdkDir/fast_float")
     }
 
+val downloadFmtDest = File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz")
 val downloadFmt by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/fmtlib/fmt/archive/${FMT_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
+      dest(downloadFmtDest)
     }
 
 val prepareFmt by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFmt))
-      from(dependenciesPath ?: tarTree(downloadFmt.dest))
+      from(dependenciesPath ?: tarTree(downloadFmtDest))
       from("src/main/jni/third-party/fmt/")
       include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "CMakeLists.txt")
       eachFile { this.path = this.path.removePrefix("fmt-${FMT_VERSION}/") }
@@ -357,32 +364,34 @@ val prepareFmt by
       into("$thirdPartyNdkDir/fmt")
     }
 
+val downloadGlogDest = File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz")
 val downloadGlog by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
+      dest(downloadGlogDest)
     }
 
+val downloadGtestDest = File(downloadsDir, "gtest.tar.gz")
 val downloadGtest by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/google/googletest/archive/refs/tags/release-${GTEST_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
       quiet(true)
-      dest(File(downloadsDir, "gtest.tar.gz"))
+      dest(downloadGtestDest)
     }
 
 val prepareGtest by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGtest))
-      from(dependenciesPath ?: tarTree(downloadGtest.dest))
+      from(dependenciesPath ?: tarTree(downloadGtestDest))
       eachFile { this.path = (this.path.removePrefix("googletest-release-${GTEST_VERSION}/")) }
       into(File(thirdPartyNdkDir, "googletest"))
     }
@@ -390,7 +399,8 @@ val prepareGtest by
 val prepareGlog by
     tasks.registering(PrepareGlogTask::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGlog))
-      glogPath.setFrom(dependenciesPath ?: tarTree(downloadGlog.dest))
+      glogPath.setFrom(dependenciesPath ?: tarTree(downloadGlogDest))
+      glogThirdPartyJniPath.set(project.file("src/main/jni/third-party/glog/"))
       glogVersion.set(GLOG_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "glog"))
     }
@@ -513,6 +523,7 @@ android {
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
     buildConfigField("boolean", "UNSTABLE_ENABLE_FUSEBOX_RELEASE", "false")
     buildConfigField("boolean", "ENABLE_PERFETTO", "false")
+    buildConfigField("boolean", "UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE", "false")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
 

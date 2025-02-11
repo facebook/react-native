@@ -21,12 +21,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStructure
 import android.view.Window
-import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.facebook.common.logging.FLog
 import com.facebook.react.R
 import com.facebook.react.bridge.GuardedRunnable
@@ -221,6 +222,15 @@ public class ReactModalHostView(context: ThemedReactContext) :
 
   private fun getCurrentActivity(): Activity? = (context as ThemedReactContext).currentActivity
 
+  private fun isFlagSecureSet(activity: Activity?): Boolean {
+    if (activity == null) {
+      return false
+    }
+
+    val flags = activity.window.attributes.flags
+    return (flags and WindowManager.LayoutParams.FLAG_SECURE) != 0
+  }
+
   /**
    * showOrUpdate will display the Dialog. It is called by the manager once all properties are set
    * because we need to know all of them before creating the Dialog. It is also smart during updates
@@ -294,6 +304,11 @@ public class ReactModalHostView(context: ThemedReactContext) :
     if (hardwareAccelerated) {
       newDialog.window?.addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
     }
+    val flagSecureSet = isFlagSecureSet(currentActivity)
+    if (flagSecureSet) {
+      newDialog.window?.setFlags(
+          WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+    }
     if (currentActivity?.isFinishing == false) {
       newDialog.show()
       updateSystemAppearance()
@@ -366,6 +381,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
     }
   }
 
+  /**
+   * Updates the system appearance of the dialog to match the activity that it is being displayed
+   * on.
+   */
   private fun updateSystemAppearance() {
     val currentActivity = getCurrentActivity() ?: return
     val dialog = checkNotNull(dialog) { "dialog must exist when we call updateProperties" }
@@ -374,16 +393,40 @@ public class ReactModalHostView(context: ThemedReactContext) :
     val activityWindow = currentActivity.window
     // Modeled after the version check in StatusBarModule.setStyle
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
-      val insetsController: WindowInsetsController = checkNotNull(activityWindow.insetsController)
-      val activityAppearance: Int = insetsController.systemBarsAppearance
+      val activityWindowInsetsController =
+          WindowInsetsControllerCompat(activityWindow, activityWindow.decorView)
+      val dialogWindowInsetsController =
+          WindowInsetsControllerCompat(dialogWindow, dialogWindow.decorView)
 
-      val activityLightStatusBars =
-          activityAppearance and WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+      dialogWindowInsetsController.isAppearanceLightStatusBars =
+          activityWindowInsetsController.isAppearanceLightStatusBars
 
-      dialogWindow.insetsController?.setSystemBarsAppearance(
-          activityLightStatusBars, WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+      val activityRootWindowInsets =
+          WindowInsetsCompat.toWindowInsetsCompat(activityWindow.decorView.rootWindowInsets)
+
+      syncSystemBarsVisibility(activityRootWindowInsets, dialogWindowInsetsController)
     } else {
       dialogWindow.decorView.systemUiVisibility = activityWindow.decorView.systemUiVisibility
+    }
+  }
+
+  /**
+   * Syncs the visibility of the system bars based on their visibility in the root window insets.
+   * This ensures consistency between the system bars visibility in the activity and the dialog.
+   */
+  private fun syncSystemBarsVisibility(
+      activityRootWindowInsets: WindowInsetsCompat,
+      dialogWindowInsetsController: WindowInsetsControllerCompat?,
+      types: List<Int> =
+          listOf(WindowInsetsCompat.Type.statusBars(), WindowInsetsCompat.Type.navigationBars()),
+  ) {
+    types.forEach { type ->
+      val isVisible = activityRootWindowInsets.isVisible(type)
+      if (isVisible) {
+        dialogWindowInsetsController?.show(type)
+      } else {
+        dialogWindowInsetsController?.hide(type)
+      }
     }
   }
 

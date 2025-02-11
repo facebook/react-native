@@ -30,8 +30,8 @@ const DESTRUCTIVE_INDEX = 3;
 const CANCEL_INDEX = 4;
 const DISABLED_BUTTON_INDICES = [1, 2];
 
-type Props = $ReadOnly<{||}>;
-type State = {|clicked: string|};
+type Props = $ReadOnly<{}>;
+type State = {clicked: string};
 class ActionSheetExample extends React.Component<Props, State> {
   state: State = {
     clicked: 'none',
@@ -359,11 +359,11 @@ class ShareActionSheetExample extends React.Component<
         subject: 'a subject to go in the email heading',
         excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
       },
-      error => Alert.alert('Error', error),
+      error => Alert.alert('Error', error?.message),
       (completed, method) => {
         let text;
         if (completed) {
-          text = `Shared via ${method}`;
+          text = `Shared via ${method ?? 'unknown'}`;
         } else {
           text = "You didn't share";
         }
@@ -410,11 +410,11 @@ class ShareScreenshotExample extends React.Component<
             url: uri,
             excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
           },
-          error => Alert.alert('Error', error),
+          error => Alert.alert('Error', error?.message),
           (completed, method) => {
             let text;
             if (completed) {
-              text = `Shared via ${method}`;
+              text = `Shared via ${method ?? 'unknown'}`;
             } else {
               text = "You didn't share";
             }
@@ -474,11 +474,11 @@ class ShareScreenshotAnchorExample extends React.Component<
               ? findNodeHandle(this.anchorRef.current)
               : undefined,
           },
-          error => Alert.alert('Error', error),
+          error => Alert.alert('Error', error?.message),
           (completed, method) => {
             let text;
             if (completed) {
-              text = `Shared via ${method}`;
+              text = `Shared via ${method ?? 'unknown'}`;
             } else {
               text = "You didn't share";
             }

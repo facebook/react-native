@@ -20,8 +20,7 @@ import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 
-internal class ReactSafeAreaView(public val reactContext: ThemedReactContext) :
-    ViewGroup(reactContext) {
+internal class ReactSafeAreaView(val reactContext: ThemedReactContext) : ViewGroup(reactContext) {
   internal var stateWrapper: StateWrapper? = null
 
   override fun onAttachedToWindow() {

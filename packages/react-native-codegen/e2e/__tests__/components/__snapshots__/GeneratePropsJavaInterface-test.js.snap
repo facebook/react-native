@@ -16,8 +16,9 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface ArrayPropsNativeComponentViewManagerInterface<T extends View> {
+public interface ArrayPropsNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setNames(T view, @Nullable ReadableArray value);
   void setDisableds(T view, @Nullable ReadableArray value);
   void setProgress(T view, @Nullable ReadableArray value);
@@ -30,6 +31,7 @@ public interface ArrayPropsNativeComponentViewManagerInterface<T extends View> {
   void setSizes(T view, @Nullable ReadableArray value);
   void setObject(T view, @Nullable ReadableArray value);
   void setArrayOfObjects(T view, @Nullable ReadableArray value);
+  void setArrayOfMixed(T view, @Nullable ReadableArray value);
 }
 ",
 }
@@ -50,8 +52,9 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface BooleanPropNativeComponentViewManagerInterface<T extends View> {
+public interface BooleanPropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setDisabled(T view, boolean value);
   void setDisabledNullable(T view, @Nullable Boolean value);
 }
@@ -74,8 +77,9 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface ColorPropNativeComponentViewManagerInterface<T extends View> {
+public interface ColorPropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setTintColor(T view, @Nullable Integer value);
 }
 ",
@@ -97,9 +101,10 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 import com.facebook.yoga.YogaValue;
 
-public interface DimensionPropNativeComponentViewManagerInterface<T extends View> {
+public interface DimensionPropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setMarginBack(T view, @Nullable YogaValue value);
 }
 ",
@@ -120,8 +125,9 @@ Object {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface EdgeInsetsPropNativeComponentViewManagerInterface<T extends View> {
+public interface EdgeInsetsPropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   // No props
 }
 ",
@@ -143,8 +149,9 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface EnumPropNativeComponentViewManagerInterface<T extends View> {
+public interface EnumPropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setAlignment(T view, @Nullable String value);
   void setIntervals(T view, @Nullable Integer value);
 }
@@ -166,8 +173,9 @@ Object {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface EventNestedObjectPropsNativeComponentViewManagerInterface<T extends View> {
+public interface EventNestedObjectPropsNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setDisabled(T view, boolean value);
 }
 ",
@@ -188,8 +196,9 @@ Object {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface EventPropsNativeComponentViewManagerInterface<T extends View> {
+public interface EventPropsNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setDisabled(T view, boolean value);
 }
 ",
@@ -211,8 +220,9 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface FloatPropsNativeComponentViewManagerInterface<T extends View> {
+public interface FloatPropsNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setBlurRadius(T view, float value);
   void setBlurRadius2(T view, float value);
   void setBlurRadius3(T view, float value);
@@ -241,8 +251,9 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface ImagePropNativeComponentViewManagerInterface<T extends View> {
+public interface ImagePropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setThumbImage(T view, @Nullable ReadableMap value);
 }
 ",
@@ -263,8 +274,9 @@ Object {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface IntegerPropNativeComponentViewManagerInterface<T extends View> {
+public interface IntegerPropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setProgress1(T view, int value);
   void setProgress2(T view, int value);
   void setProgress3(T view, int value);
@@ -288,8 +300,9 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface InterfaceOnlyNativeComponentViewManagerInterface<T extends View> {
+public interface InterfaceOnlyNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setTitle(T view, @Nullable String value);
 }
 ",
@@ -311,8 +324,9 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface MixedPropNativeComponentViewManagerInterface<T extends View> {
+public interface MixedPropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setMixedProp(T view, Dynamic value);
 }
 ",
@@ -335,8 +349,9 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface MultiNativePropNativeComponentViewManagerInterface<T extends View> {
+public interface MultiNativePropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setThumbImage(T view, @Nullable ReadableMap value);
   void setColor(T view, @Nullable Integer value);
   void setThumbTintColor(T view, @Nullable Integer value);
@@ -360,8 +375,9 @@ Object {
 package com.facebook.react.viewmanagers;
 
 import android.view.View;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface NoPropsNoEventsNativeComponentViewManagerInterface<T extends View> {
+public interface NoPropsNoEventsNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   // No props
 }
 ",
@@ -384,8 +400,9 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface ObjectPropsNativeComponentManagerInterface<T extends View> {
+public interface ObjectPropsNativeComponentManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setObjectProp(T view, @Nullable ReadableMap value);
   void setObjectArrayProp(T view, @Nullable ReadableMap value);
   void setObjectPrimitiveRequiredProp(T view, @Nullable ReadableMap value);
@@ -410,8 +427,9 @@ package com.facebook.react.viewmanagers;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface PointPropNativeComponentViewManagerInterface<T extends View> {
+public interface PointPropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setStartPoint(T view, @Nullable ReadableMap value);
 }
 ",
@@ -433,8 +451,9 @@ package com.facebook.react.viewmanagers;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;
 
-public interface StringPropNativeComponentViewManagerInterface<T extends View> {
+public interface StringPropNativeComponentViewManagerInterface<T extends View> extends ViewManagerWithGeneratedInterface {
   void setPlaceholder(T view, @Nullable String value);
   void setDefaultValue(T view, @Nullable String value);
 }

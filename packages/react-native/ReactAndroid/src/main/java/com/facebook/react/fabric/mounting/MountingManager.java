@@ -286,11 +286,11 @@ public class MountingManager {
    * Send an accessibility eventType to a Native View. eventType is any valid `AccessibilityEvent.X`
    * value.
    *
-   * <p>Why accept {@ViewUtils.NO_SURFACE_ID}(-1) SurfaceId? Currently there are calls to
+   * <p>Why accept {@ViewUtil.NO_SURFACE_ID}(-1) SurfaceId? Currently there are calls to
    * UIManager.sendAccessibilityEvent which is a legacy API and accepts only reactTag. We will have
    * to investigate and migrate away from those calls over time.
    *
-   * @param surfaceId {@link int} that identifies the surface or {@ViewUtils.NO_SURFACE_ID}(-1) to
+   * @param surfaceId {@link int} that identifies the surface or {@ViewUtil.NO_SURFACE_ID}(-1) to
    *     temporarily support backward compatibility.
    * @param reactTag {@link int} that identifies the react Tag of the view.
    * @param eventType {@link int} that identifies Android eventType. see {@link
@@ -331,14 +331,11 @@ public class MountingManager {
   @AnyThread
   @ThreadConfined(ANY)
   public @Nullable EventEmitterWrapper getEventEmitter(int surfaceId, int reactTag) {
-    SurfaceMountingManager surfaceMountingManager =
-        (surfaceId == ViewUtil.NO_SURFACE_ID
-            ? getSurfaceManagerForView(reactTag)
-            : getSurfaceManager(surfaceId));
-    if (surfaceMountingManager == null) {
+    SurfaceMountingManager smm = getSurfaceMountingManager(surfaceId, reactTag);
+    if (smm == null) {
       return null;
     }
-    return surfaceMountingManager.getEventEmitter(reactTag);
+    return smm.getEventEmitter(reactTag);
   }
 
   /**
@@ -458,11 +455,21 @@ public class MountingManager {
       boolean canCoalesceEvent,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory) {
-    @Nullable SurfaceMountingManager smm = getSurfaceManager(surfaceId);
+    SurfaceMountingManager smm = getSurfaceMountingManager(surfaceId, reactTag);
     if (smm == null) {
-      // Cannot queue event without valid surface mountng manager. Do nothing here.
+      FLog.d(
+          TAG,
+          "Cannot queue event without valid surface mounting manager for tag: %d, surfaceId: %d",
+          reactTag,
+          surfaceId);
       return;
     }
     smm.enqueuePendingEvent(reactTag, eventName, canCoalesceEvent, params, eventCategory);
+  }
+
+  private @Nullable SurfaceMountingManager getSurfaceMountingManager(int surfaceId, int reactTag) {
+    return (surfaceId == ViewUtil.NO_SURFACE_ID
+        ? getSurfaceManagerForView(reactTag)
+        : getSurfaceManager(surfaceId));
   }
 }

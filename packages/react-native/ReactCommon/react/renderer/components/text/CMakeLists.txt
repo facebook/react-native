@@ -25,13 +25,13 @@ target_link_libraries(rrc_text
         glog_init
         jsi
         react_debug
-        react_render_attributedstring
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_mapbuffer
-        react_render_mounting
-        react_render_textlayoutmanager
+        react_renderer_attributedstring
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_mapbuffer
+        react_renderer_mounting
+        react_renderer_textlayoutmanager
         react_utils
         rrc_view
         yoga

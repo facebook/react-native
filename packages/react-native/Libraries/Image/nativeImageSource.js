@@ -12,7 +12,7 @@ import type {ImageURISource} from './ImageSource';
 
 import Platform from '../Utilities/Platform';
 
-type NativeImageSourceSpec = $ReadOnly<{|
+type NativeImageSourceSpec = $ReadOnly<{
   android?: string,
   ios?: string,
   default?: string,
@@ -21,7 +21,7 @@ type NativeImageSourceSpec = $ReadOnly<{|
   // https://reactnative.dev/docs/images#why-not-automatically-size-everything
   height: number,
   width: number,
-|}>;
+}>;
 
 /**
  * In hybrid apps, use `nativeImageSource` to access images that are already
@@ -61,4 +61,4 @@ function nativeImageSource(spec: NativeImageSourceSpec): ImageURISource {
   };
 }
 
-module.exports = nativeImageSource;
+export default nativeImageSource;

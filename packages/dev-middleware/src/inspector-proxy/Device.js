@@ -737,24 +737,6 @@ export default class Device {
               sourceMapURL,
               debuggerInfo,
             ).href;
-
-          // Some debug clients do not support fetching HTTP URLs. If the
-          // message headed to the debug client identifies the source map with
-          // an HTTP URL, fetch the content here and convert the content to a
-          // Data URL (which is more widely supported) before passing the
-          // message to the debug client.
-          try {
-            const sourceMap = await this.#fetchText(
-              this.#deviceRelativeUrlToServerRelativeUrl(sourceMapURL),
-            );
-            payload.params.sourceMapURL =
-              'data:application/json;charset=utf-8;base64,' +
-              Buffer.from(sourceMap).toString('base64');
-          } catch (exception) {
-            this.#sendErrorToDebugger(
-              `Failed to fetch source map ${params.sourceMapURL}: ${exception.message}`,
-            );
-          }
         }
       }
       if ('url' in params) {

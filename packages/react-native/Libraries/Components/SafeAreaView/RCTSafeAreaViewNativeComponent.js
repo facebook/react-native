@@ -8,6 +8,6 @@
  * @flow strict-local
  */
 
-export * from '../../../src/private/specs/components/RCTSafeAreaViewNativeComponent';
-import RCTSafeAreaViewNativeComponent from '../../../src/private/specs/components/RCTSafeAreaViewNativeComponent';
+export * from '../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent';
+import RCTSafeAreaViewNativeComponent from '../../../src/private/specs_DEPRECATED/components/RCTSafeAreaViewNativeComponent';
 export default RCTSafeAreaViewNativeComponent;
