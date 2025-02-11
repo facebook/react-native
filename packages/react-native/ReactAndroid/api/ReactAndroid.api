@@ -5831,21 +5831,6 @@ public final class com/facebook/react/uimanager/style/OutlineStyle$Companion {
 	public final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/OutlineStyle;
 }
 
-public final class com/facebook/react/uimanager/style/Overflow : java/lang/Enum {
-	public static final field Companion Lcom/facebook/react/uimanager/style/Overflow$Companion;
-	public static final field HIDDEN Lcom/facebook/react/uimanager/style/Overflow;
-	public static final field SCROLL Lcom/facebook/react/uimanager/style/Overflow;
-	public static final field VISIBLE Lcom/facebook/react/uimanager/style/Overflow;
-	public static final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/Overflow;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/Overflow;
-	public static fun values ()[Lcom/facebook/react/uimanager/style/Overflow;
-}
-
-public final class com/facebook/react/uimanager/style/Overflow$Companion {
-	public final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/Overflow;
-}
-
 public final class com/facebook/react/uimanager/util/ReactFindViewUtil {
 	public static final field INSTANCE Lcom/facebook/react/uimanager/util/ReactFindViewUtil;
 	public static final fun addViewListener (Lcom/facebook/react/uimanager/util/ReactFindViewUtil$OnViewFoundListener;)V
