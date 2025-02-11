@@ -7,6 +7,7 @@ require 'json'
 
 require_relative "./utils.rb"
 require_relative "./helpers.rb"
+require_relative "./jsengine.rb"
 
 class NewArchitectureHelper
     @@NewArchWarningEmitted = false # Used not to spam warnings to the user.
@@ -136,12 +137,7 @@ class NewArchitectureHelper
         spec.dependency "DoubleConversion"
         spec.dependency 'React-jsi'
 
-        if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-            spec.dependency "hermes-engine"
-            spec.dependency 'React-hermes'
-        else
-            spec.dependency "React-jsc"
-        end
+        depend_on_js_engine(spec)
 
         spec.pod_target_xcconfig = current_config
     end

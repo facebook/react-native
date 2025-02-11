@@ -89,10 +89,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-featureflags")
 
-  if use_hermes
-    s.dependency "React-hermes"
-    s.dependency "React-RuntimeHermes"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
 end

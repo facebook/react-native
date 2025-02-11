@@ -67,9 +67,5 @@ Pod::Spec.new do |s|
   s.dependency "fast_float", "6.1.4"
   s.dependency "fmt", "11.0.2"
   
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
 end

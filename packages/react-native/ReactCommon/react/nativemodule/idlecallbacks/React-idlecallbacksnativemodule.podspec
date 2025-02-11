@@ -53,11 +53,9 @@ Pod::Spec.new do |s|
   s.dependency "RCT-Folly"
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+
+  depend_on_js_engine(s)
+
   s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-runtimescheduler"
   add_dependency(s, "React-RCTFBReactNativeSpec")

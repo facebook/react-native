@@ -18,12 +18,9 @@ end
 
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
 
 boost_config = get_boost_config()
 boost_compiler_flags = boost_config[:compiler_flags]
-
-using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
 
 Pod::Spec.new do |s|
     s.name                   = "React-NativeModulesApple"
@@ -57,9 +54,5 @@ Pod::Spec.new do |s|
     s.dependency "React-runtimeexecutor"
     add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
 
-    if using_hermes
-      s.dependency "hermes-engine"
-    else
-      s.dependency "React-jsc"
-    end
+    depend_on_js_engine(s)
 end
