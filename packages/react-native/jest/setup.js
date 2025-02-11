@@ -150,9 +150,16 @@ jest
     ),
   }))
   .mock('../Libraries/Modal/Modal', () => {
-    const baseComponent = mockComponent('../Libraries/Modal/Modal');
+    const baseComponent = mockComponent(
+      '../Libraries/Modal/Modal',
+      /* instanceMethods */ null,
+      /* isESModule */ true,
+    );
     const mockModal = jest.requireActual('./mockModal');
-    return mockModal(baseComponent);
+    return {
+      __esModule: true,
+      default: mockModal(baseComponent),
+    };
   })
   .mock('../Libraries/Components/View/View', () => ({
     __esModule: true,

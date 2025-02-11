@@ -24,7 +24,7 @@ const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
 const Text = require('../../../Libraries/Text/Text').default;
 const WebSocketInterceptor =
   require('../../../Libraries/WebSocket/WebSocketInterceptor').default;
-const XHRInterceptor = require('./XHRInterceptor');
+const XHRInterceptor = require('./XHRInterceptor').default;
 
 const LISTVIEW_CELL_HEIGHT = 15;
 
