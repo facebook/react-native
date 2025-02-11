@@ -91,7 +91,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
-export type Props<SectionT> = {
+export type Props<SectionT: SectionBase<any>> = {
   ...RequiredProps<SectionT>,
   ...OptionalProps<SectionT>,
   ...$Diff<
