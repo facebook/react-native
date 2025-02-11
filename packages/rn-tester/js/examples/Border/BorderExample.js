@@ -600,5 +600,26 @@ export default ({
         );
       },
     },
+    {
+      title: 'Borders and scaling transforms',
+      name: 'scaling-transforms',
+      description: 'Ensure borders can render properly with scaling transforms',
+      render: function (): React.Node {
+        return (
+          <View
+            testID="border-test-scaling-transforms"
+            style={[
+              styles.smallBox,
+              {
+                backgroundColor: 'red',
+                borderLeftWidth: 10,
+                borderRadius: 10,
+                transform: [{scale: 1.2}],
+              },
+            ]}
+          />
+        );
+      },
+    },
   ],
 }: RNTesterModule);
