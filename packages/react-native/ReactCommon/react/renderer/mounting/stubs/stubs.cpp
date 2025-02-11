@@ -10,6 +10,8 @@
 #include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/ShadowNodeFragment.h>
 #include <react/renderer/mounting/Differentiator.h>
+#include "../internal/ShadowViewNodePair.h"
+#include "../internal/sliceChildShadowNodeViewPairs.h"
 
 namespace facebook::react {
 

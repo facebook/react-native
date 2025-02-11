@@ -16,6 +16,7 @@ add_compile_options(
 
 file(GLOB react_renderer_mounting_SRC CONFIGURE_DEPENDS
         *.cpp
+        internal/*.cpp
         stubs/*.cpp)
 add_library(react_renderer_mounting OBJECT ${react_renderer_mounting_SRC})
 
