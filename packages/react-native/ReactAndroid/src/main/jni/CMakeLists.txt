@@ -83,6 +83,7 @@ add_react_common_subdir(react/renderer/telemetry)
 add_react_common_subdir(react/renderer/uimanager)
 add_react_common_subdir(react/renderer/core)
 add_react_common_subdir(react/renderer/consistency)
+add_react_common_subdir(react/renderer/css)
 add_react_common_subdir(react/renderer/uimanager/consistency)
 add_react_common_subdir(react/renderer/dom)
 add_react_common_subdir(react/renderer/element)
@@ -270,6 +271,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_renderer_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_consistency,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_core,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_css,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_debug,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_dom,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_renderer_element,INTERFACE_INCLUDE_DIRECTORIES>
@@ -381,6 +383,7 @@ target_link_libraries(reactnative_unittest
   react_renderer_animations
   react_renderer_attributedstring
   react_renderer_core
+  react_renderer_css
   react_renderer_debug
   react_renderer_dom
   react_renderer_element

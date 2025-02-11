@@ -16,7 +16,7 @@ PODS:
   - hermes-engine/inspector (1000.0.0)
   - hermes-engine/inspector_chrome (1000.0.0)
   - hermes-engine/Public (1000.0.0)
-  - MyNativeView (0.77.0-main):
+  - MyNativeView (0.79.0-main):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -28,7 +28,9 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
+    - React-hermes
     - React-ImageManager
+    - React-jsi
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -37,7 +39,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - NativeCxxModuleExample (0.77.0-main):
+  - NativeCxxModuleExample (0.79.0-main):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -49,7 +51,9 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
+    - React-hermes
     - React-ImageManager
+    - React-jsi
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -59,7 +63,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - OCMock (3.9.4)
-  - OSSLibraryExample (0.77.0-main):
+  - OSSLibraryExample (0.79.0-main):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -71,7 +75,9 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
+    - React-hermes
     - React-ImageManager
+    - React-jsi
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -562,6 +568,7 @@ PODS:
     - React-debug
     - React-Fabric/components/legacyviewmanagerinterop (= 1000.0.0)
     - React-Fabric/components/root (= 1000.0.0)
+    - React-Fabric/components/scrollview (= 1000.0.0)
     - React-Fabric/components/view (= 1000.0.0)
     - React-featureflags
     - React-graphics
@@ -614,6 +621,27 @@ PODS:
     - React-runtimescheduler
     - React-utils
     - ReactCommon/turbomodule/core
+  - React-Fabric/components/scrollview (1000.0.0):
+    - DoubleConversion
+    - fast_float (= 6.1.4)
+    - fmt (= 11.0.2)
+    - glog
+    - hermes-engine
+    - RCT-Folly/Fabric (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-cxxreact
+    - React-debug
+    - React-featureflags
+    - React-graphics
+    - React-jsi
+    - React-jsiexecutor
+    - React-logger
+    - React-rendererdebug
+    - React-runtimescheduler
+    - React-utils
+    - ReactCommon/turbomodule/core
   - React-Fabric/components/view (1000.0.0):
     - DoubleConversion
     - fast_float (= 6.1.4)
@@ -631,6 +659,7 @@ PODS:
     - React-jsi
     - React-jsiexecutor
     - React-logger
+    - React-renderercss
     - React-rendererdebug
     - React-runtimescheduler
     - React-utils
@@ -1485,6 +1514,9 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon
   - React-rendererconsistency (1000.0.0)
+  - React-renderercss (1000.0.0):
+    - React-debug
+    - React-utils
   - React-rendererdebug (1000.0.0):
     - DoubleConversion
     - fast_float (= 6.1.4)
@@ -1640,7 +1672,7 @@ PODS:
     - React-logger (= 1000.0.0)
     - React-perflogger (= 1000.0.0)
     - React-utils (= 1000.0.0)
-  - ScreenshotManager (0.77.0-main):
+  - ScreenshotManager (0.79.0-main):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1652,7 +1684,9 @@ PODS:
     - React-Fabric
     - React-featureflags
     - React-graphics
+    - React-hermes
     - React-ImageManager
+    - React-jsi
     - React-NativeModulesApple
     - React-RCTFabric
     - React-rendererdebug
@@ -1726,6 +1760,7 @@ DEPENDENCIES:
   - React-RCTText (from `../react-native/Libraries/Text`)
   - React-RCTVibration (from `../react-native/Libraries/Vibration`)
   - React-rendererconsistency (from `../react-native/ReactCommon/react/renderer/consistency`)
+  - React-renderercss (from `../react-native/ReactCommon/react/renderer/css`)
   - React-rendererdebug (from `../react-native/ReactCommon/react/renderer/debug`)
   - React-rncore (from `../react-native/ReactCommon`)
   - React-RuntimeApple (from `../react-native/ReactCommon/react/runtime/platform/ios`)
@@ -1865,6 +1900,8 @@ EXTERNAL SOURCES:
     :path: "../react-native/Libraries/Vibration"
   React-rendererconsistency:
     :path: "../react-native/ReactCommon/react/renderer/consistency"
+  React-renderercss:
+    :path: "../react-native/ReactCommon/react/renderer/css"
   React-rendererdebug:
     :path: "../react-native/ReactCommon/react/renderer/debug"
   React-rncore:
@@ -1903,12 +1940,12 @@ SPEC CHECKSUMS:
   FBLazyVector: d3c2dd739a63c1a124e775df075dc7c517a719cb
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
-  hermes-engine: f216eab9a40b7a386edba0f6ca92adf7bcc24572
-  MyNativeView: f8598d5f84e0369e85cc6d3abc18329ab99028a7
-  NativeCxxModuleExample: 1c5f59bd3df26a333e6427e3faada3802ab84531
+  hermes-engine: 8aef29138d400886db0e686e0f82fd6911b0179a
+  MyNativeView: a82c4313623348eaca29397752109ce986840dc5
+  NativeCxxModuleExample: bd02d4310733dbe1d54df455ff0ab9993875d603
   OCMock: 589f2c84dacb1f5aaf6e4cec1f292551fe748e74
-  OSSLibraryExample: 9e02824c11b3697106c0d236f9d1ffa8f40a7a93
-  RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
+  OSSLibraryExample: 6b09bdbcc521b493e574d0c8fc14694742deb60a
+  RCT-Folly: e78785aa9ba2ed998ea4151e314036f6c49e6d82
   RCTDeprecation: 3808e36294137f9ee5668f4df2e73dc079cd1dcf
   RCTRequired: a00614e2da5344c2cda3d287050b6cee00e21dc6
   RCTTypeSafety: 459a16418c6b413060d35434ba3e83f5b0bd2651
@@ -1920,7 +1957,7 @@ SPEC CHECKSUMS:
   React-debug: 195df38487d3f48a7af04deddeb4a5c6d4440416
   React-defaultsnativemodule: 305e740693b5840cec35964aca054c5a855b0119
   React-domnativemodule: 2e278bede6d210ec27f5801f6dd1dfaa2776a25a
-  React-Fabric: f6b99493b86350d23908bcc33df388f8b7846840
+  React-Fabric: cae698cda0b31666787bc695a0db7d8c7443ef37
   React-FabricComponents: b7ea6ea4a08ac415a95be7782decd7e6972645d1
   React-FabricImage: f3451b37d4e4f6a1917723221dc5db46bafde121
   React-featureflags: 7faf26669323dc8b2869ba9d15cfa453b71685f1
@@ -1956,6 +1993,7 @@ SPEC CHECKSUMS:
   React-RCTText: e416825b80c530647040ef91d23ffd35ccc87981
   React-RCTVibration: 4841d95dac6bcb0b1df14d5a08f96f33c55d28d3
   React-rendererconsistency: 777c894edc43dde01499189917ac54ee76ae6a6a
+  React-renderercss: 0cb3a3a38ea18d0479928fe116d1a8e2824e829d
   React-rendererdebug: a56d47403c6005c017333aa92168c996bfc9b27c
   React-rncore: 4a81ce7b8e47448973a6b29c765b07e01715921e
   React-RuntimeApple: e55cc1049bc325eb054abd8c404e15f655d9317e
@@ -1969,9 +2007,9 @@ SPEC CHECKSUMS:
   ReactCodegen: 1cffc1d79c437b74449d9af715490131557ac348
   ReactCommon: e12ab23fc61d66983e9d989c2e741271f4ead491
   ReactCommon-Samples: 3bb6c0e1f38d2c18abf9f639038aeb5ba65ac160
-  ScreenshotManager: 0ec4bf5f0f11fd0498a1d453244da51fd514c418
+  ScreenshotManager: 991f0ff0fa446b515374a25ca11ffe4cf1ecfabd
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Yoga: 216ee0d4bcba7186f47624eeac1477a068bceea0
+  Yoga: 59290f2ce3fc5c34797a21244288cad99b357b63
 
 PODFILE CHECKSUM: 8591f96a513620a2a83a0b9a125ad3fa32ea1369
 

@@ -125,6 +125,8 @@ val preparePrefab by
                           "react/renderer/consistency/"),
                       // react_renderer_core
                       Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
+                      // react_renderer_css
+                      Pair("../ReactCommon/react/renderer/css/", "react/renderer/css/"),
                       // react_debug
                       Pair("../ReactCommon/react/debug/", "react/debug/"),
                       // react_renderer_debug
