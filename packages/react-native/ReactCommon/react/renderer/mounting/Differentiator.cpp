@@ -10,9 +10,10 @@
 #include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/renderer/components/scrollview/ScrollViewShadowNode.h>
-#include <react/renderer/core/LayoutableShadowNode.h>
 #include <algorithm>
+#include "internal/CullingContext.h"
+#include "internal/ShadowViewNodePair.h"
+#include "internal/sliceChildShadowNodeViewPairs.h"
 
 #include "ShadowView.h"
 
@@ -42,14 +43,6 @@ enum class NoBreadcrumb {};
 namespace facebook::react {
 
 enum class ReparentMode { Flatten, Unflatten };
-
-bool ShadowViewNodePair::operator==(const ShadowViewNodePair& rhs) const {
-  return this->shadowNode == rhs.shadowNode;
-}
-
-bool ShadowViewNodePair::operator!=(const ShadowViewNodePair& rhs) const {
-  return !(*this == rhs);
-}
 
 #ifdef DEBUG_LOGS_DIFFER
 static std::ostream& operator<<(
@@ -224,210 +217,6 @@ static std::ostream& operator<<(std::ostream& out, TinyMap<KeyT, ValueT>& map) {
   return out;
 }
 #endif
-
-/*
- * Sorting comparator for `reorderInPlaceIfNeeded`.
- */
-static bool shouldFirstPairComesBeforeSecondOne(
-    const ShadowViewNodePair* lhs,
-    const ShadowViewNodePair* rhs) noexcept {
-  return lhs->shadowNode->getOrderIndex() < rhs->shadowNode->getOrderIndex();
-}
-
-static CullingContext adjustCullingContextIfNeeded(
-    CullingContext cullingContext,
-    const ShadowViewNodePair& pair) {
-  if (ReactNativeFeatureFlags::enableViewCulling()) {
-    if (auto scrollViewShadowNode =
-            dynamic_cast<const ScrollViewShadowNode*>(pair.shadowNode)) {
-      cullingContext.frame.origin =
-          -scrollViewShadowNode->getContentOriginOffset(
-              /* includeTransform */ true);
-      cullingContext.frame.size =
-          scrollViewShadowNode->getLayoutMetrics().frame.size;
-    } else {
-      cullingContext.frame.origin -= pair.shadowView.layoutMetrics.frame.origin;
-
-      if (auto layoutableShadowNode =
-              dynamic_cast<const LayoutableShadowNode*>(pair.shadowNode)) {
-        cullingContext.transform =
-            cullingContext.transform * layoutableShadowNode->getTransform();
-      }
-    }
-  }
-
-  return cullingContext;
-}
-
-/*
- * Reorders pairs in-place based on `orderIndex` using a stable sort algorithm.
- */
-static void reorderInPlaceIfNeeded(
-    std::vector<ShadowViewNodePair*>& pairs) noexcept {
-  if (pairs.size() < 2) {
-    return;
-  }
-
-  auto isReorderNeeded = false;
-  for (const auto& pair : pairs) {
-    if (pair->shadowNode->getOrderIndex() != 0) {
-      isReorderNeeded = true;
-      break;
-    }
-  }
-
-  if (!isReorderNeeded) {
-    return;
-  }
-
-  std::stable_sort(
-      pairs.begin(), pairs.end(), &shouldFirstPairComesBeforeSecondOne);
-}
-
-static void sliceChildShadowNodeViewPairsRecursively(
-    std::vector<ShadowViewNodePair*>& pairList,
-    size_t& startOfStaticIndex,
-    ViewNodePairScope& scope,
-    Point layoutOffset,
-    const ShadowNode& shadowNode,
-    const CullingContext& cullingContext) {
-  for (const auto& sharedChildShadowNode : shadowNode.getChildren()) {
-    auto& childShadowNode = *sharedChildShadowNode;
-#ifndef ANDROID
-    // T153547836: Disabled on Android because the mounting infrastructure
-    // is not fully ready yet.
-    if (childShadowNode.getTraits().check(ShadowNodeTraits::Trait::Hidden)) {
-      continue;
-    }
-#endif
-    auto shadowView = ShadowView(childShadowNode);
-
-    if (ReactNativeFeatureFlags::enableViewCulling()) {
-      if (cullingContext.shouldConsiderCulling() &&
-          shadowView.layoutMetrics != EmptyLayoutMetrics) {
-        auto overflowInsetFrame =
-            shadowView.layoutMetrics.getOverflowInsetFrame() *
-            cullingContext.transform;
-        if (auto layoutableShadowNode =
-                dynamic_cast<const LayoutableShadowNode*>(&childShadowNode)) {
-          overflowInsetFrame =
-              overflowInsetFrame * layoutableShadowNode->getTransform();
-        }
-        auto doesIntersect =
-            Rect::intersect(cullingContext.frame, overflowInsetFrame) != Rect{};
-        if (!doesIntersect) {
-          continue; // Culling.
-        }
-      }
-    }
-
-    auto origin = layoutOffset;
-    auto cullingContextCopy = adjustCullingContextIfNeeded(
-        cullingContext,
-        {.shadowView = shadowView, .shadowNode = &childShadowNode});
-
-    if (shadowView.layoutMetrics != EmptyLayoutMetrics) {
-      origin += shadowView.layoutMetrics.frame.origin;
-      shadowView.layoutMetrics.frame.origin += layoutOffset;
-    }
-
-    // This might not be a FormsView, or a FormsStackingContext. We let the
-    // differ handle removal of flattened views from the Mounting layer and
-    // shuffling their children around.
-    bool childrenFormStackingContexts = shadowNode.getTraits().check(
-        ShadowNodeTraits::Trait::ChildrenFormStackingContext);
-    bool isConcreteView = (childShadowNode.getTraits().check(
-                               ShadowNodeTraits::Trait::FormsView) ||
-                           childrenFormStackingContexts) &&
-        !childShadowNode.getTraits().check(
-            ShadowNodeTraits::Trait::ForceFlattenView);
-    bool areChildrenFlattened =
-        (!childShadowNode.getTraits().check(
-             ShadowNodeTraits::Trait::FormsStackingContext) &&
-         !childrenFormStackingContexts) ||
-        childShadowNode.getTraits().check(
-            ShadowNodeTraits::Trait::ForceFlattenView);
-
-    Point storedOrigin = {};
-    if (areChildrenFlattened) {
-      storedOrigin = origin;
-    }
-
-    auto isPositionStatic =
-        shadowView.layoutMetrics.positionType == PositionType::Static;
-
-    scope.push_back(
-        {.shadowView = std::move(shadowView),
-         .shadowNode = &childShadowNode,
-         .flattened = areChildrenFlattened,
-         .isConcreteView = isConcreteView,
-         .contextOrigin = storedOrigin});
-
-    if (isPositionStatic) {
-      auto it = pairList.begin();
-      std::advance(it, startOfStaticIndex);
-      pairList.insert(it, &scope.back());
-      startOfStaticIndex++;
-      if (areChildrenFlattened) {
-        sliceChildShadowNodeViewPairsRecursively(
-            pairList,
-            startOfStaticIndex,
-            scope,
-            origin,
-            childShadowNode,
-            cullingContextCopy);
-      }
-    } else {
-      pairList.push_back(&scope.back());
-      if (areChildrenFlattened) {
-        size_t pairListSize = pairList.size();
-        sliceChildShadowNodeViewPairsRecursively(
-            pairList,
-            pairListSize,
-            scope,
-            origin,
-            childShadowNode,
-            cullingContextCopy);
-      }
-    }
-  }
-}
-
-std::vector<ShadowViewNodePair*> sliceChildShadowNodeViewPairs(
-    const ShadowViewNodePair& shadowNodePair,
-    ViewNodePairScope& scope,
-    bool allowFlattened,
-    Point layoutOffset,
-    const CullingContext& cullingContext) {
-  const auto& shadowNode = *shadowNodePair.shadowNode;
-  auto pairList = std::vector<ShadowViewNodePair*>{};
-
-  if (shadowNodePair.flattened && shadowNodePair.isConcreteView &&
-      !allowFlattened) {
-    return pairList;
-  }
-
-  size_t startOfStaticIndex = 0;
-
-  sliceChildShadowNodeViewPairsRecursively(
-      pairList,
-      startOfStaticIndex,
-      scope,
-      layoutOffset,
-      shadowNode,
-      cullingContext);
-
-  // Sorting pairs based on `orderIndex` if needed.
-  reorderInPlaceIfNeeded(pairList);
-
-  // Set list and mountIndex for each after reordering
-  size_t mountIndex = 0;
-  for (auto child : pairList) {
-    child->mountIndex = (child->isConcreteView ? mountIndex++ : -1);
-  }
-
-  return pairList;
-}
 
 /**
  * Prefer calling this over `sliceChildShadowNodeViewPairs` directly, when
@@ -641,9 +430,9 @@ static void updateMatchedPairSubtrees(
   if (oldPair.shadowNode != newPair.shadowNode ||
       oldCullingContext != newCullingContext) {
     auto oldCullingContextCopy =
-        adjustCullingContextIfNeeded(oldCullingContext, oldPair);
+        oldCullingContext.adjustCullingContextIfNeeded(oldPair);
     auto newCullingContextCopy =
-        adjustCullingContextIfNeeded(newCullingContext, newPair);
+        newCullingContext.adjustCullingContextIfNeeded(newPair);
 
     ViewNodePairScope innerScope{};
     auto oldGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
@@ -1270,9 +1059,9 @@ static void calculateShadowViewMutations(
         (oldChildPair.shadowNode != newChildPair.shadowNode ||
          oldCullingContext != newCullingContext)) {
       auto oldCullingContextCopy =
-          adjustCullingContextIfNeeded(oldCullingContext, oldChildPair);
+          oldCullingContext.adjustCullingContextIfNeeded(oldChildPair);
       auto newCullingContextCopy =
-          adjustCullingContextIfNeeded(newCullingContext, newChildPair);
+          newCullingContext.adjustCullingContextIfNeeded(newChildPair);
 
       ViewNodePairScope innerScope{};
       auto oldGrandChildPairs = sliceChildShadowNodeViewPairsFromViewNodePair(
@@ -1320,7 +1109,7 @@ static void calculateShadowViewMutations(
               oldChildPair.shadowView,
               static_cast<int>(oldChildPair.mountIndex)));
       auto oldCullingContextCopy =
-          adjustCullingContextIfNeeded(oldCullingContext, oldChildPair);
+          oldCullingContext.adjustCullingContextIfNeeded(oldChildPair);
 
       // We also have to call the algorithm recursively to clean up the entire
       // subtree starting from the removed view.
@@ -1358,7 +1147,7 @@ static void calculateShadowViewMutations(
       mutationContainer.createMutations.push_back(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
       auto newCullingContextCopy =
-          adjustCullingContextIfNeeded(newCullingContext, newChildPair);
+          newCullingContext.adjustCullingContextIfNeeded(newChildPair);
 
       ViewNodePairScope innerScope{};
       calculateShadowViewMutations(
@@ -1594,7 +1383,7 @@ static void calculateShadowViewMutations(
         mutationContainer.deleteMutations.push_back(
             ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
         auto oldCullingContextCopy =
-            adjustCullingContextIfNeeded(oldCullingContext, oldChildPair);
+            oldCullingContext.adjustCullingContextIfNeeded(oldChildPair);
 
         // We also have to call the algorithm recursively to clean up the
         // entire subtree starting from the removed view.
@@ -1645,7 +1434,7 @@ static void calculateShadowViewMutations(
           ShadowViewMutation::CreateMutation(newChildPair.shadowView));
 
       auto newCullingContextCopy =
-          adjustCullingContextIfNeeded(newCullingContext, newChildPair);
+          newCullingContext.adjustCullingContextIfNeeded(newChildPair);
 
       ViewNodePairScope innerScope{};
 
@@ -1719,13 +1508,15 @@ ShadowViewMutation::List calculateShadowViewMutations(
   auto sliceOne = sliceChildShadowNodeViewPairs(
       ShadowViewNodePair{.shadowNode = &oldRootShadowNode},
       viewNodePairScope,
-      false,
-      {});
+      false /* allowFlattened */,
+      {} /* layoutOffset */,
+      {} /* cullingContext */);
   auto sliceTwo = sliceChildShadowNodeViewPairs(
       ShadowViewNodePair{.shadowNode = &newRootShadowNode},
       viewNodePairScope,
-      false,
-      {});
+      false /* allowFlattened */,
+      {} /* layoutOffset */,
+      {} /* cullingContext */);
   calculateShadowViewMutations(
       innerViewNodePairScope,
       mutations,
