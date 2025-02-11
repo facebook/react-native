@@ -19,12 +19,11 @@ import type {EventInit} from '../../dom/events/Event';
 
 import Event from '../../dom/events/Event';
 
-export type CloseEventInit = $ReadOnly<{
-  ...EventInit,
-  wasClean?: boolean,
-  code?: number,
-  reason?: string,
-}>;
+export interface CloseEventInit extends EventInit {
+  +wasClean?: boolean;
+  +code?: number;
+  +reason?: string;
+}
 
 export default class CloseEvent extends Event {
   _wasClean: boolean;
@@ -32,12 +31,11 @@ export default class CloseEvent extends Event {
   _reason: string;
 
   constructor(type: string, options?: ?CloseEventInit) {
-    const {wasClean, code, reason, ...eventOptions} = options ?? {};
-    super(type, eventOptions);
+    super(type, options);
 
-    this._wasClean = Boolean(wasClean);
-    this._code = Number(code) || 0;
-    this._reason = reason != null ? String(reason) : '';
+    this._wasClean = Boolean(options?.wasClean);
+    this._code = Number(options?.code) || 0;
+    this._reason = options?.reason != null ? String(options.reason) : '';
   }
 
   get wasClean(): boolean {
