@@ -10,10 +10,12 @@
 
 'use strict';
 
-import {typeof VirtualizedSectionList as VirtualizedSectionListType} from '@react-native/virtualized-lists';
+import VirtualizedLists from '@react-native/virtualized-lists';
 
+type VirtualizedSectionListType =
+  typeof VirtualizedLists.VirtualizedSectionList;
 const VirtualizedSectionList: VirtualizedSectionListType =
-  require('@react-native/virtualized-lists').VirtualizedSectionList;
+  VirtualizedLists.VirtualizedSectionList;
 
 export type {
   SectionBase,

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const ViewabilityHelper = require('../ViewabilityHelper');
+const ViewabilityHelper = require('../ViewabilityHelper').default;
 
 let rowFrames;
 let data;

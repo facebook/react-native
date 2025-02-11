@@ -598,7 +598,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   );
 }
 
-module.exports = VirtualizedSectionList as component(
+export default VirtualizedSectionList as component(
   ref: React.RefSetter<
     interface {
       getListRef(): ?VirtualizedList,
