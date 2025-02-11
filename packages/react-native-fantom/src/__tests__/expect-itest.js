@@ -795,6 +795,26 @@ describe('expect', () => {
     }).toThrow();
   });
 
+  test('toHaveLength', () => {
+    expect('hello').toHaveLength(5);
+    expect('hello').not.toHaveLength(6);
+    expect([1, 2, 3]).toHaveLength(3);
+    expect([1, 2, 3]).not.toHaveLength(4);
+
+    expect(() => {
+      expect('asd').toHaveLength(4);
+    }).toThrow();
+
+    expect(() => {
+      expect([1]).not.toHaveLength(1);
+    }).toThrow();
+
+    // non string/array objects should always throw
+    expect(() => {
+      expect({length: 1}).toHaveLength(1);
+    }).toThrow();
+  });
+
   describe('toMatchSnapshot()', () => {
     test('primitive types', () => {
       expect(undefined).toMatchSnapshot();
