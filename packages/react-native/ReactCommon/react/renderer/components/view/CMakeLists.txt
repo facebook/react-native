@@ -34,6 +34,7 @@ target_link_libraries(rrc_view
         logger
         react_debug
         react_renderer_core
+        react_renderer_css
         react_renderer_debug
         react_renderer_graphics
         yoga)
