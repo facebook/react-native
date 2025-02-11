@@ -4198,8 +4198,12 @@ exports[`public API should not change unintentionally Libraries/EventEmitter/Nat
   removeListeners(count: number): void;
 }
 export type { EventSubscription };
-declare export default class NativeEventEmitter<TEventToArgsMap: { ... }>
-  implements IEventEmitter<TEventToArgsMap>
+type UnsafeObject = Object;
+declare export default class NativeEventEmitter<
+  TEventToArgsMap: $ReadOnly<
+    Record<string, $ReadOnlyArray<UnsafeObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+> implements IEventEmitter<TEventToArgsMap>
 {
   constructor(nativeModule: ?NativeModule): void;
   addListener<TEvent: $Keys<TEventToArgsMap>>(
@@ -8801,10 +8805,13 @@ exports[`public API should not change unintentionally Libraries/vendor/core/Erro
 `;
 
 exports[`public API should not change unintentionally Libraries/vendor/emitter/EventEmitter.js 1`] = `
-"export interface EventSubscription {
+"type UnsafeObject = Object;
+export interface EventSubscription {
   remove(): void;
 }
-export interface IEventEmitter<TEventToArgsMap: { ... }> {
+export interface IEventEmitter<
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+> {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => mixed,
@@ -8817,8 +8824,11 @@ export interface IEventEmitter<TEventToArgsMap: { ... }> {
   removeAllListeners<TEvent: $Keys<TEventToArgsMap>>(eventType?: ?TEvent): void;
   listenerCount<TEvent: $Keys<TEventToArgsMap>>(eventType: TEvent): number;
 }
-declare export default class EventEmitter<TEventToArgsMap: { ... }>
-  implements IEventEmitter<TEventToArgsMap>
+declare export default class EventEmitter<
+  TEventToArgsMap: $ReadOnly<
+    Record<string, $ReadOnlyArray<UnsafeObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+> implements IEventEmitter<TEventToArgsMap>
 {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
