@@ -4979,14 +4979,16 @@ declare export default typeof NativeLinkingManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/FillRateHelper.js 1`] = `
-"declare const FillRateHelper: FillRateHelperType;
+"type FillRateHelperType = typeof VirtualizedLists.FillRateHelper;
+declare const FillRateHelper: FillRateHelperType;
 export type { FillRateInfo } from \\"@react-native/virtualized-lists\\";
 declare export default typeof FillRateHelper;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/FlatList.js 1`] = `
-"type RequiredProps<ItemT> = {
+"declare const VirtualizedList: $FlowFixMe;
+type RequiredProps<ItemT> = {
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
 type OptionalProps<ItemT> = {
@@ -5066,7 +5068,8 @@ declare export default typeof FlatList;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/SectionList.js 1`] = `
-"type Item = any;
+"declare const VirtualizedSectionList: $FlowFixMe;
+type Item = any;
 export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
 type RequiredProps<SectionT: SectionBase<any>> = {
   sections: $ReadOnlyArray<SectionT>,
@@ -5192,18 +5195,21 @@ exports[`public API should not change unintentionally Libraries/Lists/Viewabilit
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
 } from \\"@react-native/virtualized-lists\\";
+type ViewabilityHelperType = typeof VirtualizedLists.ViewabilityHelper;
 declare const ViewabilityHelper: ViewabilityHelperType;
 declare export default typeof ViewabilityHelper;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizeUtils.js 1`] = `
-"declare export const keyExtractor: KeyExtractorType;
+"type KeyExtractorType = typeof VirtualizedLists.keyExtractor;
+declare export const keyExtractor: KeyExtractorType;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizedList.js 1`] = `
-"declare const VirtualizedList: VirtualizedListType;
+"type VirtualizedListType = typeof VirtualizedLists.VirtualizedList;
+declare const VirtualizedList: VirtualizedListType;
 export type {
   RenderItemProps,
   RenderItemType,
@@ -5214,12 +5220,16 @@ declare export default typeof VirtualizedList;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizedListContext.js 1`] = `
-"declare export const VirtualizedListContextResetter: VirtualizedListContextResetterType;
+"type VirtualizedListContextResetterType =
+  typeof VirtualizedLists.VirtualizedListContextResetter;
+declare export const VirtualizedListContextResetter: VirtualizedListContextResetterType;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizedSectionList.js 1`] = `
-"declare const VirtualizedSectionList: VirtualizedSectionListType;
+"type VirtualizedSectionListType =
+  typeof VirtualizedLists.VirtualizedSectionList;
+declare const VirtualizedSectionList: VirtualizedSectionListType;
 export type {
   SectionBase,
   ScrollToLocationParamsType,
