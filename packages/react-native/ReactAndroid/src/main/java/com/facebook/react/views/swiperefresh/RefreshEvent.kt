@@ -15,15 +15,15 @@ import com.facebook.react.uimanager.events.Event
 internal class RefreshEvent : Event<RefreshEvent> {
 
   @Deprecated("Use constructor with surfaceId", ReplaceWith("RefreshEvent(surfaceId, viewTag)"))
-  protected constructor(viewTag: Int) : this(ViewUtil.NO_SURFACE_ID, viewTag)
+  constructor(viewTag: Int) : this(ViewUtil.NO_SURFACE_ID, viewTag)
 
-  protected constructor(surfaceId: Int, viewTag: Int) : super(surfaceId, viewTag)
+  constructor(surfaceId: Int, viewTag: Int) : super(surfaceId, viewTag)
 
-  override public fun getEventName(): String {
+  override fun getEventName(): String {
     return "topRefresh"
   }
 
-  override protected fun getEventData(): WritableMap? {
+  override fun getEventData(): WritableMap? {
     return Arguments.createMap()
   }
 }

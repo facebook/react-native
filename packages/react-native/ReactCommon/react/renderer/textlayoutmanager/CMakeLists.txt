@@ -14,37 +14,35 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_textlayourmanager_SRC CONFIGURE_DEPENDS
+file(GLOB react_renderer_textlayourmanager_SRC CONFIGURE_DEPENDS
         *.cpp
         platform/android/react/renderer/textlayoutmanager/*.cpp)
 
-add_library(react_render_textlayoutmanager
-        STATIC
-        ${react_render_textlayourmanager_SRC})
+add_library(react_renderer_textlayoutmanager
+        OBJECT
+        ${react_renderer_textlayourmanager_SRC})
 
-target_include_directories(react_render_textlayoutmanager
+target_include_directories(react_renderer_textlayoutmanager
         PUBLIC
+          .
           ${REACT_COMMON_DIR}
           ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/
 )
 
-target_link_libraries(react_render_textlayoutmanager
+target_link_libraries(react_renderer_textlayoutmanager
         glog
-        fb
         fbjni
         folly_runtime
-        glog_init
         mapbufferjni
         react_debug
-        react_render_attributedstring
-        react_render_componentregistry
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_mapbuffer
-        react_render_mounting
-        react_render_telemetry
-        react_render_uimanager
+        react_renderer_attributedstring
+        react_renderer_componentregistry
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_mapbuffer
+        react_renderer_mounting
+        react_renderer_telemetry
         react_utils
         reactnativejni
         yoga

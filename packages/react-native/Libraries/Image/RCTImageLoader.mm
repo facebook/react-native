@@ -68,6 +68,8 @@ static NSError *addResponseHeadersToError(NSError *originalError, NSHTTPURLRespo
 @end
 
 @implementation RCTImageLoader {
+  std::atomic<BOOL> _isLoaderSetup;
+  std::mutex _loaderSetupLock;
   NSArray<id<RCTImageURLLoader>> * (^_loadersProvider)(RCTModuleRegistry *);
   NSArray<id<RCTImageDataDecoder>> * (^_decodersProvider)(RCTModuleRegistry *);
   NSArray<id<RCTImageURLLoader>> *_loaders;
@@ -106,6 +108,7 @@ RCT_EXPORT_MODULE()
 {
   if (self = [super init]) {
     _redirectDelegate = redirectDelegate;
+    _isLoaderSetup = NO;
   }
   return self;
 }
@@ -123,12 +126,16 @@ RCT_EXPORT_MODULE()
 
 - (void)setUp
 {
-  // Set defaults
-  _maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks ?: 4;
-  _maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks ?: 2;
-  _maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes ?: 30 * 1024 * 1024; // 30MB
+  std::lock_guard<std::mutex> guard(_loaderSetupLock);
+  if (!_isLoaderSetup) {
+    // Set defaults
+    _maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks ?: 4;
+    _maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks ?: 2;
+    _maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes ?: 30 * 1024 * 1024; // 30MB
 
-  _URLRequestQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLRequestQueue", DISPATCH_QUEUE_SERIAL);
+    _URLRequestQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLRequestQueue", DISPATCH_QUEUE_SERIAL);
+    _isLoaderSetup = YES;
+  }
 }
 
 - (float)handlerPriority
@@ -156,7 +163,7 @@ RCT_EXPORT_MODULE()
 
 - (id<RCTImageURLLoader>)imageURLLoaderForURL:(NSURL *)URL
 {
-  if (!_maxConcurrentLoadingTasks) {
+  if (!_isLoaderSetup) {
     [self setUp];
   }
 
@@ -229,7 +236,7 @@ RCT_EXPORT_MODULE()
 
 - (id<RCTImageDataDecoder>)imageDataDecoderForData:(NSData *)data
 {
-  if (!_maxConcurrentLoadingTasks) {
+  if (!_isLoaderSetup) {
     [self setUp];
   }
 
@@ -470,7 +477,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
 
     // Add missing png extension
     if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
-      mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
+      // Check if there exists a file with that url on disk already
+      // This should fix issue https://github.com/facebook/react-native/issues/46870
+      if ([[NSFileManager defaultManager] fileExistsAtPath:request.URL.path]) {
+        mutableRequest.URL = request.URL;
+      } else {
+        // This is the default behavior in case there is no file on disk with no extension.
+        // We assume that the extension is `png`.
+        mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
+      }
     }
     if (_redirectDelegate != nil) {
       mutableRequest.URL = [_redirectDelegate redirectAssetsURL:mutableRequest.URL];
@@ -564,7 +579,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
   }
 
   // All access to URL cache must be serialized
-  if (!_URLRequestQueue) {
+  if (!_isLoaderSetup) {
     [self setUp];
   }
 
@@ -840,7 +855,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
                                                                    progressBlock:progressBlock
                                                                 partialLoadBlock:partialLoadBlock
                                                                  completionBlock:completionHandler];
+  [cancelLoadLock lock];
   cancelLoad = loaderRequest.cancellationBlock;
+  [cancelLoadLock unlock];
   return [[RCTImageURLLoaderRequest alloc] initWithRequestId:loaderRequest.requestId
                                                     imageURL:imageURLRequest.URL
                                            cancellationBlock:cancellationBlock];
@@ -977,7 +994,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image, CGSize size, CGFloat scal
       });
     };
 
-    if (!_URLRequestQueue) {
+    if (!_isLoaderSetup) {
       [self setUp];
     }
     dispatch_async(_URLRequestQueue, ^{

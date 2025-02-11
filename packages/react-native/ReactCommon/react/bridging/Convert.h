@@ -158,12 +158,12 @@ auto convert(jsi::Runtime& rt, std::optional<T> value) {
 }
 
 template <typename T, std::enable_if_t<std::is_scalar_v<T>, int> = 0>
-auto convert(jsi::Runtime& rt, T&& value) {
+auto convert(jsi::Runtime& /*rt*/, T&& value) {
   return value;
 }
 
 template <typename T>
-auto convert(jsi::Runtime& rt, Converter<T>&& converter) {
+auto convert(jsi::Runtime& /*rt*/, Converter<T>&& converter) {
   return std::move(converter);
 }
 

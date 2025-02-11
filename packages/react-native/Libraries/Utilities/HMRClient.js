@@ -39,7 +39,7 @@ type LogLevel =
   | 'groupEnd'
   | 'debug';
 
-export type HMRClientNativeInterface = {|
+export type HMRClientNativeInterface = {
   enable(): void,
   disable(): void,
   registerBundle(requestUrl: string): void,
@@ -53,7 +53,7 @@ export type HMRClientNativeInterface = {|
     scheme?: string,
   ): void,
   unstable_notifyFuseboxConsoleEnabled(): void,
-|};
+};
 
 /**
  * HMR Client that receives from the server HMR updates and propagates them
@@ -126,7 +126,7 @@ const HMRClient: HMRClientNativeInterface = {
           data: data.map(item =>
             typeof item === 'string'
               ? item
-              : prettyFormat(item, {
+              : prettyFormat.format(item, {
                   escapeString: true,
                   highlight: true,
                   maxDepth: 3,
@@ -153,11 +153,11 @@ const HMRClient: HMRClientNativeInterface = {
         level: 'info',
         data: [
           '\n' +
-            '\x1b[7m' +
-            ' \x1b[1mJavaScript logs have moved!\x1b[22m They will now appear in the debugger console. ' +
-            'Tip: Type \x1b[1mj\x1b[22m in the terminal to open the debugger (requires Google Chrome ' +
-            'or Microsoft Edge).' +
-            '\x1b[27m' +
+            '\u001B[7m' +
+            ' \u001B[1m💡 JavaScript logs have moved!\u001B[22m They can now be ' +
+            'viewed in React Native DevTools. Tip: Type \u001B[1mj\u001B[22m in ' +
+            'the terminal to open (requires Google Chrome or Microsoft Edge).' +
+            '\u001B[27m' +
             '\n',
         ],
       }),

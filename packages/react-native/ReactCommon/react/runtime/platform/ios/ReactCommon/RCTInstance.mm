@@ -9,6 +9,7 @@
 
 #import <memory>
 
+#import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/NSDataBigString.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Inspector.h>
@@ -25,19 +26,20 @@
 #import <React/RCTDisplayLink.h>
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTFollyConvert.h>
-#import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLog.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTSurfacePresenter.h>
+#import <ReactCommon/RCTTurboModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <ReactCommon/RuntimeExecutor.h>
 #import <cxxreact/ReactMarker.h>
 #import <jsinspector-modern/ReactCdp.h>
 #import <jsireact/JSIExecutor.h>
-#import <react/runtime/BridgelessJSCallInvoker.h>
+#import <react/featureflags/ReactNativeFeatureFlags.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerCallInvoker.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
 
@@ -67,7 +69,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   sRuntimeDiagnosticFlags = [flags copy];
 }
 
-@interface RCTInstance () <RCTTurboModuleManagerDelegate, RCTTurboModuleManagerRuntimeHandler>
+@interface RCTInstance () <RCTTurboModuleManagerDelegate>
 @end
 
 @implementation RCTInstance {
@@ -78,7 +80,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RCTSurfacePresenter *_surfacePresenter;
   RCTPerformanceLogger *_performanceLogger;
   RCTDisplayLink *_displayLink;
-  RCTInstanceInitialBundleLoadCompletionBlock _onInitialBundleLoad;
   RCTTurboModuleManager *_turboModuleManager;
   std::mutex _invalidationMutex;
   std::atomic<bool> _valid;
@@ -97,7 +98,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                 jsRuntimeFactory:(std::shared_ptr<facebook::react::JSRuntimeFactory>)jsRuntimeFactory
                    bundleManager:(RCTBundleManager *)bundleManager
       turboModuleManagerDelegate:(id<RCTTurboModuleManagerDelegate>)tmmDelegate
-             onInitialBundleLoad:(RCTInstanceInitialBundleLoadCompletionBlock)onInitialBundleLoad
                   moduleRegistry:(RCTModuleRegistry *)moduleRegistry
            parentInspectorTarget:(jsinspector_modern::HostTarget *)parentInspectorTarget
                    launchOptions:(nullable NSDictionary *)launchOptions
@@ -111,7 +111,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     _jsRuntimeFactory = jsRuntimeFactory;
     _appTMMDelegate = tmmDelegate;
     _jsThreadManager = [RCTJSThreadManager new];
-    _onInitialBundleLoad = onInitialBundleLoad;
     _bridgeModuleDecorator = [[RCTBridgeModuleDecorator alloc] initWithViewRegistry:[RCTViewRegistry new]
                                                                      moduleRegistry:moduleRegistry
                                                                       bundleManager:bundleManager
@@ -122,22 +121,41 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       [_bridgeModuleDecorator.callableJSModules
           setBridgelessJSModuleMethodInvoker:^(
               NSString *moduleName, NSString *methodName, NSArray *args, dispatch_block_t onComplete) {
-            // TODO: Make RCTInstance call onComplete
             [weakSelf callFunctionOnJSModule:moduleName method:methodName args:args];
+            if (onComplete) {
+              [weakSelf
+                  callFunctionOnBufferedRuntimeExecutor:[onComplete](facebook::jsi::Runtime &_) { onComplete(); }];
+            }
           }];
     }
     _launchOptions = launchOptions;
+
+    if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
+      [[NSNotificationCenter defaultCenter] addObserver:self
+                                               selector:@selector(_handleMemoryWarning)
+                                                   name:UIApplicationDidReceiveMemoryWarningNotification
+                                                 object:nil];
+    }
 
     [self _start];
   }
   return self;
 }
 
+- (void)dealloc
+{
+  if (ReactNativeFeatureFlags::enableJSRuntimeGCOnMemoryPressureOnIOS()) {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidReceiveMemoryWarningNotification
+                                                  object:nil];
+  }
+}
+
 - (void)callFunctionOnJSModule:(NSString *)moduleName method:(NSString *)method args:(NSArray *)args
 {
   if (_valid) {
     _reactInstance->callFunctionOnModule(
-        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ?: @[]));
+        [moduleName UTF8String], [method UTF8String], convertIdToFollyDynamic(args ? args : @[]));
   }
 }
 
@@ -145,8 +163,8 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 {
   std::lock_guard<std::mutex> lock(_invalidationMutex);
   _valid = false;
-  if (self->_reactInstance) {
-    self->_reactInstance->unregisterFromInspector();
+  if (_reactInstance) {
+    _reactInstance->unregisterFromInspector();
   }
   [_surfacePresenter suspend];
   [_jsThreadManager dispatchToJSThread:^{
@@ -183,22 +201,19 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
 - (Class)getModuleClassFromName:(const char *)name
 {
-  if ([_appTMMDelegate respondsToSelector:@selector(getModuleClassFromName:)]) {
-    return [_appTMMDelegate getModuleClassFromName:name];
-  }
-
-  return nil;
+  return [_appTMMDelegate getModuleClassFromName:name];
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
-  if ([_appTMMDelegate respondsToSelector:@selector(getModuleInstanceFromClass:)]) {
-    id<RCTTurboModule> module = [_appTMMDelegate getModuleInstanceFromClass:moduleClass];
-    [self _attachBridgelessAPIsToModule:module];
-    return module;
+  id<RCTTurboModule> module = [_appTMMDelegate getModuleInstanceFromClass:moduleClass];
+
+  if (!module) {
+    module = [moduleClass new];
   }
 
-  return nil;
+  [self _attachBridgelessAPIsToModule:module];
+  return module;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
@@ -211,15 +226,13 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   return nullptr;
 }
 
-#pragma mark - RCTTurboModuleManagerRuntimeHandler
-
-- (RuntimeExecutor)runtimeExecutorForTurboModuleManager:(RCTTurboModuleManager *)turboModuleManager
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  if (_valid) {
-    return _reactInstance->getBufferedRuntimeExecutor();
+  if ([_appTMMDelegate respondsToSelector:@selector(extraModulesForBridge:)]) {
+    return [_appTMMDelegate extraModulesForBridge:nil];
   }
 
-  return nullptr;
+  return @[];
 }
 
 #pragma mark - Private
@@ -235,7 +248,9 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   objCTimerRegistryRawPtr->setTimerManager(timerManager);
 
   __weak __typeof(self) weakSelf = self;
-  auto onJsError = [=](const JsErrorHandler::ParsedError &error) { [weakSelf _handleJSError:error]; };
+  auto onJsError = [=](jsi::Runtime &runtime, const JsErrorHandler::ProcessedError &error) {
+    [weakSelf _handleJSError:error withRuntime:runtime];
+  };
 
   // Create the React Instance
   _reactInstance = std::make_unique<ReactInstance>(
@@ -249,7 +264,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   RuntimeExecutor bufferedRuntimeExecutor = _reactInstance->getBufferedRuntimeExecutor();
   timerManager->setRuntimeExecutor(bufferedRuntimeExecutor);
 
-  auto jsCallInvoker = make_shared<BridgelessJSCallInvoker>(bufferedRuntimeExecutor);
+  auto jsCallInvoker = make_shared<RuntimeSchedulerCallInvoker>(_reactInstance->getRuntimeScheduler());
   RCTBridgeProxy *bridgeProxy =
       [[RCTBridgeProxy alloc] initWithViewRegistry:_bridgeModuleDecorator.viewRegistry_DEPRECATED
           moduleRegistry:_bridgeModuleDecorator.moduleRegistry
@@ -277,7 +292,6 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
                                                      bridgeModuleDecorator:_bridgeModuleDecorator
                                                                   delegate:self
                                                                  jsInvoker:jsCallInvoker];
-  _turboModuleManager.runtimeHandler = self;
 
 #if RCT_DEV
   /**
@@ -304,7 +318,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
       "RCTEventDispatcher",
       facebook::react::wrapManagedObject([_turboModuleManager moduleForName:"RCTEventDispatcher"]));
   contextContainer->insert("RCTBridgeModuleDecorator", facebook::react::wrapManagedObject(_bridgeModuleDecorator));
-  contextContainer->insert("RuntimeScheduler", std::weak_ptr<RuntimeScheduler>(_reactInstance->getRuntimeScheduler()));
+  contextContainer->insert(RuntimeSchedulerKey, std::weak_ptr<RuntimeScheduler>(_reactInstance->getRuntimeScheduler()));
   contextContainer->insert("RCTBridgeProxy", facebook::react::wrapManagedObject(bridgeProxy));
 
   _surfacePresenter = [[RCTSurfacePresenter alloc]
@@ -340,7 +354,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
     });
     RCTInstallNativeComponentRegistryBinding(runtime);
 
-    if (RCTGetUseNativeViewConfigsInBridgelessMode()) {
+    if (ReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode()) {
       installLegacyUIManagerConstantsProviderBinding(runtime);
     }
 
@@ -393,6 +407,15 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   }
 }
 
+- (void)callFunctionOnBufferedRuntimeExecutor:(std::function<void(facebook::jsi::Runtime &)> &&)executor
+{
+  _reactInstance->getBufferedRuntimeExecutor()([=](jsi::Runtime &runtime) {
+    if (executor) {
+      executor(runtime);
+    }
+  });
+}
+
 - (void)handleBundleLoadingError:(NSError *)error
 {
   if (!_valid) {
@@ -422,7 +445,7 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 #endif
 
   __weak __typeof(self) weakSelf = self;
-  [RCTJavaScriptLoader loadBundleAtURL:sourceURL
+  [_delegate loadBundleAtURL:sourceURL
       onProgress:^(RCTLoadingProgress *progressData) {
         __typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
@@ -465,32 +488,73 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
 
   auto script = std::make_unique<NSDataBigString>(source.data);
   const auto *url = deriveSourceURL(source.url).UTF8String;
-  _reactInstance->loadScript(std::move(script), url);
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
+  _reactInstance->loadScript(std::move(script), url, [](jsi::Runtime &_) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTInstanceDidLoadBundle" object:nil];
+  });
+}
 
-  if (_onInitialBundleLoad) {
-    _onInitialBundleLoad();
-    _onInitialBundleLoad = nil;
+- (void)_handleJSError:(const JsErrorHandler::ProcessedError &)error withRuntime:(jsi::Runtime &)runtime
+{
+  NSMutableDictionary<NSString *, id> *errorData = [NSMutableDictionary new];
+  errorData[@"message"] = @(error.message.c_str());
+  if (error.originalMessage) {
+    errorData[@"originalMessage"] = @(error.originalMessage->c_str());
+  }
+  if (error.name) {
+    errorData[@"name"] = @(error.name->c_str());
+  }
+  if (error.componentStack) {
+    errorData[@"componentStack"] = @(error.componentStack->c_str());
+  }
+
+  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
+  for (const JsErrorHandler::ProcessedError::StackFrame &frame : error.stack) {
+    NSMutableDictionary<NSString *, id> *stackFrame = [NSMutableDictionary new];
+    if (frame.file) {
+      stackFrame[@"file"] = @(frame.file->c_str());
+    }
+    stackFrame[@"methodName"] = @(frame.methodName.c_str());
+    if (frame.lineNumber) {
+      stackFrame[@"lineNumber"] = @(*frame.lineNumber);
+    }
+    if (frame.column) {
+      stackFrame[@"column"] = @(*frame.column);
+    }
+    [stack addObject:stackFrame];
+  }
+
+  errorData[@"stack"] = stack;
+  errorData[@"id"] = @(error.id);
+  errorData[@"isFatal"] = @(error.isFatal);
+
+  id extraData =
+      TurboModuleConvertUtils::convertJSIValueToObjCObject(runtime, jsi::Value(runtime, error.extraData), nullptr);
+  if (extraData) {
+    errorData[@"extraData"] = extraData;
+  }
+
+  if (![_delegate instance:self
+          didReceiveJSErrorStack:errorData[@"stack"]
+                         message:errorData[@"message"]
+                 originalMessage:errorData[@"originalMessage"]
+                            name:errorData[@"name"]
+                  componentStack:errorData[@"componentStack"]
+                     exceptionId:error.id
+                         isFatal:errorData[@"isFatal"]
+                       extraData:errorData[@"extraData"]]) {
+    JS::NativeExceptionsManager::ExceptionData jsErrorData{errorData};
+    id<NativeExceptionsManagerSpec> exceptionsManager = [_turboModuleManager moduleForName:"ExceptionsManager"];
+    [exceptionsManager reportException:jsErrorData];
   }
 }
 
-- (void)_handleJSError:(const JsErrorHandler::ParsedError &)error
+- (void)_handleMemoryWarning
 {
-  NSString *message = [NSString stringWithCString:error.message.c_str() encoding:[NSString defaultCStringEncoding]];
-  NSMutableArray<NSDictionary<NSString *, id> *> *stack = [NSMutableArray new];
-  for (const JsErrorHandler::ParsedError::StackFrame &frame : error.frames) {
-    [stack addObject:@{
-      @"file" : [NSString stringWithCString:frame.fileName.c_str() encoding:[NSString defaultCStringEncoding]],
-      @"methodName" : [NSString stringWithCString:frame.methodName.c_str() encoding:[NSString defaultCStringEncoding]],
-      @"lineNumber" : [NSNumber numberWithInt:frame.lineNumber],
-      @"column" : [NSNumber numberWithInt:frame.columnNumber],
-    }];
+  if (_valid) {
+    // Memory Pressure Unloading Level 15 represents TRIM_MEMORY_RUNNING_CRITICAL.
+    static constexpr int unloadLevel = 15;
+    _reactInstance->handleMemoryPressureJs(unloadLevel);
   }
-  [_delegate instance:self
-      didReceiveJSErrorStack:stack
-                     message:message
-                 exceptionId:error.exceptionId
-                     isFatal:error.isFatal];
 }
 
 @end

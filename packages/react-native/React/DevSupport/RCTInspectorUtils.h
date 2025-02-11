@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 // This is a subset of jsinspector_modern::HostTargetMetadata with ObjC types,
-// containing the nonnull members implemented by getHostMetadata.
+// containing the members implemented by getHostMetadata.
 @interface CommonHostMetadata : NSObject
 
 @property (nonatomic, strong) NSString *appDisplayName;

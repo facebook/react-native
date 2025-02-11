@@ -43,7 +43,7 @@ class RawProps final {
   /*
    * Creates empty RawProps objects.
    */
-  RawProps();
+  RawProps() : mode_(Mode::Empty) {}
 
   /*
    * Creates an object with given `runtime` and `value`.
@@ -51,10 +51,10 @@ class RawProps final {
   RawProps(jsi::Runtime& runtime, const jsi::Value& value) noexcept;
 
   explicit RawProps(const RawProps& rawProps) noexcept;
-  RawProps& operator=(const RawProps& other) noexcept;
-
   RawProps(RawProps&& other) noexcept = default;
-  RawProps& operator=(RawProps&& other) noexcept = default;
+
+  RawProps& operator=(const RawProps& other) noexcept = delete;
+  RawProps& operator=(RawProps&& other) noexcept = delete;
 
   /*
    * Creates an object with given `folly::dynamic` object.
@@ -71,7 +71,16 @@ class RawProps final {
    * The support for explicit conversion to `folly::dynamic` is deprecated and
    * will be removed as soon Android implementation does not need it.
    */
-  explicit operator folly::dynamic() const noexcept;
+  explicit operator folly::dynamic() const;
+
+  /*
+   * Deprecated. Do not use.
+   * The support for explicit conversion to `folly::dynamic` is deprecated and
+   * will be removed as soon Android implementation does not need it.
+   */
+  folly::dynamic toDynamic(
+      const std::function<bool(const std::string&)>& filterObjectKeys =
+          nullptr) const;
 
   /*
    * Once called, Yoga style props will be filtered out during conversion to
@@ -103,8 +112,9 @@ class RawProps final {
   /*
    * Source artefacts:
    */
+
   // Mode
-  mutable Mode mode_;
+  Mode mode_;
 
   // Case 1: Source data is represented as `jsi::Object`.
   jsi::Runtime* runtime_{};

@@ -11,12 +11,12 @@
 // Make sure global Event is defined
 import EventPolyfill from './EventPolyfill';
 
-type CustomEvent$Options = $ReadOnly<{|
+type CustomEvent$Options = $ReadOnly<{
   bubbles?: boolean,
   cancelable?: boolean,
   composed?: boolean,
   detail?: {...},
-|}>;
+}>;
 
 class CustomEvent extends EventPolyfill {
   detail: ?{...};

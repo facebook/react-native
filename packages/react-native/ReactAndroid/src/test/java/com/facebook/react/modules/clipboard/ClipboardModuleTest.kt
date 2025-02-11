@@ -11,8 +11,7 @@ import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
 import com.facebook.react.bridge.BridgeReactContext
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,13 +36,13 @@ class ClipboardModuleTest {
   @Test
   fun testSetString() {
     clipboardModule.setString(TEST_CONTENT)
-    assertTrue(clipboardManager.text == TEST_CONTENT)
+    assertThat(clipboardManager.text == TEST_CONTENT).isTrue()
     clipboardModule.setString(null)
-    assertFalse(clipboardManager.hasText())
+    assertThat(clipboardManager.hasText()).isFalse()
     clipboardModule.setString("")
-    assertFalse(clipboardManager.hasText())
+    assertThat(clipboardManager.hasText()).isFalse()
     clipboardModule.setString(" ")
-    assertTrue(clipboardManager.hasText())
+    assertThat(clipboardManager.hasText()).isTrue()
   }
 
   companion object {

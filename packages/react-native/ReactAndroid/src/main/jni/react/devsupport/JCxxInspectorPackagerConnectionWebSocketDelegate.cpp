@@ -7,6 +7,8 @@
 
 #include "JCxxInspectorPackagerConnectionWebSocketDelegate.h"
 
+#include <optional>
+
 using namespace facebook::jni;
 
 namespace facebook::react::jsinspector_modern {
@@ -17,10 +19,17 @@ JCxxInspectorPackagerConnectionWebSocketDelegate::
     : cxxDelegate_(cxxDelegate) {}
 
 void JCxxInspectorPackagerConnectionWebSocketDelegate::didFailWithError(
-    alias_ref<JOptionalInt::javaobject> posixCode,
+    alias_ref<jni::JInteger> posixCode,
     const std::string& error) {
+  std::optional<int> posixCodeVal;
+
+  // Handle @Nullable JInteger param
+  if (posixCode.get() != nullptr) {
+    posixCodeVal = posixCode->intValue();
+  }
+
   if (auto delegate = cxxDelegate_.lock()) {
-    delegate->didFailWithError(*posixCode, error);
+    delegate->didFailWithError(posixCodeVal, error);
   }
 }
 
@@ -28,6 +37,12 @@ void JCxxInspectorPackagerConnectionWebSocketDelegate::didReceiveMessage(
     const std::string& message) {
   if (auto delegate = cxxDelegate_.lock()) {
     delegate->didReceiveMessage(message);
+  }
+}
+
+void JCxxInspectorPackagerConnectionWebSocketDelegate::didOpen() {
+  if (auto delegate = cxxDelegate_.lock()) {
+    delegate->didOpen();
   }
 }
 
@@ -47,7 +62,10 @@ void JCxxInspectorPackagerConnectionWebSocketDelegate::registerNatives() {
            JCxxInspectorPackagerConnectionWebSocketDelegate::didReceiveMessage),
        makeNativeMethod(
            "didClose",
-           JCxxInspectorPackagerConnectionWebSocketDelegate::didClose)});
+           JCxxInspectorPackagerConnectionWebSocketDelegate::didClose),
+       makeNativeMethod(
+           "didOpen",
+           JCxxInspectorPackagerConnectionWebSocketDelegate::didOpen)});
 }
 
 } // namespace facebook::react::jsinspector_modern

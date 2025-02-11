@@ -10,7 +10,8 @@ package com.facebook.react.tasks.internal
 import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.*
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -19,11 +20,13 @@ class PrepareBoostTaskTest {
 
   @get:Rule val tempFolder = TemporaryFolder()
 
-  @Test(expected = IllegalStateException::class)
+  @Test
   fun prepareBoostTask_withMissingConfiguration_fails() {
     val task = createTestTask<PrepareBoostTask>()
-
-    task.taskAction()
+    assertThatThrownBy { task.taskAction() }
+        .isInstanceOf(IllegalStateException::class.java)
+        .hasMessage(
+            "Cannot query the value of task ':PrepareBoostTask' property 'boostVersion' because it has no value available.")
   }
 
   @Test
@@ -31,28 +34,32 @@ class PrepareBoostTaskTest {
     val boostpath = tempFolder.newFolder("boostpath")
     val output = tempFolder.newFolder("output")
     val project = createProject()
+    val boostThirdPartyJniPath = File(project.projectDir, "src/main/jni/third-party/boost/")
     val task =
         createTestTask<PrepareBoostTask>(project = project) {
           it.boostPath.setFrom(boostpath)
+          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
           it.boostVersion.set("1.0.0")
           it.outputDir.set(output)
         }
-    File(project.projectDir, "src/main/jni/third-party/boost/CMakeLists.txt").apply {
+    File(boostThirdPartyJniPath, "CMakeLists.txt").apply {
       parentFile.mkdirs()
       createNewFile()
     }
     task.taskAction()
 
-    assertTrue(output.listFiles()!!.any { it.name == "CMakeLists.txt" })
+    assertThat(output.listFiles()).extracting("name").contains("CMakeLists.txt")
   }
 
   @Test
   fun prepareBoostTask_copiesAsmFiles() {
     val boostpath = tempFolder.newFolder("boostpath")
+    val boostThirdPartyJniPath = tempFolder.newFolder("boostpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
-        createTestTask<PrepareBoostTask>() {
+        createTestTask<PrepareBoostTask> {
           it.boostPath.setFrom(boostpath)
+          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
           it.boostVersion.set("1.0.0")
           it.outputDir.set(output)
         }
@@ -62,16 +69,18 @@ class PrepareBoostTaskTest {
     }
     task.taskAction()
 
-    assertTrue(File(output, "asm/asm.S").exists())
+    assertThat(File(output, "asm/asm.S")).exists()
   }
 
   @Test
   fun prepareBoostTask_copiesBoostSourceFiles() {
     val boostpath = tempFolder.newFolder("boostpath")
+    val boostThirdPartyJniPath = tempFolder.newFolder("boostpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
         createTestTask<PrepareBoostTask> {
           it.boostPath.setFrom(boostpath)
+          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
           it.boostVersion.set("1.0.0")
           it.outputDir.set(output)
         }
@@ -81,16 +90,18 @@ class PrepareBoostTaskTest {
     }
     task.taskAction()
 
-    assertTrue(File(output, "boost_1.0.0/boost/config.hpp").exists())
+    assertThat(File(output, "boost_1.0.0/boost/config.hpp")).exists()
   }
 
   @Test
   fun prepareBoostTask_copiesVersionlessBoostSourceFiles() {
     val boostpath = tempFolder.newFolder("boostpath")
+    val boostThirdPartyJniPath = tempFolder.newFolder("boostpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
         createTestTask<PrepareBoostTask> {
           it.boostPath.setFrom(boostpath)
+          it.boostThirdPartyJniPath.set(boostThirdPartyJniPath)
           it.boostVersion.set("1.0.0")
           it.outputDir.set(output)
         }
@@ -100,6 +111,6 @@ class PrepareBoostTaskTest {
     }
     task.taskAction()
 
-    assertTrue(File(output, "boost_1.0.0/boost/config.hpp").exists())
+    assertThat(File(output, "boost_1.0.0/boost/config.hpp")).exists()
   }
 }

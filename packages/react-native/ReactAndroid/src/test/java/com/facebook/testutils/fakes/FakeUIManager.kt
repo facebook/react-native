@@ -17,6 +17,7 @@ import com.facebook.react.bridge.UIManagerListener
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.interop.UIBlockViewResolver
+import com.facebook.react.uimanager.events.EventDispatcher
 
 @OptIn(UnstableReactNativeAPI::class)
 class FakeUIManager : UIManager, UIBlockViewResolver {
@@ -25,29 +26,26 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
   var resolvedViewCount = 0
 
   override fun profileNextBatch() {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
-  override fun getPerformanceCounters(): MutableMap<String, Long> {
-    TODO("Not yet implemented")
-  }
-
+  @Deprecated("")
   override fun <T : View?> addRootView(rootView: T, initialProps: WritableMap?): Int {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
   override fun <T : View?> startSurface(
       rootView: T,
-      moduleName: String?,
+      moduleName: String,
       initialProps: WritableMap?,
       widthMeasureSpec: Int,
       heightMeasureSpec: Int
   ): Int {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
   override fun stopSurface(surfaceId: Int) {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
   override fun updateRootLayoutSpecs(
@@ -57,35 +55,34 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
       offsetX: Int,
       offsetY: Int
   ) {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
   override fun dispatchCommand(reactTag: Int, commandId: Int, commandArgs: ReadableArray?) {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
-  override fun dispatchCommand(reactTag: Int, commandId: String?, commandArgs: ReadableArray?) {
-    TODO("Not yet implemented")
+  override fun dispatchCommand(reactTag: Int, commandId: String, commandArgs: ReadableArray?) {
+    error("Not yet implemented")
   }
 
-  override fun <T : Any?> getEventDispatcher(): T {
-    TODO("Not yet implemented")
-  }
+  override val eventDispatcher: EventDispatcher
+    get() = TODO("Not yet implemented")
 
   override fun synchronouslyUpdateViewOnUIThread(reactTag: Int, props: ReadableMap?) {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
   override fun sendAccessibilityEvent(reactTag: Int, eventType: Int) {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
   override fun addUIManagerEventListener(listener: UIManagerListener?) {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
   override fun removeUIManagerEventListener(listener: UIManagerListener?) {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
   override fun resolveView(reactTag: Int): View? {
@@ -93,28 +90,36 @@ class FakeUIManager : UIManager, UIBlockViewResolver {
     return null
   }
 
-  override fun receiveEvent(reactTag: Int, eventName: String?, event: WritableMap?) {
-    TODO("Not yet implemented")
+  @Deprecated("")
+  override fun receiveEvent(reactTag: Int, eventName: String, event: WritableMap?) {
+    error("Not yet implemented")
   }
 
-  override fun receiveEvent(
-      surfaceId: Int,
-      reactTag: Int,
-      eventName: String?,
-      event: WritableMap?
-  ) {
-    TODO("Not yet implemented")
+  override fun receiveEvent(surfaceId: Int, reactTag: Int, eventName: String, event: WritableMap?) {
+    error("Not yet implemented")
   }
 
-  override fun resolveCustomDirectEventName(eventName: String?): String? {
-    TODO("Not yet implemented")
+  @Deprecated("")
+  override fun resolveCustomDirectEventName(eventName: String): String? {
+    error("Not yet implemented")
   }
 
   override fun initialize() {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
 
   override fun invalidate() {
-    TODO("Not yet implemented")
+    error("Not yet implemented")
   }
+
+  override fun markActiveTouchForTag(surfaceId: Int, reactTag: Int) {
+    error("Not yet implemented")
+  }
+
+  override fun sweepActiveTouchForTag(surfaceId: Int, reactTag: Int) {
+    error("Not yet implemented")
+  }
+
+  override val performanceCounters: Map<String, Long>?
+    get() = null
 }

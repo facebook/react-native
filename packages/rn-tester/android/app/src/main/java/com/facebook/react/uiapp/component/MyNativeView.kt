@@ -23,7 +23,7 @@ import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 
-class MyNativeView(context: ThemedReactContext) : View(context) {
+internal class MyNativeView(context: ThemedReactContext) : View(context) {
   private var currentColor = 0
   private var background: GradientDrawable = GradientDrawable()
   private var reactContext: ReactContext = context.reactApplicationContext

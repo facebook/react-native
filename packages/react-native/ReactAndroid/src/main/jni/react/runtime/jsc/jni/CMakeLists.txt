@@ -8,15 +8,17 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(-fvisibility=hidden -fexceptions -frtti)
 
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
 file(GLOB jscinstance_SRC CONFIGURE_DEPENDS "*.cpp")
-add_library(jscinstance SHARED ${jscinstance_SRC})
+
+add_library(jscinstance OBJECT ${jscinstance_SRC})
 
 target_include_directories(jscinstance PUBLIC .)
+target_merge_so(jscinstance)
 
-target_link_libraries(
-        jscinstance
-        bridgeless
+target_link_libraries(jscinstance
         jscruntime
         fbjni
-        reactnativejni
+        reactnative
 )

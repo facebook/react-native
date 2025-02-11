@@ -182,14 +182,9 @@ const UIManagerJSPlatformAPIs = Platform.select({
       return [];
     },
     setLayoutAnimationEnabledExperimental: (enabled: boolean): void => {
-      /**
-       * Layout animations are always enabled in the New Architecture.
-       * They cannot be turned off.
-       */
-      if (!enabled) {
-        raiseSoftError(
-          'setLayoutAnimationEnabledExperimental(false)',
-          'Layout animations are always enabled in the New Architecture.',
+      if (__DEV__) {
+        console.warn(
+          'setLayoutAnimationEnabledExperimental is currently a no-op in the New Architecture.',
         );
       }
     },
@@ -382,6 +377,7 @@ const UIManagerJS: UIManagerJSInterface & {[string]: any} = {
       shadowNode,
     );
 
+    // eslint-disable-next-line no-bitwise
     let isAncestor = (result & DOCUMENT_POSITION_CONTAINED_BY) !== 0;
 
     callback([isAncestor]);
@@ -415,4 +411,4 @@ if (getUIManagerConstants) {
   }
 }
 
-module.exports = UIManagerJS;
+export default UIManagerJS;

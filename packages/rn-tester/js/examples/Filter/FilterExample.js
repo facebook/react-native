@@ -10,16 +10,19 @@
 
 'use strict';
 
+import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 
+const alphaHotdog = require('../../assets/alpha-hotdog.png');
 const hotdog = require('../../assets/hotdog.jpg');
 
 type Props = $ReadOnly<{
   style: ViewStyleProp,
   testID?: string,
+  imageSource?: number,
 }>;
 
 function StaticViewAndImage(props: Props): React.Node {
@@ -40,8 +43,16 @@ function StaticViewAndImage(props: Props): React.Node {
         </View>
       </View>
       <View style={styles.container}>
-        <Image source={hotdog} style={[props.style, styles.commonImage]} />
-        <Image source={hotdog} style={styles.commonImage} />
+        <Image
+          source={props.imageSource ?? hotdog}
+          style={[props.style, styles.commonImage]}
+          resizeMode="contain"
+        />
+        <Image
+          source={props.imageSource ? props.imageSource : hotdog}
+          style={styles.commonImage}
+          resizeMode="contain"
+        />
       </View>
     </>
   );
@@ -97,7 +108,7 @@ exports.examples = [
     render(): React.Node {
       return (
         <StaticViewAndImage
-          style={{experimental_filter: [{brightness: 1.5}]}}
+          style={{filter: [{brightness: 1.5}]}}
           testID="filter-test-brightness"
         />
       );
@@ -108,9 +119,7 @@ exports.examples = [
     description: 'opacity(0.5)',
     name: 'opacity',
     render(): React.Node {
-      return (
-        <StaticViewAndImage style={{experimental_filter: [{opacity: 0.5}]}} />
-      );
+      return <StaticViewAndImage style={{filter: [{opacity: 0.5}]}} />;
     },
   },
   {
@@ -119,9 +128,7 @@ exports.examples = [
     name: 'contrast',
     platform: 'android',
     render(): React.Node {
-      return (
-        <StaticViewAndImage style={{experimental_filter: [{contrast: 0.5}]}} />
-      );
+      return <StaticViewAndImage style={{filter: [{contrast: 0.5}]}} />;
     },
   },
   {
@@ -130,9 +137,7 @@ exports.examples = [
     name: 'sepia',
     platform: 'android',
     render(): React.Node {
-      return (
-        <StaticViewAndImage style={{experimental_filter: [{sepia: 0.5}]}} />
-      );
+      return <StaticViewAndImage style={{filter: [{sepia: 0.5}]}} />;
     },
   },
   {
@@ -141,9 +146,7 @@ exports.examples = [
     name: 'grayscale',
     platform: 'android',
     render(): React.Node {
-      return (
-        <StaticViewAndImage style={{experimental_filter: [{grayscale: 0.5}]}} />
-      );
+      return <StaticViewAndImage style={{filter: [{grayscale: 0.5}]}} />;
     },
   },
   {
@@ -152,22 +155,16 @@ exports.examples = [
     name: 'saturate',
     platform: 'android',
     render(): React.Node {
-      return (
-        <StaticViewAndImage style={{experimental_filter: [{saturate: 4}]}} />
-      );
+      return <StaticViewAndImage style={{filter: [{saturate: 4}]}} />;
     },
   },
   {
     title: 'Hue Rotate',
-    description: 'hue-rotate(-90deg)',
-    name: 'hue-rotate',
+    description: 'hueRotate(-90deg)',
+    name: 'hueRotate',
     platform: 'android',
     render(): React.Node {
-      return (
-        <StaticViewAndImage
-          style={{experimental_filter: [{'hue-rotate': '-90deg'}]}}
-        />
-      );
+      return <StaticViewAndImage style={{filter: [{hueRotate: '-90deg'}]}} />;
     },
   },
   {
@@ -176,9 +173,7 @@ exports.examples = [
     name: 'invert',
     platform: 'android',
     render(): React.Node {
-      return (
-        <StaticViewAndImage style={{experimental_filter: [{invert: 0.7}]}} />
-      );
+      return <StaticViewAndImage style={{filter: [{invert: 0.7}]}} />;
     },
   },
   {
@@ -189,8 +184,25 @@ exports.examples = [
     render(): React.Node {
       return (
         <StaticViewAndImage
-          style={{experimental_filter: [{blur: 10}]}}
+          style={{filter: [{blur: 10}]}}
           testID="filter-test-blur"
+        />
+      );
+    },
+  },
+  {
+    title: 'Drop Shadow',
+    description: 'drop-shadow(30px 10px 4px #4444dd)',
+    name: 'drop-shadow',
+    platform: 'android',
+    render(): React.Node {
+      return (
+        <StaticViewAndImage
+          style={{
+            filter: [{dropShadow: '30px 10px 4px #4444dd'}],
+          }}
+          testID="filter-test-drop-shadow"
+          imageSource={alphaHotdog}
         />
       );
     },
@@ -202,7 +214,7 @@ exports.examples = [
     render(): React.Node {
       return (
         <StaticViewAndImageWithState
-          style={{experimental_filter: [{brightness: 1.5}, {opacity: 0.5}]}}
+          style={{filter: [{brightness: 1.5}, {opacity: 0.5}]}}
           testID="filter-test-chain"
         />
       );
@@ -213,10 +225,8 @@ exports.examples = [
     description: 'Turn brightness(1.5) on and off every 5 seconds',
     render(): React.Node {
       return (
-        <StaticViewAndImageWithState
-          style={{experimental_filter: [{brightness: 1.5}]}}
-        />
+        <StaticViewAndImageWithState style={{filter: [{brightness: 1.5}]}} />
       );
     },
   },
-];
+] as Array<RNTesterModuleExample>;

@@ -22,7 +22,7 @@ import java.io.InputStream
 import java.util.concurrent.Executors
 
 @ReactModule(name = NativeImageStoreAndroidSpec.NAME)
-public class ImageStoreManager(reactContext: ReactApplicationContext) :
+internal class ImageStoreManager(reactContext: ReactApplicationContext) :
     NativeImageStoreAndroidSpec(reactContext) {
 
   /**
@@ -32,7 +32,7 @@ public class ImageStoreManager(reactContext: ReactApplicationContext) :
    * @param success callback to be invoked with the base64 string as the only argument
    * @param error callback to be invoked on error (e.g. file not found, not readable etc.)
    */
-  override public fun getBase64ForTag(uri: String, success: Callback, error: Callback) {
+  override fun getBase64ForTag(uri: String, success: Callback, error: Callback) {
     val executor = Executors.newSingleThreadExecutor()
     executor.execute {
       try {
@@ -52,8 +52,8 @@ public class ImageStoreManager(reactContext: ReactApplicationContext) :
     }
   }
 
-  public companion object {
-    public const val NAME: String = NativeImageStoreAndroidSpec.NAME
+  companion object {
+    const val NAME: String = NativeImageStoreAndroidSpec.NAME
 
     private const val BUFFER_SIZE = 8_192
 

@@ -16,12 +16,12 @@ import requireNativeComponent from '../../Libraries/ReactNative/requireNativeCom
 import UIManager from '../ReactNative/UIManager';
 
 // TODO: import from CodegenSchema once workspaces are enabled
-type Options = $ReadOnly<{|
+type Options = $ReadOnly<{
   interfaceOnly?: boolean,
   paperComponentName?: string,
   paperComponentNameDeprecated?: string,
   excludedPlatforms?: $ReadOnlyArray<'iOS' | 'android'>,
-|}>;
+}>;
 
 export type NativeComponentType<T> = HostComponent<T>;
 
@@ -31,7 +31,7 @@ export type NativeComponentType<T> = HostComponent<T>;
 // `requireNativeComponent` is not available in Bridgeless mode.
 // e.g. This function runs at runtime if `codegenNativeComponent` was not called
 // from a file suffixed with NativeComponent.js.
-function codegenNativeComponent<Props>(
+function codegenNativeComponent<Props: {...}>(
   componentName: string,
   options?: Options,
 ): NativeComponentType<Props> {

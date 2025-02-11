@@ -11,6 +11,8 @@
 
 #include <perfetto.h>
 
+namespace facebook::react {
+
 class HermesPerfettoDataSource
     : public perfetto::DataSource<HermesPerfettoDataSource> {
  public:
@@ -32,6 +34,9 @@ class HermesPerfettoDataSource
       perfetto::BufferExhaustedPolicy::kStall;
 };
 
-PERFETTO_DECLARE_DATA_SOURCE_STATIC_MEMBERS(HermesPerfettoDataSource);
+} // namespace facebook::react
+
+PERFETTO_DECLARE_DATA_SOURCE_STATIC_MEMBERS(
+    facebook::react::HermesPerfettoDataSource);
 
 #endif // WITH_PERFETTO

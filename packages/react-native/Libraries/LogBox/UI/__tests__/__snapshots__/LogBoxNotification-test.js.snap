@@ -20,6 +20,7 @@ exports[`LogBoxNotification should render log 1`] = `
         "pressed": "rgba(51, 51, 51, 0.9)",
       }
     }
+    id="logbox_button_warn"
     onPress={[Function]}
     style={
       Object {

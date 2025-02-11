@@ -10,11 +10,12 @@
 
 import type {Task} from './TaskQueue';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import EventEmitter from '../vendor/emitter/EventEmitter';
 
-const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
 const infoLog = require('../Utilities/infoLog');
-const TaskQueue = require('./TaskQueue');
+const TaskQueue = require('./TaskQueue').default;
 const invariant = require('invariant');
 
 export type Handle = number;
@@ -76,7 +77,7 @@ const DEBUG: false = false;
  * allowing events such as touches to start interactions and block queued tasks
  * from executing, making apps more responsive.
  */
-const InteractionManager = {
+const InteractionManagerImpl = {
   Events: {
     interactionStart: 'interactionStart',
     interactionComplete: 'interactionComplete',
@@ -137,8 +138,9 @@ const InteractionManager = {
     _deleteInteractionSet.add(handle);
   },
 
+  // $FlowFixMe[unclear-type] unclear type of _emitter
   // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-  addListener: (_emitter.addListener.bind(_emitter): $FlowFixMe),
+  addListener: _emitter.addListener.bind(_emitter) as Function,
 
   /**
    * A positive number will use setTimeout to schedule any tasks after the
@@ -208,4 +210,10 @@ function _processUpdate() {
   _deleteInteractionSet.clear();
 }
 
-module.exports = InteractionManager;
+const InteractionManager = (
+  ReactNativeFeatureFlags.disableInteractionManager()
+    ? require('./InteractionManagerStub').default
+    : InteractionManagerImpl
+) as typeof InteractionManagerImpl;
+
+export default InteractionManager;

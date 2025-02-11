@@ -8,11 +8,13 @@
 package com.facebook.react.tasks.internal
 
 import java.io.File
+import javax.inject.Inject
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.DuplicatesStrategy
+import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 
@@ -23,20 +25,22 @@ import org.gradle.api.tasks.*
 abstract class PrepareGlogTask : DefaultTask() {
 
   @get:InputFiles abstract val glogPath: ConfigurableFileCollection
-
+  @get:InputDirectory abstract val glogThirdPartyJniPath: DirectoryProperty
   @get:Input abstract val glogVersion: Property<String>
 
   @get:OutputDirectory abstract val outputDir: DirectoryProperty
 
+  @get:Inject abstract val fs: FileSystemOperations
+
   @TaskAction
   fun taskAction() {
-    project.copy {
-      it.from(glogPath)
-      it.from(project.file("src/main/jni/third-party/glog/"))
-      it.include("glog-${glogVersion.get()}/src/**/*", "CMakeLists.txt", "config.h")
-      it.duplicatesStrategy = DuplicatesStrategy.WARN
-      it.includeEmptyDirs = false
-      it.filesMatching("**/*.h.in") { matchedFile ->
+    fs.copy { action ->
+      action.from(glogPath)
+      action.from(glogThirdPartyJniPath)
+      action.include("glog-${glogVersion.get()}/src/**/*", "CMakeLists.txt", "config.h")
+      action.duplicatesStrategy = DuplicatesStrategy.INCLUDE
+      action.includeEmptyDirs = false
+      action.filesMatching("**/*.h.in") { matchedFile ->
         matchedFile.filter(
             mapOf(
                 "tokens" to
@@ -60,20 +64,20 @@ abstract class PrepareGlogTask : DefaultTask() {
             ReplaceTokens::class.java)
         matchedFile.path = (matchedFile.name.removeSuffix(".in"))
       }
-      it.into(outputDir)
+      action.into(outputDir)
     }
     val exportedDir = File(outputDir.asFile.get(), "exported/glog/").apply { mkdirs() }
-    project.copy {
-      it.from(outputDir)
-      it.include(
+    fs.copy { action ->
+      action.from(outputDir)
+      action.include(
           "stl_logging.h",
           "logging.h",
           "raw_logging.h",
           "vlog_is_on.h",
           "**/src/glog/log_severity.h")
-      it.eachFile { file -> file.path = file.name }
-      it.includeEmptyDirs = false
-      it.into(exportedDir)
+      action.eachFile { file -> file.path = file.name }
+      action.includeEmptyDirs = false
+      action.into(exportedDir)
     }
   }
 }

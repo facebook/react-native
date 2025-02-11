@@ -6,10 +6,8 @@
  */
 
 #include "ViewShadowNode.h"
-#include <react/config/ReactNativeConfig.h>
 #include <react/renderer/components/view/HostPlatformViewTraitsInitializer.h>
 #include <react/renderer/components/view/primitives.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -61,13 +59,17 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.accessibilityViewIsModal ||
       viewProps.importantForAccessibility != ImportantForAccessibility::Auto ||
       viewProps.removeClippedSubviews || viewProps.cursor != Cursor::Auto ||
-      !viewProps.filter.empty() || !viewProps.mixBlendMode.empty() ||
+      !viewProps.filter.empty() ||
+      viewProps.mixBlendMode != BlendMode::Normal ||
+      viewProps.isolation == Isolation::Isolate ||
       HostPlatformViewTraitsInitializer::formsStackingContext(viewProps);
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) || hasBorder() ||
       !viewProps.testId.empty() || !viewProps.boxShadow.empty() ||
-      HostPlatformViewTraitsInitializer::formsView(viewProps);
+      !viewProps.backgroundImage.empty() ||
+      HostPlatformViewTraitsInitializer::formsView(viewProps) ||
+      viewProps.outlineWidth > 0;
 
   if (formsView) {
     traits_.set(ShadowNodeTraits::Trait::FormsView);

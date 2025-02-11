@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.react.ReactHost;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -93,9 +94,12 @@ public class ReactSurfaceImpl implements ReactSurface {
    *
    * @param host The ReactHost to attach.
    */
-  public void attach(ReactHostImpl host) {
-    if (!mReactHost.compareAndSet(null, host)) {
+  public void attach(ReactHost host) {
+    if (host instanceof ReactHostImpl && !mReactHost.compareAndSet(null, (ReactHostImpl) host)) {
       throw new IllegalStateException("This surface is already attached to a host!");
+    } else if (!(host instanceof ReactHostImpl)) {
+      throw new IllegalArgumentException(
+          "ReactSurfaceImpl.attach can only attach to ReactHostImpl.");
     }
   }
 

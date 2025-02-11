@@ -11,20 +11,18 @@ add_compile_options(-std=c++20)
 file(GLOB_RECURSE bridgeless_hermes_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(
         bridgelesshermes
-        STATIC
+        OBJECT
         ${bridgeless_hermes_SRC}
 )
 target_include_directories(bridgelesshermes PUBLIC .)
 
 target_link_libraries(bridgelesshermes
-        jsireact
         hermes-engine::libhermes
+        hermes_executor_common
         hermes_inspector_modern
         jsi
-        hermes_executor_common
-        bridgeless
-        react_featureflags
         jsinspector
+        reactnative
 )
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)

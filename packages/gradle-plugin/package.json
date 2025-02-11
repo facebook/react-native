@@ -1,6 +1,6 @@
 {
   "name": "@react-native/gradle-plugin",
-  "version": "0.76.0-main",
+  "version": "0.79.0-main",
   "description": "Gradle Plugin for React Native",
   "license": "MIT",
   "repository": {
@@ -32,6 +32,7 @@
     "README.md",
     "react-native-gradle-plugin",
     "settings-plugin",
-    "shared"
+    "shared",
+    "shared-testutil"
   ]
 }

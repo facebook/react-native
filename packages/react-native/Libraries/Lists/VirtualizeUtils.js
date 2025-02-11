@@ -12,7 +12,5 @@
 
 import {typeof keyExtractor as KeyExtractorType} from '@react-native/virtualized-lists';
 
-const keyExtractor: KeyExtractorType =
+export const keyExtractor: KeyExtractorType =
   require('@react-native/virtualized-lists').keyExtractor;
-
-module.exports = {keyExtractor};

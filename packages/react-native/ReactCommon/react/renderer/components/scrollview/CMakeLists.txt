@@ -14,10 +14,10 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB rrc_scrollview_SRC CONFIGURE_DEPENDS *.cpp)
+file(GLOB rrc_scrollview_SRC CONFIGURE_DEPENDS *.cpp platform/android/react/renderer/components/scrollview/*.cpp)
 add_library(rrc_scrollview STATIC ${rrc_scrollview_SRC})
 
-target_include_directories(rrc_scrollview PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(rrc_scrollview PUBLIC ${REACT_COMMON_DIR} . ${CMAKE_CURRENT_SOURCE_DIR}/platform/android/)
 
 target_link_libraries(rrc_scrollview
         glog
@@ -25,10 +25,10 @@ target_link_libraries(rrc_scrollview
         glog_init
         jsi
         react_debug
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_mapbuffer
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_mapbuffer
         rrc_view
         yoga
 )

@@ -20,7 +20,6 @@ The content of index.io.js could be something like
 For a list of complete Typescript examples: check https://github.com/bgrieder/RNTSExplorer
 */
 
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import {
   AccessibilityInfo,
@@ -112,7 +111,6 @@ import {
   View,
   ViewStyle,
   VirtualizedList,
-  YellowBox,
   findNodeHandle,
   requireNativeComponent,
   useColorScheme,
@@ -121,6 +119,7 @@ import {
   ToastAndroid,
   Touchable,
   LayoutAnimation,
+  experimental_LayoutConformance as LayoutConformance,
 } from 'react-native';
 
 declare module 'react-native' {
@@ -624,7 +623,7 @@ export class TouchableNativeFeedbackTest extends React.Component {
 
 // PressableTest
 export class PressableTest extends React.Component<{}> {
-  private readonly myRef: React.RefObject<View> = React.createRef();
+  private readonly myRef: React.RefObject<View | null> = React.createRef();
 
   onPressButton = (e: GestureResponderEvent) => {
     e.persist();
@@ -805,7 +804,9 @@ export class FlatListTest extends React.Component<FlatListProps<number>, {}> {
   render() {
     return (
       <FlatList
-        ref={list => (this.list = list)}
+        ref={list => {
+          this.list = list;
+        }}
         data={[1, 2, 3, 4, 5]}
         renderItem={this._renderItem}
         ItemSeparatorComponent={this._renderSeparator}
@@ -845,7 +846,7 @@ export class SectionListTest extends React.Component<
   SectionListProps<string>,
   {}
 > {
-  myList: React.RefObject<SectionList<string>>;
+  myList: React.RefObject<SectionList<string> | null>;
 
   constructor(props: SectionListProps<string>) {
     super(props);
@@ -919,7 +920,7 @@ export class SectionListTypedSectionTest extends React.Component<
   SectionListProps<string, SectionT>,
   {}
 > {
-  myList: React.RefObject<SectionList<string, SectionT>>;
+  myList: React.RefObject<SectionList<string, SectionT> | null>;
 
   constructor(props: SectionListProps<string, SectionT>) {
     super(props);
@@ -1247,7 +1248,9 @@ class TextInputTest extends React.Component<{}, {username: string}> {
         </Text>
 
         <TextInput
-          ref={input => (this.username = input)}
+          ref={input => {
+            this.username = input;
+          }}
           textContentType="username"
           autoComplete="username"
           value={this.state.username}
@@ -1534,10 +1537,6 @@ const NativeBridgedComponent = requireNativeComponent<{nativeProp: string}>(
 );
 
 class BridgedComponentTest extends React.Component {
-  static propTypes = {
-    jsProp: PropTypes.string.isRequired,
-  };
-
   nativeComponentRef: React.ElementRef<typeof NativeBridgedComponent> | null;
 
   callNativeMethod = () => {
@@ -1562,7 +1561,9 @@ class BridgedComponentTest extends React.Component {
       <NativeBridgedComponent
         {...this.props}
         nativeProp="test"
-        ref={ref => (this.nativeComponentRef = ref)}
+        ref={ref => {
+          this.nativeComponentRef = ref;
+        }}
       />
     );
   }
@@ -1966,9 +1967,6 @@ const PushNotificationTest = () => {
   });
 };
 
-// YellowBox
-const YellowBoxTest = () => <YellowBox />;
-
 // Appearance
 const DarkMode = () => {
   const color = useColorScheme();
@@ -2212,3 +2210,7 @@ const ActionSheetIOSTest = () => {
   // test dismissActionSheet method
   ActionSheetIOS.dismissActionSheet();
 };
+
+<LayoutConformance mode="strict">
+  <View />
+</LayoutConformance>;

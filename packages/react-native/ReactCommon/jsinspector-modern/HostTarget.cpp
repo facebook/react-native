@@ -13,6 +13,8 @@
 #include "InstanceTarget.h"
 #include "SessionState.h"
 
+#include <jsinspector-modern/InspectorFlags.h>
+
 #include <folly/dynamic.h>
 #include <folly/json.h>
 
@@ -29,7 +31,8 @@ class HostTargetSession {
   explicit HostTargetSession(
       std::unique_ptr<IRemoteConnection> remote,
       HostTargetController& targetController,
-      HostTargetMetadata hostMetadata)
+      HostTargetMetadata hostMetadata,
+      VoidExecutor executor)
       : remote_(std::make_shared<RAIIRemoteConnection>(std::move(remote))),
         frontendChannel_(
             [remoteWeak = std::weak_ptr(remote_)](std::string_view message) {
@@ -41,7 +44,8 @@ class HostTargetSession {
             frontendChannel_,
             targetController,
             std::move(hostMetadata),
-            state_) {}
+            state_,
+            executor) {}
 
   /**
    * Called by CallbackLocalConnection to send a message to this Session's
@@ -62,13 +66,20 @@ class HostTargetSession {
       return;
     }
 
-    // Catch exceptions that may arise from accessing dynamic params during
-    // request handling.
     try {
       hostAgent_.handleRequest(request);
-    } catch (const cdp::TypeError& e) {
+    }
+    // Catch exceptions that may arise from accessing dynamic params during
+    // request handling.
+    catch (const cdp::TypeError& e) {
       frontendChannel_(
           cdp::jsonError(request.id, cdp::ErrorCode::InvalidRequest, e.what()));
+      return;
+    }
+    // Catch exceptions for unrecognised or partially implemented CDP methods.
+    catch (const NotImplementedException& e) {
+      frontendChannel_(
+          cdp::jsonError(request.id, cdp::ErrorCode::MethodNotFound, e.what()));
       return;
     }
   }
@@ -148,7 +159,10 @@ HostTarget::HostTarget(HostTargetDelegate& delegate)
 std::unique_ptr<ILocalConnection> HostTarget::connect(
     std::unique_ptr<IRemoteConnection> connectionToFrontend) {
   auto session = std::make_shared<HostTargetSession>(
-      std::move(connectionToFrontend), controller_, delegate_.getMetadata());
+      std::move(connectionToFrontend),
+      controller_,
+      delegate_.getMetadata(),
+      makeVoidExecutor(executorFromThis()));
   session->setCurrentInstance(currentInstance_.get());
   sessions_.insert(std::weak_ptr(session));
   return std::make_unique<CallbackLocalConnection>(
@@ -220,7 +234,25 @@ bool HostTargetController::decrementPauseOverlayCounter() {
   return true;
 }
 
-folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata) {
+namespace {
+
+struct StaticHostTargetMetadata {
+  std::optional<bool> isProfilingBuild;
+  std::optional<bool> networkInspectionEnabled;
+};
+
+StaticHostTargetMetadata getStaticHostMetadata() {
+  auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();
+
+  return {
+      .isProfilingBuild = inspectorFlags.getIsProfilingBuild(),
+      .networkInspectionEnabled = inspectorFlags.getNetworkInspectionEnabled()};
+}
+
+} // namespace
+
+folly::dynamic createHostMetadataPayload(const HostTargetMetadata& metadata) {
+  auto staticMetadata = getStaticHostMetadata();
   folly::dynamic result = folly::dynamic::object;
 
   if (metadata.appDisplayName) {
@@ -240,6 +272,14 @@ folly::dynamic hostMetadataToDynamic(const HostTargetMetadata& metadata) {
   }
   if (metadata.reactNativeVersion) {
     result["reactNativeVersion"] = metadata.reactNativeVersion.value();
+  }
+  if (staticMetadata.isProfilingBuild) {
+    result["unstable_isProfilingBuild"] =
+        staticMetadata.isProfilingBuild.value();
+  }
+  if (staticMetadata.networkInspectionEnabled) {
+    result["unstable_networkInspectionEnabled"] =
+        staticMetadata.networkInspectionEnabled.value();
   }
 
   return result;

@@ -67,5 +67,15 @@ public class ResourceDrawableIdHelper private constructor() {
     @JvmStatic
     public val instance: ResourceDrawableIdHelper
       get() = resourceDrawableIdHelper
+
+    /**
+     * We're just re-adding this to reduce a breaking change for libraries in React Native 0.75.
+     *
+     * @deprecated Use instance instead
+     */
+    @Deprecated("Use .instance instead, this API is for backward compat", ReplaceWith("instance"))
+    @JvmName(
+        "DEPRECATED\$getInstance") // We intentionally don't want to expose this accessor to Java.
+    public fun getInstance(): ResourceDrawableIdHelper = instance
   }
 }

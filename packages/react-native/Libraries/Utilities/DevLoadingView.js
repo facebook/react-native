@@ -9,7 +9,7 @@
  */
 
 import processColor from '../StyleSheet/processColor';
-import Appearance from './Appearance';
+import {getColorScheme} from './Appearance';
 import NativeDevLoadingView from './NativeDevLoadingView';
 
 const COLOR_SCHEME = {
@@ -39,9 +39,7 @@ module.exports = {
   showMessage(message: string, type: 'load' | 'refresh') {
     if (NativeDevLoadingView) {
       const colorScheme =
-        Appearance.getColorScheme() === 'dark'
-          ? COLOR_SCHEME.dark
-          : COLOR_SCHEME.default;
+        getColorScheme() === 'dark' ? COLOR_SCHEME.dark : COLOR_SCHEME.default;
 
       const colorSet = colorScheme[type];
 

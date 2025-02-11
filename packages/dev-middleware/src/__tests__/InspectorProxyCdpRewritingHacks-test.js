@@ -12,7 +12,6 @@
 import {withFetchSelfSignedCertsForAllTests} from './FetchUtils';
 import {
   createAndConnectTarget,
-  parseJsonFromDataUri,
   sendFromDebuggerToTarget,
   sendFromTargetToDebugger,
 } from './InspectorProtocolUtils';
@@ -33,12 +32,18 @@ jest.useRealTimers();
 
 jest.setTimeout(10000);
 
+const fetchOriginal = fetch;
+const fetchSpy: JestMockFn<
+  Parameters<typeof fetch>,
+  ReturnType<typeof fetch>,
+> = jest.spyOn(globalThis, 'fetch');
+
 describe.each(['HTTP', 'HTTPS'])(
   'inspector proxy CDP rewriting hacks over %s',
   protocol => {
     // Inspector proxy tests are using a self-signed certificate for HTTPS tests.
     if (protocol === 'HTTPS') {
-      withFetchSelfSignedCertsForAllTests();
+      withFetchSelfSignedCertsForAllTests(fetchSpy, fetchOriginal);
     }
 
     const serverRef = withServerForEachTest({
@@ -46,6 +51,7 @@ describe.each(['HTTP', 'HTTPS'])(
       projectRoot: __dirname,
       secure: protocol === 'HTTPS',
     });
+
     const autoCleanup = withAbortSignalForEachTest();
     afterEach(() => {
       jest.clearAllMocks();
@@ -82,9 +88,9 @@ describe.each(['HTTP', 'HTTPS'])(
             },
           },
         );
-        expect(
-          parseJsonFromDataUri(scriptParsedMessage.params.sourceMapURL),
-        ).toEqual({version: 3, file: '\u2757.js'});
+        expect(scriptParsedMessage.params.sourceMapURL).toEqual(
+          `${serverRef.serverBaseUrl}/source-map`,
+        );
       } finally {
         device.close();
         debugger_.close();
@@ -125,7 +131,7 @@ describe.each(['HTTP', 'HTTPS'])(
         expect(debugger_.handle).toHaveBeenNthCalledWith(1, {
           method: 'Debugger.scriptParsed',
           params: {
-            sourceMapURL: expect.stringMatching(/^data:/),
+            sourceMapURL: `${serverRef.serverBaseUrl}/source-map`,
           },
         });
         expect(debugger_.handle).toHaveBeenNthCalledWith(2, {
@@ -137,7 +143,8 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
-    test('handling of failure to fetch source map', async () => {
+    test("does not rewrite urls in Debugger.scriptParsed that don't match the device connection host", async () => {
+      serverRef.app.use('/source-map', serveStaticJson({version: 3}));
       const {device, debugger_} = await createAndConnectTarget(
         serverRef,
         autoCleanup.signal,
@@ -147,8 +154,14 @@ describe.each(['HTTP', 'HTTPS'])(
           title: 'bar-title',
           vm: 'bar-vm',
         },
+        {
+          deviceHostHeader: '192.168.0.123:' + serverRef.port,
+        },
       );
       try {
+        const sourceMapURL = `${protocol.toLowerCase()}://127.0.0.1:${
+          serverRef.port
+        }/source-map`;
         const scriptParsedMessage = await sendFromTargetToDebugger(
           device,
           debugger_,
@@ -156,31 +169,12 @@ describe.each(['HTTP', 'HTTPS'])(
           {
             method: 'Debugger.scriptParsed',
             params: {
-              sourceMapURL: `${serverRef.serverBaseUrl}/source-map-missing`,
+              sourceMapURL,
             },
           },
         );
-
-        // We don't rewrite the message in this case.
         expect(scriptParsedMessage.params.sourceMapURL).toEqual(
-          `${serverRef.serverBaseUrl}/source-map-missing`,
-        );
-
-        // We send an error through to the debugger as a console message.
-        expect(debugger_.handle).toBeCalledWith(
-          expect.objectContaining({
-            method: 'Runtime.consoleAPICalled',
-            params: {
-              args: [
-                {
-                  type: 'string',
-                  value: expect.stringMatching('Failed to fetch source map'),
-                },
-              ],
-              executionContextId: 0,
-              type: 'error',
-            },
-          }),
+          `${protocol.toLowerCase()}://127.0.0.1:${serverRef.port}/source-map`,
         );
       } finally {
         device.close();
@@ -188,7 +182,7 @@ describe.each(['HTTP', 'HTTPS'])(
       }
     });
 
-    describe.each(['10.0.2.2', '10.0.3.2', '127.0.0.1'])(
+    describe.each(['10.0.2.2:8080', '[::1]', 'example.com:2000'])(
       '%s aliasing to and from localhost',
       sourceHost => {
         test('in source map fetching during Debugger.scriptParsed', async () => {
@@ -202,6 +196,9 @@ describe.each(['HTTP', 'HTTPS'])(
               title: 'bar-title',
               vm: 'bar-vm',
             },
+            {
+              deviceHostHeader: sourceHost,
+            },
           );
           try {
             const scriptParsedMessage = await sendFromTargetToDebugger(
@@ -211,15 +208,13 @@ describe.each(['HTTP', 'HTTPS'])(
               {
                 method: 'Debugger.scriptParsed',
                 params: {
-                  sourceMapURL: `${protocol.toLowerCase()}://${sourceHost}:${
-                    serverRef.port
-                  }/source-map`,
+                  sourceMapURL: `${protocol.toLowerCase()}://${sourceHost}/source-map`,
                 },
               },
             );
-            expect(
-              parseJsonFromDataUri(scriptParsedMessage.params.sourceMapURL),
-            ).toEqual({version: 3});
+            expect(scriptParsedMessage.params.sourceMapURL).toEqual(
+              `${serverRef.serverBaseUrl}/source-map`,
+            );
           } finally {
             device.close();
             debugger_.close();
@@ -236,6 +231,10 @@ describe.each(['HTTP', 'HTTPS'])(
               title: 'bar-title',
               vm: 'bar-vm',
             },
+            {
+              debuggerHostHeader: 'localhost:' + serverRef.port,
+              deviceHostHeader: sourceHost,
+            },
           );
           try {
             const scriptParsedMessage = await sendFromTargetToDebugger(
@@ -245,9 +244,7 @@ describe.each(['HTTP', 'HTTPS'])(
               {
                 method: 'Debugger.scriptParsed',
                 params: {
-                  url: `${protocol.toLowerCase()}://${sourceHost}:${
-                    serverRef.port
-                  }/some/file.js`,
+                  url: `${protocol.toLowerCase()}://${sourceHost}/some/file.js`,
                 },
               },
             );
@@ -273,9 +270,7 @@ describe.each(['HTTP', 'HTTPS'])(
               },
             );
             expect(setBreakpointByUrlMessage.params.url).toEqual(
-              `${protocol.toLowerCase()}://${sourceHost}:${
-                serverRef.port
-              }/some/file.js`,
+              `${protocol.toLowerCase()}://${sourceHost}/some/file.js`,
             );
 
             const setBreakpointByUrlRegexMessage =
@@ -284,16 +279,66 @@ describe.each(['HTTP', 'HTTPS'])(
                 method: 'Debugger.setBreakpointByUrl',
                 params: {
                   lineNumber: 1,
-                  urlRegex: 'localhost:1000|localhost:2000',
+                  urlRegex: `localhost:${serverRef.port}|example.com:2000`,
                 },
               });
-            expect(setBreakpointByUrlRegexMessage.params.urlRegex).toEqual(
-              `${sourceHost}:1000|${sourceHost}:2000`,
-            );
+
+            // urlRegex rewriting is restricted to specific Android IPs that
+            // are well-known to route to the host. In this case we only
+            // replace hostname - longstanding behaviour.
+            if (sourceHost === '10.0.2.2:8080') {
+              expect(setBreakpointByUrlRegexMessage.params.urlRegex).toEqual(
+                `10\\.0\\.2\\.2:${serverRef.port}|example.com:2000`,
+              );
+            } else {
+              // Otherwise expect no change.
+              expect(setBreakpointByUrlRegexMessage.params.urlRegex).toEqual(
+                `localhost:${serverRef.port}|example.com:2000`,
+              );
+            }
           } finally {
             device.close();
             debugger_.close();
           }
+        });
+
+        describe('Network.loadNetworkResource', () => {
+          test('should respond with an error without forwarding to the client', async () => {
+            const {device, debugger_} = await createAndConnectTarget(
+              serverRef,
+              autoCleanup.signal,
+              {
+                app: 'bar-app',
+                id: 'page1',
+                title: 'bar-title',
+                vm: 'bar-vm',
+              },
+              {
+                deviceHostHeader: sourceHost,
+              },
+            );
+            try {
+              const response = await debugger_.sendAndGetResponse({
+                id: 1,
+                method: 'Network.loadNetworkResource',
+                params: {
+                  url: 'http://example.com',
+                },
+              });
+              expect(response.result).toEqual(
+                expect.objectContaining({
+                  error: {
+                    code: -32601,
+                    message:
+                      '[inspector-proxy]: Page lacks nativeSourceCodeFetching capability.',
+                  },
+                }),
+              );
+            } finally {
+              device.close();
+              debugger_.close();
+            }
+          });
         });
       },
     );
@@ -307,6 +352,9 @@ describe.each(['HTTP', 'HTTPS'])(
           id: 'page1',
           title: 'bar-title',
           vm: 'bar-vm',
+        },
+        {
+          deviceHostHeader: '127.0.0.1:' + serverRef.port,
         },
       );
       try {
@@ -432,89 +480,6 @@ describe.each(['HTTP', 'HTTPS'])(
           debugger_.close();
         }
       });
-
-      test.each(['url', 'file'])(
-        'reports %s fetch error back to debugger',
-        async resourceType => {
-          const {device, debugger_} = await createAndConnectTarget(
-            serverRef,
-            autoCleanup.signal,
-            {
-              app: 'bar-app',
-              id: 'page1',
-              title: 'bar-title',
-              vm: 'bar-vm',
-            },
-          );
-          try {
-            await sendFromTargetToDebugger(device, debugger_, 'page1', {
-              method: 'Debugger.scriptParsed',
-              params: {
-                scriptId: 'script1',
-                url:
-                  resourceType === 'url'
-                    ? `${serverRef.serverBaseUrl}/source-missing`
-                    : '__fixtures__/mock-source-file.does-not-exist',
-                startLine: 0,
-                endLine: 0,
-                startColumn: 0,
-                endColumn: 0,
-                hash: createHash('sha256').update('foo').digest('hex'),
-              },
-            });
-            const response = await debugger_.sendAndGetResponse({
-              id: 1,
-              method: 'Debugger.getScriptSource',
-              params: {
-                scriptId: 'script1',
-              },
-            });
-
-            // We mark the request as failed.
-            expect(response).toEqual({
-              id: 1,
-              result: {
-                error: {
-                  message: expect.stringMatching(
-                    `Failed to fetch source ${resourceType}`,
-                  ),
-                },
-              },
-            });
-
-            // We also send an error through to the debugger as a console message.
-            expect(debugger_.handle).toBeCalledWith(
-              expect.objectContaining({
-                method: 'Runtime.consoleAPICalled',
-                params: {
-                  args: [
-                    {
-                      type: 'string',
-                      value: expect.stringMatching(
-                        `Failed to fetch source ${resourceType}`,
-                      ),
-                    },
-                  ],
-                  executionContextId: 0,
-                  type: 'error',
-                },
-              }),
-            );
-
-            // The device does not receive the getScriptSource request, since it
-            // is handled by the proxy.
-            expect(device.wrappedEventParsed).not.toBeCalledWith({
-              pageId: 'page1',
-              wrappedEvent: expect.objectContaining({
-                method: 'Debugger.getScriptSource',
-              }),
-            });
-          } finally {
-            device.close();
-            debugger_.close();
-          }
-        },
-      );
     });
 
     describe("disabled when target has 'nativeSourceCodeFetching' capability flag", () => {
@@ -571,6 +536,33 @@ describe.each(['HTTP', 'HTTPS'])(
             };
             await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
 
+            expect(device.wrappedEventParsed).toBeCalledWith({
+              pageId: 'page1',
+              wrappedEvent: message,
+            });
+          } finally {
+            device.close();
+            debugger_.close();
+          }
+        });
+      });
+
+      describe('Network.loadNetworkResource', () => {
+        test('should forward event directly to client (does not rewrite url host)', async () => {
+          const {device, debugger_} = await createAndConnectTarget(
+            serverRef,
+            autoCleanup.signal,
+            pageDescription,
+          );
+          try {
+            const message = {
+              id: 1,
+              method: 'Network.loadNetworkResource',
+              params: {
+                url: `${protocol.toLowerCase()}://10.0.2.2:${serverRef.port}`,
+              },
+            };
+            await sendFromDebuggerToTarget(debugger_, device, 'page1', message);
             expect(device.wrappedEventParsed).toBeCalledWith({
               pageId: 'page1',
               wrappedEvent: message,

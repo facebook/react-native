@@ -10,7 +10,7 @@
  */
 
 import type {
-  HostComponent,
+  HostInstance,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
@@ -37,7 +37,7 @@ function TestView({
     measure(callback: MeasureOnSuccessCallback): void,
     measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
     measureLayout(
-      relativeToNativeNode: number | React.ElementRef<HostComponent<mixed>>,
+      relativeToNativeNode: number | HostInstance,
       onSuccess: MeasureLayoutOnSuccessCallback,
       onFail?: () => void,
     ): void,

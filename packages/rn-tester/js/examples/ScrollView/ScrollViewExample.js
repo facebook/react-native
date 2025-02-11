@@ -11,6 +11,7 @@
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
+import RNTesterText from '../../components/RNTesterText';
 import ScrollViewPressableStickyHeaderExample from './ScrollViewPressableStickyHeaderExample';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
@@ -40,9 +41,9 @@ class EnableDisableList extends React.Component<{}, {scrollEnabled: boolean}> {
           scrollEnabled={this.state.scrollEnabled}>
           {ITEMS.map(createItemRow)}
         </ScrollView>
-        <Text>
-          {'Scrolling enabled = ' + this.state.scrollEnabled.toString()}
-        </Text>
+        <RNTesterText>
+          Scrolling enabled = {this.state.scrollEnabled.toString()}
+        </RNTesterText>
         <Button
           label="Disable Scrolling"
           onPress={() => {
@@ -63,9 +64,9 @@ class EnableDisableList extends React.Component<{}, {scrollEnabled: boolean}> {
 let AppendingListItemCount = 6;
 class AppendingList extends React.Component<
   {},
-  {items: Array<React$Element<Class<Item>>>},
+  {items: Array<ExactReactElement_DEPRECATED<Class<Item>>>},
 > {
-  state: {items: Array<React.Element<Class<Item>>>} = {
+  state: {items: Array<ExactReactElement_DEPRECATED<Class<Item>>>} = {
     items: [...Array(AppendingListItemCount)].map((_, ii) => (
       <Item msg={`Item ${ii}`} />
     )),
@@ -200,7 +201,7 @@ function ScrollViewScrollToExample(): React.Node {
   return (
     <View>
       {scrolledToTop ? (
-        <Text style={textStyle}>scrolledToTop invoked</Text>
+        <RNTesterText style={textStyle}>scrolledToTop invoked</RNTesterText>
       ) : null}
       <ScrollView
         accessibilityRole="grid"
@@ -282,6 +283,19 @@ const examples: Array<RNTesterModuleExample> = [
       return (
         <View>
           <HorizontalScrollView direction="rtl" />
+        </View>
+      );
+    },
+  },
+  {
+    name: 'stubbyHorizontalScrollView',
+    title: '<ScrollView> (horizontal = true) in RTL not filling content\n',
+    description:
+      'A horizontal RTL ScrollView whose content is smaller thatn its containner',
+    render(): React.Node {
+      return (
+        <View testID="stubby-horizontal-rtl-scrollview">
+          <HorizontalScrollView direction="rtl" itemCount={1} />
         </View>
       );
     },
@@ -460,9 +474,9 @@ if (Platform.OS === 'ios') {
     render(): React.Node {
       return (
         <>
-          <Text style={styles.text}>Vertical</Text>
+          <RNTesterText style={styles.text}>Vertical</RNTesterText>
           <BouncesExampleVertical />
-          <Text style={styles.text}>Horizontal</Text>
+          <RNTesterText style={styles.text}>Horizontal</RNTesterText>
           <BouncesExampleHorizontal />
         </>
       );
@@ -540,13 +554,19 @@ const AndroidScrollBarOptions = () => {
   );
 };
 
-const HorizontalScrollView = (props: {direction: 'ltr' | 'rtl'}) => {
+const HorizontalScrollView = (props: {
+  direction: 'ltr' | 'rtl',
+  itemCount?: number,
+}) => {
   const {direction} = props;
   const scrollRef = React.useRef<?React.ElementRef<typeof ScrollView>>();
   const title = direction === 'ltr' ? 'LTR Layout' : 'RTL Layout';
+  const items =
+    props.itemCount == null ? ITEMS : ITEMS.slice(0, props.itemCount);
+
   return (
     <View style={{direction}}>
-      <Text style={styles.text}>{title}</Text>
+      <RNTesterText style={styles.text}>{title}</RNTesterText>
       {/* $FlowFixMe[incompatible-use] */}
       <ScrollView
         ref={scrollRef}
@@ -554,7 +574,7 @@ const HorizontalScrollView = (props: {direction: 'ltr' | 'rtl'}) => {
         horizontal={true}
         style={[styles.scrollView, styles.horizontalScrollView]}
         testID={'scroll_horizontal'}>
-        {ITEMS.map(createItemRow)}
+        {items.map(createItemRow)}
       </ScrollView>
       <Button
         label="Scroll to start"
@@ -626,7 +646,9 @@ const SnapToOptions = () => {
       </ScrollView>
       {Platform.OS === 'ios' ? (
         <>
-          <Text style={styles.rowTitle}>Select Snap to Alignment Mode</Text>
+          <RNTesterText style={styles.rowTitle}>
+            Select Snap to Alignment Mode
+          </RNTesterText>
           <View style={styles.row}>
             {snapToAlignmentModes.map(label => (
               <Button
@@ -803,7 +825,7 @@ const OnScrollOptions = () => {
   const overScrollModeOptions = ['auto', 'always', 'never'];
   return (
     <View>
-      <Text>onScroll: {onScrollDrag}</Text>
+      <RNTesterText>onScroll: {onScrollDrag}</RNTesterText>
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         onScrollBeginDrag={() => setOnScrollDrag('onScrollBeginDrag')}
@@ -815,7 +837,7 @@ const OnScrollOptions = () => {
       </ScrollView>
       {Platform.OS === 'android' ? (
         <>
-          <Text style={styles.rowTitle}>Over Scroll Mode</Text>
+          <RNTesterText style={styles.rowTitle}>Over Scroll Mode</RNTesterText>
           <View style={styles.row}>
             {overScrollModeOptions.map(value => (
               <Button
@@ -836,7 +858,7 @@ const OnMomentumScroll = () => {
   const [scroll, setScroll] = useState('none');
   return (
     <View>
-      <Text>Scroll State: {scroll}</Text>
+      <RNTesterText>Scroll State: {scroll}</RNTesterText>
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         onMomentumScrollBegin={() => setScroll('onMomentumScrollBegin')}
@@ -853,7 +875,7 @@ const OnContentSizeChange = () => {
   const [contentSizeChanged, setContentSizeChanged] = useState('original');
   return (
     <View>
-      <Text>Content Size Changed: {contentSizeChanged}</Text>
+      <RNTesterText>Content Size Changed: {contentSizeChanged}</RNTesterText>
       <ScrollView
         style={[styles.scrollView, {height: 200}]}
         onContentSizeChange={() =>
@@ -890,14 +912,18 @@ const MaxMinZoomScale = () => {
         nestedScrollEnabled>
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Text style={styles.rowTitle}>Set Maximum Zoom Scale</Text>
+      <RNTesterText style={styles.rowTitle}>
+        Set Maximum Zoom Scale
+      </RNTesterText>
       <TextInput
         style={styles.textInput}
         value={maxZoomScale}
         onChangeText={val => setMaxZoomScale(val)}
         keyboardType="decimal-pad"
       />
-      <Text style={styles.rowTitle}>Set Minimum Zoom Scale</Text>
+      <RNTesterText style={styles.rowTitle}>
+        Set Minimum Zoom Scale
+      </RNTesterText>
       <TextInput
         style={styles.textInput}
         value={minZoomScale.toString()}
@@ -906,7 +932,7 @@ const MaxMinZoomScale = () => {
       />
       {Platform.OS === 'ios' ? (
         <>
-          <Text style={styles.rowTitle}>Set Zoom Scale</Text>
+          <RNTesterText style={styles.rowTitle}>Set Zoom Scale</RNTesterText>
           <TextInput
             style={styles.textInput}
             value={zoomScale.toString()}
@@ -947,7 +973,7 @@ const KeyboardExample = () => {
         />
         {ITEMS.map(createItemRow)}
       </ScrollView>
-      <Text style={styles.rowTitle}>Keyboard Dismiss Mode</Text>
+      <RNTesterText style={styles.rowTitle}>Keyboard Dismiss Mode</RNTesterText>
       <View style={styles.row}>
         {dismissOptions.map(value => (
           <Button
@@ -958,7 +984,9 @@ const KeyboardExample = () => {
           />
         ))}
       </View>
-      <Text style={styles.rowTitle}>Keyboard Should Persist taps</Text>
+      <RNTesterText style={styles.rowTitle}>
+        Keyboard Should Persist taps
+      </RNTesterText>
       <View style={styles.row}>
         {persistOptions.map(value => (
           <Button
@@ -1324,10 +1352,10 @@ function ClippingExampleHorizontal() {
   );
 }
 
-class Item extends React.PureComponent<{|
+class Item extends React.PureComponent<{
   msg?: string,
   style?: ViewStyleProp,
-|}> {
+}> {
   render(): $FlowFixMe {
     return (
       <View style={[styles.item, this.props.style]}>

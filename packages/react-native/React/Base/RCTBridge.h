@@ -77,6 +77,9 @@ void RCTSetTurboModuleInteropBridgeProxyLogLevel(RCTBridgeProxyLoggingLevel logL
 BOOL RCTTurboModuleInteropForAllTurboModulesEnabled(void);
 void RCTEnableTurboModuleInteropForAllTurboModules(BOOL enabled);
 
+BOOL RCTBridgeModuleBatchDidCompleteDisabled(void);
+void RCTDisableBridgeModuleBatchDidComplete(BOOL disabled);
+
 typedef enum {
   kRCTGlobalScope,
   kRCTGlobalScopeUsingRetainJSCallback,

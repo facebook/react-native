@@ -16,38 +16,40 @@ namespace facebook::yoga {
 FlexLine calculateFlexLine(
     yoga::Node* const node,
     const Direction ownerDirection,
-    const float mainAxisownerSize,
+    const float ownerWidth,
+    const float mainAxisOwnerSize,
     const float availableInnerWidth,
     const float availableInnerMainDim,
-    const size_t startOfLineIndex,
+    Node::LayoutableChildren::Iterator& iterator,
     const size_t lineCount) {
   std::vector<yoga::Node*> itemsInFlow;
-  itemsInFlow.reserve(node->getChildren().size());
+  itemsInFlow.reserve(node->getChildCount());
 
   float sizeConsumed = 0.0f;
   float totalFlexGrowFactors = 0.0f;
   float totalFlexShrinkScaledFactors = 0.0f;
   size_t numberOfAutoMargins = 0;
-  size_t endOfLineIndex = startOfLineIndex;
-  size_t firstElementInLineIndex = startOfLineIndex;
+  yoga::Node* firstElementInLine = nullptr;
 
   float sizeConsumedIncludingMinConstraint = 0;
-  const FlexDirection mainAxis = resolveDirection(
-      node->style().flexDirection(), node->resolveDirection(ownerDirection));
+  const Direction direction = node->resolveDirection(ownerDirection);
+  const FlexDirection mainAxis =
+      resolveDirection(node->style().flexDirection(), direction);
   const bool isNodeFlexWrap = node->style().flexWrap() != Wrap::NoWrap;
   const float gap =
       node->style().computeGapForAxis(mainAxis, availableInnerMainDim);
 
+  const auto childrenEnd = node->getLayoutChildren().end();
   // Add items to the current line until it's full or we run out of items.
-  for (; endOfLineIndex < node->getChildren().size(); endOfLineIndex++) {
-    auto child = node->getChild(endOfLineIndex);
+  for (; iterator != childrenEnd; iterator++) {
+    auto child = *iterator;
     if (child->style().display() == Display::None ||
         child->style().positionType() == PositionType::Absolute) {
-      if (firstElementInLineIndex == endOfLineIndex) {
-        // We haven't found the first contributing element in the line yet.
-        firstElementInLineIndex++;
-      }
       continue;
+    }
+
+    if (firstElementInLine == nullptr) {
+      firstElementInLine = child;
     }
 
     if (child->style().flexStartMarginIsAuto(mainAxis, ownerDirection)) {
@@ -57,19 +59,19 @@ FlexLine calculateFlexLine(
       numberOfAutoMargins++;
     }
 
-    const bool isFirstElementInLine =
-        (endOfLineIndex - firstElementInLineIndex) == 0;
-
     child->setLineIndex(lineCount);
     const float childMarginMainAxis =
         child->style().computeMarginForAxis(mainAxis, availableInnerWidth);
-    const float childLeadingGapMainAxis = isFirstElementInLine ? 0.0f : gap;
+    const float childLeadingGapMainAxis =
+        child == firstElementInLine ? 0.0f : gap;
     const float flexBasisWithMinAndMaxConstraints =
         boundAxisWithinMinAndMax(
             child,
+            direction,
             mainAxis,
             child->getLayout().computedFlexBasis,
-            mainAxisownerSize)
+            mainAxisOwnerSize,
+            ownerWidth)
             .unwrap();
 
     // If this is a multi-line flow and this item pushes us over the available
@@ -112,7 +114,6 @@ FlexLine calculateFlexLine(
   return FlexLine{
       .itemsInFlow = std::move(itemsInFlow),
       .sizeConsumed = sizeConsumed,
-      .endOfLineIndex = endOfLineIndex,
       .numberOfAutoMargins = numberOfAutoMargins,
       .layout = FlexLineRunningLayout{
           totalFlexGrowFactors,

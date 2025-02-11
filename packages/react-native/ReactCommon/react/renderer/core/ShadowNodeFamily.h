@@ -25,7 +25,7 @@ class State;
  * `ShadowNodeFamily` instances.
  *
  * Do not use this class as a general purpose container to share information
- * about a `ShadowNodeFamily`. Pelase define specific purpose containers in
+ * about a `ShadowNodeFamily`. Please define specific purpose containers in
  * those cases.
  *
  */
@@ -87,11 +87,23 @@ class ShadowNodeFamily final {
 
   SharedEventEmitter getEventEmitter() const;
 
+  /**
+   * @param callback will be executed when an unmounted instance of
+   * ShadowNodeFamily is destroyed.
+   */
+  void onUnmountedFamilyDestroyed(
+      std::function<void(const ShadowNodeFamily& family)> callback) const;
+
   /*
    * Sets and gets the most recent state.
    */
   std::shared_ptr<const State> getMostRecentState() const;
   void setMostRecentState(const std::shared_ptr<const State>& state) const;
+
+  /**
+   * Mark this ShadowNodeFamily as mounted.
+   */
+  void setMounted() const;
 
   /*
    * Dispatches a state update with given priority.
@@ -104,6 +116,20 @@ class ShadowNodeFamily final {
    * architecture and will be removed in the future.
    */
   mutable std::unique_ptr<folly::dynamic> nativeProps_DEPRECATED;
+
+  /**
+   * @return tag for the ShadowNodeFamily.
+   */
+  Tag getTag() const;
+
+  InstanceHandle::Shared getInstanceHandle() const;
+  void setInstanceHandle(InstanceHandle::Shared& instanceHandle) const;
+
+  /**
+   * Override destructor to call onUnmountedFamilyDestroyedCallback() for
+   * ShadowViews that were preallocated but never mounted on the screen.
+   */
+  ~ShadowNodeFamily();
 
  private:
   friend ShadowNode;
@@ -121,6 +147,9 @@ class ShadowNodeFamily final {
   mutable std::shared_ptr<const State> mostRecentState_;
   mutable std::shared_mutex mutex_;
 
+  mutable std::function<void(ShadowNodeFamily& family)>
+      onUnmountedFamilyDestroyedCallback_ = nullptr;
+
   /*
    * Deprecated.
    */
@@ -134,7 +163,7 @@ class ShadowNodeFamily final {
   /*
    * Weak reference to the React instance handle
    */
-  const InstanceHandle::Shared instanceHandle_;
+  mutable InstanceHandle::Shared instanceHandle_;
 
   /*
    * `EventEmitter` associated with all nodes of the family.
@@ -165,6 +194,11 @@ class ShadowNodeFamily final {
    * For optimization purposes only.
    */
   mutable bool hasParent_{false};
+
+  /*
+   * Determines if the ShadowNodeFamily was ever mounted on the screen.
+   */
+  mutable bool hasBeenMounted_{false};
 };
 
 } // namespace facebook::react

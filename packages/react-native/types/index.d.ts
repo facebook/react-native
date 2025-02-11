@@ -84,6 +84,7 @@ export * from '../Libraries/Components/Clipboard/Clipboard';
 export * from '../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid';
 export * from '../Libraries/Components/Keyboard/Keyboard';
 export * from '../Libraries/Components/Keyboard/KeyboardAvoidingView';
+export * from '../Libraries/Components/LayoutConformance/LayoutConformance';
 export * from '../Libraries/Components/Pressable/Pressable';
 export * from '../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 export * from '../Libraries/Components/RefreshControl/RefreshControl';
@@ -104,7 +105,6 @@ export * from '../Libraries/Components/View/ViewAccessibility';
 export * from '../Libraries/Components/View/ViewPropTypes';
 export * from '../Libraries/Components/Button';
 export * from '../Libraries/Core/registerCallableModule';
-export * from '../Libraries/DevToolsSettings/DevToolsSettingsManager';
 export * from '../Libraries/EventEmitter/NativeEventEmitter';
 export * from '../Libraries/EventEmitter/RCTDeviceEventEmitter';
 export * from '../Libraries/EventEmitter/RCTNativeAppEventEmitter';
@@ -142,12 +142,12 @@ export * as TurboModuleRegistry from '../Libraries/TurboModule/TurboModuleRegist
 export * from '../Libraries/Types/CoreEventTypes';
 export * from '../Libraries/Utilities/Appearance';
 export * from '../Libraries/Utilities/BackHandler';
+export * from '../src/private/devmenu/DevMenu';
 export * from '../Libraries/Utilities/DevSettings';
 export * from '../Libraries/Utilities/Dimensions';
 export * from '../Libraries/Utilities/PixelRatio';
 export * from '../Libraries/Utilities/Platform';
 export * from '../Libraries/Vibration/Vibration';
-export * from '../Libraries/YellowBox/YellowBoxDeprecated';
 export * from '../Libraries/vendor/core/ErrorUtils';
 export {
   EmitterSubscription,
@@ -183,10 +183,6 @@ declare global {
     groupCollapsed(label?: string): void;
     groupEnd(): void;
     group(label?: string): void;
-    /**
-     * @deprecated Use LogBox.ignoreLogs(patterns) instead
-     */
-    ignoredYellowBox: string[];
   }
 
   var console: Console;

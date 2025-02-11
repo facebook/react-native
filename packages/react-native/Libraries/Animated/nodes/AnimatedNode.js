@@ -8,25 +8,41 @@
  * @format
  */
 
-'use strict';
-
 import type {PlatformConfig} from '../AnimatedPlatformConfig';
 
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import invariant from 'invariant';
-
-const NativeAnimatedAPI = NativeAnimatedHelper.API;
 
 type ValueListenerCallback = (state: {value: number, ...}) => mixed;
 
-let _uniqueId = 1;
+export type AnimatedNodeConfig = $ReadOnly<{
+  debugID?: string,
+}>;
 
-// Note(vjeux): this would be better as an interface but flow doesn't
-// support them yet
+let _uniqueId = 1;
+let _assertNativeAnimatedModule: ?() => void = () => {
+  NativeAnimatedHelper.assertNativeAnimatedModule();
+  // We only have to assert that the module exists once. After we've asserted
+  // this, clear out the function so we know to skip it in the future.
+  _assertNativeAnimatedModule = null;
+};
+
 export default class AnimatedNode {
-  _listeners: {[key: string]: ValueListenerCallback, ...};
-  _platformConfig: ?PlatformConfig;
-  __nativeAnimatedValueListener: ?any;
+  #listeners: Map<string, ValueListenerCallback> = new Map();
+
+  _platformConfig: ?PlatformConfig = undefined;
+
+  constructor(
+    config?: ?$ReadOnly<{
+      ...AnimatedNodeConfig,
+      ...
+    }>,
+  ) {
+    if (__DEV__) {
+      this.__debugID = config?.debugID;
+    }
+  }
+
   __attach(): void {}
   __detach(): void {
     this.removeAllListeners();
@@ -46,23 +62,17 @@ export default class AnimatedNode {
   }
 
   /* Methods and props used by native Animated impl */
-  __isNative: boolean;
-  __nativeTag: ?number;
-  __shouldUpdateListenersForNewNativeTag: boolean;
-
-  constructor() {
-    this._listeners = {};
-  }
+  __isNative: boolean = false;
+  __nativeTag: ?number = undefined;
 
   __makeNative(platformConfig: ?PlatformConfig): void {
-    if (!this.__isNative) {
-      throw new Error('This node cannot be made a "native" animated node');
-    }
+    // Subclasses are expected to set `__isNative` to true before this.
+    invariant(
+      this.__isNative,
+      'This node cannot be made a "native" animated node',
+    );
 
     this._platformConfig = platformConfig;
-    if (this.hasListeners()) {
-      this._startListeningToNativeValueUpdates();
-    }
   }
 
   /**
@@ -74,10 +84,7 @@ export default class AnimatedNode {
    */
   addListener(callback: (value: any) => mixed): string {
     const id = String(_uniqueId++);
-    this._listeners[id] = callback;
-    if (this.__isNative) {
-      this._startListeningToNativeValueUpdates();
-    }
+    this.#listeners.set(id, callback);
     return id;
   }
 
@@ -88,10 +95,7 @@ export default class AnimatedNode {
    * See https://reactnative.dev/docs/animatedvalue#removelistener
    */
   removeListener(id: string): void {
-    delete this._listeners[id];
-    if (this.__isNative && !this.hasListeners()) {
-      this._stopListeningForNativeValueUpdates();
-    }
+    this.#listeners.delete(id);
   }
 
   /**
@@ -100,98 +104,76 @@ export default class AnimatedNode {
    * See https://reactnative.dev/docs/animatedvalue#removealllisteners
    */
   removeAllListeners(): void {
-    this._listeners = {};
-    if (this.__isNative) {
-      this._stopListeningForNativeValueUpdates();
-    }
+    this.#listeners.clear();
   }
 
   hasListeners(): boolean {
-    return !!Object.keys(this._listeners).length;
+    return this.#listeners.size > 0;
   }
 
-  _startListeningToNativeValueUpdates() {
-    if (
-      this.__nativeAnimatedValueListener &&
-      !this.__shouldUpdateListenersForNewNativeTag
-    ) {
-      return;
-    }
-
-    if (this.__shouldUpdateListenersForNewNativeTag) {
-      this.__shouldUpdateListenersForNewNativeTag = false;
-      this._stopListeningForNativeValueUpdates();
-    }
-
-    NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
-    this.__nativeAnimatedValueListener =
-      NativeAnimatedHelper.nativeEventEmitter.addListener(
-        'onAnimatedValueUpdate',
-        data => {
-          if (data.tag !== this.__getNativeTag()) {
-            return;
-          }
-          this.__onAnimatedValueUpdateReceived(data.value);
-        },
-      );
-  }
-
-  __onAnimatedValueUpdateReceived(value: number) {
+  __onAnimatedValueUpdateReceived(value: number): void {
     this.__callListeners(value);
   }
 
   __callListeners(value: number): void {
-    for (const key in this._listeners) {
-      this._listeners[key]({value});
-    }
-  }
-
-  _stopListeningForNativeValueUpdates() {
-    if (!this.__nativeAnimatedValueListener) {
-      return;
-    }
-
-    this.__nativeAnimatedValueListener.remove();
-    this.__nativeAnimatedValueListener = null;
-    NativeAnimatedAPI.stopListeningToAnimatedNodeValue(this.__getNativeTag());
+    const event = {value};
+    this.#listeners.forEach(listener => {
+      listener(event);
+    });
   }
 
   __getNativeTag(): number {
-    NativeAnimatedHelper.assertNativeAnimatedModule();
-    invariant(
-      this.__isNative,
-      'Attempt to get native tag from node not marked as "native"',
-    );
+    let nativeTag = this.__nativeTag;
+    if (nativeTag == null) {
+      _assertNativeAnimatedModule?.();
 
-    const nativeTag =
-      this.__nativeTag ?? NativeAnimatedHelper.generateNewNodeTag();
+      // `__isNative` is initialized as false and only ever set to true. So we
+      // only need to check it once here when initializing `__nativeTag`.
+      invariant(
+        this.__isNative,
+        'Attempt to get native tag from node not marked as "native"',
+      );
 
-    if (this.__nativeTag == null) {
+      nativeTag = NativeAnimatedHelper.generateNewNodeTag();
       this.__nativeTag = nativeTag;
+
       const config = this.__getNativeConfig();
       if (this._platformConfig) {
         config.platformConfig = this._platformConfig;
       }
       NativeAnimatedHelper.API.createAnimatedNode(nativeTag, config);
-      this.__shouldUpdateListenersForNewNativeTag = true;
     }
-
     return nativeTag;
   }
+
   __getNativeConfig(): Object {
     throw new Error(
       'This JS animated node type cannot be used as native animated node',
     );
   }
 
-  toJSON(): any {
-    return this.__getValue();
-  }
-
   __getPlatformConfig(): ?PlatformConfig {
     return this._platformConfig;
   }
+
   __setPlatformConfig(platformConfig: ?PlatformConfig) {
     this._platformConfig = platformConfig;
+  }
+
+  /**
+   * NOTE: This is intended to prevent `JSON.stringify` from throwing "cyclic
+   * structure" errors in React DevTools. Avoid depending on this!
+   */
+  toJSON(): mixed {
+    return this.__getValue();
+  }
+
+  __debugID: ?string = undefined;
+
+  __getDebugID(): ?string {
+    if (__DEV__) {
+      return this.__debugID;
+    }
+    return undefined;
   }
 }

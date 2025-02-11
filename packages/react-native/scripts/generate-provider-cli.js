@@ -11,7 +11,6 @@
 
 const utils = require('./codegen/codegen-utils');
 const fs = require('fs');
-const mkdirp = require('mkdirp');
 const yargs = require('yargs');
 
 const argv = yargs
@@ -49,7 +48,7 @@ function generateProvider(platform, schemaListPath, outputDirectory) {
   if (!outputDirectory) {
     throw new Error('outputDir is required');
   }
-  mkdirp.sync(outputDirectory);
+  fs.mkdirSync(outputDirectory, {recursive: true});
 
   let schemaPaths;
   try {

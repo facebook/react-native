@@ -8,8 +8,8 @@
  * @format
  */
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ViewConfig} from '../Renderer/shims/ReactNativeTypes';
-import {isIgnored} from './ViewConfigIgnore';
 
 export type Difference =
   | {
@@ -21,11 +21,6 @@ export type Difference =
       type: 'unequal',
       path: Array<string>,
       nativeValue: mixed,
-      staticValue: mixed,
-    }
-  | {
-      type: 'unexpected',
-      path: Array<string>,
       staticValue: mixed,
     };
 
@@ -90,8 +85,6 @@ export function stringifyValidationResult(
           return `- '${path.join('.')}' is missing.`;
         case 'unequal':
           return `- '${path.join('.')}' is the wrong value.`;
-        case 'unexpected':
-          return `- '${path.join('.')}' is present but not expected to be.`;
       }
     }),
     '',
@@ -136,26 +129,15 @@ function accumulateDifferences(
       }
     }
 
-    if (nativeValue !== staticValue) {
+    if (
+      nativeValue !== staticValue &&
+      !ReactNativeFeatureFlags.enableNativeCSSParsing()
+    ) {
       differences.push({
         path: [...path, nativeKey],
         type: 'unequal',
         nativeValue,
         staticValue,
-      });
-    }
-  }
-
-  for (const staticKey in staticObject) {
-    if (
-      !nativeObject.hasOwnProperty(staticKey) &&
-      // $FlowFixMe[invalid-computed-prop]
-      !isIgnored(staticObject[staticKey])
-    ) {
-      differences.push({
-        path: [...path, staticKey],
-        type: 'unexpected',
-        staticValue: staticObject[staticKey],
       });
     }
   }

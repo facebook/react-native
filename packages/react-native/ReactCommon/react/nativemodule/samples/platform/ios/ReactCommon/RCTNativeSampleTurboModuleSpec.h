@@ -15,6 +15,8 @@
 
 #import <ReactCommon/RCTTurboModule.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * The ObjC protocol based on the JS Flow type for SampleTurboModule.
  */
@@ -65,3 +67,5 @@ class JSI_EXPORT NativeSampleTurboModuleSpecJSI : public ObjCTurboModule {
 };
 
 } // namespace facebook::react
+
+NS_ASSUME_NONNULL_END

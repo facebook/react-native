@@ -10,6 +10,7 @@
 import type * as React from 'react';
 import {ViewProps} from '../Components/View/ViewPropTypes';
 import {NativeSyntheticEvent} from '../Types/CoreEventTypes';
+import {ColorValue} from '../StyleSheet/StyleSheet';
 
 export interface ModalBaseProps {
   /**
@@ -43,6 +44,12 @@ export interface ModalBaseProps {
    * The `onShow` prop allows passing a function that will be called once the modal has been shown.
    */
   onShow?: ((event: NativeSyntheticEvent<any>) => void) | undefined;
+
+  /**
+   * The `backdropColor` props sets the background color of the modal's container.
+   * Defaults to `white` if not provided and transparent is `false`. Ignored if `transparent` is `true`.
+   */
+  backdropColor?: ColorValue | undefined;
 }
 
 export interface ModalPropsIOS {
@@ -94,6 +101,11 @@ export interface ModalPropsAndroid {
    *  Determines whether your modal should go under the system statusbar.
    */
   statusBarTranslucent?: boolean | undefined;
+
+  /**
+   *  Determines whether your modal should go under the system navigationbar.
+   */
+  navigationBarTranslucent?: boolean | undefined;
 }
 
 export type ModalProps = ModalBaseProps &

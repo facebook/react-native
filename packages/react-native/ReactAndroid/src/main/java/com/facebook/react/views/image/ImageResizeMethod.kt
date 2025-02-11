@@ -11,4 +11,5 @@ public enum class ImageResizeMethod {
   AUTO,
   RESIZE,
   SCALE,
+  NONE,
 }

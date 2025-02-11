@@ -13,7 +13,7 @@ add_compile_options(
         -O3)
 
 add_library(jsireact
-        STATIC
+        OBJECT
         jsireact/JSIExecutor.cpp
         jsireact/JSINativeModules.cpp)
 

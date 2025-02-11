@@ -13,6 +13,37 @@ typedef NS_ENUM(NSInteger, RCTResizeMode) {
   RCTResizeModeStretch = UIViewContentModeScaleToFill,
   RCTResizeModeCenter = UIViewContentModeCenter,
   RCTResizeModeRepeat = -1, // Use negative values to avoid conflicts with iOS enum values.
+  RCTResizeModeNone = UIViewContentModeTopLeft,
+};
+
+static inline RCTResizeMode RCTResizeModeFromUIViewContentMode(UIViewContentMode mode)
+{
+  switch (mode) {
+    case UIViewContentModeScaleToFill:
+      return RCTResizeModeStretch;
+      break;
+    case UIViewContentModeScaleAspectFit:
+      return RCTResizeModeContain;
+      break;
+    case UIViewContentModeScaleAspectFill:
+      return RCTResizeModeCover;
+      break;
+    case UIViewContentModeCenter:
+      return RCTResizeModeCenter;
+      break;
+    case UIViewContentModeTopLeft:
+      return RCTResizeModeNone;
+      break;
+    case UIViewContentModeRedraw:
+    case UIViewContentModeTop:
+    case UIViewContentModeBottom:
+    case UIViewContentModeLeft:
+    case UIViewContentModeRight:
+    case UIViewContentModeTopRight:
+    case UIViewContentModeBottomLeft:
+    case UIViewContentModeBottomRight:
+      return RCTResizeModeRepeat;
+  }
 };
 
 @interface RCTConvert (RCTResizeMode)

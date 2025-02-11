@@ -28,6 +28,11 @@ inputs:
   react-native-version:
     description: The version of react-native
     required: true
+  run-e2e-tests:
+    description: Whether we want to run E2E tests or not
+    required: false
+    default: false
+
 runs:
   using: composite
   steps:
@@ -36,8 +41,7 @@ runs:
     - name: Setup node.js
       uses: ./.github/actions/setup-node
     - name: Run yarn
-      shell: bash
-      run: yarn install --non-interactive
+      uses: ./.github/actions/yarn-install
     - name: Download Hermes
       uses: actions/download-artifact@v4
       with:
@@ -105,8 +109,8 @@ runs:
           export USE_FRAMEWORKS=dynamic
         fi
 
-        if [[ ${{ inputs.architecture }} == "NewArch" ]]; then
-          export RCT_NEW_ARCH_ENABLED=1
+        if [[ ${{ inputs.architecture }} == "OldArch" ]]; then
+          export RCT_NEW_ARCH_ENABLED=0
         fi
 
         cd packages/rn-tester
@@ -114,17 +118,26 @@ runs:
         bundle install
         bundle exec pod install
     - name: Build RNTester
-      if: ${{ inputs.run-unit-tests != 'true' }}
       shell: bash
       run: |
-        xcodebuild build \
+        xcodebuild \
+          -scheme "RNTester" \
           -workspace packages/rn-tester/RNTesterPods.xcworkspace \
-          -scheme RNTester \
-          -sdk iphonesimulator
+          -configuration "${{ inputs.flavor }}" \
+          -sdk "iphonesimulator" \
+          -destination "generic/platform=iOS Simulator" \
+          -derivedDataPath "/tmp/RNTesterBuild"
+
+          echo "Print path to *.app file"
+          APP_PATH=$(find "/tmp/RNTesterBuild" -type d -name "*.app")
+
+          echo "App found at $APP_PATH"
+          echo "app-path=$APP_PATH" >> $GITHUB_ENV
     - name: "Run Tests: iOS Unit and Integration Tests"
       if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash
       run: yarn test-ios
+
     - name: Zip Derived data folder
       if: ${{ inputs.run-unit-tests == 'true' }}
       shell: bash
@@ -134,19 +147,20 @@ runs:
         XCRESULT_PATH=$(find . -name '*.xcresult')
         tar -zcvf xcresults.tar.gz $XCRESULT_PATH
     - name: Upload artifact
-      uses: actions/upload-artifact@v2.2.4
+      uses: actions/upload-artifact@v4.3.4
       if: ${{ inputs.run-unit-tests == 'true' }}
       with:
         name: xcresults
         path: /Users/distiller/Library/Developer/Xcode/xcresults.tar.gz
-    - name: Report bundle size
-      if: ${{ inputs.run-unit-tests == 'true' }}
-      uses: ./.github/actions/report-bundle-size
+    - name: Upload RNTester App
+      if: ${{ inputs.use-frameworks == 'StaticLibraries' && inputs.ruby-version == '2.6.10' }} # This is needed to avoid conflicts with the artifacts
+      uses: actions/upload-artifact@v4.3.4
       with:
-        platform: ios
+        name: RNTesterApp-${{ inputs.architecture }}-${{ inputs.jsengine }}-${{ inputs.flavor }}
+        path: ${{ env.app-path }}
     - name: Store test results
       if: ${{ inputs.run-unit-tests == 'true' }}
-      uses: actions/upload-artifact@v2.2.4
+      uses: actions/upload-artifact@v4.3.4
       with:
         name: test-results
         path: ./reports/junit

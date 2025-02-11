@@ -22,16 +22,13 @@ import LogBoxButton from './LogBoxButton';
 import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
-type Props = $ReadOnly<{|
+
+type Props = $ReadOnly<{
+  componentCodeFrame: ?CodeFrame,
   codeFrame: ?CodeFrame,
-|}>;
+}>;
 
-function LogBoxInspectorCodeFrame(props: Props): React.Node {
-  const codeFrame = props.codeFrame;
-  if (codeFrame == null) {
-    return null;
-  }
-
+function CodeFrameDisplay({codeFrame}: {codeFrame: CodeFrame}): React.Node {
   function getFileName() {
     // $FlowFixMe[incompatible-use]
     const matches = /[^/]*$/.exec(codeFrame.fileName);
@@ -56,28 +53,52 @@ function LogBoxInspectorCodeFrame(props: Props): React.Node {
   }
 
   return (
-    <LogBoxInspectorSection heading="Source" action={<AppInfo />}>
-      <View style={styles.box}>
-        <View style={styles.frame}>
-          <ScrollView horizontal>
-            <AnsiHighlight style={styles.content} text={codeFrame.content} />
-          </ScrollView>
-        </View>
-        <LogBoxButton
-          backgroundColor={{
-            default: 'transparent',
-            pressed: LogBoxStyle.getBackgroundDarkColor(1),
-          }}
-          style={styles.button}
-          onPress={() => {
-            openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
-          }}>
-          <Text style={styles.fileText}>
-            {getFileName()}
-            {getLocation()}
-          </Text>
-        </LogBoxButton>
+    <View style={styles.box}>
+      <View style={styles.frame}>
+        <ScrollView horizontal contentContainerStyle={styles.contentContainer}>
+          <AnsiHighlight style={styles.content} text={codeFrame.content} />
+        </ScrollView>
       </View>
+      <LogBoxButton
+        backgroundColor={{
+          default: 'transparent',
+          pressed: LogBoxStyle.getBackgroundDarkColor(1),
+        }}
+        style={styles.button}
+        onPress={() => {
+          openFileInEditor(codeFrame.fileName, codeFrame.location?.row ?? 0);
+        }}>
+        <Text style={styles.fileText}>
+          {getFileName()}
+          {getLocation()}
+        </Text>
+      </LogBoxButton>
+    </View>
+  );
+}
+
+function LogBoxInspectorCodeFrame(props: Props): React.Node {
+  const {codeFrame, componentCodeFrame} = props;
+  let sources = [];
+  if (codeFrame != null) {
+    sources.push(codeFrame);
+  }
+  if (
+    componentCodeFrame != null &&
+    componentCodeFrame?.content !== codeFrame?.content
+  ) {
+    sources.push(componentCodeFrame);
+  }
+  if (sources.length === 0) {
+    return null;
+  }
+  return (
+    <LogBoxInspectorSection
+      heading={sources.length > 1 ? 'Sources' : 'Source'}
+      action={<AppInfo />}>
+      {sources.map((frame, index) => (
+        <CodeFrameDisplay key={index} codeFrame={frame} />
+      ))}
     </LogBoxInspectorSection>
   );
 }
@@ -137,6 +158,9 @@ const styles = StyleSheet.create({
   button: {
     paddingTop: 10,
     paddingBottom: 10,
+  },
+  contentContainer: {
+    minWidth: '100%',
   },
   content: {
     color: LogBoxStyle.getTextColor(1),

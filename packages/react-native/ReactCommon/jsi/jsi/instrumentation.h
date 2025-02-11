@@ -25,6 +25,12 @@ namespace jsi {
 /// it modify the values of any jsi values in the heap (although GCs are fine).
 class JSI_EXPORT Instrumentation {
  public:
+  /// Additional options controlling what to include when capturing a heap
+  /// snapshot.
+  struct HeapSnapshotOptions {
+    bool captureNumericValue{false};
+  };
+
   virtual ~Instrumentation() = default;
 
   /// Returns GC statistics as a JSON-encoded string, with an object containing
@@ -91,13 +97,19 @@ class JSI_EXPORT Instrumentation {
 
   /// Captures the heap to a file
   ///
-  /// \param path to save the heap capture
-  virtual void createSnapshotToFile(const std::string& path) = 0;
+  /// \param path to save the heap capture.
+  /// \param options additional options for what to capture.
+  virtual void createSnapshotToFile(
+      const std::string& path,
+      const HeapSnapshotOptions& options = {false}) = 0;
 
   /// Captures the heap to an output stream
   ///
   /// \param os output stream to write to.
-  virtual void createSnapshotToStream(std::ostream& os) = 0;
+  /// \param options additional options for what to capture.
+  virtual void createSnapshotToStream(
+      std::ostream& os,
+      const HeapSnapshotOptions& options = {false}) = 0;
 
   /// If the runtime has been created to trace to a temp file, flush
   /// any unwritten parts of the trace of bridge traffic to the file,

@@ -8,6 +8,7 @@
 #pragma once
 
 #include <cmath>
+#include <shared_mutex>
 
 #ifdef __APPLE__
 #include <functional>
@@ -51,7 +52,10 @@ typedef void (*LogTaggedMarkerBridgeless)(const ReactMarkerId, const char* tag);
 #define RN_EXPORT __attribute__((visibility("default")))
 #endif
 
-extern RN_EXPORT LogTaggedMarker logTaggedMarkerImpl; // Bridge only
+extern RN_EXPORT std::shared_mutex logTaggedMarkerImplMutex;
+/// - important: To ensure this gets read and written to in a thread safe
+/// manner, make use of `logTaggedMarkerImplMutex`.
+extern RN_EXPORT LogTaggedMarker logTaggedMarkerImpl;
 extern RN_EXPORT LogTaggedMarker logTaggedMarkerBridgelessImpl;
 
 extern RN_EXPORT void logMarker(const ReactMarkerId markerId); // Bridge only

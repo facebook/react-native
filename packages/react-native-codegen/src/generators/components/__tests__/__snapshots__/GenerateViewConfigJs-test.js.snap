@@ -31,7 +31,7 @@ export const __INTERNAL_VIEW_CONFIG = {
     radii: true,
 
     colors: {
-      process: require('react-native/Libraries/StyleSheet/processColorArray'),
+      process: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/StyleSheet/processColorArray')),
     },
 
     srcs: true,
@@ -187,8 +187,8 @@ export const Commands = {
         dispatchCommand(ref, \\"flashScrollIndicators\\", []);
     },
 
-    allTypes(ref, x, y, z, message, animated) {
-        dispatchCommand(ref, \\"allTypes\\", [x, y, z, message, animated]);
+    allTypes(ref, x, y, z, message, animated, locations) {
+        dispatchCommand(ref, \\"allTypes\\", [x, y, z, message, animated, locations]);
     }
 };
 ",

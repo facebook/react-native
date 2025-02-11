@@ -20,9 +20,8 @@ WritableNativeMap::WritableNativeMap(folly::dynamic&& val)
   }
 }
 
-local_ref<WritableNativeMap::jhybriddata> WritableNativeMap::initHybrid(
-    alias_ref<jclass>) {
-  return makeCxxInstance();
+void WritableNativeMap::initHybrid(alias_ref<jhybridobject> jobj) {
+  setCxxInstance(jobj);
 }
 
 void WritableNativeMap::putNull(std::string key) {
@@ -41,6 +40,11 @@ void WritableNativeMap::putDouble(std::string key, double val) {
 }
 
 void WritableNativeMap::putInt(std::string key, int val) {
+  throwIfConsumed();
+  map_.insert(std::move(key), val);
+}
+
+void WritableNativeMap::putLong(std::string key, jlong val) {
   throwIfConsumed();
   map_.insert(std::move(key), val);
 }
@@ -91,6 +95,7 @@ void WritableNativeMap::registerNatives() {
       makeNativeMethod("putBoolean", WritableNativeMap::putBoolean),
       makeNativeMethod("putDouble", WritableNativeMap::putDouble),
       makeNativeMethod("putInt", WritableNativeMap::putInt),
+      makeNativeMethod("putLong", WritableNativeMap::putLong),
       makeNativeMethod("putString", WritableNativeMap::putString),
       makeNativeMethod("putNativeArray", WritableNativeMap::putNativeArray),
       makeNativeMethod("putNativeMap", WritableNativeMap::putNativeMap),

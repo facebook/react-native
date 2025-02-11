@@ -11,14 +11,14 @@
 
 namespace facebook::react {
 
-class Binding;
+class FabricUIManagerBinding;
 
 class JFabricUIManager : public jni::JavaClass<JFabricUIManager> {
  public:
   static constexpr auto kJavaDescriptor =
       "Lcom/facebook/react/fabric/FabricUIManager;";
 
-  Binding* getBinding();
+  FabricUIManagerBinding* getBinding();
 };
 
 } // namespace facebook::react

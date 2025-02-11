@@ -10,7 +10,7 @@ package com.facebook.react.tasks.internal
 import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.*
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -31,19 +31,21 @@ class PrepareGlogTaskTest {
     val glogpath = tempFolder.newFolder("glogpath")
     val output = tempFolder.newFolder("output")
     val project = createProject()
+    val glogThirdPartyJniPath = File(project.projectDir, "src/main/jni/third-party/glog/")
     val task =
         createTestTask<PrepareGlogTask>(project = project) {
           it.glogPath.setFrom(glogpath)
+          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
           it.glogVersion.set("1.0.0")
           it.outputDir.set(output)
         }
-    File(project.projectDir, "src/main/jni/third-party/glog/CMakeLists.txt").apply {
+    File(glogThirdPartyJniPath, "CMakeLists.txt").apply {
       parentFile.mkdirs()
       createNewFile()
     }
     task.taskAction()
 
-    assertTrue(output.listFiles()!!.any { it.name == "CMakeLists.txt" })
+    assertThat(output.listFiles()!!.any { it.name == "CMakeLists.txt" }).isTrue()
   }
 
   @Test
@@ -51,28 +53,32 @@ class PrepareGlogTaskTest {
     val glogpath = tempFolder.newFolder("glogpath")
     val output = tempFolder.newFolder("output")
     val project = createProject()
+    val glogThirdPartyJniPath = File(project.projectDir, "src/main/jni/third-party/glog/")
     val task =
         createTestTask<PrepareGlogTask>(project = project) {
           it.glogPath.setFrom(glogpath)
+          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
           it.glogVersion.set("1.0.0")
           it.outputDir.set(output)
         }
-    File(project.projectDir, "src/main/jni/third-party/glog/config.h").apply {
+    File(glogThirdPartyJniPath, "config.h").apply {
       parentFile.mkdirs()
       createNewFile()
     }
     task.taskAction()
 
-    assertTrue(output.listFiles()!!.any { it.name == "config.h" })
+    assertThat(output.listFiles()!!.any { it.name == "config.h" }).isTrue()
   }
 
   @Test
   fun prepareGlogTask_copiesSourceCode() {
     val glogpath = tempFolder.newFolder("glogpath")
+    val glogThirdPartyJniPath = tempFolder.newFolder("glogpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
         createTestTask<PrepareGlogTask> {
           it.glogPath.setFrom(glogpath)
+          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
           it.glogVersion.set("1.0.0")
           it.outputDir.set(output)
         }
@@ -83,16 +89,18 @@ class PrepareGlogTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(output, "glog-1.0.0/src/glog.cpp").exists())
+    assertThat(File(output, "glog-1.0.0/src/glog.cpp").exists()).isTrue()
   }
 
   @Test
   fun prepareGlogTask_replacesTokenCorrectly() {
     val glogpath = tempFolder.newFolder("glogpath")
+    val glogThirdPartyJniPath = tempFolder.newFolder("glogpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
         createTestTask<PrepareGlogTask> {
           it.glogPath.setFrom(glogpath)
+          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
           it.glogVersion.set("1.0.0")
           it.outputDir.set(output)
         }
@@ -104,17 +112,19 @@ class PrepareGlogTaskTest {
     task.taskAction()
 
     val expectedFile = File(output, "glog.h")
-    assertTrue(expectedFile.exists())
-    assertEquals("ac_google_start_namespace", expectedFile.readText())
+    assertThat(expectedFile.exists()).isTrue()
+    assertThat(expectedFile.readText()).isEqualTo("ac_google_start_namespace")
   }
 
   @Test
   fun prepareGlogTask_exportsHeaderCorrectly() {
     val glogpath = tempFolder.newFolder("glogpath")
+    val glogThirdPartyJniPath = tempFolder.newFolder("glogpath/jni")
     val output = tempFolder.newFolder("output")
     val task =
         createTestTask<PrepareGlogTask> {
           it.glogPath.setFrom(glogpath)
+          it.glogThirdPartyJniPath.set(glogThirdPartyJniPath)
           it.glogVersion.set("1.0.0")
           it.outputDir.set(output)
         }
@@ -125,6 +135,6 @@ class PrepareGlogTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(output, "exported/glog/logging.h").exists())
+    assertThat(File(output, "exported/glog/logging.h").exists()).isTrue()
   }
 }

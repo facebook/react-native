@@ -100,7 +100,7 @@ class RNTesterExampleFilter<T> extends React.Component<Props<T>, State> {
     }
   }
 
-  _renderTextInput(): ?React.Element<any> {
+  _renderTextInput(): ?React.MixedElement {
     if (this.props.disableSearch) {
       return null;
     }

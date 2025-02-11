@@ -237,6 +237,15 @@ class UnsupportedObjectPropertyTypeAnnotationParserError extends ParserError {
   }
 }
 
+class UnsupportedObjectPropertyWithIndexerTypeAnnotationParserError extends ParserError {
+  constructor(nativeModuleName: string, propertyAST: $FlowFixMe) {
+    let message =
+      "'ObjectTypeAnnotation' cannot contain both an indexer and properties.";
+
+    super(nativeModuleName, propertyAST, message);
+  }
+}
+
 class UnsupportedObjectPropertyValueTypeAnnotationParserError extends ParserError {
   constructor(
     nativeModuleName: string,
@@ -455,6 +464,7 @@ module.exports = {
   UnsupportedModuleEventEmitterPropertyParserError,
   UnsupportedModulePropertyParserError,
   UnsupportedObjectPropertyTypeAnnotationParserError,
+  UnsupportedObjectPropertyWithIndexerTypeAnnotationParserError,
   UnsupportedObjectPropertyValueTypeAnnotationParserError,
   UnsupportedObjectDirectRecursivePropertyParserError,
   UnusedModuleInterfaceParserError,

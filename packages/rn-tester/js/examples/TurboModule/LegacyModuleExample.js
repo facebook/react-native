@@ -22,7 +22,7 @@ exports.description = 'Usage of legacy Native Module';
 exports.examples = [
   {
     title: 'SampleLegacyModule',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <SampleLegacyModuleExample />;
     },
   },

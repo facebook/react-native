@@ -30,10 +30,19 @@ abstract class GeneratePackageListTask : DefaultTask() {
 
   @TaskAction
   fun taskAction() {
-    val model = JsonUtils.fromAutolinkingConfigJson(autolinkInputFile.get().asFile)
+    val model =
+        JsonUtils.fromAutolinkingConfigJson(autolinkInputFile.get().asFile)
+            ?: error(
+                """
+        RNGP - Autolinking: Could not parse autolinking config file:
+        ${autolinkInputFile.get().asFile.absolutePath}
+        
+        The file is either missing or not containing valid JSON so the build won't succeed. 
+      """
+                    .trimIndent())
 
     val packageName =
-        model?.project?.android?.packageName
+        model.project?.android?.packageName
             ?: error(
                 "RNGP - Autolinking: Could not find project.android.packageName in react-native config output! Could not autolink packages without this field.")
 
@@ -85,6 +94,8 @@ abstract class GeneratePackageListTask : DefaultTask() {
     val packages = model?.dependencies?.values ?: emptyList()
     return packages
         .filter { it.platforms?.android != null }
+        // The pure C++ dependencies won't have a .java/.kt file to import
+        .filterNot { it.platforms?.android?.isPureCxxDependency == true }
         .associate { it.name to checkNotNull(it.platforms?.android) }
   }
 

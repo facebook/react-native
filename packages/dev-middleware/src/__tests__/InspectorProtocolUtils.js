@@ -109,15 +109,6 @@ export async function sendFromDebuggerToTarget<Message: CdpMessageToTarget>(
   return receivedMessage.wrappedEvent;
 }
 
-export function parseJsonFromDataUri<T: JSONSerializable>(uri: string): T {
-  expect(uri).toMatch(/^data:/);
-  const parsedUri = dataUriToBuffer(uri);
-  expect(parsedUri.type).toBe('application/json');
-  return JSON.parse(
-    new TextDecoder(parsedUri.charset).decode(parsedUri.buffer),
-  );
-}
-
 export async function createAndConnectTarget(
   serverRef: $ReadOnly<{
     serverBaseUrl: string,
@@ -126,7 +117,15 @@ export async function createAndConnectTarget(
   }>,
   signal: AbortSignal,
   page: PageFromDevice,
-  deviceId: ?string = null,
+  {
+    debuggerHostHeader = null,
+    deviceId = null,
+    deviceHostHeader = null,
+  }: $ReadOnly<{
+    debuggerHostHeader?: ?string,
+    deviceId?: ?string,
+    deviceHostHeader?: ?string,
+  }> = {},
 ): Promise<{device: DeviceMock, debugger_: DebuggerMock}> {
   let device;
   let debugger_;
@@ -136,6 +135,7 @@ export async function createAndConnectTarget(
         deviceId ?? 'device' + Date.now()
       }&name=foo&app=bar`,
       signal,
+      deviceHostHeader,
     );
     device.getPages.mockImplementation(() => [page]);
 
@@ -150,7 +150,11 @@ export async function createAndConnectTarget(
     const [{webSocketDebuggerUrl}] = pageList;
     expect(webSocketDebuggerUrl).toBeDefined();
 
-    debugger_ = await createDebuggerMock(webSocketDebuggerUrl, signal);
+    debugger_ = await createDebuggerMock(
+      webSocketDebuggerUrl,
+      signal,
+      debuggerHostHeader,
+    );
     await until(() => expect(device.connect).toBeCalled());
   } catch (e) {
     device?.close();

@@ -14,24 +14,23 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_animations_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_animations STATIC ${react_render_animations_SRC})
+file(GLOB react_renderer_animations_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_animations STATIC ${react_renderer_animations_SRC})
 
-target_include_directories(react_render_animations PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_renderer_animations PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_render_animations
+target_link_libraries(react_renderer_animations
         folly_runtime
         glog
         glog_init
         jsi
-        react_config
         react_debug
-        react_render_componentregistry
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_mounting
-        react_render_uimanager
+        react_renderer_componentregistry
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_mounting
+        react_renderer_uimanager
         rrc_view
         runtimeexecutor
         yoga

@@ -171,15 +171,14 @@ RCT_EXPORT_MODULE()
 - (UIView *)container
 {
   if (!_container) {
-    CGSize statusBarSize = RCTUIStatusBarManager().statusBarFrame.size;
-    CGFloat statusBarHeight = statusBarSize.height;
-    _container = [[UIView alloc] initWithFrame:CGRectMake(10, statusBarHeight, 180, RCTPerfMonitorBarHeight)];
+    UIEdgeInsets safeInsets = RCTKeyWindow().safeAreaInsets;
+
+    _container =
+        [[UIView alloc] initWithFrame:CGRectMake(safeInsets.left, safeInsets.top, 180, RCTPerfMonitorBarHeight)];
     _container.layer.borderWidth = 2;
     _container.layer.borderColor = [UIColor lightGrayColor].CGColor;
     [_container addGestureRecognizer:self.gestureRecognizer];
     [_container addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap)]];
-
-    _container.backgroundColor = [UIColor whiteColor];
 
     _container.backgroundColor = [UIColor systemBackgroundColor];
   }
@@ -423,6 +422,11 @@ RCT_EXPORT_MODULE()
     }
   }
 
+  // Ensure the container always stays on top of newly added views
+  if ([_container.superview.subviews lastObject] != _container) {
+    [_container.superview bringSubviewToFront:_container];
+  }
+
   double mem = (double)RCTGetResidentMemorySize() / 1024 / 1024;
   self.memory.text = [NSString stringWithFormat:@"RAM\n%.2lf\nMB", mem];
   self.heap.text = [NSString stringWithFormat:@"JSC\n%.2lf\nMB", (double)_heapSize / 1024];
@@ -449,7 +453,9 @@ RCT_EXPORT_MODULE()
 {
   [self loadPerformanceLoggerData];
   if (CGRectIsEmpty(_storedMonitorFrame)) {
-    _storedMonitorFrame = CGRectMake(0, 20, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
+    UIEdgeInsets safeInsets = RCTKeyWindow().safeAreaInsets;
+    _storedMonitorFrame =
+        CGRectMake(safeInsets.left, safeInsets.top, self.container.window.frame.size.width, RCTPerfMonitorExpandHeight);
     [self.container addSubview:self.metrics];
   } else {
     [_metrics reloadData];

@@ -21,29 +21,29 @@ import flattenStyle from '../../StyleSheet/flattenStyle';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-type TVProps = $ReadOnly<{|
+type TVProps = $ReadOnly<{
   hasTVPreferredFocus?: ?boolean,
   nextFocusDown?: ?number,
   nextFocusForward?: ?number,
   nextFocusLeft?: ?number,
   nextFocusRight?: ?number,
   nextFocusUp?: ?number,
-|}>;
+}>;
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
   ...TVProps,
 
   activeOpacity?: ?number,
   style?: ?ViewStyleProp,
 
-  hostRef?: ?React.Ref<typeof Animated.View>,
-|}>;
+  hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
+}>;
 
-type State = $ReadOnly<{|
+type State = $ReadOnly<{
   anim: Animated.Value,
   pressability: Pressability,
-|}>;
+}>;
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -291,6 +291,7 @@ class TouchableOpacity extends React.Component<Props, State> {
           this.props.onPress !== undefined &&
           !this.props.disabled
         }
+        // $FlowFixMe[prop-missing]
         ref={this.props.hostRef}
         {...eventHandlersWithoutBlurAndFocus}>
         {this.props.children}
@@ -326,13 +327,13 @@ class TouchableOpacity extends React.Component<Props, State> {
   }
 }
 
-const Touchable: React.AbstractComponent<
-  Props,
-  React.ElementRef<typeof Animated.View>,
-> = React.forwardRef((props, ref) => (
+const Touchable: component(
+  ref: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ...props: Props
+) = React.forwardRef((props, ref) => (
   <TouchableOpacity {...props} hostRef={ref} />
 ));
 
 Touchable.displayName = 'TouchableOpacity';
 
-module.exports = Touchable;
+export default Touchable;

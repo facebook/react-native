@@ -12,7 +12,7 @@
 
 'use strict';
 
-const View = require('../Libraries/Components/View/View');
+const View = require('../Libraries/Components/View/View').default;
 const requireNativeComponent =
   require('../Libraries/ReactNative/requireNativeComponent').default;
 const React = require('react');
@@ -20,7 +20,7 @@ const RCTScrollView: $FlowFixMe = requireNativeComponent('RCTScrollView');
 
 function mockScrollView(BaseComponent: $FlowFixMe) {
   class ScrollViewMock extends BaseComponent {
-    render(): React.Element<typeof RCTScrollView> {
+    render(): React.MixedElement {
       return (
         <RCTScrollView {...this.props}>
           {this.props.refreshControl}

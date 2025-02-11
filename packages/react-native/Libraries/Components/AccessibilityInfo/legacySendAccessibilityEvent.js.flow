@@ -17,4 +17,4 @@ declare function legacySendAccessibilityEvent(
   eventType: string,
 ): void;
 
-module.exports = legacySendAccessibilityEvent;
+export default legacySendAccessibilityEvent;

@@ -109,6 +109,10 @@ class HermesJSRuntime : public JSRuntime {
     return *targetDelegate_;
   }
 
+  void unstable_initializeOnJsThread() override {
+    runtime_->registerForProfiling();
+  }
+
  private:
   std::shared_ptr<HermesRuntime> runtime_;
   std::optional<jsinspector_modern::HermesRuntimeTargetDelegate>
@@ -116,37 +120,42 @@ class HermesJSRuntime : public JSRuntime {
 };
 
 std::unique_ptr<JSRuntime> HermesInstance::createJSRuntime(
-    std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
-    std::shared_ptr<::hermes::vm::CrashManager> cm,
-    std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept {
+    std::shared_ptr<::hermes::vm::CrashManager> crashManager,
+    std::shared_ptr<MessageQueueThread> msgQueueThread,
+    bool allocInOldGenBeforeTTI) noexcept {
   assert(msgQueueThread != nullptr);
-  int64_t vmExperimentFlags = reactNativeConfig
-      ? reactNativeConfig->getInt64("ios_hermes:vm_experiment_flags")
-      : 0;
+
+  auto gcConfig = ::hermes::vm::GCConfig::Builder()
+                      // Default to 3GB
+                      .withMaxHeapSize(3072 << 20)
+                      .withName("RNBridgeless");
+
+  if (allocInOldGenBeforeTTI) {
+    // For the next two arguments: avoid GC before TTI
+    // by initializing the runtime to allocate directly
+    // in the old generation, but revert to normal
+    // operation when we reach the (first) TTI point.
+    gcConfig.withAllocInYoung(false).withRevertToYGAtTTI(true);
+  }
 
   ::hermes::vm::RuntimeConfig::Builder runtimeConfigBuilder =
       ::hermes::vm::RuntimeConfig::Builder()
-          .withGCConfig(::hermes::vm::GCConfig::Builder()
-                            // Default to 3GB
-                            .withMaxHeapSize(3072 << 20)
-                            .withName("RNBridgeless")
-                            // For the next two arguments: avoid GC before TTI
-                            // by initializing the runtime to allocate directly
-                            // in the old generation, but revert to normal
-                            // operation when we reach the (first) TTI point.
-                            .withAllocInYoung(false)
-                            .withRevertToYGAtTTI(true)
-                            .build())
+          .withGCConfig(gcConfig.build())
           .withEnableSampleProfiling(true)
-          .withMicrotaskQueue(ReactNativeFeatureFlags::enableMicrotasks())
-          .withVMExperimentFlags(vmExperimentFlags);
+          .withMicrotaskQueue(
+              ReactNativeFeatureFlags::enableBridgelessArchitecture());
 
-  if (cm) {
-    runtimeConfigBuilder.withCrashMgr(cm);
+  if (crashManager) {
+    runtimeConfigBuilder.withCrashMgr(crashManager);
   }
 
   std::unique_ptr<HermesRuntime> hermesRuntime =
       hermes::makeHermesRuntime(runtimeConfigBuilder.build());
+
+  auto errorPrototype = hermesRuntime->global()
+                            .getPropertyAsObject(*hermesRuntime, "Error")
+                            .getPropertyAsObject(*hermesRuntime, "prototype");
+  errorPrototype.setProperty(*hermesRuntime, "jsEngine", "hermes");
 
 #ifdef HERMES_ENABLE_DEBUGGER
   auto& inspectorFlags = jsinspector_modern::InspectorFlags::getInstance();

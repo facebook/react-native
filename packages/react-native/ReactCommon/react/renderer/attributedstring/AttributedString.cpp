@@ -53,42 +53,23 @@ bool Fragment::operator!=(const Fragment& rhs) const {
 
 #pragma mark - AttributedString
 
-void AttributedString::appendFragment(const Fragment& fragment) {
+void AttributedString::appendFragment(Fragment&& fragment) {
   ensureUnsealed();
-
-  if (fragment.string.empty()) {
-    return;
+  if (!fragment.string.empty()) {
+    fragments_.push_back(std::move(fragment));
   }
-
-  fragments_.push_back(fragment);
 }
 
-void AttributedString::prependFragment(const Fragment& fragment) {
+void AttributedString::prependFragment(Fragment&& fragment) {
   ensureUnsealed();
-
-  if (fragment.string.empty()) {
-    return;
+  if (!fragment.string.empty()) {
+    fragments_.insert(fragments_.begin(), std::move(fragment));
   }
-
-  fragments_.insert(fragments_.begin(), fragment);
 }
 
-void AttributedString::appendAttributedString(
-    const AttributedString& attributedString) {
-  ensureUnsealed();
-  fragments_.insert(
-      fragments_.end(),
-      attributedString.fragments_.begin(),
-      attributedString.fragments_.end());
-}
-
-void AttributedString::prependAttributedString(
-    const AttributedString& attributedString) {
-  ensureUnsealed();
-  fragments_.insert(
-      fragments_.begin(),
-      attributedString.fragments_.begin(),
-      attributedString.fragments_.end());
+void AttributedString::setBaseTextAttributes(
+    const TextAttributes& defaultAttributes) {
+  baseAttributes_ = defaultAttributes;
 }
 
 const Fragments& AttributedString::getFragments() const {
@@ -105,6 +86,10 @@ std::string AttributedString::getString() const {
     string += fragment.string;
   }
   return string;
+}
+
+const TextAttributes& AttributedString::getBaseTextAttributes() const {
+  return baseAttributes_;
 }
 
 bool AttributedString::isEmpty() const {

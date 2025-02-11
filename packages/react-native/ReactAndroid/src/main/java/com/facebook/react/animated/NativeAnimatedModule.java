@@ -14,6 +14,7 @@ import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.fbreact.specs.NativeAnimatedModuleSpec;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -23,6 +24,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
@@ -38,6 +40,7 @@ import com.facebook.react.uimanager.common.ViewUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -85,6 +88,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * This isolates us from the problems that may be caused by concurrent updates of animated graph
  * while UI thread is "executing" the animation loop.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModule(name = NativeAnimatedModuleSpec.NAME)
 public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     implements LifecycleEventListener, UIManagerListener {
@@ -115,6 +119,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     OP_CODE_ADD_LISTENER(20), // ios only
     OP_CODE_REMOVE_LISTENERS(21); // ios only
 
+    // NULLSAFE_FIXME[Field Not Nullable]
     private static BatchExecutionOpCodes[] valueMap = null;
     private final int value;
 
@@ -261,6 +266,43 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
         };
   }
 
+  /**
+   * This method is used to notify the JS side that the user has stopped scrolling. With natively
+   * driven animation, we might have to force a resync between the Shadow Tree and the Native Tree.
+   * This is because with natively driven animation, the Shadow Tree is bypassed and it can have
+   * stale information on the layout of the native views. This method takes care of verifying if
+   * there are some views listening to the native driven animation and it triggers the resynch.
+   *
+   * @param viewTag The tag of the scroll view that has stopped scrolling
+   */
+  public void userDrivenScrollEnded(int viewTag) {
+    // ask to the Node Manager for all the native nodes listening to OnScroll event
+    NativeAnimatedNodesManager nodeManager = mNodesManager.get();
+    if (nodeManager == null) {
+      return;
+    }
+
+    Set<Integer> tags = nodeManager.getTagsOfConnectedNodes(viewTag, "topScrollEnded");
+
+    if (tags.isEmpty()) {
+      return;
+    }
+
+    WritableArray tagsArray = Arguments.createArray();
+    for (Integer tag : tags) {
+      tagsArray.pushInt(tag);
+    }
+
+    // emit the event to JS to resync the trees
+    WritableMap onAnimationEndedData = Arguments.createMap();
+    onAnimationEndedData.putArray("tags", tagsArray);
+
+    ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+    if (reactApplicationContext != null) {
+      reactApplicationContext.emitDeviceEvent("onUserDrivenAnimationEnded", onAnimationEndedData);
+    }
+  }
+
   @Override
   public void initialize() {
     super.initialize();
@@ -332,7 +374,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
       }
     }
 
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     mPreOperations.executeBatch(batchNumber, getNodesManager());
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     mOperations.executeBatch(batchNumber, getNodesManager());
   }
 
@@ -352,7 +396,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     UIBlock preOperationsUIBlock =
         new UIBlock() {
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             mPreOperations.executeBatch(frameNo, getNodesManager());
           }
         };
@@ -360,7 +406,9 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
     UIBlock operationsUIBlock =
         new UIBlock() {
           @Override
+          // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
           public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+            // NULLSAFE_FIXME[Parameter Not Nullable]
             mOperations.executeBatch(frameNo, getNodesManager());
           }
         };
@@ -507,7 +555,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
 
   @Override
   public void finishOperationBatch() {
-    mBatchingControlledByJS = true;
+    mBatchingControlledByJS = false;
     mCurrentBatchNumber++;
   }
 
@@ -1080,13 +1128,16 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
               switch (command) {
                 case OP_CODE_CREATE_ANIMATED_NODE:
                   animatedNodesManager.createAnimatedNode(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       opsAndArgs.getInt(i++), opsAndArgs.getMap(i++));
                   break;
                 case OP_CODE_UPDATE_ANIMATED_NODE_CONFIG:
                   animatedNodesManager.updateAnimatedNodeConfig(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       opsAndArgs.getInt(i++), opsAndArgs.getMap(i++));
                   break;
                 case OP_CODE_GET_VALUE:
+                  // NULLSAFE_FIXME[Parameter Not Nullable]
                   animatedNodesManager.getValue(opsAndArgs.getInt(i++), null);
                   break;
                 case OP_START_LISTENING_TO_ANIMATED_NODE_VALUE:
@@ -1124,6 +1175,7 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                     enqueueFrameCallback();
                   }
                   animatedNodesManager.startAnimatingNode(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       opsAndArgs.getInt(i++), opsAndArgs.getInt(i++), opsAndArgs.getMap(i++), null);
                   break;
                 case OP_CODE_STOP_ANIMATION:
@@ -1161,12 +1213,14 @@ public class NativeAnimatedModule extends NativeAnimatedModuleSpec
                   break;
                 case OP_CODE_ADD_ANIMATED_EVENT_TO_VIEW:
                   animatedNodesManager.addAnimatedEventToView(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       opsAndArgs.getInt(i++), opsAndArgs.getString(i++), opsAndArgs.getMap(i++));
                   break;
                 case OP_CODE_REMOVE_ANIMATED_EVENT_FROM_VIEW:
                   viewTag = opsAndArgs.getInt(i++);
                   decrementInFlightAnimationsForViewTag(viewTag);
                   animatedNodesManager.removeAnimatedEventFromView(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       viewTag, opsAndArgs.getString(i++), opsAndArgs.getInt(i++));
                   break;
                 case OP_CODE_ADD_LISTENER:

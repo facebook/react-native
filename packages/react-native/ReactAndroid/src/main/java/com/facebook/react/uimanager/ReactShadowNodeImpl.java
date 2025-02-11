@@ -59,7 +59,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private static final YogaConfig sYogaConfig;
 
   static {
-    sYogaConfig = ReactYogaConfigProvider.get();
+    sYogaConfig = ReactYogaConfigProvider.INSTANCE.getYogaConfig();
   }
 
   private int mReactTag;
@@ -406,7 +406,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
               getScreenX(),
               getScreenY(),
               getScreenWidth(),
-              getScreenHeight());
+              getScreenHeight(),
+              getLayoutDirection());
         }
       }
     }

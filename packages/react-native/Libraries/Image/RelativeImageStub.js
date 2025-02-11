@@ -15,7 +15,7 @@
 
 const AssetRegistry = require('@react-native/assets-registry/registry');
 
-module.exports = (AssetRegistry.registerAsset({
+const RelativeImageStub = (AssetRegistry.registerAsset({
   __packager_asset: true,
   fileSystemLocation: '/full/path/to/directory',
   httpServerLocation: '/assets/full/path/to/directory',
@@ -26,3 +26,5 @@ module.exports = (AssetRegistry.registerAsset({
   name: 'icon',
   type: 'png',
 }): number);
+
+module.exports = RelativeImageStub;

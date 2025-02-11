@@ -8,10 +8,9 @@
  */
 
 import type * as React from 'react';
-import {HostComponent} from 'react-native';
 
 type PopupMenuAndroidInstance = {
-  show: () => void;
+  readonly show: () => void;
 };
 
 type Props = {
@@ -19,7 +18,7 @@ type Props = {
   onSelectionChange: (number) => void;
   onDismiss: () => void;
   children: React.ReactNode | undefined;
-  instanceRef: React.ElementRef<HostComponent<PopupMenuAndroidInstance>>;
+  instanceRef: React.RefObject<PopupMenuAndroidInstance>;
 };
 
 declare class PopupMenuAndroid extends React.Component<Props> {}

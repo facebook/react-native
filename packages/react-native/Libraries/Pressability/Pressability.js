@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../Renderer/shims/ReactNativeTypes';
 import type {
   BlurEvent,
   FocusEvent,
@@ -26,9 +26,8 @@ import {isHoverEnabled} from './HoverState';
 import PressabilityPerformanceEventEmitter from './PressabilityPerformanceEventEmitter.js';
 import {type PressabilityTouchSignal as TouchSignal} from './PressabilityTypes.js';
 import invariant from 'invariant';
-import * as React from 'react';
 
-export type PressabilityConfig = $ReadOnly<{|
+export type PressabilityConfig = $ReadOnly<{
   /**
    * Whether a press gesture can be interrupted by a parent gesture such as a
    * scroll event. Defaults to true.
@@ -136,9 +135,9 @@ export type PressabilityConfig = $ReadOnly<{|
    * while this pressable is responder.
    */
   blockNativeResponder?: ?boolean,
-|}>;
+}>;
 
-export type EventHandlers = $ReadOnly<{|
+export type EventHandlers = $ReadOnly<{
   onBlur: (event: BlurEvent) => void,
   onClick: (event: PressEvent) => void,
   onFocus: (event: FocusEvent) => void,
@@ -152,7 +151,7 @@ export type EventHandlers = $ReadOnly<{|
   onResponderTerminate: (event: PressEvent) => void,
   onResponderTerminationRequest: () => boolean,
   onStartShouldSetResponder: () => boolean,
-|}>;
+}>;
 
 type TouchState =
   | 'NOT_RESPONDER'
@@ -378,17 +377,17 @@ export default class Pressability {
   _longPressDelayTimeout: ?TimeoutID = null;
   _pressDelayTimeout: ?TimeoutID = null;
   _pressOutDelayTimeout: ?TimeoutID = null;
-  _responderID: ?number | React.ElementRef<HostComponent<mixed>> = null;
-  _responderRegion: ?$ReadOnly<{|
+  _responderID: ?number | HostInstance = null;
+  _responderRegion: ?$ReadOnly<{
     bottom: number,
     left: number,
     right: number,
     top: number,
-  |}> = null;
-  _touchActivatePosition: ?$ReadOnly<{|
+  }> = null;
+  _touchActivatePosition: ?$ReadOnly<{
     pageX: number,
     pageY: number,
-  |}>;
+  }>;
   _touchActivateTime: ?number;
   _touchState: TouchState = 'NOT_RESPONDER';
 
@@ -831,12 +830,12 @@ export default class Pressability {
 
   _isTouchWithinResponderRegion(
     touch: $PropertyType<PressEvent, 'nativeEvent'>,
-    responderRegion: $ReadOnly<{|
+    responderRegion: $ReadOnly<{
       bottom: number,
       left: number,
       right: number,
       top: number,
-    |}>,
+    }>,
   ): boolean {
     const hitSlop = normalizeRect(this._config.hitSlop);
     const pressRectOffset = normalizeRect(this._config.pressRectOffset);

@@ -35,11 +35,9 @@ interface Registration<TArgs> {
   +remove: () => void;
 }
 
-// $FlowFixMe[deprecated-type]
-type Registry<TEventToArgsMap: {...}> = $ObjMap<
-  TEventToArgsMap,
-  <TArgs>(TArgs) => Set<Registration<TArgs>>,
->;
+type Registry<TEventToArgsMap: {...}> = {
+  [K in keyof TEventToArgsMap]: Set<Registration<TEventToArgsMap[K]>>,
+};
 
 /**
  * EventEmitter manages listeners and publishes events to them.
@@ -64,6 +62,7 @@ type Registry<TEventToArgsMap: {...}> = $ObjMap<
 export default class EventEmitter<TEventToArgsMap: {...}>
   implements IEventEmitter<TEventToArgsMap>
 {
+  // $FlowFixMe[incompatible-type]
   #registry: Registry<TEventToArgsMap> = {};
 
   /**
@@ -113,6 +112,7 @@ export default class EventEmitter<TEventToArgsMap: {...}>
       // Copy `registrations` to take a snapshot when we invoke `emit`, in case
       // registrations are added or removed when listeners are invoked.
       for (const registration of Array.from(registrations)) {
+        // $FlowFixMe[incompatible-call]
         registration.listener.apply(registration.context, args);
       }
     }
@@ -125,6 +125,7 @@ export default class EventEmitter<TEventToArgsMap: {...}>
     eventType?: ?TEvent,
   ): void {
     if (eventType == null) {
+      // $FlowFixMe[incompatible-type]
       this.#registry = {};
     } else {
       delete this.#registry[eventType];

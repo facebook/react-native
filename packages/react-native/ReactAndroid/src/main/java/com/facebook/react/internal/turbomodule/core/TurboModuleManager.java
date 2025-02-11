@@ -16,8 +16,6 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.CxxModuleWrapper;
 import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactNoCrashSoftException;
-import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RuntimeExecutor;
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
@@ -27,6 +25,7 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,8 @@ import java.util.Map;
  * a Java module, that the C++ counterpart calls.
  */
 public class TurboModuleManager implements TurboModuleRegistry {
+  private static final String TAG = "TurboModuleManager";
+
   private final List<String> mEagerInitModuleNames;
   private final ModuleProvider mTurboModuleProvider;
   private final ModuleProvider mLegacyModuleProvider;
@@ -72,10 +73,10 @@ public class TurboModuleManager implements TurboModuleRegistry {
             (CallInvokerHolderImpl) jsCallInvokerHolder,
             (NativeMethodCallInvokerHolderImpl) nativeMethodCallInvokerHolder,
             delegate);
-    installJSIBindings(shouldEnableLegacyModuleInterop(), enableSyncVoidMethods());
+    installJSIBindings(shouldEnableLegacyModuleInterop());
 
     mEagerInitModuleNames =
-        delegate == null ? new ArrayList<>() : delegate.getEagerInitModuleNames();
+        delegate == null ? Collections.emptyList() : delegate.getEagerInitModuleNames();
 
     ModuleProvider nullProvider = moduleName -> null;
 
@@ -112,15 +113,6 @@ public class TurboModuleManager implements TurboModuleRegistry {
     return mDelegate != null && mDelegate.unstable_shouldEnableLegacyModuleInterop();
   }
 
-  private boolean shouldRouteTurboModulesThroughLegacyModuleInterop() {
-    return mDelegate != null
-        && mDelegate.unstable_shouldRouteTurboModulesThroughLegacyModuleInterop();
-  }
-
-  private boolean enableSyncVoidMethods() {
-    return mDelegate != null && mDelegate.unstable_enableSyncVoidMethods();
-  }
-
   @Override
   @NonNull
   public List<String> getEagerInitModuleNames() {
@@ -140,11 +132,6 @@ public class TurboModuleManager implements TurboModuleRegistry {
   @DoNotStrip
   @Nullable
   private NativeModule getLegacyJavaModule(String moduleName) {
-    if (shouldRouteTurboModulesThroughLegacyModuleInterop()) {
-      final NativeModule module = getModule(moduleName);
-      return !(module instanceof CxxModuleWrapper) ? module : null;
-    }
-
     /*
      * This API is invoked from global.nativeModuleProxy.
      * Only call getModule if the native module is a legacy module.
@@ -164,11 +151,6 @@ public class TurboModuleManager implements TurboModuleRegistry {
   @DoNotStrip
   @Nullable
   private CxxModuleWrapper getLegacyCxxModule(String moduleName) {
-    if (shouldRouteTurboModulesThroughLegacyModuleInterop()) {
-      final NativeModule module = getModule(moduleName);
-      return module instanceof CxxModuleWrapper ? (CxxModuleWrapper) module : null;
-    }
-
     /*
      * This API is invoked from global.nativeModuleProxy.
      * Only call getModule if the native module is a legacy module.
@@ -188,10 +170,6 @@ public class TurboModuleManager implements TurboModuleRegistry {
   @DoNotStrip
   @Nullable
   private CxxModuleWrapper getTurboLegacyCxxModule(String moduleName) {
-    if (shouldRouteTurboModulesThroughLegacyModuleInterop()) {
-      return null;
-    }
-
     /*
      * This API is invoked from global.__turboModuleProxy.
      * Only call getModule if the native module is a turbo module.
@@ -211,10 +189,6 @@ public class TurboModuleManager implements TurboModuleRegistry {
   @DoNotStrip
   @Nullable
   private TurboModule getTurboJavaModule(String moduleName) {
-    if (shouldRouteTurboModulesThroughLegacyModuleInterop()) {
-      return null;
-    }
-
     /*
      * This API is invoked from global.__turboModuleProxy.
      * Only call getModule if the native module is a turbo module.
@@ -244,14 +218,13 @@ public class TurboModuleManager implements TurboModuleRegistry {
         /*
          * Always return null after cleanup has started, so that getNativeModule(moduleName) returns null.
          */
-        logError(
-            "getModule(): Tried to get module \""
-                + moduleName
-                + "\", but TurboModuleManager was tearing down. Returning null. Was legacy: "
-                + isLegacyModule(moduleName)
-                + ". Was turbo: "
-                + isTurboModule(moduleName)
-                + ".");
+        FLog.e(
+            TAG,
+            "getModule(): Tried to get module \"%s\", but TurboModuleManager was tearing down"
+                + " (legacy: %b, turbo: %b)",
+            moduleName,
+            isLegacyModule(moduleName),
+            isTurboModule(moduleName));
         return null;
       }
 
@@ -328,14 +301,12 @@ public class TurboModuleManager implements TurboModuleRegistry {
          */
         nativeModule.initialize();
       } else {
-        logError(
-            "getOrCreateModule(): Unable to create module \""
-                + moduleName
-                + "\". Was legacy: "
-                + isLegacyModule(moduleName)
-                + ". Was turbo: "
-                + isTurboModule(moduleName)
-                + ".");
+        FLog.e(
+            TAG,
+            "getOrCreateModule(): Unable to create module \"%s\" (legacy: %b, turbo: %b)",
+            moduleName,
+            isLegacyModule(moduleName),
+            isTurboModule(moduleName));
       }
 
       TurboModulePerfLogger.moduleCreateSetUpEnd(moduleName, moduleHolder.getModuleId());
@@ -408,22 +379,13 @@ public class TurboModuleManager implements TurboModuleRegistry {
     return false;
   }
 
-  private void logError(String message) {
-    FLog.e("TurboModuleManager", message);
-    if (shouldRouteTurboModulesThroughLegacyModuleInterop()) {
-      ReactSoftExceptionLogger.logSoftException(
-          "TurboModuleManager", new ReactNoCrashSoftException(message));
-    }
-  }
-
   private native HybridData initHybrid(
       RuntimeExecutor runtimeExecutor,
       CallInvokerHolderImpl jsCallInvokerHolder,
       NativeMethodCallInvokerHolderImpl nativeMethodCallInvoker,
       TurboModuleManagerDelegate tmmDelegate);
 
-  private native void installJSIBindings(
-      boolean shouldCreateLegacyModules, boolean enableSyncVoidMethods);
+  private native void installJSIBindings(boolean shouldCreateLegacyModules);
 
   @Override
   public void invalidate() {

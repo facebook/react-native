@@ -16,7 +16,6 @@ import com.facebook.react.bridge.UIManager
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.devsupport.ReleaseDevSupportManager
-import com.facebook.react.devsupport.interfaces.PackagerStatusCallback
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.interfaces.TaskInterface
 import com.facebook.react.runtime.internal.bolts.TaskCompletionSource
@@ -58,7 +57,6 @@ class ReactHostTest {
   private lateinit var mockedReactInstanceCtor: MockedConstruction<ReactInstance>
   private lateinit var mockedReactHostInspectorTargetCtor:
       MockedConstruction<ReactHostInspectorTarget>
-  private lateinit var mockedDevSupportManagerCtor: MockedConstruction<BridgelessDevSupportManager>
   private lateinit var mockedBridgelessReactContextCtor: MockedConstruction<BridgelessReactContext>
   private lateinit var mockedMemoryPressureRouterCtor: MockedConstruction<MemoryPressureRouter>
   private lateinit var mockedTaskCompletionSourceCtor: MockedConstruction<TaskCompletionSource<*>>
@@ -77,7 +75,6 @@ class ReactHostTest {
     mockedReactInstanceCtor = Mockito.mockConstruction(ReactInstance::class.java)
     mockedReactHostInspectorTargetCtor =
         Mockito.mockConstruction(ReactHostInspectorTarget::class.java)
-    mockedDevSupportManagerCtor = Mockito.mockConstruction(BridgelessDevSupportManager::class.java)
     mockedBridgelessReactContextCtor = Mockito.mockConstruction(BridgelessReactContext::class.java)
     mockedMemoryPressureRouterCtor = Mockito.mockConstruction(MemoryPressureRouter::class.java)
 
@@ -95,7 +92,6 @@ class ReactHostTest {
   fun tearDown() {
     mockedReactInstanceCtor.close()
     mockedReactHostInspectorTargetCtor.close()
-    mockedDevSupportManagerCtor.close()
     mockedBridgelessReactContextCtor.close()
     mockedMemoryPressureRouterCtor.close()
     mockedTaskCompletionSourceCtor.close()
@@ -114,26 +110,29 @@ class ReactHostTest {
   }
 
   @Test
-  fun testGetDevSupportManager() {
+  fun testGetDevSupportManager_withRelease() {
     // BridgelessDevSupportManager is created only for debug
     // we check if it was instantiated or if ReleaseDevSupportManager was created (for release).
-    if (mockedDevSupportManagerCtor.constructed().isNotEmpty()) {
-      val devSupportManager = mockedDevSupportManagerCtor.constructed().first()
-      Assertions.assertThat(reactHost.devSupportManager).isEqualTo(devSupportManager)
-    } else {
-      Assertions.assertThat(reactHost.devSupportManager)
-          .isInstanceOf(ReleaseDevSupportManager::class.java)
-    }
+    Assertions.assertThat(reactHost.devSupportManager)
+        .isInstanceOf(ReleaseDevSupportManager::class.java)
+  }
+
+  @Test
+  fun testGetDevSupportManager_withDebug() {
+    reactHost =
+        ReactHostImpl(
+            activityController.get().application,
+            reactHostDelegate,
+            componentFactory,
+            false,
+            true /* useDevSupport */)
+    Assertions.assertThat(reactHost.devSupportManager)
+        .isNotInstanceOf(ReleaseDevSupportManager::class.java)
   }
 
   @Test
   @Ignore("Test is currently failing in OSS and needs to be looked into")
   fun testStart() {
-    val devSupportManager = mockedDevSupportManagerCtor.constructed().first()
-
-    Mockito.doNothing()
-        .`when`(devSupportManager)
-        .isPackagerRunning(ArgumentMatchers.any(PackagerStatusCallback::class.java))
     Assertions.assertThat(reactHost.isInstanceInitialized).isFalse()
     waitForTaskUIThread(reactHost.start())
     Assertions.assertThat(reactHost.isInstanceInitialized).isTrue()

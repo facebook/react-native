@@ -26,7 +26,7 @@ function debug(...args: Array<void | Layout | string>) {
   // console.log.apply(null, arguments);
 }
 
-type Props = $ReadOnly<{||}>;
+type Props = $ReadOnly<{}>;
 
 type State = {
   didAnimation: boolean,

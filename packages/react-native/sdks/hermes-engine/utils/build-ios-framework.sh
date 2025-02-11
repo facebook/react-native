@@ -12,9 +12,13 @@ set -e
 # Given a specific target, retrieve the right architecture for it
 # $1 the target you want to build. Allowed values: iphoneos, iphonesimulator, catalyst, xros, xrsimulator
 function get_architecture {
-    if [[ $1 == "iphoneos" || $1 == "xros" || $1 == "xrsimulator" ]]; then
+    if [[ $1 == "iphoneos" || $1 == "xros" ]]; then
       echo "arm64"
-    elif [[ $1 == "iphonesimulator" ]]; then
+    elif [[ $1 == "iphonesimulator" || $1 == "xrsimulator" ]]; then
+      echo "x86_64;arm64"
+    elif [[ $1 == "appletvos" ]]; then
+      echo "arm64"
+    elif [[ $1 == "appletvsimulator" ]]; then
       echo "x86_64;arm64"
     elif [[ $1 == "catalyst" ]]; then
       echo "x86_64;arm64"
@@ -27,7 +31,7 @@ function get_architecture {
 function get_deployment_target {
     if [[ $1 == "xros" || $1 == "xrsimulator" ]]; then
       echo "$(get_visionos_deployment_target)"
-    else
+    else # tvOS and iOS use the same deployment target
       echo "$(get_ios_deployment_target)"
     fi
 }
@@ -49,7 +53,7 @@ function build_framework {
 # group the frameworks together to create a universal framework
 function build_universal_framework {
     if [ ! -d destroot/Library/Frameworks/universal/hermes.xcframework ]; then
-        create_universal_framework "iphoneos" "iphonesimulator" "catalyst" "xros" "xrsimulator"
+        create_universal_framework "iphoneos" "iphonesimulator" "catalyst" "xros" "xrsimulator" "appletvos" "appletvsimulator"
     else
         echo "Skipping; Clean \"destroot\" to rebuild".
     fi
@@ -59,14 +63,13 @@ function build_universal_framework {
 # this is used to preserve backward compatibility
 function create_framework {
     if [ ! -d destroot/Library/Frameworks/universal/hermes.xcframework ]; then
-        ios_deployment_target=$(get_ios_deployment_target)
-
         build_framework "iphoneos"
         build_framework "iphonesimulator"
+        build_framework "appletvos"
+        build_framework "appletvsimulator"
         build_framework "catalyst"
         build_framework "xros"
         build_framework "xrsimulator"
-
         build_universal_framework
     else
         echo "Skipping; Clean \"destroot\" to rebuild".

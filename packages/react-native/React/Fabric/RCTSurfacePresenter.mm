@@ -26,49 +26,20 @@
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
 
-#import <react/config/ReactNativeConfig.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/componentregistry/ComponentDescriptorFactory.h>
 #import <react/renderer/components/text/BaseTextProps.h>
 #import <react/renderer/runtimescheduler/RuntimeScheduler.h>
-#import <react/renderer/scheduler/AsynchronousEventBeat.h>
 #import <react/renderer/scheduler/SchedulerToolbox.h>
 #import <react/utils/ContextContainer.h>
-#import <react/utils/CoreFeatures.h>
 #import <react/utils/ManagedObjectWrapper.h>
+#import "AppleEventBeat.h"
 
 #import "PlatformRunLoopObserver.h"
 #import "RCTConversions.h"
 
 using namespace facebook;
 using namespace facebook::react;
-
-static dispatch_queue_t RCTGetBackgroundQueue()
-{
-  static dispatch_queue_t queue;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    dispatch_queue_attr_t attr =
-        dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, 0);
-    queue = dispatch_queue_create("com.facebook.react.background", attr);
-  });
-  return queue;
-}
-
-static BackgroundExecutor RCTGetBackgroundExecutor()
-{
-  return [](std::function<void()> &&callback) {
-    if (RCTIsMainQueue()) {
-      callback();
-      return;
-    }
-
-    auto copyableCallback = callback;
-    dispatch_async(RCTGetBackgroundQueue(), ^{
-      copyableCallback();
-    });
-  };
-}
 
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
 @end
@@ -254,16 +225,6 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 - (RCTScheduler *)_createScheduler
 {
-  auto reactNativeConfig = _contextContainer->at<std::shared_ptr<const ReactNativeConfig>>("ReactNativeConfig");
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_cpp_props_iterator_setter_ios")) {
-    CoreFeatures::enablePropIteratorSetter = true;
-  }
-
-  if (reactNativeConfig && reactNativeConfig->getBool("react_fabric:enable_granular_scroll_view_state_updates_ios")) {
-    CoreFeatures::enableGranularScrollViewStateUpdatesIOS = true;
-  }
-
   auto componentRegistryFactory =
       [factory = wrapManagedObject(_mountingManager.componentViewRegistry.componentViewFactory)](
           const EventDispatcher::Weak &eventDispatcher, const ContextContainer::Shared &contextContainer) {
@@ -288,15 +249,11 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
   toolbox.runtimeExecutor = runtimeExecutor;
   toolbox.bridgelessBindingsExecutor = _bridgelessBindingsExecutor;
 
-  if (ReactNativeFeatureFlags::enableBackgroundExecutor()) {
-    toolbox.backgroundExecutor = RCTGetBackgroundExecutor();
-  }
-
-  toolbox.asynchronousEventBeatFactory =
-      [runtimeExecutor](const EventBeat::SharedOwnerBox &ownerBox) -> std::unique_ptr<EventBeat> {
+  toolbox.eventBeatFactory =
+      [runtimeScheduler](std::shared_ptr<EventBeat::OwnerBox> ownerBox) -> std::unique_ptr<EventBeat> {
     auto runLoopObserver =
         std::make_unique<const MainRunLoopObserver>(RunLoopObserver::Activity::BeforeWaiting, ownerBox->owner);
-    return std::make_unique<AsynchronousEventBeat>(std::move(runLoopObserver), runtimeExecutor);
+    return std::make_unique<AppleEventBeat>(std::move(ownerBox), std::move(runLoopObserver), *runtimeScheduler);
   };
 
   RCTScheduler *scheduler = [[RCTScheduler alloc] initWithToolbox:toolbox];
@@ -332,12 +289,12 @@ static BackgroundExecutor RCTGetBackgroundExecutor()
 
 #pragma mark - RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(MountingCoordinator::Shared)mountingCoordinator
+- (void)schedulerDidFinishTransaction:(std::shared_ptr<const MountingCoordinator>)mountingCoordinator
 {
   // no-op, we will flush the transaction from schedulerShouldRenderTransactions
 }
 
-- (void)schedulerShouldRenderTransactions:(MountingCoordinator::Shared)mountingCoordinator
+- (void)schedulerShouldRenderTransactions:(std::shared_ptr<const MountingCoordinator>)mountingCoordinator
 {
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }

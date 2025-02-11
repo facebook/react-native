@@ -31,14 +31,15 @@ public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEv
   private var eventDispatcherOverride: EventDispatcher? = null
 
   @Deprecated("Deprecated in Java")
-  override fun receiveEvent(targetReactTag: Int, eventName: String, eventData: WritableMap?) {
+  override fun receiveEvent(targetTag: Int, eventName: String, params: WritableMap?) {
     val dispatcher: EventDispatcher? =
         eventDispatcherOverride
-            ?: UIManagerHelper.getEventDispatcherForReactTag(reactContext, targetReactTag)
+            ?: UIManagerHelper.getEventDispatcherForReactTag(reactContext, targetTag)
     val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
-    dispatcher?.dispatchEvent(InteropEvent(eventName, eventData, surfaceId, targetReactTag))
+    dispatcher?.dispatchEvent(InteropEvent(eventName, params, surfaceId, targetTag))
   }
 
+  @Deprecated("Deprecated in Java")
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,

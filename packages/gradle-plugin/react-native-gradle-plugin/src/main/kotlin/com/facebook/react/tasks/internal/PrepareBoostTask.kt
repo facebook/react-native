@@ -8,9 +8,11 @@
 package com.facebook.react.tasks.internal
 
 import java.io.File
+import javax.inject.Inject
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 
@@ -21,16 +23,19 @@ import org.gradle.api.tasks.*
 abstract class PrepareBoostTask : DefaultTask() {
 
   @get:InputFiles abstract val boostPath: ConfigurableFileCollection
+  @get:InputDirectory abstract val boostThirdPartyJniPath: DirectoryProperty
 
   @get:Input abstract val boostVersion: Property<String>
 
   @get:OutputDirectory abstract val outputDir: DirectoryProperty
 
+  @get:Inject abstract val fs: FileSystemOperations
+
   @TaskAction
   fun taskAction() {
-    project.copy { it ->
+    fs.copy { it ->
       it.from(boostPath)
-      it.from(project.file("src/main/jni/third-party/boost"))
+      it.from(boostThirdPartyJniPath)
       it.include(
           "CMakeLists.txt",
           "boost_${boostVersion.get()}/boost/**/*.hpp",

@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_legacyviewmanagerinterop_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(rrc_legacyviewmanagerinterop SHARED ${rrc_legacyviewmanagerinterop_SRC})
+add_library(rrc_legacyviewmanagerinterop OBJECT ${rrc_legacyviewmanagerinterop_SRC})
 
 target_include_directories(rrc_legacyviewmanagerinterop PUBLIC ${REACT_COMMON_DIR})
 
@@ -24,7 +24,7 @@ target_link_libraries(rrc_legacyviewmanagerinterop
         glog_init
         folly_runtime
         jsi
-        react_render_core
+        react_renderer_core
         rrc_view
         yoga
 )

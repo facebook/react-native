@@ -13,8 +13,8 @@ import type {RootTag} from '../Types/RootTagTypes';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 import type {DisplayModeType} from './DisplayMode';
 
-import BatchedBridge from '../BatchedBridge/BatchedBridge';
 import BugReporting from '../BugReporting/BugReporting';
+import registerCallableModule from '../Core/registerCallableModule';
 import createPerformanceLogger from '../Utilities/createPerformanceLogger';
 import infoLog from '../Utilities/infoLog';
 import SceneTracker from '../Utilities/SceneTracker';
@@ -30,11 +30,11 @@ export type TaskProvider = () => Task;
 type TaskCanceller = () => void;
 type TaskCancelProvider = () => TaskCanceller;
 
-export type ComponentProvider = () => React$ComponentType<any>;
+export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component_: ComponentProvider,
   scopedPerformanceLogger: IPerformanceLogger,
-) => React$ComponentType<any>;
+) => React.ComponentType<any>;
 export type AppConfig = {
   appKey: string,
   component?: ComponentProvider,
@@ -46,7 +46,6 @@ type AppParameters = {
   initialProps: $ReadOnly<{[string]: mixed, ...}>,
   rootTag: RootTag,
   fabric?: boolean,
-  concurrentRoot?: boolean,
 };
 export type Runnable = (
   appParameters: AppParameters,
@@ -60,7 +59,7 @@ export type Registry = {
 };
 export type WrapperComponentProvider = (
   appParameters: Object,
-) => React$ComponentType<any>;
+) => React.ComponentType<any>;
 export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 
 const runnables: Runnables = {};
@@ -120,10 +119,6 @@ const AppRegistry = {
   ): string {
     const scopedPerformanceLogger = createPerformanceLogger();
     runnables[appKey] = (appParameters, displayMode) => {
-      const concurrentRootEnabled = Boolean(
-        appParameters.initialProps?.concurrentRoot ||
-          appParameters.concurrentRoot,
-      );
       renderApplication(
         componentProviderInstrumentationHook(
           componentProvider,
@@ -138,7 +133,6 @@ const AppRegistry = {
         appKey === 'LogBox', // is logbox
         appKey,
         displayMode,
-        concurrentRootEnabled,
       );
     };
     if (section) {
@@ -361,10 +355,6 @@ global.RN$SurfaceRegistry = {
   setSurfaceProps: AppRegistry.setSurfaceProps,
 };
 
-if (global.RN$Bridgeless === true) {
-  console.log('Bridgeless mode is enabled');
-} else {
-  BatchedBridge.registerCallableModule('AppRegistry', AppRegistry);
-}
+registerCallableModule('AppRegistry', AppRegistry);
 
-module.exports = AppRegistry;
+export default AppRegistry;

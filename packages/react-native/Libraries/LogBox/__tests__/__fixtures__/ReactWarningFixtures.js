@@ -30,3 +30,27 @@ export const FragmentWithProp = () => {
     </React.Fragment>
   );
 };
+
+export const ManualConsoleError = () => {
+  console.error('Manual console error');
+  return (
+    <React.Fragment>
+      {['foo', 'bar'].map(item => (
+        <Text key={item}>{item}</Text>
+      ))}
+    </React.Fragment>
+  );
+};
+
+export const ManualConsoleErrorWithStack = () => {
+  console.error(
+    'Manual console error\n    at ManualConsoleErrorWithStack (/path/to/ManualConsoleErrorWithStack:30:175)\n    at TestApp',
+  );
+  return (
+    <React.Fragment>
+      {['foo', 'bar'].map(item => (
+        <Text key={item}>{item}</Text>
+      ))}
+    </React.Fragment>
+  );
+};

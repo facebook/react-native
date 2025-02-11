@@ -9,6 +9,7 @@
 #include "ShadowNode.h"
 
 #include <react/debug/react_native_assert.h>
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ComponentDescriptor.h>
 #include <react/renderer/core/State.h>
 
@@ -58,8 +59,36 @@ ComponentName ShadowNodeFamily::getComponentName() const {
   return componentName_;
 }
 
+void ShadowNodeFamily::setMounted() const {
+  hasBeenMounted_ = true;
+}
+
 const ComponentDescriptor& ShadowNodeFamily::getComponentDescriptor() const {
   return componentDescriptor_;
+}
+
+void ShadowNodeFamily::onUnmountedFamilyDestroyed(
+    std::function<void(const ShadowNodeFamily& family)> callback) const {
+  onUnmountedFamilyDestroyedCallback_ = std::move(callback);
+}
+
+Tag ShadowNodeFamily::getTag() const {
+  return tag_;
+}
+
+InstanceHandle::Shared ShadowNodeFamily::getInstanceHandle() const {
+  return instanceHandle_;
+}
+
+void ShadowNodeFamily::setInstanceHandle(
+    InstanceHandle::Shared& instanceHandle) const {
+  instanceHandle_ = instanceHandle;
+}
+
+ShadowNodeFamily::~ShadowNodeFamily() {
+  if (!hasBeenMounted_ && onUnmountedFamilyDestroyedCallback_ != nullptr) {
+    onUnmountedFamilyDestroyedCallback_(*this);
+  }
 }
 
 AncestorList ShadowNodeFamily::getAncestors(

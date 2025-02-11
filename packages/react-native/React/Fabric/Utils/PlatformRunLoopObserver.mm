@@ -45,13 +45,10 @@ static RunLoopObserver::Activity toRunLoopActivity(CFRunLoopActivity activity)
 
 PlatformRunLoopObserver::PlatformRunLoopObserver(
     RunLoopObserver::Activity activities,
-    const RunLoopObserver::WeakOwner &owner,
+    RunLoopObserver::WeakOwner owner,
     CFRunLoopRef runLoop)
     : RunLoopObserver(activities, owner), runLoop_(runLoop)
 {
-  // A value (not a reference) to be captured by the block.
-  auto weakOwner = owner;
-
   // The documentation for `CFRunLoop` family API states that all of the methods are thread-safe.
   // See "Thread Safety and Run Loop Objects" section of the "Threading Programming Guide" for more details.
   mainRunLoopObserver_ = CFRunLoopObserverCreateWithHandler(
@@ -60,7 +57,7 @@ PlatformRunLoopObserver::PlatformRunLoopObserver(
       true /* repeats */,
       0 /* order */,
       ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
-        auto strongOwner = weakOwner.lock();
+        auto strongOwner = owner.lock();
         if (!strongOwner) {
           return;
         }

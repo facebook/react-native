@@ -34,11 +34,11 @@ import {useMemo, useRef, useState} from 'react';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
 
-export type StateCallbackType = $ReadOnly<{|
+export type StateCallbackType = $ReadOnly<{
   pressed: boolean,
-|}>;
+}>;
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   /**
    * Accessibility.
    */
@@ -193,7 +193,7 @@ type Props = $ReadOnly<{|
    * https://github.com/facebook/react-native/issues/34424
    */
   'aria-label'?: ?string,
-|}>;
+}>;
 
 type Instance = React.ElementRef<typeof View>;
 
@@ -363,7 +363,7 @@ function usePressState(forcePressed: boolean): [boolean, (boolean) => void] {
 const MemoedPressable = React.memo(React.forwardRef(Pressable));
 MemoedPressable.displayName = 'Pressable';
 
-export default (MemoedPressable: React.AbstractComponent<
-  Props,
-  React.ElementRef<typeof View>,
->);
+export default (MemoedPressable: component(
+  ref: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: Props
+));

@@ -10,7 +10,7 @@
 #include <glog/logging.h>
 #include <jsi/jsi.h>
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
@@ -22,11 +22,6 @@
 #include <react/renderer/uimanager/UIManager.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
 
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-#include <react/renderer/mounting/stubs.h>
-#include <iostream>
-#endif
-
 namespace facebook::react {
 
 Scheduler::Scheduler(
@@ -35,10 +30,6 @@ Scheduler::Scheduler(
     SchedulerDelegate* delegate) {
   runtimeExecutor_ = schedulerToolbox.runtimeExecutor;
   contextContainer_ = schedulerToolbox.contextContainer;
-
-  reactNativeConfig_ =
-      contextContainer_->at<std::shared_ptr<const ReactNativeConfig>>(
-          "ReactNativeConfig");
 
   // Creating a container for future `EventDispatcher` instance.
   eventDispatcher_ = std::make_shared<std::optional<const EventDispatcher>>();
@@ -51,24 +42,30 @@ Scheduler::Scheduler(
   eventPerformanceLogger_ =
       std::make_shared<EventPerformanceLogger>(performanceEntryReporter_);
 
-  auto uiManager = std::make_shared<UIManager>(
-      runtimeExecutor_, schedulerToolbox.backgroundExecutor, contextContainer_);
+  auto uiManager =
+      std::make_shared<UIManager>(runtimeExecutor_, contextContainer_);
   auto eventOwnerBox = std::make_shared<EventBeat::OwnerBox>();
   eventOwnerBox->owner = eventDispatcher_;
 
   auto weakRuntimeScheduler =
       contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-          "RuntimeScheduler");
-  auto runtimeScheduler = weakRuntimeScheduler.has_value()
-      ? weakRuntimeScheduler.value().lock()
-      : nullptr;
+          RuntimeSchedulerKey);
+  react_native_assert(
+      weakRuntimeScheduler.has_value() &&
+      "Unexpected state: RuntimeScheduler was not provided.");
 
-  if (runtimeScheduler && ReactNativeFeatureFlags::enableUIConsistency()) {
-    runtimeScheduler->setShadowTreeRevisionConsistencyManager(
+  runtimeScheduler_ = weakRuntimeScheduler.value().lock().get();
+
+  if (ReactNativeFeatureFlags::enableUIConsistency()) {
+    runtimeScheduler_->setShadowTreeRevisionConsistencyManager(
         uiManager->getShadowTreeRevisionConsistencyManager());
   }
 
-  auto eventPipe = [uiManager, runtimeScheduler = runtimeScheduler.get()](
+  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+    runtimeScheduler_->setEventTimingDelegate(eventPerformanceLogger_.get());
+  }
+
+  auto eventPipe = [uiManager](
                        jsi::Runtime& runtime,
                        const EventTarget* eventTarget,
                        const std::string& type,
@@ -82,25 +79,23 @@ Scheduler::Scheduler(
         runtime);
   };
 
-  auto eventPipeConclusion =
-      [runtimeScheduler = runtimeScheduler.get()](jsi::Runtime& runtime) {
-        if (runtimeScheduler != nullptr) {
-          runtimeScheduler->callExpiredTasks(runtime);
-        }
-      };
+  auto eventPipeConclusion = [runtimeScheduler =
+                                  runtimeScheduler_](jsi::Runtime& runtime) {
+    runtimeScheduler->callExpiredTasks(runtime);
+  };
 
   auto statePipe = [uiManager](const StateUpdate& stateUpdate) {
     uiManager->updateState(stateUpdate);
   };
+
+  auto eventBeat = schedulerToolbox.eventBeatFactory(std::move(eventOwnerBox));
 
   // Creating an `EventDispatcher` instance inside the already allocated
   // container (inside the optional).
   eventDispatcher_->emplace(
       EventQueueProcessor(
           eventPipe, eventPipeConclusion, statePipe, eventPerformanceLogger_),
-      schedulerToolbox.asynchronousEventBeatFactory,
-      eventOwnerBox,
-      *runtimeScheduler,
+      std::move(eventBeat),
       statePipe,
       eventPerformanceLogger_);
 
@@ -144,17 +139,7 @@ Scheduler::Scheduler(
   }
   uiManager_->setAnimationDelegate(animationDelegate);
 
-#ifdef ANDROID
-  removeOutstandingSurfacesOnDestruction_ = true;
-#else
-  removeOutstandingSurfacesOnDestruction_ = reactNativeConfig_->getBool(
-      "react_fabric:remove_outstanding_surfaces_on_destruction_ios");
-#endif
-
-  CoreFeatures::enableReportEventPaintTime = reactNativeConfig_->getBool(
-      "rn_responsiveness_performance:enable_paint_time_reporting");
-
-  if (CoreFeatures::enableReportEventPaintTime) {
+  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
     uiManager->registerMountHook(*eventPerformanceLogger_);
   }
 }
@@ -162,6 +147,19 @@ Scheduler::Scheduler(
 Scheduler::~Scheduler() {
   LOG(WARNING) << "Scheduler::~Scheduler() was called (address: " << this
                << ").";
+
+  if (ReactNativeFeatureFlags::enableReportEventPaintTime()) {
+    auto weakRuntimeScheduler =
+        contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
+            RuntimeSchedulerKey);
+    auto runtimeScheduler = weakRuntimeScheduler.has_value()
+        ? weakRuntimeScheduler.value().lock()
+        : nullptr;
+
+    if (runtimeScheduler) {
+      runtimeScheduler->setEventTimingDelegate(nullptr);
+    }
+  }
 
   for (auto& commitHook : commitHooks_) {
     uiManager_->unregisterCommitHook(*commitHook);
@@ -206,11 +204,9 @@ Scheduler::~Scheduler() {
         surfaceId,
         [](const ShadowTree& shadowTree) { shadowTree.commitEmptyTree(); });
 
-    // Removing surfaces is gated because it acquires mutex waiting for commits
-    // in flight; in theory, it can deadlock.
-    if (removeOutstandingSurfacesOnDestruction_) {
-      uiManager_->getShadowTreeRegistry().remove(surfaceId);
-    }
+    // Removing surfaces acquires mutex waiting for commits in flight; in
+    // theory, it can deadlock.
+    uiManager_->getShadowTreeRegistry().remove(surfaceId);
   }
 }
 
@@ -218,37 +214,6 @@ void Scheduler::registerSurface(
     const SurfaceHandler& surfaceHandler) const noexcept {
   surfaceHandler.setContextContainer(getContextContainer());
   surfaceHandler.setUIManager(uiManager_.get());
-}
-
-InspectorData Scheduler::getInspectorDataForInstance(
-    const EventEmitter& eventEmitter) const noexcept {
-  return executeSynchronouslyOnSameThread_CAN_DEADLOCK<InspectorData>(
-      runtimeExecutor_, [=](jsi::Runtime& runtime) -> InspectorData {
-        auto uiManagerBinding = UIManagerBinding::getBinding(runtime);
-        auto value = uiManagerBinding->getInspectorDataForInstance(
-            runtime, eventEmitter);
-
-        // TODO T97216348: avoid transforming jsi into folly::dynamic
-        auto dynamic = jsi::dynamicFromValue(runtime, value);
-        auto source = dynamic["source"];
-
-        InspectorData result = {};
-        result.fileName =
-            source["fileName"].isNull() ? "" : source["fileName"].c_str();
-        result.lineNumber = (int)source["lineNumber"].getDouble();
-        result.columnNumber = (int)source["columnNumber"].getDouble();
-        result.selectedIndex = (int)dynamic["selectedIndex"].getDouble();
-        // TODO T97216348: remove folly::dynamic from InspectorData struct
-        result.props = dynamic["props"];
-        auto hierarchy = dynamic["hierarchy"];
-        for (auto& i : hierarchy) {
-          auto viewHierarchyValue = i["name"];
-          if (!viewHierarchyValue.isNull()) {
-            result.hierarchy.emplace_back(viewHierarchyValue.c_str());
-          }
-        }
-        return result;
-      });
 }
 
 void Scheduler::unregisterSurface(
@@ -282,23 +247,20 @@ void Scheduler::animationTick() const {
 #pragma mark - UIManagerDelegate
 
 void Scheduler::uiManagerDidFinishTransaction(
-    MountingCoordinator::Shared mountingCoordinator,
+    std::shared_ptr<const MountingCoordinator> mountingCoordinator,
     bool mountSynchronously) {
-  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
+  TraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   if (delegate_ != nullptr) {
     // This is no-op on all platforms except for Android where we need to
     // observe each transaction to be able to mount correctly.
     delegate_->schedulerDidFinishTransaction(mountingCoordinator);
 
-    auto weakRuntimeScheduler =
-        contextContainer_->find<std::weak_ptr<RuntimeScheduler>>(
-            "RuntimeScheduler");
-    auto runtimeScheduler = weakRuntimeScheduler.has_value()
-        ? weakRuntimeScheduler.value().lock()
-        : nullptr;
-    if (runtimeScheduler && !mountSynchronously) {
-      runtimeScheduler->scheduleRenderingUpdate(
+    if (!mountSynchronously) {
+      auto surfaceId = mountingCoordinator->getSurfaceId();
+
+      runtimeScheduler_->scheduleRenderingUpdate(
+          surfaceId,
           [delegate = delegate_,
            mountingCoordinator = std::move(mountingCoordinator)]() {
             delegate->schedulerShouldRenderTransactions(mountingCoordinator);
@@ -319,18 +281,30 @@ void Scheduler::uiManagerDidDispatchCommand(
     const ShadowNode::Shared& shadowNode,
     const std::string& commandName,
     const folly::dynamic& args) {
-  SystraceSection s("Scheduler::uiManagerDispatchCommand");
+  TraceSection s("Scheduler::uiManagerDispatchCommand");
 
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);
-    delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+    if (ReactNativeFeatureFlags::enableFixForViewCommandRace()) {
+      runtimeScheduler_->scheduleRenderingUpdate(
+          shadowNode->getSurfaceId(),
+          [delegate = delegate_,
+           shadowView = std::move(shadowView),
+           commandName,
+           args]() {
+            delegate->schedulerDidDispatchCommand(
+                shadowView, commandName, args);
+          });
+    } else {
+      delegate_->schedulerDidDispatchCommand(shadowView, commandName, args);
+    }
   }
 }
 
 void Scheduler::uiManagerDidSendAccessibilityEvent(
     const ShadowNode::Shared& shadowNode,
     const std::string& eventType) {
-  SystraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
+  TraceSection s("Scheduler::uiManagerDidSendAccessibilityEvent");
 
   if (delegate_ != nullptr) {
     auto shadowView = ShadowView(*shadowNode);

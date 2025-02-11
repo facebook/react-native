@@ -24,11 +24,18 @@ struct Color {
   Color(int32_t color);
   Color(const DynamicColor& dynamicColor);
   Color(const ColorComponents& components);
-  Color(std::shared_ptr<void> uiColor);
+  Color() : uiColor_(nullptr){};
   int32_t getColor() const;
+  int32_t getUIColorHash() const;
+
+  static Color createSemanticColor(std::vector<std::string>& semanticItems);
+
   std::shared_ptr<void> getUIColor() const {
     return uiColor_;
   }
+
+  float getChannel(int channelId) const;
+
   ColorComponents getColorComponents() const {
     float ratio = 255;
     int32_t primitiveColor = getColor();
@@ -45,7 +52,9 @@ struct Color {
   }
 
  private:
+  Color(std::shared_ptr<void> uiColor);
   std::shared_ptr<void> uiColor_;
+  int32_t uiColorHashValue_;
 };
 
 namespace HostPlatformColor {
@@ -56,8 +65,20 @@ namespace HostPlatformColor {
 #define NO_DESTROY
 #endif
 
-NO_DESTROY static const facebook::react::Color UndefinedColor = Color(nullptr);
+NO_DESTROY static const facebook::react::Color UndefinedColor = Color();
 } // namespace HostPlatformColor
+
+inline Color
+hostPlatformColorFromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+  float ratio = 255;
+  const auto colorComponents = ColorComponents{
+      .red = r / ratio,
+      .green = g / ratio,
+      .blue = b / ratio,
+      .alpha = a / ratio,
+  };
+  return Color(colorComponents);
+}
 
 inline Color hostPlatformColorFromComponents(ColorComponents components) {
   return Color(components);
@@ -67,13 +88,27 @@ inline ColorComponents colorComponentsFromHostPlatformColor(Color color) {
   return color.getColorComponents();
 }
 
+inline float alphaFromHostPlatformColor(Color color) {
+  return color.getChannel(3) * 255;
+}
+
+inline float redFromHostPlatformColor(Color color) {
+  return color.getChannel(0) * 255;
+}
+
+inline float greenFromHostPlatformColor(Color color) {
+  return color.getChannel(1) * 255;
+}
+
+inline float blueFromHostPlatformColor(Color color) {
+  return color.getChannel(2) * 255;
+}
+
 } // namespace facebook::react
 
 template <>
 struct std::hash<facebook::react::Color> {
   size_t operator()(const facebook::react::Color& color) const {
-    auto seed = size_t{0};
-    facebook::react::hash_combine(seed, color.getColor());
-    return seed;
+    return color.getUIColorHash();
   }
 };

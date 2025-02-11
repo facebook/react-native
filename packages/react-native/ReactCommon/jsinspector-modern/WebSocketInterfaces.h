@@ -15,7 +15,6 @@ namespace facebook::react::jsinspector_modern {
 
 /**
  * Simplified interface to a WebSocket connection.
- * The socket MUST be initially open when constructed.
  */
 class IWebSocket {
  public:
@@ -39,6 +38,8 @@ class IWebSocketDelegate {
 
   /**
    * Called when the socket has encountered an error.
+   * This method must be called on the inspector queue, and the
+   * WebSocketDelegate may not be destroyed while it is executing.
    * \param posixCode POSIX errno value if available, otherwise nullopt.
    * \param error Error description.
    */
@@ -48,13 +49,24 @@ class IWebSocketDelegate {
 
   /**
    * Called when a message has been received from the socket.
+   * This method must be called on the inspector queue, and the
+   * WebSocketDelegate may not be destroyed while it is executing.
    * \param message Message received, in UTF-8 encoding.
    */
   virtual void didReceiveMessage(std::string_view message) = 0;
 
   /**
+   * Called when the socket has been opened.
+   * This method must be called on the inspector queue, and the
+   * WebSocketDelegate may not be destroyed while it is executing.
+   */
+  virtual void didOpen() = 0;
+
+  /**
    * Called when the socket has been closed. The call is not required if
    * didFailWithError was called instead.
+   * This method must be called on the inspector queue, and the
+   * WebSocketDelegate may not be destroyed while it is executing.
    */
   virtual void didClose() = 0;
 };

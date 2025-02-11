@@ -29,7 +29,7 @@ class JCxxCallbackImpl : public jni::HybridClass<JCxxCallbackImpl, JCallback> {
       "Lcom/facebook/react/bridge/CxxCallbackImpl;";
 
   static void registerNatives() {
-    javaClassStatic()->registerNatives({
+    registerHybrid({
         makeNativeMethod("nativeInvoke", JCxxCallbackImpl::invoke),
     });
   }

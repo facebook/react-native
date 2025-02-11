@@ -10,10 +10,13 @@
 
 namespace facebook::react {
 
+extern const char ImageManagerKey[] = "ImageManager";
+
 ImageComponentDescriptor::ImageComponentDescriptor(
     const ComponentDescriptorParameters& parameters)
     : ConcreteComponentDescriptor(parameters),
-      imageManager_(std::make_shared<ImageManager>(contextContainer_)){};
+      imageManager_(
+          getManagerByName<ImageManager>(contextContainer_, ImageManagerKey)){};
 
 void ImageComponentDescriptor::adopt(ShadowNode& shadowNode) const {
   ConcreteComponentDescriptor::adopt(shadowNode);

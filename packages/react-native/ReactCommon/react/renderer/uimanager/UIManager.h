@@ -41,7 +41,6 @@ class UIManager final : public ShadowTreeDelegate {
  public:
   UIManager(
       const RuntimeExecutor& runtimeExecutor,
-      BackgroundExecutor backgroundExecutor,
       ContextContainer::Shared contextContainer);
 
   ~UIManager() override;
@@ -107,20 +106,22 @@ class UIManager final : public ShadowTreeDelegate {
       ShadowTree::Unique&& shadowTree,
       const std::string& moduleName,
       const folly::dynamic& props,
-      DisplayMode displayMode) const;
+      DisplayMode displayMode) const noexcept;
+
+  void startEmptySurface(ShadowTree::Unique&& shadowTree) const noexcept;
 
   void setSurfaceProps(
       SurfaceId surfaceId,
       const std::string& moduleName,
       const folly::dynamic& props,
-      DisplayMode displayMode) const;
+      DisplayMode displayMode) const noexcept;
 
   ShadowTree::Unique stopSurface(SurfaceId surfaceId) const;
 
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidFinishTransaction(
-      MountingCoordinator::Shared mountingCoordinator,
+      std::shared_ptr<const MountingCoordinator> mountingCoordinator,
       bool mountSynchronously) const override;
 
   RootShadowNode::Unshared shadowTreeWillCommit(
@@ -199,10 +200,6 @@ class UIManager final : public ShadowTreeDelegate {
 
   void reportMount(SurfaceId surfaceId) const;
 
-  bool hasBackgroundExecutor() const {
-    return backgroundExecutor_ != nullptr;
-  }
-
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
@@ -227,7 +224,6 @@ class UIManager final : public ShadowTreeDelegate {
   UIManagerAnimationDelegate* animationDelegate_{nullptr};
   const RuntimeExecutor runtimeExecutor_{};
   ShadowTreeRegistry shadowTreeRegistry_{};
-  const BackgroundExecutor backgroundExecutor_{};
   ContextContainer::Shared contextContainer_;
 
   mutable std::shared_mutex commitHookMutex_;

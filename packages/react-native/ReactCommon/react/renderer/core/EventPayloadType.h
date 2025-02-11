@@ -9,6 +9,6 @@
 
 namespace facebook::react {
 
-enum class EventPayloadType { ValueFactory, PointerEvent };
+enum class EventPayloadType { ValueFactory, PointerEvent, ScrollEvent };
 
 }

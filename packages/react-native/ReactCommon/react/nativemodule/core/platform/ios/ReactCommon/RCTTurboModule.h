@@ -32,6 +32,11 @@ using EventEmitterCallback = std::function<void(const std::string &, id)>;
 namespace TurboModuleConvertUtils {
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
 id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
+id convertJSIValueToObjCObject(
+    jsi::Runtime &runtime,
+    const jsi::Value &value,
+    std::shared_ptr<CallInvoker> jsInvoker,
+    BOOL useNSNull);
 } // namespace TurboModuleConvertUtils
 
 template <>

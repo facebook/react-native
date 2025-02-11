@@ -6,7 +6,7 @@
  */
 
 #include "NativeMutationObserver.h"
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/uimanager/UIManagerBinding.h>
@@ -57,17 +57,6 @@ void NativeMutationObserver::connect(
     jsi::Function notifyMutationObservers,
     SyncCallback<jsi::Value(jsi::Value)> getPublicInstanceFromInstanceHandle) {
   auto& uiManager = getUIManagerFromRuntime(runtime);
-
-  // MutationObserver is not compatible with background executor.
-  // When using background executor, we commit trees outside the JS thread.
-  // In that case, we can't safely access the JS runtime in commit hooks to
-  // get references to mutated nodes (which we need to do at that point
-  // to ensure we are retaining removed nodes).
-  if (uiManager.hasBackgroundExecutor()) {
-    throw jsi::JSError(
-        runtime,
-        "MutationObserver: could not start observation because MutationObserver is incompatible with UIManager using background executor.");
-  }
 
   runtime_ = &runtime;
   notifyMutationObservers_.emplace(std::move(notifyMutationObservers));
@@ -122,7 +111,7 @@ NativeMutationObserver::getPublicInstancesFromShadowNodes(
 }
 
 void NativeMutationObserver::onMutations(std::vector<MutationRecord>& records) {
-  SystraceSection s("NativeMutationObserver::onMutations");
+  TraceSection s("NativeMutationObserver::onMutations");
 
   for (const auto& record : records) {
     pendingRecords_.emplace_back(NativeMutationRecord{
@@ -152,8 +141,8 @@ void NativeMutationObserver::notifyMutationObserversIfNecessary() {
   }
 
   if (dispatchNotification) {
-    SystraceSection s("NativeMutationObserver::notifyObservers");
-    if (ReactNativeFeatureFlags::enableMicrotasks()) {
+    TraceSection s("NativeMutationObserver::notifyObservers");
+    if (ReactNativeFeatureFlags::enableBridgelessArchitecture()) {
       runtime_->queueMicrotask(notifyMutationObservers_.value());
     } else {
       jsInvoker_->invokeAsync([&](jsi::Runtime& runtime) {

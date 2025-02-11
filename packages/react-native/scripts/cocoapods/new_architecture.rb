@@ -9,33 +9,34 @@ require_relative "./utils.rb"
 require_relative "./helpers.rb"
 
 class NewArchitectureHelper
-    @@cplusplus_version = "c++20"
-
     @@NewArchWarningEmitted = false # Used not to spam warnings to the user.
 
     def self.set_clang_cxx_language_standard_if_needed(installer)
-        language_standard = nil
+        cxxBuildsettingsName = "CLANG_CXX_LANGUAGE_STANDARD"
+        projects = installer.aggregate_targets
+            .map{ |t| t.user_project }
+            .uniq{ |p| p.path }
 
-        installer.pods_project.targets.each do |target|
-            # The React-Core pod may have a suffix added by Cocoapods, so we test whether 'React-Core' is a substring, and do not require exact match
-            if target.name.include? 'React-Core'
-                language_standard = target.resolved_build_setting("CLANG_CXX_LANGUAGE_STANDARD", resolve_against_xcconfig: true).values[0]
+        projects.each do |project|
+            Pod::UI.puts("Setting #{cxxBuildsettingsName} to #{ Helpers::Constants::cxx_language_standard } on #{ project.path }")
+
+            project.build_configurations.each do |config|
+                config.build_settings[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
+            end
+
+            project.save()
+        end
+
+        installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+            target_installation_result.native_target.build_configurations.each do |config|
+                config.build_settings[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
             end
         end
 
-        unless language_standard.nil?
-            projects = installer.aggregate_targets
-                .map{ |t| t.user_project }
-                .uniq{ |p| p.path }
-
-            projects.each do |project|
-                Pod::UI.puts("Setting CLANG_CXX_LANGUAGE_STANDARD to #{ language_standard } on #{ project.path }")
-
-                project.build_configurations.each do |config|
-                    config.build_settings["CLANG_CXX_LANGUAGE_STANDARD"] = language_standard
-                end
-
-                project.save()
+        # Override targets that would set spec.xcconfig to define c++ version
+        installer.aggregate_targets.each do |aggregate_target|
+            aggregate_target.xcconfigs.each do |config_name, config_file|
+                config_file.attributes[cxxBuildsettingsName] = Helpers::Constants::cxx_language_standard
             end
         end
     end
@@ -67,10 +68,10 @@ class NewArchitectureHelper
         end
     end
 
-    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = get_folly_config()[:version])
+    def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = Helpers::Constants.folly_config[:version])
         # Pod::Specification does not have getters so, we have to read
         # the existing values from a hash representation of the object.
-        folly_config = get_folly_config()
+        folly_config = Helpers::Constants.folly_config
         folly_compiler_flags = folly_config[:compiler_flags]
 
         hash = spec.to_hash
@@ -82,6 +83,7 @@ class NewArchitectureHelper
         header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
         if ENV['USE_FRAMEWORKS']
             header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
+            header_search_paths << "\"$(PODS_ROOT)/fast_float/include\""
             header_search_paths << "\"$(PODS_ROOT)/fmt/include\""
             ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-graphics", "React_graphics", ["react/renderer/graphics/platform/ios"])
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))
@@ -103,7 +105,7 @@ class NewArchitectureHelper
         current_config["HEADER_SEARCH_PATHS"] = current_headers.empty? ?
             header_search_paths_string :
             "#{current_headers} #{header_search_paths_string}"
-        current_config["CLANG_CXX_LANGUAGE_STANDARD"] = @@cplusplus_version
+        current_config["CLANG_CXX_LANGUAGE_STANDARD"] = Helpers::Constants::cxx_language_standard
 
 
         spec.dependency "React-Core"
@@ -112,6 +114,7 @@ class NewArchitectureHelper
 
 
         ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(new_arch_enabled))
+        ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_SWIFT_FLAGS", new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED" : "")
 
         spec.dependency "React-RCTFabric" # This is for Fabric Component
         spec.dependency "ReactCodegen"
@@ -131,18 +134,20 @@ class NewArchitectureHelper
         spec.dependency "React-rendererdebug"
         # This dependency is required for the cases when the pod includes generated sources, specifically Props.cpp.
         spec.dependency "DoubleConversion"
+        spec.dependency 'React-jsi'
 
         if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
             spec.dependency "hermes-engine"
+            spec.dependency 'React-hermes'
         else
-            spec.dependency "React-jsi"
+            spec.dependency "React-jsc"
         end
 
         spec.pod_target_xcconfig = current_config
     end
 
     def self.folly_compiler_flags
-        folly_config = get_folly_config()
+        folly_config = Helpers::Constants.folly_config
         return folly_config[:compiler_flags]
     end
 
@@ -155,37 +160,7 @@ class NewArchitectureHelper
         return package["version"]
     end
 
-    def self.compute_new_arch_enabled(new_arch_enabled, react_native_version)
-        # Regex that identify a version with the syntax `<major>.<minor>.<patch>[-<prerelease>[.-]k]
-        # where
-        # - major is a number
-        # - minor is a number
-        # - patch is a number
-        # - prerelease is a string (can include numbers)
-        # - k is a number
-        version_regex = /^(\d+)\.(\d+)\.(\d+)(?:-(\w+(?:[-.]\d+)?))?$/
-
-        if match_data = react_native_version.match(version_regex)
-
-            prerelease = match_data[4].to_s
-
-            # We want to enforce the new architecture for 1.0.0 and greater,
-            # but not for 1000 as version 1000 is currently main.
-            if prerelease.include?("prealpha")
-                if ENV['RCT_NEW_ARCH_ENABLED'] != nil && !@@NewArchWarningEmitted
-                    warning_message = "[New Architecture] Starting from version 1.0.0-prealpha the value of the " \
-                                      "RCT_NEW_ARCH_ENABLED flag is ignored and the New Architecture is enabled by default."
-                    Pod::UI.warn warning_message
-                    @@NewArchWarningEmitted = true
-                end
-
-                return "1"
-            end
-        end
-        return new_arch_enabled ? "1" : "0"
-    end
-
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == nil || ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+        return ENV["RCT_NEW_ARCH_ENABLED"] == 0 ? false : true
     end
 end

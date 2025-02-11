@@ -10,16 +10,20 @@
 
 'use strict';
 
+import flattenStyle from '../../StyleSheet/flattenStyle';
+import React from 'react';
+
 const render = require('../../../jest/renderer');
-const Text = require('../Text');
-const React = require('react');
+const Text = require('../Text').default;
 
 jest.unmock('../Text');
 jest.unmock('../TextNativeComponent');
 
-function omitRef(json) {
+function omitRefAndFlattenStyle(instance) {
+  const json = instance.toJSON();
   // Omit `ref` for forward-compatibility with `enableRefAsProp`.
   delete json.props.ref;
+  json.props.style = flattenStyle(json.props.style);
   return json;
 }
 
@@ -27,13 +31,11 @@ describe('Text', () => {
   it('default render', async () => {
     const instance = await render.create(<Text />);
 
-    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
+    expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}
         ellipsizeMode="tail"
-        isHighlighted={false}
-        selectionColor={null}
       />
     `);
   });
@@ -53,14 +55,12 @@ describe('Text compat with web', () => {
 
     const instance = await render.create(<Text {...props} />);
 
-    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
+    expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}
         ellipsizeMode="tail"
-        isHighlighted={false}
         nativeID="id"
-        selectionColor={null}
         tabIndex={0}
         testID="testID"
       />
@@ -119,7 +119,7 @@ describe('Text compat with web', () => {
 
     const instance = await render.create(<Text {...props} />);
 
-    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
+    expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
         accessibilityLabel="label"
         accessibilityState={
@@ -174,9 +174,7 @@ describe('Text compat with web', () => {
         aria-valuetext="3"
         disabled={true}
         ellipsizeMode="tail"
-        isHighlighted={false}
         role="main"
-        selectionColor={null}
       />
     `);
   });
@@ -193,14 +191,12 @@ describe('Text compat with web', () => {
 
     const instance = await render.create(<Text style={style} />);
 
-    expect(omitRef(instance.toJSON())).toMatchInlineSnapshot(`
+    expect(omitRefAndFlattenStyle(instance)).toMatchInlineSnapshot(`
       <RCTText
         accessible={true}
         allowFontScaling={true}
         ellipsizeMode="tail"
-        isHighlighted={false}
         selectable={false}
-        selectionColor={null}
         style={
           Object {
             "backgroundColor": "white",
@@ -208,6 +204,8 @@ describe('Text compat with web', () => {
             "flex": 1,
             "marginInlineStart": 10,
             "textAlignVertical": "center",
+            "userSelect": undefined,
+            "verticalAlign": undefined,
           }
         }
       />

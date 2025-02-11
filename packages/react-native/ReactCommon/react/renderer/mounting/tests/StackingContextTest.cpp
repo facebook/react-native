@@ -252,8 +252,8 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
 
   mutateViewShadowNodeProps_(nodeAA_, [](ViewProps& props) {
     auto& yogaStyle = props.yogaStyle;
-    yogaStyle.setPadding(yoga::Edge::All, yoga::value::points(42));
-    yogaStyle.setMargin(yoga::Edge::All, yoga::value::points(42));
+    yogaStyle.setPadding(yoga::Edge::All, yoga::StyleLength::points(42));
+    yogaStyle.setMargin(yoga::Edge::All, yoga::StyleLength::points(42));
     yogaStyle.setPositionType(yoga::PositionType::Absolute);
     props.shadowRadius = 42;
     props.shadowOffset = Size{42, 42};
@@ -264,7 +264,7 @@ TEST_F(StackingContextTest, mostPropsDoNotForceViewsToMaterialize) {
     auto& yogaStyle = props.yogaStyle;
     props.zIndex = 42;
     yogaStyle.setPositionType(yoga::PositionType::Static);
-    yogaStyle.setMargin(yoga::Edge::All, yoga::value::points(42));
+    yogaStyle.setMargin(yoga::Edge::All, yoga::StyleLength::points(42));
     props.shadowColor = clearColor();
     props.shadowOpacity = 0.42;
   });

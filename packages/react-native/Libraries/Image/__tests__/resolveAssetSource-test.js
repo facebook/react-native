@@ -20,7 +20,7 @@ describe('resolveAssetSource', () => {
     jest.resetModules();
 
     AssetRegistry = require('@react-native/assets-registry/registry');
-    resolveAssetSource = require('../resolveAssetSource');
+    resolveAssetSource = require('../resolveAssetSource').default;
     NativeSourceCode =
       require('../../NativeModules/specs/NativeSourceCode').default;
     Platform = require('../../Utilities/Platform');
@@ -105,6 +105,29 @@ describe('resolveAssetSource', () => {
           width: 100,
           height: 200,
           uri: 'http://10.0.0.1:8081/assets/module/a/logo@2x.png?platform=ios&hash=5b6f00f',
+          scale: 2,
+        },
+      );
+    });
+
+    it('respects query parameters', () => {
+      expectResolvesAsset(
+        {
+          __packager_asset: true,
+          fileSystemLocation: '/root/app/assets/module/a',
+          httpServerLocation: '/assets?unstable_path=./module/a',
+          width: 100,
+          height: 200,
+          scales: [1, 2, 3],
+          hash: '5b6f00f',
+          name: 'logo',
+          type: 'png',
+        },
+        {
+          __packager_asset: true,
+          width: 100,
+          height: 200,
+          uri: 'http://10.0.0.1:8081/assets?unstable_path=./module/a/logo@2x.png?platform=ios&hash=5b6f00f',
           scale: 2,
         },
       );
@@ -411,7 +434,7 @@ describe('resolveAssetSource', () => {
 });
 
 describe('resolveAssetSource.pickScale', () => {
-  const resolveAssetSource = require('../resolveAssetSource');
+  const resolveAssetSource = require('../resolveAssetSource').default;
 
   it('picks matching scale', () => {
     expect(resolveAssetSource.pickScale([1], 2)).toBe(1);

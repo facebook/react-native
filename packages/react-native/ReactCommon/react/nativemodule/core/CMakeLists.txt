@@ -19,7 +19,7 @@ file(GLOB react_nativemodule_core_SRC CONFIGURE_DEPENDS
         ReactCommon/*.cpp
         platform/android/ReactCommon/*.cpp)
 add_library(react_nativemodule_core
-        SHARED
+        OBJECT
         ${react_nativemodule_core_SRC})
 
 target_include_directories(react_nativemodule_core
@@ -36,5 +36,6 @@ target_link_libraries(react_nativemodule_core
         react_bridging
         react_debug
         react_utils
+        react_featureflags
         reactperflogger
         reactnativejni)

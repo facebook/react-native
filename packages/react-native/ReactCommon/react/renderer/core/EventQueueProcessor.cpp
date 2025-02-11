@@ -59,6 +59,7 @@ void EventQueueProcessor::flushEvents(
             return hasContinuousEventStarted_ ? ReactEventPriority::Continuous
                                               : ReactEventPriority::Default;
         }
+        return ReactEventPriority::Default;
       }();
     } else {
       if (event.category == RawEvent::Category::ContinuousEnd) {

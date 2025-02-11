@@ -11,6 +11,7 @@
 
 'use strict';
 
+const chalk = require('chalk');
 const {execSync: exec} = require('child_process');
 const fetch = require('node-fetch');
 
@@ -25,10 +26,23 @@ type WorkflowRun = {
   id: number,
   name: string,
   run_number: number,
-  status: string,
+  status: "queued" | "in_progress" | "completed",
   workflow_id: number,
   url: string,
   created_at: string,
+  conclusion: "success" | "failure" | "neutral" | "cancelled" | "skipped" | "timed_out" | "action_required" | null,
+  head_commit: {
+    author: {
+      name: string,
+    },
+    message: string,
+    ...
+  };
+  triggering_actor: {
+    login: string,
+    ...
+  };
+  run_started_at: string,
 };
 
 
@@ -60,7 +74,7 @@ const reactNativeRepo = 'https://api.github.com/repos/facebook/react-native/';
 const reactNativeActionsURL = `${reactNativeRepo}actions/runs`;
 
 async function _getActionRunsOnBranch() /*: Promise<WorkflowRuns> */ {
-  const url = `${reactNativeActionsURL}?branch=${branch}`;
+  const url = `${reactNativeActionsURL}?branch=${branch}&per_page=100`;
   const options = {
     method: 'GET',
     headers: ciHeaders,
@@ -81,7 +95,7 @@ async function _getActionRunsOnBranch() /*: Promise<WorkflowRuns> */ {
 }
 
 async function _getArtifacts(run_id /*: number */) /*: Promise<Artifacts> */ {
-  const url = `${reactNativeActionsURL}/${run_id}/artifacts`;
+  const url = `${reactNativeActionsURL}/${run_id}/artifacts?per_page=100`;
   const options = {
     method: 'GET',
     headers: ciHeaders,
@@ -99,6 +113,13 @@ async function _getArtifacts(run_id /*: number */) /*: Promise<Artifacts> */ {
     .json /*::<Artifacts>*/
     ();
   return body;
+}
+
+function quote(text /*: string*/, prefix /*: string */ = ' > ') {
+  return text
+    .split('\n')
+    .map(line => prefix + line)
+    .join('\n');
 }
 
 // === Public Interface === //
@@ -121,11 +142,49 @@ async function initialize(
     'X-GitHub-Api-Version': '2022-11-28',
   };
 
-  const testAllWorkflow = (await _getActionRunsOnBranch()).workflow_runs
+  const testAllWorkflows = (await _getActionRunsOnBranch()).workflow_runs
     .filter(w => w.name === 'Test All')
-    .sort((a, b) => (a.created_at > b.created_at ? -1 : 1))[0];
+    .sort((a, b) => {
+      // Date.getTime is needed to make Flow happy with arithmetic
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    });
 
-  artifacts = await _getArtifacts(testAllWorkflow.id);
+  if (testAllWorkflows.length === 0) {
+    console.error('No Test-All workflow found');
+    process.exit(1);
+  }
+
+  console.log(`\nUsing github workflow run ${testAllWorkflows[0].run_number}`);
+  console.log(
+    `https://github.com/facebook/react-native/actions/runs/${testAllWorkflows[0].id}\n`,
+  );
+
+  let workflow = testAllWorkflows[0];
+  if (useLastSuccessfulPipeline) {
+    workflow =
+      testAllWorkflows.find(
+        wf => wf.status === 'completed' && wf.conclusion === 'success',
+      ) ?? workflow;
+  }
+
+  const commit = workflow.head_commit;
+  const hours =
+    (new Date().getTime() - new Date(workflow.run_started_at).getTime()) /
+    (60 * 60 * 1000);
+  const started_by = workflow.triggering_actor.login;
+
+  console.log(
+    chalk.green(`The artifact being used is from a workflow started ${chalk.bold.magentaBright(hours.toFixed(0))} hours ago by ${chalk.bold.magentaBright(started_by)}:
+
+Author: ${chalk.bold(commit.author.name)}
+Message:
+${chalk.magentaBright(quote(commit.message))}
+  `),
+  );
+
+  artifacts = await _getArtifacts(workflow.id);
 }
 
 function downloadArtifact(
@@ -146,37 +205,45 @@ function downloadArtifact(
 async function artifactURLForJSCRNTesterAPK(
   emulatorArch /*: string */,
 ) /*: Promise<string> */ {
-  const url = artifacts.artifacts.filter(a => a.name === 'rntester-apk')[0]
-    .archive_download_url;
-  return Promise.resolve(url);
+  return getArtifactURL('rntester-jsc-debug');
 }
 
 async function artifactURLForHermesRNTesterAPK(
   emulatorArch /*: string */,
 ) /*: Promise<string> */ {
-  const url = artifacts.artifacts.filter(a => a.name === 'rntester-apk')[0]
-    .archive_download_url;
-  return Promise.resolve(url);
+  return getArtifactURL('rntester-hermes-debug');
+}
+
+async function artifactURLForJSCRNTesterApp() /*: Promise<string> */ {
+  return getArtifactURL('RNTesterApp-NewArch-JSC-Debug');
+}
+
+async function artifactURLForHermesRNTesterApp() /*: Promise<string> */ {
+  return getArtifactURL('RNTesterApp-NewArch-Hermes-Debug');
 }
 
 async function artifactURLForMavenLocal() /*: Promise<string> */ {
-  const url = artifacts.artifacts.filter(a => a.name === 'maven-local')[0]
-    .archive_download_url;
-  return Promise.resolve(url);
+  return getArtifactURL('maven-local');
+}
+
+async function getArtifactURL(
+  artifactName /*: string */,
+) /*: Promise<string> */ {
+  const filteredUrls = artifacts.artifacts.filter(a => a.name === artifactName);
+
+  if (filteredUrls.length === 0) {
+    console.error(`No artifact found with name ${artifactName}`);
+    process.exit(1);
+  }
+  return filteredUrls[0].archive_download_url;
 }
 
 async function artifactURLHermesDebug() /*: Promise<string> */ {
-  const url = artifacts.artifacts.filter(
-    a => a.name === 'hermes-darwin-bin-Debug',
-  )[0].archive_download_url;
-  return Promise.resolve(url);
+  return getArtifactURL('hermes-darwin-bin-Debug');
 }
 
 async function artifactURLForReactNative() /*: Promise<string> */ {
-  const url = artifacts.artifacts.filter(
-    a => a.name === 'react-native-package',
-  )[0].archive_download_url;
-  return Promise.resolve(url);
+  return getArtifactURL('react-native-package');
 }
 
 function baseTmpPath() /*: string */ {
@@ -188,6 +255,8 @@ module.exports = {
   downloadArtifact,
   artifactURLForJSCRNTesterAPK,
   artifactURLForHermesRNTesterAPK,
+  artifactURLForJSCRNTesterApp,
+  artifactURLForHermesRNTesterApp,
   artifactURLForMavenLocal,
   artifactURLHermesDebug,
   artifactURLForReactNative,

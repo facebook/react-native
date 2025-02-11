@@ -60,7 +60,6 @@ public object ViewProps {
   public const val WIDTH: String = "width"
   public const val START: String = "start"
   public const val END: String = "end"
-  public const val IS_ATTACHMENT: String = "isAttachment"
   public const val AUTO: String = "auto"
   public const val NONE: String = "none"
   public const val BOX_NONE: String = "box-none"
@@ -74,6 +73,7 @@ public object ViewProps {
   // Props that affect more than just layout
   public const val ENABLED: String = "enabled"
   public const val BACKGROUND_COLOR: String = "backgroundColor"
+  public const val BACKGROUND_IMAGE: String = "experimental_backgroundImage"
   public const val FOREGROUND_COLOR: String = "foregroundColor"
   public const val COLOR: String = "color"
   public const val FONT_SIZE: String = "fontSize"
@@ -134,9 +134,13 @@ public object ViewProps {
   public const val BORDER_START_START_RADIUS: String = "borderStartStartRadius"
   public const val BORDER_START_COLOR: String = "borderStartColor"
   public const val BORDER_END_COLOR: String = "borderEndColor"
-  public const val ON_LAYOUT: String = "onLayout"
-  public const val FILTER: String = "experimental_filter"
-  public const val MIX_BLEND_MODE: String = "experimental_mixBlendMode"
+  public const val BOX_SHADOW: String = "boxShadow"
+  public const val FILTER: String = "filter"
+  public const val MIX_BLEND_MODE: String = "mixBlendMode"
+  public const val OUTLINE_COLOR: String = "outlineColor"
+  public const val OUTLINE_OFFSET: String = "outlineOffset"
+  public const val OUTLINE_STYLE: String = "outlineStyle"
+  public const val OUTLINE_WIDTH: String = "outlineWidth"
   public const val TRANSFORM: String = "transform"
   public const val TRANSFORM_ORIGIN: String = "transformOrigin"
   public const val ELEVATION: String = "elevation"
@@ -164,6 +168,18 @@ public object ViewProps {
   /** Used to locate views in end-to-end (UI) tests. */
   public const val TEST_ID: String = "testID"
   public const val NATIVE_ID: String = "nativeID"
+  internal const val ON_POINTER_ENTER: String = "onPointerEnter"
+  internal const val ON_POINTER_ENTER_CAPTURE: String = "onPointerEnterCapture"
+  internal const val ON_POINTER_OVER: String = "onPointerOver"
+  internal const val ON_POINTER_OVER_CAPTURE: String = "onPointerOverCapture"
+  internal const val ON_POINTER_OUT: String = "onPointerOut"
+  internal const val ON_POINTER_OUT_CAPTURE: String = "onPointerOutCapture"
+  internal const val ON_POINTER_LEAVE: String = "onPointerLeave"
+  internal const val ON_POINTER_LEAVE_CAPTURE: String = "onPointerLeaveCapture"
+  internal const val ON_POINTER_MOVE: String = "onPointerMove"
+  internal const val ON_POINTER_MOVE_CAPTURE: String = "onPointerMoveCapture"
+  internal const val ON_CLICK: String = "onClick"
+  internal const val ON_CLICK_CAPTURE: String = "onClickCapture"
   @JvmField
   public val BORDER_SPACING_TYPES: IntArray =
       intArrayOf(
@@ -186,9 +202,6 @@ public object ViewProps {
           Spacing.BOTTOM,
           Spacing.LEFT,
           Spacing.RIGHT)
-  @JvmField
-  public val POSITION_SPACING_TYPES: IntArray =
-      intArrayOf(Spacing.START, Spacing.END, Spacing.TOP, Spacing.BOTTOM)
   private val LAYOUT_ONLY_PROPS: HashSet<String> =
       HashSet(
           Arrays.asList(

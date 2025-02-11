@@ -28,7 +28,7 @@ import com.facebook.react.module.annotations.ReactModule
  * device. For API >= 19.
  */
 @ReactModule(name = NativeAccessibilityInfoSpec.NAME)
-public class AccessibilityInfoModule(context: ReactApplicationContext) :
+internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     NativeAccessibilityInfoSpec(context), LifecycleEventListener {
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private inner class ReactTouchExplorationStateChangeListener :
@@ -62,6 +62,19 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
           }
         }
       }
+  // Listener that is notified when the ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED changes.
+  private val highTextContrastObserver: ContentObserver =
+      object : ContentObserver(UiThreadUtil.getUiThreadHandler()) {
+        override fun onChange(selfChange: Boolean) {
+          this.onChange(selfChange, null)
+        }
+
+        override fun onChange(selfChange: Boolean, uri: Uri?) {
+          if (getReactApplicationContext().hasActiveReactInstance()) {
+            updateAndSendHighTextContrastChangeEvent()
+          }
+        }
+      }
   private val accessibilityManager: AccessibilityManager?
   private val touchExplorationStateChangeListener: ReactTouchExplorationStateChangeListener =
       ReactTouchExplorationStateChangeListener()
@@ -69,9 +82,12 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
       ReactAccessibilityServiceChangeListener()
   private val contentResolver: ContentResolver
   private var reduceMotionEnabled = false
+  private var highTextContrastEnabled = false
   private var touchExplorationEnabled = false
   private var accessibilityServiceEnabled = false
   private var recommendedTimeout = 0
+  private var invertColorsEnabled = false
+  private var grayscaleModeEnabled = false
 
   init {
     val appContext = context.applicationContext
@@ -81,6 +97,8 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
     touchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
     accessibilityServiceEnabled = accessibilityManager.isEnabled
     reduceMotionEnabled = isReduceMotionEnabledValue
+    highTextContrastEnabled = isHighTextContrastEnabledValue
+    grayscaleModeEnabled = isGrayscaleEnabledValue
   }
 
   @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -96,8 +114,56 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
       return parsedValue == 0f
     }
 
+  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private val isInvertColorsEnabledValue: Boolean
+    get() {
+      try {
+        return Settings.Secure.getInt(
+            contentResolver, Settings.Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED) == 1
+      } catch (e: Settings.SettingNotFoundException) {
+        return false
+      }
+    }
+
+  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private val isGrayscaleEnabledValue: Boolean
+    get() {
+      try {
+        val colorCorrectionSettingKey = "accessibility_display_daltonizer_enabled"
+        val colorModeSettingKey = "accessibility_display_daltonizer"
+        // for grayscale mode to be detected, the color correction accessibility setting should be
+        // on and the color correction mode should be set to grayscale (0)
+        return Settings.Secure.getInt(contentResolver, colorCorrectionSettingKey) == 1 &&
+            Settings.Secure.getInt(contentResolver, colorModeSettingKey) == 0
+      } catch (e: Settings.SettingNotFoundException) {
+        return false
+      }
+    }
+
+  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private val isHighTextContrastEnabledValue: Boolean
+    get() {
+      return Settings.Secure.getInt(
+          contentResolver,
+          ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT,
+          0,
+      ) != 0
+    }
+
   override fun isReduceMotionEnabled(successCallback: Callback) {
     successCallback.invoke(reduceMotionEnabled)
+  }
+
+  override fun isInvertColorsEnabled(successCallback: Callback) {
+    successCallback.invoke(invertColorsEnabled)
+  }
+
+  override fun isGrayscaleEnabled(successCallback: Callback) {
+    successCallback.invoke(grayscaleModeEnabled)
+  }
+
+  override fun isHighTextContrastEnabled(successCallback: Callback) {
+    successCallback.invoke(highTextContrastEnabled)
   }
 
   override fun isTouchExplorationEnabled(successCallback: Callback) {
@@ -115,6 +181,31 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
       val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
       if (reactApplicationContext != null) {
         reactApplicationContext.emitDeviceEvent(REDUCE_MOTION_EVENT_NAME, reduceMotionEnabled)
+      }
+    }
+  }
+
+  private fun updateAndSendInvertColorsChangeEvent() {
+    val isInvertColorsEnabled = isInvertColorsEnabledValue
+    if (invertColorsEnabled != isInvertColorsEnabled) {
+      invertColorsEnabled = isInvertColorsEnabled
+      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
+      if (reactApplicationContext != null) {
+        reactApplicationContext.emitDeviceEvent(INVERT_COLOR_EVENT_NAME, invertColorsEnabled)
+      }
+    }
+  }
+
+  private fun updateAndSendHighTextContrastChangeEvent() {
+    val isHighTextContrastEnabled = isHighTextContrastEnabledValue
+    if (highTextContrastEnabled != isHighTextContrastEnabled) {
+      highTextContrastEnabled = isHighTextContrastEnabled
+      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
+      if (reactApplicationContext != null) {
+        reactApplicationContext.emitDeviceEvent(
+            HIGH_TEXT_CONTRAST_EVENT_NAME,
+            highTextContrastEnabled,
+        )
       }
     }
   }
@@ -141,6 +232,17 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
   }
 
+  private fun updateAndSendGrayscaleModeChangeEvent() {
+    val isGrayscaleModeEnabled = isGrayscaleEnabledValue
+    if (grayscaleModeEnabled != isGrayscaleModeEnabled) {
+      grayscaleModeEnabled = isGrayscaleModeEnabled
+      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
+      if (reactApplicationContext != null) {
+        reactApplicationContext.emitDeviceEvent(GRAYSCALE_MODE_EVENT_NAME, grayscaleModeEnabled)
+      }
+    }
+  }
+
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   override fun onHostResume() {
     accessibilityManager?.addTouchExplorationStateChangeListener(
@@ -148,10 +250,16 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
     accessibilityManager?.addAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     val transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE)
     contentResolver.registerContentObserver(transitionUri, false, animationScaleObserver)
+    val highTextContrastUri =
+        Settings.Global.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
+    contentResolver.registerContentObserver(highTextContrastUri, false, highTextContrastObserver)
     updateAndSendTouchExplorationChangeEvent(
         accessibilityManager?.isTouchExplorationEnabled == true)
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
+    updateAndSendHighTextContrastChangeEvent()
+    updateAndSendInvertColorsChangeEvent()
+    updateAndSendGrayscaleModeChangeEvent()
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -160,6 +268,7 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
         touchExplorationStateChangeListener)
     accessibilityManager?.removeAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     contentResolver.unregisterContentObserver(animationScaleObserver)
+    contentResolver.unregisterContentObserver(highTextContrastObserver)
   }
 
   override fun initialize() {
@@ -168,6 +277,7 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
         accessibilityManager?.isTouchExplorationEnabled == true)
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
+    updateAndSendHighTextContrastChangeEvent()
   }
 
   override fun invalidate() {
@@ -200,13 +310,21 @@ public class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
     recommendedTimeout =
         accessibilityManager?.getRecommendedTimeoutMillis(
-            originalTimeout.toInt(), AccessibilityManager.FLAG_CONTENT_CONTROLS) ?: 0
+            originalTimeout.toInt(),
+            AccessibilityManager.FLAG_CONTENT_CONTROLS,
+        ) ?: 0
     successCallback.invoke(recommendedTimeout)
   }
 
-  private companion object {
+  companion object {
+    const val NAME: String = NativeAccessibilityInfoSpec.NAME
     private const val REDUCE_MOTION_EVENT_NAME = "reduceMotionDidChange"
+    private const val HIGH_TEXT_CONTRAST_EVENT_NAME = "highTextContrastDidChange"
     private const val TOUCH_EXPLORATION_EVENT_NAME = "touchExplorationDidChange"
     private const val ACCESSIBILITY_SERVICE_EVENT_NAME = "accessibilityServiceDidChange"
+    private const val ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT =
+        "high_text_contrast_enabled" // constant is marked with @hide
+    private const val INVERT_COLOR_EVENT_NAME = "invertColorDidChange"
+    private const val GRAYSCALE_MODE_EVENT_NAME = "grayscaleModeDidChange"
   }
 }

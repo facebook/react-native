@@ -18,7 +18,7 @@ import com.facebook.react.module.annotations.ReactModule
 
 /** [NativeModule] that allows JS to show dev loading view. */
 @ReactModule(name = NativeDevLoadingViewSpec.NAME)
-public class DevLoadingModule(reactContext: ReactApplicationContext) :
+internal class DevLoadingModule(reactContext: ReactApplicationContext) :
     NativeDevLoadingViewSpec(reactContext) {
 
   private val jsExceptionHandler: JSExceptionHandler? = reactContext.jsExceptionHandler
@@ -30,15 +30,15 @@ public class DevLoadingModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  public override fun showMessage(message: String, color: Double?, backgroundColor: Double?) {
-    UiThreadUtil.runOnUiThread(Runnable { devLoadingViewManager?.showMessage(message) })
+  override fun showMessage(message: String, color: Double?, backgroundColor: Double?) {
+    UiThreadUtil.runOnUiThread { devLoadingViewManager?.showMessage(message) }
   }
 
-  public override fun hide() {
-    UiThreadUtil.runOnUiThread(Runnable { devLoadingViewManager?.hide() })
+  override fun hide() {
+    UiThreadUtil.runOnUiThread { devLoadingViewManager?.hide() }
   }
 
-  public companion object {
-    public const val NAME: String = NativeDevLoadingViewSpec.NAME
+  companion object {
+    const val NAME: String = NativeDevLoadingViewSpec.NAME
   }
 }

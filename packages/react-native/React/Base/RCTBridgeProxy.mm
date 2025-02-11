@@ -41,6 +41,8 @@ using namespace facebook;
   void *_runtime;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
                       moduleRegistry:(RCTModuleRegistry *)moduleRegistry
                        bundleManager:(RCTBundleManager *)bundleManager
@@ -61,8 +63,10 @@ using namespace facebook;
     _runtime = runtime;
     _launchOptions = [launchOptions copy];
   }
+
   return self;
 }
+#pragma clang diagnostic pop
 
 - (void)dispatchBlock:(dispatch_block_t)block queue:(dispatch_queue_t)queue
 {
@@ -414,6 +418,10 @@ using namespace facebook;
   RCTViewRegistry *_viewRegistry;
   NSMutableDictionary<NSNumber *, UIView *> *_legacyViewRegistry;
 }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+
 - (instancetype)initWithViewRegistry:(RCTViewRegistry *)viewRegistry
 {
   self = [super self];
@@ -423,6 +431,8 @@ using namespace facebook;
   }
   return self;
 }
+
+#pragma clang diagnostic pop
 
 /**
  * RCTViewRegistry

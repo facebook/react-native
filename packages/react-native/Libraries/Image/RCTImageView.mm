@@ -41,8 +41,8 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 {
   NSDictionary *dict = @{
     @"uri" : source.request.URL.absoluteString,
-    @"width" : @(source.size.width),
-    @"height" : @(source.size.height),
+    @"width" : @(source.size.width * source.scale),
+    @"height" : @(source.size.height * source.scale),
   };
   return @{@"source" : dict};
 }
@@ -406,7 +406,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
       }
     } else {
       if (strongSelf->_onLoad) {
-        RCTImageSource *sourceLoaded = [source imageSourceWithSize:image.size scale:source.scale];
+        RCTImageSource *sourceLoaded = [source imageSourceWithSize:image.size scale:image.scale];
         strongSelf->_onLoad(onLoadParamsForSource(sourceLoaded));
       }
       if (strongSelf->_onLoadEnd) {
@@ -447,8 +447,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   } else if ([self shouldReloadImageSourceAfterResize]) {
     CGSize imageSize = self.image.size;
     CGFloat imageScale = self.image.scale;
-    CGSize idealSize =
-        RCTTargetSize(imageSize, imageScale, frame.size, RCTScreenScale(), (RCTResizeMode)self.contentMode, YES);
+    CGSize idealSize = RCTTargetSize(
+        imageSize, imageScale, frame.size, RCTScreenScale(), RCTResizeModeFromUIViewContentMode(self.contentMode), YES);
 
     // Don't reload if the current image or target image size is close enough
     if (!RCTShouldReloadImageForSizeChange(imageSize, idealSize) ||

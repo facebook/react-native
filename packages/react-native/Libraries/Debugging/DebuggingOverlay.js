@@ -102,10 +102,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const DebuggingOverlayWithForwardedRef: React.AbstractComponent<
-  {},
-  DebuggingOverlayHandle,
-  React.Node,
-> = React.forwardRef(DebuggingOverlay);
+const DebuggingOverlayWithForwardedRef: component(
+  ref: React.RefSetter<DebuggingOverlayHandle>,
+  ...props: {}
+) = React.forwardRef(DebuggingOverlay);
 
 export default DebuggingOverlayWithForwardedRef;

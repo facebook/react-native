@@ -29,11 +29,11 @@ type SnapshotReadyEvent = SyntheticEvent<
   $ReadOnly<{testIdentifier: string, ...}>,
 >;
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...ViewProps,
   onSnapshotReady?: ?(event: SnapshotReadyEvent) => mixed,
   testIdentifier?: ?string,
-|}>;
+}>;
 
 class SnapshotViewIOS extends React.Component<Props> {
   onDefaultAction: (event: SnapshotReadyEvent) => void = (

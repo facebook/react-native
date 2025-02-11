@@ -25,7 +25,7 @@ export type Props<ItemT> = {
   ItemSeparatorComponent: ?React.ComponentType<
     any | {highlighted: boolean, leadingItem: ?ItemT},
   >,
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  ListItemComponent?: ?(React.ComponentType<any> | React.MixedElement),
   cellKey: string,
   horizontal: ?boolean,
   index: number,
@@ -43,17 +43,17 @@ export type Props<ItemT> = {
   ...
 };
 
-type SeparatorProps<ItemT> = $ReadOnly<{|
+type SeparatorProps<ItemT> = $ReadOnly<{
   highlighted: boolean,
   leadingItem: ?ItemT,
-|}>;
+}>;
 
 type State<ItemT> = {
   separatorProps: SeparatorProps<ItemT>,
   ...
 };
 
-export default class CellRenderer<ItemT> extends React.Component<
+export default class CellRenderer<ItemT> extends React.PureComponent<
   Props<ItemT>,
   State<ItemT>,
 > {
@@ -68,12 +68,15 @@ export default class CellRenderer<ItemT> extends React.Component<
     props: Props<ItemT>,
     prevState: State<ItemT>,
   ): ?State<ItemT> {
-    return {
-      separatorProps: {
-        ...prevState.separatorProps,
-        leadingItem: props.item,
-      },
-    };
+    if (props.item !== prevState.separatorProps.leadingItem) {
+      return {
+        separatorProps: {
+          ...prevState.separatorProps,
+          leadingItem: props.item,
+        },
+      };
+    }
+    return null;
   }
 
   // TODO: consider factoring separator stuff out of VirtualizedList into FlatList since it's not

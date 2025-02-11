@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_progressbar_SRC CONFIGURE_DEPENDS android/react/renderer/components/progressbar/*.cpp)
-add_library(rrc_progressbar STATIC ${rrc_progressbar_SRC})
+add_library(rrc_progressbar OBJECT ${rrc_progressbar_SRC})
 
 target_include_directories(rrc_progressbar
         PUBLIC
@@ -29,11 +29,11 @@ target_link_libraries(rrc_progressbar
         glog_init
         react_codegen_rncore
         react_debug
-        react_render_componentregistry
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_uimanager
+        react_renderer_componentregistry
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_uimanager
         reactnativejni
         rrc_view
         yoga

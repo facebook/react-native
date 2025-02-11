@@ -23,4 +23,8 @@ public class SoundManagerModule(reactContext: ReactApplicationContext?) :
         getReactApplicationContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
     audioManager.playSoundEffect(AudioManager.FX_KEY_CLICK)
   }
+
+  public companion object {
+    public const val NAME: String = NativeSoundManagerSpec.NAME
+  }
 }

@@ -14,19 +14,18 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_componentregistry_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_componentregistry SHARED ${react_render_componentregistry_SRC})
+file(GLOB react_renderer_componentregistry_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_componentregistry OBJECT ${react_renderer_componentregistry_SRC})
 
-target_include_directories(react_render_componentregistry PUBLIC ${REACT_COMMON_DIR})
+target_include_directories(react_renderer_componentregistry PUBLIC ${REACT_COMMON_DIR})
 
-target_link_libraries(react_render_componentregistry
+target_link_libraries(react_renderer_componentregistry
         folly_runtime
         glog_init
         jsi
-        react_config
         react_debug
-        react_render_core
-        react_render_debug
+        react_renderer_core
+        react_renderer_debug
         react_utils
         rrc_legacyviewmanagerinterop
 )

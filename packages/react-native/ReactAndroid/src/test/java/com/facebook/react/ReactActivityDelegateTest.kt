@@ -8,7 +8,7 @@
 package com.facebook.react
 
 import android.os.Bundle
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -28,7 +28,7 @@ class ReactActivityDelegateTest {
             get() = composeLaunchOptions()
         }
 
-    assertNull(delegate.inspectLaunchOptions)
+    assertThat(delegate.inspectLaunchOptions).isNull()
   }
 
   @Test
@@ -41,7 +41,7 @@ class ReactActivityDelegateTest {
             get() = composeLaunchOptions()
         }
 
-    assertNull(delegate.inspectLaunchOptions)
+    assertThat(delegate.inspectLaunchOptions).isNull()
   }
 
   @Test
@@ -57,8 +57,8 @@ class ReactActivityDelegateTest {
             get() = composeLaunchOptions()
         }
 
-    assertNotNull(delegate.inspectLaunchOptions)
-    assertTrue(delegate.inspectLaunchOptions?.containsKey("test-property") ?: false)
-    assertEquals("test-value", delegate.inspectLaunchOptions?.getString("test-property"))
+    assertThat(delegate.inspectLaunchOptions).isNotNull()
+    assertThat(delegate.inspectLaunchOptions?.containsKey("test-property") ?: false).isTrue()
+    assertThat(delegate.inspectLaunchOptions?.getString("test-property")).isEqualTo("test-value")
   }
 }

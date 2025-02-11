@@ -20,7 +20,7 @@ exports.examples = [
   {
     title: 'New Architecture Renderer',
     description: 'Click to change background and opacity',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <>
           <MyNativeView />

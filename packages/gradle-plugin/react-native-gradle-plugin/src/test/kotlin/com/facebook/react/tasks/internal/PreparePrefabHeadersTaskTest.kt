@@ -11,7 +11,7 @@ import com.facebook.react.tasks.internal.utils.PrefabPreprocessingEntry
 import com.facebook.react.tests.createProject
 import com.facebook.react.tests.createTestTask
 import java.io.*
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -41,7 +41,7 @@ class PreparePrefabHeadersTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(outputDir, "sample_library/hello.h").exists())
+    assertThat(File(outputDir, "sample_library/hello.h")).exists()
   }
 
   @Test
@@ -60,7 +60,7 @@ class PreparePrefabHeadersTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(outputDir, "sample_library/${expectedPrefix}hello.h").exists())
+    assertThat(File(outputDir, "sample_library/${expectedPrefix}hello.h")).exists()
   }
 
   @Test
@@ -81,9 +81,9 @@ class PreparePrefabHeadersTaskTest {
 
     task.taskAction()
 
-    assertFalse(File(outputDir, "sample_library/hello.hpp").exists())
-    assertFalse(File(outputDir, "sample_library/hello.cpp").exists())
-    assertFalse(File(outputDir, "sample_library/CMakeLists.txt").exists())
+    assertThat(File(outputDir, "sample_library/hello.hpp")).doesNotExist()
+    assertThat(File(outputDir, "sample_library/hello.cpp")).doesNotExist()
+    assertThat(File(outputDir, "sample_library/CMakeLists.txt")).doesNotExist()
   }
 
   @Test
@@ -106,8 +106,8 @@ class PreparePrefabHeadersTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(outputDir, "sample_library/hello1.h").exists())
-    assertTrue(File(outputDir, "sample_library/debug/hello2.h").exists())
+    assertThat(File(outputDir, "sample_library/hello1.h")).exists()
+    assertThat(File(outputDir, "sample_library/debug/hello2.h")).exists()
   }
 
   @Test
@@ -128,8 +128,8 @@ class PreparePrefabHeadersTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(outputDir, "libraryone/hello1.h").exists())
-    assertTrue(File(outputDir, "librarytwo/hello2.h").exists())
+    assertThat(File(outputDir, "libraryone/hello1.h")).exists()
+    assertThat(File(outputDir, "librarytwo/hello2.h")).exists()
   }
 
   @Test
@@ -154,10 +154,10 @@ class PreparePrefabHeadersTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(outputDir, "libraryone/hello1.h").exists())
-    assertTrue(File(outputDir, "libraryone/shared/sharedheader.h").exists())
-    assertTrue(File(outputDir, "librarytwo/hello2.h").exists())
-    assertTrue(File(outputDir, "librarytwo/shared/sharedheader.h").exists())
+    assertThat(File(outputDir, "libraryone/hello1.h")).exists()
+    assertThat(File(outputDir, "libraryone/shared/sharedheader.h")).exists()
+    assertThat(File(outputDir, "librarytwo/hello2.h")).exists()
+    assertThat(File(outputDir, "librarytwo/shared/sharedheader.h")).exists()
   }
 
   @Test
@@ -182,16 +182,15 @@ class PreparePrefabHeadersTaskTest {
 
     task.taskAction()
 
-    assertTrue(File(outputDir, "sample_library/boost/config.hpp").exists())
-    assertTrue(File(outputDir, "sample_library/boost/operators.hpp").exists())
-    assertTrue(File(outputDir, "sample_library/boost/config/default/default.hpp").exists())
-    assertTrue(File(outputDir, "sample_library/boost/core/core.hpp").exists())
-    assertTrue(File(outputDir, "sample_library/boost/detail/workaround.hpp").exists())
-    assertTrue(File(outputDir, "sample_library/boost/preprocessor/preprocessor.hpp").exists())
-    assertTrue(
-        File(outputDir, "sample_library/boost/preprocessor/detail/preprocessor_detail.hpp")
-            .exists())
-    assertFalse(File(outputDir, "sample_library/boost/anothermodule/wedontuse.hpp").exists())
+    assertThat(File(outputDir, "sample_library/boost/config.hpp")).exists()
+    assertThat(File(outputDir, "sample_library/boost/operators.hpp")).exists()
+    assertThat(File(outputDir, "sample_library/boost/config/default/default.hpp")).exists()
+    assertThat(File(outputDir, "sample_library/boost/core/core.hpp")).exists()
+    assertThat(File(outputDir, "sample_library/boost/detail/workaround.hpp")).exists()
+    assertThat(File(outputDir, "sample_library/boost/preprocessor/preprocessor.hpp")).exists()
+    assertThat(File(outputDir, "sample_library/boost/preprocessor/detail/preprocessor_detail.hpp"))
+        .exists()
+    assertThat(File(outputDir, "sample_library/boost/anothermodule/wedontuse.hpp")).doesNotExist()
   }
 
   private fun File.createNewPathAndFile() {

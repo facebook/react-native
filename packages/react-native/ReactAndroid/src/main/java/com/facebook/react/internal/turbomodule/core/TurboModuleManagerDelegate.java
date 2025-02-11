@@ -13,7 +13,7 @@ import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -62,24 +62,11 @@ public abstract class TurboModuleManagerDelegate {
   ;
 
   public List<String> getEagerInitModuleNames() {
-    return new ArrayList<>();
+    return Collections.emptyList();
   }
 
   /** Can the TurboModule system create legacy modules? */
   public boolean unstable_shouldEnableLegacyModuleInterop() {
-    return false;
-  }
-
-  /**
-   * Should the TurboModule system treat all turbo native modules as though they were legacy
-   * modules? This method is for testing purposes only.
-   */
-  public boolean unstable_shouldRouteTurboModulesThroughLegacyModuleInterop() {
-    return false;
-  }
-
-  /* Can TurboModule methods that return void execute on the JS thread? */
-  public boolean unstable_enableSyncVoidMethods() {
     return false;
   }
 

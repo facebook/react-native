@@ -19,9 +19,10 @@ end
 folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
+folly_dep_name = folly_config[:dep_name]
 
-folly_dep_name = 'RCT-Folly/Fabric'
-boost_compiler_flags = '-Wno-documentation'
+boost_config = get_boost_config()
+boost_compiler_flags = boost_config[:compiler_flags]
 react_native_path = ".."
 
 header_search_path = [
@@ -30,6 +31,7 @@ header_search_path = [
   "\"$(PODS_ROOT)/RCT-Folly\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
   "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fast_float/include\"",
   "\"$(PODS_ROOT)/fmt/include\"",
 ]
 
@@ -56,7 +58,7 @@ Pod::Spec.new do |s|
   s.header_dir           = "react/renderer/components/image"
   s.compiler_flags       = folly_compiler_flags
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
+                            "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                             "HEADER_SEARCH_PATHS" => header_search_path.join(" ")
                           }
 
@@ -74,11 +76,16 @@ Pod::Spec.new do |s|
   s.dependency "React-logger"
   s.dependency "glog"
   s.dependency "DoubleConversion"
-  s.dependency "fmt", "9.1.0"
-  s.dependency "React-ImageManager"
+  s.dependency "fast_float", "6.1.4"
+  s.dependency "fmt", "11.0.2"
+  s.dependency "React-featureflags"
   s.dependency "React-utils"
   s.dependency "Yoga"
 
+  add_dependency(s, "React-ImageManager", :additional_framework_paths => [
+    "react/renderer/components/view/platform/cxx",
+    "react/renderer/imagemanager/platform/ios",
+  ])
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
   add_dependency(s, "React-Fabric", :additional_framework_paths => [

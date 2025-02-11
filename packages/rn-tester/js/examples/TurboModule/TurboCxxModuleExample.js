@@ -20,7 +20,7 @@ exports.description = 'Usage of Cxx TurboModule';
 exports.examples = [
   {
     title: 'TurboCxxModuleExample',
-    render: function (): React.Element<any> {
+    render: function (): React.MixedElement {
       return <NativeCxxModuleExampleExample />;
     },
   },

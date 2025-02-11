@@ -9,26 +9,30 @@ package com.facebook.react.views.imagehelper
 
 import android.content.Context
 import android.net.Uri
+import com.facebook.react.modules.fresco.ImageCacheControl
 import java.util.Objects
 
 /** Class describing an image source (network URI or resource) and size. */
-public class ImageSource
+public open class ImageSource
 @JvmOverloads
 constructor(
     context: Context,
     /** Get the source of this image, as it was passed to the constructor. */
     public val source: String?,
     width: Double = 0.0,
-    height: Double = 0.0
+    height: Double = 0.0,
+    public val cacheControl: ImageCacheControl = ImageCacheControl.DEFAULT,
 ) {
 
   /** Get the URI for this image - can be either a parsed network URI or a resource URI. */
-  public val uri: Uri = computeUri(context)
+  public open val uri: Uri = computeUri(context)
   /** Get the area of this image. */
   public val size: Double = width * height
   /** Get whether this image source represents an Android resource or a network URI. */
-  public var isResource: Boolean = false
-    private set
+  public open val isResource: Boolean
+    get() = _isResource
+
+  private var _isResource: Boolean = false
 
   override fun equals(other: Any?): Boolean {
     if (this === other) {
@@ -43,10 +47,11 @@ constructor(
     return java.lang.Double.compare(that.size, size) == 0 &&
         isResource == that.isResource &&
         uri == that.uri &&
-        source == that.source
+        source == that.source &&
+        cacheControl == that.cacheControl
   }
 
-  override fun hashCode(): Int = Objects.hash(uri, source, size, isResource)
+  override fun hashCode(): Int = Objects.hash(uri, source, size, isResource, cacheControl)
 
   private fun computeUri(context: Context): Uri =
       try {
@@ -58,7 +63,7 @@ constructor(
       }
 
   private fun computeLocalUri(context: Context): Uri {
-    isResource = true
+    _isResource = true
     return ResourceDrawableIdHelper.instance.getResourceDrawableUri(context, source)
   }
 
@@ -68,6 +73,6 @@ constructor(
 
     @JvmStatic
     public fun getTransparentBitmapImageSource(context: Context): ImageSource =
-        ImageSource(context, TRANSPARENT_BITMAP_URI)
+        ImageSource(context, TRANSPARENT_BITMAP_URI, cacheControl = ImageCacheControl.DEFAULT)
   }
 }

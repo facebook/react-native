@@ -48,5 +48,5 @@ Pod::Spec.new do |s|
   s.source_files           = "dummyFile.cpp"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
                             "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
-                            "CLANG_CXX_LANGUAGE_STANDARD" => "c++20" }
+                            "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 end

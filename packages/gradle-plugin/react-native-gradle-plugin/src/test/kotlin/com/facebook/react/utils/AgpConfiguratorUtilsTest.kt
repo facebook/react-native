@@ -8,7 +8,7 @@
 package com.facebook.react.utils
 
 import java.io.File
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -23,7 +23,7 @@ class AgpConfiguratorUtilsTest {
     val manifest = File(mainFolder, "AndroidManifest.xml").apply { writeText("") }
 
     val actual = getPackageNameFromManifest(manifest)
-    assertNull(actual)
+    assertThat(actual).isNull()
   }
 
   @Test
@@ -41,7 +41,7 @@ class AgpConfiguratorUtilsTest {
         }
 
     val actual = getPackageNameFromManifest(manifest)
-    assertNull(actual)
+    assertThat(actual).isNull()
   }
 
   @Test
@@ -59,7 +59,7 @@ class AgpConfiguratorUtilsTest {
         }
 
     val actual = getPackageNameFromManifest(manifest)
-    assertNotNull(actual)
-    assertEquals("com.facebook.react", actual)
+    assertThat(actual).isNotNull()
+    assertThat(actual).isEqualTo("com.facebook.react")
   }
 }

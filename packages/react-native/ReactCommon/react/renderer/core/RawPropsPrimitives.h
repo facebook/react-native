@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <limits>
 
 namespace facebook::react {

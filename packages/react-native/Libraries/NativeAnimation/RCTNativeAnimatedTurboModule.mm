@@ -25,6 +25,8 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   NSMutableArray<AnimatedOperation> *_operations;
   // Operations called before views have been updated.
   NSMutableArray<AnimatedOperation> *_preOperations;
+
+  NSSet<NSString *> *_userDrivenAnimationEndedEvents;
 }
 
 RCT_EXPORT_MODULE();
@@ -39,6 +41,7 @@ RCT_EXPORT_MODULE();
   if (self = [super init]) {
     _operations = [NSMutableArray new];
     _preOperations = [NSMutableArray new];
+    _userDrivenAnimationEndedEvents = [NSSet setWithArray:@[ @"onScrollEnded" ]];
   }
   return self;
 }
@@ -364,12 +367,17 @@ RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations : (NSArray *)operationsAndArg
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[ @"onAnimatedValueUpdate" ];
+  return @[ @"onAnimatedValueUpdate", @"onUserDrivenAnimationEnded" ];
 }
 
 - (void)animatedNode:(RCTValueAnimatedNode *)node didUpdateValue:(CGFloat)value
 {
   [self sendEventWithName:@"onAnimatedValueUpdate" body:@{@"tag" : node.nodeTag, @"value" : @(value)}];
+}
+
+- (void)userDrivenAnimationEnded:(NSArray<NSNumber *> *)nodes
+{
+  [self sendEventWithName:@"onUserDrivenAnimationEnded" body:@{@"tags" : nodes}];
 }
 
 - (void)eventDispatcherWillDispatchEvent:(id<RCTEvent>)event
@@ -378,6 +386,14 @@ RCT_EXPORT_METHOD(queueAndExecuteBatchedOperations : (NSArray *)operationsAndArg
   // is run from the main queue.
   RCTExecuteOnMainQueue(^{
     [self->_nodesManager handleAnimatedEvent:event];
+
+    if ([self->_userDrivenAnimationEndedEvents containsObject:event.eventName]) {
+      NSSet<NSNumber *> *tags = [self->_nodesManager getTagsOfConnectedNodesFrom:event.viewTag
+                                                                        andEvent:event.eventName];
+      if (tags.count > 0) {
+        [self userDrivenAnimationEnded:[tags allObjects]];
+      }
+    }
   });
 }
 

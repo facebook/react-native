@@ -22,6 +22,7 @@
   NSString *_title;
   UIColor *_titleColor;
   CGFloat _progressViewOffset;
+  BOOL _hasMovedToWindow;
 }
 
 - (instancetype)init
@@ -32,6 +33,7 @@
     _currentRefreshingStateTimestamp = 0;
     _isInitialRender = true;
     _currentRefreshingState = false;
+    _hasMovedToWindow = NO;
   }
   return self;
 }
@@ -56,8 +58,22 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   _isInitialRender = false;
 }
 
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+
+  if (self.window) {
+    _hasMovedToWindow = YES;
+  } else {
+    _hasMovedToWindow = NO;
+  }
+}
+
 - (void)beginRefreshingProgrammatically
 {
+  if (!_hasMovedToWindow)
+    return;
+
   UInt64 beginRefreshingTimestamp = _currentRefreshingStateTimestamp;
   _refreshingProgrammatically = YES;
 
@@ -92,6 +108,8 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
 
 - (void)endRefreshingProgrammatically
 {
+  if (!_hasMovedToWindow)
+    return;
   // The contentOffset of the scrollview MUST be greater than the contentInset before calling
   // endRefreshing otherwise the next pull to refresh will not work properly.
   UIScrollView *scrollView = self.scrollView;

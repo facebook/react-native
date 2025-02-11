@@ -125,4 +125,4 @@ class AppState {
   }
 }
 
-module.exports = (new AppState(): AppState);
+export default (new AppState(): AppState);

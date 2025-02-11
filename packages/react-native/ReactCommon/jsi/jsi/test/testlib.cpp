@@ -1576,6 +1576,203 @@ TEST_P(JSITest, UTF8ExceptionTest) {
   }
 }
 
+TEST_P(JSITest, UTF16ConversionTest) {
+  // This Runtime Decorator is used to test the conversion from UTF-8 to UTF-16
+  // in the default utf16 method for runtimes that do not provide their own
+  // utf16 implementation.
+  class UTF16RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    UTF16RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    std::string utf8(const String&) override {
+      return utf8Str;
+    }
+
+    std::u16string utf16(const String& str) override {
+      return Runtime::utf16(str);
+    }
+
+    std::string utf8Str;
+  };
+
+  UTF16RD rd = UTF16RD(rt);
+  String str = String::createFromUtf8(rd, "placeholder");
+
+  rd.utf8Str = "foobar";
+  EXPECT_EQ(str.utf16(rd), u"foobar");
+
+  // 你 in UTF-8 encoding is 0xe4 0xbd 0xa0 and 好 is 0xe5 0xa5 0xbd
+  // 你 in UTF-16 encoding is 0x4f60 and 好 is 0x597d
+  rd.utf8Str = "\xe4\xbd\xa0\xe5\xa5\xbd";
+  EXPECT_EQ(str.utf16(rd), u"\x4f60\x597d");
+
+  // 👍 in UTF-8 encoding is 0xf0 0x9f 0x91 0x8d
+  // 👍 in UTF-16 encoding is 0xd83d 0xdc4d
+  rd.utf8Str = "\xf0\x9f\x91\x8d";
+  EXPECT_EQ(str.utf16(rd), u"\xd83d\xdc4d");
+
+  // String is foobar👍你好
+  rd.utf8Str = "foobar\xf0\x9f\x91\x8d\xe4\xbd\xa0\xe5\xa5\xbd";
+  EXPECT_EQ(str.utf16(rd), u"foobar\xd83d\xdc4d\x4f60\x597d");
+
+  // String ended before second byte of the encoding
+  rd.utf8Str = "\xcf";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD");
+
+  // Third byte should follow the pattern of 0b10xxxxxx
+  rd.utf8Str = "\xef\x8f\x29";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD\u0029");
+
+  // U+2200 should be encoded in 3 bytes as 0xE2 0x88 0x80, not 4 bytes
+  rd.utf8Str = "\xf0\x82\x88\x80";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD");
+
+  // Unicode Max Value is U+10FFFF, U+11FFFF is invalid
+  rd.utf8Str = "\xf4\x9f\xbf\xbf";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD");
+
+  // Missing the third byte of the 3-byte encoding, followed by 'z'
+  rd.utf8Str = "\xe1\xa0\x7a";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD\u007A");
+
+  // First byte is neither ASCII nor a valid continuation byte
+  rd.utf8Str = "\xea\x7a";
+  EXPECT_EQ(str.utf16(rd), u"\uFFFD\u007A");
+}
+
+TEST_P(JSITest, CreateFromUtf16Test) {
+  // This Runtime Decorator is used to test the default createStringFromUtf16
+  // and createPropNameIDFromUtf16 implementation for VMs that do not provide
+  // their own implementation
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    String createStringFromUtf16(const char16_t* utf16, size_t length)
+        override {
+      return Runtime::createStringFromUtf16(utf16, length);
+    }
+
+    PropNameID createPropNameIDFromUtf16(const char16_t* utf16, size_t length)
+        override {
+      return Runtime::createPropNameIDFromUtf16(utf16, length);
+    }
+  };
+
+  RD rd = RD(rt);
+  std::u16string utf16 = u"foobar";
+
+  auto jsString = String::createFromUtf16(rd, utf16);
+  EXPECT_EQ(jsString.utf16(rd), utf16);
+  auto prop = PropNameID::forUtf16(rd, utf16);
+  EXPECT_EQ(prop.utf16(rd), utf16);
+
+  // 👋 in UTF-16 encoding is 0xd83d 0xdc4b
+  utf16 = u"hello!\xd83d\xdc4b";
+  jsString = String::createFromUtf16(rd, utf16.data(), utf16.length());
+  EXPECT_EQ(jsString.utf16(rd), utf16);
+  prop = PropNameID::forUtf16(rd, utf16);
+  EXPECT_EQ(prop.utf16(rd), utf16);
+
+  utf16 = u"\xd83d";
+  jsString = String::createFromUtf16(rd, utf16.data(), utf16.length());
+  /// We need to use charCodeAt instead of UTF16 because the default
+  /// implementation of UTF16 converts to UTF8, then to UTF16, so we will lose
+  /// the lone surrogate value.
+  rd.global().setProperty(rd, "loneSurrogate", jsString);
+  auto cp = eval("loneSurrogate.charCodeAt(0)").getNumber();
+  EXPECT_EQ(cp, 55357); // 0xD83D in decimal
+}
+
+TEST_P(JSITest, GetStringDataTest) {
+  // This Runtime Decorator is used to test the default getStringData
+  // implementation for VMs that do not provide their own implementation
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void getStringData(
+        const String& str,
+        void* ctx,
+        void (*cb)(void* ctx, bool ascii, const void* data, size_t num))
+        override {
+      Runtime::getStringData(str, ctx, cb);
+    }
+  };
+
+  RD rd = RD(rt);
+  // 👋 in UTF8 encoding is 0xf0 0x9f 0x91 0x8b
+  String str = String::createFromUtf8(rd, "hello\xf0\x9f\x91\x8b");
+
+  std::u16string buf;
+  auto cb = [&buf](bool ascii, const void* data, size_t num) {
+    assert(!ascii && "Default implementation is always utf16");
+    buf.append((const char16_t*)data, num);
+  };
+
+  str.getStringData(rd, cb);
+  EXPECT_EQ(buf, str.utf16(rd));
+}
+
+TEST_P(JSITest, ObjectSetPrototype) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Object.setPrototypeOf
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    explicit RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    void setPrototypeOf(const Object& object, const Value& prototype) override {
+      return Runtime::setPrototypeOf(object, prototype);
+    }
+
+    Value getPrototypeOf(const Object& object) override {
+      return Runtime::getPrototypeOf(object);
+    }
+  };
+
+  RD rd = RD(rt);
+  Object child(rd);
+
+  // Tests null value as prototype
+  child.setPrototype(rd, Value::null());
+  EXPECT_TRUE(child.getPrototype(rd).isNull());
+
+  Object prototypeObj(rd);
+  prototypeObj.setProperty(rd, "someProperty", 123);
+  Value prototype(rd, prototypeObj);
+
+  child.setPrototype(rd, prototype);
+  EXPECT_EQ(child.getProperty(rd, "someProperty").getNumber(), 123);
+
+  auto getPrototypeRes = child.getPrototype(rd).asObject(rd);
+  EXPECT_EQ(getPrototypeRes.getProperty(rd, "someProperty").getNumber(), 123);
+}
+
+TEST_P(JSITest, ObjectCreateWithPrototype) {
+  // This Runtime Decorator is used to test the default implementation of
+  // Object.create(prototype)
+  class RD : public RuntimeDecorator<Runtime, Runtime> {
+   public:
+    RD(Runtime& rt) : RuntimeDecorator(rt) {}
+
+    Object createObjectWithPrototype(const Value& prototype) override {
+      return Runtime::createObjectWithPrototype(prototype);
+    }
+  };
+
+  RD rd = RD(rt);
+  Object prototypeObj(rd);
+  prototypeObj.setProperty(rd, "someProperty", 123);
+  Value prototype(rd, prototypeObj);
+
+  Object child = Object::create(rd, prototype);
+  EXPECT_EQ(child.getProperty(rd, "someProperty").getNumber(), 123);
+
+  // Tests null value as prototype
+  child = Object::create(rd, Value::null());
+  EXPECT_TRUE(child.getPrototype(rd).isNull());
+}
+
 INSTANTIATE_TEST_CASE_P(
     Runtimes,
     JSITest,

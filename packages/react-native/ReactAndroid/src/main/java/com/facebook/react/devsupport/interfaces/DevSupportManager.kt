@@ -28,13 +28,13 @@ public interface DevSupportManager : JSExceptionHandler {
   public val redBoxHandler: RedBoxHandler?
   public val sourceMapUrl: String?
   public val sourceUrl: String?
-  public val jSBundleURLForRemoteDebugging: String?
   public val downloadedJSBundleFile: String?
   public val lastErrorTitle: String?
   public val lastErrorStack: Array<StackFrame>?
   public val lastErrorType: ErrorType?
   public val lastErrorCookie: Int
   public val currentActivity: Activity?
+  public val currentReactContext: ReactContext?
 
   public var devSupportEnabled: Boolean
 
@@ -47,8 +47,6 @@ public interface DevSupportManager : JSExceptionHandler {
   public fun destroyRootView(rootView: View?)
 
   public fun showNewJSError(message: String?, details: ReadableArray?, errorCookie: Int)
-
-  public fun updateJSError(message: String?, details: ReadableArray?, errorCookie: Int)
 
   public fun hideRedboxDialog()
 
@@ -75,8 +73,6 @@ public interface DevSupportManager : JSExceptionHandler {
   public fun isPackagerRunning(callback: PackagerStatusCallback)
 
   public fun setHotModuleReplacementEnabled(isHotModuleReplacementEnabled: Boolean)
-
-  public fun setRemoteJSDebugEnabled(isRemoteJSDebugEnabled: Boolean)
 
   public fun setFpsDebugEnabled(isFpsDebugEnabled: Boolean)
 
@@ -106,11 +102,14 @@ public interface DevSupportManager : JSExceptionHandler {
   /** Shows the "paused in debugger" overlay with the given message. */
   public fun showPausedInDebuggerOverlay(
       message: String,
-      listener: PausedInDebuggerOverlayCommandListener
+      listener: PausedInDebuggerOverlayCommandListener,
   )
 
   /** Hides the "paused in debugger" overlay, if currently shown. */
   public fun hidePausedInDebuggerOverlay()
+
+  /** Add an option to send to packager when requesting JS bundle. */
+  public fun setAdditionalOptionForPackager(name: String, value: String)
 
   /**
    * The PackagerLocationCustomizer allows you to have a dynamic packager location that is

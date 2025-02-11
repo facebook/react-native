@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 file(GLOB hermesinspectormodern_SRC CONFIGURE_DEPENDS chrome/*.cpp)
 
 add_library(hermes_inspector_modern
-        STATIC
+        OBJECT
         ${hermesinspectormodern_SRC})
 
 target_compile_options(
@@ -29,9 +29,6 @@ endif()
 
 target_include_directories(hermes_inspector_modern PUBLIC ${REACT_COMMON_DIR})
 target_link_libraries(hermes_inspector_modern
-        jsinspector
-        fb
-        glog
         hermes-engine::libhermes
         jsi
-        runtimeexecutor)
+        reactnative)

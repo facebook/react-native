@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict-local
  */
 
 'use strict';
@@ -18,10 +19,12 @@
  * In case of "message", the `data` property contains the incoming data.
  */
 class WebSocketEvent {
-  constructor(type, eventInitDict) {
+  type: string;
+
+  constructor(type: string, eventInitDict: ?{...}) {
     this.type = type.toString();
     Object.assign(this, eventInitDict);
   }
 }
 
-module.exports = WebSocketEvent;
+export default WebSocketEvent;

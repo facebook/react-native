@@ -5,32 +5,32 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "TextLayoutManager.h"
-#include <react/renderer/telemetry/TransactionTelemetry.h>
-#include <react/utils/ManagedObjectWrapper.h>
-
+#import "TextLayoutManager.h"
 #import "RCTTextLayoutManager.h"
+
+#import <react/renderer/telemetry/TransactionTelemetry.h>
+#import <react/utils/ManagedObjectWrapper.h>
 
 namespace facebook::react {
 
 TextLayoutManager::TextLayoutManager(const ContextContainer::Shared &contextContainer)
 {
-  self_ = wrapManagedObject([RCTTextLayoutManager new]);
+  nativeTextLayoutManager_ = wrapManagedObject([RCTTextLayoutManager new]);
 }
 
 std::shared_ptr<void> TextLayoutManager::getNativeTextLayoutManager() const
 {
-  assert(self_ && "Stored NativeTextLayoutManager must not be null.");
-  return self_;
+  assert(nativeTextLayoutManager_ && "Stored NativeTextLayoutManager must not be null.");
+  return nativeTextLayoutManager_;
 }
 
 TextMeasurement TextLayoutManager::measure(
-    AttributedStringBox attributedStringBox,
-    ParagraphAttributes paragraphAttributes,
+    const AttributedStringBox &attributedStringBox,
+    const ParagraphAttributes &paragraphAttributes,
     const TextLayoutContext &layoutContext,
-    LayoutConstraints layoutConstraints) const
+    const LayoutConstraints &layoutConstraints) const
 {
-  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
+  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(nativeTextLayoutManager_);
 
   auto measurement = TextMeasurement{};
 
@@ -38,7 +38,7 @@ TextMeasurement TextLayoutManager::measure(
     case AttributedStringBox::Mode::Value: {
       auto &attributedString = attributedStringBox.getValue();
 
-      measurement = measureCache_.get(
+      measurement = textMeasureCache_.get(
           {attributedString, paragraphAttributes, layoutConstraints}, [&](const TextMeasureCacheKey &key) {
             auto telemetry = TransactionTelemetry::threadLocalTelemetry();
             if (telemetry) {
@@ -85,14 +85,24 @@ TextMeasurement TextLayoutManager::measure(
 }
 
 LinesMeasurements TextLayoutManager::measureLines(
-    AttributedString attributedString,
-    ParagraphAttributes paragraphAttributes,
-    Size size) const
+    const AttributedStringBox &attributedStringBox,
+    const ParagraphAttributes &paragraphAttributes,
+    const Size &size) const
 {
-  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(self_);
-  return [textLayoutManager getLinesForAttributedString:attributedString
-                                    paragraphAttributes:paragraphAttributes
-                                                   size:{size.width, size.height}];
+  react_native_assert(attributedStringBox.getMode() == AttributedStringBox::Mode::Value);
+  const auto &attributedString = attributedStringBox.getValue();
+
+  RCTTextLayoutManager *textLayoutManager = (RCTTextLayoutManager *)unwrapManagedObject(nativeTextLayoutManager_);
+
+  auto measurement =
+      lineMeasureCache_.get({attributedString, paragraphAttributes, size}, [&](const LineMeasureCacheKey &key) {
+        auto measurement = [textLayoutManager getLinesForAttributedString:attributedString
+                                                      paragraphAttributes:paragraphAttributes
+                                                                     size:{size.width, size.height}];
+        return measurement;
+      });
+
+  return measurement;
 }
 
 } // namespace facebook::react

@@ -40,9 +40,9 @@ class ScrollViewProps final : public ViewProps {
   bool centerContent{};
   bool automaticallyAdjustContentInsets{};
   bool automaticallyAdjustsScrollIndicatorInsets{true};
+  bool automaticallyAdjustKeyboardInsets{false};
   Float decelerationRate{0.998f};
   Float endDraggingSensitivityMultiplier{1};
-  bool enableSyncOnScroll{false};
   bool directionalLockEnabled{};
   ScrollViewIndicatorStyle indicatorStyle{};
   ScrollViewKeyboardDismissMode keyboardDismissMode{};

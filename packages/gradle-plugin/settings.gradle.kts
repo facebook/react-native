@@ -19,6 +19,7 @@ include(
     ":react-native-gradle-plugin",
     ":settings-plugin",
     ":shared",
+    ":shared-testutil",
 )
 
 rootProject.name = "gradle-plugin-root"

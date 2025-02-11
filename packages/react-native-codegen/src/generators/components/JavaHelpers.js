@@ -43,6 +43,12 @@ function getImports(
 ): Set<string> {
   const imports: Set<string> = new Set();
 
+  if (type === 'interface') {
+    imports.add(
+      'import com.facebook.react.uimanager.ViewManagerWithGeneratedInterface;',
+    );
+  }
+
   component.extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
       case 'ReactNativeBuiltInType':
@@ -66,12 +72,7 @@ function getImports(
       | 'EdgeInsetsPrimitive'
       | 'ImageSourcePrimitive'
       | 'PointPrimitive'
-      | 'DimensionPrimitive'
-      | $TEMPORARY$string<'ColorPrimitive'>
-      | $TEMPORARY$string<'EdgeInsetsPrimitive'>
-      | $TEMPORARY$string<'ImageSourcePrimitive'>
-      | $TEMPORARY$string<'PointPrimitive'>
-      | $TEMPORARY$string<'DimensionPrimitive'>,
+      | 'DimensionPrimitive',
   ) {
     switch (name) {
       case 'ColorPrimitive':
@@ -107,6 +108,7 @@ function getImports(
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'ReservedPropTypeAnnotation') {
+      // $FlowFixMe[incompatible-call]
       addImportsForNativeName(typeAnnotation.name);
     }
 

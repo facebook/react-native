@@ -206,7 +206,8 @@ public class NativeViewHierarchyOptimizer {
           node.getScreenX(),
           node.getScreenY(),
           node.getScreenWidth(),
-          node.getScreenHeight());
+          node.getScreenHeight(),
+          node.getLayoutDirection());
       return;
     }
 
@@ -370,7 +371,8 @@ public class NativeViewHierarchyOptimizer {
           x,
           y,
           toUpdate.getScreenWidth(),
-          toUpdate.getScreenHeight());
+          toUpdate.getScreenHeight(),
+          toUpdate.getLayoutDirection());
       return;
     }
 

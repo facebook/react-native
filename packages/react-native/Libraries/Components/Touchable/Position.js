@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict-local
  */
 
 'use strict';
+
 import PooledClass from './PooledClass';
 
 const twoArgumentPooler = PooledClass.twoArgumentPooler;
@@ -20,16 +22,19 @@ const twoArgumentPooler = PooledClass.twoArgumentPooler;
  * @param {number} windowStartKey Key that window starts at.
  * @param {number} windowEndKey Key that window ends at.
  */
-function Position(left, top) {
+// $FlowFixMe[missing-this-annot]
+function Position(left: number, top: number) {
   this.left = left;
   this.top = top;
 }
 
+// $FlowFixMe[prop-missing]
+// $FlowFixMe[missing-this-annot]
 Position.prototype.destructor = function () {
   this.left = null;
   this.top = null;
 };
 
-PooledClass.addPoolingTo(Position, twoArgumentPooler);
+PooledClass.addPoolingTo(Position as $FlowFixMe, twoArgumentPooler);
 
-module.exports = Position;
+export default Position;

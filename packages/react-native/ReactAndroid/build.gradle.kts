@@ -11,6 +11,7 @@ import com.facebook.react.tasks.internal.*
 import com.facebook.react.tasks.internal.utils.*
 import de.undercouch.gradle.tasks.download.Download
 import java.nio.file.Paths
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("maven-publish")
@@ -65,6 +66,7 @@ val prefabHeadersDir = project.file("$buildDir/prefab-headers")
 // Native versions which are defined inside the version catalog (libs.versions.toml)
 val BOOST_VERSION = libs.versions.boost.get()
 val DOUBLE_CONVERSION_VERSION = libs.versions.doubleconversion.get()
+val FAST_FLOAT_VERSION = libs.versions.fastFloat.get()
 val FMT_VERSION = libs.versions.fmt.get()
 val FOLLY_VERSION = libs.versions.folly.get()
 val GLOG_VERSION = libs.versions.glog.get()
@@ -79,118 +81,116 @@ val preparePrefab by
       // migrate one library at a time.
       input.set(
           listOf(
+              PrefabPreprocessingEntry("jsi", Pair("../ReactCommon/jsi/", "")),
               PrefabPreprocessingEntry(
-                  "react_render_debug",
-                  Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/")),
-              PrefabPreprocessingEntry(
-                  "turbomodulejsijni", Pair("src/main/jni/react/turbomodule", "")),
-              PrefabPreprocessingEntry(
-                  "runtimeexecutor", Pair("../ReactCommon/runtimeexecutor/", "")),
-              PrefabPreprocessingEntry(
-                  "react_codegen_rncore",
-                  Pair(File(buildDir, "generated/source/codegen/jni/").absolutePath, "")),
-              PrefabPreprocessingEntry(
-                  "react_debug", Pair("../ReactCommon/react/debug/", "react/debug/")),
-              PrefabPreprocessingEntry(
-                  "react_render_componentregistry",
-                  Pair(
-                      "../ReactCommon/react/renderer/componentregistry/",
-                      "react/renderer/componentregistry/")),
-              PrefabPreprocessingEntry(
-                  "react_newarchdefaults", Pair("src/main/jni/react/newarchdefaults", "")),
-              PrefabPreprocessingEntry(
-                  "react_render_animations",
-                  Pair("../ReactCommon/react/renderer/animations/", "react/renderer/animations/")),
-              PrefabPreprocessingEntry(
-                  "react_render_core",
-                  Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/")),
-              PrefabPreprocessingEntry(
-                  "react_render_graphics",
+                  "reactnative",
                   listOf(
+                      // hermes_executor
+                      // This prefab targets is used by Expo & Reanimated
+                      Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/"),
+                      // jscexecutor
+                      Pair("../ReactCommon/jsc/", "jsc/"),
+                      // fabricjni
+                      Pair("src/main/jni/react/fabric", "react/fabric/"),
+                      // glog
+                      Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
+                      // jsiinpsector
+                      Pair("../ReactCommon/jsinspector-modern/", "jsinspector-modern/"),
+                      // mapbufferjni
+                      Pair("src/main/jni/react/mapbuffer", ""),
+                      // turbomodulejsijni
+                      Pair("src/main/jni/react/turbomodule", ""),
+                      // react_codegen_rncore
+                      Pair(File(buildDir, "generated/source/codegen/jni/").absolutePath, ""),
+                      // reactnativejni
+                      Pair("src/main/jni/react/jni", "react/jni/"),
+                      Pair("../ReactCommon/cxxreact/", "cxxreact/"),
+                      // react_featureflags
+                      Pair("../ReactCommon/react/featureflags/", "react/featureflags/"),
+                      // react_devtoolsruntimesettings
+                      Pair(
+                          "../ReactCommon/react/devtoolsruntimesettings/",
+                          "react/devtoolsruntimesettings/"),
+                      // react_renderer_animations
+                      Pair(
+                          "../ReactCommon/react/renderer/animations/",
+                          "react/renderer/animations/"),
+                      // react_renderer_componentregistry
+                      Pair(
+                          "../ReactCommon/react/renderer/componentregistry/",
+                          "react/renderer/componentregistry/"),
+                      // react_renderer_consistency
+                      Pair(
+                          "../ReactCommon/react/renderer/consistency/",
+                          "react/renderer/consistency/"),
+                      // react_renderer_core
+                      Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
+                      // react_debug
+                      Pair("../ReactCommon/react/debug/", "react/debug/"),
+                      // react_renderer_debug
+                      Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
+                      // react_renderer_graphics
                       Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
                       Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
-                  )),
-              PrefabPreprocessingEntry(
-                  "rrc_root",
-                  Pair(
-                      "../ReactCommon/react/renderer/components/root/",
-                      "react/renderer/components/root/")),
-              PrefabPreprocessingEntry(
-                  "rrc_view",
-                  listOf(
+                      // react_renderer_imagemanager
+                      Pair(
+                          "../ReactCommon/react/renderer/imagemanager/",
+                          "react/renderer/imagemanager/"),
+                      Pair("../ReactCommon/react/renderer/imagemanager/platform/cxx/", ""),
+                      // react_renderer_mounting
+                      Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
+                      // react_renderer_scheduler
+                      Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
+                      // react_renderer_uimanager
+                      Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
+                      // react_utils
+                      Pair("../ReactCommon/react/utils/", "react/utils/"),
+                      // rrc_image
+                      Pair(
+                          "../ReactCommon/react/renderer/components/image/",
+                          "react/renderer/components/image/"),
+                      // rrc_view
                       Pair(
                           "../ReactCommon/react/renderer/components/view/",
                           "react/renderer/components/view/"),
                       Pair("../ReactCommon/react/renderer/components/view/platform/android/", ""),
-                  )),
-              PrefabPreprocessingEntry(
-                  "rrc_text",
-                  listOf(
+                      // rrc_root
+                      Pair(
+                          "../ReactCommon/react/renderer/components/root/",
+                          "react/renderer/components/root/"),
+                      // runtimeexecutor
+                      Pair("../ReactCommon/runtimeexecutor/", ""),
+                      // react_renderer_textlayoutmanager
+                      Pair(
+                          "../ReactCommon/react/renderer/textlayoutmanager/",
+                          "react/renderer/textlayoutmanager/"),
+                      Pair("../ReactCommon/react/renderer/textlayoutmanager/platform/android/", ""),
+                      // rrc_text
                       Pair(
                           "../ReactCommon/react/renderer/components/text/",
                           "react/renderer/components/text/"),
                       Pair(
                           "../ReactCommon/react/renderer/attributedstring",
                           "react/renderer/attributedstring"),
-                  )),
-              PrefabPreprocessingEntry(
-                  "rrc_textinput",
-                  listOf(
+                      // rrc_textinput
                       Pair(
                           "../ReactCommon/react/renderer/components/textinput/",
                           "react/renderer/components/textinput/"),
                       Pair(
                           "../ReactCommon/react/renderer/components/textinput/platform/android/",
                           ""),
-                  )),
-              PrefabPreprocessingEntry(
-                  "rrc_legacyviewmanagerinterop",
-                  Pair(
-                      "../ReactCommon/react/renderer/components/legacyviewmanagerinterop/",
-                      "react/renderer/components/legacyviewmanagerinterop/")),
-              PrefabPreprocessingEntry("jsi", Pair("../ReactCommon/jsi/", "")),
-              PrefabPreprocessingEntry(
-                  "glog", Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, "")),
-              PrefabPreprocessingEntry(
-                  "fabricjni", Pair("src/main/jni/react/fabric", "react/fabric/")),
-              PrefabPreprocessingEntry(
-                  "mapbufferjni", Pair("src/main/jni/react/mapbuffer", "react/mapbuffer/")),
-              PrefabPreprocessingEntry(
-                  "react_render_mapbuffer",
-                  Pair("../ReactCommon/react/renderer/mapbuffer/", "react/renderer/mapbuffer/")),
-              PrefabPreprocessingEntry(
-                  "react_render_textlayoutmanager",
-                  listOf(
-                      Pair(
-                          "../ReactCommon/react/renderer/textlayoutmanager/",
-                          "react/renderer/textlayoutmanager/"),
-                      Pair("../ReactCommon/react/renderer/textlayoutmanager/platform/android/", ""),
-                  )),
-              PrefabPreprocessingEntry(
-                  "yoga",
-                  listOf(
-                      Pair("../ReactCommon/yoga/", ""),
-                      Pair("src/main/jni/first-party/yogajni/jni", ""))),
-              PrefabPreprocessingEntry(
-                  "folly_runtime",
-                  listOf(
-                      Pair(File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
-                      Pair(File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
+                      // react_newarchdefaults
+                      Pair("src/main/jni/react/newarchdefaults", ""),
+                      // react_nativemodule_core
                       Pair(File(buildDir, "third-party-ndk/boost/boost_1_83_0/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
-                  )),
-              PrefabPreprocessingEntry(
-                  "react_nativemodule_core",
-                  listOf(
-                      Pair(File(buildDir, "third-party-ndk/boost/boost_1_83_0/").absolutePath, ""),
-                      Pair(File(buildDir, "third-party-ndk/double-conversion/").absolutePath, ""),
+                      Pair(File(buildDir, "third-party-ndk/fast_float/include/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/fmt/include/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/folly/").absolutePath, ""),
                       Pair(File(buildDir, "third-party-ndk/glog/exported/").absolutePath, ""),
                       Pair("../ReactCommon/callinvoker/", ""),
                       Pair("../ReactCommon/cxxreact/", "cxxreact/"),
                       Pair("../ReactCommon/react/bridging/", "react/bridging/"),
-                      Pair("../ReactCommon/react/config/", "react/config/"),
                       Pair("../ReactCommon/react/nativemodule/core/", ""),
                       Pair("../ReactCommon/react/nativemodule/core/platform/android/", ""),
                       Pair(
@@ -215,60 +215,30 @@ val preparePrefab by
                       Pair("../ReactCommon/react/debug/", "react/debug/"),
                       Pair("../ReactCommon/react/utils/", "react/utils/"),
                       Pair("src/main/jni/react/jni", "react/jni/"),
-                      // From: react_cxxreactpackage
+                      // react_cxxreactpackage
                       Pair("src/main/jni/react/runtime/cxxreactpackage", ""),
-                  )),
-              PrefabPreprocessingEntry(
-                  "react_utils",
-                  Pair("../ReactCommon/react/utils/", "react/utils/"),
-              ),
-              PrefabPreprocessingEntry(
-                  "react_render_imagemanager",
-                  listOf(
+                      // react_performance_timeline
                       Pair(
-                          "../ReactCommon/react/renderer/imagemanager/",
-                          "react/renderer/imagemanager/"),
-                      Pair("../ReactCommon/react/renderer/imagemanager/platform/cxx/", ""),
+                          "../ReactCommon/react/performance/timeline/",
+                          "react/performance/timeline/"),
+                      // react_renderer_observers_events
+                      Pair(
+                          "../ReactCommon/react/renderer/observers/events/",
+                          "react/renderer/observers/events/"),
+                      // react_timing
+                      Pair("../ReactCommon/react/timing/", "react/timing/"),
+                      // yoga
+                      Pair("../ReactCommon/yoga/", ""),
+                      Pair("src/main/jni/first-party/yogajni/jni", ""),
                   )),
               PrefabPreprocessingEntry(
-                  "rrc_image",
-                  Pair(
-                      "../ReactCommon/react/renderer/components/image/",
-                      "react/renderer/components/image/")),
-              // These prefab targets are used by Expo & Reanimated
-              PrefabPreprocessingEntry(
-                  "hermes_executor",
-                  // "hermes_executor" is statically linking against "hermes_executor_common"
-                  // and "hermes_inspector_modern". Here we expose only the headers that we know are
-                  // needed.
+                  "hermestooling",
+                  // hermes_executor
                   Pair("../ReactCommon/hermes/inspector-modern/", "hermes/inspector-modern/")),
               PrefabPreprocessingEntry(
-                  "jscexecutor",
-                  // "jscexecutor" is statically linking against "jscruntime"
-                  // Here we expose only the headers that we know are needed.
+                  "jsctooling",
+                  // jsc
                   Pair("../ReactCommon/jsc/", "jsc/")),
-              PrefabPreprocessingEntry(
-                  "react_render_uimanager",
-                  Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
-              ),
-              PrefabPreprocessingEntry(
-                  "react_render_scheduler",
-                  Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
-              ),
-              PrefabPreprocessingEntry(
-                  "react_render_mounting",
-                  Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
-              ),
-              PrefabPreprocessingEntry(
-                  "reactnativejni",
-                  listOf(
-                      Pair("src/main/jni/react/jni", "react/jni/"),
-                      Pair("../ReactCommon/cxxreact/", "cxxreact/"),
-                  )),
-              PrefabPreprocessingEntry(
-                  "jsinspector",
-                  Pair("../ReactCommon/jsinspector-modern/", "jsinspector-modern/"),
-              ),
           ))
       outputDir.set(prefabHeadersDir)
     }
@@ -279,40 +249,46 @@ val createNativeDepsDirectories by
       thirdPartyNdkDir.mkdirs()
     }
 
+val downloadBoostDest = File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz")
 val downloadBoost by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src(
           "https://archives.boost.io/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
+      quiet(true)
+      dest(downloadBoostDest)
     }
 
 val prepareBoost by
     tasks.registering(PrepareBoostTask::class) {
       dependsOn(if (boostPathOverride != null) emptyList() else listOf(downloadBoost))
-      boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(downloadBoost.dest))
+      boostPath.setFrom(if (boostPathOverride != null) boostPath else tarTree(downloadBoostDest))
+      boostThirdPartyJniPath.set(project.file("src/main/jni/third-party/boost"))
       boostVersion.set(BOOST_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "boost"))
     }
 
+val downloadDoubleConversionDest =
+    File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz")
 val downloadDoubleConversion by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src(
           "https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
+      quiet(true)
+      dest(downloadDoubleConversionDest)
     }
 
 val prepareDoubleConversion by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadDoubleConversion))
-      from(dependenciesPath ?: tarTree(downloadDoubleConversion.dest))
+      from(dependenciesPath ?: tarTree(downloadDoubleConversionDest))
       from("src/main/jni/third-party/double-conversion/")
       include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "CMakeLists.txt")
       filesMatching("*/src/**/*") { this.path = "double-conversion/${this.name}" }
@@ -320,19 +296,21 @@ val prepareDoubleConversion by
       into("$thirdPartyNdkDir/double-conversion")
     }
 
+val downloadFollyDest = File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz")
 val downloadFolly by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       src("https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
+      quiet(true)
+      dest(downloadFollyDest)
     }
 
 val prepareFolly by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFolly))
-      from(dependenciesPath ?: tarTree(downloadFolly.dest))
+      from(dependenciesPath ?: tarTree(downloadFollyDest))
       from("src/main/jni/third-party/folly/")
       include("folly-${FOLLY_VERSION}/folly/**/*", "CMakeLists.txt")
       eachFile { this.path = this.path.removePrefix("folly-${FOLLY_VERSION}/") }
@@ -340,20 +318,45 @@ val prepareFolly by
       into("$thirdPartyNdkDir/folly")
     }
 
+val downloadFastFloatDest = File(downloadsDir, "fast_float-${FAST_FLOAT_VERSION}.tar.gz")
+val downloadFastFloat by
+    tasks.registering(Download::class) {
+      dependsOn(createNativeDepsDirectories)
+      src("https://github.com/fastfloat/fast_float/archive/v${FAST_FLOAT_VERSION}.tar.gz")
+      onlyIfModified(true)
+      overwrite(false)
+      retries(5)
+      quiet(true)
+      dest(downloadFastFloatDest)
+    }
+
+val prepareFastFloat by
+    tasks.registering(Copy::class) {
+      dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFastFloat))
+      from(dependenciesPath ?: tarTree(downloadFastFloatDest))
+      from("src/main/jni/third-party/fast_float/")
+      include("fast_float-${FAST_FLOAT_VERSION}/include/**/*", "CMakeLists.txt")
+      eachFile { this.path = this.path.removePrefix("fast_float-${FAST_FLOAT_VERSION}/") }
+      includeEmptyDirs = false
+      into("$thirdPartyNdkDir/fast_float")
+    }
+
+val downloadFmtDest = File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz")
 val downloadFmt by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/fmtlib/fmt/archive/${FMT_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "fmt-${FMT_VERSION}.tar.gz"))
+      quiet(true)
+      dest(downloadFmtDest)
     }
 
 val prepareFmt by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadFmt))
-      from(dependenciesPath ?: tarTree(downloadFmt.dest))
+      from(dependenciesPath ?: tarTree(downloadFmtDest))
       from("src/main/jni/third-party/fmt/")
       include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "CMakeLists.txt")
       eachFile { this.path = this.path.removePrefix("fmt-${FMT_VERSION}/") }
@@ -361,49 +364,45 @@ val prepareFmt by
       into("$thirdPartyNdkDir/fmt")
     }
 
+val downloadGlogDest = File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz")
 val downloadGlog by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/google/glog/archive/v${GLOG_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "glog-${GLOG_VERSION}.tar.gz"))
+      quiet(true)
+      dest(downloadGlogDest)
     }
 
+val downloadGtestDest = File(downloadsDir, "gtest.tar.gz")
 val downloadGtest by
-    tasks.creating(Download::class) {
+    tasks.registering(Download::class) {
       dependsOn(createNativeDepsDirectories)
       src("https://github.com/google/googletest/archive/refs/tags/release-${GTEST_VERSION}.tar.gz")
       onlyIfModified(true)
       overwrite(false)
       retries(5)
-      dest(File(downloadsDir, "gtest.tar.gz"))
+      quiet(true)
+      dest(downloadGtestDest)
     }
 
 val prepareGtest by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGtest))
-      from(dependenciesPath ?: tarTree(downloadGtest.dest))
+      from(dependenciesPath ?: tarTree(downloadGtestDest))
       eachFile { this.path = (this.path.removePrefix("googletest-release-${GTEST_VERSION}/")) }
       into(File(thirdPartyNdkDir, "googletest"))
     }
 
-// Prepare glog sources to be compiled, this task will perform steps that normally should've been
-// executed by automake. This way we can avoid dependencies on make/automake
 val prepareGlog by
     tasks.registering(PrepareGlogTask::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGlog))
-      glogPath.setFrom(dependenciesPath ?: tarTree(downloadGlog.dest))
+      glogPath.setFrom(dependenciesPath ?: tarTree(downloadGlogDest))
+      glogThirdPartyJniPath.set(project.file("src/main/jni/third-party/glog/"))
       glogVersion.set(GLOG_VERSION)
       outputDir.set(File(thirdPartyNdkDir, "glog"))
-    }
-
-// Create Android native library module based on jsc from npm
-val prepareJSC by
-    tasks.registering(PrepareJSCTask::class) {
-      jscPackagePath.set(findNodeModulePath(projectDir, "jsc-android"))
-      outputDir = project.layout.buildDirectory.dir("third-party-ndk/jsc")
     }
 
 val prepareKotlinBuildScriptModel by
@@ -522,6 +521,9 @@ android {
 
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+    buildConfigField("boolean", "UNSTABLE_ENABLE_FUSEBOX_RELEASE", "false")
+    buildConfigField("boolean", "ENABLE_PERFETTO", "false")
+    buildConfigField("boolean", "UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE", "false")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
 
@@ -536,61 +538,14 @@ android {
             "-DREACT_BUILD_DIR=$buildDir",
             "-DANDROID_STL=c++_shared",
             "-DANDROID_TOOLCHAIN=clang",
-            // Due to https://github.com/android/ndk/issues/1693 we're losing Android
-            // specific compilation flags. This can be removed once we moved to NDK 25/26
-            "-DANDROID_USE_LEGACY_TOOLCHAIN_FILE=ON")
+            "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
 
         targets(
-            "jsijniprofiler",
-            "reactnativeblob",
-            "bridgeless",
-            "rninstance",
-            "hermesinstancejni",
-            "uimanagerjni",
-            "jscinstance",
-            "react_devsupportjni",
-            // prefab targets
-            "reactnativejni",
-            "react_render_debug",
-            "turbomodulejsijni",
-            "runtimeexecutor",
-            "react_featureflagsjni",
-            "react_codegen_rncore",
-            "react_debug",
-            "react_featureflags",
-            "react_performance_timeline",
-            "react_utils",
-            "react_render_componentregistry",
-            "react_newarchdefaults",
-            "react_render_animations",
-            "react_render_core",
-            "react_render_consistency",
-            "react_render_dom",
-            "react_render_graphics",
-            "react_render_observers_events",
-            "rrc_image",
-            "rrc_root",
-            "rrc_view",
-            "rrc_text",
-            "rrc_textinput",
-            "rrc_legacyviewmanagerinterop",
+            "reactnative",
             "jsi",
-            "glog",
-            "fabricjni",
-            "mapbufferjni",
-            "react_render_mapbuffer",
-            "react_render_textlayoutmanager",
-            "yoga",
-            "folly_runtime",
-            "react_nativemodule_core",
-            "react_render_imagemanager",
-            "react_render_uimanager",
-            "react_render_uimanager_consistency",
-            "react_render_scheduler",
-            "react_render_mounting",
-            "hermes_executor",
-            "jscexecutor",
-            "jsinspector")
+            "hermestooling",
+            "jsctooling",
+        )
       }
     }
     ndk { abiFilters.addAll(reactNativeArchitectures()) }
@@ -621,11 +576,11 @@ android {
           "generateCodegenArtifactsFromSchema",
           prepareBoost,
           prepareDoubleConversion,
+          prepareFastFloat,
           prepareFmt,
           prepareFolly,
           prepareGlog,
           prepareGtest,
-          prepareJSC,
           preparePrefab)
   tasks.getByName("generateCodegenSchemaFromJavaScript").dependsOn(buildCodegenCLI)
   prepareKotlinBuildScriptModel.dependsOn("preBuild")
@@ -637,9 +592,10 @@ android {
         listOf(
             "src/main/res/devsupport",
             "src/main/res/shell",
+            "src/main/res/views/alert",
             "src/main/res/views/modal",
-            "src/main/res/views/uimanager"))
-    java.exclude("com/facebook/annotationprocessors")
+            "src/main/res/views/uimanager",
+            "src/main/res/views/view"))
     java.exclude("com/facebook/react/processing")
     java.exclude("com/facebook/react/module/processing")
   }
@@ -667,72 +623,10 @@ android {
   }
 
   prefab {
-    create("react_render_debug") {
-      headers = File(prefabHeadersDir, "react_render_debug").absolutePath
-    }
-    create("turbomodulejsijni") {
-      headers = File(prefabHeadersDir, "turbomodulejsijni").absolutePath
-    }
-    create("runtimeexecutor") { headers = File(prefabHeadersDir, "runtimeexecutor").absolutePath }
-    create("react_codegen_rncore") {
-      headers = File(prefabHeadersDir, "react_codegen_rncore").absolutePath
-    }
-    create("react_debug") { headers = File(prefabHeadersDir, "react_debug").absolutePath }
-    create("react_utils") { headers = File(prefabHeadersDir, "react_utils").absolutePath }
-    create("react_render_componentregistry") {
-      headers = File(prefabHeadersDir, "react_render_componentregistry").absolutePath
-    }
-    create("react_newarchdefaults") {
-      headers = File(prefabHeadersDir, "react_newarchdefaults").absolutePath
-    }
-    create("react_render_animations") {
-      headers = File(prefabHeadersDir, "react_render_animations").absolutePath
-    }
-    create("react_render_core") {
-      headers = File(prefabHeadersDir, "react_render_core").absolutePath
-    }
-    create("react_render_graphics") {
-      headers = File(prefabHeadersDir, "react_render_graphics").absolutePath
-    }
-    create("rrc_image") { headers = File(prefabHeadersDir, "rrc_image").absolutePath }
-    create("rrc_root") { headers = File(prefabHeadersDir, "rrc_root").absolutePath }
-    create("rrc_view") { headers = File(prefabHeadersDir, "rrc_view").absolutePath }
-    create("rrc_text") { headers = File(prefabHeadersDir, "rrc_text").absolutePath }
-    create("rrc_textinput") { headers = File(prefabHeadersDir, "rrc_textinput").absolutePath }
-    create("rrc_legacyviewmanagerinterop") {
-      headers = File(prefabHeadersDir, "rrc_legacyviewmanagerinterop").absolutePath
-    }
     create("jsi") { headers = File(prefabHeadersDir, "jsi").absolutePath }
-    create("glog") { headers = File(prefabHeadersDir, "glog").absolutePath }
-    create("fabricjni") { headers = File(prefabHeadersDir, "fabricjni").absolutePath }
-    create("mapbufferjni") { headers = File(prefabHeadersDir, "mapbufferjni").absolutePath }
-    create("react_render_mapbuffer") {
-      headers = File(prefabHeadersDir, "react_render_mapbuffer").absolutePath
-    }
-    create("react_render_textlayoutmanager") {
-      headers = File(prefabHeadersDir, "react_render_textlayoutmanager").absolutePath
-    }
-    create("yoga") { headers = File(prefabHeadersDir, "yoga").absolutePath }
-    create("folly_runtime") { headers = File(prefabHeadersDir, "folly_runtime").absolutePath }
-    create("react_nativemodule_core") {
-      headers = File(prefabHeadersDir, "react_nativemodule_core").absolutePath
-    }
-    create("react_render_imagemanager") {
-      headers = File(prefabHeadersDir, "react_render_imagemanager").absolutePath
-    }
-    create("react_render_uimanager") {
-      headers = File(prefabHeadersDir, "react_render_uimanager").absolutePath
-    }
-    create("react_render_scheduler") {
-      headers = File(prefabHeadersDir, "react_render_scheduler").absolutePath
-    }
-    create("react_render_mounting") {
-      headers = File(prefabHeadersDir, "react_render_mounting").absolutePath
-    }
-    create("reactnativejni") { headers = File(prefabHeadersDir, "reactnativejni").absolutePath }
-    create("hermes_executor") { headers = File(prefabHeadersDir, "hermes_executor").absolutePath }
-    create("jscexecutor") { headers = File(prefabHeadersDir, "jscexecutor").absolutePath }
-    create("jsinspector") { headers = File(prefabHeadersDir, "jsinspector").absolutePath }
+    create("reactnative") { headers = File(prefabHeadersDir, "reactnative").absolutePath }
+    create("hermestooling") { headers = File(prefabHeadersDir, "hermestooling").absolutePath }
+    create("jsctooling") { headers = File(prefabHeadersDir, "jsctooling").absolutePath }
   }
 
   publishing {
@@ -748,6 +642,8 @@ android {
   }
 }
 
+tasks.withType<KotlinCompile>().configureEach { exclude("com/facebook/annotationprocessors/**") }
+
 dependencies {
   api(libs.androidx.appcompat)
   api(libs.androidx.appcompat.resources)
@@ -757,8 +653,8 @@ dependencies {
 
   api(libs.fbjni)
   api(libs.fresco)
-  api(libs.fresco.middleware)
   api(libs.fresco.imagepipeline.okhttp3)
+  api(libs.fresco.middleware)
   api(libs.fresco.ui.common)
   api(libs.infer.annotation)
   api(libs.soloader)
@@ -771,13 +667,15 @@ dependencies {
   compileOnly(libs.javax.annotation.api)
   api(libs.javax.inject)
 
-  // It's up to the consumer to decide if hermes should be included or not.
-  // Therefore hermes-engine is a compileOnly dependency.
+  // It's up to the consumer to decide if hermes/jsc should be included or not.
+  // Therefore hermes-engine and jsc are compileOnly dependencies.
   compileOnly(project(":packages:react-native:ReactAndroid:hermes-engine"))
+  compileOnly(libs.jsc.android)
 
   testImplementation(libs.junit)
   testImplementation(libs.assertj)
   testImplementation(libs.mockito)
+  testImplementation(libs.mockito.kotlin)
   testImplementation(libs.robolectric)
   testImplementation(libs.thoughtworks)
 }
@@ -811,6 +709,8 @@ kotlin {
   jvmToolchain(17)
   explicitApi()
 }
+
+tasks.withType<Test> { jvmArgs = listOf("-Xshare:off") }
 
 /* Publishing Configuration */
 apply(from = "./publish.gradle")

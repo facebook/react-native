@@ -17,14 +17,13 @@ import type {BuildType} from '../releases/utils/version-utils';
 
 const {REPO_ROOT} = require('../consts');
 const {getNpmInfo, publishPackage} = require('../npm-utils');
-const {removeNewArchFlags} = require('../releases/remove-new-arch-flags');
 const {
   updateReactNativeArtifacts,
 } = require('../releases/set-rn-artifacts-version');
 const {setVersion} = require('../releases/set-version');
 const {
-  generateAndroidArtifacts,
   publishAndroidArtifactsToMaven,
+  publishExternalArtifactsToMaven,
 } = require('../releases/utils/release-utils');
 const {getPackages} = require('../utils/monorepo');
 const path = require('path');
@@ -57,7 +56,7 @@ async function main() {
     .option('t', {
       alias: 'builtType',
       describe: 'The type of build you want to perform.',
-      choices: ['dry-run', 'nightly', 'release', 'prealpha'],
+      choices: ['dry-run', 'nightly', 'release'],
       default: 'dry-run',
     })
     .strict().argv;
@@ -96,12 +95,8 @@ async function publishMonorepoPackages(tag /*: ?string */) {
 async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
   const {version, tag} = getNpmInfo(buildType);
 
-  if (buildType === 'prealpha') {
-    removeNewArchFlags();
-  }
-
-  // For stable releases, CircleCI job `prepare_package_for_release` handles this
-  if (['dry-run', 'nightly', 'prealpha'].includes(buildType)) {
+  // For stable releases, ci job `prepare_package_for_release` handles this
+  if (['dry-run', 'nightly'].includes(buildType)) {
     if (buildType === 'nightly') {
       // Set same version for all monorepo packages
       await setVersion(version);
@@ -111,16 +106,19 @@ async function publishNpm(buildType /*: BuildType */) /*: Promise<void> */ {
     }
   }
 
-  generateAndroidArtifacts(version);
-
   if (buildType === 'dry-run') {
     console.log('Skipping `npm publish` because --dry-run is set.');
     return;
   }
 
-  // We first publish on Maven Central all the necessary artifacts.
-  // NPM publishing is done just after.
+  // We first publish on Maven Central all the Android artifacts.
+  // Those were built by the `build-android` CI job.
   publishAndroidArtifactsToMaven(version, buildType);
+
+  // And we then publish on Maven Central the external artifacts
+  // produced by iOS
+  // NPM publishing is done just after.
+  publishExternalArtifactsToMaven(version, buildType);
 
   const packagePath = path.join(REPO_ROOT, 'packages', 'react-native');
   const result = publishPackage(packagePath, {

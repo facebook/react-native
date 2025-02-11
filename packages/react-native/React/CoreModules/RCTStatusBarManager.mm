@@ -80,6 +80,8 @@ RCT_EXPORT_MODULE()
 - (void)startObserving
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [nc addObserver:self
          selector:@selector(applicationDidChangeStatusBarFrame:)
              name:UIApplicationDidChangeStatusBarFrameNotification
@@ -88,6 +90,7 @@ RCT_EXPORT_MODULE()
          selector:@selector(applicationWillChangeStatusBarFrame:)
              name:UIApplicationWillChangeStatusBarFrameNotification
            object:nil];
+#pragma clang diagnostic pop
 }
 
 - (void)stopObserving
@@ -97,7 +100,10 @@ RCT_EXPORT_MODULE()
 
 - (void)emitEvent:(NSString *)eventName forNotification:(NSNotification *)notification
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   CGRect frame = [notification.userInfo[UIApplicationStatusBarFrameUserInfoKey] CGRectValue];
+#pragma clang diagnostic pop
   NSDictionary *event = @{
     @"frame" : @{
       @"x" : @(frame.origin.x),
@@ -122,7 +128,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(getHeight : (RCTResponseSenderBlock)callback)
 {
   callback(@[ @{
-    @"height" : @(RCTSharedApplication().statusBarFrame.size.height),
+    @"height" : @(RCTUIStatusBarManager().statusBarFrame.size.height),
   } ]);
 }
 
@@ -161,7 +167,11 @@ RCT_EXPORT_METHOD(setHidden : (BOOL)hidden withAnimation : (NSString *)withAnima
 RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
 {
   dispatch_async(dispatch_get_main_queue(), ^{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    // This is no longer supported in iOS 13 and later. We will remove this method in a future release.
     RCTSharedApplication().networkActivityIndicatorVisible = visible;
+#pragma clang diagnostic pop
   });
 }
 

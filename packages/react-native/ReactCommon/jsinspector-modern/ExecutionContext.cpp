@@ -11,8 +11,11 @@ namespace facebook::react::jsinspector_modern {
 
 namespace {
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-const-variable"
 template <class>
 inline constexpr bool always_false_v = false;
+#pragma clang diagnostic pop
 
 } // namespace
 
@@ -34,10 +37,6 @@ bool ExecutionContextSelector::matches(
         }
       },
       value_);
-
-  // Prevent the compiler from thinking always_false_v is unused when the
-  // visitor is (correctly) exhaustive.
-  (void)always_false_v<void>;
 }
 
 ExecutionContextSelector ExecutionContextSelector::byId(int32_t id) {

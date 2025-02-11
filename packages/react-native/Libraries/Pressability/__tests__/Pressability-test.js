@@ -15,7 +15,7 @@ jest.useFakeTimers({legacyFakeTimers: true});
 import type {PressEvent} from '../../Types/CoreEventTypes';
 import type {PressabilityConfig} from '../Pressability';
 
-const UIManager = require('../../ReactNative/UIManager');
+const UIManager = require('../../ReactNative/UIManager').default;
 const Platform = require('../../Utilities/Platform');
 const HoverState = require('../HoverState');
 const Pressability = require('../Pressability').default;
@@ -82,7 +82,7 @@ const mockSlop = {
   right: 10,
 };
 
-const mockUIManagerMeasure = (options?: {|delay: number|}) => {
+const mockUIManagerMeasure = (options?: {delay: number}) => {
   getMock(UIManager.measure).mockImplementation((id, fn) => {
     if (options && options.delay) {
       setTimeout(
@@ -171,11 +171,11 @@ const createMockMouseEvent = (registrationName: string) => {
 const createMockPressEvent = (
   nameOrOverrides:
     | string
-    | $ReadOnly<{|
+    | $ReadOnly<{
         registrationName: string,
         pageX: number,
         pageY: number,
-      |}>,
+      }>,
 ): PressEvent => {
   let registrationName = '';
   let pageX = 0;
@@ -262,16 +262,22 @@ describe('Pressability', () => {
 
     beforeEach(() => {
       originalPlatform = Platform.OS;
+      /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+       * Platform.flow.js */
       Platform.OS = 'web';
       // $FlowExpectedError[prop-missing]
       HoverState.isHoverEnabled.mockReturnValue(true);
     });
 
     afterEach(() => {
+      /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+       * Platform.flow.js */
       Platform.OS = originalPlatform;
     });
 
     it('is ignored on unsupported platforms`', () => {
+      /* $FlowFixMe[incompatible-type] Error found due to incomplete typing of
+       * Platform.flow.js */
       Platform.OS = 'ios';
       const {handlers} = createMockPressability();
       expect(handlers.onMouseEnter).toBeUndefined();

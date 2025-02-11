@@ -11,7 +11,7 @@
 import RNTesterComponentTitle from './RNTesterComponentTitle';
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
-import {Platform, Pressable, StyleSheet, Text, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 
 type ViewStyleProp = $ElementType<React.ElementConfig<typeof View>, 'style'>;
 type Props = {
@@ -19,7 +19,6 @@ type Props = {
   testID?: ?string,
   onPressIn?: ?() => mixed,
   onPressOut?: ?() => mixed,
-  bottomAddOn?: ?React.Node,
   children?: ?React.Node,
   title: string,
   description?: ?string,
@@ -32,7 +31,6 @@ export default function RNTPressableRow({
   onPressOut,
   title,
   description,
-  bottomAddOn,
   onPress,
   style,
   accessibilityLabel,
@@ -60,7 +58,6 @@ export default function RNTPressableRow({
         style={[styles.descriptionText, {color: theme.SecondaryLabelColor}]}>
         {description}
       </Text>
-      {bottomAddOn}
     </Pressable>
   );
 }
@@ -68,21 +65,16 @@ export default function RNTPressableRow({
 const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginVertical: Platform.select({ios: 4, android: 8}),
-    marginHorizontal: 15,
-    overflow: 'hidden',
-    elevation: 5,
-    backgroundColor: Platform.select({ios: '#FFFFFF', android: '#F3F8FF'}),
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    marginVertical: 5,
+    marginHorizontal: 16,
+    boxShadow: '0 2px 4px -1px rgba(0, 0, 0, 0.25)',
+    borderRadius: 8,
   },
   descriptionText: {
+    marginTop: 6,
     fontSize: 12,
-    lineHeight: 20,
-    marginBottom: 5,
-  },
-  pressed: {
-    elevation: 3,
   },
   topRowStyle: {
     flexDirection: 'row',

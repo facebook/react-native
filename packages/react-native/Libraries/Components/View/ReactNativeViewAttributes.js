@@ -22,6 +22,8 @@ const UIView = {
   accessibilityValue: true,
   accessibilityHint: true,
   accessibilityLanguage: true,
+  accessibilityShowsLargeContentViewer: true,
+  accessibilityLargeContentTitle: true,
   importantForAccessibility: true,
   nativeID: true,
   testID: true,
@@ -55,4 +57,4 @@ const ReactNativeViewAttributes = {
   RCTView: RCTView,
 };
 
-module.exports = ReactNativeViewAttributes;
+export default ReactNativeViewAttributes;

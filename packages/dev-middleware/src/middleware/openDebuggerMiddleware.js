@@ -20,6 +20,9 @@ import type {IncomingMessage, ServerResponse} from 'http';
 import getDevToolsFrontendUrl from '../utils/getDevToolsFrontendUrl';
 import url from 'url';
 
+const LEGACY_SYNTHETIC_PAGE_TITLE =
+  'React Native Experimental (Improved Chrome Reloads)';
+
 type Options = $ReadOnly<{
   serverBaseUrl: string,
   logger?: Logger,
@@ -30,10 +33,10 @@ type Options = $ReadOnly<{
 }>;
 
 /**
- * Open the JavaScript debugger for a given CDP target (direct Hermes debugging).
+ * Open the debugger frontend for a given CDP target.
  *
- * Currently supports Hermes targets, opening debugger websocket URL in Chrome
- * DevTools.
+ * Currently supports React Native DevTools (rn_fusebox.html) and legacy Hermes
+ * (rn_inspector.html) targets.
  *
  * @see https://chromedevtools.github.io/devtools-protocol/
  */
@@ -61,6 +64,7 @@ export default function openDebuggerMiddleware({
         launchId,
         target: targetId,
       }: {
+        /** @deprecated Will only match legacy Hermes targets */
         appId?: string,
         device?: string,
         launchId?: string,
@@ -68,12 +72,14 @@ export default function openDebuggerMiddleware({
         ...
       } = query;
 
-      const targets = inspectorProxy.getPageDescriptions().filter(
-        // Only use targets with better reloading support
-        app =>
-          app.title === 'React Native Experimental (Improved Chrome Reloads)' ||
-          app.reactNative.capabilities?.nativePageReloads === true,
-      );
+      const targets = inspectorProxy
+        .getPageDescriptions(new URL(serverBaseUrl))
+        .filter(
+          // Only use targets with better reloading support
+          app =>
+            app.title === LEGACY_SYNTHETIC_PAGE_TITLE ||
+            app.reactNative.capabilities?.nativePageReloads === true,
+        );
 
       let target;
 
@@ -87,27 +93,29 @@ export default function openDebuggerMiddleware({
       ) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
-            ' JS debugger (experimental)...',
+            ' DevTools...',
         );
         target = targets.find(
           _target =>
             (targetId == null || _target.id === targetId) &&
-            (appId == null || _target.description === appId) &&
+            (appId == null ||
+              (_target.appId === appId &&
+                _target.title === LEGACY_SYNTHETIC_PAGE_TITLE)) &&
             (device == null || _target.reactNative.logicalDeviceId === device),
         );
       } else if (targets.length > 0) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
-            ` JS debugger${targets.length === 1 ? '' : ' for most recently connected target'}...`,
+            ` DevTools${targets.length === 1 ? '' : ' for most recently connected target'}...`,
         );
         target = targets[targets.length - 1];
       }
 
       if (!target) {
         res.writeHead(404);
-        res.end('Unable to find Chrome DevTools inspector target');
+        res.end('Unable to find debugger target');
         logger?.warn(
-          'No compatible apps connected. JavaScript debugging can only be used with the Hermes engine.',
+          'No compatible apps connected. React Native DevTools can only be used with the Hermes engine.',
         );
         eventReporter?.logEvent({
           type: 'launch_debugger_frontend',
@@ -132,6 +140,7 @@ export default function openDebuggerMiddleware({
                 {launchId, useFuseboxEntryPoint},
               ),
             );
+            res.writeHead(200);
             res.end();
             break;
           case 'redirect':
@@ -155,12 +164,13 @@ export default function openDebuggerMiddleware({
           appId: appId ?? null,
           deviceId: device ?? null,
           resolvedTargetDescription: target.description,
+          resolvedTargetAppId: target.appId,
           prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
         });
         return;
       } catch (e) {
         logger?.error(
-          'Error launching JS debugger: ' + e.message ?? 'Unknown error',
+          'Error launching DevTools: ' + e.message ?? 'Unknown error',
         );
         res.writeHead(500);
         res.end();

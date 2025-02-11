@@ -9,7 +9,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 file(GLOB bridgeless_SRC "*.cpp")
 
 add_library(bridgeless
-        STATIC
+        OBJECT
         ${bridgeless_SRC}
 )
 target_compile_options(
@@ -21,22 +21,17 @@ target_compile_options(
 )
 target_include_directories(bridgeless PUBLIC .)
 
-find_library(LIBHERMES NAMES hermes-engine::libhermes)
-if (LIBHERMES)
-    target_link_libraries(bridgeless hermes-engine::libhermes)
-endif ()
-
 target_link_libraries(
         bridgeless
         jserrorhandler
         fabricjni
         react_featureflagsjni
         turbomodulejsijni
-        fb
         jsi
         jsireact
         react_utils
         jsinspector
         react_featureflags
+        react_performance_timeline
         react_utils
 )

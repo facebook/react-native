@@ -16,6 +16,7 @@
 #import <React/RCTInvalidating.h>
 #import <React/RCTUIUtils.h>
 #import <React/RCTUtils.h>
+#import <atomic>
 
 #import "CoreModulesPlugins.h"
 
@@ -28,7 +29,7 @@ using namespace facebook::react;
   UIInterfaceOrientation _currentInterfaceOrientation;
   NSDictionary *_currentInterfaceDimensions;
   BOOL _isFullscreen;
-  BOOL _invalidated;
+  std::atomic<BOOL> _invalidated;
 }
 
 @synthesize moduleRegistry = _moduleRegistry;
@@ -68,6 +69,10 @@ RCT_EXPORT_MODULE()
                                            selector:@selector(interfaceFrameDidChange)
                                                name:RCTWindowFrameDidChangeNotification
                                              object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(interfaceFrameDidChange)
+                                               name:UIApplicationDidBecomeActiveNotification
+                                             object:nil];
 
 #if TARGET_OS_IOS
 
@@ -92,10 +97,9 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  if (_invalidated) {
+  if (_invalidated.exchange(YES)) {
     return;
   }
-  _invalidated = YES;
   [self _cleanupObservers];
 }
 
@@ -128,7 +132,10 @@ static BOOL RCTIsIPhoneNotched()
     RCTAssertMainQueue();
 
     // 20pt is the top safeArea value in non-notched devices
-    isIPhoneNotched = RCTSharedApplication().keyWindow.safeAreaInsets.top > 20;
+    UIWindow *keyWindow = RCTKeyWindow();
+    if (keyWindow) {
+      isIPhoneNotched = keyWindow.safeAreaInsets.top > 20;
+    }
   });
 #endif
 
@@ -214,7 +221,7 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (void)_interfaceOrientationDidChange
 {
-#if TARGET_OS_IOS
+#if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
   UIApplication *application = RCTSharedApplication();
   UIInterfaceOrientation nextOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
 

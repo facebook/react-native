@@ -16,7 +16,6 @@
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/InspectorPackagerConnection.h>
 
-#include <functional>
 #include <memory>
 
 #include "FollyDynamicMatchers.h"
@@ -39,12 +38,18 @@ class InspectorPackagerConnectionTestBase : public testing::Test {
   InspectorPackagerConnectionTestBase()
       : packagerConnection_(InspectorPackagerConnection{
             "ws://mock-host:12345",
+            "my-device",
             "my-app",
             packagerConnectionDelegates_.make_unique(asyncExecutor_)}) {
+    auto makeSocket = webSockets_.lazily_make_unique<
+        const std::string&,
+        std::weak_ptr<IWebSocketDelegate>>();
     ON_CALL(*packagerConnectionDelegate(), connectWebSocket(_, _))
-        .WillByDefault(webSockets_.lazily_make_unique<
-                       const std::string&,
-                       std::weak_ptr<IWebSocketDelegate>>());
+        .WillByDefault([makeSocket](auto&&... args) {
+          auto socket = makeSocket(std::forward<decltype(args)>(args)...);
+          socket->getDelegate().didOpen();
+          return std::move(socket);
+        });
   }
 
   void TearDown() override {
@@ -200,14 +205,14 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
     })");
 
   auto pageId1 = getInspectorInstance().addPage(
-      "mock-title-1",
+      "mock-description-1",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>(),
       {.nativePageReloads = true});
 
   auto pageId2 = getInspectorInstance().addPage(
-      "mock-title-2",
+      "mock-description-2",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>(),
@@ -222,17 +227,23 @@ TEST_F(InspectorPackagerConnectionTest, TestGetPages) {
               "/payload",
               ElementsAreArray(
                   {AllOf(
-                       AtJsonPtr("/app", Eq("my-app")),
-                       AtJsonPtr("/title", Eq("mock-title-1 [C++ connection]")),
                        AtJsonPtr("/id", Eq(std::to_string(pageId1))),
+                       AtJsonPtr("/title", Eq("my-app (my-device)")),
+                       AtJsonPtr(
+                           "/description",
+                           Eq("mock-description-1 [C++ connection]")),
+                       AtJsonPtr("/app", Eq("my-app")),
                        AtJsonPtr("/capabilities/nativePageReloads", Eq(true)),
                        AtJsonPtr(
                            "/capabilities/nativeSourceCodeFetching",
                            Eq(false))),
                    AllOf(
-                       AtJsonPtr("/app", Eq("my-app")),
-                       AtJsonPtr("/title", Eq("mock-title-2 [C++ connection]")),
                        AtJsonPtr("/id", Eq(std::to_string(pageId2))),
+                       AtJsonPtr("/title", Eq("my-app (my-device)")),
+                       AtJsonPtr(
+                           "/description",
+                           Eq("mock-description-2 [C++ connection]")),
+                       AtJsonPtr("/app", Eq("my-app")),
                        AtJsonPtr("/capabilities/nativePageReloads", Eq(true)),
                        AtJsonPtr(
                            "/capabilities/nativeSourceCodeFetching",
@@ -265,7 +276,7 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEvents) {
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -351,7 +362,7 @@ TEST_F(InspectorPackagerConnectionTest, TestSendReceiveEventsToMultiplePages) {
   const int kNumPages = 2;
   for (int i = 0; i < kNumPages; ++i) {
     pageIds.push_back(getInspectorInstance().addPage(
-        "mock-title",
+        "mock-description",
         "mock-vm",
         localConnections_
             .lazily_make_unique<std::unique_ptr<IRemoteConnection>>()));
@@ -429,7 +440,7 @@ TEST_F(InspectorPackagerConnectionTest, TestSendEventToAllConnections) {
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -470,7 +481,7 @@ TEST_F(InspectorPackagerConnectionTest, TestConnectThenDisconnect) {
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -505,7 +516,7 @@ TEST_F(InspectorPackagerConnectionTest, TestConnectThenCloseSocket) {
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -533,7 +544,7 @@ TEST_F(InspectorPackagerConnectionTest, TestConnectThenSocketFailure) {
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -563,7 +574,7 @@ TEST_F(
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -609,7 +620,7 @@ TEST_F(
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -644,7 +655,7 @@ TEST_F(InspectorPackagerConnectionTest, TestMultipleDisconnect) {
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -690,7 +701,7 @@ TEST_F(InspectorPackagerConnectionTest, TestDisconnectThenSendEvent) {
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -839,17 +850,6 @@ TEST_F(InspectorPackagerConnectionTest, TestReconnectOnSocketErrorWithNoCode) {
   packagerConnection_->closeQuietly();
 }
 
-TEST_F(InspectorPackagerConnectionTest, TestNoReconnectOnConnectionRefused) {
-  // Configure gmock to expect calls in a specific order.
-  InSequence mockCallsMustBeInSequence;
-
-  packagerConnection_->connect();
-  ASSERT_TRUE(webSockets_[0]);
-  webSockets_[0]->getDelegate().didFailWithError(ECONNREFUSED, "Test error");
-  EXPECT_FALSE(webSockets_[0]);
-  EXPECT_FALSE(packagerConnection_->isConnected());
-}
-
 TEST_F(InspectorPackagerConnectionTest, TestUnknownEvent) {
   packagerConnection_->connect();
   ASSERT_TRUE(webSockets_[0]);
@@ -916,7 +916,7 @@ TEST_F(
   packagerConnection_.reset();
 
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -970,7 +970,7 @@ TEST_F(InspectorPackagerConnectionTest, TestDestroyConnectionOnPageRemoved) {
   ASSERT_TRUE(webSockets_[0]);
 
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -1000,7 +1000,7 @@ TEST_F(
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -1040,7 +1040,7 @@ TEST_F(
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -1122,7 +1122,7 @@ TEST_F(
 
   packagerConnection_->connect();
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       localConnections_
           .lazily_make_unique<std::unique_ptr<IRemoteConnection>>());
@@ -1228,7 +1228,7 @@ TEST_F(InspectorPackagerConnectionTest, TestRejectedPageConnection) {
   } mockNextConnectionBehavior;
 
   auto pageId = getInspectorInstance().addPage(
-      "mock-title",
+      "mock-description",
       "mock-vm",
       [&mockNextConnectionBehavior,
        this](auto remoteConnection) -> std::unique_ptr<ILocalConnection> {

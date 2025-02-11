@@ -18,7 +18,7 @@ file(GLOB rrc_view_SRC CONFIGURE_DEPENDS
         *.cpp
         platform/android/react/renderer/components/view/*.cpp)
 
-add_library(rrc_view SHARED ${rrc_view_SRC})
+add_library(rrc_view OBJECT ${rrc_view_SRC})
 
 target_include_directories(rrc_view
         PUBLIC
@@ -33,7 +33,7 @@ target_link_libraries(rrc_view
         jsi
         logger
         react_debug
-        react_render_core
-        react_render_debug
-        react_render_graphics
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
         yoga)

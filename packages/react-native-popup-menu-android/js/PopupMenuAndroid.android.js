@@ -9,7 +9,7 @@
  */
 
 import type {RefObject} from 'react';
-import type {HostComponent} from 'react-native';
+import type {HostInstance} from 'react-native';
 import type {SyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import PopupMenuAndroidNativeComponent, {
@@ -46,7 +46,7 @@ export default function PopupMenuAndroid({
   children,
   instanceRef,
 }: Props): React.Node {
-  const nativeRef = useRef<React.ElementRef<HostComponent<mixed>> | null>(null);
+  const nativeRef = useRef<HostInstance | null>(null);
   const _onSelectionChange = useCallback(
     (event: PopupMenuSelectionEvent) => {
       onSelectionChange(event.nativeEvent.item);

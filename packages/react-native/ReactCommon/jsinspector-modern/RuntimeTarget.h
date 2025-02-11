@@ -106,6 +106,18 @@ class RuntimeTargetController {
    */
   void installBindingHandler(const std::string& bindingName);
 
+  /**
+   * Notifies the target to emit some message that debugger session is
+   * created.
+   */
+  void notifyDebuggerSessionCreated();
+
+  /**
+   * Notifies the target to emit some message that debugger session is
+   * destroyed.
+   */
+  void notifyDebuggerSessionDestroyed();
+
  private:
   RuntimeTarget& target_;
 };
@@ -205,6 +217,25 @@ class JSINSPECTOR_EXPORT RuntimeTarget
    * Install the console API handler.
    */
   void installConsoleHandler();
+
+  /**
+   * Installs __DEBUGGER_SESSION_OBSERVER__ object on the JavaScript's global
+   * object, which later could be referenced from JavaScript side for
+   * determining the status of the debugger session.
+   */
+  void installDebuggerSessionObserver();
+
+  /**
+   * Propagates the debugger session state change to the JavaScript via calling
+   * onStatusChange on __DEBUGGER_SESSION_OBSERVER__.
+   */
+  void emitDebuggerSessionCreated();
+
+  /**
+   * Propagates the debugger session state change to the JavaScript via calling
+   * onStatusChange on __DEBUGGER_SESSION_OBSERVER__.
+   */
+  void emitDebuggerSessionDestroyed();
 
   // Necessary to allow RuntimeAgent to access RuntimeTarget's internals in a
   // controlled way (i.e. only RuntimeTargetController gets friend access, while

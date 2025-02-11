@@ -29,7 +29,7 @@ import usePressability from '../../Pressability/usePressability';
 import * as React from 'react';
 import {useMemo} from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   accessibilityElementsHidden?: ?boolean,
   accessibilityHint?: ?Stringish,
@@ -82,7 +82,7 @@ type Props = $ReadOnly<{|
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
   touchSoundDisabled?: ?boolean,
-|}>;
+}>;
 
 const PASSTHROUGH_PROPS = [
   'accessibilityActions',
@@ -110,7 +110,7 @@ const PASSTHROUGH_PROPS = [
   'testID',
 ];
 
-module.exports = function TouchableWithoutFeedback(props: Props): React.Node {
+export default function TouchableWithoutFeedback(props: Props): React.Node {
   const {
     disabled,
     rejectResponderTermination,
@@ -195,8 +195,7 @@ module.exports = function TouchableWithoutFeedback(props: Props): React.Node {
 
   // BACKWARD-COMPATIBILITY: Focus and blur events were never supported before
   // adopting `Pressability`, so preserve that behavior.
-  const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} =
-    eventHandlers || {};
+  const {onBlur, onFocus, ...eventHandlersWithoutBlurAndFocus} = eventHandlers;
 
   const elementProps: {[string]: mixed, ...} = {
     ...eventHandlersWithoutBlurAndFocus,
@@ -232,4 +231,4 @@ module.exports = function TouchableWithoutFeedback(props: Props): React.Node {
 
   // $FlowFixMe[incompatible-call]
   return React.cloneElement(element, elementProps, ...children);
-};
+}

@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <../instrumentation/HermesMemoryDumper.h>
 #include <HermesExecutorFactory.h>
 #include <android/log.h>
 #include <fbjni/fbjni.h>
@@ -42,10 +41,7 @@ static ::hermes::vm::RuntimeConfig makeRuntimeConfig(jlong heapSizeMB) {
 }
 
 static void installBindings(jsi::Runtime& runtime) {
-  react::Logger androidLogger =
-      static_cast<void (*)(const std::string&, unsigned int)>(
-          &reactAndroidLoggingHook);
-  react::bindNativeLogger(runtime, androidLogger);
+  react::bindNativeLogger(runtime, &reactAndroidLoggingHook);
 }
 
 class HermesExecutorHolder

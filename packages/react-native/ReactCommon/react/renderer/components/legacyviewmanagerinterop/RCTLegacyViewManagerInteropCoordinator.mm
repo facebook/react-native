@@ -91,9 +91,8 @@ using namespace facebook::react;
 
 - (UIView *)createPaperViewWithTag:(NSInteger)tag
 {
-  UIView *view = [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL];
-  [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.bridgelessViewManager];
-  return view;
+  [_bridgelessInteropData attachInteropAPIsToModule:(id<RCTBridgeModule>)_componentData.manager];
+  return [_componentData createViewWithTag:[NSNumber numberWithInteger:tag] rootTag:NULL];
 }
 
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(UIView *)view

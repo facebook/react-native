@@ -14,12 +14,12 @@ import type {DimensionValue} from 'react-native/Libraries/StyleSheet/StyleSheetT
 
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent';
 
-type NativeProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{
   ...ViewProps,
 
   // Props
   marginBack?: DimensionValue,
-|}>;
+}>;
 
 export default (codegenNativeComponent<NativeProps>(
   'DimensionPropNativeComponentView',

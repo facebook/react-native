@@ -7,7 +7,7 @@
 
 #include "UIManagerBinding.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 #include <react/debug/react_native_assert.h>
@@ -18,8 +18,6 @@
 #include <react/renderer/uimanager/primitives.h>
 
 #include <utility>
-
-#include "bindingUtils.h"
 
 namespace facebook::react {
 
@@ -62,40 +60,13 @@ UIManagerBinding::~UIManagerBinding() {
                << this << ").";
 }
 
-jsi::Value UIManagerBinding::getInspectorDataForInstance(
-    jsi::Runtime& runtime,
-    const EventEmitter& eventEmitter) const {
-  auto eventTarget = eventEmitter.eventTarget_;
-  EventEmitter::DispatchMutex().lock();
-
-  if (!runtime.global().hasProperty(runtime, "__fbBatchedBridge") ||
-      !eventTarget) {
-    return jsi::Value::undefined();
-  }
-
-  eventTarget->retain(runtime);
-  auto instanceHandle = eventTarget->getInstanceHandle(runtime);
-  eventTarget->release(runtime);
-  EventEmitter::DispatchMutex().unlock();
-
-  if (instanceHandle.isUndefined()) {
-    return jsi::Value::undefined();
-  }
-
-  return callMethodOfModule(
-      runtime,
-      "ReactFabric",
-      "getInspectorDataForInstance",
-      {std::move(instanceHandle)});
-}
-
 void UIManagerBinding::dispatchEvent(
     jsi::Runtime& runtime,
     const EventTarget* eventTarget,
     const std::string& type,
     ReactEventPriority priority,
     const EventPayload& eventPayload) const {
-  SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
+  TraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
   if (eventPayload.getType() == EventPayloadType::PointerEvent) {
     auto pointerEvent = static_cast<const PointerEvent&>(eventPayload);
@@ -261,30 +232,6 @@ jsi::Value UIManagerBinding::get(
           } catch (const std::logic_error& ex) {
             LOG(FATAL) << "logic_error in createNode: " << ex.what();
           }
-        });
-  }
-
-  // Semantic: Clones the node with *same* props and *same* children.
-  if (methodName == "cloneNode") {
-    auto paramCount = 1;
-    return jsi::Function::createFromHostFunction(
-        runtime,
-        name,
-        paramCount,
-        [uiManager, methodName, paramCount](
-            jsi::Runtime& runtime,
-            const jsi::Value& /*thisValue*/,
-            const jsi::Value* arguments,
-            size_t count) -> jsi::Value {
-          validateArgumentCount(runtime, methodName, paramCount, count);
-
-          return valueFromShadowNode(
-              runtime,
-              uiManager->cloneNode(
-                  *shadowNodeFromValue(runtime, arguments[0]),
-                  nullptr,
-                  RawProps()),
-              true);
         });
   }
 
@@ -488,14 +435,11 @@ jsi::Value UIManagerBinding::get(
 
   if (methodName == "completeRoot") {
     auto paramCount = 2;
-    std::weak_ptr<UIManager> weakUIManager = uiManager_;
-    // Enhanced version of the method that uses `backgroundExecutor` and
-    // captures a shared pointer to `UIManager`.
     return jsi::Function::createFromHostFunction(
         runtime,
         name,
         paramCount,
-        [weakUIManager, uiManager, methodName, paramCount](
+        [uiManager, methodName, paramCount](
             jsi::Runtime& runtime,
             const jsi::Value& /*thisValue*/,
             const jsi::Value* arguments,
@@ -506,47 +450,11 @@ jsi::Value UIManagerBinding::get(
               RuntimeSchedulerBinding::getBinding(runtime);
           auto surfaceId = surfaceIdFromValue(runtime, arguments[0]);
 
-          if (uiManager->backgroundExecutor_) {
-            auto weakShadowNodeList =
-                weakShadowNodeListFromValue(runtime, arguments[1]);
-            static std::atomic_uint_fast8_t completeRootEventCounter{0};
-            static std::atomic_uint_fast32_t mostRecentSurfaceId{0};
-            completeRootEventCounter += 1;
-            mostRecentSurfaceId = surfaceId;
-            uiManager->backgroundExecutor_(
-                [weakUIManager,
-                 weakShadowNodeList,
-                 surfaceId,
-                 eventCount = completeRootEventCounter.load()] {
-                  auto shouldYield = [=]() -> bool {
-                    // If `completeRootEventCounter` was incremented, another
-                    // `completeSurface` call has been scheduled and current
-                    // `completeSurface` should yield to it.
-                    return completeRootEventCounter > eventCount &&
-                        mostRecentSurfaceId == surfaceId;
-                  };
-                  auto shadowNodeList =
-                      shadowNodeListFromWeakList(weakShadowNodeList);
-                  auto strongUIManager = weakUIManager.lock();
-                  if (shadowNodeList && strongUIManager) {
-                    strongUIManager->completeSurface(
-                        surfaceId,
-                        shadowNodeList,
-                        {.enableStateReconciliation = true,
-                         .mountSynchronously = false,
-                         .shouldYield = shouldYield});
-                  }
-                });
-          } else {
-            auto shadowNodeList =
-                shadowNodeListFromValue(runtime, arguments[1]);
-            uiManager->completeSurface(
-                surfaceId,
-                shadowNodeList,
-                {.enableStateReconciliation = true,
-                 .mountSynchronously = false,
-                 .shouldYield = nullptr});
-          }
+          auto shadowNodeList = shadowNodeListFromValue(runtime, arguments[1]);
+          uiManager->completeSurface(
+              surfaceId,
+              shadowNodeList,
+              {.enableStateReconciliation = true, .mountSynchronously = false});
 
           return jsi::Value::undefined();
         });

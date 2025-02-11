@@ -8,8 +8,10 @@
 #pragma once
 
 #include <array>
+#include <string>
 #include <vector>
 
+#include <react/renderer/debug/flags.h>
 #include <react/renderer/graphics/Float.h>
 #include <react/renderer/graphics/Point.h>
 #include <react/renderer/graphics/RectangleEdges.h>
@@ -67,6 +69,17 @@ struct TransformOrigin {
     return xy[0].value != 0.0f || xy[0].unit != UnitType::Undefined ||
         xy[1].value != 0.0f || xy[1].unit != UnitType::Undefined || z != 0.0f;
   }
+
+#ifdef ANDROID
+
+  /**
+   * Convert to folly::dynamic.
+   */
+  operator folly::dynamic() const {
+    return folly::dynamic::array(xy[0].value, xy[1].value, z);
+  }
+
+#endif
 };
 
 /*
@@ -90,7 +103,8 @@ struct Transform {
    */
   static Transform FromTransformOperation(
       TransformOperation transformOperation,
-      const Size& size);
+      const Size& size,
+      const Transform& transform = Transform::Identity());
   static TransformOperation DefaultTransformOperation(
       TransformOperationType type);
 
@@ -145,10 +159,10 @@ struct Transform {
    * performs slerp between the two rotations, and a linear interpolation
    * of scale and translation.
    *
-   * @param progress
-   * @param lhs
-   * @param rhs
-   * @return
+   * @param animationProgress of the animation
+   * @param lhs start of the interpolation
+   * @param rhs end of the interpolation
+   * @return the Transformation
    */
   static Transform Interpolate(
       Float animationProgress,

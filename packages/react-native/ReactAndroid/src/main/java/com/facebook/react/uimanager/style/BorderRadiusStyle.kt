@@ -30,7 +30,7 @@ public enum class BorderRadiusProp {
 }
 
 /** Represents all logical properties and shorthands for border radius. */
-public data class BorderRadiusStyle(
+internal data class BorderRadiusStyle(
     var uniform: LengthPercentage? = null,
     var topLeft: LengthPercentage? = null,
     var topRight: LengthPercentage? = null,
@@ -107,40 +107,103 @@ public data class BorderRadiusStyle(
       width: Float,
       height: Float,
   ): ComputedBorderRadius {
+    val zeroRadii = CornerRadii(0f, 0f)
+
     return when (layoutDirection) {
       LayoutDirection.LTR ->
-          ComputedBorderRadius(
+          ensureNoOverlap(
               topLeft =
-                  (startStart ?: topStart ?: topLeft ?: uniform)?.resolve(width, height) ?: 0f,
-              topRight = (endStart ?: topEnd ?: topRight ?: uniform)?.resolve(width, height) ?: 0f,
+                  (startStart ?: topStart ?: topLeft ?: uniform)?.resolve(width, height)
+                      ?: zeroRadii,
+              topRight =
+                  (endStart ?: topEnd ?: topRight ?: uniform)?.resolve(width, height) ?: zeroRadii,
               bottomLeft =
-                  (startEnd ?: bottomStart ?: bottomLeft ?: uniform)?.resolve(width, height) ?: 0f,
+                  (startEnd ?: bottomStart ?: bottomLeft ?: uniform)?.resolve(width, height)
+                      ?: zeroRadii,
               bottomRight =
-                  (endEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height) ?: 0f,
+                  (endEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height)
+                      ?: zeroRadii,
+              width = width,
+              height = height,
           )
       LayoutDirection.RTL ->
           if (I18nUtil.instance.doLeftAndRightSwapInRTL(context)) {
-            ComputedBorderRadius(
-                topLeft = (endStart ?: topEnd ?: topRight ?: uniform)?.resolve(width, height) ?: 0f,
+            ensureNoOverlap(
+                topLeft =
+                    (endStart ?: topEnd ?: topRight ?: uniform)?.resolve(width, height)
+                        ?: zeroRadii,
                 topRight =
-                    (startStart ?: topStart ?: topLeft ?: uniform)?.resolve(width, height) ?: 0f,
+                    (startStart ?: topStart ?: topLeft ?: uniform)?.resolve(width, height)
+                        ?: zeroRadii,
                 bottomLeft =
-                    (endEnd ?: bottomStart ?: bottomRight ?: uniform)?.resolve(width, height) ?: 0f,
+                    (endEnd ?: bottomStart ?: bottomRight ?: uniform)?.resolve(width, height)
+                        ?: zeroRadii,
                 bottomRight =
-                    (startEnd ?: bottomEnd ?: bottomLeft ?: uniform)?.resolve(width, height) ?: 0f,
+                    (startEnd ?: bottomEnd ?: bottomLeft ?: uniform)?.resolve(width, height)
+                        ?: zeroRadii,
+                width = width,
+                height = height,
             )
           } else {
-            ComputedBorderRadius(
-                topLeft = (endStart ?: topEnd ?: topLeft ?: uniform)?.resolve(width, height) ?: 0f,
+            ensureNoOverlap(
+                topLeft =
+                    (endStart ?: topEnd ?: topLeft ?: uniform)?.resolve(width, height) ?: zeroRadii,
                 topRight =
-                    (startStart ?: topStart ?: topRight ?: uniform)?.resolve(width, height) ?: 0f,
+                    (startStart ?: topStart ?: topRight ?: uniform)?.resolve(width, height)
+                        ?: zeroRadii,
                 bottomLeft =
-                    (endEnd ?: bottomStart ?: bottomLeft ?: uniform)?.resolve(width, height) ?: 0f,
+                    (endEnd ?: bottomStart ?: bottomLeft ?: uniform)?.resolve(width, height)
+                        ?: zeroRadii,
                 bottomRight =
-                    (startEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height) ?: 0f,
+                    (startEnd ?: bottomEnd ?: bottomRight ?: uniform)?.resolve(width, height)
+                        ?: zeroRadii,
+                width = width,
+                height = height,
             )
           }
       else -> throw IllegalArgumentException("Expected?.resolved layout direction")
     }
+  }
+
+  /**
+   * "Corner curves must not overlap: When the sum of any two adjacent border radii exceeds the size
+   * of the border box, UAs must proportionally reduce the used values of all border radii until
+   * none of them overlap." Source: https://www.w3.org/TR/css-backgrounds-3/#corner-overlap
+   */
+  private fun ensureNoOverlap(
+      topLeft: CornerRadii,
+      topRight: CornerRadii,
+      bottomLeft: CornerRadii,
+      bottomRight: CornerRadii,
+      width: Float,
+      height: Float
+  ): ComputedBorderRadius {
+    val leftEdgeRadii = topLeft.vertical + bottomLeft.vertical
+    val topEdgeRadii = topLeft.horizontal + topRight.horizontal
+    val rightEdgeRadii = topRight.vertical + bottomRight.vertical
+    val bottomEdgeRadii = bottomLeft.horizontal + bottomRight.horizontal
+
+    val leftEdgeRadiiScale = if (leftEdgeRadii > 0) minOf(height / leftEdgeRadii, 1f) else 0f
+    val topEdgeRadiiScale = if (topEdgeRadii > 0) minOf(width / topEdgeRadii, 1f) else 0f
+    val rightEdgeRadiiScale = if (rightEdgeRadii > 0) minOf(height / rightEdgeRadii, 1f) else 0f
+    val bottomEdgeRadiiScale = if (bottomEdgeRadii > 0) minOf(width / bottomEdgeRadii, 1f) else 0f
+
+    return ComputedBorderRadius(
+        topLeft =
+            CornerRadii(
+                topLeft.horizontal * minOf(topEdgeRadiiScale, leftEdgeRadiiScale),
+                topLeft.vertical * minOf(topEdgeRadiiScale, leftEdgeRadiiScale)),
+        topRight =
+            CornerRadii(
+                topRight.horizontal * minOf(rightEdgeRadiiScale, topEdgeRadiiScale),
+                topRight.vertical * minOf(rightEdgeRadiiScale, topEdgeRadiiScale)),
+        bottomLeft =
+            CornerRadii(
+                bottomLeft.horizontal * minOf(bottomEdgeRadiiScale, leftEdgeRadiiScale),
+                bottomLeft.vertical * minOf(bottomEdgeRadiiScale, leftEdgeRadiiScale)),
+        bottomRight =
+            CornerRadii(
+                bottomRight.horizontal * minOf(bottomEdgeRadiiScale, rightEdgeRadiiScale),
+                bottomRight.vertical * minOf(bottomEdgeRadiiScale, rightEdgeRadiiScale)))
   }
 }

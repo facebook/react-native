@@ -45,6 +45,7 @@ void RCTCopyBackedTextInput(
   toTextInput.textContentType = fromTextInput.textContentType;
   toTextInput.smartInsertDeleteType = fromTextInput.smartInsertDeleteType;
   toTextInput.passwordRules = fromTextInput.passwordRules;
+  toTextInput.disableKeyboardShortcuts = fromTextInput.disableKeyboardShortcuts;
 
   [toTextInput setSelectedTextRange:fromTextInput.selectedTextRange notifyDelegate:NO];
 }
@@ -214,6 +215,14 @@ UITextContentType RCTUITextContentTypeFromString(const std::string &contentType)
       @"oneTimeCode" : UITextContentTypeOneTimeCode,
     }];
 
+    if (@available(iOS 15.0, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"dateTime" : UITextContentTypeDateTime,
+        @"flightNumber" : UITextContentTypeFlightNumber,
+        @"shipmentTrackingNumber" : UITextContentTypeShipmentTrackingNumber,
+      }];
+    }
+
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000 /* __IPHONE_17_0 */
     if (@available(iOS 17.0, *)) {
       [mutableContentTypeMap addEntriesFromDictionary:@{
@@ -232,6 +241,15 @@ UITextContentType RCTUITextContentTypeFromString(const std::string &contentType)
         @"birthdateYear" : UITextContentTypeBirthdateYear,
       }];
     }
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 170400 /* __IPHONE_17_4 */
+    if (@available(iOS 17.4, *)) {
+      [mutableContentTypeMap addEntriesFromDictionary:@{
+        @"cellularEID" : UITextContentTypeCellularEID,
+        @"cellularIMEI" : UITextContentTypeCellularIMEI,
+      }];
+    }
+#endif
 #endif
 
     contentTypeMap = mutableContentTypeMap;
@@ -250,4 +268,32 @@ UITextSmartInsertDeleteType RCTUITextSmartInsertDeleteTypeFromOptionalBool(std::
   return smartInsertDelete.has_value()
       ? (*smartInsertDelete ? UITextSmartInsertDeleteTypeYes : UITextSmartInsertDeleteTypeNo)
       : UITextSmartInsertDeleteTypeDefault;
+}
+
+UIDataDetectorTypes RCTUITextViewDataDetectorTypesFromStringVector(const std::vector<std::string> &dataDetectorTypes)
+{
+  static dispatch_once_t onceToken;
+  static NSDictionary<NSString *, NSNumber *> *dataDetectorTypesMap = nil;
+
+  dispatch_once(&onceToken, ^{
+    dataDetectorTypesMap = @{
+      @"link" : @(UIDataDetectorTypeLink),
+      @"phoneNumber" : @(UIDataDetectorTypePhoneNumber),
+      @"address" : @(UIDataDetectorTypeAddress),
+      @"calendarEvent" : @(UIDataDetectorTypeCalendarEvent),
+      @"trackingNumber" : @(UIDataDetectorTypeShipmentTrackingNumber),
+      @"flightNumber" : @(UIDataDetectorTypeFlightNumber),
+      @"lookupSuggestion" : @(UIDataDetectorTypeLookupSuggestion),
+      @"all" : @(UIDataDetectorTypeAll)
+    };
+  });
+
+  UIDataDetectorTypes ret = UIDataDetectorTypeNone;
+  for (const auto &dataType : dataDetectorTypes) {
+    NSNumber *val = dataDetectorTypesMap[RCTNSStringFromString(dataType)];
+    if (val) {
+      ret |= (UIDataDetectorTypes)val.unsignedIntValue;
+    }
+  }
+  return ret;
 }

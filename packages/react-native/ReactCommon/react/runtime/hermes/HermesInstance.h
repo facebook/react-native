@@ -10,7 +10,6 @@
 #include <cxxreact/MessageQueueThread.h>
 #include <hermes/hermes.h>
 #include <jsi/jsi.h>
-#include <react/config/ReactNativeConfig.h>
 #include <react/runtime/JSRuntimeFactory.h>
 
 namespace facebook::react {
@@ -18,9 +17,9 @@ namespace facebook::react {
 class HermesInstance {
  public:
   static std::unique_ptr<JSRuntime> createJSRuntime(
-      std::shared_ptr<const ReactNativeConfig> reactNativeConfig,
-      std::shared_ptr<::hermes::vm::CrashManager> cm,
-      std::shared_ptr<MessageQueueThread> msgQueueThread) noexcept;
+      std::shared_ptr<::hermes::vm::CrashManager> crashManager,
+      std::shared_ptr<MessageQueueThread> msgQueueThread,
+      bool allocInOldGenBeforeTTI) noexcept;
 };
 
 } // namespace facebook::react

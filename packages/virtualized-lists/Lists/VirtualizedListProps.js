@@ -52,7 +52,7 @@ export type RenderItemType<ItemT> = (
   info: RenderItemProps<ItemT>,
 ) => React.Node;
 
-type RequiredProps = {|
+type RequiredProps = {
   /**
    * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -66,8 +66,8 @@ type RequiredProps = {|
    * Determines how many items are in the data blob.
    */
   getItemCount: (data: any) => number,
-|};
-type OptionalProps = {|
+};
+type OptionalProps = {
   renderItem?: ?RenderItemType<Item>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
@@ -155,17 +155,26 @@ type OptionalProps = {|
    * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
    * your use-case.
    */
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  ListItemComponent?: ?(
+    | React.ComponentType<any>
+    | ExactReactElement_DEPRECATED<any>
+  ),
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
    */
-  ListEmptyComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  ListEmptyComponent?: ?(
+    | React.ComponentType<any>
+    | ExactReactElement_DEPRECATED<any>
+  ),
   /**
    * Rendered at the bottom of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
    */
-  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  ListFooterComponent?: ?(
+    | React.ComponentType<any>
+    | ExactReactElement_DEPRECATED<any>
+  ),
   /**
    * Styling for internal View for ListFooterComponent
    */
@@ -174,7 +183,10 @@ type OptionalProps = {|
    * Rendered at the top of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
    */
-  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  ListHeaderComponent?: ?(
+    | React.ComponentType<any>
+    | ExactReactElement_DEPRECATED<any>
+  ),
   /**
    * Styling for internal View for ListHeaderComponent
    */
@@ -244,7 +256,7 @@ type OptionalProps = {|
    * <RefreshControl> component built internally. The onRefresh and refreshing
    * props are also ignored. Only works for vertical VirtualizedList.
    */
-  refreshControl?: ?React.Element<any>,
+  refreshControl?: ?ExactReactElement_DEPRECATED<any>,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -258,7 +270,7 @@ type OptionalProps = {|
   /**
    * Render a custom scroll component, e.g. with a differently styled `RefreshControl`.
    */
-  renderScrollComponent?: (props: Object) => React.Element<any>,
+  renderScrollComponent?: (props: Object) => ExactReactElement_DEPRECATED<any>,
   /**
    * Amount of time between low-pri item render batches, e.g. for rendering items quite a ways off
    * screen. Similar fill rate/responsiveness tradeoff as `maxToRenderPerBatch`.
@@ -285,13 +297,13 @@ type OptionalProps = {|
    * The legacy implementation is no longer supported.
    */
   legacyImplementation?: empty,
-|};
+};
 
-export type Props = {|
+export type Props = {
   ...React.ElementConfig<ScrollView>,
   ...RequiredProps,
   ...OptionalProps,
-|};
+};
 
 /**
  * Default Props Helper Functions

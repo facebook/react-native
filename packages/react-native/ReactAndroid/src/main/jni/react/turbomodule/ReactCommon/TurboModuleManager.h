@@ -7,19 +7,18 @@
 
 #pragma once
 
+#include <fbjni/fbjni.h>
+#include <jsi/jsi.h>
+#include <memory>
+#include <unordered_map>
+
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/JavaTurboModule.h>
 #include <ReactCommon/NativeMethodCallInvokerHolder.h>
 #include <ReactCommon/RuntimeExecutor.h>
 #include <ReactCommon/TurboModule.h>
 #include <ReactCommon/TurboModuleManagerDelegate.h>
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-#include <react/bridging/LongLivedObject.h>
-#include <react/jni/CxxModuleWrapper.h>
 #include <react/jni/JRuntimeExecutor.h>
-#include <memory>
-#include <unordered_map>
 
 namespace facebook::react {
 
@@ -44,7 +43,7 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
   jni::global_ref<TurboModuleManagerDelegate::javaobject> delegate_;
 
   using ModuleCache =
-      std::unordered_map<std::string, std::shared_ptr<react::TurboModule>>;
+      std::unordered_map<std::string, std::shared_ptr<TurboModule>>;
 
   /**
    * TODO(T48018690):
@@ -52,25 +51,32 @@ class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
    * We need to come up with a mechanism to allow modules to specify whether
    * they want to be long-lived or short-lived.
    */
-  std::shared_ptr<ModuleCache> turboModuleCache_;
-  std::shared_ptr<ModuleCache> legacyModuleCache_;
+  ModuleCache turboModuleCache_;
+  ModuleCache legacyModuleCache_;
 
-  static void installJSIBindings(
-      jni::alias_ref<jhybridobject> javaPart,
-      bool shouldCreateLegacyModules,
-      bool enableSyncVoidMethods);
   explicit TurboModuleManager(
       RuntimeExecutor runtimeExecutor,
       std::shared_ptr<CallInvoker> jsCallInvoker,
       std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker,
       jni::alias_ref<TurboModuleManagerDelegate::javaobject> delegate);
 
-  TurboModuleProviderFunctionType createTurboModuleProvider(
+  static void installJSIBindings(
       jni::alias_ref<jhybridobject> javaPart,
-      jsi::Runtime* runtime,
-      bool enableSyncVoidMethods);
-  TurboModuleProviderFunctionType createLegacyModuleProvider(
+      bool shouldCreateLegacyModules);
+
+  static TurboModuleProviderFunctionType createTurboModuleProvider(
+      jni::alias_ref<jhybridobject> javaPart,
+      jsi::Runtime* runtime);
+  std::shared_ptr<TurboModule> getTurboModule(
+      jni::alias_ref<jhybridobject> javaPart,
+      const std::string& name,
+      jsi::Runtime& runtime);
+
+  static TurboModuleProviderFunctionType createLegacyModuleProvider(
       jni::alias_ref<jhybridobject> javaPart);
+  std::shared_ptr<TurboModule> getLegacyModule(
+      jni::alias_ref<jhybridobject> javaPart,
+      const std::string& name);
 };
 
 } // namespace facebook::react

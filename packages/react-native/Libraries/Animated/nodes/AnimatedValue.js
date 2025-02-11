@@ -8,19 +8,21 @@
  * @format
  */
 
-'use strict';
-
+import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
+import type {PlatformConfig} from '../AnimatedPlatformConfig';
 import type Animation, {EndCallback} from '../animations/Animation';
 import type {InterpolationConfigType} from './AnimatedInterpolation';
 import type AnimatedNode from './AnimatedNode';
+import type {AnimatedNodeConfig} from './AnimatedNode';
 import type AnimatedTracking from './AnimatedTracking';
 
+import NativeAnimatedHelper from '../../../src/private/animated/NativeAnimatedHelper';
 import InteractionManager from '../../Interaction/InteractionManager';
-import NativeAnimatedHelper from '../NativeAnimatedHelper';
 import AnimatedInterpolation from './AnimatedInterpolation';
 import AnimatedWithChildren from './AnimatedWithChildren';
 
 export type AnimatedValueConfig = $ReadOnly<{
+  ...AnimatedNodeConfig,
   useNativeDriver: boolean,
 }>;
 
@@ -49,6 +51,7 @@ const NativeAnimatedAPI = NativeAnimatedHelper.API;
  * transform which can receive values from multiple parents.
  */
 export function flushValue(rootNode: AnimatedNode): void {
+  // eslint-disable-next-line func-call-spacing
   const leaves = new Set<{update: () => void, ...}>();
   function findAnimatedStyles(node: AnimatedNode) {
     // $FlowFixMe[prop-missing]
@@ -82,6 +85,9 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  * See https://reactnative.dev/docs/animatedvalue
  */
 export default class AnimatedValue extends AnimatedWithChildren {
+  #listenerCount: number = 0;
+  #updateSubscription: ?EventSubscription = null;
+
   _value: number;
   _startingValue: number;
   _offset: number;
@@ -89,7 +95,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
   _tracking: ?AnimatedTracking;
 
   constructor(value: number, config?: ?AnimatedValueConfig) {
-    super();
+    super(config);
     if (typeof value !== 'number') {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
     }
@@ -113,6 +119,67 @@ export default class AnimatedValue extends AnimatedWithChildren {
 
   __getValue(): number {
     return this._value + this._offset;
+  }
+
+  __makeNative(platformConfig: ?PlatformConfig): void {
+    super.__makeNative(platformConfig);
+    if (this.#listenerCount > 0) {
+      this.#ensureUpdateSubscriptionExists();
+    }
+  }
+
+  addListener(callback: (value: any) => mixed): string {
+    const id = super.addListener(callback);
+    this.#listenerCount++;
+    if (this.__isNative) {
+      this.#ensureUpdateSubscriptionExists();
+    }
+    return id;
+  }
+
+  removeListener(id: string): void {
+    super.removeListener(id);
+    this.#listenerCount--;
+    if (this.__isNative && this.#listenerCount === 0) {
+      this.#updateSubscription?.remove();
+    }
+  }
+
+  removeAllListeners(): void {
+    super.removeAllListeners();
+    this.#listenerCount = 0;
+    if (this.__isNative) {
+      this.#updateSubscription?.remove();
+    }
+  }
+
+  #ensureUpdateSubscriptionExists(): void {
+    if (this.#updateSubscription != null) {
+      return;
+    }
+    const nativeTag = this.__getNativeTag();
+    NativeAnimatedAPI.startListeningToAnimatedNodeValue(nativeTag);
+    const subscription: EventSubscription =
+      NativeAnimatedHelper.nativeEventEmitter.addListener(
+        'onAnimatedValueUpdate',
+        data => {
+          if (data.tag === nativeTag) {
+            this.__onAnimatedValueUpdateReceived(data.value);
+          }
+        },
+      );
+
+    this.#updateSubscription = {
+      remove: () => {
+        // Only this function assigns to `this.#updateSubscription`.
+        if (this.#updateSubscription == null) {
+          return;
+        }
+        this.#updateSubscription = null;
+        subscription.remove();
+        NativeAnimatedAPI.stopListeningToAnimatedNodeValue(nativeTag);
+      },
+    };
   }
 
   /**
@@ -297,6 +364,7 @@ export default class AnimatedValue extends AnimatedWithChildren {
       type: 'value',
       value: this._value,
       offset: this._offset,
+      debugID: this.__getDebugID(),
     };
   }
 }

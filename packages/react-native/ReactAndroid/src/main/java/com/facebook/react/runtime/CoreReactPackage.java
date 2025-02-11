@@ -10,7 +10,7 @@ package com.facebook.react.runtime;
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.react.TurboReactPackage;
+import com.facebook.react.BaseReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.ClassFinder;
@@ -23,6 +23,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
+import com.facebook.react.modules.debug.DevMenuModule;
 import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -35,13 +36,14 @@ import java.util.Map;
     nativeModules = {
       AndroidInfoModule.class,
       DeviceInfoModule.class,
+      DevMenuModule.class,
       DevSettingsModule.class,
       SourceCodeModule.class,
       LogBoxModule.class,
       DeviceEventManagerModule.class,
       ExceptionsManagerModule.class,
     })
-class CoreReactPackage extends TurboReactPackage {
+class CoreReactPackage extends BaseReactPackage {
 
   private final DevSupportManager mDevSupportManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
@@ -61,6 +63,8 @@ class CoreReactPackage extends TurboReactPackage {
         return new DeviceInfoModule(reactContext);
       case SourceCodeModule.NAME:
         return new SourceCodeModule(reactContext);
+      case DevMenuModule.NAME:
+        return new DevMenuModule(reactContext, mDevSupportManager);
       case DevSettingsModule.NAME:
         return new DevSettingsModule(reactContext, mDevSupportManager);
       case DeviceEventManagerModule.NAME:
@@ -108,6 +112,7 @@ class CoreReactPackage extends TurboReactPackage {
           AndroidInfoModule.class,
           DeviceInfoModule.class,
           SourceCodeModule.class,
+          DevMenuModule.class,
           DevSettingsModule.class,
           DeviceEventManagerModule.class,
           LogBoxModule.class,

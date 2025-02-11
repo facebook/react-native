@@ -10,7 +10,6 @@ package com.facebook.react.osslibraryexample
 import android.annotation.SuppressLint
 import android.graphics.Color
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
@@ -52,19 +51,21 @@ internal class SampleNativeComponentViewManager :
   override fun getExportedViewConstants(): Map<String, Any> = mapOf("PI" to 3.14)
 
   override fun getExportedCustomBubblingEventTypeConstants(): Map<String, Any> {
-    return MapBuilder.builder<String, Any>()
-        .put(
-            "onColorChanged",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of("bubbled", "onColorChanged", "captured", "onColorChangedCapture")))
-        .put(
-            "topIntArrayChanged",
-            MapBuilder.of(
-                "phasedRegistrationNames",
-                MapBuilder.of(
-                    "bubbled", "topIntArrayChanged", "captured", "topIntArrayChangedCapture")))
-        .build()
+    return mapOf(
+        "onColorChanged" to
+            mapOf(
+                "phasedRegistrationNames" to
+                    mapOf(
+                        "bubbled" to "onColorChanged",
+                        "captured" to "onColorChangedCapture",
+                    )),
+        "topIntArrayChanged" to
+            mapOf(
+                "phasedRegistrationNames" to
+                    mapOf(
+                        "bubbled" to "topIntArrayChanged",
+                        "captured" to "topIntArrayChangedCapture",
+                    )))
   }
 
   @SuppressLint("BadMethodUse-android.view.View.setBackgroundColor")
@@ -75,6 +76,7 @@ internal class SampleNativeComponentViewManager :
     }
   }
 
+  @Deprecated("Deprecated in Java")
   @SuppressLint("BadMethodUse-android.view.View.setBackgroundColor")
   @Suppress("DEPRECATION") // We intentionally want to test against the legacy API here.
   override fun receiveCommand(view: SampleNativeView, commandId: Int, args: ReadableArray?) {

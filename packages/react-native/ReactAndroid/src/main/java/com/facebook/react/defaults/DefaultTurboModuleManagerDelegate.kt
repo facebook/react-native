@@ -9,6 +9,7 @@ package com.facebook.react.defaults
 
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.ReactApplicationContext
@@ -25,6 +26,7 @@ import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
  * TODO(T186951312): Should this be @UnstableReactNativeAPI?
  */
 @OptIn(UnstableReactNativeAPI::class)
+@DoNotStripAny
 public class DefaultTurboModuleManagerDelegate
 private constructor(
     context: ReactApplicationContext,
@@ -38,33 +40,27 @@ private constructor(
   }
 
   public class Builder : ReactPackageTurboModuleManagerDelegate.Builder() {
-    private var cxxReactPackageProviders:
-        MutableList<((context: ReactApplicationContext) -> CxxReactPackage)> =
-        mutableListOf()
+    private val cxxReactPackageProviders =
+        mutableListOf<(context: ReactApplicationContext) -> List<CxxReactPackage>>()
 
-    public fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder {
-      cxxReactPackageProviders.add { _ -> provider() }
-      return this
+    public fun addCxxReactPackage(provider: () -> CxxReactPackage): Builder = apply {
+      cxxReactPackageProviders.add { _ -> listOf(provider()) }
     }
 
     public fun addCxxReactPackage(
         provider: (context: ReactApplicationContext) -> CxxReactPackage
-    ): Builder {
-      cxxReactPackageProviders.add(provider)
-      return this
-    }
+    ): Builder = apply { cxxReactPackageProviders.add { context -> listOf(provider(context)) } }
+
+    public fun addCxxReactPackages(
+        provider: (context: ReactApplicationContext) -> List<CxxReactPackage>
+    ): Builder = apply { cxxReactPackageProviders.add(provider) }
 
     override fun build(
         context: ReactApplicationContext,
         packages: List<ReactPackage>
-    ): DefaultTurboModuleManagerDelegate {
-      val cxxReactPackages = mutableListOf<CxxReactPackage>()
-      for (cxxReactPackageProvider in cxxReactPackageProviders) {
-        cxxReactPackages.add(cxxReactPackageProvider(context))
-      }
-
-      return DefaultTurboModuleManagerDelegate(context, packages, cxxReactPackages)
-    }
+    ): DefaultTurboModuleManagerDelegate =
+        DefaultTurboModuleManagerDelegate(
+            context, packages, cxxReactPackageProviders.flatMap { provider -> provider(context) })
   }
 
   private companion object {

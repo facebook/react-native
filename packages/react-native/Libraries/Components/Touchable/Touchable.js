@@ -713,13 +713,17 @@ const TouchableMixin = {
       return;
     }
     this.state.touchable.positionOnActivate &&
+      // $FlowFixMe[prop-missing]
       Position.release(this.state.touchable.positionOnActivate);
     this.state.touchable.dimensionsOnActivate &&
+      // $FlowFixMe[prop-missing]
       BoundingDimensions.release(this.state.touchable.dimensionsOnActivate);
+    // $FlowFixMe[prop-missing]
     this.state.touchable.positionOnActivate = Position.getPooled(
       globalX,
       globalY,
     );
+    // $FlowFixMe[prop-missing]
     this.state.touchable.dimensionsOnActivate = BoundingDimensions.getPooled(
       w,
       h,

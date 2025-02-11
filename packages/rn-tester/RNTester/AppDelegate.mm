@@ -9,7 +9,6 @@
 
 #import <UserNotifications/UserNotifications.h>
 
-#import <RCTAppDelegate+Protected.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTDefines.h>
 #import <React/RCTLinkingManager.h>
@@ -24,6 +23,13 @@
 #import <RNTMyNativeViewComponentView.h>
 #endif
 
+#if __has_include(<ReactAppDependencyProvider/RCTAppDependencyProvider.h>)
+#define USE_OSS_CODEGEN 1
+#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
+#else
+#define USE_OSS_CODEGEN 0
+#endif
+
 static NSString *kBundlePath = @"js/RNTesterApp.ios";
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
@@ -34,6 +40,9 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   self.moduleName = @"RNTesterApp";
+#if USE_OSS_CODEGEN
+  self.dependencyProvider = [RCTAppDependencyProvider new];
+#endif
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = [self prepareInitialProps];
@@ -41,11 +50,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-  [super applicationDidEnterBackground:application];
 }
 
 - (NSDictionary *)prepareInitialProps
@@ -144,20 +148,19 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   return [super bridgelessEnabled];
 }
 
-#pragma mark - Experimental settings
-
-// [Experiment] Enable the new debugger stack (codename Fusebox)
-- (BOOL)unstable_fuseboxEnabled
-{
-  return true;
-}
-
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
 #ifndef RN_DISABLE_OSS_PLUGIN_HEADER
 - (nonnull NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
 {
-  return @{@"RNTMyNativeView" : RNTMyNativeViewComponentView.class};
+  NSMutableDictionary *dict = [super thirdPartyFabricComponents].mutableCopy;
+  if (!dict[@"RNTMyNativeView"]) {
+    dict[@"RNTMyNativeView"] = NSClassFromString(@"RNTMyNativeViewComponentView");
+  }
+  if (!dict[@"SampleNativeComponent"]) {
+    dict[@"SampleNativeComponent"] = NSClassFromString(@"RCTSampleNativeComponentComponentView");
+  }
+  return dict;
 }
 #endif
 

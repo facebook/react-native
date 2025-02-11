@@ -41,7 +41,7 @@ class BufferedRuntimeExecutor {
   void unsafeFlush();
 
   RuntimeExecutor runtimeExecutor_;
-  bool isBufferingEnabled_;
+  std::atomic<bool> isBufferingEnabled_;
   std::mutex lock_;
   std::atomic<uint64_t> lastIndex_;
   std::priority_queue<BufferedWork> queue_;

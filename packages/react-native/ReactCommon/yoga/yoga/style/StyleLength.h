@@ -19,13 +19,11 @@ namespace facebook::yoga {
  * 3. A CSS <length-percentage> value:
  *    a. <length> value (e.g. 10px)
  *    b. <percentage> value of a reference <length>
- * 4. (soon) A math function which returns a <length-percentage> value
  *
  * References:
  * 1. https://www.w3.org/TR/css-values-4/#lengths
  * 2. https://www.w3.org/TR/css-values-4/#percentage-value
  * 3. https://www.w3.org/TR/css-values-4/#mixed-percentages
- * 4. https://www.w3.org/TR/css-values-4/#math
  */
 class StyleLength {
  public:
@@ -59,16 +57,20 @@ class StyleLength {
     return unit_ == Unit::Undefined;
   }
 
+  constexpr bool isPoints() const {
+    return unit_ == Unit::Point;
+  }
+
+  constexpr bool isPercent() const {
+    return unit_ == Unit::Percent;
+  }
+
   constexpr bool isDefined() const {
     return !isUndefined();
   }
 
   constexpr FloatOptional value() const {
     return value_;
-  }
-
-  constexpr Unit unit() const {
-    return unit_;
   }
 
   constexpr FloatOptional resolve(float referenceLength) {
@@ -90,6 +92,11 @@ class StyleLength {
     return value_ == rhs.value_ && unit_ == rhs.unit_;
   }
 
+  constexpr bool inexactEquals(const StyleLength& other) const {
+    return unit_ == other.unit_ &&
+        facebook::yoga::inexactEquals(value_, other.value_);
+  }
+
  private:
   // We intentionally do not allow direct construction using value and unit, to
   // avoid invalid, or redundant combinations.
@@ -101,39 +108,7 @@ class StyleLength {
 };
 
 inline bool inexactEquals(const StyleLength& a, const StyleLength& b) {
-  return a.unit() == b.unit() && inexactEquals(a.value(), b.value());
+  return a.inexactEquals(b);
 }
-
-namespace value {
-
-/**
- * Canonical unit (one YGUnitPoint)
- */
-constexpr StyleLength points(float value) {
-  return StyleLength::points(value);
-}
-
-/**
- * Percent of reference
- */
-constexpr StyleLength percent(float value) {
-  return StyleLength::percent(value);
-}
-
-/**
- * "auto" keyword
- */
-constexpr StyleLength ofAuto() {
-  return StyleLength::ofAuto();
-}
-
-/**
- * Undefined
- */
-constexpr StyleLength undefined() {
-  return StyleLength::undefined();
-}
-
-} // namespace value
 
 } // namespace facebook::yoga

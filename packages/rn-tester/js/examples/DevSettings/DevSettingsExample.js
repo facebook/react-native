@@ -18,7 +18,7 @@ exports.description = 'Customize the development settings';
 exports.examples = [
   {
     title: 'Add dev menu item',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <Button
           title="Add"
@@ -33,7 +33,7 @@ exports.examples = [
   },
   {
     title: 'Reload the app',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <Button
           title="Reload"

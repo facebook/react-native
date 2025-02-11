@@ -63,17 +63,15 @@ TurboCxxModule::TurboCxxModule(
       cxxMethods_(cxxModule->getMethods()),
       cxxModule_(std::move(cxxModule)) {}
 
-jsi::Value TurboCxxModule::get(
+jsi::Value TurboCxxModule::create(
     jsi::Runtime& runtime,
     const jsi::PropNameID& propName) {
   std::string propNameUtf8 = propName.utf8(runtime);
 
-  auto result = jsi::Value::undefined();
-
   if (propNameUtf8 == "getConstants") {
     // This is special cased because `getConstants()` is already a part of
     // CxxModule.
-    result = jsi::Function::createFromHostFunction(
+    return jsi::Function::createFromHostFunction(
         runtime,
         propName,
         0,
@@ -93,7 +91,7 @@ jsi::Value TurboCxxModule::get(
   } else {
     for (auto& method : cxxMethods_) {
       if (method.name == propNameUtf8) {
-        result = jsi::Function::createFromHostFunction(
+        return jsi::Function::createFromHostFunction(
             runtime,
             propName,
             0,
@@ -108,17 +106,7 @@ jsi::Value TurboCxxModule::get(
     }
   }
 
-  // If we have a JS wrapper, cache the result of this lookup
-  if (jsRepresentation_) {
-    auto jsRepresentation = jsRepresentation_->lock(runtime);
-    if (!jsRepresentation.isUndefined()) {
-      std::move(jsRepresentation)
-          .asObject(runtime)
-          .setProperty(runtime, propName, result);
-    }
-  }
-
-  return result;
+  return jsi::Value::undefined();
 }
 
 std::vector<jsi::PropNameID> TurboCxxModule::getPropertyNames(

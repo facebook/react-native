@@ -12,7 +12,10 @@
 #import <UIKit/UIKit.h>
 #import <react/renderer/graphics/BoxShadow.h>
 
-RCT_EXTERN UIImage *
-RCTGetBoxShadowImage(std::vector<facebook::react::BoxShadow> shadows, RCTCornerRadii cornerRadii, CALayer *layer);
+RCT_EXTERN UIImage *RCTGetBoxShadowImage(
+    const std::vector<facebook::react::BoxShadow> &shadows,
+    RCTCornerRadii cornerRadii,
+    UIEdgeInsets edgeInsets,
+    CGSize layerSize);
 
-RCT_EXTERN CGRect RCTGetBoundingRect(std::vector<facebook::react::BoxShadow> boxShadows, CGSize layerSize);
+RCT_EXTERN CGRect RCTGetBoundingRect(const std::vector<facebook::react::BoxShadow> &boxShadows, CGSize layerSize);

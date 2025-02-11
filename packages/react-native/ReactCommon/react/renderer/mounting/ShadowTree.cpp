@@ -7,9 +7,8 @@
 
 #include "ShadowTree.h"
 
-#include <cxxreact/SystraceSection.h>
+#include <cxxreact/TraceSection.h>
 #include <react/debug/react_native_assert.h>
-#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/components/root/RootComponentDescriptor.h>
 #include <react/renderer/components/view/ViewShadowNode.h>
 #include <react/renderer/core/LayoutContext.h>
@@ -25,115 +24,6 @@ namespace facebook::react {
 
 using CommitStatus = ShadowTree::CommitStatus;
 using CommitMode = ShadowTree::CommitMode;
-
-// --- State Alignment Mechanism algorithm ---
-// Note: Ideally, we don't have to const_cast but our use of constness in
-// C++ is overly restrictive. We do const_cast here but the only place where
-// we change ShadowNode is by calling `ShadowNode::progressStateIfNecessary`
-// where checks are in place to avoid manipulating a sealed ShadowNode.
-
-static void progressStateIfNecessary(
-    ShadowNode& newShadowNode,
-    const ShadowNode& baseShadowNode);
-
-/*
- * Looks at the new parent, new child and base child node to determine how to
- * reconcile the state.
- *
- * Only to be called when baseChildNode has trait `ClonedByNativeStateUpdate`.
- */
-static void progressStateIfNecessary(
-    ShadowNode& newShadowNode,
-    const ShadowNode& newChildNode,
-    const ShadowNode& baseChildNode,
-    size_t suggestedIndex) {
-  auto& shadowNode = const_cast<ShadowNode&>(newChildNode);
-  if (shadowNode.progressStateIfNecessary()) {
-    // State was progressed without the need to clone.
-    // We are done with this node, but need to keep traversing.
-    progressStateIfNecessary(shadowNode, baseChildNode);
-  } else if (newChildNode.getHasBeenPromoted()) {
-    // `newShadowNode` was cloned from react and cloned from a native state
-    // update. This child node was cloned only from a native state update.
-    // This is branching and it is safe to promote the new branch from
-    // native state update.
-    auto clonedChildNode = baseChildNode.clone({});
-    newShadowNode.replaceChild(newChildNode, clonedChildNode, suggestedIndex);
-  } else {
-    // `newShadowNode` was cloned from react and cloned from a native state
-    // update. This child node was cloned also by react.
-    // we can't reason about this on this layer and need to keep traversing.
-    progressStateIfNecessary(shadowNode, baseChildNode);
-  }
-}
-
-static void progressStateIfNecessary(
-    ShadowNode& newShadowNode,
-    const ShadowNode& baseShadowNode) {
-  auto& newChildren = newShadowNode.getChildren();
-  auto& baseChildren = baseShadowNode.getChildren();
-
-  auto newChildrenSize = newChildren.size();
-  auto baseChildrenSize = baseChildren.size();
-  auto index = size_t{0};
-
-  for (index = 0; index < newChildrenSize && index < baseChildrenSize;
-       ++index) {
-    const auto& newChildNode = *newChildren[index];
-    const auto& baseChildNode = *baseChildren[index];
-
-    if (&newChildNode == &baseChildNode) {
-      // Nodes are identical. They are shared between `newShadowNode` and
-      // `baseShadowNode` and it is safe to skipping.
-      continue;
-    }
-
-    if (!ShadowNode::sameFamily(newChildNode, baseChildNode)) {
-      // React has changed the structure of the tree. We will realign the
-      // structure below.
-      break;
-    }
-
-    if (!baseChildNode.getTraits().check(
-            ShadowNodeTraits::Trait::ClonedByNativeStateUpdate)) {
-      // was not cloned with a new state, we can continue.
-      continue;
-    }
-
-    progressStateIfNecessary(newShadowNode, newChildNode, baseChildNode, index);
-  }
-
-  // === Realigning the tree ===
-
-  auto unprocessedBaseChildren = baseChildren.begin();
-  std::advance(unprocessedBaseChildren, index);
-  for (; index < newChildrenSize; ++index) {
-    const auto& newChildNode = *newChildren[index];
-    auto baseChildNodeIterator = std::find_if(
-        unprocessedBaseChildren,
-        baseChildren.end(),
-        [&newChildNode](auto baseChildNode) {
-          return ShadowNode::sameFamily(newChildNode, *baseChildNode);
-        });
-    if (baseChildNodeIterator == baseChildren.end()) {
-      // This must never happen and there is a mismatch between the two trees.
-      // No way of recover from this, let's just continue.
-      continue;
-    }
-
-    const auto& baseChildNode = *(*baseChildNodeIterator);
-
-    if (!baseChildNode.getTraits().check(
-            ShadowNodeTraits::Trait::ClonedByNativeStateUpdate)) {
-      // was not cloned with a new state, we can continue.
-      continue;
-    }
-
-    progressStateIfNecessary(newShadowNode, newChildNode, baseChildNode, index);
-  }
-}
-
-// --- End of State Alignment Mechanism algorithm ---
 
 /*
  * Generates (possibly) a new tree where all nodes with non-obsolete `State`
@@ -301,8 +191,6 @@ ShadowTree::ShadowTree(
   currentRevision_ = ShadowTreeRevision{
       rootShadowNode, INITIAL_REVISION, TransactionTelemetry{}};
 
-  lastRevisionNumberWithNewState_ = currentRevision_.number;
-
   mountingCoordinator_ =
       std::make_shared<const MountingCoordinator>(currentRevision_);
 }
@@ -340,15 +228,14 @@ CommitMode ShadowTree::getCommitMode() const {
   return commitMode_;
 }
 
-MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
+std::shared_ptr<const MountingCoordinator> ShadowTree::getMountingCoordinator()
+    const {
   return mountingCoordinator_;
 }
 
 CommitStatus ShadowTree::commit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
-  SystraceSection s("ShadowTree::commit");
-
   [[maybe_unused]] int attempts = 0;
 
   while (true) {
@@ -368,7 +255,7 @@ CommitStatus ShadowTree::commit(
 CommitStatus ShadowTree::tryCommit(
     const ShadowTreeCommitTransaction& transaction,
     const CommitOptions& commitOptions) const {
-  SystraceSection s("ShadowTree::tryCommit");
+  TraceSection s("ShadowTree::commit");
 
   auto telemetry = TransactionTelemetry{};
   telemetry.willCommit();
@@ -376,34 +263,27 @@ CommitStatus ShadowTree::tryCommit(
   CommitMode commitMode;
   auto oldRevision = ShadowTreeRevision{};
   auto newRevision = ShadowTreeRevision{};
-  ShadowTreeRevision::Number lastRevisionNumberWithNewState;
 
   {
     // Reading `currentRevision_` in shared manner.
     std::shared_lock lock(commitMutex_);
     commitMode = commitMode_;
     oldRevision = currentRevision_;
-    lastRevisionNumberWithNewState = lastRevisionNumberWithNewState_;
   }
 
   const auto& oldRootShadowNode = oldRevision.rootShadowNode;
   auto newRootShadowNode = transaction(*oldRevision.rootShadowNode);
 
-  if (!newRootShadowNode ||
-      (commitOptions.shouldYield && commitOptions.shouldYield())) {
+  if (!newRootShadowNode) {
     return CommitStatus::Cancelled;
   }
 
   if (commitOptions.enableStateReconciliation) {
-    if (ReactNativeFeatureFlags::useStateAlignmentMechanism()) {
-      progressStateIfNecessary(*newRootShadowNode, *oldRootShadowNode);
-    } else {
-      auto updatedNewRootShadowNode =
-          progressState(*newRootShadowNode, *oldRootShadowNode);
-      if (updatedNewRootShadowNode) {
-        newRootShadowNode =
-            std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
-      }
+    auto updatedNewRootShadowNode =
+        progressState(*newRootShadowNode, *oldRootShadowNode);
+    if (updatedNewRootShadowNode) {
+      newRootShadowNode =
+          std::static_pointer_cast<RootShadowNode>(updatedNewRootShadowNode);
     }
   }
 
@@ -411,8 +291,7 @@ CommitStatus ShadowTree::tryCommit(
   newRootShadowNode = delegate_.shadowTreeWillCommit(
       *this, oldRootShadowNode, newRootShadowNode);
 
-  if (!newRootShadowNode ||
-      (commitOptions.shouldYield && commitOptions.shouldYield())) {
+  if (!newRootShadowNode) {
     return CommitStatus::Cancelled;
   }
 
@@ -430,23 +309,8 @@ CommitStatus ShadowTree::tryCommit(
     // Updating `currentRevision_` in unique manner if it hasn't changed.
     std::unique_lock lock(commitMutex_);
 
-    if (commitOptions.shouldYield && commitOptions.shouldYield()) {
-      return CommitStatus::Cancelled;
-    }
-
-    if (ReactNativeFeatureFlags::
-            enableGranularShadowTreeStateReconciliation()) {
-      auto lastRevisionNumberWithNewStateChanged =
-          lastRevisionNumberWithNewState != lastRevisionNumberWithNewState_;
-      // Commit should only fail if we propagated the wrong state.
-      if (commitOptions.enableStateReconciliation &&
-          lastRevisionNumberWithNewStateChanged) {
-        return CommitStatus::Failed;
-      }
-    } else {
-      if (currentRevision_.number != oldRevision.number) {
-        return CommitStatus::Failed;
-      }
+    if (currentRevision_.number != oldRevision.number) {
+      return CommitStatus::Failed;
     }
 
     auto newRevisionNumber = currentRevision_.number + 1;
@@ -469,9 +333,6 @@ CommitStatus ShadowTree::tryCommit(
         std::move(newRootShadowNode), newRevisionNumber, telemetry};
 
     currentRevision_ = newRevision;
-    if (!commitOptions.enableStateReconciliation) {
-      lastRevisionNumberWithNewState_ = newRevisionNumber;
-    }
   }
 
   emitLayoutEvents(affectedLayoutableNodes);
@@ -510,26 +371,20 @@ void ShadowTree::commitEmptyTree() const {
 
 void ShadowTree::emitLayoutEvents(
     std::vector<const LayoutableShadowNode*>& affectedLayoutableNodes) const {
-  SystraceSection s(
+  TraceSection s(
       "ShadowTree::emitLayoutEvents",
       "affectedLayoutableNodes",
       affectedLayoutableNodes.size());
 
   for (const auto* layoutableNode : affectedLayoutableNodes) {
-    // Only instances of `ViewShadowNode` (and subclasses) are supported.
-
-    const auto& viewEventEmitter = static_cast<const BaseViewEventEmitter&>(
-        *layoutableNode->getEventEmitter());
-
-    // Checking if the `onLayout` event was requested for the particular Shadow
-    // Node.
-    const auto& viewProps =
-        static_cast<const BaseViewProps&>(*layoutableNode->getProps());
-    if (!viewProps.onLayout) {
-      continue;
+    if (auto viewProps =
+            dynamic_cast<const ViewProps*>(layoutableNode->getProps().get())) {
+      if (viewProps->onLayout) {
+        static_cast<const BaseViewEventEmitter&>(
+            *layoutableNode->getEventEmitter())
+            .onLayout(layoutableNode->getLayoutMetrics());
+      }
     }
-
-    viewEventEmitter.onLayout(layoutableNode->getLayoutMetrics());
   }
 }
 

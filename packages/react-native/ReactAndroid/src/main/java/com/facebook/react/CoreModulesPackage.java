@@ -27,6 +27,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ExceptionsManagerModule;
 import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
 import com.facebook.react.modules.core.TimingModule;
+import com.facebook.react.modules.debug.DevMenuModule;
 import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -49,6 +50,7 @@ import java.util.Map;
       AndroidInfoModule.class,
       DeviceEventManagerModule.class,
       DeviceInfoModule.class,
+      DevMenuModule.class,
       DevSettingsModule.class,
       ExceptionsManagerModule.class,
       LogBoxModule.class,
@@ -57,7 +59,7 @@ import java.util.Map;
       TimingModule.class,
       UIManagerModule.class,
     })
-class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger {
+class CoreModulesPackage extends BaseReactPackage implements ReactPackageLogger {
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
@@ -108,6 +110,7 @@ class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger
           AndroidInfoModule.class,
           DeviceEventManagerModule.class,
           DeviceInfoModule.class,
+          DevMenuModule.class,
           DevSettingsModule.class,
           ExceptionsManagerModule.class,
           LogBoxModule.class,
@@ -142,6 +145,8 @@ class CoreModulesPackage extends TurboReactPackage implements ReactPackageLogger
         return new AndroidInfoModule(reactContext);
       case DeviceEventManagerModule.NAME:
         return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
+      case DevMenuModule.NAME:
+        return new DevMenuModule(reactContext, mReactInstanceManager.getDevSupportManager());
       case DevSettingsModule.NAME:
         return new DevSettingsModule(reactContext, mReactInstanceManager.getDevSupportManager());
       case ExceptionsManagerModule.NAME:

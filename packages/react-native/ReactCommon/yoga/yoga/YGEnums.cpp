@@ -33,6 +33,16 @@ const char* YGAlignToString(const YGAlign value) {
   return "unknown";
 }
 
+const char* YGBoxSizingToString(const YGBoxSizing value) {
+  switch (value) {
+    case YGBoxSizingBorderBox:
+      return "border-box";
+    case YGBoxSizingContentBox:
+      return "content-box";
+  }
+  return "unknown";
+}
+
 const char* YGDimensionToString(const YGDimension value) {
   switch (value) {
     case YGDimensionWidth:
@@ -61,6 +71,8 @@ const char* YGDisplayToString(const YGDisplay value) {
       return "flex";
     case YGDisplayNone:
       return "none";
+    case YGDisplayContents:
+      return "contents";
   }
   return "unknown";
 }
@@ -95,8 +107,8 @@ const char* YGErrataToString(const YGErrata value) {
       return "none";
     case YGErrataStretchFlexBasis:
       return "stretch-flex-basis";
-    case YGErrataAbsolutePositioningIncorrect:
-      return "absolute-positioning-incorrect";
+    case YGErrataAbsolutePositionWithoutInsetsExcludesPadding:
+      return "absolute-position-without-insets-excludes-padding";
     case YGErrataAbsolutePercentAgainstInnerSize:
       return "absolute-percent-against-inner-size";
     case YGErrataAll:
@@ -233,6 +245,12 @@ const char* YGUnitToString(const YGUnit value) {
       return "percent";
     case YGUnitAuto:
       return "auto";
+    case YGUnitMaxContent:
+      return "max-content";
+    case YGUnitFitContent:
+      return "fit-content";
+    case YGUnitStretch:
+      return "stretch";
   }
   return "unknown";
 }

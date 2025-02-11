@@ -22,10 +22,11 @@ void SampleTurboModuleJSIBindings::registerNatives() {
 jni::local_ref<BindingsInstallerHolder::javaobject>
 SampleTurboModuleJSIBindings::getBindingsInstaller(
     jni::alias_ref<SampleTurboModuleJSIBindings> /*jobj*/) {
-  return BindingsInstallerHolder::newObjectCxxArgs([](jsi::Runtime& runtime) {
-    runtime.global().setProperty(
-        runtime, "__SampleTurboModuleJSIBindings", "Hello JSI!");
-  });
+  return BindingsInstallerHolder::newObjectCxxArgs(
+      [](jsi::Runtime& runtime, const std::shared_ptr<CallInvoker>&) {
+        runtime.global().setProperty(
+            runtime, "__SampleTurboModuleJSIBindings", "Hello JSI!");
+      });
 }
 
 } // namespace facebook::react

@@ -7,14 +7,19 @@
 
 package com.facebook.react
 
+import com.facebook.react.model.ModelAutolinkingConfigJson
 import com.facebook.react.utils.JsonUtils
+import com.facebook.react.utils.windowsAwareCommandLine
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.math.min
+import org.gradle.api.GradleException
 import org.gradle.api.file.FileCollection
 import org.gradle.api.initialization.Settings
+import org.gradle.api.logging.Logging
 
 abstract class ReactSettingsExtension @Inject constructor(val settings: Settings) {
 
@@ -22,6 +27,11 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
       settings.layout.rootDirectory.file("build/generated/autolinking/autolinking.json").asFile
   private val outputFolder =
       settings.layout.rootDirectory.file("build/generated/autolinking/").asFile
+
+  private val defaultConfigCommand: List<String> =
+      windowsAwareCommandLine(listOf("npx", "@react-native-community/cli", "config")).map {
+        it.toString()
+      }
 
   /**
    * Utility function to autolink libraries using an external command as source of truth.
@@ -37,23 +47,30 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
    */
   @JvmOverloads
   public fun autolinkLibrariesFromCommand(
-      command: List<String> = listOf("npx", "@react-native-community/cli", "config"),
+      command: List<String> = defaultConfigCommand,
       workingDirectory: File? = settings.layout.rootDirectory.dir("../").asFile,
       lockFiles: FileCollection =
           settings.layout.rootDirectory
               .dir("../")
-              .files("yarn.lock", "package-lock.json", "package.json")
+              .files("yarn.lock", "package-lock.json", "package.json", "react-native.config.js")
   ) {
     outputFile.parentFile.mkdirs()
-    val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, outputFolder)
-    if (lockFilesChanged || outputFile.exists().not() || outputFile.length() != 0L) {
-      ProcessBuilder(command)
-          .directory(workingDirectory)
-          .redirectOutput(ProcessBuilder.Redirect.to(outputFile))
-          .redirectError(ProcessBuilder.Redirect.INHERIT)
-          .start()
-          .waitFor(5, TimeUnit.MINUTES)
-    }
+
+    val updateConfig =
+        object : GenerateConfig {
+          private val pb =
+              ProcessBuilder(command)
+                  .directory(workingDirectory)
+                  .redirectOutput(ProcessBuilder.Redirect.to(outputFile))
+                  .redirectError(ProcessBuilder.Redirect.INHERIT)
+
+          override fun command(): List<String> = pb.command()
+
+          override fun start(): Process = pb.start()
+        }
+
+    checkAndUpdateCache(updateConfig, outputFile, outputFolder, lockFiles)
+
     linkLibraries(getLibrariesToAutolink(outputFile))
   }
 
@@ -84,8 +101,75 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
     }
   }
 
+  internal interface GenerateConfig {
+    fun command(): List<String>
+
+    fun start(): Process
+  }
+
   companion object {
     private val md = MessageDigest.getInstance("SHA-256")
+
+    /**
+     * Determine if our cache is out-of-date
+     *
+     * @param cacheJsonConfig Our current cached autolinking.json config, which may exist
+     * @param cacheFolder The folder we store our cached SHAs and config
+     * @param lockFiles The [FileCollection] of the lockfiles to check.
+     * @return `true` if the cache needs to be rebuilt, `false` otherwise
+     */
+    internal fun isCacheDirty(
+        cacheJsonConfig: File,
+        cacheFolder: File,
+        lockFiles: FileCollection,
+    ): Boolean {
+      if (cacheJsonConfig.exists().not() || cacheJsonConfig.length() == 0L) {
+        return true
+      }
+      val lockFilesChanged = checkAndUpdateLockfiles(lockFiles, cacheFolder)
+      if (lockFilesChanged) {
+        return true
+      }
+      return isConfigModelInvalid(JsonUtils.fromAutolinkingConfigJson(cacheJsonConfig))
+    }
+
+    /**
+     * Utility function to update the settings cache only if it's entries are dirty
+     *
+     * @param updateJsonConfig A [GenerateConfig] to update the project's autolinking config
+     * @param cacheJsonConfig Our current cached autolinking.json config, which may exist
+     * @param cacheFolder The folder we store our cached SHAs and config
+     * @param lockFiles The [FileCollection] of the lockfiles to check.
+     */
+    internal fun checkAndUpdateCache(
+        updateJsonConfig: GenerateConfig,
+        cacheJsonConfig: File,
+        cacheFolder: File,
+        lockFiles: FileCollection,
+    ) {
+      if (isCacheDirty(cacheJsonConfig, cacheFolder, lockFiles)) {
+        val process = updateJsonConfig.start()
+
+        val finished = process.waitFor(5, TimeUnit.MINUTES)
+        if (!finished || (process.exitValue() != 0)) {
+          val command = updateJsonConfig.command().joinToString(" ")
+          val prefixCommand = "ERROR: autolinkLibrariesFromCommand: process $command"
+          val message =
+              if (!finished) "$prefixCommand timed out"
+              else "$prefixCommand exited with error code: ${process.exitValue()}"
+          val logger = Logging.getLogger("ReactSettingsExtension")
+          logger.error(message)
+          if (cacheJsonConfig.length() != 0L) {
+            logger.error(
+                cacheJsonConfig
+                    .readText()
+                    .substring(0, min(1024, cacheJsonConfig.length().toInt())))
+          }
+          cacheJsonConfig.delete()
+          throw GradleException(message)
+        }
+      }
+    }
 
     /**
      * Utility function to check if the provided lockfiles have been updated or not. This function
@@ -118,6 +202,8 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
           // We handle scenarios where there are deps that are
           // iOS-only or missing the Android configs.
           ?.filter { it.platforms?.android?.sourceDir != null }
+          // We want to skip dependencies that are pure C++ as they won't contain a .gradle file.
+          ?.filterNot { it.platforms?.android?.isPureCxxDependency == true }
           ?.associate { deps ->
             ":${deps.nameCleansed}" to File(deps.platforms?.android?.sourceDir)
           } ?: emptyMap()
@@ -125,5 +211,8 @@ abstract class ReactSettingsExtension @Inject constructor(val settings: Settings
 
     internal fun computeSha256(lockFile: File) =
         String.format("%032x", BigInteger(1, md.digest(lockFile.readBytes())))
+
+    internal fun isConfigModelInvalid(model: ModelAutolinkingConfigJson?) =
+        model?.project?.android?.packageName == null
   }
 }

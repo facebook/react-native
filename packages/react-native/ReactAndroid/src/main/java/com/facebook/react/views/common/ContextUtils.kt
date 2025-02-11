@@ -38,6 +38,7 @@ public object ContextUtils {
         return null
       }
     }
-    @Suppress("UNCHECKED_CAST") return currentContext as T?
+    @Suppress("UNCHECKED_CAST")
+    return currentContext as T?
   }
 }

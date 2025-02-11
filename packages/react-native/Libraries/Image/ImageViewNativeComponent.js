@@ -11,6 +11,7 @@
 import type {ViewProps} from '../Components/View/ViewPropTypes';
 import type {
   HostComponent,
+  HostInstance,
   PartialViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';
 import type {
@@ -20,7 +21,7 @@ import type {
 } from '../StyleSheet/StyleSheet';
 import type {ResolvedAssetSource} from './AssetSourceResolver';
 import type {ImageProps} from './ImageProps';
-import type {ElementRef} from 'react';
+import type {ImageSource} from './ImageSource';
 
 import * as NativeComponentRegistry from '../NativeComponent/NativeComponentRegistry';
 import {ConditionallyIgnoredEventHandlers} from '../NativeComponent/ViewConfigIgnore';
@@ -42,14 +43,15 @@ type Props = $ReadOnly<{
     | ?ResolvedAssetSource
     | ?$ReadOnlyArray<?$ReadOnly<{uri?: ?string, ...}>>,
   headers?: ?{[string]: string},
-  defaultSrc?: ?string,
+  defaultSource?: ?ImageSource | ?string,
   loadingIndicatorSrc?: ?string,
 }>;
 
 interface NativeCommands {
   +setIsVisible_EXPERIMENTAL: (
-    viewRef: ElementRef<HostComponent<mixed>>,
+    viewRef: HostInstance,
     isVisible: boolean,
+    time: number,
   ) => void;
 }
 
@@ -81,6 +83,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
         },
         validAttributes: {
           blurRadius: true,
+          defaultSource: true,
           internal_analyticTag: true,
           resizeMethod: true,
           resizeMode: true,
@@ -99,7 +102,6 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           borderRadius: true,
           headers: true,
           shouldNotifyLoadEvents: true,
-          defaultSrc: true,
           overlayColor: {
             process: require('../StyleSheet/processColor').default,
           },
@@ -143,7 +145,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
             diff: require('../Utilities/differ/insetsDiffer'),
           },
           defaultSource: {
-            process: require('./resolveAssetSource'),
+            process: require('./resolveAssetSource').default,
           },
           internal_analyticTag: true,
           resizeMode: true,

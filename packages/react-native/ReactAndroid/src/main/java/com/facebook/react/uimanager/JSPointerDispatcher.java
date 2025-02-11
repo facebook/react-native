@@ -37,15 +37,16 @@ import java.util.Set;
 public class JSPointerDispatcher {
   private static final int UNSELECTED_VIEW_TAG = -1;
   private static final int UNSET_POINTER_ID = -1;
+  private static final int UNSET_CHILD_VIEW_ID = -1;
   private static final float ONMOVE_EPSILON = 0.1f;
-  private static final String TAG = "POINTER EVENTS";
+  private static final String TAG = "PointerEvents";
 
   private Map<Integer, List<ViewTarget>> mLastHitPathByPointerId;
   private Map<Integer, float[]> mLastEventCoordinatesByPointerId;
   private Map<Integer, List<ViewTarget>> mCurrentlyDownPointerIdsToHitPath;
   private Set<Integer> mHoveringPointerIds = new HashSet<>();
 
-  private int mChildHandlingNativeGesture = -1;
+  private int mChildHandlingNativeGesture = UNSET_CHILD_VIEW_ID;
   private int mPrimaryPointerId = UNSET_POINTER_ID;
   private int mCoalescingKey = 0;
   private int mLastButtonState = 0;
@@ -62,7 +63,7 @@ public class JSPointerDispatcher {
 
   public void onChildStartedNativeGesture(
       View childView, MotionEvent motionEvent, EventDispatcher eventDispatcher) {
-    if (mChildHandlingNativeGesture != -1 || childView == null) {
+    if (mChildHandlingNativeGesture != UNSET_CHILD_VIEW_ID || childView == null) {
       // This means we previously had another child start handling this native gesture and now a
       // different native parent of that child has decided to intercept the touch stream and handle
       // the gesture itself. Example where this can happen: HorizontalScrollView in a ScrollView.
@@ -92,7 +93,7 @@ public class JSPointerDispatcher {
 
   public void onChildEndedNativeGesture() {
     // There should be only one child gesture at any given time. We can safely turn off the flag.
-    mChildHandlingNativeGesture = -1;
+    mChildHandlingNativeGesture = UNSET_CHILD_VIEW_ID;
   }
 
   // returns the section of the hit path shared by both lists, or an empty list if there's no such
@@ -280,7 +281,7 @@ public class JSPointerDispatcher {
   public void handleMotionEvent(
       MotionEvent motionEvent, EventDispatcher eventDispatcher, boolean isCapture) {
     // Don't fire any pointer events if child view is handling native gesture
-    if (mChildHandlingNativeGesture != -1) {
+    if (mChildHandlingNativeGesture != UNSET_CHILD_VIEW_ID) {
       return;
     }
 
@@ -609,7 +610,7 @@ public class JSPointerDispatcher {
     // expected to happen very often as it would mean some child View has decided to intercept the
     // touch stream and start a native gesture only upon receiving the UP/CANCEL event.
     Assertions.assertCondition(
-        mChildHandlingNativeGesture == -1,
+        mChildHandlingNativeGesture == UNSET_CHILD_VIEW_ID,
         "Expected to not have already sent a cancel for this gesture");
 
     int activePointerId = eventState.getActivePointerId();

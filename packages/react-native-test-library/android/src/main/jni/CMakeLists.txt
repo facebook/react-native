@@ -10,7 +10,7 @@ file(GLOB react_codegen_SRCS CONFIGURE_DEPENDS *.cpp react/renderer/components/O
 
 add_library(
   react_codegen_OSSLibraryExampleSpec
-  SHARED
+  OBJECT
   ${react_codegen_SRCS}
 )
 
@@ -19,23 +19,8 @@ target_include_directories(react_codegen_OSSLibraryExampleSpec PUBLIC . react/re
 target_link_libraries(
   react_codegen_OSSLibraryExampleSpec
   fbjni
-  folly_runtime
-  glog
   jsi
-  react_codegen_rncore
-  react_debug
-  react_nativemodule_core
-  react_render_componentregistry
-  react_render_core
-  react_render_debug
-  react_render_graphics
-  react_render_imagemanager
-  react_render_mapbuffer
-  react_utils
-  rrc_image
-  rrc_view
-  turbomodulejsijni
-  yoga
+  reactnative
 )
 
 target_compile_options(

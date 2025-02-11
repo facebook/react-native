@@ -46,6 +46,7 @@ const AnimatedScrollView: AnimatedComponentType<Props, Instance> =
         props.style != null
       ) {
         return (
+          // $FlowFixMe[prop-missing]
           <AnimatedScrollViewWithInvertedRefreshControl
             scrollEventThrottle={0.0001}
             {...props}
@@ -71,7 +72,7 @@ const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
     props: {
       ...React.ElementConfig<typeof ScrollView>,
       // $FlowFixMe[unclear-type] Same Flow type as `refreshControl` in ScrollView
-      refreshControl: React.Element<any>,
+      refreshControl: ExactReactElement_DEPRECATED<any>,
     },
     forwardedRef:
       | {current: Instance | null, ...}
@@ -97,7 +98,7 @@ const AnimatedScrollViewWithInvertedRefreshControl = React.forwardRef(
     >(intermediatePropsForRefreshControl);
     // NOTE: Assumes that refreshControl.ref` and `refreshControl.style` can be
     // safely clobbered.
-    const refreshControl: React.Element<typeof RefreshControl> =
+    const refreshControl: ExactReactElement_DEPRECATED<typeof RefreshControl> =
       React.cloneElement(props.refreshControl, {
         ...refreshControlAnimatedProps,
         ref: refreshControlRef,

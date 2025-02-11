@@ -55,7 +55,7 @@ export type StatusBarAnimation = $Keys<{
   ...
 }>;
 
-type AndroidProps = $ReadOnly<{|
+type AndroidProps = $ReadOnly<{
   /**
    * The background color of the status bar.
    * @platform android
@@ -69,9 +69,9 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   translucent?: ?boolean,
-|}>;
+}>;
 
-type IOSProps = $ReadOnly<{|
+type IOSProps = $ReadOnly<{
   /**
    * If the network activity indicator should be visible.
    *
@@ -85,9 +85,9 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   showHideTransition?: ?('fade' | 'slide' | 'none'),
-|}>;
+}>;
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...AndroidProps,
   ...IOSProps,
   /**
@@ -103,7 +103,25 @@ type Props = $ReadOnly<{|
    * Sets the color of the status bar text.
    */
   barStyle?: ?('default' | 'light-content' | 'dark-content'),
-|}>;
+}>;
+
+type StackProps = {
+  backgroundColor: ?{
+    value: Props['backgroundColor'],
+    animated: boolean,
+  },
+  barStyle: ?{
+    value: Props['barStyle'],
+    animated: boolean,
+  },
+  translucent: Props['translucent'],
+  hidden: ?{
+    value: boolean,
+    animated: boolean,
+    transition: Props['showHideTransition'],
+  },
+  networkActivityIndicatorVisible: Props['networkActivityIndicatorVisible'],
+};
 
 /**
  * Merges the prop stack with the default values.
@@ -129,7 +147,7 @@ function mergePropsStack(
  * Returns an object to insert in the props stack from the props
  * and the transition/animation info.
  */
-function createStackEntry(props: any): any {
+function createStackEntry(props: Props): StackProps {
   const animated = props.animated ?? false;
   const showHideTransition = props.showHideTransition ?? 'fade';
   return {
@@ -203,7 +221,7 @@ function createStackEntry(props: any): any {
  * `currentHeight` (Android only) The height of the status bar.
  */
 class StatusBar extends React.Component<Props> {
-  static _propsStack: Array<any> = [];
+  static _propsStack: Array<StackProps> = [];
 
   static _defaultProps: any = createStackEntry({
     backgroundColor:
@@ -218,12 +236,10 @@ class StatusBar extends React.Component<Props> {
   });
 
   // Timer for updating the native module values at the end of the frame.
-  // $FlowFixMe[missing-local-annot]
-  static _updateImmediate = null;
+  static _updateImmediate: ?number = null;
 
   // The current merged values from the props stack.
-  // $FlowFixMe[missing-local-annot]
-  static _currentValues = null;
+  static _currentValues: ?StackProps = null;
 
   // TODO(janic): Provide a real API to deal with status bar height. See the
   // discussion in #6195.
@@ -272,8 +288,10 @@ class StatusBar extends React.Component<Props> {
   }
 
   /**
-   * Control the visibility of the network activity indicator
+   * DEPRECATED - The status bar network activity indicator is not supported in iOS 13 and later. This will be removed in a future release.
    * @param visible Show the indicator.
+   *
+   * @deprecated
    */
   static setNetworkActivityIndicatorVisible(visible: boolean) {
     if (Platform.OS !== 'ios') {
@@ -369,8 +387,7 @@ class StatusBar extends React.Component<Props> {
     return newEntry;
   }
 
-  // $FlowFixMe[missing-local-annot]
-  _stackEntry = null;
+  _stackEntry: ?StackProps = null;
 
   componentDidMount() {
     // Every time a StatusBar component is mounted, we push it's prop to a stack
@@ -410,14 +427,14 @@ class StatusBar extends React.Component<Props> {
       if (Platform.OS === 'ios') {
         if (
           !oldProps ||
-          oldProps.barStyle.value !== mergedProps.barStyle.value
+          oldProps.barStyle?.value !== mergedProps.barStyle.value
         ) {
           NativeStatusBarManagerIOS.setStyle(
             mergedProps.barStyle.value,
             mergedProps.barStyle.animated || false,
           );
         }
-        if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
+        if (!oldProps || oldProps.hidden?.value !== mergedProps.hidden.value) {
           NativeStatusBarManagerIOS.setHidden(
             mergedProps.hidden.value,
             mergedProps.hidden.animated
@@ -454,7 +471,7 @@ class StatusBar extends React.Component<Props> {
             mergedProps.backgroundColor.animated,
           );
         }
-        if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
+        if (!oldProps || oldProps.hidden?.value !== mergedProps.hidden.value) {
           NativeStatusBarManagerAndroid.setHidden(mergedProps.hidden.value);
         }
         // Activities are not translucent by default, so always set if true.
@@ -476,4 +493,4 @@ class StatusBar extends React.Component<Props> {
   }
 }
 
-module.exports = StatusBar;
+export default StatusBar;

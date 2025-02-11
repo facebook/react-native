@@ -30,8 +30,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.common.logging.FLog;
-import com.facebook.debug.holder.PrinterHolder;
-import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
 import com.facebook.react.bridge.ColorPropConverter;
@@ -50,9 +48,9 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UIManagerListener;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.annotations.UnstableReactNativeAPI;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
-import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.fabric.events.EventEmitterWrapper;
 import com.facebook.react.fabric.events.FabricEventEmitter;
 import com.facebook.react.fabric.internal.interop.InteropUIBlockListener;
@@ -66,9 +64,11 @@ import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItemFactory;
 import com.facebook.react.interfaces.fabric.SurfaceHandler;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.interop.InteropEventEmitter;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.GuardedFrameCallback;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactRoot;
@@ -108,11 +108,6 @@ public class FabricUIManager
   // The IS_DEVELOPMENT_ENVIRONMENT variable is used to log extra data when running fabric in a
   // development environment. DO NOT ENABLE THIS ON PRODUCTION OR YOU WILL BE FIRED!
   public static final boolean IS_DEVELOPMENT_ENVIRONMENT = false && ReactBuildConfig.DEBUG;
-  public static final boolean ENABLE_FABRIC_LOGS =
-      ReactFeatureFlags.enableFabricLogs
-          || PrinterHolder.getPrinter()
-              .shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
-  public static final boolean ENABLE_FABRIC_PERF_LOGS = ENABLE_FABRIC_LOGS || false;
   public DevToolsReactPerfLogger mDevToolsReactPerfLogger;
 
   private static final DevToolsReactPerfLogger.DevToolsReactPerfLoggerListener FABRIC_PERF_LOGGER =
@@ -165,7 +160,7 @@ public class FabricUIManager
     FabricSoLoader.staticInit();
   }
 
-  @Nullable private Binding mBinding;
+  @Nullable private FabricUIManagerBinding mBinding;
   @NonNull private final ReactApplicationContext mReactApplicationContext;
   @NonNull private final MountingManager mMountingManager;
   @NonNull private final EventDispatcher mEventDispatcher;
@@ -256,34 +251,11 @@ public class FabricUIManager
             mReactApplicationContext, rootView.getContext(), reactRootView.getSurfaceID(), rootTag);
     mMountingManager.startSurface(rootTag, reactContext, rootView);
     String moduleName = reactRootView.getJSModuleName();
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     return rootTag;
-  }
-
-  /**
-   * This API returns metadata associated to the React Component that rendered the Android View
-   * received as a parameter.
-   *
-   * @param surfaceId {@link int} that represents the surfaceId for the View received as a
-   *     parameter. In practice surfaceId can be retrieved calling the {@link View#getId()} method
-   *     on the {@link ReactRoot} that holds the View received as a second parameter.
-   * @param view {@link View} view that will be used to retrieve the React view hierarchy metadata.
-   * @return a {@link ReadableMap} that contains metadata associated to the React Component that
-   *     rendered the Android View received as a parameter. For more details about the keys stored
-   *     in the {@link ReadableMap} refer to the "getInspectorDataForInstance" method from
-   *     jni/react/fabric/Binding.cpp file.
-   */
-  @UiThread
-  @ThreadConfined(UI)
-  public ReadableMap getInspectorDataForInstance(final int surfaceId, final View view) {
-    UiThreadUtil.assertOnUiThread();
-    int reactTag = view.getId();
-
-    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
-    return mBinding.getInspectorDataForInstance(eventEmitter);
   }
 
   @Override
@@ -299,7 +271,7 @@ public class FabricUIManager
     Context context = rootView.getContext();
     ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, context, moduleName, rootTag);
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Starting surface for module: %s and reactTag: %d", moduleName, rootTag);
     }
     mMountingManager.startSurface(rootTag, reactContext, rootView);
@@ -335,12 +307,11 @@ public class FabricUIManager
             mReactApplicationContext, context, surfaceHandler.getModuleName(), rootTag);
     mMountingManager.startSurface(rootTag, reactContext, rootView);
 
-    surfaceHandler.setSurfaceId(rootTag);
-    if (surfaceHandler instanceof SurfaceHandlerBinding) {
-      mBinding.registerSurface((SurfaceHandlerBinding) surfaceHandler);
+    if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
+      throw new IllegalArgumentException("Invalid SurfaceHandler");
     }
-    surfaceHandler.setMountable(rootView != null);
-    surfaceHandler.start();
+    mBinding.startSurfaceWithSurfaceHandler(
+        rootTag, (SurfaceHandlerBinding) surfaceHandler, rootView != null);
   }
 
   public void attachRootView(final SurfaceHandler surfaceHandler, final View rootView) {
@@ -364,12 +335,10 @@ public class FabricUIManager
     }
 
     mMountingManager.stopSurface(surfaceHandler.getSurfaceId());
-
-    surfaceHandler.stop();
-
-    if (surfaceHandler instanceof SurfaceHandlerBinding) {
-      mBinding.unregisterSurface((SurfaceHandlerBinding) surfaceHandler);
+    if (!(surfaceHandler instanceof SurfaceHandlerBinding)) {
+      throw new IllegalArgumentException("Invalid SurfaceHandler");
     }
+    mBinding.stopSurfaceWithSurfaceHandler((SurfaceHandlerBinding) surfaceHandler);
   }
 
   /** Method called when an event has been dispatched on the C++ side. */
@@ -395,13 +364,13 @@ public class FabricUIManager
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
     mEventDispatcher.addBatchEventDispatchedListener(mBatchEventDispatchedListener);
-    if (ENABLE_FABRIC_PERF_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       mDevToolsReactPerfLogger = new DevToolsReactPerfLogger();
       mDevToolsReactPerfLogger.addDevToolsReactPerfLoggerListener(FABRIC_PERF_LOGGER);
 
       ReactMarker.addFabricListener(mDevToolsReactPerfLogger);
     }
-    if (ReactFeatureFlags.unstable_useFabricInterop) {
+    if (ReactNativeFeatureFlags.useFabricInterop()) {
       InteropEventEmitter interopEventEmitter = new InteropEventEmitter(mReactApplicationContext);
       mReactApplicationContext.internal_registerInteropModule(
           RCTEventEmitter.class, interopEventEmitter);
@@ -427,11 +396,6 @@ public class FabricUIManager
 
     mDestroyed = true;
 
-    // This is not technically thread-safe, since it's read on the UI thread and written
-    // here on the JS thread. We've marked it as volatile so that this writes to UI-thread
-    // memory immediately.
-    mDispatchUIFrameCallback.stop();
-
     mEventDispatcher.removeBatchEventDispatchedListener(mBatchEventDispatchedListener);
     mEventDispatcher.unregisterEventEmitter(FABRIC);
 
@@ -453,8 +417,24 @@ public class FabricUIManager
     // responsible for initializing and deallocating EventDispatcher. StaticViewConfigs is enabled
     // only in Bridgeless for now.
     // TODO T83943316: Remove this IF once StaticViewConfigs are enabled by default
-    if (!ReactFeatureFlags.enableBridgelessArchitecture) {
+    if (!ReactNativeFeatureFlags.enableBridgelessArchitecture()) {
       mEventDispatcher.onCatalystInstanceDestroyed();
+    }
+  }
+
+  @Override
+  public void markActiveTouchForTag(int surfaceId, int reactTag) {
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    if (surfaceMountingManager != null) {
+      surfaceMountingManager.markActiveTouchForTag(reactTag);
+    }
+  }
+
+  @Override
+  public void sweepActiveTouchForTag(int surfaceId, int reactTag) {
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    if (surfaceMountingManager != null) {
+      surfaceMountingManager.sweepActiveTouchForTag(reactTag);
     }
   }
 
@@ -463,7 +443,7 @@ public class FabricUIManager
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void addUIBlock(UIBlock block) {
-    if (ReactFeatureFlags.unstable_useFabricInterop) {
+    if (ReactNativeFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.addUIBlock(block);
     }
@@ -474,7 +454,7 @@ public class FabricUIManager
    * [addUiBlock] and [prependUiBlock] on UIManagerModule.
    */
   public void prependUIBlock(UIBlock block) {
-    if (ReactFeatureFlags.unstable_useFabricInterop) {
+    if (ReactNativeFeatureFlags.useFabricInterop()) {
       InteropUIBlockListener listener = getInteropUIBlockListener();
       listener.prependUIBlock(block);
     }
@@ -629,11 +609,12 @@ public class FabricUIManager
    *     padding used by RN Android TextInput.
    * @return if theme data is available in the output parameters.
    */
+  @SuppressWarnings("unused")
   public boolean getThemeData(int surfaceId, float[] defaultTextInputPadding) {
-    Context context =
-        mMountingManager.getSurfaceManagerEnforced(surfaceId, "getThemeData").getContext();
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    Context context = surfaceMountingManager != null ? surfaceMountingManager.getContext() : null;
     if (context == null) {
-      FLog.w(TAG, "\"themedReactContext\" is null when call \"getThemeData\"");
+      FLog.w(TAG, "Couldn't get context for surfaceId %d in getThemeData", surfaceId);
       return false;
     }
 
@@ -727,7 +708,7 @@ public class FabricUIManager
     ReactMarker.logFabricMarker(
         ReactMarkerConstants.FABRIC_UPDATE_UI_MAIN_THREAD_START, null, commitNumber);
 
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(
           TAG,
           "SynchronouslyUpdateViewOnUIThread for tag %d: %s",
@@ -750,9 +731,7 @@ public class FabricUIManager
       final String componentName,
       @Nullable Object props,
       @Nullable Object stateWrapper,
-      @Nullable Object eventEmitterWrapper,
       boolean isLayoutable) {
-
     mMountItemDispatcher.addPreAllocateMountItem(
         MountItemFactory.createPreAllocateViewMountItem(
             rootTag,
@@ -760,8 +739,15 @@ public class FabricUIManager
             componentName,
             (ReadableMap) props,
             (StateWrapper) stateWrapper,
-            (EventEmitterWrapper) eventEmitterWrapper,
             isLayoutable));
+  }
+
+  @SuppressWarnings("unused")
+  @AnyThread
+  @ThreadConfined(ANY)
+  private void destroyUnmountedView(int surfaceId, int reactTag) {
+    mMountItemDispatcher.addMountItem(
+        MountItemFactory.createDestroyViewMountItem(surfaceId, reactTag));
   }
 
   @SuppressLint("NotInvokedPrivateMethod")
@@ -872,7 +858,18 @@ public class FabricUIManager
     }
   }
 
-  public void setBinding(Binding binding) {
+  /**
+   * This method initiates preloading of an image specified by ImageSource. It can later be consumed
+   * by an ImageView.
+   */
+  @UnstableReactNativeAPI
+  public void experimental_prefetchResource(
+      String componentName, int surfaceId, int reactTag, ReadableMapBuffer params) {
+    mMountingManager.experimental_prefetchResource(
+        mReactApplicationContext, componentName, surfaceId, reactTag, params);
+  }
+
+  void setBinding(FabricUIManagerBinding binding) {
     mBinding = binding;
   }
 
@@ -889,7 +886,7 @@ public class FabricUIManager
       final int offsetX,
       final int offsetY) {
 
-    if (ENABLE_FABRIC_LOGS) {
+    if (ReactNativeFeatureFlags.enableFabricLogs()) {
       FLog.d(TAG, "Updating Root Layout Specs for [%d]", surfaceId);
     }
 
@@ -954,7 +951,6 @@ public class FabricUIManager
    * @param reactTag
    * @param eventName
    * @param canCoalesceEvent
-   * @param customCoalesceKey
    * @param params
    * @param eventCategory
    */
@@ -990,7 +986,7 @@ public class FabricUIManager
     EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(surfaceId, reactTag);
     if (eventEmitter == null) {
       if (mMountingManager.getViewExists(reactTag)) {
-        // The view is preallocated and created. However, it hasn't been mounted yet. We will have
+        // The view is pre-allocated and created. However, it hasn't been mounted yet. We will have
         // access to the event emitter later when the view is mounted. For now just save the event
         // in the view state and trigger it later.
         mMountingManager.enqueuePendingEvent(
@@ -1020,21 +1016,18 @@ public class FabricUIManager
 
   @Override
   public void onHostResume() {
-    ReactChoreographer.getInstance()
-        .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    mDispatchUIFrameCallback.resume();
   }
 
   @Override
   @NonNull
-  @SuppressWarnings("unchecked")
   public EventDispatcher getEventDispatcher() {
     return mEventDispatcher;
   }
 
   @Override
   public void onHostPause() {
-    ReactChoreographer.getInstance()
-        .removeFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+    mDispatchUIFrameCallback.pause();
   }
 
   @Override
@@ -1082,7 +1075,7 @@ public class FabricUIManager
       final int reactTag,
       final String commandId,
       @Nullable final ReadableArray commandArgs) {
-    if (ReactFeatureFlags.unstable_useFabricInterop) {
+    if (ReactNativeFeatureFlags.useFabricInterop()) {
       // For Fabric Interop, we check if the commandId is an integer. If it is, we use the integer
       // overload of dispatchCommand. Otherwise, we use the string overload.
       // and the events won't be correctly dispatched.
@@ -1273,7 +1266,7 @@ public class FabricUIManager
                   public void run() {
                     mMountNotificationScheduled = false;
 
-                    final @Nullable Binding binding = mBinding;
+                    final @Nullable FabricUIManagerBinding binding = mBinding;
                     if (binding == null || mDestroyed) {
                       mMountedSurfaceIds.clear();
                       return;
@@ -1321,21 +1314,55 @@ public class FabricUIManager
 
     private volatile boolean mIsMountingEnabled = true;
 
+    @ThreadConfined(UI)
+    private boolean mShouldSchedule = false;
+
+    @ThreadConfined(UI)
+    private boolean mIsScheduled = false;
+
     private DispatchUIFrameCallback(@NonNull ReactContext reactContext) {
       super(reactContext);
     }
 
-    @AnyThread
-    void stop() {
-      mIsMountingEnabled = false;
+    @UiThread
+    @ThreadConfined(UI)
+    private void schedule() {
+      if (!mIsScheduled && mShouldSchedule) {
+        mIsScheduled = true;
+        ReactChoreographer.getInstance()
+            .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, this);
+      }
+    }
+
+    @UiThread
+    @ThreadConfined(UI)
+    void resume() {
+      mShouldSchedule = true;
+      schedule();
+    }
+
+    @UiThread
+    @ThreadConfined(UI)
+    void pause() {
+      ReactChoreographer.getInstance()
+          .removeFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, this);
+      mShouldSchedule = false;
+      mIsScheduled = false;
     }
 
     @Override
     @UiThread
     @ThreadConfined(UI)
     public void doFrameGuarded(long frameTimeNanos) {
-      if (!mIsMountingEnabled || mDestroyed) {
-        FLog.w(TAG, "Not flushing pending UI operations because of previously thrown Exception");
+      mIsScheduled = false;
+
+      if (!mIsMountingEnabled) {
+        FLog.w(TAG, "Not flushing pending UI operations: exception was previously thrown");
+        return;
+      }
+
+      if (mDestroyed) {
+        FLog.w(TAG, "Not flushing pending UI operations: FabricUIManager is destroyed");
         return;
       }
 
@@ -1345,6 +1372,10 @@ public class FabricUIManager
       // the mBinding method, unless mBinding has gone away.
       if (mDriveCxxAnimations && mBinding != null) {
         mBinding.driveCxxAnimations();
+      }
+
+      if (mBinding != null) {
+        mBinding.drainPreallocateViewsQueue();
       }
 
       try {
@@ -1357,12 +1388,10 @@ public class FabricUIManager
         mMountItemDispatcher.tryDispatchMountItems();
       } catch (Exception ex) {
         FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
-        stop();
+        mIsMountingEnabled = false;
         throw ex;
       } finally {
-        ReactChoreographer.getInstance()
-            .postFrameCallback(
-                ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+        schedule();
       }
 
       mSynchronousEvents.clear();

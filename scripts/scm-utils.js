@@ -11,7 +11,6 @@
 'use strict';
 
 const fs = require('fs');
-const mkdirp = require('mkdirp');
 const path = require('path');
 const {cp, echo, exec, exit} = require('shelljs');
 
@@ -75,7 +74,7 @@ function saveFiles(filePaths /*: Array<string> */, tmpFolder /*: string */) {
     const dirName = path.dirname(filePath);
     if (dirName !== '.') {
       const destFolder = `${tmpFolder}/${dirName}`;
-      mkdirp.sync(destFolder);
+      fs.mkdirSync(destFolder, {recursive: true});
     }
     cp(filePath, `${tmpFolder}/${filePath}`);
   }

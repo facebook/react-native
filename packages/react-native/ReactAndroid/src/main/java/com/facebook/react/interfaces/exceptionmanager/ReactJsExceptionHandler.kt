@@ -8,6 +8,8 @@
 package com.facebook.react.interfaces.exceptionmanager
 
 import com.facebook.proguard.annotations.DoNotStripAny
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableNativeMap
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import java.util.ArrayList
 
@@ -15,36 +17,44 @@ import java.util.ArrayList
 @UnstableReactNativeAPI
 public fun interface ReactJsExceptionHandler {
   @DoNotStripAny
-  public interface ParsedError {
+  public interface ProcessedError {
     @DoNotStripAny
     public interface StackFrame {
-      public val fileName: String
+      public val file: String?
       public val methodName: String
-      public val lineNumber: Int
-      public val columnNumber: Int
+      public val lineNumber: Int?
+      public val column: Int?
     }
 
-    public val frames: List<StackFrame>
     public val message: String
-    public val exceptionId: Int
+    public val originalMessage: String?
+    public val name: String?
+    public val componentStack: String?
+    public val stack: List<StackFrame>
+    public val id: Int
     public val isFatal: Boolean
+    public val extraData: ReadableMap
   }
 
   @DoNotStripAny
-  private data class ParsedStackFrameImpl(
-      override val fileName: String,
+  private data class ProcessedErrorStackFrameImpl(
+      override val file: String?,
       override val methodName: String,
-      override val lineNumber: Int,
-      override val columnNumber: Int,
-  ) : ParsedError.StackFrame
+      override val lineNumber: Int?,
+      override val column: Int?,
+  ) : ProcessedError.StackFrame
 
   @DoNotStripAny
-  private data class ParsedErrorImpl(
-      override val frames: ArrayList<ParsedStackFrameImpl>,
+  private data class ProcessedErrorImpl(
       override val message: String,
-      override val exceptionId: Int,
+      override val originalMessage: String?,
+      override val name: String?,
+      override val componentStack: String?,
+      override val stack: ArrayList<ProcessedErrorStackFrameImpl>,
+      override val id: Int,
       override val isFatal: Boolean,
-  ) : ParsedError
+      override val extraData: ReadableNativeMap,
+  ) : ProcessedError
 
-  public fun reportJsException(errorMap: ParsedError)
+  public fun reportJsException(errorMap: ProcessedError)
 }

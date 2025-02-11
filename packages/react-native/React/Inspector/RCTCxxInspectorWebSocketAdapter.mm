@@ -50,7 +50,7 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
   dispatch_async(dispatch_get_main_queue(), ^{
     RCTCxxInspectorWebSocketAdapter *strongSelf = weakSelf;
     if (strongSelf) {
-      [strongSelf->_webSocket send:messageStr];
+      [strongSelf->_webSocket sendString:messageStr error:NULL];
     }
   });
 }
@@ -58,6 +58,14 @@ NSString *NSStringFromUTF8StringView(std::string_view view)
 - (void)close
 {
   [_webSocket closeWithCode:1000 reason:@"End of session"];
+}
+
+- (void)webSocketDidOpen:(__unused SRWebSocket *)webSocket
+{
+  // NOTE: We are on the main queue here, per SRWebSocket's defaults.
+  if (auto delegate = _delegate.lock()) {
+    delegate->didOpen();
+  }
 }
 
 - (void)webSocket:(__unused SRWebSocket *)webSocket didFailWithError:(NSError *)error

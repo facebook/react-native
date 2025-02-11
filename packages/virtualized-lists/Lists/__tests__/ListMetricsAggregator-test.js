@@ -221,7 +221,7 @@ describe('ListMetricsAggregator', () => {
         height: 10,
         width: 5,
         x: 0,
-        y: 0,
+        y: 100,
       },
     });
 
@@ -233,7 +233,7 @@ describe('ListMetricsAggregator', () => {
         height: 20,
         width: 5,
         x: 0,
-        y: 10,
+        y: 110,
       },
     });
 
@@ -241,7 +241,7 @@ describe('ListMetricsAggregator', () => {
     expect(listMetrics.getCellMetricsApprox(2, props)).toEqual({
       index: 2,
       length: 15,
-      offset: 30,
+      offset: 130,
       isMounted: false,
     });
   });
@@ -481,7 +481,7 @@ describe('ListMetricsAggregator', () => {
 
   it('estimates RTL metrics of unmeasured cell', () => {
     const listMetrics = new ListMetricsAggregator();
-    const orientation = {horizontal: true, rtl: false};
+    const orientation = {horizontal: true, rtl: true};
     const props: CellMetricProps = {
       data: [1, 2, 3, 4, 5],
       getItemCount: () => nullthrows(props.data).length,
@@ -500,7 +500,7 @@ describe('ListMetricsAggregator', () => {
       layout: {
         height: 5,
         width: 10,
-        x: 90,
+        x: 70,
         y: 0,
       },
     });
@@ -512,23 +512,22 @@ describe('ListMetricsAggregator', () => {
       layout: {
         height: 5,
         width: 20,
-        x: 70,
+        x: 50,
         y: 0,
       },
     });
 
-    expect(listMetrics.getCellMetrics(2, props)).toBeNull();
     expect(listMetrics.getCellMetricsApprox(2, props)).toEqual({
       index: 2,
       length: 15,
-      offset: 30,
+      offset: 50,
       isMounted: false,
     });
   });
 
   it('uses getItemLayout for RTL metrics of unmeasured cell', () => {
     const listMetrics = new ListMetricsAggregator();
-    const orientation = {horizontal: true, rtl: false};
+    const orientation = {horizontal: true, rtl: true};
     const props: CellMetricProps = {
       data: [1, 2, 3, 4, 5],
       getItemCount: () => nullthrows(props.data).length,

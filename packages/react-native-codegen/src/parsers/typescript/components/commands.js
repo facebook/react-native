@@ -11,7 +11,9 @@
 'use strict';
 
 import type {
+  CommandParamTypeAnnotation,
   CommandTypeAnnotation,
+  ComponentCommandArrayTypeAnnotation,
   NamedShape,
 } from '../../../CodegenSchema.js';
 import type {TypeDeclarationMap} from '../../utils';
@@ -53,7 +55,7 @@ function buildCommandSchemaInternal(
       paramValue.type === 'TSTypeReference'
         ? paramValue.typeName.name
         : paramValue.type;
-    let returnType;
+    let returnType: CommandParamTypeAnnotation;
 
     switch (type) {
       case 'RootTag':
@@ -78,19 +80,15 @@ function buildCommandSchemaInternal(
         }
         returnType = {
           type: 'ArrayTypeAnnotation',
-          elementType: getPrimitiveTypeAnnotation(
-            // TODO: T172453752 support complex type annotation for array element
-            paramValue.typeParameters.params[0].type,
+          elementType: getCommandArrayElementTypeType(
+            paramValue.typeParameters.params[0],
           ),
         };
         break;
       case 'TSArrayType':
         returnType = {
           type: 'ArrayTypeAnnotation',
-          elementType: {
-            // TODO: T172453752 support complex type annotation for array element
-            type: getPrimitiveTypeAnnotation(paramValue.elementType.type).type,
-          },
+          elementType: getCommandArrayElementTypeType(paramValue.elementType),
         };
         break;
       default:
@@ -118,6 +116,44 @@ function buildCommandSchemaInternal(
       },
     },
   };
+}
+
+function getCommandArrayElementTypeType(
+  inputType: mixed,
+): ComponentCommandArrayTypeAnnotation['elementType'] {
+  // TODO: T172453752 support more complex type annotation for array element
+
+  if (inputType == null || typeof inputType !== 'object') {
+    throw new Error(`Expected an object, received ${typeof inputType}`);
+  }
+
+  const type = inputType.type;
+  if (typeof type !== 'string') {
+    throw new Error('Command array element type must be a string');
+  }
+
+  // This is not a great solution. This generally means its a type alias to another type
+  // like an object or union. Ideally we'd encode that in the schema so the compat-check can
+  // validate those deeper objects for breaking changes and the generators can do something smarter.
+  // As of now, the generators just create ReadableMap or (const NSArray *) which are untyped
+  if (type === 'TSTypeReference') {
+    const name =
+      typeof inputType.typeName === 'object' ? inputType.typeName?.name : null;
+
+    if (typeof name !== 'string') {
+      throw new Error('Expected TSTypeReference AST name to be a string');
+    }
+
+    try {
+      return getPrimitiveTypeAnnotation(name);
+    } catch (e) {
+      return {
+        type: 'MixedTypeAnnotation',
+      };
+    }
+  }
+
+  return getPrimitiveTypeAnnotation(type);
 }
 
 function buildCommandSchema(

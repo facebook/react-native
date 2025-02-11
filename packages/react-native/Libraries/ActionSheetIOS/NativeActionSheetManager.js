@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeActionSheetManager';
-import NativeActionSheetManager from '../../src/private/specs/modules/NativeActionSheetManager';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeActionSheetManager';
+import NativeActionSheetManager from '../../src/private/specs_DEPRECATED/modules/NativeActionSheetManager';
 export default NativeActionSheetManager;

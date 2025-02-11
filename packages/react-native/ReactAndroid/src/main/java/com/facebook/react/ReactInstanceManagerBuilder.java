@@ -8,7 +8,6 @@
 package com.facebook.react;
 
 import static com.facebook.react.ReactInstanceManager.initializeSoLoaderIfNecessary;
-import static com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriendlyDeviceName;
 
 import android.app.Activity;
 import android.app.Application;
@@ -37,6 +36,7 @@ import com.facebook.react.internal.ChoreographerProvider;
 import com.facebook.react.jscexecutor.JSCExecutor;
 import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.RequestHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -339,7 +339,7 @@ public class ReactInstanceManagerBuilder {
     // We use the name of the device and the app for debugging & metrics
     //noinspection ConstantConditions
     String appName = mApplication.getPackageName();
-    String deviceName = getFriendlyDeviceName();
+    String deviceName = AndroidInfoHelpers.getFriendlyDeviceName();
 
     return new ReactInstanceManager(
         mApplication,

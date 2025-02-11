@@ -137,7 +137,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Simple scroll view',
-    render: function (): React.Element<typeof ScrollViewSimpleExample> {
+    render(): React.MixedElement {
       return <ScrollViewSimpleExample />;
     },
   },

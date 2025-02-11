@@ -319,6 +319,21 @@ export interface AccessibilityPropsIOS {
    * @platform ios
    */
   accessibilityLanguage?: string | undefined;
+
+  /**
+   * A Boolean value that indicates whether or not to show the item in the large content viewer.
+   * Available on iOS 13.0+
+   * https://reactnative.dev/docs/accessibility#accessibilityshowslargecontentviewer
+   * @platform ios
+   */
+  accessibilityShowsLargeContentViewer?: boolean | undefined;
+
+  /**
+   * When `accessibilityShowsLargeContentViewer` is set, this string will be used as title for the large content viewer.
+   * https://reactnative.dev/docs/accessibility#accessibilitylargecontenttitle
+   * @platform ios
+   */
+  accessibilityLargeContentTitle?: string | undefined;
 }
 
 export type Role =

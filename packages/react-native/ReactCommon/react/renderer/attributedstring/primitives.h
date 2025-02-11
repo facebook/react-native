@@ -42,7 +42,27 @@ enum class FontVariant : int {
   OldstyleNums = 1 << 2,
   LiningNums = 1 << 3,
   TabularNums = 1 << 4,
-  ProportionalNums = 1 << 5
+  ProportionalNums = 1 << 5,
+  StylisticOne = 1 << 6,
+  StylisticTwo = 1 << 7,
+  StylisticThree = 1 << 8,
+  StylisticFour = 1 << 9,
+  StylisticFive = 1 << 10,
+  StylisticSix = 1 << 11,
+  StylisticSeven = 1 << 12,
+  StylisticEight = 1 << 13,
+  StylisticNine = 1 << 14,
+  StylisticTen = 1 << 15,
+  StylisticEleven = 1 << 16,
+  StylisticTwelve = 1 << 17,
+  StylisticThirteen = 1 << 18,
+  StylisticFourteen = 1 << 19,
+  StylisticFifteen = 1 << 20,
+  StylisticSixteen = 1 << 21,
+  StylisticSeventeen = 1 << 22,
+  StylisticEighteen = 1 << 23,
+  StylisticNineteen = 1 << 24,
+  StylisticTwenty = 1 << 25
 };
 
 enum class DynamicTypeRamp {
@@ -101,6 +121,15 @@ enum class LineBreakStrategy {
                       // characters.
   Standard // Use the same configuration of line break strategies that the
            // system uses for standard UI labels.
+};
+
+enum class LineBreakMode {
+  Word, // Wrap at word boundaries, default
+  Char, // Wrap at character boundaries
+  Clip, // Simply clip
+  Head, // Truncate at head of line: "...wxyz"
+  Middle, // Truncate middle of line:  "ab...yz"
+  Tail // Truncate at tail of line: "abcd..."
 };
 
 enum class TextDecorationLineType {

@@ -18,25 +18,25 @@ export type PlatformSelectSpec<T> = {
 
 type IOSPlatform = {
   __constants: null,
-  OS: $TEMPORARY$string<'ios'>,
+  OS: 'ios',
   // $FlowFixMe[unsafe-getters-setters]
   get Version(): string,
   // $FlowFixMe[unsafe-getters-setters]
-  get constants(): {|
+  get constants(): {
     forceTouchAvailable: boolean,
     interfaceIdiom: string,
     isTesting: boolean,
     isDisableAnimations?: boolean,
     osVersion: string,
-    reactNativeVersion: {|
+    reactNativeVersion: {
       major: number,
       minor: number,
       patch: number,
       prerelease: ?string,
-    |},
+    },
     systemName: string,
     isMacCatalyst?: boolean,
-  |},
+  },
   // $FlowFixMe[unsafe-getters-setters]
   get isPad(): boolean,
   // $FlowFixMe[unsafe-getters-setters]
@@ -54,19 +54,19 @@ type IOSPlatform = {
 
 type AndroidPlatform = {
   __constants: null,
-  OS: $TEMPORARY$string<'android'>,
+  OS: 'android',
   // $FlowFixMe[unsafe-getters-setters]
   get Version(): number,
   // $FlowFixMe[unsafe-getters-setters]
-  get constants(): {|
+  get constants(): {
     isTesting: boolean,
     isDisableAnimations?: boolean,
-    reactNativeVersion: {|
+    reactNativeVersion: {
       major: number,
       minor: number,
       patch: number,
       prerelease: ?string,
-    |},
+    },
     Version: number,
     Release: string,
     Serial: string,
@@ -76,7 +76,7 @@ type AndroidPlatform = {
     uiMode: string,
     Brand: string,
     Manufacturer: string,
-  |},
+  },
   // $FlowFixMe[unsafe-getters-setters]
   get isTV(): boolean,
   // $FlowFixMe[unsafe-getters-setters]

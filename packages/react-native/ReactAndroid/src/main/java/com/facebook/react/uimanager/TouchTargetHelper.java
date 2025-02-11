@@ -135,7 +135,7 @@ public class TouchTargetHelper {
         firstReactAncestor++;
       }
 
-      if (firstReactAncestor > 0) {
+      if (firstReactAncestor > 0 && firstReactAncestor <= pathAccumulator.size()) {
         // Drop non-React views from the path trace
         pathAccumulator = pathAccumulator.subList(firstReactAncestor, pathAccumulator.size());
       }

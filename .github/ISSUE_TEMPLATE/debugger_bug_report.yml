@@ -1,0 +1,76 @@
+name: 🔍 Debugger - Bug Report
+description: Report a bug with React Native DevTools and the New Debugger
+labels: ["Needs: Triage :mag:", "Debugger"]
+
+body:
+  - type: markdown
+    attributes:
+      value: "## Reporting a bug for React Native DevTools"
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report an issue for React Native DevTools, our new Debugger for React Native.
+
+        Before you continue:
+        * If you're using **Expo** and you're noticing a bug, [report it here](https://github.com/expo/expo/issues).
+        * If you've found a problem with our **documentation**, [report it here](https://github.com/facebook/react-native-website/issues/).
+        * If you're having an issue with **Metro** (the bundler), [report it here](https://github.com/facebook/metro/issues/).
+        * If you're using an external library, report the issue to the **library first**.
+        * Please [search for similar issues](https://github.com/facebook/react-native/issues) in our issue tracker.
+
+        Make sure that your issue is tested against the [**latest stable**](https://github.com/facebook/react-native/releases/) of React Native.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: The list of steps that reproduces the issue.
+      placeholder: |
+        1. Install the application with `yarn android`
+        2. Press `j` to open the debugger
+        3. Do something...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: React Native Version
+      description: The version of react-native that this issue reproduces on. Bear in mind that only issues on [supported versions](https://github.com/reactwg/react-native-releases#which-versions-are-currently-supported) will be looked into.
+      placeholder: "0.76.0"
+    validations:
+      required: true
+  - type: textarea
+    id: react-native-info
+    attributes:
+      label: Output of `npx react-native info`
+      description: Run `npx react-native info` in your terminal, copy and paste the results here.
+      placeholder: |
+        Paste the output of `npx react-native info` here. The output looks like:
+        ...
+        System:
+          OS: macOS 14.1.1
+          CPU: (10) arm64 Apple M1 Max
+          Memory: 417.81 MB / 64.00 GB
+          Shell:
+            version: "5.9"
+            path: /bin/zsh
+        Binaries:
+          Node: ...
+            version: 18.14.0
+        ...
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots and Videos
+      description: |
+        Please provide screenshot or a video of your bug if relevant.
+        Issues with videos and screenshots are more likely to **get prioritized**.

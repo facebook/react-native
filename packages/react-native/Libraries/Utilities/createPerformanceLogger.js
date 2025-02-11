@@ -15,10 +15,7 @@ import type {
   Timespan,
 } from './IPerformanceLogger';
 
-import * as Systrace from '../Performance/Systrace';
 import infoLog from './infoLog';
-
-const _cookies: {[key: string]: number, ...} = {};
 
 const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
 
@@ -233,7 +230,6 @@ class PerformanceLogger implements IPerformanceLogger {
       startTime: timestamp,
       startExtras: extras,
     };
-    _cookies[key] = Systrace.beginAsyncEvent(key);
     if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'start: ' + key);
     }
@@ -276,11 +272,6 @@ class PerformanceLogger implements IPerformanceLogger {
     timespan.totalTime = timespan.endTime - (timespan.startTime || 0);
     if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'end: ' + key);
-    }
-
-    if (_cookies[key] != null) {
-      Systrace.endAsyncEvent(key, _cookies[key]);
-      delete _cookies[key];
     }
   }
 }

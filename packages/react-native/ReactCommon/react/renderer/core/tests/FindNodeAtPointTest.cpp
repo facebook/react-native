@@ -366,3 +366,52 @@ TEST(FindNodeAtPointTest, overlappingViewsWithParentPointerEventsNone) {
   EXPECT_EQ(
             LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {50, 50}), nullptr);
 }
+
+TEST(FindNodeAtPointTest, invertedList) {
+  auto builder = simpleComponentBuilder();
+  
+  // clang-format off
+  auto element =
+    Element<ScrollViewShadowNode>()
+      .props([] {
+        auto sharedProps = std::make_shared<ScrollViewProps>();
+        sharedProps->transform = Transform::VerticalInversion();
+        return sharedProps;
+      })
+      .tag(1)
+      .finalize([](ScrollViewShadowNode &shadowNode){
+        auto layoutMetrics = EmptyLayoutMetrics;
+        layoutMetrics.frame.size = {100, 200};
+        shadowNode.setLayoutMetrics(layoutMetrics);
+      })
+      .children({
+        Element<ViewShadowNode>()
+        .tag(2)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {0, 0};
+          layoutMetrics.frame.size = {100, 100};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        }),
+        Element<ViewShadowNode>()
+        .tag(3)
+        .finalize([](ViewShadowNode &shadowNode){
+          auto layoutMetrics = EmptyLayoutMetrics;
+          layoutMetrics.frame.origin = {0, 100};
+          layoutMetrics.frame.size = {100, 100};
+          shadowNode.setLayoutMetrics(layoutMetrics);
+        })
+    });
+  // clang-format on
+
+  auto parentShadowNode = builder.build(element);
+
+  EXPECT_EQ(
+      LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {10, 10})
+          ->getTag(),
+      3);
+  EXPECT_EQ(
+      LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {10, 105})
+          ->getTag(),
+      2);
+}

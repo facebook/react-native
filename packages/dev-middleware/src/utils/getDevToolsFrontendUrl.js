@@ -44,12 +44,6 @@ export default function getDevToolsFrontendUrl(
   if (experiments.enableNetworkInspector) {
     searchParams.append('unstable_enableNetworkPanel', 'true');
   }
-  if (
-    options?.useFuseboxEntryPoint === true &&
-    experiments.useFuseboxInternalBranding
-  ) {
-    searchParams.append('unstable_useInternalBranding', 'true');
-  }
   if (options?.launchId != null && options.launchId !== '') {
     searchParams.append('launchId', options.launchId);
   }
@@ -71,7 +65,11 @@ function getWsParam({
   const serverHost = new URL(devServerUrl).host;
   let value;
   if (wsUrl.host === serverHost) {
-    // Use a path-absolute (host-relative) URL
+    // Use a path-absolute (host-relative) URL if the WS server and frontend
+    // server are colocated. This is more robust for cases where the frontend
+    // may actually load through a tunnel or proxy, and the WS connection
+    // should therefore do the same.
+    //
     // Depends on https://github.com/facebookexperimental/rn-chrome-devtools-frontend/pull/4
     value = wsUrl.pathname + wsUrl.search + wsUrl.hash;
   } else {

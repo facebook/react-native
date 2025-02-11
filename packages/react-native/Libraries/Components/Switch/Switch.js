@@ -24,13 +24,13 @@ import SwitchNativeComponent, {
 import * as React from 'react';
 
 type SwitchChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
+  $ReadOnly<{
     value: boolean,
     target: number,
-  |}>,
+  }>,
 >;
 
-export type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -59,10 +59,10 @@ export type Props = $ReadOnly<{|
     color of the background exposed by the shrunken track, use
      [`ios_backgroundColor`](https://reactnative.dev/docs/switch#ios_backgroundColor).
    */
-  trackColor?: ?$ReadOnly<{|
+  trackColor?: ?$ReadOnly<{
     false?: ?ColorValue,
     true?: ?ColorValue,
-  |}>,
+  }>,
 
   /**
     On iOS, custom color for the background. This background color can be
@@ -84,7 +84,7 @@ export type Props = $ReadOnly<{|
     use `onChange`.
    */
   onValueChange?: ?(value: boolean) => Promise<void> | void,
-|}>;
+}>;
 const returnsFalse = () => false;
 const returnsTrue = () => true;
 
@@ -130,12 +130,14 @@ const returnsTrue = () => true;
   ```
  */
 
-const SwitchWithForwardedRef: React.AbstractComponent<
-  Props,
-  React.ElementRef<
-    typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
-  >,
-> = React.forwardRef(function Switch(props, forwardedRef): React.Node {
+type SwitchRef = React.ElementRef<
+  typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
+>;
+
+const SwitchWithForwardedRef: component(
+  ref: React.RefSetter<SwitchRef>,
+  ...props: Props
+) = React.forwardRef(function Switch(props, forwardedRef): React.Node {
   const {
     disabled,
     ios_backgroundColor,

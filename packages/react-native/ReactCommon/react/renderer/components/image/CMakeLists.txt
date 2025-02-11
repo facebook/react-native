@@ -15,7 +15,7 @@ add_compile_options(
         -DLOG_TAG=\"Fabric\")
 
 file(GLOB rrc_image_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(rrc_image SHARED ${rrc_image_SRC})
+add_library(rrc_image OBJECT ${rrc_image_SRC})
 
 target_include_directories(rrc_image PUBLIC ${REACT_COMMON_DIR})
 
@@ -26,11 +26,11 @@ target_link_libraries(rrc_image
         jsi
         react_debug
         react_utils
-        react_render_core
-        react_render_debug
-        react_render_graphics
-        react_render_imagemanager
-        react_render_mapbuffer
+        react_renderer_core
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_imagemanager
+        react_renderer_mapbuffer
         rrc_view
         yoga
 )

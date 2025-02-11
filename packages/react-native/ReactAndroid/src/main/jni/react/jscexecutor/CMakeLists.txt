@@ -8,10 +8,13 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(-fvisibility=hidden -fexceptions -frtti)
 
+include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+
 file(GLOB jscexecutor_SRC CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-add_library(jscexecutor SHARED ${jscexecutor_SRC})
+add_library(jscexecutor OBJECT ${jscexecutor_SRC})
 
 target_include_directories(jscexecutor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_merge_so(jscexecutor)
 
 # Patch from Expo: https://github.com/expo/react-native/blob/02714ab44d1e206fa80e81aef618e61017cccdc1/ReactAndroid/src/main/java/com/facebook/react/jscexecutor/CMakeLists.txt#L16-L25
 # Explicitly link libgcc.a to prevent undefined `_Unwind_Resume` symbol and crash from throwing c++ exceptions even someone tries to catch the exceptions.
@@ -26,11 +29,7 @@ else()
 endif()
 
 target_link_libraries(jscexecutor
-        jsireact
-        jscruntime
         ${LIB_UNWIND}
-        fb
-        fbjni
-        folly_runtime
+        jscruntime
         jsi
-        reactnativejni)
+        reactnative)

@@ -14,7 +14,6 @@
 
 #import <React/RCTCxxInspectorPackagerConnection.h>
 #import <React/RCTDefines.h>
-#import <React/RCTInspectorPackagerConnection.h>
 
 #import <CommonCrypto/CommonCrypto.h>
 #import <jsinspector-modern/InspectorFlags.h>
@@ -80,8 +79,14 @@ static NSString *getInspectorDeviceId()
   // A bundle ID uniquely identifies a single app throughout the system. [Source: Apple docs]
   NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
 
+#if TARGET_OS_IPHONE
   // An alphanumeric string that uniquely identifies a device to the app's vendor. [Source: Apple docs]
   NSString *identifierForVendor = [[UIDevice currentDevice] identifierForVendor].UUIDString;
+#else
+  // macOS does not support UIDevice. Use an empty string, with the assumption
+  // that we are only building to the current system.
+  NSString *identifierForVendor = @"";
+#endif
 
   auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
 
@@ -95,6 +100,9 @@ static NSString *getInspectorDeviceId()
 
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
+  auto &inspectorFlags = facebook::react::jsinspector_modern::InspectorFlags::getInstance();
+  BOOL isProfilingBuild = inspectorFlags.getIsProfilingBuild();
+
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name]
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
   NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier]
@@ -103,11 +111,13 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
   NSString *escapedInspectorDeviceId = [getInspectorDeviceId()
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 
-  return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@&device=%@",
-                                                         getServerHost(bundleURL),
-                                                         escapedDeviceName,
-                                                         escapedAppName,
-                                                         escapedInspectorDeviceId]];
+  return [NSURL
+      URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@&device=%@&profiling=%@",
+                                               getServerHost(bundleURL),
+                                               escapedDeviceName,
+                                               escapedAppName,
+                                               escapedInspectorDeviceId,
+                                               isProfilingBuild ? @"true" : @"false"]];
 }
 
 @implementation RCTInspectorDevServerHelper
@@ -136,15 +146,11 @@ static void sendEventToAllConnections(NSString *event)
 
 + (void)openDebugger:(NSURL *)bundleURL withErrorMessage:(NSString *)errorMessage
 {
-  NSString *appId = [[[NSBundle mainBundle] bundleIdentifier]
-      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
-
   NSString *escapedInspectorDeviceId = [getInspectorDeviceId()
       stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 
-  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/open-debugger?appId=%@&device=%@",
+  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/open-debugger?device=%@",
                                                                getServerHost(bundleURL),
-                                                               appId,
                                                                escapedInspectorDeviceId]];
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
   [request setHTTPMethod:@"POST"];
@@ -181,11 +187,7 @@ static void sendEventToAllConnections(NSString *event)
   NSString *key = [inspectorURL absoluteString];
   id<RCTInspectorPackagerConnectionProtocol> connection = socketConnections[key];
   if (!connection || !connection.isConnected) {
-    if (facebook::react::jsinspector_modern::InspectorFlags::getInstance().getFuseboxEnabled()) {
-      connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
-    } else {
-      connection = [[RCTInspectorPackagerConnection alloc] initWithURL:inspectorURL];
-    }
+    connection = [[RCTCxxInspectorPackagerConnection alloc] initWithURL:inspectorURL];
 
     socketConnections[key] = connection;
     [connection connect];

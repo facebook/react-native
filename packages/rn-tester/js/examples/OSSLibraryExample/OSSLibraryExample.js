@@ -12,6 +12,7 @@
 
 import type {NativeComponentType} from '@react-native/oss-library-example';
 
+import RNTesterText from '../../components/RNTesterText';
 import {
   SampleNativeComponent,
   SampleNativeComponentCommands,
@@ -19,7 +20,7 @@ import {
 import {NativeSampleModule} from '@react-native/oss-library-example';
 import * as React from 'react';
 import {useRef, useState} from 'react';
-import {Button, Text, View} from 'react-native';
+import {Button, View} from 'react-native';
 import {StyleSheet} from 'react-native';
 
 const colors = [
@@ -105,7 +106,7 @@ function NativeSampleModuleWrapper(props: {}): React.Node {
           }
         }}
       />
-      <Text style={styles.column}>{randomNumber}</Text>
+      <RNTesterText style={styles.column}>{randomNumber}</RNTesterText>
     </View>
   );
 }
@@ -116,7 +117,7 @@ exports.examples = [
   {
     title: 'OSS Library Example',
     description: 'Click to change background and opacity',
-    render(): React.Element<any> {
+    render(): React.MixedElement {
       return (
         <>
           <SampleNativeComponentContainer />

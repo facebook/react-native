@@ -38,7 +38,7 @@ export type ModuleProps = $ReadOnly<{|
 |}>;
 
 export const Commands = codegenNativeCommands<{
-  +hotspotUpdate: (ref: React.Ref<'RCTView'>, x: Int32, y: Int32) => void,
+  +hotspotUpdate: (ref: React.RefSetter<'RCTView'>, x: Int32, y: Int32) => void,
 }>({
   supportedCommands: ['hotspotUpdate'],
 });
@@ -69,7 +69,7 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +hotspotUpdate: (viewRef: React.RefSetter<'RCTView'>, x: Int32, y: Int32) => void;
 }
 
 export type ModuleProps = $ReadOnly<{|
@@ -148,7 +148,7 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: ?React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +hotspotUpdate: (viewRef: ?React.RefSetter<'RCTView'>, x: Int32, y: Int32) => void;
 }
 
 export type ModuleProps = $ReadOnly<{|
@@ -186,9 +186,9 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +hotspotUpdate: (viewRef: React.RefSetter<'RCTView'>, x: Int32, y: Int32) => void;
   +scrollTo: (
-    viewRef: React.Ref<'RCTView'>,
+    viewRef: React.RefSetter<'RCTView'>,
     y: Int32,
     animated: boolean,
   ) => void;
@@ -229,9 +229,9 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {HostComponent} from 'react-native';
 
 interface NativeCommands {
-  +hotspotUpdate: (viewRef: React.Ref<'RCTView'>, x: Int32, y: Int32) => void;
+  +hotspotUpdate: (viewRef: React.RefSetter<'RCTView'>, x: Int32, y: Int32) => void;
   +scrollTo: (
-    viewRef: React.Ref<'RCTView'>,
+    viewRef: React.RefSetter<'RCTView'>,
     y: Int32,
     animated: boolean,
   ) => void;

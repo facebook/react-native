@@ -18,7 +18,16 @@
 
 + (CommonHostMetadata *)getHostMetadata
 {
+#if TARGET_OS_IPHONE
   UIDevice *device = [UIDevice currentDevice];
+  NSString *deviceName = [device name];
+#else
+  // macOS does not support UIDevice. Use System Configuration. This API
+  // returns a nullable value, but is non-blocking (compared with
+  // `[NSHost currentHost]`) and is ideal since deviceName is optional.
+  NSString *deviceName = (__bridge NSString *)SCDynamicStoreCopyComputerName(nil, nil);
+#endif // TARGET_OS_IPHONE
+
   auto version = RCTGetReactNativeVersion();
 
   CommonHostMetadata *metadata = [[CommonHostMetadata alloc] init];
@@ -26,7 +35,7 @@
   metadata.appDisplayName = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleNameKey];
   metadata.appIdentifier = [[NSBundle mainBundle] bundleIdentifier];
   metadata.platform = RCTPlatformName;
-  metadata.deviceName = [device name];
+  metadata.deviceName = deviceName;
   metadata.reactNativeVersion = [NSString stringWithFormat:@"%i.%i.%i%@",
                                                            [version[@"major"] intValue],
                                                            [version[@"minor"] intValue],

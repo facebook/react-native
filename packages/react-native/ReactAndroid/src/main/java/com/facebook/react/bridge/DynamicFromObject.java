@@ -80,7 +80,10 @@ public class DynamicFromObject implements Dynamic {
     if (mObject instanceof ReadableArray) {
       return ReadableType.Array;
     }
-    FLog.e(ReactConstants.TAG, "Unmapped object type " + mObject.getClass().getName());
+    FLog.e(
+        ReactConstants.TAG,
+        "Unmapped object type "
+            + (mObject == null ? "<NULL object>" : mObject.getClass().getName()));
     return ReadableType.Null;
   }
 }

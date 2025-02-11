@@ -14,21 +14,20 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_core_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_core SHARED ${react_render_core_SRC})
+file(GLOB react_renderer_core_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_core OBJECT ${react_renderer_core_SRC})
 
-target_include_directories(react_render_core PUBLIC ${REACT_COMMON_DIR})
-target_link_libraries(react_render_core
+target_include_directories(react_renderer_core PUBLIC ${REACT_COMMON_DIR})
+target_link_libraries(react_renderer_core
         folly_runtime
         glog
         jsi
         logger
-        react_config
         react_debug
         react_featureflags
-        react_render_debug
-        react_render_graphics
-        react_render_mapbuffer
-        react_render_runtimescheduler
+        react_renderer_debug
+        react_renderer_graphics
+        react_renderer_mapbuffer
+        react_renderer_runtimescheduler
         react_utils
         runtimeexecutor)

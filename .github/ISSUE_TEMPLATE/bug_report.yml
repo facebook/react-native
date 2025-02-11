@@ -1,4 +1,4 @@
-name: 🐛 Bug Report
+name: 🐛 React Native - Bug Report
 description: Report a reproducible bug or regression in React Native.
 labels: ["Needs: Triage :mag:"]
 body:

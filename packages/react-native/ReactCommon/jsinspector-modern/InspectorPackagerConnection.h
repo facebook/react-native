@@ -33,13 +33,15 @@ class InspectorPackagerConnection {
    * Creates a new connection instance. Connections start in the disconnected
    * state; connect() should be called to establish a connection.
    * \param url The WebSocket URL where the inspector-proxy server is listening.
-   * \param app The name of the application being debugged.
+   * \param deviceName The host device name.
+   * \param appName The application name.
    * \param delegate An interface to platform-specific methods for creating a
    * WebSocket, scheduling async work, etc.
    */
   InspectorPackagerConnection(
       std::string url,
-      std::string app,
+      std::string deviceName,
+      std::string appName,
       std::unique_ptr<InspectorPackagerConnectionDelegate> delegate);
   bool isConnected() const;
   void connect();
@@ -71,11 +73,10 @@ class InspectorPackagerConnectionDelegate {
   /**
    * Schedules a function to run after a delay. If the function is called
    * asynchronously, the implementer of InspectorPackagerConnectionDelegate
-   * is responsible for thread safety (e.g. scheduling the callback on a thread
-   * that has unique access to the InspectorPackagerConnection instance, or
-   * otherwise ensuring synchronization). The callback MAY be dropped and never
-   * called if no further callbacks are being accepted, e.g. if the application
-   * is terminating.
+   * is responsible for thread safety and should schedule the callback on
+   * the inspector queue. The callback MAY be dropped and never called if no
+   * further callbacks are being accepted, e.g. if the application is
+   * terminating.
    */
   virtual void scheduleCallback(
       std::function<void(void)> callback,

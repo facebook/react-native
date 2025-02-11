@@ -20,19 +20,19 @@ import StyleSheet, {type ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import Platform from '../../Utilities/Platform';
 import * as React from 'react';
 
-type AndroidProps = $ReadOnly<{|
+type AndroidProps = $ReadOnly<{
   nextFocusDown?: ?number,
   nextFocusForward?: ?number,
   nextFocusLeft?: ?number,
   nextFocusRight?: ?number,
   nextFocusUp?: ?number,
-|}>;
+}>;
 
-type IOSProps = $ReadOnly<{|
+type IOSProps = $ReadOnly<{
   hasTVPreferredFocus?: ?boolean,
-|}>;
+}>;
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   ...React.ElementConfig<TouchableWithoutFeedback>,
   ...AndroidProps,
   ...IOSProps,
@@ -44,18 +44,18 @@ type Props = $ReadOnly<{|
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
 
-  hostRef: React.Ref<typeof View>,
-|}>;
+  hostRef: React.RefSetter<React.ElementRef<typeof View>>,
+}>;
 
-type ExtraStyles = $ReadOnly<{|
+type ExtraStyles = $ReadOnly<{
   child: ViewStyleProp,
   underlay: ViewStyleProp,
-|}>;
+}>;
 
-type State = $ReadOnly<{|
+type State = $ReadOnly<{
   pressability: Pressability,
   extraStyles: ?ExtraStyles,
-|}>;
+}>;
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -381,13 +381,13 @@ class TouchableHighlight extends React.Component<Props, State> {
   }
 }
 
-const Touchable: React.AbstractComponent<
-  $ReadOnly<$Diff<Props, {|hostRef: React.Ref<typeof View>|}>>,
-  React.ElementRef<typeof View>,
-> = React.forwardRef((props, hostRef) => (
+const Touchable: component(
+  ref: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: $ReadOnly<$Diff<Props, {+hostRef: mixed}>>
+) = React.forwardRef((props, hostRef) => (
   <TouchableHighlight {...props} hostRef={hostRef} />
 ));
 
 Touchable.displayName = 'TouchableHighlight';
 
-module.exports = Touchable;
+export default Touchable;

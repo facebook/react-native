@@ -58,10 +58,7 @@ class PointerEventsProcessorTest : public ::testing::Test {
     // tests)
     RuntimeExecutor runtimeExecutor =
         [](std::function<void(facebook::jsi::Runtime & runtime)>&& callback) {};
-    BackgroundExecutor backgroundExecutor =
-        [](std::function<void()>&& callback) {};
-    uiManager_ = std::make_unique<UIManager>(
-        runtimeExecutor, backgroundExecutor, contextContainer);
+    uiManager_ = std::make_unique<UIManager>(runtimeExecutor, contextContainer);
     uiManager_->setComponentDescriptorRegistry(componentDescriptorRegistry);
 
     // Create a hierarchy of nodes
@@ -90,8 +87,8 @@ class PointerEventsProcessorTest : public ::testing::Test {
             listenToAllPointerEvents(props);
             props.layoutConstraints = LayoutConstraints{{0,0}, {500, 500}};
             auto &yogaStyle = props.yogaStyle;
-            yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(400));
-            yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(400));
+            yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(400));
+            yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(400));
             yogaStyle.setDisplay(yoga::Display::Flex);
             yogaStyle.setFlexDirection(yoga::FlexDirection::Row);
             yogaStyle.setAlignItems(yoga::Align::Center);
@@ -112,8 +109,8 @@ class PointerEventsProcessorTest : public ::testing::Test {
                 yogaStyle.setFlexDirection(yoga::FlexDirection::Column);
                 yogaStyle.setAlignItems(yoga::Align::FlexEnd);
                 yogaStyle.setJustifyContent(yoga::Justify::Center);
-                yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(150));
-                yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(300));
+                yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(150));
+                yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(300));
                 return sharedProps;
               })
               .children({
@@ -126,8 +123,8 @@ class PointerEventsProcessorTest : public ::testing::Test {
                     auto &props = *sharedProps;
                     listenToAllPointerEvents(props);
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(100));
-                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(200));
+                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(100));
+                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(200));
                     return sharedProps;
                   })
               }),
@@ -144,8 +141,8 @@ class PointerEventsProcessorTest : public ::testing::Test {
                 yogaStyle.setFlexDirection(yoga::FlexDirection::Column);
                 yogaStyle.setAlignItems(yoga::Align::FlexStart);
                 yogaStyle.setJustifyContent(yoga::Justify::Center);
-                yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(150));
-                yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(300));
+                yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(150));
+                yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(300));
                 return sharedProps;
               })
               .children({
@@ -158,8 +155,8 @@ class PointerEventsProcessorTest : public ::testing::Test {
                     auto &props = *sharedProps;
                     listenToAllPointerEvents(props);
                     auto &yogaStyle = props.yogaStyle;
-                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::value::points(100));
-                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::value::points(200));
+                    yogaStyle.setDimension(yoga::Dimension::Width, yoga::StyleSizeLength::points(100));
+                    yogaStyle.setDimension(yoga::Dimension::Height, yoga::StyleSizeLength::points(200));
                     return sharedProps;
                   })
               })

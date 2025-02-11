@@ -8,15 +8,16 @@
  * @format
  */
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {
+  HostComponent,
+  HostInstance,
+} from '../Renderer/shims/ReactNativeTypes';
 
 import * as React from 'react';
 
-function takesHostComponentInstance(
-  instance: React.ElementRef<HostComponent<mixed>> | null,
-): void {}
+function takesHostComponentInstance(instance: HostInstance | null): void {}
 
-const MyHostComponent = (('Host': any): HostComponent<mixed>);
+const MyHostComponent = (('Host': any): HostComponent<{...}>);
 
 <MyHostComponent
   ref={hostComponentRef => {

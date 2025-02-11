@@ -17,6 +17,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.BackgroundStyleApplicator;
+import com.facebook.react.uimanager.LengthPercentage;
+import com.facebook.react.uimanager.LengthPercentageType;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
@@ -28,7 +31,9 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
-import com.facebook.yoga.YogaConstants;
+import com.facebook.react.uimanager.style.BorderRadiusProp;
+import com.facebook.react.uimanager.style.BorderStyle;
+import com.facebook.react.uimanager.style.LogicalEdge;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -118,7 +123,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
   }
 
   @ReactProp(name = "snapToAlignment")
-  public void setSnapToAlignment(ReactScrollView view, String alignment) {
+  public void setSnapToAlignment(ReactScrollView view, @Nullable String alignment) {
     view.setSnapToAlignment(ReactScrollViewHelper.parseSnapToAlignment(alignment));
   }
 
@@ -162,11 +167,6 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
     view.setScrollPerfTag(scrollPerfTag);
   }
 
-  @ReactProp(name = "enableSyncOnScroll")
-  public void setEnableSyncOnScroll(ReactScrollView view, boolean value) {
-    view.setEnableSyncOnScroll(value);
-  }
-
   @ReactProp(name = "pagingEnabled")
   public void setPagingEnabled(ReactScrollView view, boolean pagingEnabled) {
     view.setPagingEnabled(pagingEnabled);
@@ -186,7 +186,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
 
   /** Controls overScroll behaviour */
   @ReactProp(name = "overScrollMode")
-  public void setOverScrollMode(ReactScrollView view, String value) {
+  public void setOverScrollMode(ReactScrollView view, @Nullable String value) {
     view.setOverScrollMode(ReactScrollViewHelper.parseOverScrollMode(value));
   }
 
@@ -238,20 +238,20 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
       },
       defaultFloat = Float.NaN)
   public void setBorderRadius(ReactScrollView view, int index, float borderRadius) {
-    if (!Float.isNaN(borderRadius)) {
-      borderRadius = PixelUtil.toPixelFromDIP(borderRadius);
-    }
-
-    if (index == 0) {
-      view.setBorderRadius(borderRadius);
-    } else {
-      view.setBorderRadius(borderRadius, index - 1);
-    }
+    @Nullable
+    LengthPercentage radius =
+        Float.isNaN(borderRadius)
+            ? null
+            : new LengthPercentage(borderRadius, LengthPercentageType.POINT);
+    BackgroundStyleApplicator.setBorderRadius(view, BorderRadiusProp.values()[index], radius);
   }
 
   @ReactProp(name = "borderStyle")
   public void setBorderStyle(ReactScrollView view, @Nullable String borderStyle) {
-    view.setBorderStyle(borderStyle);
+    @Nullable
+    BorderStyle parsedBorderStyle =
+        borderStyle == null ? null : BorderStyle.fromString(borderStyle);
+    BackgroundStyleApplicator.setBorderStyle(view, parsedBorderStyle);
   }
 
   @ReactPropGroup(
@@ -264,10 +264,7 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
       },
       defaultFloat = Float.NaN)
   public void setBorderWidth(ReactScrollView view, int index, float width) {
-    if (!Float.isNaN(width)) {
-      width = PixelUtil.toPixelFromDIP(width);
-    }
-    view.setBorderWidth(SPACING_TYPES[index], width);
+    BackgroundStyleApplicator.setBorderWidth(view, LogicalEdge.values()[index], width);
   }
 
   @ReactPropGroup(
@@ -279,10 +276,8 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
         "borderBottomColor"
       },
       customType = "Color")
-  public void setBorderColor(ReactScrollView view, int index, Integer color) {
-    float rgbComponent = color == null ? YogaConstants.UNDEFINED : (float) (color & 0x00FFFFFF);
-    float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) (color >>> 24);
-    view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  public void setBorderColor(ReactScrollView view, int index, @Nullable Integer color) {
+    BackgroundStyleApplicator.setBorderColor(view, LogicalEdge.ALL, color);
   }
 
   @ReactProp(name = "overflow")

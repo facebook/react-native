@@ -8,6 +8,7 @@
 package com.facebook.react.bridge
 
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
+import com.facebook.testutils.shadows.ShadowNativeLoader
 import com.facebook.testutils.shadows.ShadowSoLoader
 import org.junit.Before
 import org.junit.Test
@@ -18,7 +19,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /** Tests for [BaseJavaModule] and [JavaModuleWrapper] */
-@Config(shadows = [ShadowSoLoader::class])
+@Config(shadows = [ShadowSoLoader::class, ShadowNativeLoader::class])
 @RunWith(RobolectricTestRunner::class)
 class BaseJavaModuleTest {
   private lateinit var methods: List<JavaModuleWrapper.MethodDescriptor>

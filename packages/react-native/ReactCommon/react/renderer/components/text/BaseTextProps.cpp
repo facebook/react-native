@@ -7,11 +7,11 @@
 
 #include "BaseTextProps.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/attributedstring/conversions.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/core/propsConversions.h>
 #include <react/renderer/debug/DebugStringConvertibleItem.h>
-#include <react/utils/CoreFeatures.h>
 
 namespace facebook::react {
 
@@ -73,6 +73,12 @@ static TextAttributes convertRawProp(
       "allowFontScaling",
       sourceTextAttributes.allowFontScaling,
       defaultTextAttributes.allowFontScaling);
+  textAttributes.maxFontSizeMultiplier = convertRawProp(
+      context,
+      rawProps,
+      "maxFontSizeMultiplier",
+      sourceTextAttributes.maxFontSizeMultiplier,
+      defaultTextAttributes.maxFontSizeMultiplier);
   textAttributes.dynamicTypeRamp = convertRawProp(
       context,
       rawProps,
@@ -123,6 +129,12 @@ static TextAttributes convertRawProp(
       "lineBreakStrategyIOS",
       sourceTextAttributes.lineBreakStrategy,
       defaultTextAttributes.lineBreakStrategy);
+  textAttributes.lineBreakMode = convertRawProp(
+      context,
+      rawProps,
+      "lineBreakModeIOS",
+      sourceTextAttributes.lineBreakMode,
+      defaultTextAttributes.lineBreakMode);
 
   // Decoration
   textAttributes.textDecorationColor = convertRawProp(
@@ -224,7 +236,7 @@ BaseTextProps::BaseTextProps(
     const BaseTextProps& sourceProps,
     const RawProps& rawProps)
     : textAttributes(
-          CoreFeatures::enablePropIteratorSetter
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.textAttributes
               : convertRawProp(
                     context,
@@ -261,6 +273,12 @@ void BaseTextProps::setProp(
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, allowFontScaling, "allowFontScaling");
     REBUILD_FIELD_SWITCH_CASE(
+        defaults,
+        value,
+        textAttributes,
+        maxFontSizeMultiplier,
+        "maxFontSizeMultiplier");
+    REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, letterSpacing, "letterSpacing");
     REBUILD_FIELD_SWITCH_CASE(
         defaults, value, textAttributes, textTransform, "textTransform");
@@ -286,6 +304,8 @@ void BaseTextProps::setProp(
         textAttributes,
         lineBreakStrategy,
         "lineBreakStrategyIOS");
+    REBUILD_FIELD_SWITCH_CASE(
+        defaults, value, textAttributes, lineBreakMode, "lineBreakModeIOS");
     REBUILD_FIELD_SWITCH_CASE(
         defaults,
         value,

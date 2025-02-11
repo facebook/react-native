@@ -38,17 +38,17 @@ export type SectionBase<SectionItemT> = {
       ...
     },
     ...
-  }) => null | React.Element<any>,
+  }) => null | React.MixedElement,
   ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItemT, index?: ?number) => string,
   ...
 };
 
-type RequiredProps<SectionT: SectionBase<any>> = {|
+type RequiredProps<SectionT: SectionBase<any>> = {
   sections: $ReadOnlyArray<SectionT>,
-|};
+};
 
-type OptionalProps<SectionT: SectionBase<any>> = {|
+type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Default renderer for every item in every section.
    */
@@ -63,22 +63,16 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
       ...
     },
     ...
-  }) => null | React.Element<any>,
+  }) => null | React.Node,
   /**
    * Rendered at the top of each section. These stick to the top of the `ScrollView` by default on
    * iOS. See `stickySectionHeadersEnabled`.
    */
-  renderSectionHeader?: ?(info: {
-    section: SectionT,
-    ...
-  }) => null | React.Element<any>,
+  renderSectionHeader?: ?(info: {section: SectionT, ...}) => null | React.Node,
   /**
    * Rendered at the bottom of each section.
    */
-  renderSectionFooter?: ?(info: {
-    section: SectionT,
-    ...
-  }) => null | React.Element<any>,
+  renderSectionFooter?: ?(info: {section: SectionT, ...}) => null | React.Node,
   /**
    * Rendered at the top and bottom of each section (note this is different from
    * `ItemSeparatorComponent` which is only rendered between items). These are intended to separate
@@ -93,11 +87,11 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    */
   stickySectionHeadersEnabled?: boolean,
   onEndReached?: ?({distanceFromEnd: number, ...}) => void,
-|};
+};
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
-export type Props<SectionT> = {|
+export type Props<SectionT> = {
   ...RequiredProps<SectionT>,
   ...OptionalProps<SectionT>,
   ...$Diff<
@@ -108,14 +102,14 @@ export type Props<SectionT> = {|
       ...
     },
   >,
-|};
-export type ScrollToLocationParamsType = {|
+};
+export type ScrollToLocationParamsType = {
   animated?: ?boolean,
   itemIndex: number,
   sectionIndex: number,
   viewOffset?: number,
   viewPosition?: number,
-|};
+};
 
 type State = {childProps: VirtualizedListProps, ...};
 
@@ -152,7 +146,7 @@ class VirtualizedSectionList<
     this._listRef.scrollToIndex(toIndexParams);
   }
 
-  getListRef(): ?React.ElementRef<typeof VirtualizedList> {
+  getListRef(): ?VirtualizedList {
     return this._listRef;
   }
 
@@ -453,21 +447,21 @@ class VirtualizedSectionList<
 
   _updateHighlightMap: {[string]: (boolean) => void} = {};
   _updatePropsMap: {[string]: void | (boolean => void)} = {};
-  _listRef: ?React.ElementRef<typeof VirtualizedList>;
-  _captureRef = (ref: null | React$ElementRef<Class<VirtualizedList>>) => {
+  _listRef: ?VirtualizedList;
+  _captureRef = (ref: null | VirtualizedList) => {
     this._listRef = ref;
   };
 }
 
-type ItemWithSeparatorCommonProps = $ReadOnly<{|
+type ItemWithSeparatorCommonProps = $ReadOnly<{
   leadingItem: ?Item,
   leadingSection: ?Object,
   section: Object,
   trailingItem: ?Item,
   trailingSection: ?Object,
-|}>;
+}>;
 
-type ItemWithSeparatorProps = $ReadOnly<{|
+type ItemWithSeparatorProps = $ReadOnly<{
   ...ItemWithSeparatorCommonProps,
   LeadingSeparatorComponent: ?React.ComponentType<any>,
   SeparatorComponent: ?React.ComponentType<any>,
@@ -487,7 +481,7 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   updatePropsFor: (prevCellKey: string, value: Object) => void,
   renderItem: Function,
   inverted: boolean,
-|}>;
+}>;
 
 function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   const {
@@ -604,14 +598,12 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   );
 }
 
-/* $FlowFixMe[class-object-subtyping] added when improving typing for this
- * parameters */
-// $FlowFixMe[method-unbinding]
-module.exports = (VirtualizedSectionList: React.AbstractComponent<
-  React.ElementConfig<typeof VirtualizedSectionList>,
-  $ReadOnly<{
-    getListRef: () => ?React.ElementRef<typeof VirtualizedList>,
-    scrollToLocation: (params: ScrollToLocationParamsType) => void,
-    ...
-  }>,
->);
+module.exports = VirtualizedSectionList as component(
+  ref: React.RefSetter<
+    interface {
+      getListRef(): ?VirtualizedList,
+      scrollToLocation(params: ScrollToLocationParamsType): void,
+    },
+  >,
+  ...Props<SectionBase<any>>
+);
