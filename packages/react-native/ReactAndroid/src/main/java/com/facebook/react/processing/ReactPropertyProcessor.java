@@ -66,7 +66,7 @@ import javax.lang.model.util.Types;
  * reflection.
  */
 @SupportedAnnotationTypes("com.facebook.react.uimanager.annotations.ReactPropertyHolder")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_11)
 public class ReactPropertyProcessor extends ProcessorBase {
   private static final Map<TypeName, String> DEFAULT_TYPES;
   private static final Set<TypeName> BOXED_PRIMITIVES;
