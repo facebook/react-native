@@ -7346,10 +7346,10 @@ range-parser@~1.2.1:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
 
-react-devtools-core@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-6.1.0.tgz#d6398a57dad7a1bc65ed84dceb423b3212200335"
-  integrity sha512-sA8gF/pUhjoGAN3s1Ya43h+F4Q0z7cv9RgqbUfhP7bJI0MbqeshLYFb6hiHgZorovGr8AXqhLi22eQ7V3pru/Q==
+react-devtools-core@^6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-6.1.1.tgz#7dac74773d039273134c360f8b65cf4f6c795c49"
+  integrity sha512-TFo1MEnkqE6hzAbaztnyR5uLTMoz6wnEWwWBsCUzNt+sVXJycuRJdDqvL078M4/h65BI/YO5XWTaxZDWVsW0fw==
   dependencies:
     shell-quote "^1.6.1"
     ws "^7"
