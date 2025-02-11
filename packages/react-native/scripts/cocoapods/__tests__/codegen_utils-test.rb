@@ -33,7 +33,6 @@ class CodegenUtilsTests < Test::Unit::TestCase
 
     def setup
         CodegenUtils.set_react_codegen_discovery_done(false)
-        CodegenUtils.set_react_codegen_podspec_generated(false)
         Pod::Config.reset()
         @base_path = "~/app/ios"
         Pathname.pwd!(@base_path)
