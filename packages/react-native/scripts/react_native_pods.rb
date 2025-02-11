@@ -151,6 +151,7 @@ def use_react_native! (
   pod 'React-timing', :path => "#{prefix}/ReactCommon/react/timing"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
+  pod 'React-renderercss', :path => "#{prefix}/ReactCommon/react/renderer/css"
   pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
   pod 'React-rendererconsistency', :path => "#{prefix}/ReactCommon/react/renderer/consistency"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"

@@ -33,6 +33,7 @@ target_link_libraries(
         react_renderer_attributedstring
         react_renderer_componentregistry
         react_renderer_core
+        react_renderer_css
         react_renderer_debug
         react_renderer_dom
         react_renderer_graphics
