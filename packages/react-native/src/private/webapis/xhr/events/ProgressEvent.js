@@ -19,12 +19,11 @@ import type {EventInit} from '../../dom/events/Event';
 
 import Event from '../../dom/events/Event';
 
-export type ProgressEventInit = $ReadOnly<{
-  ...EventInit,
-  lengthComputable: boolean,
-  loaded: number,
-  total: number,
-}>;
+export interface ProgressEventInit extends EventInit {
+  +lengthComputable: boolean;
+  +loaded: number;
+  +total: number;
+}
 
 export default class ProgressEvent extends Event {
   _lengthComputable: boolean;
@@ -32,12 +31,11 @@ export default class ProgressEvent extends Event {
   _total: number;
 
   constructor(type: string, options?: ?ProgressEventInit) {
-    const {lengthComputable, loaded, total, ...eventOptions} = options ?? {};
-    super(type, eventOptions);
+    super(type, options);
 
-    this._lengthComputable = Boolean(lengthComputable);
-    this._loaded = Number(loaded) || 0;
-    this._total = Number(total) || 0;
+    this._lengthComputable = Boolean(options?.lengthComputable);
+    this._loaded = Number(options?.loaded) || 0;
+    this._total = Number(options?.total) || 0;
   }
 
   get lengthComputable(): boolean {

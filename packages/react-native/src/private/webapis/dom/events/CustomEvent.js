@@ -19,19 +19,17 @@ import type {EventInit} from './Event';
 
 import Event from './Event';
 
-export type CustomEventInit = $ReadOnly<{
-  ...EventInit,
-  detail?: mixed,
-}>;
+export interface CustomEventInit extends EventInit {
+  +detail?: mixed;
+}
 
 export default class CustomEvent extends Event {
   _detail: mixed;
 
   constructor(type: string, options?: ?CustomEventInit) {
-    const {detail, ...eventOptions} = options ?? {};
-    super(type, eventOptions);
+    super(type, options);
 
-    this._detail = detail;
+    this._detail = options?.detail;
   }
 
   get detail(): mixed {
