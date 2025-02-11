@@ -255,9 +255,12 @@ class RCTAppDelegateBridgelessFeatureFlags : public ReactNativeFeatureFlagsDefau
 
 - (void)_setUpFeatureFlags
 {
-  if ([self bridgelessEnabled]) {
-    ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
-  }
+  static dispatch_once_t setupFeatureFlagsToken;
+  dispatch_once(&setupFeatureFlagsToken, ^{
+    if ([self bridgelessEnabled]) {
+      ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
+    }
+  });
 }
 
 @end
