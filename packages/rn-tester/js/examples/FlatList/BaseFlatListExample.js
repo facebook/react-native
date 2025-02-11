@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
 
 import * as React from 'react';
 import {
@@ -34,7 +34,7 @@ const DATA = [
   'Brownie',
 ];
 
-const Item = ({item, separators}: RenderItemProps<string>) => {
+const Item = ({item, separators}: ListRenderItemInfo<string>) => {
   return (
     <Pressable
       onPressIn={() => {

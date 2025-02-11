@@ -4988,7 +4988,7 @@ type RequiredProps<ItemT> = {
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
 type OptionalProps<ItemT> = {
-  renderItem?: ?RenderItemType<ItemT>,
+  renderItem?: ?ListRenderItem<ItemT>,
   columnWrapperStyle?: ViewStyleProp,
   extraData?: any,
   getItemLayout?: (
@@ -5207,8 +5207,8 @@ exports[`public API should not change unintentionally Libraries/Lists/Virtualize
 "type VirtualizedListType = typeof VirtualizedLists.VirtualizedList;
 declare const VirtualizedList: VirtualizedListType;
 export type {
-  RenderItemProps,
-  RenderItemType,
+  ListRenderItemInfo,
+  ListRenderItem,
   Separators,
 } from \\"@react-native/virtualized-lists\\";
 declare export default typeof VirtualizedList;

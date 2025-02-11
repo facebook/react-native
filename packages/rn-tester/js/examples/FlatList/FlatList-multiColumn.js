@@ -12,7 +12,7 @@
 
 import type {Item} from '../../components/ListExampleShared';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
 
 import {
   FooterComponent,
@@ -68,7 +68,7 @@ function MultiColumnExample(): React.Node {
 
   const _renderItemComponent = ({
     item,
-  }: RenderItemProps<any | Item>): $FlowFixMe => {
+  }: ListRenderItemInfo<any | Item>): $FlowFixMe => {
     return (
       <View style={styles.card}>
         <ItemComponent

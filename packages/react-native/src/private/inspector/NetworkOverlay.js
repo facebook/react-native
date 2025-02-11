@@ -11,7 +11,7 @@
 'use strict';
 
 import type XMLHttpRequest from '../../../Libraries/Network/XMLHttpRequest';
-import type {RenderItemProps} from '@react-native/virtualized-lists';
+import type {ListRenderItemInfo} from '@react-native/virtualized-lists';
 
 import ScrollView from '../../../Libraries/Components/ScrollView/ScrollView';
 import React from 'react';
@@ -355,7 +355,7 @@ class NetworkOverlay extends React.Component<Props, State> {
   _renderItem = ({
     item,
     index,
-  }: RenderItemProps<NetworkRequestInfo>): React.MixedElement => {
+  }: ListRenderItemInfo<NetworkRequestInfo>): React.MixedElement => {
     const tableRowViewStyle = [
       styles.tableRow,
       index % 2 === 1 ? styles.tableRowOdd : styles.tableRowEven,

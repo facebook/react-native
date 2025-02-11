@@ -31,7 +31,7 @@ export type Separators = {
   ...
 };
 
-export type RenderItemProps<ItemT> = {
+export type ListRenderItemInfo<ItemT> = {
   item: ItemT,
   index: number,
   separators: Separators,
@@ -48,8 +48,8 @@ export type CellRendererProps<ItemT> = $ReadOnly<{
   style: ViewStyleProp,
 }>;
 
-export type RenderItemType<ItemT> = (
-  info: RenderItemProps<ItemT>,
+export type ListRenderItem<ItemT> = (
+  info: ListRenderItemInfo<ItemT>,
 ) => React.Node;
 
 type RequiredProps = {
@@ -68,7 +68,7 @@ type RequiredProps = {
   getItemCount: (data: any) => number,
 };
 type OptionalProps = {
-  renderItem?: ?RenderItemType<Item>,
+  renderItem?: ?ListRenderItem<Item>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -283,7 +283,7 @@ type OptionalProps = {
   windowSize?: ?number,
 };
 
-export type Props = {
+export type VirtualizedListProps = {
   ...React.ElementConfig<ScrollView>,
   ...RequiredProps,
   ...OptionalProps,

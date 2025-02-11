@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RenderItemProps} from '../../../../virtualized-lists/Lists/VirtualizedListProps';
+import type {ListRenderItemInfo} from '../../../../virtualized-lists/Lists/VirtualizedListProps';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import * as React from 'react';
@@ -34,7 +34,7 @@ export function FlatList_maintainVisibleContentPosition(): React.Node {
   }, []);
 
   const renderItem = useCallback(
-    ({item}: RenderItemProps<{id: string}>) => (
+    ({item}: ListRenderItemInfo<{id: string}>) => (
       <View
         key={item.id}
         style={{

@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {Props as VirtualizedListProps} from './VirtualizedListProps';
+import type {VirtualizedListProps} from './VirtualizedListProps';
 import type {Layout} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import {keyExtractor as defaultKeyExtractor} from './VirtualizeUtils';

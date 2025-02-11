@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
 
 import * as React from 'react';
 import {
@@ -142,7 +142,7 @@ function SwipeableCard(props: {
 const cardData = Array(5);
 
 function Card(props: {color: string}) {
-  const renderItem = ({item, index}: RenderItemProps<$FlowFixMe>) => (
+  const renderItem = ({item, index}: ListRenderItemInfo<$FlowFixMe>) => (
     <CardSection color={props.color} index={index} />
   );
 
