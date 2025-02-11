@@ -22,11 +22,12 @@ export type {
   ViewToken,
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
+  ViewabilityConfigCallbackPairs,
 } from './Lists/ViewabilityHelper';
 export type {
   CellRendererProps,
-  RenderItemProps,
-  RenderItemType,
+  ListRenderItemInfo,
+  ListRenderItem,
   Separators,
 } from './Lists/VirtualizedListProps';
 export type {
