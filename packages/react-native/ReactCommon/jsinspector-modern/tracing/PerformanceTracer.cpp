@@ -9,9 +9,6 @@
 
 #include <folly/json.h>
 
-#include <mutex>
-#include <unordered_set>
-
 namespace facebook::react::jsinspector_modern {
 
 namespace {
@@ -41,6 +38,7 @@ bool PerformanceTracer::startTracing() {
     return false;
   }
 
+  tracing_ = true;
   buffer_.push_back(TraceEvent{
       .name = "TracingStartedInPage",
       .cat = "disabled-by-default-devtools.timeline",
@@ -51,7 +49,6 @@ bool PerformanceTracer::startTracing() {
       .args = folly::dynamic::object("data", folly::dynamic::object()),
   });
 
-  tracing_ = true;
   return true;
 }
 
@@ -62,7 +59,9 @@ bool PerformanceTracer::stopTracing() {
   }
 
   performanceMeasureCount_ = 0;
+  profileCount_ = 0;
   tracing_ = false;
+
   return true;
 }
 
@@ -96,7 +95,7 @@ void PerformanceTracer::collectEvents(
 void PerformanceTracer::reportMark(
     const std::string_view& name,
     uint64_t start) {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::lock_guard lock(mutex_);
   if (!tracing_) {
     return;
   }
@@ -117,7 +116,7 @@ void PerformanceTracer::reportMeasure(
     uint64_t start,
     uint64_t duration,
     const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::lock_guard lock(mutex_);
   if (!tracing_) {
     return;
   }
@@ -152,6 +151,95 @@ void PerformanceTracer::reportMeasure(
       .pid = PID, // FIXME: This should be the real process ID.
       .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
                                          // thread ID.
+  });
+}
+
+void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "process_name",
+      .cat = "__metadata",
+      .ph = 'M',
+      .ts = 0,
+      .pid = id,
+      .tid = 0,
+      .args = folly::dynamic::object("name", name),
+  });
+}
+
+void PerformanceTracer::reportThread(
+    uint64_t id,
+    const std::string& name,
+    uint64_t processId) {
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "thread_name",
+      .cat = "__metadata",
+      .ph = 'M',
+      .ts = 0,
+      .pid = processId,
+      .tid = id,
+      .args = folly::dynamic::object("name", name),
+  });
+}
+
+uint16_t PerformanceTracer::reportRuntimeProfile(
+    uint64_t processId,
+    uint64_t threadId,
+    uint64_t eventUnixTimestamp) {
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    throw std::runtime_error(
+        "Runtime Profile should only be reported when Tracing is enabled");
+  }
+
+  ++profileCount_;
+  // CDT prioritizes event timestamp over startTime metadata field.
+  // https://fburl.com/lo764pf4
+  buffer_.push_back(TraceEvent{
+      .id = profileCount_,
+      .name = "Profile",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = eventUnixTimestamp,
+      .pid = processId,
+      .tid = threadId,
+      .args = folly::dynamic::object(
+          "data", folly ::dynamic::object("startTime", eventUnixTimestamp)),
+  });
+
+  return profileCount_;
+}
+
+void PerformanceTracer::reportRuntimeProfileChunk(
+    uint16_t profileId,
+    uint64_t processId,
+    uint64_t threadId,
+    uint64_t eventUnixTimestamp,
+    const tracing::TraceEventProfileChunk& traceEventProfileChunk) {
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .id = profileId,
+      .name = "ProfileChunk",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = eventUnixTimestamp,
+      .pid = processId,
+      .tid = threadId,
+      .args =
+          folly::dynamic::object("data", traceEventProfileChunk.asDynamic()),
   });
 }
 
