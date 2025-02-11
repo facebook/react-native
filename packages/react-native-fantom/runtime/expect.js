@@ -473,6 +473,31 @@ class Expect {
     }
   }
 
+  toMatch(expected: RegExp | string): void {
+    const value = this.#received;
+    if (typeof value !== 'string') {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be a string but it was a ${typeof this.#received}`,
+      ).blameToPreviousFrame();
+    }
+
+    if (typeof expected !== 'string' && !(expected instanceof RegExp)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(expected)} to be a string or a regular expression but it was a ${typeof expected}`,
+      ).blameToPreviousFrame();
+    }
+
+    const pass =
+      typeof expected === 'string'
+        ? value.includes(expected)
+        : expected.test(value);
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(value)}${this.#maybeNotLabel()} to match ${stringify(expected)}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   toMatchSnapshot(expected?: string): void {
     if (this.#isNot) {
       throw new ErrorWithCustomBlame(
