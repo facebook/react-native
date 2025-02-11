@@ -29,6 +29,7 @@ target_link_libraries(
         react_featureflagsjni
         turbomodulejsijni
         jsi
+        jsitooling
         fbjni
         bridgeless
 )
