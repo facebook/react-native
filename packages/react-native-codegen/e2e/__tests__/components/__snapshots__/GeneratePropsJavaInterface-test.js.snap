@@ -31,6 +31,7 @@ public interface ArrayPropsNativeComponentViewManagerInterface<T extends View> e
   void setSizes(T view, @Nullable ReadableArray value);
   void setObject(T view, @Nullable ReadableArray value);
   void setArrayOfObjects(T view, @Nullable ReadableArray value);
+  void setArrayOfMixed(T view, @Nullable ReadableArray value);
 }
 ",
 }
