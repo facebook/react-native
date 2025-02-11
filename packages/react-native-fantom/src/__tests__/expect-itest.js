@@ -815,6 +815,26 @@ describe('expect', () => {
     }).toThrow();
   });
 
+  test('toMatch', () => {
+    expect('hello').toMatch('he');
+    expect('hello').toMatch(/he/);
+    expect('hello').not.toMatch('lol');
+    expect('hello').not.toMatch(/lol/);
+
+    expect(() => {
+      expect('hello').not.toMatch(/he/);
+    }).toThrow('Expected hello not to match /he/');
+
+    // Should always throw if the received value isn't a string
+    expect(() => {
+      expect(1).toMatch(/e/);
+    }).toThrow();
+
+    expect(() => {
+      expect('grapefruits').not.toMatch('fruit');
+    }).toThrow();
+  });
+
   describe('toMatchSnapshot()', () => {
     test('primitive types', () => {
       expect(undefined).toMatchSnapshot();
