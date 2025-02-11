@@ -346,4 +346,4 @@ function _isEntirelyVisible(
   return top >= 0 && bottom <= viewportHeight && bottom > top;
 }
 
-module.exports = ViewabilityHelper;
+export default ViewabilityHelper;

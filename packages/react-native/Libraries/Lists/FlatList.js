@@ -20,10 +20,7 @@ import type {
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import View from '../Components/View/View';
-import {
-  VirtualizedList,
-  keyExtractor as defaultKeyExtractor,
-} from '@react-native/virtualized-lists';
+import VirtualizedLists from '@react-native/virtualized-lists';
 import memoizeOne from 'memoize-one';
 import React from 'react';
 
@@ -31,6 +28,9 @@ const StyleSheet = require('../StyleSheet/StyleSheet');
 const deepDiffer = require('../Utilities/differ/deepDiffer');
 const Platform = require('../Utilities/Platform');
 const invariant = require('invariant');
+
+const VirtualizedList = VirtualizedLists.VirtualizedList;
+const defaultKeyExtractor = VirtualizedLists.keyExtractor;
 
 type RequiredProps<ItemT> = {
   /**
