@@ -24,7 +24,7 @@ declare const KeyboardAvoidingViewBase: Constructor<TimerMixin> &
 export class KeyboardAvoidingView extends KeyboardAvoidingViewBase {}
 
 export interface KeyboardAvoidingViewProps extends ViewProps {
-  behavior?: 'height' | 'position' | 'padding' | undefined;
+  behavior?: 'height' | 'position' | 'padding' | 'nothing' | undefined;
 
   /**
    * The style of the content container(View) when behavior is 'position'.
