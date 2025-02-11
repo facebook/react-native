@@ -162,7 +162,6 @@ class ArrayPropsNativeComponentViewProps final : public ViewProps {
   ArrayPropsNativeComponentViewSizesMask sizes{static_cast<ArrayPropsNativeComponentViewSizesMask>(ArrayPropsNativeComponentViewSizes::Small)};
   std::vector<ArrayPropsNativeComponentViewObjectStruct> object{};
   std::vector<ArrayPropsNativeComponentViewArrayOfObjectsStruct> arrayOfObjects{};
-  std::vector<folly::dynamic> arrayOfMixed{};
 };
 
 } // namespace facebook::react

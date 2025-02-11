@@ -36,8 +36,7 @@ ArrayPropsNativeComponentViewProps::ArrayPropsNativeComponentViewProps(
     dimensions(convertRawProp(context, rawProps, \\"dimensions\\", sourceProps.dimensions, {})),
     sizes(convertRawProp(context, rawProps, \\"sizes\\", ArrayPropsNativeComponentViewSizesMaskWrapped{ .value = sourceProps.sizes }, {static_cast<ArrayPropsNativeComponentViewSizesMask>(ArrayPropsNativeComponentViewSizes::Small)}).value),
     object(convertRawProp(context, rawProps, \\"object\\", sourceProps.object, {})),
-    arrayOfObjects(convertRawProp(context, rawProps, \\"arrayOfObjects\\", sourceProps.arrayOfObjects, {})),
-    arrayOfMixed(convertRawProp(context, rawProps, \\"arrayOfMixed\\", sourceProps.arrayOfMixed, {}))
+    arrayOfObjects(convertRawProp(context, rawProps, \\"arrayOfObjects\\", sourceProps.arrayOfObjects, {}))
       {}
 
 } // namespace facebook::react

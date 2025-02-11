@@ -20,7 +20,6 @@ import type {
 import type {
   Float,
   Int32,
-  UnsafeMixed,
   WithDefault,
 } from 'react-native/Libraries/Types/CodegenTypes';
 
@@ -42,7 +41,6 @@ type NativeProps = $ReadOnly<{
   sizes?: WithDefault<$ReadOnlyArray<'small' | 'large'>, 'small'>,
   object?: $ReadOnlyArray<$ReadOnly<{prop: string}>>,
   arrayOfObjects?: $ReadOnlyArray<$ReadOnly<{prop1: Float, prop2: Int32}>>,
-  arrayOfMixed?: $ReadOnlyArray<UnsafeMixed>,
 }>;
 
 export default (codegenNativeComponent<NativeProps>(
