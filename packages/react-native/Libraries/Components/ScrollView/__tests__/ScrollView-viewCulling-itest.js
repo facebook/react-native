@@ -658,3 +658,157 @@ test('views are not culled when outside of viewport', () => {
     'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "child"}',
   ]);
 });
+
+test('culling with transform move', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+  let maybeNode;
+
+  Fantom.runTask(() => {
+    root.render(
+      <ScrollView
+        style={{height: 100, width: 100}}
+        ref={node => {
+          maybeNode = node;
+        }}>
+        <View
+          nativeID={'child'}
+          style={{
+            height: 10,
+            width: 10,
+            marginTop: 90,
+            transform: [{translateY: 11}],
+          }}
+        />
+      </ScrollView>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+
+  const element = ensureInstance(maybeNode, ReactNativeElement);
+
+  Fantom.runOnUIThread(() => {
+    Fantom.scrollTo(element, {
+      x: 0,
+      y: 1,
+    });
+  });
+  Fantom.runWorkLoop();
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+  ]);
+});
+
+test('culling with recursive transform move', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+  let maybeNode;
+
+  Fantom.runTask(() => {
+    root.render(
+      <ScrollView
+        style={{height: 100, width: 100}}
+        ref={node => {
+          maybeNode = node;
+        }}>
+        <View style={{transform: [{translateY: 11}]}}>
+          <View
+            nativeID={'child'}
+            style={{
+              height: 10,
+              width: 10,
+              marginTop: 90,
+            }}
+          />
+        </View>
+      </ScrollView>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+
+  const element = ensureInstance(maybeNode, ReactNativeElement);
+
+  Fantom.runOnUIThread(() => {
+    Fantom.scrollTo(element, {
+      x: 0,
+      y: 1,
+    });
+  });
+  Fantom.runWorkLoop();
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+  ]);
+});
+
+test('culling with transform scale', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+  let maybeNode;
+
+  Fantom.runTask(() => {
+    root.render(
+      <ScrollView
+        style={{height: 100, width: 100}}
+        ref={node => {
+          maybeNode = node;
+        }}>
+        <View
+          nativeID={'child'}
+          style={{
+            height: 10,
+            width: 10,
+            marginTop: 105,
+            transform: [{scale: 2}],
+          }}
+        />
+      </ScrollView>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+
+  const element = ensureInstance(maybeNode, ReactNativeElement);
+
+  Fantom.runOnUIThread(() => {
+    Fantom.scrollTo(element, {
+      x: 0,
+      y: 121,
+    });
+  });
+  Fantom.runWorkLoop();
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Delete {type: "View", nativeID: "child"}',
+    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Delete {type: "View", nativeID: (N/A)}',
+    'Update {type: "ScrollView", nativeID: (N/A)}',
+  ]);
+});

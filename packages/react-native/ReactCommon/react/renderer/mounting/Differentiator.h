@@ -9,6 +9,7 @@
 
 #include <react/renderer/core/ShadowNode.h>
 #include <react/renderer/debug/flags.h>
+#include <react/renderer/graphics/Transform.h>
 #include <react/renderer/mounting/ShadowViewMutation.h>
 #include <deque>
 
@@ -55,6 +56,17 @@ struct ShadowViewNodePair final {
   }
 };
 
+struct CullingContext {
+  Rect frame;
+  Transform transform;
+
+  bool shouldConsiderCulling() const {
+    return frame.size.width > 0 && frame.size.height > 0;
+  }
+
+  bool operator==(const CullingContext& rhs) const = default;
+};
+
 /**
  * During differ, we need to keep some `ShadowViewNodePair`s in memory.
  * Some `ShadowViewNodePair`s are referenced from std::vectors returned
@@ -97,6 +109,6 @@ std::vector<ShadowViewNodePair*> sliceChildShadowNodeViewPairs(
     ViewNodePairScope& viewNodePairScope,
     bool allowFlattened,
     Point layoutOffset,
-    Rect cullingFrame = {});
+    const CullingContext& cullingContext = {});
 
 } // namespace facebook::react
