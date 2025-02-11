@@ -493,6 +493,16 @@ function BoxShadowExample(): React.Node {
             boxShadow: '5px 5px 5px 0px rgba(0, 0, 0, 0)',
           }}
         />
+        <View
+          style={[
+            defaultStyleSize,
+            {
+              backgroundColor: 'brown',
+              boxShadow: '5px 5px 5px 0px rgba(0, 0, 255, 1) inset',
+              transform: [{scale: 1.2}],
+            },
+          ]}
+        />
       </View>
     </View>
   );
