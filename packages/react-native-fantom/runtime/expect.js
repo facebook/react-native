@@ -457,6 +457,22 @@ class Expect {
     }
   }
 
+  toHaveLength(expected: number): void {
+    if (typeof this.#received !== 'string' && !Array.isArray(this.#received)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be a string or an array`,
+      ).blameToPreviousFrame();
+    }
+
+    const length = this.#received.length;
+    const pass = length === expected;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have ${expected} length, but it has length of ${length}.`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   toMatchSnapshot(expected?: string): void {
     if (this.#isNot) {
       throw new ErrorWithCustomBlame(
