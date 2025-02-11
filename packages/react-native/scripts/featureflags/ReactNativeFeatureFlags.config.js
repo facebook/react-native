@@ -90,7 +90,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     enableCppPropsIteratorSetter: {
       defaultValue: false,
@@ -123,7 +123,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     enableFabricLogs: {
       defaultValue: false,
@@ -141,7 +141,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     enableFixForViewCommandRace: {
       defaultValue: false,
@@ -447,7 +447,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
@@ -458,7 +458,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     useOptimizedEventBatchingOnAndroid: {
       defaultValue: false,
@@ -491,7 +491,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     useTurboModules: {
       defaultValue: false,
@@ -501,7 +501,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
   },
 
