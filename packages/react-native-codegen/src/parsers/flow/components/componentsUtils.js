@@ -143,6 +143,10 @@ function getTypeAnnotationForArray<+T>(
       return {
         type: 'StringTypeAnnotation',
       };
+    case 'UnsafeMixed':
+      return {
+        type: 'MixedTypeAnnotation',
+      };
     case 'UnionTypeAnnotation':
       typeAnnotation.types.reduce((lastType, currType) => {
         if (lastType && currType.type !== lastType.type) {

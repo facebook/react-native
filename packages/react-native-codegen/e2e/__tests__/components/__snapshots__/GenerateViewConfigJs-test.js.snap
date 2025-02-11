@@ -41,6 +41,7 @@ export const __INTERNAL_VIEW_CONFIG = {
     sizes: true,
     object: true,
     arrayOfObjects: true,
+    arrayOfMixed: true,
   },
 };
 
