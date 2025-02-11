@@ -98,6 +98,7 @@
     "featureflags": "node ./scripts/featureflags/index.js"
   },
   "peerDependencies": {
+    "@react-native-community/cli-server-api": "*",
     "@types/react": "^19.0.0",
     "react": "^19.0.0"
   },
