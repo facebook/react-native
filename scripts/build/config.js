@@ -54,10 +54,6 @@ const buildConfig: BuildConfig = {
       emitTypeScriptDefs: true,
       target: 'node',
     },
-    'react-native-compatibility-check': {
-      emitTypeScriptDefs: true,
-      target: 'node',
-    },
   },
 };
 
