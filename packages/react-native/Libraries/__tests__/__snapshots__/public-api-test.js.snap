@@ -6755,7 +6755,8 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance.js 1`] = `
-"declare export function createPublicRootInstance(
+"declare export opaque type PublicRootInstance;
+declare export function createPublicRootInstance(
   rootTag: RootTag
 ): PublicRootInstance;
 declare export function createPublicInstance(

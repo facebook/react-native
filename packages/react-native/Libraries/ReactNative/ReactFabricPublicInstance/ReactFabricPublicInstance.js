@@ -21,13 +21,14 @@ import typeof * as RendererProxyT from '../../ReactNative/RendererProxy';
 import type {
   InternalInstanceHandle,
   Node,
-  PublicRootInstance,
   ViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
 import type {RootTag} from '../RootTag';
 import type ReactFabricHostComponentT from './ReactFabricHostComponent';
 
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
+
+export opaque type PublicRootInstance = mixed;
 
 // Lazy loaded to avoid evaluating the module when using the legacy renderer.
 let ReactNativeDocumentModuleObject: ?ReactNativeDocumentModuleT;
