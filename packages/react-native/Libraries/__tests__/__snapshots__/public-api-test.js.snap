@@ -1229,7 +1229,7 @@ exports[`public API should not change unintentionally Libraries/Blob/URL.js 1`] 
 declare export class URL {
   static createObjectURL(blob: Blob): string;
   static revokeObjectURL(url: string): void;
-  constructor(url: string, base: string | URL): void;
+  constructor(url: string, base?: string | URL): void;
   get hash(): string;
   get host(): string;
   get hostname(): string;
