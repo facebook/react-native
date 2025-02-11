@@ -20,25 +20,9 @@
 
 #ifdef DEBUG_LOGS_DIFFER
 #include <glog/logging.h>
-#define DEBUG_LOGS_BREADCRUMBS 1
 #define DEBUG_LOGS(code) code
 #else
 #define DEBUG_LOGS(code)
-#endif
-
-#ifdef DEBUG_LOGS_BREADCRUMBS
-#define BREADCRUMB_TYPE std::string
-#define DIFF_BREADCRUMB(X) (breadcrumb + " - " + std::string(X))
-#define CREATE_DIFF_BREADCRUMB(X) std::to_string(X)
-#else
-
-enum class NoBreadcrumb {};
-
-#define BREADCRUMB_TYPE const NoBreadcrumb&
-#define DIFF_BREADCRUMB(X) \
-  {}
-#define CREATE_DIFF_BREADCRUMB(X) \
-  {}
 #endif
 
 namespace facebook::react {
