@@ -1108,7 +1108,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           (
             this.props.renderScrollComponent ||
             this._defaultRenderScrollComponent
-          )(scrollProps),
+          )(scrollProps) as ExactReactElement_DEPRECATED<any>,
           {
             ref: this._captureScrollRef,
           },
@@ -1711,7 +1711,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       zoomScale,
     };
     if (this.state.pendingScrollUpdateCount > 0) {
-      this.setState(state => ({
+      this.setState<'pendingScrollUpdateCount'>(state => ({
         pendingScrollUpdateCount: state.pendingScrollUpdateCount - 1,
       }));
     }
@@ -1871,7 +1871,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _updateCellsToRender = () => {
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
 
-    this.setState((state, props) => {
+    this.setState<'cellsAroundViewport' | 'renderMask'>((state, props) => {
       const cellsAroundViewport = this._adjustCellsAroundViewport(
         props,
         state.cellsAroundViewport,

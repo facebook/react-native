@@ -64,10 +64,10 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
     },
   };
 
-  static getDerivedStateFromProps(
-    props: Props<ItemT>,
-    prevState: State<ItemT>,
-  ): ?State<ItemT> {
+  static getDerivedStateFromProps<StaticItemT>(
+    props: Props<StaticItemT>,
+    prevState: State<StaticItemT>,
+  ): ?State<StaticItemT> {
     if (props.item !== prevState.separatorProps.leadingItem) {
       return {
         separatorProps: {
