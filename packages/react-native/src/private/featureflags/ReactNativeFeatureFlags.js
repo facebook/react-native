@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7f675a8e759b564728cfc96c1a3af7b1>>
+ * @generated SignedSource<<4c34b78c4af6de8e0784ecade5f2e593>>
  * @flow strict
  */
 
@@ -176,7 +176,7 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
 /**
  * Common flag for testing (without native implementation). Do NOT modify.
  */
-export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false, true);
+export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
 /**
  * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
  */
