@@ -11,8 +11,9 @@
 
 @protocol RCTCxxBridgeDelegate;
 @protocol RCTComponentViewFactoryComponentProvider;
-@protocol RCTTurboModuleManagerDelegate;
 @protocol RCTHostDelegate;
+@protocol RCTJSRuntimeFactoryDelegate;
+@protocol RCTTurboModuleManagerDelegate;
 @class RCTBridge;
 @class RCTHost;
 @class RCTRootView;
@@ -109,6 +110,8 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  * @parameter: rootView - The root view to customize.
  */
 @property (nonatomic, nullable) RCTCustomizeRootViewBlock customizeRootView;
+
+@property (nonatomic, weak, nullable) id<RCTJSRuntimeFactoryDelegate> jsRuntimeFactoryDelegate;
 
 #pragma mark - RCTBridgeDelegate blocks
 

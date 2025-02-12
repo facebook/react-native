@@ -26,11 +26,6 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
-#if USE_HERMES
-#import <ReactCommon/RCTHermesInstance.h>
-#else
-#import <ReactCommon/RCTJscInstance.h>
-#endif
 #import <ReactCommon/RCTHost+Internal.h>
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
@@ -263,11 +258,14 @@
 
 - (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory
 {
-#if USE_HERMES
-  return std::make_shared<facebook::react::RCTHermesInstance>(nullptr, /* allocInOldGenBeforeTTI */ false);
-#else
-  return std::make_shared<facebook::react::RCTJscInstance>();
-#endif
+  if (_configuration.jsRuntimeFactoryDelegate != nil) {
+    NSValue *runtimeFactory = [_configuration.jsRuntimeFactoryDelegate createJSRuntimeFactory];
+    return std::shared_ptr<facebook::react::JSRuntimeFactory>(reinterpret_cast<facebook::react::JSRuntimeFactory *>(runtimeFactory.pointerValue));
+  }
+
+  [NSException raise:@"RCTReactNativeFactoryDelegate::createJSRuntimeFactory not implemented"
+              format:@"Delegate must implement a valid createJSRuntimeFactory method"];
+  return nullptr;
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge

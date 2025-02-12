@@ -202,6 +202,8 @@ using namespace facebook::react;
     [weakSelf.delegate customizeRootView:(RCTRootView *)rootView];
   };
 
+  configuration.jsRuntimeFactoryDelegate = weakSelf.delegate;
+
   configuration.sourceURLForBridge = ^NSURL *_Nullable(RCTBridge *_Nonnull bridge)
   {
     return [weakSelf.delegate sourceURLForBridge:bridge];
