@@ -25,7 +25,7 @@ const View = require('../Components/View/View').default;
 const AppContainer = require('../ReactNative/AppContainer').default;
 const I18nManager = require('../ReactNative/I18nManager').default;
 const {RootTagContext} = require('../ReactNative/RootTag');
-const StyleSheet = require('../StyleSheet/StyleSheet');
+const StyleSheet = require('../StyleSheet/StyleSheet').default;
 const Platform = require('../Utilities/Platform');
 
 const VirtualizedListContextResetter =

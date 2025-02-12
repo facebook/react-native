@@ -72,7 +72,7 @@ if (__DEV__) {
 
   const ReactNativeStyleAttributes =
     require('../Components/View/ReactNativeStyleAttributes').default;
-  const resolveRNStyle = require('../StyleSheet/flattenStyle');
+  const resolveRNStyle = require('../StyleSheet/flattenStyle').default;
 
   function handleReactDevToolsSettingsUpdate(settings: Object) {
     reactDevToolsSettingsManager.setGlobalHookSettings(

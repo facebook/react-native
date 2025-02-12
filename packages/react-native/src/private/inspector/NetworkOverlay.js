@@ -20,7 +20,7 @@ const TouchableHighlight =
   require('../../../Libraries/Components/Touchable/TouchableHighlight').default;
 const View = require('../../../Libraries/Components/View/View').default;
 const FlatList = require('../../../Libraries/Lists/FlatList').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
 const Text = require('../../../Libraries/Text/Text').default;
 const WebSocketInterceptor =
   require('../../../Libraries/WebSocket/WebSocketInterceptor').default;

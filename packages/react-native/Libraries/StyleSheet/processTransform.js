@@ -266,4 +266,4 @@ function _validateTransform(
   }
 }
 
-module.exports = processTransform;
+export default processTransform;

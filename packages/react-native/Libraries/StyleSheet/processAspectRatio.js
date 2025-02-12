@@ -60,4 +60,4 @@ function processAspectRatio(aspectRatio?: number | string): ?number {
   return Number(matches[0]);
 }
 
-module.exports = processAspectRatio;
+export default processAspectRatio;
