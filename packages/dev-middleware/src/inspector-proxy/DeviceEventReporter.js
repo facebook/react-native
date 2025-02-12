@@ -212,6 +212,12 @@ class DeviceEventReporter {
     });
   }
 
+  logFuseboxConsoleNotice(): void {
+    this.#eventReporter.logEvent({
+      type: 'fusebox_console_notice',
+    });
+  }
+
   #logExpiredCommand(pendingCommand: PendingCommand): void {
     this.#eventReporter.logEvent({
       type: 'debugger_command',

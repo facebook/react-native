@@ -8942,7 +8942,6 @@ export type HMRClientNativeInterface = {|
     isEnabled: boolean,
     scheme?: string
   ): void,
-  unstable_notifyFuseboxConsoleEnabled(): void,
 |};
 declare const HMRClient: HMRClientNativeInterface;
 declare module.exports: HMRClient;

@@ -78,6 +78,9 @@ export type ReportableEvent =
           >,
     }
   | {
+      type: 'fusebox_console_notice',
+    }
+  | {
       type: 'proxy_error',
       status: 'error',
       messageOrigin: 'debugger' | 'device',
