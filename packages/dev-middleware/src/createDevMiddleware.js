@@ -11,7 +11,7 @@
 
 import type {CreateCustomMessageHandlerFn} from './inspector-proxy/CustomMessageHandler';
 import type {BrowserLauncher} from './types/BrowserLauncher';
-import type {EventReporter} from './types/EventReporter';
+import type {EventReporter, ReportableEvent} from './types/EventReporter';
 import type {Experiments, ExperimentsConfig} from './types/Experiments';
 import type {Logger} from './types/Logger';
 import type {NextHandleFunction} from 'connect';
@@ -81,11 +81,15 @@ export default function createDevMiddleware({
   unstable_customInspectorMessageHandler,
 }: Options): DevMiddlewareAPI {
   const experiments = getExperiments(experimentConfig);
+  const eventReporter = createWrappedEventReporter(
+    unstable_eventReporter,
+    logger,
+  );
 
   const inspectorProxy = new InspectorProxy(
     projectRoot,
     serverBaseUrl,
-    unstable_eventReporter,
+    eventReporter,
     experiments,
     unstable_customInspectorMessageHandler,
   );
@@ -97,7 +101,7 @@ export default function createDevMiddleware({
         serverBaseUrl,
         inspectorProxy,
         browserLauncher: unstable_browserLauncher,
-        eventReporter: unstable_eventReporter,
+        eventReporter,
         experiments,
         logger,
       }),
@@ -127,5 +131,34 @@ function getExperiments(config: ExperimentsConfig): Experiments {
   return {
     enableOpenDebuggerRedirect: config.enableOpenDebuggerRedirect ?? false,
     enableNetworkInspector: config.enableNetworkInspector ?? false,
+  };
+}
+
+/**
+ * Creates a wrapped EventReporter that locally intercepts events to
+ * log to the terminal.
+ */
+function createWrappedEventReporter(
+  reporter: ?EventReporter,
+  logger: ?Logger,
+): EventReporter {
+  return {
+    logEvent(event: ReportableEvent) {
+      switch (event.type) {
+        case 'fusebox_console_notice':
+          logger?.info(
+            '\n' +
+              '\u001B[7m' +
+              ' \u001B[1m💡 JavaScript logs have moved!\u001B[22m They can now be ' +
+              'viewed in React Native DevTools. Tip: Type \u001B[1mj\u001B[22m in ' +
+              'the terminal to open (requires Google Chrome or Microsoft Edge).' +
+              '\u001B[27m' +
+              '\n',
+          );
+          break;
+      }
+
+      reporter?.logEvent(event);
+    },
   };
 }
