@@ -18,6 +18,9 @@ const util = require('util');
 
 const exec = util.promisify(require('child_process').exec);
 
+const THIRD_PARTY_PATH = 'packages/react-native/third-party';
+const BUILD_DESTINATION = '.build';
+
 /*::
 type Folder = RegExp;
 
@@ -150,11 +153,27 @@ async function setupDependency(
   _removeUnnecessaryFiles(dependency.filesToKeep, destination);
 }
 
+async function build() {
+  const swiftPMFolder = path.join(process.cwd(), THIRD_PARTY_PATH);
+  const buildDestination = path.join(swiftPMFolder, BUILD_DESTINATION);
+  console.log(`Clean up ${buildDestination}`);
+  fs.rmSync(buildDestination, {recursive: true, force: true});
+
+  //TODO: Add support for mac,  Mac (catalyst), tvOS, xros and xrsimulator
+  const platforms = ['generic/platform=iOS', 'generic/platform=iOS Simulator'];
+  for (const platform of platforms) {
+    console.log(`Building ReactNativeDependencies for ${platform}`);
+    const command = `xcodebuild -scheme "ReactNativeDependencies" -destination "${platform}" -derivedDataPath "${BUILD_DESTINATION}"`;
+    execSync(command, {cwd: swiftPMFolder, stdio: 'inherit'});
+  }
+}
+
 async function main() {
   console.log('Starting iOS prebuilds preparation...');
 
   await Promise.all(dependencies.map(setupDependency));
 
+  await build();
   console.log('Done!');
 }
 
