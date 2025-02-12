@@ -24,4 +24,4 @@ jobs:
           repo_name: "react-native"
           discord_webhook_url: "${{ secrets.DISCORD_WEBHOOK_URL }}"
           discord_id_type: "role"
-          discord_ids: "1295340673779630141"
+          discord_ids: "1339243367841927228"
