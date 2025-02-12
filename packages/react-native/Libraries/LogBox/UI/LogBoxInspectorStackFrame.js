@@ -43,7 +43,9 @@ function LogBoxInspectorStackFrame(props: Props): React.Node {
         }}
         onPress={onPress}
         style={styles.frame}>
-        <Text style={[styles.name, frame.collapse === true && styles.dim]}>
+        <Text
+          id="logbox_stack_frame_text"
+          style={[styles.name, frame.collapse === true && styles.dim]}>
           {frame.methodName}
         </Text>
         <Text
