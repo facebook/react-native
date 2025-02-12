@@ -40,6 +40,12 @@ class FallbackRuntimeTargetDelegate : public RuntimeTargetDelegate {
       jsi::Runtime& runtime,
       size_t framesToSkip) override;
 
+  void enableSamplingProfiler() override;
+
+  void disableSamplingProfiler() override;
+
+  tracing::RuntimeSamplingProfile collectSamplingProfile() override;
+
  private:
   std::string engineDescription_;
 };
