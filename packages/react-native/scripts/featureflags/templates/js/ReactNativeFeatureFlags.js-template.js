@@ -75,7 +75,7 @@ ${Object.entries(definitions.common)
  */
 export const ${flagName}: Getter<${typeof flagConfig.defaultValue}> = createNativeFlagGetter('${flagName}', ${JSON.stringify(
         flagConfig.defaultValue,
-      )}${flagConfig.skipNativeAPI === true ? ', true' : ''});`,
+      )});`,
   )
   .join('\n')}
 
