@@ -6,7 +6,13 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions)
+add_compile_options(
+        -fexceptions
+        -frtti
+        -std=c++20
+        -Wall
+        -Wpedantic
+        -DLOG_TAG=\"ReactNative\")
 
 file(GLOB jsitooling_SRC CONFIGURE_DEPENDS react/runtime/*.cpp)
 add_library(jsitooling OBJECT ${jsitooling_SRC})
