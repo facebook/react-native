@@ -24,16 +24,12 @@ class OkHttpClientProviderTest {
 
   @Before
   fun setUp() {
-    OkHttpClientProvider.setOkHttpClientFactory(null)
-    OkHttpClientProvider::class.java.getDeclaredField("sClient").apply {
-      isAccessible = true
-      set(null, null)
-    }
+    resetClientProvider()
   }
 
   @After
   fun tearDown() {
-    OkHttpClientProvider.setOkHttpClientFactory(null)
+    resetClientProvider()
   }
 
   @Test
@@ -42,32 +38,22 @@ class OkHttpClientProviderTest {
 
     OkHttpClientProvider.setOkHttpClientFactory(mockFactory)
 
-    val field = OkHttpClientProvider::class.java.getDeclaredField("sFactory")
-    field.isAccessible = true
-    val factory = field.get(null) as OkHttpClientFactory?
-
-    assertThat(factory).isNotNull
-    assertThat(factory).isSameAs(mockFactory)
+    assertThat(OkHttpClientProvider.factory).isNotNull
+    assertThat(OkHttpClientProvider.factory).isSameAs(mockFactory)
   }
 
   @Test
   fun testGetOkHttpClientCreatesClientIfNull() {
-    val field = OkHttpClientProvider::class.java.getDeclaredField("sClient")
-    field.isAccessible = true
-    field.set(null, null)
-
     val client = OkHttpClientProvider.getOkHttpClient()
 
     assertThat(client).isNotNull
-    assertThat(field.get(null) as OkHttpClient?).isSameAs(client)
+    assertThat(OkHttpClientProvider.client).isSameAs(client)
   }
 
   @Test
   fun testGetOkHttpClientDoesNotCreateNewClientIfAlreadyExists() {
     val existingClient = OkHttpClient()
-    val field = OkHttpClientProvider::class.java.getDeclaredField("sClient")
-    field.isAccessible = true
-    field.set(null, existingClient)
+    OkHttpClientProvider.client = existingClient
 
     val client = OkHttpClientProvider.getOkHttpClient()
 
@@ -85,6 +71,7 @@ class OkHttpClientProviderTest {
 
     val client = OkHttpClientProvider.createClient()
 
+    assertThat(OkHttpClientProvider.factory).isSameAs(mockFactory)
     assertThat(client).isNotNull
     assertThat(client).isSameAs(customClient)
     verify(mockFactory).createNewNetworkModuleClient()
@@ -139,5 +126,10 @@ class OkHttpClientProviderTest {
     assertThat(cache).isNotNull
     assertThat(checkNotNull(cache).directory()).isEqualTo(File(mockCacheDir, "http-cache"))
     assertThat(cache.maxSize()).isEqualTo(customCacheSize)
+  }
+
+  private fun resetClientProvider() {
+    OkHttpClientProvider.setOkHttpClientFactory(null)
+    OkHttpClientProvider.client = null
   }
 }

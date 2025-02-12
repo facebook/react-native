@@ -3338,15 +3338,15 @@ public abstract interface class com/facebook/react/modules/network/OkHttpClientF
 	public abstract fun createNewNetworkModuleClient ()Lokhttp3/OkHttpClient;
 }
 
-public class com/facebook/react/modules/network/OkHttpClientProvider {
-	public fun <init> ()V
-	public static fun createClient ()Lokhttp3/OkHttpClient;
-	public static fun createClient (Landroid/content/Context;)Lokhttp3/OkHttpClient;
-	public static fun createClientBuilder ()Lokhttp3/OkHttpClient$Builder;
-	public static fun createClientBuilder (Landroid/content/Context;)Lokhttp3/OkHttpClient$Builder;
-	public static fun createClientBuilder (Landroid/content/Context;I)Lokhttp3/OkHttpClient$Builder;
-	public static fun getOkHttpClient ()Lokhttp3/OkHttpClient;
-	public static fun setOkHttpClientFactory (Lcom/facebook/react/modules/network/OkHttpClientFactory;)V
+public final class com/facebook/react/modules/network/OkHttpClientProvider {
+	public static final field INSTANCE Lcom/facebook/react/modules/network/OkHttpClientProvider;
+	public static final fun createClient ()Lokhttp3/OkHttpClient;
+	public static final fun createClient (Landroid/content/Context;)Lokhttp3/OkHttpClient;
+	public static final fun createClientBuilder ()Lokhttp3/OkHttpClient$Builder;
+	public static final fun createClientBuilder (Landroid/content/Context;)Lokhttp3/OkHttpClient$Builder;
+	public static final fun createClientBuilder (Landroid/content/Context;I)Lokhttp3/OkHttpClient$Builder;
+	public static final fun getOkHttpClient ()Lokhttp3/OkHttpClient;
+	public static final fun setOkHttpClientFactory (Lcom/facebook/react/modules/network/OkHttpClientFactory;)V
 }
 
 public class com/facebook/react/modules/network/OkHttpCompat {
