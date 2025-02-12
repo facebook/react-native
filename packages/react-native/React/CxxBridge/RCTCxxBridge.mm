@@ -47,7 +47,7 @@
 
 #if USE_HERMES
 #import <reacthermes/HermesExecutorFactory.h>
-#else
+#elif USE_THIRD_PARTY_JSC != 1
 #import "JSCExecutorFactory.h"
 #endif
 #import "RCTJSIExecutorRuntimeInstaller.h"
@@ -440,8 +440,10 @@ struct RCTInstanceCallback : public InstanceCallback {
       auto installBindings = RCTJSIExecutorRuntimeInstaller(nullptr);
 #if USE_HERMES
       executorFactory = std::make_shared<HermesExecutorFactory>(installBindings);
-#else
+#elif USE_THIRD_PARTY_JSC != 1
       executorFactory = std::make_shared<JSCExecutorFactory>(installBindings);
+#else
+      throw std::runtime_error("No JSExecutorFactory specified.");
 #endif
     }
   } else {
