@@ -110,7 +110,7 @@ internal class PropsAnimatedNode(
   }
 
   val connectedView: View?
-    // resolveView throws an {@link IllegalViewOperationException} when the view doesn't exist
+    // resolveView throws an [IllegalViewOperationException] when the view doesn't exist
     // (this can happen if the surface is being deallocated).
     get() = runCatching { connectedViewUIManager?.resolveView(connectedViewTag) }.getOrNull()
 

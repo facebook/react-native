@@ -29,7 +29,7 @@ public object ViewUtil {
       }
 
   /**
-   * Overload for {@link #getUIManagerType(int)} that uses the view's id to determine if it
+   * Overload for [getUIManagerType] that uses the view's id to determine if it
    * originated from Fabric
    */
   @JvmStatic @UIManagerType public fun getUIManagerType(view: View): Int = getUIManagerType(view.id)

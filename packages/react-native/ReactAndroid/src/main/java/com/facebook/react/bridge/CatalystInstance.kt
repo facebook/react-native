@@ -91,7 +91,7 @@ public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundle
   @VisibleForTesting public fun setGlobalVariable(propName: String, jsonValue: String)
 
   /**
-   * Do not use this anymore. Use {@link #getRuntimeExecutor()} instead. Get the C pointer (as a
+   * Do not use this anymore. Use [getRuntimeExecutor] instead. Get the C pointer (as a
    * long) to the JavaScriptCore context associated with this instance.
    *
    * <p>Use the following pattern to ensure that the JS context is not cleared while you are using

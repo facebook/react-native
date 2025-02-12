@@ -8,11 +8,11 @@
 package com.facebook.react.bridge
 
 /**
- * {@link UIManagerProvider} is used to create UIManager objects during the initialization of React
+ * [UIManagerProvider] is used to create UIManager objects during the initialization of React
  * Native.
  */
 public fun interface UIManagerProvider {
 
-  /* Provides a {@link com.facebook.react.bridge.UIManager} for the context received as a parameter. */
+  /* Provides a [com.facebook.react.bridge.UIManager] for the context received as a parameter. */
   public fun createUIManager(context: ReactApplicationContext): UIManager?
 }
