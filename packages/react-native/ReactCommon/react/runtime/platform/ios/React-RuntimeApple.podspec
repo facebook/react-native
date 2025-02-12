@@ -70,7 +70,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jserrorhandler"
   s.dependency "React-jsinspector"
   s.dependency "React-featureflags"
-
+  add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "React-RCTFBReactNativeSpec")
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"

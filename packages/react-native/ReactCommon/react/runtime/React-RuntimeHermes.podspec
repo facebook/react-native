@@ -56,4 +56,5 @@ Pod::Spec.new do |s|
 
   s.dependency "React-hermes"
   s.dependency "hermes-engine"
+  add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
 end

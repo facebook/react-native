@@ -27,6 +27,7 @@ target_merge_so(hermesinstancejni)
 
 target_link_libraries(hermesinstancejni
         hermes-engine::libhermes
+        jsitooling
         fbjni
         bridgelesshermes
         reactnative
