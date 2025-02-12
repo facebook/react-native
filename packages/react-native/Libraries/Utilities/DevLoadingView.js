@@ -35,7 +35,7 @@ const COLOR_SCHEME = {
   },
 };
 
-module.exports = {
+export default {
   showMessage(message: string, type: 'load' | 'refresh') {
     if (NativeDevLoadingView) {
       const colorScheme =
