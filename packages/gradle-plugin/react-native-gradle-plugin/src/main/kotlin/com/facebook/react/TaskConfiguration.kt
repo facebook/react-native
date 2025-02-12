@@ -13,6 +13,7 @@ import com.facebook.react.utils.KotlinStdlibCompatUtils.capitalizeCompat
 import com.facebook.react.utils.NdkConfiguratorUtils.configureJsEnginePackagingOptions
 import com.facebook.react.utils.NdkConfiguratorUtils.configureNewArchPackagingOptions
 import com.facebook.react.utils.ProjectUtils.isHermesEnabled
+import com.facebook.react.utils.ProjectUtils.useThirdPartyJSC
 import com.facebook.react.utils.detectedCliFile
 import com.facebook.react.utils.detectedEntryFile
 import java.io.File
@@ -48,9 +49,10 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
       }
   val isDebuggableVariant =
       config.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
+  val useThirdPartyJSC = project.useThirdPartyJSC
 
   configureNewArchPackagingOptions(project, config, variant)
-  configureJsEnginePackagingOptions(config, variant, isHermesEnabledInThisVariant)
+  configureJsEnginePackagingOptions(config, variant, isHermesEnabledInThisVariant, useThirdPartyJSC)
 
   if (!isDebuggableVariant) {
     val entryFileEnvVariable = System.getenv("ENTRY_FILE")
