@@ -142,8 +142,9 @@ vendor/
 /packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
 
 # iOS prebuilds
-/packages/react-native/third-party/
-fix_glog_0.3.5_apple_silicon.patch
+/packages/react-native/third-party/glog
+/packages/react-native/third-party/.swiftpm
+.patch
 
 # Visual Studio Code (config dir - if present, this merges user defined
 # workspace settings on top of react-native.code-workspace)

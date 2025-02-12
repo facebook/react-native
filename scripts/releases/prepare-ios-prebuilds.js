@@ -19,11 +19,22 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
 /*::
+type Folder = RegExp;
+
+// We need to pass through the downloaded files and only keep the ones highlighted here.
+// We can delete the rest of the files.
+type FilesToKeep = $ReadOnly<{
+  headers: Folder | $ReadOnlyArray<string>,
+  sources: $ReadOnlyArray<string>,
+}>;
+
+
 type Dependency = $ReadOnly<{
   name: string,
   version: string,
   url: URL,
   prepareScript?: string,
+  filesToKeep: FilesToKeep,
 }>;
 */
 
@@ -35,44 +46,114 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
       'https://github.com/google/glog/archive/refs/tags/v0.3.5.tar.gz',
     ),
     prepareScript: './packages/react-native/scripts/ios-configure-glog.sh',
+    filesToKeep: {
+      headers: /src(\/(glog|base))?\/[a-zA-Z0-9_-]+\.h$/, // Keep all headers in src, src/glog and src/base
+      sources: [
+        'src/demangle.cc',
+        'src/logging.cc',
+        'src/raw_logging.cc',
+        'src/signalhandler.cc',
+        'src/symbolize.cc',
+        'src/utilities.cc',
+        'src/vlog_is_on.cc',
+      ],
+    },
   },
 ];
 
-async function downloadDependency(
-  dependency /*: Dependency*/,
-) /*: Promise<void> */ {
-  const {name, url} = dependency;
+async function _downloadDependency(
+  name /*: string*/,
+  url /*: URL*/,
+  destination /*: string*/,
+) {
   const filename = `${name}.tgz`;
   const archiveDestination = `/tmp/${filename}`;
   const command = `curl -L ${url.toString()} --output ${archiveDestination}`;
-
   console.log(`Downloading ${filename}...`);
   await exec(command);
 
-  const destination = `packages/react-native/third-party/${name}`;
   fs.mkdirSync(destination, {recursive: true});
-
   console.log(`Extracting ${filename} to ${destination}...`);
   await exec(
     `tar -xzf ${archiveDestination} -C ${destination} --strip-components 1`,
   );
-
   console.log(`Cleaning up ${filename}...`);
   await exec(`rm ${archiveDestination}`);
+}
+
+function _prepareDependency(scriptPath /*: string*/, destination /*: string*/) {
+  console.log(`Running ${scriptPath}...`);
+  const finalPath = path.join(destination, 'prepare.sh');
+  fs.copyFileSync(scriptPath, finalPath);
+  execSync('./prepare.sh', {cwd: destination, stdio: 'inherit'});
+}
+
+function _removeUnnecessaryFiles(
+  filesToKeep /*: FilesToKeep*/,
+  destination /*: string*/,
+) {
+  const backupPath = `${destination}_backup`;
+  fs.mkdirSync(backupPath, {recursive: true});
+
+  console.log('Moving headers to backup folder...');
+  const headers = filesToKeep.headers;
+  if (headers instanceof RegExp) {
+    const files = execSync(`find ${destination} -type f -name "*.h"`)
+      .toString()
+      .trim()
+      .split('\n');
+    for (const file of files) {
+      if (headers.test(file)) {
+        const relativeFilePath = path
+          .relative(backupPath, file)
+          .split('/')
+          .slice(2)
+          .join('/');
+        const destinationFile = `${backupPath}/${relativeFilePath}`;
+
+        fs.mkdirSync(path.dirname(destinationFile), {recursive: true});
+        fs.copyFileSync(file, destinationFile);
+      }
+    }
+  } else {
+    for (const file of headers) {
+      const filePath = path.join(destination, file);
+      const destFilePath = path.join(`${destination}_backup`, file);
+      fs.copyFileSync(filePath, destFilePath);
+    }
+  }
+
+  console.log('Moving sources to backup folder...');
+  for (const file of filesToKeep.sources) {
+    const filePath = path.join(destination, file);
+    const destFilePath = path.join(`${destination}_backup`, file);
+    fs.copyFileSync(filePath, destFilePath);
+  }
+
+  console.log('Cleaning up...');
+  fs.rmSync(destination, {recursive: true, force: true});
+  fs.renameSync(`${destination}_backup`, destination);
+}
+
+async function setupDependency(
+  dependency /*: Dependency*/,
+) /*: Promise<void> */ {
+  const {name, url} = dependency;
+  const destination = `packages/react-native/third-party/${name}`;
+
+  await _downloadDependency(name, url, destination);
 
   if (dependency.prepareScript) {
-    const scriptPath = dependency.prepareScript;
-    console.log(`Running ${scriptPath}...`);
-    const finalPath = path.join(destination, 'prepare.sh');
-    fs.copyFileSync(scriptPath, finalPath);
-    execSync('./prepare.sh', {cwd: destination, stdio: 'inherit'});
+    _prepareDependency(dependency.prepareScript, destination);
   }
+
+  _removeUnnecessaryFiles(dependency.filesToKeep, destination);
 }
 
 async function main() {
   console.log('Starting iOS prebuilds preparation...');
 
-  await Promise.all(dependencies.map(downloadDependency));
+  await Promise.all(dependencies.map(setupDependency));
 
   console.log('Done!');
 }
