@@ -23,6 +23,20 @@ const deprecated = () => {
   );
 };
 
+function findCommunityCli(startDir = process.cwd()) {
+  // In monorepos, we cannot make any assumptions on where
+  // `@react-native-community/cli` gets installed. The safest way to find it
+  // (barring adding an optional peer dependency) is to start from the project
+  // root.
+  //
+  // Note that we're assuming that the current working directory is the project
+  // root. This is also what `@react-native-community/cli` assumes (see
+  // https://github.com/react-native-community/cli/blob/14.x/packages/cli-tools/src/findProjectRoot.ts).
+  const options = { paths: [startDir] };
+  const rncli = require.resolve('@react-native-community/cli', options);
+  return require(rncli);
+}
+
 function isMissingCliDependency(error) {
   return (
     error.code === 'MODULE_NOT_FOUND' &&
@@ -217,7 +231,7 @@ async function main() {
   }
 
   try {
-    return require('@react-native-community/cli').run(name);
+    return findCommunityCli().run(name);
   } catch (e) {
     if (isMissingCliDependency(e)) {
       warnWithExplicitDependency();
@@ -231,7 +245,7 @@ if (require.main === module) {
   main();
 } else {
   try {
-    cli = require('@react-native-community/cli');
+    cli = findCommunityCli();
   } catch (e) {
     // We silence @react-native-community/cli missing as it is no
     // longer a dependency
