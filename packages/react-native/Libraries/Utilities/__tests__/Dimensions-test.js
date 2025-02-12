@@ -12,7 +12,7 @@
 
 describe('Dimensions', () => {
   const Dimensions = require('../Dimensions').default;
-  const Platform = require('../Platform');
+  const Platform = require('../Platform').default;
 
   it('should set window dimensions', () => {
     Dimensions.set({

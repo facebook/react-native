@@ -12,7 +12,7 @@ import type {TurboModule} from '../../../../Libraries/TurboModule/RCTExport';
 
 import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboModuleRegistry';
 
-const Platform = require('../../../../Libraries/Utilities/Platform');
+const Platform = require('../../../../Libraries/Utilities/Platform').default;
 
 export type StackFrame = {
   column: ?number,
