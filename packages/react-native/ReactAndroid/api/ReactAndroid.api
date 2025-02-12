@@ -4697,6 +4697,19 @@ public class com/facebook/react/uimanager/ReactShadowNodeImpl : com/facebook/rea
 
 public abstract interface annotation class com/facebook/react/uimanager/ReactStage : java/lang/annotation/Annotation {
 	public static final field BRIDGE_DID_LOAD I
+	public static final field Companion Lcom/facebook/react/uimanager/ReactStage$Companion;
+	public static final field MODULE_DID_LOAD I
+	public static final field ON_ATTACH_TO_INSTANCE I
+	public static final field SURFACE_DID_INITIALIZE I
+	public static final field SURFACE_DID_INITIAL_LAYOUT I
+	public static final field SURFACE_DID_INITIAL_MOUNTING I
+	public static final field SURFACE_DID_INITIAL_RENDERING I
+	public static final field SURFACE_DID_RUN I
+	public static final field SURFACE_DID_STOP I
+}
+
+public final class com/facebook/react/uimanager/ReactStage$Companion {
+	public static final field BRIDGE_DID_LOAD I
 	public static final field MODULE_DID_LOAD I
 	public static final field ON_ATTACH_TO_INSTANCE I
 	public static final field SURFACE_DID_INITIALIZE I
