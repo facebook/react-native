@@ -39,11 +39,6 @@
   "peerDependencies": {
     "@react-native-community/cli-server-api": "*"
   },
-  "peerDependenciesMeta": {
-    "@react-native-community/cli-server-api": {
-      "optional": true
-    }
-  },
   "engines": {
     "node": ">=18"
   }
