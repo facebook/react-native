@@ -44,6 +44,7 @@ export type StartCommandArgs = {
   config?: string,
   projectRoot?: string,
   interactive: boolean,
+  clientLogs: boolean,
 };
 
 async function runServer(
@@ -95,6 +96,11 @@ async function runServer(
     metroConfig.transformer.assetPlugins = args.assetPlugins.map(plugin =>
       require.resolve(plugin),
     );
+  }
+  // TODO(T214991636): Remove legacy Metro log forwarding
+  if (!args.clientLogs) {
+    // $FlowIgnore[cannot-write] Assigning to readonly property
+    metroConfig.server.forwardClientLogs = false;
   }
 
   let reportEvent: (event: TerminalReportableEvent) => void;
