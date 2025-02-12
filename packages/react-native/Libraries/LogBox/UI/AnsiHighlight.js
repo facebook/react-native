@@ -98,7 +98,10 @@ export default function Ansi({
                       backgroundColor: bundle.bg && COLORS[bundle.bg],
                     };
               return (
-                <Text style={[style, textStyle]} key={key}>
+                <Text
+                  id="logbox_codeframe_contents_text"
+                  style={[style, textStyle]}
+                  key={key}>
                   {getText(bundle.content, key)}
                 </Text>
               );

@@ -101,7 +101,9 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
             }
             style={componentStyles.frame}>
             <View style={componentStyles.component}>
-              <Text style={componentStyles.frameName}>
+              <Text
+                id="logbox_component_stack_frame_text"
+                style={componentStyles.frameName}>
                 <Text style={componentStyles.bracket}>{'<'}</Text>
                 {frame.content}
                 <Text style={componentStyles.bracket}>{' />'}</Text>
