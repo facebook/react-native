@@ -83,6 +83,9 @@ export type ReportableEvent =
       ...DebuggerSessionIDs,
     }
   | {
+      type: 'fusebox_console_notice',
+    }
+  | {
       type: 'proxy_error',
       status: 'error',
       messageOrigin: 'debugger' | 'device',
