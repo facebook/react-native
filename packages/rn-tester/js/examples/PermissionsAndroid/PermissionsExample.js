@@ -15,9 +15,10 @@ import RNTesterText from '../../components/RNTesterText';
 import RNTOption from '../../components/RNTOption';
 import * as React from 'react';
 import {PermissionsAndroid, StyleSheet, View} from 'react-native';
+import type {PermissionType} from 'react-native/Libraries/PermissionsAndroid/NativePermissionsAndroid';
 
 function PermissionsExample() {
-  const [permission, setPermission] = React.useState<string>(
+  const [permission, setPermission] = React.useState<PermissionType>(
     PermissionsAndroid.PERMISSIONS.CAMERA,
   );
   const [hasPermission, setHasPermission] = React.useState('Not Checked');
