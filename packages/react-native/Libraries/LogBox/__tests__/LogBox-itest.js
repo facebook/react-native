@@ -10,35 +10,9 @@
  * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
-import ensureInstance from '../../../src/private/utilities/ensureInstance';
-import ReadOnlyElement from '../../../src/private/webapis/dom/nodes/ReadOnlyElement';
 import View from '../../Components/View/View';
-import AppContainer from '../../ReactNative/AppContainer';
-import LogBoxInspectorContainer from '../LogBoxInspectorContainer';
-import {
-  ManualConsoleError,
-  // $FlowExpectedError[untyped-import]
-} from './__fixtures__/ReactWarningFixtures';
-import Fantom from '@react-native/fantom';
-import nullthrows from 'nullthrows';
+import {renderLogBox} from './fantomHelpers';
 import * as React from 'react';
-
-import '../../Core/InitializeCore.js';
-
-function findById(node: ReadOnlyElement, id: string): ?ReadOnlyElement {
-  if (node.id === id) {
-    return node;
-  }
-
-  for (const child of node.children) {
-    const found = findById(child, id);
-    if (found) {
-      return found;
-    }
-  }
-
-  return null;
-}
 
 describe('LogBox', () => {
   let originalConsoleError;
@@ -60,8 +34,12 @@ describe('LogBox', () => {
     });
     // $FlowExpectedError[cannot-write]
     console.error = mockError;
+    // $FlowExpectedError[prop-missing]
+    console.error.displayName = 'MockConsoleErrorForTesting';
     // $FlowExpectedError[cannot-write]
     console.warn = mockWarn;
+    // $FlowExpectedError[prop-missing]
+    console.warn.displayName = 'MockConsoleWarnForTesting';
   });
 
   afterEach(() => {
@@ -72,65 +50,45 @@ describe('LogBox', () => {
   });
 
   it('renders an empty screen if there are no errors', () => {
-    const logBoxRoot = Fantom.createRoot();
-    Fantom.runTask(() => {
-      logBoxRoot.render(<LogBoxInspectorContainer />);
-    });
+    const logBox = renderLogBox(<View />);
 
-    expect(logBoxRoot.getRenderedOutput().toJSX()).toBe(null);
+    expect(logBox.isOpen()).toBe(false);
+    expect(logBox.getInspectorUI()).toBe(null);
+    expect(logBox.getNotificationUI()).toBe(null);
   });
 
-  it('handles a manual console.error without a component stack in LogBox', () => {
-    let maybeViewNode;
+  it('handles a soft error in render, and dismisses', () => {
+    function ManualConsoleErrorCall() {
+      console.error('HIT');
+    }
+    const logBox = renderLogBox(<ManualConsoleErrorCall />);
 
-    const logBoxRoot = Fantom.createRoot();
-    Fantom.runTask(() => {
-      logBoxRoot.render(
-        <View
-          ref={node => {
-            maybeViewNode = node;
-          }}>
-          <LogBoxInspectorContainer />
-        </View>,
-      );
+    // Console error should not pop a dialog.
+    expect(logBox.isOpen()).toBe(false);
+    expect(logBox.getNotificationUI()).toEqual({
+      count: '!',
+      message: 'HIT',
     });
 
-    expect(logBoxRoot.getRenderedOutput().toJSX()).toBe(null);
+    // Open LogBox.
+    logBox.openNotification();
 
-    const logBoxRootNode = ensureInstance(maybeViewNode, ReadOnlyElement);
-
-    const root = Fantom.createRoot();
-    Fantom.runTask(() => {
-      root.render(
-        <View
-          ref={node => {
-            maybeViewNode = node;
-          }}>
-          <AppContainer rootTag={root.getRootTag()}>
-            <ManualConsoleError />
-          </AppContainer>
-        </View>,
-      );
+    expect(logBox.isOpen()).toBe(true);
+    expect(logBox.getInspectorUI()).toEqual({
+      header: 'Log 1 of 1',
+      title: 'Console Error',
+      message: 'HIT',
+      // TODO: There should be component frames for console errors.
+      componentStackFrames: [],
+      stackFrames: ['ManualConsoleErrorCall'],
+      isDismissable: true,
     });
 
-    expect(logBoxRoot.getRenderedOutput().toJSX()).toBe(null);
+    // Dismiss LogBox.
+    logBox.dismissInspector();
 
-    const appRootNode = ensureInstance(maybeViewNode, ReadOnlyElement);
-    const logBoxButton = nullthrows(
-      findById(appRootNode, 'logbox_button_error'),
-    );
-
-    Fantom.dispatchNativeEvent(logBoxButton, 'click');
-
-    const headerTitle = findById(logBoxRootNode, 'logbox_header_title_text');
-    const messageTitle = findById(logBoxRootNode, 'logbox_message_title_text');
-    const messageContents = findById(
-      logBoxRootNode,
-      'logbox_message_contents_text',
-    );
-
-    expect(headerTitle?.textContent).toBe('Log 1 of 1');
-    expect(messageTitle?.textContent).toBe('Console Error');
-    expect(messageContents?.textContent).toBe('Manual console error');
+    // All logs should be cleared.
+    expect(logBox.getInspectorUI()).toBe(null);
+    expect(logBox.getNotificationUI()).toBe(null);
   });
 });

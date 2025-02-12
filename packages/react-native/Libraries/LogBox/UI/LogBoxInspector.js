@@ -64,7 +64,7 @@ export default function LogBoxInspector(props: Props): React.Node {
   }
 
   return (
-    <View style={styles.root}>
+    <View id="logbox_inspector" style={styles.root}>
       <LogBoxInspectorHeader
         onSelectIndex={props.onChangeSelectedIndex}
         selectedIndex={selectedIndex}
