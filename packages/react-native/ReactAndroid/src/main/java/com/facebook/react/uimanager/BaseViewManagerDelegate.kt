@@ -108,6 +108,9 @@ public abstract class BaseViewManagerDelegate<
       ViewProps.RENDER_TO_HARDWARE_TEXTURE ->
           mViewManager.setRenderToHardwareTexture(view, value as Boolean? ?: false)
 
+      ViewProps.TOOLTIP_TEXT ->
+          mViewManager.setTooltipText(view, value as String?)
+
       ViewProps.ROTATION -> mViewManager.setRotation(view, (value as Double?)?.toFloat() ?: 0.0f)
 
       ViewProps.SCALE_X -> mViewManager.setScaleX(view, (value as Double?)?.toFloat() ?: 1.0f)

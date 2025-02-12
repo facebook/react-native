@@ -667,6 +667,14 @@ function BoxSizingExample(): React.Node {
   );
 }
 
+function TooltipTextAndroidExample(): React.Node {
+  return (
+    <View testID={'view-test-tooltip-text'}>
+      <View tooltipTextAndroid={'test tooltip text'} style={{height: 50, width: 50, backgroundColor: "red"}} />
+    </View>
+  );
+}
+
 export default ({
   title: 'View',
   documentationURL: 'https://reactnative.dev/docs/view',
@@ -1330,6 +1338,11 @@ export default ({
       title: 'Box Sizing',
       name: 'box-sizing',
       render: BoxSizingExample,
+    },
+    {
+      title: 'Tooltip text android',
+      name: 'tooltip-text',
+      render: TooltipTextAndroidExample,
     },
   ],
 }: RNTesterModule);
