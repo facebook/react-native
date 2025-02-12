@@ -28,6 +28,9 @@ CullingContext CullingContext::adjustCullingContextIfNeeded(
               /* includeTransform */ true);
       cullingContext.frame.size =
           scrollViewShadowNode->getLayoutMetrics().frame.size;
+    } else if (pair.shadowView.traits.check(
+                   ShadowNodeTraits::Trait::RootNodeKind)) {
+      cullingContext = {};
     } else {
       cullingContext.frame.origin -= pair.shadowView.layoutMetrics.frame.origin;
 
