@@ -63,7 +63,7 @@ module.exports = {
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get deepDiffer(): deepDiffer {
-    return require('../Utilities/differ/deepDiffer');
+    return require('../Utilities/differ/deepDiffer').default;
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
     {...} | Array<mixed>,
