@@ -9,6 +9,4 @@
  * @oncall react_native
  */
 
-module.exports = {
-  enableFabricCompleteRootInCommitPhase: true,
-};
+module.exports = {};
