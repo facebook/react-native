@@ -107,14 +107,13 @@ public class ReactTextViewManager
       // delegate so that these can be picked up by the accessibility system.
       ReactClickableSpan[] clickableSpans =
           spannable.getSpans(0, update.getText().length(), ReactClickableSpan.class);
-
-      if (clickableSpans.length > 0) {
-        view.setTag(
-            R.id.accessibility_links,
-            new ReactTextViewAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable));
-        ReactTextViewAccessibilityDelegate.Companion.resetDelegate(
-            view, view.isFocusable(), view.getImportantForAccessibility());
-      }
+      view.setTag(
+          R.id.accessibility_links,
+          clickableSpans.length > 0
+              ? new ReactTextViewAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable)
+              : null);
+      ReactTextViewAccessibilityDelegate.Companion.resetDelegate(
+          view, view.isFocusable(), view.getImportantForAccessibility());
     }
   }
 
