@@ -19,10 +19,11 @@
 #elif __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
 #endif
-#else // USE_HERMES
+#elif USE_THIRD_PARTY_JSC != 1
 #import <React/JSCExecutorFactory.h>
 #endif // USE_HERMES
 
+#import <jsireact/JSIExecutor.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 @protocol RCTDependencyProvider;
