@@ -17,7 +17,7 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.runtime.BindingsInstaller
-import com.facebook.react.runtime.JSCInstance
+import com.facebook.react.runtime.JSRuntimeFactory
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.cxxreactpackage.CxxReactPackage
 import com.facebook.react.runtime.hermes.HermesInstance
@@ -60,7 +60,7 @@ public object DefaultReactHost {
       jsMainModulePath: String = "index",
       jsBundleAssetPath: String = "index",
       jsBundleFilePath: String? = null,
-      isHermesEnabled: Boolean = true,
+      jsRuntimeFactory: JSRuntimeFactory? = null,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
   ): ReactHost =
@@ -70,7 +70,7 @@ public object DefaultReactHost {
           jsMainModulePath,
           jsBundleAssetPath,
           jsBundleFilePath,
-          isHermesEnabled,
+          jsRuntimeFactory,
           useDevSupport,
           cxxReactPackageProviders,
           { throw it },
@@ -106,7 +106,7 @@ public object DefaultReactHost {
       jsMainModulePath: String = "index",
       jsBundleAssetPath: String = "index",
       jsBundleFilePath: String? = null,
-      isHermesEnabled: Boolean = true,
+      jsRuntimeFactory: JSRuntimeFactory? = null,
       useDevSupport: Boolean = ReactBuildConfig.DEBUG,
       cxxReactPackageProviders: List<(ReactContext) -> CxxReactPackage> = emptyList(),
       exceptionHandler: (Exception) -> Unit = { throw it },
@@ -124,7 +124,6 @@ public object DefaultReactHost {
           } else {
             JSBundleLoader.createAssetLoader(context, "assets://$jsBundleAssetPath", true)
           }
-      val jsRuntimeFactory = if (isHermesEnabled) HermesInstance() else JSCInstance()
       val defaultTmmDelegateBuilder = DefaultTurboModuleManagerDelegate.Builder()
       cxxReactPackageProviders.forEach { defaultTmmDelegateBuilder.addCxxReactPackage(it) }
       val defaultReactHostDelegate =
@@ -132,7 +131,7 @@ public object DefaultReactHost {
               jsMainModulePath = jsMainModulePath,
               jsBundleLoader = bundleLoader,
               reactPackages = packageList,
-              jsRuntimeFactory = jsRuntimeFactory,
+              jsRuntimeFactory = jsRuntimeFactory ?: HermesInstance(),
               bindingsInstaller = bindingsInstaller,
               turboModuleManagerDelegateBuilder = defaultTmmDelegateBuilder,
               exceptionHandler = exceptionHandler)
@@ -169,11 +168,12 @@ public object DefaultReactHost {
   public fun getDefaultReactHost(
       context: Context,
       reactNativeHost: ReactNativeHost,
+      jsRuntimeFactory: JSRuntimeFactory? = null
   ): ReactHost {
     require(reactNativeHost is DefaultReactNativeHost) {
       "You can call getDefaultReactHost only with instances of DefaultReactNativeHost"
     }
-    return reactNativeHost.toReactHost(context)
+    return reactNativeHost.toReactHost(context, jsRuntimeFactory)
   }
 
   /**
