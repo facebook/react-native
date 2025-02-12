@@ -41,7 +41,13 @@ async function simpleResolve(
 
   // Resolve exact '@react-native/<package>' import
   if (importPath in cachedProjectInfo) {
-    return cachedProjectInfo[importPath].path;
+    const packageJson = cachedProjectInfo[importPath].packageJson;
+
+    if (packageJson.main !== undefined) {
+      return path.join(cachedProjectInfo[importPath].path, packageJson.main);
+    }
+
+    return path.join(cachedProjectInfo[importPath].path, 'index.js');
   }
 
   // Resolve relative import within the project

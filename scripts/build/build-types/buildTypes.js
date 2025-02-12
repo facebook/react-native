@@ -52,7 +52,7 @@ async function buildTypes(): Promise<void> {
   while (files.size > 0) {
     const dependencies = await translateSourceFiles(files);
 
-    translatedFiles.add(...files);
+    files.forEach(file => translatedFiles.add(file));
     files.clear();
 
     for (const dep of dependencies) {
