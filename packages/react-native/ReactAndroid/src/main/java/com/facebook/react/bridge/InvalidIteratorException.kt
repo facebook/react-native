@@ -10,7 +10,7 @@ package com.facebook.react.bridge
 import com.facebook.proguard.annotations.DoNotStrip
 
 /**
- * Exception thrown by {@link ReadableMapKeySetIterator#nextKey()} when the iterator tries to
+ * Exception thrown by [ReadableMapKeySetIterator.nextKey] when the iterator tries to
  * iterate over elements after the end of the key set.
  */
 @DoNotStrip

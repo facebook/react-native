@@ -10,5 +10,5 @@ package com.facebook.react.bridge
 import com.facebook.proguard.annotations.DoNotStripAny
 
 @DoNotStripAny
-@Deprecated("Use {@link TurboModule} to identify generated specs")
+@Deprecated("Use [TurboModule] to identify generated specs")
 public interface ReactModuleWithSpec
