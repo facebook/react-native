@@ -16,7 +16,7 @@ import type {____FlattenStyleProp_Internal} from '../../../Libraries/StyleSheet/
 import React from 'react';
 
 const View = require('../../../Libraries/Components/View/View').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
 const Text = require('../../../Libraries/Text/Text').default;
 
 type Props = $ReadOnly<{

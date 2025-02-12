@@ -8,7 +8,7 @@
  * @oncall react_native
  */
 
-const StyleSheet = require('../../StyleSheet/StyleSheet');
+const StyleSheet = require('../../StyleSheet/StyleSheet').default;
 let Animated = require('../Animated').default;
 let AnimatedProps = require('../nodes/AnimatedProps').default;
 

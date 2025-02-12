@@ -16,7 +16,7 @@ import type {InspectedElement} from './Inspector';
 import React from 'react';
 
 const View = require('../../../Libraries/Components/View/View').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
 const ElementBox = require('./ElementBox').default;
 
 type Props = $ReadOnly<{

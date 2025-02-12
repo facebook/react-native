@@ -26,7 +26,7 @@ const PressabilityDebug = require('../../../Libraries/Pressability/PressabilityD
 const {
   findNodeHandle,
 } = require('../../../Libraries/ReactNative/RendererProxy');
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
 const Dimensions = require('../../../Libraries/Utilities/Dimensions').default;
 const Platform = require('../../../Libraries/Utilities/Platform');
 const getInspectorDataForViewAtPoint =

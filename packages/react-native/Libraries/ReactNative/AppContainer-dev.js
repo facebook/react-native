@@ -33,7 +33,8 @@ const reactDevToolsHook: ReactDevToolsGlobalHook =
 // Required for React DevTools to view / edit React Native styles in Flipper.
 // Flipper doesn't inject these values when initializing DevTools.
 if (reactDevToolsHook) {
-  reactDevToolsHook.resolveRNStyle = require('../StyleSheet/flattenStyle');
+  reactDevToolsHook.resolveRNStyle =
+    require('../StyleSheet/flattenStyle').default;
   reactDevToolsHook.nativeStyleEditorValidAttributes = Object.keys(
     ReactNativeStyleAttributes,
   );

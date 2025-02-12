@@ -321,7 +321,7 @@ module.exports = {
     return require('./Libraries/Share/Share').default;
   },
   get StyleSheet(): StyleSheet {
-    return require('./Libraries/StyleSheet/StyleSheet');
+    return require('./Libraries/StyleSheet/StyleSheet').default;
   },
   get Systrace(): Systrace {
     return require('./Libraries/Performance/Systrace');
