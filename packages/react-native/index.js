@@ -238,7 +238,7 @@ module.exports = {
     return require('./Libraries/AppState/AppState').default;
   },
   get BackHandler(): BackHandler {
-    return require('./Libraries/Utilities/BackHandler');
+    return require('./Libraries/Utilities/BackHandler').default;
   },
   get Clipboard(): Clipboard {
     warnOnce(

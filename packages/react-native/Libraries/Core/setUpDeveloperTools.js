@@ -34,7 +34,7 @@ if (__DEV__) {
     global.navigator.appName === 'Netscape'; // Any real browser
 
   if (!Platform.isTesting) {
-    const HMRClient = require('../Utilities/HMRClient');
+    const HMRClient = require('../Utilities/HMRClient').default;
 
     // TODO(T214991636): Remove legacy Metro log forwarding
     if (console._isPolyfilled) {

@@ -14,14 +14,14 @@ type BackPressHandler = () => ?boolean;
 function emptyFunction(): void {}
 
 type TBackHandler = {
-  +exitApp: () => void,
-  +addEventListener: (
+  exitApp(): void,
+  addEventListener(
     eventName: BackPressEventName,
     handler: BackPressHandler,
-  ) => {remove: () => void, ...},
+  ): {remove: () => void, ...},
 };
 
-let BackHandler: TBackHandler = {
+const BackHandler: TBackHandler = {
   exitApp: emptyFunction,
   addEventListener(_eventName: BackPressEventName, _handler: BackPressHandler) {
     return {
@@ -30,4 +30,4 @@ let BackHandler: TBackHandler = {
   },
 };
 
-module.exports = BackHandler;
+export default BackHandler;
