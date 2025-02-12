@@ -18,7 +18,8 @@ import type {
 
 const React = require('react');
 const ReactNative = require('react-native');
-const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer');
+const deepDiffer =
+  require('react-native/Libraries/Utilities/differ/deepDiffer').default;
 
 const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;

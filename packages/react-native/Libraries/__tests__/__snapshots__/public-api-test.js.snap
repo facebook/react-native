@@ -8502,13 +8502,13 @@ declare module.exports: defineLazyObjectProperty;
 
 exports[`public API should not change unintentionally Libraries/Utilities/differ/deepDiffer.js 1`] = `
 "type Options = { +unsafelyIgnoreFunctions?: boolean };
-declare const deepDiffer: (
+declare function deepDiffer(
   one: any,
   two: any,
   maxDepthOrOptions: Options | number,
   maybeOptions?: Options
-) => boolean;
-declare module.exports: deepDiffer;
+): boolean;
+declare export default typeof deepDiffer;
 "
 `;
 
@@ -8520,17 +8520,17 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
   bottom: ?number,
   ...
 };
-declare const insetsDiffer: (one: Inset, two: Inset) => boolean;
-declare module.exports: insetsDiffer;
+declare function insetsDiffer(one: Inset, two: Inset): boolean;
+declare export default typeof insetsDiffer;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/differ/matricesDiffer.js 1`] = `
-"declare const matricesDiffer: (
+"declare function matricesDiffer(
   one: ?Array<number>,
   two: ?Array<number>
-) => boolean;
-declare module.exports: matricesDiffer;
+): boolean;
+declare export default typeof matricesDiffer;
 "
 `;
 
@@ -8540,15 +8540,15 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
   y: ?number,
   ...
 };
-declare const pointsDiffer: (one: ?Point, two: ?Point) => boolean;
-declare module.exports: pointsDiffer;
+declare function pointsDiffer(one: ?Point, two: ?Point): boolean;
+declare export default typeof pointsDiffer;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/differ/sizesDiffer.js 1`] = `
 "type Size = { width: ?number, height: ?number };
-declare const sizesDiffer: (one: Size, two: Size) => boolean;
-declare module.exports: sizesDiffer;
+declare function sizesDiffer(one: Size, two: Size): boolean;
+declare export default typeof sizesDiffer;
 "
 `;
 
