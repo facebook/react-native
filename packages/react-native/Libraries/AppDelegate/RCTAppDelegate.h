@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                          (const facebook::react::ObjCTurboModule::InitParams &)params
  *   - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
  */
-@interface RCTAppDelegate : RCTDefaultReactNativeFactoryDelegate <UIApplicationDelegate, UISceneDelegate>
+@interface RCTAppDelegate : RCTDefaultReactNativeFactoryDelegate <UIApplicationDelegate>
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong, nonnull) UIWindow *window;
