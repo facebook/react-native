@@ -103,6 +103,9 @@
     "react": "^19.0.0"
   },
   "peerDependenciesMeta": {
+    "@react-native-community/cli-server-api": {
+      "optional": true
+    },
     "@types/react": {
       "optional": true
     }
