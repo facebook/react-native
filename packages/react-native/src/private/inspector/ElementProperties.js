@@ -24,7 +24,8 @@ const flattenStyle =
   require('../../../Libraries/StyleSheet/flattenStyle').default;
 const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
 const Text = require('../../../Libraries/Text/Text').default;
-const mapWithSeparator = require('../../../Libraries/Utilities/mapWithSeparator');
+const mapWithSeparator =
+  require('../../../Libraries/Utilities/mapWithSeparator').default;
 const BoxInspector = require('./BoxInspector').default;
 const StyleInspector = require('./StyleInspector').default;
 

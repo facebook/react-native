@@ -8561,13 +8561,13 @@ declare module.exports: dismissKeyboard;
 
 exports[`public API should not change unintentionally Libraries/Utilities/infoLog.js 1`] = `
 "declare function infoLog(...args: Array<mixed>): void;
-declare module.exports: infoLog;
+declare export default typeof infoLog;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/logError.js 1`] = `
 "declare const logError: (...args: $ReadOnlyArray<mixed>) => void;
-declare module.exports: logError;
+declare export default typeof logError;
 "
 `;
 
@@ -8577,7 +8577,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/mapWit
   itemRenderer: (item: TFrom, index: number, items: Array<TFrom>) => TTo,
   spacerRenderer: (index: number) => TTo
 ): Array<TTo>;
-declare module.exports: mapWithSeparator;
+declare export default typeof mapWithSeparator;
 "
 `;
 
@@ -8627,7 +8627,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/useWin
 
 exports[`public API should not change unintentionally Libraries/Utilities/warnOnce.js 1`] = `
 "declare function warnOnce(key: string, message: string): void;
-declare module.exports: warnOnce;
+declare export default typeof warnOnce;
 "
 `;
 

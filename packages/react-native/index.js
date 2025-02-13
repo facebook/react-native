@@ -98,7 +98,7 @@ import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimension
 import typeof Vibration from './Libraries/Vibration/Vibration';
 import typeof DevMenu from './src/private/devmenu/DevMenu';
 
-const warnOnce = require('./Libraries/Utilities/warnOnce');
+const warnOnce = require('./Libraries/Utilities/warnOnce').default;
 const invariant = require('invariant');
 
 export type {HostComponent, HostInstance};
