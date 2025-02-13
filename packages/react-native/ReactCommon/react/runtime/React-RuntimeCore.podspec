@@ -62,6 +62,6 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-Fabric")
 
   depend_on_js_engine(s)
-
   s.dependency "React-jsinspector"
+  add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
 end
