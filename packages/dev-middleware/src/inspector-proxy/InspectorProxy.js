@@ -37,7 +37,7 @@ const WS_DEBUGGER_URL = '/inspector/debug';
 const PAGES_LIST_JSON_URL = '/json';
 const PAGES_LIST_JSON_URL_2 = '/json/list';
 const PAGES_LIST_JSON_VERSION_URL = '/json/version';
-const MAX_PONG_LATENCY_MS = 5000;
+const MAX_PONG_LATENCY_MS = 60000;
 const DEBUGGER_HEARTBEAT_INTERVAL_MS = 10000;
 
 const INTERNAL_ERROR_CODE = 1011;
