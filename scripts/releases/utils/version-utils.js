@@ -66,7 +66,6 @@ function validateBuildType(
   const validBuildTypes = new Set(['release', 'dry-run', 'nightly']);
 
   // $FlowFixMe[incompatible-return]
-  // $FlowFixMe[incompatible-type-guard]
   return validBuildTypes.has(buildType);
 }
 
