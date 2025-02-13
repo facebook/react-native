@@ -24,7 +24,7 @@ import VirtualizedLists from '@react-native/virtualized-lists';
 import memoizeOne from 'memoize-one';
 import React from 'react';
 
-const StyleSheet = require('../StyleSheet/StyleSheet');
+const StyleSheet = require('../StyleSheet/StyleSheet').default;
 const deepDiffer = require('../Utilities/differ/deepDiffer').default;
 const Platform = require('../Utilities/Platform');
 const invariant = require('invariant');

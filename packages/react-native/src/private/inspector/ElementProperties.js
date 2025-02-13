@@ -20,8 +20,9 @@ const TouchableHighlight =
 const TouchableWithoutFeedback =
   require('../../../Libraries/Components/Touchable/TouchableWithoutFeedback').default;
 const View = require('../../../Libraries/Components/View/View').default;
-const flattenStyle = require('../../../Libraries/StyleSheet/flattenStyle');
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const flattenStyle =
+  require('../../../Libraries/StyleSheet/flattenStyle').default;
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
 const Text = require('../../../Libraries/Text/Text').default;
 const mapWithSeparator = require('../../../Libraries/Utilities/mapWithSeparator');
 const BoxInspector = require('./BoxInspector').default;

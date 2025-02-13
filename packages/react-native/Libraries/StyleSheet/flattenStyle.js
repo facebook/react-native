@@ -43,4 +43,4 @@ function flattenStyle<TStyleProp: DangerouslyImpreciseStyleProp>(
   return result;
 }
 
-module.exports = flattenStyle;
+export default flattenStyle;

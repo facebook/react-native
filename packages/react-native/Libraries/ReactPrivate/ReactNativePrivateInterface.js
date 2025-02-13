@@ -74,7 +74,7 @@ module.exports = {
   get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {
     // $FlowFixMe[underconstrained-implicit-instantiation]
     // $FlowFixMe[incompatible-return]
-    return require('../StyleSheet/flattenStyle');
+    return require('../StyleSheet/flattenStyle').default;
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {
     return require('../Core/ReactFiberErrorDialog').default;

@@ -20,7 +20,7 @@ const ScrollView =
 const TouchableHighlight =
   require('../../../Libraries/Components/Touchable/TouchableHighlight').default;
 const View = require('../../../Libraries/Components/View/View').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
 const Text = require('../../../Libraries/Text/Text').default;
 const ElementProperties = require('./ElementProperties').default;
 const NetworkOverlay = require('./NetworkOverlay').default;
