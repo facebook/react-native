@@ -23,63 +23,6 @@ class GenerateCodegenSchemaTaskTest {
   @get:Rule val osRule = OsRule()
 
   @Test
-  fun generateCodegenSchema_inputFiles_areSetCorrectly() {
-    val jsRootDir =
-        tempFolder.newFolder("js").apply {
-          File(this, "file.js").createNewFile()
-          File(this, "file.jsx").createNewFile()
-          File(this, "file.ts").createNewFile()
-          File(this, "file.tsx").createNewFile()
-          File(this, "ignore.txt").createNewFile()
-        }
-
-    val task = createTestTask<GenerateCodegenSchemaTask> { it.jsRootDir.set(jsRootDir) }
-
-    assertThat(task.jsInputFiles.dir).isEqualTo(jsRootDir)
-    assertThat(task.jsInputFiles.includes)
-        .isEqualTo(setOf("**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"))
-    assertThat(task.jsInputFiles.files)
-        .containsExactlyInAnyOrder(
-            File(jsRootDir, "file.js"),
-            File(jsRootDir, "file.jsx"),
-            File(jsRootDir, "file.ts"),
-            File(jsRootDir, "file.tsx"))
-  }
-
-  @Test
-  fun generateCodegenSchema_inputFilesInExcludedPath_areExcluded() {
-    fun File.createFileAndPath() {
-      parentFile.mkdirs()
-      createNewFile()
-    }
-
-    val jsRootDir =
-        tempFolder.newFolder("js").apply {
-          File(this, "afolder/includedfile.js").createFileAndPath()
-          // Those files should be excluded due to their filepath
-          File(this, "afolder/build/generated/source/codegen/anotherfolder/excludedfile.js")
-              .createFileAndPath()
-          File(this, "afolder/build/generated/assets/react/anotherfolder/excludedfile.js")
-              .createFileAndPath()
-          File(this, "afolder/build/generated/res/react/anotherfolder/excludedfile.js")
-              .createFileAndPath()
-          File(this, "afolder/build/generated/sourcemaps/react/anotherfolder/excludedfile.js")
-              .createFileAndPath()
-          File(this, "afolder/build/intermediates/sourcemaps/react/anotherfolder/excludedfile.js")
-              .createFileAndPath()
-          File(this, "node_modules/excludedfile.js").createFileAndPath()
-          File(this, "afolder/excludedfile.d.ts").createFileAndPath()
-        }
-
-    val task = createTestTask<GenerateCodegenSchemaTask> { it.jsRootDir.set(jsRootDir) }
-
-    assertThat(task.jsInputFiles.dir).isEqualTo(jsRootDir)
-    assertThat(task.jsInputFiles.excludes)
-        .isEqualTo(setOf("node_modules/**/*", "**/*.d.ts", "**/build/**/*"))
-    assertThat(task.jsInputFiles.files).containsExactly(File(jsRootDir, "afolder/includedfile.js"))
-  }
-
-  @Test
   fun generateCodegenSchema_outputFile_isSetCorrectly() {
     val outputDir = tempFolder.newFolder("output")
 
@@ -131,13 +74,15 @@ class GenerateCodegenSchemaTaskTest {
     val codegenDir = tempFolder.newFolder("codegen")
     val jsRootDir = tempFolder.newFolder("js")
     val outputDir = tempFolder.newFolder("output")
+    val workingDir = jsRootDir
 
     val task =
-        createTestTask<GenerateCodegenSchemaTask> {
-          it.codegenDir.set(codegenDir)
-          it.jsRootDir.set(jsRootDir)
-          it.generatedSrcDir.set(outputDir)
-          it.nodeExecutableAndArgs.set(listOf("node", "--verbose"))
+        createTestTask<GenerateCodegenSchemaTask> { task ->
+          task.codegenDir.set(codegenDir)
+          task.jsRootDir.set(jsRootDir)
+          task.generatedSrcDir.set(outputDir)
+          task.nodeExecutableAndArgs.set(listOf("node", "--verbose"))
+          task.nodeWorkingDir.set(workingDir.absolutePath)
         }
 
     task.setupCommandLine()
@@ -165,11 +110,12 @@ class GenerateCodegenSchemaTaskTest {
 
     val project = createProject()
     val task =
-        createTestTask<GenerateCodegenSchemaTask>(project) {
-          it.codegenDir.set(codegenDir)
-          it.jsRootDir.set(jsRootDir)
-          it.generatedSrcDir.set(outputDir)
-          it.nodeExecutableAndArgs.set(listOf("node", "--verbose"))
+        createTestTask<GenerateCodegenSchemaTask>(project) { task ->
+          task.codegenDir.set(codegenDir)
+          task.jsRootDir.set(jsRootDir)
+          task.generatedSrcDir.set(outputDir)
+          task.nodeExecutableAndArgs.set(listOf("node", "--verbose"))
+          task.nodeWorkingDir.set(project.rootDir.absolutePath)
         }
 
     task.setupCommandLine()

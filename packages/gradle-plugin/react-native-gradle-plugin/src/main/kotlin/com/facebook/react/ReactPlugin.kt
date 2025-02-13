@@ -138,6 +138,7 @@ class ReactPlugin : Plugin<Project> {
               it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
               it.codegenDir.set(rootExtension.codegenDir)
               it.generatedSrcDir.set(generatedSrcDir)
+              it.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
 
               // We're reading the package.json at configuration time to properly feed
               // the `jsRootDir` @Input property of this task & the onlyIf. Therefore, the
@@ -153,6 +154,20 @@ class ReactPlugin : Plugin<Project> {
               } else {
                 it.jsRootDir.set(localExtension.jsRootDir)
               }
+              it.jsInputFiles.set(
+                  project.fileTree(it.jsRootDir) { tree ->
+                    tree.include("**/*.js")
+                    tree.include("**/*.jsx")
+                    tree.include("**/*.ts")
+                    tree.include("**/*.tsx")
+
+                    tree.exclude("node_modules/**/*")
+                    tree.exclude("**/*.d.ts")
+                    // We want to exclude the build directory, to don't pick them up for execution
+                    // avoidance.
+                    tree.exclude("**/build/**/*")
+                  })
+
               val needsCodegenFromPackageJson =
                   project.needsCodegenFromPackageJson(rootExtension.root)
               it.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
