@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {OS} = require('../../Utilities/Platform');
+const {OS} = require('../../Utilities/Platform').default;
 const normalizeColor = require('../normalizeColor').default;
 
 it('forwards calls to @react-native/normalize-colors', () => {

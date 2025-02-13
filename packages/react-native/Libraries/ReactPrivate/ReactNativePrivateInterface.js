@@ -47,7 +47,7 @@ module.exports = {
     return require('../Core/ExceptionsManager').default;
   },
   get Platform(): Platform {
-    return require('../Utilities/Platform');
+    return require('../Utilities/Platform').default;
   },
   get RCTEventEmitter(): RCTEventEmitter {
     return require('../EventEmitter/RCTEventEmitter').default;
