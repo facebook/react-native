@@ -8131,7 +8131,7 @@ declare export default typeof DevSettings;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/DeviceInfo.js 1`] = `
-"declare module.exports: NativeDeviceInfo;
+"declare export default typeof NativeDeviceInfo;
 "
 `;
 
@@ -8146,12 +8146,11 @@ declare export default typeof Dimensions;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/FeatureDetection.js 1`] = `
-"declare function isNativeFunction(f: Function): boolean;
-declare function hasNativeConstructor(o: Object, expectedName: string): boolean;
-declare module.exports: {
-  isNativeFunction: isNativeFunction,
-  hasNativeConstructor: hasNativeConstructor,
-};
+"declare export function isNativeFunction(f: Function): boolean;
+declare export function hasNativeConstructor(
+  o: Object,
+  expectedName: string
+): boolean;
 "
 `;
 
@@ -8482,7 +8481,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/deepFr
 "declare function deepFreezeAndThrowOnMutationInDev<T: { ... } | Array<mixed>>(
   object: T
 ): T;
-declare module.exports: deepFreezeAndThrowOnMutationInDev;
+declare export default typeof deepFreezeAndThrowOnMutationInDev;
 "
 `;
 
@@ -8497,7 +8496,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/define
     ...
   }
 ): void;
-declare module.exports: defineLazyObjectProperty;
+declare export default typeof defineLazyObjectProperty;
 "
 `;
 

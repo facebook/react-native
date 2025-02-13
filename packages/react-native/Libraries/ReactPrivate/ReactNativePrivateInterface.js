@@ -68,7 +68,7 @@ module.exports = {
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
     {...} | Array<mixed>,
   > {
-    return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
+    return require('../Utilities/deepFreezeAndThrowOnMutationInDev').default;
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {

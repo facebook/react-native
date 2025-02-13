@@ -15,7 +15,8 @@ import NativeUIManager from './NativeUIManager';
 import nullthrows from 'nullthrows';
 
 const NativeModules = require('../BatchedBridge/NativeModules').default;
-const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
+const defineLazyObjectProperty =
+  require('../Utilities/defineLazyObjectProperty').default;
 const Platform = require('../Utilities/Platform').default;
 const UIManagerProperties = require('./UIManagerProperties').default;
 
