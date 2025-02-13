@@ -12,7 +12,7 @@
 
 import processBackgroundImage from '../processBackgroundImage';
 
-const {OS} = require('../../Utilities/Platform');
+const {OS} = require('../../Utilities/Platform').default;
 const PlatformColorAndroid =
   require('../PlatformColorValueTypes.android').PlatformColor;
 const PlatformColorIOS =

@@ -374,7 +374,7 @@ module.exports = {
     return require('./Libraries/BatchedBridge/NativeModules').default;
   },
   get Platform(): Platform {
-    return require('./Libraries/Utilities/Platform');
+    return require('./Libraries/Utilities/Platform').default;
   },
   get PlatformColor(): PlatformColor {
     return require('./Libraries/StyleSheet/PlatformColorValueTypes')

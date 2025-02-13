@@ -11,7 +11,7 @@
 import type {
   Platform as PlatformType,
   PlatformSelectSpec,
-} from './Platform.flow';
+} from './PlatformTypes';
 
 import NativePlatformConstantsAndroid from './NativePlatformConstantsAndroid';
 
@@ -84,4 +84,4 @@ const Platform: PlatformType = {
           spec.default,
 };
 
-module.exports = Platform;
+export default Platform;

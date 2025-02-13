@@ -26,7 +26,7 @@ import React from 'react';
 
 const StyleSheet = require('../StyleSheet/StyleSheet').default;
 const deepDiffer = require('../Utilities/differ/deepDiffer').default;
-const Platform = require('../Utilities/Platform');
+const Platform = require('../Utilities/Platform').default;
 const invariant = require('invariant');
 
 const VirtualizedList = VirtualizedLists.VirtualizedList;

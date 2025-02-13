@@ -8285,7 +8285,12 @@ declare export default typeof PixelRatio;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Utilities/Platform.flow.js 1`] = `
+exports[`public API should not change unintentionally Libraries/Utilities/Platform.js.flow 1`] = `
+"declare export default Platform;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Utilities/PlatformTypes.js 1`] = `
 "export type PlatformSelectSpec<T> = {
   default?: T,
   native?: T,
@@ -8348,11 +8353,6 @@ type AndroidPlatform = {
   select: <T>(spec: PlatformSelectSpec<T>) => T,
 };
 export type Platform = IOSPlatform | AndroidPlatform;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Utilities/Platform.js.flow 1`] = `
-"declare module.exports: Platform;
 "
 `;
 
