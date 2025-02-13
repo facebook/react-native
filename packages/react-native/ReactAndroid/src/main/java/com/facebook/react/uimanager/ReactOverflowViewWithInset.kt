@@ -23,7 +23,7 @@ public interface ReactOverflowViewWithInset : ReactOverflowView {
    * @return Rect of integers indicating the left, top, right, bottom pixel extensions. The values
    * are non-positive (indicating enlarged boundaries).
    */
-  public fun getOverflowInset(): Rect
+  public val overflowInset: Rect
 
   /**
    * Set the overflow inset rect values which indicate the extensions to the boundaries of current
