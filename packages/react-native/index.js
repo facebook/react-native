@@ -250,7 +250,7 @@ module.exports = {
     return require('./Libraries/Components/Clipboard/Clipboard').default;
   },
   get DeviceInfo(): DeviceInfo {
-    return require('./Libraries/Utilities/DeviceInfo');
+    return require('./Libraries/Utilities/DeviceInfo').default;
   },
   get DevMenu(): DevMenu {
     return require('./src/private/devmenu/DevMenu');

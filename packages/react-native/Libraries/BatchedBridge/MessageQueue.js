@@ -11,7 +11,8 @@
 'use strict';
 
 const Systrace = require('../Performance/Systrace');
-const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
+const deepFreezeAndThrowOnMutationInDev =
+  require('../Utilities/deepFreezeAndThrowOnMutationInDev').default;
 const stringifySafe = require('../Utilities/stringifySafe').default;
 const warnOnce = require('../Utilities/warnOnce');
 const ErrorUtils = require('../vendor/core/ErrorUtils').default;
