@@ -11,7 +11,7 @@
 'use strict';
 
 describe('logError', () => {
-  const logError = require('../logError');
+  const logError = require('../logError').default;
 
   it('logs error messages to the console', () => {
     console.error.apply = jest.fn();

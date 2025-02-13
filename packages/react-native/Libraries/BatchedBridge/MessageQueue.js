@@ -13,7 +13,7 @@
 const Systrace = require('../Performance/Systrace');
 const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
 const stringifySafe = require('../Utilities/stringifySafe').default;
-const warnOnce = require('../Utilities/warnOnce');
+const warnOnce = require('../Utilities/warnOnce').default;
 const ErrorUtils = require('../vendor/core/ErrorUtils').default;
 const invariant = require('invariant');
 
