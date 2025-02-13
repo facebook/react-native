@@ -10,8 +10,8 @@
 
 'use strict';
 
-const flattenStyle = require('../flattenStyle');
-const StyleSheet = require('../StyleSheet');
+const flattenStyle = require('../flattenStyle').default;
+const StyleSheet = require('../StyleSheet').default;
 
 function getFixture() {
   return StyleSheet.create({

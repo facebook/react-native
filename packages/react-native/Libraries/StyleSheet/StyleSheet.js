@@ -228,7 +228,7 @@ if (__DEV__) {
  *  and suggestions to help you write valid styles.
  *
  */
-module.exports = {
+export default {
   /**
    * This is defined as the width of a thin line on the platform. It can be
    * used as the thickness of a border or division between two elements.

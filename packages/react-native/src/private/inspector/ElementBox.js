@@ -16,8 +16,9 @@ import type {InspectedElementFrame} from './Inspector';
 import React from 'react';
 
 const View = require('../../../Libraries/Components/View/View').default;
-const flattenStyle = require('../../../Libraries/StyleSheet/flattenStyle');
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const flattenStyle =
+  require('../../../Libraries/StyleSheet/flattenStyle').default;
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
 const Dimensions = require('../../../Libraries/Utilities/Dimensions').default;
 const BorderBox = require('./BorderBox').default;
 const resolveBoxStyle = require('./resolveBoxStyle').default;
