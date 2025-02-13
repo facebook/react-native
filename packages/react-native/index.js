@@ -256,7 +256,7 @@ module.exports = {
     return require('./src/private/devmenu/DevMenu');
   },
   get DevSettings(): DevSettings {
-    return require('./Libraries/Utilities/DevSettings');
+    return require('./Libraries/Utilities/DevSettings').default;
   },
   get Dimensions(): Dimensions {
     return require('./Libraries/Utilities/Dimensions').default;

@@ -8125,7 +8125,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/DevSet
   reload(reason?: string): void,
   onFastRefresh(): void,
 };
-declare module.exports: DevSettings;
+declare export default typeof DevSettings;
 "
 `;
 
@@ -8356,16 +8356,15 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/PolyfillFunctions.js 1`] = `
-"declare function polyfillObjectProperty<T>(
+"declare export function polyfillObjectProperty<T>(
   object: { ... },
   name: string,
   getValue: () => T
 ): void;
-declare function polyfillGlobal<T>(name: string, getValue: () => T): void;
-declare module.exports: {
-  polyfillObjectProperty: polyfillObjectProperty,
-  polyfillGlobal: polyfillGlobal,
-};
+declare export function polyfillGlobal<T>(
+  name: string,
+  getValue: () => T
+): void;
 "
 `;
 
@@ -8376,7 +8375,7 @@ declare const RCTLog: {
   logToConsole(level: string, ...args: Array<mixed>): void,
   setWarningHandler(handler: typeof warningHandler): void,
 };
-declare module.exports: RCTLog;
+declare export default typeof RCTLog;
 "
 `;
 
@@ -8440,7 +8439,7 @@ declare module.exports: SceneTracker;
 
 exports[`public API should not change unintentionally Libraries/Utilities/binaryToBase64.js 1`] = `
 "declare function binaryToBase64(data: ArrayBuffer | $ArrayBufferView): string;
-declare module.exports: binaryToBase64;
+declare export default typeof binaryToBase64;
 "
 `;
 

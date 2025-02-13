@@ -14,7 +14,7 @@ import getDevServer from '../Core/Devtools/getDevServer';
 import LogBox from '../LogBox/LogBox';
 import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
-const DevSettings = require('./DevSettings');
+const DevSettings = require('./DevSettings').default;
 const Platform = require('./Platform');
 const invariant = require('invariant');
 const MetroHMRClient = require('metro-runtime/src/modules/HMRClient');
