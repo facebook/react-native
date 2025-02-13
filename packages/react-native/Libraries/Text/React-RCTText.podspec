@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.source_files           = "**/*.{h,m,mm}"
   s.preserve_paths         = "package.json", "LICENSE", "LICENSE-docs"
   s.header_dir             = "RCTText"
-  s.framework              = ["MobileCoreServices"]
+  s.framework              = ["UniformTypeIdentifiers"]
   s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 
   s.dependency "Yoga"

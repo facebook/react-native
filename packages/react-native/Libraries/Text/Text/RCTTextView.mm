@@ -7,7 +7,7 @@
 
 #import <React/RCTTextView.h>
 
-#import <MobileCoreServices/UTCoreTypes.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
@@ -282,10 +282,10 @@
                                         error:nil];
 
   if (rtf) {
-    [item setObject:rtf forKey:(id)kUTTypeFlatRTFD];
+    [item setObject:rtf forKey:UTTypeFlatRTFD.identifier];
   }
 
-  [item setObject:attributedText.string forKey:(id)kUTTypeUTF8PlainText];
+  [item setObject:attributedText.string forKey:UTTypeUTF8PlainText.identifier];
 
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
   pasteboard.items = @[ item ];

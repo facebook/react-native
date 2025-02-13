@@ -12,7 +12,7 @@
 
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <ImageIO/ImageIO.h>
-#import <MobileCoreServices/UTType.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <React/RCTAssert.h>
 #import <React/RCTImageUtils.h>
 #import <React/RCTLog.h>
@@ -202,7 +202,7 @@ RCT_EXPORT_METHOD(addImageFromBase64
     CFStringRef UTI = CGImageSourceGetType(sourceRef);
     CFRelease(sourceRef);
 
-    NSString *MIMEType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType);
+    NSString *MIMEType = [UTType typeWithIdentifier:(__bridge NSString *)UTI].preferredMIMEType;
     NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL
                                                         MIMEType:MIMEType
                                            expectedContentLength:imageData.length
