@@ -326,6 +326,11 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
   CAShapeLayer *_highlightLayer;
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  return nil;
+}
+
 - (void)drawRect:(CGRect)rect
 {
   if (!_state) {
