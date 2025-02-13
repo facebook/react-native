@@ -8156,7 +8156,7 @@ declare module.exports: {
 
 exports[`public API should not change unintentionally Libraries/Utilities/GlobalPerformanceLogger.js 1`] = `
 "declare const GlobalPerformanceLogger: IPerformanceLogger;
-declare module.exports: GlobalPerformanceLogger;
+declare export default typeof GlobalPerformanceLogger;
 "
 `;
 
@@ -8434,7 +8434,7 @@ declare const SceneTracker: {
     ...
   },
 };
-declare module.exports: SceneTracker;
+declare export default typeof SceneTracker;
 "
 `;
 
@@ -8555,7 +8555,7 @@ declare export default typeof sizesDiffer;
 
 exports[`public API should not change unintentionally Libraries/Utilities/dismissKeyboard.js 1`] = `
 "declare function dismissKeyboard(): void;
-declare module.exports: dismissKeyboard;
+declare export default typeof dismissKeyboard;
 "
 `;
 

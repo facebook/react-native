@@ -12,7 +12,8 @@
 
 const createPerformanceLogger =
   require('../../Utilities/createPerformanceLogger').default;
-const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
+const GlobalPerformanceLogger =
+  require('../../Utilities/GlobalPerformanceLogger').default;
 const Platform = require('../../Utilities/Platform');
 const XMLHttpRequest = require('../XMLHttpRequest').default;
 

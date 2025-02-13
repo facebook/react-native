@@ -27,7 +27,8 @@ import ProgressEvent from '../../src/private/webapis/xhr/events/ProgressEvent';
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 
 const BlobManager = require('../Blob/BlobManager').default;
-const GlobalPerformanceLogger = require('../Utilities/GlobalPerformanceLogger');
+const GlobalPerformanceLogger =
+  require('../Utilities/GlobalPerformanceLogger').default;
 const RCTNetworking = require('./RCTNetworking').default;
 const base64 = require('base64-js');
 const invariant = require('invariant');
