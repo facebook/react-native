@@ -27,4 +27,4 @@ const HMRClientProdShim: HMRClientNativeInterface = {
   log() {},
 };
 
-module.exports = HMRClientProdShim;
+export default HMRClientProdShim;

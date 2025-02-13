@@ -32,10 +32,10 @@ const loadingViewMock = {
   showMessage: jest.fn(),
   hide: jest.fn(),
 };
-jest.mock(
-  'react-native/Libraries/Utilities/DevLoadingView',
-  () => loadingViewMock,
-);
+jest.mock('react-native/Libraries/Utilities/DevLoadingView', () => ({
+  __esModule: true,
+  default: loadingViewMock,
+}));
 
 const sendRequest = jest.fn(
   (

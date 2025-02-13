@@ -8101,18 +8101,19 @@ declare export function addChangeListener(
 exports[`public API should not change unintentionally Libraries/Utilities/BackHandler.js.flow 1`] = `
 "type BackPressEventName = \\"backPress\\" | \\"hardwareBackPress\\";
 type TBackHandler = {
-  +exitApp: () => void,
-  +addEventListener: (
+  exitApp(): void,
+  addEventListener(
     eventName: BackPressEventName,
     handler: () => ?boolean
-  ) => { remove: () => void, ... },
+  ): { remove: () => void, ... },
 };
-declare module.exports: TBackHandler;
+declare const BackHandler: TBackHandler;
+declare export default typeof BackHandler;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/DevLoadingView.js 1`] = `
-"declare module.exports: {
+"declare export default {
   showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
   hide(): void,
 };
@@ -8186,13 +8187,13 @@ export type HMRClientNativeInterface = {
   ): void,
 };
 declare const HMRClient: HMRClientNativeInterface;
-declare module.exports: HMRClient;
+declare export default typeof HMRClient;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/HMRClientProdShim.js 1`] = `
 "declare const HMRClientProdShim: HMRClientNativeInterface;
-declare module.exports: HMRClientProdShim;
+declare export default typeof HMRClientProdShim;
 "
 `;
 

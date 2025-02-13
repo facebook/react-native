@@ -18,7 +18,7 @@ declare var console: {[string]: $FlowFixMe};
  */
 if (__DEV__) {
   if (!Platform.isTesting) {
-    const HMRClient = require('../Utilities/HMRClient');
+    const HMRClient = require('../Utilities/HMRClient').default;
 
     // TODO(T214991636): Remove legacy Metro log forwarding
     if (console._isPolyfilled) {
