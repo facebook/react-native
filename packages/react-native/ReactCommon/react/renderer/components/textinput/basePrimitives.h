@@ -16,4 +16,6 @@ enum class SubmitBehavior {
   Newline,
 };
 
+using TextInputMaxLength = int32_t;
+
 } // namespace facebook::react
