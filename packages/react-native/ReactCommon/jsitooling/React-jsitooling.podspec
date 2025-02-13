@@ -22,15 +22,15 @@ folly_version = folly_config[:version]
 boost_config = get_boost_config()
 boost_compiler_flags = boost_config[:compiler_flags]
 
-Pod::Spec.new do |s|
-  header_search_paths = [
-    "\"$(PODS_ROOT)/boost\"",
-    "\"$(PODS_ROOT)/RCT-Folly\"",
-    "\"$(PODS_ROOT)/DoubleConversion\"",
-    "\"$(PODS_ROOT)/fast_float/include\"",
-    "\"$(PODS_ROOT)/fmt/include\""
-  ]
+header_search_paths = [
+  "\"$(PODS_ROOT)/boost\"",
+  "\"$(PODS_ROOT)/RCT-Folly\"",
+  "\"$(PODS_ROOT)/DoubleConversion\"",
+  "\"$(PODS_ROOT)/fast_float/include\"",
+  "\"$(PODS_ROOT)/fmt/include\""
+]
 
+Pod::Spec.new do |s|
   s.name                   = "React-jsitooling"
   s.version                = version
   s.summary                = "-"  # TODO
@@ -46,7 +46,6 @@ Pod::Spec.new do |s|
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "JSITooling"
     s.header_mappings_dir  = "./"
-    header_search_paths = header_search_paths + ["\"$(PODS_TARGET_SRCROOT)/.\""]
   end
 
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
