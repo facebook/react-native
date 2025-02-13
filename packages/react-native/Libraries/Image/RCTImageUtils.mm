@@ -55,6 +55,68 @@ static CGImagePropertyOrientation CGImagePropertyOrientationFromUIImageOrientati
   }
 }
 
+static UIImage* decodeImageFromCGImageSourceRef(
+    CGImageSourceRef sourceRef,
+    CGSize destSize,
+    CGFloat destScale,
+    RCTResizeMode resizeMode)
+{
+  if (!sourceRef) {
+    return nil;
+  }
+
+  // Get original image size
+  CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(sourceRef, 0, NULL);
+  if (!imageProperties) {
+    CFRelease(sourceRef);
+    return nil;
+  }
+  NSNumber *width = (NSNumber *)CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelWidth);
+  NSNumber *height = (NSNumber *)CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelHeight);
+  CGSize sourceSize = {width.doubleValue, height.doubleValue};
+  CFRelease(imageProperties);
+
+  if (CGSizeEqualToSize(destSize, CGSizeZero)) {
+    destSize = sourceSize;
+    if (!destScale) {
+      destScale = 1;
+    }
+  } else if (!destScale) {
+    destScale = RCTScreenScale();
+  }
+
+  if (resizeMode == RCTResizeModeStretch) {
+    // Decoder cannot change aspect ratio, so RCTResizeModeStretch is equivalent
+    // to RCTResizeModeCover for our purposes
+    resizeMode = RCTResizeModeCover;
+  }
+
+  // Calculate target size
+  CGSize targetSize = RCTTargetSize(sourceSize, 1, destSize, destScale, resizeMode, NO);
+  CGSize targetPixelSize = RCTSizeInPixels(targetSize, destScale);
+  CGFloat maxPixelSize =
+    fmax(fmin(sourceSize.width, targetPixelSize.width), fmin(sourceSize.height, targetPixelSize.height));
+
+  NSDictionary<NSString *, NSNumber *> *options = @{
+    (id)kCGImageSourceShouldAllowFloat : @YES,
+    (id)kCGImageSourceCreateThumbnailWithTransform : @YES,
+    (id)kCGImageSourceCreateThumbnailFromImageAlways : @YES,
+    (id)kCGImageSourceThumbnailMaxPixelSize : @(maxPixelSize),
+  };
+
+  // Get thumbnail
+  CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)options);
+  CFRelease(sourceRef);
+  if (!imageRef) {
+    return nil;
+  }
+
+  // Return image
+  UIImage *image = [UIImage imageWithCGImage:imageRef scale:destScale orientation:UIImageOrientationUp];
+  CGImageRelease(imageRef);
+  return image;
+}
+
 CGRect RCTTargetRect(CGSize sourceSize, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode)
 {
   if (CGSizeEqualToSize(destSize, CGSizeZero)) {
@@ -259,61 +321,31 @@ BOOL RCTUpscalingRequired(
 UIImage *__nullable RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode)
 {
   CGImageSourceRef sourceRef = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
-  if (!sourceRef) {
-    return nil;
-  }
+    return decodeImageFromCGImageSourceRef(sourceRef, destSize, destScale, resizeMode);
 
-  // Get original image size
-  CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(sourceRef, 0, NULL);
-  if (!imageProperties) {
-    CFRelease(sourceRef);
-    return nil;
-  }
-  NSNumber *width = (NSNumber *)CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelWidth);
-  NSNumber *height = (NSNumber *)CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelHeight);
-  CGSize sourceSize = {width.doubleValue, height.doubleValue};
-  CFRelease(imageProperties);
 
-  if (CGSizeEqualToSize(destSize, CGSizeZero)) {
-    destSize = sourceSize;
-    if (!destScale) {
-      destScale = 1;
+ }
+
+UIImage *__nullable RCTDecodeImageWithLocalAssetURL(NSURL *url, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode) {
+    
+  
+    UIImage *image = nil;
+    if (resizeMode == RCTResizeModeCover) {
+        image = RCTImageFromLocalAssetURL(url);
+    } else {
+        CGImageSourceRef sourceRef = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
+        image = decodeImageFromCGImageSourceRef(sourceRef, destSize, destScale, resizeMode);
+        CFRelease(sourceRef);
     }
-  } else if (!destScale) {
-    destScale = RCTScreenScale();
-  }
 
-  if (resizeMode == RCTResizeModeStretch) {
-    // Decoder cannot change aspect ratio, so RCTResizeModeStretch is equivalent
-    // to RCTResizeModeCover for our purposes
-    resizeMode = RCTResizeModeCover;
-  }
+  
+    if (!image) {
+        image = RCTImageFromLocalAssetURL(url);
+    }
 
-  // Calculate target size
-  CGSize targetSize = RCTTargetSize(sourceSize, 1, destSize, destScale, resizeMode, NO);
-  CGSize targetPixelSize = RCTSizeInPixels(targetSize, destScale);
-  CGFloat maxPixelSize =
-      fmax(fmin(sourceSize.width, targetPixelSize.width), fmin(sourceSize.height, targetPixelSize.height));
-
-  NSDictionary<NSString *, NSNumber *> *options = @{
-    (id)kCGImageSourceShouldAllowFloat : @YES,
-    (id)kCGImageSourceCreateThumbnailWithTransform : @YES,
-    (id)kCGImageSourceCreateThumbnailFromImageAlways : @YES,
-    (id)kCGImageSourceThumbnailMaxPixelSize : @(maxPixelSize),
-  };
-
-  // Get thumbnail
-  CGImageRef imageRef = CGImageSourceCreateThumbnailAtIndex(sourceRef, 0, (__bridge CFDictionaryRef)options);
-  CFRelease(sourceRef);
-  if (!imageRef) {
-    return nil;
-  }
-
-  // Return image
-  UIImage *image = [UIImage imageWithCGImage:imageRef scale:destScale orientation:UIImageOrientationUp];
-  CGImageRelease(imageRef);
-  return image;
+    return image;
 }
+
 
 NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *data)
 {
