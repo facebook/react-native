@@ -227,7 +227,9 @@ const validAttributesForNonEventProps = {
   collapsable: true,
   collapsableChildren: true,
   filter: {
-    process: require('../StyleSheet/processFilter').default,
+    process: ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? undefined
+      : require('../StyleSheet/processFilter').default,
   },
   boxShadow: {
     process: ReactNativeFeatureFlags.enableNativeCSSParsing()
