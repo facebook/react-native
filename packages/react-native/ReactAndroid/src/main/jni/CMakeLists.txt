@@ -83,6 +83,7 @@ add_react_common_subdir(react/renderer/telemetry)
 add_react_common_subdir(react/renderer/uimanager)
 add_react_common_subdir(react/renderer/core)
 add_react_common_subdir(react/renderer/consistency)
+add_react_common_subdir(react/renderer/css)
 add_react_common_subdir(react/renderer/uimanager/consistency)
 add_react_common_subdir(react/renderer/dom)
 add_react_common_subdir(react/renderer/element)
@@ -181,26 +182,26 @@ add_library(reactnative
           $<TARGET_OBJECTS:react_nativemodule_microtasks>
           $<TARGET_OBJECTS:react_newarchdefaults>
           $<TARGET_OBJECTS:react_performance_timeline>
-          $<TARGET_OBJECTS:react_render_animations>
-          $<TARGET_OBJECTS:react_render_attributedstring>
-          $<TARGET_OBJECTS:react_render_componentregistry>
-          $<TARGET_OBJECTS:react_render_consistency>
-          $<TARGET_OBJECTS:react_render_core>
-          $<TARGET_OBJECTS:react_render_debug>
-          $<TARGET_OBJECTS:react_render_dom>
-          $<TARGET_OBJECTS:react_render_element>
-          $<TARGET_OBJECTS:react_render_graphics>
-          $<TARGET_OBJECTS:react_render_imagemanager>
-          $<TARGET_OBJECTS:react_render_leakchecker>
-          $<TARGET_OBJECTS:react_render_mapbuffer>
-          $<TARGET_OBJECTS:react_render_mounting>
-          $<TARGET_OBJECTS:react_render_observers_events>
-          $<TARGET_OBJECTS:react_render_runtimescheduler>
-          $<TARGET_OBJECTS:react_render_scheduler>
-          $<TARGET_OBJECTS:react_render_telemetry>
-          $<TARGET_OBJECTS:react_render_textlayoutmanager>
-          $<TARGET_OBJECTS:react_render_uimanager>
-          $<TARGET_OBJECTS:react_render_uimanager_consistency>
+          $<TARGET_OBJECTS:react_renderer_animations>
+          $<TARGET_OBJECTS:react_renderer_attributedstring>
+          $<TARGET_OBJECTS:react_renderer_componentregistry>
+          $<TARGET_OBJECTS:react_renderer_consistency>
+          $<TARGET_OBJECTS:react_renderer_core>
+          $<TARGET_OBJECTS:react_renderer_debug>
+          $<TARGET_OBJECTS:react_renderer_dom>
+          $<TARGET_OBJECTS:react_renderer_element>
+          $<TARGET_OBJECTS:react_renderer_graphics>
+          $<TARGET_OBJECTS:react_renderer_imagemanager>
+          $<TARGET_OBJECTS:react_renderer_leakchecker>
+          $<TARGET_OBJECTS:react_renderer_mapbuffer>
+          $<TARGET_OBJECTS:react_renderer_mounting>
+          $<TARGET_OBJECTS:react_renderer_observers_events>
+          $<TARGET_OBJECTS:react_renderer_runtimescheduler>
+          $<TARGET_OBJECTS:react_renderer_scheduler>
+          $<TARGET_OBJECTS:react_renderer_telemetry>
+          $<TARGET_OBJECTS:react_renderer_textlayoutmanager>
+          $<TARGET_OBJECTS:react_renderer_uimanager>
+          $<TARGET_OBJECTS:react_renderer_uimanager_consistency>
           $<TARGET_OBJECTS:react_utils>
           $<TARGET_OBJECTS:reactnativeblob>
           $<TARGET_OBJECTS:reactnativejni>
@@ -264,27 +265,28 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:react_nativemodule_microtasks,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_newarchdefaults,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_performance_timeline,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_animations,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_consistency,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_core,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_debug,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_dom,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_element,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_graphics,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_imagemanager,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_leakchecker,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_mapbuffer,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_mounting,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_observers_events,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_runtimescheduler,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_scheduler,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_telemetry,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_textlayoutmanager,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_uimanager,INTERFACE_INCLUDE_DIRECTORIES>
-        $<TARGET_PROPERTY:react_render_uimanager_consistency,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_animations,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_attributedstring,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_componentregistry,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_consistency,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_core,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_css,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_debug,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_dom,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_element,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_graphics,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_imagemanager,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_leakchecker,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_mapbuffer,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_mounting,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_observers_events,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_runtimescheduler,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_scheduler,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_telemetry,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_textlayoutmanager,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_uimanager,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:react_renderer_uimanager_consistency,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:react_utils,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:reactnativeblob,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:reactnativejni,INTERFACE_INCLUDE_DIRECTORIES>
@@ -378,19 +380,20 @@ target_link_libraries(reactnative_unittest
   react_codegen_rncore
   react_cxxreact
   react_debug
-  react_render_animations
-  react_render_attributedstring
-  react_render_core
-  react_render_debug
-  react_render_dom
-  react_render_element
-  react_render_graphics
-  react_render_mapbuffer
-  react_render_mounting
-  react_render_telemetry
-  react_render_textlayoutmanager
-  react_render_uimanager
-  react_render_uimanager_consistency
+  react_renderer_animations
+  react_renderer_attributedstring
+  react_renderer_core
+  react_renderer_css
+  react_renderer_debug
+  react_renderer_dom
+  react_renderer_element
+  react_renderer_graphics
+  react_renderer_mapbuffer
+  react_renderer_mounting
+  react_renderer_telemetry
+  react_renderer_textlayoutmanager
+  react_renderer_uimanager
+  react_renderer_uimanager_consistency
   react_utils
   reactnative
   rrc_legacyviewmanagerinterop

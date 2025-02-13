@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {CellRendererProps, RenderItemType} from './VirtualizedListProps';
+import type {CellRendererProps, ListRenderItem} from './VirtualizedListProps';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
@@ -39,7 +39,7 @@ export type Props<ItemT> = {
     props: Partial<SeparatorProps<ItemT>>,
   ) => void,
   prevCellKey: ?string,
-  renderItem?: ?RenderItemType<ItemT>,
+  renderItem?: ?ListRenderItem<ItemT>,
   ...
 };
 
@@ -64,10 +64,10 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
     },
   };
 
-  static getDerivedStateFromProps(
-    props: Props<ItemT>,
-    prevState: State<ItemT>,
-  ): ?State<ItemT> {
+  static getDerivedStateFromProps<StaticItemT>(
+    props: Props<StaticItemT>,
+    prevState: State<StaticItemT>,
+  ): ?State<StaticItemT> {
     if (props.item !== prevState.separatorProps.leadingItem) {
       return {
         separatorProps: {
@@ -130,7 +130,7 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
   };
 
   _renderElement(
-    renderItem: ?RenderItemType<ItemT>,
+    renderItem: ?ListRenderItem<ItemT>,
     ListItemComponent: any,
     item: ItemT,
     index: number,

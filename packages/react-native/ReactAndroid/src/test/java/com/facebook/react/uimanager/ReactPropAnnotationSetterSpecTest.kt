@@ -12,11 +12,8 @@ import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.uimanager.annotations.ReactPropGroup
 import java.util.Date
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 /** Test that verifies that spec of methods annotated with @ReactProp is correct */
-@RunWith(RobolectricTestRunner::class)
 @Suppress("UNUSED_PARAMETER")
 class ReactPropAnnotationSetterSpecTest {
   private abstract inner class BaseViewManager : ViewManager<View, ReactShadowNode<*>>() {

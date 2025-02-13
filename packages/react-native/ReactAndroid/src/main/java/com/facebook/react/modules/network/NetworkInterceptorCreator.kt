@@ -10,8 +10,8 @@ package com.facebook.react.modules.network
 import okhttp3.Interceptor
 
 /**
- * Classes implementing this interface return a new {@link Interceptor} when the {@link #create}
- * method is called.
+ * Classes implementing this interface return a new [Interceptor] when the [create] method is
+ * called.
  */
 public fun interface NetworkInterceptorCreator {
   public fun create(): Interceptor

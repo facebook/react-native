@@ -1141,6 +1141,46 @@ exports[`RN Codegen Flow Parser can generate fixture ARRAY_PROP_TYPES_NO_EVENTS 
               }
             },
             {
+              'name': 'array_mixed_required',
+              'optional': false,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'MixedTypeAnnotation'
+                }
+              }
+            },
+            {
+              'name': 'array_mixed_optional_key',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'MixedTypeAnnotation'
+                }
+              }
+            },
+            {
+              'name': 'array_mixed_optional_value',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'MixedTypeAnnotation'
+                }
+              }
+            },
+            {
+              'name': 'array_mixed_optional_both',
+              'optional': true,
+              'typeAnnotation': {
+                'type': 'ArrayTypeAnnotation',
+                'elementType': {
+                  'type': 'MixedTypeAnnotation'
+                }
+              }
+            },
+            {
               'name': 'array_of_array_object_required',
               'optional': false,
               'typeAnnotation': {

@@ -483,6 +483,12 @@ type ModuleProps = $ReadOnly<{|
   array_object_optional_value: ?ArrayObjectType,
   array_object_optional_both?: ?$ReadOnlyArray<ObjectType>,
 
+  // UnsafeMixed props
+  array_mixed_required: $ReadOnlyArray<UnsafeMixed>,
+  array_mixed_optional_key?: $ReadOnlyArray<UnsafeMixed>,
+  array_mixed_optional_value: ?$ReadOnlyArray<UnsafeMixed>,
+  array_mixed_optional_both?: ?$ReadOnlyArray<UnsafeMixed>,
+
   // Nested array object types
   array_of_array_object_required: $ReadOnlyArray<
     $ReadOnly<{|

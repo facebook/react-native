@@ -36,11 +36,11 @@ import {
   setStopPropagationFlag,
 } from './internals/EventInternals';
 
-export type EventInit = $ReadOnly<{
-  bubbles?: boolean,
-  cancelable?: boolean,
-  composed?: boolean,
-}>;
+export interface EventInit {
+  +bubbles?: boolean;
+  +cancelable?: boolean;
+  +composed?: boolean;
+}
 
 export default class Event {
   static +NONE: 0;

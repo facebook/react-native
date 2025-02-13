@@ -10,6 +10,7 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import {
   ConditionallyIgnoredEventHandlers,
@@ -201,13 +202,13 @@ const validAttributesForNonEventProps = {
   cursor: true,
   opacity: true,
   shadowColor: {process: require('../StyleSheet/processColor').default},
-  shadowOffset: {diff: require('../Utilities/differ/sizesDiffer')},
+  shadowOffset: {diff: require('../Utilities/differ/sizesDiffer').default},
   shadowOpacity: true,
   shadowRadius: true,
   needsOffscreenAlphaCompositing: true,
   overflow: true,
   shouldRasterizeIOS: true,
-  transform: {diff: require('../Utilities/differ/matricesDiffer')},
+  transform: {diff: require('../Utilities/differ/matricesDiffer').default},
   transformOrigin: true,
   accessibilityRole: true,
   accessibilityState: true,
@@ -222,14 +223,16 @@ const validAttributesForNonEventProps = {
   borderWidth: true,
   borderBlockWidth: true,
   borderStyle: true,
-  hitSlop: {diff: require('../Utilities/differ/insetsDiffer')},
+  hitSlop: {diff: require('../Utilities/differ/insetsDiffer').default},
   collapsable: true,
   collapsableChildren: true,
   filter: {
     process: require('../StyleSheet/processFilter').default,
   },
   boxShadow: {
-    process: require('../StyleSheet/processBoxShadow').default,
+    process: ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? undefined
+      : require('../StyleSheet/processBoxShadow').default,
   },
   mixBlendMode: true,
   isolation: true,

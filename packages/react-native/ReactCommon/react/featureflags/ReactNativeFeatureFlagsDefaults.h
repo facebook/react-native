@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9fee14db3238ef942607e84d59166ca5>>
+ * @generated SignedSource<<2f51678b553f9d19ce54e23614f5e67f>>
  */
 
 /**
@@ -67,10 +67,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableGranularShadowTreeStateReconciliation() override {
-    return false;
-  }
-
   bool enableIOSViewClipToPaddingBox() override {
     return false;
   }
@@ -96,6 +92,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool enableLongTaskAPI() override {
+    return false;
+  }
+
+  bool enableNativeCSSParsing() override {
     return false;
   }
 

@@ -41,6 +41,7 @@ export const __INTERNAL_VIEW_CONFIG = {
     object: true,
     array: true,
     arrayOfArrayOfObject: true,
+    arrayOfMixed: true,
   },
 };
 
@@ -706,7 +707,7 @@ export const __INTERNAL_VIEW_CONFIG = {
 
   validAttributes: {
     contentInset: {
-      diff: require('react-native/Libraries/Utilities/differ/insetsDiffer'),
+      diff: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/insetsDiffer')),
     },
   },
 };
@@ -906,7 +907,7 @@ export const __INTERNAL_VIEW_CONFIG = {
     },
 
     point: {
-      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
+      diff: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/pointsDiffer')),
     },
   },
 };
@@ -1007,7 +1008,7 @@ export const __INTERNAL_VIEW_CONFIG = {
 
   validAttributes: {
     startPoint: {
-      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
+      diff: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/pointsDiffer')),
     },
   },
 };

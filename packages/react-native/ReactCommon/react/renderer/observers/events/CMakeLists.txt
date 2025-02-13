@@ -14,15 +14,15 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_observers_events_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_observers_events OBJECT ${react_render_observers_events_SRC})
+file(GLOB react_renderer_observers_events_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_observers_events OBJECT ${react_renderer_observers_events_SRC})
 
-target_include_directories(react_render_observers_events PUBLIC ${REACT_COMMON_DIR})
-target_link_libraries(react_render_observers_events
+target_include_directories(react_renderer_observers_events PUBLIC ${REACT_COMMON_DIR})
+target_link_libraries(react_renderer_observers_events
         react_performance_timeline
         react_timing
-        react_render_core
-        react_render_runtimescheduler
+        react_renderer_core
+        react_renderer_runtimescheduler
         react_featureflags
-        react_render_uimanager
+        react_renderer_uimanager
         react_utils)

@@ -90,7 +90,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     enableCppPropsIteratorSetter: {
       defaultValue: false,
@@ -123,7 +123,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     enableFabricLogs: {
       defaultValue: false,
@@ -141,7 +141,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     enableFixForViewCommandRace: {
       defaultValue: false,
@@ -149,17 +149,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-11-14',
         description:
           'Synchronise the view command dispatching with mounting of new transaction',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableGranularShadowTreeStateReconciliation: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-05-01',
-        description:
-          'When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -232,6 +221,17 @@ const definitions: FeatureFlagDefinitions = {
           'Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.',
         expectedReleaseValue: true,
         purpose: 'release',
+      },
+      ossReleaseStage: 'none',
+    },
+    enableNativeCSSParsing: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-02-07',
+        description:
+          'Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },
@@ -457,7 +457,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     useNativeViewConfigsInBridgelessMode: {
       defaultValue: false,
@@ -468,7 +468,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     useOptimizedEventBatchingOnAndroid: {
       defaultValue: false,
@@ -501,7 +501,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
     useTurboModules: {
       defaultValue: false,
@@ -511,7 +511,7 @@ const definitions: FeatureFlagDefinitions = {
         expectedReleaseValue: true,
         purpose: 'release',
       },
-      ossReleaseStage: 'none',
+      ossReleaseStage: 'canary',
     },
   },
 
@@ -622,17 +622,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2025-01-22',
         description:
           'Changes the cleanup of`AnimatedProps` to occur in a microtask instead of synchronously during effect cleanup (for unmount) or subsequent mounts (for updates).',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    shouldSkipStateUpdatesForLoopingAnimations: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-07-25',
-        description:
-          'If the animation is within Animated.loop, we do not send state updates to React.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

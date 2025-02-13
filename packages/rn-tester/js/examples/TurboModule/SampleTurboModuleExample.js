@@ -204,7 +204,7 @@ class SampleTurboModuleExample extends React.Component<{}, State> {
   }
 
   componentDidMount(): void {
-    if (global.__turboModuleProxy == null && global.nativeModuleProxy == null) {
+    if (global.__turboModuleProxy == null && global.RN$Bridgeless == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
       );

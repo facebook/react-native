@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<edaaec03b8baa8bbe3c0cf236cafe1ca>>
+ * @generated SignedSource<<3aebf2012e35cd050764da5e4993a4a3>>
  */
 
 /**
@@ -42,7 +42,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableFabricLogs();
   bool enableFabricRenderer();
   bool enableFixForViewCommandRace();
-  bool enableGranularShadowTreeStateReconciliation();
   bool enableIOSViewClipToPaddingBox();
   bool enableImagePrefetchingAndroid();
   bool enableJSRuntimeGCOnMemoryPressureOnIOS();
@@ -50,6 +49,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableLayoutAnimationsOnIOS();
   bool enableLineHeightCenteringOnIOS();
   bool enableLongTaskAPI();
+  bool enableNativeCSSParsing();
   bool enableNewBackgroundAndBorderDrawables();
   bool enablePreciseSchedulingForPremountItemsOnAndroid();
   bool enablePropsUpdateReconciliationAndroid();
@@ -99,7 +99,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;
   std::atomic<std::optional<bool>> enableFixForViewCommandRace_;
-  std::atomic<std::optional<bool>> enableGranularShadowTreeStateReconciliation_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
   std::atomic<std::optional<bool>> enableJSRuntimeGCOnMemoryPressureOnIOS_;
@@ -107,6 +106,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
   std::atomic<std::optional<bool>> enableLineHeightCenteringOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
+  std::atomic<std::optional<bool>> enableNativeCSSParsing_;
   std::atomic<std::optional<bool>> enableNewBackgroundAndBorderDrawables_;
   std::atomic<std::optional<bool>> enablePreciseSchedulingForPremountItemsOnAndroid_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;

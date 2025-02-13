@@ -4198,8 +4198,12 @@ exports[`public API should not change unintentionally Libraries/EventEmitter/Nat
   removeListeners(count: number): void;
 }
 export type { EventSubscription };
-declare export default class NativeEventEmitter<TEventToArgsMap: { ... }>
-  implements IEventEmitter<TEventToArgsMap>
+type UnsafeObject = Object;
+declare export default class NativeEventEmitter<
+  TEventToArgsMap: $ReadOnly<
+    Record<string, $ReadOnlyArray<UnsafeObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+> implements IEventEmitter<TEventToArgsMap>
 {
   constructor(nativeModule: ?NativeModule): void;
   addListener<TEvent: $Keys<TEventToArgsMap>>(
@@ -4975,18 +4979,20 @@ declare export default typeof NativeLinkingManager;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/FillRateHelper.js 1`] = `
-"declare const FillRateHelper: FillRateHelperType;
+"type FillRateHelperType = typeof VirtualizedLists.FillRateHelper;
+declare const FillRateHelper: FillRateHelperType;
 export type { FillRateInfo } from \\"@react-native/virtualized-lists\\";
 declare export default typeof FillRateHelper;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/FlatList.js 1`] = `
-"type RequiredProps<ItemT> = {
+"declare const VirtualizedList: $FlowFixMe;
+type RequiredProps<ItemT> = {
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
 };
 type OptionalProps<ItemT> = {
-  renderItem?: ?RenderItemType<ItemT>,
+  renderItem?: ?ListRenderItem<ItemT>,
   columnWrapperStyle?: ViewStyleProp,
   extraData?: any,
   getItemLayout?: (
@@ -5062,7 +5068,8 @@ declare export default typeof FlatList;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/SectionList.js 1`] = `
-"type Item = any;
+"declare const VirtualizedSectionList: $FlowFixMe;
+type Item = any;
 export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
 type RequiredProps<SectionT: SectionBase<any>> = {
   sections: $ReadOnlyArray<SectionT>,
@@ -5188,21 +5195,24 @@ exports[`public API should not change unintentionally Libraries/Lists/Viewabilit
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
 } from \\"@react-native/virtualized-lists\\";
+type ViewabilityHelperType = typeof VirtualizedLists.ViewabilityHelper;
 declare const ViewabilityHelper: ViewabilityHelperType;
 declare export default typeof ViewabilityHelper;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizeUtils.js 1`] = `
-"declare export const keyExtractor: KeyExtractorType;
+"type KeyExtractorType = typeof VirtualizedLists.keyExtractor;
+declare export const keyExtractor: KeyExtractorType;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizedList.js 1`] = `
-"declare const VirtualizedList: VirtualizedListType;
+"type VirtualizedListType = typeof VirtualizedLists.VirtualizedList;
+declare const VirtualizedList: VirtualizedListType;
 export type {
-  RenderItemProps,
-  RenderItemType,
+  ListRenderItemInfo,
+  ListRenderItem,
   Separators,
 } from \\"@react-native/virtualized-lists\\";
 declare export default typeof VirtualizedList;
@@ -5210,12 +5220,16 @@ declare export default typeof VirtualizedList;
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizedListContext.js 1`] = `
-"declare export const VirtualizedListContextResetter: VirtualizedListContextResetterType;
+"type VirtualizedListContextResetterType =
+  typeof VirtualizedLists.VirtualizedListContextResetter;
+declare export const VirtualizedListContextResetter: VirtualizedListContextResetterType;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/VirtualizedSectionList.js 1`] = `
-"declare const VirtualizedSectionList: VirtualizedSectionListType;
+"type VirtualizedSectionListType =
+  typeof VirtualizedLists.VirtualizedSectionList;
+declare const VirtualizedSectionList: VirtualizedSectionListType;
 export type {
   SectionBase,
   ScrollToLocationParamsType,
@@ -5436,7 +5450,7 @@ interface ILogBox {
   uninstall(): void;
   isInstalled(): boolean;
   ignoreLogs($ReadOnlyArray<IgnorePattern>): void;
-  ignoreAllLogs(?boolean): void;
+  ignoreAllLogs(value?: boolean): void;
   clearAllLogs(): void;
   addLog(log: LogData): void;
   addException(error: ExtendedExceptionData): void;
@@ -5538,6 +5552,7 @@ declare export default function LogBoxInspectorFooter(props: Props): React.Node;
 
 exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBoxInspectorFooterButton.js 1`] = `
 "type ButtonProps = $ReadOnly<{
+  id: string,
   onPress: () => void,
   text: string,
 }>;
@@ -5561,6 +5576,7 @@ declare export default function LogBoxInspectorHeader(props: Props): React.Node;
 exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBoxInspectorHeaderButton.js 1`] = `
 "declare export default function LogBoxInspectorHeaderButton(
   props: $ReadOnly<{
+    id: string,
     disabled: boolean,
     image: ImageSource,
     level: LogLevel,
@@ -5672,6 +5688,7 @@ exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBox
 
 exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBoxNotificationDismissButton.js 1`] = `
 "declare export default function LogBoxNotificationDismissButton(props: {
+  id: string,
   onPress: () => void,
 }): React.Node;
 "
@@ -5748,7 +5765,7 @@ declare class Modal extends React.Component<Props, State> {
 declare const ExportedModal: React.ComponentType<
   React.ElementConfig<typeof Modal>,
 >;
-declare module.exports: ExportedModal;
+declare export default typeof ExportedModal;
 "
 `;
 
@@ -5927,7 +5944,7 @@ declare class FormData {
   getAll(key: string): Array<FormDataValue>;
   getParts(): Array<FormDataPart>;
 }
-declare module.exports: FormData;
+declare export default typeof FormData;
 "
 `;
 
@@ -5983,7 +6000,7 @@ exports[`public API should not change unintentionally Libraries/Network/RCTNetwo
 
 exports[`public API should not change unintentionally Libraries/Network/XMLHttpRequest.js 1`] = `
 "export type * from \\"./XMLHttpRequest_old\\";
-declare module.exports: XMLHttpRequest;
+declare export default XMLHttpRequest;
 "
 `;
 
@@ -6077,7 +6094,7 @@ declare class XMLHttpRequest extends EventTarget {
   get onreadystatechange(): EventCallback | null;
   set onreadystatechange(listener: ?EventCallback): void;
 }
-declare module.exports: XMLHttpRequest;
+declare export default typeof XMLHttpRequest;
 "
 `;
 
@@ -6156,7 +6173,7 @@ declare class XMLHttpRequest extends EventTarget {
   setReadyState(newState: number): void;
   addEventListener(type: string, listener: EventListener): void;
 }
-declare module.exports: XMLHttpRequest;
+declare export default typeof XMLHttpRequest;
 "
 `;
 
@@ -6169,17 +6186,15 @@ exports[`public API should not change unintentionally Libraries/Network/convertR
   | ArrayBuffer
   | $ArrayBufferView;
 declare function convertRequestBody(body: RequestBody): Object;
-declare module.exports: convertRequestBody;
+declare export default typeof convertRequestBody;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Network/fetch.js 1`] = `
-"declare module.exports: {
-  fetch: fetch,
-  Headers: Headers,
-  Request: Request,
-  Response: Response,
-};
+"declare export const fetch: $FlowFixMe;
+declare export const Headers: $FlowFixMe;
+declare export const Request: $FlowFixMe;
+declare export const Response: $FlowFixMe;
 "
 `;
 
@@ -6299,7 +6314,7 @@ declare class PermissionsAndroid {
   ): Promise<{ [permission: PermissionType]: PermissionStatus, ... }>;
 }
 declare const PermissionsAndroidInstance: PermissionsAndroid;
-declare module.exports: PermissionsAndroidInstance;
+declare export default typeof PermissionsAndroidInstance;
 "
 `;
 
@@ -6487,7 +6502,7 @@ declare class PushNotificationIOS {
   getData(): ?Object;
   getThreadID(): ?string;
 }
-declare module.exports: PushNotificationIOS;
+declare export default typeof PushNotificationIOS;
 "
 `;
 
@@ -6755,7 +6770,8 @@ exports[`public API should not change unintentionally Libraries/ReactNative/Reac
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance.js 1`] = `
-"declare export function createPublicRootInstance(
+"declare export opaque type PublicRootInstance;
+declare export function createPublicRootInstance(
   rootTag: RootTag
 ): PublicRootInstance;
 declare export function createPublicInstance(
@@ -8166,7 +8182,6 @@ export type HMRClientNativeInterface = {
     isEnabled: boolean,
     scheme?: string
   ): void,
-  unstable_notifyFuseboxConsoleEnabled(): void,
 };
 declare const HMRClient: HMRClientNativeInterface;
 declare module.exports: HMRClient;
@@ -8486,13 +8501,13 @@ declare module.exports: defineLazyObjectProperty;
 
 exports[`public API should not change unintentionally Libraries/Utilities/differ/deepDiffer.js 1`] = `
 "type Options = { +unsafelyIgnoreFunctions?: boolean };
-declare const deepDiffer: (
+declare function deepDiffer(
   one: any,
   two: any,
   maxDepthOrOptions: Options | number,
   maybeOptions?: Options
-) => boolean;
-declare module.exports: deepDiffer;
+): boolean;
+declare export default typeof deepDiffer;
 "
 `;
 
@@ -8504,17 +8519,17 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
   bottom: ?number,
   ...
 };
-declare const insetsDiffer: (one: Inset, two: Inset) => boolean;
-declare module.exports: insetsDiffer;
+declare function insetsDiffer(one: Inset, two: Inset): boolean;
+declare export default typeof insetsDiffer;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/differ/matricesDiffer.js 1`] = `
-"declare const matricesDiffer: (
+"declare function matricesDiffer(
   one: ?Array<number>,
   two: ?Array<number>
-) => boolean;
-declare module.exports: matricesDiffer;
+): boolean;
+declare export default typeof matricesDiffer;
 "
 `;
 
@@ -8524,15 +8539,15 @@ exports[`public API should not change unintentionally Libraries/Utilities/differ
   y: ?number,
   ...
 };
-declare const pointsDiffer: (one: ?Point, two: ?Point) => boolean;
-declare module.exports: pointsDiffer;
+declare function pointsDiffer(one: ?Point, two: ?Point): boolean;
+declare export default typeof pointsDiffer;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/differ/sizesDiffer.js 1`] = `
 "type Size = { width: ?number, height: ?number };
-declare const sizesDiffer: (one: Size, two: Size) => boolean;
-declare module.exports: sizesDiffer;
+declare function sizesDiffer(one: Size, two: Size): boolean;
+declare export default typeof sizesDiffer;
 "
 `;
 
@@ -8800,10 +8815,13 @@ exports[`public API should not change unintentionally Libraries/vendor/core/Erro
 `;
 
 exports[`public API should not change unintentionally Libraries/vendor/emitter/EventEmitter.js 1`] = `
-"export interface EventSubscription {
+"type UnsafeObject = Object;
+export interface EventSubscription {
   remove(): void;
 }
-export interface IEventEmitter<TEventToArgsMap: { ... }> {
+export interface IEventEmitter<
+  TEventToArgsMap: $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+> {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => mixed,
@@ -8816,8 +8834,11 @@ export interface IEventEmitter<TEventToArgsMap: { ... }> {
   removeAllListeners<TEvent: $Keys<TEventToArgsMap>>(eventType?: ?TEvent): void;
   listenerCount<TEvent: $Keys<TEventToArgsMap>>(eventType: TEvent): number;
 }
-declare export default class EventEmitter<TEventToArgsMap: { ... }>
-  implements IEventEmitter<TEventToArgsMap>
+declare export default class EventEmitter<
+  TEventToArgsMap: $ReadOnly<
+    Record<string, $ReadOnlyArray<UnsafeObject>>,
+  > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
+> implements IEventEmitter<TEventToArgsMap>
 {
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,

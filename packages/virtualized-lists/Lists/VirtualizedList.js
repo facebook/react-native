@@ -12,9 +12,9 @@ import type {CellMetricProps, ListOrientation} from './ListMetricsAggregator';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   Item,
-  Props,
-  RenderItemProps,
-  RenderItemType,
+  VirtualizedListProps,
+  ListRenderItemInfo,
+  ListRenderItem,
   Separators,
 } from './VirtualizedListProps';
 import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
@@ -63,7 +63,7 @@ import {
   findNodeHandle,
 } from 'react-native';
 
-export type {RenderItemProps, RenderItemType, Separators};
+export type {ListRenderItemInfo, ListRenderItem, Separators};
 
 const ON_EDGE_REACHED_EPSILON = 0.001;
 
@@ -122,7 +122,10 @@ function getScrollingThreshold(threshold: number, visibleLength: number) {
  * - As an effort to remove defaultProps, use helper functions when referencing certain props
  *
  */
-class VirtualizedList extends StateSafePureComponent<Props, State> {
+class VirtualizedList extends StateSafePureComponent<
+  VirtualizedListProps,
+  State,
+> {
   static contextType: typeof VirtualizedListContext = VirtualizedListContext;
 
   // scrollToEnd may be janky without getItemLayout prop
@@ -369,7 +372,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   state: State;
 
-  constructor(props: Props) {
+  constructor(props: VirtualizedListProps) {
     super(props);
     this._checkProps(props);
 
@@ -415,7 +418,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     };
   }
 
-  _checkProps(props: Props) {
+  _checkProps(props: VirtualizedListProps) {
     const {onScroll, windowSize, getItemCount, data, initialScrollIndex} =
       props;
 
@@ -464,7 +467,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   static _findItemIndexWithKey(
-    props: Props,
+    props: VirtualizedListProps,
     key: string,
     hint: ?number,
   ): ?number {
@@ -486,9 +489,9 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   static _getItemKey(
     props: {
-      data: Props['data'],
-      getItem: Props['getItem'],
-      keyExtractor: Props['keyExtractor'],
+      data: VirtualizedListProps['data'],
+      getItem: VirtualizedListProps['getItem'],
+      keyExtractor: VirtualizedListProps['keyExtractor'],
       ...
     },
     index: number,
@@ -498,7 +501,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   static _createRenderMask(
-    props: Props,
+    props: VirtualizedListProps,
     cellsAroundViewport: {first: number, last: number},
     additionalRegions?: ?$ReadOnlyArray<{first: number, last: number}>,
   ): CellRenderMask {
@@ -541,7 +544,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     return renderMask;
   }
 
-  static _initialRenderRegion(props: Props): {first: number, last: number} {
+  static _initialRenderRegion(props: VirtualizedListProps): {
+    first: number,
+    last: number,
+  } {
     const itemCount = props.getItemCount(props.data);
 
     const firstCellIndex = Math.max(
@@ -562,7 +568,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   static _ensureClosestStickyHeader(
-    props: Props,
+    props: VirtualizedListProps,
     stickyIndicesSet: Set<number>,
     renderMask: CellRenderMask,
     cellIdx: number,
@@ -578,7 +584,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   }
 
   _adjustCellsAroundViewport(
-    props: Props,
+    props: VirtualizedListProps,
     cellsAroundViewport: {first: number, last: number},
     pendingScrollUpdateCount: number,
   ): {first: number, last: number} {
@@ -689,7 +695,10 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     this._fillRateHelper.deactivateAndFlush();
   }
 
-  static getDerivedStateFromProps(newProps: Props, prevState: State): State {
+  static getDerivedStateFromProps(
+    newProps: VirtualizedListProps,
+    prevState: State,
+  ): State {
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
     const itemCount = newProps.getItemCount(newProps.data);
@@ -821,7 +830,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
 
   static _constrainToItemCount(
     cells: {first: number, last: number},
-    props: Props,
+    props: VirtualizedListProps,
   ): {first: number, last: number} {
     const itemCount = props.getItemCount(props.data);
     const lastPossibleCellIndex = itemCount - 1;
@@ -1108,7 +1117,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
           (
             this.props.renderScrollComponent ||
             this._defaultRenderScrollComponent
-          )(scrollProps),
+          )(scrollProps) as ExactReactElement_DEPRECATED<any>,
           {
             ref: this._captureScrollRef,
           },
@@ -1153,7 +1162,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: VirtualizedListProps) {
     const {data, extraData, getItemLayout} = this.props;
     if (data !== prevProps.data || extraData !== prevProps.extraData) {
       // clear the viewableIndices cache to also trigger
@@ -1711,7 +1720,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
       zoomScale,
     };
     if (this.state.pendingScrollUpdateCount > 0) {
-      this.setState(state => ({
+      this.setState<'pendingScrollUpdateCount'>(state => ({
         pendingScrollUpdateCount: state.pendingScrollUpdateCount - 1,
       }));
     }
@@ -1871,7 +1880,7 @@ class VirtualizedList extends StateSafePureComponent<Props, State> {
   _updateCellsToRender = () => {
     this._updateViewableItems(this.props, this.state.cellsAroundViewport);
 
-    this.setState((state, props) => {
+    this.setState<'cellsAroundViewport' | 'renderMask'>((state, props) => {
       const cellsAroundViewport = this._adjustCellsAroundViewport(
         props,
         state.cellsAroundViewport,
@@ -2037,4 +2046,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = VirtualizedList;
+export default VirtualizedList;

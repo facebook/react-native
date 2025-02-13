@@ -17,7 +17,7 @@ import {type EventSubscription} from '../vendor/emitter/EventEmitter';
 import ModalInjection from './ModalInjection';
 import NativeModalManager from './NativeModalManager';
 import RCTModalHostView from './RCTModalHostViewNativeComponent';
-import {VirtualizedListContextResetter} from '@react-native/virtualized-lists';
+import VirtualizedLists from '@react-native/virtualized-lists';
 import React from 'react';
 
 const ScrollView = require('../Components/ScrollView/ScrollView').default;
@@ -27,6 +27,9 @@ const I18nManager = require('../ReactNative/I18nManager').default;
 const {RootTagContext} = require('../ReactNative/RootTag');
 const StyleSheet = require('../StyleSheet/StyleSheet');
 const Platform = require('../Utilities/Platform');
+
+const VirtualizedListContextResetter =
+  VirtualizedLists.VirtualizedListContextResetter;
 
 type ModalEventDefinitions = {
   modalDismissed: [{modalID: number}],
@@ -364,4 +367,4 @@ const styles = StyleSheet.create({
 const ExportedModal: React.ComponentType<React.ElementConfig<typeof Modal>> =
   ModalInjection.unstable_Modal ?? Modal;
 
-module.exports = ExportedModal;
+export default ExportedModal;

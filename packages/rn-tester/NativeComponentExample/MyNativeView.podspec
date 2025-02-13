@@ -7,7 +7,6 @@ require "json"
 
 package = JSON.parse(File.read(File.join(__dir__, "../" "package.json")))
 
-boost_version = '1.83.0'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|

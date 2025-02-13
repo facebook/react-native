@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c2070c7e40a85f943bdc304244bc3d2b>>
+ * @generated SignedSource<<8e46e9a4ea18fd0d43ee73456a172426>>
  */
 
 /**
@@ -57,8 +57,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableFixForViewCommandRace(jsi::Runtime& runtime);
 
-  bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
-
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
   bool enableImagePrefetchingAndroid(jsi::Runtime& runtime);
@@ -72,6 +70,8 @@ class NativeReactNativeFeatureFlags
   bool enableLineHeightCenteringOnIOS(jsi::Runtime& runtime);
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
+
+  bool enableNativeCSSParsing(jsi::Runtime& runtime);
 
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 

@@ -22,5 +22,5 @@ target_include_directories(react_nativemodule_idlecallbacks PUBLIC ${REACT_COMMO
 target_link_libraries(react_nativemodule_idlecallbacks
         react_codegen_rncore
         react_cxxreact
-        react_render_runtimescheduler
+        react_renderer_runtimescheduler
 )

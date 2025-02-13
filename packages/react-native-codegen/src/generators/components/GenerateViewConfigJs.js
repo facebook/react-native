@@ -74,10 +74,10 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
           throw new Error('ImageRequest should not be used in props');
         case 'PointPrimitive':
           return j.template
-            .expression`{ diff: require('react-native/Libraries/Utilities/differ/pointsDiffer') }`;
+            .expression`{ diff: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/pointsDiffer')) }`;
         case 'EdgeInsetsPrimitive':
           return j.template
-            .expression`{ diff: require('react-native/Libraries/Utilities/differ/insetsDiffer') }`;
+            .expression`{ diff: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/insetsDiffer')) }`;
         case 'DimensionPrimitive':
           return j.literal(true);
         default:

@@ -54,7 +54,7 @@ import javax.lang.model.util.Types;
   "com.facebook.react.module.annotations.ReactModule",
   "com.facebook.react.module.annotations.ReactModuleList",
 })
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_11)
 public class ReactModuleSpecProcessor extends ProcessorBase {
 
   private static final TypeName COLLECTIONS_TYPE = ParameterizedTypeName.get(Collections.class);

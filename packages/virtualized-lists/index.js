@@ -22,11 +22,12 @@ export type {
   ViewToken,
   ViewabilityConfig,
   ViewabilityConfigCallbackPair,
+  ViewabilityConfigCallbackPairs,
 } from './Lists/ViewabilityHelper';
 export type {
   CellRendererProps,
-  RenderItemProps,
-  RenderItemType,
+  ListRenderItemInfo,
+  ListRenderItem,
   Separators,
 } from './Lists/VirtualizedListProps';
 export type {
@@ -36,23 +37,23 @@ export type {
 } from './Lists/VirtualizedSectionList';
 export type {FillRateInfo} from './Lists/FillRateHelper';
 
-module.exports = {
+export default {
   keyExtractor,
 
   get VirtualizedList(): VirtualizedList {
-    return require('./Lists/VirtualizedList');
+    return require('./Lists/VirtualizedList').default;
   },
   get VirtualizedSectionList(): VirtualizedSectionList {
-    return require('./Lists/VirtualizedSectionList');
+    return require('./Lists/VirtualizedSectionList').default;
   },
   get VirtualizedListContextResetter(): VirtualizedListContextResetter {
     const VirtualizedListContext = require('./Lists/VirtualizedListContext');
     return VirtualizedListContext.VirtualizedListContextResetter;
   },
   get ViewabilityHelper(): ViewabilityHelper {
-    return require('./Lists/ViewabilityHelper');
+    return require('./Lists/ViewabilityHelper').default;
   },
   get FillRateHelper(): FillRateHelper {
-    return require('./Lists/FillRateHelper');
+    return require('./Lists/FillRateHelper').default;
   },
 };

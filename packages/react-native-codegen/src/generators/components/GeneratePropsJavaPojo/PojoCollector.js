@@ -80,6 +80,7 @@ export type PojoTypeAnnotation =
         | DoubleTypeAnnotation
         | FloatTypeAnnotation
         | Int32TypeAnnotation
+        | MixedTypeAnnotation
         | $ReadOnly<{
             type: 'StringEnumTypeAnnotation',
             default: string,

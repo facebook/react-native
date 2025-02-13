@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0077e5427a3d7dbea80cad7ebd5bbe7d>>
+ * @generated SignedSource<<957f487d2cd37f26a293985c5af94260>>
  * @flow strict
  */
 
@@ -38,7 +38,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   scheduleAnimatedCleanupInMicrotask: Getter<boolean>,
-  shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean>,
   shouldUseAnimatedObjectForTransform: Getter<boolean>,
   shouldUseRemoveClippedSubviewsAsDefaultOnIOS: Getter<boolean>,
   shouldUseSetNativePropsInFabric: Getter<boolean>,
@@ -60,7 +59,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
   enableFixForViewCommandRace: Getter<boolean>,
-  enableGranularShadowTreeStateReconciliation: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableImagePrefetchingAndroid: Getter<boolean>,
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
@@ -68,6 +66,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLayoutAnimationsOnIOS: Getter<boolean>,
   enableLineHeightCenteringOnIOS: Getter<boolean>,
   enableLongTaskAPI: Getter<boolean>,
+  enableNativeCSSParsing: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
   enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
@@ -152,11 +151,6 @@ export const isLayoutAnimationEnabled: Getter<boolean> = createJavaScriptFlagGet
 export const scheduleAnimatedCleanupInMicrotask: Getter<boolean> = createJavaScriptFlagGetter('scheduleAnimatedCleanupInMicrotask', false);
 
 /**
- * If the animation is within Animated.loop, we do not send state updates to React.
- */
-export const shouldSkipStateUpdatesForLoopingAnimations: Getter<boolean> = createJavaScriptFlagGetter('shouldSkipStateUpdatesForLoopingAnimations', true);
-
-/**
  * Enables use of AnimatedObject for animating transform values.
  */
 export const shouldUseAnimatedObjectForTransform: Getter<boolean> = createJavaScriptFlagGetter('shouldUseAnimatedObjectForTransform', false);
@@ -183,7 +177,7 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
 /**
  * Common flag for testing (without native implementation). Do NOT modify.
  */
-export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false, true);
+export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
 /**
  * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
  */
@@ -221,10 +215,6 @@ export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('ena
  */
 export const enableFixForViewCommandRace: Getter<boolean> = createNativeFlagGetter('enableFixForViewCommandRace', false);
 /**
- * When enabled, the renderer would only fail commits when they propagate state and the last commit that updated state changed before committing.
- */
-export const enableGranularShadowTreeStateReconciliation: Getter<boolean> = createNativeFlagGetter('enableGranularShadowTreeStateReconciliation', false);
-/**
  * iOS Views will clip to their padding box vs border box
  */
 export const enableIOSViewClipToPaddingBox: Getter<boolean> = createNativeFlagGetter('enableIOSViewClipToPaddingBox', false);
@@ -252,6 +242,10 @@ export const enableLineHeightCenteringOnIOS: Getter<boolean> = createNativeFlagG
  * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
  */
 export const enableLongTaskAPI: Getter<boolean> = createNativeFlagGetter('enableLongTaskAPI', false);
+/**
+ * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing
+ */
+export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('enableNativeCSSParsing', false);
 /**
  * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
  */

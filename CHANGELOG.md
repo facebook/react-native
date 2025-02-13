@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.78.0-rc.4
+
+### Fixed
+
+#### Android specific
+
+-  Fix execution of early InteropEvents ([4ed2b35bf6](https://github.com/facebook/react-native/commit/4ed2b35bf61426c81c9f8b30a142d77b44988fdb) by [@mdvacca](https://github.com/mdvacca))
+
+#### iOS specific
+
+- Restore "Paused in debugger" overlay icon ([f30c46efbd](https://github.com/facebook/react-native/commit/f30c46efbd964d367f678181589865a3faa931cd) by [@robhogan](https://github.com/robhogan))
+- Avoid crashing the app when the InteropLayer can't find some methods in the native implementation ([3bd3f101b9](https://github.com/facebook/react-native/commit/3bd3f101b9dcff8551a2f8259ddeed9843fd69b8) by [@cipolleschi](https://github.com/cipolleschi))
+- Properly handle null value in TurboModule Interop layer ([ebfd7057af](https://github.com/facebook/react-native/commit/ebfd7057af049ebfbc593448918c70db37e39d48) by [@cipolleschi](https://github.com/cipolleschi))
+
+
 ## v0.78.0-rc.3
 
 ### Added

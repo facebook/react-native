@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bf410794b6ee41428e6d632d3d7b3a99>>
+ * @generated SignedSource<<77887f8c4b0328eb87a0e99aa776afad>>
  */
 
 /**
@@ -135,15 +135,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableFixForViewCommandRace();
   }
 
-  bool enableGranularShadowTreeStateReconciliation() override {
-    auto value = values_["enableGranularShadowTreeStateReconciliation"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableGranularShadowTreeStateReconciliation();
-  }
-
   bool enableIOSViewClipToPaddingBox() override {
     auto value = values_["enableIOSViewClipToPaddingBox"];
     if (!value.isNull()) {
@@ -205,6 +196,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableLongTaskAPI();
+  }
+
+  bool enableNativeCSSParsing() override {
+    auto value = values_["enableNativeCSSParsing"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableNativeCSSParsing();
   }
 
   bool enableNewBackgroundAndBorderDrawables() override {

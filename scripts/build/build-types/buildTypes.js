@@ -27,10 +27,17 @@ const IGNORE_PATTERNS = [
 const ENTRY_POINTS = [
   // TODO: Re-include when all deps are translatable
   // 'packages/react-native/Libraries/ActionSheetIOS/ActionSheetIOS.js',
+  // 'packages/react-native/Libraries/Share/Share.js',
   'packages/react-native/Libraries/Alert/Alert.js',
+  'packages/react-native/Libraries/EventEmitter/NativeEventEmitter.js',
+  'packages/react-native/Libraries/EventEmitter/RCTDeviceEventEmitter.js',
+  'packages/react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter.js',
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
   'packages/react-native/Libraries/Settings/Settings.js',
-  'packages/react-native/Libraries/Share/Share.js',
+  'packages/react-native/Libraries/Performance/Systrace.js',
+  'packages/react-native/Libraries/LogBox/LogBox.js',
+  'packages/react-native/Libraries/vendor/emitter/EventEmitter.js',
+  'packages/react-native/Libraries/ReactNative/UIManager.js',
 ];
 
 /**
@@ -45,7 +52,7 @@ async function buildTypes(): Promise<void> {
   while (files.size > 0) {
     const dependencies = await translateSourceFiles(files);
 
-    translatedFiles.add(...files);
+    files.forEach(file => translatedFiles.add(file));
     files.clear();
 
     for (const dep of dependencies) {

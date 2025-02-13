@@ -134,6 +134,7 @@ def use_react_native! (
   pod 'React-jserrorhandler', :path => "#{prefix}/ReactCommon/jserrorhandler"
   pod 'RCTDeprecation', :path => "#{prefix}/ReactApple/Libraries/RCTFoundation/RCTDeprecation"
   pod 'React-RCTFBReactNativeSpec', :path => "#{prefix}/React"
+  pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
 
   if hermes_enabled
     setup_hermes!(:react_native_path => prefix)
@@ -150,6 +151,7 @@ def use_react_native! (
   pod 'React-timing', :path => "#{prefix}/ReactCommon/react/timing"
   pod 'React-runtimeexecutor', :path => "#{prefix}/ReactCommon/runtimeexecutor"
   pod 'React-runtimescheduler', :path => "#{prefix}/ReactCommon/react/renderer/runtimescheduler"
+  pod 'React-renderercss', :path => "#{prefix}/ReactCommon/react/renderer/css"
   pod 'React-rendererdebug', :path => "#{prefix}/ReactCommon/react/renderer/debug"
   pod 'React-rendererconsistency', :path => "#{prefix}/ReactCommon/react/renderer/consistency"
   pod 'React-perflogger', :path => "#{prefix}/ReactCommon/reactperflogger"

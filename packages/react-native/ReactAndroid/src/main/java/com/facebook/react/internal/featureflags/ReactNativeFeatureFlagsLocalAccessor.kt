@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d7d9f09d6555f4331d00585dba01e08d>>
+ * @generated SignedSource<<847b530f0a24f49a5fff0382740246e4>>
  */
 
 /**
@@ -34,7 +34,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
   private var enableFixForViewCommandRaceCache: Boolean? = null
-  private var enableGranularShadowTreeStateReconciliationCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
   private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
@@ -42,6 +41,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableLayoutAnimationsOnIOSCache: Boolean? = null
   private var enableLineHeightCenteringOnIOSCache: Boolean? = null
   private var enableLongTaskAPICache: Boolean? = null
+  private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
   private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
@@ -169,16 +169,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun enableGranularShadowTreeStateReconciliation(): Boolean {
-    var cached = enableGranularShadowTreeStateReconciliationCache
-    if (cached == null) {
-      cached = currentProvider.enableGranularShadowTreeStateReconciliation()
-      accessedFeatureFlags.add("enableGranularShadowTreeStateReconciliation")
-      enableGranularShadowTreeStateReconciliationCache = cached
-    }
-    return cached
-  }
-
   override fun enableIOSViewClipToPaddingBox(): Boolean {
     var cached = enableIOSViewClipToPaddingBoxCache
     if (cached == null) {
@@ -245,6 +235,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableLongTaskAPI()
       accessedFeatureFlags.add("enableLongTaskAPI")
       enableLongTaskAPICache = cached
+    }
+    return cached
+  }
+
+  override fun enableNativeCSSParsing(): Boolean {
+    var cached = enableNativeCSSParsingCache
+    if (cached == null) {
+      cached = currentProvider.enableNativeCSSParsing()
+      accessedFeatureFlags.add("enableNativeCSSParsing")
+      enableNativeCSSParsingCache = cached
     }
     return cached
   }

@@ -19,8 +19,10 @@ import type {
 import type {ElementRef} from 'react';
 
 import Platform from '../Utilities/Platform';
-import {VirtualizedSectionList} from '@react-native/virtualized-lists';
+import VirtualizedLists from '@react-native/virtualized-lists';
 import React, {forwardRef, useImperativeHandle, useRef} from 'react';
+
+const VirtualizedSectionList = VirtualizedLists.VirtualizedSectionList;
 
 type Item = any;
 

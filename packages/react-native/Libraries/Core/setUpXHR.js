@@ -18,8 +18,11 @@ const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
  *
  * You can use this module directly, or just require InitializeCore.
  */
-polyfillGlobal('XMLHttpRequest', () => require('../Network/XMLHttpRequest'));
-polyfillGlobal('FormData', () => require('../Network/FormData'));
+polyfillGlobal(
+  'XMLHttpRequest',
+  () => require('../Network/XMLHttpRequest').default,
+);
+polyfillGlobal('FormData', () => require('../Network/FormData').default);
 
 polyfillGlobal('fetch', () => require('../Network/fetch').fetch);
 polyfillGlobal('Headers', () => require('../Network/fetch').Headers);

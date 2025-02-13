@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7ac0bc05c134d62478fc384301574d7c>>
+ * @generated SignedSource<<2079e42d4261c0f4f069a19d53a99763>>
  */
 
 /**
@@ -43,8 +43,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableFixForViewCommandRace(): Boolean = false
 
-  override fun enableGranularShadowTreeStateReconciliation(): Boolean = false
-
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 
   override fun enableImagePrefetchingAndroid(): Boolean = false
@@ -58,6 +56,8 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableLineHeightCenteringOnIOS(): Boolean = false
 
   override fun enableLongTaskAPI(): Boolean = false
+
+  override fun enableNativeCSSParsing(): Boolean = false
 
   override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
 

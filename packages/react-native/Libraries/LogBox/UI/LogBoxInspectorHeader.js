@@ -56,6 +56,7 @@ export default function LogBoxInspectorHeader(props: Props): React.Node {
     <LogBoxInspectorHeaderSafeArea style={styles[props.level]}>
       <View style={styles.header}>
         <LogBoxInspectorHeaderButton
+          id="logbox_header_button_prev"
           disabled={props.total <= 1}
           level={props.level}
           image={require('./LogBoxImages/chevron-left.png')}
@@ -67,6 +68,7 @@ export default function LogBoxInspectorHeader(props: Props): React.Node {
           </Text>
         </View>
         <LogBoxInspectorHeaderButton
+          id="logbox_header_button_next"
           disabled={props.total <= 1}
           level={props.level}
           image={require('./LogBoxImages/chevron-right.png')}

@@ -21,6 +21,7 @@ type TransformFn = ParseResult => Promise<TransformASTResult>;
 const preTransforms: Array<TransformFn> = [
   require('./transforms/stripPrivateProperties'),
   require('./transforms/replaceRequiresWithImports'),
+  require('./transforms/replaceEmptyWithNever'),
 ];
 const prettierOptions = {parser: 'babel'};
 const unsupportedFeatureRegex =

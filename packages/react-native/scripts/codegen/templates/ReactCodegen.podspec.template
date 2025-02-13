@@ -85,11 +85,7 @@ Pod::Spec.new do |s|
   s.dependency 'React-featureflags'
   s.dependency 'React-RCTAppDelegate'
 
-  if ENV["USE_HERMES"] == "0"
-    s.dependency 'React-jsc'
-  else
-    s.dependency 'hermes-engine'
-  end
+  depend_on_js_engine(s)
 
   s.script_phases = {
     'name' => 'Generate Specs',

@@ -146,7 +146,7 @@ module.exports = {
       .default;
   },
   get Modal(): Modal {
-    return require('./Libraries/Modal/Modal');
+    return require('./Libraries/Modal/Modal').default;
   },
   get Pressable(): Pressable {
     return require('./Libraries/Components/Pressable/Pressable').default;
@@ -299,7 +299,7 @@ module.exports = {
     return require('./Libraries/Interaction/PanResponder').default;
   },
   get PermissionsAndroid(): PermissionsAndroid {
-    return require('./Libraries/PermissionsAndroid/PermissionsAndroid');
+    return require('./Libraries/PermissionsAndroid/PermissionsAndroid').default;
   },
   get PixelRatio(): PixelRatio {
     return require('./Libraries/Utilities/PixelRatio').default;
@@ -311,7 +311,8 @@ module.exports = {
         "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " +
         'See https://github.com/react-native-push-notification/ios',
     );
-    return require('./Libraries/PushNotificationIOS/PushNotificationIOS');
+    return require('./Libraries/PushNotificationIOS/PushNotificationIOS')
+      .default;
   },
   get Settings(): Settings {
     return require('./Libraries/Settings/Settings').default;

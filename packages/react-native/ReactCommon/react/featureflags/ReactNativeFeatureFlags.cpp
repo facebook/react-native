@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4dc574a6492a7a0e9804cc5bcb7ba890>>
+ * @generated SignedSource<<eff00af88a96ad5e354a41d16709eccf>>
  */
 
 /**
@@ -66,10 +66,6 @@ bool ReactNativeFeatureFlags::enableFixForViewCommandRace() {
   return getAccessor().enableFixForViewCommandRace();
 }
 
-bool ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation() {
-  return getAccessor().enableGranularShadowTreeStateReconciliation();
-}
-
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
   return getAccessor().enableIOSViewClipToPaddingBox();
 }
@@ -96,6 +92,10 @@ bool ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS() {
 
 bool ReactNativeFeatureFlags::enableLongTaskAPI() {
   return getAccessor().enableLongTaskAPI();
+}
+
+bool ReactNativeFeatureFlags::enableNativeCSSParsing() {
+  return getAccessor().enableNativeCSSParsing();
 }
 
 bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {

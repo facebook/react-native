@@ -66,11 +66,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
 
   s.subspec "animations" do |ss|
     ss.dependency             folly_dep_name, folly_version
@@ -142,6 +138,7 @@ Pod::Spec.new do |s|
 
     ss.subspec "view" do |sss|
       sss.dependency             folly_dep_name, folly_version
+      sss.dependency             "React-renderercss"
       sss.dependency             "Yoga"
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/view/**/*.{m,mm,cpp,h}"

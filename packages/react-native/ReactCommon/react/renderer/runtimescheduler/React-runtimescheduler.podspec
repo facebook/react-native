@@ -65,10 +65,5 @@ Pod::Spec.new do |s|
   s.dependency "React-rendererconsistency"
   add_dependency(s, "React-debug")
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
-
+  depend_on_js_engine(s)
 end

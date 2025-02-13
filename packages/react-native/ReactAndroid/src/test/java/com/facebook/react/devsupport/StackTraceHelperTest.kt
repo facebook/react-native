@@ -13,11 +13,8 @@ import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.interfaces.exceptionmanager.ReactJsExceptionHandler.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
 @OptIn(UnstableReactNativeAPI::class)
-@RunWith(RobolectricTestRunner::class)
 class StackTraceHelperTest {
   @Test
   fun testParseAlternateFormatStackFrameWithMethod() {

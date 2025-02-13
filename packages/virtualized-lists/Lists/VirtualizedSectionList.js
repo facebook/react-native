@@ -91,7 +91,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
-export type Props<SectionT> = {
+export type Props<SectionT: SectionBase<any>> = {
   ...RequiredProps<SectionT>,
   ...OptionalProps<SectionT>,
   ...$Diff<
@@ -598,7 +598,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   );
 }
 
-module.exports = VirtualizedSectionList as component(
+export default VirtualizedSectionList as component(
   ref: React.RefSetter<
     interface {
       getListRef(): ?VirtualizedList,

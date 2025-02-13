@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8c5c3ad945875e106db03f2388858340>>
+ * @generated SignedSource<<d82f361900070868f3487a34647fc70f>>
  */
 
 /**
@@ -94,11 +94,6 @@ bool NativeReactNativeFeatureFlags::enableFixForViewCommandRace(
   return ReactNativeFeatureFlags::enableFixForViewCommandRace();
 }
 
-bool NativeReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableGranularShadowTreeStateReconciliation();
-}
-
 bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
@@ -132,6 +127,11 @@ bool NativeReactNativeFeatureFlags::enableLineHeightCenteringOnIOS(
 bool NativeReactNativeFeatureFlags::enableLongTaskAPI(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableLongTaskAPI();
+}
+
+bool NativeReactNativeFeatureFlags::enableNativeCSSParsing(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::enableNativeCSSParsing();
 }
 
 bool NativeReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables(

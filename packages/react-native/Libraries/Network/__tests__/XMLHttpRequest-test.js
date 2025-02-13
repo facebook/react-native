@@ -14,7 +14,7 @@ const createPerformanceLogger =
   require('../../Utilities/createPerformanceLogger').default;
 const GlobalPerformanceLogger = require('../../Utilities/GlobalPerformanceLogger');
 const Platform = require('../../Utilities/Platform');
-const XMLHttpRequest = require('../XMLHttpRequest');
+const XMLHttpRequest = require('../XMLHttpRequest').default;
 
 jest.unmock('../../Utilities/Platform');
 jest.mock('../../Utilities/GlobalPerformanceLogger');

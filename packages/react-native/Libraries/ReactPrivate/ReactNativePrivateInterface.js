@@ -36,6 +36,8 @@ import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAnd
 import typeof deepDiffer from '../Utilities/differ/deepDiffer';
 import typeof Platform from '../Utilities/Platform';
 
+export type {PublicRootInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
+
 // flowlint unsafe-getters-setters:off
 module.exports = {
   get BatchedBridge(): BatchedBridge {
@@ -61,7 +63,7 @@ module.exports = {
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get deepDiffer(): deepDiffer {
-    return require('../Utilities/differ/deepDiffer');
+    return require('../Utilities/differ/deepDiffer').default;
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
     {...} | Array<mixed>,

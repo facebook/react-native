@@ -142,8 +142,6 @@ class ShadowTree final {
   mutable CommitMode commitMode_{
       CommitMode::Normal}; // Protected by `commitMutex_`.
   mutable ShadowTreeRevision currentRevision_; // Protected by `commitMutex_`.
-  mutable ShadowTreeRevision::Number
-      lastRevisionNumberWithNewState_; // Protected by `commitMutex_`.
   std::shared_ptr<const MountingCoordinator> mountingCoordinator_;
 };
 

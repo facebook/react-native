@@ -349,11 +349,6 @@ public abstract interface class com/facebook/react/ReactPackage {
 	public fun getModule (Ljava/lang/String;Lcom/facebook/react/bridge/ReactApplicationContext;)Lcom/facebook/react/bridge/NativeModule;
 }
 
-public abstract interface class com/facebook/react/ReactPackageLogger {
-	public abstract fun endProcessPackage ()V
-	public abstract fun startProcessPackage ()V
-}
-
 public abstract class com/facebook/react/ReactPackageTurboModuleManagerDelegate : com/facebook/react/internal/turbomodule/core/TurboModuleManagerDelegate {
 	protected fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;)V
 	protected fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/util/List;Lcom/facebook/jni/HybridData;)V
@@ -3343,15 +3338,15 @@ public abstract interface class com/facebook/react/modules/network/OkHttpClientF
 	public abstract fun createNewNetworkModuleClient ()Lokhttp3/OkHttpClient;
 }
 
-public class com/facebook/react/modules/network/OkHttpClientProvider {
-	public fun <init> ()V
-	public static fun createClient ()Lokhttp3/OkHttpClient;
-	public static fun createClient (Landroid/content/Context;)Lokhttp3/OkHttpClient;
-	public static fun createClientBuilder ()Lokhttp3/OkHttpClient$Builder;
-	public static fun createClientBuilder (Landroid/content/Context;)Lokhttp3/OkHttpClient$Builder;
-	public static fun createClientBuilder (Landroid/content/Context;I)Lokhttp3/OkHttpClient$Builder;
-	public static fun getOkHttpClient ()Lokhttp3/OkHttpClient;
-	public static fun setOkHttpClientFactory (Lcom/facebook/react/modules/network/OkHttpClientFactory;)V
+public final class com/facebook/react/modules/network/OkHttpClientProvider {
+	public static final field INSTANCE Lcom/facebook/react/modules/network/OkHttpClientProvider;
+	public static final fun createClient ()Lokhttp3/OkHttpClient;
+	public static final fun createClient (Landroid/content/Context;)Lokhttp3/OkHttpClient;
+	public static final fun createClientBuilder ()Lokhttp3/OkHttpClient$Builder;
+	public static final fun createClientBuilder (Landroid/content/Context;)Lokhttp3/OkHttpClient$Builder;
+	public static final fun createClientBuilder (Landroid/content/Context;I)Lokhttp3/OkHttpClient$Builder;
+	public static final fun getOkHttpClient ()Lokhttp3/OkHttpClient;
+	public static final fun setOkHttpClientFactory (Lcom/facebook/react/modules/network/OkHttpClientFactory;)V
 }
 
 public class com/facebook/react/modules/network/OkHttpCompat {
@@ -4702,6 +4697,19 @@ public class com/facebook/react/uimanager/ReactShadowNodeImpl : com/facebook/rea
 
 public abstract interface annotation class com/facebook/react/uimanager/ReactStage : java/lang/annotation/Annotation {
 	public static final field BRIDGE_DID_LOAD I
+	public static final field Companion Lcom/facebook/react/uimanager/ReactStage$Companion;
+	public static final field MODULE_DID_LOAD I
+	public static final field ON_ATTACH_TO_INSTANCE I
+	public static final field SURFACE_DID_INITIALIZE I
+	public static final field SURFACE_DID_INITIAL_LAYOUT I
+	public static final field SURFACE_DID_INITIAL_MOUNTING I
+	public static final field SURFACE_DID_INITIAL_RENDERING I
+	public static final field SURFACE_DID_RUN I
+	public static final field SURFACE_DID_STOP I
+}
+
+public final class com/facebook/react/uimanager/ReactStage$Companion {
+	public static final field BRIDGE_DID_LOAD I
 	public static final field MODULE_DID_LOAD I
 	public static final field ON_ATTACH_TO_INSTANCE I
 	public static final field SURFACE_DID_INITIALIZE I
@@ -5377,25 +5385,6 @@ public abstract interface class com/facebook/react/uimanager/events/BatchEventDi
 	public abstract fun onBatchEventDispatched ()V
 }
 
-public final class com/facebook/react/uimanager/events/BlackHoleEventDispatcher : com/facebook/react/uimanager/events/EventDispatcher {
-	public static final field Companion Lcom/facebook/react/uimanager/events/BlackHoleEventDispatcher$Companion;
-	public fun addBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun addListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun dispatchAllEvents ()V
-	public fun dispatchEvent (Lcom/facebook/react/uimanager/events/Event;)V
-	public static final fun get ()Lcom/facebook/react/uimanager/events/EventDispatcher;
-	public fun onCatalystInstanceDestroyed ()V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTEventEmitter;)V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
-	public fun removeBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun removeListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun unregisterEventEmitter (I)V
-}
-
-public final class com/facebook/react/uimanager/events/BlackHoleEventDispatcher$Companion {
-	public final fun get ()Lcom/facebook/react/uimanager/events/EventDispatcher;
-}
-
 public final class com/facebook/react/uimanager/events/ContentSizeChangeEvent : com/facebook/react/uimanager/events/Event {
 	public fun <init> (III)V
 	public fun <init> (IIII)V
@@ -5651,23 +5640,6 @@ public final class com/facebook/react/uimanager/events/TouchesHelper {
 	public static final fun sendTouchesLegacy (Lcom/facebook/react/uimanager/events/RCTEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
 }
 
-public final class com/facebook/react/uimanager/layoutanimation/InterpolatorType : java/lang/Enum {
-	public static final field Companion Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType$Companion;
-	public static final field EASE_IN Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static final field EASE_IN_EASE_OUT Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static final field EASE_OUT Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static final field LINEAR Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static final field SPRING Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static fun values ()[Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-}
-
-public final class com/facebook/react/uimanager/layoutanimation/InterpolatorType$Companion {
-	public final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-}
-
 public class com/facebook/react/uimanager/layoutanimation/LayoutAnimationController {
 	public fun <init> ()V
 	public fun applyLayoutUpdate (Landroid/view/View;IIII)V
@@ -5834,21 +5806,6 @@ public final class com/facebook/react/uimanager/style/OutlineStyle : java/lang/E
 
 public final class com/facebook/react/uimanager/style/OutlineStyle$Companion {
 	public final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/OutlineStyle;
-}
-
-public final class com/facebook/react/uimanager/style/Overflow : java/lang/Enum {
-	public static final field Companion Lcom/facebook/react/uimanager/style/Overflow$Companion;
-	public static final field HIDDEN Lcom/facebook/react/uimanager/style/Overflow;
-	public static final field SCROLL Lcom/facebook/react/uimanager/style/Overflow;
-	public static final field VISIBLE Lcom/facebook/react/uimanager/style/Overflow;
-	public static final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/Overflow;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/Overflow;
-	public static fun values ()[Lcom/facebook/react/uimanager/style/Overflow;
-}
-
-public final class com/facebook/react/uimanager/style/Overflow$Companion {
-	public final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/style/Overflow;
 }
 
 public final class com/facebook/react/uimanager/util/ReactFindViewUtil {

@@ -13,7 +13,7 @@
 
 const render = require('../../../jest/renderer');
 const View = require('../../Components/View/View').default;
-const Modal = require('../Modal');
+const Modal = require('../Modal').default;
 const React = require('react');
 
 describe('Modal', () => {
