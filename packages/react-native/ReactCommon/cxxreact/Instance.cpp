@@ -90,11 +90,11 @@ void Instance::initializeBridge(
         //   (`RCTCxxBridge::_initializeBridgeLocked`).
         // - On Android, we explicitly wait for instance creation before
         //   destruction (`ReactInstanceManager::mReactContextLock`).
-        inspectorTarget_ = &hostTarget.registerInstance(*this);
         RuntimeExecutor runtimeExecutorIfJsi = getRuntimeExecutor();
+        inspectorTarget_ = &hostTarget.registerInstance(
+            *this, runtimeExecutorIfJsi ? runtimeExecutorIfJsi : [](auto) {});
         runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(
-            nativeToJsBridge_->getInspectorTargetDelegate(),
-            runtimeExecutorIfJsi ? runtimeExecutorIfJsi : [](auto) {});
+            nativeToJsBridge_->getInspectorTargetDelegate());
 
         // Signal that initialization is complete
         {

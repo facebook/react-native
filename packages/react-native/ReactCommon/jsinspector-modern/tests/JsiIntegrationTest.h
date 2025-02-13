@@ -54,11 +54,11 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
   void SetUp() override {
     // NOTE: Using SetUp() so we can call virtual methods like
     // setupRuntimeBeforeRegistration().
-    instance_ = &page_->registerInstance(instanceTargetDelegate_);
+    instance_ = &page_->registerInstance(
+        instanceTargetDelegate_, engineAdapter_->getRuntimeExecutor());
     setupRuntimeBeforeRegistration(engineAdapter_->getRuntime());
-    runtimeTarget_ = &instance_->registerRuntime(
-        engineAdapter_->getRuntimeTargetDelegate(),
-        engineAdapter_->getRuntimeExecutor());
+    runtimeTarget_ =
+        &instance_->registerRuntime(engineAdapter_->getRuntimeTargetDelegate());
     loadMainBundle();
   }
 
@@ -118,11 +118,11 @@ class JsiIntegrationPortableTestBase : public ::testing::Test,
     }
     // Recreate the engine (e.g. to wipe any state in the inner jsi::Runtime)
     engineAdapter_.emplace(executor_);
-    instance_ = &page_->registerInstance(instanceTargetDelegate_);
+    instance_ = &page_->registerInstance(
+        instanceTargetDelegate_, engineAdapter_->getRuntimeExecutor());
     setupRuntimeBeforeRegistration(engineAdapter_->getRuntime());
-    runtimeTarget_ = &instance_->registerRuntime(
-        engineAdapter_->getRuntimeTargetDelegate(),
-        engineAdapter_->getRuntimeExecutor());
+    runtimeTarget_ =
+        &instance_->registerRuntime(engineAdapter_->getRuntimeTargetDelegate());
     loadMainBundle();
   }
 

@@ -131,10 +131,10 @@ ReactInstance::ReactInstance(
       // * On iOS it's because we do the setup synchronously.
       // * On Android it's because we explicitly wait for the instance
       //   creation task to finish before starting the destruction.
-      inspectorTarget_ = &hostTarget.registerInstance(*this);
+      inspectorTarget_ = &hostTarget.registerInstance(
+          *this, runtimeExecutorThatGoesThroughRuntimeScheduler);
       runtimeInspectorTarget_ = &inspectorTarget_->registerRuntime(
-          runtime_->getRuntimeTargetDelegate(),
-          runtimeExecutorThatGoesThroughRuntimeScheduler);
+          runtime_->getRuntimeTargetDelegate());
       bufferedRuntimeExecutorThatWaitsForInspectorSetup->flush();
     });
   } else {
