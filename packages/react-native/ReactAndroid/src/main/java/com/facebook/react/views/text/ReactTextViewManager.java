@@ -21,7 +21,6 @@ import com.facebook.react.internal.SystraceSection;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.IViewManagerWithChildren;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -84,6 +83,12 @@ public class ReactTextViewManager
   }
 
   @Override
+  protected void updateViewAccessibility(@NonNull ReactTextView view) {
+    ReactTextViewAccessibilityDelegate.Companion.setDelegate(
+        view, view.isFocusable(), view.getImportantForAccessibility());
+  }
+
+  @Override
   public ReactTextView createViewInstance(ThemedReactContext context) {
     return new ReactTextView(context);
   }
@@ -106,8 +111,8 @@ public class ReactTextViewManager
       if (clickableSpans.length > 0) {
         view.setTag(
             R.id.accessibility_links,
-            new ReactAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable));
-        ReactAccessibilityDelegate.resetDelegate(
+            new ReactTextViewAccessibilityDelegate.AccessibilityLinks(clickableSpans, spannable));
+        ReactTextViewAccessibilityDelegate.Companion.resetDelegate(
             view, view.isFocusable(), view.getImportantForAccessibility());
       }
     }
