@@ -217,7 +217,10 @@ public class ReactPropertyProcessor extends ProcessorBase {
         mTypes.isAssignable(typeElement.asType(), getViewManagerWithGeneratedInterface());
 
     if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE
-        && implementsViewManagerWithGeneratedInterface) {
+        && (implementsViewManagerWithGeneratedInterface || viewType == null)) {
+      // When "MINIFY_LEGACY_ARCHITECTURE" is enabled, we don't want to generate the props setter
+      // for classes that implement ViewManagerWithGeneratedInterface or that are not a ViewManager.
+      // This is because we will be using the new architecture for these classes.
       return null;
     }
 
