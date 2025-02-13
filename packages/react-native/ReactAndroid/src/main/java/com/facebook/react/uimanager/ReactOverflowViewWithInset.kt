@@ -5,29 +5,29 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager
 
-import android.graphics.Rect;
-import android.view.View;
+import android.graphics.Rect
+import android.view.View
 
 /**
- * Interface that should be implemented by {@link View} subclasses that support {@code overflow}
+ * Interface that should be implemented by [View] subclasses that support `overflow`
  * style and want to use the overflowInset values. This allows the overflow information to be used
- * by {@link TouchTargetHelper} to determine if a View is touchable.
+ * by [TouchTargetHelper] to determine if a View is touchable.
  */
-public interface ReactOverflowViewWithInset extends ReactOverflowView {
+public interface ReactOverflowViewWithInset : ReactOverflowView {
   /**
    * Get the overflow inset rect values which indicate the extensions to the boundaries of current
    * view that wraps all of its children views
    *
    * @return Rect of integers indicating the left, top, right, bottom pixel extensions. The values
-   *     are non-positive (indicating enlarged boundaries).
+   * are non-positive (indicating enlarged boundaries).
    */
-  Rect getOverflowInset();
+  public fun getOverflowInset(): Rect
 
   /**
    * Set the overflow inset rect values which indicate the extensions to the boundaries of current
    * view that wraps all of its children views
    */
-  void setOverflowInset(int left, int top, int right, int bottom);
+  public fun setOverflowInset(left: Int, top: Int, right: Int, bottom: Int)
 }
