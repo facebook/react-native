@@ -198,8 +198,8 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
    * frame and another from this frame during the next.
    */
   private void moveStagedEventsToDispatchQueue() {
-    synchronized (mEventsStagingLock) {
-      synchronized (mEventsToDispatchLock) {
+    synchronized (mEventsToDispatchLock) {
+      synchronized (mEventsStagingLock) {
         for (int i = 0; i < mEventStaging.size(); i++) {
           Event event = mEventStaging.get(i);
 
@@ -238,8 +238,8 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
             eventToDispose.dispose();
           }
         }
+        mEventStaging.clear();
       }
-      mEventStaging.clear();
     }
   }
 
