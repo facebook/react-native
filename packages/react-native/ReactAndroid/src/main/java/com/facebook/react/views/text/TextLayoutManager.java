@@ -590,72 +590,96 @@ public class TextLayoutManager {
       Layout.Alignment alignment,
       int justificationMode,
       TextPaint paint) {
-    BoringLayout.Metrics boring = BoringLayout.isBoring(text, paint);
-    Layout layout =
-        createLayout(
-            text,
-            boring,
-            width,
-            widthYogaMeasureMode,
-            includeFontPadding,
-            textBreakStrategy,
-            hyphenationFrequency,
-            alignment,
-            justificationMode,
-            paint);
-
     // Minimum font size is 4pts to match the iOS implementation.
-    int minimumFontSize =
-        (int)
-            (Double.isNaN(minimumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : minimumFontSizeAttr);
+    int minimumFontSize = (int) (Double.isNaN(minimumFontSizeAttr) ? PixelUtil.toPixelFromDIP(4) : minimumFontSizeAttr);
 
-    // Find the largest font size used in the spannable to use as a starting point.
-    int currentFontSize = minimumFontSize;
+    // Find the largest font size used in the spannable to use as the initial high value.
+    int initialFontSize = minimumFontSize;
     ReactAbsoluteSizeSpan[] spans = text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
     for (ReactAbsoluteSizeSpan span : spans) {
-      currentFontSize = Math.max(currentFontSize, span.getSize());
+      initialFontSize = Math.max(initialFontSize, span.getSize());
     }
 
-    int initialFontSize = currentFontSize;
-    while (currentFontSize > minimumFontSize
-        && ((maximumNumberOfLines != ReactConstants.UNSET
-                && maximumNumberOfLines != 0
-                && layout.getLineCount() > maximumNumberOfLines)
-            || (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED && layout.getHeight() > height)
-            || (text.length() == 1 && layout.getLineWidth(0) > width))) {
-      // TODO: We could probably use a smarter algorithm here. This will require 0(n)
-      // measurements based on the number of points the font size needs to be reduced by.
-      currentFontSize -= Math.max(1, (int) PixelUtil.toPixelFromDIP(1));
+    int low = minimumFontSize;
+    int high = initialFontSize;
+    int bestSize = minimumFontSize;
 
-      float ratio = (float) currentFontSize / (float) initialFontSize;
-      paint.setTextSize(Math.max((paint.getTextSize() * ratio), minimumFontSize));
+    while (low <= high) {
+      int mid = (low + high) / 2;
 
-      ReactAbsoluteSizeSpan[] sizeSpans =
-          text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
-      for (ReactAbsoluteSizeSpan span : sizeSpans) {
-        text.setSpan(
-            new ReactAbsoluteSizeSpan((int) Math.max((span.getSize() * ratio), minimumFontSize)),
-            text.getSpanStart(span),
-            text.getSpanEnd(span),
-            text.getSpanFlags(span));
-        text.removeSpan(span);
+      // Create test Spannable with mid font size
+      Spannable testText = new SpannableStringBuilder(text);
+      ReactAbsoluteSizeSpan[] testSpans = testText.getSpans(0, testText.length(), ReactAbsoluteSizeSpan.class);
+      for (ReactAbsoluteSizeSpan span : testSpans) {
+        int start = testText.getSpanStart(span);
+        int end = testText.getSpanEnd(span);
+        int flags = testText.getSpanFlags(span);
+        testText.removeSpan(span);
+        testText.setSpan(new ReactAbsoluteSizeSpan(mid), start, end, flags);
       }
-      if (boring != null) {
-        boring = BoringLayout.isBoring(text, paint);
+
+      TextPaint testPaint = new TextPaint(paint);
+      testPaint.setTextSize(mid);
+
+      BoringLayout.Metrics testBoring = BoringLayout.isBoring(testText, testPaint);
+      Layout testLayout = createLayout(
+          testText,
+          testBoring,
+          width,
+          widthYogaMeasureMode,
+          includeFontPadding,
+          textBreakStrategy,
+          hyphenationFrequency,
+          alignment,
+          justificationMode,
+          testPaint);
+
+      boolean fits = true;
+      if (maximumNumberOfLines != ReactConstants.UNSET
+          && maximumNumberOfLines != 0
+          && testLayout.getLineCount() > maximumNumberOfLines) {
+        fits = false;
       }
-      layout =
-          createLayout(
-              text,
-              boring,
-              width,
-              widthYogaMeasureMode,
-              includeFontPadding,
-              textBreakStrategy,
-              hyphenationFrequency,
-              alignment,
-              justificationMode,
-              paint);
+      if (heightYogaMeasureMode != YogaMeasureMode.UNDEFINED
+          && testLayout.getHeight() > height) {
+        fits = false;
+      }
+      if (text.length() == 1 && testLayout.getLineWidth(0) > width) {
+        fits = false;
+      }
+
+      if (fits) {
+        bestSize = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
     }
+
+    // Apply the best size to the original text and paint
+    ReactAbsoluteSizeSpan[] originalSpans = text.getSpans(0, text.length(), ReactAbsoluteSizeSpan.class);
+    for (ReactAbsoluteSizeSpan span : originalSpans) {
+      int start = text.getSpanStart(span);
+      int end = text.getSpanEnd(span);
+      int flags = text.getSpanFlags(span);
+      text.removeSpan(span);
+      text.setSpan(new ReactAbsoluteSizeSpan(bestSize), start, end, flags);
+    }
+    paint.setTextSize(bestSize);
+
+    // Ensure final layout is created with the adjusted font size
+    BoringLayout.Metrics finalBoring = BoringLayout.isBoring(text, paint);
+    createLayout(
+        text,
+        finalBoring,
+        width,
+        widthYogaMeasureMode,
+        includeFontPadding,
+        textBreakStrategy,
+        hyphenationFrequency,
+        alignment,
+        justificationMode,
+        paint);
   }
 
   public static long measureText(
