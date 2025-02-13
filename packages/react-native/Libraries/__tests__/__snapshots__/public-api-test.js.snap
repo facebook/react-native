@@ -966,28 +966,30 @@ exports[`public API should not change unintentionally Libraries/Animated/useAnim
 `;
 
 exports[`public API should not change unintentionally Libraries/AppState/AppState.js 1`] = `
-"export type AppStateValues = \\"inactive\\" | \\"background\\" | \\"active\\";
+"export type AppStateStatus = \\"inactive\\" | \\"background\\" | \\"active\\";
 type AppStateEventDefinitions = {
-  change: [AppStateValues],
+  change: [AppStateStatus],
   memoryWarning: [],
   blur: [],
   focus: [],
 };
+export type AppStateEvent = $Keys<AppStateEventDefinitions>;
 type NativeAppStateEventDefinitions = {
-  appStateDidChange: [{ app_state: AppStateValues }],
+  appStateDidChange: [{ app_state: AppStateStatus }],
   appStateFocusChange: [boolean],
   memoryWarning: [],
 };
-declare class AppState {
+declare class AppStateImpl {
   currentState: ?string;
   isAvailable: boolean;
   constructor(): void;
-  addEventListener<K: $Keys<AppStateEventDefinitions>>(
+  addEventListener<K: AppStateEvent>(
     type: K,
     handler: (...$ElementType<AppStateEventDefinitions, K>) => void
   ): EventSubscription;
 }
-declare export default AppState;
+declare const AppState: AppStateImpl;
+declare export default typeof AppState;
 "
 `;
 

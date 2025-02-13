@@ -32,6 +32,7 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/EventEmitter/NativeEventEmitter.js',
   'packages/react-native/Libraries/EventEmitter/RCTDeviceEventEmitter.js',
   'packages/react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter.js',
+  'packages/react-native/Libraries/AppState/AppState.js',
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
   'packages/react-native/Libraries/Settings/Settings.js',
   'packages/react-native/Libraries/Performance/Systrace.js',
