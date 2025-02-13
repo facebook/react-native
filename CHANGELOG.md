@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.78.0-rc.5
+
+### Added
+
+- Add opt in for legacy Metro log streaming via `--client-logs` flag ([86db4fa90b](https://github.com/facebook/react-native/commit/86db4fa90b90919867a9b66f6caa28f77fba3a37) by [@huntie](https://github.com/huntie))
+
+### Fixed
+
+#### iOS specific
+
+- Allow multiple RN instances to run at the same time ([444c7d4eff](https://github.com/facebook/react-native/commit/444c7d4eff3d4fbe25452c94cba7ffacb3c366cc) by [@cipolleschi](https://github.com/cipolleschi))
+
+
 ## v0.78.0-rc.4
 
 ### Fixed
