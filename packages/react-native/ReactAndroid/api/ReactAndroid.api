@@ -5385,25 +5385,6 @@ public abstract interface class com/facebook/react/uimanager/events/BatchEventDi
 	public abstract fun onBatchEventDispatched ()V
 }
 
-public final class com/facebook/react/uimanager/events/BlackHoleEventDispatcher : com/facebook/react/uimanager/events/EventDispatcher {
-	public static final field Companion Lcom/facebook/react/uimanager/events/BlackHoleEventDispatcher$Companion;
-	public fun addBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun addListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun dispatchAllEvents ()V
-	public fun dispatchEvent (Lcom/facebook/react/uimanager/events/Event;)V
-	public static final fun get ()Lcom/facebook/react/uimanager/events/EventDispatcher;
-	public fun onCatalystInstanceDestroyed ()V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTEventEmitter;)V
-	public fun registerEventEmitter (ILcom/facebook/react/uimanager/events/RCTModernEventEmitter;)V
-	public fun removeBatchEventDispatchedListener (Lcom/facebook/react/uimanager/events/BatchEventDispatchedListener;)V
-	public fun removeListener (Lcom/facebook/react/uimanager/events/EventDispatcherListener;)V
-	public fun unregisterEventEmitter (I)V
-}
-
-public final class com/facebook/react/uimanager/events/BlackHoleEventDispatcher$Companion {
-	public final fun get ()Lcom/facebook/react/uimanager/events/EventDispatcher;
-}
-
 public final class com/facebook/react/uimanager/events/ContentSizeChangeEvent : com/facebook/react/uimanager/events/Event {
 	public fun <init> (III)V
 	public fun <init> (IIII)V
@@ -5657,23 +5638,6 @@ public final class com/facebook/react/uimanager/events/TouchesHelper {
 	public static final field TARGET_KEY Ljava/lang/String;
 	public static final fun sendTouchEvent (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
 	public static final fun sendTouchesLegacy (Lcom/facebook/react/uimanager/events/RCTEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
-}
-
-public final class com/facebook/react/uimanager/layoutanimation/InterpolatorType : java/lang/Enum {
-	public static final field Companion Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType$Companion;
-	public static final field EASE_IN Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static final field EASE_IN_EASE_OUT Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static final field EASE_OUT Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static final field LINEAR Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static final field SPRING Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-	public static fun values ()[Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
-}
-
-public final class com/facebook/react/uimanager/layoutanimation/InterpolatorType$Companion {
-	public final fun fromString (Ljava/lang/String;)Lcom/facebook/react/uimanager/layoutanimation/InterpolatorType;
 }
 
 public class com/facebook/react/uimanager/layoutanimation/LayoutAnimationController {
