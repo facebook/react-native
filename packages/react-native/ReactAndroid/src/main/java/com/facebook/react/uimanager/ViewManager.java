@@ -15,6 +15,8 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
@@ -113,7 +115,15 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *     view manager should be set via this delegate
    */
   protected ViewManagerDelegate<T> getDelegate() {
-    return new ViewManagerPropertyUpdater.GenericViewManagerDelegate(this);
+    if (this instanceof ViewManagerWithGeneratedInterface) {
+      ReactSoftExceptionLogger.logSoftException(
+          NAME,
+          new ReactNoCrashSoftException(
+              "ViewManager using codegen must override getDelegate method (name: "
+                  + getName()
+                  + ")."));
+    }
+    return new ViewManagerPropertyUpdater.GenericViewManagerDelegate<>(this);
   }
 
   private ViewManagerDelegate<T> getOrCreateViewManagerDelegate() {
