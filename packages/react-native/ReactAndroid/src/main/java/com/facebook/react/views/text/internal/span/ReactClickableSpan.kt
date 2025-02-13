@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text.internal.span
 
+import android.graphics.Color
 import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.view.View
@@ -35,6 +36,9 @@ import com.facebook.react.views.view.ViewGroupClickEvent
  * menu).
  */
 public class ReactClickableSpan(public val reactTag: Int) : ClickableSpan(), ReactSpan {
+  public var isKeyboardFocused: Boolean = false
+  public var focusBgColor: Int = Color.TRANSPARENT
+
   public override fun onClick(view: View) {
     val context = view.context as ReactContext
     val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(context, reactTag)
@@ -43,7 +47,10 @@ public class ReactClickableSpan(public val reactTag: Int) : ClickableSpan(), Rea
   }
 
   public override fun updateDrawState(ds: TextPaint) {
-    // no-op to make sure we don't change the link color or add an underline by default, as the
+    // no super call so we don't change the link color or add an underline by default, as the
     // superclass does.
+    if (isKeyboardFocused) {
+      ds.bgColor = focusBgColor
+    }
   }
 }
