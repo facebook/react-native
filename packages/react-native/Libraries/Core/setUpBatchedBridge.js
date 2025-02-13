@@ -16,7 +16,7 @@ registerModule('Systrace', () => require('../Performance/Systrace'));
 if (!(global.RN$Bridgeless === true)) {
   registerModule('JSTimers', () => require('./Timers/JSTimers').default);
 }
-registerModule('RCTLog', () => require('../Utilities/RCTLog'));
+registerModule('RCTLog', () => require('../Utilities/RCTLog').default);
 registerModule(
   'RCTDeviceEventEmitter',
   () => require('../EventEmitter/RCTDeviceEventEmitter').default,
