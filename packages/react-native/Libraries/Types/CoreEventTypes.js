@@ -229,6 +229,8 @@ export type PressEvent = ResponderSyntheticEvent<
     locationY: number,
     pageX: number,
     pageY: number,
+    screenX?: number,
+    screenY?: number,
     target: ?number,
     timestamp: number,
     touches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
