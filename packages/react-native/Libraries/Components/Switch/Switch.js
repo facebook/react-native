@@ -9,7 +9,7 @@
  */
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {NativeSyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -23,7 +23,7 @@ import SwitchNativeComponent, {
 } from './SwitchNativeComponent';
 import * as React from 'react';
 
-type SwitchChangeEvent = SyntheticEvent<
+type SwitchChangeEvent = NativeSyntheticEvent<
   $ReadOnly<{
     value: boolean,
     target: number,

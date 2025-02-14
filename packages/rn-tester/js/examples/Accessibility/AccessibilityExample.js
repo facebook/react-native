@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 import type {EventSubscription} from 'react-native/Libraries/vendor/emitter/EventEmitter';
 
 import RNTesterBlock from '../../components/RNTesterBlock';
@@ -1469,7 +1469,7 @@ class EnabledExample extends React.Component<
     this._subscription?.remove();
   }
 
-  _handleToggled = (isEnabled: void | PressEvent | boolean) => {
+  _handleToggled = (isEnabled: void | GestureResponderEvent | boolean) => {
     if (!this.state.isEnabled) {
       this.setState({isEnabled: true});
     } else {

@@ -17,13 +17,16 @@ import type {
   ImageStyleProp,
   ViewStyleProp,
 } from '../StyleSheet/StyleSheet';
-import type {LayoutChangeEvent, SyntheticEvent} from '../Types/CoreEventTypes';
+import type {
+  LayoutChangeEvent,
+  NativeSyntheticEvent,
+} from '../Types/CoreEventTypes';
 import typeof Image from './Image';
 import type {ImageResizeMode} from './ImageResizeMode';
 import type {ImageSource} from './ImageSource';
 import type {ElementRef, Node, RefSetter} from 'react';
 
-export type ImageLoadEvent = SyntheticEvent<
+export type ImageLoadEvent = NativeSyntheticEvent<
   $ReadOnly<{
     source: $ReadOnly<{
       width: number,
@@ -52,7 +55,7 @@ type IOSImageProps = $ReadOnly<{
    * See https://reactnative.dev/docs/image#onprogress
    */
   onProgress?: ?(
-    event: SyntheticEvent<$ReadOnly<{loaded: number, total: number}>>,
+    event: NativeSyntheticEvent<$ReadOnly<{loaded: number, total: number}>>,
   ) => void,
 }>;
 
@@ -163,7 +166,7 @@ export type ImageProps = $ReadOnly<{
    * See https://reactnative.dev/docs/image#onerror
    */
   onError?: ?(
-    event: SyntheticEvent<
+    event: NativeSyntheticEvent<
       $ReadOnly<{
         error: string,
       }>,

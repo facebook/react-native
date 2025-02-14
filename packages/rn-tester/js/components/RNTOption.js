@@ -11,7 +11,7 @@
 'use strict';
 
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
-import type {PressEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import {RNTesterThemeContext} from './RNTesterTheme';
 import * as React from 'react';
@@ -20,7 +20,7 @@ import {Pressable, StyleSheet, Text, View} from 'react-native';
 type Props = $ReadOnly<{
   testID?: ?string,
   label: string,
-  onPress?: ?(event: PressEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
   selected?: ?boolean,
   multiSelect?: ?boolean,
   disabled?: ?boolean,

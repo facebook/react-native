@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
 import Animated from '../../Animated/Animated';
 import Easing from '../../Animated/Easing';
@@ -19,7 +19,7 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
 type Props = $ReadOnly<{
-  onPress?: ?(event: PressEvent) => void,
+  onPress?: ?(event: GestureResponderEvent) => void,
   status: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING',
 }>;
 

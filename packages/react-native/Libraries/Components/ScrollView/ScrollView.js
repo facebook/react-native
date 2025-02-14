@@ -15,7 +15,7 @@ import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {
   LayoutChangeEvent,
-  PressEvent,
+  GestureResponderEvent,
   ScrollEvent,
 } from '../../Types/CoreEventTypes';
 import type {EventSubscription} from '../../vendor/emitter/EventEmitter';
@@ -1322,7 +1322,9 @@ class ScrollView extends React.Component<Props, State> {
   /**
    * Invoke this from an `onResponderGrant` event.
    */
-  _handleResponderGrant: (e: PressEvent) => void = (e: PressEvent) => {
+  _handleResponderGrant: (e: GestureResponderEvent) => void = (
+    e: GestureResponderEvent,
+  ) => {
     this._observedScrollSinceBecomingResponder = false;
     this.props.onResponderGrant && this.props.onResponderGrant(e);
     this._becameResponderWhileAnimating = this._isAnimating();
@@ -1343,7 +1345,9 @@ class ScrollView extends React.Component<Props, State> {
   /**
    * Invoke this from an `onResponderRelease` event.
    */
-  _handleResponderRelease: (e: PressEvent) => void = (e: PressEvent) => {
+  _handleResponderRelease: (e: GestureResponderEvent) => void = (
+    e: GestureResponderEvent,
+  ) => {
     this._isTouching = e.nativeEvent.touches.length !== 0;
     this.props.onResponderRelease && this.props.onResponderRelease(e);
 
@@ -1428,8 +1432,8 @@ class ScrollView extends React.Component<Props, State> {
    *   true.
    *
    */
-  _handleStartShouldSetResponder: (e: PressEvent) => boolean = (
-    e: PressEvent,
+  _handleStartShouldSetResponder: (e: GestureResponderEvent) => boolean = (
+    e: GestureResponderEvent,
   ) => {
     // Allow any event touch pass through if the default pan responder is disabled
     if (this.props.disableScrollViewPanResponder === true) {
@@ -1458,55 +1462,54 @@ class ScrollView extends React.Component<Props, State> {
    *
    * Invoke this from an `onStartShouldSetResponderCapture` event.
    */
-  _handleStartShouldSetResponderCapture: (e: PressEvent) => boolean = (
-    e: PressEvent,
-  ) => {
-    // The scroll view should receive taps instead of its descendants if:
-    // * it is already animating/decelerating
-    if (this._isAnimating()) {
-      return true;
-    }
+  _handleStartShouldSetResponderCapture: (e: GestureResponderEvent) => boolean =
+    (e: GestureResponderEvent) => {
+      // The scroll view should receive taps instead of its descendants if:
+      // * it is already animating/decelerating
+      if (this._isAnimating()) {
+        return true;
+      }
 
-    // Allow any event touch pass through if the default pan responder is disabled
-    if (this.props.disableScrollViewPanResponder === true) {
-      return false;
-    }
+      // Allow any event touch pass through if the default pan responder is disabled
+      if (this.props.disableScrollViewPanResponder === true) {
+        return false;
+      }
 
-    // * the keyboard is up, keyboardShouldPersistTaps is 'never' (the default),
-    // and a new touch starts with a non-textinput target (in which case the
-    // first tap should be sent to the scroll view and dismiss the keyboard,
-    // then the second tap goes to the actual interior view)
-    const {keyboardShouldPersistTaps} = this.props;
-    const keyboardNeverPersistTaps =
-      !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
+      // * the keyboard is up, keyboardShouldPersistTaps is 'never' (the default),
+      // and a new touch starts with a non-textinput target (in which case the
+      // first tap should be sent to the scroll view and dismiss the keyboard,
+      // then the second tap goes to the actual interior view)
+      const {keyboardShouldPersistTaps} = this.props;
+      const keyboardNeverPersistTaps =
+        !keyboardShouldPersistTaps || keyboardShouldPersistTaps === 'never';
 
-    if (typeof e.target === 'number') {
-      if (__DEV__) {
-        console.error(
-          'Did not expect event target to be a number. Should have been a native component',
-        );
+      if (typeof e.target === 'number') {
+        if (__DEV__) {
+          console.error(
+            'Did not expect event target to be a number. Should have been a native component',
+          );
+        }
+
+        return false;
+      }
+
+      // Let presses through if the soft keyboard is detached from the viewport
+      if (this._softKeyboardIsDetached()) {
+        return false;
+      }
+
+      if (
+        keyboardNeverPersistTaps &&
+        this._keyboardIsDismissible() &&
+        e.target != null &&
+        // $FlowFixMe[incompatible-call]
+        !TextInputState.isTextInput(e.target)
+      ) {
+        return true;
       }
 
       return false;
-    }
-
-    // Let presses through if the soft keyboard is detached from the viewport
-    if (this._softKeyboardIsDetached()) {
-      return false;
-    }
-
-    if (
-      keyboardNeverPersistTaps &&
-      this._keyboardIsDismissible() &&
-      e.target != null &&
-      // $FlowFixMe[incompatible-call]
-      !TextInputState.isTextInput(e.target)
-    ) {
-      return true;
-    }
-
-    return false;
-  };
+    };
 
   /**
    * Do we consider there to be a dismissible soft-keyboard open?
@@ -1550,9 +1553,11 @@ class ScrollView extends React.Component<Props, State> {
   /**
    * Invoke this from an `onTouchEnd` event.
    *
-   * @param {PressEvent} e Event.
+   * @param {GestureResponderEvent} e Event.
    */
-  _handleTouchEnd: (e: PressEvent) => void = (e: PressEvent) => {
+  _handleTouchEnd: (e: GestureResponderEvent) => void = (
+    e: GestureResponderEvent,
+  ) => {
     const nativeEvent = e.nativeEvent;
     this._isTouching = nativeEvent.touches.length !== 0;
 
@@ -1580,9 +1585,11 @@ class ScrollView extends React.Component<Props, State> {
   /**
    * Invoke this from an `onTouchCancel` event.
    *
-   * @param {PressEvent} e Event.
+   * @param {GestureResponderEvent} e Event.
    */
-  _handleTouchCancel: (e: PressEvent) => void = (e: PressEvent) => {
+  _handleTouchCancel: (e: GestureResponderEvent) => void = (
+    e: GestureResponderEvent,
+  ) => {
     this._isTouching = false;
     this.props.onTouchCancel && this.props.onTouchCancel(e);
   };
@@ -1596,9 +1603,11 @@ class ScrollView extends React.Component<Props, State> {
    * responder). The `onResponderReject` won't fire in that case - it only
    * fires when a *current* responder rejects our request.
    *
-   * @param {PressEvent} e Touch Start event.
+   * @param {GestureResponderEvent} e Touch Start event.
    */
-  _handleTouchStart: (e: PressEvent) => void = (e: PressEvent) => {
+  _handleTouchStart: (e: GestureResponderEvent) => void = (
+    e: GestureResponderEvent,
+  ) => {
     this._isTouching = true;
     this.props.onTouchStart && this.props.onTouchStart(e);
   };
@@ -1612,9 +1621,11 @@ class ScrollView extends React.Component<Props, State> {
    * responder). The `onResponderReject` won't fire in that case - it only
    * fires when a *current* responder rejects our request.
    *
-   * @param {PressEvent} e Touch Start event.
+   * @param {GestureResponderEvent} e Touch Start event.
    */
-  _handleTouchMove: (e: PressEvent) => void = (e: PressEvent) => {
+  _handleTouchMove: (e: GestureResponderEvent) => void = (
+    e: GestureResponderEvent,
+  ) => {
     this.props.onTouchMove && this.props.onTouchMove(e);
   };
 
