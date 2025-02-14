@@ -84,6 +84,12 @@ class RuntimeAgent final {
   ExportedState getExportedState();
 
   /**
+   * Registers the corresponding RuntimeTarget for Tracing: might enable some
+   * capabilities that will be later used in Tracing Profile.
+   */
+  void registerForTracing();
+
+  /**
    * Start sampling profiler for the corresponding RuntimeTarget.
    */
   void enableSamplingProfiler();
