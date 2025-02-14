@@ -46,6 +46,7 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/ReactNative/UIManager.js',
   'packages/react-native/Libraries/ReactNative/I18nManager.js',
   'packages/react-native/Libraries/Vibration/Vibration.js',
+  'packages/react-native/Libraries/PermissionsAndroid/PermissionsAndroid.js',
 ];
 
 /**
