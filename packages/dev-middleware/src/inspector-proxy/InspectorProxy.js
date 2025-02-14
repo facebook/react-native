@@ -317,6 +317,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const pageId = query.page;
         const debuggerRelativeBaseUrl =
           getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
+        const appId = this.#devices.get(deviceId)?.getApp() || 'unknown';
 
         if (deviceId == null || pageId == null) {
           throw new Error('Incorrect URL - must provide device and page IDs');
@@ -329,7 +330,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
         this.#logger?.info('Connection to DevTools established.');
 
-        this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS);
+        this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS, appId);
 
         device.handleDebuggerConnection(socket, pageId, {
           debuggerRelativeBaseUrl,
@@ -357,9 +358,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // where proxies may drop idle connections (e.g., VS Code tunnels).
   //
   // https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
-  #startHeartbeat(socket: WS, intervalMs: number) {
+  #startHeartbeat(socket: WS, intervalMs: number, appId: string) {
     let shouldSetTerminateTimeout = false;
     let terminateTimeout = null;
+    let latestPingMs = Date.now();
 
     const pingTimeout: Timeout = setTimeout(() => {
       if (socket.readyState !== WS.OPEN) {
@@ -369,6 +371,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
       }
 
       shouldSetTerminateTimeout = true;
+      latestPingMs = Date.now();
       socket.ping(() => {
         if (!shouldSetTerminateTimeout) {
           // Sometimes, this `sent` callback fires later than
@@ -394,6 +397,11 @@ export default class InspectorProxy implements InspectorProxyQueries {
           this.#logger?.error(
             `Connection terminated with DevTools after not responding for ${MAX_PONG_LATENCY_MS / 1000} seconds.`,
           );
+          this.#eventReporter?.logEvent({
+            type: 'debugger_timeout',
+            duration: MAX_PONG_LATENCY_MS,
+            appId,
+          });
         }, MAX_PONG_LATENCY_MS).unref();
       });
     }, intervalMs).unref();
@@ -404,8 +412,17 @@ export default class InspectorProxy implements InspectorProxyQueries {
       pingTimeout.refresh();
     };
 
-    socket.on('pong', onAnyMessageFromDebugger);
-    socket.on('message', onAnyMessageFromDebugger);
+    socket.on('pong', () => {
+      onAnyMessageFromDebugger();
+      this.#eventReporter?.logEvent({
+        type: 'debugger_heartbeat',
+        duration: Date.now() - latestPingMs,
+        appId,
+      });
+    });
+    socket.on('message', () => {
+      onAnyMessageFromDebugger();
+    });
 
     socket.on('close', (code: number, reason: string) => {
       this.#logger?.info(
