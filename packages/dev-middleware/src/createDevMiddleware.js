@@ -91,6 +91,7 @@ export default function createDevMiddleware({
     serverBaseUrl,
     eventReporter,
     experiments,
+    logger,
     unstable_customInspectorMessageHandler,
   );
 
