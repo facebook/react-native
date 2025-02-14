@@ -12,14 +12,13 @@
 #include "SessionState.h"
 
 #include <jsinspector-modern/InspectorInterfaces.h>
+#include <jsinspector-modern/InstanceTarget.h>
 #include <jsinspector-modern/RuntimeAgent.h>
 #include <jsinspector-modern/tracing/InstanceTracingProfile.h>
 
 #include <functional>
 
 namespace facebook::react::jsinspector_modern {
-
-class InstanceTarget;
 
 /**
  * An Agent that handles requests from the Chrome DevTools Protocol for the
