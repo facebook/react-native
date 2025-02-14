@@ -8638,7 +8638,7 @@ declare export default typeof NativeVibration;
 
 exports[`public API should not change unintentionally Libraries/Vibration/Vibration.js 1`] = `
 "declare const Vibration: {
-  vibrate: (pattern: number | Array<number>, repeat: boolean) => void,
+  vibrate: (pattern?: number | Array<number>, repeat?: boolean) => void,
   cancel: () => void,
 };
 declare export default typeof Vibration;
