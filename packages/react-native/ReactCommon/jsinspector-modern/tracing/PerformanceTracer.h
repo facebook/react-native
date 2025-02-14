@@ -9,12 +9,13 @@
 
 #include "CdpTracing.h"
 #include "TraceEvent.h"
+#include "TraceEventProfile.h"
 
 #include <folly/dynamic.h>
 
 #include <functional>
+#include <mutex>
 #include <optional>
-#include <unordered_map>
 #include <vector>
 
 namespace facebook::react::jsinspector_modern {
@@ -67,8 +68,41 @@ class PerformanceTracer {
       uint64_t duration,
       const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
 
+  /**
+   * Record a corresponding Trace Event for OS-level process.
+   */
+  void reportProcess(uint64_t id, const std::string& name);
+
+  /**
+   * Record a corresponding Trace Event for OS-level thread.
+   */
+  void reportThread(uint64_t id, const std::string& name);
+
+  /**
+   * Should only be called from the JavaScript thread, will buffer metadata
+   * Trace Event.
+   */
+  void reportJavaScriptThread();
+
+  /**
+   * Record a corresponding Profile Trace Event.
+   * \return the id of the profile, should be used to linking profile chunks.
+   */
+  uint16_t reportRuntimeProfile(uint64_t threadId, uint64_t eventUnixTimestamp);
+
+  /**
+   * Record a corresponding ProfileChunk Trace Event.
+   */
+  void reportRuntimeProfileChunk(
+      uint16_t profileId,
+      uint64_t threadId,
+      uint64_t eventUnixTimestamp,
+      const tracing::TraceEventProfileChunk& traceEventProfileChunk);
+
+  void reportEventLoopTask(uint64_t start, uint64_t end);
+
  private:
-  PerformanceTracer() = default;
+  PerformanceTracer();
   PerformanceTracer(const PerformanceTracer&) = delete;
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
@@ -76,7 +110,9 @@ class PerformanceTracer {
   folly::dynamic serializeTraceEvent(TraceEvent event) const;
 
   bool tracing_{false};
+  uint64_t processId_;
   uint32_t performanceMeasureCount_{0};
+  uint16_t profileCount_{0};
   std::vector<TraceEvent> buffer_;
   std::mutex mutex_;
 };
