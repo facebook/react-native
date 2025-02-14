@@ -108,7 +108,7 @@ fun getPackageNameFromManifest(manifest: File): String? {
   }
 }
 
-fun getHostIpAddress(): String =
+internal fun getHostIpAddress(): String =
   NetworkInterface.getNetworkInterfaces().asSequence()
     .filter { it.isUp && !it.isLoopback }
     .flatMap { it.inetAddresses.asSequence() }
