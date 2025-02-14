@@ -29,4 +29,5 @@ target_link_libraries(react_renderer_runtimescheduler
         react_timing
         react_utils
         react_featureflags
-        runtimeexecutor)
+        runtimeexecutor
+        jsinspector_tracing)
