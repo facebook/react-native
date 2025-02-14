@@ -3700,8 +3700,15 @@ export type Role =
   | \\"tree\\"
   | \\"treegrid\\"
   | \\"treeitem\\";
+export type AccessibilityActionName =
+  | \\"activate\\"
+  | \\"increment\\"
+  | \\"decrement\\"
+  | \\"longpress\\"
+  | \\"magicTap\\"
+  | \\"escape\\";
 export type AccessibilityActionInfo = $ReadOnly<{
-  name: string,
+  name: AccessibilityActionName | string,
   label?: string,
   ...
 }>;
@@ -3721,6 +3728,45 @@ export type AccessibilityValue = $ReadOnly<{
   max?: number,
   now?: number,
   text?: Stringish,
+}>;
+export type AccessibilityPropsAndroid = $ReadOnly<{
+  accessibilityLabelledBy?: ?string | ?Array<string>,
+  \\"aria-labelledby\\"?: ?string,
+  accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
+  \\"aria-live\\"?: ?(\\"polite\\" | \\"assertive\\" | \\"off\\"),
+  importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
+}>;
+export type AccessibilityPropsIOS = $ReadOnly<{
+  accessibilityIgnoresInvertColors?: ?boolean,
+  accessibilityViewIsModal?: ?boolean,
+  accessibilityShowsLargeContentViewer?: ?boolean,
+  accessibilityLargeContentTitle?: ?string,
+  \\"aria-modal\\"?: ?boolean,
+  accessibilityElementsHidden?: ?boolean,
+  accessibilityLanguage?: ?Stringish,
+}>;
+export type AccessibilityProps = $ReadOnly<{
+  ...AccessibilityPropsAndroid,
+  ...AccessibilityPropsIOS,
+  accessible?: ?boolean,
+  accessibilityLabel?: ?Stringish,
+  accessibilityHint?: ?Stringish,
+  \\"aria-label\\"?: ?Stringish,
+  accessibilityRole?: ?AccessibilityRole,
+  role?: ?Role,
+  accessibilityState?: ?AccessibilityState,
+  accessibilityValue?: ?AccessibilityValue,
+  \\"aria-valuemax\\"?: ?AccessibilityValue[\\"max\\"],
+  \\"aria-valuemin\\"?: ?AccessibilityValue[\\"min\\"],
+  \\"aria-valuenow\\"?: ?AccessibilityValue[\\"now\\"],
+  \\"aria-valuetext\\"?: ?AccessibilityValue[\\"text\\"],
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  \\"aria-busy\\"?: ?boolean,
+  \\"aria-checked\\"?: ?boolean | \\"mixed\\",
+  \\"aria-disabled\\"?: ?boolean,
+  \\"aria-expanded\\"?: ?boolean,
+  \\"aria-selected\\"?: ?boolean,
+  \\"aria-hidden\\"?: ?boolean,
 }>;
 "
 `;
@@ -3791,7 +3837,7 @@ type TouchEventProps = $ReadOnly<{
   onTouchStart?: ?(e: PressEvent) => void,
   onTouchStartCapture?: ?(e: PressEvent) => void,
 }>;
-type GestureResponderEventProps = $ReadOnly<{
+export type GestureResponderHandlers = $ReadOnly<{
   onMoveShouldSetResponder?: ?(e: PressEvent) => boolean,
   onMoveShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
   onResponderGrant?: ?(e: PressEvent) => void | boolean,
@@ -3816,15 +3862,10 @@ type AndroidDrawableRipple = $ReadOnly<{
   rippleRadius?: ?number,
 }>;
 type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
-type AndroidViewProps = $ReadOnly<{
-  accessibilityLabelledBy?: ?string | ?Array<string>,
-  \\"aria-labelledby\\"?: ?string,
-  accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
-  \\"aria-live\\"?: ?(\\"polite\\" | \\"assertive\\" | \\"off\\"),
+export type ViewPropsAndroid = $ReadOnly<{
   nativeBackgroundAndroid?: ?AndroidDrawable,
   nativeForegroundAndroid?: ?AndroidDrawable,
   renderToHardwareTextureAndroid?: ?boolean,
-  importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
   hasTVPreferredFocus?: ?boolean,
   nextFocusDown?: ?number,
   nextFocusForward?: ?number,
@@ -3835,46 +3876,21 @@ type AndroidViewProps = $ReadOnly<{
   tabIndex?: 0 | -1,
   onClick?: ?(event: PressEvent) => mixed,
 }>;
-type IOSViewProps = $ReadOnly<{
-  accessibilityIgnoresInvertColors?: ?boolean,
-  accessibilityViewIsModal?: ?boolean,
-  accessibilityShowsLargeContentViewer?: ?boolean,
-  accessibilityLargeContentTitle?: ?string,
-  \\"aria-modal\\"?: ?boolean,
-  accessibilityElementsHidden?: ?boolean,
-  accessibilityLanguage?: ?Stringish,
+export type ViewPropsIOS = $ReadOnly<{
   shouldRasterizeIOS?: ?boolean,
 }>;
 export type ViewProps = $ReadOnly<{
   ...DirectEventProps,
-  ...GestureResponderEventProps,
+  ...GestureResponderHandlers,
   ...MouseEventProps,
   ...PointerEventProps,
   ...FocusEventProps,
   ...TouchEventProps,
-  ...AndroidViewProps,
-  ...IOSViewProps,
+  ...ViewPropsAndroid,
+  ...ViewPropsIOS,
+  ...AccessibilityProps,
   children?: Node,
   style?: ?ViewStyleProp,
-  accessible?: ?boolean,
-  accessibilityLabel?: ?Stringish,
-  accessibilityHint?: ?Stringish,
-  \\"aria-label\\"?: ?Stringish,
-  accessibilityRole?: ?AccessibilityRole,
-  role?: ?Role,
-  accessibilityState?: ?AccessibilityState,
-  accessibilityValue?: ?AccessibilityValue,
-  \\"aria-valuemax\\"?: ?AccessibilityValue[\\"max\\"],
-  \\"aria-valuemin\\"?: ?AccessibilityValue[\\"min\\"],
-  \\"aria-valuenow\\"?: ?AccessibilityValue[\\"now\\"],
-  \\"aria-valuetext\\"?: ?AccessibilityValue[\\"text\\"],
-  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
-  \\"aria-busy\\"?: ?boolean,
-  \\"aria-checked\\"?: ?boolean | \\"mixed\\",
-  \\"aria-disabled\\"?: ?boolean,
-  \\"aria-expanded\\"?: ?boolean,
-  \\"aria-selected\\"?: ?boolean,
-  \\"aria-hidden\\"?: ?boolean,
   collapsable?: ?boolean,
   collapsableChildren?: ?boolean,
   id?: string,
