@@ -23195,6 +23195,7 @@ class HostPlatformViewProps : public BaseViewProps {
   bool hasTVPreferredFocus{false};
   bool needsOffscreenAlphaCompositing{false};
   bool renderToHardwareTextureAndroid{false};
+  std::string tooltipTextAndroid{};
   bool getProbablyMoreHorizontalThanVertical_DEPRECATED() const;
 };
 } // namespace facebook::react

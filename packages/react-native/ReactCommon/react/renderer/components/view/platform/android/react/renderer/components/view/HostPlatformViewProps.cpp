@@ -85,6 +85,15 @@ HostPlatformViewProps::HostPlatformViewProps(
                     rawProps,
                     "renderToHardwareTextureAndroid",
                     sourceProps.renderToHardwareTextureAndroid,
+                    {})),
+      tooltipTextAndroid(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.tooltipTextAndroid
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "tooltipTextAndroid",
+                    sourceProps.tooltipTextAndroid,
                     {})) {}
 
 #define VIEW_EVENT_CASE(eventType)                      \
@@ -512,6 +521,11 @@ folly::dynamic HostPlatformViewProps::getDiffProps(
   if (renderToHardwareTextureAndroid !=
       oldProps->renderToHardwareTextureAndroid) {
     result["renderToHardwareTextureAndroid"] = renderToHardwareTextureAndroid;
+  }
+  
+  if (tooltipTextAndroid !=
+      oldProps->tooltipTextAndroid) {
+    result["tooltipTextAndroid"] = tooltipTextAndroid;
   }
 
   if (opacity != oldProps->opacity) {

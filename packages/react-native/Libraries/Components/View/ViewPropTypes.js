@@ -316,6 +316,15 @@ type AndroidViewProps = $ReadOnly<{
   renderToHardwareTextureAndroid?: ?boolean,
 
   /**
+   * Displays a small descriptive message that appears near a view when users long press the view or hover their mouse over it
+   *
+   * @platform android
+   *
+   * See https://reactnative.dev/docs/view#tooltipTextAndroid
+   */
+  tooltipTextAndroid?: ?string,
+
+  /**
    * Controls how view is important for accessibility which is if it
    * fires accessibility events and if it is reported to accessibility services
    * that query the screen. Works for Android only.
