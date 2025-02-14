@@ -130,16 +130,16 @@ internal object NdkConfiguratorUtils {
       excludes.add("**/libjsctooling.so")
       includes.add("**/libhermes.so")
       includes.add("**/libhermestooling.so")
+    } else if (useThirdPartyJSC) {
+      excludes.add("**/libhermes.so")
+      excludes.add("**/libhermestooling.so")
+      excludes.add("**/libjsctooling.so")
+      includes.add("**/libjsc.so")
     } else {
       excludes.add("**/libhermes.so")
       excludes.add("**/libhermestooling.so")
-      if (useThirdPartyJSC) {
-        includes.add("**/libjsc.so")
-        excludes.add("**/libjsctooling.so")
-      } else {
-        includes.add("**/libjsc.so")
-        includes.add("**/libjsctooling.so")
-      }
+      includes.add("**/libjsc.so")
+      includes.add("**/libjsctooling.so")
     }
     return excludes to includes
   }
