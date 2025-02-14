@@ -15,6 +15,7 @@ import * as TurboModuleRegistry from '../../../../Libraries/TurboModule/TurboMod
 // TODO: Use proper enum types.
 export type PermissionStatus = string;
 export type PermissionType = string;
+
 /*
 export type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
 export type PermissionType =
@@ -45,9 +46,9 @@ export type PermissionType =
   | 'android.permission.RECEIVE_WAP_PUSH'
   | 'android.permission.RECEIVE_MMS'
   | 'android.permission.READ_EXTERNAL_STORAGE'
-  | 'android.permission.READ_MEDIA_IMAGES',
-  | 'android.permission.READ_MEDIA_VIDEO',
-  | 'android.permission.READ_MEDIA_AUDIO',
+  | 'android.permission.READ_MEDIA_IMAGES'
+  | 'android.permission.READ_MEDIA_VIDEO'
+  | 'android.permission.READ_MEDIA_AUDIO'
   | 'android.permission.READ_MEDIA_VISUAL_USER_SELECTED'
   | 'android.permission.WRITE_EXTERNAL_STORAGE'
   | 'android.permission.BLUETOOTH_CONNECT'
@@ -61,7 +62,7 @@ export type PermissionType =
   | 'android.permission.UWB_RANGING'
   | 'android.permission.POST_NOTIFICATIONS'
   | 'android.permission.NEARBY_WIFI_DEVICES';
-*/
+  */
 
 export interface Spec extends TurboModule {
   +checkPermission: (permission: PermissionType) => Promise<boolean>;
