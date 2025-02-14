@@ -10,7 +10,6 @@ package com.facebook.react.modules.systeminfo
 import android.content.Context
 import android.os.Build
 import com.facebook.common.logging.FLog
-import com.facebook.react.BuildConfig
 import com.facebook.react.R
 import java.io.BufferedReader
 import java.io.InputStreamReader
