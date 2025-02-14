@@ -50,6 +50,12 @@ class TracingAgent {
    * currently no active instance.
    */
   std::shared_ptr<InstanceAgent> instanceAgent_;
+
+  /**
+   * Timestamp of when we started tracing of an Instance, will be used as a
+   * a start of JavaScript samples recording.
+   */
+  std::chrono::steady_clock::time_point instanceTracingStartTimestamp_;
 };
 
 } // namespace facebook::react::jsinspector_modern
