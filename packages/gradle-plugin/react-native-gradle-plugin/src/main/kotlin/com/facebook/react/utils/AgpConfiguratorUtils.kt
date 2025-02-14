@@ -52,7 +52,7 @@ internal object AgpConfiguratorUtils {
     }
   }
 
-  fun configureDevIpAndPorts(project: Project) {
+  fun configureDevServerLocation(project: Project) {
     val devServerPort =
         project.properties["reactNativeDevServerPort"]?.toString() ?: DEFAULT_DEV_SERVER_PORT
 
