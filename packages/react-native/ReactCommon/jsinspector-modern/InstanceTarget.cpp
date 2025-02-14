@@ -15,18 +15,21 @@ namespace facebook::react::jsinspector_modern {
 std::shared_ptr<InstanceTarget> InstanceTarget::create(
     std::shared_ptr<ExecutionContextManager> executionContextManager,
     InstanceTargetDelegate& delegate,
-    VoidExecutor executor) {
-  std::shared_ptr<InstanceTarget> instanceTarget{
-      new InstanceTarget(executionContextManager, delegate)};
+    VoidExecutor executor,
+    RuntimeExecutor runtimeExecutor) {
+  std::shared_ptr<InstanceTarget> instanceTarget{new InstanceTarget(
+      executionContextManager, delegate, std::move(runtimeExecutor))};
   instanceTarget->setExecutor(executor);
   return instanceTarget;
 }
 
 InstanceTarget::InstanceTarget(
     std::shared_ptr<ExecutionContextManager> executionContextManager,
-    InstanceTargetDelegate& delegate)
+    InstanceTargetDelegate& delegate,
+    RuntimeExecutor runtimeExecutor)
     : delegate_(delegate),
-      executionContextManager_(std::move(executionContextManager)) {
+      executionContextManager_(std::move(executionContextManager)),
+      runtimeExecutor_(std::move(runtimeExecutor)) {
   (void)delegate_;
 }
 
@@ -51,8 +54,7 @@ InstanceTarget::~InstanceTarget() {
 }
 
 RuntimeTarget& InstanceTarget::registerRuntime(
-    RuntimeTargetDelegate& delegate,
-    RuntimeExecutor jsExecutor) {
+    RuntimeTargetDelegate& delegate) {
   assert(!currentRuntime_ && "Only one Runtime allowed");
   currentRuntime_ = RuntimeTarget::create(
       ExecutionContextDescription{
@@ -61,7 +63,7 @@ RuntimeTarget& InstanceTarget::registerRuntime(
           .name = "main",
           .uniqueId = std::nullopt},
       delegate,
-      jsExecutor,
+      runtimeExecutor_,
       makeVoidExecutor(executorFromThis()));
 
   agents_.forEach([currentRuntime = &*currentRuntime_](InstanceAgent& agent) {

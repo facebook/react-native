@@ -182,10 +182,15 @@ HostTarget::~HostTarget() {
 
 HostTargetDelegate::~HostTargetDelegate() {}
 
-InstanceTarget& HostTarget::registerInstance(InstanceTargetDelegate& delegate) {
+InstanceTarget& HostTarget::registerInstance(
+    InstanceTargetDelegate& delegate,
+    RuntimeExecutor runtimeExecutor) {
   assert(!currentInstance_ && "Only one instance allowed");
   currentInstance_ = InstanceTarget::create(
-      executionContextManager_, delegate, makeVoidExecutor(executorFromThis()));
+      executionContextManager_,
+      delegate,
+      makeVoidExecutor(executorFromThis()),
+      std::move(runtimeExecutor));
   sessions_.forEach(
       [currentInstance = &*currentInstance_](HostTargetSession& session) {
         session.setCurrentInstance(currentInstance);

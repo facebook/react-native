@@ -58,7 +58,8 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
   static std::shared_ptr<InstanceTarget> create(
       std::shared_ptr<ExecutionContextManager> executionContextManager,
       InstanceTargetDelegate& delegate,
-      VoidExecutor executor);
+      VoidExecutor executor,
+      RuntimeExecutor runtimeExecutor);
 
   InstanceTarget(const InstanceTarget&) = delete;
   InstanceTarget(InstanceTarget&&) = delete;
@@ -75,9 +76,7 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
    * the created RuntimeTarget, which is owned by the \c InstanceTarget. All the
    * requirements of \c RuntimeTarget::create must be met.
    */
-  RuntimeTarget& registerRuntime(
-      RuntimeTargetDelegate& delegate,
-      RuntimeExecutor executor);
+  RuntimeTarget& registerRuntime(RuntimeTargetDelegate& delegate);
 
   /**
    * Unregisters a JS runtime from this InstanceTarget. This destroys the \c
@@ -96,15 +95,19 @@ class InstanceTarget : public EnableExecutorFromThis<InstanceTarget> {
    * \param delegate The object that will receive events from this target.
    * The caller is responsible for ensuring that the delegate outlives this
    * object.
+   * \param runtimeExecutor The executor that will be passed to RuntimeTarget,
+   * once registered.
    */
   InstanceTarget(
       std::shared_ptr<ExecutionContextManager> executionContextManager,
-      InstanceTargetDelegate& delegate);
+      InstanceTargetDelegate& delegate,
+      RuntimeExecutor runtimeExecutor);
 
   InstanceTargetDelegate& delegate_;
   std::shared_ptr<RuntimeTarget> currentRuntime_{nullptr};
   WeakList<InstanceAgent> agents_;
   std::shared_ptr<ExecutionContextManager> executionContextManager_;
+  RuntimeExecutor runtimeExecutor_;
 };
 
 } // namespace facebook::react::jsinspector_modern
