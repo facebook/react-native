@@ -13,8 +13,8 @@
 #include <folly/dynamic.h>
 
 #include <functional>
+#include <mutex>
 #include <optional>
-#include <unordered_map>
 #include <vector>
 
 namespace facebook::react::jsinspector_modern {
@@ -67,8 +67,18 @@ class PerformanceTracer {
       uint64_t duration,
       const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
 
+  /**
+   * Record a corresponding Trace Event for OS-level process.
+   */
+  void reportProcess(uint64_t id, const std::string& name);
+
+  /**
+   * Record a corresponding Trace Event for OS-level thread.
+   */
+  void reportThread(uint64_t id, const std::string& name);
+
  private:
-  PerformanceTracer() = default;
+  PerformanceTracer();
   PerformanceTracer(const PerformanceTracer&) = delete;
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
@@ -76,6 +86,7 @@ class PerformanceTracer {
   folly::dynamic serializeTraceEvent(TraceEvent event) const;
 
   bool tracing_{false};
+  uint64_t processId_;
   uint32_t performanceMeasureCount_{0};
   std::vector<TraceEvent> buffer_;
   std::mutex mutex_;
