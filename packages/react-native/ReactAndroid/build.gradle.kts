@@ -426,10 +426,7 @@ val buildCodegenCLI by
             include("lib/**/*.js")
             include("lib/**/*.js.flow")
           })
-      onlyIf {
-        // For build from source scenario, we don't need to build the codegen at all.
-        rootProject.name != "react-native-build-from-source"
-      }
+      rootProjectName.set(rootProject.name)
     }
 
 /**

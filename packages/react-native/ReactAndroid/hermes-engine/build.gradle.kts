@@ -124,8 +124,8 @@ val unzipHermes by
 // the two tasks mentioned before, so we install CMake manually to break the circular dependency.
 
 val installCMake by
-    tasks.registering(Exec::class) {
-      onlyIf { !File(cmakePath).exists() }
+    tasks.registering(CustomExecTask::class) {
+      onlyIfProvidedPathDoesNotExists.set(cmakePath)
       commandLine(
           windowsAwareCommandLine(getSDKManagerPath(), "--install", "cmake;${cmakeVersion}"))
     }
