@@ -9,6 +9,7 @@
 
 #include "CdpJson.h"
 #include "InspectorInterfaces.h"
+#include "InstanceAgent.h"
 
 namespace facebook::react::jsinspector_modern {
 
@@ -31,11 +32,30 @@ class TracingAgent {
    */
   bool handleRequest(const cdp::PreparsedRequest& req);
 
+  /**
+   * Replace the current InstanceAgent with the given one.
+   * \param agent The new InstanceAgent. May be null to signify that there is
+   * currently no active instance.
+   */
+  void setCurrentInstanceAgent(std::shared_ptr<InstanceAgent> agent);
+
  private:
   /**
    * A channel used to send responses and events to the frontend.
    */
   FrontendChannel frontendChannel_;
+
+  /**
+   * Current InstanceAgent. May be null to signify that there is
+   * currently no active instance.
+   */
+  std::shared_ptr<InstanceAgent> instanceAgent_;
+
+  /**
+   * Timestamp of when we started tracing of an Instance, will be used as a
+   * a start of JavaScript samples recording.
+   */
+  std::chrono::steady_clock::time_point instanceTracingStartTimestamp_;
 };
 
 } // namespace facebook::react::jsinspector_modern
