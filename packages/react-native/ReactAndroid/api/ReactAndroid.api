@@ -1830,6 +1830,18 @@ public abstract interface annotation class com/facebook/react/common/annotations
 public abstract interface annotation class com/facebook/react/common/annotations/VisibleForTesting : java/lang/annotation/Annotation {
 }
 
+public abstract interface annotation class com/facebook/react/common/annotations/internal/LegacyArchitecture : java/lang/annotation/Annotation {
+	public abstract fun logLevel ()Lcom/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel;
+}
+
+public final class com/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel : java/lang/Enum {
+	public static final field ERROR Lcom/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel;
+	public static final field WARNING Lcom/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel;
+	public static fun values ()[Lcom/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel;
+}
+
 public final class com/facebook/react/common/assets/ReactFontManager {
 	public static final field Companion Lcom/facebook/react/common/assets/ReactFontManager$Companion;
 	public fun <init> ()V
