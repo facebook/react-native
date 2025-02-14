@@ -176,14 +176,16 @@ class ReactPlugin : Plugin<Project> {
     // We create the task to generate Java code from schema.
     val generateCodegenArtifactsTask =
         project.tasks.register(
-            "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) {
-              it.dependsOn(generateCodegenSchemaTask)
-              it.reactNativeDir.set(rootExtension.reactNativeDir)
-              it.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
-              it.generatedSrcDir.set(generatedSrcDir)
-              it.packageJsonFile.set(findPackageJsonFile(project, rootExtension.root))
-              it.codegenJavaPackageName.set(localExtension.codegenJavaPackageName)
-              it.libraryName.set(localExtension.libraryName)
+            "generateCodegenArtifactsFromSchema", GenerateCodegenArtifactsTask::class.java) { task
+              ->
+              task.dependsOn(generateCodegenSchemaTask)
+              task.reactNativeDir.set(rootExtension.reactNativeDir)
+              task.nodeExecutableAndArgs.set(rootExtension.nodeExecutableAndArgs)
+              task.generatedSrcDir.set(generatedSrcDir)
+              task.packageJsonFile.set(findPackageJsonFile(project, rootExtension.root))
+              task.codegenJavaPackageName.set(localExtension.codegenJavaPackageName)
+              task.libraryName.set(localExtension.libraryName)
+              task.nodeWorkingDir.set(project.layout.projectDirectory.asFile.absolutePath)
 
               // Please note that appNeedsCodegen is triggering a read of the package.json at
               // configuration time as we need to feed the onlyIf condition of this task.
@@ -194,7 +196,7 @@ class ReactPlugin : Plugin<Project> {
               val parsedPackageJson = packageJson?.let { JsonUtils.fromPackageJson(it) }
               val includesGeneratedCode =
                   parsedPackageJson?.codegenConfig?.includesGeneratedCode ?: false
-              it.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
+              task.onlyIf { (isLibrary || needsCodegenFromPackageJson) && !includesGeneratedCode }
             }
 
     // We update the android configuration to include the generated sources.
