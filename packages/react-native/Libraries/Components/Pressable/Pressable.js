@@ -9,9 +9,9 @@
  */
 
 import type {
-  LayoutEvent,
+  LayoutChangeEvent,
   MouseEvent,
-  PressEvent,
+  GestureResponderEvent,
 } from '../../Types/CoreEventTypes';
 import type {
   AccessibilityActionEvent,
@@ -126,7 +126,7 @@ type Props = $ReadOnly<{
   /**
    * Called when this view's layout changes.
    */
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
 
   /**
    * Called when the hover is activated to provide visual feedback.
@@ -141,22 +141,22 @@ type Props = $ReadOnly<{
   /**
    * Called when a long-tap gesture is detected.
    */
-  onLongPress?: ?(event: PressEvent) => mixed,
+  onLongPress?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * Called when a single tap gesture is detected.
    */
-  onPress?: ?(event: PressEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * Called when a touch is engaged before `onPress`.
    */
-  onPressIn?: ?(event: PressEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * Called when a touch is released before `onPress`.
    */
-  onPressOut?: ?(event: PressEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * Either view styles or a function that receives a boolean reflecting whether
@@ -299,7 +299,7 @@ function Pressable(
       onHoverOut,
       onLongPress,
       onPress,
-      onPressIn(event: PressEvent): void {
+      onPressIn(event: GestureResponderEvent): void {
         if (android_rippleConfig != null) {
           android_rippleConfig.onPressIn(event);
         }
@@ -309,7 +309,7 @@ function Pressable(
         }
       },
       onPressMove: android_rippleConfig?.onPressMove,
-      onPressOut(event: PressEvent): void {
+      onPressOut(event: GestureResponderEvent): void {
         if (android_rippleConfig != null) {
           android_rippleConfig.onPressOut(event);
         }

@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
 
 import View from '../../Components/View/View';
@@ -220,7 +220,7 @@ class TouchableNativeFeedback extends React.Component<Props, State> {
     }
   }
 
-  _dispatchHotspotUpdate(event: PressEvent): void {
+  _dispatchHotspotUpdate(event: GestureResponderEvent): void {
     if (Platform.OS === 'android') {
       const {locationX, locationY} = event.nativeEvent;
       const hostComponentRef = findHostInstance_DEPRECATED(this);

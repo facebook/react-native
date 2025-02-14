@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {PressEvent} from '../../../Libraries/Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../../Libraries/Types/CoreEventTypes';
 import type {InspectedElement} from './Inspector';
 
 import React from 'react';
@@ -25,13 +25,13 @@ type Props = $ReadOnly<{
 }>;
 
 function InspectorOverlay({inspected, onTouchPoint}: Props): React.Node {
-  const findViewForTouchEvent = (e: PressEvent) => {
+  const findViewForTouchEvent = (e: GestureResponderEvent) => {
     const {locationX, locationY} = e.nativeEvent.touches[0];
 
     onTouchPoint(locationX, locationY);
   };
 
-  const handleStartShouldSetResponder = (e: PressEvent): boolean => {
+  const handleStartShouldSetResponder = (e: GestureResponderEvent): boolean => {
     findViewForTouchEvent(e);
     return true;
   };

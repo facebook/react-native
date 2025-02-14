@@ -15,11 +15,11 @@ import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
   FocusEvent,
-  Layout,
-  LayoutEvent,
+  LayoutChangeEvent,
+  LayoutRectangle,
   MouseEvent,
   PointerEvent,
-  PressEvent,
+  GestureResponderEvent,
 } from '../../Types/CoreEventTypes';
 import type {
   AccessibilityActionEvent,
@@ -31,8 +31,8 @@ import type {
 } from './ViewAccessibility';
 import type {Node} from 'react';
 
-export type ViewLayout = Layout;
-export type ViewLayoutEvent = LayoutEvent;
+export type ViewLayout = LayoutRectangle;
+export type ViewLayoutEvent = LayoutChangeEvent;
 
 type DirectEventProps = $ReadOnly<{
   /**
@@ -61,7 +61,7 @@ type DirectEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onlayout
    */
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the
@@ -119,14 +119,14 @@ type FocusEventProps = $ReadOnly<{
 }>;
 
 type TouchEventProps = $ReadOnly<{
-  onTouchCancel?: ?(e: PressEvent) => void,
-  onTouchCancelCapture?: ?(e: PressEvent) => void,
-  onTouchEnd?: ?(e: PressEvent) => void,
-  onTouchEndCapture?: ?(e: PressEvent) => void,
-  onTouchMove?: ?(e: PressEvent) => void,
-  onTouchMoveCapture?: ?(e: PressEvent) => void,
-  onTouchStart?: ?(e: PressEvent) => void,
-  onTouchStartCapture?: ?(e: PressEvent) => void,
+  onTouchCancel?: ?(e: GestureResponderEvent) => void,
+  onTouchCancelCapture?: ?(e: GestureResponderEvent) => void,
+  onTouchEnd?: ?(e: GestureResponderEvent) => void,
+  onTouchEndCapture?: ?(e: GestureResponderEvent) => void,
+  onTouchMove?: ?(e: GestureResponderEvent) => void,
+  onTouchMoveCapture?: ?(e: GestureResponderEvent) => void,
+  onTouchStart?: ?(e: GestureResponderEvent) => void,
+  onTouchStartCapture?: ?(e: GestureResponderEvent) => void,
 }>;
 
 /**
@@ -144,7 +144,7 @@ type GestureResponderEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onmoveshouldsetresponder
    */
-  onMoveShouldSetResponder?: ?(e: PressEvent) => boolean,
+  onMoveShouldSetResponder?: ?(e: GestureResponderEvent) => boolean,
 
   /**
    * If a parent `View` wants to prevent a child `View` from becoming responder
@@ -155,7 +155,7 @@ type GestureResponderEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onMoveShouldsetrespondercapture
    */
-  onMoveShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
+  onMoveShouldSetResponderCapture?: ?(e: GestureResponderEvent) => boolean,
 
   /**
    * The View is now responding for touch events. This is the time to highlight
@@ -169,7 +169,7 @@ type GestureResponderEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onrespondergrant
    */
-  onResponderGrant?: ?(e: PressEvent) => void | boolean,
+  onResponderGrant?: ?(e: GestureResponderEvent) => void | boolean,
 
   /**
    * The user is moving their finger.
@@ -179,7 +179,7 @@ type GestureResponderEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onrespondermove
    */
-  onResponderMove?: ?(e: PressEvent) => void,
+  onResponderMove?: ?(e: GestureResponderEvent) => void,
 
   /**
    * Another responder is already active and will not release it to that `View`
@@ -190,7 +190,7 @@ type GestureResponderEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onresponderreject
    */
-  onResponderReject?: ?(e: PressEvent) => void,
+  onResponderReject?: ?(e: GestureResponderEvent) => void,
 
   /**
    * Fired at the end of the touch.
@@ -200,10 +200,10 @@ type GestureResponderEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onresponderrelease
    */
-  onResponderRelease?: ?(e: PressEvent) => void,
+  onResponderRelease?: ?(e: GestureResponderEvent) => void,
 
-  onResponderStart?: ?(e: PressEvent) => void,
-  onResponderEnd?: ?(e: PressEvent) => void,
+  onResponderStart?: ?(e: GestureResponderEvent) => void,
+  onResponderEnd?: ?(e: GestureResponderEvent) => void,
 
   /**
    * The responder has been taken from the `View`. Might be taken by other
@@ -216,7 +216,7 @@ type GestureResponderEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onresponderterminate
    */
-  onResponderTerminate?: ?(e: PressEvent) => void,
+  onResponderTerminate?: ?(e: GestureResponderEvent) => void,
 
   /**
    * Some other `View` wants to become responder and is asking this `View` to
@@ -227,7 +227,7 @@ type GestureResponderEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onresponderterminationrequest
    */
-  onResponderTerminationRequest?: ?(e: PressEvent) => boolean,
+  onResponderTerminationRequest?: ?(e: GestureResponderEvent) => boolean,
 
   /**
    * Does this view want to become responder on the start of a touch?
@@ -237,7 +237,7 @@ type GestureResponderEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onstartshouldsetresponder
    */
-  onStartShouldSetResponder?: ?(e: PressEvent) => boolean,
+  onStartShouldSetResponder?: ?(e: GestureResponderEvent) => boolean,
 
   /**
    * If a parent `View` wants to prevent a child `View` from becoming responder
@@ -248,7 +248,7 @@ type GestureResponderEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onstartshouldsetrespondercapture
    */
-  onStartShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
+  onStartShouldSetResponderCapture?: ?(e: GestureResponderEvent) => boolean,
 }>;
 
 type AndroidDrawableThemeAttr = $ReadOnly<{
@@ -393,7 +393,7 @@ type AndroidViewProps = $ReadOnly<{
    *
    * @platform android
    */
-  onClick?: ?(event: PressEvent) => mixed,
+  onClick?: ?(event: GestureResponderEvent) => mixed,
 }>;
 
 type IOSViewProps = $ReadOnly<{
