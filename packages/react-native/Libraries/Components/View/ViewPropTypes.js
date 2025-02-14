@@ -15,8 +15,8 @@ import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
   FocusEvent,
-  Layout,
-  LayoutEvent,
+  LayoutChangeEvent,
+  LayoutRectangle,
   MouseEvent,
   PointerEvent,
   PressEvent,
@@ -31,8 +31,8 @@ import type {
 } from './ViewAccessibility';
 import type {Node} from 'react';
 
-export type ViewLayout = Layout;
-export type ViewLayoutEvent = LayoutEvent;
+export type ViewLayout = LayoutRectangle;
+export type ViewLayoutEvent = LayoutChangeEvent;
 
 type DirectEventProps = $ReadOnly<{
   /**
@@ -61,7 +61,7 @@ type DirectEventProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/view#onlayout
    */
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the

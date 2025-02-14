@@ -9,7 +9,7 @@
  */
 
 import type {
-  LayoutEvent,
+  LayoutChangeEvent,
   MouseEvent,
   PressEvent,
 } from '../../Types/CoreEventTypes';
@@ -126,7 +126,7 @@ type Props = $ReadOnly<{
   /**
    * Called when this view's layout changes.
    */
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
 
   /**
    * Called when the hover is activated to provide visual feedback.

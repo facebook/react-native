@@ -20,7 +20,7 @@ import type {
 import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
-  LayoutEvent,
+  LayoutChangeEvent,
   ScrollEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
 
@@ -955,7 +955,7 @@ class VirtualizedList extends StateSafePureComponent<
           cellKey={this._getCellKey() + '-empty'}
           key="$empty">
           {React.cloneElement(element, {
-            onLayout: (event: LayoutEvent) => {
+            onLayout: (event: LayoutChangeEvent) => {
               this._onLayoutEmpty(event);
               // $FlowFixMe[prop-missing] React.Element internal inspection
               if (element.props.onLayout) {
@@ -1292,7 +1292,7 @@ class VirtualizedList extends StateSafePureComponent<
   };
 
   _onCellLayout = (
-    e: LayoutEvent,
+    e: LayoutChangeEvent,
     cellKey: string,
     cellIndex: number,
   ): void => {
@@ -1379,7 +1379,7 @@ class VirtualizedList extends StateSafePureComponent<
     }
   }
 
-  _onLayout = (e: LayoutEvent) => {
+  _onLayout = (e: LayoutChangeEvent) => {
     if (this._isNestedWithSameOrientation()) {
       // Need to adjust our scroll metrics to be relative to our containing
       // VirtualizedList before we can make claims about list item viewability
@@ -1394,7 +1394,7 @@ class VirtualizedList extends StateSafePureComponent<
     this._maybeCallOnEdgeReached();
   };
 
-  _onLayoutEmpty = (e: LayoutEvent) => {
+  _onLayoutEmpty = (e: LayoutChangeEvent) => {
     this.props.onLayout && this.props.onLayout(e);
   };
 
@@ -1402,12 +1402,12 @@ class VirtualizedList extends StateSafePureComponent<
     return this._getCellKey() + '-footer';
   }
 
-  _onLayoutFooter = (e: LayoutEvent) => {
+  _onLayoutFooter = (e: LayoutChangeEvent) => {
     this._triggerRemeasureForChildListsInCell(this._getFooterCellKey());
     this._footerLength = this._selectLength(e.nativeEvent.layout);
   };
 
-  _onLayoutHeader = (e: LayoutEvent) => {
+  _onLayoutHeader = (e: LayoutChangeEvent) => {
     this._headerLength = this._selectLength(e.nativeEvent.layout);
   };
 
