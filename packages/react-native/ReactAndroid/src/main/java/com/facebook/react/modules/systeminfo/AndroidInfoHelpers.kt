@@ -30,10 +30,12 @@ public object AndroidInfoHelpers {
   private fun isRunningOnStockEmulator(): Boolean =
       Build.FINGERPRINT.contains("generic") || Build.FINGERPRINT.startsWith("google/sdk_gphone")
 
-  @JvmStatic public fun getServerHost(context: Context, port: Int): String = getServerIpAddress(context, port)
+  @JvmStatic public fun getServerHost(port: Int): String = getServerIpAddress(null, port)
 
   @JvmStatic
   public fun getServerHost(context: Context): String = getServerIpAddress(context, getDevServerPort(context))
+
+  @JvmStatic public fun getServerHost(context: Context, port: Int): String = getServerIpAddress(context, port)
 
   @JvmStatic
   public fun getAdbReverseTcpCommand(port: Int): String = "adb reverse tcp:$port tcp:$port"
@@ -86,12 +88,13 @@ public object AndroidInfoHelpers {
   private fun getDevServerPort(context: Context): Int =
       context.resources.getInteger(R.integer.react_native_dev_server_port)
 
-  private fun getServerIpAddress(context: Context, port: Int): String {
+  private fun getServerIpAddress(context: Context?, port: Int): String {
     val ipAddress: String =
         when {
           getMetroHostPropValue().isNotEmpty() -> getMetroHostPropValue()
           isRunningOnGenymotion() -> GENYMOTION_LOCALHOST
           isRunningOnStockEmulator() -> EMULATOR_LOCALHOST
+          context == null -> DEVICE_LOCALHOST
           else -> context.resources.getString(R.string.react_native_dev_server_ip)
         }
     return String.format(Locale.US, "%s:%d", ipAddress, port)
