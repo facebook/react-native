@@ -14,7 +14,7 @@ import type {PointProp} from '../../StyleSheet/PointPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
 import type {
-  LayoutEvent,
+  LayoutChangeEvent,
   PressEvent,
   ScrollEvent,
 } from '../../Types/CoreEventTypes';
@@ -1105,7 +1105,11 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  _onStickyHeaderLayout(index: number, event: LayoutEvent, key: React.Key) {
+  _onStickyHeaderLayout(
+    index: number,
+    event: LayoutChangeEvent,
+    key: React.Key,
+  ) {
     const {stickyHeaderIndices} = this.props;
     if (!stickyHeaderIndices) {
       return;
@@ -1136,7 +1140,7 @@ class ScrollView extends React.Component<Props, State> {
     this.props.onScroll && this.props.onScroll(e);
   };
 
-  _handleLayout = (e: LayoutEvent) => {
+  _handleLayout = (e: LayoutChangeEvent) => {
     if (this.props.invertStickyHeaders === true) {
       this.setState({layoutHeight: e.nativeEvent.layout.height});
     }
@@ -1145,7 +1149,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   };
 
-  _handleContentOnLayout = (e: LayoutEvent) => {
+  _handleContentOnLayout = (e: LayoutChangeEvent) => {
     const {width, height} = e.nativeEvent.layout;
     this.props.onContentSizeChange &&
       this.props.onContentSizeChange(width, height);

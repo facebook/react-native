@@ -12,7 +12,7 @@
 
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type {ImageProps} from 'react-native/Libraries/Image/ImageProps';
-import type {LayoutEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import type {LayoutChangeEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import RNTesterButton from '../../components/RNTesterButton';
 import RNTesterText from '../../components/RNTesterText';
@@ -463,7 +463,7 @@ class OnLayoutExample extends React.Component<
     layoutHandlerMessage: 'No Message',
   };
 
-  onLayoutHandler = (event: LayoutEvent) => {
+  onLayoutHandler = (event: LayoutChangeEvent) => {
     this.setState({
       width: this.state.width,
       height: this.state.height,

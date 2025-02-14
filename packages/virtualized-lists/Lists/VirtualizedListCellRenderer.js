@@ -12,7 +12,7 @@ import type {CellRendererProps, ListRenderItem} from './VirtualizedListProps';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
-  LayoutEvent,
+  LayoutChangeEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
 
 import {VirtualizedListCellContextProvider} from './VirtualizedListContext.js';
@@ -31,7 +31,11 @@ export type Props<ItemT> = {
   index: number,
   inversionStyle: ViewStyleProp,
   item: ItemT,
-  onCellLayout?: (event: LayoutEvent, cellKey: string, index: number) => void,
+  onCellLayout?: (
+    event: LayoutChangeEvent,
+    cellKey: string,
+    index: number,
+  ) => void,
   onCellFocusCapture?: (cellKey: string) => void,
   onUnmount: (cellKey: string) => void,
   onUpdateSeparators: (
@@ -117,7 +121,7 @@ export default class CellRenderer<ItemT> extends React.PureComponent<
     this.props.onUnmount(this.props.cellKey);
   }
 
-  _onLayout = (nativeEvent: LayoutEvent): void => {
+  _onLayout = (nativeEvent: LayoutChangeEvent): void => {
     this.props.onCellLayout?.(
       nativeEvent,
       this.props.cellKey,

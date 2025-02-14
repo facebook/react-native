@@ -19,7 +19,7 @@ import type {EdgeInsetsOrSizeProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {
   BlurEvent,
   FocusEvent,
-  LayoutEvent,
+  LayoutChangeEvent,
   PressEvent,
 } from '../../Types/CoreEventTypes';
 
@@ -73,7 +73,7 @@ type Props = $ReadOnly<{
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   onBlur?: ?(event: BlurEvent) => mixed,
   onFocus?: ?(event: FocusEvent) => mixed,
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onLongPress?: ?(event: PressEvent) => mixed,
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
