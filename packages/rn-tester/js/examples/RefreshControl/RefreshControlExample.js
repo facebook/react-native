@@ -64,6 +64,10 @@ class RefreshControlExample extends React.Component {
     })),
   };
 
+  componentDidMount() {
+    this._onRefresh();
+  }
+
   _onClick = row => {
     row.clicks++;
     this.setState({
