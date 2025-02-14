@@ -2,7 +2,7 @@ name: Monitor React Native New Issues
 
 on:
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 0,6,12,18 * * *"
   workflow_dispatch:
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: '20'
       - name: Monitor New Issues
-        uses: react-native-community/repo-monitor@v1.0.0
+        uses: react-native-community/repo-monitor@v1.0.1
         with:
           task: "monitor-issues"
           git_secret: ${{ secrets.GITHUB_TOKEN }}
