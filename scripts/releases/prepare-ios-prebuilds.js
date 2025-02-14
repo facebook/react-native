@@ -38,6 +38,7 @@ type Dependency = $ReadOnly<{
   url: URL,
   prepareScript?: string,
   filesToKeep: FilesToKeep,
+  copyHeaderRule?: 'skipFirstFolder', // We can use this field to handle specifics of 3rd party libraries
 }>;
 */
 
@@ -61,6 +62,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         'src/vlog_is_on.cc',
       ],
     },
+    copyHeaderRule: 'skipFirstFolder',
   },
 ];
 
@@ -142,7 +144,7 @@ async function setupDependency(
   dependency /*: Dependency*/,
 ) /*: Promise<void> */ {
   const {name, url} = dependency;
-  const destination = `packages/react-native/third-party/${name}`;
+  const destination = path.join(THIRD_PARTY_PATH, name);
 
   await _downloadDependency(name, url, destination);
 
@@ -153,11 +155,12 @@ async function setupDependency(
   _removeUnnecessaryFiles(dependency.filesToKeep, destination);
 }
 
-async function build() {
-  const swiftPMFolder = path.join(process.cwd(), THIRD_PARTY_PATH);
-  const buildDestination = path.join(swiftPMFolder, BUILD_DESTINATION);
-  console.log(`Clean up ${buildDestination}`);
-  fs.rmSync(buildDestination, {recursive: true, force: true});
+async function build(
+  swiftPMFolder /*:string*/,
+  buildDestinationPath /*: string */,
+) {
+  console.log(`Clean up ${buildDestinationPath}`);
+  fs.rmSync(buildDestinationPath, {recursive: true, force: true});
 
   //TODO: Add support for mac,  Mac (catalyst), tvOS, xros and xrsimulator
   const platforms = ['generic/platform=iOS', 'generic/platform=iOS Simulator'];
@@ -168,12 +171,76 @@ async function build() {
   }
 }
 
+async function copyHeadersToFrameworks(
+  dependency /*: Dependency*/,
+  swiftPMFolder /*:string*/,
+  buildDestinationPath /*: string */,
+) {
+  const headers = dependency.filesToKeep.headers;
+  const {name} = dependency;
+  const sourceCodePath = path.join(THIRD_PARTY_PATH, name);
+
+  let filePathMapping /*: { [string]: string }*/ = {};
+  if (headers instanceof RegExp) {
+    const files = execSync(`find ${sourceCodePath} -type f -name "*.h"`)
+      .toString()
+      .trim()
+      .split('\n');
+    for (const file of files) {
+      if (headers.test(file)) {
+        const relativeFilePath = path
+          .relative(buildDestinationPath, file)
+          .split('/')
+          .slice(
+            dependency.copyHeaderRule &&
+              dependency.copyHeaderRule === 'skipFirstFolder'
+              ? 3 // Skip ../{name}/firstFolder
+              : 2, // Skip ../{name} which will be duplicated.
+          )
+          .join('/');
+        filePathMapping[file] = relativeFilePath;
+      }
+    }
+  } else {
+    headers.forEach(file => {
+      filePathMapping[path.join(sourceCodePath, file)] = file;
+    });
+  }
+
+  console.log(`Copying headers for ${name} to frameworks...`);
+  const productsFolder = path.join(buildDestinationPath, 'Build', 'Products');
+  Object.entries(filePathMapping).forEach(([sourceFile, relativeFilePath]) => {
+    // For each file, we need to copy it in every slice of the frameworks we built.
+    fs.readdirSync(productsFolder).forEach(productFolderPath => {
+      const destinationFile = path.join(
+        productsFolder,
+        productFolderPath,
+        'PackageFrameworks',
+        'ReactNativeDependencies.framework',
+        'Headers',
+        relativeFilePath,
+      );
+      fs.mkdirSync(path.dirname(destinationFile), {recursive: true});
+      fs.copyFileSync(sourceFile, destinationFile);
+    });
+  });
+}
+
 async function main() {
   console.log('Starting iOS prebuilds preparation...');
 
+  const swiftPMFolder = path.join(process.cwd(), THIRD_PARTY_PATH);
+  const buildDestinationPath = path.join(swiftPMFolder, BUILD_DESTINATION);
+
   await Promise.all(dependencies.map(setupDependency));
 
-  await build();
+  await build(swiftPMFolder, buildDestinationPath);
+
+  await Promise.all(
+    dependencies.map(dependency =>
+      copyHeadersToFrameworks(dependency, swiftPMFolder, buildDestinationPath),
+    ),
+  );
   console.log('Done!');
 }
 
