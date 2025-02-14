@@ -8959,7 +8959,6 @@ declare module.exports: {
     uiViewClassName: string
   ) => HostComponent<T>,
   get RootTagContext(): RootTagContext,
-  get unstable_enableLogBox(): () => void,
 };
 "
 `;
