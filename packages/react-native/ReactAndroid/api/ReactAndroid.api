@@ -1814,34 +1814,6 @@ public final class com/facebook/react/common/SystemClock {
 	public static final fun uptimeMillis ()J
 }
 
-public abstract interface annotation class com/facebook/react/common/annotations/DeprecatedInNewArchitecture : java/lang/annotation/Annotation {
-	public abstract fun message ()Ljava/lang/String;
-}
-
-public abstract interface annotation class com/facebook/react/common/annotations/FrameworkAPI : java/lang/annotation/Annotation {
-}
-
-public abstract interface annotation class com/facebook/react/common/annotations/StableReactNativeAPI : java/lang/annotation/Annotation {
-}
-
-public abstract interface annotation class com/facebook/react/common/annotations/UnstableReactNativeAPI : java/lang/annotation/Annotation {
-}
-
-public abstract interface annotation class com/facebook/react/common/annotations/VisibleForTesting : java/lang/annotation/Annotation {
-}
-
-public abstract interface annotation class com/facebook/react/common/annotations/internal/LegacyArchitecture : java/lang/annotation/Annotation {
-	public abstract fun logLevel ()Lcom/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel;
-}
-
-public final class com/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel : java/lang/Enum {
-	public static final field ERROR Lcom/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel;
-	public static final field WARNING Lcom/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel;
-	public static fun values ()[Lcom/facebook/react/common/annotations/internal/LegacyArchitectureLogLevel;
-}
-
 public final class com/facebook/react/common/assets/ReactFontManager {
 	public static final field Companion Lcom/facebook/react/common/assets/ReactFontManager$Companion;
 	public fun <init> ()V
@@ -3707,39 +3679,6 @@ public final class com/facebook/react/runtime/hermes/HermesInstance : com/facebo
 }
 
 public final class com/facebook/react/runtime/hermes/HermesInstance$Companion {
-}
-
-public class com/facebook/react/runtime/internal/bolts/Task : com/facebook/react/interfaces/TaskInterface {
-	public static final field IMMEDIATE_EXECUTOR Ljava/util/concurrent/Executor;
-	public static final field UI_THREAD_EXECUTOR Ljava/util/concurrent/Executor;
-	public static fun call (Ljava/util/concurrent/Callable;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun call (Ljava/util/concurrent/Callable;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun cancelled ()Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWith (Lcom/facebook/react/runtime/internal/bolts/Continuation;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWith (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWithTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun continueWithTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun create ()Lcom/facebook/react/runtime/internal/bolts/TaskCompletionSource;
-	public static fun forError (Ljava/lang/Exception;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun forResult (Ljava/lang/Object;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun getError ()Ljava/lang/Exception;
-	public fun getResult ()Ljava/lang/Object;
-	public static fun getUnobservedExceptionHandler ()Lcom/facebook/react/runtime/internal/bolts/Task$UnobservedExceptionHandler;
-	public fun isCancelled ()Z
-	public fun isCompleted ()Z
-	public fun isFaulted ()Z
-	public fun makeVoid ()Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun onSuccess (Lcom/facebook/react/runtime/internal/bolts/Continuation;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun onSuccess (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun onSuccessTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public fun onSuccessTask (Lcom/facebook/react/runtime/internal/bolts/Continuation;Ljava/util/concurrent/Executor;)Lcom/facebook/react/runtime/internal/bolts/Task;
-	public static fun setUnobservedExceptionHandler (Lcom/facebook/react/runtime/internal/bolts/Task$UnobservedExceptionHandler;)V
-	public fun waitForCompletion ()V
-	public fun waitForCompletion (JLjava/util/concurrent/TimeUnit;)Z
-}
-
-public abstract interface class com/facebook/react/runtime/internal/bolts/Task$UnobservedExceptionHandler {
-	public abstract fun unobservedException (Lcom/facebook/react/runtime/internal/bolts/Task;Lcom/facebook/react/runtime/internal/bolts/UnobservedTaskException;)V
 }
 
 public final class com/facebook/react/shell/MainPackageConfig {
