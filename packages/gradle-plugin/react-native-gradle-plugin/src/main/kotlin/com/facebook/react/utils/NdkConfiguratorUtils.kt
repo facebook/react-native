@@ -110,27 +110,40 @@ internal object NdkConfiguratorUtils {
       config: ReactExtension,
       variant: Variant,
       hermesEnabled: Boolean,
+      useThirdPartyJSC: Boolean,
   ) {
     if (config.enableSoCleanup.get()) {
-      val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled)
+      val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled, useThirdPartyJSC)
       variant.packaging.jniLibs.excludes.addAll(excludes)
       variant.packaging.jniLibs.pickFirsts.addAll(includes)
     }
   }
 
-  fun getPackagingOptionsForVariant(hermesEnabled: Boolean): Pair<List<String>, List<String>> {
+  fun getPackagingOptionsForVariant(
+      hermesEnabled: Boolean,
+      useThirdPartyJSC: Boolean
+  ): Pair<List<String>, List<String>> {
     val excludes = mutableListOf<String>()
     val includes = mutableListOf<String>()
-    if (hermesEnabled) {
-      excludes.add("**/libjsc.so")
-      excludes.add("**/libjsctooling.so")
-      includes.add("**/libhermes.so")
-      includes.add("**/libhermestooling.so")
-    } else {
-      excludes.add("**/libhermes.so")
-      excludes.add("**/libhermestooling.so")
-      includes.add("**/libjsc.so")
-      includes.add("**/libjsctooling.so")
+    when {
+      hermesEnabled -> {
+        excludes.add("**/libjsc.so")
+        excludes.add("**/libjsctooling.so")
+        includes.add("**/libhermes.so")
+        includes.add("**/libhermestooling.so")
+      }
+      useThirdPartyJSC -> {
+        excludes.add("**/libhermes.so")
+        excludes.add("**/libhermestooling.so")
+        excludes.add("**/libjsctooling.so")
+        includes.add("**/libjsc.so")
+      }
+      else -> {
+        excludes.add("**/libhermes.so")
+        excludes.add("**/libhermestooling.so")
+        includes.add("**/libjsc.so")
+        includes.add("**/libjsctooling.so")
+      }
     }
     return excludes to includes
   }
