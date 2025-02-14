@@ -134,6 +134,7 @@ inline std::optional<BoxShadow> fromCSSShadow(const CSSShadow& cssShadow) {
       .blurRadius = cssShadow.blurRadius.value,
       .spreadDistance = cssShadow.spreadDistance.value,
       .color = fromCSSColor(cssShadow.color),
+      .inset = cssShadow.inset,
   };
 }
 
@@ -186,6 +187,9 @@ inline std::optional<BoxShadow> parseBoxShadowRawValue(
   auto rawBlurRadius = boxShadow.find("blurRadius");
   if (rawBlurRadius != boxShadow.end()) {
     if (auto blurRadiusValue = coerceLength(rawBlurRadius->second)) {
+      if (*blurRadiusValue < 0) {
+        return {};
+      }
       blurRadius = *blurRadiusValue;
     } else {
       return {};

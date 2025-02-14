@@ -283,6 +283,9 @@ inline std::optional<FilterFunction> parseDropShadow(
   if (standardDeviation != rawDropShadow.end()) {
     if (auto parsedStandardDeviation =
             coerceLength(standardDeviation->second)) {
+      if (*parsedStandardDeviation < 0.0f) {
+        return {};
+      }
       dropShadowParams.standardDeviation = *parsedStandardDeviation;
     } else {
       return {};
@@ -320,6 +323,9 @@ inline std::optional<FilterFunction> parseFilterRawValue(
     return parseDropShadow(context, rawFilter.begin()->second);
   } else if (filterKey == "blur") {
     if (auto length = coerceLength(rawFilter.begin()->second)) {
+      if (*length < 0.0f) {
+        return {};
+      }
       return FilterFunction{FilterType::Blur, *length};
     }
     return {};
@@ -330,6 +336,9 @@ inline std::optional<FilterFunction> parseFilterRawValue(
     return {};
   } else {
     if (auto amount = coerceAmount(rawFilter.begin()->second)) {
+      if (*amount < 0.0f) {
+        return {};
+      }
       return FilterFunction{filterTypeFromString(filterKey), *amount};
     }
     return {};
