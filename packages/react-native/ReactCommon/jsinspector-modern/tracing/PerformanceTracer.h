@@ -77,6 +77,12 @@ class PerformanceTracer {
    */
   void reportThread(uint64_t id, const std::string& name);
 
+  /**
+   * Should only be called from the JavaScript thread, will buffer metadata
+   * Trace Event.
+   */
+  void reportJavaScriptThread();
+
  private:
   PerformanceTracer();
   PerformanceTracer(const PerformanceTracer&) = delete;
