@@ -72,8 +72,8 @@ const Vibration = {
    * See https://reactnative.dev/docs/vibration#vibrate
    */
   vibrate: function (
-    pattern: number | Array<number> = _default_vibration_length,
-    repeat: boolean = false,
+    pattern?: number | Array<number> = _default_vibration_length,
+    repeat?: boolean = false,
   ) {
     if (Platform.OS === 'android') {
       if (typeof pattern === 'number') {
