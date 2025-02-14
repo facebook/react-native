@@ -635,6 +635,7 @@ class ReactNativePodsUtils
             "React-jsinspector",
             "React-jsitooling",
             "React-logger",
+            "React-oscompat",
             "React-perflogger",
             "React-rncore",
             "React-runtimeexecutor",
