@@ -130,38 +130,47 @@ std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupDefaultJsExecutor
   [turboModuleManager moduleForName:"RCTDevMenu"];
 #endif // end RCT_DEV
 
+  auto runtimeInstallerLambda = [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+    if (!bridge || !turboModuleManager) {
+      return;
+    }
+    if (runtimeScheduler) {
+      facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+    }
+    [turboModuleManager installJSBindings:runtime];
+  };
 #if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
-#else
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#elif USE_THIRD_PARTY_JSC != 1
   return std::make_unique<facebook::react::JSCExecutorFactory>(
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#else
+  throw std::runtime_error("No JSExecutorFactory specified.");
+  return nullptr;
 #endif // USE_HERMES
-      facebook::react::RCTJSIExecutorRuntimeInstaller(
-          [turboModuleManager, bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
-            if (!bridge || !turboModuleManager) {
-              return;
-            }
-            if (runtimeScheduler) {
-              facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
-            }
-            [turboModuleManager installJSBindings:runtime];
-          }));
 }
 
 std::unique_ptr<facebook::react::JSExecutorFactory> RCTAppSetupJsExecutorFactoryForOldArch(
     RCTBridge *bridge,
     const std::shared_ptr<facebook::react::RuntimeScheduler> &runtimeScheduler)
 {
+  auto runtimeInstallerLambda = [bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
+    if (!bridge) {
+      return;
+    }
+    if (runtimeScheduler) {
+      facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
+    }
+  };
 #if USE_HERMES
   return std::make_unique<facebook::react::HermesExecutorFactory>(
-#else
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#elif USE_THIRD_PARTY_JSC != 1
   return std::make_unique<facebook::react::JSCExecutorFactory>(
+      facebook::react::RCTJSIExecutorRuntimeInstaller(runtimeInstallerLambda));
+#else
+  throw std::runtime_error("No JSExecutorFactory specified.");
+  return nullptr;
 #endif // USE_HERMES
-      facebook::react::RCTJSIExecutorRuntimeInstaller([bridge, runtimeScheduler](facebook::jsi::Runtime &runtime) {
-        if (!bridge) {
-          return;
-        }
-        if (runtimeScheduler) {
-          facebook::react::RuntimeSchedulerBinding::createAndInstallIfNeeded(runtime, runtimeScheduler);
-        }
-      }));
 }

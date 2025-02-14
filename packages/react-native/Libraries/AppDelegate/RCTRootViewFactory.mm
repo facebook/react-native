@@ -28,9 +28,10 @@
 #import <React/RCTSurfacePresenter.h>
 #if USE_HERMES
 #import <ReactCommon/RCTHermesInstance.h>
-#else
+#elif USE_THIRD_PARTY_JSC != 1
 #import <ReactCommon/RCTJscInstance.h>
-#endif
+#else
+#endif // USE_HERMES
 #import <ReactCommon/RCTHost+Internal.h>
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
@@ -265,8 +266,10 @@
 {
 #if USE_HERMES
   return std::make_shared<facebook::react::RCTHermesInstance>(nullptr, /* allocInOldGenBeforeTTI */ false);
-#else
+#elif USE_THIRD_PARTY_JSC != 1
   return std::make_shared<facebook::react::RCTJscInstance>();
+#else
+  throw std::runtime_error("No JSRuntimeFactory specified.");
 #endif
 }
 
