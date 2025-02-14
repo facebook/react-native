@@ -145,7 +145,8 @@ vendor/
 /packages/react-native/third-party/glog
 /packages/react-native/third-party/.swiftpm
 /packages/react-native/third-party/.build
-.patch
+fix_*.patch
+*.xcframework
 
 # Visual Studio Code (config dir - if present, this merges user defined
 # workspace settings on top of react-native.code-workspace)

@@ -226,21 +226,49 @@ async function copyHeadersToFrameworks(
   });
 }
 
+function composeXCFrameworks(
+  thirdPartyFolder /*: string */,
+  buildDestinationPath /*: string */,
+) {
+  console.log('Composing XCFrameworks...');
+  const frameworksFolder = path.join(buildDestinationPath, 'Build', 'Products');
+  const frameworks = fs.readdirSync(frameworksFolder);
+  const frameworkPaths = frameworks.map(framework =>
+    path.join(
+      frameworksFolder,
+      framework,
+      'PackageFrameworks',
+      'ReactNativeDependencies.framework',
+    ),
+  );
+  const frameworksArgs = frameworkPaths
+    .map(framework => `-framework ${framework}`)
+    .join(' ');
+  const command = `xcodebuild -create-xcframework ${frameworksArgs} -output ${path.join(thirdPartyFolder, 'ReactNativeDependencies.xcframework')}`;
+  execSync(command, {stdio: 'inherit'});
+}
+
 async function main() {
   console.log('Starting iOS prebuilds preparation...');
 
-  const swiftPMFolder = path.join(process.cwd(), THIRD_PARTY_PATH);
-  const buildDestinationPath = path.join(swiftPMFolder, BUILD_DESTINATION);
+  const thirdPartyFolder = path.join(process.cwd(), THIRD_PARTY_PATH);
+  const buildDestinationPath = path.join(thirdPartyFolder, BUILD_DESTINATION);
 
   await Promise.all(dependencies.map(setupDependency));
 
-  await build(swiftPMFolder, buildDestinationPath);
+  await build(thirdPartyFolder, buildDestinationPath);
 
   await Promise.all(
     dependencies.map(dependency =>
-      copyHeadersToFrameworks(dependency, swiftPMFolder, buildDestinationPath),
+      copyHeadersToFrameworks(
+        dependency,
+        thirdPartyFolder,
+        buildDestinationPath,
+      ),
     ),
   );
+
+  composeXCFrameworks(thirdPartyFolder, buildDestinationPath);
   console.log('Done!');
 }
 
