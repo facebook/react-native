@@ -91,7 +91,7 @@ loadScriptFromAssets(AAssetManager* manager, const std::string& assetName) {
       "Unable to load script.\n\n"
       "Make sure you're running Metro or that your "
       "bundle '", assetName, "' is packaged correctly for release.\n\n"
-      "The device must be on the same Wi-Fi network as your laptop to connect to Metro.\n\n"
+      "The device must be on the same Wi-Fi network as your computer to connect to Metro.\n\n"
       "To use USB instead, shake the device to open the Dev Menu and set "
       "the bundler location to \"localhost:8081\" and run:\n"
       "  adb reverse tcp:8081 tcp:8081"));
