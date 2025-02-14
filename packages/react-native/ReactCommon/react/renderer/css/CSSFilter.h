@@ -9,6 +9,7 @@
 
 #include <array>
 #include <optional>
+#include <variant>
 
 #include <react/renderer/css/CSSColor.h>
 #include <react/renderer/css/CSSCompoundDataType.h>
@@ -325,6 +326,11 @@ using CSSFilterFunction = CSSCompoundDataType<
     CSSOpacityFilter,
     CSSSaturateFilter,
     CSSSepiaFilter>;
+
+/**
+ * Variant of possible CSS filter function types
+ */
+using CSSFilterFunctionVariant = CSSVariantWithTypes<CSSFilterFunction>;
 
 /**
  * Representation of <filter-value-list>

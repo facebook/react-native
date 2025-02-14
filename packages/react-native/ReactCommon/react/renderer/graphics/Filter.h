@@ -13,7 +13,6 @@
 #include <string>
 #include <string_view>
 #include <variant>
-#include <vector>
 
 namespace facebook::react {
 

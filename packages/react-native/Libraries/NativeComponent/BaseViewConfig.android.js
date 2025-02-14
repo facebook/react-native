@@ -10,6 +10,7 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import {DynamicallyInjectedByGestureHandler} from './ViewConfigIgnore';
 
@@ -170,10 +171,14 @@ const validAttributesForNonEventProps = {
     process: require('../StyleSheet/processBackgroundImage').default,
   },
   boxShadow: {
-    process: require('../StyleSheet/processBoxShadow').default,
+    process: ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? undefined
+      : require('../StyleSheet/processBoxShadow').default,
   },
   filter: {
-    process: require('../StyleSheet/processFilter').default,
+    process: ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? undefined
+      : require('../StyleSheet/processFilter').default,
   },
   mixBlendMode: true,
   isolation: true,

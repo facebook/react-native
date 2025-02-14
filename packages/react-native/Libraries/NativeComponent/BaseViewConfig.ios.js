@@ -10,6 +10,7 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import {
   ConditionallyIgnoredEventHandlers,
@@ -226,10 +227,14 @@ const validAttributesForNonEventProps = {
   collapsable: true,
   collapsableChildren: true,
   filter: {
-    process: require('../StyleSheet/processFilter').default,
+    process: ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? undefined
+      : require('../StyleSheet/processFilter').default,
   },
   boxShadow: {
-    process: require('../StyleSheet/processBoxShadow').default,
+    process: ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? undefined
+      : require('../StyleSheet/processBoxShadow').default,
   },
   mixBlendMode: true,
   isolation: true,
