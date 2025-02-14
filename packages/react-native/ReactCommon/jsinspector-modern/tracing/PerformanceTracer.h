@@ -83,6 +83,8 @@ class PerformanceTracer {
    */
   void reportJavaScriptThread();
 
+  void reportEventLoopTask(uint64_t start, uint64_t end);
+
  private:
   PerformanceTracer();
   PerformanceTracer(const PerformanceTracer&) = delete;
