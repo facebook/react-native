@@ -113,12 +113,13 @@ class ReactPlugin : Plugin<Project> {
   }
 
   /** This function configures Android resources - in this case just the bundle */
+  @Suppress("DEPRECATION")
   private fun configureResources(project: Project) {
     val android = project.extensions.getByType(ApplicationExtension::class.java)
     android.aaptOptions.apply {
         // This makes sure the JS bundle is NOT compressed in the .apk.
         // If it were compressed, `mmap` would not work causing it to be fully loaded into RAM.
-        val currentNoCompress = noCompress?.toMutableSet() ?: mutableSetOf()
+        val currentNoCompress = noCompress.toMutableSet()
         currentNoCompress.add("bundle")
         noCompress(*currentNoCompress.toTypedArray())
     }
