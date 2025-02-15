@@ -140,28 +140,25 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
 
   std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 
- private:
   /*
    * Creates a `State` object if needed.
    */
-  void updateStateIfNeeded(const LayoutContext& layoutContext) {
+  virtual void updateStateIfNeeded(const LayoutContext& layoutContext) {
     Sealable::ensureUnsealed();
     const auto& stateData = BaseShadowNode::getStateData();
     const auto& reactTreeAttributedString = getAttributedString(layoutContext);
 
-    react_native_assert(textLayoutManager_);
     if (stateData.reactTreeAttributedString.isContentEqual(
             reactTreeAttributedString)) {
       return;
     }
 
     const auto& props = BaseShadowNode::getConcreteProps();
-    TextInputState newState(
+    BaseShadowNode::setStateData(TextInputState{
         AttributedStringBox{reactTreeAttributedString},
         reactTreeAttributedString,
         props.paragraphAttributes,
-        props.mostRecentEventCount);
-    BaseShadowNode::setStateData(std::move(newState));
+        props.mostRecentEventCount});
   }
 
   /*
@@ -174,18 +171,25 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
         props.getEffectiveTextAttributes(layoutContext.fontSizeMultiplier);
 
     AttributedString attributedString;
-    attributedString.appendFragment(AttributedString::Fragment{
-        .string = props.text,
-        .textAttributes = textAttributes,
-        .parentShadowView = ShadowView(*this)});
-
     auto attachments = BaseTextShadowNode::Attachments{};
+    // Use BaseTextShadowNode to get attributed string from children
     BaseTextShadowNode::buildAttributedString(
         textAttributes, *this, attributedString, attachments);
     attributedString.setBaseTextAttributes(textAttributes);
+
+    // BaseTextShadowNode only gets children. We must detect and prepend text
+    // value attributes manually.
+    if (!props.text.empty()) {
+      attributedString.appendFragment(AttributedString::Fragment{
+          .string = props.text,
+          .textAttributes = textAttributes,
+          .parentShadowView = ShadowView(*this)});
+    }
+
     return attributedString;
   }
 
+ private:
   /*
    * Returns an `AttributedStringBox` which represents text content that should
    * be used for measuring purposes. It might contain actual text value,
