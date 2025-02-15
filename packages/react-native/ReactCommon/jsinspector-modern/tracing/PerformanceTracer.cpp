@@ -34,23 +34,31 @@ PerformanceTracer::PerformanceTracer()
     : processId_(oscompat::getCurrentProcessId()) {}
 
 bool PerformanceTracer::startTracing() {
-  std::lock_guard lock(mutex_);
-  if (tracing_) {
-    return false;
+  {
+    std::lock_guard lock(mutex_);
+    if (tracing_) {
+      return false;
+    }
+
+    tracing_ = true;
   }
 
-  buffer_.push_back(TraceEvent{
-      .name = "TracingStartedInPage",
-      .cat = "disabled-by-default-devtools.timeline",
-      .ph = 'I',
-      .ts = getUnixTimestampOfNow(),
-      .pid = processId_,
-      .tid = oscompat::getCurrentThreadId(),
-      .args = folly::dynamic::object("data", folly::dynamic::object()),
-  });
+  reportProcess(processId_, "React Native");
 
-  tracing_ = true;
-  return true;
+  {
+    std::lock_guard lock(mutex_);
+    buffer_.push_back(TraceEvent{
+        .name = "TracingStartedInPage",
+        .cat = "disabled-by-default-devtools.timeline",
+        .ph = 'I',
+        .ts = getUnixTimestampOfNow(),
+        .pid = processId_,
+        .tid = oscompat::getCurrentThreadId(),
+        .args = folly::dynamic::object("data", folly::dynamic::object()),
+    });
+
+    return true;
+  }
 }
 
 bool PerformanceTracer::stopTracing() {
