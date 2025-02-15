@@ -1901,7 +1901,7 @@ class VirtualizedList extends StateSafePureComponent<
       }
 
       return {cellsAroundViewport, renderMask};
-    });
+    }, this._maybeCallOnEdgeReached);
   };
 
   _createViewToken = (
