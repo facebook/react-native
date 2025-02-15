@@ -50,6 +50,10 @@ class ReactNativePodsUtils
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", :debug)
     end
 
+    def self.set_other_cplusplusflags_for_React_Fabric(installer)
+        self.add_build_settings_to_pod(installer, "OTHER_CPLUSPLUSFLAGS", " -D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE", "React-Fabric", :debug)
+    end
+
     def self.turn_off_resource_bundle_react_core(installer)
         # this is needed for Xcode 14, see more details here https://github.com/facebook/react-native/issues/34673
         # we should be able to remove this once CocoaPods catches up to it, see more details here https://github.com/CocoaPods/CocoaPods/issues/11402
