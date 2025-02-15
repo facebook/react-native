@@ -36,6 +36,7 @@ import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
 import org.gradle.internal.jvm.Jvm
+import com.android.build.api.dsl.ApplicationExtension
 
 class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -114,12 +115,14 @@ class ReactPlugin : Plugin<Project> {
   /** This function configures Android resources - in this case just the bundle */
   private fun configureResources(project: Project) {
     val android = project.extensions.getByType(ApplicationExtension::class.java)
-    android.buildTypes.all { buildType ->
-      // This makes sure the JS bundle is NOT compressed in the .apk.
-      // If it were compressed, `mmap` would not work causing it to be fully loaded into RAM.
-      val currentNoCompress = buildType.androidResources.noCompress ?: mutableSetOf()
-      currentNoCompress.add("bundle")
-      buildType.androidResources.noCompress = currentNoCompress
+    android.aaptOptions.apply {
+        // This makes sure the JS bundle is NOT compressed in the .apk.
+        // If it were compressed, `mmap` would not work causing it to be fully loaded into RAM.
+        val currentNoCompress = noCompress?.toMutableSet() ?: mutableSetOf()
+        currentNoCompress.add("bundle")
+        noCompress(*currentNoCompress.toTypedArray())
+    }
+  }
     }
   }
 
