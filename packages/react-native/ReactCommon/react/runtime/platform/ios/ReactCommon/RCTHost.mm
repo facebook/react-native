@@ -34,6 +34,7 @@ using namespace facebook::react;
 @interface RCTHost () <RCTReloadListener, RCTInstanceDelegate>
 @property (nonatomic, readonly) jsinspector_modern::HostTarget *inspectorTarget;
 @end
+#import "RCTWindowSafeAreaProxy.h"
 
 class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::HostTargetDelegate {
  public:
@@ -248,6 +249,8 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                                              mode:(DisplayMode)displayMode
                                 initialProperties:(NSDictionary *)properties
 {
+  [[RCTWindowSafeAreaProxy sharedInstance] startObservingSafeArea];
+
   RCTFabricSurface *surface = [[RCTFabricSurface alloc] initWithSurfacePresenter:self.surfacePresenter
                                                                       moduleName:moduleName
                                                                initialProperties:properties];
