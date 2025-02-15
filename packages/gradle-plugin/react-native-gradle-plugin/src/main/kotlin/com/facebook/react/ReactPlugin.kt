@@ -7,6 +7,7 @@
 
 package com.facebook.react
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.internal.PrivateReactExtension
@@ -36,7 +37,6 @@ import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
 import org.gradle.internal.jvm.Jvm
-import com.android.build.api.dsl.ApplicationExtension
 
 class ReactPlugin : Plugin<Project> {
   override fun apply(project: Project) {
