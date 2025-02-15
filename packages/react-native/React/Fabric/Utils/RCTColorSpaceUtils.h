@@ -7,7 +7,7 @@
 
 #pragma once
 
-#import <React/RCTConvert.h>
+#import <React/RCTColorSpace.h>
 
 @interface RCTColorSpaceUtils : NSObject
 
