@@ -23,4 +23,5 @@ target_include_directories(jsinspector_tracing PUBLIC ${REACT_COMMON_DIR})
 
 target_link_libraries(jsinspector_tracing
         folly_runtime
+        oscompat
 )
