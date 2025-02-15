@@ -200,6 +200,11 @@ RCT_NOT_IMPLEMENTED(-(nullable instancetype)initWithCoder : (NSCoder *)coder)
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
+
+  if (RCTSharedApplication().applicationState == UIApplicationStateBackground) {
+    return;
+  }
+
   [[NSNotificationCenter defaultCenter]
       postNotificationName:RCTUserInterfaceStyleDidChangeNotification
                     object:self
