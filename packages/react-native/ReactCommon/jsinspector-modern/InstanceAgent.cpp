@@ -152,4 +152,24 @@ void InstanceAgent::maybeSendPendingConsoleMessages() {
   }
 }
 
+void InstanceAgent::startTracing() {
+  if (runtimeAgent_) {
+    runtimeAgent_->registerForTracing();
+    runtimeAgent_->enableSamplingProfiler();
+  }
+}
+
+void InstanceAgent::stopTracing() {
+  if (runtimeAgent_) {
+    runtimeAgent_->disableSamplingProfiler();
+  }
+}
+
+tracing::InstanceTracingProfile InstanceAgent::collectTracingProfile() {
+  tracing::RuntimeSamplingProfile runtimeSamplingProfile =
+      runtimeAgent_->collectSamplingProfile();
+
+  return tracing::InstanceTracingProfile{runtimeSamplingProfile};
+}
+
 } // namespace facebook::react::jsinspector_modern
