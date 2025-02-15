@@ -151,6 +151,40 @@ void PerformanceTracer::reportMeasure(
   });
 }
 
+void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "process_name",
+      .cat = "__metadata",
+      .ph = 'M',
+      .ts = 0,
+      .pid = id,
+      .tid = 0,
+      .args = folly::dynamic::object("name", name),
+  });
+}
+
+void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "thread_name",
+      .cat = "__metadata",
+      .ph = 'M',
+      .ts = 0,
+      .pid = processId_,
+      .tid = id,
+      .args = folly::dynamic::object("name", name),
+  });
+}
+
 folly::dynamic PerformanceTracer::serializeTraceEvent(TraceEvent event) const {
   folly::dynamic result = folly::dynamic::object;
 
