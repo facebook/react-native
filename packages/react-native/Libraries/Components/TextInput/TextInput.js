@@ -1295,7 +1295,9 @@ function InternalTextInput(props: TextInputProps): React.Node {
     'aria-checked': ariaChecked,
     'aria-disabled': ariaDisabled,
     'aria-expanded': ariaExpanded,
+    'aria-label': ariaLabel,
     'aria-selected': ariaSelected,
+    accessibilityLabel,
     accessibilityState,
     id,
     tabIndex,
@@ -1572,6 +1574,8 @@ function InternalTextInput(props: TextInputProps): React.Node {
     };
   }
 
+  const _accessibilityLabel = ariaLabel ?? accessibilityLabel;
+
   // Keep the original (potentially nested) style when possible, as React can diff these more efficiently
   let _style = props.style;
   const flattenedStyle = flattenStyle<TextStyleProp>(props.style);
@@ -1616,6 +1620,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         ref={ref}
         {...otherProps}
         {...eventHandlers}
+        accessibilityLabel={_accessibilityLabel}
         accessibilityState={_accessibilityState}
         accessible={accessible}
         submitBehavior={submitBehavior}
@@ -1679,6 +1684,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         {...colorProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
+        accessibilityLabel={_accessibilityLabel}
         accessibilityLabelledBy={_accessibilityLabelledBy}
         accessible={accessible}
         autoCapitalize={autoCapitalize}
