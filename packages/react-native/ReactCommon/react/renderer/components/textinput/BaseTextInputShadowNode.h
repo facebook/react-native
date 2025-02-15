@@ -140,11 +140,10 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
 
   std::shared_ptr<const TextLayoutManager> textLayoutManager_;
 
- private:
   /*
    * Creates a `State` object if needed.
    */
-  void updateStateIfNeeded(const LayoutContext& layoutContext) {
+  virtual void updateStateIfNeeded(const LayoutContext& layoutContext) {
     Sealable::ensureUnsealed();
     const auto& stateData = BaseShadowNode::getStateData();
     const auto& reactTreeAttributedString = getAttributedString(layoutContext);
@@ -190,6 +189,7 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     return attributedString;
   }
 
+ private:
   /*
    * Returns an `AttributedStringBox` which represents text content that should
    * be used for measuring purposes. It might contain actual text value,
