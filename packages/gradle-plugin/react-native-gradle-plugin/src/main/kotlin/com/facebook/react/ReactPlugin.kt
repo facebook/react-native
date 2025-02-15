@@ -81,6 +81,7 @@ class ReactPlugin : Plugin<Project> {
       }
       configureAutolinking(project, extension)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
+      configureResources(project)
     }
 
     // Library Only Configuration
@@ -107,6 +108,18 @@ class ReactPlugin : Plugin<Project> {
       """
               .trimIndent())
       exitProcess(1)
+    }
+  }
+
+  /** This function configures Android resources - in this case just the bundle */
+  private fun configureResources(project: Project) {
+    val android = project.extensions.getByType(ApplicationExtension::class.java)
+    android.buildTypes.all { buildType ->
+      // This makes sure the JS bundle is NOT compressed in the .apk.
+      // If it were compressed, `mmap` would not work causing it to be fully loaded into RAM.
+      val currentNoCompress = buildType.androidResources.noCompress ?: mutableSetOf()
+      currentNoCompress.add("bundle")
+      buildType.androidResources.noCompress = currentNoCompress
     }
   }
 
