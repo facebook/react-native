@@ -14,7 +14,6 @@
 
 #include <functional>
 #include <optional>
-#include <unordered_map>
 #include <vector>
 
 namespace facebook::react::jsinspector_modern {
@@ -68,7 +67,7 @@ class PerformanceTracer {
       const std::optional<DevToolsTrackEntryPayload>& trackMetadata);
 
  private:
-  PerformanceTracer() = default;
+  PerformanceTracer();
   PerformanceTracer(const PerformanceTracer&) = delete;
   PerformanceTracer& operator=(const PerformanceTracer&) = delete;
   ~PerformanceTracer() = default;
@@ -76,6 +75,7 @@ class PerformanceTracer {
   folly::dynamic serializeTraceEvent(TraceEvent event) const;
 
   bool tracing_{false};
+  uint64_t processId_;
   uint32_t performanceMeasureCount_{0};
   std::vector<TraceEvent> buffer_;
   std::mutex mutex_;
