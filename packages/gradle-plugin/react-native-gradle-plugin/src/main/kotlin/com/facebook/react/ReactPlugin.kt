@@ -123,8 +123,6 @@ class ReactPlugin : Plugin<Project> {
         noCompress(*currentNoCompress.toTypedArray())
     }
   }
-    }
-  }
 
   /** This function sets up `react-native-codegen` in our Gradle plugin. */
   @Suppress("UnstableApiUsage")
