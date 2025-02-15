@@ -1321,7 +1321,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
       ? props.value
       : typeof props.defaultValue === 'string'
         ? props.defaultValue
-        : '';
+        : undefined;
 
   const viewCommands =
     AndroidTextInputCommands ||
