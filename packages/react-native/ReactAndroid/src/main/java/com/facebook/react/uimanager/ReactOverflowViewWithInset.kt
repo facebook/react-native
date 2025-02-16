@@ -15,7 +15,7 @@ import android.view.View
  * to use the overflowInset values. This allows the overflow information to be used by
  * [TouchTargetHelper] to determine if a View is touchable.
  */
-public interface ReactOverflowViewWithInset : ReactOverflowView {
+internal interface ReactOverflowViewWithInset : ReactOverflowView {
   /**
    * Get the overflow inset rect values which indicate the extensions to the boundaries of current
    * view that wraps all of its children views
@@ -23,11 +23,11 @@ public interface ReactOverflowViewWithInset : ReactOverflowView {
    * @return Rect of integers indicating the left, top, right, bottom pixel extensions. The values
    *   are non-positive (indicating enlarged boundaries).
    */
-  public val overflowInset: Rect
+  val overflowInset: Rect
 
   /**
    * Set the overflow inset rect values which indicate the extensions to the boundaries of current
    * view that wraps all of its children views
    */
-  public fun setOverflowInset(left: Int, top: Int, right: Int, bottom: Int)
+  fun setOverflowInset(left: Int, top: Int, right: Int, bottom: Int)
 }
