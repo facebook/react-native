@@ -81,7 +81,8 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
    * Disabling compression for the `.bundle` allows it to be directly memory-mapped to RAM,
    * hence improving startup time - at the cost of a larger resulting `.apk` size.
    */
-  val enableBundleCompression: Boolean = false
+  val enableBundleCompression: Property<Boolean> =
+      objects.property(Boolean::class.java).convention(false)
 
   /**
    * Toggles the .so Cleanup step. If enabled, we will clean up all the unnecessary files before the

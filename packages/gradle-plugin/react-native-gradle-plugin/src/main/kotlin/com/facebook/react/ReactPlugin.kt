@@ -117,9 +117,10 @@ class ReactPlugin : Plugin<Project> {
       project: Project,
       reactExtension: ReactExtension
   ) {
-    if (!reactExtension.enableBundleCompression) {
+    if (!reactExtension.enableBundleCompression.get()) {
       // Bundle should not be compressed; add it to noCompress blacklist.
-      val bundleFileExtension = reactExtension.bundleAssetName.substringAfterLast('.', "")
+      val bundleFileName = reactExtension.bundleAssetName.get()
+      val bundleFileExtension = bundleFileName.substringAfterLast('.', "")
       val android = project.extensions.getByType(ApplicationExtension::class.java)
       android.androidResources.noCompress.add(bundleFileExtension)
     }
