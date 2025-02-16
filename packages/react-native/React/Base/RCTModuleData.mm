@@ -468,7 +468,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init);
 - (dispatch_queue_t)methodQueue
 {
   if (_bridge.valid) {
-    id instance = self.instance;
+    __unused id instance = self.instance;
     RCTAssert(_methodQueue != nullptr, @"Module %@ has no methodQueue (instance: %@)", self, instance);
   }
   return _methodQueue;
