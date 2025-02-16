@@ -317,13 +317,15 @@ TEST_F(HostTargetProtocolTest, OverlaySetPausedInDebuggerMultipleClients) {
 }
 
 TEST_F(HostTargetProtocolTest, RegisterUnregisterInstanceWithoutEvents) {
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
 
   page_->unregisterInstance(instanceTarget);
 }
 
 TEST_F(HostTargetTest, ConnectToAlreadyRegisteredInstanceWithoutEvents) {
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
 
   connect();
 
@@ -342,7 +344,8 @@ TEST_F(HostTargetProtocolTest, RegisterUnregisterInstanceWithEvents) {
                            "method": "Runtime.enable"
                          })");
 
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
 
   EXPECT_CALL(fromPage(), onMessage(JsonEq(R"({
                                                "method": "Runtime.executionContextsCleared"
@@ -351,7 +354,8 @@ TEST_F(HostTargetProtocolTest, RegisterUnregisterInstanceWithEvents) {
 }
 
 TEST_F(HostTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
 
   connect();
 
@@ -374,9 +378,9 @@ TEST_F(HostTargetTest, ConnectToAlreadyRegisteredInstanceWithEvents) {
 }
 
 TEST_F(HostTargetTest, ConnectToAlreadyRegisteredRuntimeWithEvents) {
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget =
-      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
   connect();
 
@@ -410,9 +414,10 @@ TEST_F(HostTargetTest, ConnectToAlreadyRegisteredRuntimeWithEvents) {
 
 TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateLifecycle) {
   {
-    auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
-    auto& runtimeTarget = instanceTarget.registerRuntime(
-        runtimeTargetDelegate_, runtimeExecutor_);
+    auto& instanceTarget =
+        page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
+    auto& runtimeTarget =
+        instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
     EXPECT_TRUE(runtimeAgentDelegates_[0]);
 
@@ -423,9 +428,10 @@ TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateLifecycle) {
   EXPECT_FALSE(runtimeAgentDelegates_[0]);
 
   {
-    auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
-    auto& runtimeTarget = instanceTarget.registerRuntime(
-        runtimeTargetDelegate_, runtimeExecutor_);
+    auto& instanceTarget =
+        page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
+    auto& runtimeTarget =
+        instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
     EXPECT_TRUE(runtimeAgentDelegates_[1]);
 
@@ -439,9 +445,9 @@ TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateLifecycle) {
 TEST_F(HostTargetProtocolTest, MethodNotHandledByRuntimeAgentDelegate) {
   InSequence s;
 
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget =
-      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
   ASSERT_TRUE(runtimeAgentDelegates_[0]);
   EXPECT_CALL(*runtimeAgentDelegates_[0], handleRequest(_))
@@ -465,9 +471,9 @@ TEST_F(HostTargetProtocolTest, MethodNotHandledByRuntimeAgentDelegate) {
 TEST_F(HostTargetProtocolTest, MethodHandledByRuntimeAgentDelegate) {
   InSequence s;
 
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget =
-      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
   ASSERT_TRUE(runtimeAgentDelegates_[0]);
   EXPECT_CALL(*runtimeAgentDelegates_[0], handleRequest(_))
@@ -509,9 +515,9 @@ TEST_F(HostTargetProtocolTest, MessageRoutingWhileNoRuntimeAgentDelegate) {
                            }
                          })");
 
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget =
-      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
   ASSERT_TRUE(runtimeAgentDelegates_[0]);
   EXPECT_CALL(*runtimeAgentDelegates_[0], handleRequest(_))
@@ -558,9 +564,9 @@ TEST_F(HostTargetProtocolTest, InstanceWithNullRuntimeAgentDelegate) {
   EXPECT_CALL(runtimeTargetDelegate_, createAgentDelegate(_, _, _, _, _))
       .WillRepeatedly(ReturnNull());
 
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget =
-      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
   EXPECT_FALSE(runtimeAgentDelegates_[0]);
 
@@ -602,14 +608,15 @@ TEST_F(HostTargetProtocolTest, RuntimeAgentDelegateHasAccessToSessionState) {
                            "method": "Runtime.enable"
                          })");
 
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
 
   EXPECT_CALL(
       fromPage(),
       onMessage(
           JsonParsed(AtJsonPtr("/method", "Runtime.executionContextCreated"))))
       .RetiresOnSaturation();
-  instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
+  instanceTarget.registerRuntime(runtimeTargetDelegate_);
   ASSERT_TRUE(runtimeAgentDelegates_[0]);
 
   EXPECT_TRUE(runtimeAgentDelegates_[0]->sessionState.isRuntimeDomainEnabled);
@@ -670,9 +677,9 @@ TEST_F(HostTargetTest, HostCommands) {
   page_->sendCommand(HostCommand::DebuggerStepOver);
   EXPECT_FALSE(runtimeAgentDelegates_[0]);
 
-  auto& instanceTarget = page_->registerInstance(instanceTargetDelegate_);
-  auto& runtimeTarget =
-      instanceTarget.registerRuntime(runtimeTargetDelegate_, runtimeExecutor_);
+  auto& instanceTarget =
+      page_->registerInstance(instanceTargetDelegate_, runtimeExecutor_);
+  auto& runtimeTarget = instanceTarget.registerRuntime(runtimeTargetDelegate_);
 
   page_->sendCommand(HostCommand::DebuggerResume);
   page_->sendCommand(HostCommand::DebuggerStepOver);

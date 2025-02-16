@@ -222,7 +222,9 @@ class JSINSPECTOR_EXPORT HostTarget
    * (or the HostTarget is destroyed). \pre There isn't currently an instance
    * registered with this HostTarget.
    */
-  InstanceTarget& registerInstance(InstanceTargetDelegate& delegate);
+  InstanceTarget& registerInstance(
+      InstanceTargetDelegate& delegate,
+      RuntimeExecutor runtimeExecutor);
 
   /**
    * Unregisters an instance from this HostTarget.
