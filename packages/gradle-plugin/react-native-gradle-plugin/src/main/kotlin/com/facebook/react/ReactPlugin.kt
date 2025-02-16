@@ -82,7 +82,7 @@ class ReactPlugin : Plugin<Project> {
       }
       configureAutolinking(project, extension)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
-      configureResources(project)
+      configureResources(project, extension)
     }
 
     // Library Only Configuration
