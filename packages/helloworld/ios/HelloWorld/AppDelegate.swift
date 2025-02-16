@@ -34,4 +34,8 @@ class AppDelegate: RCTAppDelegate {
     Bundle.main.url(forResource: "main", withExtension: "jsbundle")
     #endif
   }
+
+  override func createJSRuntimeFactory() -> NSValue {
+    return HermesRuntimeFactory.createJSRuntimeFactory()
+  }
 }
