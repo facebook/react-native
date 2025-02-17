@@ -52,6 +52,14 @@ async function getDependencies(
           }
         }
       },
+      ExportAllDeclaration(node): void {
+        importPaths.add(node.source.value);
+      },
+      ExportNamedDeclaration(node): void {
+        if (node.source != null) {
+          importPaths.add(node.source.value);
+        }
+      },
     }),
   );
 
