@@ -26,6 +26,7 @@ import {
   getExamplesListWithRecentlyUsed,
   initialNavigationState,
 } from './utils/testerStateUtils';
+import ReportFullyDrawnView from '../ReportFullyDrawnView/ReportFullyDrawnView';
 import * as React from 'react';
 import {
   BackHandler,
@@ -265,40 +266,42 @@ const RNTesterApp = ({
     screen === Screens.COMPONENTS ? examplesList.components : examplesList.apis;
 
   return (
-    <RNTesterThemeContext.Provider value={theme}>
-      <RNTTitleBar
-        title={title}
-        theme={theme}
-        documentationURL={activeModule?.documentationURL}>
-        {activeModule && BackButtonComponent ? (
-          <BackButtonComponent onBack={handleBackPress} />
-        ) : undefined}
-      </RNTTitleBar>
-      <View
-        style={StyleSheet.compose(styles.container, {
-          backgroundColor: theme.GroupedBackgroundColor,
-        })}>
-        {activeModule != null ? (
-          <RNTesterModuleContainer
-            module={activeModule}
-            example={activeModuleExample}
-            onExampleCardPress={handleModuleExampleCardPress}
+    <ReportFullyDrawnView style={styles.container}>
+      <RNTesterThemeContext.Provider value={theme}>
+        <RNTTitleBar
+          title={title}
+          theme={theme}
+          documentationURL={activeModule?.documentationURL}>
+          {activeModule && BackButtonComponent ? (
+            <BackButtonComponent onBack={handleBackPress} />
+          ) : undefined}
+        </RNTTitleBar>
+        <View
+          style={StyleSheet.compose(styles.container, {
+            backgroundColor: theme.GroupedBackgroundColor,
+          })}>
+          {activeModule != null ? (
+            <RNTesterModuleContainer
+              module={activeModule}
+              example={activeModuleExample}
+              onExampleCardPress={handleModuleExampleCardPress}
+            />
+          ) : (
+            <RNTesterModuleList
+              sections={activeExampleList}
+              handleModuleCardPress={handleModuleCardPress}
+            />
+          )}
+        </View>
+        <View style={styles.bottomNavbar}>
+          <RNTesterNavBar
+            screen={screen || Screens.COMPONENTS}
+            isExamplePageOpen={!!activeModule}
+            handleNavBarPress={handleNavBarPress}
           />
-        ) : (
-          <RNTesterModuleList
-            sections={activeExampleList}
-            handleModuleCardPress={handleModuleCardPress}
-          />
-        )}
-      </View>
-      <View style={styles.bottomNavbar}>
-        <RNTesterNavBar
-          screen={screen || Screens.COMPONENTS}
-          isExamplePageOpen={!!activeModule}
-          handleNavBarPress={handleNavBarPress}
-        />
-      </View>
-    </RNTesterThemeContext.Provider>
+        </View>
+      </RNTesterThemeContext.Provider>
+    </ReportFullyDrawnView>
   );
 };
 

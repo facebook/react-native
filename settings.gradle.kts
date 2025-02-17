@@ -39,3 +39,5 @@ configure<com.facebook.react.ReactSettingsExtension> {
   autolinkLibrariesFromCommand(
       workingDirectory = file("packages/rn-tester/"), lockFiles = files("yarn.lock"))
 }
+
+include(":packages:rn-tester:android:app:benchmark")

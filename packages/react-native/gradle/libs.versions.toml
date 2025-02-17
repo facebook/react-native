@@ -42,6 +42,10 @@ fmt="11.0.2"
 folly="2024.11.18.00"
 glog="0.3.5"
 gtest="1.12.1"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+uiautomator = "2.3.0"
+benchmarkMacroJunit4 = "1.3.3"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
@@ -76,6 +80,10 @@ mockito = {module = "org.mockito:mockito-inline", version.ref = "mockito" }
 mockito-kotlin = {module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito-kotlin" }
 robolectric = {module = "org.robolectric:robolectric", version.ref = "robolectric" }
 thoughtworks = {module = "com.thoughtworks.xstream:xstream", version.ref = "xstream" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
+androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -84,3 +92,4 @@ download = { id = "de.undercouch.download", version.ref = "download" }
 nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
+android-test = { id = "com.android.test", version.ref = "agp" }
