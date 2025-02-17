@@ -62,7 +62,9 @@ react {
   /* Hermes Commands */
   //   The hermes compiler command to run. By default it is 'hermesc'
   hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
-  enableHermesOnlyInVariants = listOf("hermesDebug", "hermesRelease")
+  enableHermesOnlyInVariants = listOf("hermesDebug", "hermesRelease", "hermesBenchmark")
+
+  enableBundleCompression.set(false)
 
   autolinkLibrariesWithApp()
 }
@@ -142,6 +144,11 @@ android {
       proguardFiles(getDefaultProguardFile("proguard-android.txt"))
       signingConfig = signingConfigs.getByName("debug")
     }
+    create("benchmark") {
+      initWith(buildTypes.getByName("release"))
+      matchingFallbacks += listOf("release")
+      isDebuggable = false
+    }
   }
   sourceSets.named("main") {
     // SampleTurboModule.
@@ -165,6 +172,7 @@ dependencies {
   "jscImplementation"(jscFlavor)
 
   testImplementation(libs.junit)
+  implementation("androidx.profileinstaller:profileinstaller:1.4.1")
 }
 
 android {
