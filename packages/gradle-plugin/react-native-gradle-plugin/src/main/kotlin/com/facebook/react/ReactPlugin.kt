@@ -7,6 +7,7 @@
 
 package com.facebook.react
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.facebook.react.internal.PrivateReactExtension
@@ -81,6 +82,7 @@ class ReactPlugin : Plugin<Project> {
       }
       configureAutolinking(project, extension)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
+      configureResources(project, extension)
     }
 
     // Library Only Configuration
@@ -107,6 +109,17 @@ class ReactPlugin : Plugin<Project> {
       """
               .trimIndent())
       exitProcess(1)
+    }
+  }
+
+  /** This function configures Android resources - in this case just the bundle */
+  private fun configureResources(project: Project, reactExtension: ReactExtension) {
+    if (!reactExtension.enableBundleCompression.get()) {
+      // Bundle should not be compressed; add it to noCompress blacklist.
+      val bundleFileName = reactExtension.bundleAssetName.get()
+      val bundleFileExtension = bundleFileName.substringAfterLast('.', "")
+      val android = project.extensions.getByType(ApplicationExtension::class.java)
+      android.androidResources.noCompress.add(bundleFileExtension)
     }
   }
 
