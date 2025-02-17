@@ -3359,17 +3359,6 @@ public final class com/facebook/react/modules/network/ReactCookieJarContainer : 
 	public fun setCookieJar (Lokhttp3/CookieJar;)V
 }
 
-public class com/facebook/react/modules/network/TLSSocketFactory : javax/net/ssl/SSLSocketFactory {
-	public fun <init> ()V
-	public fun createSocket (Ljava/lang/String;I)Ljava/net/Socket;
-	public fun createSocket (Ljava/lang/String;ILjava/net/InetAddress;I)Ljava/net/Socket;
-	public fun createSocket (Ljava/net/InetAddress;I)Ljava/net/Socket;
-	public fun createSocket (Ljava/net/InetAddress;ILjava/net/InetAddress;I)Ljava/net/Socket;
-	public fun createSocket (Ljava/net/Socket;Ljava/lang/String;IZ)Ljava/net/Socket;
-	public fun getDefaultCipherSuites ()[Ljava/lang/String;
-	public fun getSupportedCipherSuites ()[Ljava/lang/String;
-}
-
 public final class com/facebook/react/modules/permissions/PermissionsModule : com/facebook/fbreact/specs/NativePermissionsAndroidSpec, com/facebook/react/modules/core/PermissionListener {
 	public static final field Companion Lcom/facebook/react/modules/permissions/PermissionsModule$Companion;
 	public static final field NAME Ljava/lang/String;
