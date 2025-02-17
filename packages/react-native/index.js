@@ -8,6 +8,8 @@
  * @flow
  */
 
+/* eslint-disable lint/no-commonjs-exports */
+
 'use strict';
 'use client';
 
@@ -119,7 +121,6 @@ module.exports = {
   get Button(): Button {
     return require('./Libraries/Components/Button').default;
   },
-  // $FlowFixMe[value-as-type]
   get DrawerLayoutAndroid(): DrawerLayoutAndroid {
     return require('./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid')
       .default;
@@ -151,7 +152,6 @@ module.exports = {
   get Pressable(): Pressable {
     return require('./Libraries/Components/Pressable/Pressable').default;
   },
-  // $FlowFixMe[value-as-type]
   get ProgressBarAndroid(): ProgressBarAndroid {
     warnOnce(
       'progress-bar-android-moved',
@@ -225,7 +225,6 @@ module.exports = {
   // Include any types exported in the Animated module together with its default export, so
   // you can references types such as Animated.Numeric
   get Animated(): {...$Diff<AnimatedModule, {default: any}>, ...Animated} {
-    // $FlowExpectedError[prop-missing]: we only return the default export, all other exports are types
     return require('./Libraries/Animated/Animated').default;
   },
   get Appearance(): Appearance {
@@ -326,7 +325,6 @@ module.exports = {
   get Systrace(): Systrace {
     return require('./Libraries/Performance/Systrace');
   },
-  // $FlowFixMe[value-as-type]
   get ToastAndroid(): ToastAndroid {
     return require('./Libraries/Components/ToastAndroid/ToastAndroid').default;
   },
@@ -390,12 +388,6 @@ module.exports = {
   },
   get RootTagContext(): RootTagContext {
     return require('./Libraries/ReactNative/RootTag').RootTagContext;
-  },
-  get unstable_enableLogBox(): () => void {
-    return () =>
-      console.warn(
-        'LogBox is enabled by default so there is no need to call unstable_enableLogBox() anymore. This is a no op and will be removed in the next version.',
-      );
   },
 };
 
