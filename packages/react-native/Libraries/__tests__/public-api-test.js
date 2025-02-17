@@ -54,7 +54,7 @@ const JS_PRIVATE_FILES_INCLUDE_PATTERNS = [
 const JS_PRIVATE_FILES_IGNORE_PATTERNS = SHARED_PATTERNS;
 
 const sourceFiles = [
-  'index.js',
+  'index.js.flow',
   ...glob.sync(JS_LIBRARIES_FILES_PATTERN, {
     cwd: PACKAGE_ROOT,
     ignore: JS_LIBRARIES_FILES_IGNORE_PATTERNS,
