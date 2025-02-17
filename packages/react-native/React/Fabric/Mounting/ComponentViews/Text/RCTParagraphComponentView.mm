@@ -327,6 +327,11 @@ Class<RCTComponentViewProtocol> RCTParagraphCls(void)
   CAShapeLayer *_highlightLayer;
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  return nil;
+}
+
 - (CGRect)calculateCenteredFrameWithAttributedText:(NSAttributedString *)attributedText
                                              frame:(CGRect)frame {
   UIFont *font = [attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];

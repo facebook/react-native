@@ -88,11 +88,7 @@ async function applyTransforms(
         ? await print(transformed.ast, transformed.mutatedCode, prettierOptions)
         : transformed.mutatedCode;
 
-      return {
-        ...result,
-        ast: transformed.ast,
-        code,
-      };
+      return parse(code);
     });
   }, Promise.resolve(source));
 }

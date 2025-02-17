@@ -5,21 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager
 
 /** ViewGroup that supports z-index. */
 public interface ReactZIndexedViewGroup {
   /**
-   * Determine the index of a child view at {@param index} considering z-index.
+   * Determine the index of a child view at [index] considering z-index.
    *
    * @param index The child view index
    * @return The child view index considering z-index
    */
-  int getZIndexMappedChildIndex(int index);
+  public fun getZIndexMappedChildIndex(index: Int): Int
 
   /**
    * Redraw the view based on updated child z-index. This should be called after updating one of its
    * child z-index.
    */
-  void updateDrawingOrder();
+  public fun updateDrawingOrder()
 }

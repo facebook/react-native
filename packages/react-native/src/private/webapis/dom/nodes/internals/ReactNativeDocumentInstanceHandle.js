@@ -39,5 +39,6 @@ export function isReactNativeDocumentInstanceHandle(
   instanceHandle: mixed,
   // $FlowExpectedError[incompatible-type-guard]
 ): instanceHandle is ReactNativeDocumentInstanceHandle {
+  // $FlowFixMe[incompatible-type-guard]
   return typeof instanceHandle === 'number' && instanceHandle % 10 === 1;
 }

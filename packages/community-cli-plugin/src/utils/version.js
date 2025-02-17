@@ -92,6 +92,7 @@ Diff: ${chalk.dim.underline(newVersion?.diffUrl ?? 'none')}
 // $FlowFixMe
 function isDiffPurgeEntry(data: Partial<DiffPurge>): data is DiffPurge {
   return (
+    // $FlowFixMe[incompatible-type-guard]
     [data.name, data.zipball_url, data.tarball_url, data.node_id].filter(
       e => typeof e !== 'undefined',
     ).length === 0

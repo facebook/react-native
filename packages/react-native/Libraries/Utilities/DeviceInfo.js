@@ -10,4 +10,4 @@
 
 import NativeDeviceInfo from './NativeDeviceInfo';
 
-module.exports = NativeDeviceInfo;
+export default NativeDeviceInfo;

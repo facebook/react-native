@@ -19,7 +19,7 @@ import type {InspectedElementFrame} from './Inspector';
 import React from 'react';
 
 const View = require('../../../Libraries/Components/View/View').default;
-const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet');
+const StyleSheet = require('../../../Libraries/StyleSheet/StyleSheet').default;
 const Text = require('../../../Libraries/Text/Text').default;
 const resolveBoxStyle = require('./resolveBoxStyle').default;
 

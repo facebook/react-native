@@ -187,7 +187,8 @@ if (global.nativeModuleProxy) {
     '__fbBatchedBridgeConfig is not set, cannot invoke native modules',
   );
 
-  const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
+  const defineLazyObjectProperty =
+    require('../Utilities/defineLazyObjectProperty').default;
   (bridgeConfig.remoteModuleConfig || []).forEach(
     (config: ModuleConfig, moduleID: number) => {
       // Initially this config will only contain the module name when running in JSC. The actual

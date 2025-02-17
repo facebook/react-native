@@ -401,10 +401,10 @@ public class ReactModalHostView(context: ThemedReactContext) :
       dialogWindowInsetsController.isAppearanceLightStatusBars =
           activityWindowInsetsController.isAppearanceLightStatusBars
 
-      val activityRootWindowInsets =
-          WindowInsetsCompat.toWindowInsetsCompat(activityWindow.decorView.rootWindowInsets)
-
-      syncSystemBarsVisibility(activityRootWindowInsets, dialogWindowInsetsController)
+      activityWindow.decorView.rootWindowInsets?.let { insets ->
+        val activityRootWindowInsets = WindowInsetsCompat.toWindowInsetsCompat(insets)
+        syncSystemBarsVisibility(activityRootWindowInsets, dialogWindowInsetsController)
+      }
     } else {
       dialogWindow.decorView.systemUiVisibility = activityWindow.decorView.systemUiVisibility
     }

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {OS} = require('../../Utilities/Platform');
+const {OS} = require('../../Utilities/Platform').default;
 const PlatformColorAndroid =
   require('../PlatformColorValueTypes.android').PlatformColor;
 const PlatformColorIOS =

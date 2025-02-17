@@ -141,6 +141,13 @@ vendor/
 /packages/react-native/sdks/hermesc
 /packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
 
+# iOS prebuilds
+/packages/react-native/third-party/glog
+/packages/react-native/third-party/.swiftpm
+/packages/react-native/third-party/.build
+fix_*.patch
+*.xcframework
+
 # Visual Studio Code (config dir - if present, this merges user defined
 # workspace settings on top of react-native.code-workspace)
 /.vscode

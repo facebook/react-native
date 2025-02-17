@@ -10,7 +10,6 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
-import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import {
   ConditionallyIgnoredEventHandlers,
@@ -230,9 +229,7 @@ const validAttributesForNonEventProps = {
     process: require('../StyleSheet/processFilter').default,
   },
   boxShadow: {
-    process: ReactNativeFeatureFlags.enableNativeCSSParsing()
-      ? undefined
-      : require('../StyleSheet/processBoxShadow').default,
+    process: require('../StyleSheet/processBoxShadow').default,
   },
   mixBlendMode: true,
   isolation: true,

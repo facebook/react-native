@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.78.0-rc.5
+
+### Added
+
+- Add opt in for legacy Metro log streaming via `--client-logs` flag ([86db4fa90b](https://github.com/facebook/react-native/commit/86db4fa90b90919867a9b66f6caa28f77fba3a37) by [@huntie](https://github.com/huntie))
+
+### Fixed
+
+#### iOS specific
+
+- Allow multiple RN instances to run at the same time ([444c7d4eff](https://github.com/facebook/react-native/commit/444c7d4eff3d4fbe25452c94cba7ffacb3c366cc) by [@cipolleschi](https://github.com/cipolleschi))
+
+
 ## v0.78.0-rc.4
 
 ### Fixed
@@ -207,6 +220,27 @@
 - Test(image): [android] react okhttp network fetcher cache control tests ([37c532a063](https://github.com/facebook/react-native/commit/37c532a063c6054ea974612a40551f7c1399c147) by [@mateoguzmana](https://github.com/mateoguzmana))
 - Test(network): [android] `ResponseUtil` unit tests ([50d0157f0c](https://github.com/facebook/react-native/commit/50d0157f0c6a4e3224d8064a8b55c523bcd33269) by [@mateoguzmana](https://github.com/mateoguzmana))
 - ReactOkHttpNetworkFetcher – cache control headers getting overwritten by the rest of the headers ([81cb166d10](https://github.com/facebook/react-native/commit/81cb166d103f7caaa5135b5a1c66d4e978f3619f) by [@mateoguzmana](https://github.com/mateoguzmana))
+
+## v0.77.1
+
+### Fixed
+
+ - **Dev-Middleware:** Add missing `invariant` dependency ([877e82c1a9](https://github.com/facebook/react-native/commit/877e82c1a97d6c667024a437d993e84af3b820a6) by [@tido64](https://github.com/tido64))
+ - **style:** Respect `maxFontSizeMultiplier` prop on `Text` and `TextInput` components in New Architecture ([8baa858412](https://github.com/facebook/react-native/commit/8baa85841209679936938e7759c5be149304843c) by [RickardZrinski](https://github.com/RickardZrinski))
+
+#### Android specific
+
+ - **layout:** Fix elevation prop on android has incorrect border-radius ([55d5c44976](https://github.com/facebook/react-native/commit/55d5c4497621a8dfd6545899754451fcf68dce70) by [@NickGerleman](https://github.com/NickGerleman))
+ - **Fabric:** Fix execution of early InteropEvents ([d8af0ae3f2](https://github.com/facebook/react-native/commit/d8af0ae3f22c906a9584e1f5d1aaf2dba3cc3fea) by [mdvacca](https://github.com/mdvacca))
+
+#### iOS specific
+
+ - **Image:** Load images even when the extension is implicit ([bc35afefd5](https://github.com/facebook/react-native/commit/bc35afefd57a7d0516796dee209881120b82c0b1) by [@cipolleschi](https://github.com/cipolleschi))
+ - **Interop Layer:** Avoid crashing the app when the InteropLayer can't find some methods in the native implementation. ([83b986d370](https://github.com/facebook/react-native/commit/83b986d370139266bbbad3e2c356b871c56ae17c) by [@cipolleschi](https://github.com/cipolleschi))
+ - **Interop Layer:** Properly handle `null` values coming from NativeModules. ([475f797a51](https://github.com/facebook/react-native/commit/475f797a51237e63e4d2bb4e5718e6aa73157767) by [sammy-SC](https://github.com/sammy-SC))
+
+### Added
+ - **DevX:** Add opt in for legacy Metro log streaming via `--client-logs` flag ([969eb3f007](https://github.com/facebook/react-native/commit/969eb3f0070dc9df2e89ea52a6eb2c68b05aa2d7) by [huntie](https://github.com/huntie))
 
 ## v0.77.0
 

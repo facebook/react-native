@@ -15,6 +15,8 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactNoCrashSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
@@ -40,7 +42,7 @@ import java.util.Stack;
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     extends BaseJavaModule {
 
-  private static final String NAME = ViewManager.class.getSimpleName();
+  private static final String TAG = "ViewManager";
 
   private @Nullable ViewManagerDelegate<T> mDelegate = null;
 
@@ -113,7 +115,15 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    *     view manager should be set via this delegate
    */
   protected ViewManagerDelegate<T> getDelegate() {
-    return new ViewManagerPropertyUpdater.GenericViewManagerDelegate(this);
+    if (this instanceof ViewManagerWithGeneratedInterface) {
+      ReactSoftExceptionLogger.logSoftException(
+          TAG,
+          new ReactNoCrashSoftException(
+              "ViewManager using codegen must override getDelegate method (name: "
+                  + getName()
+                  + ")."));
+    }
+    return new ViewManagerPropertyUpdater.GenericViewManagerDelegate<>(this);
   }
 
   private ViewManagerDelegate<T> getOrCreateViewManagerDelegate() {
@@ -227,12 +237,12 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     if (viewContext == null) {
       // Who knows! Anything is possible. Checking instanceof on null is an NPE,
       // So this is not redundant.
-      FLog.e(NAME, "onDropViewInstance: view [" + view.getId() + "] has a null context");
+      FLog.e(TAG, "onDropViewInstance: view [" + view.getId() + "] has a null context");
       return;
     }
     if (!(viewContext instanceof ThemedReactContext)) {
       FLog.e(
-          NAME,
+          TAG,
           "onDropViewInstance: view ["
               + view.getId()
               + "] has a context that is not a ThemedReactContext: "

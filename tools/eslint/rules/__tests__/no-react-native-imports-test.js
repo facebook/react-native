@@ -61,10 +61,10 @@ ruleTester.run('require(...)', rule, {
       output: null, // Expect no autofix to be suggested.
     },
     {
-      code: `const Platform = require('react-native/Libraries/Utilities/Platform');`,
+      code: `const Platform = require('react-native/Libraries/Utilities/Platform').default;`,
       errors: [{messageId: 'rnImport'}],
       filename,
-      output: `const Platform = require('../../Utilities/Platform');`,
+      output: `const Platform = require('../../Utilities/Platform').default;`,
     },
     {
       code: `const ViewNativeComponent = require('react-native/Libraries/Components/View/ViewNativeComponent');`,
@@ -107,10 +107,10 @@ ruleTester.run('import(...)', rule, {
       output: null, // Expect no autofix to be suggested.
     },
     {
-      code: `import('react-native/Libraries/Utilities/Platform');`,
+      code: `import('react-native/Libraries/Utilities/Platform').default;`,
       errors: [{messageId: 'rnImport'}],
       filename,
-      output: `import('../../Utilities/Platform');`,
+      output: `import('../../Utilities/Platform').default;`,
     },
     {
       code: `import('react-native/Libraries/Components/View/ViewNativeComponent');`,

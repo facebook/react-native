@@ -419,6 +419,13 @@ val buildCodegenCLI by
     tasks.registering(BuildCodegenCLITask::class) {
       codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
       bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath").toString())
+      logFile.set(file("$buildDir/codegen.log"))
+      inputFiles.set(fileTree(codegenDir) { include("src/**/*.js") })
+      outputFiles.set(
+          fileTree(codegenDir) {
+            include("lib/**/*.js")
+            include("lib/**/*.js.flow")
+          })
       onlyIf {
         // For build from source scenario, we don't need to build the codegen at all.
         rootProject.name != "react-native-build-from-source"

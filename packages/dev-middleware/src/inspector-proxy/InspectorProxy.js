@@ -11,6 +11,7 @@
 
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
+import type {Logger} from '../types/Logger';
 import type {CreateCustomMessageHandlerFn} from './CustomMessageHandler';
 import type {DeviceOptions} from './Device';
 import type {
@@ -75,11 +76,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // custom message handler factory allowing implementers to handle unsupported CDP messages.
   #customMessageHandler: ?CreateCustomMessageHandlerFn;
 
+  #logger: ?Logger;
+
   constructor(
     projectRoot: string,
     serverBaseUrl: string,
     eventReporter: ?EventReporter,
     experiments: Experiments,
+    logger?: Logger,
     customMessageHandler: ?CreateCustomMessageHandlerFn,
   ) {
     this.#projectRoot = projectRoot;
@@ -87,6 +91,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     this.#devices = new Map();
     this.#eventReporter = eventReporter;
     this.#experiments = experiments;
+    this.#logger = logger;
     this.#customMessageHandler = customMessageHandler;
   }
 
@@ -218,15 +223,15 @@ export default class InspectorProxy implements InspectorProxyQueries {
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
+      const fallbackDeviceId = String(this.#deviceCounter++);
+
+      const query = url.parse(req.url || '', true).query || {};
+      const deviceId = query.device || fallbackDeviceId;
+      const deviceName = query.name || 'Unknown';
+      const appName = query.app || 'Unknown';
+      const isProfilingBuild = query.profiling === 'true';
+
       try {
-        const fallbackDeviceId = String(this.#deviceCounter++);
-
-        const query = url.parse(req.url || '', true).query || {};
-        const deviceId = query.device || fallbackDeviceId;
-        const deviceName = query.name || 'Unknown';
-        const appName = query.app || 'Unknown';
-        const isProfilingBuild = query.profiling === 'true';
-
         const deviceRelativeBaseUrl =
           getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
 
@@ -255,19 +260,37 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
         this.#devices.set(deviceId, newDevice);
 
+        this.#logger?.info(
+          "Connection established to app '%s' on device '%s'.",
+          appName,
+          deviceName,
+        );
+
         debug(
           `Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}, via=${deviceRelativeBaseUrl.origin}`,
         );
 
-        socket.on('close', () => {
+        socket.on('close', (code: number, reason: string) => {
+          this.#logger?.info(
+            "Connection closed to app '%s' on device '%s' with code '%s' and reason '%s'.",
+            appName,
+            deviceName,
+            String(code),
+            reason,
+          );
+
           if (this.#devices.get(deviceId)?.dangerouslyGetSocket() === socket) {
             this.#devices.delete(deviceId);
           }
-          debug(`Device ${deviceName} disconnected.`);
         });
-      } catch (e) {
-        console.error('error', e);
-        socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
+      } catch (error) {
+        this.#logger?.error(
+          "Connection failed to be established with app '%s' on device '%s' with error:",
+          appName,
+          deviceName,
+          error,
+        );
+        socket.close(INTERNAL_ERROR_CODE, error?.toString() ?? 'Unknown error');
       }
     });
     return wss;
@@ -294,6 +317,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         const pageId = query.page;
         const debuggerRelativeBaseUrl =
           getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
+        const appId = this.#devices.get(deviceId)?.getApp() || 'unknown';
 
         if (deviceId == null || pageId == null) {
           throw new Error('Incorrect URL - must provide device and page IDs');
@@ -304,19 +328,24 @@ export default class InspectorProxy implements InspectorProxyQueries {
           throw new Error('Unknown device with ID ' + deviceId);
         }
 
-        this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS);
+        this.#logger?.info('Connection to DevTools established.');
+
+        this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS, appId);
 
         device.handleDebuggerConnection(socket, pageId, {
           debuggerRelativeBaseUrl,
           userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
-      } catch (e) {
-        console.error(e);
-        socket.close(INTERNAL_ERROR_CODE, e?.toString() ?? 'Unknown error');
+      } catch (error) {
+        this.#logger?.error(
+          'Connection failed to be established with DevTools with error:',
+          error,
+        );
+        socket.close(INTERNAL_ERROR_CODE, error?.toString() ?? 'Unknown error');
         this.#eventReporter?.logEvent({
           type: 'connect_debugger_frontend',
           status: 'error',
-          error: e,
+          error,
         });
       }
     });
@@ -329,9 +358,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // where proxies may drop idle connections (e.g., VS Code tunnels).
   //
   // https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
-  #startHeartbeat(socket: WS, intervalMs: number) {
+  #startHeartbeat(socket: WS, intervalMs: number, appId: string) {
     let shouldSetTerminateTimeout = false;
     let terminateTimeout = null;
+    let latestPingMs = Date.now();
 
     const pingTimeout: Timeout = setTimeout(() => {
       if (socket.readyState !== WS.OPEN) {
@@ -341,6 +371,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
       }
 
       shouldSetTerminateTimeout = true;
+      latestPingMs = Date.now();
       socket.ping(() => {
         if (!shouldSetTerminateTimeout) {
           // Sometimes, this `sent` callback fires later than
@@ -363,6 +394,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
           // terminate() emits 'close' immediately, allowing us to handle it and
           // inform any clients.
           socket.terminate();
+          this.#logger?.error(
+            `Connection terminated with DevTools after not responding for ${MAX_PONG_LATENCY_MS / 1000} seconds.`,
+          );
+          this.#eventReporter?.logEvent({
+            type: 'debugger_timeout',
+            duration: MAX_PONG_LATENCY_MS,
+            appId,
+          });
         }, MAX_PONG_LATENCY_MS).unref();
       });
     }, intervalMs).unref();
@@ -373,10 +412,24 @@ export default class InspectorProxy implements InspectorProxyQueries {
       pingTimeout.refresh();
     };
 
-    socket.on('pong', onAnyMessageFromDebugger);
-    socket.on('message', onAnyMessageFromDebugger);
+    socket.on('pong', () => {
+      onAnyMessageFromDebugger();
+      this.#eventReporter?.logEvent({
+        type: 'debugger_heartbeat',
+        duration: Date.now() - latestPingMs,
+        appId,
+      });
+    });
+    socket.on('message', () => {
+      onAnyMessageFromDebugger();
+    });
 
-    socket.on('close', () => {
+    socket.on('close', (code: number, reason: string) => {
+      this.#logger?.info(
+        "Connection to DevTools closed with code '%s' and reason '%s'.",
+        String(code),
+        reason,
+      );
       shouldSetTerminateTimeout = false;
       terminateTimeout && clearTimeout(terminateTimeout);
       clearTimeout(pingTimeout);

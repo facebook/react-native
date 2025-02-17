@@ -10,7 +10,8 @@
 
 'use strict';
 
-const deepFreezeAndThrowOnMutationInDev = require('./Utilities/deepFreezeAndThrowOnMutationInDev');
+const deepFreezeAndThrowOnMutationInDev =
+  require('./Utilities/deepFreezeAndThrowOnMutationInDev').default;
 
 /**
  * A collection of Unicode sequences for various characters and emoji.

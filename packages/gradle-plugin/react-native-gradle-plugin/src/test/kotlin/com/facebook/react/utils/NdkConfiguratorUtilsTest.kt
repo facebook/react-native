@@ -14,8 +14,12 @@ import org.junit.Test
 class NdkConfiguratorUtilsTest {
 
   @Test
-  fun getPackagingOptionsForVariant_withHermesEnabled() {
-    val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled = true)
+  fun getPackagingOptionsForVariant_withHermesEnabledAndThirdPartyJSCDisabled() {
+    val (excludes, includes) =
+        getPackagingOptionsForVariant(
+            hermesEnabled = true,
+            useThirdPartyJSC = false,
+        )
 
     assertThat(excludes).containsExactly("**/libjsc.so", "**/libjsctooling.so")
     assertThat(includes).doesNotContain("**/libjsc.so", "**/libjsctooling.so")
@@ -25,13 +29,45 @@ class NdkConfiguratorUtilsTest {
   }
 
   @Test
-  fun getPackagingOptionsForVariant_withHermesDisabled() {
-    val (excludes, includes) = getPackagingOptionsForVariant(hermesEnabled = false)
+  fun getPackagingOptionsForVariant_withHermesEnabledAndThirdPartyJSC() {
+    val (excludes, includes) =
+        getPackagingOptionsForVariant(
+            hermesEnabled = true,
+            useThirdPartyJSC = true,
+        )
+
+    assertThat(excludes).containsExactly("**/libjsc.so", "**/libjsctooling.so")
+    assertThat(includes).doesNotContain("**/libjsc.so", "**/libjsctooling.so")
+
+    assertThat(includes).containsExactly("**/libhermes.so", "**/libhermestooling.so")
+    assertThat(excludes).doesNotContain("**/libhermes.so", "**/libhermestooling.so")
+  }
+
+  @Test
+  fun getPackagingOptionsForVariant_withHermesDisabledAndThirdPartyJSCDisabled() {
+    val (excludes, includes) =
+        getPackagingOptionsForVariant(
+            hermesEnabled = false,
+            useThirdPartyJSC = false,
+        )
 
     assertThat(excludes).containsExactly("**/libhermes.so", "**/libhermestooling.so")
     assertThat(includes).doesNotContain("**/libhermes.so", "**/libhermestooling.so")
 
     assertThat(includes).containsExactly("**/libjsc.so", "**/libjsctooling.so")
     assertThat(excludes).doesNotContain("**/libjsc.so", "**/libjsctooling.so")
+  }
+
+  @Test
+  fun getPackagingOptionsForVariant_withHermesDisabledAndThirdPartyJSC() {
+    val (excludes, includes) =
+        getPackagingOptionsForVariant(
+            hermesEnabled = false,
+            useThirdPartyJSC = true,
+        )
+
+    assertThat(includes).containsExactly("**/libjsc.so")
+    assertThat(excludes)
+        .containsExactly("**/libhermes.so", "**/libhermestooling.so", "**/libjsctooling.so")
   }
 }

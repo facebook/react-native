@@ -98,7 +98,7 @@ import typeof useWindowDimensions from './Libraries/Utilities/useWindowDimension
 import typeof Vibration from './Libraries/Vibration/Vibration';
 import typeof DevMenu from './src/private/devmenu/DevMenu';
 
-const warnOnce = require('./Libraries/Utilities/warnOnce');
+const warnOnce = require('./Libraries/Utilities/warnOnce').default;
 const invariant = require('invariant');
 
 export type {HostComponent, HostInstance};
@@ -238,7 +238,7 @@ module.exports = {
     return require('./Libraries/AppState/AppState').default;
   },
   get BackHandler(): BackHandler {
-    return require('./Libraries/Utilities/BackHandler');
+    return require('./Libraries/Utilities/BackHandler').default;
   },
   get Clipboard(): Clipboard {
     warnOnce(
@@ -250,13 +250,13 @@ module.exports = {
     return require('./Libraries/Components/Clipboard/Clipboard').default;
   },
   get DeviceInfo(): DeviceInfo {
-    return require('./Libraries/Utilities/DeviceInfo');
+    return require('./Libraries/Utilities/DeviceInfo').default;
   },
   get DevMenu(): DevMenu {
     return require('./src/private/devmenu/DevMenu');
   },
   get DevSettings(): DevSettings {
-    return require('./Libraries/Utilities/DevSettings');
+    return require('./Libraries/Utilities/DevSettings').default;
   },
   get Dimensions(): Dimensions {
     return require('./Libraries/Utilities/Dimensions').default;
@@ -321,7 +321,7 @@ module.exports = {
     return require('./Libraries/Share/Share').default;
   },
   get StyleSheet(): StyleSheet {
-    return require('./Libraries/StyleSheet/StyleSheet');
+    return require('./Libraries/StyleSheet/StyleSheet').default;
   },
   get Systrace(): Systrace {
     return require('./Libraries/Performance/Systrace');
@@ -374,7 +374,7 @@ module.exports = {
     return require('./Libraries/BatchedBridge/NativeModules').default;
   },
   get Platform(): Platform {
-    return require('./Libraries/Utilities/Platform');
+    return require('./Libraries/Utilities/Platform').default;
   },
   get PlatformColor(): PlatformColor {
     return require('./Libraries/StyleSheet/PlatformColorValueTypes')

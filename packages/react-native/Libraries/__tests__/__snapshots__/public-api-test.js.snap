@@ -966,28 +966,30 @@ exports[`public API should not change unintentionally Libraries/Animated/useAnim
 `;
 
 exports[`public API should not change unintentionally Libraries/AppState/AppState.js 1`] = `
-"export type AppStateValues = \\"inactive\\" | \\"background\\" | \\"active\\";
+"export type AppStateStatus = \\"inactive\\" | \\"background\\" | \\"active\\";
 type AppStateEventDefinitions = {
-  change: [AppStateValues],
+  change: [AppStateStatus],
   memoryWarning: [],
   blur: [],
   focus: [],
 };
+export type AppStateEvent = $Keys<AppStateEventDefinitions>;
 type NativeAppStateEventDefinitions = {
-  appStateDidChange: [{ app_state: AppStateValues }],
+  appStateDidChange: [{ app_state: AppStateStatus }],
   appStateFocusChange: [boolean],
   memoryWarning: [],
 };
-declare class AppState {
+declare class AppStateImpl {
   currentState: ?string;
   isAvailable: boolean;
   constructor(): void;
-  addEventListener<K: $Keys<AppStateEventDefinitions>>(
+  addEventListener<K: AppStateEvent>(
     type: K,
     handler: (...$ElementType<AppStateEventDefinitions, K>) => void
   ): EventSubscription;
 }
-declare export default AppState;
+declare const AppState: AppStateImpl;
+declare export default typeof AppState;
 "
 `;
 
@@ -1082,7 +1084,7 @@ exports[`public API should not change unintentionally Libraries/Blob/Blob.js 1`]
   constructor(parts: Array<Blob | string>, options?: BlobOptions): void;
   set data(data: ?BlobData): void;
   get data(): BlobData;
-  slice(start?: number, end?: number, contentType: string): Blob;
+  slice(start?: number, end?: number, contentType?: string): Blob;
   close(): void;
   get size(): number;
   get type(): string;
@@ -1193,12 +1195,12 @@ exports[`public API should not change unintentionally Libraries/Blob/FileReader_
 "type ReadyState = 0 | 1 | 2;
 type ReaderResult = string | ArrayBuffer;
 declare class FileReader extends EventTarget {
-  static EMPTY: number;
-  static LOADING: number;
-  static DONE: number;
-  EMPTY: number;
-  LOADING: number;
-  DONE: number;
+  static EMPTY: 0;
+  static LOADING: 1;
+  static DONE: 2;
+  EMPTY: 0;
+  LOADING: 1;
+  DONE: 2;
   constructor(): void;
   readAsArrayBuffer(blob: ?Blob): void;
   readAsDataURL(blob: ?Blob): void;
@@ -1229,7 +1231,7 @@ exports[`public API should not change unintentionally Libraries/Blob/URL.js 1`] 
 declare export class URL {
   static createObjectURL(blob: Blob): string;
   static revokeObjectURL(url: string): void;
-  constructor(url: string, base: string | URL): void;
+  constructor(url: string, base?: string | URL): void;
   get hash(): string;
   get host(): string;
   get hostname(): string;
@@ -1250,15 +1252,15 @@ declare export class URL {
 
 exports[`public API should not change unintentionally Libraries/Blob/URLSearchParams.js.flow 1`] = `
 "declare export class URLSearchParams {
-  constructor(params: any): void;
+  constructor(params?: Record<string, string>): void;
   append(key: string, value: string): void;
-  delete(name: string): void;
-  get(name: string): void;
-  getAll(name: string): void;
-  has(name: string): void;
-  set(name: string, value: string): void;
-  sort(): void;
-  @@iterator: Iterator<Array<string>>;
+  delete(name: string): empty;
+  get(name: string): empty;
+  getAll(name: string): empty;
+  has(name: string): empty;
+  set(name: string, value: string): empty;
+  sort(): empty;
+  @@iterator: Iterator<[string, string]>;
   toString(): string;
 }
 "
@@ -3698,8 +3700,15 @@ export type Role =
   | \\"tree\\"
   | \\"treegrid\\"
   | \\"treeitem\\";
+export type AccessibilityActionName =
+  | \\"activate\\"
+  | \\"increment\\"
+  | \\"decrement\\"
+  | \\"longpress\\"
+  | \\"magicTap\\"
+  | \\"escape\\";
 export type AccessibilityActionInfo = $ReadOnly<{
-  name: string,
+  name: AccessibilityActionName | string,
   label?: string,
   ...
 }>;
@@ -3719,6 +3728,45 @@ export type AccessibilityValue = $ReadOnly<{
   max?: number,
   now?: number,
   text?: Stringish,
+}>;
+export type AccessibilityPropsAndroid = $ReadOnly<{
+  accessibilityLabelledBy?: ?string | ?Array<string>,
+  \\"aria-labelledby\\"?: ?string,
+  accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
+  \\"aria-live\\"?: ?(\\"polite\\" | \\"assertive\\" | \\"off\\"),
+  importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
+}>;
+export type AccessibilityPropsIOS = $ReadOnly<{
+  accessibilityIgnoresInvertColors?: ?boolean,
+  accessibilityViewIsModal?: ?boolean,
+  accessibilityShowsLargeContentViewer?: ?boolean,
+  accessibilityLargeContentTitle?: ?string,
+  \\"aria-modal\\"?: ?boolean,
+  accessibilityElementsHidden?: ?boolean,
+  accessibilityLanguage?: ?Stringish,
+}>;
+export type AccessibilityProps = $ReadOnly<{
+  ...AccessibilityPropsAndroid,
+  ...AccessibilityPropsIOS,
+  accessible?: ?boolean,
+  accessibilityLabel?: ?Stringish,
+  accessibilityHint?: ?Stringish,
+  \\"aria-label\\"?: ?Stringish,
+  accessibilityRole?: ?AccessibilityRole,
+  role?: ?Role,
+  accessibilityState?: ?AccessibilityState,
+  accessibilityValue?: ?AccessibilityValue,
+  \\"aria-valuemax\\"?: ?AccessibilityValue[\\"max\\"],
+  \\"aria-valuemin\\"?: ?AccessibilityValue[\\"min\\"],
+  \\"aria-valuenow\\"?: ?AccessibilityValue[\\"now\\"],
+  \\"aria-valuetext\\"?: ?AccessibilityValue[\\"text\\"],
+  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
+  \\"aria-busy\\"?: ?boolean,
+  \\"aria-checked\\"?: ?boolean | \\"mixed\\",
+  \\"aria-disabled\\"?: ?boolean,
+  \\"aria-expanded\\"?: ?boolean,
+  \\"aria-selected\\"?: ?boolean,
+  \\"aria-hidden\\"?: ?boolean,
 }>;
 "
 `;
@@ -3789,7 +3837,7 @@ type TouchEventProps = $ReadOnly<{
   onTouchStart?: ?(e: PressEvent) => void,
   onTouchStartCapture?: ?(e: PressEvent) => void,
 }>;
-type GestureResponderEventProps = $ReadOnly<{
+export type GestureResponderHandlers = $ReadOnly<{
   onMoveShouldSetResponder?: ?(e: PressEvent) => boolean,
   onMoveShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
   onResponderGrant?: ?(e: PressEvent) => void | boolean,
@@ -3814,15 +3862,10 @@ type AndroidDrawableRipple = $ReadOnly<{
   rippleRadius?: ?number,
 }>;
 type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
-type AndroidViewProps = $ReadOnly<{
-  accessibilityLabelledBy?: ?string | ?Array<string>,
-  \\"aria-labelledby\\"?: ?string,
-  accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
-  \\"aria-live\\"?: ?(\\"polite\\" | \\"assertive\\" | \\"off\\"),
+export type ViewPropsAndroid = $ReadOnly<{
   nativeBackgroundAndroid?: ?AndroidDrawable,
   nativeForegroundAndroid?: ?AndroidDrawable,
   renderToHardwareTextureAndroid?: ?boolean,
-  importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
   hasTVPreferredFocus?: ?boolean,
   nextFocusDown?: ?number,
   nextFocusForward?: ?number,
@@ -3833,46 +3876,21 @@ type AndroidViewProps = $ReadOnly<{
   tabIndex?: 0 | -1,
   onClick?: ?(event: PressEvent) => mixed,
 }>;
-type IOSViewProps = $ReadOnly<{
-  accessibilityIgnoresInvertColors?: ?boolean,
-  accessibilityViewIsModal?: ?boolean,
-  accessibilityShowsLargeContentViewer?: ?boolean,
-  accessibilityLargeContentTitle?: ?string,
-  \\"aria-modal\\"?: ?boolean,
-  accessibilityElementsHidden?: ?boolean,
-  accessibilityLanguage?: ?Stringish,
+export type ViewPropsIOS = $ReadOnly<{
   shouldRasterizeIOS?: ?boolean,
 }>;
 export type ViewProps = $ReadOnly<{
   ...DirectEventProps,
-  ...GestureResponderEventProps,
+  ...GestureResponderHandlers,
   ...MouseEventProps,
   ...PointerEventProps,
   ...FocusEventProps,
   ...TouchEventProps,
-  ...AndroidViewProps,
-  ...IOSViewProps,
+  ...ViewPropsAndroid,
+  ...ViewPropsIOS,
+  ...AccessibilityProps,
   children?: Node,
   style?: ?ViewStyleProp,
-  accessible?: ?boolean,
-  accessibilityLabel?: ?Stringish,
-  accessibilityHint?: ?Stringish,
-  \\"aria-label\\"?: ?Stringish,
-  accessibilityRole?: ?AccessibilityRole,
-  role?: ?Role,
-  accessibilityState?: ?AccessibilityState,
-  accessibilityValue?: ?AccessibilityValue,
-  \\"aria-valuemax\\"?: ?AccessibilityValue[\\"max\\"],
-  \\"aria-valuemin\\"?: ?AccessibilityValue[\\"min\\"],
-  \\"aria-valuenow\\"?: ?AccessibilityValue[\\"now\\"],
-  \\"aria-valuetext\\"?: ?AccessibilityValue[\\"text\\"],
-  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
-  \\"aria-busy\\"?: ?boolean,
-  \\"aria-checked\\"?: ?boolean | \\"mixed\\",
-  \\"aria-disabled\\"?: ?boolean,
-  \\"aria-expanded\\"?: ?boolean,
-  \\"aria-selected\\"?: ?boolean,
-  \\"aria-hidden\\"?: ?boolean,
   collapsable?: ?boolean,
   collapsableChildren?: ?boolean,
   id?: string,
@@ -7083,7 +7101,7 @@ declare const absoluteFill: {
   +right: 0,
   +top: 0,
 };
-declare module.exports: {
+declare export default {
   hairlineWidth: hairlineWidth,
   absoluteFill: any,
   absoluteFillObject: absoluteFill,
@@ -7507,7 +7525,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/flatt
 "declare function flattenStyle<TStyleProp: DangerouslyImpreciseStyleProp>(
   style: ?TStyleProp
 ): ?____FlattenStyleProp_Internal<TStyleProp>;
-declare module.exports: flattenStyle;
+declare export default typeof flattenStyle;
 "
 `;
 
@@ -7515,7 +7533,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/norma
 "declare function normalizeColor(
   color: ?(ColorValue | ProcessedColorValue)
 ): ?ProcessedColorValue;
-declare module.exports: normalizeColor;
+declare export default typeof normalizeColor;
 "
 `;
 
@@ -7563,7 +7581,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/priva
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/processAspectRatio.js 1`] = `
 "declare function processAspectRatio(aspectRatio?: number | string): ?number;
-declare module.exports: processAspectRatio;
+declare export default typeof processAspectRatio;
 "
 `;
 
@@ -7647,7 +7665,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "declare function processFontVariant(
   fontVariant: ____FontVariantArray_Internal | string
 ): ?____FontVariantArray_Internal;
-declare module.exports: processFontVariant;
+declare export default typeof processFontVariant;
 "
 `;
 
@@ -7655,7 +7673,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 "declare function processTransform(
   transform: Array<Object> | string
 ): Array<Object> | Array<number>;
-declare module.exports: processTransform;
+declare export default typeof processTransform;
 "
 `;
 
@@ -7668,7 +7686,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/proce
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/setNormalizedColorAlpha.js 1`] = `
 "declare function setNormalizedColorAlpha(input: number, alpha: number): number;
-declare module.exports: setNormalizedColorAlpha;
+declare export default typeof setNormalizedColorAlpha;
 "
 `;
 
@@ -8099,18 +8117,19 @@ declare export function addChangeListener(
 exports[`public API should not change unintentionally Libraries/Utilities/BackHandler.js.flow 1`] = `
 "type BackPressEventName = \\"backPress\\" | \\"hardwareBackPress\\";
 type TBackHandler = {
-  +exitApp: () => void,
-  +addEventListener: (
+  exitApp(): void,
+  addEventListener(
     eventName: BackPressEventName,
     handler: () => ?boolean
-  ) => { remove: () => void, ... },
+  ): { remove: () => void, ... },
 };
-declare module.exports: TBackHandler;
+declare const BackHandler: TBackHandler;
+declare export default typeof BackHandler;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/DevLoadingView.js 1`] = `
-"declare module.exports: {
+"declare export default {
   showMessage(message: string, type: \\"load\\" | \\"refresh\\"): void,
   hide(): void,
 };
@@ -8123,12 +8142,12 @@ exports[`public API should not change unintentionally Libraries/Utilities/DevSet
   reload(reason?: string): void,
   onFastRefresh(): void,
 };
-declare module.exports: DevSettings;
+declare export default typeof DevSettings;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/DeviceInfo.js 1`] = `
-"declare module.exports: NativeDeviceInfo;
+"declare export default typeof NativeDeviceInfo;
 "
 `;
 
@@ -8143,18 +8162,17 @@ declare export default typeof Dimensions;
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/FeatureDetection.js 1`] = `
-"declare function isNativeFunction(f: Function): boolean;
-declare function hasNativeConstructor(o: Object, expectedName: string): boolean;
-declare module.exports: {
-  isNativeFunction: isNativeFunction,
-  hasNativeConstructor: hasNativeConstructor,
-};
+"declare export function isNativeFunction(f: Function): boolean;
+declare export function hasNativeConstructor(
+  o: Object,
+  expectedName: string
+): boolean;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/GlobalPerformanceLogger.js 1`] = `
 "declare const GlobalPerformanceLogger: IPerformanceLogger;
-declare module.exports: GlobalPerformanceLogger;
+declare export default typeof GlobalPerformanceLogger;
 "
 `;
 
@@ -8184,13 +8202,13 @@ export type HMRClientNativeInterface = {
   ): void,
 };
 declare const HMRClient: HMRClientNativeInterface;
-declare module.exports: HMRClient;
+declare export default typeof HMRClient;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/HMRClientProdShim.js 1`] = `
 "declare const HMRClientProdShim: HMRClientNativeInterface;
-declare module.exports: HMRClientProdShim;
+declare export default typeof HMRClientProdShim;
 "
 `;
 
@@ -8282,7 +8300,12 @@ declare export default typeof PixelRatio;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Utilities/Platform.flow.js 1`] = `
+exports[`public API should not change unintentionally Libraries/Utilities/Platform.js.flow 1`] = `
+"declare export default Platform;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Utilities/PlatformTypes.js 1`] = `
 "export type PlatformSelectSpec<T> = {
   default?: T,
   native?: T,
@@ -8348,22 +8371,16 @@ export type Platform = IOSPlatform | AndroidPlatform;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Utilities/Platform.js.flow 1`] = `
-"declare module.exports: Platform;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Utilities/PolyfillFunctions.js 1`] = `
-"declare function polyfillObjectProperty<T>(
+"declare export function polyfillObjectProperty<T>(
   object: { ... },
   name: string,
   getValue: () => T
 ): void;
-declare function polyfillGlobal<T>(name: string, getValue: () => T): void;
-declare module.exports: {
-  polyfillObjectProperty: polyfillObjectProperty,
-  polyfillGlobal: polyfillGlobal,
-};
+declare export function polyfillGlobal<T>(
+  name: string,
+  getValue: () => T
+): void;
 "
 `;
 
@@ -8374,7 +8391,7 @@ declare const RCTLog: {
   logToConsole(level: string, ...args: Array<mixed>): void,
   setWarningHandler(handler: typeof warningHandler): void,
 };
-declare module.exports: RCTLog;
+declare export default typeof RCTLog;
 "
 `;
 
@@ -8432,13 +8449,13 @@ declare const SceneTracker: {
     ...
   },
 };
-declare module.exports: SceneTracker;
+declare export default typeof SceneTracker;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/binaryToBase64.js 1`] = `
 "declare function binaryToBase64(data: ArrayBuffer | $ArrayBufferView): string;
-declare module.exports: binaryToBase64;
+declare export default typeof binaryToBase64;
 "
 `;
 
@@ -8480,7 +8497,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/deepFr
 "declare function deepFreezeAndThrowOnMutationInDev<T: { ... } | Array<mixed>>(
   object: T
 ): T;
-declare module.exports: deepFreezeAndThrowOnMutationInDev;
+declare export default typeof deepFreezeAndThrowOnMutationInDev;
 "
 `;
 
@@ -8495,7 +8512,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/define
     ...
   }
 ): void;
-declare module.exports: defineLazyObjectProperty;
+declare export default typeof defineLazyObjectProperty;
 "
 `;
 
@@ -8553,19 +8570,19 @@ declare export default typeof sizesDiffer;
 
 exports[`public API should not change unintentionally Libraries/Utilities/dismissKeyboard.js 1`] = `
 "declare function dismissKeyboard(): void;
-declare module.exports: dismissKeyboard;
+declare export default typeof dismissKeyboard;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/infoLog.js 1`] = `
 "declare function infoLog(...args: Array<mixed>): void;
-declare module.exports: infoLog;
+declare export default typeof infoLog;
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/logError.js 1`] = `
 "declare const logError: (...args: $ReadOnlyArray<mixed>) => void;
-declare module.exports: logError;
+declare export default typeof logError;
 "
 `;
 
@@ -8575,7 +8592,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/mapWit
   itemRenderer: (item: TFrom, index: number, items: Array<TFrom>) => TTo,
   spacerRenderer: (index: number) => TTo
 ): Array<TTo>;
-declare module.exports: mapWithSeparator;
+declare export default typeof mapWithSeparator;
 "
 `;
 
@@ -8625,7 +8642,7 @@ exports[`public API should not change unintentionally Libraries/Utilities/useWin
 
 exports[`public API should not change unintentionally Libraries/Utilities/warnOnce.js 1`] = `
 "declare function warnOnce(key: string, message: string): void;
-declare module.exports: warnOnce;
+declare export default typeof warnOnce;
 "
 `;
 
@@ -8637,7 +8654,7 @@ declare export default typeof NativeVibration;
 
 exports[`public API should not change unintentionally Libraries/Vibration/Vibration.js 1`] = `
 "declare const Vibration: {
-  vibrate: (pattern: number | Array<number>, repeat: boolean) => void,
+  vibrate: (pattern?: number | Array<number>, repeat?: boolean) => void,
   cancel: () => void,
 };
 declare export default typeof Vibration;
