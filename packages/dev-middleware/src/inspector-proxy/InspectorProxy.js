@@ -359,7 +359,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
   //
   // https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
   #startHeartbeat(socket: WS, intervalMs: number, appId: string) {
-    let shouldSetTerminateTimeout = false;
     let terminateTimeout = null;
     let latestPingMs = Date.now();
 
@@ -370,58 +369,52 @@ export default class InspectorProxy implements InspectorProxyQueries {
         return;
       }
 
-      shouldSetTerminateTimeout = true;
       latestPingMs = Date.now();
-      socket.ping(() => {
-        if (!shouldSetTerminateTimeout) {
-          // Sometimes, this `sent` callback fires later than
-          // the actual pong reply.
-          //
-          // If any message came in between ping `sending` and `sent`,
-          // then the connection exists; and we don't need to do anything.
-          return;
-        }
 
-        shouldSetTerminateTimeout = false;
-        terminateTimeout = setTimeout(() => {
-          if (socket.readyState !== WS.OPEN) {
-            return;
-          }
-          // We don't use close() here because that initiates a closing handshake,
-          // which will not complete if the other end has gone away - 'close'
-          // would not be emitted.
-          //
-          // terminate() emits 'close' immediately, allowing us to handle it and
-          // inform any clients.
-          socket.terminate();
-          this.#logger?.error(
-            `Connection terminated with DevTools after not responding for ${MAX_PONG_LATENCY_MS / 1000} seconds.`,
-          );
-          this.#eventReporter?.logEvent({
-            type: 'debugger_timeout',
-            duration: MAX_PONG_LATENCY_MS,
-            appId,
-          });
-        }, MAX_PONG_LATENCY_MS).unref();
+      socket.ping(() => {
+        if (!terminateTimeout) {
+          terminateTimeout = setTimeout(() => {
+            if (socket.readyState !== WS.OPEN) {
+              return;
+            }
+
+            // We don't use close() here because that initiates a closing handshake,
+            // which will not complete if the other end has gone away - 'close'
+            // would not be emitted.
+            //
+            // terminate() emits 'close' immediately, allowing us to handle it and
+            // inform any clients.
+            socket.terminate();
+            this.#logger?.error(
+              `Connection terminated with DevTools after not responding for ${MAX_PONG_LATENCY_MS / 1000} seconds.`,
+            );
+            this.#eventReporter?.logEvent({
+              type: 'debugger_timeout',
+              duration: MAX_PONG_LATENCY_MS,
+              appId,
+            });
+          }, MAX_PONG_LATENCY_MS).unref();
+        }
       });
     }, intervalMs).unref();
 
-    const onAnyMessageFromDebugger = () => {
-      shouldSetTerminateTimeout = false;
-      terminateTimeout && clearTimeout(terminateTimeout);
-      pingTimeout.refresh();
-    };
-
     socket.on('pong', () => {
-      onAnyMessageFromDebugger();
+      const duration = Date.now() - latestPingMs;
+
+      debug(`debugger ping-pong for ${appId} took ${duration}ms.`);
+
       this.#eventReporter?.logEvent({
         type: 'debugger_heartbeat',
-        duration: Date.now() - latestPingMs,
+        duration,
         appId,
       });
+
+      terminateTimeout?.refresh();
+      pingTimeout.refresh();
     });
+
     socket.on('message', () => {
-      onAnyMessageFromDebugger();
+      terminateTimeout?.refresh();
     });
 
     socket.on('close', (code: number, reason: string) => {
@@ -430,7 +423,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
         String(code),
         reason,
       );
-      shouldSetTerminateTimeout = false;
       terminateTimeout && clearTimeout(terminateTimeout);
       clearTimeout(pingTimeout);
     });
