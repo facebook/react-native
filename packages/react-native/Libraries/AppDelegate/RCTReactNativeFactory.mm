@@ -67,6 +67,32 @@ using namespace facebook::react;
   return self;
 }
 
+- (void)startReactNativeWithModuleName:(NSString *)moduleName inWindow:(UIWindow *_Nullable)window
+{
+  [self startReactNativeWithModuleName:moduleName inWindow:window initialProperties:nil launchOptions:nil];
+}
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                         launchOptions:(NSDictionary *_Nullable)launchOptions
+{
+  [self startReactNativeWithModuleName:moduleName inWindow:window initialProperties:nil launchOptions:launchOptions];
+}
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                     initialProperties:(NSDictionary *_Nullable)initialProperties
+                         launchOptions:(NSDictionary *_Nullable)launchOptions
+{
+  UIView *rootView = [self.rootViewFactory viewWithModuleName:moduleName
+                                            initialProperties:initialProperties
+                                                launchOptions:launchOptions];
+  UIViewController *rootViewController = [_delegate createRootViewController];
+  [_delegate setRootView:rootView toRootViewController:rootViewController];
+  window.rootViewController = rootViewController;
+  [window makeKeyAndVisible];
+}
+
 #pragma mark - RCTUIConfiguratorProtocol
 
 - (RCTColorSpace)defaultColorSpace
