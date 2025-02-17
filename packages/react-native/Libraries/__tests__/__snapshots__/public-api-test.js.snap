@@ -4921,7 +4921,18 @@ declare export default typeof TouchHistoryMath;
 `;
 
 exports[`public API should not change unintentionally Libraries/LayoutAnimation/LayoutAnimation.js 1`] = `
-"export type LayoutAnimationConfig = LayoutAnimationConfig_;
+"export type {
+  LayoutAnimationType,
+  LayoutAnimationProperty,
+  LayoutAnimationAnimationConfig as LayoutAnimationAnim,
+} from \\"../Renderer/shims/ReactNativeTypes\\";
+export type LayoutAnimationConfig = LayoutAnimationConfig_;
+export type LayoutAnimationTypes = $ReadOnly<{
+  [type in LayoutAnimationType]: type,
+}>;
+export type LayoutAnimationProperties = $ReadOnly<{
+  [prop in LayoutAnimationProperty]: prop,
+}>;
 type OnAnimationDidEndCallback = () => void;
 type OnAnimationDidFailCallback = () => void;
 declare function setEnabled(value: boolean): void;
@@ -4932,8 +4943,8 @@ declare function configureNext(
 ): void;
 declare function create(
   duration: number,
-  type: LayoutAnimationType,
-  property: LayoutAnimationProperty
+  type?: LayoutAnimationType,
+  property?: LayoutAnimationProperty
 ): LayoutAnimationConfig;
 declare const Presets: {
   easeInEaseOut: LayoutAnimationConfig,
@@ -4943,8 +4954,8 @@ declare const Presets: {
 declare const LayoutAnimation: {
   configureNext: configureNext,
   create: create,
-  Types: $ReadOnly<{ [K in LayoutAnimationType]: K }>,
-  Properties: $ReadOnly<{ [K in LayoutAnimationProperty]: K }>,
+  Types: LayoutAnimationTypes,
+  Properties: LayoutAnimationProperties,
   checkConfig(...args: Array<mixed>): void,
   Presets: Presets,
   easeInEaseOut: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
