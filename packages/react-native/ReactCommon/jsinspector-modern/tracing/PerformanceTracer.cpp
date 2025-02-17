@@ -7,20 +7,15 @@
 
 #include "PerformanceTracer.h"
 
+#include <oscompat/OSCompat.h>
+
 #include <folly/json.h>
 
 #include <mutex>
-#include <unordered_set>
 
 namespace facebook::react::jsinspector_modern {
 
 namespace {
-
-/** Process ID for all emitted events. */
-const uint64_t PID = 1000;
-
-/** Default/starting track ID for the "Timings" track. */
-const uint64_t USER_TIMINGS_DEFAULT_TRACK = 1000;
 
 uint64_t getUnixTimestampOfNow() {
   return std::chrono::duration_cast<std::chrono::microseconds>(
@@ -35,6 +30,9 @@ PerformanceTracer& PerformanceTracer::getInstance() {
   return tracer;
 }
 
+PerformanceTracer::PerformanceTracer()
+    : processId_(oscompat::getCurrentProcessId()) {}
+
 bool PerformanceTracer::startTracing() {
   std::lock_guard lock(mutex_);
   if (tracing_) {
@@ -46,8 +44,8 @@ bool PerformanceTracer::startTracing() {
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
       .ts = getUnixTimestampOfNow(),
-      .pid = PID, // FIXME: This should be the real process ID.
-      .tid = 0, // FIXME: This should be the real thread ID.
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
       .args = folly::dynamic::object("data", folly::dynamic::object()),
   });
 
@@ -106,9 +104,8 @@ void PerformanceTracer::reportMark(
       .cat = "blink.user_timing",
       .ph = 'I',
       .ts = start,
-      .pid = PID, // FIXME: This should be the real process ID.
-      .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
-                                         // thread ID.
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
   });
 }
 
@@ -132,15 +129,15 @@ void PerformanceTracer::reportMeasure(
   }
 
   ++performanceMeasureCount_;
+  auto currentThreadId = oscompat::getCurrentThreadId();
   buffer_.push_back(TraceEvent{
       .id = performanceMeasureCount_,
       .name = std::string(name),
       .cat = "blink.user_timing",
       .ph = 'b',
       .ts = start,
-      .pid = PID, // FIXME: This should be the real process ID.
-      .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
-                                         // thread ID.
+      .pid = processId_,
+      .tid = currentThreadId,
       .args = beginEventArgs,
   });
   buffer_.push_back(TraceEvent{
@@ -149,9 +146,8 @@ void PerformanceTracer::reportMeasure(
       .cat = "blink.user_timing",
       .ph = 'e',
       .ts = start + duration,
-      .pid = PID, // FIXME: This should be the real process ID.
-      .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
-                                         // thread ID.
+      .pid = processId_,
+      .tid = currentThreadId,
   });
 }
 
