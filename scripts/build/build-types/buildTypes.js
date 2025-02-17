@@ -48,6 +48,7 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Share/Share.js',
   'packages/react-native/Libraries/vendor/emitter/EventEmitter.js',
   'packages/react-native/Libraries/Vibration/Vibration.js',
+  'packages/react-native/Libraries/PermissionsAndroid/PermissionsAndroid.js',
 ];
 
 /**
