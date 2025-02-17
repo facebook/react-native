@@ -8872,94 +8872,90 @@ declare export default class EventEmitter<
 "
 `;
 
-exports[`public API should not change unintentionally index.js 1`] = `
-"export type { HostComponent, HostInstance };
-declare module.exports: {
-  get registerCallableModule(): RegisterCallableModule,
-  get AccessibilityInfo(): AccessibilityInfo,
-  get ActivityIndicator(): ActivityIndicator,
-  get Button(): Button,
-  get DrawerLayoutAndroid(): DrawerLayoutAndroid,
-  get FlatList(): FlatList,
-  get Image(): Image,
-  get ImageBackground(): ImageBackground,
-  get InputAccessoryView(): InputAccessoryView,
-  get experimental_LayoutConformance(): LayoutConformance,
-  get KeyboardAvoidingView(): KeyboardAvoidingView,
-  get Modal(): Modal,
-  get Pressable(): Pressable,
-  get ProgressBarAndroid(): ProgressBarAndroid,
-  get RefreshControl(): RefreshControl,
-  get SafeAreaView(): SafeAreaView,
-  get ScrollView(): ScrollView,
-  get SectionList(): SectionList,
-  get StatusBar(): StatusBar,
-  get Switch(): Switch,
-  get Text(): Text,
-  get TextInput(): TextInput,
-  get Touchable(): Touchable,
-  get TouchableHighlight(): TouchableHighlight,
-  get TouchableNativeFeedback(): TouchableNativeFeedback,
-  get TouchableOpacity(): TouchableOpacity,
-  get TouchableWithoutFeedback(): TouchableWithoutFeedback,
-  get View(): View,
-  get VirtualizedList(): VirtualizedList,
-  get VirtualizedSectionList(): VirtualizedSectionList,
-  get ActionSheetIOS(): ActionSheetIOS,
-  get Alert(): Alert,
-  get Animated(): { ...$Diff<AnimatedModule, { default: any }>, ...Animated },
-  get Appearance(): Appearance,
-  get AppRegistry(): AppRegistry,
-  get AppState(): AppState,
-  get BackHandler(): BackHandler,
-  get Clipboard(): Clipboard,
-  get DeviceInfo(): DeviceInfo,
-  get DevMenu(): DevMenu,
-  get DevSettings(): DevSettings,
-  get Dimensions(): Dimensions,
-  get Easing(): Easing,
-  get findNodeHandle(): $PropertyType<ReactNative, \\"findNodeHandle\\">,
-  get I18nManager(): I18nManager,
-  get InteractionManager(): InteractionManager,
-  get Keyboard(): Keyboard,
-  get LayoutAnimation(): LayoutAnimation,
-  get Linking(): Linking,
-  get LogBox(): LogBox,
-  get NativeDialogManagerAndroid(): NativeDialogManagerAndroid,
-  get NativeEventEmitter(): NativeEventEmitter,
-  get Networking(): Networking,
-  get PanResponder(): PanResponder,
-  get PermissionsAndroid(): PermissionsAndroid,
-  get PixelRatio(): PixelRatio,
-  get PushNotificationIOS(): PushNotificationIOS,
-  get Settings(): Settings,
-  get Share(): Share,
-  get StyleSheet(): StyleSheet,
-  get Systrace(): Systrace,
-  get ToastAndroid(): ToastAndroid,
-  get TurboModuleRegistry(): TurboModuleRegistry,
-  get UIManager(): UIManager,
-  get unstable_batchedUpdates(): $PropertyType<
-    ReactNative,
-    \\"unstable_batchedUpdates\\",
-  >,
-  get useAnimatedValue(): useAnimatedValue,
-  get useColorScheme(): useColorScheme,
-  get useWindowDimensions(): useWindowDimensions,
-  get UTFSequence(): UTFSequence,
-  get Vibration(): Vibration,
-  get DeviceEventEmitter(): RCTDeviceEventEmitter,
-  get DynamicColorIOS(): DynamicColorIOS,
-  get NativeAppEventEmitter(): RCTNativeAppEventEmitter,
-  get NativeModules(): NativeModules,
-  get Platform(): Platform,
-  get PlatformColor(): PlatformColor,
-  get processColor(): processColor,
-  get requireNativeComponent(): <T: { ... }>(
-    uiViewClassName: string
-  ) => HostComponent<T>,
-  get RootTagContext(): RootTagContext,
-};
+exports[`public API should not change unintentionally index.js.flow 1`] = `
+"export type {
+  HostComponent,
+  HostInstance,
+} from \\"./Libraries/Renderer/shims/ReactNativeTypes\\";
+export { default as registerCallableModule } from \\"./Libraries/Core/registerCallableModule\\";
+export { default as AccessibilityInfo } from \\"./Libraries/Components/AccessibilityInfo/AccessibilityInfo\\";
+export { default as ActivityIndicator } from \\"./Libraries/Components/ActivityIndicator/ActivityIndicator\\";
+export { default as Button } from \\"./Libraries/Components/Button\\";
+export { default as DrawerLayoutAndroid } from \\"./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid\\";
+export { default as experimental_LayoutConformance } from \\"./Libraries/Components/LayoutConformance/LayoutConformance\\";
+export { default as FlatList } from \\"./Libraries/Lists/FlatList\\";
+export { default as Image } from \\"./Libraries/Image/Image\\";
+export { default as ImageBackground } from \\"./Libraries/Image/ImageBackground\\";
+export { default as InputAccessoryView } from \\"./Libraries/Components/TextInput/InputAccessoryView\\";
+export { default as KeyboardAvoidingView } from \\"./Libraries/Components/Keyboard/KeyboardAvoidingView\\";
+export { default as Modal } from \\"./Libraries/Modal/Modal\\";
+export { default as Pressable } from \\"./Libraries/Components/Pressable/Pressable\\";
+export { default as ProgressBarAndroid } from \\"./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid\\";
+export { default as RefreshControl } from \\"./Libraries/Components/RefreshControl/RefreshControl\\";
+export { default as SafeAreaView } from \\"./Libraries/Components/SafeAreaView/SafeAreaView\\";
+export { default as ScrollView } from \\"./Libraries/Components/ScrollView/ScrollView\\";
+export { default as SectionList } from \\"./Libraries/Lists/SectionList\\";
+export { default as StatusBar } from \\"./Libraries/Components/StatusBar/StatusBar\\";
+export { default as Switch } from \\"./Libraries/Components/Switch/Switch\\";
+export { default as Text } from \\"./Libraries/Text/Text\\";
+export { default as TextInput } from \\"./Libraries/Components/TextInput/TextInput\\";
+export { default as Touchable } from \\"./Libraries/Components/Touchable/Touchable\\";
+export { default as TouchableHighlight } from \\"./Libraries/Components/Touchable/TouchableHighlight\\";
+export { default as TouchableNativeFeedback } from \\"./Libraries/Components/Touchable/TouchableNativeFeedback\\";
+export { default as TouchableOpacity } from \\"./Libraries/Components/Touchable/TouchableOpacity\\";
+export { default as TouchableWithoutFeedback } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
+export { default as View } from \\"./Libraries/Components/View/View\\";
+export { default as VirtualizedList } from \\"./Libraries/Lists/VirtualizedList\\";
+export { default as VirtualizedSectionList } from \\"./Libraries/Lists/VirtualizedSectionList\\";
+export { default as ActionSheetIOS } from \\"./Libraries/ActionSheetIOS/ActionSheetIOS\\";
+export { default as Alert } from \\"./Libraries/Alert/Alert\\";
+export { default as Animated } from \\"./Libraries/Animated/Animated\\";
+export * as Appearance from \\"./Libraries/Utilities/Appearance\\";
+export { default as AppRegistry } from \\"./Libraries/ReactNative/AppRegistry\\";
+export { default as AppState } from \\"./Libraries/AppState/AppState\\";
+export { default as BackHandler } from \\"./Libraries/Utilities/BackHandler\\";
+export { default as Clipboard } from \\"./Libraries/Components/Clipboard/Clipboard\\";
+export { default as DeviceInfo } from \\"./Libraries/Utilities/DeviceInfo\\";
+export { default as DevMenu } from \\"./src/private/devmenu/DevMenu\\";
+export { default as DevSettings } from \\"./Libraries/Utilities/DevSettings\\";
+export { default as Dimensions } from \\"./Libraries/Utilities/Dimensions\\";
+export { default as Easing } from \\"./Libraries/Animated/Easing\\";
+export { findNodeHandle } from \\"./Libraries/ReactNative/RendererProxy\\";
+export { default as I18nManager } from \\"./Libraries/ReactNative/I18nManager\\";
+export { default as InteractionManager } from \\"./Libraries/Interaction/InteractionManager\\";
+export { default as Keyboard } from \\"./Libraries/Components/Keyboard/Keyboard\\";
+export { default as LayoutAnimation } from \\"./Libraries/LayoutAnimation/LayoutAnimation\\";
+export { default as Linking } from \\"./Libraries/Linking/Linking\\";
+export { default as LogBox } from \\"./Libraries/LogBox/LogBox\\";
+export { default as NativeDialogManagerAndroid } from \\"./Libraries/NativeModules/specs/NativeDialogManagerAndroid\\";
+export { default as NativeEventEmitter } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
+export { default as Networking } from \\"./Libraries/Network/RCTNetworking\\";
+export { default as PanResponder } from \\"./Libraries/Interaction/PanResponder\\";
+export { default as PermissionsAndroid } from \\"./Libraries/PermissionsAndroid/PermissionsAndroid\\";
+export { default as PixelRatio } from \\"./Libraries/Utilities/PixelRatio\\";
+export { default as PushNotificationIOS } from \\"./Libraries/PushNotificationIOS/PushNotificationIOS\\";
+export { default as Settings } from \\"./Libraries/Settings/Settings\\";
+export { default as Share } from \\"./Libraries/Share/Share\\";
+export { default as StyleSheet } from \\"./Libraries/StyleSheet/StyleSheet\\";
+export * as Systrace from \\"./Libraries/Performance/Systrace\\";
+export { default as ToastAndroid } from \\"./Libraries/Components/ToastAndroid/ToastAndroid\\";
+export * as TurboModuleRegistry from \\"./Libraries/TurboModule/TurboModuleRegistry\\";
+export { default as UIManager } from \\"./Libraries/ReactNative/UIManager\\";
+export { unstable_batchedUpdates } from \\"./Libraries/ReactNative/RendererProxy\\";
+export { default as useAnimatedValue } from \\"./Libraries/Animated/useAnimatedValue\\";
+export { default as useColorScheme } from \\"./Libraries/Utilities/useColorScheme\\";
+export { default as useWindowDimensions } from \\"./Libraries/Utilities/useWindowDimensions\\";
+export { default as UTFSequence } from \\"./Libraries/UTFSequence\\";
+export { default as Vibration } from \\"./Libraries/Vibration/Vibration\\";
+export { default as DeviceEventEmitter } from \\"./Libraries/EventEmitter/RCTDeviceEventEmitter\\";
+export { DynamicColorIOS } from \\"./Libraries/StyleSheet/PlatformColorValueTypesIOS\\";
+export { default as NativeAppEventEmitter } from \\"./Libraries/EventEmitter/RCTNativeAppEventEmitter\\";
+export { default as NativeModules } from \\"./Libraries/BatchedBridge/NativeModules\\";
+export { default as Platform } from \\"./Libraries/Utilities/Platform\\";
+export { PlatformColor } from \\"./Libraries/StyleSheet/PlatformColorValueTypes\\";
+export { default as processColor } from \\"./Libraries/StyleSheet/processColor\\";
+export { default as requireNativeComponent } from \\"./Libraries/ReactNative/requireNativeComponent\\";
+export { RootTagContext } from \\"./Libraries/ReactNative/RootTag\\";
 "
 `;
 
