@@ -27,9 +27,9 @@
 #import <React/RCTComponentViewProtocol.h>
 #if USE_HERMES
 #import <ReactCommon/RCTHermesInstance.h>
-#else
+#elif USE_THIRD_PARTY_JSC != 1
 #import <ReactCommon/RCTJscInstance.h>
-#endif
+#endif // USE_HERMES
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
 #import "RCTDependencyProvider.h"
