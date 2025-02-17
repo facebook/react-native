@@ -24,7 +24,6 @@ using namespace facebook::react;
 @end
 
 @implementation RCTPullToRefreshViewComponentView {
-  Props::Shared _initialProps;
   BOOL _isBeforeInitialLayout;
   UIRefreshControl *_refreshControl;
   RCTScrollViewComponentView *__weak _scrollViewComponentView;
@@ -64,15 +63,16 @@ using namespace facebook::react;
 {
   [super prepareForRecycle];
   _scrollViewComponentView = nil;
+  _props = nil;
   _isBeforeInitialLayout = YES;
   [self _initializeUIRefreshControl];
 }
 
 - (void)updateProps:(const Props::Shared &)props oldProps:(const Props::Shared &)oldProps
 {
-  // Prop updates are ignored by _refreshControl until after the initial layout, so just store them in _initialProps until then
+  // Prop updates are ignored by _refreshControl until after the initial layout, so just store them in _props until then
   if (_isBeforeInitialLayout) {
-    _initialProps = props;
+    _props = std::static_pointer_cast<const BaseViewProps>(props);
     return;
   }
   
@@ -157,7 +157,7 @@ using namespace facebook::react;
   if (_isBeforeInitialLayout) {
     _isBeforeInitialLayout = NO;
 
-    [self updateProps:_initialProps oldProps:PullToRefreshViewShadowNode::defaultSharedProps()];
+    [self updateProps:_props oldProps:PullToRefreshViewShadowNode::defaultSharedProps()];
   }
 }
 
