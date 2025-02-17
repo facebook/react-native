@@ -13,12 +13,42 @@ import {
   type DisplayMetrics,
   type DisplayMetricsAndroid,
 } from './NativeDeviceInfo';
-import {useEffect, useState} from 'react';
+import {startTransition, useEffect, useSyncExternalStore} from 'react';
+
+const windowDimensionsStore = {
+  state: Dimensions.get('window'),
+  listeners: new Set(),
+  getWindowDimensions: () => {
+    return windowDimensionsStore.state;
+  },
+  setWindowDimensions: (newSize) => {
+    if (
+      windowDimensionsStore.state.width !== newSize.width ||
+      windowDimensionsStore.state.height !== newSize.height ||
+      windowDimensionsStore.state.fontScale !== newSize.fontScale ||
+      windowDimensionsStore.state.scale !== newSize.scale
+    ) {
+      windowDimensionsStore.state = newSize;
+      for (const listener of windowDimensionsStore.listeners) {
+        listener();
+      }
+    }
+  },
+  subscribe: (callback) => {
+    windowDimensionsStore.listeners.add(callback);
+    return () => {
+      windowDimensionsStore.listeners.delete(callback);
+    };
+  },
+};
 
 export default function useWindowDimensions():
   | DisplayMetrics
   | DisplayMetricsAndroid {
-  const [dimensions, setDimensions] = useState(() => Dimensions.get('window'));
+  const dimensions = useSyncExternalStore(
+    windowDimensionsStore.subscribe,
+    windowDimensionsStore.getWindowDimensions,
+  );
   useEffect(() => {
     function handleChange({
       window,
@@ -31,7 +61,10 @@ export default function useWindowDimensions():
         dimensions.scale !== window.scale ||
         dimensions.fontScale !== window.fontScale
       ) {
-        setDimensions(window);
+        // adds smoothness for frequent window resizing
+        startTransition(() => {
+          windowDimensionsStore.setWindowDimensions(window);
+        });
       }
     }
     const subscription = Dimensions.addEventListener('change', handleChange);
