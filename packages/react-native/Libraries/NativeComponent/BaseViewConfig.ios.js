@@ -227,9 +227,13 @@ const validAttributesForNonEventProps = {
   hitSlop: {diff: require('../Utilities/differ/insetsDiffer').default},
   collapsable: true,
   collapsableChildren: true,
-  filter: {
-    process: require('../StyleSheet/processFilter').default,
-  },
+  filter:
+    NativeReactNativeFeatureFlags != null &&
+    ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? true
+      : {
+          process: require('../StyleSheet/processFilter').default,
+        },
   boxShadow:
     NativeReactNativeFeatureFlags != null &&
     ReactNativeFeatureFlags.enableNativeCSSParsing()
