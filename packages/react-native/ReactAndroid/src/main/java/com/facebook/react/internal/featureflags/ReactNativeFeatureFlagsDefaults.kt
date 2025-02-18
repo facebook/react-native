@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6db30b8e6ac5778ae5ff333a12c6c17d>>
+ * @generated SignedSource<<5315bd93234b8c00b7d029081231eeeb>>
  */
 
 /**
@@ -40,8 +40,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableFabricLogs(): Boolean = false
 
   override fun enableFabricRenderer(): Boolean = false
-
-  override fun enableFixForViewCommandRace(): Boolean = false
 
   override fun enableIOSViewClipToPaddingBox(): Boolean = false
 

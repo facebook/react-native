@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<60990f71a42269290b741cd9072d21fe>>
+ * @generated SignedSource<<6e8144a48ab65f3b5ad8dd601cee2114>>
  */
 
 /**
@@ -81,12 +81,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
-
-  /**
-   * Synchronise the view command dispatching with mounting of new transaction
-   */
-  @JvmStatic
-  public fun enableFixForViewCommandRace(): Boolean = accessor.enableFixForViewCommandRace()
 
   /**
    * iOS Views will clip to their padding box vs border box

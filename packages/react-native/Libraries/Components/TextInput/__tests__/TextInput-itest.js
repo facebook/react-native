@@ -7,7 +7,6 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableFixForViewCommandRace:true
  * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
