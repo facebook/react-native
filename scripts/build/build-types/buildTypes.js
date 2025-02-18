@@ -10,6 +10,7 @@
  */
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../../consts');
+const getRequireStack = require('./resolution/getRequireStack');
 const translatedModuleTemplate = require('./templates/translatedModule.d.ts-template');
 const translateSourceFile = require('./translateSourceFile');
 const debug = require('debug')('build-types:main');
@@ -64,14 +65,16 @@ async function buildTypes(): Promise<void> {
     ENTRY_POINTS.map(file => path.join(REPO_ROOT, file)),
   );
   const translatedFiles = new Set<string>();
+  const dependencyEdges: DependencyEdges = [];
 
   while (files.size > 0) {
-    const dependencies = await translateSourceFiles(files);
+    const dependencies = await translateSourceFiles(dependencyEdges, files);
+    dependencyEdges.push(...dependencies);
 
     files.forEach(file => translatedFiles.add(file));
     files.clear();
 
-    for (const dep of dependencies) {
+    for (const [, dep] of dependencies) {
       if (
         !translatedFiles.has(dep) &&
         !IGNORE_PATTERNS.some(pattern => micromatch.isMatch(dep, pattern))
@@ -80,13 +83,14 @@ async function buildTypes(): Promise<void> {
       }
     }
   }
-
-  await translateSourceFiles(files);
 }
 
+type DependencyEdges = Array<[string, string]>;
+
 async function translateSourceFiles(
-  inputFiles: $ReadOnlySet<string>,
-): Promise<Set<string>> {
+  dependencyEdges: DependencyEdges,
+  inputFiles: Iterable<string>,
+): Promise<DependencyEdges> {
   const files = new Set<string>([...inputFiles]);
 
   // Require common interface file (js.flow) or base implementation (.js) for
@@ -128,7 +132,7 @@ async function translateSourceFiles(
     }
   }
 
-  const dependencies = new Set<string>();
+  const dependencies: DependencyEdges = [];
 
   await Promise.all(
     Array.from(files).map(async file => {
@@ -140,7 +144,7 @@ async function translateSourceFiles(
           await translateSourceFile(source, file);
 
         for (const dep of fileDeps) {
-          dependencies.add(dep);
+          dependencies.push([file, dep]);
         }
 
         await fs.mkdir(path.dirname(buildPath), {recursive: true});
@@ -153,6 +157,13 @@ async function translateSourceFiles(
         );
       } catch (e) {
         console.error(`Failed to build ${path.relative(REPO_ROOT, file)}\n`, e);
+        const requireStack = getRequireStack(dependencyEdges, file);
+        if (requireStack.length > 0) {
+          console.error('Chain of imports that led to this file:');
+          for (const stackEntry of requireStack) {
+            console.error(`- ${stackEntry}`);
+          }
+        }
       }
     }),
   );
