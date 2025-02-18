@@ -6473,11 +6473,32 @@ declare export default typeof NativePushNotificationManagerIOS;
 `;
 
 exports[`public API should not change unintentionally Libraries/PushNotificationIOS/PushNotificationIOS.js 1`] = `
-"export type ContentAvailable = 1 | null | void;
+"export type PushNotificationPermissions = {
+  alert: boolean,
+  badge: boolean,
+  sound: boolean,
+  [key: string]: boolean | number,
+};
+type PresentLocalNotificationDetails = {
+  alertBody: string,
+  alertAction?: string,
+  alertTitle?: string,
+  soundName?: string,
+  category?: string,
+  userInfo?: Object,
+  applicationIconBadgeNumber?: number,
+  fireDate?: number,
+  isSilent?: boolean,
+};
+type ScheduleLocalNotificationDetails = {
+  ...PresentLocalNotificationDetails,
+  repeatInterval?: \\"year\\" | \\"month\\" | \\"week\\" | \\"day\\" | \\"hour\\" | \\"minute\\",
+};
+export type ContentAvailable = 1 | null | void;
 export type FetchResult = {
-  NewData: string,
-  NoData: string,
-  ResultFailed: string,
+  NewData: \\"UIBackgroundFetchResultNewData\\",
+  NoData: \\"UIBackgroundFetchResultNoData\\",
+  ResultFailed: \\"UIBackgroundFetchResultFailed\\",
   ...
 };
 export type PushNotificationEventName = $Keys<{
@@ -6487,10 +6508,25 @@ export type PushNotificationEventName = $Keys<{
   registrationError: string,
   ...
 }>;
+export interface PushNotification {
+  getMessage(): ?string | ?Object;
+  getSound(): ?string;
+  getCategory(): ?string;
+  getAlert(): ?string | ?Object;
+  getContentAvailable(): ContentAvailable;
+  getBadgeCount(): ?number;
+  getData(): ?Object;
+  getThreadID(): ?string;
+  finish(result: string): void;
+}
 declare class PushNotificationIOS {
   static FetchResult: FetchResult;
-  static presentLocalNotification(details: Object): void;
-  static scheduleLocalNotification(details: Object): void;
+  static presentLocalNotification(
+    details: PresentLocalNotificationDetails
+  ): void;
+  static scheduleLocalNotification(
+    details: ScheduleLocalNotificationDetails
+  ): void;
   static cancelAllLocalNotifications(): void;
   static removeAllDeliveredNotifications(): void;
   static getDeliveredNotifications(
@@ -6506,20 +6542,19 @@ declare class PushNotificationIOS {
     handler: Function
   ): void;
   static removeEventListener(type: PushNotificationEventName): void;
-  static requestPermissions(permissions?: {
-    alert?: boolean,
-    badge?: boolean,
-    sound?: boolean,
-    ...
-  }): Promise<{
+  static requestPermissions(
+    permissions?: PushNotificationPermissions
+  ): Promise<{
     alert: boolean,
     badge: boolean,
     sound: boolean,
     ...
   }>;
   static abandonPermissions(): void;
-  static checkPermissions(callback: Function): void;
-  static getInitialNotification(): Promise<?PushNotificationIOS>;
+  static checkPermissions(
+    callback: (permissions: PushNotificationPermissions) => void
+  ): void;
+  static getInitialNotification(): Promise<?PushNotification>;
   static getAuthorizationStatus(
     callback: (authorizationStatus: number) => void
   ): void;
