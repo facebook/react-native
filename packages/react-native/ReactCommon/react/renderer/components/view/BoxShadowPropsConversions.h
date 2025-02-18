@@ -10,14 +10,12 @@
 #include <glog/logging.h>
 #include <react/debug/react_native_expect.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
-#include <react/renderer/components/view/primitives.h>
+#include <react/renderer/components/view/CSSConversions.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
-#include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/css/CSSShadow.h>
 #include <react/renderer/css/CSSValueParser.h>
 #include <react/renderer/graphics/BoxShadow.h>
-#include <react/renderer/graphics/PlatformColorParser.h>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -121,11 +119,6 @@ inline void parseProcessedBoxShadow(
   result = boxShadows;
 }
 
-inline SharedColor fromCSSColor(const CSSColor& cssColor) {
-  return hostPlatformColorFromRGBA(
-      cssColor.r, cssColor.g, cssColor.b, cssColor.a);
-}
-
 inline std::optional<BoxShadow> fromCSSShadow(const CSSShadow& cssShadow) {
   // TODO: handle non-px values
   if (cssShadow.offsetX.unit != CSSLengthUnit::Px ||
@@ -162,27 +155,6 @@ inline void parseUnprocessedBoxShadowString(
       return;
     }
   }
-}
-
-inline std::optional<Float> coerceLength(const RawValue& value) {
-  if (value.hasType<Float>()) {
-    return (Float)value;
-  }
-
-  if (value.hasType<std::string>()) {
-    auto len = parseCSSProperty<CSSLength>((std::string)value);
-    if (!std::holds_alternative<CSSLength>(len)) {
-      return {};
-    }
-
-    auto cssLen = std::get<CSSLength>(len);
-    if (cssLen.unit != CSSLengthUnit::Px) {
-      return {};
-    }
-
-    return cssLen.value;
-  }
-  return {};
 }
 
 inline std::optional<BoxShadow> parseBoxShadowRawValue(
@@ -244,19 +216,9 @@ inline std::optional<BoxShadow> parseBoxShadowRawValue(
   SharedColor color;
   auto rawColor = boxShadow.find("color");
   if (rawColor != boxShadow.end()) {
-    const auto& rawColorValue = rawColor->second;
-    if (rawColorValue.hasType<std::string>()) {
-      auto cssColor = parseCSSProperty<CSSColor>((std::string)rawColorValue);
-      if (!std::holds_alternative<CSSColor>(cssColor)) {
-        return {};
-      }
-      color = fromCSSColor(std::get<CSSColor>(cssColor));
-    } else {
-      fromRawValue(
-          context.contextContainer, context.surfaceId, rawColor->second, color);
-      if (!color) {
-        return {};
-      }
+    color = coerceColor(rawColor->second, context);
+    if (!color) {
+      return {};
     }
   }
 

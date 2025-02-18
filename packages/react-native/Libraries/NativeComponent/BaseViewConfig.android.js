@@ -178,9 +178,13 @@ const validAttributesForNonEventProps = {
       : {
           process: require('../StyleSheet/processBoxShadow').default,
         },
-  filter: {
-    process: require('../StyleSheet/processFilter').default,
-  },
+  filter:
+    NativeReactNativeFeatureFlags != null &&
+    ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? true
+      : {
+          process: require('../StyleSheet/processFilter').default,
+        },
   mixBlendMode: true,
   isolation: true,
   opacity: true,
