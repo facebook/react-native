@@ -473,16 +473,6 @@ fun enableWarningsAsErrors(): Boolean {
   return value?.toString()?.toBoolean() ?: false
 }
 
-val packageReactNdkLibsForBuck by
-    tasks.registering(Copy::class) {
-      dependsOn("mergeDebugNativeLibs")
-      // Shared libraries (.so) are copied from the merged_native_libs folder instead
-      from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
-      exclude("**/libjsc.so")
-      exclude("**/libhermes.so")
-      into("src/main/jni/prebuilt/lib")
-    }
-
 repositories {
   // Normally RNGP will set repositories for all modules,
   // but when consumed from source, we need to re-declare
