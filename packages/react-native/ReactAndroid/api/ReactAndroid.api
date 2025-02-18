@@ -1487,11 +1487,11 @@ public final class com/facebook/react/bridge/RetryableMountingLayerException : j
 	public fun <init> (Ljava/lang/Throwable;)V
 }
 
-public class com/facebook/react/bridge/RuntimeExecutor {
+public final class com/facebook/react/bridge/RuntimeExecutor {
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
 }
 
-public class com/facebook/react/bridge/RuntimeScheduler {
+public final class com/facebook/react/bridge/RuntimeScheduler {
 	public fun <init> (Lcom/facebook/jni/HybridData;)V
 }
 
