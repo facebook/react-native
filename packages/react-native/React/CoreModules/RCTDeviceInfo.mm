@@ -14,7 +14,9 @@
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTInitializing.h>
 #import <React/RCTInvalidating.h>
+#import <React/RCTKeyWindowValuesProxy.h>
 #import <React/RCTUtils.h>
+#import <React/RCTWindowSafeAreaProxy.h>
 #import <atomic>
 
 #import "CoreModulesPlugins.h"
@@ -40,25 +42,14 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if (self = [super init]) {
-    [RCTKeyWindow() addObserver:self forKeyPath:kFrameKeyPath options:NSKeyValueObservingOptionNew context:nil];
+    [[RCTKeyWindowValuesProxy sharedInstance] startObservingWindowSizeIfNecessary];
   }
   return self;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-  if ([keyPath isEqualToString:kFrameKeyPath]) {
-    [self interfaceFrameDidChange];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTWindowFrameDidChangeNotification object:self];
-  }
-}
-
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
+  return NO;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -92,7 +83,7 @@ RCT_EXPORT_MODULE()
 
 #if TARGET_OS_IOS
 
-  _currentInterfaceOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
+  _currentInterfaceOrientation = [RCTKeyWindowValuesProxy sharedInstance].currentInterfaceOrientation;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
@@ -145,13 +136,8 @@ static BOOL RCTIsIPhoneNotched()
 
 #if TARGET_OS_IOS
   dispatch_once(&onceToken, ^{
-    RCTAssertMainQueue();
-
     // 20pt is the top safeArea value in non-notched devices
-    UIWindow *keyWindow = RCTKeyWindow();
-    if (keyWindow) {
-      isIPhoneNotched = keyWindow.safeAreaInsets.top > 20;
-    }
+    isIPhoneNotched = [RCTWindowSafeAreaProxy sharedInstance].currentSafeAreaInsets.top > 20;
   });
 #endif
 
@@ -160,13 +146,11 @@ static BOOL RCTIsIPhoneNotched()
 
 static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 {
-  RCTAssertMainQueue();
   UIScreen *mainScreen = UIScreen.mainScreen;
   CGSize screenSize = mainScreen.bounds.size;
-  UIView *mainWindow = RCTKeyWindow();
 
   // We fallback to screen size if a key window is not found.
-  CGSize windowSize = mainWindow ? mainWindow.bounds.size : screenSize;
+  CGSize windowSize = [RCTKeyWindowValuesProxy sharedInstance].windowSize;
 
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
     @"width" : @(windowSize.width),
@@ -202,20 +186,14 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (NSDictionary<NSString *, id> *)getConstants
 {
-  __block NSDictionary<NSString *, id> *constants;
-  __weak __typeof(self) weakSelf = self;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    constants = @{
-      @"Dimensions" : [weakSelf _exportedDimensions],
-      // Note:
-      // This prop is deprecated and will be removed in a future release.
-      // Please use this only for a quick and temporary solution.
-      // Use <SafeAreaView> instead.
-      @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
-    };
-  });
-
-  return constants;
+  return @{
+    @"Dimensions" : [self _exportedDimensions],
+    // Note:
+    // This prop is deprecated and will be removed in a future release.
+    // Please use this only for a quick and temporary solution.
+    // Use <SafeAreaView> instead.
+    @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
+  };
 }
 
 - (void)didReceiveNewContentSizeMultiplier
