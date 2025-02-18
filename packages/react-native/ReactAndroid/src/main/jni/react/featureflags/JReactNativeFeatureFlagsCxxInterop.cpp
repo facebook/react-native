@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29ba9a9556698e26eac8e2534bce4732>>
+ * @generated SignedSource<<b0dab4690bff769baf4e83f508a6e514>>
  */
 
 /**
@@ -90,12 +90,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableFabricRenderer() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricRenderer");
-    return method(javaProvider_);
-  }
-
-  bool enableFixForViewCommandRace() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFixForViewCommandRace");
     return method(javaProvider_);
   }
 
@@ -346,11 +340,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFabricRenderer(
   return ReactNativeFeatureFlags::enableFabricRenderer();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableFixForViewCommandRace(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableFixForViewCommandRace();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox();
@@ -574,9 +563,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableFabricRenderer",
         JReactNativeFeatureFlagsCxxInterop::enableFabricRenderer),
-      makeNativeMethod(
-        "enableFixForViewCommandRace",
-        JReactNativeFeatureFlagsCxxInterop::enableFixForViewCommandRace),
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
