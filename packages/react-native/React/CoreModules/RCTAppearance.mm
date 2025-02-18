@@ -10,7 +10,7 @@
 #import <FBReactNativeSpec/FBReactNativeSpec.h>
 #import <React/RCTConstants.h>
 #import <React/RCTEventEmitter.h>
-#import <React/RCTUtils.h>
+#import <React/RCTTraitCollectionProxy.h>
 
 #import "CoreModulesPlugins.h"
 
@@ -90,7 +90,7 @@ NSString *RCTColorSchemePreference(UITraitCollection *traitCollection)
 - (instancetype)init
 {
   if ((self = [super init])) {
-    UITraitCollection *traitCollection = RCTKeyWindow().traitCollection;
+    UITraitCollection *traitCollection = [RCTTraitCollectionProxy sharedInstance].currentTraitCollection;
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(appearanceChanged:)
@@ -104,7 +104,7 @@ RCT_EXPORT_MODULE(Appearance)
 
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
+  return NO;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -133,10 +133,7 @@ RCT_EXPORT_METHOD(setColorScheme : (NSString *)style)
 RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString *, getColorScheme)
 {
   if (!sIsAppearancePreferenceSet) {
-    __block UITraitCollection *traitCollection = nil;
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      traitCollection = RCTKeyWindow().traitCollection;
-    });
+    UITraitCollection *traitCollection = [RCTTraitCollectionProxy sharedInstance].currentTraitCollection;
     _currentColorScheme = RCTColorSchemePreference(traitCollection);
   }
   return _currentColorScheme;
