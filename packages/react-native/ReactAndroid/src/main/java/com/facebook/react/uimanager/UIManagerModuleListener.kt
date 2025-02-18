@@ -5,17 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager
 
 /**
- * Listener used to hook into the UIManager update process. Deprecated: use UIManagerListener
- * instead. This will be deleted in some future release.
+ * Listener used to hook into the UIManager update process.
  */
-@Deprecated
+@Deprecated("Use UIManagerListener instead. This will be deleted in some future release.")
 public interface UIManagerModuleListener {
   /**
    * Called right before view updates are dispatched at the end of a batch. This is useful if a
    * module needs to add UIBlocks to the queue before it is flushed.
    */
-  void willDispatchViewUpdates(UIManagerModule uiManager);
+  public fun willDispatchViewUpdates(uiManager: UIManagerModule)
 }
