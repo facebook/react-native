@@ -15,13 +15,23 @@ import {
 } from './NativeDeviceInfo';
 import {startTransition, useEffect, useSyncExternalStore} from 'react';
 
-const windowDimensionsStore = {
+type WindowDimensions = DisplayMetrics | DisplayMetricsAndroid;
+
+type WindowDimensionsStore = {|
+  state: WindowDimensions,
+  listeners: Set<() => void>,
+  getWindowDimensions: () => WindowDimensions,
+  setWindowDimensions: (newSize: WindowDimensions) => void,
+  subscribe: (callback: () => void) => () => void,
+|};
+
+const windowDimensionsStore: WindowDimensionsStore = {
   state: Dimensions.get('window'),
   listeners: new Set(),
-  getWindowDimensions: () => {
+  getWindowDimensions: (): WindowDimensions => {
     return windowDimensionsStore.state;
   },
-  setWindowDimensions: (newSize) => {
+  setWindowDimensions: (newSize: WindowDimensions): void => {
     if (
       windowDimensionsStore.state.width !== newSize.width ||
       windowDimensionsStore.state.height !== newSize.height ||
@@ -34,7 +44,7 @@ const windowDimensionsStore = {
       }
     }
   },
-  subscribe: (callback) => {
+  subscribe: (callback: () => void): (() => void) => {
     windowDimensionsStore.listeners.add(callback);
     return () => {
       windowDimensionsStore.listeners.delete(callback);
@@ -42,19 +52,13 @@ const windowDimensionsStore = {
   },
 };
 
-export default function useWindowDimensions():
-  | DisplayMetrics
-  | DisplayMetricsAndroid {
+export default function useWindowDimensions(): WindowDimensions {
   const dimensions = useSyncExternalStore(
     windowDimensionsStore.subscribe,
     windowDimensionsStore.getWindowDimensions,
   );
   useEffect(() => {
-    function handleChange({
-      window,
-    }: {
-      window: DisplayMetrics | DisplayMetricsAndroid,
-    }) {
+    function handleChange({window}: {window: WindowDimensions}) {
       if (
         dimensions.width !== window.width ||
         dimensions.height !== window.height ||
