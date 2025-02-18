@@ -17,7 +17,7 @@ import type {
   ImageStyleProp,
   ViewStyleProp,
 } from '../StyleSheet/StyleSheet';
-import type {LayoutEvent, SyntheticEvent} from '../Types/CoreEventTypes';
+import type {LayoutChangeEvent, SyntheticEvent} from '../Types/CoreEventTypes';
 import typeof Image from './Image';
 import type {ImageResizeMode} from './ImageResizeMode';
 import type {ImageSource} from './ImageSource';
@@ -177,7 +177,7 @@ export type ImageProps = $ReadOnly<{
    * See https://reactnative.dev/docs/image#onlayout
    */
 
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
 
   /**
    * Invoked when load completes successfully.

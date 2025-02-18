@@ -1616,7 +1616,7 @@ type Props = $ReadOnly<{
   disabled?: ?boolean,
   hitSlop?: ?RectOrSize,
   pressRetentionOffset?: ?RectOrSize,
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onHoverIn?: ?(event: MouseEvent) => mixed,
   onHoverOut?: ?(event: MouseEvent) => mixed,
   onLongPress?: ?(event: PressEvent) => mixed,
@@ -2053,7 +2053,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 "export type Props = $ReadOnly<{
   children?: React.Node,
   nextHeaderLayoutY: ?number,
-  onLayout: (event: LayoutEvent) => void,
+  onLayout: (event: LayoutChangeEvent) => void,
   scrollAnimatedValue: Animated.Value,
   inverted: ?boolean,
   scrollViewHeight: ?number,
@@ -3505,7 +3505,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   onBlur?: ?(event: BlurEvent) => mixed,
   onFocus?: ?(event: FocusEvent) => mixed,
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onLongPress?: ?(event: PressEvent) => mixed,
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
@@ -3784,12 +3784,12 @@ export type ViewNativeComponentType = HostComponent<Props>;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/ViewPropTypes.js 1`] = `
-"export type ViewLayout = Layout;
-export type ViewLayoutEvent = LayoutEvent;
+"export type ViewLayout = LayoutRectangle;
+export type ViewLayoutEvent = LayoutChangeEvent;
 type DirectEventProps = $ReadOnly<{
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   onAccessibilityTap?: ?() => mixed,
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onMagicTap?: ?() => mixed,
   onAccessibilityEscape?: ?() => mixed,
 }>;
@@ -4476,7 +4476,7 @@ export type ImageProps = $ReadOnly<{
       }>,
     >
   ) => void,
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onLoad?: ?(event: ImageLoadEvent) => void,
   onLoadEnd?: ?() => void,
   onLoadStart?: ?() => void,
@@ -7784,7 +7784,7 @@ export type TextProps = $ReadOnly<{
   maxFontSizeMultiplier?: ?number,
   nativeID?: ?string,
   numberOfLines?: ?number,
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onLongPress?: ?(event: PressEvent) => mixed,
   onPress?: ?(event: PressEvent) => mixed,
   onPressIn?: ?(event: PressEvent) => mixed,
@@ -7911,30 +7911,29 @@ export type ResponderSyntheticEvent<T> = $ReadOnly<{
     >,
   }>,
 }>;
-export type Layout = $ReadOnly<{
+export type LayoutRectangle = $ReadOnly<{
   x: number,
   y: number,
   width: number,
   height: number,
 }>;
-export type TextLayout = $ReadOnly<{
-  ...Layout,
+export type TextLayoutLine = $ReadOnly<{
+  ...LayoutRectangle,
   ascender: number,
   capHeight: number,
   descender: number,
   text: string,
   xHeight: number,
 }>;
-export type LayoutEvent = SyntheticEvent<
+export type LayoutChangeEvent = SyntheticEvent<
   $ReadOnly<{
-    layout: Layout,
+    layout: LayoutRectangle,
   }>,
 >;
-export type TextLayoutEvent = SyntheticEvent<
-  $ReadOnly<{
-    lines: Array<TextLayout>,
-  }>,
->;
+export type TextLayoutEventData = $ReadOnly<{
+  lines: Array<TextLayoutLine>,
+}>;
+export type TextLayoutEvent = SyntheticEvent<TextLayoutEventData>;
 export interface NativeUIEvent {
   +detail: number;
 }
