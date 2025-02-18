@@ -8,6 +8,8 @@
 #import <React/RCTDataRequestHandler.h>
 #import <ReactCommon/RCTTurboModule.h>
 
+#import <mutex>
+
 #import "RCTNetworkPlugins.h"
 
 @interface RCTDataRequestHandler () <RCTTurboModule>
@@ -15,14 +17,22 @@
 
 @implementation RCTDataRequestHandler {
   NSOperationQueue *_queue;
+  std::mutex _operationHandlerMutexLock;
 }
 
 RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  [_queue cancelAllOperations];
-  _queue = nil;
+  std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
+  if (_queue) {
+    for (NSOperation *operation in _queue.operations) {
+      if (!operation.isCancelled && !operation.isFinished) {
+        [operation cancel];
+      }
+    }
+    _queue = nil;
+  }
 }
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
@@ -32,6 +42,7 @@ RCT_EXPORT_MODULE()
 
 - (NSOperation *)sendRequest:(NSURLRequest *)request withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
+  std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
   // Lazy setup
   if (!_queue) {
     _queue = [NSOperationQueue new];
@@ -69,7 +80,10 @@ RCT_EXPORT_MODULE()
 
 - (void)cancelRequest:(NSOperation *)op
 {
-  [op cancel];
+  std::lock_guard<std::mutex> lock(_operationHandlerMutexLock);
+  if (!op.isCancelled && !op.isFinished) {
+    [op cancel];
+  }
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
