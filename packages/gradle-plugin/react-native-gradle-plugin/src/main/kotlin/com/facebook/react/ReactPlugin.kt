@@ -67,6 +67,7 @@ class ReactPlugin : Plugin<Project> {
         val groupString = versionAndGroupStrings.second
         configureDependencies(project, versionString, groupString)
         configureRepositories(project)
+        configureResources(project, extension)
       }
 
       configureReactNativeNdk(project, extension)
@@ -82,7 +83,6 @@ class ReactPlugin : Plugin<Project> {
       }
       configureAutolinking(project, extension)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
-      configureResources(project, extension)
     }
 
     // Library Only Configuration
