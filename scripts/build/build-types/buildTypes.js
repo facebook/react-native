@@ -40,6 +40,7 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/EventEmitter/NativeEventEmitter.js',
   'packages/react-native/Libraries/EventEmitter/RCTDeviceEventEmitter.js',
   'packages/react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter.js',
+  'packages/react-native/Libraries/LayoutAnimation/LayoutAnimation.js',
   'packages/react-native/Libraries/LogBox/LogBox.js',
   'packages/react-native/Libraries/Performance/Systrace.js',
   'packages/react-native/Libraries/ReactNative/AppRegistry.js',
