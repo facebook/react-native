@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {LayoutEvent} from '../../Types/CoreEventTypes';
+import type {LayoutChangeEvent} from '../../Types/CoreEventTypes';
 
 import Animated from '../../Animated/Animated';
 import {isPublicInstance as isFabricPublicInstance} from '../../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
@@ -21,7 +21,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 export type Props = $ReadOnly<{
   children?: React.Node,
   nextHeaderLayoutY: ?number,
-  onLayout: (event: LayoutEvent) => void,
+  onLayout: (event: LayoutChangeEvent) => void,
   scrollAnimatedValue: Animated.Value,
   // Will cause sticky headers to stick at the bottom of the ScrollView instead
   // of the top.
@@ -253,7 +253,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
     isFabric,
   ]);
 
-  const _onLayout = (event: LayoutEvent) => {
+  const _onLayout = (event: LayoutChangeEvent) => {
     setLayoutY(event.nativeEvent.layout.y);
     setLayoutHeight(event.nativeEvent.layout.height);
     setMeasured(true);

@@ -54,15 +54,15 @@ export type ResponderSyntheticEvent<T> = $ReadOnly<{
   }>,
 }>;
 
-export type Layout = $ReadOnly<{
+export type LayoutRectangle = $ReadOnly<{
   x: number,
   y: number,
   width: number,
   height: number,
 }>;
 
-export type TextLayout = $ReadOnly<{
-  ...Layout,
+export type TextLayoutLine = $ReadOnly<{
+  ...LayoutRectangle,
   ascender: number,
   capHeight: number,
   descender: number,
@@ -70,17 +70,17 @@ export type TextLayout = $ReadOnly<{
   xHeight: number,
 }>;
 
-export type LayoutEvent = SyntheticEvent<
+export type LayoutChangeEvent = SyntheticEvent<
   $ReadOnly<{
-    layout: Layout,
+    layout: LayoutRectangle,
   }>,
 >;
 
-export type TextLayoutEvent = SyntheticEvent<
-  $ReadOnly<{
-    lines: Array<TextLayout>,
-  }>,
->;
+export type TextLayoutEventData = $ReadOnly<{
+  lines: Array<TextLayoutLine>,
+}>;
+
+export type TextLayoutEvent = SyntheticEvent<TextLayoutEventData>;
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/API/UIEvent

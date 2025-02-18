@@ -19,7 +19,7 @@ import type {
 } from '../Components/View/ViewAccessibility';
 import type {ColorValue, TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {
-  LayoutEvent,
+  LayoutChangeEvent,
   PointerEvent,
   PressEvent,
   TextLayoutEvent,
@@ -142,7 +142,7 @@ export type TextProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/text#onlayout
    */
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
 
   /**
    * This function is called on long press.
