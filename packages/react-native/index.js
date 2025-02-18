@@ -177,7 +177,7 @@ module.exports = {
     return require('./Libraries/Utilities/DeviceInfo').default;
   },
   get DevMenu() {
-    return require('./src/private/devmenu/DevMenu');
+    return require('./src/private/devmenu/DevMenu').default;
   },
   get DevSettings() {
     return require('./Libraries/Utilities/DevSettings').default;
