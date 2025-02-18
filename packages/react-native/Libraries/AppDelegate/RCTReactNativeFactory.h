@@ -12,6 +12,7 @@
 #import "RCTDependencyProvider.h"
 #import "RCTRootViewFactory.h"
 #import "RCTUIConfiguratorProtocol.h"
+#import "RCTJSRuntimeConfiguratorProtocol.h"
 
 #if defined(__cplusplus) // Don't conform to protocols requiring C++ when it's not defined.
 #import <React/RCTComponentViewFactory.h>
@@ -34,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     RCTTurboModuleManagerDelegate,
     RCTComponentViewFactoryComponentProvider,
 #endif
+    RCTJSRuntimeConfiguratorProtocol,
     RCTArchConfiguratorProtocol>
 
 /// Return the bundle URL for the main bundle.

@@ -90,6 +90,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-featureflags")
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
+  add_dependency(s, "React-RCTRuntime", :framework_name => "RCTRuntime")
 
   depend_on_js_engine(s)
 end

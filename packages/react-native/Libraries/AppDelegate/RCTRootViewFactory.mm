@@ -26,12 +26,6 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
-#if USE_HERMES
-#import <ReactCommon/RCTHermesInstance.h>
-#elif USE_THIRD_PARTY_JSC != 1
-#import <ReactCommon/RCTJscInstance.h>
-#else
-#endif // USE_HERMES
 #import <ReactCommon/RCTHost+Internal.h>
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
@@ -264,13 +258,16 @@
 
 - (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory
 {
-#if USE_HERMES
-  return std::make_shared<facebook::react::RCTHermesInstance>(nullptr, /* allocInOldGenBeforeTTI */ false);
-#elif USE_THIRD_PARTY_JSC != 1
-  return std::make_shared<facebook::react::RCTJscInstance>();
-#else
-  throw std::runtime_error("No JSRuntimeFactory specified.");
-#endif
+  if (_configuration.jsRuntimeConfiguratorDelegate == nil) {
+    [NSException raise:@"RCTReactNativeFactoryDelegate::createJSRuntimeFactory not implemented"
+                 format:@"Delegate must implement a valid createJSRuntimeFactory method"];
+    return nullptr;
+  }
+  
+  auto jsRuntimeFactory = [_configuration.jsRuntimeConfiguratorDelegate createJSRuntimeFactory];
+  
+  return std::shared_ptr<facebook::react::JSRuntimeFactory>(reinterpret_cast<facebook::react::JSRuntimeFactory *>(jsRuntimeFactory),
+                                                            &js_runtime_factory_destroy);
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge

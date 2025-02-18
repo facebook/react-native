@@ -618,6 +618,7 @@ class ReactNativePodsUtils
             "React-RCTAppDelegate",
             "React-RCTBlob",
             "React-RCTFabric",
+            "React-RCTRuntime",
             "React-RCTImage",
             "React-RCTLinking",
             "React-RCTNetwork",
