@@ -59,17 +59,10 @@ export default function useWindowDimensions(): WindowDimensions {
   );
   useEffect(() => {
     function handleChange({window}: {window: WindowDimensions}) {
-      if (
-        dimensions.width !== window.width ||
-        dimensions.height !== window.height ||
-        dimensions.scale !== window.scale ||
-        dimensions.fontScale !== window.fontScale
-      ) {
-        // adds smoothness for frequent window resizing
-        startTransition(() => {
-          windowDimensionsStore.setWindowDimensions(window);
-        });
-      }
+      // adds smoothness for frequent window resizing
+      startTransition(() => {
+        windowDimensionsStore.setWindowDimensions(window);
+      });
     }
     const subscription = Dimensions.addEventListener('change', handleChange);
     // We might have missed an update between calling `get` in render and
@@ -79,6 +72,6 @@ export default function useWindowDimensions(): WindowDimensions {
     return () => {
       subscription.remove();
     };
-  }, [dimensions]);
+  }, []);
   return dimensions;
 }
