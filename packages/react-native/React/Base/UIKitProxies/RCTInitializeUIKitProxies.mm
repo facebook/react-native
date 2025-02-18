@@ -6,6 +6,7 @@
  */
 
 #import "RCTInitializeUIKitProxies.h"
+#import "RCTTraitCollectionProxy.h"
 #import "RCTWindowSafeAreaProxy.h"
 
 void RCTInitializeUIKitProxies(void)
@@ -13,5 +14,6 @@ void RCTInitializeUIKitProxies(void)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     [[RCTWindowSafeAreaProxy sharedInstance] startObservingSafeArea];
+    [[RCTTraitCollectionProxy sharedInstance] startObservingTraitCollection];
   });
 }
