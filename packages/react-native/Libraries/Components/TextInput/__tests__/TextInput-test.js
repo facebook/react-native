@@ -210,7 +210,6 @@ jest.unmock('../TextInput');
         rejectResponderTermination={true}
         selection={null}
         submitBehavior="blurAndSubmit"
-        text=""
         textContentType="emailAddress"
         underlineColorAndroid="transparent"
       />
@@ -255,7 +254,6 @@ jest.unmock('../TextInput');
         rejectResponderTermination={true}
         selection={null}
         submitBehavior="blurAndSubmit"
-        text=""
         underlineColorAndroid="transparent"
       />
     `);
@@ -301,7 +299,6 @@ jest.unmock('../TextInput');
         selection={null}
         submitBehavior="blurAndSubmit"
         testID="testID"
-        text=""
         underlineColorAndroid="transparent"
       />
     `);
@@ -432,7 +429,6 @@ jest.unmock('../TextInput');
         role="main"
         selection={null}
         submitBehavior="blurAndSubmit"
-        text=""
         underlineColorAndroid="transparent"
       />
     `);
@@ -489,7 +485,6 @@ jest.unmock('../TextInput');
           ]
         }
         submitBehavior="blurAndSubmit"
-        text=""
         underlineColorAndroid="transparent"
       />
     `);
