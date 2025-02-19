@@ -233,6 +233,12 @@ function composeXCFrameworks(
   thirdPartyFolder /*: string */,
   buildDestinationPath /*: string */,
 ) {
+  console.log('Removing previous XCFramework');
+  const outputFile = path.join(
+    thirdPartyFolder,
+    'ReactNativeDependencies.xcframework',
+  );
+  fs.rmSync(outputFile, {recursive: true, force: true});
   console.log('Composing XCFrameworks...');
   const frameworksFolder = path.join(buildDestinationPath, 'Build', 'Products');
   const frameworks = fs.readdirSync(frameworksFolder);
@@ -247,7 +253,7 @@ function composeXCFrameworks(
   const frameworksArgs = frameworkPaths
     .map(framework => `-framework ${framework}`)
     .join(' ');
-  const command = `xcodebuild -create-xcframework ${frameworksArgs} -output ${path.join(thirdPartyFolder, 'ReactNativeDependencies.xcframework')}`;
+  const command = `xcodebuild -create-xcframework ${frameworksArgs} -output ${outputFile}`;
   execSync(command, {stdio: 'inherit'});
 }
 
