@@ -11,10 +11,10 @@
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../../consts');
 const getRequireStack = require('./resolution/getRequireStack');
+const resolveTypeInputFile = require('./resolution/resolveTypeInputFile');
 const translatedModuleTemplate = require('./templates/translatedModule.d.ts-template');
 const translateSourceFile = require('./translateSourceFile');
-const debug = require('debug')('build-types:main');
-const {existsSync, promises: fs} = require('fs');
+const {promises: fs} = require('fs');
 const micromatch = require('micromatch');
 const path = require('path');
 
@@ -69,6 +69,14 @@ async function buildTypes(): Promise<void> {
   const dependencyEdges: DependencyEdges = [];
 
   while (files.size > 0) {
+    for (const file of files) {
+      const interfaceFile = resolveTypeInputFile(file);
+      if (interfaceFile) {
+        files.delete(file);
+        translatedFiles.add(file);
+        files.add(interfaceFile);
+      }
+    }
     const dependencies = await translateSourceFiles(dependencyEdges, files);
     dependencyEdges.push(...dependencies);
 
@@ -93,46 +101,6 @@ async function translateSourceFiles(
   inputFiles: Iterable<string>,
 ): Promise<DependencyEdges> {
   const files = new Set<string>([...inputFiles]);
-
-  // Require common interface file (js.flow) or base implementation (.js) for
-  // platform-specific files (.android.js or .ios.js)
-  for (const file of files) {
-    const [pathWithoutExt, extension] = splitPathAndExtension(file);
-
-    if (/(\.android\.js|\.ios\.js)$/.test(extension)) {
-      files.delete(file);
-
-      let resolved = false;
-
-      for (const ext of ['.js.flow', '.js']) {
-        let interfaceFile = pathWithoutExt + ext;
-
-        if (files.has(interfaceFile)) {
-          resolved = true;
-          break;
-        }
-
-        if (existsSync(interfaceFile)) {
-          files.add(interfaceFile);
-          resolved = true;
-          debug(
-            'Resolved %s to %s',
-            path.relative(REPO_ROOT, file),
-            path.relative(REPO_ROOT, interfaceFile),
-          );
-          break;
-        }
-      }
-
-      if (!resolved) {
-        throw new Error(
-          `No common interface found for ${file}.[android|ios].js. This ` +
-            'should either be a base .js implementation or a .js.flow interface file.',
-        );
-      }
-    }
-  }
-
   const dependencies: DependencyEdges = [];
 
   await Promise.all(
@@ -160,7 +128,7 @@ async function translateSourceFiles(
         console.error(`Failed to build ${path.relative(REPO_ROOT, file)}\n`, e);
         const requireStack = getRequireStack(dependencyEdges, file);
         if (requireStack.length > 0) {
-          console.error('Chain of imports that led to this file:');
+          console.error('Require stack:');
           for (const stackEntry of requireStack) {
             console.error(`- ${stackEntry}`);
           }
@@ -186,15 +154,6 @@ function getBuildPath(file: string): string {
       .replace(/\.js\.flow$/, '.js')
       .replace(/\.js$/, '.d.ts'),
   );
-}
-
-function splitPathAndExtension(file: string): [string, string] {
-  const lastSep = file.lastIndexOf(path.sep);
-  const extensionStart = file.indexOf('.', lastSep);
-  return [
-    file.substring(0, extensionStart),
-    file.substring(extensionStart, file.length),
-  ];
 }
 
 function stripDocblock(source: string): string {
