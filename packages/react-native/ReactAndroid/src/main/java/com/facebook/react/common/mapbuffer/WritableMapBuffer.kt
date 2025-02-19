@@ -191,10 +191,4 @@ public class WritableMapBuffer : MapBuffer {
   @Suppress("UNUSED")
   /** JNI hook for MapBuffer to retrieve sorted values from this class. */
   private fun getValues(): Array<Any> = Array(values.size()) { values.valueAt(it) }
-
-  private companion object {
-    init {
-      MapBufferSoLoader.staticInit()
-    }
-  }
 }

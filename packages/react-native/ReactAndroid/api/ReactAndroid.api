@@ -1291,8 +1291,6 @@ public final class com/facebook/react/bridge/ReactMarkerConstants : java/lang/En
 	public static final field JAVASCRIPT_EXECUTOR_FACTORY_INJECT_START Lcom/facebook/react/bridge/ReactMarkerConstants;
 	public static final field LOAD_REACT_NATIVE_FABRIC_SO_FILE_END Lcom/facebook/react/bridge/ReactMarkerConstants;
 	public static final field LOAD_REACT_NATIVE_FABRIC_SO_FILE_START Lcom/facebook/react/bridge/ReactMarkerConstants;
-	public static final field LOAD_REACT_NATIVE_MAPBUFFER_SO_FILE_END Lcom/facebook/react/bridge/ReactMarkerConstants;
-	public static final field LOAD_REACT_NATIVE_MAPBUFFER_SO_FILE_START Lcom/facebook/react/bridge/ReactMarkerConstants;
 	public static final field LOAD_REACT_NATIVE_SO_FILE_END Lcom/facebook/react/bridge/ReactMarkerConstants;
 	public static final field LOAD_REACT_NATIVE_SO_FILE_START Lcom/facebook/react/bridge/ReactMarkerConstants;
 	public static final field NATIVE_MODULE_INITIALIZE_END Lcom/facebook/react/bridge/ReactMarkerConstants;
@@ -1487,12 +1485,10 @@ public final class com/facebook/react/bridge/RetryableMountingLayerException : j
 	public fun <init> (Ljava/lang/Throwable;)V
 }
 
-public final class com/facebook/react/bridge/RuntimeExecutor {
-	public fun <init> (Lcom/facebook/jni/HybridData;)V
+public final class com/facebook/react/bridge/RuntimeExecutor : com/facebook/jni/HybridClassBase {
 }
 
-public final class com/facebook/react/bridge/RuntimeScheduler {
-	public fun <init> (Lcom/facebook/jni/HybridData;)V
+public final class com/facebook/react/bridge/RuntimeScheduler : com/facebook/jni/HybridClassBase {
 }
 
 public final class com/facebook/react/bridge/SoftAssertions {
@@ -1898,12 +1894,7 @@ public abstract interface class com/facebook/react/common/mapbuffer/MapBuffer$En
 	public abstract fun getType ()Lcom/facebook/react/common/mapbuffer/MapBuffer$DataType;
 }
 
-public final class com/facebook/react/common/mapbuffer/MapBufferSoLoader {
-	public static final field INSTANCE Lcom/facebook/react/common/mapbuffer/MapBufferSoLoader;
-	public static final fun staticInit ()V
-}
-
-public final class com/facebook/react/common/mapbuffer/ReadableMapBuffer : com/facebook/react/common/mapbuffer/MapBuffer {
+public final class com/facebook/react/common/mapbuffer/ReadableMapBuffer : com/facebook/jni/HybridClassBase, com/facebook/react/common/mapbuffer/MapBuffer {
 	public static final field Companion Lcom/facebook/react/common/mapbuffer/ReadableMapBuffer$Companion;
 	public fun contains (I)Z
 	public fun entryAt (I)Lcom/facebook/react/common/mapbuffer/MapBuffer$Entry;
