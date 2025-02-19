@@ -578,12 +578,12 @@ typedef struct {
       if ([self _requiresMainQueueSetup:moduleClass]) {
         if (ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS()) {
           static int32_t modulesSettingUpOnMainQueueCount = 0;
-          bool needsUnlock = NO;
+          bool needsUnlock = false;
 
           // This function can be recursive. If it's called recursively, we need to skip the lock.
           // We can't use a recursive mutex instead because the lock is needed on multiple threads.
           if (modulesSettingUpOnMainQueueCount == 0) {
-            if (!facebook::react::getMainThreadMutex()->try_lock()) {
+            if (!facebook::react::getMainThreadMutex().try_lock()) {
               NSString *reason = [NSString
                   stringWithFormat:
                       @"TurboModule %@ which requires main queue setup is initializing during sync rendering. This would have caused a deadlock. Please fix this by avoiding main queue setup or eager initializing this TurboModule.",
@@ -599,7 +599,7 @@ typedef struct {
           RCTUnsafeExecuteOnMainQueueSync(work);
           modulesSettingUpOnMainQueueCount--;
           if (needsUnlock) {
-            facebook::react::getMainThreadMutex()->unlock();
+            facebook::react::getMainThreadMutex().unlock();
           }
         } else {
           RCTUnsafeExecuteOnMainQueueSync(work);

@@ -14,7 +14,7 @@
 
 namespace facebook::react {
 
-std::mutex* getMainThreadMutex();
+std::mutex& getMainThreadMutex();
 
 /*
  * Takes a function and calls it with a reference to a Runtime. The function
@@ -54,7 +54,7 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
   std::mutex mutex2;
   std::mutex mutex3;
 
-  getMainThreadMutex()->lock();
+  std::lock_guard<std::mutex> lock(getMainThreadMutex());
   mutex1.lock();
   mutex2.lock();
   mutex3.lock();
@@ -83,7 +83,6 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
   callback(*runtimePtr);
   mutex2.unlock();
   mutex3.lock();
-  getMainThreadMutex()->unlock();
 }
 
 template <typename DataT>

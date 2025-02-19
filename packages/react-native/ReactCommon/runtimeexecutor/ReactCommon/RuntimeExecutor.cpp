@@ -9,9 +9,9 @@
 
 namespace facebook::react {
 
-std::mutex* getMainThreadMutex() {
+std::mutex& getMainThreadMutex() {
   static std::mutex mainThreadMutex;
-  return &mainThreadMutex;
+  return mainThreadMutex;
 }
 
 } // namespace facebook::react
