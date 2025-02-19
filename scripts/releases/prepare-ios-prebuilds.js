@@ -263,21 +263,29 @@ async function main() {
   const thirdPartyFolder = path.join(process.cwd(), THIRD_PARTY_PATH);
   const buildDestinationPath = path.join(thirdPartyFolder, BUILD_DESTINATION);
 
-  await Promise.all(dependencies.map(setupDependency));
+  if (task === 'all' || task === 'prepare') {
+    await Promise.all(
+      dependencies.map(dependency => setupDependency(dependency)),
+    );
+  }
 
-  await build(thirdPartyFolder, buildDestinationPath);
+  if (task === 'all' || task === 'build') {
+    await build(thirdPartyFolder, buildDestinationPath);
 
-  await Promise.all(
-    dependencies.map(dependency =>
-      copyHeadersToFrameworks(
-        dependency,
-        thirdPartyFolder,
-        buildDestinationPath,
+    await Promise.all(
+      dependencies.map(dependency =>
+        copyHeadersToFrameworks(
+          dependency,
+          thirdPartyFolder,
+          buildDestinationPath,
+        ),
       ),
-    ),
-  );
+    );
+  }
 
-  composeXCFrameworks(thirdPartyFolder, buildDestinationPath);
+  if (task === 'all' || task === 'create-xcframework') {
+    composeXCFrameworks(thirdPartyFolder, buildDestinationPath);
+  }
   console.log('Done!');
 }
 
