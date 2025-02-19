@@ -52,12 +52,13 @@ Props::Shared ShadowNode::propsForClonedShadowNode(
     const Props::Shared& props) {
 #ifdef ANDROID
   bool hasBeenMounted = sourceShadowNode.hasBeenMounted_;
-  bool sourceNodeHasRawProps = !sourceShadowNode.getProps()->rawProps.empty();
+  bool sourceNodeHasRawProps =
+      !sourceShadowNode.getProps()->dynamicProps.empty();
   if (!hasBeenMounted && sourceNodeHasRawProps && props) {
     auto& castedProps = const_cast<Props&>(*props);
-    castedProps.rawProps = mergeDynamicProps(
-        sourceShadowNode.getProps()->rawProps,
-        props->rawProps,
+    castedProps.dynamicProps = mergeDynamicProps(
+        sourceShadowNode.getProps()->dynamicProps,
+        props->dynamicProps,
         NullValueStrategy::Override);
     return props;
   }
