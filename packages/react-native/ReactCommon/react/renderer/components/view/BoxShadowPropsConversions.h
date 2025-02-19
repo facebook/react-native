@@ -187,6 +187,9 @@ inline std::optional<BoxShadow> parseBoxShadowRawValue(
   auto rawBlurRadius = boxShadow.find("blurRadius");
   if (rawBlurRadius != boxShadow.end()) {
     if (auto blurRadiusValue = coerceLength(rawBlurRadius->second)) {
+      if (*blurRadiusValue < 0) {
+        return {};
+      }
       blurRadius = *blurRadiusValue;
     } else {
       return {};
