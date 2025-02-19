@@ -73,13 +73,23 @@ export default function openDebuggerMiddleware({
       } = query;
 
       const targets = inspectorProxy
-        .getPageDescriptions(new URL(serverBaseUrl))
-        .filter(
-          // Only use targets with better reloading support
-          app =>
+        .getPageDescriptions({requestorRelativeBaseUrl: new URL(serverBaseUrl)})
+        .filter(app => {
+          const betterReloadingSupport =
             app.title === LEGACY_SYNTHETIC_PAGE_TITLE ||
-            app.reactNative.capabilities?.nativePageReloads === true,
-        );
+            app.reactNative.capabilities?.nativePageReloads === true;
+
+          if (!betterReloadingSupport) {
+            logger?.warn(
+              "Ignoring DevTools app debug target for '%s' with title '%s' and 'nativePageReloads' capability set to '%s'. ",
+              app.appId,
+              app.title,
+              String(app.reactNative.capabilities?.nativePageReloads),
+            );
+          }
+
+          return betterReloadingSupport;
+        });
 
       let target;
 
