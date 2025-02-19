@@ -5759,23 +5759,22 @@ exports[`public API should not change unintentionally Libraries/Modal/Modal.js 1
 "type OrientationChangeEvent = $ReadOnly<{
   orientation: \\"portrait\\" | \\"landscape\\",
 }>;
-export type Props = $ReadOnly<{
-  ...ViewProps,
+export type ModalBaseProps = {
+  animated?: boolean,
   animationType?: ?(\\"none\\" | \\"slide\\" | \\"fade\\"),
+  transparent?: ?boolean,
+  visible?: ?boolean,
+  onRequestClose?: ?DirectEventHandler<null>,
+  onShow?: ?DirectEventHandler<null>,
+  backdropColor?: ColorValue,
+};
+export type ModalPropsIOS = {
   presentationStyle?: ?(
     | \\"fullScreen\\"
     | \\"pageSheet\\"
     | \\"formSheet\\"
     | \\"overFullScreen\\"
   ),
-  transparent?: ?boolean,
-  statusBarTranslucent?: ?boolean,
-  navigationBarTranslucent?: ?boolean,
-  hardwareAccelerated?: ?boolean,
-  visible?: ?boolean,
-  onRequestClose?: ?DirectEventHandler<null>,
-  onShow?: ?DirectEventHandler<null>,
-  onDismiss?: ?() => mixed,
   supportedOrientations?: ?$ReadOnlyArray<
     | \\"portrait\\"
     | \\"portrait-upside-down\\"
@@ -5783,19 +5782,30 @@ export type Props = $ReadOnly<{
     | \\"landscape-left\\"
     | \\"landscape-right\\",
   >,
+  onDismiss?: ?() => void,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
-  backdropColor?: ?string,
-}>;
+};
+export type ModalPropsAndroid = {
+  hardwareAccelerated?: ?boolean,
+  statusBarTranslucent?: ?boolean,
+  navigationBarTranslucent?: ?boolean,
+};
+export type ModalProps = {
+  ...ModalBaseProps,
+  ...ModalPropsIOS,
+  ...ModalPropsAndroid,
+  ...ViewProps,
+};
 type State = {
   isRendered: boolean,
 };
-declare class Modal extends React.Component<Props, State> {
+declare class Modal extends React.Component<ModalProps, State> {
   static defaultProps: { hardwareAccelerated: boolean, visible: boolean };
   static contextType: React.Context<RootTag>;
-  constructor(props: Props): void;
+  constructor(props: ModalProps): void;
   componentDidMount(): void;
   componentWillUnmount(): void;
-  componentDidUpdate(prevProps: Props): void;
+  componentDidUpdate(prevProps: ModalProps): void;
   render(): React.Node;
 }
 declare const ExportedModal: React.ComponentType<
