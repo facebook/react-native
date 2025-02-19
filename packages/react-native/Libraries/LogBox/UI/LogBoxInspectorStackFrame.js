@@ -9,7 +9,7 @@
  */
 
 import type {StackFrame} from '../../Core/NativeExceptionsManager';
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -21,7 +21,7 @@ import * as React from 'react';
 
 type Props = $ReadOnly<{
   frame: StackFrame,
-  onPress?: ?(event: PressEvent) => void,
+  onPress?: ?(event: GestureResponderEvent) => void,
 }>;
 
 function LogBoxInspectorStackFrame(props: Props): React.Node {

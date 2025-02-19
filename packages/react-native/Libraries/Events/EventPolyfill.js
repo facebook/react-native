@@ -152,9 +152,9 @@ class EventPolyfill implements IEvent {
   /** @deprecated */
   srcElement: Element; // TODO: nullable
 
-  // React Native-specific: proxy data to a SyntheticEvent when
+  // React Native-specific: proxy data to a NativeSyntheticEvent when
   // certain methods are called.
-  // SyntheticEvent will also have a reference to this instance -
+  // NativeSyntheticEvent will also have a reference to this instance -
   // it is circular - and both classes use this reference to keep
   // data with the other in sync.
   _syntheticEvent: mixed;
