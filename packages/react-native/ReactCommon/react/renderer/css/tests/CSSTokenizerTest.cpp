@@ -95,6 +95,11 @@ TEST(CSSTokenizer, number_values) {
       "+.123e+0",
       CSSToken{CSSTokenType::Number, +.123e+0},
       CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "+.9999999999",
+      CSSToken{CSSTokenType::Number, +.9999999999},
+      CSSToken{CSSTokenType::EndOfFile});
 }
 
 TEST(CSSTokenizer, dimension_values) {
