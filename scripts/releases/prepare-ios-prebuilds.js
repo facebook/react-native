@@ -20,6 +20,7 @@ const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const {parseArgs} = require('util');
 
 const exec = util.promisify(require('child_process').exec);
 
@@ -208,9 +209,57 @@ function composeXCFrameworks(
   execSync(command, {stdio: 'inherit'});
 }
 
-async function main() {
-  console.log('Starting iOS prebuilds preparation...');
+const config = {
+  options: {
+    task: {
+      type: 'string', // valid values: 'all', 'prepare', 'build', 'create-xcframework'
+      default: 'all',
+      short: 'o',
+    },
+    slice: {
+      type: 'string', // valid values: 'all', 'ios', 'ios-simulator', 'mac', 'mac-catalyst', 'tvos', 'xros', 'xrsimulator'
+      default: 'all',
+      short: 's',
+    },
+    configurations: {
+      type: 'string', // valid values: 'all', 'Debug', 'Release',
+      default: 'all',
+      short: 'c',
+    },
+    help: {
+      type: 'boolean',
+      short: 'h',
+    },
+  },
+};
 
+function printHelp() {
+  console.log(`
+  Usage: node ./scripts/releases/prepare-ios-prebuilds.js [OPTIONS]
+
+  This script prepares iOS prebuilds for React Native. It downloads the dependencies, prepare them, builds them and creates the XCFrameworks.
+
+  Calling the script with no options will build all the dependencies for all the slices and configurations.
+
+  Options:
+    --task, -t: the specific task that needs to be carried on. Default value is 'all'. Valid values are 'all', 'prepare', 'build', 'create-xcframework'.
+    --slice, -s: the specific slice that needs to be built. Default value is 'all'. Valid values are 'all', 'ios', 'ios-simulator', 'mac', 'mac-catalyst', 'tvos', 'xros', 'xrsimulator'.
+    --configurations, -c: the specific configurations that needs to be built. Default value is 'all'. Valid values are 'all', 'Debug', 'Release'.
+    --help, -h: print this help message.
+    `);
+}
+
+async function main() {
+  const {
+    values: {task, slice, configurations, help},
+  } = parseArgs(config);
+
+  if (help) {
+    printHelp();
+    return;
+  }
+
+  console.log('Starting iOS prebuilds preparation...');
   const thirdPartyFolder = path.join(process.cwd(), THIRD_PARTY_PATH);
   const buildDestinationPath = path.join(thirdPartyFolder, BUILD_DESTINATION);
 
