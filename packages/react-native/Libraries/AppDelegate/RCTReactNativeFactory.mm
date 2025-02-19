@@ -27,9 +27,9 @@
 #import <React/RCTComponentViewProtocol.h>
 #if USE_HERMES
 #import <ReactCommon/RCTHermesInstance.h>
-#else
+#elif USE_THIRD_PARTY_JSC != 1
 #import <ReactCommon/RCTJscInstance.h>
-#endif
+#endif // USE_HERMES
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
 #import "RCTDependencyProvider.h"
@@ -65,6 +65,32 @@ using namespace facebook::react;
   }
 
   return self;
+}
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName inWindow:(UIWindow *_Nullable)window
+{
+  [self startReactNativeWithModuleName:moduleName inWindow:window initialProperties:nil launchOptions:nil];
+}
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                         launchOptions:(NSDictionary *_Nullable)launchOptions
+{
+  [self startReactNativeWithModuleName:moduleName inWindow:window initialProperties:nil launchOptions:launchOptions];
+}
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                     initialProperties:(NSDictionary *_Nullable)initialProperties
+                         launchOptions:(NSDictionary *_Nullable)launchOptions
+{
+  UIView *rootView = [self.rootViewFactory viewWithModuleName:moduleName
+                                            initialProperties:initialProperties
+                                                launchOptions:launchOptions];
+  UIViewController *rootViewController = [_delegate createRootViewController];
+  [_delegate setRootView:rootView toRootViewController:rootViewController];
+  window.rootViewController = rootViewController;
+  [window makeKeyAndVisible];
 }
 
 #pragma mark - RCTUIConfiguratorProtocol
@@ -263,10 +289,6 @@ class RCTAppDelegateBridgelessFeatureFlags : public ReactNativeFeatureFlagsDefau
     return true;
   }
   bool useNativeViewConfigsInBridgelessMode() override
-  {
-    return true;
-  }
-  bool enableFixForViewCommandRace() override
   {
     return true;
   }

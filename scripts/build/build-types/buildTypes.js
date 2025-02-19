@@ -10,10 +10,11 @@
  */
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../../consts');
+const getRequireStack = require('./resolution/getRequireStack');
+const resolveTypeInputFile = require('./resolution/resolveTypeInputFile');
 const translatedModuleTemplate = require('./templates/translatedModule.d.ts-template');
 const translateSourceFile = require('./translateSourceFile');
-const debug = require('debug')('build-types:main');
-const {existsSync, promises: fs} = require('fs');
+const {promises: fs} = require('fs');
 const micromatch = require('micromatch');
 const path = require('path');
 
@@ -26,11 +27,7 @@ const IGNORE_PATTERNS = [
 
 const ENTRY_POINTS = [
   'packages/react-native/Libraries/ActionSheetIOS/ActionSheetIOS.js',
-  'packages/react-native/Libraries/Share/Share.js',
   'packages/react-native/Libraries/Alert/Alert.js',
-  'packages/react-native/Libraries/EventEmitter/NativeEventEmitter.js',
-  'packages/react-native/Libraries/EventEmitter/RCTDeviceEventEmitter.js',
-  'packages/react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter.js',
   'packages/react-native/Libraries/AppState/AppState.js',
   'packages/react-native/Libraries/BatchedBridge/NativeModules.js',
   'packages/react-native/Libraries/Blob/Blob.js',
@@ -38,14 +35,28 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Blob/FileReader.js',
   'packages/react-native/Libraries/Blob/URL.js',
   'packages/react-native/Libraries/Blob/URLSearchParams.js',
+  'packages/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.js',
+  'packages/react-native/Libraries/Components/Clipboard/Clipboard.js',
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
-  'packages/react-native/Libraries/Settings/Settings.js',
-  'packages/react-native/Libraries/Performance/Systrace.js',
+  'packages/react-native/Libraries/EventEmitter/NativeEventEmitter.js',
+  'packages/react-native/Libraries/EventEmitter/RCTDeviceEventEmitter.js',
+  'packages/react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter.js',
+  'packages/react-native/Libraries/LayoutAnimation/LayoutAnimation.js',
   'packages/react-native/Libraries/LogBox/LogBox.js',
-  'packages/react-native/Libraries/vendor/emitter/EventEmitter.js',
-  'packages/react-native/Libraries/ReactNative/UIManager.js',
+  'packages/react-native/Libraries/Performance/Systrace.js',
+  'packages/react-native/Libraries/ReactNative/AppRegistry.js',
   'packages/react-native/Libraries/ReactNative/I18nManager.js',
+  'packages/react-native/Libraries/ReactNative/RendererProxy.js',
+  'packages/react-native/Libraries/ReactNative/requireNativeComponent.js',
+  'packages/react-native/Libraries/ReactNative/RootTag.js',
+  'packages/react-native/Libraries/ReactNative/UIManager.js',
+  'packages/react-native/Libraries/Settings/Settings.js',
+  'packages/react-native/Libraries/Share/Share.js',
+  'packages/react-native/Libraries/vendor/emitter/EventEmitter.js',
   'packages/react-native/Libraries/Vibration/Vibration.js',
+  'packages/react-native/Libraries/PermissionsAndroid/PermissionsAndroid.js',
+  'packages/react-native/Libraries/PushNotificationIOS/PushNotificationIOS.js',
+  'packages/react-native/Libraries/Modal/Modal.js',
 ];
 
 /**
@@ -56,14 +67,24 @@ async function buildTypes(): Promise<void> {
     ENTRY_POINTS.map(file => path.join(REPO_ROOT, file)),
   );
   const translatedFiles = new Set<string>();
+  const dependencyEdges: DependencyEdges = [];
 
   while (files.size > 0) {
-    const dependencies = await translateSourceFiles(files);
+    for (const file of files) {
+      const interfaceFile = resolveTypeInputFile(file);
+      if (interfaceFile) {
+        files.delete(file);
+        translatedFiles.add(file);
+        files.add(interfaceFile);
+      }
+    }
+    const dependencies = await translateSourceFiles(dependencyEdges, files);
+    dependencyEdges.push(...dependencies);
 
     files.forEach(file => translatedFiles.add(file));
     files.clear();
 
-    for (const dep of dependencies) {
+    for (const [, dep] of dependencies) {
       if (
         !translatedFiles.has(dep) &&
         !IGNORE_PATTERNS.some(pattern => micromatch.isMatch(dep, pattern))
@@ -72,55 +93,16 @@ async function buildTypes(): Promise<void> {
       }
     }
   }
-
-  await translateSourceFiles(files);
 }
 
+type DependencyEdges = Array<[string, string]>;
+
 async function translateSourceFiles(
-  inputFiles: $ReadOnlySet<string>,
-): Promise<Set<string>> {
+  dependencyEdges: DependencyEdges,
+  inputFiles: Iterable<string>,
+): Promise<DependencyEdges> {
   const files = new Set<string>([...inputFiles]);
-
-  // Require common interface file (js.flow) or base implementation (.js) for
-  // platform-specific files (.android.js or .ios.js)
-  for (const file of files) {
-    const [pathWithoutExt, extension] = splitPathAndExtension(file);
-
-    if (/(\.android\.js|\.ios\.js)$/.test(extension)) {
-      files.delete(file);
-
-      let resolved = false;
-
-      for (const ext of ['.js.flow', '.js']) {
-        let interfaceFile = pathWithoutExt + ext;
-
-        if (files.has(interfaceFile)) {
-          resolved = true;
-          break;
-        }
-
-        if (existsSync(interfaceFile)) {
-          files.add(interfaceFile);
-          resolved = true;
-          debug(
-            'Resolved %s to %s',
-            path.relative(REPO_ROOT, file),
-            path.relative(REPO_ROOT, interfaceFile),
-          );
-          break;
-        }
-      }
-
-      if (!resolved) {
-        throw new Error(
-          `No common interface found for ${file}.[android|ios].js. This ` +
-            'should either be a base .js implementation or a .js.flow interface file.',
-        );
-      }
-    }
-  }
-
-  const dependencies = new Set<string>();
+  const dependencies: DependencyEdges = [];
 
   await Promise.all(
     Array.from(files).map(async file => {
@@ -132,7 +114,7 @@ async function translateSourceFiles(
           await translateSourceFile(source, file);
 
         for (const dep of fileDeps) {
-          dependencies.add(dep);
+          dependencies.push([file, dep]);
         }
 
         await fs.mkdir(path.dirname(buildPath), {recursive: true});
@@ -145,6 +127,13 @@ async function translateSourceFiles(
         );
       } catch (e) {
         console.error(`Failed to build ${path.relative(REPO_ROOT, file)}\n`, e);
+        const requireStack = getRequireStack(dependencyEdges, file);
+        if (requireStack.length > 0) {
+          console.error('Require stack:');
+          for (const stackEntry of requireStack) {
+            console.error(`- ${stackEntry}`);
+          }
+        }
       }
     }),
   );
@@ -166,15 +155,6 @@ function getBuildPath(file: string): string {
       .replace(/\.js\.flow$/, '.js')
       .replace(/\.js$/, '.d.ts'),
   );
-}
-
-function splitPathAndExtension(file: string): [string, string] {
-  const lastSep = file.lastIndexOf(path.sep);
-  const extensionStart = file.indexOf('.', lastSep);
-  return [
-    file.substring(0, extensionStart),
-    file.substring(extensionStart, file.length),
-  ];
 }
 
 function stripDocblock(source: string): string {

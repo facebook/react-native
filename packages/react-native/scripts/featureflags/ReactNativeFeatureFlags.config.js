@@ -143,17 +143,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'canary',
     },
-    enableFixForViewCommandRace: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-11-14',
-        description:
-          'Synchronise the view command dispatching with mounting of new transaction',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enableIOSViewClipToPaddingBox: {
       defaultValue: false,
       metadata: {

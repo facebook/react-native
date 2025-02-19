@@ -18,6 +18,7 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTI18nUtil.h>
+#import <React/RCTInitializeUIKitProxies.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTScheduler.h>
@@ -64,6 +65,7 @@ using namespace facebook::react;
               bridgelessBindingsExecutor:(std::optional<RuntimeExecutor>)bridgelessBindingsExecutor
 {
   if (self = [super init]) {
+    RCTInitializeUIKitProxies();
     assert(contextContainer && "RuntimeExecutor must be not null.");
     _runtimeExecutor = runtimeExecutor;
     _bridgelessBindingsExecutor = bridgelessBindingsExecutor;

@@ -28,6 +28,7 @@ boost_compiler_flags = boost_config[:compiler_flags]
 
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 use_hermes_flag = use_hermes ? "-DUSE_HERMES=1" : ""
+use_third_party_jsc_flag = ENV['USE_THIRD_PARTY_JSC'] == '1' ? "-DUSE_THIRD_PARTY_JSC=1" : ""
 
 header_subspecs = {
   'CoreModulesHeaders'          => 'React/CoreModules/**/*.h',
@@ -70,7 +71,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.resource_bundle        = { "RCTI18nStrings" => ["React/I18n/strings/*.lproj"]}
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags + ' ' + use_hermes_flag
+  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags + ' ' + use_hermes_flag + ' ' + use_third_party_jsc_flag
   s.header_dir             = "React"
   s.weak_framework         = "JavaScriptCore"
   s.pod_target_xcconfig    = {
@@ -95,7 +96,7 @@ Pod::Spec.new do |s|
     ]
     # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
     # So we have to exclude the JSCExecutorFactory
-    if use_hermes
+    if use_hermes || ENV['USE_THIRD_PARTY_JSC'] == '1'
       exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
     end
     ss.exclude_files = exclude_files

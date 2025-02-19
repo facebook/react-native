@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<697f62ac96b2b28d64659cd77007a59b>>
+ * @generated SignedSource<<dd2fa7d4fb722350d77094f8bcc38872>>
  */
 
 /**
@@ -29,7 +29,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
-  private var enableFixForViewCommandRaceCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
   private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
@@ -141,15 +140,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableFabricRenderer()
       enableFabricRendererCache = cached
-    }
-    return cached
-  }
-
-  override fun enableFixForViewCommandRace(): Boolean {
-    var cached = enableFixForViewCommandRaceCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableFixForViewCommandRace()
-      enableFixForViewCommandRaceCache = cached
     }
     return cached
   }

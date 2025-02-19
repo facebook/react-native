@@ -1342,6 +1342,7 @@ PODS:
     - React-runtimeexecutor (= 1000.0.0)
   - React-jsinspectortracing (1000.0.0):
     - RCT-Folly
+    - React-oscompat
   - React-jsitracing (1000.0.0):
     - React-jsi
   - React-logger (1000.0.0):
@@ -1367,6 +1368,7 @@ PODS:
     - React-runtimeexecutor
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
+  - React-oscompat (1000.0.0)
   - React-perflogger (1000.0.0):
     - DoubleConversion
     - RCT-Folly (= 2024.11.18.00)
@@ -1743,6 +1745,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../react-native/ReactCommon/react/nativemodule/microtasks`)
   - React-NativeModulesApple (from `../react-native/ReactCommon/react/nativemodule/core/platform/ios`)
+  - React-oscompat (from `../react-native/ReactCommon/oscompat`)
   - React-perflogger (from `../react-native/ReactCommon/reactperflogger`)
   - React-performancetimeline (from `../react-native/ReactCommon/react/performance/timeline`)
   - React-RCTActionSheet (from `../react-native/Libraries/ActionSheetIOS`)
@@ -1866,6 +1869,8 @@ EXTERNAL SOURCES:
     :path: "../react-native/ReactCommon/react/nativemodule/microtasks"
   React-NativeModulesApple:
     :path: "../react-native/ReactCommon/react/nativemodule/core/platform/ios"
+  React-oscompat:
+    :path: "../react-native/ReactCommon/oscompat"
   React-perflogger:
     :path: "../react-native/ReactCommon/reactperflogger"
   React-performancetimeline:
@@ -1970,12 +1975,13 @@ SPEC CHECKSUMS:
   React-jsi: 640bb3438e3abab16c87c00b164dcb6157302538
   React-jsiexecutor: 0188eeb6c71752c8a80ebad427449297dff78509
   React-jsinspector: 31bf1f65aa86b42aa3258485b98e51a3c9b6dac3
-  React-jsinspectortracing: 969209ebbedc4e3d94e1c30b823ce866ab10c849
+  React-jsinspectortracing: 3ff2c35be750be3ba11bb52af4ad1efa78e1d758
   React-jsitracing: ce443686f52538d1033ce7db1e7d643e866262f0
   React-logger: eeb704f8f8197d565c420c2de7be03576dace972
   React-Mapbuffer: cd5e7720cb5fd9c0bc43ae71a952cc2a16711a5a
   React-microtasksnativemodule: 6af4b5b26640a12f9abc421a014f300d2a02b789
   React-NativeModulesApple: 612e7d0ccf461840f010689daa86fd058aec01c5
+  React-oscompat: 7133e0e945cda067ae36b22502df663d73002864
   React-perflogger: 6f2b10b96094d29e1dca6be7689d975b98ba4166
   React-performancetimeline: b91e898716885df30697e54eab3eb14f6b48766b
   React-RCTActionSheet: 1bf8cc8086ad1c15da3407dfb7bc9dd94dc7595d

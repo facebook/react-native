@@ -11,7 +11,7 @@
 'use strict';
 
 import type {TextStyleProp, ViewStyleProp} from '../StyleSheet/StyleSheet';
-import type {PressEvent} from '../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../Types/CoreEventTypes';
 import type {
   AccessibilityActionEvent,
   AccessibilityActionInfo,
@@ -36,9 +36,9 @@ type ButtonProps = $ReadOnly<{
 
   /**
     Handler to be called when the user taps the button. The first function
-    argument is an event in form of [PressEvent](pressevent).
+    argument is an event in form of [GestureResponderEvent](pressevent).
    */
-  onPress: (event?: PressEvent) => mixed,
+  onPress: (event?: GestureResponderEvent) => mixed,
 
   /**
     If `true`, doesn't play system sound on touch.

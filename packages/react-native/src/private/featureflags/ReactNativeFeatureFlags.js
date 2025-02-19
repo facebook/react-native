@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4c34b78c4af6de8e0784ecade5f2e593>>
+ * @generated SignedSource<<4bdedb6bbe2199cb99e72e86bfffe372>>
  * @flow strict
  */
 
@@ -58,7 +58,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
-  enableFixForViewCommandRace: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableImagePrefetchingAndroid: Getter<boolean>,
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
@@ -209,10 +208,6 @@ export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableF
  * Enables the use of the Fabric renderer in the whole app.
  */
 export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('enableFabricRenderer', false);
-/**
- * Synchronise the view command dispatching with mounting of new transaction
- */
-export const enableFixForViewCommandRace: Getter<boolean> = createNativeFlagGetter('enableFixForViewCommandRace', false);
 /**
  * iOS Views will clip to their padding box vs border box
  */

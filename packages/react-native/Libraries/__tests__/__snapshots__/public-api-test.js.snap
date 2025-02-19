@@ -1409,7 +1409,7 @@ declare export default typeof ActivityIndicatorViewNativeComponent;
 exports[`public API should not change unintentionally Libraries/Components/Button.js 1`] = `
 "type ButtonProps = $ReadOnly<{
   title: string,
-  onPress: (event?: PressEvent) => mixed,
+  onPress: (event?: GestureResponderEvent) => mixed,
   touchSoundDisabled?: ?boolean,
   color?: ?ColorValue,
   hasTVPreferredFocus?: ?boolean,
@@ -1616,13 +1616,13 @@ type Props = $ReadOnly<{
   disabled?: ?boolean,
   hitSlop?: ?RectOrSize,
   pressRetentionOffset?: ?RectOrSize,
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onHoverIn?: ?(event: MouseEvent) => mixed,
   onHoverOut?: ?(event: MouseEvent) => mixed,
-  onLongPress?: ?(event: PressEvent) => mixed,
-  onPress?: ?(event: PressEvent) => mixed,
-  onPressIn?: ?(event: PressEvent) => mixed,
-  onPressOut?: ?(event: PressEvent) => mixed,
+  onLongPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
   style?: ViewStyleProp | ((state: StateCallbackType) => ViewStyleProp),
   testID?: ?string,
   android_disableSound?: ?boolean,
@@ -1655,9 +1655,9 @@ declare export default function useAndroidRippleForView(
   rippleConfig: ?RippleConfig,
   viewRef: { current: null | React.ElementRef<typeof View> }
 ): ?$ReadOnly<{
-  onPressIn: (event: PressEvent) => void,
-  onPressMove: (event: PressEvent) => void,
-  onPressOut: (event: PressEvent) => void,
+  onPressIn: (event: GestureResponderEvent) => void,
+  onPressMove: (event: GestureResponderEvent) => void,
+  onPressOut: (event: GestureResponderEvent) => void,
   viewProps:
     | $ReadOnly<{ nativeBackgroundAndroid: NativeBackgroundProp }>
     | $ReadOnly<{ nativeForegroundAndroid: NativeBackgroundProp }>,
@@ -2043,7 +2043,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   snapToOffsets?: ?$ReadOnlyArray<number>,
   snapToStart?: ?boolean,
   zoomScale?: ?number,
-  onResponderGrant?: ?(e: PressEvent) => void | boolean,
+  onResponderGrant?: ?(e: GestureResponderEvent) => void | boolean,
   ...
 }>;
 "
@@ -2053,7 +2053,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 "export type Props = $ReadOnly<{
   children?: React.Node,
   nextHeaderLayoutY: ?number,
-  onLayout: (event: LayoutEvent) => void,
+  onLayout: (event: LayoutChangeEvent) => void,
   scrollAnimatedValue: Animated.Value,
   inverted: ?boolean,
   scrollViewHeight: ?number,
@@ -2189,7 +2189,7 @@ declare export default typeof AndroidSwitchNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Switch/Switch.js 1`] = `
-"type SwitchChangeEvent = SyntheticEvent<
+"type SwitchChangeEvent = NativeSyntheticEvent<
   $ReadOnly<{
     value: boolean,
     target: number,
@@ -2475,8 +2475,9 @@ export type TextInputChangeEventData = $ReadOnly<{
   target: number,
   text: string,
 }>;
-export type TextInputChangeEvent = SyntheticEvent<TextInputChangeEventData>;
-export type TextInputEvent = SyntheticEvent<
+export type TextInputChangeEvent =
+  NativeSyntheticEvent<TextInputChangeEventData>;
+export type TextInputEvent = NativeSyntheticEvent<
   $ReadOnly<{
     eventCount: number,
     previousText: string,
@@ -2496,13 +2497,13 @@ export type TextInputContentSizeChangeEventData = $ReadOnly<{
   }>,
 }>;
 export type TextInputContentSizeChangeEvent =
-  SyntheticEvent<TextInputContentSizeChangeEventData>;
+  NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
 export type TargetEvent = $ReadOnly<{
   target: number,
 }>;
 export type TextInputFocusEventData = TargetEvent;
-export type TextInputBlurEvent = SyntheticEvent<TextInputFocusEventData>;
-export type TextInputFocusEvent = SyntheticEvent<TextInputFocusEventData>;
+export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
+export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 type Selection = $ReadOnly<{
   start: number,
   end: number,
@@ -2512,21 +2513,22 @@ export type TextInputSelectionChangeEventData = $ReadOnly<{
   selection: Selection,
 }>;
 export type TextInputSelectionChangeEvent =
-  SyntheticEvent<TextInputSelectionChangeEventData>;
+  NativeSyntheticEvent<TextInputSelectionChangeEventData>;
 export type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
   eventCount: number,
 }>;
-export type TextInputKeyPressEvent = SyntheticEvent<TextInputKeyPressEventData>;
+export type TextInputKeyPressEvent =
+  NativeSyntheticEvent<TextInputKeyPressEventData>;
 export type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
 export type TextInputEditingEvent =
-  SyntheticEvent<TextInputEndEditingEventData>;
+  NativeSyntheticEvent<TextInputEndEditingEventData>;
 type DataDetectorTypesType =
   | \\"phoneNumber\\"
   | \\"link\\"
@@ -2771,9 +2773,9 @@ export type TextInputProps = $ReadOnly<{
   onFocus?: ?(e: TextInputFocusEvent) => mixed,
   onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
   unstable_onKeyPressSync?: ?(e: TextInputKeyPressEvent) => mixed,
-  onPress?: ?(event: PressEvent) => mixed,
-  onPressIn?: ?(event: PressEvent) => mixed,
-  onPressOut?: ?(event: PressEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
   onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
   onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
@@ -2830,8 +2832,9 @@ export type TextInputChangeEventData = $ReadOnly<{
   target: number,
   text: string,
 }>;
-export type TextInputChangeEvent = SyntheticEvent<TextInputChangeEventData>;
-export type TextInputEvent = SyntheticEvent<
+export type TextInputChangeEvent =
+  NativeSyntheticEvent<TextInputChangeEventData>;
+export type TextInputEvent = NativeSyntheticEvent<
   $ReadOnly<{
     eventCount: number,
     previousText: string,
@@ -2851,13 +2854,13 @@ export type TextInputContentSizeChangeEventData = $ReadOnly<{
   }>,
 }>;
 export type TextInputContentSizeChangeEvent =
-  SyntheticEvent<TextInputContentSizeChangeEventData>;
+  NativeSyntheticEvent<TextInputContentSizeChangeEventData>;
 export type TargetEvent = $ReadOnly<{
   target: number,
 }>;
 export type TextInputFocusEventData = TargetEvent;
-export type TextInputBlurEvent = SyntheticEvent<TextInputFocusEventData>;
-export type TextInputFocusEvent = SyntheticEvent<TextInputFocusEventData>;
+export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
+export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 type Selection = $ReadOnly<{
   start: number,
   end: number,
@@ -2867,21 +2870,22 @@ export type TextInputSelectionChangeEventData = $ReadOnly<{
   selection: Selection,
 }>;
 export type TextInputSelectionChangeEvent =
-  SyntheticEvent<TextInputSelectionChangeEventData>;
+  NativeSyntheticEvent<TextInputSelectionChangeEventData>;
 type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
   eventCount?: ?number,
 }>;
-export type TextInputKeyPressEvent = SyntheticEvent<TextInputKeyPressEventData>;
+export type TextInputKeyPressEvent =
+  NativeSyntheticEvent<TextInputKeyPressEventData>;
 export type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
 export type TextInputEditingEvent =
-  SyntheticEvent<TextInputEndEditingEventData>;
+  NativeSyntheticEvent<TextInputEndEditingEventData>;
 type DataDetectorTypesType =
   | \\"phoneNumber\\"
   | \\"link\\"
@@ -3122,9 +3126,9 @@ export type TextInputProps = $ReadOnly<{
   onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
   onFocus?: ?(e: TextInputFocusEvent) => mixed,
   onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
-  onPress?: ?(event: PressEvent) => mixed,
-  onPressIn?: ?(event: PressEvent) => mixed,
-  onPressOut?: ?(event: PressEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
   onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
   onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
@@ -3306,16 +3310,16 @@ declare const TouchableMixin: {
   touchableGetInitialState: () => {
     touchable: {
       touchState: ?State,
-      responderID: ?PressEvent[\\"currentTarget\\"],
+      responderID: ?GestureResponderEvent[\\"currentTarget\\"],
     },
   },
   touchableHandleResponderTerminationRequest: () => any,
   touchableHandleStartShouldSetResponder: () => any,
   touchableLongPressCancelsPress: () => boolean,
-  touchableHandleResponderGrant: (e: PressEvent) => void,
-  touchableHandleResponderRelease: (e: PressEvent) => void,
-  touchableHandleResponderTerminate: (e: PressEvent) => void,
-  touchableHandleResponderMove: (e: PressEvent) => void,
+  touchableHandleResponderGrant: (e: GestureResponderEvent) => void,
+  touchableHandleResponderRelease: (e: GestureResponderEvent) => void,
+  touchableHandleResponderTerminate: (e: GestureResponderEvent) => void,
+  touchableHandleResponderMove: (e: GestureResponderEvent) => void,
   touchableHandleFocus: (e: Event) => void,
   touchableHandleBlur: (e: Event) => void,
   withoutDefaultFocusAndBlur: { ... },
@@ -3505,11 +3509,11 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   onBlur?: ?(event: BlurEvent) => mixed,
   onFocus?: ?(event: FocusEvent) => mixed,
-  onLayout?: ?(event: LayoutEvent) => mixed,
-  onLongPress?: ?(event: PressEvent) => mixed,
-  onPress?: ?(event: PressEvent) => mixed,
-  onPressIn?: ?(event: PressEvent) => mixed,
-  onPressOut?: ?(event: PressEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
+  onLongPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
   pressRetentionOffset?: ?EdgeInsetsOrSizeProp,
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
@@ -3712,7 +3716,7 @@ export type AccessibilityActionInfo = $ReadOnly<{
   label?: string,
   ...
 }>;
-export type AccessibilityActionEvent = SyntheticEvent<
+export type AccessibilityActionEvent = NativeSyntheticEvent<
   $ReadOnly<{ actionName: string, ... }>,
 >;
 export type AccessibilityState = {
@@ -3784,12 +3788,12 @@ export type ViewNativeComponentType = HostComponent<Props>;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/View/ViewPropTypes.js 1`] = `
-"export type ViewLayout = Layout;
-export type ViewLayoutEvent = LayoutEvent;
+"export type ViewLayout = LayoutRectangle;
+export type ViewLayoutEvent = LayoutChangeEvent;
 type DirectEventProps = $ReadOnly<{
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
   onAccessibilityTap?: ?() => mixed,
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onMagicTap?: ?() => mixed,
   onAccessibilityEscape?: ?() => mixed,
 }>;
@@ -3828,28 +3832,28 @@ type FocusEventProps = $ReadOnly<{
   onFocusCapture?: ?(event: FocusEvent) => void,
 }>;
 type TouchEventProps = $ReadOnly<{
-  onTouchCancel?: ?(e: PressEvent) => void,
-  onTouchCancelCapture?: ?(e: PressEvent) => void,
-  onTouchEnd?: ?(e: PressEvent) => void,
-  onTouchEndCapture?: ?(e: PressEvent) => void,
-  onTouchMove?: ?(e: PressEvent) => void,
-  onTouchMoveCapture?: ?(e: PressEvent) => void,
-  onTouchStart?: ?(e: PressEvent) => void,
-  onTouchStartCapture?: ?(e: PressEvent) => void,
+  onTouchCancel?: ?(e: GestureResponderEvent) => void,
+  onTouchCancelCapture?: ?(e: GestureResponderEvent) => void,
+  onTouchEnd?: ?(e: GestureResponderEvent) => void,
+  onTouchEndCapture?: ?(e: GestureResponderEvent) => void,
+  onTouchMove?: ?(e: GestureResponderEvent) => void,
+  onTouchMoveCapture?: ?(e: GestureResponderEvent) => void,
+  onTouchStart?: ?(e: GestureResponderEvent) => void,
+  onTouchStartCapture?: ?(e: GestureResponderEvent) => void,
 }>;
 export type GestureResponderHandlers = $ReadOnly<{
-  onMoveShouldSetResponder?: ?(e: PressEvent) => boolean,
-  onMoveShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
-  onResponderGrant?: ?(e: PressEvent) => void | boolean,
-  onResponderMove?: ?(e: PressEvent) => void,
-  onResponderReject?: ?(e: PressEvent) => void,
-  onResponderRelease?: ?(e: PressEvent) => void,
-  onResponderStart?: ?(e: PressEvent) => void,
-  onResponderEnd?: ?(e: PressEvent) => void,
-  onResponderTerminate?: ?(e: PressEvent) => void,
-  onResponderTerminationRequest?: ?(e: PressEvent) => boolean,
-  onStartShouldSetResponder?: ?(e: PressEvent) => boolean,
-  onStartShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
+  onMoveShouldSetResponder?: ?(e: GestureResponderEvent) => boolean,
+  onMoveShouldSetResponderCapture?: ?(e: GestureResponderEvent) => boolean,
+  onResponderGrant?: ?(e: GestureResponderEvent) => void | boolean,
+  onResponderMove?: ?(e: GestureResponderEvent) => void,
+  onResponderReject?: ?(e: GestureResponderEvent) => void,
+  onResponderRelease?: ?(e: GestureResponderEvent) => void,
+  onResponderStart?: ?(e: GestureResponderEvent) => void,
+  onResponderEnd?: ?(e: GestureResponderEvent) => void,
+  onResponderTerminate?: ?(e: GestureResponderEvent) => void,
+  onResponderTerminationRequest?: ?(e: GestureResponderEvent) => boolean,
+  onStartShouldSetResponder?: ?(e: GestureResponderEvent) => boolean,
+  onStartShouldSetResponderCapture?: ?(e: GestureResponderEvent) => boolean,
 }>;
 type AndroidDrawableThemeAttr = $ReadOnly<{
   type: \\"ThemeAttrAndroid\\",
@@ -3874,7 +3878,7 @@ export type ViewPropsAndroid = $ReadOnly<{
   nextFocusUp?: ?number,
   focusable?: boolean,
   tabIndex?: 0 | -1,
-  onClick?: ?(event: PressEvent) => mixed,
+  onClick?: ?(event: GestureResponderEvent) => mixed,
 }>;
 export type ViewPropsIOS = $ReadOnly<{
   shouldRasterizeIOS?: ?boolean,
@@ -4431,7 +4435,7 @@ declare export function useWrapRefWithImageAttachedCallbacks(
 `;
 
 exports[`public API should not change unintentionally Libraries/Image/ImageProps.js 1`] = `
-"export type ImageLoadEvent = SyntheticEvent<
+"export type ImageLoadEvent = NativeSyntheticEvent<
   $ReadOnly<{
     source: $ReadOnly<{
       width: number,
@@ -4444,7 +4448,7 @@ type IOSImageProps = $ReadOnly<{
   defaultSource?: ?ImageSource,
   onPartialLoad?: ?() => void,
   onProgress?: ?(
-    event: SyntheticEvent<$ReadOnly<{ loaded: number, total: number }>>
+    event: NativeSyntheticEvent<$ReadOnly<{ loaded: number, total: number }>>
   ) => void,
 }>;
 type AndroidImageProps = $ReadOnly<{
@@ -4470,13 +4474,13 @@ export type ImageProps = $ReadOnly<{
   height?: number,
   width?: number,
   onError?: ?(
-    event: SyntheticEvent<
+    event: NativeSyntheticEvent<
       $ReadOnly<{
         error: string,
       }>,
     >
   ) => void,
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
   onLoad?: ?(event: ImageLoadEvent) => void,
   onLoadEnd?: ?() => void,
   onLoadStart?: ?() => void,
@@ -4822,23 +4826,26 @@ exports[`public API should not change unintentionally Libraries/Interaction/PanR
   numberActiveTouches: number,
 };
 type ActiveCallback = (
-  event: PressEvent,
+  event: GestureResponderEvent,
   gestureState: GestureState
 ) => boolean;
-type PassiveCallback = (event: PressEvent, gestureState: GestureState) => mixed;
+type PassiveCallback = (
+  event: GestureResponderEvent,
+  gestureState: GestureState
+) => mixed;
 export type PanHandlers = {
-  onMoveShouldSetResponder: (event: PressEvent) => boolean,
-  onMoveShouldSetResponderCapture: (event: PressEvent) => boolean,
-  onResponderEnd: (event: PressEvent) => void,
-  onResponderGrant: (event: PressEvent) => boolean,
-  onResponderMove: (event: PressEvent) => void,
-  onResponderReject: (event: PressEvent) => void,
-  onResponderRelease: (event: PressEvent) => void,
-  onResponderStart: (event: PressEvent) => void,
-  onResponderTerminate: (event: PressEvent) => void,
-  onResponderTerminationRequest: (event: PressEvent) => boolean,
-  onStartShouldSetResponder: (event: PressEvent) => boolean,
-  onStartShouldSetResponderCapture: (event: PressEvent) => boolean,
+  onMoveShouldSetResponder: (event: GestureResponderEvent) => boolean,
+  onMoveShouldSetResponderCapture: (event: GestureResponderEvent) => boolean,
+  onResponderEnd: (event: GestureResponderEvent) => void,
+  onResponderGrant: (event: GestureResponderEvent) => boolean,
+  onResponderMove: (event: GestureResponderEvent) => void,
+  onResponderReject: (event: GestureResponderEvent) => void,
+  onResponderRelease: (event: GestureResponderEvent) => void,
+  onResponderStart: (event: GestureResponderEvent) => void,
+  onResponderTerminate: (event: GestureResponderEvent) => void,
+  onResponderTerminationRequest: (event: GestureResponderEvent) => boolean,
+  onStartShouldSetResponder: (event: GestureResponderEvent) => boolean,
+  onStartShouldSetResponderCapture: (event: GestureResponderEvent) => boolean,
 };
 type PanResponderConfig = $ReadOnly<{
   onMoveShouldSetPanResponder?: ?ActiveCallback,
@@ -4921,7 +4928,18 @@ declare export default typeof TouchHistoryMath;
 `;
 
 exports[`public API should not change unintentionally Libraries/LayoutAnimation/LayoutAnimation.js 1`] = `
-"export type LayoutAnimationConfig = LayoutAnimationConfig_;
+"export type {
+  LayoutAnimationType,
+  LayoutAnimationProperty,
+  LayoutAnimationAnimationConfig as LayoutAnimationAnim,
+} from \\"../Renderer/shims/ReactNativeTypes\\";
+export type LayoutAnimationConfig = LayoutAnimationConfig_;
+export type LayoutAnimationTypes = $ReadOnly<{
+  [type in LayoutAnimationType]: type,
+}>;
+export type LayoutAnimationProperties = $ReadOnly<{
+  [prop in LayoutAnimationProperty]: prop,
+}>;
 type OnAnimationDidEndCallback = () => void;
 type OnAnimationDidFailCallback = () => void;
 declare function setEnabled(value: boolean): void;
@@ -4932,8 +4950,8 @@ declare function configureNext(
 ): void;
 declare function create(
   duration: number,
-  type: LayoutAnimationType,
-  property: LayoutAnimationProperty
+  type?: LayoutAnimationType,
+  property?: LayoutAnimationProperty
 ): LayoutAnimationConfig;
 declare const Presets: {
   easeInEaseOut: LayoutAnimationConfig,
@@ -4943,8 +4961,8 @@ declare const Presets: {
 declare const LayoutAnimation: {
   configureNext: configureNext,
   create: create,
-  Types: $ReadOnly<{ [K in LayoutAnimationType]: K }>,
-  Properties: $ReadOnly<{ [K in LayoutAnimationProperty]: K }>,
+  Types: LayoutAnimationTypes,
+  Properties: LayoutAnimationProperties,
   checkConfig(...args: Array<mixed>): void,
   Presets: Presets,
   easeInEaseOut: (onAnimationDidEnd?: OnAnimationDidEndCallback) => void,
@@ -5519,7 +5537,7 @@ exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBox
   }>,
   children?: React.Node,
   hitSlop?: ?EdgeInsetsProp,
-  onPress?: ?(event: PressEvent) => void,
+  onPress?: ?(event: GestureResponderEvent) => void,
   style?: ViewStyleProp,
 }>;
 declare function LogBoxButton(props: Props): React.Node;
@@ -5639,7 +5657,7 @@ declare export default typeof LogBoxInspectorSection;
 
 exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBoxInspectorSourceMapStatus.js 1`] = `
 "type Props = $ReadOnly<{
-  onPress?: ?(event: PressEvent) => void,
+  onPress?: ?(event: GestureResponderEvent) => void,
   status: \\"COMPLETE\\" | \\"FAILED\\" | \\"NONE\\" | \\"PENDING\\",
 }>;
 declare function LogBoxInspectorSourceMapStatus(props: Props): React.Node;
@@ -5650,7 +5668,7 @@ declare export default typeof LogBoxInspectorSourceMapStatus;
 exports[`public API should not change unintentionally Libraries/LogBox/UI/LogBoxInspectorStackFrame.js 1`] = `
 "type Props = $ReadOnly<{
   frame: StackFrame,
-  onPress?: ?(event: PressEvent) => void,
+  onPress?: ?(event: GestureResponderEvent) => void,
 }>;
 declare function LogBoxInspectorStackFrame(props: Props): React.Node;
 declare export default typeof LogBoxInspectorStackFrame;
@@ -5741,23 +5759,22 @@ exports[`public API should not change unintentionally Libraries/Modal/Modal.js 1
 "type OrientationChangeEvent = $ReadOnly<{
   orientation: \\"portrait\\" | \\"landscape\\",
 }>;
-export type Props = $ReadOnly<{
-  ...ViewProps,
+export type ModalBaseProps = {
+  animated?: boolean,
   animationType?: ?(\\"none\\" | \\"slide\\" | \\"fade\\"),
+  transparent?: ?boolean,
+  visible?: ?boolean,
+  onRequestClose?: ?DirectEventHandler<null>,
+  onShow?: ?DirectEventHandler<null>,
+  backdropColor?: ColorValue,
+};
+export type ModalPropsIOS = {
   presentationStyle?: ?(
     | \\"fullScreen\\"
     | \\"pageSheet\\"
     | \\"formSheet\\"
     | \\"overFullScreen\\"
   ),
-  transparent?: ?boolean,
-  statusBarTranslucent?: ?boolean,
-  navigationBarTranslucent?: ?boolean,
-  hardwareAccelerated?: ?boolean,
-  visible?: ?boolean,
-  onRequestClose?: ?DirectEventHandler<null>,
-  onShow?: ?DirectEventHandler<null>,
-  onDismiss?: ?() => mixed,
   supportedOrientations?: ?$ReadOnlyArray<
     | \\"portrait\\"
     | \\"portrait-upside-down\\"
@@ -5765,19 +5782,30 @@ export type Props = $ReadOnly<{
     | \\"landscape-left\\"
     | \\"landscape-right\\",
   >,
+  onDismiss?: ?() => void,
   onOrientationChange?: ?DirectEventHandler<OrientationChangeEvent>,
-  backdropColor?: ?string,
-}>;
+};
+export type ModalPropsAndroid = {
+  hardwareAccelerated?: ?boolean,
+  statusBarTranslucent?: ?boolean,
+  navigationBarTranslucent?: ?boolean,
+};
+export type ModalProps = {
+  ...ModalBaseProps,
+  ...ModalPropsIOS,
+  ...ModalPropsAndroid,
+  ...ViewProps,
+};
 type State = {
   isRendered: boolean,
 };
-declare class Modal extends React.Component<Props, State> {
+declare class Modal extends React.Component<ModalProps, State> {
   static defaultProps: { hardwareAccelerated: boolean, visible: boolean };
   static contextType: React.Context<RootTag>;
-  constructor(props: Props): void;
+  constructor(props: ModalProps): void;
   componentDidMount(): void;
   componentWillUnmount(): void;
-  componentDidUpdate(prevProps: Props): void;
+  componentDidUpdate(prevProps: ModalProps): void;
   render(): React.Node;
 }
 declare const ExportedModal: React.ComponentType<
@@ -6266,70 +6294,73 @@ exports[`public API should not change unintentionally Libraries/PermissionsAndro
   buttonNeutral?: string,
   ...
 };
+type PermissionsType = $ReadOnly<{
+  READ_CALENDAR: \\"android.permission.READ_CALENDAR\\",
+  WRITE_CALENDAR: \\"android.permission.WRITE_CALENDAR\\",
+  CAMERA: \\"android.permission.CAMERA\\",
+  READ_CONTACTS: \\"android.permission.READ_CONTACTS\\",
+  WRITE_CONTACTS: \\"android.permission.WRITE_CONTACTS\\",
+  GET_ACCOUNTS: \\"android.permission.GET_ACCOUNTS\\",
+  ACCESS_FINE_LOCATION: \\"android.permission.ACCESS_FINE_LOCATION\\",
+  ACCESS_COARSE_LOCATION: \\"android.permission.ACCESS_COARSE_LOCATION\\",
+  ACCESS_BACKGROUND_LOCATION: \\"android.permission.ACCESS_BACKGROUND_LOCATION\\",
+  RECORD_AUDIO: \\"android.permission.RECORD_AUDIO\\",
+  READ_PHONE_STATE: \\"android.permission.READ_PHONE_STATE\\",
+  CALL_PHONE: \\"android.permission.CALL_PHONE\\",
+  READ_CALL_LOG: \\"android.permission.READ_CALL_LOG\\",
+  WRITE_CALL_LOG: \\"android.permission.WRITE_CALL_LOG\\",
+  ADD_VOICEMAIL: \\"com.android.voicemail.permission.ADD_VOICEMAIL\\",
+  READ_VOICEMAIL: \\"com.android.voicemail.permission.READ_VOICEMAIL\\",
+  WRITE_VOICEMAIL: \\"com.android.voicemail.permission.WRITE_VOICEMAIL\\",
+  USE_SIP: \\"android.permission.USE_SIP\\",
+  PROCESS_OUTGOING_CALLS: \\"android.permission.PROCESS_OUTGOING_CALLS\\",
+  BODY_SENSORS: \\"android.permission.BODY_SENSORS\\",
+  BODY_SENSORS_BACKGROUND: \\"android.permission.BODY_SENSORS_BACKGROUND\\",
+  SEND_SMS: \\"android.permission.SEND_SMS\\",
+  RECEIVE_SMS: \\"android.permission.RECEIVE_SMS\\",
+  READ_SMS: \\"android.permission.READ_SMS\\",
+  RECEIVE_WAP_PUSH: \\"android.permission.RECEIVE_WAP_PUSH\\",
+  RECEIVE_MMS: \\"android.permission.RECEIVE_MMS\\",
+  READ_EXTERNAL_STORAGE: \\"android.permission.READ_EXTERNAL_STORAGE\\",
+  READ_MEDIA_IMAGES: \\"android.permission.READ_MEDIA_IMAGES\\",
+  READ_MEDIA_VIDEO: \\"android.permission.READ_MEDIA_VIDEO\\",
+  READ_MEDIA_AUDIO: \\"android.permission.READ_MEDIA_AUDIO\\",
+  READ_MEDIA_VISUAL_USER_SELECTED: \\"android.permission.READ_MEDIA_VISUAL_USER_SELECTED\\",
+  WRITE_EXTERNAL_STORAGE: \\"android.permission.WRITE_EXTERNAL_STORAGE\\",
+  BLUETOOTH_CONNECT: \\"android.permission.BLUETOOTH_CONNECT\\",
+  BLUETOOTH_SCAN: \\"android.permission.BLUETOOTH_SCAN\\",
+  BLUETOOTH_ADVERTISE: \\"android.permission.BLUETOOTH_ADVERTISE\\",
+  ACCESS_MEDIA_LOCATION: \\"android.permission.ACCESS_MEDIA_LOCATION\\",
+  ACCEPT_HANDOVER: \\"android.permission.ACCEPT_HANDOVER\\",
+  ACTIVITY_RECOGNITION: \\"android.permission.ACTIVITY_RECOGNITION\\",
+  ANSWER_PHONE_CALLS: \\"android.permission.ANSWER_PHONE_CALLS\\",
+  READ_PHONE_NUMBERS: \\"android.permission.READ_PHONE_NUMBERS\\",
+  UWB_RANGING: \\"android.permission.UWB_RANGING\\",
+  POST_NOTIFICATIONS: \\"android.permission.POST_NOTIFICATIONS\\",
+  NEARBY_WIFI_DEVICES: \\"android.permission.NEARBY_WIFI_DEVICES\\",
+}>;
+export type PermissionStatus = \\"granted\\" | \\"denied\\" | \\"never_ask_again\\";
+export type Permission = $Values<PermissionsType>;
 declare class PermissionsAndroid {
-  PERMISSIONS: $ReadOnly<{
-    ACCEPT_HANDOVER: string,
-    ACCESS_BACKGROUND_LOCATION: string,
-    ACCESS_COARSE_LOCATION: string,
-    ACCESS_FINE_LOCATION: string,
-    ACCESS_MEDIA_LOCATION: string,
-    ACTIVITY_RECOGNITION: string,
-    ADD_VOICEMAIL: string,
-    READ_VOICEMAIL: string,
-    WRITE_VOICEMAIL: string,
-    ANSWER_PHONE_CALLS: string,
-    BLUETOOTH_ADVERTISE: string,
-    BLUETOOTH_CONNECT: string,
-    BLUETOOTH_SCAN: string,
-    BODY_SENSORS: string,
-    BODY_SENSORS_BACKGROUND: string,
-    CALL_PHONE: string,
-    CAMERA: string,
-    GET_ACCOUNTS: string,
-    NEARBY_WIFI_DEVICES: string,
-    POST_NOTIFICATIONS: string,
-    PROCESS_OUTGOING_CALLS: string,
-    READ_CALENDAR: string,
-    READ_CALL_LOG: string,
-    READ_CONTACTS: string,
-    READ_EXTERNAL_STORAGE: string,
-    READ_MEDIA_IMAGES: string,
-    READ_MEDIA_VIDEO: string,
-    READ_MEDIA_AUDIO: string,
-    READ_MEDIA_VISUAL_USER_SELECTED: string,
-    READ_PHONE_NUMBERS: string,
-    READ_PHONE_STATE: string,
-    READ_SMS: string,
-    RECEIVE_MMS: string,
-    RECEIVE_SMS: string,
-    RECEIVE_WAP_PUSH: string,
-    RECORD_AUDIO: string,
-    SEND_SMS: string,
-    USE_SIP: string,
-    UWB_RANGING: string,
-    WRITE_CALENDAR: string,
-    WRITE_CALL_LOG: string,
-    WRITE_CONTACTS: string,
-    WRITE_EXTERNAL_STORAGE: string,
-  }>;
+  PERMISSIONS: PermissionsType;
   RESULTS: $ReadOnly<{
     DENIED: \\"denied\\",
     GRANTED: \\"granted\\",
     NEVER_ASK_AGAIN: \\"never_ask_again\\",
   }>;
-  checkPermission(permission: PermissionType): Promise<boolean>;
-  check(permission: PermissionType): Promise<boolean>;
+  checkPermission(permission: Permission): Promise<boolean>;
+  check(permission: Permission): Promise<boolean>;
   requestPermission(
-    permission: PermissionType,
+    permission: Permission,
     rationale?: Rationale
   ): Promise<boolean>;
   request(
-    permission: PermissionType,
+    permission: Permission,
     rationale?: Rationale
   ): Promise<PermissionStatus>;
   requestMultiple(
-    permissions: Array<PermissionType>
-  ): Promise<{ [permission: PermissionType]: PermissionStatus, ... }>;
+    permissions: Array<Permission>
+  ): Promise<{ [permission: Permission]: PermissionStatus, ... }>;
 }
 declare const PermissionsAndroidInstance: PermissionsAndroid;
 declare export default typeof PermissionsAndroidInstance;
@@ -6358,25 +6389,25 @@ exports[`public API should not change unintentionally Libraries/Pressability/Pre
   onFocus?: ?(event: FocusEvent) => mixed,
   onHoverIn?: ?(event: MouseEvent) => mixed,
   onHoverOut?: ?(event: MouseEvent) => mixed,
-  onLongPress?: ?(event: PressEvent) => mixed,
-  onPress?: ?(event: PressEvent) => mixed,
-  onPressIn?: ?(event: PressEvent) => mixed,
-  onPressMove?: ?(event: PressEvent) => mixed,
-  onPressOut?: ?(event: PressEvent) => mixed,
+  onLongPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressMove?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
   blockNativeResponder?: ?boolean,
 }>;
 export type EventHandlers = $ReadOnly<{
   onBlur: (event: BlurEvent) => void,
-  onClick: (event: PressEvent) => void,
+  onClick: (event: GestureResponderEvent) => void,
   onFocus: (event: FocusEvent) => void,
   onMouseEnter?: (event: MouseEvent) => void,
   onMouseLeave?: (event: MouseEvent) => void,
   onPointerEnter?: (event: PointerEvent) => void,
   onPointerLeave?: (event: PointerEvent) => void,
-  onResponderGrant: (event: PressEvent) => void | boolean,
-  onResponderMove: (event: PressEvent) => void,
-  onResponderRelease: (event: PressEvent) => void,
-  onResponderTerminate: (event: PressEvent) => void,
+  onResponderGrant: (event: GestureResponderEvent) => void | boolean,
+  onResponderMove: (event: GestureResponderEvent) => void,
+  onResponderRelease: (event: GestureResponderEvent) => void,
+  onResponderTerminate: (event: GestureResponderEvent) => void,
   onResponderTerminationRequest: () => boolean,
   onStartShouldSetResponder: () => boolean,
 }>;
@@ -6459,11 +6490,32 @@ declare export default typeof NativePushNotificationManagerIOS;
 `;
 
 exports[`public API should not change unintentionally Libraries/PushNotificationIOS/PushNotificationIOS.js 1`] = `
-"export type ContentAvailable = 1 | null | void;
+"export type PushNotificationPermissions = {
+  alert: boolean,
+  badge: boolean,
+  sound: boolean,
+  [key: string]: boolean | number,
+};
+type PresentLocalNotificationDetails = {
+  alertBody: string,
+  alertAction?: string,
+  alertTitle?: string,
+  soundName?: string,
+  category?: string,
+  userInfo?: Object,
+  applicationIconBadgeNumber?: number,
+  fireDate?: number,
+  isSilent?: boolean,
+};
+type ScheduleLocalNotificationDetails = {
+  ...PresentLocalNotificationDetails,
+  repeatInterval?: \\"year\\" | \\"month\\" | \\"week\\" | \\"day\\" | \\"hour\\" | \\"minute\\",
+};
+export type ContentAvailable = 1 | null | void;
 export type FetchResult = {
-  NewData: string,
-  NoData: string,
-  ResultFailed: string,
+  NewData: \\"UIBackgroundFetchResultNewData\\",
+  NoData: \\"UIBackgroundFetchResultNoData\\",
+  ResultFailed: \\"UIBackgroundFetchResultFailed\\",
   ...
 };
 export type PushNotificationEventName = $Keys<{
@@ -6473,10 +6525,25 @@ export type PushNotificationEventName = $Keys<{
   registrationError: string,
   ...
 }>;
+export interface PushNotification {
+  getMessage(): ?string | ?Object;
+  getSound(): ?string;
+  getCategory(): ?string;
+  getAlert(): ?string | ?Object;
+  getContentAvailable(): ContentAvailable;
+  getBadgeCount(): ?number;
+  getData(): ?Object;
+  getThreadID(): ?string;
+  finish(result: string): void;
+}
 declare class PushNotificationIOS {
   static FetchResult: FetchResult;
-  static presentLocalNotification(details: Object): void;
-  static scheduleLocalNotification(details: Object): void;
+  static presentLocalNotification(
+    details: PresentLocalNotificationDetails
+  ): void;
+  static scheduleLocalNotification(
+    details: ScheduleLocalNotificationDetails
+  ): void;
   static cancelAllLocalNotifications(): void;
   static removeAllDeliveredNotifications(): void;
   static getDeliveredNotifications(
@@ -6492,20 +6559,19 @@ declare class PushNotificationIOS {
     handler: Function
   ): void;
   static removeEventListener(type: PushNotificationEventName): void;
-  static requestPermissions(permissions?: {
-    alert?: boolean,
-    badge?: boolean,
-    sound?: boolean,
-    ...
-  }): Promise<{
+  static requestPermissions(
+    permissions?: PushNotificationPermissions
+  ): Promise<{
     alert: boolean,
     badge: boolean,
     sound: boolean,
     ...
   }>;
   static abandonPermissions(): void;
-  static checkPermissions(callback: Function): void;
-  static getInitialNotification(): Promise<?PushNotificationIOS>;
+  static checkPermissions(
+    callback: (permissions: PushNotificationPermissions) => void
+  ): void;
+  static getInitialNotification(): Promise<?PushNotification>;
   static getAuthorizationStatus(
     callback: (authorizationStatus: number) => void
   ): void;
@@ -7724,7 +7790,7 @@ exports[`public API should not change unintentionally Libraries/Text/TextNativeC
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,
-  onClick?: ?(event: PressEvent) => mixed,
+  onClick?: ?(event: GestureResponderEvent) => mixed,
   isPressable?: ?boolean,
 }>;
 declare export const NativeText: HostComponent<NativeTextProps>;
@@ -7770,15 +7836,15 @@ export type TextProps = $ReadOnly<{
   maxFontSizeMultiplier?: ?number,
   nativeID?: ?string,
   numberOfLines?: ?number,
-  onLayout?: ?(event: LayoutEvent) => mixed,
-  onLongPress?: ?(event: PressEvent) => mixed,
-  onPress?: ?(event: PressEvent) => mixed,
-  onPressIn?: ?(event: PressEvent) => mixed,
-  onPressOut?: ?(event: PressEvent) => mixed,
-  onResponderGrant?: ?(event: PressEvent) => void,
-  onResponderMove?: ?(event: PressEvent) => void,
-  onResponderRelease?: ?(event: PressEvent) => void,
-  onResponderTerminate?: ?(event: PressEvent) => void,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
+  onLongPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
+  onResponderGrant?: ?(event: GestureResponderEvent) => void,
+  onResponderMove?: ?(event: GestureResponderEvent) => void,
+  onResponderRelease?: ?(event: GestureResponderEvent) => void,
+  onResponderTerminate?: ?(event: GestureResponderEvent) => void,
   onResponderTerminationRequest?: ?() => boolean,
   onStartShouldSetResponder?: ?() => boolean,
   onMoveShouldSetResponder?: ?() => boolean,
@@ -7836,10 +7902,10 @@ declare export default typeof NativeSampleTurboModule;
 
 exports[`public API should not change unintentionally Libraries/Types/CodegenTypes.js 1`] = `
 "export type BubblingEventHandler<T, PaperName: string | empty = empty> = (
-  event: SyntheticEvent<T>
+  event: NativeSyntheticEvent<T>
 ) => void | Promise<void>;
 export type DirectEventHandler<T, PaperName: string | empty = empty> = (
-  event: SyntheticEvent<T>
+  event: NativeSyntheticEvent<T>
 ) => void | Promise<void>;
 export type Double = number;
 export type Float = number;
@@ -7855,7 +7921,7 @@ export type EventEmitter<T> = (
 `;
 
 exports[`public API should not change unintentionally Libraries/Types/CoreEventTypes.js 1`] = `
-"export type SyntheticEvent<+T> = $ReadOnly<{
+"export type NativeSyntheticEvent<+T> = $ReadOnly<{
   bubbles: ?boolean,
   cancelable: ?boolean,
   currentTarget: number | HostInstance,
@@ -7876,7 +7942,7 @@ exports[`public API should not change unintentionally Libraries/Types/CoreEventT
   type: ?string,
 }>;
 export type ResponderSyntheticEvent<T> = $ReadOnly<{
-  ...SyntheticEvent<T>,
+  ...NativeSyntheticEvent<T>,
   touchHistory: $ReadOnly<{
     indexOfSingleActiveTouch: number,
     mostRecentTimeStamp: number,
@@ -7897,30 +7963,29 @@ export type ResponderSyntheticEvent<T> = $ReadOnly<{
     >,
   }>,
 }>;
-export type Layout = $ReadOnly<{
+export type LayoutRectangle = $ReadOnly<{
   x: number,
   y: number,
   width: number,
   height: number,
 }>;
-export type TextLayout = $ReadOnly<{
-  ...Layout,
+export type TextLayoutLine = $ReadOnly<{
+  ...LayoutRectangle,
   ascender: number,
   capHeight: number,
   descender: number,
   text: string,
   xHeight: number,
 }>;
-export type LayoutEvent = SyntheticEvent<
+export type LayoutChangeEvent = NativeSyntheticEvent<
   $ReadOnly<{
-    layout: Layout,
+    layout: LayoutRectangle,
   }>,
 >;
-export type TextLayoutEvent = SyntheticEvent<
-  $ReadOnly<{
-    lines: Array<TextLayout>,
-  }>,
->;
+export type TextLayoutEventData = $ReadOnly<{
+  lines: Array<TextLayoutLine>,
+}>;
+export type TextLayoutEvent = NativeSyntheticEvent<TextLayoutEventData>;
 export interface NativeUIEvent {
   +detail: number;
 }
@@ -7955,66 +8020,56 @@ export interface NativePointerEvent extends NativeMouseEvent {
   +pointerType: string;
   +isPrimary: boolean;
 }
-export type PointerEvent = SyntheticEvent<NativePointerEvent>;
-export type PressEvent = ResponderSyntheticEvent<
-  $ReadOnly<{
-    changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, \\"nativeEvent\\">>,
-    force?: number,
-    identifier: number,
-    locationX: number,
-    locationY: number,
-    pageX: number,
-    pageY: number,
-    target: ?number,
-    timestamp: number,
-    touches: $ReadOnlyArray<$PropertyType<PressEvent, \\"nativeEvent\\">>,
-  }>,
->;
-export type ScrollEvent = SyntheticEvent<
-  $ReadOnly<{
-    contentInset: $ReadOnly<{
-      bottom: number,
-      left: number,
-      right: number,
-      top: number,
-    }>,
-    contentOffset: $ReadOnly<{
-      y: number,
-      x: number,
-    }>,
-    contentSize: $ReadOnly<{
-      height: number,
-      width: number,
-    }>,
-    layoutMeasurement: $ReadOnly<{
-      height: number,
-      width: number,
-    }>,
-    targetContentOffset?: $ReadOnly<{
-      y: number,
-      x: number,
-    }>,
-    velocity?: $ReadOnly<{
-      y: number,
-      x: number,
-    }>,
-    zoomScale?: number,
-    responderIgnoreScroll?: boolean,
-  }>,
->;
-export type BlurEvent = SyntheticEvent<
-  $ReadOnly<{
-    target: number,
-    ...
-  }>,
->;
-export type FocusEvent = SyntheticEvent<
-  $ReadOnly<{
-    target: number,
-    ...
-  }>,
->;
-export type MouseEvent = SyntheticEvent<
+export type PointerEvent = NativeSyntheticEvent<NativePointerEvent>;
+export type NativeTouchEvent = $ReadOnly<{
+  changedTouches: $ReadOnlyArray<NativeTouchEvent>,
+  force?: number,
+  identifier: number,
+  locationX: number,
+  locationY: number,
+  pageX: number,
+  pageY: number,
+  target: ?number,
+  timestamp: number,
+  touches: $ReadOnlyArray<NativeTouchEvent>,
+}>;
+export type GestureResponderEvent = ResponderSyntheticEvent<NativeTouchEvent>;
+export type NativeScrollRectangle = $ReadOnly<{
+  bottom: number,
+  left: number,
+  right: number,
+  top: number,
+}>;
+export type NativeScrollPoint = $ReadOnly<{
+  y: number,
+  x: number,
+}>;
+export type NativeScrollVelocity = $ReadOnly<{
+  y: number,
+  x: number,
+}>;
+export type NativeScrollSize = $ReadOnly<{
+  height: number,
+  width: number,
+}>;
+export type NativeScrollEvent = $ReadOnly<{
+  contentInset: NativeScrollRectangle,
+  contentOffset: NativeScrollPoint,
+  contentSize: NativeScrollSize,
+  layoutMeasurement: NativeScrollSize,
+  velocity?: NativeScrollVelocity,
+  zoomScale?: number,
+  responderIgnoreScroll?: boolean,
+  targetContentOffset?: NativeScrollPoint,
+}>;
+export type ScrollEvent = NativeSyntheticEvent<NativeScrollEvent>;
+export type TargetedEvent = $ReadOnly<{
+  target: number,
+  ...
+}>;
+export type BlurEvent = NativeSyntheticEvent<TargetedEvent>;
+export type FocusEvent = NativeSyntheticEvent<TargetedEvent>;
+export type MouseEvent = NativeSyntheticEvent<
   $ReadOnly<{
     clientX: number,
     clientY: number,
@@ -8872,95 +8927,90 @@ declare export default class EventEmitter<
 "
 `;
 
-exports[`public API should not change unintentionally index.js 1`] = `
-"export type { HostComponent, HostInstance };
-declare module.exports: {
-  get registerCallableModule(): RegisterCallableModule,
-  get AccessibilityInfo(): AccessibilityInfo,
-  get ActivityIndicator(): ActivityIndicator,
-  get Button(): Button,
-  get DrawerLayoutAndroid(): DrawerLayoutAndroid,
-  get FlatList(): FlatList,
-  get Image(): Image,
-  get ImageBackground(): ImageBackground,
-  get InputAccessoryView(): InputAccessoryView,
-  get experimental_LayoutConformance(): LayoutConformance,
-  get KeyboardAvoidingView(): KeyboardAvoidingView,
-  get Modal(): Modal,
-  get Pressable(): Pressable,
-  get ProgressBarAndroid(): ProgressBarAndroid,
-  get RefreshControl(): RefreshControl,
-  get SafeAreaView(): SafeAreaView,
-  get ScrollView(): ScrollView,
-  get SectionList(): SectionList,
-  get StatusBar(): StatusBar,
-  get Switch(): Switch,
-  get Text(): Text,
-  get TextInput(): TextInput,
-  get Touchable(): Touchable,
-  get TouchableHighlight(): TouchableHighlight,
-  get TouchableNativeFeedback(): TouchableNativeFeedback,
-  get TouchableOpacity(): TouchableOpacity,
-  get TouchableWithoutFeedback(): TouchableWithoutFeedback,
-  get View(): View,
-  get VirtualizedList(): VirtualizedList,
-  get VirtualizedSectionList(): VirtualizedSectionList,
-  get ActionSheetIOS(): ActionSheetIOS,
-  get Alert(): Alert,
-  get Animated(): { ...$Diff<AnimatedModule, { default: any }>, ...Animated },
-  get Appearance(): Appearance,
-  get AppRegistry(): AppRegistry,
-  get AppState(): AppState,
-  get BackHandler(): BackHandler,
-  get Clipboard(): Clipboard,
-  get DeviceInfo(): DeviceInfo,
-  get DevMenu(): DevMenu,
-  get DevSettings(): DevSettings,
-  get Dimensions(): Dimensions,
-  get Easing(): Easing,
-  get findNodeHandle(): $PropertyType<ReactNative, \\"findNodeHandle\\">,
-  get I18nManager(): I18nManager,
-  get InteractionManager(): InteractionManager,
-  get Keyboard(): Keyboard,
-  get LayoutAnimation(): LayoutAnimation,
-  get Linking(): Linking,
-  get LogBox(): LogBox,
-  get NativeDialogManagerAndroid(): NativeDialogManagerAndroid,
-  get NativeEventEmitter(): NativeEventEmitter,
-  get Networking(): Networking,
-  get PanResponder(): PanResponder,
-  get PermissionsAndroid(): PermissionsAndroid,
-  get PixelRatio(): PixelRatio,
-  get PushNotificationIOS(): PushNotificationIOS,
-  get Settings(): Settings,
-  get Share(): Share,
-  get StyleSheet(): StyleSheet,
-  get Systrace(): Systrace,
-  get ToastAndroid(): ToastAndroid,
-  get TurboModuleRegistry(): TurboModuleRegistry,
-  get UIManager(): UIManager,
-  get unstable_batchedUpdates(): $PropertyType<
-    ReactNative,
-    \\"unstable_batchedUpdates\\",
-  >,
-  get useAnimatedValue(): useAnimatedValue,
-  get useColorScheme(): useColorScheme,
-  get useWindowDimensions(): useWindowDimensions,
-  get UTFSequence(): UTFSequence,
-  get Vibration(): Vibration,
-  get DeviceEventEmitter(): RCTDeviceEventEmitter,
-  get DynamicColorIOS(): DynamicColorIOS,
-  get NativeAppEventEmitter(): RCTNativeAppEventEmitter,
-  get NativeModules(): NativeModules,
-  get Platform(): Platform,
-  get PlatformColor(): PlatformColor,
-  get processColor(): processColor,
-  get requireNativeComponent(): <T: { ... }>(
-    uiViewClassName: string
-  ) => HostComponent<T>,
-  get RootTagContext(): RootTagContext,
-  get unstable_enableLogBox(): () => void,
-};
+exports[`public API should not change unintentionally index.js.flow 1`] = `
+"export type {
+  HostComponent,
+  HostInstance,
+} from \\"./Libraries/Renderer/shims/ReactNativeTypes\\";
+export { default as registerCallableModule } from \\"./Libraries/Core/registerCallableModule\\";
+export { default as AccessibilityInfo } from \\"./Libraries/Components/AccessibilityInfo/AccessibilityInfo\\";
+export { default as ActivityIndicator } from \\"./Libraries/Components/ActivityIndicator/ActivityIndicator\\";
+export { default as Button } from \\"./Libraries/Components/Button\\";
+export { default as DrawerLayoutAndroid } from \\"./Libraries/Components/DrawerAndroid/DrawerLayoutAndroid\\";
+export { default as experimental_LayoutConformance } from \\"./Libraries/Components/LayoutConformance/LayoutConformance\\";
+export { default as FlatList } from \\"./Libraries/Lists/FlatList\\";
+export { default as Image } from \\"./Libraries/Image/Image\\";
+export { default as ImageBackground } from \\"./Libraries/Image/ImageBackground\\";
+export { default as InputAccessoryView } from \\"./Libraries/Components/TextInput/InputAccessoryView\\";
+export { default as KeyboardAvoidingView } from \\"./Libraries/Components/Keyboard/KeyboardAvoidingView\\";
+export { default as Modal } from \\"./Libraries/Modal/Modal\\";
+export { default as Pressable } from \\"./Libraries/Components/Pressable/Pressable\\";
+export { default as ProgressBarAndroid } from \\"./Libraries/Components/ProgressBarAndroid/ProgressBarAndroid\\";
+export { default as RefreshControl } from \\"./Libraries/Components/RefreshControl/RefreshControl\\";
+export { default as SafeAreaView } from \\"./Libraries/Components/SafeAreaView/SafeAreaView\\";
+export { default as ScrollView } from \\"./Libraries/Components/ScrollView/ScrollView\\";
+export { default as SectionList } from \\"./Libraries/Lists/SectionList\\";
+export { default as StatusBar } from \\"./Libraries/Components/StatusBar/StatusBar\\";
+export { default as Switch } from \\"./Libraries/Components/Switch/Switch\\";
+export { default as Text } from \\"./Libraries/Text/Text\\";
+export { default as TextInput } from \\"./Libraries/Components/TextInput/TextInput\\";
+export { default as Touchable } from \\"./Libraries/Components/Touchable/Touchable\\";
+export { default as TouchableHighlight } from \\"./Libraries/Components/Touchable/TouchableHighlight\\";
+export { default as TouchableNativeFeedback } from \\"./Libraries/Components/Touchable/TouchableNativeFeedback\\";
+export { default as TouchableOpacity } from \\"./Libraries/Components/Touchable/TouchableOpacity\\";
+export { default as TouchableWithoutFeedback } from \\"./Libraries/Components/Touchable/TouchableWithoutFeedback\\";
+export { default as View } from \\"./Libraries/Components/View/View\\";
+export { default as VirtualizedList } from \\"./Libraries/Lists/VirtualizedList\\";
+export { default as VirtualizedSectionList } from \\"./Libraries/Lists/VirtualizedSectionList\\";
+export { default as ActionSheetIOS } from \\"./Libraries/ActionSheetIOS/ActionSheetIOS\\";
+export { default as Alert } from \\"./Libraries/Alert/Alert\\";
+export { default as Animated } from \\"./Libraries/Animated/Animated\\";
+export * as Appearance from \\"./Libraries/Utilities/Appearance\\";
+export { default as AppRegistry } from \\"./Libraries/ReactNative/AppRegistry\\";
+export { default as AppState } from \\"./Libraries/AppState/AppState\\";
+export { default as BackHandler } from \\"./Libraries/Utilities/BackHandler\\";
+export { default as Clipboard } from \\"./Libraries/Components/Clipboard/Clipboard\\";
+export { default as DeviceInfo } from \\"./Libraries/Utilities/DeviceInfo\\";
+export { default as DevMenu } from \\"./src/private/devmenu/DevMenu\\";
+export { default as DevSettings } from \\"./Libraries/Utilities/DevSettings\\";
+export { default as Dimensions } from \\"./Libraries/Utilities/Dimensions\\";
+export { default as Easing } from \\"./Libraries/Animated/Easing\\";
+export { findNodeHandle } from \\"./Libraries/ReactNative/RendererProxy\\";
+export { default as I18nManager } from \\"./Libraries/ReactNative/I18nManager\\";
+export { default as InteractionManager } from \\"./Libraries/Interaction/InteractionManager\\";
+export { default as Keyboard } from \\"./Libraries/Components/Keyboard/Keyboard\\";
+export { default as LayoutAnimation } from \\"./Libraries/LayoutAnimation/LayoutAnimation\\";
+export { default as Linking } from \\"./Libraries/Linking/Linking\\";
+export { default as LogBox } from \\"./Libraries/LogBox/LogBox\\";
+export { default as NativeDialogManagerAndroid } from \\"./Libraries/NativeModules/specs/NativeDialogManagerAndroid\\";
+export { default as NativeEventEmitter } from \\"./Libraries/EventEmitter/NativeEventEmitter\\";
+export { default as Networking } from \\"./Libraries/Network/RCTNetworking\\";
+export { default as PanResponder } from \\"./Libraries/Interaction/PanResponder\\";
+export { default as PermissionsAndroid } from \\"./Libraries/PermissionsAndroid/PermissionsAndroid\\";
+export { default as PixelRatio } from \\"./Libraries/Utilities/PixelRatio\\";
+export { default as PushNotificationIOS } from \\"./Libraries/PushNotificationIOS/PushNotificationIOS\\";
+export { default as Settings } from \\"./Libraries/Settings/Settings\\";
+export { default as Share } from \\"./Libraries/Share/Share\\";
+export { default as StyleSheet } from \\"./Libraries/StyleSheet/StyleSheet\\";
+export * as Systrace from \\"./Libraries/Performance/Systrace\\";
+export { default as ToastAndroid } from \\"./Libraries/Components/ToastAndroid/ToastAndroid\\";
+export * as TurboModuleRegistry from \\"./Libraries/TurboModule/TurboModuleRegistry\\";
+export { default as UIManager } from \\"./Libraries/ReactNative/UIManager\\";
+export { unstable_batchedUpdates } from \\"./Libraries/ReactNative/RendererProxy\\";
+export { default as useAnimatedValue } from \\"./Libraries/Animated/useAnimatedValue\\";
+export { default as useColorScheme } from \\"./Libraries/Utilities/useColorScheme\\";
+export { default as useWindowDimensions } from \\"./Libraries/Utilities/useWindowDimensions\\";
+export { default as UTFSequence } from \\"./Libraries/UTFSequence\\";
+export { default as Vibration } from \\"./Libraries/Vibration/Vibration\\";
+export { default as DeviceEventEmitter } from \\"./Libraries/EventEmitter/RCTDeviceEventEmitter\\";
+export { DynamicColorIOS } from \\"./Libraries/StyleSheet/PlatformColorValueTypesIOS\\";
+export { default as NativeAppEventEmitter } from \\"./Libraries/EventEmitter/RCTNativeAppEventEmitter\\";
+export { default as NativeModules } from \\"./Libraries/BatchedBridge/NativeModules\\";
+export { default as Platform } from \\"./Libraries/Utilities/Platform\\";
+export { PlatformColor } from \\"./Libraries/StyleSheet/PlatformColorValueTypes\\";
+export { default as processColor } from \\"./Libraries/StyleSheet/processColor\\";
+export { default as requireNativeComponent } from \\"./Libraries/ReactNative/requireNativeComponent\\";
+export { RootTagContext } from \\"./Libraries/ReactNative/RootTag\\";
 "
 `;
 
