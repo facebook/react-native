@@ -45,12 +45,19 @@ const DEBUGGER_HEARTBEAT_INTERVAL_MS = 10000;
 
 const INTERNAL_ERROR_CODE = 1011;
 
+export type GetPageDescriptionsConfig = {
+  requestorRelativeBaseUrl: URL,
+  logNoPagesForConnectedDevice?: boolean,
+};
+
 export interface InspectorProxyQueries {
   /**
    * Returns list of page descriptions ordered by device connection order, then
    * page addition order.
    */
-  getPageDescriptions(requestorRelativeBaseUrl: URL): Array<PageDescription>;
+  getPageDescriptions(
+    config: GetPageDescriptionsConfig,
+  ): Array<PageDescription>;
 }
 
 /**
@@ -95,22 +102,40 @@ export default class InspectorProxy implements InspectorProxyQueries {
     this.#customMessageHandler = customMessageHandler;
   }
 
-  getPageDescriptions(requestorRelativeBaseUrl: URL): Array<PageDescription> {
+  getPageDescriptions({
+    requestorRelativeBaseUrl,
+    logNoPagesForConnectedDevice = false,
+  }: GetPageDescriptionsConfig): Array<PageDescription> {
     // Build list of pages from all devices.
     let result: Array<PageDescription> = [];
     Array.from(this.#devices.entries()).forEach(([deviceId, device]) => {
-      result = result.concat(
-        device
-          .getPagesList()
-          .map((page: Page) =>
-            this.#buildPageDescription(
-              deviceId,
-              device,
-              page,
-              requestorRelativeBaseUrl,
-            ),
+      const devicePages = device
+        .getPagesList()
+        .map((page: Page) =>
+          this.#buildPageDescription(
+            deviceId,
+            device,
+            page,
+            requestorRelativeBaseUrl,
           ),
-      );
+        );
+
+      if (
+        logNoPagesForConnectedDevice &&
+        devicePages.length === 0 &&
+        device.dangerouslyGetSocket()?.readyState === WS.OPEN
+      ) {
+        this.#logger?.warn(
+          `Waiting for a DevTools connection to app '%s' on device '%s'. If no connection occurs, try:
+    - Restart the app
+    - Ensure a stable connection to the device
+    - Ensure that the app is built in a mode that supports debugging`,
+          device.getApp(),
+          device.getName(),
+        );
+      }
+
+      result = result.concat(devicePages);
     });
     return result;
   }
@@ -131,9 +156,11 @@ export default class InspectorProxy implements InspectorProxyQueries {
     ) {
       this.#sendJsonResponse(
         response,
-        this.getPageDescriptions(
-          getBaseUrlFromRequest(request) ?? this.#serverBaseUrl,
-        ),
+        this.getPageDescriptions({
+          requestorRelativeBaseUrl:
+            getBaseUrlFromRequest(request) ?? this.#serverBaseUrl,
+          logNoPagesForConnectedDevice: true,
+        }),
       );
     } else if (pathname === PAGES_LIST_JSON_VERSION_URL) {
       this.#sendJsonResponse(response, {
