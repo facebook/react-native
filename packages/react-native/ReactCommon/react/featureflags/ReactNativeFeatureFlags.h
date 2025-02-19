@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7f9d91738a6817bee27c5e0c8ace3686>>
+ * @generated SignedSource<<b354e1b9ffc58e74ffff200c14728d1d>>
  */
 
 /**
@@ -83,11 +83,6 @@ class ReactNativeFeatureFlags {
    * Enables the use of the Fabric renderer in the whole app.
    */
   RN_EXPORT static bool enableFabricRenderer();
-
-  /**
-   * Synchronise the view command dispatching with mounting of new transaction
-   */
-  RN_EXPORT static bool enableFixForViewCommandRace();
 
   /**
    * iOS Views will clip to their padding box vs border box

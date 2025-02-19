@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4f565477e7fd49756af7e8ac548c09a2>>
+ * @generated SignedSource<<9a4f0e72b7e6518347f65253c018220a>>
  */
 
 /**
@@ -87,11 +87,6 @@ bool NativeReactNativeFeatureFlags::enableFabricLogs(
 bool NativeReactNativeFeatureFlags::enableFabricRenderer(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableFabricRenderer();
-}
-
-bool NativeReactNativeFeatureFlags::enableFixForViewCommandRace(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enableFixForViewCommandRace();
 }
 
 bool NativeReactNativeFeatureFlags::enableIOSViewClipToPaddingBox(

@@ -13,7 +13,6 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.NativeMap
 import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.bridge.RuntimeScheduler
-import com.facebook.react.common.mapbuffer.MapBufferSoLoader
 import com.facebook.react.fabric.events.EventBeatManager
 import com.facebook.react.uimanager.PixelUtil.getDisplayMetricDensity
 
@@ -102,7 +101,6 @@ internal class FabricUIManagerBinding : HybridClassBase() {
   private companion object {
     init {
       FabricSoLoader.staticInit()
-      MapBufferSoLoader.staticInit()
     }
   }
 }

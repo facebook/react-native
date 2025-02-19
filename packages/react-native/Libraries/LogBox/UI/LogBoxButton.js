@@ -10,7 +10,7 @@
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
 import TouchableWithoutFeedback from '../../Components/Touchable/TouchableWithoutFeedback';
 import View from '../../Components/View/View';
@@ -26,7 +26,7 @@ type Props = $ReadOnly<{
   }>,
   children?: React.Node,
   hitSlop?: ?EdgeInsetsProp,
-  onPress?: ?(event: PressEvent) => void,
+  onPress?: ?(event: GestureResponderEvent) => void,
   style?: ViewStyleProp,
 }>;
 

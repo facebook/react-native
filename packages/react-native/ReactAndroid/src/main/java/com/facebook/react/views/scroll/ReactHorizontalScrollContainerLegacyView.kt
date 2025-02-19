@@ -19,16 +19,16 @@ internal class ReactHorizontalScrollContainerLegacyView(context: Context) :
     ReactViewGroup(context) {
   private val isRTL: Boolean = I18nUtil.instance.isRTL(context)
 
-  override fun setRemoveClippedSubviews(removeClippedSubviews: Boolean) {
-    // removeClippedSubviews logic may read metrics before the offsetting we do in onLayout() and is
-    // such unsafe
-    if (isRTL) {
-      super.setRemoveClippedSubviews(false)
-      return
+  override var removeClippedSubviews: Boolean = false
+    set(value) {
+      // removeClippedSubviews logic may read metrics before the offsetting we do in onLayout() and
+      // is such unsafe
+      if (isRTL) {
+        field = false
+      } else {
+        field = value
+      }
     }
-
-    super.setRemoveClippedSubviews(removeClippedSubviews)
-  }
 
   protected override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     if (isRTL) {

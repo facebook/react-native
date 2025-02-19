@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {NativeSyntheticEvent} from '../../Types/CoreEventTypes';
 
 // This must be kept in sync with the AccessibilityRolesMask in RCTViewManager.m
 export type AccessibilityRole =
@@ -160,7 +160,7 @@ export type AccessibilityActionInfo = $ReadOnly<{
 }>;
 
 // The info included in the event sent to onAccessibilityAction
-export type AccessibilityActionEvent = SyntheticEvent<
+export type AccessibilityActionEvent = NativeSyntheticEvent<
   $ReadOnly<{actionName: string, ...}>,
 >;
 

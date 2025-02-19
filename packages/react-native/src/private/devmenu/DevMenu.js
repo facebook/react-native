@@ -28,4 +28,4 @@ const DevMenu: DevMenuStatic = {
   },
 };
 
-module.exports = DevMenu;
+export default DevMenu;

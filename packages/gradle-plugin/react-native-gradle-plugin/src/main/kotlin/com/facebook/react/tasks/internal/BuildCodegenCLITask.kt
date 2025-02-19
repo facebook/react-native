@@ -28,6 +28,8 @@ abstract class BuildCodegenCLITask : Exec() {
 
   @get:Internal abstract val bashWindowsHome: Property<String>
 
+  @get:Internal abstract val rootProjectName: Property<String>
+
   @get:InputFiles abstract val inputFiles: Property<FileTree>
 
   @get:OutputFiles abstract val outputFiles: Property<FileTree>
@@ -35,6 +37,10 @@ abstract class BuildCodegenCLITask : Exec() {
   @get:OutputFile abstract val logFile: RegularFileProperty
 
   override fun exec() {
+    // For build from source scenario, we don't need to build the codegen at all.
+    if (rootProjectName.get() == "react-native-build-from-source") {
+      return
+    }
     val logFileConcrete =
         logFile.get().asFile.apply {
           parentFile.mkdirs()
