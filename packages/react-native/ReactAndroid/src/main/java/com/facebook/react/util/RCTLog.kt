@@ -14,12 +14,12 @@ import com.facebook.react.bridge.JavaScriptModule
  *
  * The RCTLog module allows for showing native logs in JavaScript.
  */
-internal interface RCTLog : JavaScriptModule {
+public interface RCTLog : JavaScriptModule {
   /**
    * Send a log to JavaScript.
    *
    * @param level The level of the log.
    * @param message The message to log.
    */
-  fun logIfNoNativeHook(level: String?, message: String?)
+  public fun logIfNoNativeHook(level: String?, message: String?)
 }
