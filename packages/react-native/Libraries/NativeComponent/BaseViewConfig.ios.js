@@ -10,6 +10,8 @@
 
 import type {PartialViewConfigWithoutName} from './PlatformBaseViewConfig';
 
+import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
+import NativeReactNativeFeatureFlags from '../../src/private/featureflags/specs/NativeReactNativeFeatureFlags';
 import ReactNativeStyleAttributes from '../Components/View/ReactNativeStyleAttributes';
 import {
   ConditionallyIgnoredEventHandlers,
@@ -228,9 +230,13 @@ const validAttributesForNonEventProps = {
   filter: {
     process: require('../StyleSheet/processFilter').default,
   },
-  boxShadow: {
-    process: require('../StyleSheet/processBoxShadow').default,
-  },
+  boxShadow:
+    NativeReactNativeFeatureFlags != null &&
+    ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? true
+      : {
+          process: require('../StyleSheet/processBoxShadow').default,
+        },
   mixBlendMode: true,
   isolation: true,
 
