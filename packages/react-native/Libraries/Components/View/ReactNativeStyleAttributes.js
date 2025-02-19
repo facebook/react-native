@@ -123,7 +123,13 @@ const ReactNativeStyleAttributes: {[string]: AnyAttributeType, ...} = {
   /**
    * Filter
    */
-  filter: {process: processFilter},
+  filter:
+    NativeReactNativeFeatureFlags != null &&
+    ReactNativeFeatureFlags.enableNativeCSSParsing()
+      ? true
+      : {
+          process: processFilter,
+        },
 
   /**
    * MixBlendMode
