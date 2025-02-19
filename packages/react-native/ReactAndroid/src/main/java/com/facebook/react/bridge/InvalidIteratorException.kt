@@ -14,5 +14,5 @@ import com.facebook.proguard.annotations.DoNotStrip
  * elements after the end of the key set.
  */
 @DoNotStrip
-public class InvalidIteratorException public @DoNotStrip constructor(msg: String) :
+public class InvalidIteratorException @DoNotStrip public constructor(msg: String) :
     RuntimeException(msg) {}

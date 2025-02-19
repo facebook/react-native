@@ -17,9 +17,9 @@ import android.view.animation.TranslateAnimation
  */
 internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
 
-  override internal fun isValid(): Boolean = mDurationMs > 0
+  internal override fun isValid(): Boolean = mDurationMs > 0
 
-  override internal fun createAnimationImpl(
+  internal override fun createAnimationImpl(
       view: View,
       x: Int,
       y: Int,

@@ -18,7 +18,7 @@ public class PerftestDevSupportManager(
     applicationContext: Context,
 ) : ReleaseDevSupportManager() {
 
-  override public val devSettings: DeveloperSettings =
+  public override val devSettings: DeveloperSettings =
       DevInternalSettings(
           applicationContext,
           object : DevInternalSettings.Listener {
