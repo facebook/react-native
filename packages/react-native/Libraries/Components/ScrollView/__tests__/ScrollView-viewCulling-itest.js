@@ -812,3 +812,32 @@ test('culling with transform scale', () => {
     'Update {type: "ScrollView", nativeID: (N/A)}',
   ]);
 });
+
+test('culling when ScrollView parent has transform', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+  Fantom.runTask(() => {
+    root.render(
+      <View style={{transform: [{translateY: 100}]}}>
+        <ScrollView style={{height: 100, width: 100}}>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 45}}
+          />
+        </ScrollView>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+});
