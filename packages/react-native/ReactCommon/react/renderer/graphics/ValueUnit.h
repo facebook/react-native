@@ -40,5 +40,9 @@ struct ValueUnit {
     }
     return 0.0f;
   }
+
+  constexpr operator bool() const {
+    return unit != UnitType::Undefined;
+  }
 };
 } // namespace facebook::react
