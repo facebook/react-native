@@ -19,7 +19,7 @@ internal enum class AnimatedPropertyType {
 
   companion object {
     @JvmStatic
-    public fun fromString(name: String): AnimatedPropertyType {
+    fun fromString(name: String): AnimatedPropertyType {
       return when (name) {
         "opacity" -> OPACITY
         "scaleX" -> SCALE_X

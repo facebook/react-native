@@ -30,7 +30,7 @@ internal class ReactHorizontalScrollContainerLegacyView(context: Context) :
       }
     }
 
-  protected override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+  override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     if (isRTL) {
       // When the layout direction is RTL, we expect Yoga to give us a layout
       // that extends off the screen to the left so we re-center it with left=0

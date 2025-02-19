@@ -17,7 +17,7 @@ internal object BlobCollector {
   }
 
   @JvmStatic
-  public fun install(reactContext: ReactContext, blobModule: BlobModule) {
+  fun install(reactContext: ReactContext, blobModule: BlobModule) {
     reactContext.runOnJSQueueThread {
       val jsContext: JavaScriptContextHolder? = reactContext.getJavaScriptContextHolder()
       // When debugging in chrome the JS context is not available.

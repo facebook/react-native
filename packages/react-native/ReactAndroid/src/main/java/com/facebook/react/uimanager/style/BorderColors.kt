@@ -25,7 +25,7 @@ internal value class BorderColors(
     @ColorInt val edgeColors: Array<Int?> = arrayOfNulls<Int?>(LogicalEdge.values().size)
 ) {
 
-  public fun resolve(layoutDirection: Int, context: Context): ColorEdges {
+  fun resolve(layoutDirection: Int, context: Context): ColorEdges {
     return when (layoutDirection) {
       LayoutDirection.LTR ->
           ColorEdges(

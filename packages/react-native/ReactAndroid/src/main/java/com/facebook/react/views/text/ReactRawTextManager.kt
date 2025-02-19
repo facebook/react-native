@@ -40,6 +40,6 @@ public class ReactRawTextManager : ViewManager<View, ReactRawTextShadowNode>() {
   }
 
   internal companion object {
-    public const val REACT_CLASS: String = "RCTRawText"
+    const val REACT_CLASS: String = "RCTRawText"
   }
 }

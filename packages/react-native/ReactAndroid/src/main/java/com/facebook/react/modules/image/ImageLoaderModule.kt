@@ -91,9 +91,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
         this.imagePipeline.fetchDecodedImage(request, this.callerContext)
     val dataSubscriber: DataSubscriber<CloseableReference<CloseableImage>> =
         object : BaseDataSubscriber<CloseableReference<CloseableImage>>() {
-          protected override fun onNewResultImpl(
-              dataSource: DataSource<CloseableReference<CloseableImage>>
-          ) {
+          override fun onNewResultImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
             if (!dataSource.isFinished) {
               return
             }
@@ -115,9 +113,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
             }
           }
 
-          protected override fun onFailureImpl(
-              dataSource: DataSource<CloseableReference<CloseableImage>>
-          ) {
+          override fun onFailureImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
             promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.failureCause)
           }
         }
@@ -151,9 +147,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
         this.imagePipeline.fetchDecodedImage(request, this.callerContext)
     val dataSubscriber: DataSubscriber<CloseableReference<CloseableImage>> =
         object : BaseDataSubscriber<CloseableReference<CloseableImage>>() {
-          protected override fun onNewResultImpl(
-              dataSource: DataSource<CloseableReference<CloseableImage>>
-          ) {
+          override fun onNewResultImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
             if (!dataSource.isFinished) {
               return
             }
@@ -175,9 +169,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
             }
           }
 
-          protected override fun onFailureImpl(
-              dataSource: DataSource<CloseableReference<CloseableImage>>
-          ) {
+          override fun onFailureImpl(dataSource: DataSource<CloseableReference<CloseableImage>>) {
             promise.reject(ERROR_GET_SIZE_FAILURE, dataSource.failureCause)
           }
         }
@@ -208,7 +200,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
         this.imagePipeline.prefetchToDiskCache(request, this.callerContext)
     val prefetchSubscriber =
         object : BaseDataSubscriber<Void?>() {
-          protected override fun onNewResultImpl(dataSource: DataSource<Void?>) {
+          override fun onNewResultImpl(dataSource: DataSource<Void?>) {
             if (!dataSource.isFinished) {
               return
             }
@@ -222,7 +214,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
             }
           }
 
-          protected override fun onFailureImpl(dataSource: DataSource<Void?>) {
+          override fun onFailureImpl(dataSource: DataSource<Void?>) {
             try {
               removeRequest(requestId)
               promise.reject(ERROR_PREFETCH_FAILURE, dataSource.failureCause)
@@ -245,7 +237,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
     // perform cache interrogation in async task as disk cache checks are expensive
     @Suppress("DEPRECATION", "StaticFieldLeak")
     object : GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {
-          protected override fun doInBackgroundGuarded(vararg params: Void) {
+          override fun doInBackgroundGuarded(vararg params: Void) {
             val result: WritableMap = Arguments.createMap()
             val imagePipeline: ImagePipeline = this@ImageLoaderModule.imagePipeline
             for (i in 0 until uris.size()) {
