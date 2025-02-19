@@ -14,6 +14,7 @@
 #import <React/RCTConversions.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTI18nUtil.h>
+#import <React/RCTInitializeUIKitProxies.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTSurfaceDelegate.h>
 #import <React/RCTSurfaceRootView.h>
@@ -54,6 +55,7 @@ using namespace facebook::react;
                        initialProperties:(NSDictionary *)initialProperties
 {
   if (self = [super init]) {
+    RCTInitializeUIKitProxies();
     _surfacePresenter = surfacePresenter;
 
     _surfaceHandler =
