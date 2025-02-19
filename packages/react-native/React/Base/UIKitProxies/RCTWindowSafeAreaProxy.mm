@@ -43,18 +43,19 @@
 
 - (UIEdgeInsets)currentSafeAreaInsets
 {
-  std::lock_guard<std::mutex> lock(_mutex);
-
-  if (!_isObserving) {
-    // Fallback in case [startObservingSafeArea startObservingSafeArea] was not called.
-    __block UIEdgeInsets insets;
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      insets = [UIApplication sharedApplication].delegate.window.safeAreaInsets;
-    });
-    return insets;
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    if (_isObserving) {
+      return _currentSafeAreaInsets;
+    }
   }
 
-  return _currentSafeAreaInsets;
+  // Fallback in case [startObservingSafeArea startObservingSafeArea] was not called.
+  __block UIEdgeInsets insets;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    insets = [UIApplication sharedApplication].delegate.window.safeAreaInsets;
+  });
+  return insets;
 }
 
 - (void)_interfaceFrameDidChange
