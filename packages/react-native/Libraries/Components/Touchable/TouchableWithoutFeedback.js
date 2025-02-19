@@ -20,7 +20,7 @@ import type {
   BlurEvent,
   FocusEvent,
   LayoutChangeEvent,
-  PressEvent,
+  GestureResponderEvent,
 } from '../../Types/CoreEventTypes';
 
 import View from '../../Components/View/View';
@@ -74,10 +74,10 @@ type Props = $ReadOnly<{
   onBlur?: ?(event: BlurEvent) => mixed,
   onFocus?: ?(event: FocusEvent) => mixed,
   onLayout?: ?(event: LayoutChangeEvent) => mixed,
-  onLongPress?: ?(event: PressEvent) => mixed,
-  onPress?: ?(event: PressEvent) => mixed,
-  onPressIn?: ?(event: PressEvent) => mixed,
-  onPressOut?: ?(event: PressEvent) => mixed,
+  onLongPress?: ?(event: GestureResponderEvent) => mixed,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
   pressRetentionOffset?: ?EdgeInsetsOrSizeProp,
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
