@@ -14,12 +14,12 @@ import com.facebook.react.bridge.ReadableType
 import java.io.IOException
 import java.io.StringWriter
 
-internal object ExceptionDataHelper {
+public object ExceptionDataHelper {
 
-  const val EXTRA_DATA_FIELD: String = "extraData"
+  public const val EXTRA_DATA_FIELD: String = "extraData"
 
   @JvmStatic
-  fun getExtraDataAsJson(metadata: ReadableMap?): String? {
+  public fun getExtraDataAsJson(metadata: ReadableMap?): String? {
     if (metadata == null || metadata.getType(EXTRA_DATA_FIELD) == ReadableType.Null) {
       return null
     }
