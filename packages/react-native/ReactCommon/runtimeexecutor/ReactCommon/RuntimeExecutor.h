@@ -14,6 +14,8 @@
 
 namespace facebook::react {
 
+std::mutex* getMainThreadMutex();
+
 /*
  * Takes a function and calls it with a reference to a Runtime. The function
  * will be called when it is safe to do so (i.e. it ensures non-concurrent
@@ -31,6 +33,16 @@ using RuntimeExecutor =
  * Use this method when the caller needs to *be blocked* by executing the
  * `callback` and requires that the callback will be executed on the same
  * thread.
+ * Example order of events (when not a sync call in runtimeExecutor callback):
+ * - [UI thread] Lock all mutexes at start
+ * - [UI thread] mutex1.lock before callback
+ * - [JS thread] Set runtimePtr in runtimeExecutor callback
+ * - [JS thread] mutex1.unlock in runtimeExecutor callback
+ * - [UI thread] Call callback
+ * - [JS thread] mutex2.lock in runtimeExecutor callback
+ * - [UI thread] mutex2.unlock after callback
+ * - [UI thread] mutex3.lock after callback
+ * - [JS thread] mutex3.unlock in runtimeExecutor callback
  */
 inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
     const RuntimeExecutor& runtimeExecutor,
@@ -42,6 +54,7 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
   std::mutex mutex2;
   std::mutex mutex3;
 
+  getMainThreadMutex()->lock();
   mutex1.lock();
   mutex2.lock();
   mutex3.lock();
@@ -70,6 +83,7 @@ inline static void executeSynchronouslyOnSameThread_CAN_DEADLOCK(
   callback(*runtimePtr);
   mutex2.unlock();
   mutex3.lock();
+  getMainThreadMutex()->unlock();
 }
 
 template <typename DataT>
