@@ -29,7 +29,7 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 
 /** A wrapper around WebSocketClient that recognizes RN debugging message format. */
-public class JSDebuggerWebSocketClient extends WebSocketListener {
+class JSDebuggerWebSocketClient extends WebSocketListener {
 
   private static final String TAG = "JSDebuggerWebSocketClient";
 
