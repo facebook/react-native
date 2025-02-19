@@ -699,6 +699,8 @@ static void RCTAddContourEffectToLayer(
         CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
     layer.contents = (id)image.CGImage;
     layer.contentsScale = image.scale;
+    layer.shouldRasterize = YES;
+    layer.rasterizationScale = image.scale;
 
     BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
     if (isResizable) {
