@@ -11,6 +11,9 @@ inputs:
     required: false
     description: The GHA npm token, required only to publish to npm
     default: ''
+  gradle-cache-encryption-key:
+    description: The encryption key needed to store the Gradle Configuration cache
+
 runs:
   using: composite
   steps:
@@ -102,6 +105,8 @@ runs:
       uses: ./.github/actions/setup-node
     - name: Setup gradle
       uses: ./.github/actions/setup-gradle
+      with:
+        cache-encryption-key: ${{ inputs.gradle-cache-encryption-key }}
     - name: Install dependencies
       uses: ./.github/actions/yarn-install
     - name: Build packages
