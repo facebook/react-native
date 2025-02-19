@@ -7,8 +7,8 @@
 
 package com.facebook.react.bridge
 
-import com.facebook.jni.HybridData
+import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStrip
 
 /** A Kotlin holder for a C++ RuntimeExecutor. */
-public class RuntimeExecutor(@DoNotStrip private val mHybridData: HybridData)
+@DoNotStrip public class RuntimeExecutor @DoNotStrip private constructor() : HybridClassBase()
