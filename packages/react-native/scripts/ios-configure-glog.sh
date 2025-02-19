@@ -63,9 +63,7 @@ sed -i.bak -e 's/HAVE_LIB_GFLAGS/HAVE_LIB_GFLAGS_DISABLED/' src/config.h.in && r
 
 ./configure --host arm-apple-darwin || true
 
-# Fix build for tvOS
 cat << EOF >> src/config.h
-
 /* Add in so we have Apple Target Conditionals */
 #ifdef __APPLE__
 #include <TargetConditionals.h>
