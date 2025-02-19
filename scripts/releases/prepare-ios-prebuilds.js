@@ -159,7 +159,7 @@ async function build(
     process.exit(1);
   }
   const configurations =
-    configuration === 'All' ? ['Debug', 'Release'] : [configuration];
+    configuration === 'all' ? ['Debug', 'Release'] : [configuration];
   for (const platform of platforms) {
     for (const config of configurations) {
       console.log(
