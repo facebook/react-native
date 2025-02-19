@@ -144,13 +144,13 @@ class CSSTokenizer {
       advance();
     }
 
-    int32_t intPart = 0;
+    double intPart = 0;
     while (isDigit(peek())) {
       intPart = intPart * 10 + (peek() - '0');
       advance();
     }
 
-    int32_t fractionalPart = 0;
+    double fractionalPart = 0;
     int32_t fractionDigits = 0;
     if (peek() == '.') {
       advance();
@@ -162,7 +162,7 @@ class CSSTokenizer {
     }
 
     int32_t exponentSign = 1.0;
-    int32_t exponentPart = 0;
+    double exponentPart = 0;
     if ((peek() == 'e' || peek() == 'E') &&
         (isDigit(peek(1)) ||
          ((peek(1) == '+' || peek(1) == '-') && isDigit(peek(2))))) {
