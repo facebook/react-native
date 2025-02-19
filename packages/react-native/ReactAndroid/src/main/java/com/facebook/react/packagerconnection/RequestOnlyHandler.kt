@@ -11,9 +11,9 @@ import com.facebook.common.logging.FLog
 
 public abstract class RequestOnlyHandler : RequestHandler {
 
-  override abstract fun onRequest(params: Any?, responder: Responder)
+  abstract override fun onRequest(params: Any?, responder: Responder)
 
-  override final fun onNotification(params: Any?) {
+  final override fun onNotification(params: Any?) {
     FLog.e(JSPackagerClient::class.java.simpleName, "Notification is not supported")
   }
 }

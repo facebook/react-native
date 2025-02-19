@@ -81,7 +81,7 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
     throw UnsupportedOperationException("Unimplemented method 'destroy'")
   }
 
-  override public val isDestroyed: Boolean
+  public override val isDestroyed: Boolean
     get() = throw UnsupportedOperationException("Unimplemented method 'isDestroyed'")
 
   @VisibleForTesting
@@ -93,16 +93,16 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
       reactHost.currentReactContext?.getJSModule(jsInterface)
 
   @get:Deprecated("Deprecated in Java")
-  override public val javaScriptContextHolder: JavaScriptContextHolder
+  public override val javaScriptContextHolder: JavaScriptContextHolder
     get() = reactHost.getJavaScriptContextHolder()!!
 
   @Suppress("INAPPLICABLE_JVM_NAME")
   @get:Deprecated("Deprecated in Java")
   @get:JvmName("getJSCallInvokerHolder") // This is needed to keep backward compatibility
-  override public val jsCallInvokerHolder: CallInvokerHolder
+  public override val jsCallInvokerHolder: CallInvokerHolder
     get() = reactHost.getJSCallInvokerHolder()!!
 
-  override public val nativeMethodCallInvokerHolder: NativeMethodCallInvokerHolder
+  public override val nativeMethodCallInvokerHolder: NativeMethodCallInvokerHolder
     get() =
         throw UnsupportedOperationException(
             "Unimplemented method 'getNativeMethodCallInvokerHolder'")
@@ -116,23 +116,23 @@ public class BridgelessCatalystInstance(private val reactHost: ReactHostImpl) : 
   override fun getNativeModule(moduleName: String): NativeModule? =
       reactHost.getNativeModule(moduleName)
 
-  override public val nativeModules: Collection<NativeModule>
+  public override val nativeModules: Collection<NativeModule>
     get() = reactHost.getNativeModules()
 
-  override public val reactQueueConfiguration: ReactQueueConfiguration
+  public override val reactQueueConfiguration: ReactQueueConfiguration
     get() = reactHost.reactQueueConfiguration!!
 
-  override public val runtimeExecutor: RuntimeExecutor?
+  public override val runtimeExecutor: RuntimeExecutor?
     get() = reactHost.getRuntimeExecutor()
 
-  override public val runtimeScheduler: RuntimeScheduler?
+  public override val runtimeScheduler: RuntimeScheduler?
     get() = throw UnsupportedOperationException("Unimplemented method 'getRuntimeScheduler'")
 
-  override public fun extendNativeModules(modules: NativeModuleRegistry) {
+  public override fun extendNativeModules(modules: NativeModuleRegistry) {
     throw UnsupportedOperationException("Unimplemented method 'extendNativeModules'")
   }
 
-  override public val sourceURL: String?
+  public override val sourceURL: String?
     get() = throw UnsupportedOperationException("Unimplemented method 'getSourceURL'")
 
   override fun addBridgeIdleDebugListener(listener: NotThreadSafeBridgeIdleDebugListener) {
