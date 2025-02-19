@@ -27,6 +27,32 @@ const exec = util.promisify(require('child_process').exec);
 const THIRD_PARTY_PATH = 'packages/react-native/third-party';
 const BUILD_DESTINATION = '.build';
 
+// tvOS is currently commented out because it requires additional patches.
+const DESTINATIONS /*: { [string]: $ReadOnlyArray<string>} */ = {
+  all: [
+    'generic/platform=iOS',
+    'generic/platform=iOS Simulator',
+    'generic/platform=macOS',
+    'generic/platform=macOS,variant=Mac Catalyst',
+    // 'generic/platform=tvOS',
+    // 'generic/platform=tvOS Simulator',
+    'generic/platform=visionOS',
+    'generic/platform=visionOS Simulator',
+  ],
+  ios: ['generic/platform=iOS'],
+  'ios-simulator': ['generic/platform=iOS Simulator'],
+  mac: ['generic/platform=macOS'],
+  'mac-catalyst': ['generic/platform=macOS,variant=Mac Catalyst'],
+  tvos: [
+    /*'generic/platform=tvOS'*/
+  ],
+  'tvos-simulator': [
+    /*'generic/platform=tvOS Simulator'*/
+  ],
+  xros: ['generic/platform=visionOS'],
+  xrsimulator: ['generic/platform=visionOS Simulator'],
+};
+
 async function _downloadDependency(
   name /*: string*/,
   url /*: URL*/,
@@ -117,18 +143,34 @@ async function setupDependency(
 }
 
 async function build(
-  swiftPMFolder /*:string*/,
+  swiftPMFolder /* :string */,
   buildDestinationPath /*: string */,
+  configuration /*: string */,
+  destination /*: string */,
 ) {
   console.log(`Clean up ${buildDestinationPath}`);
   fs.rmSync(buildDestinationPath, {recursive: true, force: true});
 
-  //TODO: Add support for mac,  Mac (catalyst), tvOS, xros and xrsimulator
-  const platforms = ['generic/platform=iOS', 'generic/platform=iOS Simulator'];
+  const platforms = DESTINATIONS[destination];
+  if (!platforms) {
+    console.error(
+      `No valid destinations found for destination: ${destination}`,
+    );
+    process.exit(1);
+  }
+  const configurations =
+    configuration === 'All' ? ['Debug', 'Release'] : [configuration];
   for (const platform of platforms) {
-    console.log(`Building ReactNativeDependencies for ${platform}`);
-    const command = `xcodebuild -scheme "ReactNativeDependencies" -destination "${platform}" -derivedDataPath "${BUILD_DESTINATION}"`;
-    execSync(command, {cwd: swiftPMFolder, stdio: 'inherit'});
+    for (const config of configurations) {
+      console.log(
+        `Building ReactNativeDependencies for ${platform}. Configuration: ${config}`,
+      );
+      const command = `xcodebuild -scheme "ReactNativeDependencies" \
+        -destination "${platform}" \
+        -configuration ${config} \
+        -derivedDataPath "${BUILD_DESTINATION}"`;
+      execSync(command, {cwd: swiftPMFolder, stdio: 'inherit'});
+    }
   }
 }
 
@@ -214,14 +256,14 @@ const config = {
     task: {
       type: 'string', // valid values: 'all', 'prepare', 'build', 'create-xcframework'
       default: 'all',
-      short: 'o',
+      short: 't',
     },
     slice: {
       type: 'string', // valid values: 'all', 'ios', 'ios-simulator', 'mac', 'mac-catalyst', 'tvos', 'xros', 'xrsimulator'
       default: 'all',
       short: 's',
     },
-    configurations: {
+    configuration: {
       type: 'string', // valid values: 'all', 'Debug', 'Release',
       default: 'all',
       short: 'c',
@@ -244,14 +286,14 @@ function printHelp() {
   Options:
     --task, -t: the specific task that needs to be carried on. Default value is 'all'. Valid values are 'all', 'prepare', 'build', 'create-xcframework'.
     --slice, -s: the specific slice that needs to be built. Default value is 'all'. Valid values are 'all', 'ios', 'ios-simulator', 'mac', 'mac-catalyst', 'tvos', 'xros', 'xrsimulator'.
-    --configurations, -c: the specific configurations that needs to be built. Default value is 'all'. Valid values are 'all', 'Debug', 'Release'.
+    --configuration, -c: the specific configuration that needs to be built. Default value is 'all'. Valid values are 'all', 'Debug', 'Release'.
     --help, -h: print this help message.
     `);
 }
 
 async function main() {
   const {
-    values: {task, slice, configurations, help},
+    values: {task, slice, configuration, help},
   } = parseArgs(config);
 
   if (help) {
@@ -270,7 +312,7 @@ async function main() {
   }
 
   if (task === 'all' || task === 'build') {
-    await build(thirdPartyFolder, buildDestinationPath);
+    await build(thirdPartyFolder, buildDestinationPath, configuration, slice);
 
     await Promise.all(
       dependencies.map(dependency =>
