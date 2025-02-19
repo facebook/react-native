@@ -25,7 +25,17 @@ const Animated: typeof AnimatedImplementation = Platform.isDisableAnimations
   ? AnimatedMock
   : AnimatedImplementation;
 
-export default {
+type AnimatedExportType = {
+  ...typeof Animated,
+  FlatList: AnimatedFlatList,
+  Image: AnimatedImage,
+  ScrollView: AnimatedScrollView,
+  SectionList: AnimatedSectionList,
+  Text: AnimatedText,
+  View: AnimatedView,
+};
+
+const AnimatedExport: AnimatedExportType = {
   get FlatList(): AnimatedFlatList {
     return require('./components/AnimatedFlatList').default;
   },
@@ -44,5 +54,8 @@ export default {
   get View(): AnimatedView {
     return require('./components/AnimatedView').default;
   },
-  ...Animated,
-};
+} as $FlowFixMe;
+
+Object.assign(AnimatedExport, Animated);
+
+export default AnimatedExport;
