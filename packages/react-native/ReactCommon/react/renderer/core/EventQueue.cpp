@@ -7,6 +7,7 @@
 
 #include "EventQueue.h"
 
+#include <react/featureflags/ReactNativeFeatureFlags.h>
 #include "EventEmitter.h"
 #include "ShadowNodeFamily.h"
 
@@ -19,6 +20,10 @@ EventQueue::EventQueue(
       eventBeat_(std::move(eventBeat)) {
   eventBeat_->setBeatCallback(
       [this](jsi::Runtime& runtime) { onBeat(runtime); });
+
+  if (ReactNativeFeatureFlags::enableSynchronousStateUpdates()) {
+    eventBeat_->unstable_setInduceCallback([this]() { flushStateUpdates(); });
+  }
 }
 
 void EventQueue::enqueueEvent(RawEvent&& rawEvent) const {
@@ -84,7 +89,9 @@ void EventQueue::experimental_flushSync() const {
 }
 
 void EventQueue::onBeat(jsi::Runtime& runtime) const {
-  flushStateUpdates();
+  if (!ReactNativeFeatureFlags::enableSynchronousStateUpdates()) {
+    flushStateUpdates();
+  }
   flushEvents(runtime);
 }
 
