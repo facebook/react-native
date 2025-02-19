@@ -80,6 +80,8 @@ abstract class ReactExtension @Inject constructor(val project: Project) {
    * Whether the Bundle Asset should be compressed when packaged into a `.apk`, or not.
    * Disabling compression for the `.bundle` allows it to be directly memory-mapped to RAM,
    * hence improving startup time - at the cost of a larger resulting `.apk` size.
+   * 
+   * Default: false
    */
   val enableBundleCompression: Property<Boolean> =
       objects.property(Boolean::class.java).convention(false)
