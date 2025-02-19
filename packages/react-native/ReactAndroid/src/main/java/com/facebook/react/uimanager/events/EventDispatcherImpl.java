@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 
 /**
  * Class responsible for dispatching UI events to JS. The main purpose of this class is to act as an
@@ -61,7 +62,7 @@ public class EventDispatcherImpl implements EventDispatcher, LifecycleEventListe
   private static final Comparator<Event> EVENT_COMPARATOR =
       new Comparator<Event>() {
         @Override
-        public int compare(Event lhs, Event rhs) {
+        public int compare(@Nullable Event lhs, @Nullable Event rhs) {
           if (lhs == null && rhs == null) {
             return 0;
           }
