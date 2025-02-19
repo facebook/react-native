@@ -20,6 +20,7 @@ import com.facebook.react.bridge.DynamicFromObject;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.UnstableReactNativeAPI;
+import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
@@ -66,7 +67,7 @@ import javax.lang.model.util.Types;
  * reflection.
  */
 @SupportedAnnotationTypes("com.facebook.react.uimanager.annotations.ReactPropertyHolder")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_11)
 public class ReactPropertyProcessor extends ProcessorBase {
   private static final Map<TypeName, String> DEFAULT_TYPES;
   private static final Set<TypeName> BOXED_PRIMITIVES;
@@ -93,6 +94,8 @@ public class ReactPropertyProcessor extends ProcessorBase {
 
   private static final TypeName PROPERTY_MAP_TYPE =
       ParameterizedTypeName.get(Map.class, String.class, String.class);
+  public static final String VIEW_MANAGER_INTERFACE =
+      "com.facebook.react.uimanager.ViewManagerWithGeneratedInterface";
 
   private final Map<ClassName, ClassInfo> mClasses;
 
@@ -100,6 +103,7 @@ public class ReactPropertyProcessor extends ProcessorBase {
   @SuppressFieldNotInitialized private Messager mMessager;
   @SuppressFieldNotInitialized private Elements mElements;
   @SuppressFieldNotInitialized private Types mTypes;
+  @SuppressFieldNotInitialized private TypeMirror mViewManagerWithGeneratedInterface = null;
 
   static {
     DEFAULT_TYPES = new HashMap<>();
@@ -144,6 +148,17 @@ public class ReactPropertyProcessor extends ProcessorBase {
     mTypes = processingEnv.getTypeUtils();
   }
 
+  private TypeMirror getViewManagerWithGeneratedInterface() {
+    if (mViewManagerWithGeneratedInterface == null) {
+      TypeElement typeElement = mElements.getTypeElement(VIEW_MANAGER_INTERFACE);
+      if (typeElement == null || typeElement.asType() == null) {
+        throw new IllegalStateException("Could not find " + VIEW_MANAGER_INTERFACE);
+      }
+      mViewManagerWithGeneratedInterface = typeElement.asType();
+    }
+    return mViewManagerWithGeneratedInterface;
+  }
+
   @Override
   public boolean processImpl(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     // Clear properties from previous rounds
@@ -154,7 +169,10 @@ public class ReactPropertyProcessor extends ProcessorBase {
       try {
         TypeElement classType = (TypeElement) element;
         ClassName className = ClassName.get(classType);
-        mClasses.put(className, parseClass(className, classType));
+        ClassInfo classInfo = parseClass(className, classType);
+        if (classInfo != null) {
+          mClasses.put(className, classInfo);
+        }
       } catch (Exception e) {
         error(element, e.getMessage());
       }
@@ -192,9 +210,19 @@ public class ReactPropertyProcessor extends ProcessorBase {
     return typeName.equals(SHADOW_NODE_IMPL_TYPE);
   }
 
-  private ClassInfo parseClass(ClassName className, TypeElement typeElement) {
+  private @Nullable ClassInfo parseClass(ClassName className, TypeElement typeElement) {
     TypeName targetType = getTargetType(typeElement.asType());
     TypeName viewType = isShadowNodeType(targetType) ? null : targetType;
+    boolean implementsViewManagerWithGeneratedInterface =
+        mTypes.isAssignable(typeElement.asType(), getViewManagerWithGeneratedInterface());
+
+    if (ReactBuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE
+        && (implementsViewManagerWithGeneratedInterface || viewType == null)) {
+      // When "MINIFY_LEGACY_ARCHITECTURE" is enabled, we don't want to generate the props setter
+      // for classes that implement ViewManagerWithGeneratedInterface or that are not a ViewManager.
+      // This is because we will be using the new architecture for these classes.
+      return null;
+    }
 
     ClassInfo classInfo = new ClassInfo(className, typeElement, viewType);
     findProperties(classInfo, typeElement);

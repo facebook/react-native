@@ -104,7 +104,7 @@ static CGColorRef colorRefFromSharedColor(const SharedColor &color)
 static void renderOutsetShadows(
     std::vector<BoxShadow> &outsetShadows,
     RCTCornerRadii cornerRadii,
-    CALayer *layer,
+    CGSize layerSize,
     CGRect boundingRect,
     CGContextRef context)
 {
@@ -129,8 +129,8 @@ static void renderOutsetShadows(
     // the blur radius since this rect is not the shadow itself.
     const RCTCornerInsets shadowRectCornerInsets =
         RCTGetCornerInsets(cornerRadiiForBoxShadow(cornerRadii, spreadDistance), UIEdgeInsetsZero);
-    CGSize shadowRectSize = CGSizeMake(
-        fmax(layer.bounds.size.width + 2 * spreadDistance, 0), fmax(layer.bounds.size.height + 2 * spreadDistance, 0));
+    CGSize shadowRectSize =
+        CGSizeMake(fmax(layerSize.width + 2 * spreadDistance, 0), fmax(layerSize.height + 2 * spreadDistance, 0));
     // Ensure this is drawn offscreen and will not show in the image
     CGRect shadowRect = CGRectMake(-shadowRectSize.width, 0, shadowRectSize.width, shadowRectSize.height);
     CGPathRef shadowRectPath = RCTPathCreateWithRoundedRect(shadowRect, shadowRectCornerInsets, nil);
@@ -165,7 +165,7 @@ static void renderOutsetShadows(
   // not cover its content
   const RCTCornerInsets layerCornerInsets = RCTGetCornerInsets(cornerRadii, UIEdgeInsetsZero);
   CGPathRef shadowPathAlignedWithLayer = RCTPathCreateWithRoundedRect(
-      CGRectMake(-boundingRect.origin.x, -boundingRect.origin.y, layer.bounds.size.width, layer.bounds.size.height),
+      CGRectMake(-boundingRect.origin.x, -boundingRect.origin.y, layerSize.width, layerSize.height),
       layerCornerInsets,
       nil);
   CGContextAddPath(context, shadowPathAlignedWithLayer);
@@ -187,7 +187,7 @@ static void renderInsetShadows(
     std::vector<BoxShadow> &insetShadows,
     RCTCornerRadii cornerRadii,
     UIEdgeInsets edgeInsets,
-    CALayer *layer,
+    CGSize layerSize,
     CGRect boundingRect,
     CGContextRef context)
 {
@@ -200,7 +200,7 @@ static void renderInsetShadows(
   CGContextSaveGState(context);
 
   CGRect layerFrameRelativeToBoundingRect =
-      CGRectMake(-boundingRect.origin.x, -boundingRect.origin.y, layer.bounds.size.width, layer.bounds.size.height);
+      CGRectMake(-boundingRect.origin.x, -boundingRect.origin.y, layerSize.width, layerSize.height);
   CGRect shadowFrame =
       insetRect(layerFrameRelativeToBoundingRect, edgeInsets.left, edgeInsets.top, edgeInsets.right, edgeInsets.bottom);
 
@@ -279,9 +279,9 @@ UIImage *RCTGetBoxShadowImage(
     const std::vector<BoxShadow> &shadows,
     RCTCornerRadii cornerRadii,
     UIEdgeInsets edgeInsets,
-    CALayer *layer)
+    CGSize layerSize)
 {
-  CGRect boundingRect = RCTGetBoundingRect(shadows, layer.bounds.size);
+  CGRect boundingRect = RCTGetBoundingRect(shadows, layerSize);
   UIGraphicsImageRendererFormat *const rendererFormat = [UIGraphicsImageRendererFormat defaultFormat];
   UIGraphicsImageRenderer *const renderer = [[UIGraphicsImageRenderer alloc] initWithSize:boundingRect.size
                                                                                    format:rendererFormat];
@@ -293,8 +293,8 @@ UIImage *RCTGetBoxShadowImage(
         // clear out a region in the view so we do not block its contents.
         // Inset shadows could draw over those outset shadows but if the shadow
         // colors have alpha < 1 then we will have inaccurate alpha compositing
-        renderOutsetShadows(outsetShadows, cornerRadii, layer, boundingRect, context);
-        renderInsetShadows(insetShadows, cornerRadii, edgeInsets, layer, boundingRect, context);
+        renderOutsetShadows(outsetShadows, cornerRadii, layerSize, boundingRect, context);
+        renderInsetShadows(insetShadows, cornerRadii, edgeInsets, layerSize, boundingRect, context);
       }];
 
   return boxShadowImage;

@@ -1,0 +1,73 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
+/* eslint-disable no-unused-vars */
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+type SimpleObject = {||};
+
+type BeforeMismatchGeneric<T> = {||};
+type AfterMismatchGeneric<Foo> = {||};
+
+type BeforeMatchingGeneric<T> = {||};
+type AfterMatchingGeneric<T> = {||};
+
+type BooleanType = boolean;
+type StringType = string;
+
+type SimpleFunction = (a: string) => string;
+type SimpleFunction2 = (a: string) => number;
+type SimpleFunction3 = (foo: string) => string;
+type SimpleFunction4 = (a: number) => string;
+
+type SimpleUnion = 'str1' | 'str2';
+type SimpleUnionLonger = 'str1' | 'str2' | 'str3';
+type SimpleUnion2 = 4 | 5;
+type SimpleUnion3 = {} | {key: 'value'};
+type SimpleUnion4 = BooleanType | StringType | SimpleObject;
+
+type FunctionReferencingUnion = (a: SimpleUnion) => void;
+type FunctionReferencingUnion2 = (a: SimpleUnion2) => void;
+
+type SimpleArray = Array<string>;
+// changed from Array<number> to Array<string>
+type SimpleArrayChange = Array<string>;
+
+export interface Spec extends TurboModule {
+    +exampleFunction: (a: SimpleObject) => void;
+    +simpleObject: (a: SimpleObject) => void;
+    +beforeMismatchGeneric: <T>(a: BeforeMismatchGeneric<T>) => void;
+    +afterMismatchGeneric: <Foo>(a: AfterMismatchGeneric<Foo>) => void;
+
+    +beforeMatchingGeneric: <T>(a: BeforeMatchingGeneric<T>) => void;
+    +afterMatchingGeneric: <T>(a: AfterMatchingGeneric<T>) => void;
+
+    +booleanType: (a: BooleanType) => void;
+    +stringType: (a: StringType) => void;
+
+    +simpleFunction: (a: string) => string;
+    +simpleFunction2: (a: string) => number;
+    +simpleFunction3: (foo: string) => string;
+    +simpleFunction4: (a: number) => string;
+
+    +simpleUnion: (a: SimpleUnion) => void;
+    +simpleUnionLonger: (a: SimpleUnionLonger) => void;
+    +simpleUnion2: (a: SimpleUnion2) => void;
+    +simpleUnion3: (a: SimpleUnion3) => void;
+    +simpleUnion4: (a: SimpleUnion4) => void;
+
+    +simpleArray: (a: SimpleArray) => void;
+    +simpleArrayChange: (a: SimpleArrayChange) => void;
+  }
+
+  (TurboModuleRegistry.getEnforcing<Spec>(
+    'NativeModuleTest',
+  ): Spec);

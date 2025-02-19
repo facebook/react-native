@@ -23,9 +23,9 @@ import com.facebook.react.packagerconnection.RequestHandler
  * dependencies in release builds. If the class isn't found, [PerftestDevSupportManager] is returned
  * instead.
  */
-public class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
+internal class DefaultDevSupportManagerFactory : DevSupportManagerFactory {
 
-  public override fun create(
+  override fun create(
       applicationContext: Context,
       reactInstanceManagerHelper: ReactInstanceDevHelper,
       packagerPathForJSBundleName: String?,

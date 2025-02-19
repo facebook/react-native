@@ -10,7 +10,7 @@ package com.facebook.react.bridge
 /** Exception thrown when a native module method call receives unexpected arguments from JS. */
 internal class NativeArgumentsParseException : JSApplicationCausedNativeException {
 
-  public constructor(detailMessage: String) : super(detailMessage)
+  constructor(detailMessage: String) : super(detailMessage)
 
-  public constructor(detailMessage: String, throwable: Throwable?) : super(detailMessage, throwable)
+  constructor(detailMessage: String, throwable: Throwable?) : super(detailMessage, throwable)
 }

@@ -12,7 +12,7 @@
 
 import type {ExtendedError} from '../Core/ExtendedError';
 
-const BatchedBridge = require('./BatchedBridge');
+const BatchedBridge = require('./BatchedBridge').default;
 const invariant = require('invariant');
 
 export type ModuleConfig = [
@@ -176,7 +176,8 @@ function updateErrorWithErrorData(
   return Object.assign(error, errorData || {});
 }
 
-let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
+/* $FlowFixMe[unclear-type] unclear type of NativeModules */
+let NativeModules: {[moduleName: string]: any, ...} = {};
 if (global.nativeModuleProxy) {
   NativeModules = global.nativeModuleProxy;
 } else {
@@ -186,7 +187,8 @@ if (global.nativeModuleProxy) {
     '__fbBatchedBridgeConfig is not set, cannot invoke native modules',
   );
 
-  const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
+  const defineLazyObjectProperty =
+    require('../Utilities/defineLazyObjectProperty').default;
   (bridgeConfig.remoteModuleConfig || []).forEach(
     (config: ModuleConfig, moduleID: number) => {
       // Initially this config will only contain the module name when running in JSC. The actual
@@ -209,4 +211,4 @@ if (global.nativeModuleProxy) {
   );
 }
 
-module.exports = NativeModules;
+export default NativeModules;

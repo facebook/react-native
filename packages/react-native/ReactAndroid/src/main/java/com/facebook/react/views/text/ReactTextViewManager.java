@@ -18,6 +18,7 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.common.mapbuffer.MapBuffer;
 import com.facebook.react.internal.SystraceSection;
+import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
@@ -58,7 +59,9 @@ public class ReactTextViewManager
 
   public ReactTextViewManager(@Nullable ReactTextViewManagerCallback reactTextViewManagerCallback) {
     mReactTextViewManagerCallback = reactTextViewManagerCallback;
-    setupViewRecycling();
+    if (ReactNativeFeatureFlags.enableViewRecyclingForText()) {
+      setupViewRecycling();
+    }
   }
 
   @Override

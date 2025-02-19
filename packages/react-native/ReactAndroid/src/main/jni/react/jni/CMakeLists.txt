@@ -32,13 +32,12 @@ target_include_directories(reactnativejni PUBLIC ../../)
 target_link_libraries(reactnativejni
         android
         callinvokerholder
-        fb
         fbjni
         folly_runtime
         glog_init
         logger
         react_cxxreact
-        react_render_runtimescheduler
+        react_renderer_runtimescheduler
         runtimeexecutor
         yoga
         )

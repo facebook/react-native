@@ -31,7 +31,7 @@ constructor(
 
   override fun getName(): String = REACT_CLASS
 
-  public override fun createViewInstance(context: ThemedReactContext): View {
+  override fun createViewInstance(context: ThemedReactContext): View {
     throw IllegalStateException("RCTTextInlineImage doesn't map into a native view")
   }
 
@@ -44,7 +44,7 @@ constructor(
 
   override fun updateExtraData(root: View, extraData: Any) = Unit
 
-  public companion object {
-    public const val REACT_CLASS: String = "RCTTextInlineImage"
+  companion object {
+    const val REACT_CLASS: String = "RCTTextInlineImage"
   }
 }

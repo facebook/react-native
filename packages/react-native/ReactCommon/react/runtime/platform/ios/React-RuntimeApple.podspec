@@ -70,13 +70,15 @@ Pod::Spec.new do |s|
   s.dependency "React-jserrorhandler"
   s.dependency "React-jsinspector"
   s.dependency "React-featureflags"
-
+  add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "React-RCTFBReactNativeSpec")
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
     s.dependency "React-RuntimeHermes"
     s.exclude_files = "ReactCommon/RCTJscInstance.{mm,h}"
+  elsif ENV['USE_THIRD_PARTY_JSC'] == '1'
+    s.exclude_files = ["ReactCommon/RCTHermesInstance.{mm,h}", "ReactCommon/RCTJscInstance.{mm,h}"]
   else
     s.dependency "React-jsc"
     s.exclude_files = "ReactCommon/RCTHermesInstance.{mm,h}"

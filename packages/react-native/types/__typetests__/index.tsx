@@ -111,7 +111,6 @@ import {
   View,
   ViewStyle,
   VirtualizedList,
-  YellowBox,
   findNodeHandle,
   requireNativeComponent,
   useColorScheme,
@@ -1541,11 +1540,11 @@ class BridgedComponentTest extends React.Component {
   nativeComponentRef: React.ElementRef<typeof NativeBridgedComponent> | null;
 
   callNativeMethod = () => {
-    UIManager.dispatchViewManagerCommand(
-      findNodeHandle(this.nativeComponentRef),
-      'someNativeMethod',
-      [],
-    );
+    const nodeHandle = findNodeHandle(this.nativeComponentRef);
+    if (nodeHandle != null) {
+      const commandID = 1; // some command
+      UIManager.dispatchViewManagerCommand(nodeHandle, commandID, []);
+    }
   };
 
   measureNativeComponent() {
@@ -1967,9 +1966,6 @@ const PushNotificationTest = () => {
     },
   });
 };
-
-// YellowBox
-const YellowBoxTest = () => <YellowBox />;
 
 // Appearance
 const DarkMode = () => {

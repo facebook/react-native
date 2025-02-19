@@ -11,18 +11,13 @@ import com.facebook.yoga.YogaConfig
 import com.facebook.yoga.YogaConfigFactory
 import com.facebook.yoga.YogaErrata
 
-public object ReactYogaConfigProvider {
+internal object ReactYogaConfigProvider {
 
-  private val yogaConfig: YogaConfig by
+  val yogaConfig: YogaConfig by
       lazy(LazyThreadSafetyMode.NONE) {
-        val config = YogaConfigFactory.create()
-        config.setPointScaleFactor(0f)
-        config.setErrata(YogaErrata.ALL)
-        config
+        YogaConfigFactory.create().apply {
+          setPointScaleFactor(0f)
+          setErrata(YogaErrata.ALL)
+        }
       }
-
-  @JvmStatic
-  public fun get(): YogaConfig {
-    return yogaConfig
-  }
 }

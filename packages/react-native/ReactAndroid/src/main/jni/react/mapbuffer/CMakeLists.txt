@@ -25,13 +25,12 @@ target_include_directories(mapbufferjni
 target_merge_so(mapbufferjni)
 
 target_link_libraries(mapbufferjni
-        fb
         fbjni
         folly_runtime
         glog
         glog_init
         react_debug
-        react_render_mapbuffer
+        react_renderer_mapbuffer
         react_utils
         yoga
 )

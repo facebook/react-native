@@ -93,11 +93,7 @@ Pod::Spec.new do |s|
     "react/renderer/imagemanager/platform/ios"
   ])
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
 
   s.subspec "components" do |ss|
 
@@ -153,8 +149,8 @@ Pod::Spec.new do |s|
     ss.subspec "iostextinput" do |sss|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "react/renderer/components/textinput/**/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "react/renderer/components/textinput/platform/android"
+      sss.source_files         = "react/renderer/components/textinput/*.{m,mm,cpp,h}",
+                                 "react/renderer/components/textinput/platform/ios/**/*.{m,mm,cpp,h}"
       sss.header_dir           = "react/renderer/components/iostextinput"
 
     end

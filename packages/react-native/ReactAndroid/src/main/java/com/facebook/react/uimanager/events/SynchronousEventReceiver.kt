@@ -10,8 +10,8 @@ package com.facebook.react.uimanager.events
 import com.facebook.react.bridge.WritableMap
 
 @Deprecated("Experimental")
-public interface SynchronousEventReceiver {
-  public fun receiveEvent(
+internal interface SynchronousEventReceiver {
+  fun receiveEvent(
       surfaceId: Int,
       reactTag: Int,
       eventName: String,

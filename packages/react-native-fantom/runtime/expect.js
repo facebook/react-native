@@ -15,6 +15,9 @@ import deepEqual from 'deep-equal';
 import {diff} from 'jest-diff';
 import {format, plugins} from 'pretty-format';
 
+const stringify = (data: mixed): string =>
+  format(data, {min: true, plugins: [plugins.ReactElement]});
+
 class ErrorWithCustomBlame extends Error {
   // Initially 5 to ignore all the frames from Babel helpers to instantiate this
   // custom error class.
@@ -89,6 +92,31 @@ class Expect {
     }
   }
 
+  toStrictEqual(expected: mixed): void {
+    let expectedType: mixed =
+      typeof expected === 'object' && expected !== null
+        ? Object.getPrototypeOf(expected)
+        : null;
+    let receivedType: mixed =
+      typeof this.#received === 'object' && this.#received !== null
+        ? Object.getPrototypeOf(this.#received)
+        : null;
+    const pass =
+      deepEqual(this.#received, expected, {strict: true}) &&
+      expectedType === receivedType;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected${this.#maybeNotLabel()} to strictly equal:\n${
+          diff(expected, this.#received, {
+            contextLines: 1,
+            expand: false,
+            omitAnnotationLines: true,
+          }) ?? 'Failed to compare outputs'
+        }`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   toBe(expected: mixed): void {
     const pass = this.#received === expected;
     if (!this.#isExpectedResult(pass)) {
@@ -117,11 +145,47 @@ class Expect {
     }
   }
 
+  toBeDefined(): void {
+    const pass = this.#received !== undefined;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be defined`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toBeUndefined(): void {
+    const pass = this.#received === undefined;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be undefined`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   toBeNull(): void {
     const pass = this.#received == null;
     if (!this.#isExpectedResult(pass)) {
       throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be null`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toBeFalsy(): void {
+    const pass = Boolean(this.#received) === false;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be falsy`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toBeTruthy(): void {
+    const pass = Boolean(this.#received);
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to be truthy`,
       ).blameToPreviousFrame();
     }
   }
@@ -166,6 +230,7 @@ class Expect {
     }
   }
 
+  toBeCalled: () => void;
   toHaveBeenCalled(): void {
     const mock = this.#requireMock();
     const pass = mock.calls.length > 0;
@@ -176,6 +241,7 @@ class Expect {
     }
   }
 
+  toBeCalledTimes: (times: number) => void;
   toHaveBeenCalledTimes(times: number): void {
     const mock = this.#requireMock();
     const pass = mock.calls.length === times;
@@ -183,6 +249,63 @@ class Expect {
       throw new ErrorWithCustomBlame(
         `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called ${times} times, but it was called ${mock.calls.length} times`,
       ).blameToPreviousFrame();
+    }
+  }
+
+  toBeCalledWith: (...args: Array<mixed>) => void;
+  toHaveBeenCalledWith(...args: Array<mixed>): void {
+    const mock = this.#requireMock();
+    const pass = mock.calls.some(callArgs =>
+      deepEqual(callArgs, args, {strict: true}),
+    );
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been called with ${stringify(
+          args,
+        )}, but it was called with ${stringify(mock.calls)}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  lastCalledWith: (...args: Array<mixed>) => void;
+  toHaveBeenLastCalledWith(...args: mixed[]): void {
+    const mock = this.#requireMock();
+    if (mock.calls.length === 0) {
+      if (this.#isNot) {
+        return;
+      }
+
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to have been last called with ${stringify(args)}, but it was not called a single time.`,
+      );
+    }
+
+    const pass = deepEqual(mock.lastCall, args, {strict: true});
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been last called with ${stringify(args)}, but it was last called with ${stringify(mock.lastCall)}.`,
+      );
+    }
+  }
+
+  nthCalledWith: (index: number, ...args: mixed[]) => void;
+  toHaveBeenNthCalledWith(index: number, ...args: mixed[]): void {
+    if (index < 1) {
+      throw new ErrorWithCustomBlame(
+        `Expected index to be positive number, got ${index}.`,
+      ).blameToPreviousFrame();
+    }
+
+    const mock = this.#requireMock();
+    if (this.#isNot && mock.calls.length < index) {
+      return;
+    }
+
+    const pass = deepEqual(mock.calls[index - 1], args, {strict: true});
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have been nth(${index}) called with ${stringify(args)}, but it was called with ${stringify(mock.calls[index - 1])}.`,
+      );
     }
   }
 
@@ -270,6 +393,111 @@ class Expect {
     }
   }
 
+  toContain(item: mixed): void {
+    if (typeof this.#received === 'string') {
+      if (typeof item !== 'string') {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(item)} to be a string but it was a ${typeof item}`,
+        ).blameToPreviousFrame();
+      }
+
+      const pass = this.#received.includes(item);
+      if (!this.#isExpectedResult(pass)) {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(this.#received)}${this.#maybeNotLabel()} to contain ${item}`,
+        ).blameToPreviousFrame();
+      }
+      return;
+    }
+
+    if (!Array.isArray(this.#received)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be an array`,
+      ).blameToPreviousFrame();
+    }
+
+    const pass = this.#received.includes(item);
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to contain ${String(item)}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toContainEqual(item: mixed): void {
+    if (typeof this.#received === 'string') {
+      if (typeof item !== 'string') {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(item)} to be a string but it was a ${typeof item}`,
+        ).blameToPreviousFrame();
+      }
+
+      const pass = this.#received.includes(item);
+      if (!this.#isExpectedResult(pass)) {
+        throw new ErrorWithCustomBlame(
+          `Expected ${String(this.#received)}${this.#maybeNotLabel()} to contain ${item}`,
+        ).blameToPreviousFrame();
+      }
+      return;
+    }
+
+    if (!Array.isArray(this.#received)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be an array`,
+      ).blameToPreviousFrame();
+    }
+
+    const pass = this.#received.some(value =>
+      deepEqual(value, item, {strict: true}),
+    );
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to contain item equal to ${String(item)}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toHaveLength(expected: number): void {
+    if (typeof this.#received !== 'string' && !Array.isArray(this.#received)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be a string or an array`,
+      ).blameToPreviousFrame();
+    }
+
+    const length = this.#received.length;
+    const pass = length === expected;
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)}${this.#maybeNotLabel()} to have ${expected} length, but it has length of ${length}.`,
+      ).blameToPreviousFrame();
+    }
+  }
+
+  toMatch(expected: RegExp | string): void {
+    const value = this.#received;
+    if (typeof value !== 'string') {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(this.#received)} to be a string but it was a ${typeof this.#received}`,
+      ).blameToPreviousFrame();
+    }
+
+    if (typeof expected !== 'string' && !(expected instanceof RegExp)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(expected)} to be a string or a regular expression but it was a ${typeof expected}`,
+      ).blameToPreviousFrame();
+    }
+
+    const pass =
+      typeof expected === 'string'
+        ? value.includes(expected)
+        : expected.test(value);
+    if (!this.#isExpectedResult(pass)) {
+      throw new ErrorWithCustomBlame(
+        `Expected ${String(value)}${this.#maybeNotLabel()} to match ${stringify(expected)}`,
+      ).blameToPreviousFrame();
+    }
+  }
+
   toMatchSnapshot(expected?: string): void {
     if (this.#isNot) {
       throw new ErrorWithCustomBlame(
@@ -310,6 +538,21 @@ class Expect {
     }
   }
 }
+
+/**
+ * Base methods can't be implemented as an arrow function because they
+ * will not be added to the prototype.
+ */
+// $FlowExpectedError[method-unbinding]
+Expect.prototype.toBeCalled = Expect.prototype.toHaveBeenCalled;
+// $FlowExpectedError[method-unbinding]
+Expect.prototype.toBeCalledTimes = Expect.prototype.toHaveBeenCalledTimes;
+// $FlowExpectedError[method-unbinding]
+Expect.prototype.toBeCalledWith = Expect.prototype.toHaveBeenCalledWith;
+// $FlowExpectedError[method-unbinding]
+Expect.prototype.lastCalledWith = Expect.prototype.toHaveBeenLastCalledWith;
+// $FlowExpectedError[method-unbinding]
+Expect.prototype.nthCalledWith = Expect.prototype.toHaveBeenNthCalledWith;
 
 const expect: mixed => Expect = (received: mixed) => new Expect(received);
 

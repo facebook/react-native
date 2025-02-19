@@ -73,9 +73,9 @@ const SurfaceHandler& SurfaceHandlerBinding::getSurfaceHandler() {
 void SurfaceHandlerBinding::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", SurfaceHandlerBinding::initHybrid),
-      makeNativeMethod("getSurfaceId", SurfaceHandlerBinding::getSurfaceId),
-      makeNativeMethod("isRunning", SurfaceHandlerBinding::isRunning),
-      makeNativeMethod("getModuleName", SurfaceHandlerBinding::getModuleName),
+      makeNativeMethod("_getSurfaceId", SurfaceHandlerBinding::getSurfaceId),
+      makeNativeMethod("_isRunning", SurfaceHandlerBinding::isRunning),
+      makeNativeMethod("_getModuleName", SurfaceHandlerBinding::getModuleName),
       makeNativeMethod(
           "setLayoutConstraintsNative",
           SurfaceHandlerBinding::setLayoutConstraints),

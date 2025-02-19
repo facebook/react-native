@@ -11,7 +11,7 @@
 'use strict';
 
 const Settings = {
-  get(key: string): mixed {
+  get(key: string): any {
     console.warn('Settings is not yet supported on this platform.');
     return null;
   },
@@ -20,7 +20,7 @@ const Settings = {
     console.warn('Settings is not yet supported on this platform.');
   },
 
-  watchKeys(keys: string | Array<string>, callback: Function): number {
+  watchKeys(keys: string | Array<string>, callback: () => void): number {
     console.warn('Settings is not yet supported on this platform.');
     return -1;
   },
@@ -30,4 +30,4 @@ const Settings = {
   },
 };
 
-module.exports = Settings;
+export default Settings;

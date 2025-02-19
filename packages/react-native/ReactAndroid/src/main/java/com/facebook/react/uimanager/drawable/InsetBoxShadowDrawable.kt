@@ -55,11 +55,9 @@ internal class InsetBoxShadowDrawable(
   private val shadowPaint =
       Paint().apply {
         color = shadowColor
-        if (blurRadius > 0) {
-          maskFilter =
-              BlurMaskFilter(
-                  FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE),
-                  BlurMaskFilter.Blur.NORMAL)
+        val convertedBlurRadius = FilterHelper.sigmaToRadius(blurRadius * BLUR_RADIUS_SIGMA_SCALE)
+        if (convertedBlurRadius > 0) {
+          maskFilter = BlurMaskFilter(convertedBlurRadius, BlurMaskFilter.Blur.NORMAL)
         }
       }
 
@@ -119,7 +117,7 @@ internal class InsetBoxShadowDrawable(
     // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/box_painter_base.cc;l=338;drc=0a301506035e13015ea5c8dd39164d0d5954fa60
     val blurExtent = FilterHelper.sigmaToRadius(blurRadius)
     val outerRect =
-        RectF(innerRect).apply {
+        RectF(paddingBoxRect).apply {
           inset(-blurExtent, -blurExtent)
           if (spreadExtent < 0) {
             inset(spreadExtent, spreadExtent)

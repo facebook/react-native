@@ -14,8 +14,7 @@ import type {SnapshotConfig, TestSnapshotResults} from './snapshotContext';
 import expect from './expect';
 import {createMockFunction} from './mocks';
 import {setupSnapshotConfig, snapshotContext} from './snapshotContext';
-import nullthrows from 'nullthrows';
-import NativeFantom from 'react-native/src/private/specs/modules/NativeFantom';
+import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 
 export type TestCaseResult = {
   ancestorTitles: Array<string>,
@@ -40,16 +39,43 @@ export type TestSuiteResult =
       },
     };
 
-const tests: Array<{
-  title: string,
-  ancestorTitles: Array<string>,
-  implementation: () => mixed,
-  isFocused: boolean,
-  isSkipped: boolean,
-  result?: TestCaseResult,
-}> = [];
+type FocusState = {
+  focused: boolean,
+  skipped: boolean,
+};
 
-const ancestorTitles: Array<string> = [];
+type Spec = {
+  ...FocusState,
+  title: string,
+  parentContext: Context,
+  implementation: () => mixed,
+};
+
+type Suite = Spec | Context;
+
+type Hook = () => void;
+
+type Context = {
+  ...FocusState,
+  title?: string,
+  afterAllHooks: Hook[],
+  afterEachHooks: Hook[],
+  beforeAllHooks: Hook[],
+  beforeEachHooks: Hook[],
+  parentContext?: Context,
+  children: Array<Suite>,
+};
+
+const rootContext: Context = {
+  beforeAllHooks: [],
+  beforeEachHooks: [],
+  afterAllHooks: [],
+  afterEachHooks: [validateEmptyMessageQueue],
+  children: [],
+  focused: false,
+  skipped: false,
+};
+let currentContext: Context = rootContext;
 
 const globalModifiers: Array<'focused' | 'skipped'> = [];
 
@@ -57,26 +83,64 @@ const globalDescribe = (global.describe = (
   title: string,
   implementation: () => mixed,
 ) => {
-  ancestorTitles.push(title);
+  const parentContext = currentContext;
+  const {focused, skipped} = getFocusState();
+  const childContext: Context = {
+    title,
+    parentContext,
+    afterAllHooks: [],
+    afterEachHooks: [],
+    beforeAllHooks: [],
+    beforeEachHooks: [],
+    children: [],
+    focused,
+    skipped,
+  };
+  currentContext.children.push(childContext);
+  currentContext = childContext;
   implementation();
-  ancestorTitles.pop();
+  currentContext = parentContext;
 });
+
+global.afterAll = (implementation: () => void) => {
+  currentContext.afterAllHooks.push(implementation);
+};
+
+global.afterEach = (implementation: () => void) => {
+  currentContext.afterEachHooks.push(implementation);
+};
+
+global.beforeAll = (implementation: () => void) => {
+  currentContext.beforeAllHooks.push(implementation);
+};
+
+global.beforeEach = (implementation: () => void) => {
+  currentContext.beforeEachHooks.push(implementation);
+};
+
+function getFocusState(): {focused: boolean, skipped: boolean} {
+  const focused =
+    globalModifiers.length > 0 &&
+    globalModifiers[globalModifiers.length - 1] === 'focused';
+  const skipped =
+    globalModifiers.length > 0 &&
+    globalModifiers[globalModifiers.length - 1] === 'skipped';
+  return {focused, skipped};
+}
 
 const globalIt =
   (global.it =
   global.test =
-    (title: string, implementation: () => mixed) =>
-      tests.push({
+    (title: string, implementation: () => mixed) => {
+      const {focused, skipped} = getFocusState();
+      currentContext.children.push({
         title,
+        parentContext: currentContext,
         implementation,
-        ancestorTitles: ancestorTitles.slice(),
-        isFocused:
-          globalModifiers.length > 0 &&
-          globalModifiers[globalModifiers.length - 1] === 'focused',
-        isSkipped:
-          globalModifiers.length > 0 &&
-          globalModifiers[globalModifiers.length - 1] === 'skipped',
-      }));
+        focused,
+        skipped,
+      });
+    });
 
 // $FlowExpectedError[prop-missing]
 global.fdescribe = global.describe.only = (
@@ -142,52 +206,177 @@ function runWithGuard(fn: () => void) {
   }
 }
 
-function executeTests() {
-  const hasFocusedTests = tests.some(test => test.isFocused);
+const focusCache = new Map<Suite, boolean>();
 
-  for (const test of tests) {
-    const result: TestCaseResult = {
-      title: test.title,
-      fullName: [...test.ancestorTitles, test.title].join(' '),
-      ancestorTitles: test.ancestorTitles,
-      status: 'pending',
-      duration: 0,
-      failureMessages: [],
-      numPassingAsserts: 0,
-      snapshotResults: {},
-    };
+function isFocusedSuite(suite: Suite): boolean {
+  const cached = focusCache.get(suite);
+  if (cached != null) {
+    return cached;
+  }
 
-    test.result = result;
-    snapshotContext.setTargetTest(result.fullName);
+  if (isSkipped(suite)) {
+    focusCache.set(suite, false);
+    return false;
+  }
 
-    if (!test.isSkipped && (!hasFocusedTests || test.isFocused)) {
-      let status;
-      let error;
+  if ('children' in suite) {
+    const hasFocused = suite.children.some(isFocusedSuite);
+    focusCache.set(suite, hasFocused);
+    return hasFocused;
+  }
 
-      const start = Date.now();
+  focusCache.set(suite, suite.focused);
+  return suite.focused;
+}
 
-      try {
-        test.implementation();
-        status = 'passed';
-      } catch (e) {
-        error = e;
-        status = 'failed';
-      }
+const skippedCache = new Map<Suite, boolean>();
+function isSkipped(suite: Suite): boolean {
+  const cached = skippedCache.get(suite);
+  if (cached != null) {
+    return cached;
+  }
 
-      result.status = status;
-      result.duration = Date.now() - start;
-      result.failureMessages =
-        status === 'failed' && error
-          ? [error.stack ?? error.message ?? String(error)]
-          : [];
+  if (suite.skipped) {
+    skippedCache.set(suite, true);
+    return true;
+  }
 
-      result.snapshotResults = snapshotContext.getSnapshotResults();
+  if (suite.parentContext != null) {
+    const skipped = isSkipped(suite.parentContext);
+    skippedCache.set(suite, skipped);
+    return skipped;
+  }
+
+  skippedCache.set(suite, false);
+  return false;
+}
+
+function getContextTitle(context: Context): string[] {
+  if (context.parentContext == null) {
+    return [];
+  }
+
+  const titles = context.title != null ? [context.title] : [];
+  if (context.parentContext) {
+    titles.push(...getContextTitle(context.parentContext));
+  }
+  return titles.reverse();
+}
+
+function invokeHooks(
+  context: Context,
+  hookType: 'beforeEachHooks' | 'afterEachHooks',
+) {
+  const contextStack = [];
+  let current: ?Context = context;
+  while (current != null) {
+    if (hookType === 'beforeEachHooks') {
+      contextStack.unshift(current);
+    } else {
+      contextStack.push(current);
+    }
+    current = current.parentContext;
+  }
+
+  for (const c of contextStack) {
+    for (const hook of c[hookType]) {
+      hook();
+    }
+  }
+}
+
+function shouldRunSuite(suite: Suite): boolean {
+  if (isSkipped(suite)) {
+    return false;
+  }
+
+  if (isFocusedSuite(suite)) {
+    return true;
+  }
+
+  // there is a focused suite in the root at some point
+  // but not in this suite hence we should not run it
+  if (isFocusedSuite(rootContext)) {
+    return false;
+  }
+
+  return true;
+}
+
+function runSpec(spec: Spec): TestCaseResult {
+  const ancestorTitles = getContextTitle(spec.parentContext);
+  const result: TestCaseResult = {
+    title: spec.title,
+    ancestorTitles,
+    fullName: [...ancestorTitles, spec.title].join(' '),
+    status: 'pending',
+    duration: 0,
+    failureMessages: [],
+    numPassingAsserts: 0,
+    snapshotResults: {},
+  };
+
+  if (!shouldRunSuite(spec)) {
+    return result;
+  }
+
+  let status;
+  let error;
+
+  const start = Date.now();
+  snapshotContext.setTargetTest(result.fullName);
+
+  try {
+    invokeHooks(spec.parentContext, 'beforeEachHooks');
+    spec.implementation();
+    invokeHooks(spec.parentContext, 'afterEachHooks');
+
+    status = 'passed';
+  } catch (e) {
+    error = e;
+    status = 'failed';
+  }
+
+  result.status = status;
+  result.duration = Date.now() - start;
+  result.failureMessages =
+    status === 'failed' && error
+      ? [error.stack ?? error.message ?? String(error)]
+      : [];
+
+  result.snapshotResults = snapshotContext.getSnapshotResults();
+  return result;
+}
+
+function runContext(context: Context): TestCaseResult[] {
+  const shouldRunHooks = shouldRunSuite(context);
+
+  if (shouldRunHooks) {
+    for (const beforeAllHook of context.beforeAllHooks) {
+      beforeAllHook();
     }
   }
 
-  reportTestSuiteResult({
-    testResults: tests.map(test => nullthrows(test.result)),
-  });
+  const testResults: TestCaseResult[] = [];
+  for (const child of context.children) {
+    testResults.push(...runSuite(child));
+  }
+
+  if (shouldRunHooks) {
+    for (const afterAllHook of context.afterAllHooks) {
+      afterAllHook();
+    }
+  }
+
+  return testResults;
+}
+
+function runSuite(suite: Suite): TestCaseResult[] {
+  if ('children' in suite) {
+    return runContext(suite);
+  } else {
+    return [runSpec(suite)];
+  }
 }
 
 function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
@@ -199,8 +388,14 @@ function reportTestSuiteResult(testSuiteResult: TestSuiteResult): void {
   );
 }
 
+function validateEmptyMessageQueue(): void {
+  NativeFantom.validateEmptyMessageQueue();
+}
+
 global.$$RunTests$$ = () => {
-  executeTests();
+  reportTestSuiteResult({
+    testResults: runSuite(currentContext),
+  });
 };
 
 export function registerTest(

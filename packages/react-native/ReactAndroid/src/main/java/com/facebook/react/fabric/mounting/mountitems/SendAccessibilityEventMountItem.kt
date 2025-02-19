@@ -19,7 +19,7 @@ internal class SendAccessibilityEventMountItem(
 
   private val TAG = "Fabric.SendAccessibilityEvent"
 
-  override public fun execute(mountingManager: MountingManager) {
+  override fun execute(mountingManager: MountingManager) {
     try {
       mountingManager.sendAccessibilityEvent(_surfaceId, reactTag, eventType)
     } catch (e: RetryableMountingLayerException) {
@@ -34,7 +34,7 @@ internal class SendAccessibilityEventMountItem(
     }
   }
 
-  override public fun getSurfaceId(): Int = _surfaceId
+  override fun getSurfaceId(): Int = _surfaceId
 
-  override public fun toString(): String = "SendAccessibilityEventMountItem [$reactTag] $eventType"
+  override fun toString(): String = "SendAccessibilityEventMountItem [$reactTag] $eventType"
 }

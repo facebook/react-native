@@ -27,9 +27,9 @@
 #import <React/RCTComponentViewProtocol.h>
 #if USE_HERMES
 #import <ReactCommon/RCTHermesInstance.h>
-#else
+#elif USE_THIRD_PARTY_JSC != 1
 #import <ReactCommon/RCTJscInstance.h>
-#endif
+#endif // USE_HERMES
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
 #import "RCTDependencyProvider.h"
@@ -65,6 +65,32 @@ using namespace facebook::react;
   }
 
   return self;
+}
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName inWindow:(UIWindow *_Nullable)window
+{
+  [self startReactNativeWithModuleName:moduleName inWindow:window initialProperties:nil launchOptions:nil];
+}
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                         launchOptions:(NSDictionary *_Nullable)launchOptions
+{
+  [self startReactNativeWithModuleName:moduleName inWindow:window initialProperties:nil launchOptions:launchOptions];
+}
+
+- (void)startReactNativeWithModuleName:(NSString *)moduleName
+                              inWindow:(UIWindow *_Nullable)window
+                     initialProperties:(NSDictionary *_Nullable)initialProperties
+                         launchOptions:(NSDictionary *_Nullable)launchOptions
+{
+  UIView *rootView = [self.rootViewFactory viewWithModuleName:moduleName
+                                            initialProperties:initialProperties
+                                                launchOptions:launchOptions];
+  UIViewController *rootViewController = [_delegate createRootViewController];
+  [_delegate setRootView:rootView toRootViewController:rootViewController];
+  window.rootViewController = rootViewController;
+  [window makeKeyAndVisible];
 }
 
 #pragma mark - RCTUIConfiguratorProtocol
@@ -228,6 +254,21 @@ using namespace facebook::react;
     };
   }
 
+  if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:onProgress:onComplete:)]) {
+    configuration.loadSourceForBridgeWithProgress =
+        ^(RCTBridge *_Nonnull bridge,
+          RCTSourceLoadProgressBlock _Nonnull onProgress,
+          RCTSourceLoadBlock _Nonnull loadCallback) {
+          [weakSelf.delegate loadSourceForBridge:bridge onProgress:onProgress onComplete:loadCallback];
+        };
+  }
+
+  if ([self.delegate respondsToSelector:@selector(loadSourceForBridge:withBlock:)]) {
+    configuration.loadSourceForBridge = ^(RCTBridge *_Nonnull bridge, RCTSourceLoadBlock _Nonnull loadCallback) {
+      [weakSelf.delegate loadSourceForBridge:bridge withBlock:loadCallback];
+    };
+  }
+
   return [[RCTRootViewFactory alloc] initWithTurboModuleDelegate:self hostDelegate:self configuration:configuration];
 }
 
@@ -255,9 +296,12 @@ class RCTAppDelegateBridgelessFeatureFlags : public ReactNativeFeatureFlagsDefau
 
 - (void)_setUpFeatureFlags
 {
-  if ([self bridgelessEnabled]) {
-    ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
-  }
+  static dispatch_once_t setupFeatureFlagsToken;
+  dispatch_once(&setupFeatureFlagsToken, ^{
+    if ([self bridgelessEnabled]) {
+      ReactNativeFeatureFlags::override(std::make_unique<RCTAppDelegateBridgelessFeatureFlags>());
+    }
+  });
 }
 
 @end

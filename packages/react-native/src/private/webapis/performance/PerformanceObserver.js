@@ -20,9 +20,9 @@ import {
   performanceEntryTypeToRaw,
   rawToPerformanceEntry,
   rawToPerformanceEntryType,
-} from './RawPerformanceEntry';
+} from './internals/RawPerformanceEntry';
+import {warnNoNativePerformance} from './internals/Utilities';
 import NativePerformance from './specs/NativePerformance';
-import {warnNoNativePerformance} from './Utilities';
 
 export {PerformanceEntry} from './PerformanceEntry';
 

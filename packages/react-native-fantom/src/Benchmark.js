@@ -10,7 +10,7 @@
 
 import {getConstants} from './index';
 import nullthrows from 'nullthrows';
-import NativeCPUTime from 'react-native/src/private/specs/modules/NativeCPUTime';
+import NativeCPUTime from 'react-native/src/private/testing/fantom/specs/NativeCPUTime';
 import {
   Bench,
   type BenchOptions,
@@ -19,28 +19,40 @@ import {
 } from 'tinybench';
 
 type SuiteOptions = $ReadOnly<{
-  ...Pick<
-    BenchOptions,
-    'iterations' | 'time' | 'warmup' | 'warmupIterations' | 'warmupTime',
-  >,
+  minIterations?: number,
+  minDuration?: number,
+  warmup?: boolean,
+  minWarmupDuration?: number,
+  minWarmupIterations?: number,
   disableOptimizedBuildCheck?: boolean,
+  testOnly?: boolean,
+}>;
+
+type TestOptions = $ReadOnly<{
+  ...FnOptions,
+  only?: boolean,
 }>;
 
 type SuiteResults = Array<$ReadOnly<TaskResult>>;
 
+interface TestFunction {
+  (name: string, fn: () => void, options?: FnOptions): SuiteAPI;
+  only: (name: string, fn: () => void, options?: FnOptions) => SuiteAPI;
+}
+
 interface SuiteAPI {
-  add(name: string, fn: () => void, options?: FnOptions): SuiteAPI;
+  +test: TestFunction;
   verify(fn: (results: SuiteResults) => void): SuiteAPI;
 }
 
 export function suite(
   suiteName: string,
-  suiteOptions?: ?SuiteOptions,
+  suiteOptions?: SuiteOptions = {},
 ): SuiteAPI {
   const tasks: Array<{
     name: string,
     fn: () => void,
-    options: FnOptions | void,
+    options: TestOptions | void,
   }> = [];
   const verifyFns = [];
 
@@ -55,29 +67,55 @@ export function suite(
     // no point in running the benchmark.
     // We still run a single iteration of each test just to make sure that the
     // logic in the benchmark doesn't break.
-    const isTestOnly = isRunningFromCI && verifyFns.length === 0;
+    const isTestOnly =
+      suiteOptions.testOnly === true ||
+      (isRunningFromCI && verifyFns.length === 0);
 
-    const overriddenOptions: BenchOptions = isTestOnly
+    const benchOptions: BenchOptions = isTestOnly
       ? {
-          warmupIterations: 1,
-          warmupTime: 0,
+          warmup: false,
           iterations: 1,
           time: 0,
         }
       : {};
 
-    const {disableOptimizedBuildCheck, ...benchOptions} = suiteOptions ?? {};
+    benchOptions.name = suiteName;
+    benchOptions.throws = true;
+    benchOptions.now = () => NativeCPUTime.getCPUTimeNanos() / 1000000;
 
-    const bench = new Bench({
-      ...benchOptions,
-      ...overriddenOptions,
-      name: suiteName,
-      throws: true,
-      now: () => NativeCPUTime.getCPUTimeNanos() / 1000000,
-    });
+    if (!isTestOnly) {
+      if (suiteOptions.minIterations != null) {
+        benchOptions.iterations = suiteOptions.minIterations;
+      }
+
+      if (suiteOptions.minDuration != null) {
+        benchOptions.time = suiteOptions.minDuration;
+      }
+
+      if (suiteOptions.warmup != null) {
+        benchOptions.warmup = suiteOptions.warmup;
+      }
+
+      if (suiteOptions.minWarmupDuration != null) {
+        benchOptions.warmupTime = suiteOptions.minWarmupDuration;
+      }
+
+      if (suiteOptions.minWarmupIterations != null) {
+        benchOptions.warmupIterations = suiteOptions.minWarmupIterations;
+      }
+    }
+
+    const bench = new Bench(benchOptions);
+
+    const isFocused = tasks.find(task => task.options?.only === true) != null;
 
     for (const task of tasks) {
-      bench.add(task.name, task.fn, task.options);
+      if (isFocused && task.options?.only !== true) {
+        continue;
+      }
+
+      const {only, ...options} = task.options ?? {};
+      bench.add(task.name, task.fn, options);
     }
 
     bench.runSync();
@@ -96,16 +134,33 @@ export function suite(
       );
     }
 
-    if (__DEV__ && disableOptimizedBuildCheck !== true) {
+    if (__DEV__ && suiteOptions.disableOptimizedBuildCheck !== true) {
       throw new Error('Benchmarks should not be run in development mode');
+    }
+
+    if (isFocused) {
+      throw new Error(
+        'Failing focused test to prevent it from being committed',
+      );
     }
   });
 
+  const test = (
+    name: string,
+    fn: () => void,
+    options?: FnOptions,
+  ): SuiteAPI => {
+    tasks.push({name, fn, options});
+    return suiteAPI;
+  };
+
+  test.only = (name: string, fn: () => void, options?: FnOptions): SuiteAPI => {
+    tasks.push({name, fn, options: {...options, only: true}});
+    return suiteAPI;
+  };
+
   const suiteAPI = {
-    add(name: string, fn: () => void, options?: FnOptions): SuiteAPI {
-      tasks.push({name, fn, options});
-      return suiteAPI;
-    },
+    test,
     verify(fn: (results: SuiteResults) => void): SuiteAPI {
       verifyFns.push(fn);
       return suiteAPI;
@@ -120,10 +175,14 @@ function printBenchmarkResults(bench: Bench) {
     (maxLength, task) => Math.max(maxLength, task.name.length),
     0,
   );
-  const separatorWidth = 121 + longestTaskNameLength - 'Task name'.length;
+  const separatorWidth = 137 + longestTaskNameLength - 'Task name'.length;
+  const benchmarkName = bench.name ?? 'Benchmark';
 
   console.log('-'.repeat(separatorWidth));
-  console.log(bench.name);
+  console.log(
+    `| ${benchmarkName}${' '.repeat(separatorWidth - (4 + benchmarkName.length))} |`,
+  );
+  console.log('-'.repeat(separatorWidth));
   console.table(nullthrows(bench.table()));
   console.log('-'.repeat(separatorWidth) + '\n');
 }

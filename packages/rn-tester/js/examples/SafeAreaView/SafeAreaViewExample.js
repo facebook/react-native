@@ -10,75 +10,58 @@
 
 'use strict';
 
-const React = require('react');
-const {
+import RNTesterText from '../../components/RNTesterText';
+import React from 'react';
+import {
   Button,
   DeviceInfo,
   Modal,
   SafeAreaView,
   StyleSheet,
-  Text,
   View,
-} = require('react-native');
+} from 'react-native';
 
-class SafeAreaViewExample extends React.Component<
-  {...},
-  {|
-    modalVisible: boolean,
-  |},
-> {
-  state: {modalVisible: boolean} = {
-    modalVisible: false,
+function SafeAreaViewExample(): React.Node {
+  const [modalVisible, setModalVisible] = React.useState<boolean>(false);
+
+  const toggleModal = (visible: boolean) => {
+    setModalVisible(visible);
   };
 
-  _setModalVisible = (visible: boolean) => {
-    this.setState({modalVisible: visible});
-  };
-
-  render(): React.Node {
-    return (
-      <View>
-        <Modal
-          visible={this.state.modalVisible}
-          onRequestClose={() => this._setModalVisible(false)}
-          animationType="slide"
-          supportedOrientations={['portrait', 'landscape']}>
-          <View style={styles.modal}>
-            <SafeAreaView style={styles.safeArea}>
-              <View style={styles.safeAreaContent}>
-                <Button
-                  onPress={this._setModalVisible.bind(this, false)}
-                  title="Close"
-                />
-              </View>
-            </SafeAreaView>
-          </View>
-        </Modal>
-        <Button
-          onPress={this._setModalVisible.bind(this, true)}
-          title="Present Modal Screen with SafeAreaView"
-        />
-      </View>
-    );
-  }
+  return (
+    <View>
+      <Modal
+        visible={modalVisible}
+        onRequestClose={() => toggleModal(false)}
+        animationType="slide"
+        supportedOrientations={['portrait', 'landscape']}>
+        <View style={styles.modal}>
+          <SafeAreaView style={styles.safeArea}>
+            <View style={styles.safeAreaContent}>
+              <Button onPress={() => toggleModal(false)} title="Close" />
+            </View>
+          </SafeAreaView>
+        </View>
+      </Modal>
+      <Button
+        onPress={() => toggleModal(true)}
+        title="Present Modal Screen with SafeAreaView"
+      />
+    </View>
+  );
 }
 
-class IsIPhoneXExample extends React.Component<{...}> {
-  render(): React.Node {
-    return (
-      <View>
-        <Text>
-          Is this an iPhone X:{' '}
-          {
-            // $FlowFixMe[sketchy-null-bool]
-            DeviceInfo.getConstants().isIPhoneX_deprecated
-              ? 'Yeah!'
-              : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'
-          }
-        </Text>
-      </View>
-    );
-  }
+function IsIPhoneXExample(): React.Node {
+  return (
+    <View>
+      <RNTesterText>
+        Is this an iPhone X:{' '}
+        {DeviceInfo.getConstants()?.isIPhoneX_deprecated === true
+          ? 'Yeah!'
+          : 'Nope. (Or `isIPhoneX_deprecated` was already removed.)'}
+      </RNTesterText>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

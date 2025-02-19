@@ -27,7 +27,7 @@ const {
   View,
 } = require('react-native');
 
-class Entity extends React.Component<{|children: React.Node|}> {
+class Entity extends React.Component<{children: React.Node}> {
   render(): React.Node {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
@@ -84,12 +84,12 @@ class AttributeToggler extends React.Component<{...}, $FlowFixMeState> {
   }
 }
 
-type AdjustingFontSizeProps = $ReadOnly<{||}>;
+type AdjustingFontSizeProps = $ReadOnly<{}>;
 
-type AdjustingFontSizeState = {|
+type AdjustingFontSizeState = {
   dynamicText: string,
   shouldRender: boolean,
-|};
+};
 
 class AdjustingFontSize extends React.Component<
   AdjustingFontSizeProps,
@@ -479,6 +479,37 @@ function AllowFontScalingExample(props: {}): React.Node {
         </RNTesterText>
       </RNTesterText>
     </>
+  );
+}
+
+function MaxFontSizeMultiplierExample(props: {}): React.Node {
+  return (
+    <View testID={'max-font-size-multiplier'}>
+      <Text>
+        When allowFontScaling is enabled, you can use the maxFontSizeMultiplier
+        prop to set an upper limit on how much the font size will be scaled.
+      </Text>
+      <Text
+        allowFontScaling={true}
+        maxFontSizeMultiplier={1}
+        style={{marginTop: 10}}>
+        This text will not scale up (max 1x)
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1.5}>
+        This text will scale up (max 1.5x)
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+        <Text>Inherit max (max 1x)</Text>
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+        <Text maxFontSizeMultiplier={1.5}>
+          Override inherited max (max 1.5x)
+        </Text>
+      </Text>
+      <Text allowFontScaling={true} maxFontSizeMultiplier={1}>
+        <Text maxFontSizeMultiplier={0}>Ignore inherited max (no max)</Text>
+      </Text>
+    </View>
   );
 }
 
@@ -1460,6 +1491,13 @@ const examples = [
     name: 'allowFontScaling',
     render(): React.Node {
       return <AllowFontScalingExample />;
+    },
+  },
+  {
+    title: 'maxFontSizeMultiplier attribute',
+    name: 'maxFontSizeMultiplier',
+    render(): React.Node {
+      return <MaxFontSizeMultiplierExample />;
     },
   },
   {

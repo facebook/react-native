@@ -28,7 +28,7 @@ const registerCallableModule: RegisterCallableModule = (function () {
     };
   }
 
-  const BatchedBridge = require('../BatchedBridge/BatchedBridge');
+  const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
   return (name, moduleOrFactory) => {
     if (typeof moduleOrFactory === 'function') {
       BatchedBridge.registerLazyCallableModule(name, moduleOrFactory);

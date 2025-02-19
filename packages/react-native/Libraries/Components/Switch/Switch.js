@@ -9,7 +9,7 @@
  */
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {NativeSyntheticEvent} from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import StyleSheet from '../../StyleSheet/StyleSheet';
@@ -23,14 +23,14 @@ import SwitchNativeComponent, {
 } from './SwitchNativeComponent';
 import * as React from 'react';
 
-type SwitchChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
+type SwitchChangeEvent = NativeSyntheticEvent<
+  $ReadOnly<{
     value: boolean,
     target: number,
-  |}>,
+  }>,
 >;
 
-export type Props = $ReadOnly<{|
+export type Props = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -59,10 +59,10 @@ export type Props = $ReadOnly<{|
     color of the background exposed by the shrunken track, use
      [`ios_backgroundColor`](https://reactnative.dev/docs/switch#ios_backgroundColor).
    */
-  trackColor?: ?$ReadOnly<{|
+  trackColor?: ?$ReadOnly<{
     false?: ?ColorValue,
     true?: ?ColorValue,
-  |}>,
+  }>,
 
   /**
     On iOS, custom color for the background. This background color can be
@@ -84,7 +84,7 @@ export type Props = $ReadOnly<{|
     use `onChange`.
    */
   onValueChange?: ?(value: boolean) => Promise<void> | void,
-|}>;
+}>;
 const returnsFalse = () => false;
 const returnsTrue = () => true;
 

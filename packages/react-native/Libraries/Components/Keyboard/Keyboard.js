@@ -25,32 +25,32 @@ export type KeyboardEventEasing =
   | 'linear'
   | 'keyboard';
 
-export type KeyboardMetrics = $ReadOnly<{|
+export type KeyboardMetrics = $ReadOnly<{
   screenX: number,
   screenY: number,
   width: number,
   height: number,
-|}>;
+}>;
 
 export type KeyboardEvent = AndroidKeyboardEvent | IOSKeyboardEvent;
 
-type BaseKeyboardEvent = {|
+type BaseKeyboardEvent = {
   duration: number,
   easing: KeyboardEventEasing,
   endCoordinates: KeyboardMetrics,
-|};
+};
 
-export type AndroidKeyboardEvent = $ReadOnly<{|
+export type AndroidKeyboardEvent = $ReadOnly<{
   ...BaseKeyboardEvent,
   duration: 0,
   easing: 'keyboard',
-|}>;
+}>;
 
-export type IOSKeyboardEvent = $ReadOnly<{|
+export type IOSKeyboardEvent = $ReadOnly<{
   ...BaseKeyboardEvent,
   startCoordinates: KeyboardMetrics,
   isEventFromThisApp: boolean,
-|}>;
+}>;
 
 type KeyboardEventDefinitions = {
   keyboardWillShow: [KeyboardEvent],
@@ -202,4 +202,4 @@ class Keyboard {
   }
 }
 
-module.exports = (new Keyboard(): Keyboard);
+export default (new Keyboard(): Keyboard);

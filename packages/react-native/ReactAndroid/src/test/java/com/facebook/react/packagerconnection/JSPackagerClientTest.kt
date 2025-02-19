@@ -13,9 +13,13 @@ import okio.ByteString
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.*
-import org.mockito.Mockito.`when` as whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
@@ -25,7 +29,7 @@ class JSPackagerClientTest {
 
   @Before
   fun setup() {
-    settings = mock(PackagerConnectionSettings::class.java)
+    settings = mock<PackagerConnectionSettings>()
     whenever(settings.debugServerHost).thenReturn("ws://not_needed")
     whenever(settings.packageName).thenReturn("my_test_package")
   }
@@ -33,97 +37,97 @@ class JSPackagerClientTest {
   @Test
   @Throws(IOException::class)
   fun test_onMessage_ShouldTriggerNotification() {
-    val handler = mock(RequestHandler::class.java)
+    val handler = mock<RequestHandler>()
     val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage("""{"version": 2, "method": "methodValue", "params": "paramsValue"}""")
     verify(handler).onNotification(eq("paramsValue"))
-    verify(handler, never()).onRequest(any(), any(Responder::class.java))
+    verify(handler, never()).onRequest(any(), any())
   }
 
   @Test
   @Throws(IOException::class)
   fun test_onMessage_ShouldTriggerRequest() {
-    val handler = mock(RequestHandler::class.java)
+    val handler = mock<RequestHandler>()
     val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage(
         """{"version": 2, "id": "idValue", "method": "methodValue", "params": "paramsValue"}""")
     verify(handler, never()).onNotification(any())
-    verify(handler).onRequest(eq("paramsValue"), any(Responder::class.java))
+    verify(handler).onRequest(eq("paramsValue"), any())
   }
 
   @Test
   @Throws(IOException::class)
   fun test_onMessage_WithoutParams_ShouldTriggerNotification() {
-    val handler = mock(RequestHandler::class.java)
+    val handler = mock<RequestHandler>()
     val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage("""{"version": 2, "method": "methodValue"}""")
-    verify(handler).onNotification(ArgumentMatchers.isNull())
-    verify(handler, never()).onRequest(any(), any(Responder::class.java))
+    verify(handler).onNotification(eq(null))
+    verify(handler, never()).onRequest(any(), any())
   }
 
   @Test
   @Throws(IOException::class)
   fun test_onMessage_WithInvalidContentType_ShouldNotTriggerCallback() {
-    val handler = mock(RequestHandler::class.java)
+    val handler = mock<RequestHandler>()
     val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage(encodeUtf8("""{"version": 2, "method": "methodValue"}"""))
     verify(handler, never()).onNotification(any())
-    verify(handler, never()).onRequest(any(), any(Responder::class.java))
+    verify(handler, never()).onRequest(any(), any())
   }
 
   @Test
   @Throws(IOException::class)
   fun test_onMessage_WithoutMethod_ShouldNotTriggerCallback() {
-    val handler = mock(RequestHandler::class.java)
+    val handler = mock<RequestHandler>()
     val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage("""{"version": 2}""")
     verify(handler, never()).onNotification(any())
-    verify(handler, never()).onRequest(any(), any(Responder::class.java))
+    verify(handler, never()).onRequest(any(), any())
   }
 
   @Test
   @Throws(IOException::class)
   fun test_onMessage_With_Null_Action_ShouldNotTriggerCallback() {
-    val handler = mock(RequestHandler::class.java)
+    val handler = mock<RequestHandler>()
     val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage("""{"version": 2, "method": null}""")
     verify(handler, never()).onNotification(any())
-    verify(handler, never()).onRequest(any(), any(Responder::class.java))
+    verify(handler, never()).onRequest(any(), any())
   }
 
   @Test
   @Throws(IOException::class)
   fun test_onMessage_WithInvalidMethod_ShouldNotTriggerCallback() {
-    val handler = mock(RequestHandler::class.java)
+    val handler = mock<RequestHandler>()
     val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage(ByteString.EMPTY)
     verify(handler, never()).onNotification(any())
-    verify(handler, never()).onRequest(any(), any(Responder::class.java))
+    verify(handler, never()).onRequest(any(), any())
   }
 
   @Test
   @Throws(IOException::class)
   fun test_onMessage_WrongVersion_ShouldNotTriggerCallback() {
-    val handler = mock(RequestHandler::class.java)
+    val handler = mock<RequestHandler>()
     val client = getClient(createRequestHandler("methodValue", handler))
 
     client.onMessage("""{"version": 1, "method": "methodValue"}""")
     verify(handler, never()).onNotification(any())
-    verify(handler, never()).onRequest(any(), any(Responder::class.java))
+    verify(handler, never()).onRequest(any(), any())
   }
 
   @Test
   @Throws(IOException::class)
   fun test_onDisconnection_ShouldTriggerDisconnectionCallback() {
-    val connectionHandler = mock(ConnectionCallback::class.java)
-    val handler = mock(RequestHandler::class.java)
+    val connectionHandler = mock<ConnectionCallback>()
+    val handler = mock<RequestHandler>()
     val client = getClient(requestHandlers = emptyMap(), connectionCallback = connectionHandler)
 
     client.close()
@@ -132,7 +136,7 @@ class JSPackagerClientTest {
     verify(connectionHandler, times(1)).onDisconnected()
 
     verify(handler, never()).onNotification(any())
-    verify(handler, never()).onRequest(any(), any(Responder::class.java))
+    verify(handler, never()).onRequest(any(), any())
   }
 
   private fun getClient(

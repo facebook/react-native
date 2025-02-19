@@ -19,7 +19,7 @@ import isDevServerRunning from '../../utils/isDevServerRunning';
 import loadMetroConfig from '../../utils/loadMetroConfig';
 import * as version from '../../utils/version';
 import attachKeyHandlers from './attachKeyHandlers';
-import {createDevServerMiddleware, indexPageMiddleware} from './middleware';
+import {createDevServerMiddleware} from './middleware';
 import {createDevMiddleware} from '@react-native/dev-middleware';
 import chalk from 'chalk';
 import Metro from 'metro';
@@ -44,6 +44,7 @@ export type StartCommandArgs = {
   config?: string,
   projectRoot?: string,
   interactive: boolean,
+  clientLogs: boolean,
 };
 
 async function runServer(
@@ -96,6 +97,11 @@ async function runServer(
       require.resolve(plugin),
     );
   }
+  // TODO(T214991636): Remove legacy Metro log forwarding
+  if (!args.clientLogs) {
+    // $FlowIgnore[cannot-write] Assigning to readonly property
+    metroConfig.server.forwardClientLogs = false;
+  }
 
   let reportEvent: (event: TerminalReportableEvent) => void;
   const terminal = new Terminal(process.stdout);
@@ -146,11 +152,7 @@ async function runServer(
     secure: args.https,
     secureCert: args.cert,
     secureKey: args.key,
-    unstable_extraMiddleware: [
-      communityMiddleware,
-      indexPageMiddleware,
-      middleware,
-    ],
+    unstable_extraMiddleware: [communityMiddleware, middleware],
     websocketEndpoints: {
       ...communityWebsocketEndpoints,
       ...websocketEndpoints,

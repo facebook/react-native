@@ -124,7 +124,7 @@ std::vector<DebugStringConvertibleObject> getDebugProps(
       {"contentInset", getDebugDescription(scrollEvent.contentInset, options)},
       {"contentSize", getDebugDescription(scrollEvent.contentSize, options)},
       {"layoutMeasurement",
-       getDebugDescription(scrollEvent.layoutMeasurement, options)},
+       getDebugDescription(scrollEvent.containerSize, options)},
       {"zoomScale", getDebugDescription(scrollEvent.zoomScale, options)},
       {"timestamp", getDebugDescription(scrollEvent.timestamp, options)}};
 }

@@ -138,7 +138,7 @@ internal class ReactSwitchManager :
   }
 
   internal companion object {
-    public const val REACT_CLASS: String = "AndroidSwitch"
+    const val REACT_CLASS: String = "AndroidSwitch"
 
     private val ON_CHECKED_CHANGE_LISTENER =
         CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->

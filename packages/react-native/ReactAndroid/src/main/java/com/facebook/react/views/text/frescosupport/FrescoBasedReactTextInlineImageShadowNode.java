@@ -11,9 +11,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import androidx.annotation.Nullable;
+import androidx.core.util.Preconditions;
 import com.facebook.common.logging.FLog;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.controller.AbstractDraweeControllerBuilder;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -27,10 +29,11 @@ import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 
 /** Shadow node that represents an inline image. Loading is done using Fresco. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShadowNode {
 
   private @Nullable Uri mUri;
-  private ReadableMap mHeaders;
+  private @Nullable ReadableMap mHeaders;
   private final AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;
   private float mWidth = YogaConstants.UNDEFINED;
@@ -46,8 +49,10 @@ class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShad
 
   @ReactProp(name = "src")
   public void setSource(@Nullable ReadableArray sources) {
-    final String source =
-        (sources == null || sources.size() == 0) ? null : sources.getMap(0).getString("uri");
+    final @Nullable String source =
+        (sources == null || sources.size() == 0 || sources.getType(0) != ReadableType.Map)
+            ? null
+            : Preconditions.checkNotNull(sources.getMap(0)).getString("uri");
     Uri uri = null;
     if (source != null) {
       try {
@@ -70,7 +75,7 @@ class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShad
   }
 
   @ReactProp(name = "headers")
-  public void setHeaders(ReadableMap headers) {
+  public void setHeaders(@Nullable ReadableMap headers) {
     mHeaders = headers;
   }
 
@@ -109,7 +114,7 @@ class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineImageShad
     return mUri;
   }
 
-  public ReadableMap getHeaders() {
+  public @Nullable ReadableMap getHeaders() {
     return mHeaders;
   }
 

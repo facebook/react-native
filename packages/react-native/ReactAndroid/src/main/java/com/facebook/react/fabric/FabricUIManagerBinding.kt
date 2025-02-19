@@ -13,7 +13,6 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.NativeMap
 import com.facebook.react.bridge.RuntimeExecutor
 import com.facebook.react.bridge.RuntimeScheduler
-import com.facebook.react.common.mapbuffer.MapBufferSoLoader
 import com.facebook.react.fabric.events.EventBeatManager
 import com.facebook.react.uimanager.PixelUtil.getDisplayMetricDensity
 
@@ -34,9 +33,9 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       componentsRegistry: ComponentFactory,
   )
 
-  public external fun startSurface(surfaceId: Int, moduleName: String, initialProps: NativeMap)
+  external fun startSurface(surfaceId: Int, moduleName: String, initialProps: NativeMap)
 
-  public external fun startSurfaceWithConstraints(
+  external fun startSurfaceWithConstraints(
       surfaceId: Int,
       moduleName: String,
       initialProps: NativeMap,
@@ -50,19 +49,19 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       doLeftAndRightSwapInRTL: Boolean
   )
 
-  public external fun startSurfaceWithSurfaceHandler(
+  external fun startSurfaceWithSurfaceHandler(
       surfaceId: Int,
       surfaceHandler: SurfaceHandlerBinding,
       isMountable: Boolean
   )
 
-  public external fun stopSurface(surfaceId: Int)
+  external fun stopSurface(surfaceId: Int)
 
-  public external fun stopSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
+  external fun stopSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
 
-  public external fun setPixelDensity(pointScaleFactor: Float)
+  external fun setPixelDensity(pointScaleFactor: Float)
 
-  public external fun setConstraints(
+  external fun setConstraints(
       surfaceId: Int,
       minWidth: Float,
       maxWidth: Float,
@@ -74,13 +73,13 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       doLeftAndRightSwapInRTL: Boolean
   )
 
-  public external fun driveCxxAnimations()
+  external fun driveCxxAnimations()
 
-  public external fun drainPreallocateViewsQueue()
+  external fun drainPreallocateViewsQueue()
 
-  public external fun reportMount(surfaceId: Int)
+  external fun reportMount(surfaceId: Int)
 
-  public fun register(
+  fun register(
       runtimeExecutor: RuntimeExecutor,
       runtimeScheduler: RuntimeScheduler,
       fabricUIManager: FabricUIManager,
@@ -95,14 +94,13 @@ internal class FabricUIManagerBinding : HybridClassBase() {
 
   private external fun uninstallFabricUIManager()
 
-  public fun unregister() {
+  fun unregister() {
     uninstallFabricUIManager()
   }
 
   private companion object {
     init {
       FabricSoLoader.staticInit()
-      MapBufferSoLoader.staticInit()
     }
   }
 }

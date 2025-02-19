@@ -177,6 +177,7 @@ abstract class BundleHermesCTask : DefaultTask() {
     val rootFile = root.get().asFile
     return windowsAwareCommandLine(
         hermesCommand,
+        "-w",
         "-emit-binary",
         "-max-diagnostic-width=80",
         "-out",

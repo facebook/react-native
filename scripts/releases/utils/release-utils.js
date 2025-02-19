@@ -17,7 +17,7 @@ const {
 const {echo, exec, exit, popd, pushd, test} = require('shelljs');
 
 /*::
-type BuildType = 'dry-run' | 'release' | 'nightly' | 'prealpha';
+type BuildType = 'dry-run' | 'release' | 'nightly';
 */
 
 function generateAndroidArtifacts(releaseVersion /*: string */) {
@@ -105,7 +105,7 @@ function publishExternalArtifactsToMaven(
       exit(1);
     }
   } else {
-    const isSnapshot = buildType === 'nightly' || buildType === 'prealpha';
+    const isSnapshot = buildType === 'nightly';
     // -------- For nightly releases, we only need to publish the snapshot to Sonatype snapshot repo.
     if (
       exec(

@@ -10,57 +10,72 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer');
+import * as React from 'react';
+import {useEffect, useState} from 'react';
+import {
+  NativeAppEventEmitter,
+  NativeModules,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import deepDiffer from 'react-native/Libraries/Utilities/differ/deepDiffer';
 
-const {NativeAppEventEmitter, StyleSheet, Text, View} = ReactNative;
-const {TestModule} = ReactNative.NativeModules;
+const {TestModule} = NativeModules;
 
 const TEST_PAYLOAD = {foo: 'bar'};
 
 type AppEvent = {
   data: Object,
   ts: number,
-  ...
 };
+
 type State = {
   sent: 'none' | AppEvent,
   received: 'none' | AppEvent,
   elapsed?: string,
-  ...
 };
 
-class AppEventsTest extends React.Component<{...}, State> {
-  state: State = {sent: 'none', received: 'none'};
+function AppEventsTest(): React.Node {
+  const [state, setState] = useState<State>({
+    sent: 'none',
+    received: 'none',
+  });
 
-  componentDidMount() {
-    NativeAppEventEmitter.addListener('testEvent', this.receiveEvent);
+  useEffect(() => {
+    const receiveEvent = (event: any) => {
+      if (deepDiffer(event.data, TEST_PAYLOAD)) {
+        throw new Error('Received wrong event: ' + JSON.stringify(event));
+      }
+      const elapsed = Date.now() - event.ts + 'ms';
+      setState(prevState => ({
+        ...prevState,
+        received: event,
+        elapsed,
+      }));
+      TestModule.markTestCompleted();
+    };
+
+    const listener = NativeAppEventEmitter.addListener(
+      'testEvent',
+      receiveEvent,
+    );
+
     const event = {data: TEST_PAYLOAD, ts: Date.now()};
     TestModule.sendAppEvent('testEvent', event);
-    this.setState({sent: event});
-  }
+    setState(prevState => ({...prevState, sent: event}));
 
-  receiveEvent: (event: any) => void = (event: any) => {
-    if (deepDiffer(event.data, TEST_PAYLOAD)) {
-      throw new Error('Received wrong event: ' + JSON.stringify(event));
-    }
-    const elapsed = Date.now() - event.ts + 'ms';
-    this.setState({received: event, elapsed}, () => {
-      TestModule.markTestCompleted();
-    });
-  };
+    return () => {
+      listener.remove();
+    };
+  }, []);
 
-  render(): React.Node {
-    return (
-      <View style={styles.container}>
-        <Text>{JSON.stringify(this.state, null, '  ')}</Text>
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Text>{JSON.stringify(state, null, '  ')}</Text>
+    </View>
+  );
 }
-
-AppEventsTest.displayName = 'AppEventsTest';
 
 const styles = StyleSheet.create({
   container: {
@@ -68,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = AppEventsTest;
+export default AppEventsTest;

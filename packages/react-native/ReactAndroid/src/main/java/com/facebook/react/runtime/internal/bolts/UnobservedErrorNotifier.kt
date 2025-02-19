@@ -21,7 +21,7 @@ internal class UnobservedErrorNotifier(private var task: Task<*>?) {
     }
   }
 
-  public fun setObserved(): Unit {
+  fun setObserved(): Unit {
     task = null
   }
 }

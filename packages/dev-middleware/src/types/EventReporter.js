@@ -83,6 +83,9 @@ export type ReportableEvent =
       ...DebuggerSessionIDs,
     }
   | {
+      type: 'fusebox_console_notice',
+    }
+  | {
       type: 'proxy_error',
       status: 'error',
       messageOrigin: 'debugger' | 'device',
@@ -90,6 +93,16 @@ export type ReportableEvent =
       error: string,
       errorStack: string,
       ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'debugger_heartbeat',
+      duration: number,
+      appId: string,
+    }
+  | {
+      type: 'debugger_timeout',
+      duration: number,
+      appId: string,
     };
 
 /**

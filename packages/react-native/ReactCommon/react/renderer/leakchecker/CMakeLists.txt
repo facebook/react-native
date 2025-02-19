@@ -14,11 +14,11 @@ add_compile_options(
         -Wpedantic
         -DLOG_TAG=\"Fabric\")
 
-file(GLOB react_render_leakchecker_SRC CONFIGURE_DEPENDS *.cpp)
-add_library(react_render_leakchecker STATIC ${react_render_leakchecker_SRC})
+file(GLOB react_renderer_leakchecker_SRC CONFIGURE_DEPENDS *.cpp)
+add_library(react_renderer_leakchecker STATIC ${react_renderer_leakchecker_SRC})
 
-target_include_directories(react_render_leakchecker PUBLIC ${REACT_COMMON_DIR})
-target_link_libraries(react_render_leakchecker
+target_include_directories(react_renderer_leakchecker PUBLIC ${REACT_COMMON_DIR})
+target_link_libraries(react_renderer_leakchecker
         glog
-        react_render_core
+        react_renderer_core
         runtimeexecutor)

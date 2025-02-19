@@ -41,6 +41,8 @@ const PAGES_POLLING_INTERVAL = 1000;
 // more details.
 const FILE_PREFIX = 'file://';
 
+let fuseboxConsoleNoticeLogged = false;
+
 type DebuggerConnection = {
   // Debugger web socket connection
   socket: WS,
@@ -519,6 +521,7 @@ export default class Device {
       // created instead of manually checking this on every getPages result.
       for (const page of this.#pages.values()) {
         if (this.#pageHasCapability(page, 'nativePageReloads')) {
+          this.#logFuseboxConsoleNotice();
           continue;
         }
 
@@ -737,24 +740,6 @@ export default class Device {
               sourceMapURL,
               debuggerInfo,
             ).href;
-
-          // Some debug clients do not support fetching HTTP URLs. If the
-          // message headed to the debug client identifies the source map with
-          // an HTTP URL, fetch the content here and convert the content to a
-          // Data URL (which is more widely supported) before passing the
-          // message to the debug client.
-          try {
-            const sourceMap = await this.#fetchText(
-              this.#deviceRelativeUrlToServerRelativeUrl(sourceMapURL),
-            );
-            payload.params.sourceMapURL =
-              'data:application/json;charset=utf-8;base64,' +
-              Buffer.from(sourceMap).toString('base64');
-          } catch (exception) {
-            this.#sendErrorToDebugger(
-              `Failed to fetch source map ${params.sourceMapURL}: ${exception.message}`,
-            );
-          }
         }
       }
       if ('url' in params) {
@@ -1072,5 +1057,15 @@ export default class Device {
 
   dangerouslyGetSocket(): WS {
     return this.#deviceSocket;
+  }
+
+  // TODO(T214991636): Remove notice
+  #logFuseboxConsoleNotice() {
+    if (fuseboxConsoleNoticeLogged) {
+      return;
+    }
+
+    this.#deviceEventReporter?.logFuseboxConsoleNotice();
+    fuseboxConsoleNoticeLogged = true;
   }
 }

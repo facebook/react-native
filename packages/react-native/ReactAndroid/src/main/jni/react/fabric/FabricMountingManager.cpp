@@ -925,15 +925,9 @@ void FabricMountingManager::maybePreallocateShadowNode(
 
   auto shadowView = ShadowView(shadowNode);
 
-  if (ReactNativeFeatureFlags::useOptimisedViewPreallocationOnAndroid()) {
-    // Optimised implementation where FabricUIManager.preallocateView is called
-    // from the main thread.
+  {
     std::lock_guard lock(preallocateMutex_);
     preallocatedViewsQueue_.push_back(std::move(shadowView));
-  } else {
-    // Old implementation where FabricUIManager.preallocateView is called
-    // immediately.
-    preallocateShadowView(shadowView);
   }
 }
 

@@ -23,7 +23,7 @@ import {Commands as AndroidTextInputCommands} from '../../Components/TextInput/A
 import {Commands as iOSTextInputCommands} from '../../Components/TextInput/RCTSingelineTextInputNativeComponent';
 
 const {findNodeHandle} = require('../../ReactNative/RendererProxy');
-const Platform = require('../../Utilities/Platform');
+const Platform = require('../../Utilities/Platform').default;
 
 let currentlyFocusedInputRef: ?HostInstance = null;
 const inputs = new Set<{
@@ -196,7 +196,7 @@ function isTextInput(textField: HostInstance): boolean {
   return inputs.has(textField);
 }
 
-module.exports = {
+const TextInputState = {
   currentlyFocusedInput,
   focusInput,
   blurInput,
@@ -210,3 +210,5 @@ module.exports = {
   unregisterInput,
   isTextInput,
 };
+
+export default TextInputState;

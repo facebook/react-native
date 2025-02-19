@@ -15,9 +15,9 @@ import {StyleSheet, TextInput} from 'react-native';
 
 const ExampleTextInput: component(
   ref: React.RefSetter<
-    $ReadOnly<{|
+    $ReadOnly<{
       ...React.ElementRef<typeof TextInput>,
-    |}>,
+    }>,
   >,
   ...props: React.ElementConfig<typeof TextInput>
 ) = forwardRef((props, ref) => {

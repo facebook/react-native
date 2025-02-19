@@ -24,10 +24,11 @@ import type {
 } from './StyleSheetTypes';
 
 import composeStyles from '../../src/private/styles/composeStyles';
+import flatten from './flattenStyle';
 
-const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const ReactNativeStyleAttributes =
+  require('../Components/View/ReactNativeStyleAttributes').default;
 const PixelRatio = require('../Utilities/PixelRatio').default;
-const flatten = require('./flattenStyle');
 
 export type {NativeColorValue} from './StyleSheetTypes';
 
@@ -227,7 +228,7 @@ if (__DEV__) {
  *  and suggestions to help you write valid styles.
  *
  */
-module.exports = {
+export default {
   /**
    * This is defined as the width of a thin line on the platform. It can be
    * used as the thickness of a border or division between two elements.

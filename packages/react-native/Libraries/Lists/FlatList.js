@@ -11,35 +11,35 @@
 import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
-  RenderItemProps,
-  RenderItemType,
+  ListRenderItem,
+  ListRenderItemInfo,
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from '@react-native/virtualized-lists';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
-import {
-  VirtualizedList,
-  keyExtractor as defaultKeyExtractor,
-} from '@react-native/virtualized-lists';
+import View from '../Components/View/View';
+import VirtualizedLists from '@react-native/virtualized-lists';
 import memoizeOne from 'memoize-one';
+import React from 'react';
 
-const View = require('../Components/View/View');
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const deepDiffer = require('../Utilities/differ/deepDiffer');
-const Platform = require('../Utilities/Platform');
+const StyleSheet = require('../StyleSheet/StyleSheet').default;
+const deepDiffer = require('../Utilities/differ/deepDiffer').default;
+const Platform = require('../Utilities/Platform').default;
 const invariant = require('invariant');
-const React = require('react');
 
-type RequiredProps<ItemT> = {|
+const VirtualizedList = VirtualizedLists.VirtualizedList;
+const defaultKeyExtractor = VirtualizedLists.keyExtractor;
+
+type RequiredProps<ItemT> = {
   /**
    * An array (or array-like list) of items to render. Other data types can be
    * used by targeting VirtualizedList directly.
    */
   data: ?$ReadOnly<$ArrayLike<ItemT>>,
-|};
-type OptionalProps<ItemT> = {|
+};
+type OptionalProps<ItemT> = {
   /**
    * Takes an item from `data` and renders it into the list. Example usage:
    *
@@ -66,7 +66,7 @@ type OptionalProps<ItemT> = {|
    * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
    * your use-case.
    */
-  renderItem?: ?RenderItemType<ItemT>,
+  renderItem?: ?ListRenderItem<ItemT>,
 
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
@@ -150,7 +150,7 @@ type OptionalProps<ItemT> = {|
    * Enable an optimization to memoize the item renderer to prevent unnecessary rerenders.
    */
   strictMode?: boolean,
-|};
+};
 
 /**
  * Default Props Helper Functions
@@ -176,10 +176,10 @@ function isArrayLike(data: mixed): boolean {
   return typeof Object(data).length === 'number';
 }
 
-type FlatListProps<ItemT> = {|
+type FlatListProps<ItemT> = {
   ...RequiredProps<ItemT>,
   ...OptionalProps<ItemT>,
-|};
+};
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
@@ -618,7 +618,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
   _renderer = (
     ListItemComponent: ?(React.ComponentType<any> | React.MixedElement),
-    renderItem: ?RenderItemType<ItemT>,
+    renderItem: ?ListRenderItem<ItemT>,
     columnWrapperStyle: ?ViewStyleProp,
     numColumns: ?number,
     extraData: ?any,
@@ -626,7 +626,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   ) => {
     const cols = numColumnsOrDefault(numColumns);
 
-    const render = (props: RenderItemProps<ItemT>): React.Node => {
+    const render = (props: ListRenderItemInfo<ItemT>): React.Node => {
       if (ListItemComponent) {
         // $FlowFixMe[not-a-component] Component isn't valid
         // $FlowFixMe[incompatible-type-arg] Component isn't valid
@@ -640,7 +640,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       }
     };
 
-    const renderProp = (info: RenderItemProps<ItemT>) => {
+    const renderProp = (info: ListRenderItemInfo<ItemT>) => {
       if (cols > 1) {
         const {item, index} = info;
         invariant(
@@ -672,8 +672,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       : {renderItem: renderProp};
   };
 
-  // $FlowFixMe[missing-local-annot]
-  _memoizedRenderer = memoizeOne(this._renderer);
+  _memoizedRenderer: ReturnType<typeof memoizeOne> = memoizeOne(this._renderer);
 
   render(): React.Node {
     const {
@@ -714,4 +713,4 @@ const styles = StyleSheet.create({
   row: {flexDirection: 'row'},
 });
 
-module.exports = FlatList;
+export default FlatList;

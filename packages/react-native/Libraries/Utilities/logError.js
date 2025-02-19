@@ -24,4 +24,4 @@ const logError = function (...args: $ReadOnlyArray<mixed>) {
   }
 };
 
-module.exports = logError;
+export default logError;

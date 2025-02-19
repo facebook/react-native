@@ -10,10 +10,7 @@ package com.facebook.react.uimanager.layoutanimation
 import java.util.Locale
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class InterpolatorTypeTest {
   @Test
   fun testCamelCase() {

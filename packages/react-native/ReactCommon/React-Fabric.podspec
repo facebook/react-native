@@ -66,11 +66,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
 
   s.subspec "animations" do |ss|
     ss.dependency             folly_dep_name, folly_version
@@ -142,12 +138,21 @@ Pod::Spec.new do |s|
 
     ss.subspec "view" do |sss|
       sss.dependency             folly_dep_name, folly_version
+      sss.dependency             "React-renderercss"
       sss.dependency             "Yoga"
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "react/renderer/components/view/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "react/renderer/components/view/tests", "react/renderer/components/view/platform/android", "react/renderer/components/view/platform/windows"
       sss.header_dir           = "react/renderer/components/view"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/Yoga\"" }
+    end
+
+    ss.subspec "scrollview" do |sss|
+      sss.dependency             folly_dep_name, folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "react/renderer/components/scrollview/*.{m,mm,cpp,h}"
+      sss.header_dir           = "react/renderer/components/scrollview"
+      ss.exclude_files         = "react/renderer/components/scrollview/tests"
     end
 
     ss.subspec "legacyviewmanagerinterop" do |sss|

@@ -20,9 +20,9 @@ import LogBoxInspectorSection from './LogBoxInspectorSection';
 import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
-type Props = $ReadOnly<{|
+type Props = $ReadOnly<{
   log: LogBoxLog,
-|}>;
+}>;
 
 const BEFORE_SLASH_RE = /^(.*)[\\/]/;
 
@@ -101,7 +101,9 @@ function LogBoxInspectorReactFrames(props: Props): React.Node {
             }
             style={componentStyles.frame}>
             <View style={componentStyles.component}>
-              <Text style={componentStyles.frameName}>
+              <Text
+                id="logbox_component_stack_frame_text"
+                style={componentStyles.frameName}>
                 <Text style={componentStyles.bracket}>{'<'}</Text>
                 {frame.content}
                 <Text style={componentStyles.bracket}>{' />'}</Text>

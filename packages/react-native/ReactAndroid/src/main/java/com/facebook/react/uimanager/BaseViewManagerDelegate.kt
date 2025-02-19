@@ -23,8 +23,8 @@ public abstract class BaseViewManagerDelegate<
     T : View, U : BaseViewManager<T, out LayoutShadowNode>>(
     @Suppress("NoHungarianNotation") @JvmField protected val mViewManager: U
 ) : ViewManagerDelegate<T> {
-  @Suppress("DEPRECATION")
-  override public fun setProperty(view: T, propName: String?, value: Any?) {
+  @Suppress("ACCIDENTAL_OVERRIDE", "DEPRECATION")
+  override public fun setProperty(view: T, propName: String, value: Any?) {
     when (propName) {
       ViewProps.ACCESSIBILITY_ACTIONS ->
           mViewManager.setAccessibilityActions(view, value as ReadableArray?)
@@ -146,6 +146,7 @@ public abstract class BaseViewManagerDelegate<
     }
   }
 
-  override public fun receiveCommand(view: T, commandName: String?, args: ReadableArray?): Unit =
+  @Suppress("ACCIDENTAL_OVERRIDE")
+  override public fun receiveCommand(view: T, commandName: String, args: ReadableArray?): Unit =
       Unit
 }

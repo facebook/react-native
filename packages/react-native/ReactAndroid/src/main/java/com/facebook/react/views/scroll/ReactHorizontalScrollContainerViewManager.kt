@@ -16,7 +16,7 @@ import com.facebook.react.uimanager.common.ViewUtil
 import com.facebook.react.views.view.ReactViewGroup
 import com.facebook.react.views.view.ReactViewManager
 
-/** View manager for {@link ReactHorizontalScrollContainerView} components. */
+/** View manager for [ReactHorizontalScrollContainerView] components. */
 @ReactModule(name = ReactHorizontalScrollContainerViewManager.REACT_CLASS)
 public class ReactHorizontalScrollContainerViewManager : ReactViewManager() {
   override public fun getName(): String = REACT_CLASS

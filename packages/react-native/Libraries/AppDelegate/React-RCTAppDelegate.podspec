@@ -20,12 +20,13 @@ folly_config = get_folly_config()
 folly_compiler_flags = folly_config[:compiler_flags]
 folly_version = folly_config[:version]
 
-is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] == "1"
+is_new_arch_enabled = ENV["RCT_NEW_ARCH_ENABLED"] != "0"
 use_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
 
 new_arch_enabled_flag = (is_new_arch_enabled ? " -DRCT_NEW_ARCH_ENABLED=1" : "")
 hermes_flag = (use_hermes ? " -DUSE_HERMES=1" : "")
-other_cflags = "$(inherited) " + folly_compiler_flags + new_arch_enabled_flag + hermes_flag
+use_third_party_jsc_flag = ENV['USE_THIRD_PARTY_JSC'] == '1' ? " -DUSE_THIRD_PARTY_JSC=1" : ""
+other_cflags = "$(inherited) " + folly_compiler_flags + new_arch_enabled_flag + hermes_flag  + use_third_party_jsc_flag
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/../../ReactCommon",
@@ -88,11 +89,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-debug")
   add_dependency(s, "React-rendererdebug")
   add_dependency(s, "React-featureflags")
+  add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
 
-  if use_hermes
-    s.dependency "React-hermes"
-    s.dependency "React-RuntimeHermes"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
 end

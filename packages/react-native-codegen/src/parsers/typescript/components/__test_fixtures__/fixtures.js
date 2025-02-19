@@ -386,7 +386,7 @@ const ARRAY_PROP_TYPES_NO_EVENTS = `
 
 const codegenNativeComponent = require('codegenNativeComponent');
 
-import type {Int32, Double, Float, WithDefault} from 'CodegenTypes';
+import type {Int32, Double, Float, UnsafeMixed, WithDefault} from 'CodegenTypes';
 import type {ImageSource} from 'ImageSource';
 import type {
   ColorValue,
@@ -478,6 +478,12 @@ export interface ModuleProps extends ViewProps {
   array_object_optional_key?: ReadonlyArray<Readonly<{prop: string}>>;
   array_object_optional_value: ArrayObjectType | null | undefined;
   array_object_optional_both?: ReadonlyArray<ObjectType> | null | undefined;
+
+  // UnsafeMixed props
+  array_mixed_required: ReadonlyArray<UnsafeMixed>;
+  array_mixed_optional_key?: ReadonlyArray<UnsafeMixed>;
+  array_mixed_optional_value: ReadonlyArray<UnsafeMixed> | null | undefined;
+  array_mixed_optional_both?: ReadonlyArray<UnsafeMixed> | null | undefined;
 
   // Nested array object types
   array_of_array_object_required: ReadonlyArray<

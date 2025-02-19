@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+require('../babel-register').registerForScript();
+
 const {PACKAGES_DIR, REPO_ROOT} = require('../consts');
 const {
   buildConfig,
@@ -35,15 +37,15 @@ const IGNORE_PATTERN = '**/__{tests,mocks,fixtures}__/**';
 const config = {
   allowPositionals: true,
   options: {
-    help: {type: 'boolean'},
     check: {type: 'boolean'},
+    help: {type: 'boolean'},
   },
 };
 
 async function build() {
   const {
     positionals: packageNames,
-    values: {help, check},
+    values: {check, help},
   } = parseArgs(config);
 
   if (help) {
@@ -54,6 +56,10 @@ async function build() {
 
   By default, builds all packages defined in ./scripts/build/config.js. If a
   a package list is provided, builds only those specified.
+
+  Options:
+    --check           Validate that no build artifacts have been accidentally
+                      committed.
     `);
     process.exitCode = 0;
     return;
@@ -83,7 +89,7 @@ async function checkPackage(packageName /*: string */) /*: Promise<boolean> */ {
   const artifacts = await exportedBuildArtifacts(packageName);
   if (artifacts.length > 0) {
     console.log(
-      `${chalk.bgRed(packageName)}: has been build and the ${chalk.bold('build artifacts')} committed to the repository. This will break Flow checks.`,
+      `${chalk.bgRed(packageName)}: has been built and the ${chalk.bold('build artifacts')} committed to the repository. This will break Flow checks.`,
     );
     return false;
   }

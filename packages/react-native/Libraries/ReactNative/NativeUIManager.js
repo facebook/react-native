@@ -8,6 +8,6 @@
  * @format
  */
 
-export * from '../../src/private/specs/modules/NativeUIManager';
-import NativeUIManager from '../../src/private/specs/modules/NativeUIManager';
+export * from '../../src/private/specs_DEPRECATED/modules/NativeUIManager';
+import NativeUIManager from '../../src/private/specs_DEPRECATED/modules/NativeUIManager';
 export default NativeUIManager;

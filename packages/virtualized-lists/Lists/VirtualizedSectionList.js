@@ -44,11 +44,11 @@ export type SectionBase<SectionItemT> = {
   ...
 };
 
-type RequiredProps<SectionT: SectionBase<any>> = {|
+type RequiredProps<SectionT: SectionBase<any>> = {
   sections: $ReadOnlyArray<SectionT>,
-|};
+};
 
-type OptionalProps<SectionT: SectionBase<any>> = {|
+type OptionalProps<SectionT: SectionBase<any>> = {
   /**
    * Default renderer for every item in every section.
    */
@@ -87,11 +87,11 @@ type OptionalProps<SectionT: SectionBase<any>> = {|
    */
   stickySectionHeadersEnabled?: boolean,
   onEndReached?: ?({distanceFromEnd: number, ...}) => void,
-|};
+};
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
-export type Props<SectionT> = {|
+export type Props<SectionT: SectionBase<any>> = {
   ...RequiredProps<SectionT>,
   ...OptionalProps<SectionT>,
   ...$Diff<
@@ -102,14 +102,14 @@ export type Props<SectionT> = {|
       ...
     },
   >,
-|};
-export type ScrollToLocationParamsType = {|
+};
+export type ScrollToLocationParamsType = {
   animated?: ?boolean,
   itemIndex: number,
   sectionIndex: number,
   viewOffset?: number,
   viewPosition?: number,
-|};
+};
 
 type State = {childProps: VirtualizedListProps, ...};
 
@@ -453,15 +453,15 @@ class VirtualizedSectionList<
   };
 }
 
-type ItemWithSeparatorCommonProps = $ReadOnly<{|
+type ItemWithSeparatorCommonProps = $ReadOnly<{
   leadingItem: ?Item,
   leadingSection: ?Object,
   section: Object,
   trailingItem: ?Item,
   trailingSection: ?Object,
-|}>;
+}>;
 
-type ItemWithSeparatorProps = $ReadOnly<{|
+type ItemWithSeparatorProps = $ReadOnly<{
   ...ItemWithSeparatorCommonProps,
   LeadingSeparatorComponent: ?React.ComponentType<any>,
   SeparatorComponent: ?React.ComponentType<any>,
@@ -481,7 +481,7 @@ type ItemWithSeparatorProps = $ReadOnly<{|
   updatePropsFor: (prevCellKey: string, value: Object) => void,
   renderItem: Function,
   inverted: boolean,
-|}>;
+}>;
 
 function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   const {
@@ -598,7 +598,7 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   );
 }
 
-module.exports = VirtualizedSectionList as component(
+export default VirtualizedSectionList as component(
   ref: React.RefSetter<
     interface {
       getListRef(): ?VirtualizedList,

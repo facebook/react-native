@@ -33,7 +33,8 @@ target_link_libraries(rrc_view
         jsi
         logger
         react_debug
-        react_render_core
-        react_render_debug
-        react_render_graphics
+        react_renderer_core
+        react_renderer_css
+        react_renderer_debug
+        react_renderer_graphics
         yoga)

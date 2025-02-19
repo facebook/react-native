@@ -45,7 +45,7 @@ using NativeIntersectionObserverEntry =
         // rootRect
         RectAsTuple,
         // intersectionRect
-        std::optional<RectAsTuple>,
+        RectAsTuple,
         // isIntersectingAboveThresholds
         bool,
         // time

@@ -9,16 +9,16 @@
  */
 
 import type {ExtendedError} from '../../../../Libraries/Core/ExtendedError';
+import type {Component as ReactComponent} from 'react';
 
-import {
+import ExceptionsManager, {
   SyntheticError,
-  handleException,
 } from '../../../../Libraries/Core/ExceptionsManager';
 
 type ErrorInfo = {
   +componentStack?: ?string,
   // $FlowFixMe[unclear-type] unknown props and state.
-  +errorBoundary?: ?React$Component<any, any>,
+  +errorBoundary?: ?ReactComponent<any, any>,
 };
 
 function getExtendedError(
@@ -60,14 +60,14 @@ export function onUncaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
   const error = getExtendedError(errorValue, errorInfo);
 
   // Uncaught errors are fatal.
-  handleException(error, true);
+  ExceptionsManager.handleException(error, true);
 }
 
 export function onCaughtError(errorValue: mixed, errorInfo: ErrorInfo): void {
   const error = getExtendedError(errorValue, errorInfo);
 
   // Caught errors are not fatal.
-  handleException(error, false);
+  ExceptionsManager.handleException(error, false);
 }
 
 export function onRecoverableError(

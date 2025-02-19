@@ -8,7 +8,7 @@
  * @format
  */
 
-import NativeDevMenu from '../specs/modules/NativeDevMenu';
+import NativeDevMenu from '../specs_DEPRECATED/modules/NativeDevMenu';
 
 /**
  * The DevMenu module exposes methods for interacting with the Dev Menu in development.
@@ -28,4 +28,4 @@ const DevMenu: DevMenuStatic = {
   },
 };
 
-module.exports = DevMenu;
+export default DevMenu;

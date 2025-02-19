@@ -27,8 +27,8 @@ target_link_libraries(
         fabricjni
         react_featureflagsjni
         turbomodulejsijni
-        fb
         jsi
+        jsitooling
         jsireact
         react_utils
         jsinspector

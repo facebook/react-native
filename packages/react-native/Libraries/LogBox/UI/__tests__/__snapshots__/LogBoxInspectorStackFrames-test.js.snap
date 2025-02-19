@@ -93,6 +93,7 @@ exports[`LogBoxInspectorStackFrames should render stack frames with 1 frame coll
         }
       >
         <Text
+          id="logbox_stack_frame_text"
           style={
             Array [
               Object {

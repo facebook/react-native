@@ -7,10 +7,12 @@
  * @noformat
  * @nolint
  * @flow strict
- * @generated SignedSource<<c6ea057ee85cbc116a083e3a306b2b88>>
+ * @generated SignedSource<<c1ce40ef01008fe3cd38df1d9ff46f56>>
  */
 
 import type {ElementRef, ElementType, MixedElement} from 'react';
+// $FlowFixMe[nonstrict-import] TODO(@rubennorte)
+import {type PublicRootInstance} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 
 export type MeasureOnSuccessCallback = (
   x: number,
@@ -261,6 +263,7 @@ export type ReactFabricType = {
   getPublicInstanceFromInternalInstanceHandle(
     internalInstanceHandle: InternalInstanceHandle,
   ): PublicInstance | PublicTextInstance | null,
+  getPublicInstanceFromRootTag(rootTag: number): PublicRootInstance | null,
   ...
 };
 

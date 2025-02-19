@@ -10,4 +10,4 @@
 
 import type {Image} from './ImageTypes.flow';
 
-declare module.exports: Image;
+declare export default Image;

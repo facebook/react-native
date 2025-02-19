@@ -11,11 +11,14 @@
 'use strict';
 
 jest.setMock('../../BatchedBridge/NativeModules', {
-  BlobModule: require('../__mocks__/BlobModule'),
+  __esModule: true,
+  default: {
+    BlobModule: require('../__mocks__/BlobModule'),
+  },
 });
 
-const Blob = require('../Blob');
-const BlobManager = require('../BlobManager');
+const Blob = require('../Blob').default;
+const BlobManager = require('../BlobManager').default;
 
 describe('BlobManager', function () {
   it('should create blob from parts', () => {

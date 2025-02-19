@@ -13,7 +13,7 @@
 
 import nullthrows from 'nullthrows';
 
-const VirtualizedSectionList = require('../VirtualizedSectionList');
+const VirtualizedSectionList = require('../VirtualizedSectionList').default;
 const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
 

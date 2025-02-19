@@ -11,6 +11,16 @@
 
 namespace facebook::react::jsinspector_modern {
 
+namespace {
+
+/**
+ * Threshold for the size Trace Event chunk, that will be flushed out with
+ * Tracing.dataCollected event.
+ */
+const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
+
+} // namespace
+
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
     // @cdp Tracing.start support is experimental.
@@ -26,31 +36,32 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     return true;
   } else if (req.method == "Tracing.end") {
     // @cdp Tracing.end support is experimental.
-    bool firstChunk = true;
-    auto id = req.id;
-    bool wasStopped =
-        PerformanceTracer::getInstance().stopTracingAndCollectEvents(
-            [this, firstChunk, id](const folly::dynamic& eventsChunk) {
-              if (firstChunk) {
-                frontendChannel_(cdp::jsonResult(id));
-              }
-              frontendChannel_(cdp::jsonNotification(
-                  "Tracing.dataCollected",
-                  folly::dynamic::object("value", eventsChunk)));
-            });
+    bool correctlyStopped = PerformanceTracer::getInstance().stopTracing();
 
-    if (!wasStopped) {
+    if (!correctlyStopped) {
       frontendChannel_(cdp::jsonError(
           req.id,
           cdp::ErrorCode::InternalError,
           "Tracing session not started"));
-    } else {
-      frontendChannel_(cdp::jsonNotification(
-          "Tracing.tracingComplete",
-          folly::dynamic::object("dataLossOccurred", false)));
+
+      return true;
     }
 
+    // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
+
+    PerformanceTracer::getInstance().collectEvents(
+        [this](const folly::dynamic& eventsChunk) {
+          frontendChannel_(cdp::jsonNotification(
+              "Tracing.dataCollected",
+              folly::dynamic::object("value", eventsChunk)));
+        },
+        TRACE_EVENT_CHUNK_SIZE);
+
+    frontendChannel_(cdp::jsonNotification(
+        "Tracing.tracingComplete",
+        folly::dynamic::object("dataLossOccurred", false)));
+
     return true;
   }
 

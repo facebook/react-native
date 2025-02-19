@@ -26,7 +26,7 @@ import {
   View,
 } from 'react-native';
 
-type State = {|
+type State = {
   testResults: {
     [string]: {
       type: string,
@@ -35,7 +35,7 @@ type State = {|
     },
     ...
   },
-|};
+};
 
 type Examples =
   | 'callback'
@@ -71,8 +71,8 @@ type ErrorExamples =
   | 'getObjectAssert'
   | 'promiseAssert';
 
-class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
-  static contextType: React$Context<RootTag> = RootTagContext;
+class NativeCxxModuleExampleExample extends React.Component<{}, State> {
+  static contextType: React.Context<RootTag> = RootTagContext;
   eventSubscriptions: EventSubscription[] = [];
 
   state: State = {
@@ -261,7 +261,7 @@ class NativeCxxModuleExampleExample extends React.Component<{||}, State> {
   }
 
   componentDidMount(): void {
-    if (global.__turboModuleProxy == null) {
+    if (global.__turboModuleProxy == null && global.RN$Bridgeless == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
       );

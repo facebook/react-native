@@ -11,6 +11,8 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcherProtocol.h>
+
+#import <React/RCTInitialAppStateProxy.h>
 #import <React/RCTUtils.h>
 
 #import "CoreModulesPlugins.h"
@@ -31,7 +33,7 @@ static NSString *RCTCurrentAppState()
     return @"extension";
   }
 
-  return states[@(RCTSharedApplication().applicationState)] ?: @"unknown";
+  return states[@([RCTInitialAppStateProxy sharedInstance].initialAppState)] ?: @"unknown";
 }
 
 @interface RCTAppState () <NativeAppStateSpec>
@@ -45,7 +47,7 @@ RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
+  return NO;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -60,14 +62,9 @@ RCT_EXPORT_MODULE()
 
 - (facebook::react::ModuleConstants<JS::NativeAppState::Constants>)getConstants
 {
-  __block facebook::react::ModuleConstants<JS::NativeAppState::Constants> constants;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    constants = facebook::react::typedConstants<JS::NativeAppState::Constants>({
-        .initialAppState = RCTCurrentAppState(),
-    });
+  return facebook::react::typedConstants<JS::NativeAppState::Constants>({
+      .initialAppState = RCTCurrentAppState(),
   });
-
-  return constants;
 }
 
 #pragma mark - Lifecycle

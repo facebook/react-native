@@ -8,6 +8,8 @@
 #import <React/RCTConvert.h>
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol RCTArchConfiguratorProtocol
 /// This method controls whether the `turboModules` feature of the New Architecture is turned on or off.
 ///
@@ -30,3 +32,5 @@
 /// @return: `true` if the new architecture is enabled. Otherwise returns `false`.
 - (BOOL)newArchEnabled;
 @end
+
+NS_ASSUME_NONNULL_END

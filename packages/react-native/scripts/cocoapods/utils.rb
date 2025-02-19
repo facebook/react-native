@@ -600,7 +600,7 @@ class ReactNativePodsUtils
     end
 
     def self.react_native_pods
-        return [
+        pods = [
             "DoubleConversion",
             "FBLazyVector",
             "RCT-Folly",
@@ -629,11 +629,12 @@ class ReactNativePodsUtils
             "React-callinvoker",
             "React-cxxreact",
             "React-graphics",
-            "React-jsc",
             "React-jsi",
             "React-jsiexecutor",
             "React-jsinspector",
+            "React-jsitooling",
             "React-logger",
+            "React-oscompat",
             "React-perflogger",
             "React-rncore",
             "React-runtimeexecutor",
@@ -647,6 +648,11 @@ class ReactNativePodsUtils
             "hermes-engine",
             "React-hermes",
         ]
+        if ENV['USE_THIRD_PARTY_JSC'] != '1'
+            pods << "React-jsc"
+        end
+
+        return pods
     end
 
     def self.add_search_path_to_result(result, base_path, additional_paths, include_base_path)
