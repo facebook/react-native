@@ -54,7 +54,7 @@ public enum class LogicalEdge {
   // INLINE_END,
   // INLINE;
 
-  abstract public fun toSpacingType(): Int
+  public abstract fun toSpacingType(): Int
 
   public companion object {
     @JvmStatic

@@ -80,7 +80,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
    *   when there is an error
    */
   @ReactMethod
-  override public fun getSize(uriString: String?, promise: Promise) {
+  public override fun getSize(uriString: String?, promise: Promise) {
     if (uriString.isNullOrEmpty()) {
       promise.reject(ERROR_INVALID_URI, "Cannot get the size of an image for an empty URI")
       return
@@ -133,7 +133,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
    *   when there is an error
    */
   @ReactMethod
-  override public fun getSizeWithHeaders(
+  public override fun getSizeWithHeaders(
       uriString: String?,
       headers: ReadableMap?,
       promise: Promise
@@ -192,7 +192,7 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
    * @param promise the promise that is fulfilled when the image is successfully prefetched or
    *   rejected when there is an error
    */
-  override public fun prefetchImage(
+  public override fun prefetchImage(
       uriString: String?,
       requestIdAsDouble: Double,
       promise: Promise
@@ -235,13 +235,13 @@ public class ImageLoaderModule : NativeImageLoaderAndroidSpec, LifecycleEventLis
     prefetchSource.subscribe(prefetchSubscriber, CallerThreadExecutor.getInstance())
   }
 
-  override public fun abortRequest(requestId: Double) {
+  public override fun abortRequest(requestId: Double) {
     val request = removeRequest(requestId.toInt())
     request?.close()
   }
 
   @ReactMethod
-  override public fun queryCache(uris: ReadableArray, promise: Promise) {
+  public override fun queryCache(uris: ReadableArray, promise: Promise) {
     // perform cache interrogation in async task as disk cache checks are expensive
     @Suppress("DEPRECATION", "StaticFieldLeak")
     object : GuardedAsyncTask<Void, Void>(getReactApplicationContext()) {

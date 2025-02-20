@@ -29,7 +29,7 @@ public final class EventBeatManager() : BatchEventDispatchedListener {
   @Suppress("UNUSED_PARAMETER")
   public constructor(reactApplicationContext: ReactApplicationContext?) : this()
 
-  override public fun onBatchEventDispatched() {
+  public override fun onBatchEventDispatched() {
     tick()
   }
 

@@ -45,6 +45,6 @@ public open class ValueAnimatedNode(config: ReadableMap? = null) : AnimatedNode(
     valueListener = listener
   }
 
-  override public fun prettyPrint(): String =
+  public override fun prettyPrint(): String =
       "ValueAnimatedNode[$tag]: value: $nodeValue offset: $offset"
 }

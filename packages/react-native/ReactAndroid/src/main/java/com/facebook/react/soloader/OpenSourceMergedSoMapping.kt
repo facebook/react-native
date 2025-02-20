@@ -20,7 +20,7 @@ import com.facebook.soloader.ExternalSoMapping
  */
 public object OpenSourceMergedSoMapping : ExternalSoMapping {
 
-  override public fun mapLibName(input: String): String =
+  public override fun mapLibName(input: String): String =
       when (input) {
         "fabricjni",
         "jsinspector",
@@ -49,7 +49,7 @@ public object OpenSourceMergedSoMapping : ExternalSoMapping {
         else -> input
       }
 
-  override public fun invokeJniOnload(libraryName: String): Unit {
+  public override fun invokeJniOnload(libraryName: String): Unit {
     when (libraryName) {
       "fabricjni" -> libfabricjni_so()
       "hermes_executor" -> libhermes_executor_so()

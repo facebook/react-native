@@ -19,9 +19,9 @@ public class DrawerClosedEvent : Event<DrawerClosedEvent> {
 
   public constructor(surfaceId: Int, viewId: Int) : super(surfaceId, viewId)
 
-  override public fun getEventName(): String = EVENT_NAME
+  public override fun getEventName(): String = EVENT_NAME
 
-  override protected fun getEventData(): WritableMap? = Arguments.createMap()
+  protected override fun getEventData(): WritableMap? = Arguments.createMap()
 
   public companion object {
     public const val EVENT_NAME: String = "topDrawerClose"
