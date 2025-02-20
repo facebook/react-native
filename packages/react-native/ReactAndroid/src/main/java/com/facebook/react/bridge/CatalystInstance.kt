@@ -10,6 +10,7 @@ package com.facebook.react.bridge
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.queue.ReactQueueConfiguration
 import com.facebook.react.common.annotations.VisibleForTesting
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry
 import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHolder
@@ -23,6 +24,7 @@ import com.facebook.react.turbomodule.core.interfaces.NativeMethodCallInvokerHol
     message =
         "This class is deprecated, please to migrate to new architecture using [com.facebook.react.defaults.DefaultReactHost] instead.")
 @DoNotStrip
+@LegacyArchitecture
 public interface CatalystInstance : MemoryPressureListener, JSInstance, JSBundleLoaderDelegate {
   public fun runJSBundle()
 
