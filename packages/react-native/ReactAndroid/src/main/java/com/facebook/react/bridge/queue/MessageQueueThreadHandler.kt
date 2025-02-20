@@ -4,18 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.bridge.queue
 
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
 
-/** Handler that can catch and dispatch Exceptions to an Exception handler.  */
-internal class MessageQueueThreadHandler constructor(
+/** Handler that can catch and dispatch Exceptions to an Exception handler. */
+public class MessageQueueThreadHandler constructor(
   looper: Looper,
   private val exceptionHandler: QueueThreadExceptionHandler
-) :
-  Handler(looper) {
+) : Handler(looper) {
   override fun dispatchMessage(msg: Message) {
     try {
       super.dispatchMessage(msg)
