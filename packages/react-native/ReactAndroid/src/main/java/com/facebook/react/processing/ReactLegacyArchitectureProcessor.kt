@@ -21,7 +21,7 @@ import javax.lang.model.element.TypeElement
 @SupportedSourceVersion(SourceVersion.RELEASE_11)
 class ReactLegacyArchitectureProcessor : ProcessorBase() {
   override fun processImpl(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
-    val outputFileName = System.getenv()["RN_LEGACY_ARCH_OUTPUT_FILE_NAME"]
+    val outputFileName = System.getenv()["RN_LEGACY_ARCH_OUTPUT_FILE_PATH"]
     if (outputFileName.isNullOrEmpty()) {
       return true
     }
