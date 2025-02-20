@@ -234,6 +234,9 @@ afterEvaluate {
       .getByName("createBundleHermesReleaseJsAndAssets")
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
   tasks
+      .getByName("createBundleJscBenchmarkJsAndAssets")
+      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+  tasks
       .getByName("createBundleHermesBenchmarkJsAndAssets")
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }
