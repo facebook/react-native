@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager
 
-import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.mapbuffer.ReadableMapBuffer;
-import javax.annotation.Nullable;
+import com.facebook.react.bridge.ReadableNativeMap
+import com.facebook.react.bridge.WritableMap
+import com.facebook.react.common.mapbuffer.ReadableMapBuffer
 
 /**
  * This is a wrapper that can be used for passing State objects from Fabric C++ core to
@@ -18,26 +17,23 @@ import javax.annotation.Nullable;
  * by calling updateState, which communicates state back to the C++ layer.
  */
 public interface StateWrapper {
-
   /**
    * Get a ReadableMapBuffer object from the C++ layer, which is a K/V map of short keys to values.
    *
-   * <p>Unstable API - DO NOT USE.
+   * Unstable API - DO NOT USE.
    */
-  @Nullable
-  ReadableMapBuffer getStateDataMapBuffer();
+  public val stateDataMapBuffer: ReadableMapBuffer?
 
   /**
    * Get a ReadableNativeMap object from the C++ layer, which is a K/V map of string keys to values.
    */
-  @Nullable
-  ReadableNativeMap getStateData();
+  public val stateData: ReadableNativeMap?
 
   /**
    * Pass a map of values back to the C++ layer. The operation is performed synchronously and cannot
    * fail.
    */
-  void updateState(WritableMap map);
+  public fun updateState(map: WritableMap)
 
   /**
    * Mark state as unused and clean up in Java and in native. This should be called as early as
@@ -45,5 +41,5 @@ public interface StateWrapper {
    * used legitimately, don't destroy it! It is expected that all StateWrappers are destroyed
    * immediately upon stopSurface.
    */
-  void destroyState();
+  public fun destroyState()
 }
