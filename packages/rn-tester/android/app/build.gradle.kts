@@ -207,6 +207,9 @@ afterEvaluate {
     tasks
         .getByName("createBundleHermesReleaseJsAndAssets")
         .dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
+    tasks
+        .getByName("createBundleHermesBenchmarkJsAndAssets")
+        .dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
   }
 
   // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
@@ -229,5 +232,8 @@ afterEvaluate {
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
   tasks
       .getByName("createBundleHermesReleaseJsAndAssets")
+      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
+  tasks
+      .getByName("createBundleHermesBenchmarkJsAndAssets")
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }
