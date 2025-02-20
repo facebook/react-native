@@ -62,7 +62,7 @@ react {
   /* Hermes Commands */
   //   The hermes compiler command to run. By default it is 'hermesc'
   hermesCommand = "$reactNativeDirPath/ReactAndroid/hermes-engine/build/hermes/bin/hermesc"
-  enableHermesOnlyInVariants = listOf("hermesDebug", "hermesRelease", "hermesBenchmark")
+  enableHermesOnlyInVariants = listOf("hermesDebug", "hermesRelease")
 
   autolinkLibrariesWithApp()
 }
@@ -142,11 +142,6 @@ android {
       proguardFiles(getDefaultProguardFile("proguard-android.txt"))
       signingConfig = signingConfigs.getByName("debug")
     }
-    create("benchmark") {
-      initWith(buildTypes.getByName("release"))
-      matchingFallbacks += listOf("release")
-      isDebuggable = false
-    }
   }
   sourceSets.named("main") {
     // SampleTurboModule.
@@ -207,9 +202,6 @@ afterEvaluate {
     tasks
         .getByName("createBundleHermesReleaseJsAndAssets")
         .dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
-    tasks
-        .getByName("createBundleHermesBenchmarkJsAndAssets")
-        .dependsOn(":packages:react-native:ReactAndroid:hermes-engine:buildHermesC")
   }
 
   // As we're building 4 native flavors in parallel, there is clash on the `.cxx/Debug` and
@@ -232,11 +224,5 @@ afterEvaluate {
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
   tasks
       .getByName("createBundleHermesReleaseJsAndAssets")
-      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
-  tasks
-      .getByName("createBundleJscBenchmarkJsAndAssets")
-      .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
-  tasks
-      .getByName("createBundleHermesBenchmarkJsAndAssets")
       .dependsOn(":packages:react-native:ReactAndroid:buildCodegenCLI")
 }
