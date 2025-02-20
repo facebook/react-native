@@ -8170,7 +8170,7 @@ declare export function addChangeListener(
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/BackHandler.js.flow 1`] = `
-"type BackPressEventName = \\"backPress\\" | \\"hardwareBackPress\\";
+"export type BackPressEventName = \\"backPress\\" | \\"hardwareBackPress\\";
 type TBackHandler = {
   exitApp(): void,
   addEventListener(
@@ -8207,7 +8207,9 @@ exports[`public API should not change unintentionally Libraries/Utilities/Device
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/Dimensions.js 1`] = `
-"declare class Dimensions {
+"export type { DisplayMetrics, DisplayMetricsAndroid };
+export type ScaledSize = DisplayMetrics;
+declare class Dimensions {
   static get(dim: string): DisplayMetrics | DisplayMetricsAndroid;
   static set(dims: $ReadOnly<DimensionsPayload>): void;
   static addEventListener(type: \\"change\\", handler: Function): EventSubscription;
@@ -8361,12 +8363,16 @@ exports[`public API should not change unintentionally Libraries/Utilities/Platfo
 `;
 
 exports[`public API should not change unintentionally Libraries/Utilities/PlatformTypes.js 1`] = `
-"export type PlatformSelectSpec<T> = {
+"export type PlatformOSType =
+  | \\"ios\\"
+  | \\"android\\"
+  | \\"macos\\"
+  | \\"windows\\"
+  | \\"web\\"
+  | \\"native\\";
+export type PlatformSelectSpec<T> = {
   default?: T,
-  native?: T,
-  ios?: T,
-  android?: T,
-  ...
+  [PlatformOSType]: T,
 };
 type IOSPlatform = {
   OS: \\"ios\\",
@@ -8422,7 +8428,71 @@ type AndroidPlatform = {
   get isDisableAnimations(): boolean,
   select: <T>(spec: PlatformSelectSpec<T>) => T,
 };
-export type Platform = IOSPlatform | AndroidPlatform;
+type WindowsPlatform = {
+  OS: \\"windows\\",
+  get Version(): number,
+  get constants(): {
+    isTesting: boolean,
+    isDisableAnimations?: boolean,
+    reactNativeVersion: {
+      major: number,
+      minor: number,
+      patch: number,
+      prerelease: ?string,
+    },
+    reactNativeWindowsVersion: {
+      major: number,
+      minor: number,
+      patch: number,
+    },
+    osVersion: number,
+  },
+  get isTesting(): boolean,
+  get isDisableAnimations(): boolean,
+  get isTV(): boolean,
+  select: <T>(spec: PlatformSelectSpec<T>) => T,
+};
+type MacOSPlatform = {
+  OS: \\"macos\\",
+  get Version(): string,
+  get constants(): {
+    isTesting: boolean,
+    osVersion: string,
+    reactNativeVersion: {
+      major: number,
+      minor: number,
+      patch: number,
+      prerelease: ?number,
+    },
+    systemName: string,
+  },
+  get isTV(): boolean,
+  get isVision(): boolean,
+  get isTesting(): boolean,
+  get isDisableAnimations(): boolean,
+  select: <T>(spec: PlatformSelectSpec<T>) => T,
+};
+type WebPlatform = {
+  OS: \\"web\\",
+  get constants(): {
+    reactNativeVersion: {
+      major: number,
+      minor: number,
+      patch: number,
+      prerelease: ?string,
+    },
+  },
+  get isTV(): boolean,
+  get isTesting(): boolean,
+  get isDisableAnimations(): boolean,
+  select: <T>(spec: PlatformSelectSpec<T>) => T,
+};
+export type Platform =
+  | IOSPlatform
+  | AndroidPlatform
+  | WindowsPlatform
+  | MacOSPlatform
+  | WebPlatform;
 "
 `;
 
