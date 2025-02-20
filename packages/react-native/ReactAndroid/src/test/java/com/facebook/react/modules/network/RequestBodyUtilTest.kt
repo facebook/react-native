@@ -44,7 +44,6 @@ class RequestBodyUtilTest {
     val fileUri = "http://example.com/file"
 
     // Since getDownloadFileInputStream is private and not mocked, it will throw an exception.
-    // If it is made internal when migrating to Kotlin, a test case can be added for it.
     val result = RequestBodyUtil.getFileInputStream(context, fileUri)
 
     assertThat(result).isNull() // Expected null due to exception handling
