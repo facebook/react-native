@@ -478,6 +478,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
         String(code),
         reason,
       );
+      this.#eventReporter?.logEvent({
+        type: 'debugger_connection_closed',
+        code,
+        reason,
+        ...debuggerSessionIDs,
+      });
       terminateTimeout && clearTimeout(terminateTimeout);
       clearTimeout(pingTimeout);
     });

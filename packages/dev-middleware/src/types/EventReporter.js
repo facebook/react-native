@@ -102,6 +102,12 @@ export type ReportableEvent =
       type: 'debugger_timeout',
       duration: number,
       ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'debugger_connection_closed',
+      code: number,
+      reason: string,
+      ...DebuggerSessionIDs,
     };
 
 /**
