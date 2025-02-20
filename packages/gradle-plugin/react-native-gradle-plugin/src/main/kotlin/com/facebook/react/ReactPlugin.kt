@@ -81,6 +81,7 @@ class ReactPlugin : Plugin<Project> {
       }
       configureAutolinking(project, extension)
       configureCodegen(project, extension, rootExtension, isLibrary = false)
+      configureResources(project, extension)
     }
 
     // Library Only Configuration
@@ -107,6 +108,16 @@ class ReactPlugin : Plugin<Project> {
       """
               .trimIndent())
       exitProcess(1)
+    }
+  }
+
+  /** This function configures Android resources - in this case just the bundle */
+  private fun configureResources(project: Project, reactExtension: ReactExtension) {
+    project.extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl { ext ->
+      val bundleFileExtension = reactExtension.bundleAssetName.get().substringAfterLast('.', "")
+      if (!reactExtension.enableBundleCompression.get() && bundleFileExtension.isNotBlank()) {
+        ext.androidResources.noCompress.add(bundleFileExtension)
+      }
     }
   }
 
