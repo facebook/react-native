@@ -7,7 +7,10 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+
 /** Implementation of javascript callback function that use Bridge to schedule method execution */
+@LegacyArchitecture
 public final class CallbackImpl implements Callback {
 
   private final JSInstance mJSInstance;
