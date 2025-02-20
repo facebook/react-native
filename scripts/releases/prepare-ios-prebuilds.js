@@ -291,10 +291,50 @@ function printHelp() {
 
   Options:
     --task, -t: the specific task that needs to be carried on. Default value is 'all'. Valid values are 'all', 'prepare', 'build', 'create-xcframework'.
-    --slice, -s: the specific slice that needs to be built. Default value is 'all'. Valid values are 'all', 'ios', 'ios-simulator', 'mac', 'mac-catalyst', 'tvos', 'xros', 'xrsimulator'.
+    --slice, -s: the specific slice that needs to be built. Default value is 'all'. Valid values are 'all', 'ios', 'ios-simulator', 'mac', 'mac-catalyst', 'tvos', 'tvos-simulator', 'xros', 'xrsimulator'.
     --configuration, -c: the specific configuration that needs to be built. Default value is 'all'. Valid values are 'all', 'Debug', 'Release'.
     --help, -h: print this help message.
     `);
+}
+
+const VALID_TASKS = ['all', 'prepare', 'build', 'create-xcframework'];
+const VALID_SLICES = [
+  'all',
+  'ios',
+  'ios-simulator',
+  'mac',
+  'mac-catalyst',
+  'tvos',
+  'tvos-simulator',
+  'xros',
+  'xrsimulator',
+];
+const VALID_CONFIGURATIONS = ['all', 'Debug', 'Release'];
+function validateArgs(
+  task /*: string*/,
+  slice /*: string*/,
+  configuration /*: string*/,
+) {
+  if (!VALID_TASKS.includes(task)) {
+    console.error(
+      `Invalid task: ${task}. Valid values are ${VALID_TASKS.join(', ')}`,
+    );
+    process.exit(1);
+  }
+
+  if (!VALID_SLICES.includes(slice)) {
+    console.error(
+      `Invalid slice: ${slice}. Valid values are ${VALID_SLICES.join(', ')}`,
+    );
+    process.exit(1);
+  }
+
+  if (!VALID_CONFIGURATIONS.includes(configuration)) {
+    console.error(
+      `Invalid configuration: ${configuration}. Valid values are ${VALID_CONFIGURATIONS.join(', ')}`,
+    );
+    process.exit(1);
+  }
 }
 
 async function main() {
@@ -306,6 +346,8 @@ async function main() {
     printHelp();
     return;
   }
+
+  validateArgs(task, slice, configuration);
 
   console.log('Starting iOS prebuilds preparation...');
   const thirdPartyFolder = path.join(process.cwd(), THIRD_PARTY_PATH);
