@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import type {EventReporter} from '../types/EventReporter';
+import type {DebuggerSessionIDs, EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
 import type {CreateCustomMessageHandlerFn} from './CustomMessageHandler';
@@ -342,26 +342,38 @@ export default class InspectorProxy implements InspectorProxyQueries {
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
-      try {
-        const query = url.parse(req.url || '', true).query || {};
-        const deviceId = query.device;
-        const pageId = query.page;
-        const debuggerRelativeBaseUrl =
-          getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
-        const appId = this.#devices.get(deviceId)?.getApp() || 'unknown';
+      const query = url.parse(req.url || '', true).query || {};
+      const deviceId = query.device;
+      const pageId = query.page;
+      const debuggerRelativeBaseUrl =
+        getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
+      const device: Device | void = deviceId
+        ? this.#devices.get(deviceId)
+        : undefined;
 
+      const debuggerSessionIDs: DebuggerSessionIDs = {
+        appId: device?.getApp() || null,
+        deviceId,
+        deviceName: device?.getName() || null,
+        pageId,
+      };
+
+      try {
         if (deviceId == null || pageId == null) {
           throw new Error('Incorrect URL - must provide device and page IDs');
         }
 
-        const device = this.#devices.get(deviceId);
         if (device == null) {
           throw new Error('Unknown device with ID ' + deviceId);
         }
 
         this.#logger?.info('Connection established to DevTools.');
 
-        this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS, appId);
+        this.#startHeartbeat(
+          socket,
+          DEBUGGER_HEARTBEAT_INTERVAL_MS,
+          debuggerSessionIDs,
+        );
 
         device.handleDebuggerConnection(socket, pageId, {
           debuggerRelativeBaseUrl,
@@ -377,6 +389,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           type: 'connect_debugger_frontend',
           status: 'error',
           error,
+          ...debuggerSessionIDs,
         });
       }
     });
@@ -389,7 +402,11 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // where proxies may drop idle connections (e.g., VS Code tunnels).
   //
   // https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
-  #startHeartbeat(socket: WS, intervalMs: number, appId: string) {
+  #startHeartbeat(
+    socket: WS,
+    intervalMs: number,
+    debuggerSessionIDs: DebuggerSessionIDs,
+  ) {
     let latestPingMs = Date.now();
     let terminateTimeout: ?Timeout;
 
@@ -423,7 +440,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           this.#eventReporter?.logEvent({
             type: 'debugger_timeout',
             duration: DEBUGGER_TIMEOUT_MS,
-            appId,
+            ...debuggerSessionIDs,
           });
         }, DEBUGGER_TIMEOUT_MS).unref();
       }
@@ -435,12 +452,16 @@ export default class InspectorProxy implements InspectorProxyQueries {
     socket.on('pong', () => {
       const roundtripDuration = Date.now() - latestPingMs;
 
-      debug('debugger ping-pong for %s took %dms.', appId, roundtripDuration);
+      debug(
+        'debugger ping-pong for %s took %dms.',
+        debuggerSessionIDs.appId,
+        roundtripDuration,
+      );
 
       this.#eventReporter?.logEvent({
         type: 'debugger_heartbeat',
         duration: roundtripDuration,
-        appId,
+        ...debuggerSessionIDs,
       });
 
       terminateTimeout?.refresh();

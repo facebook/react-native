@@ -10,6 +10,7 @@
  */
 
 import type {InspectorProxyQueries} from '../inspector-proxy/InspectorProxy';
+import type {PageDescription} from '../inspector-proxy/types';
 import type {BrowserLauncher} from '../types/BrowserLauncher';
 import type {EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
@@ -57,20 +58,16 @@ export default function openDebuggerMiddleware({
       req.method === 'POST' ||
       (experiments.enableOpenDebuggerRedirect && req.method === 'GET')
     ) {
-      const {query} = url.parse(req.url, true);
-      const {
-        appId,
-        device,
-        launchId,
-        target: targetId,
-      }: {
+      const paresedUrl = url.parse(req.url, true);
+      const query: {
         /** @deprecated Will only match legacy Hermes targets */
         appId?: string,
+        /** @deprecated Will only match legacy Hermes targets */
         device?: string,
         launchId?: string,
         target?: string,
         ...
-      } = query;
+      } = paresedUrl.query;
 
       const targets = inspectorProxy
         .getPageDescriptions({requestorRelativeBaseUrl: new URL(serverBaseUrl)})
@@ -91,27 +88,29 @@ export default function openDebuggerMiddleware({
           return betterReloadingSupport;
         });
 
-      let target;
+      let target: PageDescription | void;
 
       const launchType: 'launch' | 'redirect' =
         req.method === 'POST' ? 'launch' : 'redirect';
 
       if (
-        typeof targetId === 'string' ||
-        typeof appId === 'string' ||
-        typeof device === 'string'
+        typeof query.target === 'string' ||
+        typeof query.appId === 'string' ||
+        typeof query.device === 'string'
       ) {
         logger?.info(
           (launchType === 'launch' ? 'Launching' : 'Redirecting to') +
             ' DevTools...',
         );
+
         target = targets.find(
           _target =>
-            (targetId == null || _target.id === targetId) &&
-            (appId == null ||
-              (_target.appId === appId &&
+            (query.target == null || _target.id === query.target) &&
+            (query.appId == null ||
+              (_target.appId === query.appId &&
                 _target.title === LEGACY_SYNTHETIC_PAGE_TITLE)) &&
-            (device == null || _target.reactNative.logicalDeviceId === device),
+            (query.device == null ||
+              _target.reactNative.logicalDeviceId === query.device),
         );
       } else if (targets.length > 0) {
         logger?.info(
@@ -147,7 +146,7 @@ export default function openDebuggerMiddleware({
                 experiments,
                 target.webSocketDebuggerUrl,
                 serverBaseUrl,
-                {launchId, useFuseboxEntryPoint},
+                {launchId: query.launchId, useFuseboxEntryPoint},
               ),
             );
             res.writeHead(200);
@@ -159,7 +158,11 @@ export default function openDebuggerMiddleware({
                 experiments,
                 target.webSocketDebuggerUrl,
                 serverBaseUrl,
-                {relative: true, launchId, useFuseboxEntryPoint},
+                {
+                  relative: true,
+                  launchId: query.launchId,
+                  useFuseboxEntryPoint,
+                },
               ),
             });
             res.end();
@@ -171,10 +174,11 @@ export default function openDebuggerMiddleware({
           type: 'launch_debugger_frontend',
           launchType,
           status: 'success',
-          appId: appId ?? null,
-          deviceId: device ?? null,
-          resolvedTargetDescription: target.description,
-          resolvedTargetAppId: target.appId,
+          appId: target.appId,
+          deviceId: target.reactNative.logicalDeviceId,
+          pageId: target.id,
+          deviceName: target.deviceName,
+          targetDescription: target.description,
           prefersFuseboxFrontend: useFuseboxEntryPoint ?? false,
         });
         return;
