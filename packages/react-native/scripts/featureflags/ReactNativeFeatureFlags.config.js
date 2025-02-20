@@ -398,17 +398,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-02-18',
-        description:
-          'Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     traceTurboModulePromiseRejectionsOnAndroid: {
       defaultValue: false,
       metadata: {

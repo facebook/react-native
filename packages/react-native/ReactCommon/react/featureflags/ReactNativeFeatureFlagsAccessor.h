@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<65caac2e749261ca919780dff302ef57>>
+ * @generated SignedSource<<cf03a6e938df9988c00249dc78576cbf>>
  */
 
 /**
@@ -65,7 +65,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
   bool lazyAnimationCallbacks();
-  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool useAlwaysAvailableJSErrorHandling();
   bool useEditTextStockAndroidFocusBehavior();
@@ -86,7 +85,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 43> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -121,7 +120,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
-  std::atomic<std::optional<bool>> throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useEditTextStockAndroidFocusBehavior_;

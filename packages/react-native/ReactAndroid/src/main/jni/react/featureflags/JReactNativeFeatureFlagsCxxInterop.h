@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a34eb273660e3fecbc6d9fba66176462>>
+ * @generated SignedSource<<0bf1c23eda1c41a60eaae19e87c541e9>>
  */
 
 /**
@@ -127,9 +127,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool lazyAnimationCallbacks(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool traceTurboModulePromiseRejectionsOnAndroid(

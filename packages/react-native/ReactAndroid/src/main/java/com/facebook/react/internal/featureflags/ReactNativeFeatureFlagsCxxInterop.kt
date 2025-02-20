@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<33adb23bfdb99c531c674f4c6d09ddbd>>
+ * @generated SignedSource<<eb52a136ba489460c2131105f4cc5b3f>>
  */
 
 /**
@@ -93,8 +93,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun lazyAnimationCallbacks(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
