@@ -78,7 +78,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
       callbacks.put(
           requestCode,
           object : Callback {
-            public override operator fun invoke(vararg args: Any?) {
+            override operator fun invoke(vararg args: Any?) {
               val results = args[0] as IntArray
               if (results.size > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
                 promise.resolve(GRANTED)
@@ -125,7 +125,7 @@ public class PermissionsModule(reactContext: ReactApplicationContext?) :
       callbacks.put(
           requestCode,
           object : Callback {
-            public override operator fun invoke(vararg args: Any?) {
+            override operator fun invoke(vararg args: Any?) {
               val results = args[0] as IntArray
               val callbackActivity = args[1] as PermissionAwareActivity
               for (j in permissionsToCheck.indices) {

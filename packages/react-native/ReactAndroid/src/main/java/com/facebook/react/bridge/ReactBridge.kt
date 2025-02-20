@@ -19,7 +19,7 @@ internal object ReactBridge {
 
   @JvmStatic
   @Synchronized
-  public fun staticInit() {
+  fun staticInit() {
     if (_didInit) {
       return
     }
@@ -35,14 +35,14 @@ internal object ReactBridge {
   }
 
   @JvmStatic
-  public val loadStartTime: Long
+  val loadStartTime: Long
     get() = _loadStartTime
 
   @JvmStatic
-  public val loadEndTime: Long
+  val loadEndTime: Long
     get() = _loadEndTime
 
   @JvmStatic
-  public val initialized: Boolean
+  val initialized: Boolean
     @JvmName("isInitialized") get() = _didInit
 }
