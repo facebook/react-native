@@ -4728,7 +4728,8 @@ declare export default typeof FrameRateLogger;
 `;
 
 exports[`public API should not change unintentionally Libraries/Interaction/InteractionManager.js 1`] = `
-"export type Handle = number;
+"export type { Task, SimpleTask, PromiseTask } from \\"./TaskQueue\\";
+export type Handle = number;
 declare const InteractionManagerImpl: {
   Events: {
     interactionStart: \\"interactionStart\\",
@@ -4744,7 +4745,11 @@ declare const InteractionManagerImpl: {
   },
   createInteractionHandle(): Handle,
   clearInteractionHandle(handle: Handle): void,
-  addListener: Function,
+  addListener: (
+    eventType: string,
+    listener: (...args: any) => mixed,
+    context: mixed
+  ) => EventSubscription,
   setDeadline(deadline: number): void,
 };
 declare const InteractionManager: typeof InteractionManagerImpl;
@@ -4809,7 +4814,7 @@ declare export default typeof NativeFrameRateLogger;
 `;
 
 exports[`public API should not change unintentionally Libraries/Interaction/PanResponder.js 1`] = `
-"export type GestureState = {
+"export type PanResponderGestureState = {
   stateID: number,
   moveX: number,
   moveY: number,
@@ -4823,13 +4828,13 @@ exports[`public API should not change unintentionally Libraries/Interaction/PanR
 };
 type ActiveCallback = (
   event: GestureResponderEvent,
-  gestureState: GestureState
+  gestureState: PanResponderGestureState
 ) => boolean;
 type PassiveCallback = (
   event: GestureResponderEvent,
-  gestureState: GestureState
+  gestureState: PanResponderGestureState
 ) => mixed;
-export type PanHandlers = {
+export type GestureResponderHandlers = {
   onMoveShouldSetResponder: (event: GestureResponderEvent) => boolean,
   onMoveShouldSetResponderCapture: (event: GestureResponderEvent) => boolean,
   onResponderEnd: (event: GestureResponderEvent) => void,
@@ -4843,7 +4848,7 @@ export type PanHandlers = {
   onStartShouldSetResponder: (event: GestureResponderEvent) => boolean,
   onStartShouldSetResponderCapture: (event: GestureResponderEvent) => boolean,
 };
-type PanResponderConfig = $ReadOnly<{
+export type PanResponderCallbacks = $ReadOnly<{
   onMoveShouldSetPanResponder?: ?ActiveCallback,
   onMoveShouldSetPanResponderCapture?: ?ActiveCallback,
   onStartShouldSetPanResponder?: ?ActiveCallback,
@@ -4859,9 +4864,9 @@ type PanResponderConfig = $ReadOnly<{
   onShouldBlockNativeResponder?: ?ActiveCallback,
 }>;
 declare const PanResponder: {
-  create(config: PanResponderConfig): {
+  create(config: PanResponderCallbacks): {
     getInteractionHandle: () => ?number,
-    panHandlers: PanHandlers,
+    panHandlers: GestureResponderHandlers,
   },
 };
 export type PanResponderInstance = ReturnType<(typeof PanResponder)[\\"create\\"]>;
@@ -4870,11 +4875,11 @@ declare export default typeof PanResponder;
 `;
 
 exports[`public API should not change unintentionally Libraries/Interaction/TaskQueue.js 1`] = `
-"type SimpleTask = {
+"export type SimpleTask = {
   name: string,
   run: () => void,
 };
-type PromiseTask = {
+export type PromiseTask = {
   name: string,
   gen: () => Promise<void>,
 };

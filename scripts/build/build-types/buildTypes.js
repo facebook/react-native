@@ -38,6 +38,8 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.js',
   'packages/react-native/Libraries/Components/Clipboard/Clipboard.js',
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
+  'packages/react-native/Libraries/Interaction/InteractionManager.js',
+  'packages/react-native/Libraries/Interaction/PanResponder.js',
   'packages/react-native/Libraries/EventEmitter/NativeEventEmitter.js',
   'packages/react-native/Libraries/EventEmitter/RCTDeviceEventEmitter.js',
   'packages/react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter.js',

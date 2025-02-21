@@ -12,11 +12,14 @@ import type {Task} from './TaskQueue';
 
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import EventEmitter from '../vendor/emitter/EventEmitter';
+import type {EventSubscription} from '../vendor/emitter/EventEmitter';
 
 const BatchedBridge = require('../BatchedBridge/BatchedBridge').default;
 const infoLog = require('../Utilities/infoLog').default;
 const TaskQueue = require('./TaskQueue').default;
 const invariant = require('invariant');
+
+export type {Task, SimpleTask, PromiseTask} from './TaskQueue';
 
 export type Handle = number;
 
@@ -140,7 +143,12 @@ const InteractionManagerImpl = {
 
   // $FlowFixMe[unclear-type] unclear type of _emitter
   // $FlowFixMe[method-unbinding] added when improving typing for this parameters
-  addListener: _emitter.addListener.bind(_emitter) as Function,
+  addListener: _emitter.addListener.bind(_emitter) as (
+    eventType: string,
+    // $FlowFixMe[unclear-type] unclear type of arguments
+    listener: (...args: any) => mixed,
+    context: mixed,
+  ) => EventSubscription,
 
   /**
    * A positive number will use setTimeout to schedule any tasks after the
