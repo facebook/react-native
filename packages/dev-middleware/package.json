@@ -31,7 +31,6 @@
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1",
     "open": "^7.0.3",
-    "selfsigned": "^2.4.1",
     "serve-static": "^1.16.2",
     "ws": "^6.2.3"
   },
@@ -40,6 +39,7 @@
   },
   "devDependencies": {
     "data-uri-to-buffer": "^6.0.1",
+    "selfsigned": "^2.4.1",
     "undici": "^5.28.5",
     "wait-for-expect": "^3.0.2"
   }
