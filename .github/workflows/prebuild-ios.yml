@@ -1,0 +1,44 @@
+name: Prebuild iOS
+
+on:
+  workflow_call: # this directive allow us to call this workflow from other workflows
+  pull_request: # remove this before landing
+
+jobs:
+  prepare_workspace:
+    name: Prepare workspace
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Restore cache if present
+        id: restore-ios-prebuilds
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            packages/react-native/third-party/glog
+          key: v1-ios-dependencies-${{ hashfiles('scripts/releases/ios-prebuilds/dependencies') }}
+          enableCrossOsArchive: true
+      - name: Yarn Install
+        if: steps.restore-ios-prebuilds.outputs.cache-hit != 'true'
+        uses: ./.github/actions/yarn-install
+      - name: Prepare Dependencies
+        if: steps.restore-ios-prebuilds.outputs.cache-hit != 'true'
+        run: |
+          node scripts/releases/prepare-ios-prebuilds.js -t prepare
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: ios-prebuilds-workspace
+          path: |
+            packages/react-native/third-party/glog
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
+        with:
+          key: v1-ios-dependencies-${{ hashfiles('scripts/releases/ios-prebuilds/dependencies') }}
+          enableCrossOsArchive: true
+          path: |
+            packages/react-native/third-party/glog
