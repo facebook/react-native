@@ -93,7 +93,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4.3.4
         with:
-          name: ios-slice-${{ matrix.flavor }}-${{ matrix.slice }}
+          name: prebuild-slice-${{ matrix.flavor }}-${{ matrix.slice }}
           path: |
             packages/react-native/third-party/.build/Build/Products
       - name: Save Cache
@@ -104,3 +104,58 @@ jobs:
           enableCrossOsArchive: true
           path: |
             packages/react-native/third-party/.build/Build/Products
+
+  create-xcframework:
+    name: Prepare XCFramework
+    runs-on: macos-14
+    needs: [build-apple-slices]
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [Debug, Release]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Setup xcode
+        uses: ./.github/actions/setup-xcode
+        with:
+          xcode-version: '16.1'
+      - name: Restore XCFramework
+        id: restore-xcframework
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework
+          key: v1-ios-dependencies-xcframework-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuilds/dependencies') }}
+      # If cache hit, we already have our binary. We don't need to do anything.
+      - name: Yarn Install
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        uses: ./.github/actions/yarn-install
+      - name: Download slices
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          pattern: prebuild-slice-${{ matrix.flavor }}-*
+          path: packages/react-native/third-party/.build/Build/Products
+          merge-multiple: true
+      - name: Create XCFramework
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        run: node scripts/releases/prepare-ios-prebuilds.js -t create-xcframework
+      - name: Rename XCFramework
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        run: mv packages/react-native/third-party/ReactNativeDependencies.xcframework packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework
+      - name: Upload XCFramework Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReactNativeDependencies${{ matrix.flavor }}.xcframework
+          path: |
+            packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework
+      - name: Save XCFramework in Cache
+        if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework
+          key: v1-ios-dependencies-xcframework-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuilds/dependencies') }}
