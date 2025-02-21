@@ -9,6 +9,7 @@ package com.facebook.react.views.text
 
 import android.graphics.Paint
 import android.graphics.Rect
+import android.os.Bundle
 import android.text.Spannable
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
@@ -20,6 +21,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat
 import com.facebook.react.R
 import com.facebook.react.uimanager.ReactAccessibilityDelegate
+import com.facebook.react.views.text.internal.span.ReactClickableSpan
 import kotlin.math.ceil
 
 internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
@@ -66,6 +68,49 @@ internal class ReactTextViewAccessibilityDelegate : ReactAccessibilityDelegate {
           ReactTextViewAccessibilityDelegate(
               view, originalFocus, originalImportantForAccessibility))
     }
+  }
+
+  override fun onVirtualViewKeyboardFocusChanged(virtualViewId: Int, hasFocus: Boolean) {
+    if (accessibilityLinks == null) {
+      return
+    }
+
+    val link = accessibilityLinks?.getLinkById(virtualViewId) ?: return
+
+    val span = getFirstSpan(link.start, link.end, ClickableSpan::class.java)
+    if (span == null || span !is ReactClickableSpan || hostView !is ReactTextView) {
+      return
+    }
+
+    // TODO: When we refactor ReactTextView, implement this using
+    // https://developer.android.com/reference/android/text/Layout
+    span.isKeyboardFocused = hasFocus
+    span.focusBgColor = (hostView as TextView).highlightColor
+    hostView.invalidate()
+  }
+
+  override fun onPerformActionForVirtualView(
+      virtualViewId: Int,
+      action: Int,
+      arguments: Bundle?
+  ): Boolean {
+    if (accessibilityLinks == null) {
+      return false
+    }
+
+    val link = accessibilityLinks?.getLinkById(virtualViewId) ?: return false
+
+    val span = getFirstSpan(link.start, link.end, ClickableSpan::class.java)
+    if (span == null || span !is ReactClickableSpan) {
+      return false
+    }
+
+    if (action == AccessibilityNodeInfoCompat.ACTION_CLICK) {
+      span.onClick(hostView)
+      return true
+    }
+
+    return false
   }
 
   override fun getVisibleVirtualViews(virtualViewIds: MutableList<Int?>) {
