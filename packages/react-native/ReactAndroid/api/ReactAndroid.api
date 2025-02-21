@@ -2163,13 +2163,6 @@ public class com/facebook/react/devsupport/PackagerStatusCheck {
 	public fun run (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
 }
 
-public final class com/facebook/react/devsupport/PerftestDevSupportManager : com/facebook/react/devsupport/ReleaseDevSupportManager {
-	public fun <init> (Landroid/content/Context;)V
-	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
-	public fun startInspector ()V
-	public fun stopInspector ()V
-}
-
 public abstract interface class com/facebook/react/devsupport/ReactInstanceDevHelper {
 	public abstract fun createRootView (Ljava/lang/String;)Landroid/view/View;
 	public abstract fun destroyRootView (Landroid/view/View;)V
