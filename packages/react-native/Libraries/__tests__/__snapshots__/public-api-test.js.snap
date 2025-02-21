@@ -2189,14 +2189,17 @@ declare export default typeof AndroidSwitchNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Switch/Switch.js 1`] = `
-"type SwitchChangeEvent = NativeSyntheticEvent<
-  $ReadOnly<{
-    value: boolean,
-    target: number,
-  }>,
->;
-export type Props = $ReadOnly<{
-  ...ViewProps,
+"export type SwitchPropsIOS = {
+  onTintColor?: ?ColorValue,
+  thumbTintColor?: ?ColorValue,
+  tintColor?: ?ColorValue,
+};
+export type SwitchChangeEventData = $ReadOnly<{
+  target: number,
+  value: boolean,
+}>;
+export type SwitchChangeEvent = NativeSyntheticEvent<SwitchChangeEventData>;
+type SwitchPropsBase = {
   disabled?: ?boolean,
   value?: ?boolean,
   thumbColor?: ?ColorValue,
@@ -2207,15 +2210,20 @@ export type Props = $ReadOnly<{
   ios_backgroundColor?: ?ColorValue,
   onChange?: ?(event: SwitchChangeEvent) => Promise<void> | void,
   onValueChange?: ?(value: boolean) => Promise<void> | void,
+};
+export type SwitchProps = $ReadOnly<{
+  ...ViewProps,
+  ...SwitchPropsIOS,
+  ...SwitchPropsBase,
 }>;
 type SwitchRef = React.ElementRef<
   typeof SwitchNativeComponent | typeof AndroidSwitchNativeComponent,
 >;
-declare const SwitchWithForwardedRef: component(
-  ref: React.RefSetter<SwitchRef>,
-  ...props: Props
+declare const Switch: component(
+  ref?: React.RefSetter<SwitchRef>,
+  ...props: SwitchProps
 );
-declare export default typeof SwitchWithForwardedRef;
+declare export default typeof Switch;
 "
 `;
 
