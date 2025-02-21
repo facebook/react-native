@@ -626,7 +626,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     throw new IllegalStateException("Invalid float property value: " + value);
   }
 
-  private void updateViewAccessibility(@NonNull T view) {
+  protected void updateViewAccessibility(@NonNull T view) {
     ReactAccessibilityDelegate.setDelegate(
         view, view.isFocusable(), view.getImportantForAccessibility());
   }
