@@ -9,7 +9,7 @@
  */
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
+import type {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
 import View from '../../Components/View/View';
 import Pressability, {
@@ -33,14 +33,29 @@ type IOSProps = $ReadOnly<{
 }>;
 
 type Props = $ReadOnly<{
-  ...React.ElementConfig<TouchableWithoutFeedback>,
+  ...TouchableWithoutFeedbackProps,
   ...AndroidProps,
   ...IOSProps,
 
+  /**
+   * Determines what the opacity of the wrapped view should be when touch is active.
+   */
   activeOpacity?: ?number,
+  /**
+   * The color of the underlay that will show through when the touch is active.
+   */
   underlayColor?: ?ColorValue,
+  /**
+   * @see https://reactnative.dev/docs/view#style
+   */
   style?: ?ViewStyleProp,
+  /**
+   * Called immediately after the underlay is shown
+   */
   onShowUnderlay?: ?() => void,
+  /**
+   * Called immediately after the underlay is hidden
+   */
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
 
