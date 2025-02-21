@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0a3119b99e455127d8a404963a23eb96>>
+ * @generated SignedSource<<5eb8bf78f457c44ae514b706bf23265e>>
  */
 
 /**
@@ -48,10 +48,6 @@ bool ReactNativeFeatureFlags::enableCppPropsIteratorSetter() {
 
 bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
   return getAccessor().enableEagerRootViewAttachment();
-}
-
-bool ReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid() {
-  return getAccessor().enableEventEmitterRetentionDuringGesturesOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::enableFabricLogs() {
