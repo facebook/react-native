@@ -490,6 +490,7 @@ export class TouchableHighlightTest extends React.Component {
   render() {
     return (
       <>
+        <TouchableHighlight />
         <TouchableHighlight ref={this.buttonRef} />
         <TouchableHighlight
           ref={ref => {

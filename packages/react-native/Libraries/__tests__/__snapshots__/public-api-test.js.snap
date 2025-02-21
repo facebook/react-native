@@ -3364,10 +3364,7 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
 type IOSProps = $ReadOnly<{
   hasTVPreferredFocus?: ?boolean,
 }>;
-type Props = $ReadOnly<{
-  ...TouchableWithoutFeedbackProps,
-  ...AndroidProps,
-  ...IOSProps,
+type TouchableHighlightBaseProps = $ReadOnly<{
   activeOpacity?: ?number,
   underlayColor?: ?ColorValue,
   style?: ?ViewStyleProp,
@@ -3376,11 +3373,17 @@ type Props = $ReadOnly<{
   testOnly_pressed?: ?boolean,
   hostRef: React.RefSetter<React.ElementRef<typeof View>>,
 }>;
-declare const Touchable: component(
-  ref: React.RefSetter<React.ElementRef<typeof View>>,
-  ...props: $ReadOnly<$Diff<Props, { +hostRef: mixed }>>
+type TouchableHighlightProps = $ReadOnly<{
+  ...TouchableWithoutFeedbackProps,
+  ...AndroidProps,
+  ...IOSProps,
+  ...TouchableHighlightBaseProps,
+}>;
+declare const TouchableHighlight: component(
+  ref?: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: $ReadOnly<$Diff<TouchableHighlightProps, { +hostRef: mixed }>>
 );
-declare export default typeof Touchable;
+declare export default typeof TouchableHighlight;
 "
 `;
 
