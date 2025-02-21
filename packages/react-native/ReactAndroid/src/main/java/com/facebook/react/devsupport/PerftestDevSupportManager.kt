@@ -14,11 +14,11 @@ import com.facebook.react.modules.debug.interfaces.DeveloperSettings
  * Interface for accessing and interacting with development features related to performance testing.
  * Communication is enabled via the Inspector, but everything else is disabled.
  */
-internal class PerftestDevSupportManager(
+public class PerftestDevSupportManager(
     applicationContext: Context,
 ) : ReleaseDevSupportManager() {
 
-  override val devSettings: DeveloperSettings =
+  public override val devSettings: DeveloperSettings =
       DevInternalSettings(
           applicationContext,
           object : DevInternalSettings.Listener {
