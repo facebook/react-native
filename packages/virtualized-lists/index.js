@@ -31,7 +31,7 @@ export type {
   Separators,
 } from './Lists/VirtualizedListProps';
 export type {
-  Props as VirtualizedSectionListProps,
+  VirtualizedSectionListProps,
   ScrollToLocationParamsType,
   SectionBase,
 } from './Lists/VirtualizedSectionList';
