@@ -53,9 +53,11 @@
 
   // Fallback in case [startObservingSafeArea startObservingSafeArea] was not called.
   __block UIEdgeInsets insets;
+#if !TARGET_OS_MACCATALYST
   RCTUnsafeExecuteOnMainQueueSync(^{
     insets = [UIApplication sharedApplication].delegate.window.safeAreaInsets;
   });
+#endif
   return insets;
 }
 
