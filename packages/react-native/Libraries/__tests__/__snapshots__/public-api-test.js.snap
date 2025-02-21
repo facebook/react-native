@@ -3470,57 +3470,45 @@ declare export default typeof Touchable;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/TouchableWithoutFeedback.js 1`] = `
-"type Props = $ReadOnly<{
-  accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
-  accessibilityElementsHidden?: ?boolean,
-  accessibilityHint?: ?Stringish,
-  accessibilityLanguage?: ?Stringish,
-  accessibilityIgnoresInvertColors?: ?boolean,
-  accessibilityLabel?: ?Stringish,
-  accessibilityLiveRegion?: ?(\\"none\\" | \\"polite\\" | \\"assertive\\"),
-  accessibilityRole?: ?AccessibilityRole,
-  accessibilityState?: ?AccessibilityState,
-  accessibilityValue?: ?AccessibilityValue,
-  \\"aria-valuemax\\"?: AccessibilityValue[\\"max\\"],
-  \\"aria-valuemin\\"?: AccessibilityValue[\\"min\\"],
-  \\"aria-valuenow\\"?: AccessibilityValue[\\"now\\"],
-  \\"aria-valuetext\\"?: AccessibilityValue[\\"text\\"],
-  accessibilityViewIsModal?: ?boolean,
-  \\"aria-modal\\"?: ?boolean,
-  accessible?: ?boolean,
-  \\"aria-busy\\"?: ?boolean,
-  \\"aria-checked\\"?: ?boolean | \\"mixed\\",
-  \\"aria-disabled\\"?: ?boolean,
-  \\"aria-expanded\\"?: ?boolean,
-  \\"aria-selected\\"?: ?boolean,
-  \\"aria-hidden\\"?: ?boolean,
-  \\"aria-live\\"?: ?(\\"polite\\" | \\"assertive\\" | \\"off\\"),
-  \\"aria-label\\"?: ?Stringish,
-  children?: ?React.Node,
-  delayLongPress?: ?number,
-  delayPressIn?: ?number,
-  delayPressOut?: ?number,
-  disabled?: ?boolean,
-  focusable?: ?boolean,
-  hitSlop?: ?EdgeInsetsOrSizeProp,
-  id?: string,
-  importantForAccessibility?: ?(\\"auto\\" | \\"yes\\" | \\"no\\" | \\"no-hide-descendants\\"),
-  nativeID?: ?string,
-  onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
-  onBlur?: ?(event: BlurEvent) => mixed,
-  onFocus?: ?(event: FocusEvent) => mixed,
-  onLayout?: ?(event: LayoutChangeEvent) => mixed,
-  onLongPress?: ?(event: GestureResponderEvent) => mixed,
-  onPress?: ?(event: GestureResponderEvent) => mixed,
-  onPressIn?: ?(event: GestureResponderEvent) => mixed,
-  onPressOut?: ?(event: GestureResponderEvent) => mixed,
-  pressRetentionOffset?: ?EdgeInsetsOrSizeProp,
-  rejectResponderTermination?: ?boolean,
-  testID?: ?string,
+"export type TouchableWithoutFeedbackPropsIOS = {};
+export type TouchableWithoutFeedbackPropsAndroid = {
   touchSoundDisabled?: ?boolean,
-}>;
+};
+export type TouchableWithoutFeedbackProps = $ReadOnly<
+  {
+    children?: ?React.Node,
+    delayLongPress?: ?number,
+    delayPressIn?: ?number,
+    delayPressOut?: ?number,
+    disabled?: ?boolean,
+    focusable?: ?boolean,
+    hitSlop?: ?EdgeInsetsOrSizeProp,
+    id?: string,
+    importantForAccessibility?: ?(
+      | \\"auto\\"
+      | \\"yes\\"
+      | \\"no\\"
+      | \\"no-hide-descendants\\"
+    ),
+    nativeID?: ?string,
+    onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
+    onBlur?: ?(event: BlurEvent) => mixed,
+    onFocus?: ?(event: FocusEvent) => mixed,
+    onLayout?: ?(event: LayoutChangeEvent) => mixed,
+    onLongPress?: ?(event: GestureResponderEvent) => mixed,
+    onPress?: ?(event: GestureResponderEvent) => mixed,
+    onPressIn?: ?(event: GestureResponderEvent) => mixed,
+    onPressOut?: ?(event: GestureResponderEvent) => mixed,
+    pressRetentionOffset?: ?EdgeInsetsOrSizeProp,
+    rejectResponderTermination?: ?boolean,
+    testID?: ?string,
+    style?: ?ViewStyleProp,
+  } & TouchableWithoutFeedbackPropsAndroid &
+    TouchableWithoutFeedbackPropsIOS &
+    AccessibilityProps,
+>;
 declare export default function TouchableWithoutFeedback(
-  props: Props
+  props: TouchableWithoutFeedbackProps
 ): React.Node;
 "
 `;
