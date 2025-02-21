@@ -20,8 +20,14 @@ using namespace facebook::react;
   std::weak_ptr<const EventEmitter> _weakEventEmitter;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
+- (NSUInteger)length
 {
+  return 0;
+}
+
+- (const void *)bytes
+{
+  return nullptr;
 }
 
 - (void)setEventEmitter:(SharedEventEmitter)eventEmitter

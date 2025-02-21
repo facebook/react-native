@@ -52,7 +52,7 @@ BOOL RCTIsAttributedStringEffectivelySame(
     NSDictionary<NSAttributedStringKey, id> *insensitiveAttributes,
     const facebook::react::TextAttributes &baseTextAttributes);
 
-@interface RCTWeakEventEmitterWrapper : NSDictionary
+@interface RCTWeakEventEmitterWrapper : NSData
 @property (nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;
 @end
 
