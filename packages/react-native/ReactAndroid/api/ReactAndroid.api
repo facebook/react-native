@@ -2182,15 +2182,6 @@ public abstract interface class com/facebook/react/devsupport/ReactInstanceDevHe
 	public abstract fun toggleElementInspector ()V
 }
 
-public final class com/facebook/react/devsupport/RedBoxContentView : android/widget/LinearLayout, android/widget/AdapterView$OnItemClickListener {
-	public fun <init> (Landroid/content/Context;Lcom/facebook/react/devsupport/interfaces/DevSupportManager;Lcom/facebook/react/devsupport/interfaces/RedBoxHandler;)V
-	public final fun init ()V
-	public fun onItemClick (Landroid/widget/AdapterView;Landroid/view/View;IJ)V
-	public final fun refreshContentView ()V
-	public final fun resetReporting ()V
-	public final fun setExceptionDetails (Ljava/lang/String;[Lcom/facebook/react/devsupport/interfaces/StackFrame;)V
-}
-
 public class com/facebook/react/devsupport/ReleaseDevSupportManager : com/facebook/react/devsupport/interfaces/DevSupportManager {
 	public fun <init> ()V
 	public fun addCustomDevOption (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/DevOptionHandler;)V
