@@ -51,7 +51,7 @@ jobs:
       fail-fast: false
       matrix:
         flavor: ['Debug', 'Release']
-        slice: ['ios', 'ios-simulator', 'mac', 'mac-catalyst' , 'xros', 'xrsimulator'] #, 'tvos', 'tvos-simulator' are excluded for now
+        slice: ['ios', 'ios-simulator', 'mac', 'mac-catalyst' , 'xros', 'xrsimulator', 'tvos', 'tvos-simulator']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
