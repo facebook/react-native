@@ -3365,7 +3365,7 @@ type IOSProps = $ReadOnly<{
   hasTVPreferredFocus?: ?boolean,
 }>;
 type Props = $ReadOnly<{
-  ...React.ElementConfig<TouchableWithoutFeedback>,
+  ...TouchableWithoutFeedbackProps,
   ...AndroidProps,
   ...IOSProps,
   activeOpacity?: ?number,
