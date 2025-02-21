@@ -638,7 +638,11 @@ android {
   }
 }
 
-tasks.withType<KotlinCompile>().configureEach { exclude("com/facebook/annotationprocessors/**") }
+tasks.withType<KotlinCompile>().configureEach {
+  exclude("com/facebook/annotationprocessors/**")
+  exclude("com/facebook/react/processing/**")
+  exclude("com/facebook/react/module/processing/**")
+}
 
 dependencies {
   api(libs.androidx.appcompat)
