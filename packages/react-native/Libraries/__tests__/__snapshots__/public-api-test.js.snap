@@ -3385,8 +3385,17 @@ declare export default typeof Touchable;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/TouchableNativeFeedback.js 1`] = `
-"type Props = $ReadOnly<{
-  ...React.ElementConfig<TouchableWithoutFeedback>,
+"type TVProps = {
+  hasTVPreferredFocus?: ?boolean,
+  nextFocusDown?: ?number,
+  nextFocusForward?: ?number,
+  nextFocusLeft?: ?number,
+  nextFocusRight?: ?number,
+  nextFocusUp?: ?number,
+};
+export type TouchableNativeFeedbackProps = $ReadOnly<{
+  ...TouchableWithoutFeedbackProps,
+  ...TVProps,
   background?: ?(
     | $ReadOnly<{
         type: \\"ThemeAttrAndroid\\",
@@ -3402,24 +3411,20 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
         rippleRadius: ?number,
       }>
   ),
-  hasTVPreferredFocus?: ?boolean,
-  nextFocusDown?: ?number,
-  nextFocusForward?: ?number,
-  nextFocusLeft?: ?number,
-  nextFocusRight?: ?number,
-  nextFocusUp?: ?number,
   useForeground?: ?boolean,
 }>;
 type State = $ReadOnly<{
   pressability: Pressability,
 }>;
-declare class TouchableNativeFeedback extends React.Component<Props, State> {
-  static SelectableBackground: (rippleRadius: ?number) => $ReadOnly<{
+declare class TouchableNativeFeedback
+  extends React.Component<TouchableNativeFeedbackProps, State>
+{
+  static SelectableBackground: (rippleRadius?: ?number) => $ReadOnly<{
     attribute: \\"selectableItemBackground\\",
     type: \\"ThemeAttrAndroid\\",
     rippleRadius: ?number,
   }>;
-  static SelectableBackgroundBorderless: (rippleRadius: ?number) => $ReadOnly<{
+  static SelectableBackgroundBorderless: (rippleRadius?: ?number) => $ReadOnly<{
     attribute: \\"selectableItemBackgroundBorderless\\",
     type: \\"ThemeAttrAndroid\\",
     rippleRadius: ?number,
@@ -3427,7 +3432,7 @@ declare class TouchableNativeFeedback extends React.Component<Props, State> {
   static Ripple: (
     color: string,
     borderless: boolean,
-    rippleRadius: ?number
+    rippleRadius?: ?number
   ) => $ReadOnly<{
     borderless: boolean,
     color: ?number,
@@ -3437,7 +3442,10 @@ declare class TouchableNativeFeedback extends React.Component<Props, State> {
   static canUseNativeForeground: () => boolean;
   state: State;
   render(): React.Node;
-  componentDidUpdate(prevProps: Props, prevState: State): void;
+  componentDidUpdate(
+    prevProps: TouchableNativeFeedbackProps,
+    prevState: State
+  ): void;
   componentDidMount(): mixed;
   componentWillUnmount(): void;
 }
