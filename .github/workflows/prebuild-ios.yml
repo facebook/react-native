@@ -42,3 +42,65 @@ jobs:
           enableCrossOsArchive: true
           path: |
             packages/react-native/third-party/glog
+
+  build-apple-slices:
+    name: Build Apple Slice
+    runs-on: macos-14
+    needs: [prepare_workspace]
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: ['Debug', 'Release']
+        slice: ['ios', 'ios-simulator', 'mac', 'mac-catalyst' , 'xros', 'xrsimulator'] #, 'tvos', 'tvos-simulator' are excluded for now
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node.js
+        uses: ./.github/actions/setup-node
+      - name: Setup xcode
+        uses: ./.github/actions/setup-xcode
+        with:
+          xcode-version: '16.1'
+      - name: Restore slice folder
+        id: restore-slice-folder
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            packages/react-native/third-party/.build/Build/Products
+          key: v1-ios-dependencies-slice-folder-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuilds/dependencies') }}
+      - name: Yarn Install
+        if: steps.restore-slice-folder.outputs.cache-hit != 'true'
+        uses: ./.github/actions/yarn-install
+      - name: Restore workspace
+        if: steps.restore-slice-folder.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-prebuilds-workspace
+          path: packages/react-native/third-party/glog
+      - name: Print third-party folder structure
+        run: ls -lR packages/react-native/third-party
+      - name: Install VisionOS
+        if: ${{ steps.restore-slice-folder.outputs.cache-hit != 'true' && (matrix.slice == 'xros' || matrix.slice == 'xrsimulator') }}
+        run: |
+          # https://github.com/actions/runner-images/issues/10559
+          sudo xcodebuild -runFirstLaunch
+          sudo xcrun simctl list
+          sudo xcodebuild -downloadPlatform visionOS
+          sudo xcodebuild -runFirstLaunch
+      - name: Build slice ${{ matrix.slice }} for ${{ matrix.flavor }}
+        if: steps.restore-slice-folder.outputs.cache-hit != 'true'
+        run:  node scripts/releases/prepare-ios-prebuilds.js -t build -s ${{ matrix.slice }} -c ${{ matrix.flavor }}
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.3.4
+        with:
+          name: ios-slice-${{ matrix.flavor }}-${{ matrix.slice }}
+          path: |
+            packages/react-native/third-party/.build/Build/Products
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
+        with:
+          key: v1-ios-dependencies-slice-folder-${{ matrix.slice }}-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuilds/dependencies') }}
+          enableCrossOsArchive: true
+          path: |
+            packages/react-native/third-party/.build/Build/Products
