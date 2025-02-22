@@ -44,21 +44,28 @@ static NSString *const kFrameKeyPath = @"frame";
 
 - (void)startObservingWindowSizeIfNecessary
 {
-  std::lock_guard<std::mutex> lock(_mutex);
-  if (!_isObserving) {
+  // Accesing _isObserving must be done under the lock to avoid a race condition.
+  // We can't hold the lock while calling RCTUnsafeExecuteOnMainQueueSync.
+  // Therefore, reading/writing _isObserving is kept separate from calling RCTUnsafeExecuteOnMainQueueSync.
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    if (_isObserving) {
+      return;
+    }
     _isObserving = YES;
-    // For backwards compatibility, we register for notifications from the main thread only.
-    // On the new architecture, we are already on the main thread and RCTUnsafeExecuteOnMainQueueSync will simply call
-    // the block.
-    RCTUnsafeExecuteOnMainQueueSync(^{
-      [RCTKeyWindow() addObserver:self forKeyPath:kFrameKeyPath options:NSKeyValueObservingOptionNew context:nil];
-    });
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_interfaceOrientationDidChange)
-                                                 name:UIApplicationDidBecomeActiveNotification
-                                               object:nil];
   }
+
+  // For backwards compatibility, we register for notifications from the main thread only.
+  // On the new architecture, we are already on the main thread and RCTUnsafeExecuteOnMainQueueSync will simply call
+  // the block.
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    [RCTKeyWindow() addObserver:self forKeyPath:kFrameKeyPath options:NSKeyValueObservingOptionNew context:nil];
+  });
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_interfaceOrientationDidChange)
+                                               name:UIApplicationDidBecomeActiveNotification
+                                             object:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
