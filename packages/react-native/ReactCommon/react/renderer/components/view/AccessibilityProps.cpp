@@ -46,6 +46,15 @@ AccessibilityProps::AccessibilityProps(
                     "accessibilityLabel",
                     sourceProps.accessibilityLabel,
                     "")),
+      accessibilityElements(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.accessibilityElements
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityElements",
+                    sourceProps.accessibilityElements,
+                    {})),
       accessibilityLabelledBy(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.accessibilityLabelledBy
