@@ -9,7 +9,6 @@
  * @oncall react_native
  */
 
-//const {buildDepenencies} = require('./build');
 const {buildDepenencies} = require('./build');
 const {createFramework} = require('./compose-framework');
 const {dependencies, platforms} = require('./configuration');
@@ -27,6 +26,10 @@ const BUILD_DESTINATION = '.build';
 const SCHEME = 'ReactNativeDependencies';
 
 const cli = yargs
+  .usage(
+    'This script prepares iOS prebuilds for React Native. It downloads the dependencies, prepare them, builds them and creates the XCFrameworks.' +
+      'Calling the script with no options will build all the dependencies for all the slices and configurations.',
+  )
   .option('setup', {
     alias: 's',
     type: 'boolean',

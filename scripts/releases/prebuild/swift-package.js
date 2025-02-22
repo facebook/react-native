@@ -18,20 +18,15 @@ const path = require('path');
   import {skip} from "rxjs/operators";
   */
 
-const log = (message /*: string */, ...optionalParams /*: Array<mixed> */) =>
-  console.log('   → ' + message, ...optionalParams);
-
 /**
- * Creates the Package.swift file for a Swift package based on the dependencies
- * @param {*} dependency
- * @param {*} rootFolder
+ * Creates the Package.swift file that can be used to compile targets into frameworks
  */
 async function createSwiftPackageFile(
   scheme /*: string */,
   dependencies /*  :$ReadOnlyArray<Dependency> */,
   rootFolder /*: string */,
 ) {
-  log(
+  console.log(
     'Creating Package.swift file for',
     dependencies.map(d => d.name).join(', '),
   );
@@ -64,9 +59,12 @@ ${dependencies.map(d => createSwiftTarget(d)).join('')}
 
   // Write to file
   fs.writeFileSync(packageSwiftPath, packageSwiftContents);
-  log('Package.swift file created at', packageSwiftPath);
+  console.log('Package.swift file created at', packageSwiftPath);
 }
 
+/**
+ * Emits code for a swift target which is the same a dependency in our configuration
+ */
 function createSwiftTarget(dependency /*  :Dependency */) {
   // Setup unsafe flags
   let unsafeCAndCxxSettings = '';

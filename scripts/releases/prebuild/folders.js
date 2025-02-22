@@ -20,8 +20,7 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
 /**
- * Removes and recreates the folder
- * @param {*} buildFolder
+ * Removes and recreates the given folder
  */
 async function cleanFolder(folder /*: string */) {
   console.log('✅ Preparing build folder...');
@@ -33,9 +32,6 @@ async function cleanFolder(folder /*: string */) {
 
 /**
  * Reads all files recursively in the fiven dir
- * @param {*} dirPath
- * @param {*} arrayOfFiles
- * @returns
  */
 function getAllFilesRecursively(
   dirPath /*:string */,

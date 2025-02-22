@@ -9,24 +9,20 @@
  * @oncall react_native
  */
 
-const {HEADERS_FOLDER, TARGET_FOLDER} = require('./constants');
+const {HEADERS_FOLDER} = require('./constants');
 const {getAllFilesRecursively} = require('./folders');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
-
-const log = (message /*: string */, ...optionalParams /*: Array<mixed> */) =>
-  console.log('   → ' + message, ...optionalParams);
 
 /*::
 import type { Dependency, Platform } from './types';
 */
 
 /**
- * Builds the dependencies for the specified platforms
- * @param {*} dependencies
- * @param {*} platforms
- * @param {*} destination
+ * Builds dependencies for the specified platforms. This function will use the generated
+ * Package.swift file together with the extracted dependencies to build the frameworks for
+ * the requested platforms.
  */
 async function buildDepenencies(
   scheme /*: string */,
@@ -49,10 +45,6 @@ async function buildDepenencies(
 
 /**
  * Builds a single platform.
- * @param {*} scheme
- * @param {*} platform
- * @param {*} rootFolder
- * @param {*} buildFolder
  */
 async function buildPlatform(
   scheme /*: string */,
@@ -60,17 +52,13 @@ async function buildPlatform(
   rootFolder /*: string */,
   buildFolder /*: string */,
 ) {
-  log(`Building ${platform}...`);
+  console.log(`Building ${platform}...`);
   const command = `xcodebuild -scheme "${scheme}" -destination "generic/platform=${platform}" -derivedDataPath "${buildFolder}"`;
   execSync(command, {cwd: rootFolder, stdio: 'inherit'});
 }
 
 /**
  * Copies headers needed from the package to the framework
- * @param {*} scheme
- * @param {*} dependencies
- * @param {*} rootFolder
- * @param {*} buildFolder
  */
 async function copyHeadersToFrameworks(
   scheme /*: string */,
@@ -83,7 +71,7 @@ async function copyHeadersToFrameworks(
     .readdirSync(frameworkFolder)
     .filter(f => fs.statSync(path.join(frameworkFolder, f)).isDirectory());
 
-  log('Frameworks found:', frameworks.join(', '));
+  console.log('Frameworks found:', frameworks.join(', '));
   const frameworkPaths = frameworks.map(framework =>
     path.join(frameworkFolder, framework),
   );
@@ -111,7 +99,7 @@ async function copyHeadersToFrameworks(
 
     // Get files in public header files
     const headerFiles = getAllFilesRecursively(publicHeaderFiles);
-    log(
+    console.log(
       `Copying ${headerFiles.length} headers from "${dep.name}" to framework.`,
     );
 

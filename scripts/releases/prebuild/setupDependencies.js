@@ -29,13 +29,9 @@ import {skip} from "rxjs/operators";
 
 const exec = util.promisify(require('child_process').exec);
 
-const log = (message /*: string */, ...optionalParams /*: Array<mixed> */) =>
-  console.log('   → ' + message, ...optionalParams);
-
 /**
- * Main entry point for setting up dependencies
- * @param {*} dependencies
- * @param {*} rootFolder
+ * This function downloads, prepares and creates the structure for the dependencies
+ * according to the configuration provided.
  */
 async function setupDependencies(
   dependencies /*: $ReadOnlyArray<Dependency> */,
@@ -48,9 +44,8 @@ async function setupDependencies(
 }
 
 /**
- * Sets up a single dependency.
- * @param {*} dependency
- * @param {*} destination
+ * Sets up a single dependency. This function will download the dependency, run the
+ * prepare script (if any), create the build structure and copy the headers and any resources
  */
 async function setupDepenency(
   dependency /*: Dependency */,
@@ -65,7 +60,6 @@ async function setupDepenency(
 
 /**
  * Downloads a dependency from a URL and extracts it to a destination folder.
- * @param {*} dependency
  */
 async function downloadDependency(
   dependency /*: Dependency */,
@@ -74,25 +68,22 @@ async function downloadDependency(
   const filename = `${dependency.name}.tgz`;
   const archiveDestination = `/tmp/${filename}`;
   const command = `curl -L ${dependency.url.toString()} --output ${archiveDestination}`;
-  log(`Downloading ${filename}...`);
+  console.log(`Downloading ${filename}...`);
   await exec(command);
 
   const targetFolder = path.join(rootFolder, dependency.name, SOURCE_FOLDER);
-  log(`Building target folder ${targetFolder}...`);
+  console.log(`Building target folder ${targetFolder}...`);
   fs.mkdirSync(targetFolder, {recursive: true});
-  log(`Extracting ${filename} to ${targetFolder}...`);
+  console.log(`Extracting ${filename} to ${targetFolder}...`);
   await exec(
     `tar -xzf ${archiveDestination} -C ${targetFolder} --strip-components 1`,
   );
-  log(`Cleaning up ${filename}...`);
+  console.log(`Cleaning up ${filename}...`);
   await exec(`rm ${archiveDestination}`);
 }
 
 /**
  * Runs a prepare script for a dependency if it exists
- * @param {*} dependency
- * @param {*} destination
- * @returns
  */
 async function runPrepareDependencyScript(
   dependency /*  :Dependency */,
@@ -107,7 +98,7 @@ async function runPrepareDependencyScript(
 
   // Check if the prepare script is a file or a command
   if (dependency.prepareScript && !fs.existsSync(dependency.prepareScript)) {
-    log(`Running prepare script for ${dependency.name}...`);
+    console.log(`Running prepare script for ${dependency.name}...`);
     dependency.prepareScript &&
       execSync(dependency.prepareScript, {cwd: sourceFolder, stdio: 'inherit'});
     return;
@@ -118,7 +109,9 @@ async function runPrepareDependencyScript(
   fs.mkdirSync(targetFolder, {recursive: true});
 
   const finalPath = path.join(targetFolder, 'prepare.sh');
-  log(`Running prepare script for ${dependency.name} in ${finalPath}...`);
+  console.log(
+    `Running prepare script for ${dependency.name} in ${finalPath}...`,
+  );
 
   if (dependency.prepareScript) {
     fs.copyFileSync(dependency.prepareScript, finalPath);
@@ -131,8 +124,6 @@ async function runPrepareDependencyScript(
 
 /**
  * Creates the structure for the build
- * @param {*} dependency
- * @param {*} rootFolder
  */
 async function createBuildStructure(
   dependency /*  :Dependency */,
@@ -140,7 +131,7 @@ async function createBuildStructure(
 ) {
   const targetFolder = path.join(rootFolder, dependency.name, TARGET_FOLDER);
   const sourceFolder = path.join(rootFolder, dependency.name, SOURCE_FOLDER);
-  log(
+  console.log(
     'Creating build structure for dependency',
     dependency.name,
     'in',
@@ -169,8 +160,6 @@ async function createBuildStructure(
 /**
  * Creates the correct header structure for the dependency. This structure will be copied
  * into the final frameworks under the Headers folder.
- * @param {*} dependency
- * @param {*} rootFolder
  */
 async function createHeaderStructure(
   dependency /*  :Dependency */,
@@ -178,7 +167,7 @@ async function createHeaderStructure(
 ) {
   const targetFolder = path.join(rootFolder, dependency.name, HEADERS_FOLDER);
   const sourceFolder = path.join(rootFolder, dependency.name, SOURCE_FOLDER);
-  log('Copying header files for dependency', dependency.name);
+  console.log('Copying header files for dependency', dependency.name);
 
   fs.mkdirSync(targetFolder, {recursive: true});
 
@@ -207,6 +196,10 @@ async function createHeaderStructure(
   });
 }
 
+/**
+ * Copies the resources for the dependency into the final framework. A resource is a file
+ * that should be bundled with the final framewwork.
+ */
 async function copyResources(
   dependency /*  :Dependency */,
   rootFolder /*: string */,
@@ -216,7 +209,10 @@ async function copyResources(
     return;
   }
 
-  log(`Copying ${resources.length} resources for dependency`, dependency.name);
+  console.log(
+    `Copying ${resources.length} resources for dependency`,
+    dependency.name,
+  );
   const targetFolder = path.join(
     rootFolder,
     dependency.name,

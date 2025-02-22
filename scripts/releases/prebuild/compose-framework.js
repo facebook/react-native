@@ -13,17 +13,12 @@ const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const log = (message /*: string */, ...optionalParams /*: Array<mixed> */) =>
-  console.log('   → ' + message, ...optionalParams);
-
 /*::
 import type { Dependency, Platform } from './types';
 */
 
 /**
  * Composes the final XCFramework from the artifacts in the build folder
- * @param {*} rootFolder
- * @param {*} buildFolder
  */
 async function createFramework(
   scheme /*: string */,
@@ -36,7 +31,7 @@ async function createFramework(
   // Get the build destination path from the prebuild step
   const frameworksOutputFolder = path.join(buildFolder, 'Build', 'Products');
   const frameworks = fs.readdirSync(frameworksOutputFolder);
-  log('Frameworks found:', frameworks.join(', '));
+  console.log('Frameworks found:', frameworks.join(', '));
 
   const frameworkPaths = frameworks.map(framework =>
     path.join(
@@ -53,7 +48,7 @@ async function createFramework(
   if (fs.existsSync(output)) {
     fs.rmSync(output, {recursive: true, force: true});
   }
-  log('Output path:', output);
+  console.log('Output path:', output);
 
   const frameworksArgs = frameworkPaths
     .map(framework => `-framework ${framework}`)
@@ -66,13 +61,16 @@ async function createFramework(
   copyBundles(scheme, dependencies, output, frameworkPaths);
 }
 
+/**
+ * Copies the bundles in the source frameworks to the target xcframework inside the xcframework's Resources folder
+ */
 function copyBundles(
   scheme /*: string */,
   dependencies /*: $ReadOnlyArray<Dependency> */,
   outputFolder /*:string*/,
   frameworkPaths /*:Array<string>*/,
 ) {
-  log('Copying bundles to the framework...');
+  console.log('Copying bundles to the framework...');
 
   // Let's precalculate the target folder. It is the xcframework's output folder with
   // all its targets.
@@ -123,9 +121,7 @@ function copyBundles(
 }
 
 /**
- * Copies a bundle - which is basically a directory - from one location to another
- * @param {*} source
- * @param {*} target
+ * Copies a directory recursively
  */
 function copyDirectory(source /*: string*/, target /*: string*/) {
   if (!fs.existsSync(target)) {
