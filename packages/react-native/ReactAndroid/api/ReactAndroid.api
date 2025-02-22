@@ -3822,6 +3822,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setTranslateY (Landroid/view/View;F)V
 	public fun setViewState (Landroid/view/View;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun setZIndex (Landroid/view/View;F)V
+	protected fun updateViewAccessibility (Landroid/view/View;)V
 }
 
 public abstract class com/facebook/react/uimanager/BaseViewManagerDelegate : com/facebook/react/uimanager/ViewManagerDelegate {
@@ -4106,7 +4107,7 @@ public class com/facebook/react/uimanager/ReactAccessibilityDelegate : androidx/
 	public fun <init> (Landroid/view/View;ZI)V
 	public static fun createNodeInfoFromView (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;
 	public fun getAccessibilityNodeProvider (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeProviderCompat;
-	protected fun getFirstSpan (IILjava/lang/Class;)Ljava/lang/Object;
+	protected fun getHostView ()Landroid/view/View;
 	public static fun getTalkbackDescription (Landroid/view/View;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Ljava/lang/CharSequence;
 	protected fun getVirtualViewAt (FF)I
 	protected fun getVisibleVirtualViews (Ljava/util/List;)V
@@ -4124,13 +4125,7 @@ public class com/facebook/react/uimanager/ReactAccessibilityDelegate : androidx/
 	public static fun resetDelegate (Landroid/view/View;ZI)V
 	public static fun setDelegate (Landroid/view/View;ZI)V
 	public static fun setRole (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;Landroid/content/Context;)V
-}
-
-public class com/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityLinks {
-	public fun <init> ([Landroid/text/style/ClickableSpan;Landroid/text/Spannable;)V
-	public fun getLinkById (I)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityLinks$AccessibleLink;
-	public fun getLinkBySpanPos (II)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityLinks$AccessibleLink;
-	public fun size ()I
+	public fun superGetAccessibilityNodeProvider (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeProviderCompat;
 }
 
 public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole : java/lang/Enum {
@@ -6922,6 +6917,8 @@ public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/r
 	public fun updateExtraData (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Object;)V
 	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public fun updateState (Lcom/facebook/react/views/text/ReactTextView;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
+	protected synthetic fun updateViewAccessibility (Landroid/view/View;)V
+	protected fun updateViewAccessibility (Lcom/facebook/react/views/text/ReactTextView;)V
 }
 
 public abstract interface class com/facebook/react/views/text/ReactTextViewManagerCallback {
