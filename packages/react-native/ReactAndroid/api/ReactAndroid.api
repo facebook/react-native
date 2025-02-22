@@ -6856,6 +6856,7 @@ public final class com/facebook/react/views/text/ReactTextUpdate$Companion {
 public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/widget/AppCompatTextView, com/facebook/react/uimanager/ReactCompoundView {
 	public fun <init> (Landroid/content/Context;)V
 	protected fun dispatchHoverEvent (Landroid/view/MotionEvent;)Z
+	public fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun getSpanned ()Landroid/text/Spannable;
 	public fun hasOverlappingRendering ()Z
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
@@ -6863,6 +6864,7 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun onDetachedFromWindow ()V
 	protected fun onDraw (Landroid/graphics/Canvas;)V
 	public fun onFinishTemporaryDetach ()V
+	public final fun onFocusChanged (ZILandroid/graphics/Rect;)V
 	protected fun onLayout (ZIIII)V
 	protected fun onMeasure (II)V
 	public fun onStartTemporaryDetach ()V
