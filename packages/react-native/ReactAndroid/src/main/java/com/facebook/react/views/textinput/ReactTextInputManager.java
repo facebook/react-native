@@ -933,6 +933,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setReturnKeyType(returnKeyType);
   }
 
+  @ReactProp(name = "disableDragAndDropPasting", defaultBoolean = false)
+  public void setDisableDragAndDropPasting(ReactEditText view, boolean disableDragAndDropPasting) {
+    view.setDisableDragAndDropPasting(disableDragAndDropPasting);
+  }
+
   @ReactProp(name = "disableFullscreenUI", defaultBoolean = false)
   public void setDisableFullscreenUI(ReactEditText view, boolean disableFullscreenUI) {
     view.setDisableFullscreenUI(disableFullscreenUI);

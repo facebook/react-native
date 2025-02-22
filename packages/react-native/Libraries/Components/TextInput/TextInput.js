@@ -418,6 +418,15 @@ export type TextInputAndroidProps = $ReadOnly<{
   cursorColor?: ?ColorValue,
 
   /**
+   * When `true`, the text input will no longer receive data from drag and drop
+   * events. This means the text input will not change focus nor will dropping
+   * a dragged item have any effect.
+   * Defaults to `false`.
+   * @platform android
+   */
+  disableDragAndDropPasting?: ?boolean,
+
+  /**
    * When `false`, if there is a small amount of space available around a text input
    * (e.g. landscape orientation on a phone), the OS may choose to have the user edit
    * the text inside of a full screen text input mode. When `true`, this feature is
