@@ -8,13 +8,11 @@
  * @flow strict-local
  */
 
-import type {HostComponent} from '../../src/private/types/HostComponent';
 import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {
   InternalInstanceHandle,
   Node,
 } from '../Renderer/shims/ReactNativeTypes';
-import type ReactFabricHostComponent from './ReactFabricPublicInstance/ReactFabricHostComponent';
 import type {ElementRef, ElementType} from 'react';
 
 import {
@@ -136,8 +134,8 @@ export function isProfilingRenderer(): boolean {
 }
 
 export function isChildPublicInstance(
-  parentInstance: ReactFabricHostComponent | HostComponent<empty>,
-  childInstance: ReactFabricHostComponent | HostComponent<empty>,
+  parentInstance: HostInstance,
+  childInstance: HostInstance,
 ): boolean {
   return require('../Renderer/shims/ReactNative').default.isChildPublicInstance(
     parentInstance,

@@ -6976,8 +6976,8 @@ declare export function unstable_batchedUpdates<T>(
 ): void;
 declare export function isProfilingRenderer(): boolean;
 declare export function isChildPublicInstance(
-  parentInstance: ReactFabricHostComponent | HostComponent<empty>,
-  childInstance: ReactFabricHostComponent | HostComponent<empty>
+  parentInstance: HostInstance,
+  childInstance: HostInstance
 ): boolean;
 declare export function getNodeFromInternalInstanceHandle(
   internalInstanceHandle: InternalInstanceHandle
