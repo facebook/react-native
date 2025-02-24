@@ -216,9 +216,12 @@ function generateBubblingEventInfo(
         t.objectExpression([
           t.objectProperty(
             t.identifier('captured'),
-            t.identifier(`${event.name}Capture`),
+            t.stringLiteral(`${event.name}Capture`),
           ),
-          t.objectProperty(t.identifier('bubbled'), t.identifier(event.name)),
+          t.objectProperty(
+            t.identifier('bubbled'),
+            t.stringLiteral(event.name),
+          ),
         ]),
       ),
     ]),
@@ -234,7 +237,7 @@ function generateDirectEventInfo(
     t.objectExpression([
       t.objectProperty(
         t.identifier('registrationName'),
-        t.identifier(event.name),
+        t.stringLiteral(event.name),
       ),
     ]),
   );
@@ -367,7 +370,8 @@ function buildCommands(
       const dispatchCommandCall = t.callExpression(
         t.identifier('dispatchCommand'),
         [
-          t.identifier(commandName),
+          t.identifier('ref'),
+          t.stringLiteral(commandName),
           t.arrayExpression(params.map(param => t.identifier(param.name))),
         ],
       );
