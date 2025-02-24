@@ -607,10 +607,11 @@ export default class Device {
   // Sends single message to device.
   #sendMessageToDevice(message: MessageToDevice) {
     try {
+      const messageToSend = JSON.stringify(message);
       if (message.event !== 'getPages') {
-        debug('(Debugger)    (Proxy) -> (Device): ' + JSON.stringify(message));
+        debug('(Debugger)    (Proxy) -> (Device): %s', messageToSend);
       }
-      this.#deviceSocket.send(JSON.stringify(message));
+      this.#deviceSocket.send(messageToSend);
     } catch (error) {}
   }
 
