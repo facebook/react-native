@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dd2fa7d4fb722350d77094f8bcc38872>>
+ * @generated SignedSource<<7aacac604f39305d7374b4396f81d013>>
  */
 
 /**
@@ -26,7 +26,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
-  private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
@@ -113,15 +112,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableEagerRootViewAttachment()
       enableEagerRootViewAttachmentCache = cached
-    }
-    return cached
-  }
-
-  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean {
-    var cached = enableEventEmitterRetentionDuringGesturesOnAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableEventEmitterRetentionDuringGesturesOnAndroid()
-      enableEventEmitterRetentionDuringGesturesOnAndroidCache = cached
     }
     return cached
   }

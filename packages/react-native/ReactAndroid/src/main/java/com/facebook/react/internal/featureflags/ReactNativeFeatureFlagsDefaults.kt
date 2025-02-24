@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5315bd93234b8c00b7d029081231eeeb>>
+ * @generated SignedSource<<66fc8ba13c69e2f5a1f90372b6b2e94f>>
  */
 
 /**
@@ -34,8 +34,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableCppPropsIteratorSetter(): Boolean = false
 
   override fun enableEagerRootViewAttachment(): Boolean = false
-
-  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean = false
 
   override fun enableFabricLogs(): Boolean = false
 

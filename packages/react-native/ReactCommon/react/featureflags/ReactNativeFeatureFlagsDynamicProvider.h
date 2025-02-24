@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<95aa462c1a48b2299c2a82adf74c58df>>
+ * @generated SignedSource<<a9421d6ca56ea2f81d69298dcf0d97ad>>
  */
 
 /**
@@ -97,15 +97,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableEagerRootViewAttachment();
-  }
-
-  bool enableEventEmitterRetentionDuringGesturesOnAndroid() override {
-    auto value = values_["enableEventEmitterRetentionDuringGesturesOnAndroid"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableEventEmitterRetentionDuringGesturesOnAndroid();
   }
 
   bool enableFabricLogs() override {

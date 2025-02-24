@@ -1609,7 +1609,7 @@ public abstract interface class com/facebook/react/bridge/queue/MessageQueueThre
 	public abstract fun runOnQueue (Ljava/lang/Runnable;)Z
 }
 
-public class com/facebook/react/bridge/queue/MessageQueueThreadHandler : android/os/Handler {
+public final class com/facebook/react/bridge/queue/MessageQueueThreadHandler : android/os/Handler {
 	public fun <init> (Landroid/os/Looper;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)V
 	public fun dispatchMessage (Landroid/os/Message;)V
 }
@@ -2155,19 +2155,6 @@ public final class com/facebook/react/devsupport/LogBoxModule : com/facebook/fbr
 }
 
 public final class com/facebook/react/devsupport/LogBoxModule$Companion {
-}
-
-public class com/facebook/react/devsupport/PackagerStatusCheck {
-	public fun <init> ()V
-	public fun <init> (Lokhttp3/OkHttpClient;)V
-	public fun run (Ljava/lang/String;Lcom/facebook/react/devsupport/interfaces/PackagerStatusCallback;)V
-}
-
-public final class com/facebook/react/devsupport/PerftestDevSupportManager : com/facebook/react/devsupport/ReleaseDevSupportManager {
-	public fun <init> (Landroid/content/Context;)V
-	public fun getDevSettings ()Lcom/facebook/react/modules/debug/interfaces/DeveloperSettings;
-	public fun startInspector ()V
-	public fun stopInspector ()V
 }
 
 public abstract interface class com/facebook/react/devsupport/ReactInstanceDevHelper {
@@ -3835,6 +3822,7 @@ public abstract class com/facebook/react/uimanager/BaseViewManager : com/faceboo
 	public fun setTranslateY (Landroid/view/View;F)V
 	public fun setViewState (Landroid/view/View;Lcom/facebook/react/bridge/ReadableMap;)V
 	public fun setZIndex (Landroid/view/View;F)V
+	protected fun updateViewAccessibility (Landroid/view/View;)V
 }
 
 public abstract class com/facebook/react/uimanager/BaseViewManagerDelegate : com/facebook/react/uimanager/ViewManagerDelegate {
@@ -4119,7 +4107,7 @@ public class com/facebook/react/uimanager/ReactAccessibilityDelegate : androidx/
 	public fun <init> (Landroid/view/View;ZI)V
 	public static fun createNodeInfoFromView (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;
 	public fun getAccessibilityNodeProvider (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeProviderCompat;
-	protected fun getFirstSpan (IILjava/lang/Class;)Ljava/lang/Object;
+	protected fun getHostView ()Landroid/view/View;
 	public static fun getTalkbackDescription (Landroid/view/View;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)Ljava/lang/CharSequence;
 	protected fun getVirtualViewAt (FF)I
 	protected fun getVisibleVirtualViews (Ljava/util/List;)V
@@ -4137,13 +4125,7 @@ public class com/facebook/react/uimanager/ReactAccessibilityDelegate : androidx/
 	public static fun resetDelegate (Landroid/view/View;ZI)V
 	public static fun setDelegate (Landroid/view/View;ZI)V
 	public static fun setRole (Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole;Landroid/content/Context;)V
-}
-
-public class com/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityLinks {
-	public fun <init> ([Landroid/text/style/ClickableSpan;Landroid/text/Spannable;)V
-	public fun getLinkById (I)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityLinks$AccessibleLink;
-	public fun getLinkBySpanPos (II)Lcom/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityLinks$AccessibleLink;
-	public fun size ()I
+	public fun superGetAccessibilityNodeProvider (Landroid/view/View;)Landroidx/core/view/accessibility/AccessibilityNodeProviderCompat;
 }
 
 public final class com/facebook/react/uimanager/ReactAccessibilityDelegate$AccessibilityRole : java/lang/Enum {
@@ -6874,6 +6856,7 @@ public final class com/facebook/react/views/text/ReactTextUpdate$Companion {
 public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/widget/AppCompatTextView, com/facebook/react/uimanager/ReactCompoundView {
 	public fun <init> (Landroid/content/Context;)V
 	protected fun dispatchHoverEvent (Landroid/view/MotionEvent;)Z
+	public fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun getSpanned ()Landroid/text/Spannable;
 	public fun hasOverlappingRendering ()Z
 	public fun invalidateDrawable (Landroid/graphics/drawable/Drawable;)V
@@ -6881,6 +6864,7 @@ public class com/facebook/react/views/text/ReactTextView : androidx/appcompat/wi
 	public fun onDetachedFromWindow ()V
 	protected fun onDraw (Landroid/graphics/Canvas;)V
 	public fun onFinishTemporaryDetach ()V
+	public final fun onFocusChanged (ZILandroid/graphics/Rect;)V
 	protected fun onLayout (ZIIII)V
 	protected fun onMeasure (II)V
 	public fun onStartTemporaryDetach ()V
@@ -6935,6 +6919,8 @@ public class com/facebook/react/views/text/ReactTextViewManager : com/facebook/r
 	public fun updateExtraData (Lcom/facebook/react/views/text/ReactTextView;Ljava/lang/Object;)V
 	public synthetic fun updateState (Landroid/view/View;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
 	public fun updateState (Lcom/facebook/react/views/text/ReactTextView;Lcom/facebook/react/uimanager/ReactStylesDiffMap;Lcom/facebook/react/uimanager/StateWrapper;)Ljava/lang/Object;
+	protected synthetic fun updateViewAccessibility (Landroid/view/View;)V
+	protected fun updateViewAccessibility (Lcom/facebook/react/views/text/ReactTextView;)V
 }
 
 public abstract interface class com/facebook/react/views/text/ReactTextViewManagerCallback {

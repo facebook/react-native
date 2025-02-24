@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<cf03a6e938df9988c00249dc78576cbf>>
+ * @generated SignedSource<<503e0fd17df2653f1634bc2a7314090b>>
  */
 
 /**
@@ -38,7 +38,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableBridgelessArchitecture();
   bool enableCppPropsIteratorSetter();
   bool enableEagerRootViewAttachment();
-  bool enableEventEmitterRetentionDuringGesturesOnAndroid();
   bool enableFabricLogs();
   bool enableFabricRenderer();
   bool enableIOSViewClipToPaddingBox();
@@ -85,7 +84,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 41> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -93,7 +92,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
-  std::atomic<std::optional<bool>> enableEventEmitterRetentionDuringGesturesOnAndroid_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;

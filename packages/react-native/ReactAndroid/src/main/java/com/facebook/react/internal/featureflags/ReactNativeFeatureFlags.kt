@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6e8144a48ab65f3b5ad8dd601cee2114>>
+ * @generated SignedSource<<4558ccf6c50d565ffdbb33aa5470261d>>
  */
 
 /**
@@ -63,12 +63,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableEagerRootViewAttachment(): Boolean = accessor.enableEagerRootViewAttachment()
-
-  /**
-   * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
-   */
-  @JvmStatic
-  public fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean = accessor.enableEventEmitterRetentionDuringGesturesOnAndroid()
 
   /**
    * This feature flag enables logs for Fabric.
