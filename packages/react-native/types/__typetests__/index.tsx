@@ -469,12 +469,10 @@ export default Welcome;
 // TouchableTest
 function TouchableTest() {
   function basicUsage() {
-    if (Touchable.TOUCH_TARGET_DEBUG) {
-      return Touchable.renderDebugView({
-        color: 'mediumspringgreen',
-        hitSlop: {bottom: 5, top: 5},
-      });
-    }
+    return Touchable.renderDebugView({
+      color: 'mediumspringgreen',
+      hitSlop: {bottom: 5, top: 5},
+    });
   }
 
   function defaultHitSlop() {
