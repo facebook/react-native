@@ -1382,19 +1382,19 @@ declare export default typeof legacySendAccessibilityEvent;
 
 exports[`public API should not change unintentionally Libraries/Components/ActivityIndicator/ActivityIndicator.js 1`] = `
 "type IndicatorSize = number | \\"small\\" | \\"large\\";
-type IOSProps = $ReadOnly<{
+type ActivityIndicatorIOSProps = $ReadOnly<{
   hidesWhenStopped?: ?boolean,
 }>;
-type Props = $ReadOnly<{
+export type ActivityIndicatorProps = $ReadOnly<{
   ...ViewProps,
-  ...IOSProps,
+  ...ActivityIndicatorIOSProps,
   animating?: ?boolean,
   color?: ?ColorValue,
   size?: ?IndicatorSize,
 }>;
 declare const ActivityIndicatorWithRef: component(
-  ref: React.RefSetter<HostComponent<empty>>,
-  ...props: Props
+  ref?: React.RefSetter<HostComponent<empty>>,
+  ...props: ActivityIndicatorProps
 );
 declare export default typeof ActivityIndicatorWithRef;
 "
