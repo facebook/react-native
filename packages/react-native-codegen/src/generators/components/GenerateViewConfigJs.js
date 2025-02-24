@@ -446,8 +446,15 @@ module.exports = {
                 replacedSourceRoot.body.push(commandsExport);
               }
 
-              const replacedSource =
-                core.transformFromAstSync(replacedSourceRoot);
+              const replacedSource = core.transformFromAstSync(
+                replacedSourceRoot,
+                undefined,
+                {
+                  babelrc: false,
+                  browserslistConfigFile: false,
+                  configFile: false,
+                },
+              );
               return replacedSource.code;
             })
             .join('\n\n');
