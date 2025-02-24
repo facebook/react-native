@@ -112,6 +112,10 @@ class RuntimeDecorator : public Base, private jsi::Instrumentation {
     return plain_;
   }
 
+  ICast* castInterface(const UUID& interfaceUuid) override {
+    return plain().castInterface(interfaceUuid);
+  }
+
   Value evaluateJavaScript(
       const std::shared_ptr<const Buffer>& buffer,
       const std::string& sourceURL) override {
@@ -575,6 +579,11 @@ class WithRuntimeDecorator : public RuntimeDecorator<Plain, Base> {
   // the ctor, and there is no ctor, so they can be passed members of
   // the derived class.
   WithRuntimeDecorator(Plain& plain, With& with) : RD(plain), with_(with) {}
+
+  ICast* castInterface(const UUID& interfaceUuid) override {
+    Around around{with_};
+    return RD::castInterface(interfaceUuid);
+  }
 
   Value evaluateJavaScript(
       const std::shared_ptr<const Buffer>& buffer,
