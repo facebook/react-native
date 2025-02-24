@@ -172,6 +172,7 @@ public class UIImplementation {
   public void removeRootView(int rootViewTag) {
     removeRootShadowNode(rootViewTag);
     mOperationsQueue.enqueueRemoveRootView(rootViewTag);
+    //if container is destroyed, we need make RemoveRootView Operation do in UIThread
     if (isDestroy) {
       dispatchViewUpdates(-1);
     }
