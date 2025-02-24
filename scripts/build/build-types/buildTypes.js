@@ -71,6 +71,7 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Components/Touchable/TouchableNativeFeedback.js',
   'packages/react-native/Libraries/Components/Touchable/TouchableHighlight.js',
   'packages/react-native/Libraries/Components/Switch/Switch.js',
+  'packages/react-native/Libraries/Components/StatusBar/StatusBar.js',
 ];
 
 /**
