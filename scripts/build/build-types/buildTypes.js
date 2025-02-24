@@ -37,6 +37,7 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Blob/URLSearchParams.js',
   'packages/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.js',
   'packages/react-native/Libraries/Components/Clipboard/Clipboard.js',
+  'packages/react-native/Libraries/Components/LayoutConformance/LayoutConformance.js',
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
   'packages/react-native/Libraries/Components/ScrollView/ScrollView.js',
   'packages/react-native/Libraries/Interaction/InteractionManager.js',
