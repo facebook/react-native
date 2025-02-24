@@ -860,8 +860,6 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
   layer.contentsScale = image.scale;
   layer.needsDisplayOnBoundsChange = YES;
   layer.magnificationFilter = kCAFilterNearest;
-  layer.shouldRasterize = YES;
-  layer.rasterizationScale = image.scale;
 
   const BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
   if (isResizable) {

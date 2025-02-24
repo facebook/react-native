@@ -699,8 +699,6 @@ static void RCTAddContourEffectToLayer(
         CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
     layer.contents = (id)image.CGImage;
     layer.contentsScale = image.scale;
-    layer.shouldRasterize = YES;
-    layer.rasterizationScale = image.scale;
 
     BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
     if (isResizable) {
@@ -911,6 +909,13 @@ static RCTBorderStyle RCTBorderStyleFromOutlineStyle(OutlineStyle outlineStyle)
       borderLayer.magnificationFilter = kCAFilterNearest;
       [layer addSublayer:borderLayer];
       _borderLayer = borderLayer;
+    }
+
+    if (_props->shouldRasterize) {
+      _borderLayer.shouldRasterize = YES;
+      _borderLayer.rasterizationScale = self.traitCollection.displayScale;
+    } else {
+      _borderLayer.shouldRasterize = NO;
     }
 
     layer.borderWidth = 0;
