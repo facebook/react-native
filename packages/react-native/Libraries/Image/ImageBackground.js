@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {HostInstance} from '../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {ImageBackgroundProps} from './ImageProps';
 
 import View from '../Components/View/View';

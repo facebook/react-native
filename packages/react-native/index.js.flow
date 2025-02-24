@@ -17,10 +17,8 @@
 
 // TODO(T215317597): Reconsider the pre-existing grouping of these APIs
 
-export type {
-  HostComponent,
-  HostInstance,
-} from './Libraries/Renderer/shims/ReactNativeTypes';
+export type {HostInstance} from './src/private/types/HostInstance';
+export type {HostComponent} from './src/private/types/HostComponent';
 export {default as registerCallableModule} from './Libraries/Core/registerCallableModule';
 
 // #region Components

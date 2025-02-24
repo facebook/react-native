@@ -8100,16 +8100,13 @@ export type MouseEvent = NativeSyntheticEvent<
 `;
 
 exports[`public API should not change unintentionally Libraries/Types/ReactDevToolsTypes.js 1`] = `
-"type PublicInstance = {
-  ...NativeMethods,
-};
-export type InstanceFromReactDevTools =
-  | PublicInstance
+"export type InstanceFromReactDevTools =
+  | HostInstance
   | {
       canonical?:
-        | PublicInstance
+        | HostInstance
         | {
-            publicInstance?: PublicInstance,
+            publicInstance?: HostInstance,
           },
     };
 export type ReactDevToolsAgentEvents = {
@@ -9016,10 +9013,8 @@ declare export default class EventEmitter<
 `;
 
 exports[`public API should not change unintentionally index.js.flow 1`] = `
-"export type {
-  HostComponent,
-  HostInstance,
-} from \\"./Libraries/Renderer/shims/ReactNativeTypes\\";
+"export type { HostInstance } from \\"./src/private/types/HostInstance\\";
+export type { HostComponent } from \\"./src/private/types/HostComponent\\";
 export { default as registerCallableModule } from \\"./Libraries/Core/registerCallableModule\\";
 export { default as AccessibilityInfo } from \\"./Libraries/Components/AccessibilityInfo/AccessibilityInfo\\";
 export { default as ActivityIndicator } from \\"./Libraries/Components/ActivityIndicator/ActivityIndicator\\";
@@ -9119,6 +9114,63 @@ exports[`public API should not change unintentionally src/private/setup/setUpMut
 
 exports[`public API should not change unintentionally src/private/setup/setUpPerformanceObserver.js 1`] = `
 "declare export default function setUpPerformanceObserver(): void;
+"
+`;
+
+exports[`public API should not change unintentionally src/private/types/HostComponent.js 1`] = `
+"export type HostComponent<Config: { ... }> = component(
+  ref: React$RefSetter<HostInstance>,
+  ...Config
+);
+"
+`;
+
+exports[`public API should not change unintentionally src/private/types/HostInstance.js 1`] = `
+"export type MeasureOnSuccessCallback = (
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  pageX: number,
+  pageY: number
+) => void;
+export type MeasureInWindowOnSuccessCallback = (
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) => void;
+export type MeasureLayoutOnSuccessCallback = (
+  left: number,
+  top: number,
+  width: number,
+  height: number
+) => void;
+export interface INativeMethods {
+  blur(): void;
+  focus(): void;
+  measure(callback: MeasureOnSuccessCallback): void;
+  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void;
+  measureLayout(
+    relativeToNativeNode: number | HostInstance,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail?: () => void
+  ): void;
+  setNativeProps(nativeProps: { ... }): void;
+}
+export type NativeMethods = $ReadOnly<{
+  blur(): void,
+  focus(): void,
+  measure(callback: MeasureOnSuccessCallback): void,
+  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
+  measureLayout(
+    relativeToNativeNode: number | HostInstance,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail?: () => void
+  ): void,
+  setNativeProps(nativeProps: { ... }): void,
+}>;
+export type HostInstance = NativeMethods;
 "
 `;
 

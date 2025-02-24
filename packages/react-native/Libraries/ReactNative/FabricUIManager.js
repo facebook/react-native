@@ -10,13 +10,15 @@
 
 'use strict';
 
+import type {
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+  MeasureOnSuccessCallback,
+} from '../../src/private/types/HostInstance';
 import type {NativeElementReference} from '../../src/private/webapis/dom/nodes/specs/NativeDOM';
 import type {
   InternalInstanceHandle,
   LayoutAnimationConfig,
-  MeasureInWindowOnSuccessCallback,
-  MeasureLayoutOnSuccessCallback,
-  MeasureOnSuccessCallback,
   Node,
 } from '../Renderer/shims/ReactNativeTypes';
 import type {RootTag} from '../Types/RootTagTypes';

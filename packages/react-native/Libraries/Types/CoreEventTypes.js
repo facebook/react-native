@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {HostInstance} from '../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../src/private/types/HostInstance';
 
 export type NativeSyntheticEvent<+T> = $ReadOnly<{
   bubbles: ?boolean,
