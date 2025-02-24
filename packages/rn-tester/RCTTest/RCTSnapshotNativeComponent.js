@@ -10,8 +10,8 @@
 
 'use strict';
 
+import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {NativeSyntheticEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 const {requireNativeComponent} = require('react-native');

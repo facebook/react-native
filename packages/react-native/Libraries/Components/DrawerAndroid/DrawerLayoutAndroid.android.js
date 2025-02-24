@@ -8,12 +8,12 @@
  * @format
  */
 
-import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
 import type {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
-} from '../../Renderer/shims/ReactNativeTypes';
+} from '../../../src/private/types/HostInstance';
+import type {AccessibilityRole} from '../../Components/View/ViewAccessibility';
 import type {ColorValue, ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {DirectEventHandler} from '../../Types/CodegenTypes';
 

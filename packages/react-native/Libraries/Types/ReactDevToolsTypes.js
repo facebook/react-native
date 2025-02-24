@@ -9,19 +9,15 @@
  * @oncall react_native
  */
 
-import type {NativeMethods} from '../Renderer/shims/ReactNativeTypes';
-
-type PublicInstance = {
-  ...NativeMethods,
-};
+import type {HostInstance} from '../../src/private/types/HostInstance';
 
 export type InstanceFromReactDevTools =
-  | PublicInstance
+  | HostInstance
   | {
       canonical?:
-        | PublicInstance // TODO: remove this variant when syncing the new version of the renderer from React to React Native.
+        | HostInstance
         | {
-            publicInstance?: PublicInstance,
+            publicInstance?: HostInstance,
           },
     };
 

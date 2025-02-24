@@ -8,12 +8,10 @@
  * @format
  */
 
+import type {HostComponent} from '../../src/private/types/HostComponent';
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
-import type {
-  HostComponent,
-  HostInstance,
-  PartialViewConfig,
-} from '../Renderer/shims/ReactNativeTypes';
+import type {PartialViewConfig} from '../Renderer/shims/ReactNativeTypes';
 import type {
   ColorValue,
   DangerouslyImpreciseStyle,
