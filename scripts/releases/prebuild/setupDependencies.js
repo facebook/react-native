@@ -24,7 +24,6 @@ const util = require('util');
 
 /*::
 import type {Dependency} from './types';
-import {skip} from "rxjs/operators";
 */
 
 const exec = util.promisify(require('child_process').exec);

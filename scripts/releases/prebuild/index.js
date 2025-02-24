@@ -10,13 +10,12 @@
  */
 
 const {buildDepenencies} = require('./build');
+const {getCLIConfiguration} = require('./cli');
 const {createFramework} = require('./compose-framework');
-const {dependencies, platforms} = require('./configuration');
 const {cleanFolder} = require('./folders');
 const {setupDependencies} = require('./setupDependencies');
 const {createSwiftPackageFile} = require('./swift-package');
 const path = require('path');
-const yargs = require('yargs');
 
 require('../../babel-register').registerForScript();
 
@@ -25,114 +24,41 @@ const BUILD_DESTINATION = '.build';
 
 const SCHEME = 'ReactNativeDependencies';
 
-const cli = yargs
-  .usage(
-    'This script prepares iOS prebuilds for React Native. It downloads the dependencies, prepare them, builds them and creates the XCFrameworks.' +
-      'Calling the script with no options will build all the dependencies for all the slices and configurations.',
-  )
-  .option('setup', {
-    alias: 's',
-    type: 'boolean',
-    describe: 'Download and setup dependencies',
-  })
-  .option('swiftpackage', {
-    alias: 'w',
-    type: 'boolean',
-    describe: 'Creates the Package.swift file',
-  })
-  .option('build', {
-    alias: 'b',
-    type: 'boolean',
-    describe: 'Build dependencies/platforms',
-  })
-  .option('compose', {
-    alias: 'c',
-    type: 'boolean',
-    describe: 'Compose xcframework from built dependencies',
-  })
-  .option('platforms', {
-    alias: 'p',
-    type: 'array',
-    default: platforms,
-    describe: 'Specify one or more platforms to build for',
-  })
-  .option('dependencies', {
-    alias: 'd',
-    type: 'array',
-    default: dependencies.filter(d => !d.disabled).map(d => d.name),
-    describe: 'Specify one or more dependencies',
-  })
-  .help();
-
-const arrayLike = (value /*: Array<any> */) /*: Array<any> */ =>
-  Array.isArray(value) ? value : [value];
-
 /**
  * Main entry point
  */
 async function main() {
-  const argv = await cli.argv;
-
-  // Verify that the platforms argument is valid
-  const invalidPlatforms = arrayLike(argv.platforms).filter(
-    rs => !platforms.includes(rs),
-  );
-  if (invalidPlatforms.length > 0) {
-    console.error(`Invalid platform specified: ${invalidPlatforms.join(', ')}`);
+  const cli = await getCLIConfiguration();
+  if (cli == null) {
     return 0;
   }
 
-  // Verify that the dependencies argument is valid
-  const invalidDependencies = arrayLike(argv.dependencies).filter(
-    rd => !dependencies.map(d => d.name).includes(rd),
-  );
-  if (invalidDependencies.length > 0) {
-    console.error(
-      `Invalid dependency specified: ${invalidDependencies.join(', ')}`,
-    );
-    return 0;
-  }
-
-  // Prepare platforms and dependencies
-  const resolvedPlatforms = platforms.filter(p => argv.platforms.includes(p));
-  const resolvedDependencies = dependencies.filter(d =>
-    argv.dependencies.includes(d.name),
-  );
-
-  // Prepare output folders
   const buildFolder = path.resolve(THIRD_PARTY_PATH, BUILD_DESTINATION);
   const rootFolder = path.resolve(THIRD_PARTY_PATH);
 
-  // Are we running all commands?
-  const runAllCommands =
-    argv.setup == null &&
-    argv.swiftpackage == null &&
-    argv.build == null &&
-    argv.compose == null;
-
-  if (runAllCommands || argv.setup != null) {
+  if (cli.tasks.setup) {
     await cleanFolder(rootFolder);
-    await setupDependencies(resolvedDependencies, rootFolder);
+    await setupDependencies(cli.dependencies, rootFolder);
   }
 
-  if (runAllCommands || argv.swiftpackage != null) {
+  if (cli.tasks.swiftpackage) {
     // Create Package.swift file
-    await createSwiftPackageFile(SCHEME, resolvedDependencies, rootFolder);
+    await createSwiftPackageFile(SCHEME, cli.dependencies, rootFolder);
   }
 
-  if (runAllCommands || argv.build != null) {
+  if (cli.tasks.build) {
     await cleanFolder(buildFolder);
     await buildDepenencies(
       SCHEME,
-      resolvedDependencies,
-      resolvedPlatforms,
+      cli.dependencies,
+      cli.platforms,
       rootFolder,
       buildFolder,
     );
   }
 
-  if (runAllCommands || argv.compose != null) {
-    await createFramework(SCHEME, dependencies, rootFolder, buildFolder);
+  if (cli.tasks.compose) {
+    await createFramework(SCHEME, cli.dependencies, rootFolder, buildFolder);
   }
 
   console.log('');
