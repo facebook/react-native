@@ -163,10 +163,10 @@ export const __INTERNAL_VIEW_CONFIG = {
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 export const Commands = {
   flashScrollIndicators(ref) {
-    dispatchCommand(flashScrollIndicators, []);
+    dispatchCommand(ref, \\"flashScrollIndicators\\", []);
   },
   allTypes(ref, x, y, z, message, animated, locations) {
-    dispatchCommand(allTypes, [x, y, z, message, animated, locations]);
+    dispatchCommand(ref, \\"allTypes\\", [x, y, z, message, animated, locations]);
   }
 };
 ",
@@ -202,13 +202,13 @@ export const __INTERNAL_VIEW_CONFIG = {
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 export const Commands = {
   handleRootTag(ref, rootTag) {
-    dispatchCommand(handleRootTag, [rootTag]);
+    dispatchCommand(ref, \\"handleRootTag\\", [rootTag]);
   },
   hotspotUpdate(ref, x, y) {
-    dispatchCommand(hotspotUpdate, [x, y]);
+    dispatchCommand(ref, \\"hotspotUpdate\\", [x, y]);
   },
   addItems(ref, items) {
-    dispatchCommand(addItems, [items]);
+    dispatchCommand(ref, \\"addItems\\", [items]);
   }
 };
 ",
@@ -305,8 +305,8 @@ export const __INTERNAL_VIEW_CONFIG = {
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
-        captured: onChangeCapture,
-        bubbled: onChange
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
       }
     }
   },
@@ -347,32 +347,32 @@ export const __INTERNAL_VIEW_CONFIG = {
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
-        captured: onChangeCapture,
-        bubbled: onChange
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
       }
     },
     topArrayEventType: {
       phasedRegistrationNames: {
-        captured: onArrayEventTypeCapture,
-        bubbled: onArrayEventType
+        captured: \\"onArrayEventTypeCapture\\",
+        bubbled: \\"onArrayEventType\\"
       }
     },
     topEnd: {
       phasedRegistrationNames: {
-        captured: onEndCapture,
-        bubbled: onEnd
+        captured: \\"onEndCapture\\",
+        bubbled: \\"onEnd\\"
       }
     }
   },
   directEventTypes: {
     topEventDirect: {
-      registrationName: onEventDirect
+      registrationName: \\"onEventDirect\\"
     },
     topOrientationChange: {
-      registrationName: onOrientationChange
+      registrationName: \\"onOrientationChange\\"
     },
     topEventWithMixedPropAttribute: {
-      registrationName: onEventWithMixedPropAttribute
+      registrationName: \\"onEventWithMixedPropAttribute\\"
     }
   },
   validAttributes: {
@@ -417,14 +417,14 @@ export const __INTERNAL_VIEW_CONFIG = {
   bubblingEventTypes: {
     topPaperChange: {
       phasedRegistrationNames: {
-        captured: onChangeCapture,
-        bubbled: onChange
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
       }
     }
   },
   directEventTypes: {
     topPaperDirectChange: {
-      registrationName: onDirectChange
+      registrationName: \\"onDirectChange\\"
     }
   },
   validAttributes: {
@@ -718,8 +718,8 @@ export const __INTERNAL_VIEW_CONFIG = {
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
-        captured: onChangeCapture,
-        bubbled: onChange
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
       }
     }
   },

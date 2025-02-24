@@ -221,8 +221,8 @@ export const __INTERNAL_VIEW_CONFIG = {
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
-        captured: onChangeCapture,
-        bubbled: onChange
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
       }
     }
   },
@@ -263,32 +263,32 @@ export const __INTERNAL_VIEW_CONFIG = {
   bubblingEventTypes: {
     topPaperDirectName: {
       phasedRegistrationNames: {
-        captured: onChangeCapture,
-        bubbled: onChange
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
       }
     },
     topEnd: {
       phasedRegistrationNames: {
-        captured: onEndCapture,
-        bubbled: onEnd
+        captured: \\"onEndCapture\\",
+        bubbled: \\"onEnd\\"
       }
     },
     topPaperBubblingName: {
       phasedRegistrationNames: {
-        captured: onEventBubblingWithPaperNameCapture,
-        bubbled: onEventBubblingWithPaperName
+        captured: \\"onEventBubblingWithPaperNameCapture\\",
+        bubbled: \\"onEventBubblingWithPaperName\\"
       }
     }
   },
   directEventTypes: {
     topEventDirect: {
-      registrationName: onEventDirect
+      registrationName: \\"onEventDirect\\"
     },
     topPaperDirectName: {
-      registrationName: onEventDirectWithPaperName
+      registrationName: \\"onEventDirectWithPaperName\\"
     },
     topPaperBubblingName: {
-      registrationName: onOrientationChange
+      registrationName: \\"onOrientationChange\\"
     }
   },
   validAttributes: {
@@ -433,8 +433,8 @@ export const __INTERNAL_VIEW_CONFIG = {
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
-        captured: onChangeCapture,
-        bubbled: onChange
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
       }
     }
   },
