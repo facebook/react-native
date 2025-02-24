@@ -414,7 +414,6 @@ def react_native_post_install(
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
   end
 
-  ReactNativePodsUtils.set_other_cplusplusflags_for_React_Fabric(installer)
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
   ReactNativePodsUtils.set_build_setting(installer, build_setting: "USE_HERMES", value: hermes_enabled)
