@@ -15,7 +15,6 @@ const path = require('path');
 
 /*::
   import type {Dependency} from './types';
-  import {skip} from "rxjs/operators";
   */
 
 /**
