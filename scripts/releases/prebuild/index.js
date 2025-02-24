@@ -59,7 +59,7 @@ const cli = yargs
   .option('dependencies', {
     alias: 'd',
     type: 'array',
-    default: dependencies.map(d => d.name),
+    default: dependencies.filter(d => !d.disabled).map(d => d.name),
     describe: 'Specify one or more dependencies',
   })
   .help();
@@ -112,20 +112,20 @@ async function main() {
 
   if (runAllCommands || argv.setup != null) {
     await cleanFolder(rootFolder);
-    await setupDependencies(resolved_dependencies, rootFolder);
+    await setupDependencies(resolvedDependencies, rootFolder);
   }
 
   if (runAllCommands || argv.swiftpackage != null) {
     // Create Package.swift file
-    await createSwiftPackageFile(SCHEME, resolved_dependencies, rootFolder);
+    await createSwiftPackageFile(SCHEME, resolvedDependencies, rootFolder);
   }
 
   if (runAllCommands || argv.build != null) {
     await cleanFolder(buildFolder);
     await buildDepenencies(
       SCHEME,
-      resolved_dependencies,
-      resolved_platforms,
+      resolvedDependencies,
+      resolvedPlatforms,
       rootFolder,
       buildFolder,
     );

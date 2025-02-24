@@ -30,6 +30,7 @@ export type Settings = $ReadOnly<{
   compilerFlags?: $ReadOnlyArray<string>,
   linkedLibraries?: $ReadOnlyArray<string>,
   publicHeaderFiles: string,
+  linkerSettings?: $ReadOnlyArray<string>
 }>;
 
 export type Dependency = $ReadOnly<{
@@ -39,6 +40,7 @@ export type Dependency = $ReadOnly<{
   prepareScript?: string,
   files: Files,
   settings: Settings,
+  disabled?: boolean,
 }>;
 
 export type Platform = 'iOS' | 'iOS Simulator';

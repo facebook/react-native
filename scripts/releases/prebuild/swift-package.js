@@ -33,29 +33,29 @@ async function createSwiftPackageFile(
 
   const packageSwiftPath = path.join(rootFolder, 'Package.swift');
   const packageSwiftContents = `// swift-tools-version: 6.0
-  /*
-   * Copyright (c) Meta Platforms, Inc. and affiliates.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE file in the root directory of this source tree.
-   */
+/*
+  * Copyright (c) Meta Platforms, Inc. and affiliates.
+  *
+  * This source code is licensed under the MIT license found in the
+  * LICENSE file in the root directory of this source tree.
+  */
 
-  import PackageDescription
+import PackageDescription
 
-  let package = Package(
-      name: "${scheme}",
-      products: [
-          // Products define the executables and libraries a package produces, making them visible to other packages.
-          .library(
-              name: "${scheme}",
-              type: .dynamic,
-              targets: [${dependencies.map(d => `"${d.name}"`).join(', ')}]
-          ),
-      ],
-      targets: [
+let package = Package(
+    name: "${scheme}",
+    products: [
+        // Products define the executables and libraries a package produces, making them visible to other packages.
+        .library(
+            name: "${scheme}",
+            type: .dynamic,
+            targets: [${dependencies.map(d => `"${d.name}"`).join(', ')}]
+        ),
+    ],
+    targets: [
 ${dependencies.map(d => createSwiftTarget(d)).join('')}
-      ]
-    )`;
+    ]
+)`;
 
   // Write to file
   fs.writeFileSync(packageSwiftPath, packageSwiftContents);
@@ -99,6 +99,12 @@ function createSwiftTarget(dependency /*  :Dependency */) {
       .join('');
   }
 
+  // Linker settings
+  let linkerSettings = '';
+  if (dependency.settings.linkerSettings != null) {
+    linkerSettings = `.unsafeFlags([${dependency.settings.linkerSettings.map(l => `"${l}"`).join(', ')}]),\n                `;
+  }
+
   return `          .target(
               name: "${dependency.name}",
               dependencies: [],
@@ -117,6 +123,7 @@ function createSwiftTarget(dependency /*  :Dependency */) {
               ],
               linkerSettings: [
                 ${linkedLibraries}
+                ${linkerSettings}
               ]
             ),
 `;
