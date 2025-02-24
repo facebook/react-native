@@ -20,6 +20,8 @@ namespace facebook::react {
  */
 class ReactPerfettoLogger {
  public:
+  static bool isTracing();
+
   static void mark(
       const std::string_view& eventName,
       double startTime,

@@ -10,6 +10,11 @@
 #include <cxxreact/JSExecutor.h>
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
+#include <reactperflogger/ReactPerfettoLogger.h>
+
+#ifdef WITH_PERFETTO
+#include <reactperflogger/ReactPerfetto.h>
+#endif
 
 namespace facebook::react {
 
@@ -33,6 +38,33 @@ uint64_t timestampToMicroseconds(DOMHighResTimeStamp timestamp) {
   return static_cast<uint64_t>(timestamp * 1000);
 }
 
+#if defined(__clang__)
+#define NO_DESTROY [[clang::no_destroy]]
+#else
+#define NO_DESTROY
+#endif
+
+NO_DESTROY const std::string TRACK_PREFIX = "Track:";
+
+std::tuple<std::optional<std::string>, std::string_view> parseTrackName(
+    const std::string& name) {
+  // Until there's a standard way to pass through track information, parse it
+  // manually, e.g., "Track:Foo:Event name"
+  // https://github.com/w3c/user-timing/issues/109
+  std::optional<std::string> trackName;
+  std::string_view eventName(name);
+  if (name.starts_with(TRACK_PREFIX)) {
+    const auto trackNameDelimiter = name.find(':', TRACK_PREFIX.length());
+    if (trackNameDelimiter != std::string::npos) {
+      trackName = name.substr(
+          TRACK_PREFIX.length(), trackNameDelimiter - TRACK_PREFIX.length());
+      eventName = std::string_view(name).substr(trackNameDelimiter + 1);
+    }
+  }
+
+  return std::make_tuple(trackName, eventName);
+}
+
 } // namespace
 
 std::shared_ptr<PerformanceEntryReporter>&
@@ -42,7 +74,11 @@ PerformanceEntryReporter::getInstance() {
 }
 
 PerformanceEntryReporter::PerformanceEntryReporter()
-    : observerRegistry_(std::make_unique<PerformanceObserverRegistry>()) {}
+    : observerRegistry_(std::make_unique<PerformanceObserverRegistry>()) {
+#ifdef WITH_PERFETTO
+  initializePerfetto();
+#endif
+}
 
 DOMHighResTimeStamp PerformanceEntryReporter::getCurrentTimeStamp() const {
   return timeStampProvider_ != nullptr ? timeStampProvider_()
@@ -135,26 +171,28 @@ void PerformanceEntryReporter::clearEntries(
 PerformanceEntry PerformanceEntryReporter::reportMark(
     const std::string& name,
     const std::optional<DOMHighResTimeStamp>& startTime) {
+  // Resolve timings
   auto startTimeVal = startTime ? *startTime : getCurrentTimeStamp();
   const auto entry = PerformanceEntry{
       .name = name,
       .entryType = PerformanceEntryType::MARK,
       .startTime = startTimeVal};
 
+  traceMark(entry);
+
+  // Add to buffers & notify observers
   {
     std::unique_lock lock(buffersMutex_);
     markBuffer_.add(entry);
   }
 
-  jsinspector_modern::PerformanceTracer::getInstance().reportMark(
-      name, timestampToMicroseconds(startTimeVal));
-
   observerRegistry_->queuePerformanceEntry(entry);
+
   return entry;
 }
 
 PerformanceEntry PerformanceEntryReporter::reportMeasure(
-    const std::string_view& name,
+    const std::string& name,
     DOMHighResTimeStamp startTime,
     DOMHighResTimeStamp endTime,
     const std::optional<DOMHighResTimeStamp>& duration,
@@ -181,18 +219,16 @@ PerformanceEntry PerformanceEntryReporter::reportMeasure(
       .startTime = startTimeVal,
       .duration = durationVal};
 
+  traceMeasure(entry);
+
+  // Add to buffers & notify observers
   {
     std::unique_lock lock(buffersMutex_);
     measureBuffer_.add(entry);
   }
 
-  jsinspector_modern::PerformanceTracer::getInstance().reportMeasure(
-      name,
-      timestampToMicroseconds(startTimeVal),
-      timestampToMicroseconds(durationVal),
-      trackMetadata);
-
   observerRegistry_->queuePerformanceEntry(entry);
+
   return entry;
 }
 
@@ -255,6 +291,54 @@ void PerformanceEntryReporter::reportLongTask(
   }
 
   observerRegistry_->queuePerformanceEntry(entry);
+}
+
+void PerformanceEntryReporter::traceMark(const PerformanceEntry& entry) const {
+  auto& performanceTracer =
+      jsinspector_modern::PerformanceTracer::getInstance();
+  if (ReactPerfettoLogger::isTracing() || performanceTracer.isTracing()) {
+    auto [trackName, eventName] = parseTrackName(entry.name);
+
+    if (performanceTracer.isTracing()) {
+      performanceTracer.reportMark(
+          entry.name, timestampToMicroseconds(entry.startTime));
+    }
+
+    if (ReactPerfettoLogger::isTracing()) {
+      ReactPerfettoLogger::mark(eventName, entry.startTime, trackName);
+    }
+  }
+}
+
+void PerformanceEntryReporter::traceMeasure(
+    const PerformanceEntry& entry) const {
+  auto& performanceTracer =
+      jsinspector_modern::PerformanceTracer::getInstance();
+  if (performanceTracer.isTracing() || ReactPerfettoLogger::isTracing()) {
+    auto [trackName, eventName] = parseTrackName(entry.name);
+
+    if (performanceTracer.isTracing()) {
+      std::optional<jsinspector_modern::DevToolsTrackEntryPayload>
+          trackMetadata;
+
+      if (trackName.has_value()) {
+        trackMetadata = {.track = trackName.value()};
+      }
+      performanceTracer.reportMeasure(
+          eventName,
+          timestampToMicroseconds(entry.startTime),
+          timestampToMicroseconds(entry.duration),
+          trackMetadata);
+    }
+
+    if (ReactPerfettoLogger::isTracing()) {
+      ReactPerfettoLogger::measure(
+          eventName,
+          entry.startTime,
+          entry.startTime + entry.duration,
+          trackName);
+    }
+  }
 }
 
 } // namespace facebook::react
