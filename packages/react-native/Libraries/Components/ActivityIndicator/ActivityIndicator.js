@@ -26,7 +26,7 @@ const GRAY = '#999999';
 
 type IndicatorSize = number | 'small' | 'large';
 
-type IOSProps = $ReadOnly<{
+type ActivityIndicatorIOSProps = $ReadOnly<{
   /**
     Whether the indicator should hide when not animating.
 
@@ -34,9 +34,9 @@ type IOSProps = $ReadOnly<{
   */
   hidesWhenStopped?: ?boolean,
 }>;
-type Props = $ReadOnly<{
+export type ActivityIndicatorProps = $ReadOnly<{
   ...ViewProps,
-  ...IOSProps,
+  ...ActivityIndicatorIOSProps,
 
   /**
    	Whether to show the indicator (`true`) or hide it (`false`).
@@ -69,7 +69,7 @@ const ActivityIndicator = (
     size = 'small',
     style,
     ...restProps
-  }: Props,
+  }: ActivityIndicatorProps,
   forwardedRef?: any,
 ) => {
   let sizeStyle;
@@ -154,8 +154,8 @@ const ActivityIndicator = (
 */
 
 const ActivityIndicatorWithRef: component(
-  ref: React.RefSetter<HostComponent<empty>>,
-  ...props: Props
+  ref?: React.RefSetter<HostComponent<empty>>,
+  ...props: ActivityIndicatorProps
 ) = React.forwardRef(ActivityIndicator);
 ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 
