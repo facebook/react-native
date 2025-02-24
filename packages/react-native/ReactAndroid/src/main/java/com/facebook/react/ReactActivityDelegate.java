@@ -20,6 +20,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
+import com.facebook.react.interfaces.fabric.ReactSurface;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.systrace.Systrace;
@@ -154,6 +155,14 @@ public class ReactActivityDelegate {
   protected void loadApp(String appKey) {
     mReactDelegate.loadApp(appKey);
     getPlainActivity().setContentView(mReactDelegate.getReactRootView());
+  }
+
+  public void setReactSurface(ReactSurface reactSurface) {
+    mReactDelegate.setReactSurface(reactSurface);
+  }
+
+  public void setReactRootView(ReactRootView reactRootView) {
+    mReactDelegate.setReactRootView(reactRootView);
   }
 
   public void onUserLeaveHint() {
