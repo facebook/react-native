@@ -11,10 +11,12 @@
 import type {
   HostInstance,
   INativeMethods,
-  InternalInstanceHandle,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
+} from '../../../src/private/types/HostInstance';
+import type {
+  InternalInstanceHandle,
   ViewConfig,
 } from '../../Renderer/shims/ReactNativeTypes';
 

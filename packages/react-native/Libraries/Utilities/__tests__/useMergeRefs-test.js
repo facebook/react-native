@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {ReactTestRenderer} from 'react-test-renderer';
 
 import View from '../../Components/View/View';
