@@ -1019,7 +1019,7 @@ function useTextInputStateSynchronization_STATE({
   mostRecentEventCount: number,
   selection: ?Selection,
   inputRef: React.RefObject<null | HostInstance>,
-  text: string,
+  text?: string,
   viewCommands: ViewCommands,
 }): {
   setLastNativeText: string => void,
@@ -1100,7 +1100,7 @@ function useTextInputStateSynchronization_REFS({
   mostRecentEventCount: number,
   selection: ?Selection,
   inputRef: React.RefObject<null | HostInstance>,
-  text: string,
+  text?: string,
   viewCommands: ViewCommands,
 }): {
   setLastNativeText: string => void,
@@ -1314,7 +1314,7 @@ function InternalTextInput(props: Props): React.Node {
       ? props.value
       : typeof props.defaultValue === 'string'
         ? props.defaultValue
-        : '';
+        : undefined;
 
   const viewCommands =
     AndroidTextInputCommands ||
