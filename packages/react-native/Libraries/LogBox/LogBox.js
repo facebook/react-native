@@ -206,7 +206,7 @@ if (__DEV__) {
       if (!hasComponentStack(args) && React.captureOwnerStack != null) {
         stack = React.captureOwnerStack();
         if (!hasComponentStack(args)) {
-          if (stack !== '') {
+          if (stack != null && stack !== '') {
             args[0] = args[0] += '%s';
             args.push(stack);
           }
