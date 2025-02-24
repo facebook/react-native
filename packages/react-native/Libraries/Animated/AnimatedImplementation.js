@@ -11,6 +11,7 @@
 'use strict';
 
 import type {EventConfig, Mapping} from './AnimatedEvent';
+import type {CompositeAnimation} from './AnimatedTypes';
 import type {
   AnimationConfig,
   EndCallback,
@@ -38,14 +39,7 @@ import AnimatedTracking from './nodes/AnimatedTracking';
 import AnimatedValue from './nodes/AnimatedValue';
 import AnimatedValueXY from './nodes/AnimatedValueXY';
 
-export type CompositeAnimation = {
-  start: (callback?: ?EndCallback, isLooping?: boolean) => void,
-  stop: () => void,
-  reset: () => void,
-  _startNativeLoop: (iterations?: number) => void,
-  _isUsingNativeDriver: () => boolean,
-  ...
-};
+export type {CompositeAnimation, Numeric} from './AnimatedTypes';
 
 const add = function (
   a: AnimatedNode | number,
@@ -551,19 +545,6 @@ const event = function (
     return animatedEvent.__getHandler();
   }
 };
-
-// All types of animated nodes that represent scalar numbers and can be interpolated (etc)
-type AnimatedNumeric =
-  | AnimatedAddition
-  | AnimatedDiffClamp
-  | AnimatedDivision
-  | AnimatedInterpolation<number>
-  | AnimatedModulo
-  | AnimatedMultiplication
-  | AnimatedSubtraction
-  | AnimatedValue;
-
-export type {AnimatedNumeric as Numeric};
 
 /**
  * The `Animated` library is designed to make animations fluid, powerful, and

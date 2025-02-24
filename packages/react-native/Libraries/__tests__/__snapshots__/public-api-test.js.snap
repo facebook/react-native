@@ -112,17 +112,8 @@ exports[`public API should not change unintentionally Libraries/Alert/RCTAlertMa
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/Animated.js 1`] = `
-"export type { CompositeAnimation, Numeric } from \\"./AnimatedImplementation\\";
-declare const Animated: typeof AnimatedImplementation;
-declare export default {
-  get FlatList(): AnimatedFlatList,
-  get Image(): AnimatedImage,
-  get ScrollView(): AnimatedScrollView,
-  get SectionList(): AnimatedSectionList,
-  get Text(): AnimatedText,
-  get View(): AnimatedView,
-  ...Animated,
-};
+"export type { CompositeAnimation, Numeric } from \\"./AnimatedTypes\\";
+declare export default typeof Animated;
 "
 `;
 
@@ -148,13 +139,57 @@ declare export class AnimatedEvent {
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/Animated/AnimatedImplementation.js 1`] = `
-"export type CompositeAnimation = {
-  start: (callback?: ?EndCallback, isLooping?: boolean) => void,
-  stop: () => void,
-  reset: () => void,
-  ...
+exports[`public API should not change unintentionally Libraries/Animated/AnimatedExports.js 1`] = `
+"declare const Animated: typeof AnimatedImplementation;
+declare module.exports: {
+  get FlatList(): AnimatedFlatList,
+  get Image(): AnimatedImage,
+  get ScrollView(): AnimatedScrollView,
+  get SectionList(): AnimatedSectionList,
+  get Text(): AnimatedText,
+  get View(): AnimatedView,
+  ...Animated,
 };
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Animated/AnimatedExports.js.flow 1`] = `
+"export { default as FlatList } from \\"./components/AnimatedFlatList\\";
+export { default as Image } from \\"./components/AnimatedImage\\";
+export { default as ScrollView } from \\"./components/AnimatedScrollView\\";
+export { default as SectionList } from \\"./components/AnimatedSectionList\\";
+export { default as Text } from \\"./components/AnimatedText\\";
+export { default as View } from \\"./components/AnimatedView\\";
+export { default as Color } from \\"./nodes/AnimatedColor\\";
+export { AnimatedEvent as Event } from \\"./AnimatedEvent\\";
+export { default as Interpolation } from \\"./nodes/AnimatedInterpolation\\";
+export { default as Node } from \\"./nodes/AnimatedNode\\";
+export { default as Value } from \\"./nodes/AnimatedValue\\";
+export { default as ValueXY } from \\"./nodes/AnimatedValueXY\\";
+declare export const add: $FlowFixMe;
+declare export const attachNativeEvent: $FlowFixMe;
+declare export const createAnimatedComponent: $FlowFixMe;
+declare export const decay: $FlowFixMe;
+declare export const delay: $FlowFixMe;
+declare export const diffClamp: $FlowFixMe;
+declare export const divide: $FlowFixMe;
+declare export const event: $FlowFixMe;
+declare export const forkEvent: $FlowFixMe;
+declare export const loop: $FlowFixMe;
+declare export const modulo: $FlowFixMe;
+declare export const multiply: $FlowFixMe;
+declare export const parallel: $FlowFixMe;
+declare export const sequence: $FlowFixMe;
+declare export const spring: $FlowFixMe;
+declare export const stagger: $FlowFixMe;
+declare export const subtract: $FlowFixMe;
+declare export const timing: $FlowFixMe;
+declare export const unforkEvent: $FlowFixMe;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Animated/AnimatedImplementation.js 1`] = `
+"export type { CompositeAnimation, Numeric } from \\"./AnimatedTypes\\";
 declare const add: (
   a: AnimatedNode | number,
   b: AnimatedNode | number
@@ -226,16 +261,6 @@ declare const event: (
   argMapping: $ReadOnlyArray<?Mapping>,
   config: EventConfig
 ) => any;
-type AnimatedNumeric =
-  | AnimatedAddition
-  | AnimatedDiffClamp
-  | AnimatedDivision
-  | AnimatedInterpolation<number>
-  | AnimatedModulo
-  | AnimatedMultiplication
-  | AnimatedSubtraction
-  | AnimatedValue;
-export type { AnimatedNumeric as Numeric };
 declare export default {
   Value: AnimatedValue,
   ValueXY: AnimatedValueXY,
@@ -280,6 +305,25 @@ declare export default typeof AnimatedImplementation;
 
 exports[`public API should not change unintentionally Libraries/Animated/AnimatedPlatformConfig.js 1`] = `
 "export type PlatformConfig = {};
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Animated/AnimatedTypes.js 1`] = `
+"export type CompositeAnimation = {
+  start: (callback?: ?EndCallback, isLooping?: boolean) => void,
+  stop: () => void,
+  reset: () => void,
+  ...
+};
+export type Numeric =
+  | AnimatedAddition
+  | AnimatedDiffClamp
+  | AnimatedDivision
+  | AnimatedInterpolation<number>
+  | AnimatedModulo
+  | AnimatedMultiplication
+  | AnimatedSubtraction
+  | AnimatedValue;
 "
 `;
 
