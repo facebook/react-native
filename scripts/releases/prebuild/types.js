@@ -43,9 +43,13 @@ export type Dependency = $ReadOnly<{
   disabled?: boolean,
 }>;
 
-export type Platform = 'iOS' | 'iOS Simulator' | 'macOS' | 'macOS,variant=Mac Catalyst' |
-  // 'generic/platform=tvOS',
-  // 'generic/platform=tvOS Simulator',
+export type Platform =
+  'iOS' |
+  'iOS Simulator' |
+  'macOS' |
+  'macOS,variant=Mac Catalyst' |
+  'tvOS' |
+  'tvOS Simulator' |
   'visionOS' |
   'visionOS Simulator';
 */

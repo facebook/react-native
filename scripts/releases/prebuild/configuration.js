@@ -19,8 +19,8 @@ const platforms /*: $ReadOnlyArray<Platform> */ = [
   'iOS Simulator',
   'macOS',
   'macOS,variant=Mac Catalyst',
-  // 'generic/platform=tvOS',
-  // 'generic/platform=tvOS Simulator',
+  'tvOS',
+  'tvOS Simulator',
   'visionOS',
   'visionOS Simulator',
 ];
