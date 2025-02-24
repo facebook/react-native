@@ -94,7 +94,7 @@ async function main() {
   }
 
   // Prepare platforms and dependencies
-  const resolved_platforms = platforms.filter(p => argv.platforms.includes(p));
+  const resolvedPlatforms = platforms.filter(p => argv.platforms.includes(p));
   const resolved_dependencies = dependencies.filter(d =>
     argv.dependencies.includes(d.name),
   );
