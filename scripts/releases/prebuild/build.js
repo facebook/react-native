@@ -84,11 +84,8 @@ async function copyHeadersToFrameworks(
       `${scheme}.framework`,
       'Headers',
     );
-    if (fs.existsSync(headerFolder)) {
-      // Delete
-      fs.rmSync(headerFolder, {force: true, recursive: true});
-    }
-    // Create
+    // Delete and recreate the folder
+    fs.rmSync(headerFolder, {force: true, recursive: true});
     fs.mkdirSync(headerFolder, {recursive: true});
   });
 
