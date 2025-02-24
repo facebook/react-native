@@ -9,20 +9,23 @@
  * @oncall react_native
  */
 
+import type {PluginObj} from '@babel/core';
 import type {ParseResult} from 'hermes-transform/dist/transform/parse';
 import type {TransformASTResult} from 'hermes-transform/dist/transform/transformAST';
 
 const getDependencies = require('./resolution/getDependencies');
+const babel = require('@babel/core');
 const translate = require('flow-api-translator');
 const {parse, print} = require('hermes-transform');
 
-type TransformFn = ParseResult => Promise<TransformASTResult>;
+type PreTransformFn = ParseResult => Promise<TransformASTResult>;
 
-const preTransforms: Array<TransformFn> = [
+const preTransforms: Array<PreTransformFn> = [
   require('./transforms/stripPrivateProperties'),
   require('./transforms/replaceRequiresWithImports'),
   require('./transforms/replaceEmptyWithNever'),
 ];
+const postTransforms: Array<PluginObj<mixed>> = [];
 const prettierOptions = {parser: 'babel'};
 const unsupportedFeatureRegex =
   /Unsupported feature: Translating ".*" is currently not supported/;
@@ -46,7 +49,7 @@ async function translateSourceFile(
   const parsed = await parse(source);
 
   // Apply pre-transforms
-  const preTransformResult = await applyTransforms(parsed, preTransforms);
+  const preTransformResult = await applyPreTransforms(parsed);
 
   // Translate to Flow defs (prunes non-type imports)
   const flowDefResult = await translate.translateFlowToFlowDef(
@@ -61,15 +64,18 @@ async function translateSourceFile(
   );
 
   // Translate to TypeScript defs
-  const result = await translate.translateFlowToTSDef(
+  const tsDefResult = await translate.translateFlowToTSDef(
     flowDefResult,
     prettierOptions,
   );
 
-  const unsupportedFeatureMatch = result.match(unsupportedFeatureRegex);
+  const unsupportedFeatureMatch = tsDefResult.match(unsupportedFeatureRegex);
   if (unsupportedFeatureMatch != null) {
     throw new Error(`Error: ${unsupportedFeatureMatch[0]}`);
   }
+
+  // Apply post-transforms
+  const result = await applyPostTransforms(tsDefResult);
 
   return {
     result,
@@ -77,11 +83,8 @@ async function translateSourceFile(
   };
 }
 
-async function applyTransforms(
-  source: ParseResult,
-  transforms: $ReadOnlyArray<TransformFn>,
-): Promise<ParseResult> {
-  return transforms.reduce((input, transform) => {
+async function applyPreTransforms(source: ParseResult): Promise<ParseResult> {
+  return preTransforms.reduce((input, transform) => {
     return input.then(async result => {
       const transformed = await transform(result);
       const code = transformed.astWasMutated
@@ -91,6 +94,22 @@ async function applyTransforms(
       return parse(code);
     });
   }, Promise.resolve(source));
+}
+
+/**
+ * Apply post-transforms to .d.ts source code containing @build-types directives.
+ */
+async function applyPostTransforms(source: string): Promise<string> {
+  if (!source.includes('@build-types')) {
+    // Exiting early, as there are no @build-types directives
+    return source;
+  }
+
+  const result = await babel.transformAsync(source, {
+    plugins: ['@babel/plugin-syntax-typescript', ...postTransforms],
+  });
+
+  return result.code;
 }
 
 module.exports = translateSourceFile;
