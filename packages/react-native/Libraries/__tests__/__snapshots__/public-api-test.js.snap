@@ -1869,6 +1869,11 @@ type StickyHeaderComponentType = component(
   >,
   ...ScrollViewStickyHeaderProps
 );
+export type StickyHeaderOnLayoutEventContext<T: { ... } = { ... }> = $ReadOnly<{
+  index: number,
+  key: React.Key,
+  itemProps: T,
+}>;
 export type ScrollViewProps = $ReadOnly<{
   ...ViewProps,
   ...ScrollViewPropsIOS,
@@ -1892,6 +1897,10 @@ export type ScrollViewProps = $ReadOnly<{
   onScrollBeginDrag?: ?(event: ScrollEvent) => void,
   onScrollEndDrag?: ?(event: ScrollEvent) => void,
   onContentSizeChange?: (contentWidth: number, contentHeight: number) => void,
+  onStickyHeaderLayout?: (
+    event: LayoutChangeEvent,
+    context: StickyHeaderOnLayoutEventContext<{ ... }>
+  ) => void,
   onKeyboardDidShow?: (event: KeyboardEvent) => void,
   onKeyboardDidHide?: (event: KeyboardEvent) => void,
   onKeyboardWillShow?: (event: KeyboardEvent) => void,

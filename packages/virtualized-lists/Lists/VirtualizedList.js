@@ -10,14 +10,18 @@
 
 import type {CellMetricProps, ListOrientation} from './ListMetricsAggregator';
 import type {ViewToken} from './ViewabilityHelper';
+import type {Props as CellRendererProps} from './VirtualizedListCellRenderer';
 import type {
   Item,
-  VirtualizedListProps,
-  ListRenderItemInfo,
   ListRenderItem,
+  ListRenderItemInfo,
   Separators,
+  VirtualizedListProps,
 } from './VirtualizedListProps';
-import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
+import type {
+  ScrollResponderType,
+  StickyHeaderOnLayoutEventContext,
+} from 'react-native/Libraries/Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   LayoutChangeEvent,
@@ -791,9 +795,9 @@ class VirtualizedList extends StateSafePureComponent<
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
       const key = VirtualizedList._keyExtractor(item, ii, this.props);
-
+      const isSticky = stickyIndicesFromProps.has(ii + stickyOffset);
       this._indicesToKeys.set(ii, key);
-      if (stickyIndicesFromProps.has(ii + stickyOffset)) {
+      if (isSticky) {
         stickyHeaderIndices.push(cells.length);
       }
 
@@ -819,9 +823,10 @@ class VirtualizedList extends StateSafePureComponent<
             this._cellRefs[key] = ref;
           }}
           renderItem={renderItem}
-          {...(shouldListenForLayout && {
-            onCellLayout: this._onCellLayout,
-          })}
+          {...(shouldListenForLayout &&
+            !isSticky && {
+              onCellLayout: this._onCellLayout,
+            })}
         />,
       );
       prevCellKey = key;
@@ -1072,6 +1077,7 @@ class VirtualizedList extends StateSafePureComponent<
       ...this.props,
       onContentSizeChange: this._onContentSizeChange,
       onLayout: this._onLayout,
+      onStickyHeaderLayout: this._onStickyHeaderLayout,
       onScroll: this._onScroll,
       onScrollBeginDrag: this._onScrollBeginDrag,
       onScrollEndDrag: this._onScrollEndDrag,
@@ -1392,6 +1398,19 @@ class VirtualizedList extends StateSafePureComponent<
     this.props.onLayout && this.props.onLayout(e);
     this._scheduleCellsToRenderUpdate();
     this._maybeCallOnEdgeReached();
+  };
+
+  _onStickyHeaderLayout = (
+    e: LayoutChangeEvent,
+    {
+      key: _key,
+      index: _index,
+      itemProps,
+    }: StickyHeaderOnLayoutEventContext<CellRendererProps<{...}>>,
+  ) => {
+    // Key and index provided in event are relative to current window.
+    const {index: cellIndex, cellKey} = itemProps;
+    this._onCellLayout(e, cellKey, cellIndex);
   };
 
   _onLayoutEmpty = (e: LayoutChangeEvent) => {
