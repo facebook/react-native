@@ -1778,7 +1778,7 @@ type PublicScrollViewInstance = $ReadOnly<{
   ...ScrollViewImperativeMethods,
 }>;
 type InnerViewInstance = React.ElementRef<View>;
-type IOSProps = $ReadOnly<{
+export type ScrollViewPropsIOS = $ReadOnly<{
   automaticallyAdjustContentInsets?: ?boolean,
   automaticallyAdjustKeyboardInsets?: ?boolean,
   automaticallyAdjustsScrollIndicatorInsets?: ?boolean,
@@ -1808,7 +1808,7 @@ type IOSProps = $ReadOnly<{
     | \\"always\\"
   ),
 }>;
-type AndroidProps = $ReadOnly<{
+export type ScrollViewPropsAndroid = $ReadOnly<{
   nestedScrollEnabled?: ?boolean,
   endFillColor?: ?ColorValue,
   scrollPerfTag?: ?string,
@@ -1822,10 +1822,10 @@ type StickyHeaderComponentType = component(
   >,
   ...ScrollViewStickyHeaderProps
 );
-export type Props = $ReadOnly<{
+export type ScrollViewProps = $ReadOnly<{
   ...ViewProps,
-  ...IOSProps,
-  ...AndroidProps,
+  ...ScrollViewPropsIOS,
+  ...ScrollViewPropsAndroid,
   contentContainerStyle?: ?ViewStyleProp,
   contentOffset?: ?PointProp,
   disableIntervalMomentum?: ?boolean,
@@ -1862,7 +1862,7 @@ export type Props = $ReadOnly<{
   snapToStart?: ?boolean,
   snapToEnd?: ?boolean,
   removeClippedSubviews?: ?boolean,
-  refreshControl?: ?ExactReactElement_DEPRECATED<any>,
+  refreshControl?: ?React.Node,
   children?: React.Node,
   innerViewRef?: React.RefSetter<InnerViewInstance>,
   scrollViewRef?: React.RefSetter<PublicScrollViewInstance>,
@@ -1873,12 +1873,12 @@ type State = {
 export type ScrollViewComponentStatics = $ReadOnly<{
   Context: typeof ScrollViewContext,
 }>;
-declare class ScrollView extends React.Component<Props, State> {
+declare class ScrollView extends React.Component<ScrollViewProps, State> {
   static Context: typeof ScrollViewContext;
-  constructor(props: Props): void;
+  constructor(props: ScrollViewProps): void;
   state: State;
   componentDidMount(): void;
-  componentDidUpdate(prevProps: Props): void;
+  componentDidUpdate(prevProps: ScrollViewProps): void;
   componentWillUnmount(): void;
   getScrollResponder: () => ScrollResponderType;
   getScrollableNode: () => ?number;
@@ -1928,8 +1928,8 @@ type RefForwarder<TNativeInstance, TPublicInstance> = {
   publicInstance: TPublicInstance | null,
 };
 declare const Wrapper: component(
-  ref: React.RefSetter<PublicScrollViewInstance>,
-  ...props: Props
+  ref?: React.RefSetter<PublicScrollViewInstance>,
+  ...props: ScrollViewProps
 );
 declare export default typeof Wrapper & ScrollViewComponentStatics;
 "
@@ -2050,7 +2050,7 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/ScrollViewStickyHeader.js 1`] = `
-"export type Props = $ReadOnly<{
+"export type ScrollViewStickyHeaderProps = $ReadOnly<{
   children?: React.Node,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutChangeEvent) => void,
@@ -2067,7 +2067,7 @@ type Instance = {
 };
 declare const ScrollViewStickyHeaderWithForwardedRef: component(
   ref: React.RefSetter<Instance>,
-  ...props: Props
+  ...props: ScrollViewStickyHeaderProps
 );
 declare export default typeof ScrollViewStickyHeaderWithForwardedRef;
 "
