@@ -140,6 +140,8 @@ public class com/facebook/react/ReactActivityDelegate {
 	public fun onUserLeaveHint ()V
 	public fun onWindowFocusChanged (Z)V
 	public fun requestPermissions ([Ljava/lang/String;ILcom/facebook/react/modules/core/PermissionListener;)V
+	public fun setReactRootView (Lcom/facebook/react/ReactRootView;)V
+	public fun setReactSurface (Lcom/facebook/react/interfaces/fabric/ReactSurface;)V
 }
 
 public abstract interface class com/facebook/react/ReactApplication {
@@ -171,6 +173,8 @@ public class com/facebook/react/ReactDelegate {
 	public fun onUserLeaveHint ()V
 	public fun onWindowFocusChanged (Z)V
 	public fun reload ()V
+	public fun setReactRootView (Lcom/facebook/react/ReactRootView;)V
+	public fun setReactSurface (Lcom/facebook/react/interfaces/fabric/ReactSurface;)V
 	public fun shouldShowDevMenuOrReload (ILandroid/view/KeyEvent;)Z
 	public fun unloadApp ()V
 }
