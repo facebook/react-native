@@ -8,9 +8,8 @@
  * @flow strict-local
  */
 
+import type {HostComponent, HostInstance} from '../..';
 import type {
-  HostComponent,
-  HostInstance,
   InternalInstanceHandle,
   Node,
 } from '../Renderer/shims/ReactNativeTypes';

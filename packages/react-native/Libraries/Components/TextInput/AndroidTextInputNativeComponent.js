@@ -8,10 +8,8 @@
  * @format
  */
 
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../..';
+import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import type {
   ColorValue,
   TextStyleProp,

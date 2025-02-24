@@ -8,12 +8,12 @@
  * @format
  */
 
-import type {HostInstance} from '../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../..';
 import type {
   BlurEvent,
   FocusEvent,
-  MouseEvent,
   GestureResponderEvent,
+  MouseEvent,
 } from '../Types/CoreEventTypes';
 
 import SoundManager from '../Components/Sound/SoundManager';

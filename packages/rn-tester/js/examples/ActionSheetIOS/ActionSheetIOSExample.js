@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {NativeMethods} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from 'react-native';
 
 import {RNTesterThemeContext} from '../../components/RNTesterTheme';
 
@@ -207,7 +207,7 @@ class ActionSheetAnchorExample extends React.Component<
     clicked: 'none',
   };
 
-  anchorRef: {current: null | $Exact<NativeMethods>} = React.createRef();
+  anchorRef: {current: null | HostInstance} = React.createRef();
 
   render(): React.Node {
     return (
@@ -434,7 +434,7 @@ class ShareScreenshotAnchorExample extends React.Component<
     text: '',
   };
 
-  anchorRef: {current: null | $Exact<NativeMethods>} = React.createRef();
+  anchorRef: {current: null | HostInstance} = React.createRef();
 
   render(): React.Node {
     return (

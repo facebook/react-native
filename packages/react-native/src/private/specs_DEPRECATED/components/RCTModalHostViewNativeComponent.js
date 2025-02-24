@@ -8,8 +8,8 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from '../../../..';
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from '../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {
   DirectEventHandler,
   Int32,

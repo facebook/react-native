@@ -10,8 +10,8 @@
 
 // flowlint unsafe-getters-setters:off
 
+import type {HostInstance} from '../../../../..';
 import type {
-  HostInstance,
   INativeMethods,
   InternalInstanceHandle,
   MeasureInWindowOnSuccessCallback,

@@ -8,8 +8,8 @@
  * @flow strict-local
  */
 
+import type {HostInstance} from '../../..';
 import type {
-  HostInstance,
   INativeMethods,
   InternalInstanceHandle,
   MeasureInWindowOnSuccessCallback,

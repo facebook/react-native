@@ -8,12 +8,12 @@
  * @format
  */
 
-import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../..';
 import type {____TextStyle_Internal as TextStyleInternal} from '../../StyleSheet/StyleSheetTypes';
 import type {
   GestureResponderEvent,
-  ScrollEvent,
   NativeSyntheticEvent,
+  ScrollEvent,
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputType} from './TextInput.flow';

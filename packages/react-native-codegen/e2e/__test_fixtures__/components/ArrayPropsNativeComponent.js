@@ -8,9 +8,9 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from 'react-native';
 import type {ViewProps} from 'react-native/Libraries/Components/View/ViewPropTypes';
 import type {ImageSource} from 'react-native/Libraries/Image/ImageSource';
-import type {HostComponent} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   DimensionValue,

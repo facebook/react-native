@@ -8,10 +8,8 @@
  * @flow
  */
 
-import type {
-  HostInstance,
-  TouchedViewDataAtPoint,
-} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../..';
+import type {TouchedViewDataAtPoint} from '../../../Libraries/Renderer/shims/ReactNativeTypes';
 
 const invariant = require('invariant');
 

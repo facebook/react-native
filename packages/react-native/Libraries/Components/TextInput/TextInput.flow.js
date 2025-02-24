@@ -8,11 +8,11 @@
  * @format
  */
 
-import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../..';
 import type {
   GestureResponderEvent,
-  ScrollEvent,
   NativeSyntheticEvent,
+  ScrollEvent,
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 

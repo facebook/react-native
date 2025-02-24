@@ -9,7 +9,7 @@
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
-import type {HostInstance} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from 'react-native';
 import type {PointerEvent} from 'react-native/Libraries/Types/CoreEventTypes';
 
 import RNTesterPlatformTest from '../PlatformTest/RNTesterPlatformTest';

@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../..';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';

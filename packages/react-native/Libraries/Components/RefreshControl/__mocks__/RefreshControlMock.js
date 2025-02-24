@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import type {HostComponent} from '../../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../../..';
 
 import requireNativeComponent from '../../../ReactNative/requireNativeComponent';
 import * as React from 'react';
