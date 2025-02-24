@@ -70,15 +70,23 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
     case 'ReservedPropTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
-          return expression(`{ process: require('react-native/Libraries/StyleSheet/processColor').default }`);
+          return expression(
+            `{ process: require('react-native/Libraries/StyleSheet/processColor').default }`,
+          );
         case 'ImageSourcePrimitive':
-          return expression(`{ process: require('react-native/Libraries/Image/resolveAssetSource') }`);
+          return expression(
+            `{ process: require('react-native/Libraries/Image/resolveAssetSource') }`,
+          );
         case 'ImageRequestPrimitive':
           throw new Error('ImageRequest should not be used in props');
         case 'PointPrimitive':
-          return expression(`{ diff: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/pointsDiffer')) }`);
+          return expression(
+            `{ diff: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/pointsDiffer')) }`,
+          );
         case 'EdgeInsetsPrimitive':
-          return expression(`{ diff: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/insetsDiffer')) }`);
+          return expression(
+            `{ diff: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/insetsDiffer')) }`,
+          );
         case 'DimensionPrimitive':
           return t.booleanLiteral(true);
         default:
@@ -91,7 +99,9 @@ function getReactDiffProcessValue(typeAnnotation: PropTypeAnnotation) {
       if (typeAnnotation.elementType.type === 'ReservedPropTypeAnnotation') {
         switch (typeAnnotation.elementType.name) {
           case 'ColorPrimitive':
-            return expression(`{ process: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/StyleSheet/processColorArray')) }`);
+            return expression(
+              `{ process: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/StyleSheet/processColorArray')) }`,
+            );
           case 'ImageSourcePrimitive':
           case 'PointPrimitive':
           case 'EdgeInsetsPrimitive':
@@ -189,10 +199,9 @@ function getValidAttributesForEvents(
     }),
   );
 
-  return t.callExpression(
-    t.identifier('ConditionallyIgnoredEventHandlers'),
-    [validAttributes]
-  );
+  return t.callExpression(t.identifier('ConditionallyIgnoredEventHandlers'), [
+    validAttributes,
+  ]);
 }
 
 function generateBubblingEventInfo(
@@ -209,11 +218,8 @@ function generateBubblingEventInfo(
             t.identifier('captured'),
             t.identifier(`${event.name}Capture`),
           ),
-          t.objectProperty(
-            t.identifier('bubbled'),
-            t.identifier(event.name),
-          ),
-        ])
+          t.objectProperty(t.identifier('bubbled'), t.identifier(event.name)),
+        ]),
       ),
     ]),
   );
@@ -271,11 +277,7 @@ function buildViewConfig(
       );
     }),
     ...(componentEvents.length > 0
-      ? [
-          t.spreadElement(
-            getValidAttributesForEvents(componentEvents, imports),
-          ),
-        ]
+      ? [t.spreadElement(getValidAttributesForEvents(componentEvents, imports))]
       : []),
   ]);
 
@@ -319,19 +321,25 @@ function buildViewConfig(
   ];
 
   if (bubblingEventNames.length > 0) {
-    properties.push(t.objectProperty(
-      t.identifier('bubblingEventTypes'),
-      t.objectExpression(bubblingEventNames),
-    ));
+    properties.push(
+      t.objectProperty(
+        t.identifier('bubblingEventTypes'),
+        t.objectExpression(bubblingEventNames),
+      ),
+    );
   }
   if (directEventNames.length > 0) {
-    properties.push(t.objectProperty(
-      t.identifier('directEventTypes'),
-      t.objectExpression(directEventNames),
-    ));
+    properties.push(
+      t.objectProperty(
+        t.identifier('directEventTypes'),
+        t.objectExpression(directEventNames),
+      ),
+    );
   }
 
-  properties.push(t.objectProperty(t.identifier('validAttributes'), validAttributes));
+  properties.push(
+    t.objectProperty(t.identifier('validAttributes'), validAttributes),
+  );
   return t.objectExpression(properties);
 }
 
@@ -356,28 +364,26 @@ function buildCommands(
       const commandName = command.name;
       const params = command.typeAnnotation.params;
 
-      const dispatchCommandCall = t.callExpression(t.identifier('dispatchCommand'), [
-        t.identifier(commandName),
-        t.arrayExpression(params.map(param => t.identifier(param.name))),
-      ]);
+      const dispatchCommandCall = t.callExpression(
+        t.identifier('dispatchCommand'),
+        [
+          t.identifier(commandName),
+          t.arrayExpression(params.map(param => t.identifier(param.name))),
+        ],
+      );
 
       return t.objectMethod(
         'method',
         t.identifier(commandName),
         [t.identifier('ref'), ...params.map(param => t.identifier(param.name))],
-        t.blockStatement([
-          t.expressionStatement(dispatchCommandCall),
-        ]),
+        t.blockStatement([t.expressionStatement(dispatchCommandCall)]),
       );
-    })
+    }),
   );
 
   return t.exportNamedDeclaration(
     t.variableDeclaration('const', [
-      t.variableDeclarator(
-        t.identifier('Commands'),
-        commandsObject,
-      ),
+      t.variableDeclarator(t.identifier('Commands'), commandsObject),
     ]),
   );
 }
@@ -415,8 +421,15 @@ module.exports = {
               const paperComponentName =
                 component.paperComponentName ?? componentName;
 
-              const replacedSourceRoot = core.template.program(replacedTemplate)({
-                VIEW_CONFIG: buildViewConfig(schema, paperComponentName, component, imports),
+              const replacedSourceRoot = core.template.program(
+                replacedTemplate,
+              )({
+                VIEW_CONFIG: buildViewConfig(
+                  schema,
+                  paperComponentName,
+                  component,
+                  imports,
+                ),
               });
 
               const commandsExport = buildCommands(
@@ -429,7 +442,8 @@ module.exports = {
                 replacedSourceRoot.body.push(commandsExport);
               }
 
-              const replacedSource = core.transformFromAstSync(replacedSourceRoot);
+              const replacedSource =
+                core.transformFromAstSync(replacedSourceRoot);
               return replacedSource.code;
             })
             .join('\n\n');
