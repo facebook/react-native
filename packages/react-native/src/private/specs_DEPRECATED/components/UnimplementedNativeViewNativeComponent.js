@@ -8,8 +8,8 @@
  * @flow strict-local
  */
 
+import type {HostComponent} from '../../../..';
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from '../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {WithDefault} from '../../../../Libraries/Types/CodegenTypes';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';

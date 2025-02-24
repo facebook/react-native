@@ -8,10 +8,8 @@
  * @flow strict-local
  */
 
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../..';
+import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import type {ViewProps as Props} from '../View/ViewPropTypes';
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';

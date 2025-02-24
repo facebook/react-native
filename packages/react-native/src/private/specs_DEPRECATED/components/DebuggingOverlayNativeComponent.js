@@ -8,8 +8,8 @@
  * @format
  */
 
+import type {HostComponent} from '../../../..';
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from '../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {ProcessedColorValue} from '../../../../Libraries/StyleSheet/processColor';
 
 import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNativeCommands';

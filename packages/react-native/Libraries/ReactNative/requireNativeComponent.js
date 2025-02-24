@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../..';
 
 const createReactNativeComponentClass =
   require('../Renderer/shims/createReactNativeComponentClass').default;
