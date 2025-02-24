@@ -14,7 +14,16 @@ import type { Dependency, Platform } from './types';
 */
 
 //TODO: Add support for mac,  Mac (catalyst), tvOS, xros and xrsimulator
-const platforms /*: $ReadOnlyArray<Platform> */ = ['iOS', 'iOS Simulator'];
+const platforms /*: $ReadOnlyArray<Platform> */ = [
+  'iOS',
+  'iOS Simulator',
+  'macOS',
+  'macOS,variant=Mac Catalyst',
+  // 'generic/platform=tvOS',
+  // 'generic/platform=tvOS Simulator',
+  'visionOS',
+  'visionOS Simulator',
+];
 
 const dependencies /*: $ReadOnlyArray<Dependency> */ = [
   {
