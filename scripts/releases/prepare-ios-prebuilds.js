@@ -34,8 +34,8 @@ const DESTINATIONS /*: { [string]: $ReadOnlyArray<string>} */ = {
     'generic/platform=iOS Simulator',
     'generic/platform=macOS',
     'generic/platform=macOS,variant=Mac Catalyst',
-    // 'generic/platform=tvOS',
-    // 'generic/platform=tvOS Simulator',
+    'generic/platform=tvOS',
+    'generic/platform=tvOS Simulator',
     'generic/platform=visionOS',
     'generic/platform=visionOS Simulator',
   ],
@@ -43,12 +43,8 @@ const DESTINATIONS /*: { [string]: $ReadOnlyArray<string>} */ = {
   'ios-simulator': ['generic/platform=iOS Simulator'],
   mac: ['generic/platform=macOS'],
   'mac-catalyst': ['generic/platform=macOS,variant=Mac Catalyst'],
-  tvos: [
-    /*'generic/platform=tvOS'*/
-  ],
-  'tvos-simulator': [
-    /*'generic/platform=tvOS Simulator'*/
-  ],
+  tvos: ['generic/platform=tvOS'],
+  'tvos-simulator': ['generic/platform=tvOS Simulator'],
   xros: ['generic/platform=visionOS'],
   xrsimulator: ['generic/platform=visionOS Simulator'],
 };
