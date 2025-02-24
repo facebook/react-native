@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6733084994ad357b1deab51d39ab8914>>
+ * @generated SignedSource<<c5a13d6132901954c9c581b78a0d62f8>>
  */
 
 /**
@@ -198,6 +198,11 @@ class ReactNativeFeatureFlags {
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
   RN_EXPORT static bool lazyAnimationCallbacks();
+
+  /**
+   * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
+   */
+  RN_EXPORT static bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

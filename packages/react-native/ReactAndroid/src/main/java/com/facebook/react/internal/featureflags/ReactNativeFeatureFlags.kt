@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4558ccf6c50d565ffdbb33aa5470261d>>
+ * @generated SignedSource<<79c141388878536d9ead03cfe8555186>>
  */
 
 /**
@@ -219,6 +219,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
+
+  /**
+   * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
+   */
+  @JvmStatic
+  public fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean = accessor.throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
