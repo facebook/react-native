@@ -1407,7 +1407,7 @@ declare export default typeof ActivityIndicatorViewNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Button.js 1`] = `
-"type ButtonProps = $ReadOnly<{
+"export type ButtonProps = $ReadOnly<{
   title: string,
   onPress: (event?: GestureResponderEvent) => mixed,
   touchSoundDisabled?: ?boolean,
@@ -1440,7 +1440,7 @@ declare const Touchable:
   | typeof TouchableOpacity;
 type ButtonRef = React.ElementRef<typeof Touchable>;
 declare const Button: component(
-  ref: React.RefSetter<ButtonRef>,
+  ref?: React.RefSetter<ButtonRef>,
   ...props: ButtonProps
 );
 declare export default typeof Button;
