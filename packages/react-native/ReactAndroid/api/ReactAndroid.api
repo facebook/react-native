@@ -1646,20 +1646,30 @@ public final class com/facebook/react/bridge/queue/MessageQueueThreadPerfStats {
 	public fun <init> ()V
 }
 
-public class com/facebook/react/bridge/queue/MessageQueueThreadSpec {
+public final class com/facebook/react/bridge/queue/MessageQueueThreadSpec {
+	public static final field Companion Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec$Companion;
 	public static final field DEFAULT_STACK_SIZE_BYTES J
-	public fun getName ()Ljava/lang/String;
-	public fun getStackSize ()J
-	public fun getThreadType ()Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec$ThreadType;
-	public static fun mainThreadSpec ()Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
-	public static fun newBackgroundThreadSpec (Ljava/lang/String;)Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
-	public static fun newBackgroundThreadSpec (Ljava/lang/String;J)Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
-	public static fun newUIBackgroundTreadSpec (Ljava/lang/String;)Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+	public synthetic fun <init> (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec$ThreadType;Ljava/lang/String;JLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getName ()Ljava/lang/String;
+	public final fun getStackSize ()J
+	public final fun getThreadType ()Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec$ThreadType;
+	public static final fun mainThreadSpec ()Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+	public static final fun newBackgroundThreadSpec (Ljava/lang/String;)Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+	public static final fun newBackgroundThreadSpec (Ljava/lang/String;J)Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+	public static final fun newUIBackgroundTreadSpec (Ljava/lang/String;)Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
 }
 
-protected final class com/facebook/react/bridge/queue/MessageQueueThreadSpec$ThreadType : java/lang/Enum {
+public final class com/facebook/react/bridge/queue/MessageQueueThreadSpec$Companion {
+	public final fun mainThreadSpec ()Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+	public final fun newBackgroundThreadSpec (Ljava/lang/String;)Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+	public final fun newBackgroundThreadSpec (Ljava/lang/String;J)Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+	public final fun newUIBackgroundTreadSpec (Ljava/lang/String;)Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+}
+
+public final class com/facebook/react/bridge/queue/MessageQueueThreadSpec$ThreadType : java/lang/Enum {
 	public static final field MAIN_UI Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec$ThreadType;
 	public static final field NEW_BACKGROUND Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec$ThreadType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec$ThreadType;
 	public static fun values ()[Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec$ThreadType;
 }
@@ -1675,27 +1685,38 @@ public abstract interface class com/facebook/react/bridge/queue/ReactQueueConfig
 	public abstract fun getUIQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
 }
 
-public class com/facebook/react/bridge/queue/ReactQueueConfigurationImpl : com/facebook/react/bridge/queue/ReactQueueConfiguration {
-	public static fun create (Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)Lcom/facebook/react/bridge/queue/ReactQueueConfigurationImpl;
+public final class com/facebook/react/bridge/queue/ReactQueueConfigurationImpl : com/facebook/react/bridge/queue/ReactQueueConfiguration {
+	public static final field Companion Lcom/facebook/react/bridge/queue/ReactQueueConfigurationImpl$Companion;
+	public synthetic fun <init> (Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;Lcom/facebook/react/bridge/queue/MessageQueueThreadImpl;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun create (Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)Lcom/facebook/react/bridge/queue/ReactQueueConfigurationImpl;
 	public fun destroy ()V
 	public fun getJSQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
 	public fun getNativeModulesQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
 	public fun getUIQueueThread ()Lcom/facebook/react/bridge/queue/MessageQueueThread;
 }
 
-public class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec {
-	public fun <init> (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;)V
-	public static fun builder ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder;
-	public static fun createDefault ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;
-	public fun getJSQueueThreadSpec ()Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
-	public fun getNativeModulesQueueThreadSpec ()Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+public final class com/facebook/react/bridge/queue/ReactQueueConfigurationImpl$Companion {
+	public final fun create (Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;Lcom/facebook/react/bridge/queue/QueueThreadExceptionHandler;)Lcom/facebook/react/bridge/queue/ReactQueueConfigurationImpl;
 }
 
-public class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder {
+public final class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec {
+	public static final field Companion Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Companion;
+	public fun <init> (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;)V
+	public static final fun createDefault ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;
+	public final fun getJSQueueThreadSpec ()Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+	public final fun getNativeModulesQueueThreadSpec ()Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;
+}
+
+public final class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder {
 	public fun <init> ()V
-	public fun build ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;
-	public fun setJSQueueThreadSpec (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;)Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder;
-	public fun setNativeModulesQueueThreadSpec (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;)Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder;
+	public final fun build ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;
+	public final fun setJSQueueThreadSpec (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;)Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder;
+	public final fun setNativeModulesQueueThreadSpec (Lcom/facebook/react/bridge/queue/MessageQueueThreadSpec;)Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder;
+}
+
+public final class com/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Companion {
+	public final fun builder ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec$Builder;
+	public final fun createDefault ()Lcom/facebook/react/bridge/queue/ReactQueueConfigurationSpec;
 }
 
 public final class com/facebook/react/common/ClassFinder {
