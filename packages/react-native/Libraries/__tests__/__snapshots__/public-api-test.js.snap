@@ -9211,7 +9211,7 @@ exports[`public API should not change unintentionally src/private/setup/setUpPer
 
 exports[`public API should not change unintentionally src/private/types/HostComponent.js 1`] = `
 "export type HostComponent<Config: { ... }> = component(
-  ref: React$RefSetter<HostInstance>,
+  ref: React.RefSetter<HostInstance>,
   ...Config
 );
 "
