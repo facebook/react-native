@@ -16,6 +16,7 @@
 		CD9D441E2D68FE9500DC8EAC /* NativeSampleModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD9D441C2D68FE9500DC8EAC /* NativeSampleModule.cpp */; };
 		CD9D44212D68FEBB00DC8EAC /* NativeSampleModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD9D44202D68FEBB00DC8EAC /* NativeSampleModuleProvider.mm */; };
 		CDA0ED1A2D0B2D810079F561 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA0ED192D0B2D810079F561 /* AppDelegate.swift */; };
+		CDFA036E2D6D194800DD8DA4 /* RCTNativeLocalStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDFA036D2D6D194800DD8DA4 /* RCTNativeLocalStorage.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,8 @@
 		CD9D441F2D68FEBB00DC8EAC /* NativeSampleModuleProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeSampleModuleProvider.h; sourceTree = "<group>"; };
 		CD9D44202D68FEBB00DC8EAC /* NativeSampleModuleProvider.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NativeSampleModuleProvider.mm; sourceTree = "<group>"; };
 		CDA0ED192D0B2D810079F561 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = HelloWorld/AppDelegate.swift; sourceTree = "<group>"; };
+		CDFA036C2D6D194800DD8DA4 /* RCTNativeLocalStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTNativeLocalStorage.h; sourceTree = "<group>"; };
+		CDFA036D2D6D194800DD8DA4 /* RCTNativeLocalStorage.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTNativeLocalStorage.mm; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -124,6 +127,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				CDFA036B2D6D191E00DD8DA4 /* NativeLocalStorage */,
 				CD9D441D2D68FE9500DC8EAC /* shared */,
 				13B07FAE1A68108700A75B9A /* HelloWorld */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -164,6 +168,15 @@
 				CD9D441C2D68FE9500DC8EAC /* NativeSampleModule.cpp */,
 			);
 			path = shared;
+			sourceTree = "<group>";
+		};
+		CDFA036B2D6D191E00DD8DA4 /* NativeLocalStorage */ = {
+			isa = PBXGroup;
+			children = (
+				CDFA036C2D6D194800DD8DA4 /* RCTNativeLocalStorage.h */,
+				CDFA036D2D6D194800DD8DA4 /* RCTNativeLocalStorage.mm */,
+			);
+			path = NativeLocalStorage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -414,6 +427,7 @@
 			files = (
 				CD9D441E2D68FE9500DC8EAC /* NativeSampleModule.cpp in Sources */,
 				CD9D44212D68FEBB00DC8EAC /* NativeSampleModuleProvider.mm in Sources */,
+				CDFA036E2D6D194800DD8DA4 /* RCTNativeLocalStorage.mm in Sources */,
 				CDA0ED1A2D0B2D810079F561 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
