@@ -45,9 +45,8 @@ async function createFramework(
   const output = path.join(rootFolder, `${scheme}.xcframework`);
 
   // Check if output already exists and delete it
-  if (fs.existsSync(output)) {
-    fs.rmSync(output, {recursive: true, force: true});
-  }
+  fs.rmSync(output, {recursive: true, force: true});
+
   console.log('Output path:', output);
 
   const frameworksArgs = frameworkPaths
