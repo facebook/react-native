@@ -5,53 +5,45 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager;
+package com.facebook.react.uimanager
 
-import android.graphics.Rect;
-import android.view.View;
+import android.graphics.Rect
+import android.view.View
 
 /**
- * Interface that should be implemented by {@link View} subclasses that support {@code
- * removeClippedSubviews} property. When this property is set for the {@link ViewGroup} subclass
+ * Interface that should be implemented by [View] subclasses that support `removeClippedSubviews` property. When this property is set for the [ViewGroup] subclass
  * it's responsible for detaching it's child views that are clipped by the view boundaries. Those
  * view boundaries should be determined based on it's parent clipping area and current view's offset
  * in parent and doesn't necessarily reflect the view visible area (in a sense of a value that
- * {@link View#getGlobalVisibleRect} may return). In order to determine the clipping rect for
- * current view helper method {@link ReactClippingViewGroupHelper#calculateClippingRect} can be used
+ * [View.getGlobalVisibleRect] may return). In order to determine the clipping rect for
+ * current view helper method [ReactClippingViewGroupHelper.calculateClippingRect] can be used
  * that takes into account parent view settings.
  */
 public interface ReactClippingViewGroup {
-
   /**
    * Notify view that clipping area may have changed and it should recalculate the list of children
-   * that should be attached/detached. This method should be called only when property {@code
-   * removeClippedSubviews} is set to {@code true} on a view.
+   * that should be attached/detached. This method should be called only when property `removeClippedSubviews` is set to `true` on a view.
    *
-   * <p>CAUTION: Views are responsible for calling {@link #updateClippingRect} on it's children.
-   * This should happen if child implement {@link ReactClippingViewGroup}, return true from {@link
-   * #getRemoveClippedSubviews} and clipping rect change of the current view may affect clipping
+   * CAUTION: Views are responsible for calling [updateClippingRect] on it's children.
+   * This should happen if child implement [ReactClippingViewGroup], return true from [getRemoveClippedSubviews] and clipping rect change of the current view may affect clipping
    * rect of this child.
    */
-  void updateClippingRect();
+  public fun updateClippingRect()
 
   /**
    * Get rectangular bounds to which view is currently clipped to. Called only on views that has set
-   * {@code removeCLippedSubviews} property value to {@code true}.
+   * `removeCLippedSubviews` property value to `true`.
    *
    * @param outClippingRect output clipping rect should be written to this object.
    */
-  void getClippingRect(Rect outClippingRect);
+  public fun getClippingRect(outClippingRect: Rect)
 
   /**
-   * Sets property {@code removeClippedSubviews} as a result of property update in JS. Should be
-   * called only from @{link ViewManager#updateView} method.
+   * Sets property `removeClippedSubviews` as a result of property update in JS. Should be
+   * called only from [ViewManager.updateView] method.
    *
-   * <p>Helper method {@link ReactClippingViewGroupHelper#applyRemoveClippedSubviewsProperty} may be
-   * used by {@link ViewManager} subclass to apply this property based on property update map {@link
-   * ReactStylesDiffMap}.
+   * Helper method [ReactClippingViewGroupHelper.applyRemoveClippedSubviewsProperty] may be
+   * used by [ViewManager] subclass to apply this property based on property update map [ReactStylesDiffMap].
    */
-  void setRemoveClippedSubviews(boolean removeClippedSubviews);
-
-  /** Get the current value of {@code removeClippedSubviews} property. */
-  boolean getRemoveClippedSubviews();
+  public var removeClippedSubviews: Boolean
 }
