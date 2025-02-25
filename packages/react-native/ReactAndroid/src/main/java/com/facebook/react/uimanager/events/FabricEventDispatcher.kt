@@ -15,6 +15,7 @@ import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.UIManagerHelper
@@ -74,9 +75,8 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
     try {
       val fabricUIManager: UIManager? =
           UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
-      @Suppress("DEPRECATION")
+      @OptIn(UnstableReactNativeAPI::class)
       if (fabricUIManager is SynchronousEventReceiver) {
-        @Suppress("DEPRECATION")
         (fabricUIManager as SynchronousEventReceiver).receiveEvent(
             event.surfaceId,
             event.viewTag,
