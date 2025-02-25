@@ -5,10 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
 /** Constants used by ReactMarker. */
-public enum ReactMarkerConstants {
+public enum class ReactMarkerConstants(
+    @get:JvmName("hasMatchingNameMarker") public val hasMatchingNameMarker: Boolean = false
+) {
   APP_STARTUP_START(true),
   APP_STARTUP_END(true),
   CREATE_REACT_CONTEXT_START,
@@ -124,19 +126,5 @@ public enum ReactMarkerConstants {
   REACT_BRIDGE_LOADING_START,
   REACT_BRIDGE_LOADING_END,
   REACT_BRIDGELESS_LOADING_START,
-  REACT_BRIDGELESS_LOADING_END;
-
-  private boolean mHasMatchingNameMarker;
-
-  ReactMarkerConstants() {
-    this(false);
-  }
-
-  ReactMarkerConstants(boolean hasMatchingNameMarker) {
-    mHasMatchingNameMarker = hasMatchingNameMarker;
-  }
-
-  public boolean hasMatchingNameMarker() {
-    return mHasMatchingNameMarker;
-  }
+  REACT_BRIDGELESS_LOADING_END
 }

@@ -1346,7 +1346,8 @@ public final class com/facebook/react/bridge/ReactMarkerConstants : java/lang/En
 	public static final field VM_INIT Lcom/facebook/react/bridge/ReactMarkerConstants;
 	public static final field loadApplicationScript_endStringConvert Lcom/facebook/react/bridge/ReactMarkerConstants;
 	public static final field loadApplicationScript_startStringConvert Lcom/facebook/react/bridge/ReactMarkerConstants;
-	public fun hasMatchingNameMarker ()Z
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun hasMatchingNameMarker ()Z
 	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/bridge/ReactMarkerConstants;
 	public static fun values ()[Lcom/facebook/react/bridge/ReactMarkerConstants;
 }
