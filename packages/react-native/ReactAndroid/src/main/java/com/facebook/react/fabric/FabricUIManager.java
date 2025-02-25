@@ -968,11 +968,11 @@ public class FabricUIManager
   public void receiveEvent(
       int surfaceId,
       int reactTag,
-      String eventName,
+      @NonNull String eventName,
       boolean canCoalesceEvent,
       @Nullable WritableMap params,
       @EventCategoryDef int eventCategory,
-      boolean experimental_isSynchronous) {
+      boolean experimentalIsSynchronous) {
 
     if (ReactBuildConfig.DEBUG && surfaceId == View.NO_ID) {
       FLog.d(TAG, "Emitted event without surfaceId: [%d] %s", reactTag, eventName);
@@ -993,12 +993,12 @@ public class FabricUIManager
             surfaceId, reactTag, eventName, canCoalesceEvent, params, eventCategory);
       } else {
         // This can happen if the view has disappeared from the screen (because of async events)
-        FLog.d(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
+        FLog.i(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
       }
       return;
     }
 
-    if (experimental_isSynchronous) {
+    if (experimentalIsSynchronous) {
       // add() returns true only if there are no equivalent events already in the set
       boolean firstEventForFrame =
           mSynchronousEvents.add(new SynchronousEvent(surfaceId, reactTag, eventName));

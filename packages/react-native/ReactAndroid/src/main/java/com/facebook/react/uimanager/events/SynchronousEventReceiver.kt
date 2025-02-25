@@ -19,6 +19,6 @@ internal interface SynchronousEventReceiver {
       canCoalesceEvent: Boolean,
       params: WritableMap?,
       @EventCategoryDef eventCategory: Int,
-      experimental_isSynchronous: Boolean
+      experimentalIsSynchronous: Boolean
   ): Unit
 }
