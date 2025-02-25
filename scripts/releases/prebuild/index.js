@@ -50,6 +50,7 @@ async function main() {
     await cleanFolder(buildFolder);
     await buildDepenencies(
       SCHEME,
+      cli.configuration,
       cli.dependencies,
       cli.platforms,
       rootFolder,
@@ -58,7 +59,13 @@ async function main() {
   }
 
   if (cli.tasks.compose) {
-    await createFramework(SCHEME, cli.dependencies, rootFolder, buildFolder);
+    await createFramework(
+      SCHEME,
+      cli.configuration,
+      cli.dependencies,
+      rootFolder,
+      buildFolder,
+    );
   }
 
   console.log('');

@@ -26,6 +26,7 @@ import type { Dependency, Platform } from './types';
  */
 async function buildDepenencies(
   scheme /*: string */,
+  configuration /*: string */,
   dependencies /*: $ReadOnlyArray<Dependency> */,
   platforms /*: $ReadOnlyArray<Platform> */,
   rootFolder /*: string */,
@@ -35,7 +36,7 @@ async function buildDepenencies(
 
   await Promise.all(
     platforms.map(platform =>
-      buildPlatform(scheme, platform, rootFolder, buildFolder),
+      buildPlatform(scheme, configuration, platform, rootFolder, buildFolder),
     ),
   );
 
@@ -48,6 +49,7 @@ async function buildDepenencies(
  */
 async function buildPlatform(
   scheme /*: string */,
+  configuration /*: string */,
   platform /*: Platform */,
   rootFolder /*: string */,
   buildFolder /*: string */,
@@ -56,7 +58,7 @@ async function buildPlatform(
   const command =
     `xcodebuild -scheme "${scheme}" -destination "generic/platform=${platform}" ` +
     `-derivedDataPath "${buildFolder}" ` +
-    '-configuration Release ' +
+    `-configuration "${configuration}" ` +
     'SKIP_INSTALL=NO \
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     DEBUG_INFORMATION_FORMAT=dwarf-with-dsym';

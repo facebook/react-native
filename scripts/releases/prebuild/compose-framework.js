@@ -15,6 +15,7 @@ const path = require('path');
 
 /*::
 import type { Dependency, Platform } from './types';
+import {exec} from "child_process";
 */
 
 /**
@@ -22,6 +23,7 @@ import type { Dependency, Platform } from './types';
  */
 async function createFramework(
   scheme /*: string */,
+  configuration /*: string */,
   dependencies /*: $ReadOnlyArray<Dependency> */,
   rootFolder /*: string */,
   buildFolder /*: string */,
@@ -51,7 +53,7 @@ async function createFramework(
           framework,
           'PackageFrameworks',
           `${scheme}.framework`,
-        )} -debug-symbols ${path.join(framework, `${scheme}.framework.dSYM`)}`,
+        )}`,
     )
     .join(' ');
 
@@ -60,6 +62,15 @@ async function createFramework(
 
   // Copy bundles into the framework
   copyBundles(scheme, dependencies, output, frameworkPaths);
+
+  // Copy Symbols to symbols folder
+  const symbolPaths = frameworkPaths.map(framework =>
+    path.join(framework, `${scheme}.framework.dSYM`),
+  );
+  console.log('Copying symbols to symbols folder...');
+  const symbolOutput = path.join(rootFolder, 'Symbols');
+  fs.mkdirSync(symbolOutput, {recursive: true});
+  symbolPaths.forEach(symbol => execSync(`cp -r ${symbol} ${symbolOutput}`));
 }
 
 /**

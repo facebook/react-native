@@ -57,6 +57,12 @@ const cli = yargs
     default: dependencies.filter(d => !d.disabled).map(d => d.name),
     describe: 'Specify one or more dependencies',
   })
+  .option('configuration', {
+    alias: 'r',
+    type: 'string',
+    default: 'Debug',
+    describe: 'Specify the configuration to build, Release or Debug (default).',
+  })
   .help();
 
 /**
@@ -71,6 +77,7 @@ async function getCLIConfiguration() /*: Promise<?{|
   |},
   platforms: $ReadOnlyArray<Platform>,
   dependencies: $ReadOnlyArray<Dependency>,
+  configuration: string,
 |}> */ {
   // Run input parsing
   const argv = await cli.argv;
@@ -117,6 +124,7 @@ async function getCLIConfiguration() /*: Promise<?{|
     },
     platforms: resolvedPlatforms,
     dependencies: resolvedDependencies,
+    configuration: argv.configuration,
   };
 }
 
