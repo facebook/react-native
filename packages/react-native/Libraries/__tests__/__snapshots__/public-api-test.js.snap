@@ -1468,7 +1468,69 @@ declare export default typeof AndroidDrawerLayoutNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js 1`] = `
-"declare export default DrawerLayoutAndroid;
+"export type {
+  DrawerLayoutAndroidProps,
+  DrawerSlideEvent,
+} from \\"./DrawerLayoutAndroidTypes\\";
+declare export default class DrawerLayoutAndroid
+  extends React.Component<DrawerLayoutAndroidProps, DrawerLayoutAndroidState>
+  implements DrawerLayoutAndroidMethods
+{
+  render(): React.Node;
+  openDrawer(): void;
+  closeDrawer(): void;
+  blur(): void;
+  focus(): void;
+  measure(callback: MeasureOnSuccessCallback): void;
+  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void;
+  measureLayout(
+    relativeToNativeNode: number,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail?: () => void
+  ): void;
+  setNativeProps(nativeProps: Object): void;
+}
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/DrawerAndroid/DrawerLayoutAndroidTypes.js 1`] = `
+"export type DrawerStates = \\"Idle\\" | \\"Dragging\\" | \\"Settling\\";
+export type DrawerSlideEvent = NativeSyntheticEvent<
+  $ReadOnly<{
+    offset: number,
+  }>,
+>;
+export type DrawerLayoutAndroidProps = $ReadOnly<{
+  ...ViewProps,
+  keyboardDismissMode?: ?(\\"none\\" | \\"on-drag\\"),
+  drawerBackgroundColor?: ?ColorValue,
+  drawerPosition: ?(\\"left\\" | \\"right\\"),
+  drawerWidth?: ?number,
+  drawerLockMode?: ?(\\"unlocked\\" | \\"locked-closed\\" | \\"locked-open\\"),
+  onDrawerSlide?: ?(event: DrawerSlideEvent) => mixed,
+  onDrawerStateChanged?: ?(state: DrawerStates) => mixed,
+  onDrawerOpen?: ?() => mixed,
+  onDrawerClose?: ?() => mixed,
+  renderNavigationView: () => React.MixedElement,
+  statusBarBackgroundColor?: ?ColorValue,
+}>;
+export type DrawerLayoutAndroidState = {
+  drawerOpened: boolean,
+};
+export interface DrawerLayoutAndroidMethods {
+  openDrawer(): void;
+  closeDrawer(): void;
+  blur(): void;
+  focus(): void;
+  measure(callback: MeasureOnSuccessCallback): void;
+  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void;
+  measureLayout(
+    relativeToNativeNode: number,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail?: () => void
+  ): void;
+  setNativeProps(nativeProps: Object): void;
+}
 "
 `;
 
