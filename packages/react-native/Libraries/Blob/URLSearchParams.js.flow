@@ -18,6 +18,6 @@ declare export class URLSearchParams {
   has(name: string): empty;
   set(name: string, value: string): empty;
   sort(): empty;
-  @@iterator: Iterator<[string, string]>;
+  @@iterator(): Iterator<[string, string]>;
   toString(): string;
 }
