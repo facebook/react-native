@@ -21,6 +21,8 @@ export type {HostInstance} from './src/private/types/HostInstance';
 export type {HostComponent} from './src/private/types/HostComponent';
 export {default as registerCallableModule} from './Libraries/Core/registerCallableModule';
 
+/// <reference path="src/types/globals.d.ts" />
+
 // #region Components
 
 export {default as AccessibilityInfo} from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
