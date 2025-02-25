@@ -34,12 +34,7 @@ async function createFramework(
   console.log('Frameworks found:', frameworks.join(', '));
 
   const frameworkPaths = frameworks.map(framework =>
-    path.join(
-      frameworksOutputFolder,
-      framework,
-      'PackageFrameworks',
-      `${scheme}.framework`,
-    ),
+    path.join(frameworksOutputFolder, framework),
   );
 
   const output = path.join(rootFolder, `${scheme}.xcframework`);
@@ -50,10 +45,17 @@ async function createFramework(
   console.log('Output path:', output);
 
   const frameworksArgs = frameworkPaths
-    .map(framework => `-framework ${framework}`)
+    .map(
+      framework =>
+        `-framework ${path.join(
+          framework,
+          'PackageFrameworks',
+          `${scheme}.framework`,
+        )} -debug-symbols ${path.join(framework, `${scheme}.framework.dSYM`)}`,
+    )
     .join(' ');
 
-  const command = `xcodebuild -create-xcframework ${frameworksArgs} -output ${output}`;
+  const command = `xcodebuild -create-xcframework ${frameworksArgs} -output ${output} `;
   execSync(command, {stdio: 'inherit'});
 
   // Copy bundles into the framework
@@ -90,7 +92,7 @@ function copyBundles(
 
       // Get bundle source folder
       const bundleName = `${scheme}_${dep.name}.bundle`;
-      const sourceBundlePath = path.join(frameworkPath, '../../', bundleName);
+      const sourceBundlePath = path.join(frameworkPath, bundleName);
       if (fs.existsSync(sourceBundlePath)) {
         // Target folder - needs to be copied to the resulting framework
         targetArchFolders.forEach(targetArchFolder => {

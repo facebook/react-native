@@ -53,7 +53,14 @@ async function buildPlatform(
   buildFolder /*: string */,
 ) {
   console.log(`Building ${platform}...`);
-  const command = `xcodebuild -scheme "${scheme}" -destination "generic/platform=${platform}" -derivedDataPath "${buildFolder}"`;
+  const command =
+    `xcodebuild -scheme "${scheme}" -destination "generic/platform=${platform}" ` +
+    `-derivedDataPath "${buildFolder}" ` +
+    '-configuration Release ' +
+    'SKIP_INSTALL=NO \
+    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+    DEBUG_INFORMATION_FORMAT=dwarf-with-dsym';
+
   execSync(command, {cwd: rootFolder, stdio: 'inherit'});
 }
 
