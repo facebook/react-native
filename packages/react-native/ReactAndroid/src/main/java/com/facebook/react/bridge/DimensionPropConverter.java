@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaValue;
 
-public class DimensionPropConverter {
+class DimensionPropConverter {
 
   @Nullable
   public static YogaValue getDimension(@Nullable Object value) {

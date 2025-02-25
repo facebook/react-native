@@ -733,11 +733,6 @@ public class com/facebook/react/bridge/DefaultJSExceptionHandler : com/facebook/
 	public fun handleException (Ljava/lang/Exception;)V
 }
 
-public class com/facebook/react/bridge/DimensionPropConverter {
-	public fun <init> ()V
-	public static fun getDimension (Ljava/lang/Object;)Lcom/facebook/yoga/YogaValue;
-}
-
 public abstract interface class com/facebook/react/bridge/Dynamic {
 	public abstract fun asArray ()Lcom/facebook/react/bridge/ReadableArray;
 	public abstract fun asBoolean ()Z
