@@ -79,7 +79,7 @@
 - (nullable Class<RCTTurboModuleProvider>)getTurboModuleProvider:(const char *)name
 {
   NSString *providerName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
-  return self.dependencyProvider ? self.dependencyProvider.thirdPartyModuleProviders[providerName] : nullptr;
+  return self.dependencyProvider ? self.dependencyProvider.moduleProviders[providerName] : nullptr;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
@@ -112,11 +112,6 @@
 - (BOOL)turboModuleEnabled
 {
   return self.newArchEnabled;
-}
-
-- (Class)getModuleClassFromName:(const char *)name
-{
-  return nullptr;
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass

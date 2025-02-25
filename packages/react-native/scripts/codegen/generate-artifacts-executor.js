@@ -97,14 +97,14 @@ const THIRD_PARTY_COMPONENTS_MM_TEMPLATE_PATH = path.join(
   'RCTThirdPartyComponentsProviderMM.template',
 );
 
-const THIRD_PARTY_MODULES_H_TEMPLATE_PATH = path.join(
+const MODULE_PROVIDER_H_TEMPLATE_PATH = path.join(
   TEMPLATES_FOLDER_PATH,
-  'RCTThirdPartyModuleProviderH.template',
+  'RCTModuleProviderH.template',
 );
 
-const THIRD_PARTY_MODULES_MM_TEMPLATE_PATH = path.join(
+const MODULE_PROVIDER_MM_TEMPLATE_PATH = path.join(
   TEMPLATES_FOLDER_PATH,
-  'RCTThirdPartyModuleProviderMM.template',
+  'RCTModuleProviderMM.template',
 );
 
 const APP_DEPENDENCY_PROVIDER_H_TEMPLATE_PATH = path.join(
@@ -686,24 +686,16 @@ function generateAppDependencyProvider(outputDir) {
   codegenLog(`Generated podspec: ${finalPathPodspec}`);
 }
 
-function generateRCTThirdPartyCxxModules(
-  projectRoot,
-  pkgJson,
-  libraries,
-  outputDir,
-) {
+function generateRCTModuleProvider(projectRoot, pkgJson, libraries, outputDir) {
   fs.mkdirSync(outputDir, {recursive: true});
   // Generate Header File
-  codegenLog('Generating RCTThirdPartyModulesProvider.h');
-  const templateH = fs.readFileSync(
-    THIRD_PARTY_MODULES_H_TEMPLATE_PATH,
-    'utf8',
-  );
-  const finalPathH = path.join(outputDir, 'RCTThirdPartyModuleProvider.h');
+  codegenLog('Generating RCTModulesProvider.h');
+  const templateH = fs.readFileSync(MODULE_PROVIDER_H_TEMPLATE_PATH, 'utf8');
+  const finalPathH = path.join(outputDir, 'RCTModuleProvider.h');
   fs.writeFileSync(finalPathH, templateH);
   codegenLog(`Generated artifact: ${finalPathH}`);
 
-  codegenLog('Generating RCTThirdPartyModuleProvider.mm');
+  codegenLog('Generating RCTModuleProvider.mm');
   let modulesInLibraries = {};
 
   let app = pkgJson.codegenConfig
@@ -732,7 +724,6 @@ function generateRCTThirdPartyCxxModules(
             className: config.ios?.modulesProvider[moduleName],
           };
         });
-        return;
       }
     });
 
@@ -747,9 +738,9 @@ function generateRCTThirdPartyCxxModules(
 
   // Generate implementation file
   const templateMM = fs
-    .readFileSync(THIRD_PARTY_MODULES_MM_TEMPLATE_PATH, 'utf8')
-    .replace(/{thirdPartyModuleMapping}/, modulesMapping);
-  const finalPathMM = path.join(outputDir, 'RCTThirdPartyModuleProvider.mm');
+    .readFileSync(MODULE_PROVIDER_MM_TEMPLATE_PATH, 'utf8')
+    .replace(/{moduleMapping}/, modulesMapping);
+  const finalPathMM = path.join(outputDir, 'RCTModuleProvider.mm');
   fs.writeFileSync(finalPathMM, templateMM);
   codegenLog(`Generated artifact: ${finalPathMM}`);
 }
@@ -1088,12 +1079,7 @@ function execute(projectRoot, targetPlatform, baseOutputPath, source) {
       if (source === 'app') {
         // These components are only required by apps, not by libraries
         generateRCTThirdPartyComponents(libraries, outputPath);
-        generateRCTThirdPartyCxxModules(
-          projectRoot,
-          pkgJson,
-          libraries,
-          outputPath,
-        );
+        generateRCTModuleProvider(projectRoot, pkgJson, libraries, outputPath);
         generateCustomURLHandlers(libraries, outputPath);
         generateAppDependencyProvider(outputPath);
       }
