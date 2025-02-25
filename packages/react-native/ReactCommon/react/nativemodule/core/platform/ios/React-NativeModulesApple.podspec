@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
     s.platforms              = min_supported_versions
     s.source                 = source
     s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-    s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+    s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/Headers/Private/React-Core\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-debug/React_featureflags.framework/Headers\"",
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
@@ -51,6 +51,7 @@ Pod::Spec.new do |s|
     s.dependency "React-Core"
     s.dependency "React-cxxreact"
     s.dependency "React-jsi"
+    s.dependency "React-featureflags"
     s.dependency "React-runtimeexecutor"
     add_dependency(s, "React-featureflags")
     add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')

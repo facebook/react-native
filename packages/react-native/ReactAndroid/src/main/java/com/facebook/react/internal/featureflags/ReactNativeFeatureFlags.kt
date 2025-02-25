@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<79c141388878536d9ead03cfe8555186>>
+ * @generated SignedSource<<5e27f8a6852293234595697743315ff8>>
  */
 
 /**
@@ -219,6 +219,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
+
+  /**
+   * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
+   */
+  @JvmStatic
+  public fun removeTurboModuleManagerDelegateMutex(): Boolean = accessor.removeTurboModuleManagerDelegateMutex()
 
   /**
    * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
