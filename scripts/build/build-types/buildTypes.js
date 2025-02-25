@@ -80,6 +80,8 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Components/Switch/Switch.js',
   'packages/react-native/Libraries/Components/StatusBar/StatusBar.js',
   'packages/react-native/Libraries/Components/RefreshControl/RefreshControl.js',
+  'packages/react-native/Libraries/Image/Image.js.flow',
+  'packages/react-native/Libraries/Image/ImageBackground.js',
 ];
 
 /**
