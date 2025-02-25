@@ -27,6 +27,9 @@ import type {Timeout} from 'timers';
 import getBaseUrlFromRequest from '../utils/getBaseUrlFromRequest';
 import Device from './Device';
 import nullthrows from 'nullthrows';
+// Import these from node:perf_hooks to get the correct Flow types.
+// $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
+import {performance} from 'perf_hooks';
 // Import these from node:timers to get the correct Flow types.
 // $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
 import {clearTimeout, setTimeout} from 'timers';
@@ -43,6 +46,7 @@ const PAGES_LIST_JSON_VERSION_URL = '/json/version';
 const HEARTBEAT_TIMEOUT_MS = 60000;
 const HEARTBEAT_INTERVAL_MS = 10000;
 const PROXY_IDLE_TIMEOUT_MS = 10000;
+const EVENT_LOOP_PERF_DURATION_MS = 5000;
 
 const INTERNAL_ERROR_CODE = 1011;
 
@@ -88,6 +92,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
   #lastMessageTimestamp: number = 0;
 
+  #trackEventLoopPerf: boolean;
+
+  #eventLoopDelayMeasurementOngoing: boolean = false;
+
   constructor(
     projectRoot: string,
     serverBaseUrl: string,
@@ -95,6 +103,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     experiments: Experiments,
     logger?: Logger,
     customMessageHandler: ?CreateCustomMessageHandlerFn,
+    trackEventLoopPerf?: boolean = false,
   ) {
     this.#projectRoot = projectRoot;
     this.#serverBaseUrl = new URL(serverBaseUrl);
@@ -103,6 +112,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     this.#experiments = experiments;
     this.#logger = logger;
     this.#customMessageHandler = customMessageHandler;
+    this.#trackEventLoopPerf = trackEventLoopPerf;
   }
 
   getPageDescriptions({
@@ -344,6 +354,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
         this.#trackLastMessageTimestamp(socket);
 
+        if (this.#trackEventLoopPerf) {
+          socket.on('message', () => {
+            this.#trackEventLoopPerfThrottled();
+          });
+        }
+
         socket.on('close', (code: number, reason: string) => {
           this.#logger?.info(
             "Connection closed to device='%s' for app='%s' with code='%s' and reason='%s'.",
@@ -378,6 +394,33 @@ export default class InspectorProxy implements InspectorProxyQueries {
     return wss;
   }
 
+  #trackEventLoopPerfThrottled(): void {
+    if (this.#eventLoopDelayMeasurementOngoing) {
+      return;
+    }
+
+    this.#eventLoopDelayMeasurementOngoing = true;
+
+    // https://nodejs.org/api/perf_hooks.html#performanceeventlooputilizationutilization1-utilization2
+    const eluStart = performance.eventLoopUtilization();
+    setTimeout(() => {
+      const eluEnd = performance.eventLoopUtilization(eluStart);
+
+      // utilization is the percentage of time, between eluStart and eluEnd where event loop was busy
+      const utilization = Math.floor(eluEnd.utilization * 100);
+
+      debug(
+        'DevToolsMiddleware event loop utilization: %d%, idle: %dms, active: %dms, isIdleState: %s.',
+        utilization,
+        Math.floor(eluEnd.idle),
+        Math.floor(eluEnd.active),
+        this.#isIdle() ? 'true' : 'false',
+      );
+
+      this.#eventLoopDelayMeasurementOngoing = false;
+    }, EVENT_LOOP_PERF_DURATION_MS).unref();
+  }
+
   // Returns websocket handler for debugger connections.
   // Debugger connects to webSocketDebuggerUrl that we return as part of page description
   // in /json response.
@@ -408,6 +451,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
         deviceName: device?.getName() || null,
         pageId,
       };
+
+      if (this.#trackEventLoopPerf) {
+        socket.on('message', () => {
+          this.#trackEventLoopPerfThrottled();
+        });
+      }
 
       try {
         if (deviceId == null || pageId == null) {
