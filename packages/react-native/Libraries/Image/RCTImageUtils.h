@@ -64,6 +64,16 @@ RCT_EXTERN UIImage *__nullable
 RCTDecodeImageWithData(NSData *data, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode);
 
 /**
+ * This function takes the source url for an image and decodes it at the
+ * specified size. If the original image is smaller than the destination size,
+ * the resultant image's scale will be decreased to compensate, so the
+ * width/height of the returned image is guaranteed to be >= destSize.
+ * Pass a destSize of CGSizeZero to decode the image at its original size.
+ */
+RCT_EXTERN UIImage *__nullable
+RCTDecodeImageWithLocalAssetURL(NSURL *url, CGSize destSize, CGFloat destScale, RCTResizeMode resizeMode);
+
+/**
  * This function takes the source data for an image and decodes just the
  * metadata, without decompressing the image itself.
  */
