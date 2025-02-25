@@ -276,7 +276,7 @@ BaseViewProps::BaseViewProps(
               : convertRawProp(
                     context,
                     rawProps,
-                    "shouldRasterize",
+                    "shouldRasterizeIOS",
                     sourceProps.shouldRasterize,
                     {})),
       zIndex(

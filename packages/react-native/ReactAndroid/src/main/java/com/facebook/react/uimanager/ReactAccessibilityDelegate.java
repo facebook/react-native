@@ -983,11 +983,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
         return talkbackSegments;
       }
 
-      // EditText
+      // TextView
       if (hasNodeText) {
-        // skipped status checks above for EditText
-
-        // description
         talkbackSegments.append(nodeText);
         return talkbackSegments;
       }

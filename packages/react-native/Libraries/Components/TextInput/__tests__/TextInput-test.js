@@ -7,7 +7,7 @@
  * @format
  */
 
-const {create} = require('../../../../jest/renderer');
+const {create, update} = require('../../../../jest/renderer');
 const ReactNativeFeatureFlags = require('../../../../src/private/featureflags/ReactNativeFeatureFlags');
 const ReactNative = require('../../../ReactNative/RendererProxy');
 const {
@@ -20,8 +20,14 @@ const ReactTestRenderer = require('react-test-renderer');
 
 jest.unmock('../TextInput');
 
-[true, false].forEach(useRefsForTextInputState => {
-  describe(`TextInput tests (useRefsForTextInputState = ${useRefsForTextInputState}`, () => {
+[
+  {useRefsForTextInputState: true, useTextChildren: true},
+  {useRefsForTextInputState: false, useTextChildren: true},
+  {useRefsForTextInputState: true, useTextChildren: false},
+  {useRefsForTextInputState: false, useTextChildren: false},
+].forEach(testCase => {
+  const {useRefsForTextInputState, useTextChildren} = testCase;
+  describe(`TextInput tests (useRefsForTextInputState = ${useRefsForTextInputState}) useTextChildren = ${useTextChildren}`, () => {
     let input;
     let inputRef;
     let onChangeListener;
@@ -43,15 +49,16 @@ jest.unmock('../TextInput');
         return (
           <TextInput
             ref={inputRef}
-            value={state.text}
+            value={useTextChildren ? undefined : state.text}
             onChangeText={text => {
               onChangeTextListener(text);
               setState({text});
             }}
             onChange={event => {
               onChangeListener(event);
-            }}
-          />
+            }}>
+            {useTextChildren ? state.text : undefined}
+          </TextInput>
         );
       }
       const renderTree = await create(<TextInputWrapper />);
@@ -75,12 +82,20 @@ jest.unmock('../TextInput');
       );
     });
     it('calls onChange callbacks', () => {
-      expect(input.props.value).toBe(initialValue);
+      if (!useTextChildren) {
+        expect(input.props.value).toBe(initialValue);
+      } else {
+        expect(input.props.children).toBe(initialValue);
+      }
       const message = 'This is a test message';
       ReactTestRenderer.act(() => {
         enter(input, message);
       });
-      expect(input.props.value).toBe(message);
+      if (!useTextChildren) {
+        expect(input.props.value).toBe(message);
+      } else {
+        expect(input.props.children).toBe(message);
+      }
       expect(onChangeTextListener).toHaveBeenCalledWith(message);
       expect(onChangeListener).toHaveBeenCalledWith({
         nativeEvent: {text: message},
@@ -90,7 +105,12 @@ jest.unmock('../TextInput');
     async function createTextInput(extraProps) {
       const textInputRef = React.createRef(null);
       await create(
-        <TextInput ref={textInputRef} value="value1" {...extraProps} />,
+        <TextInput
+          ref={textInputRef}
+          value={useTextChildren ? undefined : 'value1'}
+          {...extraProps}>
+          {useTextChildren ? 'value1' : undefined}
+        </TextInput>,
       );
       return textInputRef;
     }
@@ -134,14 +154,55 @@ jest.unmock('../TextInput');
       expect(TextInput.State.currentlyFocusedInput()).toBe(null);
     });
 
+    it('change selection keeps content', async () => {
+      const defaultValue = 'value1';
+      // create content
+      let renderTree = await create(
+        <TextInput
+          value={useTextChildren ? undefined : defaultValue}
+          position={{start: 1, end: 1}}>
+          {useTextChildren ? defaultValue : undefined}
+        </TextInput>,
+      );
+      input = renderTree.root.findByType(TextInput);
+      expect(
+        useTextChildren ? input.children[0].props.children : input.props.value,
+      ).toBe(defaultValue);
+      expect(input.props.position.start).toBe(1);
+      expect(input.props.position.end).toBe(1);
+
+      // update position
+      renderTree = await update(
+        renderTree,
+        <TextInput
+          value={useTextChildren ? undefined : defaultValue}
+          position={{start: 2, end: 2}}>
+          {useTextChildren ? defaultValue : undefined}
+        </TextInput>,
+      );
+      expect(
+        useTextChildren ? input.children[0].props.children : input.props.value,
+      ).toBe(defaultValue);
+      expect(input.props.position.start).toBe(2);
+      expect(input.props.position.end).toBe(2);
+    });
+
     it('should unfocus when other TextInput is focused', async () => {
       const textInputRe1 = React.createRef(null);
       const textInputRe2 = React.createRef(null);
 
       await create(
         <>
-          <TextInput ref={textInputRe1} value="value1" />
-          <TextInput ref={textInputRe2} value="value2" />
+          <TextInput
+            ref={textInputRe1}
+            value={useTextChildren ? undefined : 'value1'}>
+            {useTextChildren ? 'value1' : undefined}
+          </TextInput>
+          <TextInput
+            ref={textInputRe2}
+            value={useTextChildren ? undefined : 'value2'}>
+            {useTextChildren ? 'value2' : undefined}
+          </TextInput>
         </>,
       );
       ReactNative.findNodeHandle = jest.fn().mockImplementation(ref => {
@@ -210,7 +271,6 @@ jest.unmock('../TextInput');
         rejectResponderTermination={true}
         selection={null}
         submitBehavior="blurAndSubmit"
-        text=""
         textContentType="emailAddress"
         underlineColorAndroid="transparent"
       />
@@ -255,7 +315,6 @@ jest.unmock('../TextInput');
         rejectResponderTermination={true}
         selection={null}
         submitBehavior="blurAndSubmit"
-        text=""
         underlineColorAndroid="transparent"
       />
     `);
@@ -301,7 +360,6 @@ jest.unmock('../TextInput');
         selection={null}
         submitBehavior="blurAndSubmit"
         testID="testID"
-        text=""
         underlineColorAndroid="transparent"
       />
     `);
@@ -432,7 +490,6 @@ jest.unmock('../TextInput');
         role="main"
         selection={null}
         submitBehavior="blurAndSubmit"
-        text=""
         underlineColorAndroid="transparent"
       />
     `);
@@ -489,7 +546,6 @@ jest.unmock('../TextInput');
           ]
         }
         submitBehavior="blurAndSubmit"
-        text=""
         underlineColorAndroid="transparent"
       />
     `);

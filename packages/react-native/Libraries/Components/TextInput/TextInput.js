@@ -8,12 +8,12 @@
  * @format
  */
 
-import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {____TextStyle_Internal as TextStyleInternal} from '../../StyleSheet/StyleSheetTypes';
 import type {
   GestureResponderEvent,
-  ScrollEvent,
   NativeSyntheticEvent,
+  ScrollEvent,
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 import type {TextInputType} from './TextInput.flow';
@@ -1028,7 +1028,7 @@ function useTextInputStateSynchronization_STATE({
   mostRecentEventCount: number,
   selection: ?Selection,
   inputRef: React.RefObject<null | HostInstance>,
-  text: string,
+  text?: string,
   viewCommands: ViewCommands,
 }): {
   setLastNativeText: string => void,
@@ -1109,7 +1109,7 @@ function useTextInputStateSynchronization_REFS({
   mostRecentEventCount: number,
   selection: ?Selection,
   inputRef: React.RefObject<null | HostInstance>,
-  text: string,
+  text?: string,
   viewCommands: ViewCommands,
 }): {
   setLastNativeText: string => void,
@@ -1323,7 +1323,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
       ? props.value
       : typeof props.defaultValue === 'string'
         ? props.defaultValue
-        : '';
+        : undefined;
 
   const viewCommands =
     AndroidTextInputCommands ||
@@ -1614,8 +1614,8 @@ function InternalTextInput(props: TextInputProps): React.Node {
 
     textInput = (
       <RCTTextInputView
-        // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
-        ref={ref}
+        // Figure out imperative + forward refs.
+        ref={(ref: $FlowFixMe)}
         {...otherProps}
         {...eventHandlers}
         accessibilityState={_accessibilityState}
@@ -1626,6 +1626,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         focusable={tabIndex !== undefined ? !tabIndex : focusable}
         mostRecentEventCount={mostRecentEventCount}
         nativeID={id ?? props.nativeID}
+        numberOfLines={props.rows ?? props.numberOfLines}
         onBlur={_onBlur}
         onChange={_onChange}
         onContentSizeChange={props.onContentSizeChange}
@@ -1675,8 +1676,8 @@ function InternalTextInput(props: TextInputProps): React.Node {
        * match up exactly with the props for TextInput. This will need to get
        * fixed */
       <AndroidTextInput
-        // $FlowFixMe[incompatible-type] - Figure out imperative + forward refs.
-        ref={ref}
+        // Figure out imperative + forward refs.
+        ref={(ref: $FlowFixMe)}
         {...otherProps}
         {...colorProps}
         {...eventHandlers}

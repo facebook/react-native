@@ -11,15 +11,17 @@
 // flowlint unsafe-getters-setters:off
 
 import type {
-  HostInstance,
-  INativeMethods,
   InternalInstanceHandle,
-  MeasureInWindowOnSuccessCallback,
-  MeasureLayoutOnSuccessCallback,
-  MeasureOnSuccessCallback,
   Node as ShadowNode,
   ViewConfig,
 } from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {
+  HostInstance,
+  INativeMethods,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+  MeasureOnSuccessCallback,
+} from '../../../types/HostInstance';
 import type {InstanceHandle} from './internals/NodeInternals';
 import type ReactNativeDocument from './ReactNativeDocument';
 

@@ -32,11 +32,7 @@ type IOSProps = $ReadOnly<{
   hasTVPreferredFocus?: ?boolean,
 }>;
 
-type Props = $ReadOnly<{
-  ...TouchableWithoutFeedbackProps,
-  ...AndroidProps,
-  ...IOSProps,
-
+type TouchableHighlightBaseProps = $ReadOnly<{
   /**
    * Determines what the opacity of the wrapped view should be when touch is active.
    */
@@ -60,6 +56,13 @@ type Props = $ReadOnly<{
   testOnly_pressed?: ?boolean,
 
   hostRef: React.RefSetter<React.ElementRef<typeof View>>,
+}>;
+
+type TouchableHighlightProps = $ReadOnly<{
+  ...TouchableWithoutFeedbackProps,
+  ...AndroidProps,
+  ...IOSProps,
+  ...TouchableHighlightBaseProps,
 }>;
 
 type ExtraStyles = $ReadOnly<{
@@ -168,7 +171,10 @@ type State = $ReadOnly<{
  * ```
  *
  */
-class TouchableHighlight extends React.Component<Props, State> {
+class TouchableHighlightImpl extends React.Component<
+  TouchableHighlightProps,
+  State,
+> {
   _hideTimeout: ?TimeoutID;
   _isMounted: boolean = false;
 
@@ -383,7 +389,7 @@ class TouchableHighlight extends React.Component<Props, State> {
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State) {
+  componentDidUpdate(prevProps: TouchableHighlightProps, prevState: State) {
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 
@@ -396,13 +402,13 @@ class TouchableHighlight extends React.Component<Props, State> {
   }
 }
 
-const Touchable: component(
-  ref: React.RefSetter<React.ElementRef<typeof View>>,
-  ...props: $ReadOnly<$Diff<Props, {+hostRef: mixed}>>
+const TouchableHighlight: component(
+  ref?: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: $ReadOnly<$Diff<TouchableHighlightProps, {+hostRef: mixed}>>
 ) = React.forwardRef((props, hostRef) => (
-  <TouchableHighlight {...props} hostRef={hostRef} />
+  <TouchableHighlightImpl {...props} hostRef={hostRef} />
 ));
 
-Touchable.displayName = 'TouchableHighlight';
+TouchableHighlight.displayName = 'TouchableHighlight';
 
-export default Touchable;
+export default TouchableHighlight;

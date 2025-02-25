@@ -8,7 +8,7 @@
  * @flow strict-local
  */
 
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../../src/private/types/HostComponent';
 import type {Double} from '../../Types/CodegenTypes';
 
 import codegenNativeCommands from '../../Utilities/codegenNativeCommands';

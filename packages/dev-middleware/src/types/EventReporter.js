@@ -94,19 +94,22 @@ export type ReportableEvent =
       ...DebuggerSessionIDs,
     }
   | {
-      type: 'debugger_heartbeat',
+      type: 'debugger_heartbeat' | 'device_heartbeat',
       duration: number,
+      isIdle: boolean,
       ...DebuggerSessionIDs,
     }
   | {
-      type: 'debugger_timeout',
+      type: 'debugger_timeout' | 'device_timeout',
       duration: number,
+      isIdle: boolean,
       ...DebuggerSessionIDs,
     }
   | {
-      type: 'debugger_connection_closed',
+      type: 'debugger_connection_closed' | 'device_connection_closed',
       code: number,
       reason: string,
+      isIdle: boolean,
       ...DebuggerSessionIDs,
     };
 

@@ -41,6 +41,17 @@ class PerformanceTracer {
   bool stopTracing();
 
   /**
+   * Returns whether the tracer is currently tracing. This can be useful to
+   * avoid doing expensive work (like formatting strings) if tracing is not
+   * enabled.
+   */
+  bool isTracing() const {
+    // This is not thread safe but it's only a performance optimization. The
+    // call to report marks and measures is already thread safe.
+    return tracing_;
+  }
+
+  /**
    * Flush out buffered CDP Trace Events using the given callback.
    */
   void collectEvents(

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<be34d6bf68f4d54cdaebd06432770674>>
+ * @generated SignedSource<<e80434127379886a001ffcbace6ba619>>
  */
 
 /**
@@ -152,6 +152,14 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool lazyAnimationCallbacks() override {
+    return false;
+  }
+
+  bool removeTurboModuleManagerDelegateMutex() override {
+    return false;
+  }
+
+  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
     return false;
   }
 

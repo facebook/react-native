@@ -36,8 +36,14 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Blob/URL.js',
   'packages/react-native/Libraries/Blob/URLSearchParams.js',
   'packages/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.js',
+  'packages/react-native/Libraries/Components/ActivityIndicator/ActivityIndicator.js',
+  'packages/react-native/Libraries/Components/Button.js',
   'packages/react-native/Libraries/Components/Clipboard/Clipboard.js',
+  'packages/react-native/Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js',
+  'packages/react-native/Libraries/Components/Keyboard/Keyboard.js',
+  'packages/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js',
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
+  'packages/react-native/Libraries/Components/ScrollView/ScrollView.js',
   'packages/react-native/Libraries/Interaction/InteractionManager.js',
   'packages/react-native/Libraries/Interaction/PanResponder.js',
   'packages/react-native/Libraries/EventEmitter/NativeEventEmitter.js',
@@ -70,7 +76,12 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   'packages/react-native/Libraries/Components/Touchable/TouchableNativeFeedback.js',
   'packages/react-native/Libraries/Components/Touchable/TouchableHighlight.js',
+  'packages/react-native/Libraries/Components/Touchable/Touchable.js',
   'packages/react-native/Libraries/Components/Switch/Switch.js',
+  'packages/react-native/Libraries/Components/StatusBar/StatusBar.js',
+  'packages/react-native/Libraries/Components/RefreshControl/RefreshControl.js',
+  'packages/react-native/Libraries/Image/Image.js.flow',
+  'packages/react-native/Libraries/Image/ImageBackground.js',
 ];
 
 /**

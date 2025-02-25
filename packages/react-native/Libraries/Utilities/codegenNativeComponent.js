@@ -10,7 +10,7 @@
 
 // TODO: move this file to shims/ReactNative (requires React update and sync)
 
-import type {HostComponent} from '../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../src/private/types/HostComponent';
 
 import requireNativeComponent from '../../Libraries/ReactNative/requireNativeComponent';
 import UIManager from '../ReactNative/UIManager';

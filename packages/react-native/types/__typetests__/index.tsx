@@ -469,12 +469,10 @@ export default Welcome;
 // TouchableTest
 function TouchableTest() {
   function basicUsage() {
-    if (Touchable.TOUCH_TARGET_DEBUG) {
-      return Touchable.renderDebugView({
-        color: 'mediumspringgreen',
-        hitSlop: {bottom: 5, top: 5},
-      });
-    }
+    return Touchable.renderDebugView({
+      color: 'mediumspringgreen',
+      hitSlop: {bottom: 5, top: 5},
+    });
   }
 
   function defaultHitSlop() {
@@ -490,6 +488,7 @@ export class TouchableHighlightTest extends React.Component {
   render() {
     return (
       <>
+        <TouchableHighlight />
         <TouchableHighlight ref={this.buttonRef} />
         <TouchableHighlight
           ref={ref => {
@@ -1345,8 +1344,8 @@ export class ImageTest extends React.Component {
     const uri =
       'https://seeklogo.com/images/T/typescript-logo-B29A3F462D-seeklogo.com.png';
     const headers = {Authorization: 'Bearer test'};
-    const image: ImageResolvedAssetSource = Image.resolveAssetSource({uri});
-    console.log(image.width, image.height, image.scale, image.uri);
+    const image = Image.resolveAssetSource({uri});
+    console.log(image?.width, image?.height, image?.scale, image?.uri);
 
     Image.queryCache &&
       Image.queryCache([uri]).then(({[uri]: status}) => {
@@ -1381,14 +1380,14 @@ export class ImageTest extends React.Component {
     Image.prefetch(uri); // $ExpectType Promise<boolean>
   }
 
-  handleOnLoad = (e: NativeSyntheticEvent<ImageLoadEventData>) => {
+  handleOnLoad = (e: NativeSyntheticEvent<Readonly<ImageLoadEventData>>) => {
     testNativeSyntheticEvent(e);
     console.log('height:', e.nativeEvent.source.height);
     console.log('width:', e.nativeEvent.source.width);
     console.log('uri:', e.nativeEvent.source.uri);
   };
 
-  handleOnError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
+  handleOnError = (e: NativeSyntheticEvent<Readonly<ImageErrorEventData>>) => {
     testNativeSyntheticEvent(e);
     console.log('error:', e.nativeEvent.error);
   };

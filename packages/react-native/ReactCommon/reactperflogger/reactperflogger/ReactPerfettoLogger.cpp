@@ -29,6 +29,14 @@ std::string toPerfettoTrackName(
 } // namespace
 #endif
 
+/* static */ bool ReactPerfettoLogger::isTracing() {
+#ifdef WITH_PERFETTO
+  return TRACE_EVENT_CATEGORY_ENABLED("react-native");
+#else
+  return false;
+#endif
+}
+
 /* static */ void ReactPerfettoLogger::measure(
     const std::string_view& eventName,
     double startTime,

@@ -82,7 +82,7 @@ class PerformanceEntryReporter {
       const std::optional<DOMHighResTimeStamp>& startTime = std::nullopt);
 
   PerformanceEntry reportMeasure(
-      const std::string_view& name,
+      const std::string& name,
       double startTime,
       double endTime,
       const std::optional<double>& duration = std::nullopt,
@@ -148,6 +148,9 @@ class PerformanceEntryReporter {
     }
     throw std::logic_error("Unhandled PerformanceEntryType");
   }
+
+  void traceMark(const PerformanceEntry& entry) const;
+  void traceMeasure(const PerformanceEntry& entry) const;
 };
 
 } // namespace facebook::react

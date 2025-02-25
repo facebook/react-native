@@ -7,10 +7,16 @@
  * @noformat
  * @nolint
  * @flow strict
- * @generated SignedSource<<c1ce40ef01008fe3cd38df1d9ff46f56>>
+ * @generated SignedSource<<de5df78e34b3d51e1cc9efbc4e79c1d8>>
  */
 
-import type {ElementRef, ElementType, MixedElement} from 'react';
+import type {
+  Component as ReactComponent,
+  ElementRef,
+  ElementType,
+  MixedElement,
+  RefSetter,
+} from 'react';
 // $FlowFixMe[nonstrict-import] TODO(@rubennorte)
 import {type PublicRootInstance} from 'react-native/Libraries/ReactPrivate/ReactNativePrivateInterface';
 
@@ -136,7 +142,7 @@ declare const ensureNativeMethodsAreSynced: NativeMethods;
 
 export type HostInstance = NativeMethods;
 export type HostComponent<Config: {...}> = component(
-  ref: React$RefSetter<HostInstance>,
+  ref: RefSetter<HostInstance>,
   ...Config
 );
 
@@ -165,18 +171,19 @@ export type InspectorData = $ReadOnly<{
   componentStack: string,
 }>;
 
-export type TouchedViewDataAtPoint = $ReadOnly<{
-  pointerY: number,
-  touchedViewTag?: number,
-  frame: $ReadOnly<{
-    top: number,
-    left: number,
-    width: number,
-    height: number,
-  }>,
-  closestPublicInstance?: PublicInstance,
-  ...InspectorData,
-}>;
+export type TouchedViewDataAtPoint = $ReadOnly<
+  {
+    pointerY: number,
+    touchedViewTag?: number,
+    frame: $ReadOnly<{
+      top: number,
+      left: number,
+      width: number,
+      height: number,
+    }>,
+    closestPublicInstance?: PublicInstance,
+  } & InspectorData,
+>;
 
 export type RenderRootOptions = {
   onUncaughtError?: (
@@ -188,7 +195,8 @@ export type RenderRootOptions = {
     errorInfo: {
       +componentStack?: ?string,
       // $FlowFixMe[unclear-type] unknown props and state.
-      +errorBoundary?: ?React$Component<any, any>,
+      // $FlowFixMe[value-as-type] Component in react repo is any-typed, but it will be well typed externally.
+      +errorBoundary?: ?ReactComponent<any, any>,
     },
   ) => void,
   onRecoverableError?: (

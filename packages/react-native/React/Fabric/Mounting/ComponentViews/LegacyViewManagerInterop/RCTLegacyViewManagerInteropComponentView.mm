@@ -97,8 +97,8 @@ static NSString *const kRCTLegacyInteropChildIndexKey = @"index";
 
 + (NSMutableDictionary<NSString *, Class> *)_supportedLegacyViewComponents
 {
-  static NSMutableDictionary<NSString *, Class> *suppoerted = [NSMutableDictionary new];
-  return suppoerted;
+  static NSMutableDictionary<NSString *, Class> *supported = [NSMutableDictionary new];
+  return supported;
 }
 
 + (BOOL)isSupported:(NSString *)componentName
