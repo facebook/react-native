@@ -164,7 +164,15 @@ async function createHeaderStructure(
   dependency /*  :Dependency */,
   rootFolder /*: string */,
 ) {
-  const targetFolder = path.join(rootFolder, dependency.name, HEADERS_FOLDER);
+  // Get the target for header files if necessary
+  const headerTarget = dependency.files.headerTargetFolder ?? '';
+  const targetFolder = path.join(
+    rootFolder,
+    dependency.name,
+    TARGET_FOLDER,
+    HEADERS_FOLDER,
+    headerTarget,
+  );
   const sourceFolder = path.join(rootFolder, dependency.name, SOURCE_FOLDER);
   console.log('Copying header files for dependency', dependency.name);
 

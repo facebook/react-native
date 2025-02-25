@@ -104,9 +104,15 @@ function createSwiftTarget(dependency /*  :Dependency */) {
     linkerSettings = `.unsafeFlags([${dependency.settings.linkerSettings.map(l => `"${l}"`).join(', ')}]),\n                `;
   }
 
+  // Dependencies
+  let dependencyList = '[]';
+  if (dependency.dependencies != null) {
+    dependencyList = `[${dependency.dependencies.map(d => `"${d}"`).join(', ')}]`;
+  }
+
   return `          .target(
               name: "${dependency.name}",
-              dependencies: [],
+              dependencies: ${dependencyList},
               path: "${dependency.name}/${TARGET_FOLDER}",
               ${dependency.files.resources ? 'resources: [.process("' + RESOURCES_FOLDER + '")],' : ''}
               publicHeadersPath: "${dependency.settings.publicHeaderFiles}",

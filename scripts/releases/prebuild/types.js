@@ -16,6 +16,10 @@ export type Files = $ReadOnly<{
   headers: $ReadOnlyArray<string>,
   sources: $ReadOnlyArray<string>,
   resources?: $ReadOnlyArray<string>,
+  // Relative path from target root to where the header files should be copied.
+  // Can be used to ensure header search paths like <double-conversion/double-conversion.h>
+  // are correctly resolved.
+  headerTargetFolder?: string,
   headerSkipFolderNames?: string,
 }>;
 
@@ -41,6 +45,7 @@ export type Dependency = $ReadOnly<{
   files: Files,
   settings: Settings,
   disabled?: boolean,
+  dependencies?: $ReadOnlyArray<string>,
 }>;
 
 export type Platform =

@@ -25,6 +25,8 @@ const platforms /*: $ReadOnlyArray<Platform> */ = [
   'visionOS Simulator',
 ];
 
+const CPP_STANDARD = 'c++20';
+
 const dependencies /*: $ReadOnlyArray<Dependency> */ = [
   {
     name: 'glog',
@@ -46,12 +48,12 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         'src/utilities.cc',
         'src/vlog_is_on.cc',
       ],
-      headers: ['src/*.h', 'src/glog/*.h', 'src/base/*.h'],
+      headers: ['src/glog/*.h'],
       resources: ['../third-party-podspecs/glog/PrivacyInfo.xcprivacy'],
       headerSkipFolderNames: 'src',
     },
     settings: {
-      publicHeaderFiles: './src',
+      publicHeaderFiles: './headers',
       headerSearchPaths: ['src'],
       compilerFlags: ['-Wno-shorten-64-to-32', '-Wno-everything'],
       defines: [
@@ -69,10 +71,11 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     files: {
       sources: ['src/*.{h,cc}'],
       headers: ['src/*.h'],
+      headerTargetFolder: 'double-conversion',
       headerSkipFolderNames: 'src',
     },
     settings: {
-      publicHeaderFiles: './src',
+      publicHeaderFiles: './headers',
       headerSearchPaths: ['src'],
       compilerFlags: ['-Wno-everything'],
     },
@@ -92,7 +95,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
       publicHeaderFiles: './include',
       headerSearchPaths: ['include'],
       linkedLibraries: ['c++'],
-      compilerFlags: ['-Wno-everything', '-std=c++11'],
+      compilerFlags: ['-Wno-everything', `-std=${CPP_STANDARD}`],
     },
   },
   {
@@ -108,8 +111,8 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
       resources: ['../third-party-podspecs/boost/PrivacyInfo.xcprivacy'],
     },
     settings: {
-      publicHeaderFiles: './boost',
-      headerSearchPaths: ['boost'],
+      publicHeaderFiles: './',
+      headerSearchPaths: ['./'],
       compilerFlags: ['-Wno-everything'],
     },
   },
@@ -128,7 +131,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './include',
       headerSearchPaths: ['include'],
-      compilerFlags: ['-Wno-everything', '-std=c++11'],
+      compilerFlags: ['-Wno-everything', `-std=${CPP_STANDARD}`],
       linkedLibraries: ['c++'],
     },
   },
@@ -162,13 +165,59 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
   {
     name: 'folly',
     version: '0.9.0',
-    disabled: true,
+    disabled: false,
     url: new URL(
       'https://github.com/facebook/folly/archive/refs/tags/v2024.11.18.00.tar.gz',
     ),
-    prepareScript: 'touch dummy.cc',
     files: {
       sources: [
+        // Common:
+        'folly/String.cpp',
+        'folly/Conv.cpp',
+        'folly/Demangle.cpp',
+        'folly/FileUtil.cpp',
+        'folly/Format.cpp',
+        'folly/lang/SafeAssert.cpp',
+        'folly/lang/ToAscii.cpp',
+        'folly/ScopeGuard.cpp',
+        'folly/Unicode.cpp',
+        'folly/json/dynamic.cpp',
+        'folly/json/json.cpp',
+        'folly/json/json_pointer.cpp',
+        'folly/container/detail/F14Table.cpp',
+        'folly/detail/Demangle.cpp',
+        'folly/detail/FileUtilDetail.cpp',
+        'folly/detail/SplitStringSimd.cpp',
+        'folly/detail/StaticSingletonManager.cpp',
+        'folly/detail/UniqueInstance.cpp',
+        'folly/hash/SpookyHashV2.cpp',
+        'folly/lang/CString.cpp',
+        'folly/lang/Exception.cpp',
+        'folly/memory/ReentrantAllocator.cpp',
+        'folly/memory/detail/MallocImpl.cpp',
+        'folly/net/NetOps.cpp',
+        'folly/portability/SysUio.cpp',
+        'folly/synchronization/SanitizeThread.cpp',
+        'folly/system/AtFork.cpp',
+        'folly/system/ThreadId.cpp',
+        'folly/*.h',
+        'folly/algorithm/simd/*.h',
+        'folly/algorithm/simd/detail/*.h',
+        'folly/chrono/*.h',
+        'folly/container/*.h',
+        'folly/container/detail/*.h',
+        'folly/detail/*.h',
+        'folly/functional/*.h',
+        'folly/hash/*.h',
+        'folly/json/*.h',
+        'folly/lang/*.h',
+        'folly/memory/*.h',
+        'folly/memory/detail/*.h',
+        'folly/net/*.h',
+        'folly/net/detail/*.h',
+        'folly/portability/*.h',
+        'folly/system/*.h',
+        // Fabric:
         'folly/SharedMutex.cpp',
         'folly/concurrency/CacheLocality.cpp',
         'folly/detail/Futex.cpp',
@@ -176,11 +225,6 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         'folly/concurrency/CacheLocality.h',
         'folly/synchronization/*.h',
         'folly/system/ThreadId.h',
-        'folly/detail/futex.h',
-        'folly/Hash.h',
-        'folly/hash/Hash.h',
-        'folly/SharedMutex.h',
-        'folly/CPortability.h',
       ],
       headers: [
         'folly/*.h',
@@ -201,14 +245,23 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         'folly/portability/*.h',
         'folly/system/*.h',
       ],
-      resources: ['../third-party-podspecs/RCT-Folly/PrivacyInfo.xcprivacy'],
+      // TODO: When including this we get "failed to scan dependencies" error
+      // resources: ['../third-party-podspecs/RCT-Folly/PrivacyInfo.xcprivacy'],
     },
+    dependencies: [
+      'glog',
+      'double-conversion',
+      'fmt',
+      'boost',
+      'fast_float',
+      'socket-rocket',
+    ],
     settings: {
       publicHeaderFiles: './',
       headerSearchPaths: ['./'],
       compilerFlags: [
         '-Wno-everything',
-        '-std=c++11',
+        `-std=${CPP_STANDARD}`,
         '-faligned-new',
         '-Wno-shorten-64-to-32',
         '-Wno-comma',
@@ -224,7 +277,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         {name: 'FOLLY_HAVE_CLOCK_GETTIME', value: '1'},
       ],
       linkedLibraries: ['c++abi'],
-      linkerSettings: ['-Wl', '-U,_jump_fcontext', '-Wl', '-U,_make_fcontext'],
+      linkerSettings: ['-Wl,-U,_jump_fcontext', '-Wl,-U,_make_fcontext'],
     },
   },
 ];

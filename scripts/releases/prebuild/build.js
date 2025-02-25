@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-const {HEADERS_FOLDER} = require('./constants');
+const {HEADERS_FOLDER, TARGET_FOLDER} = require('./constants');
 const {getAllFilesRecursively} = require('./folders');
 const {execSync} = require('child_process');
 const fs = require('fs');
@@ -91,7 +91,12 @@ async function copyHeadersToFrameworks(
 
   // Now we can go through all dependencies and copy header files for each depencendy
   dependencies.forEach(dep => {
-    const depHeadersFolder = path.join(rootFolder, dep.name, HEADERS_FOLDER);
+    const depHeadersFolder = path.join(
+      rootFolder,
+      dep.name,
+      TARGET_FOLDER,
+      HEADERS_FOLDER,
+    );
     const publicHeaderFiles = path.join(depHeadersFolder);
 
     // Get files in public header files
