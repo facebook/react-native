@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4d57d474194f93bfa213b062b7cf2927>>
+ * @generated SignedSource<<3d4eefc7af1e9d594ade8339c261ca01>>
  */
 
 /**
@@ -152,6 +152,10 @@ bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
 
 bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
   return getAccessor().lazyAnimationCallbacks();
+}
+
+bool ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex() {
+  return getAccessor().removeTurboModuleManagerDelegateMutex();
 }
 
 bool ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() {

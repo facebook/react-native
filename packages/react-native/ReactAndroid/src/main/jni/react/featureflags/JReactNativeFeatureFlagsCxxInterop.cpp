@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<fa20eb3604553fc9e43d01c49c7d8b68>>
+ * @generated SignedSource<<91c1a65790aa5946a354ab8a1966a5f4>>
  */
 
 /**
@@ -228,6 +228,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool lazyAnimationCallbacks() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("lazyAnimationCallbacks");
+    return method(javaProvider_);
+  }
+
+  bool removeTurboModuleManagerDelegateMutex() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("removeTurboModuleManagerDelegateMutex");
     return method(javaProvider_);
   }
 
@@ -455,6 +461,11 @@ bool JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks(
   return ReactNativeFeatureFlags::lazyAnimationCallbacks();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::removeTurboModuleManagerDelegateMutex(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
@@ -632,6 +643,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "lazyAnimationCallbacks",
         JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks),
+      makeNativeMethod(
+        "removeTurboModuleManagerDelegateMutex",
+        JReactNativeFeatureFlagsCxxInterop::removeTurboModuleManagerDelegateMutex),
       makeNativeMethod(
         "throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS",
         JReactNativeFeatureFlagsCxxInterop::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS),
