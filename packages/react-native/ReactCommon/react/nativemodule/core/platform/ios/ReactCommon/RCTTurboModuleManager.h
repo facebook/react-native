@@ -34,6 +34,8 @@
 
 @optional
 
+- (nullable Class<RCTTurboModuleProvider>)getTurboModuleProvider:(const char *)name;
+
 /**
  * Create an instance of a TurboModule without relying on any ObjC++ module instance.
  */
