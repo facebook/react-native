@@ -25,7 +25,7 @@ import View from '../View/View';
 import Keyboard from './Keyboard';
 import * as React from 'react';
 
-type Props = $ReadOnly<{
+export type KeyboardAvoidingViewProps = $ReadOnly<{
   ...ViewProps,
 
   /**
@@ -59,7 +59,10 @@ type State = {
  * View that moves out of the way when the keyboard appears by automatically
  * adjusting its height, position, or bottom padding.
  */
-class KeyboardAvoidingView extends React.Component<Props, State> {
+class KeyboardAvoidingView extends React.Component<
+  KeyboardAvoidingViewProps,
+  State,
+> {
   _frame: ?ViewLayout = null;
   _keyboardEvent: ?KeyboardEvent = null;
   _subscriptions: Array<EventSubscription> = [];
@@ -67,7 +70,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
   _initialFrameHeight: number = 0;
   _bottom: number = 0;
 
-  constructor(props: Props) {
+  constructor(props: KeyboardAvoidingViewProps) {
     super(props);
     this.state = {bottom: 0};
     this.viewRef = React.createRef();
@@ -175,7 +178,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
     }
   };
 
-  componentDidUpdate(_: Props, prevState: State): void {
+  componentDidUpdate(_: KeyboardAvoidingViewProps, prevState: State): void {
     const enabled = this.props.enabled ?? true;
     if (enabled && this._bottom !== prevState.bottom) {
       this.setState({bottom: this._bottom});
