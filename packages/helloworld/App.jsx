@@ -9,18 +9,29 @@
 
 import React from 'react';
 import {
+  Button,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   View,
   useColorScheme,
 } from 'react-native';
 import {Colors, Header} from 'react-native/Libraries/NewAppScreen';
+import SampleTurboModule from './specs/NativeSampleModule';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+
+  const [value, setValue] = React.useState('');
+  const [reversedValue, setReversedValue] = React.useState('');
+
+  const onPress = () => {
+    const revString = SampleTurboModule.reverseString(value);
+    setReversedValue(revString);
+  };
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -40,7 +51,15 @@ function App(): React.JSX.Element {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Text style={styles.title}>Hello, World!</Text>
+          <Text>Write down here he text you want to revert</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Write your text here"
+            onChangeText={setValue}
+            value={value}
+          />
+          <Button title="Reverse" onPress={onPress} />
+          <Text>Reversed text: {reversedValue}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

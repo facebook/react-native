@@ -33,5 +33,18 @@
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "codegenConfig": {
+     "name": "AppSpecs",
+     "type": "modules",
+     "jsSrcsDir": "specs",
+     "android": {
+       "javaPackageName": "com.sampleapp.specs"
+     },
+     "ios": {
+       "modulesProvider": {
+         "NativeSampleModule": "NativeSampleModuleProvider"
+        }
+     }
+   }
 }
