@@ -17,19 +17,19 @@ import java.io.FilterOutputStream
 import java.io.IOException
 
 internal class ProgressRequestBody(
-  private val requestBody: RequestBody?,
-  private val progressListener: ProgressListener?
+  private val requestBody: RequestBody,
+  private val progressListener: ProgressListener
 ) : RequestBody() {
   private var contentLength = 0L
 
   override fun contentType(): MediaType? {
-    return requestBody?.contentType()
+    return requestBody.contentType()
   }
 
   @Throws(IOException::class)
   override fun contentLength(): Long {
     if (contentLength == 0L) {
-      contentLength = requestBody?.contentLength() ?: 0L
+      contentLength = requestBody.contentLength()
     }
     return contentLength
   }
@@ -45,7 +45,7 @@ internal class ProgressRequestBody(
     // so get the length before writing to the sink
     contentLength()
 
-    requestBody?.writeTo(sinkWrapper)
+    requestBody.writeTo(sinkWrapper)
     sinkWrapper.flush()
   }
 
@@ -71,7 +71,7 @@ internal class ProgressRequestBody(
       fun sendProgressUpdate() {
         val bytesWritten = count
         val contentLength = contentLength()
-        progressListener?.onProgress(
+        progressListener.onProgress(
           bytesWritten, contentLength, bytesWritten == contentLength
         )
       }
