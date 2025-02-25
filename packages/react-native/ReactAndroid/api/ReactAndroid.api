@@ -455,30 +455,6 @@ public abstract class com/facebook/react/animated/AnimatedNode {
 public final class com/facebook/react/animated/AnimatedNode$Companion {
 }
 
-public abstract interface class com/facebook/react/animated/AnimatedNodeValueListener {
-	public abstract fun onValueUpdate (D)V
-}
-
-public final class com/facebook/react/animated/InterpolationAnimatedNode : com/facebook/react/animated/ValueAnimatedNode {
-	public static final field Companion Lcom/facebook/react/animated/InterpolationAnimatedNode$Companion;
-	public static final field EXTRAPOLATE_TYPE_CLAMP Ljava/lang/String;
-	public static final field EXTRAPOLATE_TYPE_EXTEND Ljava/lang/String;
-	public static final field EXTRAPOLATE_TYPE_IDENTITY Ljava/lang/String;
-	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;)V
-	public fun getAnimatedObject ()Ljava/lang/Object;
-	public fun onAttachedToNode (Lcom/facebook/react/animated/AnimatedNode;)V
-	public fun onDetachedFromNode (Lcom/facebook/react/animated/AnimatedNode;)V
-	public fun prettyPrint ()Ljava/lang/String;
-	public fun update ()V
-}
-
-public final class com/facebook/react/animated/InterpolationAnimatedNode$Companion {
-	public final fun interpolate (DDDDDLjava/lang/String;Ljava/lang/String;)D
-	public final fun interpolate (D[D[DLjava/lang/String;Ljava/lang/String;)D
-	public final fun interpolateColor (D[D[I)I
-	public final fun interpolateString (Ljava/lang/String;D[D[[DLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;
-}
-
 public class com/facebook/react/animated/NativeAnimatedModule : com/facebook/fbreact/specs/NativeAnimatedModuleSpec, com/facebook/react/bridge/LifecycleEventListener, com/facebook/react/bridge/UIManagerListener {
 	public static final field ANIMATED_MODULE_DEBUG Z
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
@@ -546,19 +522,6 @@ public class com/facebook/react/animated/NativeAnimatedNodesManager : com/facebo
 	public fun stopAnimation (I)V
 	public fun stopListeningToAnimatedNodeValue (I)V
 	public fun updateAnimatedNodeConfig (ILcom/facebook/react/bridge/ReadableMap;)V
-}
-
-public class com/facebook/react/animated/ValueAnimatedNode : com/facebook/react/animated/AnimatedNode {
-	public fun <init> ()V
-	public fun <init> (Lcom/facebook/react/bridge/ReadableMap;)V
-	public synthetic fun <init> (Lcom/facebook/react/bridge/ReadableMap;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun extractOffset ()V
-	public final fun flattenOffset ()V
-	public fun getAnimatedObject ()Ljava/lang/Object;
-	public final fun getValue ()D
-	public final fun onValueUpdate ()V
-	public fun prettyPrint ()Ljava/lang/String;
-	public final fun setValueListener (Lcom/facebook/react/animated/AnimatedNodeValueListener;)V
 }
 
 public abstract interface class com/facebook/react/bridge/ActivityEventListener {
