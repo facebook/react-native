@@ -193,10 +193,13 @@ async function createHeaderStructure(
 
       const targetPath = path.join(targetFolder, resolvedSourcePath);
 
-      // Create the folder structure
+      // Create the folder structure if necessary - each sourceFile is
+      // expanded using glob, so we have no guarantee that the target
+      // folder exists after the first sourceFile has been processed.
       const targetDir = path.dirname(targetPath);
-
-      fs.mkdirSync(targetDir, {recursive: true});
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, {recursive: true});
+      }
       // Copy the file
       fs.copyFileSync(sourcePath, targetPath);
     });
