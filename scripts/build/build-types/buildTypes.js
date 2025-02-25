@@ -39,6 +39,7 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Components/ActivityIndicator/ActivityIndicator.js',
   'packages/react-native/Libraries/Components/Button.js',
   'packages/react-native/Libraries/Components/Clipboard/Clipboard.js',
+  'packages/react-native/Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js',
   'packages/react-native/Libraries/Components/Keyboard/Keyboard.js',
   'packages/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js',
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
