@@ -5,80 +5,76 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.modules.network;
+package com.facebook.react.modules.network
 
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okio.BufferedSink;
-import okio.Okio;
-import okio.Sink;
+import okhttp3.MediaType
+import okhttp3.RequestBody
+import okio.BufferedSink
+import okio.Sink
+import okio.buffer
+import okio.sink
+import java.io.FilterOutputStream
+import java.io.IOException
 
-class ProgressRequestBody extends RequestBody {
+internal class ProgressRequestBody(
+  private val requestBody: RequestBody?,
+  private val progressListener: ProgressListener?
+) : RequestBody() {
+  private var contentLength = 0L
 
-  private final RequestBody mRequestBody;
-  private final ProgressListener mProgressListener;
-  private long mContentLength = 0L;
-
-  public ProgressRequestBody(RequestBody requestBody, ProgressListener progressListener) {
-    mRequestBody = requestBody;
-    mProgressListener = progressListener;
+  override fun contentType(): MediaType? {
+    return requestBody?.contentType()
   }
 
-  @Override
-  public MediaType contentType() {
-    return mRequestBody.contentType();
-  }
-
-  @Override
-  public long contentLength() throws IOException {
-    if (mContentLength == 0) {
-      mContentLength = mRequestBody.contentLength();
+  @Throws(IOException::class)
+  override fun contentLength(): Long {
+    if (contentLength == 0L) {
+      contentLength = requestBody?.contentLength() ?: 0L
     }
-    return mContentLength;
+    return contentLength
   }
 
-  @Override
-  public void writeTo(BufferedSink sink) throws IOException {
+  @Throws(IOException::class)
+  override fun writeTo(sink: BufferedSink) {
     // In 99% of cases, this method is called strictly once.
     // The only case when it is called more than once is internal okhttp upload re-try.
     // We need to re-create CountingOutputStream in this case as progress should be re-evaluated.
-    BufferedSink sinkWrapper = Okio.buffer(outputStreamSink(sink));
+    val sinkWrapper = outputStreamSink(sink).buffer()
 
     // contentLength changes for input streams, since we're using inputStream.available(),
     // so get the length before writing to the sink
-    contentLength();
+    contentLength()
 
-    mRequestBody.writeTo(sinkWrapper);
-    sinkWrapper.flush();
+    requestBody?.writeTo(sinkWrapper)
+    sinkWrapper.flush()
   }
 
-  private Sink outputStreamSink(BufferedSink sink) {
-    return Okio.sink(
-        new FilterOutputStream(sink.outputStream()) {
-          private long mCount = 0;
+  private fun outputStreamSink(sink: BufferedSink): Sink {
+    return object : FilterOutputStream(sink.outputStream()) {
+      private var count: Long = 0
 
-          @Override
-          public void write(byte[] data, int offset, int byteCount) throws IOException {
-            super.write(data, offset, byteCount);
-            mCount += byteCount;
-            sendProgressUpdate();
-          }
+      @Throws(IOException::class)
+      override fun write(data: ByteArray, offset: Int, byteCount: Int) {
+        super.write(data, offset, byteCount)
+        count += byteCount.toLong()
+        sendProgressUpdate()
+      }
 
-          @Override
-          public void write(int data) throws IOException {
-            super.write(data);
-            mCount++;
-            sendProgressUpdate();
-          }
+      @Throws(IOException::class)
+      override fun write(data: Int) {
+        super.write(data)
+        count++
+        sendProgressUpdate()
+      }
 
-          private void sendProgressUpdate() throws IOException {
-            long bytesWritten = mCount;
-            long contentLength = contentLength();
-            mProgressListener.onProgress(
-                bytesWritten, contentLength, bytesWritten == contentLength);
-          }
-        });
+      @Throws(IOException::class)
+      fun sendProgressUpdate() {
+        val bytesWritten = count
+        val contentLength = contentLength()
+        progressListener?.onProgress(
+          bytesWritten, contentLength, bytesWritten == contentLength
+        )
+      }
+    }.sink()
   }
 }
