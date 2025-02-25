@@ -70,67 +70,60 @@ const packageJsonPath = path.join(
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath));
 const REACT_NATIVE = packageJson.name;
 
-const MODULES_PROTOCOLS_H_TEMPLATE_PATH = path.join(
+const TEMPLATES_FOLDER_PATH = path.join(
   REACT_NATIVE_PACKAGE_ROOT_FOLDER,
   'scripts',
   'codegen',
   'templates',
+);
+
+const MODULES_PROTOCOLS_H_TEMPLATE_PATH = path.join(
+  TEMPLATES_FOLDER_PATH,
   'RCTModulesConformingToProtocolsProviderH.template',
 );
 
 const MODULES_PROTOCOLS_MM_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
+  TEMPLATES_FOLDER_PATH,
   'RCTModulesConformingToProtocolsProviderMM.template',
 );
 
 const THIRD_PARTY_COMPONENTS_H_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
+  TEMPLATES_FOLDER_PATH,
   'RCTThirdPartyComponentsProviderH.template',
 );
 
 const THIRD_PARTY_COMPONENTS_MM_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
+  TEMPLATES_FOLDER_PATH,
   'RCTThirdPartyComponentsProviderMM.template',
 );
 
+const THIRD_PARTY_MODULES_H_TEMPLATE_PATH = path.join(
+  TEMPLATES_FOLDER_PATH,
+  'RCTThirdPartyModuleProviderH.template',
+);
+
+const THIRD_PARTY_MODULES_MM_TEMPLATE_PATH = path.join(
+  TEMPLATES_FOLDER_PATH,
+  'RCTThirdPartyModuleProviderMM.template',
+);
+
 const APP_DEPENDENCY_PROVIDER_H_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
+  TEMPLATES_FOLDER_PATH,
   'RCTAppDependencyProviderH.template',
 );
 
 const APP_DEPENDENCY_PROVIDER_MM_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
+  TEMPLATES_FOLDER_PATH,
   'RCTAppDependencyProviderMM.template',
 );
 
 const APP_DEPENDENCY_PROVIDER_PODSPEC_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
+  TEMPLATES_FOLDER_PATH,
   'ReactAppDependencyProvider.podspec.template',
 );
 
 const REACT_CODEGEN_PODSPEC_TEMPLATE_PATH = path.join(
-  REACT_NATIVE_PACKAGE_ROOT_FOLDER,
-  'scripts',
-  'codegen',
-  'templates',
+  TEMPLATES_FOLDER_PATH,
   'ReactCodegen.podspec.template',
 );
 
@@ -693,6 +686,74 @@ function generateAppDependencyProvider(outputDir) {
   codegenLog(`Generated podspec: ${finalPathPodspec}`);
 }
 
+function generateRCTThirdPartyCxxModules(
+  projectRoot,
+  pkgJson,
+  libraries,
+  outputDir,
+) {
+  fs.mkdirSync(outputDir, {recursive: true});
+  // Generate Header File
+  codegenLog('Generating RCTThirdPartyModulesProvider.h');
+  const templateH = fs.readFileSync(
+    THIRD_PARTY_MODULES_H_TEMPLATE_PATH,
+    'utf8',
+  );
+  const finalPathH = path.join(outputDir, 'RCTThirdPartyModuleProvider.h');
+  fs.writeFileSync(finalPathH, templateH);
+  codegenLog(`Generated artifact: ${finalPathH}`);
+
+  codegenLog('Generating RCTThirdPartyModuleProvider.mm');
+  let modulesInLibraries = {};
+
+  let app = pkgJson.codegenConfig
+    ? {config: pkgJson.codegenConfig, libraryPath: projectRoot}
+    : null;
+  libraries
+    .concat(app)
+    .filter(Boolean)
+    .forEach(({config, libraryPath}) => {
+      if (
+        isReactNativeCoreLibrary(config.name) ||
+        config.type === 'components'
+      ) {
+        return;
+      }
+
+      const libraryName = JSON.parse(
+        fs.readFileSync(path.join(libraryPath, 'package.json')),
+      ).name;
+      if (config.ios?.modulesProvider) {
+        modulesInLibraries[libraryName] = Object.keys(
+          config.ios?.modulesProvider,
+        ).map(moduleName => {
+          return {
+            moduleName,
+            className: config.ios?.modulesProvider[moduleName],
+          };
+        });
+        return;
+      }
+    });
+
+  const modulesMapping = Object.keys(modulesInLibraries)
+    .flatMap(library => {
+      const modules = modulesInLibraries[library];
+      return modules.map(({moduleName, className}) => {
+        return `\t\t@"${moduleName}": NSClassFromString(@"${className}"), // ${library}`;
+      });
+    })
+    .join('\n');
+
+  // Generate implementation file
+  const templateMM = fs
+    .readFileSync(THIRD_PARTY_MODULES_MM_TEMPLATE_PATH, 'utf8')
+    .replace(/{thirdPartyModuleMapping}/, modulesMapping);
+  const finalPathMM = path.join(outputDir, 'RCTThirdPartyModuleProvider.mm');
+  fs.writeFileSync(finalPathMM, templateMM);
+  codegenLog(`Generated artifact: ${finalPathMM}`);
+}
+
 function generateRCTThirdPartyComponents(libraries, outputDir) {
   fs.mkdirSync(outputDir, {recursive: true});
   // Generate Header File
@@ -1027,6 +1088,12 @@ function execute(projectRoot, targetPlatform, baseOutputPath, source) {
       if (source === 'app') {
         // These components are only required by apps, not by libraries
         generateRCTThirdPartyComponents(libraries, outputPath);
+        generateRCTThirdPartyCxxModules(
+          projectRoot,
+          pkgJson,
+          libraries,
+          outputPath,
+        );
         generateCustomURLHandlers(libraries, outputPath);
         generateAppDependencyProvider(outputPath);
       }

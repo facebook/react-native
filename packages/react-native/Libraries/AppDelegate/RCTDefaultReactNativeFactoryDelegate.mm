@@ -78,9 +78,8 @@
 
 - (nullable Class<RCTTurboModuleProvider>)getTurboModuleProvider:(const char *)name
 {
-  // NSString * providerName = [NSString stringWithCString:name];
-  // return self.dependencyProvider ? self.dependencyProvider.cxxTurboModuleProvider[providerName] : nullptr
-  return nullptr;
+  NSString *providerName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
+  return self.dependencyProvider ? self.dependencyProvider.thirdPartyModuleProviders[providerName] : nullptr;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
