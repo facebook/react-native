@@ -232,6 +232,17 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   layoutManager.usesFontLeading = NO;
   [layoutManager addTextContainer:textContainer];
 
+  // A workaround for the issue with empty line measurement:
+  // When maximumNumberOfLines is set to N and N+1 line is empty, the returned
+  // measurement is for N+1 lines. Adding any character to that line results
+  // in the correct measurement.
+  if (attributedString.length > 0 && [[attributedString string] characterAtIndex:attributedString.length - 1] == '\n') {
+    NSMutableAttributedString *mutableString =
+        [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+    [mutableString replaceCharactersInRange:NSMakeRange(attributedString.length - 1, 1) withString:@"\n "];
+    attributedString = mutableString;
+  }
+
   NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
 
   RCTApplyBaselineOffset(textStorage);

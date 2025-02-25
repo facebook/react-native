@@ -22,11 +22,11 @@ import okhttp3.Request
 import okhttp3.Response
 
 /** Use this class to check if the JavaScript packager is running on the provided host. */
-public open class PackagerStatusCheck {
+internal class PackagerStatusCheck {
 
   private val client: OkHttpClient
 
-  public constructor() {
+  constructor() {
     client =
         OkHttpClient.Builder()
             .connectTimeout(HTTP_CONNECT_TIMEOUT_MS.toLong(), TimeUnit.MILLISECONDS)
@@ -35,11 +35,11 @@ public open class PackagerStatusCheck {
             .build()
   }
 
-  public constructor(client: OkHttpClient) {
+  constructor(client: OkHttpClient) {
     this.client = client
   }
 
-  public open fun run(host: String, callback: PackagerStatusCallback): Unit {
+  fun run(host: String, callback: PackagerStatusCallback): Unit {
     val statusURL = createPackagerStatusURL(host)
     val request = Request.Builder().url(statusURL).build()
 

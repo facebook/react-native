@@ -8,9 +8,9 @@
  * @format
  */
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../src/private/types/HostComponent';
 import type {ProcessedColorValue} from '../StyleSheet/processColor';
-import type {PressEvent} from '../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../Types/CoreEventTypes';
 import type {TextProps} from './TextProps';
 
 import {createViewConfig} from '../NativeComponent/ViewConfig';
@@ -21,7 +21,7 @@ export type NativeTextProps = $ReadOnly<{
   ...TextProps,
   isHighlighted?: ?boolean,
   selectionColor?: ?ProcessedColorValue,
-  onClick?: ?(event: PressEvent) => mixed,
+  onClick?: ?(event: GestureResponderEvent) => mixed,
   // This is only needed for platforms that optimize text hit testing, e.g.,
   // react-native-windows. It can be used to only hit test virtual text spans
   // that have pressable events attached to them.

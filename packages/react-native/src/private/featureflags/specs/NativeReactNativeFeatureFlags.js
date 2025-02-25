@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4a8a9b72b888e0d3330e48edcf556a4e>>
+ * @generated SignedSource<<799ade210837793b58f18e263325d77a>>
  * @flow strict
  */
 
@@ -30,10 +30,8 @@ export interface Spec extends TurboModule {
   +enableBridgelessArchitecture?: () => boolean;
   +enableCppPropsIteratorSetter?: () => boolean;
   +enableEagerRootViewAttachment?: () => boolean;
-  +enableEventEmitterRetentionDuringGesturesOnAndroid?: () => boolean;
   +enableFabricLogs?: () => boolean;
   +enableFabricRenderer?: () => boolean;
-  +enableFixForViewCommandRace?: () => boolean;
   +enableIOSViewClipToPaddingBox?: () => boolean;
   +enableImagePrefetchingAndroid?: () => boolean;
   +enableJSRuntimeGCOnMemoryPressureOnIOS?: () => boolean;
@@ -59,6 +57,7 @@ export interface Spec extends TurboModule {
   +fuseboxEnabledRelease?: () => boolean;
   +fuseboxNetworkInspectionEnabled?: () => boolean;
   +lazyAnimationCallbacks?: () => boolean;
+  +throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS?: () => boolean;
   +traceTurboModulePromiseRejectionsOnAndroid?: () => boolean;
   +useAlwaysAvailableJSErrorHandling?: () => boolean;
   +useEditTextStockAndroidFocusBehavior?: () => boolean;

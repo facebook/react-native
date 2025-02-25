@@ -10,7 +10,7 @@
 
 'use strict';
 
-type BackPressEventName = 'backPress' | 'hardwareBackPress';
+export type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
 type TBackHandler = {
   exitApp(): void,

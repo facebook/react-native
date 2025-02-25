@@ -13,10 +13,11 @@ type SuccessResult<Props: {...} | void = {}> = {
   ...Props,
 };
 
-type ErrorResult<ErrorT = mixed> = {
+type ErrorResult<ErrorT = mixed, Props: {...} | void = {}> = {
   status: 'error',
   error: ErrorT,
   prefersFuseboxFrontend?: ?boolean,
+  ...Props,
 };
 
 type CodedErrorResult<ErrorCode: string> = {
@@ -25,10 +26,10 @@ type CodedErrorResult<ErrorCode: string> = {
   errorDetails?: string,
 };
 
-type DebuggerSessionIDs = {
-  appId: string,
-  deviceName: string,
-  deviceId: string,
+export type DebuggerSessionIDs = {
+  appId: string | null,
+  deviceName: string | null,
+  deviceId: string | null,
   pageId: string | null,
 };
 
@@ -38,11 +39,9 @@ export type ReportableEvent =
       launchType: 'launch' | 'redirect',
       ...
         | SuccessResult<{
-            appId: string | null,
-            deviceId: string | null,
-            resolvedTargetDescription: string,
-            resolvedTargetAppId: string,
+            targetDescription: string,
             prefersFuseboxFrontend: boolean,
+            ...DebuggerSessionIDs,
           }>
         | ErrorResult<mixed>
         | CodedErrorResult<'NO_APPS_FOUND'>,
@@ -54,7 +53,7 @@ export type ReportableEvent =
             ...DebuggerSessionIDs,
             frontendUserAgent: string | null,
           }>
-        | ErrorResult<mixed>,
+        | ErrorResult<mixed, DebuggerSessionIDs>,
     }
   | {
       type: 'debugger_command',
@@ -95,14 +94,20 @@ export type ReportableEvent =
       ...DebuggerSessionIDs,
     }
   | {
-      type: 'debugger_heartbeat',
+      type: 'debugger_heartbeat' | 'device_heartbeat',
       duration: number,
-      appId: string,
+      ...DebuggerSessionIDs,
     }
   | {
-      type: 'debugger_timeout',
+      type: 'debugger_timeout' | 'device_timeout',
       duration: number,
-      appId: string,
+      ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'debugger_connection_closed' | 'device_connection_closed',
+      code: number,
+      reason: string,
+      ...DebuggerSessionIDs,
     };
 
 /**

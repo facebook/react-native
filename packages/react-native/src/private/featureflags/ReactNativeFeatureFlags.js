@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<957f487d2cd37f26a293985c5af94260>>
+ * @generated SignedSource<<8964bcac7c1b7a1e262cdad8d4ce7047>>
  * @flow strict
  */
 
@@ -55,10 +55,8 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableBridgelessArchitecture: Getter<boolean>,
   enableCppPropsIteratorSetter: Getter<boolean>,
   enableEagerRootViewAttachment: Getter<boolean>,
-  enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean>,
   enableFabricLogs: Getter<boolean>,
   enableFabricRenderer: Getter<boolean>,
-  enableFixForViewCommandRace: Getter<boolean>,
   enableIOSViewClipToPaddingBox: Getter<boolean>,
   enableImagePrefetchingAndroid: Getter<boolean>,
   enableJSRuntimeGCOnMemoryPressureOnIOS: Getter<boolean>,
@@ -84,6 +82,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   fuseboxEnabledRelease: Getter<boolean>,
   fuseboxNetworkInspectionEnabled: Getter<boolean>,
   lazyAnimationCallbacks: Getter<boolean>,
+  throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
   useEditTextStockAndroidFocusBehavior: Getter<boolean>,
@@ -199,10 +198,6 @@ export const enableCppPropsIteratorSetter: Getter<boolean> = createNativeFlagGet
  */
 export const enableEagerRootViewAttachment: Getter<boolean> = createNativeFlagGetter('enableEagerRootViewAttachment', false);
 /**
- * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
- */
-export const enableEventEmitterRetentionDuringGesturesOnAndroid: Getter<boolean> = createNativeFlagGetter('enableEventEmitterRetentionDuringGesturesOnAndroid', false);
-/**
  * This feature flag enables logs for Fabric.
  */
 export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableFabricLogs', false);
@@ -210,10 +205,6 @@ export const enableFabricLogs: Getter<boolean> = createNativeFlagGetter('enableF
  * Enables the use of the Fabric renderer in the whole app.
  */
 export const enableFabricRenderer: Getter<boolean> = createNativeFlagGetter('enableFabricRenderer', false);
-/**
- * Synchronise the view command dispatching with mounting of new transaction
- */
-export const enableFixForViewCommandRace: Getter<boolean> = createNativeFlagGetter('enableFixForViewCommandRace', false);
 /**
  * iOS Views will clip to their padding box vs border box
  */
@@ -314,6 +305,10 @@ export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlag
  * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
  */
 export const lazyAnimationCallbacks: Getter<boolean> = createNativeFlagGetter('lazyAnimationCallbacks', false);
+/**
+ * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
+ */
+export const throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: Getter<boolean> = createNativeFlagGetter('throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS', false);
 /**
  * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.
  */

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2f51678b553f9d19ce54e23614f5e67f>>
+ * @generated SignedSource<<09cdad55c2ed58e13248b3ba9bec94e9>>
  */
 
 /**
@@ -51,19 +51,11 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enableEventEmitterRetentionDuringGesturesOnAndroid() override {
-    return false;
-  }
-
   bool enableFabricLogs() override {
     return false;
   }
 
   bool enableFabricRenderer() override {
-    return false;
-  }
-
-  bool enableFixForViewCommandRace() override {
     return false;
   }
 
@@ -164,6 +156,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool lazyAnimationCallbacks() override {
+    return false;
+  }
+
+  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
     return false;
   }
 

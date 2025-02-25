@@ -19,13 +19,13 @@ import android.view.View
  */
 public abstract class SimpleViewManager<T : View> : BaseViewManager<T, LayoutShadowNode>() {
 
-  override public fun createShadowNodeInstance(): LayoutShadowNode {
+  public override fun createShadowNodeInstance(): LayoutShadowNode {
     return LayoutShadowNode()
   }
 
-  override public fun getShadowNodeClass(): Class<LayoutShadowNode> {
+  public override fun getShadowNodeClass(): Class<LayoutShadowNode> {
     return LayoutShadowNode::class.java
   }
 
-  override public fun updateExtraData(root: T, extraData: Any?): Unit = Unit
+  public override fun updateExtraData(root: T, extraData: Any?): Unit = Unit
 }

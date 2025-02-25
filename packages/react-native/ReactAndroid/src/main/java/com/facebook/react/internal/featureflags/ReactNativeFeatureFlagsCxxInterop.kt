@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<46a7d623ece362b83c39617466ffa6e9>>
+ * @generated SignedSource<<422954b314ef85921c9d51fd75cc057f>>
  */
 
 /**
@@ -40,13 +40,9 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableEagerRootViewAttachment(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enableFabricLogs(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableFabricRenderer(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun enableFixForViewCommandRace(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableIOSViewClipToPaddingBox(): Boolean
 
@@ -97,6 +93,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip @JvmStatic public external fun lazyAnimationCallbacks(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean
 
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

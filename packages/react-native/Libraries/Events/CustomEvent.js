@@ -25,7 +25,7 @@ class CustomEvent extends EventPolyfill {
     const {bubbles, cancelable, composed} = options;
     super(typeArg, {bubbles, cancelable, composed});
 
-    this.detail = options.detail; // this would correspond to `NativeEvent` in SyntheticEvent
+    this.detail = options.detail; // this would correspond to `NativeEvent` in NativeSyntheticEvent
   }
 }
 

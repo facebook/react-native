@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<eff00af88a96ad5e354a41d16709eccf>>
+ * @generated SignedSource<<4d57d474194f93bfa213b062b7cf2927>>
  */
 
 /**
@@ -50,20 +50,12 @@ bool ReactNativeFeatureFlags::enableEagerRootViewAttachment() {
   return getAccessor().enableEagerRootViewAttachment();
 }
 
-bool ReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid() {
-  return getAccessor().enableEventEmitterRetentionDuringGesturesOnAndroid();
-}
-
 bool ReactNativeFeatureFlags::enableFabricLogs() {
   return getAccessor().enableFabricLogs();
 }
 
 bool ReactNativeFeatureFlags::enableFabricRenderer() {
   return getAccessor().enableFabricRenderer();
-}
-
-bool ReactNativeFeatureFlags::enableFixForViewCommandRace() {
-  return getAccessor().enableFixForViewCommandRace();
 }
 
 bool ReactNativeFeatureFlags::enableIOSViewClipToPaddingBox() {
@@ -164,6 +156,10 @@ bool ReactNativeFeatureFlags::fuseboxNetworkInspectionEnabled() {
 
 bool ReactNativeFeatureFlags::lazyAnimationCallbacks() {
   return getAccessor().lazyAnimationCallbacks();
+}
+
+bool ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() {
+  return getAccessor().throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
 }
 
 bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {

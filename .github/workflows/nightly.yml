@@ -153,6 +153,7 @@ jobs:
         uses: ./.github/actions/build-android
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   build_npm_package:
     runs-on: 8-core-ubuntu
@@ -188,3 +189,4 @@ jobs:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           gha-npm-token: ${{ env.GHA_NPM_TOKEN }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}

@@ -19,27 +19,27 @@ import com.facebook.react.uimanager.ViewManager
 @ReactModule(name = ReactRawTextManager.REACT_CLASS)
 public class ReactRawTextManager : ViewManager<View, ReactRawTextShadowNode>() {
 
-  override public fun getName(): String {
+  public override fun getName(): String {
     return REACT_CLASS
   }
 
-  override public fun createViewInstance(context: ThemedReactContext): ReactTextView =
+  public override fun createViewInstance(context: ThemedReactContext): ReactTextView =
       throw IllegalStateException("Attempt to create a native view for RCTRawText")
 
-  override protected fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? =
+  protected override fun prepareToRecycleView(reactContext: ThemedReactContext, view: View): View? =
       throw IllegalStateException("Attempt to recycle a native view for RCTRawText")
 
-  override public fun updateExtraData(view: View, extraData: Any): Unit = Unit
+  public override fun updateExtraData(view: View, extraData: Any): Unit = Unit
 
-  override public fun getShadowNodeClass(): Class<ReactRawTextShadowNode> {
+  public override fun getShadowNodeClass(): Class<ReactRawTextShadowNode> {
     return ReactRawTextShadowNode::class.java
   }
 
-  override public fun createShadowNodeInstance(): ReactRawTextShadowNode {
+  public override fun createShadowNodeInstance(): ReactRawTextShadowNode {
     return ReactRawTextShadowNode()
   }
 
   internal companion object {
-    public const val REACT_CLASS: String = "RCTRawText"
+    const val REACT_CLASS: String = "RCTRawText"
   }
 }

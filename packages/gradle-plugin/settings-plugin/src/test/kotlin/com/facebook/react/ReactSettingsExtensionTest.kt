@@ -455,9 +455,9 @@ class ReactSettingsExtensionTest {
       object : GenerateConfig {
         var run = false
 
-        override fun start(): Process {
+        override fun execute(): Int {
           run = true
-          return ProcessBuilder("true").start()
+          return 0
         }
 
         override fun command(): List<String> = listOf("true")

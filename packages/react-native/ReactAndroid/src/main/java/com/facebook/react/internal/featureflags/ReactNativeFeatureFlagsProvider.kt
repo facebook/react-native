@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8df75cf5765272e57bfb1dd3d461cfde>>
+ * @generated SignedSource<<cdd065193d3f3ef5c6912e4baac8d266>>
  */
 
 /**
@@ -35,13 +35,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
-  @DoNotStrip public fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean
-
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
-
-  @DoNotStrip public fun enableFixForViewCommandRace(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
@@ -92,6 +88,8 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun fuseboxNetworkInspectionEnabled(): Boolean
 
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
+
+  @DoNotStrip public fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 

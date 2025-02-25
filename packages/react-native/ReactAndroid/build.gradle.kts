@@ -293,7 +293,7 @@ val prepareDoubleConversion by
       from(dependenciesPath ?: tarTree(downloadDoubleConversionDest))
       from("src/main/jni/third-party/double-conversion/")
       include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "CMakeLists.txt")
-      filesMatching("*/src/**/*") { this.path = "double-conversion/${this.name}" }
+      filesMatching("*/src/**/*") { path = "double-conversion/${name}" }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/double-conversion")
     }
@@ -315,7 +315,7 @@ val prepareFolly by
       from(dependenciesPath ?: tarTree(downloadFollyDest))
       from("src/main/jni/third-party/folly/")
       include("folly-${FOLLY_VERSION}/folly/**/*", "CMakeLists.txt")
-      eachFile { this.path = this.path.removePrefix("folly-${FOLLY_VERSION}/") }
+      eachFile { path = path.substringAfter("/") }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/folly")
     }
@@ -338,7 +338,7 @@ val prepareFastFloat by
       from(dependenciesPath ?: tarTree(downloadFastFloatDest))
       from("src/main/jni/third-party/fast_float/")
       include("fast_float-${FAST_FLOAT_VERSION}/include/**/*", "CMakeLists.txt")
-      eachFile { this.path = this.path.removePrefix("fast_float-${FAST_FLOAT_VERSION}/") }
+      eachFile { path = path.substringAfter("/") }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/fast_float")
     }
@@ -361,7 +361,7 @@ val prepareFmt by
       from(dependenciesPath ?: tarTree(downloadFmtDest))
       from("src/main/jni/third-party/fmt/")
       include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "CMakeLists.txt")
-      eachFile { this.path = this.path.removePrefix("fmt-${FMT_VERSION}/") }
+      eachFile { path = path.substringAfter("/") }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/fmt")
     }
@@ -394,7 +394,7 @@ val prepareGtest by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGtest))
       from(dependenciesPath ?: tarTree(downloadGtestDest))
-      eachFile { this.path = (this.path.removePrefix("googletest-release-${GTEST_VERSION}/")) }
+      eachFile { path = path.substringAfter("/") }
       into(File(thirdPartyNdkDir, "googletest"))
     }
 
@@ -426,10 +426,7 @@ val buildCodegenCLI by
             include("lib/**/*.js")
             include("lib/**/*.js.flow")
           })
-      onlyIf {
-        // For build from source scenario, we don't need to build the codegen at all.
-        rootProject.name != "react-native-build-from-source"
-      }
+      rootProjectName.set(rootProject.name)
     }
 
 /**
@@ -475,16 +472,6 @@ fun enableWarningsAsErrors(): Boolean {
   val value = project.properties["enableWarningsAsErrors"]
   return value?.toString()?.toBoolean() ?: false
 }
-
-val packageReactNdkLibsForBuck by
-    tasks.registering(Copy::class) {
-      dependsOn("mergeDebugNativeLibs")
-      // Shared libraries (.so) are copied from the merged_native_libs folder instead
-      from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
-      exclude("**/libjsc.so")
-      exclude("**/libhermes.so")
-      into("src/main/jni/prebuilt/lib")
-    }
 
 repositories {
   // Normally RNGP will set repositories for all modules,
@@ -651,7 +638,11 @@ android {
   }
 }
 
-tasks.withType<KotlinCompile>().configureEach { exclude("com/facebook/annotationprocessors/**") }
+tasks.withType<KotlinCompile>().configureEach {
+  exclude("com/facebook/annotationprocessors/**")
+  exclude("com/facebook/react/processing/**")
+  exclude("com/facebook/react/module/processing/**")
+}
 
 dependencies {
   api(libs.androidx.appcompat)

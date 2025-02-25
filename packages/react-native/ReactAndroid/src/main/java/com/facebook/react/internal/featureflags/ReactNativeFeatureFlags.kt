@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<71455749add674700080a24deaa91a5b>>
+ * @generated SignedSource<<79c141388878536d9ead03cfe8555186>>
  */
 
 /**
@@ -65,12 +65,6 @@ public object ReactNativeFeatureFlags {
   public fun enableEagerRootViewAttachment(): Boolean = accessor.enableEagerRootViewAttachment()
 
   /**
-   * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
-   */
-  @JvmStatic
-  public fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean = accessor.enableEventEmitterRetentionDuringGesturesOnAndroid()
-
-  /**
    * This feature flag enables logs for Fabric.
    */
   @JvmStatic
@@ -81,12 +75,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableFabricRenderer(): Boolean = accessor.enableFabricRenderer()
-
-  /**
-   * Synchronise the view command dispatching with mounting of new transaction
-   */
-  @JvmStatic
-  public fun enableFixForViewCommandRace(): Boolean = accessor.enableFixForViewCommandRace()
 
   /**
    * iOS Views will clip to their padding box vs border box
@@ -237,6 +225,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun lazyAnimationCallbacks(): Boolean = accessor.lazyAnimationCallbacks()
+
+  /**
+   * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
+   */
+  @JvmStatic
+  public fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean = accessor.throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS()
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

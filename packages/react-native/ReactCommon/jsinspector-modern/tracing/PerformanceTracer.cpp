@@ -7,20 +7,15 @@
 
 #include "PerformanceTracer.h"
 
+#include <oscompat/OSCompat.h>
+
 #include <folly/json.h>
 
 #include <mutex>
-#include <unordered_set>
 
 namespace facebook::react::jsinspector_modern {
 
 namespace {
-
-/** Process ID for all emitted events. */
-const uint64_t PID = 1000;
-
-/** Default/starting track ID for the "Timings" track. */
-const uint64_t USER_TIMINGS_DEFAULT_TRACK = 1000;
 
 uint64_t getUnixTimestampOfNow() {
   return std::chrono::duration_cast<std::chrono::microseconds>(
@@ -35,24 +30,35 @@ PerformanceTracer& PerformanceTracer::getInstance() {
   return tracer;
 }
 
+PerformanceTracer::PerformanceTracer()
+    : processId_(oscompat::getCurrentProcessId()) {}
+
 bool PerformanceTracer::startTracing() {
-  std::lock_guard lock(mutex_);
-  if (tracing_) {
-    return false;
+  {
+    std::lock_guard lock(mutex_);
+    if (tracing_) {
+      return false;
+    }
+
+    tracing_ = true;
   }
 
-  buffer_.push_back(TraceEvent{
-      .name = "TracingStartedInPage",
-      .cat = "disabled-by-default-devtools.timeline",
-      .ph = 'I',
-      .ts = getUnixTimestampOfNow(),
-      .pid = PID, // FIXME: This should be the real process ID.
-      .tid = 0, // FIXME: This should be the real thread ID.
-      .args = folly::dynamic::object("data", folly::dynamic::object()),
-  });
+  reportProcess(processId_, "React Native");
 
-  tracing_ = true;
-  return true;
+  {
+    std::lock_guard lock(mutex_);
+    buffer_.push_back(TraceEvent{
+        .name = "TracingStartedInPage",
+        .cat = "disabled-by-default-devtools.timeline",
+        .ph = 'I',
+        .ts = getUnixTimestampOfNow(),
+        .pid = processId_,
+        .tid = oscompat::getCurrentThreadId(),
+        .args = folly::dynamic::object("data", folly::dynamic::object()),
+    });
+
+    return true;
+  }
 }
 
 bool PerformanceTracer::stopTracing() {
@@ -96,6 +102,10 @@ void PerformanceTracer::collectEvents(
 void PerformanceTracer::reportMark(
     const std::string_view& name,
     uint64_t start) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
@@ -106,9 +116,8 @@ void PerformanceTracer::reportMark(
       .cat = "blink.user_timing",
       .ph = 'I',
       .ts = start,
-      .pid = PID, // FIXME: This should be the real process ID.
-      .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
-                                         // thread ID.
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
   });
 }
 
@@ -117,6 +126,10 @@ void PerformanceTracer::reportMeasure(
     uint64_t start,
     uint64_t duration,
     const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
@@ -132,15 +145,15 @@ void PerformanceTracer::reportMeasure(
   }
 
   ++performanceMeasureCount_;
+  auto currentThreadId = oscompat::getCurrentThreadId();
   buffer_.push_back(TraceEvent{
       .id = performanceMeasureCount_,
       .name = std::string(name),
       .cat = "blink.user_timing",
       .ph = 'b',
       .ts = start,
-      .pid = PID, // FIXME: This should be the real process ID.
-      .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
-                                         // thread ID.
+      .pid = processId_,
+      .tid = currentThreadId,
       .args = beginEventArgs,
   });
   buffer_.push_back(TraceEvent{
@@ -149,9 +162,50 @@ void PerformanceTracer::reportMeasure(
       .cat = "blink.user_timing",
       .ph = 'e',
       .ts = start + duration,
-      .pid = PID, // FIXME: This should be the real process ID.
-      .tid = USER_TIMINGS_DEFAULT_TRACK, // FIXME: This should be the real
-                                         // thread ID.
+      .pid = processId_,
+      .tid = currentThreadId,
+  });
+}
+
+void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "process_name",
+      .cat = "__metadata",
+      .ph = 'M',
+      .ts = 0,
+      .pid = id,
+      .tid = 0,
+      .args = folly::dynamic::object("name", name),
+  });
+}
+
+void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "thread_name",
+      .cat = "__metadata",
+      .ph = 'M',
+      .ts = 0,
+      .pid = processId_,
+      .tid = id,
+      .args = folly::dynamic::object("name", name),
   });
 }
 

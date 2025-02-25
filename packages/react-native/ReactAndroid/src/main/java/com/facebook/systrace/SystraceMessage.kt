@@ -12,7 +12,7 @@ import kotlin.jvm.JvmField
 
 public object SystraceMessage {
 
-  public @JvmField var INCLUDE_ARGS: Boolean = false
+  @JvmField public var INCLUDE_ARGS: Boolean = false
 
   @JvmStatic
   public fun beginSection(tag: Long, sectionName: String): Builder =

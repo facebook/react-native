@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<6da6900a6956ce35b0ef75320a49ba85>>
+ * @generated SignedSource<<d550236a5fa723c87edaef7b44296869>>
  */
 
 /**
@@ -31,10 +31,8 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableBridgelessArchitecture() = 0;
   virtual bool enableCppPropsIteratorSetter() = 0;
   virtual bool enableEagerRootViewAttachment() = 0;
-  virtual bool enableEventEmitterRetentionDuringGesturesOnAndroid() = 0;
   virtual bool enableFabricLogs() = 0;
   virtual bool enableFabricRenderer() = 0;
-  virtual bool enableFixForViewCommandRace() = 0;
   virtual bool enableIOSViewClipToPaddingBox() = 0;
   virtual bool enableImagePrefetchingAndroid() = 0;
   virtual bool enableJSRuntimeGCOnMemoryPressureOnIOS() = 0;
@@ -60,6 +58,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool fuseboxEnabledRelease() = 0;
   virtual bool fuseboxNetworkInspectionEnabled() = 0;
   virtual bool lazyAnimationCallbacks() = 0;
+  virtual bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() = 0;
   virtual bool traceTurboModulePromiseRejectionsOnAndroid() = 0;
   virtual bool useAlwaysAvailableJSErrorHandling() = 0;
   virtual bool useEditTextStockAndroidFocusBehavior() = 0;

@@ -444,6 +444,7 @@ jobs:
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           run-e2e-tests: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   test_e2e_android_rntester:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
@@ -504,6 +505,7 @@ jobs:
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   test_android_helloworld:
     runs-on: 4-core-ubuntu
@@ -542,6 +544,8 @@ jobs:
           path: /tmp/maven-local
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run yarn install
         uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aec8f7c6bf750d667bbf32373a647d0f>>
+ * @generated SignedSource<<fa20eb3604553fc9e43d01c49c7d8b68>>
  */
 
 /**
@@ -75,12 +75,6 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool enableEventEmitterRetentionDuringGesturesOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableEventEmitterRetentionDuringGesturesOnAndroid");
-    return method(javaProvider_);
-  }
-
   bool enableFabricLogs() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricLogs");
@@ -90,12 +84,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableFabricRenderer() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFabricRenderer");
-    return method(javaProvider_);
-  }
-
-  bool enableFixForViewCommandRace() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableFixForViewCommandRace");
     return method(javaProvider_);
   }
 
@@ -249,6 +237,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS");
+    return method(javaProvider_);
+  }
+
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("traceTurboModulePromiseRejectionsOnAndroid");
@@ -337,11 +331,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment(
   return ReactNativeFeatureFlags::enableEagerRootViewAttachment();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enableEventEmitterRetentionDuringGesturesOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableEventEmitterRetentionDuringGesturesOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricLogs(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFabricLogs();
@@ -350,11 +339,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableFabricLogs(
 bool JReactNativeFeatureFlagsCxxInterop::enableFabricRenderer(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableFabricRenderer();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::enableFixForViewCommandRace(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enableFixForViewCommandRace();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox(
@@ -482,6 +466,11 @@ bool JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks(
   return ReactNativeFeatureFlags::lazyAnimationCallbacks();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -577,17 +566,11 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableEagerRootViewAttachment",
         JReactNativeFeatureFlagsCxxInterop::enableEagerRootViewAttachment),
       makeNativeMethod(
-        "enableEventEmitterRetentionDuringGesturesOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::enableEventEmitterRetentionDuringGesturesOnAndroid),
-      makeNativeMethod(
         "enableFabricLogs",
         JReactNativeFeatureFlagsCxxInterop::enableFabricLogs),
       makeNativeMethod(
         "enableFabricRenderer",
         JReactNativeFeatureFlagsCxxInterop::enableFabricRenderer),
-      makeNativeMethod(
-        "enableFixForViewCommandRace",
-        JReactNativeFeatureFlagsCxxInterop::enableFixForViewCommandRace),
       makeNativeMethod(
         "enableIOSViewClipToPaddingBox",
         JReactNativeFeatureFlagsCxxInterop::enableIOSViewClipToPaddingBox),
@@ -663,6 +646,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "lazyAnimationCallbacks",
         JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks),
+      makeNativeMethod(
+        "throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS",
+        JReactNativeFeatureFlagsCxxInterop::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),

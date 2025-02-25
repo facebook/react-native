@@ -16,7 +16,7 @@ import type {
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 import type {
   FocusEvent,
-  LayoutEvent,
+  LayoutChangeEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
 
 import * as React from 'react';
@@ -44,7 +44,7 @@ export type CellRendererProps<ItemT> = $ReadOnly<{
   index: number,
   item: ItemT,
   onFocusCapture?: (event: FocusEvent) => void,
-  onLayout?: (event: LayoutEvent) => void,
+  onLayout?: (event: LayoutChangeEvent) => void,
   style: ViewStyleProp,
 }>;
 

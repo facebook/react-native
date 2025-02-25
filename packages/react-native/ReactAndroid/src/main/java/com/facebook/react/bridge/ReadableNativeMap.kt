@@ -179,7 +179,7 @@ public open class ReadableNativeMap protected constructor() : NativeMap(), Reada
   private companion object {
     @get:JvmStatic
     @get:JvmName("getJNIPassCounter")
-    public var jniPassCounter: Int = 0
+    var jniPassCounter: Int = 0
       private set
   }
 }

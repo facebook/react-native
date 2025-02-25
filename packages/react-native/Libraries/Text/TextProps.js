@@ -19,9 +19,9 @@ import type {
 } from '../Components/View/ViewAccessibility';
 import type {ColorValue, TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {
-  LayoutEvent,
+  LayoutChangeEvent,
   PointerEvent,
-  PressEvent,
+  GestureResponderEvent,
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
 import type {Node} from 'react';
@@ -142,27 +142,27 @@ export type TextProps = $ReadOnly<{
    *
    * See https://reactnative.dev/docs/text#onlayout
    */
-  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLayout?: ?(event: LayoutChangeEvent) => mixed,
 
   /**
    * This function is called on long press.
    *
    * See https://reactnative.dev/docs/text#onlongpress
    */
-  onLongPress?: ?(event: PressEvent) => mixed,
+  onLongPress?: ?(event: GestureResponderEvent) => mixed,
 
   /**
    * This function is called on press.
    *
    * See https://reactnative.dev/docs/text#onpress
    */
-  onPress?: ?(event: PressEvent) => mixed,
-  onPressIn?: ?(event: PressEvent) => mixed,
-  onPressOut?: ?(event: PressEvent) => mixed,
-  onResponderGrant?: ?(event: PressEvent) => void,
-  onResponderMove?: ?(event: PressEvent) => void,
-  onResponderRelease?: ?(event: PressEvent) => void,
-  onResponderTerminate?: ?(event: PressEvent) => void,
+  onPress?: ?(event: GestureResponderEvent) => mixed,
+  onPressIn?: ?(event: GestureResponderEvent) => mixed,
+  onPressOut?: ?(event: GestureResponderEvent) => mixed,
+  onResponderGrant?: ?(event: GestureResponderEvent) => void,
+  onResponderMove?: ?(event: GestureResponderEvent) => void,
+  onResponderRelease?: ?(event: GestureResponderEvent) => void,
+  onResponderTerminate?: ?(event: GestureResponderEvent) => void,
   onResponderTerminationRequest?: ?() => boolean,
   onStartShouldSetResponder?: ?() => boolean,
   onMoveShouldSetResponder?: ?() => boolean,

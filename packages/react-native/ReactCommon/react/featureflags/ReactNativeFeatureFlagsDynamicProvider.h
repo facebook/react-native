@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<77887f8c4b0328eb87a0e99aa776afad>>
+ * @generated SignedSource<<e47de8f2b946977b6e106e5842113e5b>>
  */
 
 /**
@@ -99,15 +99,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     return ReactNativeFeatureFlagsDefaults::enableEagerRootViewAttachment();
   }
 
-  bool enableEventEmitterRetentionDuringGesturesOnAndroid() override {
-    auto value = values_["enableEventEmitterRetentionDuringGesturesOnAndroid"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableEventEmitterRetentionDuringGesturesOnAndroid();
-  }
-
   bool enableFabricLogs() override {
     auto value = values_["enableFabricLogs"];
     if (!value.isNull()) {
@@ -124,15 +115,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableFabricRenderer();
-  }
-
-  bool enableFixForViewCommandRace() override {
-    auto value = values_["enableFixForViewCommandRace"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enableFixForViewCommandRace();
   }
 
   bool enableIOSViewClipToPaddingBox() override {
@@ -358,6 +340,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::lazyAnimationCallbacks();
+  }
+
+  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
+    auto value = values_["throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
   }
 
   bool traceTurboModulePromiseRejectionsOnAndroid() override {

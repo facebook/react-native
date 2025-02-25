@@ -11,60 +11,47 @@
 
 require('../babel-register').registerForScript();
 
+/*::
+import type {Folder, FilesToKeep, Dependency} from './ios-prebuilds/dependencies';
+*/
+
+const dependencies /*: $ReadOnlyArray<Dependency> */ = require('./ios-prebuilds/dependencies');
 const {execSync} = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const {parseArgs} = require('util');
 
 const exec = util.promisify(require('child_process').exec);
 
 const THIRD_PARTY_PATH = 'packages/react-native/third-party';
 const BUILD_DESTINATION = '.build';
 
-/*::
-type Folder = RegExp;
-
-// We need to pass through the downloaded files and only keep the ones highlighted here.
-// We can delete the rest of the files.
-type FilesToKeep = $ReadOnly<{
-  headers: Folder | $ReadOnlyArray<string>,
-  sources: $ReadOnlyArray<string>,
-}>;
-
-
-type Dependency = $ReadOnly<{
-  name: string,
-  version: string,
-  url: URL,
-  prepareScript?: string,
-  filesToKeep: FilesToKeep,
-  copyHeaderRule?: 'skipFirstFolder', // We can use this field to handle specifics of 3rd party libraries
-}>;
-*/
-
-const dependencies /*: $ReadOnlyArray<Dependency> */ = [
-  {
-    name: 'glog',
-    version: '0.3.5',
-    url: new URL(
-      'https://github.com/google/glog/archive/refs/tags/v0.3.5.tar.gz',
-    ),
-    prepareScript: './packages/react-native/scripts/ios-configure-glog.sh',
-    filesToKeep: {
-      headers: /src(\/(glog|base))?\/[a-zA-Z0-9_-]+\.h$/, // Keep all headers in src, src/glog and src/base
-      sources: [
-        'src/demangle.cc',
-        'src/logging.cc',
-        'src/raw_logging.cc',
-        'src/signalhandler.cc',
-        'src/symbolize.cc',
-        'src/utilities.cc',
-        'src/vlog_is_on.cc',
-      ],
-    },
-    copyHeaderRule: 'skipFirstFolder',
-  },
-];
+// tvOS is currently commented out because it requires additional patches.
+const DESTINATIONS /*: { [string]: $ReadOnlyArray<string>} */ = {
+  all: [
+    'generic/platform=iOS',
+    'generic/platform=iOS Simulator',
+    'generic/platform=macOS',
+    'generic/platform=macOS,variant=Mac Catalyst',
+    // 'generic/platform=tvOS',
+    // 'generic/platform=tvOS Simulator',
+    'generic/platform=visionOS',
+    'generic/platform=visionOS Simulator',
+  ],
+  ios: ['generic/platform=iOS'],
+  'ios-simulator': ['generic/platform=iOS Simulator'],
+  mac: ['generic/platform=macOS'],
+  'mac-catalyst': ['generic/platform=macOS,variant=Mac Catalyst'],
+  tvos: [
+    /*'generic/platform=tvOS'*/
+  ],
+  'tvos-simulator': [
+    /*'generic/platform=tvOS Simulator'*/
+  ],
+  xros: ['generic/platform=visionOS'],
+  xrsimulator: ['generic/platform=visionOS Simulator'],
+};
 
 async function _downloadDependency(
   name /*: string*/,
@@ -156,18 +143,34 @@ async function setupDependency(
 }
 
 async function build(
-  swiftPMFolder /*:string*/,
+  swiftPMFolder /* :string */,
   buildDestinationPath /*: string */,
+  configuration /*: string */,
+  destination /*: string */,
 ) {
   console.log(`Clean up ${buildDestinationPath}`);
   fs.rmSync(buildDestinationPath, {recursive: true, force: true});
 
-  //TODO: Add support for mac,  Mac (catalyst), tvOS, xros and xrsimulator
-  const platforms = ['generic/platform=iOS', 'generic/platform=iOS Simulator'];
+  const platforms = DESTINATIONS[destination];
+  if (!platforms) {
+    console.error(
+      `No valid destinations found for destination: ${destination}`,
+    );
+    process.exit(1);
+  }
+  const configurations =
+    configuration === 'all' ? ['Debug', 'Release'] : [configuration];
   for (const platform of platforms) {
-    console.log(`Building ReactNativeDependencies for ${platform}`);
-    const command = `xcodebuild -scheme "ReactNativeDependencies" -destination "${platform}" -derivedDataPath "${BUILD_DESTINATION}"`;
-    execSync(command, {cwd: swiftPMFolder, stdio: 'inherit'});
+    for (const config of configurations) {
+      console.log(
+        `Building ReactNativeDependencies for ${platform}. Configuration: ${config}`,
+      );
+      const command = `xcodebuild -scheme "ReactNativeDependencies" \
+        -destination "${platform}" \
+        -configuration ${config} \
+        -derivedDataPath "${BUILD_DESTINATION}"`;
+      execSync(command, {cwd: swiftPMFolder, stdio: 'inherit'});
+    }
   }
 }
 
@@ -230,6 +233,12 @@ function composeXCFrameworks(
   thirdPartyFolder /*: string */,
   buildDestinationPath /*: string */,
 ) {
+  console.log('Removing previous XCFramework');
+  const outputFile = path.join(
+    thirdPartyFolder,
+    'ReactNativeDependencies.xcframework',
+  );
+  fs.rmSync(outputFile, {recursive: true, force: true});
   console.log('Composing XCFrameworks...');
   const frameworksFolder = path.join(buildDestinationPath, 'Build', 'Products');
   const frameworks = fs.readdirSync(frameworksFolder);
@@ -244,31 +253,129 @@ function composeXCFrameworks(
   const frameworksArgs = frameworkPaths
     .map(framework => `-framework ${framework}`)
     .join(' ');
-  const command = `xcodebuild -create-xcframework ${frameworksArgs} -output ${path.join(thirdPartyFolder, 'ReactNativeDependencies.xcframework')}`;
+  const command = `xcodebuild -create-xcframework ${frameworksArgs} -output ${outputFile}`;
   execSync(command, {stdio: 'inherit'});
 }
 
-async function main() {
-  console.log('Starting iOS prebuilds preparation...');
+const config = {
+  options: {
+    task: {
+      type: 'string', // valid values: 'all', 'prepare', 'build', 'create-xcframework'
+      default: 'all',
+      short: 't',
+    },
+    slice: {
+      type: 'string', // valid values: 'all', 'ios', 'ios-simulator', 'mac', 'mac-catalyst', 'tvos', 'xros', 'xrsimulator'
+      default: 'all',
+      short: 's',
+    },
+    configuration: {
+      type: 'string', // valid values: 'all', 'Debug', 'Release',
+      default: 'all',
+      short: 'c',
+    },
+    help: {
+      type: 'boolean',
+      short: 'h',
+    },
+  },
+};
 
+function printHelp() {
+  console.log(`
+  Usage: node ./scripts/releases/prepare-ios-prebuilds.js [OPTIONS]
+
+  This script prepares iOS prebuilds for React Native. It downloads the dependencies, prepare them, builds them and creates the XCFrameworks.
+
+  Calling the script with no options will build all the dependencies for all the slices and configurations.
+
+  Options:
+    --task, -t: the specific task that needs to be carried on. Default value is 'all'. Valid values are 'all', 'prepare', 'build', 'create-xcframework'.
+    --slice, -s: the specific slice that needs to be built. Default value is 'all'. Valid values are 'all', 'ios', 'ios-simulator', 'mac', 'mac-catalyst', 'tvos', 'tvos-simulator', 'xros', 'xrsimulator'.
+    --configuration, -c: the specific configuration that needs to be built. Default value is 'all'. Valid values are 'all', 'Debug', 'Release'.
+    --help, -h: print this help message.
+    `);
+}
+
+const VALID_TASKS = ['all', 'prepare', 'build', 'create-xcframework'];
+const VALID_SLICES = [
+  'all',
+  'ios',
+  'ios-simulator',
+  'mac',
+  'mac-catalyst',
+  'tvos',
+  'tvos-simulator',
+  'xros',
+  'xrsimulator',
+];
+const VALID_CONFIGURATIONS = ['all', 'Debug', 'Release'];
+function validateArgs(
+  task /*: string*/,
+  slice /*: string*/,
+  configuration /*: string*/,
+) {
+  if (!VALID_TASKS.includes(task)) {
+    console.error(
+      `Invalid task: ${task}. Valid values are ${VALID_TASKS.join(', ')}`,
+    );
+    process.exit(1);
+  }
+
+  if (!VALID_SLICES.includes(slice)) {
+    console.error(
+      `Invalid slice: ${slice}. Valid values are ${VALID_SLICES.join(', ')}`,
+    );
+    process.exit(1);
+  }
+
+  if (!VALID_CONFIGURATIONS.includes(configuration)) {
+    console.error(
+      `Invalid configuration: ${configuration}. Valid values are ${VALID_CONFIGURATIONS.join(', ')}`,
+    );
+    process.exit(1);
+  }
+}
+
+async function main() {
+  const {
+    values: {task, slice, configuration, help},
+  } = parseArgs(config);
+
+  if (help) {
+    printHelp();
+    return;
+  }
+
+  validateArgs(task, slice, configuration);
+
+  console.log('Starting iOS prebuilds preparation...');
   const thirdPartyFolder = path.join(process.cwd(), THIRD_PARTY_PATH);
   const buildDestinationPath = path.join(thirdPartyFolder, BUILD_DESTINATION);
 
-  await Promise.all(dependencies.map(setupDependency));
+  if (task === 'all' || task === 'prepare') {
+    await Promise.all(
+      dependencies.map(dependency => setupDependency(dependency)),
+    );
+  }
 
-  await build(thirdPartyFolder, buildDestinationPath);
+  if (task === 'all' || task === 'build') {
+    await build(thirdPartyFolder, buildDestinationPath, configuration, slice);
 
-  await Promise.all(
-    dependencies.map(dependency =>
-      copyHeadersToFrameworks(
-        dependency,
-        thirdPartyFolder,
-        buildDestinationPath,
+    await Promise.all(
+      dependencies.map(dependency =>
+        copyHeadersToFrameworks(
+          dependency,
+          thirdPartyFolder,
+          buildDestinationPath,
+        ),
       ),
-    ),
-  );
+    );
+  }
 
-  composeXCFrameworks(thirdPartyFolder, buildDestinationPath);
+  if (task === 'all' || task === 'create-xcframework') {
+    composeXCFrameworks(thirdPartyFolder, buildDestinationPath);
+  }
   console.log('Done!');
 }
 

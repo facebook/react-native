@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3aebf2012e35cd050764da5e4993a4a3>>
+ * @generated SignedSource<<668083828fa10d5ad689ded390d782fb>>
  */
 
 /**
@@ -38,10 +38,8 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableBridgelessArchitecture();
   bool enableCppPropsIteratorSetter();
   bool enableEagerRootViewAttachment();
-  bool enableEventEmitterRetentionDuringGesturesOnAndroid();
   bool enableFabricLogs();
   bool enableFabricRenderer();
-  bool enableFixForViewCommandRace();
   bool enableIOSViewClipToPaddingBox();
   bool enableImagePrefetchingAndroid();
   bool enableJSRuntimeGCOnMemoryPressureOnIOS();
@@ -67,6 +65,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool fuseboxEnabledRelease();
   bool fuseboxNetworkInspectionEnabled();
   bool lazyAnimationCallbacks();
+  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
   bool traceTurboModulePromiseRejectionsOnAndroid();
   bool useAlwaysAvailableJSErrorHandling();
   bool useEditTextStockAndroidFocusBehavior();
@@ -87,7 +86,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 44> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -95,10 +94,8 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableBridgelessArchitecture_;
   std::atomic<std::optional<bool>> enableCppPropsIteratorSetter_;
   std::atomic<std::optional<bool>> enableEagerRootViewAttachment_;
-  std::atomic<std::optional<bool>> enableEventEmitterRetentionDuringGesturesOnAndroid_;
   std::atomic<std::optional<bool>> enableFabricLogs_;
   std::atomic<std::optional<bool>> enableFabricRenderer_;
-  std::atomic<std::optional<bool>> enableFixForViewCommandRace_;
   std::atomic<std::optional<bool>> enableIOSViewClipToPaddingBox_;
   std::atomic<std::optional<bool>> enableImagePrefetchingAndroid_;
   std::atomic<std::optional<bool>> enableJSRuntimeGCOnMemoryPressureOnIOS_;
@@ -124,6 +121,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> fuseboxEnabledRelease_;
   std::atomic<std::optional<bool>> fuseboxNetworkInspectionEnabled_;
   std::atomic<std::optional<bool>> lazyAnimationCallbacks_;
+  std::atomic<std::optional<bool>> throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS_;
   std::atomic<std::optional<bool>> traceTurboModulePromiseRejectionsOnAndroid_;
   std::atomic<std::optional<bool>> useAlwaysAvailableJSErrorHandling_;
   std::atomic<std::optional<bool>> useEditTextStockAndroidFocusBehavior_;

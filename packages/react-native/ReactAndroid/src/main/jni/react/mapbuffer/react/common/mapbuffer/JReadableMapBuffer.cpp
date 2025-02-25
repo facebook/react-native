@@ -9,13 +9,6 @@
 
 namespace facebook::react {
 
-void JReadableMapBuffer::registerNatives() {
-  registerHybrid({
-      makeNativeMethod(
-          "importByteBuffer", JReadableMapBuffer::importByteBuffer),
-  });
-}
-
 jni::local_ref<jni::JByteBuffer> JReadableMapBuffer::importByteBuffer() {
   // TODO T83483191: Reevaluate what's the best approach here (allocateDirect vs
   // DirectByteBuffer).
@@ -29,7 +22,10 @@ std::vector<uint8_t> JReadableMapBuffer::data() const {
 
 jni::local_ref<JReadableMapBuffer::jhybridobject>
 JReadableMapBuffer::createWithContents(MapBuffer&& map) {
-  return newObjectCxxArgs(std::move(map));
+  auto cxxPart = std::make_unique<JReadableMapBuffer>(std::move(map));
+  auto javaPart = newObjectJavaArgs(cxxPart->importByteBuffer(), 0);
+  setNativePointer(javaPart, std::move(cxxPart));
+  return javaPart;
 }
 
 JReadableMapBuffer::JReadableMapBuffer(MapBuffer&& map)

@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import type {EventReporter} from '../types/EventReporter';
+import type {DebuggerSessionIDs, EventReporter} from '../types/EventReporter';
 import type {Experiments} from '../types/Experiments';
 import type {Logger} from '../types/Logger';
 import type {CreateCustomMessageHandlerFn} from './CustomMessageHandler';
@@ -40,17 +40,24 @@ const WS_DEBUGGER_URL = '/inspector/debug';
 const PAGES_LIST_JSON_URL = '/json';
 const PAGES_LIST_JSON_URL_2 = '/json/list';
 const PAGES_LIST_JSON_VERSION_URL = '/json/version';
-const MAX_PONG_LATENCY_MS = 60000;
-const DEBUGGER_HEARTBEAT_INTERVAL_MS = 10000;
+const HEARTBEAT_TIMEOUT_MS = 60000;
+const HEARTBEAT_INTERVAL_MS = 10000;
 
 const INTERNAL_ERROR_CODE = 1011;
+
+export type GetPageDescriptionsConfig = {
+  requestorRelativeBaseUrl: URL,
+  logNoPagesForConnectedDevice?: boolean,
+};
 
 export interface InspectorProxyQueries {
   /**
    * Returns list of page descriptions ordered by device connection order, then
    * page addition order.
    */
-  getPageDescriptions(requestorRelativeBaseUrl: URL): Array<PageDescription>;
+  getPageDescriptions(
+    config: GetPageDescriptionsConfig,
+  ): Array<PageDescription>;
 }
 
 /**
@@ -95,22 +102,41 @@ export default class InspectorProxy implements InspectorProxyQueries {
     this.#customMessageHandler = customMessageHandler;
   }
 
-  getPageDescriptions(requestorRelativeBaseUrl: URL): Array<PageDescription> {
+  getPageDescriptions({
+    requestorRelativeBaseUrl,
+    logNoPagesForConnectedDevice = false,
+  }: GetPageDescriptionsConfig): Array<PageDescription> {
     // Build list of pages from all devices.
     let result: Array<PageDescription> = [];
     Array.from(this.#devices.entries()).forEach(([deviceId, device]) => {
-      result = result.concat(
-        device
-          .getPagesList()
-          .map((page: Page) =>
-            this.#buildPageDescription(
-              deviceId,
-              device,
-              page,
-              requestorRelativeBaseUrl,
-            ),
+      const devicePages = device
+        .getPagesList()
+        .map((page: Page) =>
+          this.#buildPageDescription(
+            deviceId,
+            device,
+            page,
+            requestorRelativeBaseUrl,
           ),
-      );
+        );
+
+      if (
+        logNoPagesForConnectedDevice &&
+        devicePages.length === 0 &&
+        device.dangerouslyGetSocket()?.readyState === WS.OPEN
+      ) {
+        this.#logger?.warn(
+          `Waiting for a DevTools connection to app='%s' on device='%s'.
+    Try again when it's established. If no connection occurs, try to:
+    - Restart the app
+    - Ensure a stable connection to the device
+    - Ensure that the app is built in a mode that supports debugging`,
+          device.getApp(),
+          device.getName(),
+        );
+      }
+
+      result = result.concat(devicePages);
     });
     return result;
   }
@@ -131,9 +157,11 @@ export default class InspectorProxy implements InspectorProxyQueries {
     ) {
       this.#sendJsonResponse(
         response,
-        this.getPageDescriptions(
-          getBaseUrlFromRequest(request) ?? this.#serverBaseUrl,
-        ),
+        this.getPageDescriptions({
+          requestorRelativeBaseUrl:
+            getBaseUrlFromRequest(request) ?? this.#serverBaseUrl,
+          logNoPagesForConnectedDevice: true,
+        }),
       );
     } else if (pathname === PAGES_LIST_JSON_VERSION_URL) {
       this.#sendJsonResponse(response, {
@@ -261,23 +289,50 @@ export default class InspectorProxy implements InspectorProxyQueries {
         this.#devices.set(deviceId, newDevice);
 
         this.#logger?.info(
-          "Connection established to app '%s' on device '%s'.",
+          "Connection established to app='%s' on device='%s'.",
           appName,
           deviceName,
         );
 
         debug(
-          `Got new connection: name=${deviceName}, app=${appName}, device=${deviceId}, via=${deviceRelativeBaseUrl.origin}`,
+          "Got new device connection: name='%s', app=%s, device=%s, via=%s",
+          deviceName,
+          appName,
+          deviceId,
+          deviceRelativeBaseUrl.origin,
         );
+
+        const debuggerSessionIDs: DebuggerSessionIDs = {
+          appId: newDevice?.getApp() || null,
+          deviceId,
+          deviceName: newDevice?.getName() || null,
+          pageId: null,
+        };
+
+        this.#startHeartbeat({
+          socketName: 'Device',
+          socket,
+          intervalMs: HEARTBEAT_INTERVAL_MS,
+          debuggerSessionIDs,
+          timeoutEventName: 'device_timeout',
+          heartbeatEventName: 'device_heartbeat',
+        });
 
         socket.on('close', (code: number, reason: string) => {
           this.#logger?.info(
-            "Connection closed to app '%s' on device '%s' with code '%s' and reason '%s'.",
-            appName,
+            "Connection closed to device='%s' for app='%s' with code='%s' and reason='%s'.",
             deviceName,
+            appName,
             String(code),
             reason,
           );
+
+          this.#eventReporter?.logEvent({
+            type: 'device_connection_closed',
+            code,
+            reason,
+            ...debuggerSessionIDs,
+          });
 
           if (this.#devices.get(deviceId)?.dangerouslyGetSocket() === socket) {
             this.#devices.delete(deviceId);
@@ -285,7 +340,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
         });
       } catch (error) {
         this.#logger?.error(
-          "Connection failed to be established with app '%s' on device '%s' with error:",
+          "Connection failed to be established with app='%s' on device='%s' with error:",
           appName,
           deviceName,
           error,
@@ -311,34 +366,72 @@ export default class InspectorProxy implements InspectorProxyQueries {
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
-      try {
-        const query = url.parse(req.url || '', true).query || {};
-        const deviceId = query.device;
-        const pageId = query.page;
-        const debuggerRelativeBaseUrl =
-          getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
-        const appId = this.#devices.get(deviceId)?.getApp() || 'unknown';
+      const query = url.parse(req.url || '', true).query || {};
+      const deviceId = query.device;
+      const pageId = query.page;
+      const debuggerRelativeBaseUrl =
+        getBaseUrlFromRequest(req) ?? this.#serverBaseUrl;
+      const device: Device | void = deviceId
+        ? this.#devices.get(deviceId)
+        : undefined;
 
+      const debuggerSessionIDs: DebuggerSessionIDs = {
+        appId: device?.getApp() || null,
+        deviceId,
+        deviceName: device?.getName() || null,
+        pageId,
+      };
+
+      try {
         if (deviceId == null || pageId == null) {
           throw new Error('Incorrect URL - must provide device and page IDs');
         }
 
-        const device = this.#devices.get(deviceId);
         if (device == null) {
           throw new Error('Unknown device with ID ' + deviceId);
         }
 
-        this.#logger?.info('Connection to DevTools established.');
+        this.#logger?.info(
+          "Connection established to DevTools for app='%s' on device='%s'.",
+          device.getApp() || 'unknown',
+          device.getName() || 'unknown',
+        );
 
-        this.#startHeartbeat(socket, DEBUGGER_HEARTBEAT_INTERVAL_MS, appId);
+        this.#startHeartbeat({
+          socketName: 'DevTools',
+          socket,
+          intervalMs: HEARTBEAT_INTERVAL_MS,
+          debuggerSessionIDs,
+          timeoutEventName: 'debugger_timeout',
+          heartbeatEventName: 'debugger_heartbeat',
+        });
 
         device.handleDebuggerConnection(socket, pageId, {
           debuggerRelativeBaseUrl,
           userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
+
+        socket.on('close', (code: number, reason: string) => {
+          this.#logger?.info(
+            "Connection closed to DevTools for app='%s' on device='%s' with code='%s' and reason='%s'.",
+            device.getApp() || 'unknown',
+            device.getName() || 'unknown',
+            String(code),
+            reason,
+          );
+
+          this.#eventReporter?.logEvent({
+            type: 'debugger_connection_closed',
+            code,
+            reason,
+            ...debuggerSessionIDs,
+          });
+        });
       } catch (error) {
         this.#logger?.error(
-          'Connection failed to be established with DevTools with error:',
+          "Connection failed to be established with DevTools for app='%s' on device='%s' with error:",
+          device?.getApp() || 'unknown',
+          device?.getName() || 'unknown',
           error,
         );
         socket.close(INTERNAL_ERROR_CODE, error?.toString() ?? 'Unknown error');
@@ -346,6 +439,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           type: 'connect_debugger_frontend',
           status: 'error',
           error,
+          ...debuggerSessionIDs,
         });
       }
     });
@@ -358,10 +452,23 @@ export default class InspectorProxy implements InspectorProxyQueries {
   // where proxies may drop idle connections (e.g., VS Code tunnels).
   //
   // https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
-  #startHeartbeat(socket: WS, intervalMs: number, appId: string) {
-    let shouldSetTerminateTimeout = false;
-    let terminateTimeout = null;
+  #startHeartbeat({
+    socketName,
+    socket,
+    intervalMs,
+    debuggerSessionIDs,
+    timeoutEventName,
+    heartbeatEventName,
+  }: {
+    socketName: string,
+    socket: WS,
+    intervalMs: number,
+    debuggerSessionIDs: DebuggerSessionIDs,
+    timeoutEventName: 'debugger_timeout' | 'device_timeout',
+    heartbeatEventName: 'debugger_heartbeat' | 'device_heartbeat',
+  }) {
     let latestPingMs = Date.now();
+    let terminateTimeout: ?Timeout;
 
     const pingTimeout: Timeout = setTimeout(() => {
       if (socket.readyState !== WS.OPEN) {
@@ -370,67 +477,65 @@ export default class InspectorProxy implements InspectorProxyQueries {
         return;
       }
 
-      shouldSetTerminateTimeout = true;
-      latestPingMs = Date.now();
-      socket.ping(() => {
-        if (!shouldSetTerminateTimeout) {
-          // Sometimes, this `sent` callback fires later than
-          // the actual pong reply.
-          //
-          // If any message came in between ping `sending` and `sent`,
-          // then the connection exists; and we don't need to do anything.
-          return;
-        }
-
-        shouldSetTerminateTimeout = false;
+      if (!terminateTimeout) {
         terminateTimeout = setTimeout(() => {
           if (socket.readyState !== WS.OPEN) {
+            // May be connecting or closing, try again later.
+            terminateTimeout?.refresh();
             return;
           }
+
           // We don't use close() here because that initiates a closing handshake,
           // which will not complete if the other end has gone away - 'close'
           // would not be emitted.
-          //
           // terminate() emits 'close' immediately, allowing us to handle it and
           // inform any clients.
           socket.terminate();
+
           this.#logger?.error(
-            `Connection terminated with DevTools after not responding for ${MAX_PONG_LATENCY_MS / 1000} seconds.`,
+            "Connection terminated with %s for app='%s' on device='%s' after not responding for %s seconds.",
+            socketName,
+            String(HEARTBEAT_TIMEOUT_MS / 1000),
           );
+
           this.#eventReporter?.logEvent({
-            type: 'debugger_timeout',
-            duration: MAX_PONG_LATENCY_MS,
-            appId,
+            type: timeoutEventName,
+            duration: HEARTBEAT_TIMEOUT_MS,
+            ...debuggerSessionIDs,
           });
-        }, MAX_PONG_LATENCY_MS).unref();
-      });
+        }, HEARTBEAT_TIMEOUT_MS).unref();
+      }
+
+      latestPingMs = Date.now();
+      socket.ping();
     }, intervalMs).unref();
 
-    const onAnyMessageFromDebugger = () => {
-      shouldSetTerminateTimeout = false;
-      terminateTimeout && clearTimeout(terminateTimeout);
-      pingTimeout.refresh();
-    };
-
     socket.on('pong', () => {
-      onAnyMessageFromDebugger();
+      const roundtripDuration = Date.now() - latestPingMs;
+
+      debug(
+        '%s heartbeat ping-pong for %s on %s took %dms.',
+        socketName,
+        debuggerSessionIDs.appId,
+        debuggerSessionIDs.deviceName,
+        roundtripDuration,
+      );
+
       this.#eventReporter?.logEvent({
-        type: 'debugger_heartbeat',
-        duration: Date.now() - latestPingMs,
-        appId,
+        type: heartbeatEventName,
+        duration: roundtripDuration,
+        ...debuggerSessionIDs,
       });
+
+      terminateTimeout?.refresh();
+      pingTimeout.refresh();
     });
+
     socket.on('message', () => {
-      onAnyMessageFromDebugger();
+      terminateTimeout?.refresh();
     });
 
     socket.on('close', (code: number, reason: string) => {
-      this.#logger?.info(
-        "Connection to DevTools closed with code '%s' and reason '%s'.",
-        String(code),
-        reason,
-      );
-      shouldSetTerminateTimeout = false;
       terminateTimeout && clearTimeout(terminateTimeout);
       clearTimeout(pingTimeout);
     });

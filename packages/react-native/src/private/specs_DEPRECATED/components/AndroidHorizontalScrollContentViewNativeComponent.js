@@ -9,7 +9,7 @@
  */
 
 import type {ViewProps} from '../../../../Libraries/Components/View/ViewPropTypes';
-import type {HostComponent} from '../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../types/HostComponent';
 
 import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
 

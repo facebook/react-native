@@ -14,8 +14,9 @@
 #import <React/RCTEventDispatcherProtocol.h>
 #import <React/RCTInitializing.h>
 #import <React/RCTInvalidating.h>
-#import <React/RCTUIUtils.h>
+#import <React/RCTKeyWindowValuesProxy.h>
 #import <React/RCTUtils.h>
+#import <React/RCTWindowSafeAreaProxy.h>
 #import <atomic>
 
 #import "CoreModulesPlugins.h"
@@ -32,8 +33,6 @@ using namespace facebook::react;
   std::atomic<BOOL> _invalidated;
 }
 
-static NSString *const kFrameKeyPath = @"frame";
-
 @synthesize moduleRegistry = _moduleRegistry;
 
 RCT_EXPORT_MODULE()
@@ -41,25 +40,14 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if (self = [super init]) {
-    [RCTKeyWindow() addObserver:self forKeyPath:kFrameKeyPath options:NSKeyValueObservingOptionNew context:nil];
+    [[RCTKeyWindowValuesProxy sharedInstance] startObservingWindowSizeIfNecessary];
   }
   return self;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-  if ([keyPath isEqualToString:kFrameKeyPath]) {
-    [self interfaceFrameDidChange];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTWindowFrameDidChangeNotification object:self];
-  }
-}
-
 + (BOOL)requiresMainQueueSetup
 {
-  return YES;
+  return NO;
 }
 
 - (dispatch_queue_t)methodQueue
@@ -93,7 +81,7 @@ RCT_EXPORT_MODULE()
 
 #if TARGET_OS_IOS
 
-  _currentInterfaceOrientation = RCTKeyWindow().windowScene.interfaceOrientation;
+  _currentInterfaceOrientation = [RCTKeyWindowValuesProxy sharedInstance].currentInterfaceOrientation;
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(interfaceFrameDidChange)
@@ -132,8 +120,6 @@ RCT_EXPORT_MODULE()
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
 
-  [RCTKeyWindow() removeObserver:self forKeyPath:kFrameKeyPath];
-
 #if TARGET_OS_IOS
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 #endif
@@ -146,13 +132,8 @@ static BOOL RCTIsIPhoneNotched()
 
 #if TARGET_OS_IOS
   dispatch_once(&onceToken, ^{
-    RCTAssertMainQueue();
-
     // 20pt is the top safeArea value in non-notched devices
-    UIWindow *keyWindow = RCTKeyWindow();
-    if (keyWindow) {
-      isIPhoneNotched = keyWindow.safeAreaInsets.top > 20;
-    }
+    isIPhoneNotched = [RCTWindowSafeAreaProxy sharedInstance].currentSafeAreaInsets.top > 20;
   });
 #endif
 
@@ -161,21 +142,24 @@ static BOOL RCTIsIPhoneNotched()
 
 static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 {
-  RCTAssertMainQueue();
-  RCTDimensions dimensions = RCTGetDimensions(fontScale);
-  __typeof(dimensions.window) window = dimensions.window;
+  UIScreen *mainScreen = UIScreen.mainScreen;
+  CGSize screenSize = mainScreen.bounds.size;
+
+  // We fallback to screen size if a key window is not found.
+  CGSize windowSize = [RCTKeyWindowValuesProxy sharedInstance].windowSize;
+
   NSDictionary<NSString *, NSNumber *> *dimsWindow = @{
-    @"width" : @(window.width),
-    @"height" : @(window.height),
-    @"scale" : @(window.scale),
-    @"fontScale" : @(window.fontScale)
+    @"width" : @(windowSize.width),
+    @"height" : @(windowSize.height),
+    @"scale" : @(mainScreen.scale),
+    @"fontScale" : @(fontScale)
   };
-  __typeof(dimensions.screen) screen = dimensions.screen;
+
   NSDictionary<NSString *, NSNumber *> *dimsScreen = @{
-    @"width" : @(screen.width),
-    @"height" : @(screen.height),
-    @"scale" : @(screen.scale),
-    @"fontScale" : @(screen.fontScale)
+    @"width" : @(screenSize.width),
+    @"height" : @(screenSize.height),
+    @"scale" : @(mainScreen.scale),
+    @"fontScale" : @(fontScale)
   };
   return @{@"window" : dimsWindow, @"screen" : dimsScreen};
 }
@@ -198,20 +182,14 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 
 - (NSDictionary<NSString *, id> *)getConstants
 {
-  __block NSDictionary<NSString *, id> *constants;
-  __weak __typeof(self) weakSelf = self;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    constants = @{
-      @"Dimensions" : [weakSelf _exportedDimensions],
-      // Note:
-      // This prop is deprecated and will be removed in a future release.
-      // Please use this only for a quick and temporary solution.
-      // Use <SafeAreaView> instead.
-      @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
-    };
-  });
-
-  return constants;
+  return @{
+    @"Dimensions" : [self _exportedDimensions],
+    // Note:
+    // This prop is deprecated and will be removed in a future release.
+    // Please use this only for a quick and temporary solution.
+    // Use <SafeAreaView> instead.
+    @"isIPhoneX_deprecated" : @(RCTIsIPhoneNotched()),
+  };
 }
 
 - (void)didReceiveNewContentSizeMultiplier
@@ -229,14 +207,6 @@ static NSDictionary *RCTExportedDimensions(CGFloat fontScale)
 }
 
 - (void)interfaceOrientationDidChange
-{
-  __weak __typeof(self) weakSelf = self;
-  RCTExecuteOnMainQueue(^{
-    [weakSelf _interfaceOrientationDidChange];
-  });
-}
-
-- (void)_interfaceOrientationDidChange
 {
 #if TARGET_OS_IOS && !TARGET_OS_MACCATALYST
   UIApplication *application = RCTSharedApplication();

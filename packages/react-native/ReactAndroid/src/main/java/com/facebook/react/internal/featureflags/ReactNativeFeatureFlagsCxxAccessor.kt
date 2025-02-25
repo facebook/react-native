@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<41e3850f832093d44e919559d39b38a4>>
+ * @generated SignedSource<<b8a066c9f7ba13ea50ce5d18d04ccd23>>
  */
 
 /**
@@ -26,10 +26,8 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
-  private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
-  private var enableFixForViewCommandRaceCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
   private var enableImagePrefetchingAndroidCache: Boolean? = null
   private var enableJSRuntimeGCOnMemoryPressureOnIOSCache: Boolean? = null
@@ -55,6 +53,7 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
+  private var throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
@@ -119,15 +118,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean {
-    var cached = enableEventEmitterRetentionDuringGesturesOnAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableEventEmitterRetentionDuringGesturesOnAndroid()
-      enableEventEmitterRetentionDuringGesturesOnAndroidCache = cached
-    }
-    return cached
-  }
-
   override fun enableFabricLogs(): Boolean {
     var cached = enableFabricLogsCache
     if (cached == null) {
@@ -142,15 +132,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableFabricRenderer()
       enableFabricRendererCache = cached
-    }
-    return cached
-  }
-
-  override fun enableFixForViewCommandRace(): Boolean {
-    var cached = enableFixForViewCommandRaceCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enableFixForViewCommandRace()
-      enableFixForViewCommandRaceCache = cached
     }
     return cached
   }
@@ -376,6 +357,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.lazyAnimationCallbacks()
       lazyAnimationCallbacksCache = cached
+    }
+    return cached
+  }
+
+  override fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean {
+    var cached = throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS()
+      throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache = cached
     }
     return cached
   }

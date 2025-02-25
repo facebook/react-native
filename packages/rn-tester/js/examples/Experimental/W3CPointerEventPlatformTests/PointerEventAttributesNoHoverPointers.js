@@ -9,9 +9,9 @@
  */
 
 import type {PlatformTestComponentBaseProps} from '../PlatformTest/RNTesterPlatformTestTypes';
-import type {HostInstance} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from 'react-native';
 import type {
-  Layout,
+  LayoutRectangle,
   PointerEvent,
 } from 'react-native/Libraries/Types/CoreEventTypes';
 
@@ -47,7 +47,7 @@ function PointerEventAttributesNoHoverPointersTestCase(
     (
       event: PointerEvent,
       eventType: string,
-      targetLayout: Layout,
+      targetLayout: LayoutRectangle,
       testNamePrefix: string,
       expectedPointerType: string,
     ) => {

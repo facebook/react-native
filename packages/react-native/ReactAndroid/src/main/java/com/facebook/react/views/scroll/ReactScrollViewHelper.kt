@@ -476,8 +476,7 @@ public object ReactScrollViewHelper {
     public val stateWrapper: StateWrapper?
   }
 
-  private class OverScrollerDurationGetter internal constructor(context: Context?) :
-      OverScroller(context) {
+  private class OverScrollerDurationGetter(context: Context?) : OverScroller(context) {
     // This is the default in AOSP, hardcoded in OverScroller.java.
     private var currentScrollAnimationDuration = 250
     val scrollAnimationDuration: Int

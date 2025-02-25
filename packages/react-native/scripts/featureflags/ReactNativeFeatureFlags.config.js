@@ -114,17 +114,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enableEventEmitterRetentionDuringGesturesOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-08-08',
-        description:
-          'Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'canary',
-    },
     enableFabricLogs: {
       defaultValue: false,
       metadata: {
@@ -142,17 +131,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'release',
       },
       ossReleaseStage: 'canary',
-    },
-    enableFixForViewCommandRace: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-11-14',
-        description:
-          'Synchronise the view command dispatching with mounting of new transaction',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
     },
     enableIOSViewClipToPaddingBox: {
       defaultValue: false,
@@ -414,6 +392,17 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-05-01',
         description:
           'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-02-18',
+        description:
+          'Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },

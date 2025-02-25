@@ -12,6 +12,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
+#import <React/RCTInitializeUIKitProxies.h>
 #import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTInspectorNetworkHelper.h>
 #import <React/RCTInspectorUtils.h>
@@ -52,7 +53,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
         .appDisplayName = [metadata.appDisplayName UTF8String],
         .appIdentifier = [metadata.appIdentifier UTF8String],
         .deviceName = [metadata.deviceName UTF8String],
-        .integrationName = "iOS Bridgeless (RCTHost)",
+        .integrationName = [[NSString stringWithFormat:@"%@ Bridgeless (RCTHost)", metadata.platform] UTF8String],
         .platform = [metadata.platform UTF8String],
         .reactNativeVersion = [metadata.reactNativeVersion UTF8String],
     };
@@ -248,6 +249,7 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                                              mode:(DisplayMode)displayMode
                                 initialProperties:(NSDictionary *)properties
 {
+  RCTInitializeUIKitProxies();
   RCTFabricSurface *surface = [[RCTFabricSurface alloc] initWithSurfacePresenter:self.surfacePresenter
                                                                       moduleName:moduleName
                                                                initialProperties:properties];

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a541130ede60de1ea81f8e7846577c3a>>
+ * @generated SignedSource<<c5a13d6132901954c9c581b78a0d62f8>>
  */
 
 /**
@@ -70,11 +70,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableEagerRootViewAttachment();
 
   /**
-   * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
-   */
-  RN_EXPORT static bool enableEventEmitterRetentionDuringGesturesOnAndroid();
-
-  /**
    * This feature flag enables logs for Fabric.
    */
   RN_EXPORT static bool enableFabricLogs();
@@ -83,11 +78,6 @@ class ReactNativeFeatureFlags {
    * Enables the use of the Fabric renderer in the whole app.
    */
   RN_EXPORT static bool enableFabricRenderer();
-
-  /**
-   * Synchronise the view command dispatching with mounting of new transaction
-   */
-  RN_EXPORT static bool enableFixForViewCommandRace();
 
   /**
    * iOS Views will clip to their padding box vs border box
@@ -213,6 +203,11 @@ class ReactNativeFeatureFlags {
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
   RN_EXPORT static bool lazyAnimationCallbacks();
+
+  /**
+   * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
+   */
+  RN_EXPORT static bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

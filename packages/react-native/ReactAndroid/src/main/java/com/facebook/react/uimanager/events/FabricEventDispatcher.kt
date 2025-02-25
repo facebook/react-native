@@ -201,15 +201,15 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
       }
     }
 
-    public fun stop() {
+    fun stop() {
       shouldStop = true
     }
 
-    public fun resume() {
+    fun resume() {
       shouldStop = false
     }
 
-    public fun maybeDispatchBatchedEvents() {
+    fun maybeDispatchBatchedEvents() {
       if (!isFrameCallbackDispatchScheduled) {
         isFrameCallbackDispatchScheduled = true
         dispatchBatchedEvents()
@@ -221,7 +221,7 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
           .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, currentFrameCallback)
     }
 
-    public fun maybeScheduleDispatchOfBatchedEvents() {
+    fun maybeScheduleDispatchOfBatchedEvents() {
       if (isFrameCallbackDispatchScheduled) {
         return
       }
