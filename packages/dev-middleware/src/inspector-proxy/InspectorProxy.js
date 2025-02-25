@@ -42,6 +42,7 @@ const PAGES_LIST_JSON_URL_2 = '/json/list';
 const PAGES_LIST_JSON_VERSION_URL = '/json/version';
 const HEARTBEAT_TIMEOUT_MS = 60000;
 const HEARTBEAT_INTERVAL_MS = 10000;
+const PROXY_IDLE_TIMEOUT_MS = 10000;
 
 const INTERNAL_ERROR_CODE = 1011;
 
@@ -84,6 +85,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
   #customMessageHandler: ?CreateCustomMessageHandlerFn;
 
   #logger: ?Logger;
+
+  #lastMessageTimestamp: number = 0;
 
   constructor(
     projectRoot: string,
@@ -236,6 +239,27 @@ export default class InspectorProxy implements InspectorProxyQueries {
     response.end(data);
   }
 
+  /* returns true if proxy didn't receive any messages from
+   * either the device or debugger for PROXY_IDLE_TIMEOUT_MS */
+  #isIdle(): boolean {
+    return (
+      new Date().getTime() - this.#lastMessageTimestamp > PROXY_IDLE_TIMEOUT_MS
+    );
+  }
+
+  #trackLastMessageTimestamp(socket: WS): void {
+    socket.on('message', message => {
+      // TODO: instead remove this and any other messages in idle state we find
+      // Not using JSON.parse for performance reasons. Worst case, we'll get
+      // less accurate idle state reporting, which we would easily see in data.
+      if (message.toString().includes('"event":"getPages"')) {
+        return;
+      }
+
+      this.#lastMessageTimestamp = new Date().getTime();
+    });
+  }
+
   // Adds websocket handler for device connections.
   // Device connects to /inspector/device and passes device and app names as
   // HTTP GET params.
@@ -318,6 +342,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
           heartbeatEventName: 'device_heartbeat',
         });
 
+        this.#trackLastMessageTimestamp(socket);
+
         socket.on('close', (code: number, reason: string) => {
           this.#logger?.info(
             "Connection closed to device='%s' for app='%s' with code='%s' and reason='%s'.",
@@ -331,6 +357,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
             type: 'device_connection_closed',
             code,
             reason,
+            isIdle: this.#isIdle(),
             ...debuggerSessionIDs,
           });
 
@@ -411,6 +438,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
           userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
 
+        this.#trackLastMessageTimestamp(socket);
+
         socket.on('close', (code: number, reason: string) => {
           this.#logger?.info(
             "Connection closed to DevTools for app='%s' on device='%s' with code='%s' and reason='%s'.",
@@ -424,6 +453,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
             type: 'debugger_connection_closed',
             code,
             reason,
+            isIdle: this.#isIdle(),
             ...debuggerSessionIDs,
           });
         });
@@ -492,15 +522,21 @@ export default class InspectorProxy implements InspectorProxyQueries {
           // inform any clients.
           socket.terminate();
 
+          const isIdle = this.#isIdle();
+
           this.#logger?.error(
-            "Connection terminated with %s for app='%s' on device='%s' after not responding for %s seconds.",
+            "Connection terminated with %s for app='%s' on device='%s' with idle='%s' after not responding for %s seconds.",
             socketName,
+            debuggerSessionIDs.appId ?? 'unknown',
+            debuggerSessionIDs.deviceName ?? 'unknown',
+            isIdle ? 'true' : 'false',
             String(HEARTBEAT_TIMEOUT_MS / 1000),
           );
 
           this.#eventReporter?.logEvent({
             type: timeoutEventName,
             duration: HEARTBEAT_TIMEOUT_MS,
+            isIdle,
             ...debuggerSessionIDs,
           });
         }, HEARTBEAT_TIMEOUT_MS).unref();
@@ -513,17 +549,21 @@ export default class InspectorProxy implements InspectorProxyQueries {
     socket.on('pong', () => {
       const roundtripDuration = Date.now() - latestPingMs;
 
+      const isIdle = this.#isIdle();
+
       debug(
-        '%s heartbeat ping-pong for %s on %s took %dms.',
+        "%s heartbeat ping-pong for app='%s' on device='%s' with idle='%s' took %dms",
         socketName,
         debuggerSessionIDs.appId,
         debuggerSessionIDs.deviceName,
+        isIdle ? 'true' : 'false',
         roundtripDuration,
       );
 
       this.#eventReporter?.logEvent({
         type: heartbeatEventName,
         duration: roundtripDuration,
+        isIdle,
         ...debuggerSessionIDs,
       });
 
