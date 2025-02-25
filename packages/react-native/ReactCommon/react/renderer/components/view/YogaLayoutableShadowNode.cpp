@@ -214,7 +214,8 @@ void YogaLayoutableShadowNode::adoptYogaChild(size_t index) {
   } else {
     // The child is owned by some other node, we need to clone that.
     // TODO: At this point, React has wrong reference to the node. (T138668036)
-    auto clonedChildNode = childNode.clone({});
+    auto clonedChildNode = std::static_pointer_cast<YogaLayoutableShadowNode>(childNode.clone({}));
+    clonedChildNode->invalidateLayoutCaches();
 
     // Replace the child node with a newly cloned one in the children list.
     replaceChild(childNode, clonedChildNode, index);
@@ -454,6 +455,12 @@ void YogaLayoutableShadowNode::updateYogaProps() {
   }
 
   return result;
+}
+
+void YogaLayoutableShadowNode::invalidateLayoutCaches() {
+  auto& layout = yogaNode_.getLayout();
+  layout.cachedLayout = {};
+  layout.cachedMeasurements = {};
 }
 
 void YogaLayoutableShadowNode::configureYogaTree(
