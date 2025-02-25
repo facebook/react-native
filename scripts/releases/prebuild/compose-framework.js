@@ -98,7 +98,6 @@ function copyBundles(
             targetArchFolder,
             `${scheme}.framework`,
             'Resources',
-            bundleName,
           );
           if (
             !fs.existsSync(path.join(targetArchFolder, `${scheme}.framework`))
@@ -110,32 +109,12 @@ function copyBundles(
           }
 
           // A bundle is a directory, so we need to copy the whole directory
-          copyDirectory(sourceBundlePath, targetBundlePath);
+          execSync(`cp -r ${sourceBundlePath} ${targetBundlePath}`);
         });
       } else {
         console.warn(`Bundle ${sourceBundlePath} not found`);
       }
     });
-  });
-}
-
-/**
- * Copies a directory recursively
- */
-function copyDirectory(source /*: string*/, target /*: string*/) {
-  if (!fs.existsSync(target)) {
-    fs.mkdirSync(target, {recursive: true});
-  }
-  // Read all files in source
-  const files = fs.readdirSync(source);
-  files.forEach(file => {
-    const sourceFile = path.join(source, file);
-    const targetFile = path.join(target, file);
-    if (fs.statSync(sourceFile).isDirectory()) {
-      copyDirectory(sourceFile, targetFile);
-    } else {
-      fs.copyFileSync(sourceFile, targetFile);
-    }
   });
 }
 
