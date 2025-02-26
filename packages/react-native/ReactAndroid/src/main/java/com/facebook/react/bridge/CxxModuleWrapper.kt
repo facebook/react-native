@@ -12,4 +12,4 @@ import com.facebook.proguard.annotations.DoNotStrip
 
 /** This does nothing interesting, except avoid breaking existing code. */
 @DoNotStrip
-public class CxxModuleWrapper protected constructor(hd: HybridData) : CxxModuleWrapperBase(hd)
+public open class CxxModuleWrapper protected constructor(hybridData: HybridData) : CxxModuleWrapperBase(hybridData)
