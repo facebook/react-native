@@ -9238,7 +9238,7 @@ declare export function createReactNativeDocument(
 `;
 
 exports[`public API should not change unintentionally src/private/webapis/dom/nodes/ReactNativeElement.js 1`] = `
-"declare class ReactNativeElementMethods
+"declare class ReactNativeElement
   extends ReadOnlyElement
   implements LegacyHostInstanceMethods
 {
@@ -9264,7 +9264,7 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   ): void;
   setNativeProps(nativeProps: { ... }): void;
 }
-declare export default typeof ReactNativeElementMethods;
+declare export default typeof ReactNativeElement;
 "
 `;
 

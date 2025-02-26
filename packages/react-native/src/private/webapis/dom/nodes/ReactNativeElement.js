@@ -60,7 +60,7 @@ const noop = () => {};
 // was slower than this method because the engine has to create an object than
 // we then discard to create a new one.
 
-class ReactNativeElementMethods
+class ReactNativeElement
   extends ReadOnlyElement
   implements LegacyHostInstanceMethods
 {
@@ -227,28 +227,36 @@ class ReactNativeElementMethods
   }
 }
 
-// Alternative constructor just implemented to provide a better performance than
-// calling super() in the original class.
-function ReactNativeElement(
-  this: ReactNativeElementMethods,
-  tag: number,
-  viewConfig: ViewConfig,
-  internalInstanceHandle: InternalInstanceHandle,
-  ownerDocument: ReactNativeDocument,
-) {
-  // Inlined from `ReadOnlyNode`
-  setOwnerDocument(this, ownerDocument);
-  setInstanceHandle(this, internalInstanceHandle);
+type ReactNativeElementT = ReactNativeElement;
 
-  this.__nativeTag = tag;
-  this.__internalInstanceHandle = internalInstanceHandle;
-  this.__viewConfig = viewConfig;
+function replaceConstructorWithoutSuper(
+  ReactNativeElementClass: Class<ReactNativeElementT>,
+): Class<ReactNativeElementT> {
+  // Alternative constructor just implemented to provide a better performance than
+  // calling super() in the original class.
+  // eslint-disable-next-line no-shadow
+  function ReactNativeElement(
+    this: ReactNativeElementT,
+    tag: number,
+    viewConfig: ViewConfig,
+    internalInstanceHandle: InternalInstanceHandle,
+    ownerDocument: ReactNativeDocument,
+  ) {
+    // Inlined from `ReadOnlyNode`
+    setOwnerDocument(this, ownerDocument);
+    setInstanceHandle(this, internalInstanceHandle);
+
+    this.__nativeTag = tag;
+    this.__internalInstanceHandle = internalInstanceHandle;
+    this.__viewConfig = viewConfig;
+  }
+
+  ReactNativeElement.prototype = ReactNativeElementClass.prototype;
+
+  // $FlowExpectedError[incompatible-return]
+  return ReactNativeElement;
 }
 
-ReactNativeElement.prototype = Object.create(
-  ReactNativeElementMethods.prototype,
-);
-
-// $FlowExpectedError[prop-missing]
-// $FlowFixMe[incompatible-cast]
-export default ReactNativeElement as typeof ReactNativeElementMethods;
+export default replaceConstructorWithoutSuper(
+  ReactNativeElement,
+) as typeof ReactNativeElement;
