@@ -2468,19 +2468,6 @@ public class com/facebook/react/fabric/StateWrapperImpl : com/facebook/jni/Hybri
 	public fun updateStateImpl (Lcom/facebook/react/bridge/NativeMap;)V
 }
 
-public class com/facebook/react/fabric/SurfaceHandlerBinding : com/facebook/jni/HybridClassBase, com/facebook/react/interfaces/fabric/SurfaceHandler {
-	public static final field DISPLAY_MODE_HIDDEN I
-	public static final field DISPLAY_MODE_SUSPENDED I
-	public static final field DISPLAY_MODE_VISIBLE I
-	public fun <init> (Ljava/lang/String;)V
-	public fun getModuleName ()Ljava/lang/String;
-	public fun getSurfaceId ()I
-	public fun isRunning ()Z
-	public fun setLayoutConstraints (IIIIZZF)V
-	public fun setMountable (Z)V
-	public fun setProps (Lcom/facebook/react/bridge/NativeMap;)V
-}
-
 public final class com/facebook/react/fabric/events/EventBeatManager : com/facebook/react/uimanager/events/BatchEventDispatchedListener {
 	public fun <init> ()V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
