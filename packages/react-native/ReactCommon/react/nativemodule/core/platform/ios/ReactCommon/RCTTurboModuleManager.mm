@@ -340,8 +340,10 @@ typedef struct {
   /**
    * Step 2: Look for platform-specific modules.
    */
-  id<RCTBridgeModule> module =
-      !RCTTurboModuleInteropEnabled() || [self _isTurboModule:moduleName] ? [self _provideObjCModule:moduleName] : nil;
+  id<RCTTurboModuleProvider> module = !RCTTurboModuleInteropEnabled() || [self _isTurboModule:moduleName] ||
+          [_delegate getTurboModuleProvider:moduleName]
+      ? (id<RCTTurboModuleProvider>)[self _provideObjCModule:moduleName]
+      : nil;
 
   TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
 
@@ -352,24 +354,21 @@ typedef struct {
   }
 
   Class moduleClass = [module class];
-
+  std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker = nullptr;
   dispatch_queue_t methodQueue = (dispatch_queue_t)objc_getAssociatedObject(module, &kAssociatedMethodQueueKey);
-  if (methodQueue == nil) {
-    RCTLogError(@"TurboModule \"%@\" was not associated with a method queue.", moduleClass);
-  }
+  if (methodQueue) {
+    /**
+     * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
+     */
+    nativeMethodCallInvoker = std::make_shared<ModuleNativeMethodCallInvoker>(methodQueue);
 
-  /**
-   * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
-   */
-  std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker =
-      std::make_shared<ModuleNativeMethodCallInvoker>(methodQueue);
-
-  /**
-   * Have RCTCxxBridge decorate native CallInvoker, so that it's aware of TurboModule async method calls.
-   * This helps the bridge fire onBatchComplete as readily as it should.
-   */
-  if ([_bridge respondsToSelector:@selector(decorateNativeMethodCallInvoker:)]) {
-    nativeMethodCallInvoker = [_bridge decorateNativeMethodCallInvoker:nativeMethodCallInvoker];
+    /**
+     * Have RCTCxxBridge decorate native CallInvoker, so that it's aware of TurboModule async method calls.
+     * This helps the bridge fire onBatchComplete as readily as it should.
+     */
+    if ([_bridge respondsToSelector:@selector(decorateNativeMethodCallInvoker:)]) {
+      nativeMethodCallInvoker = [_bridge decorateNativeMethodCallInvoker:nativeMethodCallInvoker];
+    }
   }
 
   /**
@@ -393,7 +392,7 @@ typedef struct {
   if ([module respondsToSelector:@selector(getTurboModule:)]) {
     ObjCTurboModule::InitParams params = {
         .moduleName = moduleName,
-        .instance = module,
+        .instance = [module conformsToProtocol:@protocol(RCTBridgeModule)] ? (id<RCTBridgeModule>)module : nullptr,
         .jsInvoker = _jsInvoker,
         .nativeMethodCallInvoker = nativeMethodCallInvoker,
         .isSyncModule = methodQueue == RCTJSThread,
@@ -560,7 +559,9 @@ typedef struct {
     /**
      * Step 2a: Resolve platform-specific class.
      */
-    Class moduleClass = [self _getModuleClassFromName:moduleName];
+    id<RCTTurboModuleProvider> moduleProvider = [_delegate getTurboModuleProvider:moduleName];
+
+    Class moduleClass = moduleProvider ? [moduleProvider class] : [self _getModuleClassFromName:moduleName];
 
     __block id<RCTBridgeModule> module = nil;
 
@@ -603,6 +604,10 @@ typedef struct {
       } else {
         work();
       }
+    } else {
+      // we are in the Cxx TurboModule scenario
+      // This will be cast back to id<RCTTurboModuleProvider>
+      return (id<RCTBridgeModule>)moduleProvider;
     }
 
     {
@@ -611,7 +616,6 @@ typedef struct {
       moduleHolder->setModule(module);
       moduleHolder->endCreatingModule();
     }
-
     moduleHolder->cv().notify_all();
 
     return module;
