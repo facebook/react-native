@@ -16,7 +16,7 @@ import type {
   ScrollEvent,
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
-import type {TextInputType} from './TextInput.flow';
+import type {TextInputInstance, TextInputType} from './TextInput.flow';
 
 import * as ReactNativeFeatureFlags from '../../../src/private/featureflags/ReactNativeFeatureFlags';
 import usePressability from '../../Pressability/usePressability';
@@ -35,14 +35,6 @@ import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 import {useCallback, useLayoutEffect, useRef, useState} from 'react';
-
-type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
-type TextInputInstance = HostInstance & {
-  +clear: () => void,
-  +isFocused: () => boolean,
-  +getNativeRef: () => ?HostInstance,
-  +setSelection: (start: number, end: number) => void,
-};
 
 let AndroidTextInput;
 let AndroidTextInputCommands;
@@ -685,7 +677,7 @@ export type TextInputProps = $ReadOnly<{
    */
   editable?: ?boolean,
 
-  forwardedRef?: ?ReactRefSetter<TextInputInstance>,
+  forwardedRef?: ?React.RefSetter<TextInputInstance>,
 
   /**
    * `enterKeyHint` defines what action label (or icon) to present for the enter key on virtual keyboards.
@@ -1027,7 +1019,7 @@ function useTextInputStateSynchronization_STATE({
   props: TextInputProps,
   mostRecentEventCount: number,
   selection: ?Selection,
-  inputRef: React.RefObject<null | HostInstance>,
+  inputRef: React.RefObject<null | TextInputInstance>,
   text?: string,
   viewCommands: ViewCommands,
 }): {
@@ -1108,7 +1100,7 @@ function useTextInputStateSynchronization_REFS({
   props: TextInputProps,
   mostRecentEventCount: number,
   selection: ?Selection,
-  inputRef: React.RefObject<null | HostInstance>,
+  inputRef: React.RefObject<null | TextInputInstance>,
   text?: string,
   viewCommands: ViewCommands,
 }): {
@@ -1308,7 +1300,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
     ...otherProps
   } = props;
 
-  const inputRef = useRef<null | HostInstance>(null);
+  const inputRef = useRef<null | TextInputInstance>(null);
 
   const selection: ?Selection =
     propsSelection == null
@@ -1363,7 +1355,8 @@ function InternalTextInput(props: TextInputProps): React.Node {
   }, []);
 
   const setLocalRef = useCallback(
-    (instance: TextInputInstance | null) => {
+    (instance: HostInstance | null) => {
+      // $FlowExpectedError[incompatible-type]
       inputRef.current = instance;
 
       /*
@@ -1389,7 +1382,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
         before we can get to the long term breaking change.
       */
       if (instance != null) {
-        // $FlowFixMe[incompatible-use] - See the explanation above.
+        // $FlowFixMe[prop-missing] - See the explanation above.
         Object.assign(instance, {
           clear(): void {
             if (inputRef.current != null) {
@@ -1406,7 +1399,7 @@ function InternalTextInput(props: TextInputProps): React.Node {
           isFocused(): boolean {
             return TextInputState.currentlyFocusedInput() === inputRef.current;
           },
-          getNativeRef(): ?HostInstance {
+          getNativeRef(): ?TextInputInstance {
             return inputRef.current;
           },
           setSelection(start: number, end: number): void {
@@ -1426,7 +1419,8 @@ function InternalTextInput(props: TextInputProps): React.Node {
     [mostRecentEventCount, viewCommands],
   );
 
-  const ref = useMergeRefs<TextInputInstance>(setLocalRef, props.forwardedRef);
+  // $FlowExpectedError[incompatible-call]
+  const ref = useMergeRefs<HostInstance>(setLocalRef, props.forwardedRef);
 
   const _onChange = (event: TextInputChangeEvent) => {
     const currentText = event.nativeEvent.text;
@@ -1814,7 +1808,6 @@ const autoCompleteWebToTextContentTypeMap = {
 const ExportedForwardRef: component(
   ref: React.RefSetter<TextInputInstance>,
   ...props: React.ElementConfig<typeof InternalTextInput>
-  // $FlowFixMe[incompatible-call]
 ) = React.forwardRef(function TextInput(
   {
     allowFontScaling = true,
@@ -1831,7 +1824,7 @@ const ExportedForwardRef: component(
     keyboardType,
     ...restProps
   },
-  forwardedRef: ReactRefSetter<TextInputInstance>,
+  forwardedRef: React.RefSetter<TextInputInstance>,
 ) {
   return (
     <InternalTextInput

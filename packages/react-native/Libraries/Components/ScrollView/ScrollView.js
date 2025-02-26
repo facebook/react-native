@@ -126,30 +126,35 @@ import * as React from 'react';
  *   this.props.onKeyboardDidHide
  */
 
+export interface ScrollViewScrollToOptions {
+  x?: number;
+  y?: number;
+  animated?: boolean;
+}
+
 // Public methods for ScrollView
-export type ScrollViewImperativeMethods = $ReadOnly<{
-  getScrollResponder: $PropertyType<ScrollView, 'getScrollResponder'>,
-  getScrollableNode: $PropertyType<ScrollView, 'getScrollableNode'>,
-  getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>,
-  getInnerViewRef: $PropertyType<ScrollView, 'getInnerViewRef'>,
-  getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>,
-  scrollTo: $PropertyType<ScrollView, 'scrollTo'>,
-  scrollToEnd: $PropertyType<ScrollView, 'scrollToEnd'>,
-  flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>,
-  scrollResponderZoomTo: $PropertyType<ScrollView, 'scrollResponderZoomTo'>,
-  scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
+export interface ScrollViewImperativeMethods {
+  +getScrollResponder: $PropertyType<ScrollView, 'getScrollResponder'>;
+  +getScrollableNode: $PropertyType<ScrollView, 'getScrollableNode'>;
+  +getInnerViewNode: $PropertyType<ScrollView, 'getInnerViewNode'>;
+  +getInnerViewRef: $PropertyType<ScrollView, 'getInnerViewRef'>;
+  +getNativeScrollRef: $PropertyType<ScrollView, 'getNativeScrollRef'>;
+  +scrollTo: $PropertyType<ScrollView, 'scrollTo'>;
+  +scrollToEnd: $PropertyType<ScrollView, 'scrollToEnd'>;
+  +flashScrollIndicators: $PropertyType<ScrollView, 'flashScrollIndicators'>;
+  +scrollResponderZoomTo: $PropertyType<ScrollView, 'scrollResponderZoomTo'>;
+  +scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
     ScrollView,
     'scrollResponderScrollNativeHandleToKeyboard',
-  >,
-}>;
+  >;
+}
 
 export type DecelerationRateType = 'fast' | 'normal' | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
 
-type PublicScrollViewInstance = $ReadOnly<{
-  ...HostInstance,
-  ...ScrollViewImperativeMethods,
-}>;
+export interface PublicScrollViewInstance
+  extends HostInstance,
+    ScrollViewImperativeMethods {}
 
 type InnerViewInstance = React.ElementRef<View>;
 
@@ -851,28 +856,10 @@ class ScrollView extends React.Component<ScrollViewProps, State> {
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
   scrollTo: (
-    options?:
-      | {
-          x?: number,
-          y?: number,
-          animated?: boolean,
-          ...
-        }
-      | number,
+    options?: ScrollViewScrollToOptions | number,
     deprecatedX?: number,
     deprecatedAnimated?: boolean,
-  ) => void = (
-    options?:
-      | {
-          x?: number,
-          y?: number,
-          animated?: boolean,
-          ...
-        }
-      | number,
-    deprecatedX?: number,
-    deprecatedAnimated?: boolean,
-  ) => {
+  ) => void = (options, deprecatedX, deprecatedAnimated) => {
     let x, y, animated;
     if (typeof options === 'number') {
       console.warn(
@@ -902,9 +889,7 @@ class ScrollView extends React.Component<ScrollViewProps, State> {
    * `scrollToEnd({animated: false})` for immediate scrolling.
    * If no options are passed, `animated` defaults to true.
    */
-  scrollToEnd: (options?: ?{animated?: boolean, ...}) => void = (
-    options?: ?{animated?: boolean, ...},
-  ) => {
+  scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void = options => {
     // Default to true
     const animated = (options && options.animated) !== false;
     const component = this.getNativeScrollRef();
@@ -1502,7 +1487,7 @@ class ScrollView extends React.Component<ScrollViewProps, State> {
         keyboardNeverPersistTaps &&
         this._keyboardIsDismissible() &&
         e.target != null &&
-        // $FlowFixMe[incompatible-call]
+        // $FlowFixMe[incompatible-type]
         !TextInputState.isTextInput(e.target)
       ) {
         return true;
