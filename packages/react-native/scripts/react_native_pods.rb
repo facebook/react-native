@@ -414,6 +414,7 @@ def react_native_post_install(
   if hermes_enabled
     ReactNativePodsUtils.set_gcc_preprocessor_definition_for_React_hermes(installer)
   end
+  ReactNativePodsUtils.set_gcc_preprocessor_definition_for_debugger(installer)
 
   ReactNativePodsUtils.fix_library_search_paths(installer)
   ReactNativePodsUtils.update_search_paths(installer)
