@@ -7,7 +7,6 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 import {NativeEventCategory} from '../../../src/private/testing/fantom/specs/NativeFantom';
