@@ -9274,7 +9274,7 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   get previousElementSibling(): ReadOnlyElement | null;
   get data(): string;
   get length(): number;
-  get textContent(): string | null;
+  get textContent(): string;
   get nodeValue(): string;
   substringData(offset: number, count: number): string;
 }
@@ -9303,7 +9303,7 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   get scrollTop(): number;
   get scrollWidth(): number;
   get tagName(): string;
-  get textContent(): string | null;
+  get textContent(): string;
   getBoundingClientRect(): DOMRect;
   hasPointerCapture(pointerId: number): boolean;
   setPointerCapture(pointerId: number): void;
@@ -9334,7 +9334,7 @@ exports[`public API should not change unintentionally src/private/webapis/dom/no
   get parentElement(): ReadOnlyElement | null;
   get parentNode(): ReadOnlyNode | null;
   get previousSibling(): ReadOnlyNode | null;
-  get textContent(): string | null;
+  get textContent(): string;
   compareDocumentPosition(otherNode: ReadOnlyNode): number;
   contains(otherNode: ReadOnlyNode): boolean;
   getRootNode(): ReadOnlyNode;
