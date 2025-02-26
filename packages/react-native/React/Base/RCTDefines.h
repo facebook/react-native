@@ -52,8 +52,8 @@
  * If Fusebox is enabled for release builds, enable the remote profile mode, fall back to RCT_DEV by default.
  */
 #ifndef RCT_REMOTE_PROFILE
-#ifdef REACT_NATIVE_ENABLE_FUSEBOX_RELEASE
-#define RCT_REMOTE_PROFILE REACT_NATIVE_ENABLE_FUSEBOX_RELEASE
+#ifdef REACT_NATIVE_DEBUGGER_MODE_PROD
+#define RCT_REMOTE_PROFILE REACT_NATIVE_DEBUGGER_MODE_PROD
 #else
 #define RCT_REMOTE_PROFILE RCT_DEV
 #endif

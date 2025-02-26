@@ -45,9 +45,13 @@ class ReactNativePodsUtils
 
     def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", :debug)
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-jsinspector", :debug)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", :debug)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", :debug)
+    end
+
+    def self.set_gcc_preprocessor_definition_for_debugger(installer)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED=1", "React-jsinspector", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1", "React-jsinspector", :debug)
     end
 
     def self.turn_off_resource_bundle_react_core(installer)
