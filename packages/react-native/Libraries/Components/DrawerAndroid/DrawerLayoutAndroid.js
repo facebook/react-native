@@ -15,7 +15,7 @@ import type {
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
-} from '../../Renderer/shims/ReactNativeTypes';
+} from '../../../src/private/types/HostInstance';
 import type {
   DrawerLayoutAndroidMethods,
   DrawerLayoutAndroidProps,
