@@ -14,11 +14,7 @@ import React, {forwardRef, useContext} from 'react';
 import {StyleSheet, TextInput} from 'react-native';
 
 const ExampleTextInput: component(
-  ref: React.RefSetter<
-    $ReadOnly<{
-      ...React.ElementRef<typeof TextInput>,
-    }>,
-  >,
+  ref: React.RefSetter<null | React.ElementRef<typeof TextInput>>,
   ...props: React.ElementConfig<typeof TextInput>
 ) = forwardRef((props, ref) => {
   const theme = useContext(RNTesterThemeContext);

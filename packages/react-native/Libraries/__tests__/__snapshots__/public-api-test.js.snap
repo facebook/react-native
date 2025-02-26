@@ -1823,27 +1823,31 @@ declare export default typeof ScrollContentViewNativeComponent;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ScrollView/ScrollView.js 1`] = `
-"export type ScrollViewImperativeMethods = $ReadOnly<{
-  getScrollResponder: $PropertyType<ScrollView, \\"getScrollResponder\\">,
-  getScrollableNode: $PropertyType<ScrollView, \\"getScrollableNode\\">,
-  getInnerViewNode: $PropertyType<ScrollView, \\"getInnerViewNode\\">,
-  getInnerViewRef: $PropertyType<ScrollView, \\"getInnerViewRef\\">,
-  getNativeScrollRef: $PropertyType<ScrollView, \\"getNativeScrollRef\\">,
-  scrollTo: $PropertyType<ScrollView, \\"scrollTo\\">,
-  scrollToEnd: $PropertyType<ScrollView, \\"scrollToEnd\\">,
-  flashScrollIndicators: $PropertyType<ScrollView, \\"flashScrollIndicators\\">,
-  scrollResponderZoomTo: $PropertyType<ScrollView, \\"scrollResponderZoomTo\\">,
-  scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
+"export interface ScrollViewScrollToOptions {
+  x?: number;
+  y?: number;
+  animated?: boolean;
+}
+export interface ScrollViewImperativeMethods {
+  +getScrollResponder: $PropertyType<ScrollView, \\"getScrollResponder\\">;
+  +getScrollableNode: $PropertyType<ScrollView, \\"getScrollableNode\\">;
+  +getInnerViewNode: $PropertyType<ScrollView, \\"getInnerViewNode\\">;
+  +getInnerViewRef: $PropertyType<ScrollView, \\"getInnerViewRef\\">;
+  +getNativeScrollRef: $PropertyType<ScrollView, \\"getNativeScrollRef\\">;
+  +scrollTo: $PropertyType<ScrollView, \\"scrollTo\\">;
+  +scrollToEnd: $PropertyType<ScrollView, \\"scrollToEnd\\">;
+  +flashScrollIndicators: $PropertyType<ScrollView, \\"flashScrollIndicators\\">;
+  +scrollResponderZoomTo: $PropertyType<ScrollView, \\"scrollResponderZoomTo\\">;
+  +scrollResponderScrollNativeHandleToKeyboard: $PropertyType<
     ScrollView,
     \\"scrollResponderScrollNativeHandleToKeyboard\\",
-  >,
-}>;
+  >;
+}
 export type DecelerationRateType = \\"fast\\" | \\"normal\\" | number;
 export type ScrollResponderType = ScrollViewImperativeMethods;
-type PublicScrollViewInstance = $ReadOnly<{
-  ...HostInstance,
-  ...ScrollViewImperativeMethods,
-}>;
+export interface PublicScrollViewInstance
+  extends HostInstance,
+    ScrollViewImperativeMethods {}
 type InnerViewInstance = React.ElementRef<View>;
 export type ScrollViewPropsIOS = $ReadOnly<{
   automaticallyAdjustContentInsets?: ?boolean,
@@ -1953,18 +1957,11 @@ declare class ScrollView extends React.Component<ScrollViewProps, State> {
   getInnerViewRef: () => InnerViewInstance | null;
   getNativeScrollRef: () => HostInstance | null;
   scrollTo: (
-    options?:
-      | {
-          x?: number,
-          y?: number,
-          animated?: boolean,
-          ...
-        }
-      | number,
+    options?: ScrollViewScrollToOptions | number,
     deprecatedX?: number,
     deprecatedAnimated?: boolean
   ) => void;
-  scrollToEnd: (options?: ?{ animated?: boolean, ... }) => void;
+  scrollToEnd: (options?: ?ScrollViewScrollToOptions) => void;
   flashScrollIndicators: () => void;
   scrollResponderScrollNativeHandleToKeyboard: (
     nodeHandle: number | HostInstance,
@@ -2127,11 +2124,9 @@ exports[`public API should not change unintentionally Libraries/Components/Scrol
   nativeID?: ?string,
   hiddenOnScroll?: ?boolean,
 }>;
-type Instance = {
-  ...React.ElementRef<typeof Animated.View>,
-  setNextHeaderY: (number) => void,
-  ...
-};
+interface Instance extends React.ElementRef<typeof Animated.View> {
+  +setNextHeaderY: (number) => void;
+}
 declare const ScrollViewStickyHeaderWithForwardedRef: component(
   ref: React.RefSetter<Instance>,
   ...props: ScrollViewStickyHeaderProps
@@ -2548,10 +2543,7 @@ declare export default PartialViewConfigWithoutName;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.flow.js 1`] = `
-"type ReactRefSetter<T> =
-  | { current: null | T, ... }
-  | ((ref: null | T) => mixed);
-export type TextInputChangeEventData = $ReadOnly<{
+"export type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
   text: string,
@@ -2837,7 +2829,7 @@ export type TextInputProps = $ReadOnly<{
   contextMenuHidden?: ?boolean,
   defaultValue?: ?Stringish,
   editable?: ?boolean,
-  forwardedRef?: ?ReactRefSetter<HostInstance & ImperativeMethods>,
+  forwardedRef?: ?React.RefSetter<TextInputInstance>,
   enterKeyHint?: ?EnterKeyHintTypeOptions,
   inputMode?: ?InputModeOptions,
   keyboardType?: ?KeyboardTypeOptions,
@@ -2876,14 +2868,14 @@ export type TextInputProps = $ReadOnly<{
   style?: ?TextStyleProp,
   value?: ?Stringish,
 }>;
-type ImperativeMethods = $ReadOnly<{
-  clear: () => void,
-  isFocused: () => boolean,
-  getNativeRef: () => ?HostInstance,
-  setSelection: (start: number, end: number) => void,
-}>;
+export interface TextInputInstance extends HostInstance {
+  +clear: () => void;
+  +isFocused: () => boolean;
+  +getNativeRef: () => ?HostInstance;
+  +setSelection: (start: number, end: number) => void;
+}
 type InternalTextInput = component(
-  ref: React.RefSetter<$ReadOnly<{ ...HostInstance, ...ImperativeMethods }>>,
+  ref: React.RefSetter<TextInputInstance>,
   ...TextInputProps
 );
 export type TextInputComponentStatics = $ReadOnly<{
@@ -2899,16 +2891,7 @@ export type TextInputType = InternalTextInput & TextInputComponentStatics;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/TextInput/TextInput.js 1`] = `
-"type ReactRefSetter<T> =
-  | { current: null | T, ... }
-  | ((ref: null | T) => mixed);
-type TextInputInstance = HostInstance & {
-  +clear: () => void,
-  +isFocused: () => boolean,
-  +getNativeRef: () => ?HostInstance,
-  +setSelection: (start: number, end: number) => void,
-};
-export type TextInputChangeEventData = $ReadOnly<{
+"export type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
   text: string,
@@ -3193,7 +3176,7 @@ export type TextInputProps = $ReadOnly<{
   contextMenuHidden?: ?boolean,
   defaultValue?: ?Stringish,
   editable?: ?boolean,
-  forwardedRef?: ?ReactRefSetter<TextInputInstance>,
+  forwardedRef?: ?React.RefSetter<TextInputInstance>,
   enterKeyHint?: ?EnterKeyHintTypeOptions,
   inputMode?: ?InputModeOptions,
   keyboardType?: ?KeyboardTypeOptions,
@@ -9250,19 +9233,7 @@ export interface INativeMethods {
   ): void;
   setNativeProps(nativeProps: { ... }): void;
 }
-export type NativeMethods = $ReadOnly<{
-  blur(): void,
-  focus(): void,
-  measure(callback: MeasureOnSuccessCallback): void,
-  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
-  measureLayout(
-    relativeToNativeNode: number | HostInstance,
-    onSuccess: MeasureLayoutOnSuccessCallback,
-    onFail?: () => void
-  ): void,
-  setNativeProps(nativeProps: { ... }): void,
-}>;
-export type HostInstance = NativeMethods;
+export type HostInstance = INativeMethods;
 "
 `;
 

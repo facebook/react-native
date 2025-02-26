@@ -32,11 +32,9 @@ export type ScrollViewStickyHeaderProps = $ReadOnly<{
   hiddenOnScroll?: ?boolean,
 }>;
 
-type Instance = {
-  ...React.ElementRef<typeof Animated.View>,
-  setNextHeaderY: number => void,
-  ...
-};
+interface Instance extends React.ElementRef<typeof Animated.View> {
+  +setNextHeaderY: number => void;
+}
 
 const ScrollViewStickyHeaderWithForwardedRef: component(
   ref: React.RefSetter<Instance>,
@@ -62,6 +60,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
     if (ref == null) {
       return;
     }
+    // $FlowExpectedError[cannot-write]
     ref.setNextHeaderY = setNextHeaderLayoutY;
     setIsFabric(isFabricPublicInstance(ref));
   }, []);

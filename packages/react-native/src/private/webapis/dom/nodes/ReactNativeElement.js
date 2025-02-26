@@ -146,12 +146,10 @@ class ReactNativeElementMethods
    */
 
   blur(): void {
-    // $FlowFixMe[incompatible-exact] Migrate all usages of `NativeMethods` to an interface to fix this.
     TextInputState.blurTextInput(this);
   }
 
   focus() {
-    // $FlowFixMe[incompatible-exact] Migrate all usages of `NativeMethods` to an interface to fix this.
     TextInputState.focusTextInput(this);
   }
 

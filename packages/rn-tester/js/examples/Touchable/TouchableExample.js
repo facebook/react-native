@@ -560,7 +560,7 @@ const TouchableTouchSoundDisabled = () => {
 };
 
 function TouchableOnFocus() {
-  const ref = useRef<?{focus(): void, ...}>(null);
+  const ref = useRef<?React.ElementRef<typeof TouchableHighlight>>(null);
   const [isFocused, setIsFocused] = useState<string | boolean>(false);
   const [focusStatus, setFocusStatus] = useState(
     'This touchable is not focused.',
