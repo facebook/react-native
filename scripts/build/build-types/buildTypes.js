@@ -28,6 +28,7 @@ const IGNORE_PATTERNS = [
 const ENTRY_POINTS = [
   'packages/react-native/Libraries/ActionSheetIOS/ActionSheetIOS.js',
   'packages/react-native/Libraries/Alert/Alert.js',
+  'packages/react-native/Libraries/Animated/Animated.js',
   'packages/react-native/Libraries/AppState/AppState.js',
   'packages/react-native/Libraries/BatchedBridge/NativeModules.js',
   'packages/react-native/Libraries/Blob/Blob.js',
