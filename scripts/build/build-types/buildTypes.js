@@ -42,6 +42,7 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js',
   'packages/react-native/Libraries/Components/Keyboard/Keyboard.js',
   'packages/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js',
+  'packages/react-native/Libraries/Components/Pressable/Pressable.js',
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
   'packages/react-native/Libraries/Components/ScrollView/ScrollView.js',
   'packages/react-native/Libraries/Interaction/InteractionManager.js',
