@@ -11,7 +11,6 @@ import com.facebook.yoga.YogaUnit
 import com.facebook.yoga.YogaValue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.junit.Assert.assertThrows
 
 /** Tests for [DimensionPropConverter] */
 class DimensionPropConverterTest {
