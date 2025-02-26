@@ -1,0 +1,35 @@
+name: Run Fantom Tests
+# inputs:
+#   <name of the input>:
+#     required: true | false
+#     description: A description of the input parameter
+
+
+runs:
+  using: composite
+  steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        sudo apt update
+        sudo apt install -y git cmake
+    - name: Setup node.js
+      uses: ./.github/actions/setup-node
+    - name: Run yarn
+      uses: ./.github/actions/yarn-install
+    - name: Download HermesC executable
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/hermes/linux64-bin
+        name: hermes-linux-bin
+    - name: PRepare 3p dependencies with Gradle
+      shell: bash
+      run: echo "./gradlew <task-to-dwnld-dependencies>" # fix this with Nicola
+    - name: Build Fantom
+      shell: bash
+      run: echo "build fantom script"
+    - name: Run Tests
+      shell: bash
+      run: echo "jest e2e --mode fantom"
+      env: # I don't know if you bundle JS here or above
+        hermesc-path: /tmp/hermes/linux64-bin
