@@ -76,6 +76,13 @@
 {
 }
 
+- (nullable id<RCTTurboModuleProvider>)getTurboModuleProvider:(const char *)name
+{
+  // NSString * providerName = [NSString stringWithCString:name];
+  // return self.dependencyProvider ? self.dependencyProvider.cxxTurboModuleProvider[providerName] : nullptr
+  return nullptr;
+}
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
