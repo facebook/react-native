@@ -1795,7 +1795,7 @@ declare export default typeof RCTSafeAreaViewNativeComponent;
 
 exports[`public API should not change unintentionally Libraries/Components/SafeAreaView/SafeAreaView.js 1`] = `
 "declare const exported: component(
-  ref: React.RefSetter<React.ElementRef<typeof View>>,
+  ref?: React.RefSetter<React.ElementRef<typeof View>>,
   ...props: ViewProps
 );
 declare export default typeof exported;

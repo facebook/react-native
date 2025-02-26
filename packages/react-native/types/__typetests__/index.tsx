@@ -110,6 +110,7 @@ import {
   UIManager,
   View,
   ViewStyle,
+  SafeAreaView,
   VirtualizedList,
   findNodeHandle,
   requireNativeComponent,
@@ -1567,6 +1568,31 @@ class BridgedComponentTest extends React.Component {
     );
   }
 }
+
+const SafeAreaViewTest = () => {
+  const viewRef = React.createRef<React.ElementRef<typeof View>>();
+
+  return (
+    <>
+      <SafeAreaView />;
+      <SafeAreaView ref={viewRef} />;
+      <SafeAreaView
+        ref={ref => {
+          ref?.focus();
+          ref?.blur();
+          ref?.measure(
+            (x, y, width, height, pageX, pageY): number =>
+              x + y + width + height + pageX + pageY,
+          );
+          ref?.measureInWindow(
+            (x, y, width, height): number => x + y + width + height,
+          );
+          ref?.setNativeProps({focusable: false});
+        }}
+      />
+    </>
+  );
+};
 
 const SwitchRefTest = () => {
   const switchRef = React.createRef<React.ElementRef<typeof Switch>>();
