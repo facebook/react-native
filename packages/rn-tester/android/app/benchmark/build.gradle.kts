@@ -12,11 +12,11 @@ plugins {
 
 android {
   namespace = "com.example.benchmark"
-  compileSdk = 35
+  compileSdk = libs.versions.compileSdk.get().toInt()
 
   defaultConfig {
-    minSdk = 24
-    targetSdk = 35
+    minSdk = libs.versions.minSdk.get().toInt()
+    targetSdk = libs.versions.targetSdk.get().toInt()
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
