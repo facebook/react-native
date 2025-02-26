@@ -176,9 +176,25 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 }
 @end
 
-@protocol RCTTurboModule <NSObject>
+/**
+ * Factory object that can create a Turbomodule. It could be either a C++ TM or any TurboModule.
+ * This needs to be an Objective-C class so we can instantiate it at runtime.
+ */
+@protocol RCTTurboModuleProvider <NSObject>
+
+/**
+ * Create an instance of a TurboModule with the JS Invoker.
+ */
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params;
+@end
+
+/**
+ * Protocol that objects can inherit to conform to be treated as turbomodules.
+ * It inherits from RCTTurboModuleProvider, meaning that a TurboModule can create itself
+ */
+@protocol RCTTurboModule <RCTTurboModuleProvider>
+
 @optional
 - (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
 @end
