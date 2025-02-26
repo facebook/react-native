@@ -8,6 +8,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
+#import "RCTJSRuntimeConfiguratorProtocol.h"
 
 @protocol RCTCxxBridgeDelegate;
 @protocol RCTComponentViewFactoryComponentProvider;
@@ -109,6 +110,8 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  * @parameter: rootView - The root view to customize.
  */
 @property (nonatomic, nullable) RCTCustomizeRootViewBlock customizeRootView;
+
+@property (nonatomic, weak, nullable) id<RCTJSRuntimeConfiguratorProtocol> jsRuntimeConfiguratorDelegate;
 
 #pragma mark - RCTBridgeDelegate blocks
 
