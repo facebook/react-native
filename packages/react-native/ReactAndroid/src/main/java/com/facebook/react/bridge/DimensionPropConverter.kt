@@ -5,29 +5,23 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
-import androidx.annotation.Nullable;
-import com.facebook.yoga.YogaUnit;
-import com.facebook.yoga.YogaValue;
+import com.facebook.yoga.YogaUnit
+import com.facebook.yoga.YogaValue
 
-class DimensionPropConverter {
-
-  @Nullable
-  public static YogaValue getDimension(@Nullable Object value) {
-    if (value == null) {
-      return null;
+internal class DimensionPropConverter {
+  companion object {
+    @JvmStatic
+    fun getDimension(value: Any?): YogaValue? {
+      return when (value) {
+        null -> null
+        is Double -> YogaValue(value.toFloat(), YogaUnit.POINT)
+        is String -> YogaValue.parse(value)
+        else -> throw JSApplicationCausedNativeException(
+          "DimensionValue: the value must be a number or string."
+        )
+      }
     }
-
-    if (value instanceof Double) {
-      return new YogaValue(((Double) value).floatValue(), YogaUnit.POINT);
-    }
-
-    if (value instanceof String) {
-      return YogaValue.parse((String) value);
-    }
-
-    throw new JSApplicationCausedNativeException(
-        "DimensionValue: the value must be a number or string.");
   }
 }
