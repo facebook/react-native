@@ -34,7 +34,7 @@ export type MeasureLayoutOnSuccessCallback = (
 /**
  * Current usages should migrate to this definition
  */
-export interface INativeMethods {
+export interface LegacyHostInstanceMethods {
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
@@ -47,4 +47,4 @@ export interface INativeMethods {
   setNativeProps(nativeProps: {...}): void;
 }
 
-export type HostInstance = INativeMethods;
+export type HostInstance = LegacyHostInstanceMethods;

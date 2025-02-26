@@ -17,7 +17,7 @@ import type {
 } from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
 import type {
   HostInstance,
-  INativeMethods,
+  LegacyHostInstanceMethods,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
@@ -62,7 +62,7 @@ const noop = () => {};
 
 class ReactNativeElementMethods
   extends ReadOnlyElement
-  implements INativeMethods
+  implements LegacyHostInstanceMethods
 {
   // These need to be accessible from `ReactFabricPublicInstanceUtils`.
   __nativeTag: number;

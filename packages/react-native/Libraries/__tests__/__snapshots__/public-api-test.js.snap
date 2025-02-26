@@ -6924,7 +6924,7 @@ declare export default typeof UIManagerJS;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricHostComponent.js 1`] = `
 "declare export default class ReactFabricHostComponent
-  implements INativeMethods
+  implements LegacyHostInstanceMethods
 {
   constructor(
     tag: number,
@@ -9221,7 +9221,7 @@ export type MeasureLayoutOnSuccessCallback = (
   width: number,
   height: number
 ) => void;
-export interface INativeMethods {
+export interface LegacyHostInstanceMethods {
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
@@ -9233,7 +9233,7 @@ export interface INativeMethods {
   ): void;
   setNativeProps(nativeProps: { ... }): void;
 }
-export type HostInstance = INativeMethods;
+export type HostInstance = LegacyHostInstanceMethods;
 "
 `;
 
@@ -9262,7 +9262,7 @@ declare export function createReactNativeDocument(
 exports[`public API should not change unintentionally src/private/webapis/dom/nodes/ReactNativeElement.js 1`] = `
 "declare class ReactNativeElementMethods
   extends ReadOnlyElement
-  implements INativeMethods
+  implements LegacyHostInstanceMethods
 {
   constructor(
     tag: number,

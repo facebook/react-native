@@ -10,7 +10,7 @@
 
 import type {
   HostInstance,
-  INativeMethods,
+  LegacyHostInstanceMethods,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
   MeasureOnSuccessCallback,
@@ -40,7 +40,9 @@ const noop = () => {};
 /**
  * This is used for refs on host components.
  */
-export default class ReactFabricHostComponent implements INativeMethods {
+export default class ReactFabricHostComponent
+  implements LegacyHostInstanceMethods
+{
   // These need to be accessible from `ReactFabricPublicInstanceUtils`.
   __nativeTag: number;
   __internalInstanceHandle: InternalInstanceHandle;
