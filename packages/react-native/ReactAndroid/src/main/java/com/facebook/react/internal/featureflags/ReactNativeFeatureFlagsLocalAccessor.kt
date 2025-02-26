@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<a97afc0515bcfc2e4ed60565af08ce8a>>
+ * @generated SignedSource<<e5c1e722f33148fe3aa36ccab62e2293>>
  */
 
 /**
@@ -30,7 +30,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableBridgelessArchitectureCache: Boolean? = null
   private var enableCppPropsIteratorSetterCache: Boolean? = null
   private var enableEagerRootViewAttachmentCache: Boolean? = null
-  private var enableEventEmitterRetentionDuringGesturesOnAndroidCache: Boolean? = null
   private var enableFabricLogsCache: Boolean? = null
   private var enableFabricRendererCache: Boolean? = null
   private var enableIOSViewClipToPaddingBoxCache: Boolean? = null
@@ -57,6 +56,8 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var fuseboxEnabledReleaseCache: Boolean? = null
   private var fuseboxNetworkInspectionEnabledCache: Boolean? = null
   private var lazyAnimationCallbacksCache: Boolean? = null
+  private var removeTurboModuleManagerDelegateMutexCache: Boolean? = null
+  private var throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
@@ -123,16 +124,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableEagerRootViewAttachment()
       accessedFeatureFlags.add("enableEagerRootViewAttachment")
       enableEagerRootViewAttachmentCache = cached
-    }
-    return cached
-  }
-
-  override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean {
-    var cached = enableEventEmitterRetentionDuringGesturesOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.enableEventEmitterRetentionDuringGesturesOnAndroid()
-      accessedFeatureFlags.add("enableEventEmitterRetentionDuringGesturesOnAndroid")
-      enableEventEmitterRetentionDuringGesturesOnAndroidCache = cached
     }
     return cached
   }
@@ -393,6 +384,26 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.lazyAnimationCallbacks()
       accessedFeatureFlags.add("lazyAnimationCallbacks")
       lazyAnimationCallbacksCache = cached
+    }
+    return cached
+  }
+
+  override fun removeTurboModuleManagerDelegateMutex(): Boolean {
+    var cached = removeTurboModuleManagerDelegateMutexCache
+    if (cached == null) {
+      cached = currentProvider.removeTurboModuleManagerDelegateMutex()
+      accessedFeatureFlags.add("removeTurboModuleManagerDelegateMutex")
+      removeTurboModuleManagerDelegateMutexCache = cached
+    }
+    return cached
+  }
+
+  override fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean {
+    var cached = throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache
+    if (cached == null) {
+      cached = currentProvider.throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS()
+      accessedFeatureFlags.add("throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS")
+      throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache = cached
     }
     return cached
   }

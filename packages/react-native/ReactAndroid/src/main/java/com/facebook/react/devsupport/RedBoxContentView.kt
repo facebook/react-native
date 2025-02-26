@@ -45,7 +45,7 @@ import org.json.JSONObject
 
 /** Dialog for displaying JS errors in an eye-catching form (red box). */
 @SuppressLint("ViewConstructor")
-public class RedBoxContentView(
+internal class RedBoxContentView(
     context: Context?,
     private val devSupportManager: DevSupportManager,
     private val redBoxHandler: RedBoxHandler?,
@@ -190,7 +190,7 @@ public class RedBoxContentView(
     }
   }
 
-  public fun init() {
+  fun init() {
     LayoutInflater.from(context).inflate(R.layout.redbox_view, this)
 
     stackView =
@@ -220,12 +220,12 @@ public class RedBoxContentView(
     }
   }
 
-  public fun setExceptionDetails(title: String, stack: Array<StackFrame>) {
+  fun setExceptionDetails(title: String, stack: Array<StackFrame>) {
     stackView.setAdapter(StackAdapter(title, stack))
   }
 
   /** Show the report button, hide the report textview and the loading indicator. */
-  public fun resetReporting() {
+  fun resetReporting() {
     if (redBoxHandler?.isReportEnabled() == false) {
       return
     }
@@ -244,7 +244,7 @@ public class RedBoxContentView(
   }
 
   /** Refresh the content view with latest errors from dev support manager */
-  public fun refreshContentView() {
+  fun refreshContentView() {
     val message: String? = devSupportManager.lastErrorTitle
     val stack: Array<StackFrame> = devSupportManager.lastErrorStack ?: emptyArray()
     val errorType: ErrorType = checkNotNull(devSupportManager.lastErrorType)

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<16deece14930c9b259f6f7594127fe55>>
+ * @generated SignedSource<<1a082675338773d1a6259fabfd2f652f>>
  */
 
 /**
@@ -48,8 +48,6 @@ class NativeReactNativeFeatureFlags
   bool enableCppPropsIteratorSetter(jsi::Runtime& runtime);
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
-
-  bool enableEventEmitterRetentionDuringGesturesOnAndroid(jsi::Runtime& runtime);
 
   bool enableFabricLogs(jsi::Runtime& runtime);
 
@@ -102,6 +100,10 @@ class NativeReactNativeFeatureFlags
   bool fuseboxNetworkInspectionEnabled(jsi::Runtime& runtime);
 
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
+
+  bool removeTurboModuleManagerDelegateMutex(jsi::Runtime& runtime);
+
+  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 

@@ -102,6 +102,10 @@ void PerformanceTracer::collectEvents(
 void PerformanceTracer::reportMark(
     const std::string_view& name,
     uint64_t start) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
@@ -122,6 +126,10 @@ void PerformanceTracer::reportMeasure(
     uint64_t start,
     uint64_t duration,
     const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
@@ -160,6 +168,10 @@ void PerformanceTracer::reportMeasure(
 }
 
 void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
@@ -177,6 +189,10 @@ void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
 }
 
 void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;

@@ -11,15 +11,17 @@
 // flowlint unsafe-getters-setters:off
 
 import type {
-  HostInstance,
-  INativeMethods,
   InternalInstanceHandle,
-  MeasureInWindowOnSuccessCallback,
-  MeasureLayoutOnSuccessCallback,
-  MeasureOnSuccessCallback,
   Node as ShadowNode,
   ViewConfig,
 } from '../../../../../Libraries/Renderer/shims/ReactNativeTypes';
+import type {
+  HostInstance,
+  LegacyHostInstanceMethods,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+  MeasureOnSuccessCallback,
+} from '../../../types/HostInstance';
 import type {InstanceHandle} from './internals/NodeInternals';
 import type ReactNativeDocument from './ReactNativeDocument';
 
@@ -60,7 +62,7 @@ const noop = () => {};
 
 class ReactNativeElementMethods
   extends ReadOnlyElement
-  implements INativeMethods
+  implements LegacyHostInstanceMethods
 {
   // These need to be accessible from `ReactFabricPublicInstanceUtils`.
   __nativeTag: number;
@@ -144,12 +146,10 @@ class ReactNativeElementMethods
    */
 
   blur(): void {
-    // $FlowFixMe[incompatible-exact] Migrate all usages of `NativeMethods` to an interface to fix this.
     TextInputState.blurTextInput(this);
   }
 
   focus() {
-    // $FlowFixMe[incompatible-exact] Migrate all usages of `NativeMethods` to an interface to fix this.
     TextInputState.focusTextInput(this);
   }
 

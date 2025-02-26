@@ -9,14 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTKeyWindowValuesProxy : NSObject
+@interface RCTViewFinder : NSObject
 
-+ (instancetype)sharedInstance;
-
-@property (assign, readonly) CGSize windowSize;
-@property (assign, readonly) UIInterfaceOrientation currentInterfaceOrientation;
-
-- (void)startObservingWindowSizeIfNecessary;
++ (UIView *)findView:(UIView *)root withNativeId:(NSString *)nativeId;
 
 @end
 

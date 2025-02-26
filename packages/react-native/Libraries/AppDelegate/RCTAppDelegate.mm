@@ -23,11 +23,6 @@
 #endif
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
-#if USE_HERMES
-#import <ReactCommon/RCTHermesInstance.h>
-#elif USE_THIRD_PARTY_JSC != 1
-#import <ReactCommon/RCTJscInstance.h>
-#endif // USE_HERMES
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
 using namespace facebook::react;

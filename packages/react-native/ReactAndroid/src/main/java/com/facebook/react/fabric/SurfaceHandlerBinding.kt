@@ -12,7 +12,7 @@ import com.facebook.react.bridge.NativeMap
 import com.facebook.react.fabric.mounting.LayoutMetricsConversions
 import com.facebook.react.interfaces.fabric.SurfaceHandler
 
-public open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(), SurfaceHandler {
+internal open class SurfaceHandlerBinding(moduleName: String) : HybridClassBase(), SurfaceHandler {
 
   init {
     initHybrid(NO_SURFACE_ID, moduleName)

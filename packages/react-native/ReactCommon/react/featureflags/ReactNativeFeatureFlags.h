@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b354e1b9ffc58e74ffff200c14728d1d>>
+ * @generated SignedSource<<55a526204b386d34058c86183d5b97ac>>
  */
 
 /**
@@ -68,11 +68,6 @@ class ReactNativeFeatureFlags {
    * Feature flag to configure eager attachment of the root view/initialisation of the JS code.
    */
   RN_EXPORT static bool enableEagerRootViewAttachment();
-
-  /**
-   * Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)
-   */
-  RN_EXPORT static bool enableEventEmitterRetentionDuringGesturesOnAndroid();
 
   /**
    * This feature flag enables logs for Fabric.
@@ -203,6 +198,16 @@ class ReactNativeFeatureFlags {
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
   RN_EXPORT static bool lazyAnimationCallbacks();
+
+  /**
+   * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
+   */
+  RN_EXPORT static bool removeTurboModuleManagerDelegateMutex();
+
+  /**
+   * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.
+   */
+  RN_EXPORT static bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
 
   /**
    * Enables storing js caller stack when creating promise in native module. This is useful in case of Promise rejection and tracing the cause.

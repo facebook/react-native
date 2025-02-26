@@ -81,7 +81,10 @@ export default function getFantomTestConfig(
     mode: DEFAULT_MODE,
     flags: {
       common: {},
-      jsOnly: {},
+      jsOnly: {
+        enableAccessToHostTreeInFabric: true,
+        enableDOMDocumentAPI: true,
+      },
     },
   };
 

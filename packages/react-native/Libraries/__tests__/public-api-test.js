@@ -44,6 +44,7 @@ const JS_LIBRARIES_FILES_IGNORE_PATTERNS = [
 const JS_PRIVATE_FILES_INCLUDE_PATTERNS = [
   'setup/**/*.js',
   'specs/**/*.js',
+  'types/**/*.js',
   'webapis/dom/geometry/*.js',
   'webapis/dom/nodes/*.js',
   'webapis/dom/oldstylecollections/*.js',

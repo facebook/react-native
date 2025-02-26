@@ -13,11 +13,11 @@
 const infoLog = require('../Utilities/infoLog').default;
 const invariant = require('invariant');
 
-type SimpleTask = {
+export type SimpleTask = {
   name: string,
   run: () => void,
 };
-type PromiseTask = {
+export type PromiseTask = {
   name: string,
   gen: () => Promise<void>,
 };

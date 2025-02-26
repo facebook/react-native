@@ -8,7 +8,7 @@ ndkVersion = "27.1.12297006"
 # Dependencies versions
 agp = "8.8.0"
 androidx-annotation = "1.6.0"
-androidx-appcompat = "1.6.1"
+androidx-appcompat = "1.7.0"
 androidx-autofill = "1.1.0"
 androidx-swiperefreshlayout = "1.1.0"
 androidx-test = "1.5.0"

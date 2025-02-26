@@ -45,11 +45,6 @@ public object DefaultNewArchitectureEntryPoint {
 
           override fun enableFabricRenderer(): Boolean = bridgelessEnabled || fabricEnabled
 
-          // We turn this feature flag to true for OSS to fix #44610 and #45126 and other
-          // similar bugs related to pressable.
-          override fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean =
-              bridgelessEnabled || fabricEnabled
-
           override fun useTurboModules(): Boolean = bridgelessEnabled || turboModulesEnabled
         })
 

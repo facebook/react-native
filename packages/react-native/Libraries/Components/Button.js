@@ -27,7 +27,7 @@ import View from './View/View';
 import invariant from 'invariant';
 import * as React from 'react';
 
-type ButtonProps = $ReadOnly<{
+export type ButtonProps = $ReadOnly<{
   /**
     Text to display inside the button. On Android the given title will be
     converted to the uppercased form.
@@ -286,7 +286,7 @@ const Touchable: typeof TouchableNativeFeedback | typeof TouchableOpacity =
 type ButtonRef = React.ElementRef<typeof Touchable>;
 
 const Button: component(
-  ref: React.RefSetter<ButtonRef>,
+  ref?: React.RefSetter<ButtonRef>,
   ...props: ButtonProps
 ) = React.forwardRef((props: ButtonProps, ref: React.RefSetter<ButtonRef>) => {
   const {
