@@ -11,7 +11,6 @@ import android.os.Handler
 import android.view.Choreographer
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UiThreadUtil
@@ -23,6 +22,8 @@ import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.systrace.Systrace
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.concurrent.Volatile
+
+private const val TAG = "FabricEventDispatcher"
 
 /**
  * A singleton class that overrides [EventDispatcher] with no-op methods, to be used by callers that
@@ -87,8 +88,8 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
             true)
       } else {
         ReactSoftExceptionLogger.logSoftException(
-            "FabricEventDispatcher",
-            ReactNoCrashSoftException(
+            TAG,
+            IllegalStateException(
                 "Fabric UIManager expected to implement SynchronousEventReceiver."))
       }
     } finally {
