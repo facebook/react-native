@@ -322,7 +322,7 @@ export type ViewPropsAndroid = $ReadOnly<{
    *
    * @platform android
    */
-  focusable?: boolean,
+  focusable?: ?boolean,
 
   /**
    * Indicates whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
