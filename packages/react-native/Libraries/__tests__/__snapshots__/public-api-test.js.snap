@@ -3499,7 +3499,7 @@ declare export default typeof TouchableNativeFeedback;
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/Touchable/TouchableOpacity.js 1`] = `
-"type TVProps = $ReadOnly<{
+"export type TVProps = $ReadOnly<{
   hasTVPreferredFocus?: ?boolean,
   nextFocusDown?: ?number,
   nextFocusForward?: ?number,
@@ -3507,16 +3507,19 @@ exports[`public API should not change unintentionally Libraries/Components/Touch
   nextFocusRight?: ?number,
   nextFocusUp?: ?number,
 }>;
-type Props = $ReadOnly<{
-  ...React.ElementConfig<TouchableWithoutFeedback>,
-  ...TVProps,
+type TouchableOpacityBaseProps = $ReadOnly<{
   activeOpacity?: ?number,
   style?: ?ViewStyleProp,
   hostRef?: ?React.RefSetter<React.ElementRef<typeof Animated.View>>,
 }>;
+export type TouchableOpacityProps = $ReadOnly<{
+  ...TouchableWithoutFeedbackProps,
+  ...TVProps,
+  ...TouchableOpacityBaseProps,
+}>;
 declare const Touchable: component(
-  ref: React.RefSetter<React.ElementRef<typeof Animated.View>>,
-  ...props: Props
+  ref?: React.RefSetter<React.ElementRef<typeof Animated.View>>,
+  ...props: TouchableOpacityProps
 );
 declare export default typeof Touchable;
 "
