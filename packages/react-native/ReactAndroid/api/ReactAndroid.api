@@ -1747,6 +1747,15 @@ public final class com/facebook/react/common/ReactConstants {
 	public static final field UNSET I
 }
 
+public final class com/facebook/react/common/ReleaseLevel : java/lang/Enum {
+	public static final field CANARY Lcom/facebook/react/common/ReleaseLevel;
+	public static final field EXPERIMENTAL Lcom/facebook/react/common/ReleaseLevel;
+	public static final field STABLE Lcom/facebook/react/common/ReleaseLevel;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/common/ReleaseLevel;
+	public static fun values ()[Lcom/facebook/react/common/ReleaseLevel;
+}
+
 public final class com/facebook/react/common/ShakeDetector : android/hardware/SensorEventListener {
 	public fun <init> (Lcom/facebook/react/common/ShakeDetector$ShakeListener;)V
 	public fun <init> (Lcom/facebook/react/common/ShakeDetector$ShakeListener;I)V
@@ -1940,12 +1949,14 @@ public final class com/facebook/react/defaults/DefaultNewArchitectureEntryPoint 
 	public static final fun getBridgelessEnabled ()Z
 	public static final fun getConcurrentReactEnabled ()Z
 	public static final fun getFabricEnabled ()Z
+	public final fun getReleaseLevel ()Lcom/facebook/react/common/ReleaseLevel;
 	public static final fun getTurboModulesEnabled ()Z
 	public static final fun load ()V
 	public static final fun load (Z)V
 	public static final fun load (ZZ)V
 	public static final fun load (ZZZ)V
 	public static synthetic fun load$default (ZZZILjava/lang/Object;)V
+	public final fun setReleaseLevel (Lcom/facebook/react/common/ReleaseLevel;)V
 }
 
 public class com/facebook/react/defaults/DefaultReactActivityDelegate : com/facebook/react/ReactActivityDelegate {
