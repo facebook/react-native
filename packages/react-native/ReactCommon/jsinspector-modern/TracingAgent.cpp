@@ -24,20 +24,44 @@ const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
     // @cdp Tracing.start support is experimental.
-    if (PerformanceTracer::getInstance().startTracing()) {
-      frontendChannel_(cdp::jsonResult(req.id));
-    } else {
+    if (!instanceAgent_) {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Couldn't find instance available for Tracing"));
+
+      return true;
+    }
+
+    bool correctlyStartedPerformanceTracer =
+        PerformanceTracer::getInstance().startTracing();
+
+    if (!correctlyStartedPerformanceTracer) {
       frontendChannel_(cdp::jsonError(
           req.id,
           cdp::ErrorCode::InternalError,
           "Tracing session already started"));
+
+      return true;
     }
+
+    instanceAgent_->startTracing();
+    frontendChannel_(cdp::jsonResult(req.id));
 
     return true;
   } else if (req.method == "Tracing.end") {
     // @cdp Tracing.end support is experimental.
-    bool correctlyStopped = PerformanceTracer::getInstance().stopTracing();
+    if (!instanceAgent_) {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Couldn't find instance available for Tracing"));
 
+      return true;
+    }
+    instanceAgent_->stopTracing();
+
+    bool correctlyStopped = PerformanceTracer::getInstance().stopTracing();
     if (!correctlyStopped) {
       frontendChannel_(cdp::jsonError(
           req.id,
@@ -66,6 +90,11 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   }
 
   return false;
+}
+
+void TracingAgent::setCurrentInstanceAgent(
+    std::shared_ptr<InstanceAgent> instanceAgent) {
+  instanceAgent_ = std::move(instanceAgent);
 }
 
 } // namespace facebook::react::jsinspector_modern

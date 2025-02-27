@@ -67,6 +67,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi"
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
 
   add_dependency(s, "React-RuntimeCore")
   add_dependency(s, "React-RuntimeApple")
@@ -77,7 +78,7 @@ Pod::Spec.new do |s|
     s.exclude_files = "RCTJscInstanceFactory.{h,mm}"
   elsif ENV['USE_THIRD_PARTY_JSC'] == '1'
     s.exclude_files = ["RCTHermesInstanceFactory.{mm,h}", "RCTJscInstanceFactory.{mm,h}"]
-  else 
+  else
     s.exclude_files = ["RCTHermesInstanceFactory.{mm,h}"]
   end
   depend_on_js_engine(s)
