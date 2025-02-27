@@ -11,8 +11,8 @@
 
 import type {SnapshotConfig} from '../runtime/snapshotContext';
 import type {
-  FantomTestConfigInternalFeatureFlags,
   FantomTestConfigJsOnlyFeatureFlags,
+  FantomTestConfigReactInternalFeatureFlags,
 } from './getFantomTestConfig';
 
 module.exports = function entrypointTemplate({
@@ -20,7 +20,7 @@ module.exports = function entrypointTemplate({
   setupModulePath,
   featureFlagsModulePath,
   featureFlags,
-  internalFeatureFlags,
+  reactInternalFeatureFlags,
   snapshotConfig,
   isRunningFromCI,
 }: {
@@ -28,7 +28,7 @@ module.exports = function entrypointTemplate({
   setupModulePath: string,
   featureFlagsModulePath: string,
   featureFlags: FantomTestConfigJsOnlyFeatureFlags,
-  internalFeatureFlags: FantomTestConfigInternalFeatureFlags,
+  reactInternalFeatureFlags: FantomTestConfigReactInternalFeatureFlags,
   snapshotConfig: SnapshotConfig,
   isRunningFromCI: boolean,
 }): string {
@@ -58,9 +58,9 @@ ${Object.entries(featureFlags)
     : ''
 }
 ${
-  Object.keys(internalFeatureFlags).length > 0
+  Object.keys(reactInternalFeatureFlags).length > 0
     ? `import ReactNativeInternalFeatureFlags from 'ReactNativeInternalFeatureFlags';
-  ${Object.entries(internalFeatureFlags)
+  ${Object.entries(reactInternalFeatureFlags)
     .map(
       ([name, value]) =>
         `ReactNativeInternalFeatureFlags.${name} = ${JSON.stringify(value)};`,

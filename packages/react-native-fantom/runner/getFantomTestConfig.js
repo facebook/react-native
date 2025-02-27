@@ -35,7 +35,7 @@ export type FantomTestConfigJsOnlyFeatureFlags = Partial<{
   [key in keyof JsOnlyFeatureFlags]: JsOnlyFeatureFlags[key]['defaultValue'],
 }>;
 
-export type FantomTestConfigInternalFeatureFlags = {
+export type FantomTestConfigReactInternalFeatureFlags = {
   [key: string]: FeatureFlagValue,
 };
 
@@ -44,7 +44,7 @@ export type FantomTestConfig = {
   flags: {
     common: FantomTestConfigCommonFeatureFlags,
     jsOnly: FantomTestConfigJsOnlyFeatureFlags,
-    internal: FantomTestConfigInternalFeatureFlags,
+    reactInternal: FantomTestConfigReactInternalFeatureFlags,
   },
 };
 
@@ -66,7 +66,7 @@ const FANTOM_BENCHMARK_SUITE_RE = /\nFantom\.unstable_benchmark(\s*)\.suite\(/g;
  *  * @fantom_mode opt
  *  * @fantom_flags commonTestFlag:true
  *  * @fantom_flags jsOnlyTestFlag:true
- *  * @fantom_internal_flags internalTestFlag:true
+ *  * @fantom_react_fb_flags reactInternalFlag:true
  *  *
  * ```
  *
@@ -93,7 +93,7 @@ export default function getFantomTestConfig(
         enableAccessToHostTreeInFabric: true,
         enableDOMDocumentAPI: true,
       },
-      internal: {},
+      reactInternal: {},
     },
   };
 
@@ -167,26 +167,26 @@ export default function getFantomTestConfig(
     }
   }
 
-  const maybeInternalRawFlagConfig = pragmas.fantom_internal_flags;
+  const maybeReactInternalRawFlagConfig = pragmas.fantom_react_fb_flags;
 
-  if (maybeInternalRawFlagConfig != null) {
-    const internalRawFlagConfigs = (
-      Array.isArray(maybeInternalRawFlagConfig)
-        ? maybeInternalRawFlagConfig
-        : [maybeInternalRawFlagConfig]
+  if (maybeReactInternalRawFlagConfig != null) {
+    const reactInternalRawFlagConfigs = (
+      Array.isArray(maybeReactInternalRawFlagConfig)
+        ? maybeReactInternalRawFlagConfig
+        : [maybeReactInternalRawFlagConfig]
     ).flatMap(value => value.split(/\s+/g));
 
-    for (const internalRawFlagConfig of internalRawFlagConfigs) {
-      const matches = FANTOM_FLAG_FORMAT.exec(internalRawFlagConfig);
+    for (const reactInternalRawFlagConfig of reactInternalRawFlagConfigs) {
+      const matches = FANTOM_FLAG_FORMAT.exec(reactInternalRawFlagConfig);
       if (matches == null) {
         throw new Error(
-          `Invalid format for Fantom internal feature flag: ${internalRawFlagConfig}. Expected <flag_name>:<value>`,
+          `Invalid format for Fantom React fb feature flag: ${reactInternalRawFlagConfig}. Expected <flag_name>:<value>`,
         );
       }
 
       const [, name, rawValue] = matches;
       const value = parseFeatureFlagValue(false, rawValue);
-      config.flags.internal[name] = value;
+      config.flags.reactInternal[name] = value;
     }
   }
 
