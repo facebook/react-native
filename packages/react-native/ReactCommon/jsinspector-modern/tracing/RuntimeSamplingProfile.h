@@ -86,6 +86,12 @@ struct RuntimeSamplingProfile {
       return columnNumber_.value();
     }
 
+    inline bool operator==(const SampleCallStackFrame& rhs) const noexcept {
+      return kind_ == rhs.kind_ && scriptId_ == rhs.scriptId_ &&
+          functionName_ == rhs.functionName_ && url_ == rhs.url_ &&
+          lineNumber_ == rhs.lineNumber_ && columnNumber_ == rhs.columnNumber_;
+    }
+
    private:
     Kind kind_;
     uint32_t scriptId_;
