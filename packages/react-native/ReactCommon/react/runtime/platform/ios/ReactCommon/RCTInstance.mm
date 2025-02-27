@@ -235,6 +235,14 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   return @[];
 }
 
+- (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
+{
+  if ([_appTMMDelegate respondsToSelector:@selector(getModuleProvider:)]) {
+    return [_appTMMDelegate getModuleProvider:name];
+  }
+  return nil;
+}
+
 #pragma mark - Private
 
 - (void)_start

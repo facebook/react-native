@@ -8,12 +8,14 @@
 #import "RCTAppDependencyProvider.h"
 #import <ReactCodegen/RCTModulesConformingToProtocolsProvider.h>
 #import <ReactCodegen/RCTThirdPartyComponentsProvider.h>
+#import <ReactCodegen/RCTModuleProviders.h>
 
 @implementation RCTAppDependencyProvider {
   NSArray<NSString *> * _URLRequestHandlerClassNames;
   NSArray<NSString *> * _imageDataDecoderClassNames;
   NSArray<NSString *> * _imageURLLoaderClassNames;
   NSDictionary<NSString *,Class<RCTComponentViewProtocol>> * _thirdPartyFabricComponents;
+  NSDictionary<NSString *, id<RCTModuleProvider>> * _moduleProviders;
 }
 
 - (nonnull NSArray<NSString *> *)URLRequestHandlerClassNames {
@@ -50,6 +52,14 @@
   });
 
   return _thirdPartyFabricComponents;
+}
+
+- (nonnull NSDictionary<NSString *, id<RCTModuleProvider>> *)moduleProviders {
+  static dispatch_once_t modulesToken;
+  dispatch_once(&modulesToken, ^{
+    _moduleProviders = RCTModuleProviders.moduleProviders;
+  });
+  return _moduleProviders;
 }
 
 @end
