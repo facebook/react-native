@@ -17,6 +17,8 @@
 
 #import "RCTTurboModule.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class RCTBridgeProxy;
 @class RCTTurboModuleManager;
 
@@ -33,6 +35,8 @@
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass;
 
 @optional
+
+- (nullable Class<RCTTurboModuleProvider>)getTurboModuleProvider:(const char *)name;
 
 /**
  * Create an instance of a TurboModule without relying on any ObjC++ module instance.
@@ -71,3 +75,5 @@
 - (void)invalidate;
 
 @end
+
+NS_ASSUME_NONNULL_END
