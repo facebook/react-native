@@ -235,6 +235,14 @@ void RCTInstanceSetRuntimeDiagnosticFlags(NSString *flags)
   return @[];
 }
 
+- (nullable Class<RCTTurboModuleProvider>)getTurboModuleProvider:(const char *)name
+{
+  if ([_appTMMDelegate respondsToSelector:@selector(getTurboModuleProvider:)]) {
+    return [_appTMMDelegate getTurboModuleProvider:name];
+  }
+  return nullptr;
+}
+
 #pragma mark - Private
 
 - (void)_start

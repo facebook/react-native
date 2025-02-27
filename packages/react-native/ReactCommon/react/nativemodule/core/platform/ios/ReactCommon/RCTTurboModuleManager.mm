@@ -344,39 +344,52 @@ typedef struct {
       !RCTTurboModuleInteropEnabled() || [self _isTurboModule:moduleName] ? [self _provideObjCModule:moduleName] : nil;
 
   TurboModulePerfLogger::moduleJSRequireEndingStart(moduleName);
+  
+  id<RCTTurboModuleProvider> moduleProvider = nil;
+  if ([_delegate respondsToSelector:@selector(getTurboModuleProvider:)]) {
+    Class<RCTTurboModuleProvider> clazz = [_delegate getTurboModuleProvider:moduleName];
+    moduleProvider = [clazz.class new];
+  }
 
   // If we request that a TurboModule be created, its respective ObjC class must exist
-  // If the class doesn't exist, then _provideObjCModule returns nil
-  if (!module) {
+  // If the class doesn't exist or we don't have a moduleProvider for it, then we can't create it.
+  if (!module && !moduleProvider) {
     return nullptr;
   }
+  
 
-  Class moduleClass = [module class];
+  Class moduleClass = nullptr;
+  std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker = nullptr;
+  dispatch_queue_t methodQueue;
+  if (module) {
+    // handle Objc-TurboModules
+    moduleClass = [module class];
+    
+    methodQueue = (dispatch_queue_t)objc_getAssociatedObject(module, &kAssociatedMethodQueueKey);
+    if (methodQueue == nil) {
+      RCTLogError(@"TurboModule \"%@\" was not associated with a method queue.", moduleClass);
+    }
+    
+    /**
+     * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
+     */
+    nativeMethodCallInvoker =
+        std::make_shared<ModuleNativeMethodCallInvoker>(methodQueue);
 
-  dispatch_queue_t methodQueue = (dispatch_queue_t)objc_getAssociatedObject(module, &kAssociatedMethodQueueKey);
-  if (methodQueue == nil) {
-    RCTLogError(@"TurboModule \"%@\" was not associated with a method queue.", moduleClass);
-  }
-
-  /**
-   * Step 2c: Create and native CallInvoker from the TurboModule's method queue.
-   */
-  std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker =
-      std::make_shared<ModuleNativeMethodCallInvoker>(methodQueue);
-
-  /**
-   * Have RCTCxxBridge decorate native CallInvoker, so that it's aware of TurboModule async method calls.
-   * This helps the bridge fire onBatchComplete as readily as it should.
-   */
-  if ([_bridge respondsToSelector:@selector(decorateNativeMethodCallInvoker:)]) {
-    nativeMethodCallInvoker = [_bridge decorateNativeMethodCallInvoker:nativeMethodCallInvoker];
+    /**
+     * Have RCTCxxBridge decorate native CallInvoker, so that it's aware of TurboModule async method calls.
+     * This helps the bridge fire onBatchComplete as readily as it should.
+     */
+    if ([_bridge respondsToSelector:@selector(decorateNativeMethodCallInvoker:)]) {
+      nativeMethodCallInvoker = [_bridge decorateNativeMethodCallInvoker:nativeMethodCallInvoker];
+    }
   }
 
   /**
    * Step 2d: If the moduleClass is a legacy CxxModule, return a TurboCxxModule instance that
    * wraps CxxModule.
    */
-  if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
+  if (moduleClass && [moduleClass isSubclassOfClass:RCTCxxModule.class]) {
     // Use TurboCxxModule compat class to wrap the CxxModule instance.
     // This is only for migration convenience, despite less performant.
     auto turboModule = std::make_shared<TurboCxxModule>([((RCTCxxModule *)module) createModule], _jsInvoker);
@@ -390,7 +403,7 @@ typedef struct {
    * Use respondsToSelector: below to infer conformance to @protocol(RCTTurboModule). Using conformsToProtocol: is
    * expensive.
    */
-  if ([module respondsToSelector:@selector(getTurboModule:)]) {
+  if ([module respondsToSelector:@selector(getTurboModule:)] || [moduleProvider respondsToSelector:@selector(getTurboModule:)]) {
     ObjCTurboModule::InitParams params = {
         .moduleName = moduleName,
         .instance = module,
@@ -400,7 +413,12 @@ typedef struct {
         .shouldVoidMethodsExecuteSync = (bool)RCTTurboModuleSyncVoidMethodsEnabled(),
     };
 
-    auto turboModule = [(id<RCTTurboModule>)module getTurboModule:params];
+    std::shared_ptr<TurboModule> turboModule = nullptr;
+    if ([module respondsToSelector:@selector(getTurboModule:)]) {
+      turboModule = [(id<RCTTurboModule>)module getTurboModule:params];
+    } else {
+      turboModule = [moduleProvider getTurboModule:params];
+    }
     if (turboModule == nullptr) {
       RCTLogError(@"TurboModule \"%@\"'s getTurboModule: method returned nil.", moduleClass);
     }
