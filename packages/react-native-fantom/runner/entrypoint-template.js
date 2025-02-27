@@ -10,13 +10,17 @@
  */
 
 import type {SnapshotConfig} from '../runtime/snapshotContext';
-import type {FantomTestConfigJsOnlyFeatureFlags} from './getFantomTestConfig';
+import type {
+  FantomTestConfigInternalFeatureFlags,
+  FantomTestConfigJsOnlyFeatureFlags,
+} from './getFantomTestConfig';
 
 module.exports = function entrypointTemplate({
   testPath,
   setupModulePath,
   featureFlagsModulePath,
   featureFlags,
+  internalFeatureFlags,
   snapshotConfig,
   isRunningFromCI,
 }: {
@@ -24,6 +28,7 @@ module.exports = function entrypointTemplate({
   setupModulePath: string,
   featureFlagsModulePath: string,
   featureFlags: FantomTestConfigJsOnlyFeatureFlags,
+  internalFeatureFlags: FantomTestConfigInternalFeatureFlags,
   snapshotConfig: SnapshotConfig,
   isRunningFromCI: boolean,
 }): string {
@@ -50,6 +55,17 @@ ${Object.entries(featureFlags)
   .map(([name, value]) => `  ${name}: () => ${JSON.stringify(value)},`)
   .join('\n')}
 });`
+    : ''
+}
+${
+  Object.keys(internalFeatureFlags).length > 0
+    ? `import ReactNativeInternalFeatureFlags from 'ReactNativeInternalFeatureFlags';
+  ${Object.entries(internalFeatureFlags)
+    .map(
+      ([name, value]) =>
+        `ReactNativeInternalFeatureFlags.${name} = ${JSON.stringify(value)};`,
+    )
+    .join('\n')}`
     : ''
 }
 
