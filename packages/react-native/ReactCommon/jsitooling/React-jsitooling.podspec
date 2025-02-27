@@ -59,4 +59,5 @@ Pod::Spec.new do |s|
   s.dependency "fmt", "11.0.2"
   s.dependency "glog"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
 end

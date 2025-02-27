@@ -237,8 +237,11 @@ void HostAgent::sendInfoLogEntry(
 
 void HostAgent::setCurrentInstanceAgent(
     std::shared_ptr<InstanceAgent> instanceAgent) {
+  tracingAgent_.setCurrentInstanceAgent(instanceAgent);
+
   auto previousInstanceAgent = std::move(instanceAgent_);
   instanceAgent_ = std::move(instanceAgent);
+
   if (!sessionState_.isRuntimeDomainEnabled) {
     return;
   }

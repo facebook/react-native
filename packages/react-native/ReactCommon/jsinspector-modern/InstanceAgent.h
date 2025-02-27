@@ -13,6 +13,7 @@
 
 #include <jsinspector-modern/InspectorInterfaces.h>
 #include <jsinspector-modern/RuntimeAgent.h>
+#include <jsinspector-modern/tracing/InstanceTracingProfile.h>
 
 #include <functional>
 
@@ -58,6 +59,23 @@ class InstanceAgent final {
    * Send a console message to the frontend, or buffer it to be sent later.
    */
   void sendConsoleMessage(SimpleConsoleMessage message);
+
+  /**
+   * Notify Instance about started Tracing session. Should be initiated by
+   * TracingAgent on Tracing.start CDP method.
+   */
+  void startTracing();
+
+  /**
+   * Notify Instance about stopped Tracing session. Should be initiated by
+   * TracingAgent on Tracing.end CDP method.
+   */
+  void stopTracing();
+
+  /**
+   * Return recorded profile for the previous tracing session.
+   */
+  tracing::InstanceTracingProfile collectTracingProfile();
 
  private:
   void maybeSendExecutionContextCreatedNotification();

@@ -159,4 +159,29 @@ void RuntimeTargetController::notifyDebuggerSessionDestroyed() {
   target_.emitDebuggerSessionDestroyed();
 }
 
+void RuntimeTargetController::enableSamplingProfiler() {
+  target_.enableSamplingProfiler();
+}
+
+void RuntimeTargetController::disableSamplingProfiler() {
+  target_.disableSamplingProfiler();
+}
+
+tracing::RuntimeSamplingProfile
+RuntimeTargetController::collectSamplingProfile() {
+  return target_.collectSamplingProfile();
+}
+
+void RuntimeTarget::enableSamplingProfiler() {
+  delegate_.enableSamplingProfiler();
+}
+
+void RuntimeTarget::disableSamplingProfiler() {
+  delegate_.disableSamplingProfiler();
+}
+
+tracing::RuntimeSamplingProfile RuntimeTarget::collectSamplingProfile() {
+  return delegate_.collectSamplingProfile();
+}
+
 } // namespace facebook::react::jsinspector_modern
