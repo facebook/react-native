@@ -170,6 +170,14 @@ using namespace facebook::react;
 #endif
 }
 
+- (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
+{
+  if ([_delegate respondsToSelector:@selector(getModuleProvider:)]) {
+    return [_delegate getModuleProvider:name];
+  }
+  return nil;
+}
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
