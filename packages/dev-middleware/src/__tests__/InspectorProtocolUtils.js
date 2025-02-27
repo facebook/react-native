@@ -20,7 +20,6 @@ import type {DeviceMock} from './InspectorDeviceUtils';
 import {fetchJson} from './FetchUtils';
 import {createDebuggerMock} from './InspectorDebuggerUtils';
 import {createDeviceMock} from './InspectorDeviceUtils';
-import {dataUriToBuffer} from 'data-uri-to-buffer';
 import until from 'wait-for-expect';
 
 export type CdpMessageFromTarget = $ReadOnly<{
