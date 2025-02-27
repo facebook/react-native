@@ -13,8 +13,21 @@ const {dependencies, platforms} = require('./configuration');
 const yargs = require('yargs');
 
 /*::
-import type {Dependency, Platform} from './types';
+import type {Dependency, Destination, Platform} from './types';
 */
+
+// CI can't use commas in cache keys, so 'macOS,variant=Mac Catalyst' was creating troubles
+// This map that converts from platforms to valid Xcodebuild destinations.
+const platformToDestination /*: $ReadOnly<{|[Platform]: Destination|}> */ = {
+  ios: 'iOS',
+  'ios-simulator': 'iOS Simulator',
+  macos: 'macOS',
+  'mac-catalyst': 'macOS,variant=Mac Catalyst',
+  tvos: 'tvOS',
+  'tvos-simulator': 'tvOS Simulator',
+  xros: 'visionOS',
+  'xros-simulator': 'visionOS Simulator',
+};
 
 const arrayLike = (value /*: Array<any> */) /*: Array<any> */ =>
   Array.isArray(value) ? value : [value];
@@ -74,7 +87,7 @@ async function getCLIConfiguration() /*: Promise<?{|
     build: boolean,
     compose: boolean,
   |},
-  platforms: $ReadOnlyArray<Platform>,
+  destinations: $ReadOnlyArray<Destination>,
   dependencies: $ReadOnlyArray<Dependency>,
   configuration: string,
 |}> */ {
@@ -102,7 +115,9 @@ async function getCLIConfiguration() /*: Promise<?{|
   }
 
   // Prepare platforms and dependencies
-  const resolvedPlatforms = platforms.filter(p => argv.platforms.includes(p));
+  const resolvedPlatforms = platforms
+    .filter(p => argv.platforms.includes(p))
+    .map(p => platformToDestination[p]);
   const resolvedDependencies = dependencies.filter(d =>
     argv.dependencies.includes(d.name),
   );
@@ -121,7 +136,7 @@ async function getCLIConfiguration() /*: Promise<?{|
       build: runAllCommands || argv.build != null,
       compose: runAllCommands || argv.compose != null,
     },
-    platforms: resolvedPlatforms,
+    destinations: resolvedPlatforms,
     dependencies: resolvedDependencies,
     configuration: argv.configuration,
   };

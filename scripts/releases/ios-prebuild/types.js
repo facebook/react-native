@@ -49,13 +49,23 @@ export type Dependency = $ReadOnly<{
 }>;
 
 export type Platform =
+  'ios' |
+  'ios-simulator' |
+  'macos' |
+  'mac-catalyst' |
+  'tvos' |
+  'tvos-simulator' |
+  'xros' |
+  'xros-simulator';
+
+export type Destination =
   'iOS' |
-  'iOS Simulator' |
-  'macOS' |
+  'iOS Simulator' |
+  'macOS' |
   'macOS,variant=Mac Catalyst' |
   'tvOS' |
   'tvOS Simulator' |
-  'visionOS' |
+  'visionOS' |
   'visionOS Simulator';
 */
 

@@ -52,7 +52,7 @@ async function main() {
       SCHEME,
       cli.configuration,
       cli.dependencies,
-      cli.platforms,
+      cli.destinations,
       rootFolder,
       buildFolder,
     );
