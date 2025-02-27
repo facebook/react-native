@@ -29,6 +29,7 @@ using namespace facebook::react;
   NSDictionary *_currentInterfaceDimensions;
   BOOL _isFullscreen;
   std::atomic<BOOL> _invalidated;
+  __weak UIWindow *_keyWindow;
 }
 
 static NSString *const kFrameKeyPath = @"frame";
@@ -40,7 +41,8 @@ RCT_EXPORT_MODULE()
 - (instancetype)init
 {
   if (self = [super init]) {
-    [RCTKeyWindow() addObserver:self forKeyPath:kFrameKeyPath options:NSKeyValueObservingOptionNew context:nil];
+    _keyWindow = RCTKeyWindow();
+    [_keyWindow addObserver:self forKeyPath:kFrameKeyPath options:NSKeyValueObservingOptionNew context:nil];
   }
   return self;
 }
@@ -131,7 +133,7 @@ RCT_EXPORT_MODULE()
 
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
 
-  [RCTKeyWindow() removeObserver:self forKeyPath:kFrameKeyPath];
+  [_keyWindow removeObserver:self forKeyPath:kFrameKeyPath];
 
 #if TARGET_OS_IOS
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
