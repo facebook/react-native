@@ -155,7 +155,7 @@ export default class ReadOnlyNode {
   /**
    * @abstract
    */
-  get textContent(): string | null {
+  get textContent(): string {
     throw new TypeError(
       '`textContent` is abstract and must be implemented in a subclass of `ReadOnlyNode`',
     );

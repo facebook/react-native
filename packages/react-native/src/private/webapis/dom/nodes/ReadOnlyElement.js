@@ -179,7 +179,7 @@ export default class ReadOnlyElement extends ReadOnlyNode {
     return '';
   }
 
-  get textContent(): string | null {
+  get textContent(): string {
     const node = getNativeElementReference(this);
 
     if (node != null) {
