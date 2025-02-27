@@ -7,6 +7,7 @@
 
 #include <jsinspector-modern/RuntimeTarget.h>
 
+#include "HermesRuntimeSamplingProfileSerializer.h"
 #include "HermesRuntimeTargetDelegate.h"
 
 // If HERMES_ENABLE_DEBUGGER isn't defined, we can't access any Hermes
@@ -182,7 +183,9 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
   }
 
   tracing::RuntimeSamplingProfile collectSamplingProfile() override {
-    return tracing::RuntimeSamplingProfile{};
+    return tracing::HermesRuntimeSamplingProfileSerializer::
+        serializeToTracingSamplingProfile(
+            runtime_->dumpSampledTraceToProfile());
   }
 
  private:
