@@ -695,7 +695,7 @@ public class com/facebook/react/bridge/CxxModuleWrapperBase : com/facebook/react
 	protected fun resetModule (Lcom/facebook/jni/HybridData;)V
 }
 
-public class com/facebook/react/bridge/DefaultJSExceptionHandler : com/facebook/react/bridge/JSExceptionHandler {
+public final class com/facebook/react/bridge/DefaultJSExceptionHandler : com/facebook/react/bridge/JSExceptionHandler {
 	public fun <init> ()V
 	public fun handleException (Ljava/lang/Exception;)V
 }

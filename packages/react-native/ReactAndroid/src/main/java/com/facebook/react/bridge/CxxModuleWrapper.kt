@@ -5,15 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
-import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.jni.HybridData
+import com.facebook.proguard.annotations.DoNotStrip
 
 /** This does nothing interesting, except avoid breaking existing code. */
 @DoNotStrip
-public class CxxModuleWrapper extends CxxModuleWrapperBase {
-  protected CxxModuleWrapper(HybridData hd) {
-    super(hd);
-  }
-}
+public open class CxxModuleWrapper protected constructor(hybridData: HybridData) :
+    CxxModuleWrapperBase(hybridData)
