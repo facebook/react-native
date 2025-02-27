@@ -48,6 +48,18 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width, CGFLOAT_MAX};
 
+  // A workaround for the issue with empty line measurement:
+  // When maximumNumberOfLines is set to N and N+1 line is empty, the returned
+  // measurement is for N+1 lines. Adding any character to that line results
+  // in the correct measurement.
+  if (paragraphAttributes.maximumNumberOfLines > 0 && attributedString.length > 0 &&
+      [[attributedString string] characterAtIndex:attributedString.length - 1] == '\n') {
+    NSMutableAttributedString *mutableString =
+        [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
+    [mutableString replaceCharactersInRange:NSMakeRange(attributedString.length - 1, 1) withString:@"\n "];
+    attributedString = mutableString;
+  }
+
   NSTextStorage *textStorage = [self _textStorageAndLayoutManagerWithAttributesString:attributedString
                                                                   paragraphAttributes:paragraphAttributes
                                                                                  size:maximumSize];
@@ -231,17 +243,6 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   NSLayoutManager *layoutManager = [NSLayoutManager new];
   layoutManager.usesFontLeading = NO;
   [layoutManager addTextContainer:textContainer];
-
-  // A workaround for the issue with empty line measurement:
-  // When maximumNumberOfLines is set to N and N+1 line is empty, the returned
-  // measurement is for N+1 lines. Adding any character to that line results
-  // in the correct measurement.
-  if (attributedString.length > 0 && [[attributedString string] characterAtIndex:attributedString.length - 1] == '\n') {
-    NSMutableAttributedString *mutableString =
-        [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
-    [mutableString replaceCharactersInRange:NSMakeRange(attributedString.length - 1, 1) withString:@"\n "];
-    attributedString = mutableString;
-  }
 
   NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedString];
 
