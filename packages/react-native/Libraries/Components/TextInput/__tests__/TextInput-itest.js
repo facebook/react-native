@@ -7,7 +7,6 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 import '../../../Core/InitializeCore.js';
@@ -211,5 +210,26 @@ describe('onChangeText', () => {
     expect(onChangeText).toHaveBeenCalledTimes(1);
     const [entry] = onChangeText.mock.lastCall;
     expect(entry).toEqual('Hello World');
+  });
+});
+
+describe('props.selection', () => {
+  it('the selection is passed to component view by command', () => {
+    const root = Fantom.createRoot();
+
+    Fantom.runTask(() => {
+      root.render(
+        <TextInput nativeID="text-input" selection={{start: 0, end: 4}}>
+          hello World!
+        </TextInput>,
+      );
+    });
+
+    expect(root.takeMountingManagerLogs()).toEqual([
+      'Update {type: "RootView", nativeID: (root)}',
+      'Create {type: "AndroidTextInput", nativeID: "text-input"}',
+      'Insert {type: "AndroidTextInput", parentNativeID: (root), index: 0, nativeID: "text-input"}',
+      'Command {type: "AndroidTextInput", nativeID: "text-input", name: "setTextAndSelection, args: [0,null,0,4]"}',
+    ]);
   });
 });

@@ -138,7 +138,7 @@ let BaseImage: AbstractImageAndroid = React.forwardRef(
       props.loadingIndicatorSource,
     );
 
-    if (props.children) {
+    if (props.children != null) {
       throw new Error(
         'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
       );

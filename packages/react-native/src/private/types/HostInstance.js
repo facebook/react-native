@@ -34,7 +34,7 @@ export type MeasureLayoutOnSuccessCallback = (
 /**
  * Current usages should migrate to this definition
  */
-export interface INativeMethods {
+export interface LegacyHostInstanceMethods {
   blur(): void;
   focus(): void;
   measure(callback: MeasureOnSuccessCallback): void;
@@ -47,21 +47,4 @@ export interface INativeMethods {
   setNativeProps(nativeProps: {...}): void;
 }
 
-export type NativeMethods = $ReadOnly<{
-  blur(): void,
-  focus(): void,
-  measure(callback: MeasureOnSuccessCallback): void,
-  measureInWindow(callback: MeasureInWindowOnSuccessCallback): void,
-  measureLayout(
-    relativeToNativeNode: number | HostInstance,
-    onSuccess: MeasureLayoutOnSuccessCallback,
-    onFail?: () => void,
-  ): void,
-  setNativeProps(nativeProps: {...}): void,
-}>;
-
-// This validates that INativeMethods and NativeMethods stay in sync using Flow!
-declare const ensureNativeMethodsAreSynced: NativeMethods;
-(ensureNativeMethodsAreSynced: INativeMethods);
-
-export type HostInstance = NativeMethods;
+export type HostInstance = LegacyHostInstanceMethods;

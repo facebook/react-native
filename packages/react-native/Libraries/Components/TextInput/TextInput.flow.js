@@ -23,8 +23,6 @@ import {
 } from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
 
-type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
-
 export type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
@@ -649,7 +647,7 @@ export type TextInputProps = $ReadOnly<{
    */
   editable?: ?boolean,
 
-  forwardedRef?: ?ReactRefSetter<HostInstance & ImperativeMethods>,
+  forwardedRef?: ?React.RefSetter<TextInputInstance>,
 
   /**
    * `enterKeyHint` defines what action label (or icon) to present for the enter key on virtual keyboards.
@@ -992,12 +990,12 @@ export type TextInputProps = $ReadOnly<{
   value?: ?Stringish,
 }>;
 
-type ImperativeMethods = $ReadOnly<{
-  clear: () => void,
-  isFocused: () => boolean,
-  getNativeRef: () => ?HostInstance,
-  setSelection: (start: number, end: number) => void,
-}>;
+export interface TextInputInstance extends HostInstance {
+  +clear: () => void;
+  +isFocused: () => boolean;
+  +getNativeRef: () => ?HostInstance;
+  +setSelection: (start: number, end: number) => void;
+}
 
 /**
  * A foundational component for inputting text into the app via a
@@ -1111,7 +1109,7 @@ type ImperativeMethods = $ReadOnly<{
  *
  */
 type InternalTextInput = component(
-  ref: React.RefSetter<$ReadOnly<{...HostInstance, ...ImperativeMethods}>>,
+  ref: React.RefSetter<TextInputInstance>,
   ...TextInputProps
 );
 

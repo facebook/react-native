@@ -7,8 +7,6 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
- * @fantom_flags enableDOMDocumentAPI:true
  */
 
 import '../../../../../../Libraries/Core/InitializeCore.js';

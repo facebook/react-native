@@ -26,7 +26,7 @@ type NativeBackgroundProp = $ReadOnly<{
   rippleRadius: ?number,
 }>;
 
-export type RippleConfig = {
+export type PressableAndroidRippleConfig = {
   color?: ColorValue,
   borderless?: boolean,
   radius?: number,
@@ -38,7 +38,7 @@ export type RippleConfig = {
  * supported versions of Android.
  */
 export default function useAndroidRippleForView(
-  rippleConfig: ?RippleConfig,
+  rippleConfig: ?PressableAndroidRippleConfig,
   viewRef: {current: null | React.ElementRef<typeof View>},
 ): ?$ReadOnly<{
   onPressIn: (event: GestureResponderEvent) => void,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dd43e546e292a4906ba917e204aa747a>>
+ * @generated SignedSource<<2d0ac25a5fffe44afc0d575e8262bf63>>
  */
 
 /**
@@ -203,6 +203,11 @@ class ReactNativeFeatureFlags {
    * Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.
    */
   RN_EXPORT static bool lazyAnimationCallbacks();
+
+  /**
+   * When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used
+   */
+  RN_EXPORT static bool removeTurboModuleManagerDelegateMutex();
 
   /**
    * Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.

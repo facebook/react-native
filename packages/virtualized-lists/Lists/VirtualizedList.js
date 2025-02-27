@@ -12,10 +12,10 @@ import type {CellMetricProps, ListOrientation} from './ListMetricsAggregator';
 import type {ViewToken} from './ViewabilityHelper';
 import type {
   Item,
-  VirtualizedListProps,
-  ListRenderItemInfo,
   ListRenderItem,
+  ListRenderItemInfo,
   Separators,
+  VirtualizedListProps,
 } from './VirtualizedListProps';
 import type {ScrollResponderType} from 'react-native/Libraries/Components/ScrollView/ScrollView';
 import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
@@ -262,6 +262,7 @@ class VirtualizedList extends StateSafePureComponent<
       return;
     }
 
+    // $FlowFixMe[incompatible-call]
     scrollRef.scrollTo({
       animated,
       ...this._scrollToParamsFromOffset(offset),
@@ -318,10 +319,10 @@ class VirtualizedList extends StateSafePureComponent<
     }
   }
 
-  getScrollRef():
-    | ?React.ElementRef<typeof ScrollView>
-    | ?React.ElementRef<typeof View> {
+  getScrollRef(): ?React.ElementRef<typeof ScrollView> {
+    // $FlowFixMe[prop-missing]
     if (this._scrollRef && this._scrollRef.getScrollRef) {
+      // $FlowFixMe[not-a-function]
       return this._scrollRef.getScrollRef();
     } else {
       return this._scrollRef;
@@ -1229,15 +1230,13 @@ class VirtualizedList extends StateSafePureComponent<
     visibleLength: 0,
     zoomScale: 1,
   };
-  _scrollRef: ?React.ElementRef<any> = null;
+  _scrollRef: ?React.ElementRef<typeof ScrollView> = null;
   _sentStartForContentLength = 0;
   _sentEndForContentLength = 0;
   _updateCellsToRenderTimeoutID: ?TimeoutID = null;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
 
-  /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
-   * LTI update could not be added via codemod */
-  _captureScrollRef = ref => {
+  _captureScrollRef = (ref: ?React.ElementRef<typeof ScrollView>) => {
     this._scrollRef = ref;
   };
 

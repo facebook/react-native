@@ -110,6 +110,7 @@ import {
   UIManager,
   View,
   ViewStyle,
+  SafeAreaView,
   VirtualizedList,
   findNodeHandle,
   requireNativeComponent,
@@ -469,12 +470,10 @@ export default Welcome;
 // TouchableTest
 function TouchableTest() {
   function basicUsage() {
-    if (Touchable.TOUCH_TARGET_DEBUG) {
-      return Touchable.renderDebugView({
-        color: 'mediumspringgreen',
-        hitSlop: {bottom: 5, top: 5},
-      });
-    }
+    return Touchable.renderDebugView({
+      color: 'mediumspringgreen',
+      hitSlop: {bottom: 5, top: 5},
+    });
   }
 
   function defaultHitSlop() {
@@ -1346,8 +1345,8 @@ export class ImageTest extends React.Component {
     const uri =
       'https://seeklogo.com/images/T/typescript-logo-B29A3F462D-seeklogo.com.png';
     const headers = {Authorization: 'Bearer test'};
-    const image: ImageResolvedAssetSource = Image.resolveAssetSource({uri});
-    console.log(image.width, image.height, image.scale, image.uri);
+    const image = Image.resolveAssetSource({uri});
+    console.log(image?.width, image?.height, image?.scale, image?.uri);
 
     Image.queryCache &&
       Image.queryCache([uri]).then(({[uri]: status}) => {
@@ -1382,14 +1381,14 @@ export class ImageTest extends React.Component {
     Image.prefetch(uri); // $ExpectType Promise<boolean>
   }
 
-  handleOnLoad = (e: NativeSyntheticEvent<ImageLoadEventData>) => {
+  handleOnLoad = (e: NativeSyntheticEvent<Readonly<ImageLoadEventData>>) => {
     testNativeSyntheticEvent(e);
     console.log('height:', e.nativeEvent.source.height);
     console.log('width:', e.nativeEvent.source.width);
     console.log('uri:', e.nativeEvent.source.uri);
   };
 
-  handleOnError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
+  handleOnError = (e: NativeSyntheticEvent<Readonly<ImageErrorEventData>>) => {
     testNativeSyntheticEvent(e);
     console.log('error:', e.nativeEvent.error);
   };
@@ -1569,6 +1568,31 @@ class BridgedComponentTest extends React.Component {
     );
   }
 }
+
+const SafeAreaViewTest = () => {
+  const viewRef = React.createRef<React.ElementRef<typeof View>>();
+
+  return (
+    <>
+      <SafeAreaView />;
+      <SafeAreaView ref={viewRef} />;
+      <SafeAreaView
+        ref={ref => {
+          ref?.focus();
+          ref?.blur();
+          ref?.measure(
+            (x, y, width, height, pageX, pageY): number =>
+              x + y + width + height + pageX + pageY,
+          );
+          ref?.measureInWindow(
+            (x, y, width, height): number => x + y + width + height,
+          );
+          ref?.setNativeProps({focusable: false});
+        }}
+      />
+    </>
+  );
+};
 
 const SwitchRefTest = () => {
   const switchRef = React.createRef<React.ElementRef<typeof Switch>>();

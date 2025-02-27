@@ -93,12 +93,16 @@ Pod::Spec.new do |s|
       "React/FBReactNativeSpec/**/*",
       "React/Tests/**/*",
       "React/Inspector/**/*",
+      "React/Runtime/**/*",
     ]
     # If we are using Hermes (the default is use hermes, so USE_HERMES can be nil), we don't have jsc installed
     # So we have to exclude the JSCExecutorFactory
-    if use_hermes || ENV['USE_THIRD_PARTY_JSC'] == '1'
+    if use_hermes 
+      exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
+    elsif ENV['USE_THIRD_PARTY_JSC'] == '1'
       exclude_files = exclude_files.append("React/CxxBridge/JSCExecutorFactory.{h,mm}")
     end
+
     ss.exclude_files = exclude_files
     ss.private_header_files   = "React/Cxx*/*.h"
   end
@@ -141,6 +145,7 @@ Pod::Spec.new do |s|
   s.resource_bundles = {'React-Core_privacy' => 'React/Resources/PrivacyInfo.xcprivacy'}
 
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "RCTDeprecation")
 
   depend_on_js_engine(s)

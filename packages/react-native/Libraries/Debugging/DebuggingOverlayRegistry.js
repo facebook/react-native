@@ -97,7 +97,9 @@ class DebuggingOverlayRegistry {
     instanceHandle: InstanceFromReactDevTools,
   ): HostInstance | null => {
     // `canonical.publicInstance` => Fabric
+    // $FlowExpectedError[prop-missing]
     if (instanceHandle.canonical?.publicInstance != null) {
+      // $FlowExpectedError[incompatible-return]
       return instanceHandle.canonical?.publicInstance;
     }
 
@@ -108,6 +110,7 @@ class DebuggingOverlayRegistry {
     }
 
     // `instanceHandle` => Legacy renderer
+    // $FlowExpectedError[method-unbinding]
     if (instanceHandle.measure != null) {
       // $FlowFixMe[incompatible-return]
       return instanceHandle;

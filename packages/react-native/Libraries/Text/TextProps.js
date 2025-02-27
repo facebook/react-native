@@ -19,9 +19,9 @@ import type {
 } from '../Components/View/ViewAccessibility';
 import type {ColorValue, TextStyleProp} from '../StyleSheet/StyleSheet';
 import type {
+  GestureResponderEvent,
   LayoutChangeEvent,
   PointerEvent,
-  GestureResponderEvent,
   TextLayoutEvent,
 } from '../Types/CoreEventTypes';
 import type {Node} from 'react';

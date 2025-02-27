@@ -11,7 +11,7 @@ import ReactAppDependencyProvider
 import UIKit
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
 
   var reactNativeDelegate: ReactNativeDelegate?

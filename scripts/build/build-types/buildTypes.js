@@ -39,7 +39,10 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Components/ActivityIndicator/ActivityIndicator.js',
   'packages/react-native/Libraries/Components/Button.js',
   'packages/react-native/Libraries/Components/Clipboard/Clipboard.js',
-  'packages/react-native/Libraries/Components/LayoutConformance/LayoutConformance.js',
+  'packages/react-native/Libraries/Components/DrawerAndroid/DrawerLayoutAndroid.js',
+  'packages/react-native/Libraries/Components/Keyboard/Keyboard.js',
+  'packages/react-native/Libraries/Components/Keyboard/KeyboardAvoidingView.js',
+  'packages/react-native/Libraries/Components/Pressable/Pressable.js',
   'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
   'packages/react-native/Libraries/Components/ScrollView/ScrollView.js',
   'packages/react-native/Libraries/Interaction/InteractionManager.js',
@@ -74,9 +77,13 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Components/Touchable/TouchableWithoutFeedback.js',
   'packages/react-native/Libraries/Components/Touchable/TouchableNativeFeedback.js',
   'packages/react-native/Libraries/Components/Touchable/TouchableHighlight.js',
+  'packages/react-native/Libraries/Components/Touchable/Touchable.js',
   'packages/react-native/Libraries/Components/Switch/Switch.js',
   'packages/react-native/Libraries/Components/StatusBar/StatusBar.js',
   'packages/react-native/Libraries/Components/RefreshControl/RefreshControl.js',
+  'packages/react-native/Libraries/Image/Image.js.flow',
+  'packages/react-native/Libraries/Image/ImageBackground.js',
+  'packages/react-native/Libraries/Components/SafeAreaView/SafeAreaView.js',
 ];
 
 /**

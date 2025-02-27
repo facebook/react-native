@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import "RCTArchConfiguratorProtocol.h"
 #import "RCTDependencyProvider.h"
+#import "RCTJSRuntimeConfiguratorProtocol.h"
 #import "RCTRootViewFactory.h"
 #import "RCTUIConfiguratorProtocol.h"
 
@@ -34,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     RCTTurboModuleManagerDelegate,
     RCTComponentViewFactoryComponentProvider,
 #endif
+    RCTJSRuntimeConfiguratorProtocol,
     RCTArchConfiguratorProtocol>
 
 /// Return the bundle URL for the main bundle.

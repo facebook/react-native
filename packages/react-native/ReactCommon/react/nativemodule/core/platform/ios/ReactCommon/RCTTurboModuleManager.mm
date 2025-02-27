@@ -822,7 +822,9 @@ typedef struct {
   }
 
   Class moduleClass = nil;
-  {
+  if (ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex()) {
+    moduleClass = [_delegate getModuleClassFromName:moduleName];
+  } else {
     std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
     moduleClass = [_delegate getModuleClassFromName:moduleName];
   }
@@ -861,7 +863,9 @@ typedef struct {
   }
 
   id<RCTBridgeModule> module = nil;
-  {
+  if (ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex()) {
+    module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
+  } else {
     std::lock_guard<std::mutex> delegateGuard(_turboModuleManagerDelegateMutex);
     module = (id<RCTBridgeModule>)[_delegate getModuleInstanceFromClass:moduleClass];
   }
