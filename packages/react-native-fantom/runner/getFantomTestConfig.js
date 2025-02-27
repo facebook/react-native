@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+import type {FeatureFlagValue} from '../../../packages/react-native/scripts/featureflags/types';
+
 import ReactNativeFeatureFlags from '../../../packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config';
 import fs from 'fs';
 // $FlowExpectedError[untyped-import]
@@ -33,11 +35,16 @@ export type FantomTestConfigJsOnlyFeatureFlags = Partial<{
   [key in keyof JsOnlyFeatureFlags]: JsOnlyFeatureFlags[key]['defaultValue'],
 }>;
 
+export type FantomTestConfigInternalFeatureFlags = {
+  [key: string]: FeatureFlagValue,
+};
+
 export type FantomTestConfig = {
   mode: FantomTestConfigMode,
   flags: {
     common: FantomTestConfigCommonFeatureFlags,
     jsOnly: FantomTestConfigJsOnlyFeatureFlags,
+    internal: FantomTestConfigInternalFeatureFlags,
   },
 };
 
@@ -59,6 +66,7 @@ const FANTOM_BENCHMARK_SUITE_RE = /\nFantom\.unstable_benchmark(\s*)\.suite\(/g;
  *  * @fantom_mode opt
  *  * @fantom_flags commonTestFlag:true
  *  * @fantom_flags jsOnlyTestFlag:true
+ *  * @fantom_internal_flags internalTestFlag:true
  *  *
  * ```
  *
@@ -85,6 +93,7 @@ export default function getFantomTestConfig(
         enableAccessToHostTreeInFabric: true,
         enableDOMDocumentAPI: true,
       },
+      internal: {},
     },
   };
 
@@ -155,6 +164,29 @@ export default function getFantomTestConfig(
           `Invalid Fantom feature flag: ${name}. Valid flags are: ${validKeys}`,
         );
       }
+    }
+  }
+
+  const maybeInternalRawFlagConfig = pragmas.fantom_internal_flags;
+
+  if (maybeInternalRawFlagConfig != null) {
+    const internalRawFlagConfigs = (
+      Array.isArray(maybeInternalRawFlagConfig)
+        ? maybeInternalRawFlagConfig
+        : [maybeInternalRawFlagConfig]
+    ).flatMap(value => value.split(/\s+/g));
+
+    for (const internalRawFlagConfig of internalRawFlagConfigs) {
+      const matches = FANTOM_FLAG_FORMAT.exec(internalRawFlagConfig);
+      if (matches == null) {
+        throw new Error(
+          `Invalid format for Fantom internal feature flag: ${internalRawFlagConfig}. Expected <flag_name>:<value>`,
+        );
+      }
+
+      const [, name, rawValue] = matches;
+      const value = parseFeatureFlagValue(false, rawValue);
+      config.flags.internal[name] = value;
     }
   }
 
