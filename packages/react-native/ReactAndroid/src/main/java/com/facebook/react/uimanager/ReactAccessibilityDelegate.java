@@ -50,15 +50,25 @@ import java.util.List;
  */
 public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
 
-  private static final String TAG = "ReactAccessibilityDelegate";
   public static final String TOP_ACCESSIBILITY_ACTION_EVENT = "topAccessibilityAction";
+  public static final HashMap<String, Integer> sActionIdMap = new HashMap<>();
+
+  private static final String TAG = "ReactAccessibilityDelegate";
   private static int sCounter = 0x3f000000;
   private static final int TIMEOUT_SEND_ACCESSIBILITY_EVENT = 200;
   private static final int SEND_EVENT = 1;
   private static final String delimiter = ", ";
   private static final int delimiterLength = delimiter.length();
+  // State constants for states which have analogs in AccessibilityNodeInfo
+  private static final String STATE_DISABLED = "disabled";
+  private static final String STATE_SELECTED = "selected";
+  private static final String STATE_CHECKED = "checked";
 
-  public static final HashMap<String, Integer> sActionIdMap = new HashMap<>();
+  private final View mView;
+  private Handler mHandler;
+  private final HashMap<Integer, String> mAccessibilityActionsMap;
+
+  @Nullable View mAccessibilityLabelledBy;
 
   static {
     sActionIdMap.put("activate", AccessibilityActionCompat.ACTION_CLICK.getId());
@@ -68,312 +78,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     sActionIdMap.put("expand", AccessibilityActionCompat.ACTION_EXPAND.getId());
     sActionIdMap.put("collapse", AccessibilityActionCompat.ACTION_COLLAPSE.getId());
   }
-
-  private final View mView;
-
-  private Handler mHandler;
-
-  /**
-   * Schedule a command for sending an accessibility event. </br> Note: A command is used to ensure
-   * that accessibility events are sent at most one in a given time frame to save system resources
-   * while the progress changes quickly.
-   */
-  private void scheduleAccessibilityEventSender(View host) {
-    if (mHandler.hasMessages(SEND_EVENT, host)) {
-      mHandler.removeMessages(SEND_EVENT, host);
-    }
-    Message msg = mHandler.obtainMessage(SEND_EVENT, host);
-    mHandler.sendMessageDelayed(msg, TIMEOUT_SEND_ACCESSIBILITY_EVENT);
-  }
-
-  /**
-   * An ARIA Role representable by View's `role` prop. Ordinals should be kept in sync with
-   * `facebook::react::Role`.
-   */
-  public enum Role {
-    ALERT,
-    ALERTDIALOG,
-    APPLICATION,
-    ARTICLE,
-    BANNER,
-    BUTTON,
-    CELL,
-    CHECKBOX,
-    COLUMNHEADER,
-    COMBOBOX,
-    COMPLEMENTARY,
-    CONTENTINFO,
-    DEFINITION,
-    DIALOG,
-    DIRECTORY,
-    DOCUMENT,
-    FEED,
-    FIGURE,
-    FORM,
-    GRID,
-    GROUP,
-    HEADING,
-    IMG,
-    LINK,
-    LIST,
-    LISTITEM,
-    LOG,
-    MAIN,
-    MARQUEE,
-    MATH,
-    MENU,
-    MENUBAR,
-    MENUITEM,
-    METER,
-    NAVIGATION,
-    NONE,
-    NOTE,
-    OPTION,
-    PRESENTATION,
-    PROGRESSBAR,
-    RADIO,
-    RADIOGROUP,
-    REGION,
-    ROW,
-    ROWGROUP,
-    ROWHEADER,
-    SCROLLBAR,
-    SEARCHBOX,
-    SEPARATOR,
-    SLIDER,
-    SPINBUTTON,
-    STATUS,
-    SUMMARY,
-    SWITCH,
-    TAB,
-    TABLE,
-    TABLIST,
-    TABPANEL,
-    TERM,
-    TIMER,
-    TOOLBAR,
-    TOOLTIP,
-    TREE,
-    TREEGRID,
-    TREEITEM;
-
-    public static @Nullable Role fromValue(@Nullable String value) {
-      for (Role role : Role.values()) {
-        if (role.name().equalsIgnoreCase(value)) {
-          return role;
-        }
-      }
-      return null;
-    }
-  }
-
-  /**
-   * These roles are defined by Google's TalkBack screen reader, and this list should be kept up to
-   * date with their implementation. Details can be seen in their source code here:
-   *
-   * <p>https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java
-   */
-  public enum AccessibilityRole {
-    NONE,
-    BUTTON,
-    DROPDOWNLIST,
-    TOGGLEBUTTON,
-    LINK,
-    SEARCH,
-    IMAGE,
-    IMAGEBUTTON,
-    KEYBOARDKEY,
-    TEXT,
-    ADJUSTABLE,
-    SUMMARY,
-    HEADER,
-    ALERT,
-    CHECKBOX,
-    COMBOBOX,
-    MENU,
-    MENUBAR,
-    MENUITEM,
-    PROGRESSBAR,
-    RADIO,
-    RADIOGROUP,
-    SCROLLBAR,
-    SPINBUTTON,
-    SWITCH,
-    TAB,
-    TABLIST,
-    TIMER,
-    LIST,
-    GRID,
-    PAGER,
-    SCROLLVIEW,
-    HORIZONTALSCROLLVIEW,
-    VIEWGROUP,
-    WEBVIEW,
-    DRAWERLAYOUT,
-    SLIDINGDRAWER,
-    ICONMENU,
-    TOOLBAR;
-
-    public static String getValue(AccessibilityRole role) {
-      switch (role) {
-        case BUTTON:
-          return "android.widget.Button";
-        case DROPDOWNLIST:
-          return "android.widget.Spinner";
-        case TOGGLEBUTTON:
-          return "android.widget.ToggleButton";
-        case SEARCH:
-          return "android.widget.EditText";
-        case IMAGE:
-          return "android.widget.ImageView";
-        case IMAGEBUTTON:
-          return "android.widget.ImageButton";
-        case KEYBOARDKEY:
-          return "android.inputmethodservice.Keyboard$Key";
-        case TEXT:
-          return "android.widget.TextView";
-        case ADJUSTABLE:
-          return "android.widget.SeekBar";
-        case CHECKBOX:
-          return "android.widget.CheckBox";
-        case RADIO:
-          return "android.widget.RadioButton";
-        case SPINBUTTON:
-          return "android.widget.SpinButton";
-        case SWITCH:
-          return "android.widget.Switch";
-        case LIST:
-          return "android.widget.AbsListView";
-        case GRID:
-          return "android.widget.GridView";
-        case SCROLLVIEW:
-          return "android.widget.ScrollView";
-        case HORIZONTALSCROLLVIEW:
-          return "android.widget.HorizontalScrollView";
-        case PAGER:
-          return "androidx.viewpager.widget.ViewPager";
-        case DRAWERLAYOUT:
-          return "androidx.drawerlayout.widget.DrawerLayout";
-        case SLIDINGDRAWER:
-          return "android.widget.SlidingDrawer";
-        case ICONMENU:
-          return "com.android.internal.view.menu.IconMenuView";
-        case VIEWGROUP:
-          return "android.view.ViewGroup";
-        case WEBVIEW:
-          return "android.webkit.WebView";
-        case NONE:
-        case LINK:
-        case SUMMARY:
-        case HEADER:
-        case ALERT:
-        case COMBOBOX:
-        case MENU:
-        case MENUBAR:
-        case MENUITEM:
-        case PROGRESSBAR:
-        case RADIOGROUP:
-        case SCROLLBAR:
-        case TAB:
-        case TABLIST:
-        case TIMER:
-        case TOOLBAR:
-          return "android.view.View";
-        default:
-          throw new IllegalArgumentException("Invalid accessibility role value: " + role);
-      }
-    }
-
-    public static AccessibilityRole fromValue(@Nullable String value) {
-      if (value == null) {
-        return NONE;
-      }
-
-      for (AccessibilityRole role : AccessibilityRole.values()) {
-        if (role.name().equalsIgnoreCase(value)) {
-          return role;
-        }
-      }
-      throw new IllegalArgumentException("Invalid accessibility role value: " + value);
-    }
-
-    public static @Nullable AccessibilityRole fromRole(Role role) {
-      switch (role) {
-        case ALERT:
-          return AccessibilityRole.ALERT;
-        case BUTTON:
-          return AccessibilityRole.BUTTON;
-        case CHECKBOX:
-          return AccessibilityRole.CHECKBOX;
-        case COMBOBOX:
-          return AccessibilityRole.COMBOBOX;
-        case GRID:
-          return AccessibilityRole.GRID;
-        case HEADING:
-          return AccessibilityRole.HEADER;
-        case IMG:
-          return AccessibilityRole.IMAGE;
-        case LINK:
-          return AccessibilityRole.LINK;
-        case LIST:
-          return AccessibilityRole.LIST;
-        case MENU:
-          return AccessibilityRole.MENU;
-        case MENUBAR:
-          return AccessibilityRole.MENUBAR;
-        case MENUITEM:
-          return AccessibilityRole.MENUITEM;
-        case NONE:
-          return AccessibilityRole.NONE;
-        case PROGRESSBAR:
-          return AccessibilityRole.PROGRESSBAR;
-        case RADIO:
-          return AccessibilityRole.RADIO;
-        case RADIOGROUP:
-          return AccessibilityRole.RADIOGROUP;
-        case SCROLLBAR:
-          return AccessibilityRole.SCROLLBAR;
-        case SEARCHBOX:
-          return AccessibilityRole.SEARCH;
-        case SLIDER:
-          return AccessibilityRole.ADJUSTABLE;
-        case SPINBUTTON:
-          return AccessibilityRole.SPINBUTTON;
-        case SUMMARY:
-          return AccessibilityRole.SUMMARY;
-        case SWITCH:
-          return AccessibilityRole.SWITCH;
-        case TAB:
-          return AccessibilityRole.TAB;
-        case TABLIST:
-          return AccessibilityRole.TABLIST;
-        case TIMER:
-          return AccessibilityRole.TIMER;
-        case TOOLBAR:
-          return AccessibilityRole.TOOLBAR;
-        default:
-          // No mapping from ARIA role to AccessibilityRole
-          return null;
-      }
-    }
-
-    public static @Nullable AccessibilityRole fromViewTag(View view) {
-      Role role = (Role) view.getTag(R.id.role);
-      if (role != null) {
-        return AccessibilityRole.fromRole(role);
-      } else {
-        return (AccessibilityRole) view.getTag(R.id.accessibility_role);
-      }
-    }
-  }
-
-  private final HashMap<Integer, String> mAccessibilityActionsMap;
-
-  // State constants for states which have analogs in AccessibilityNodeInfo
-
-  private static final String STATE_DISABLED = "disabled";
-  private static final String STATE_SELECTED = "selected";
-  private static final String STATE_CHECKED = "checked";
 
   public ReactAccessibilityDelegate(
       final View view, boolean originalFocus, int originalImportantForAccessibility) {
@@ -397,12 +101,36 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     ViewCompat.setImportantForAccessibility(mView, originalImportantForAccessibility);
   }
 
+  public static void setDelegate(
+      final View view, boolean originalFocus, int originalImportantForAccessibility) {
+    // if a view already has an accessibility delegate, replacing it could cause
+    // problems, so leave it alone.
+    if (!ViewCompat.hasAccessibilityDelegate(view)
+        && (view.getTag(R.id.accessibility_role) != null
+            || view.getTag(R.id.accessibility_state) != null
+            || view.getTag(R.id.accessibility_actions) != null
+            || view.getTag(R.id.react_test_id) != null
+            || view.getTag(R.id.accessibility_collection_item) != null
+            || view.getTag(R.id.accessibility_links) != null
+            || view.getTag(R.id.role) != null)) {
+      ViewCompat.setAccessibilityDelegate(
+          view,
+          new ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility));
+    }
+  }
+
+  // Explicitly re-set the delegate, even if one has already been set.
+  public static void resetDelegate(
+      final View view, boolean originalFocus, int originalImportantForAccessibility) {
+    ViewCompat.setAccessibilityDelegate(
+        view,
+        new ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility));
+  }
+
   // The View this delegate is attached to
   protected View getHostView() {
     return mView;
   }
-
-  @Nullable View mAccessibilityLabelledBy;
 
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
@@ -608,6 +336,19 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     return super.performAccessibilityAction(host, action, args);
   }
 
+  /**
+   * Schedule a command for sending an accessibility event. </br> Note: A command is used to ensure
+   * that accessibility events are sent at most one in a given time frame to save system resources
+   * while the progress changes quickly.
+   */
+  private void scheduleAccessibilityEventSender(View host) {
+    if (mHandler.hasMessages(SEND_EVENT, host)) {
+      mHandler.removeMessages(SEND_EVENT, host);
+    }
+    Message msg = mHandler.obtainMessage(SEND_EVENT, host);
+    mHandler.sendMessageDelayed(msg, TIMEOUT_SEND_ACCESSIBILITY_EVENT);
+  }
+
   private static void setState(
       AccessibilityNodeInfoCompat info, ReadableMap accessibilityState, Context context) {
     final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
@@ -626,10 +367,7 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     }
   }
 
-  /** Strings for setting the Role Description in english */
-
   // TODO: Eventually support for other languages on talkback
-
   public static void setRole(
       AccessibilityNodeInfoCompat nodeInfo, AccessibilityRole role, final Context context) {
     if (role == null) {
@@ -679,33 +417,6 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     } else if (role.equals(AccessibilityRole.TOOLBAR)) {
       nodeInfo.setRoleDescription(context.getString(R.string.toolbar_description));
     }
-  }
-
-  public static void setDelegate(
-      final View view, boolean originalFocus, int originalImportantForAccessibility) {
-    // if a view already has an accessibility delegate, replacing it could cause
-    // problems,
-    // so leave it alone.
-    if (!ViewCompat.hasAccessibilityDelegate(view)
-        && (view.getTag(R.id.accessibility_role) != null
-            || view.getTag(R.id.accessibility_state) != null
-            || view.getTag(R.id.accessibility_actions) != null
-            || view.getTag(R.id.react_test_id) != null
-            || view.getTag(R.id.accessibility_collection_item) != null
-            || view.getTag(R.id.accessibility_links) != null
-            || view.getTag(R.id.role) != null)) {
-      ViewCompat.setAccessibilityDelegate(
-          view,
-          new ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility));
-    }
-  }
-
-  // Explicitly re-set the delegate, even if one has already been set.
-  public static void resetDelegate(
-      final View view, boolean originalFocus, int originalImportantForAccessibility) {
-    ViewCompat.setAccessibilityDelegate(
-        view,
-        new ReactAccessibilityDelegate(view, originalFocus, originalImportantForAccessibility));
   }
 
   @Override
@@ -1026,5 +737,286 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
       builder.delete(end - delimiterLength, end);
     }
     return builder.toString();
+  }
+
+  /**
+   * An ARIA Role representable by View's `role` prop. Ordinals should be kept in sync with
+   * `facebook::react::Role`.
+   */
+  public enum Role {
+    ALERT,
+    ALERTDIALOG,
+    APPLICATION,
+    ARTICLE,
+    BANNER,
+    BUTTON,
+    CELL,
+    CHECKBOX,
+    COLUMNHEADER,
+    COMBOBOX,
+    COMPLEMENTARY,
+    CONTENTINFO,
+    DEFINITION,
+    DIALOG,
+    DIRECTORY,
+    DOCUMENT,
+    FEED,
+    FIGURE,
+    FORM,
+    GRID,
+    GROUP,
+    HEADING,
+    IMG,
+    LINK,
+    LIST,
+    LISTITEM,
+    LOG,
+    MAIN,
+    MARQUEE,
+    MATH,
+    MENU,
+    MENUBAR,
+    MENUITEM,
+    METER,
+    NAVIGATION,
+    NONE,
+    NOTE,
+    OPTION,
+    PRESENTATION,
+    PROGRESSBAR,
+    RADIO,
+    RADIOGROUP,
+    REGION,
+    ROW,
+    ROWGROUP,
+    ROWHEADER,
+    SCROLLBAR,
+    SEARCHBOX,
+    SEPARATOR,
+    SLIDER,
+    SPINBUTTON,
+    STATUS,
+    SUMMARY,
+    SWITCH,
+    TAB,
+    TABLE,
+    TABLIST,
+    TABPANEL,
+    TERM,
+    TIMER,
+    TOOLBAR,
+    TOOLTIP,
+    TREE,
+    TREEGRID,
+    TREEITEM;
+
+    public static @Nullable Role fromValue(@Nullable String value) {
+      for (Role role : Role.values()) {
+        if (role.name().equalsIgnoreCase(value)) {
+          return role;
+        }
+      }
+      return null;
+    }
+  }
+
+  /**
+   * These roles are defined by Google's TalkBack screen reader, and this list should be kept up to
+   * date with their implementation. Details can be seen in their source code here:
+   *
+   * <p>https://github.com/google/talkback/blob/master/utils/src/main/java/Role.java
+   */
+  public enum AccessibilityRole {
+    NONE,
+    BUTTON,
+    DROPDOWNLIST,
+    TOGGLEBUTTON,
+    LINK,
+    SEARCH,
+    IMAGE,
+    IMAGEBUTTON,
+    KEYBOARDKEY,
+    TEXT,
+    ADJUSTABLE,
+    SUMMARY,
+    HEADER,
+    ALERT,
+    CHECKBOX,
+    COMBOBOX,
+    MENU,
+    MENUBAR,
+    MENUITEM,
+    PROGRESSBAR,
+    RADIO,
+    RADIOGROUP,
+    SCROLLBAR,
+    SPINBUTTON,
+    SWITCH,
+    TAB,
+    TABLIST,
+    TIMER,
+    LIST,
+    GRID,
+    PAGER,
+    SCROLLVIEW,
+    HORIZONTALSCROLLVIEW,
+    VIEWGROUP,
+    WEBVIEW,
+    DRAWERLAYOUT,
+    SLIDINGDRAWER,
+    ICONMENU,
+    TOOLBAR;
+
+    public static String getValue(AccessibilityRole role) {
+      switch (role) {
+        case BUTTON:
+          return "android.widget.Button";
+        case DROPDOWNLIST:
+          return "android.widget.Spinner";
+        case TOGGLEBUTTON:
+          return "android.widget.ToggleButton";
+        case SEARCH:
+          return "android.widget.EditText";
+        case IMAGE:
+          return "android.widget.ImageView";
+        case IMAGEBUTTON:
+          return "android.widget.ImageButton";
+        case KEYBOARDKEY:
+          return "android.inputmethodservice.Keyboard$Key";
+        case TEXT:
+          return "android.widget.TextView";
+        case ADJUSTABLE:
+          return "android.widget.SeekBar";
+        case CHECKBOX:
+          return "android.widget.CheckBox";
+        case RADIO:
+          return "android.widget.RadioButton";
+        case SPINBUTTON:
+          return "android.widget.SpinButton";
+        case SWITCH:
+          return "android.widget.Switch";
+        case LIST:
+          return "android.widget.AbsListView";
+        case GRID:
+          return "android.widget.GridView";
+        case SCROLLVIEW:
+          return "android.widget.ScrollView";
+        case HORIZONTALSCROLLVIEW:
+          return "android.widget.HorizontalScrollView";
+        case PAGER:
+          return "androidx.viewpager.widget.ViewPager";
+        case DRAWERLAYOUT:
+          return "androidx.drawerlayout.widget.DrawerLayout";
+        case SLIDINGDRAWER:
+          return "android.widget.SlidingDrawer";
+        case ICONMENU:
+          return "com.android.internal.view.menu.IconMenuView";
+        case VIEWGROUP:
+          return "android.view.ViewGroup";
+        case WEBVIEW:
+          return "android.webkit.WebView";
+        case NONE:
+        case LINK:
+        case SUMMARY:
+        case HEADER:
+        case ALERT:
+        case COMBOBOX:
+        case MENU:
+        case MENUBAR:
+        case MENUITEM:
+        case PROGRESSBAR:
+        case RADIOGROUP:
+        case SCROLLBAR:
+        case TAB:
+        case TABLIST:
+        case TIMER:
+        case TOOLBAR:
+          return "android.view.View";
+        default:
+          throw new IllegalArgumentException("Invalid accessibility role value: " + role);
+      }
+    }
+
+    public static AccessibilityRole fromValue(@Nullable String value) {
+      if (value == null) {
+        return NONE;
+      }
+
+      for (AccessibilityRole role : AccessibilityRole.values()) {
+        if (role.name().equalsIgnoreCase(value)) {
+          return role;
+        }
+      }
+      throw new IllegalArgumentException("Invalid accessibility role value: " + value);
+    }
+
+    public static @Nullable AccessibilityRole fromRole(Role role) {
+      switch (role) {
+        case ALERT:
+          return AccessibilityRole.ALERT;
+        case BUTTON:
+          return AccessibilityRole.BUTTON;
+        case CHECKBOX:
+          return AccessibilityRole.CHECKBOX;
+        case COMBOBOX:
+          return AccessibilityRole.COMBOBOX;
+        case GRID:
+          return AccessibilityRole.GRID;
+        case HEADING:
+          return AccessibilityRole.HEADER;
+        case IMG:
+          return AccessibilityRole.IMAGE;
+        case LINK:
+          return AccessibilityRole.LINK;
+        case LIST:
+          return AccessibilityRole.LIST;
+        case MENU:
+          return AccessibilityRole.MENU;
+        case MENUBAR:
+          return AccessibilityRole.MENUBAR;
+        case MENUITEM:
+          return AccessibilityRole.MENUITEM;
+        case NONE:
+          return AccessibilityRole.NONE;
+        case PROGRESSBAR:
+          return AccessibilityRole.PROGRESSBAR;
+        case RADIO:
+          return AccessibilityRole.RADIO;
+        case RADIOGROUP:
+          return AccessibilityRole.RADIOGROUP;
+        case SCROLLBAR:
+          return AccessibilityRole.SCROLLBAR;
+        case SEARCHBOX:
+          return AccessibilityRole.SEARCH;
+        case SLIDER:
+          return AccessibilityRole.ADJUSTABLE;
+        case SPINBUTTON:
+          return AccessibilityRole.SPINBUTTON;
+        case SUMMARY:
+          return AccessibilityRole.SUMMARY;
+        case SWITCH:
+          return AccessibilityRole.SWITCH;
+        case TAB:
+          return AccessibilityRole.TAB;
+        case TABLIST:
+          return AccessibilityRole.TABLIST;
+        case TIMER:
+          return AccessibilityRole.TIMER;
+        case TOOLBAR:
+          return AccessibilityRole.TOOLBAR;
+        default:
+          // No mapping from ARIA role to AccessibilityRole
+          return null;
+      }
+    }
+
+    public static @Nullable AccessibilityRole fromViewTag(View view) {
+      Role role = (Role) view.getTag(R.id.role);
+      if (role != null) {
+        return AccessibilityRole.fromRole(role);
+      } else {
+        return (AccessibilityRole) view.getTag(R.id.accessibility_role);
+      }
+    }
   }
 }
