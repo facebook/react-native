@@ -213,6 +213,27 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
   });
 }
 
+void PerformanceTracer::reportEventLoopTask(uint64_t start, uint64_t end) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "RunTask",
+      .cat = "disabled-by-default-devtools.timeline",
+      .ph = 'X',
+      .ts = start,
+      .pid = oscompat::getCurrentProcessId(),
+      .tid = oscompat::getCurrentThreadId(),
+      .dur = end - start,
+  });
+}
+
 folly::dynamic PerformanceTracer::serializeTraceEvent(TraceEvent event) const {
   folly::dynamic result = folly::dynamic::object;
 

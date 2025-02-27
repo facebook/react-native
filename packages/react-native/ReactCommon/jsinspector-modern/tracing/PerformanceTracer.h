@@ -94,6 +94,12 @@ class PerformanceTracer {
    */
   void reportJavaScriptThread();
 
+  /**
+   * Record an Event Loop tick, which will be represented as an Event Loop task
+   * on a timeline view and grouped with JavaScript samples.
+   */
+  void reportEventLoopTask(uint64_t start, uint64_t end);
+
  private:
   PerformanceTracer();
   PerformanceTracer(const PerformanceTracer&) = delete;
