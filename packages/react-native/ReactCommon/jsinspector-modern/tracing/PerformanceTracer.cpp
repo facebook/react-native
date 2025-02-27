@@ -188,6 +188,10 @@ void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
   });
 }
 
+void PerformanceTracer::reportJavaScriptThread() {
+  reportThread(oscompat::getCurrentThreadId(), "JavaScript");
+}
+
 void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
   if (!tracing_) {
     return;
