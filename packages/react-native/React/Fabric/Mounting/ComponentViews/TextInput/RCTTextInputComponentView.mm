@@ -107,9 +107,11 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
       [_backedTextInputView.defaultTextAttributes mutableCopy];
 
+#if !TARGET_OS_MACCATALYST
   RCTWeakEventEmitterWrapper *eventEmitterWrapper = [RCTWeakEventEmitterWrapper new];
   eventEmitterWrapper.eventEmitter = _eventEmitter;
   defaultAttributes[RCTAttributedStringEventEmitterKey] = eventEmitterWrapper;
+#endif
 
   _backedTextInputView.defaultTextAttributes = defaultAttributes;
 }
@@ -139,6 +141,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 #if !TARGET_OS_OSX // [macOS]
   if (![self isDescendantOfView:scrollView.scrollView] || !_backedTextInputView.isFirstResponder) {
     // View is outside scroll view or it's not a first responder.
+    scrollView.firstResponderViewOutsideScrollView = _backedTextInputView;
     return;
   }
 
@@ -283,8 +286,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (newTextInputProps.textAttributes != oldTextInputProps.textAttributes) {
     NSMutableDictionary<NSAttributedStringKey, id> *defaultAttributes =
         RCTNSTextAttributesFromTextAttributes(newTextInputProps.getEffectiveTextAttributes(RCTFontSizeMultiplier()));
+#if !TARGET_OS_MACCATALYST
     defaultAttributes[RCTAttributedStringEventEmitterKey] =
         _backedTextInputView.defaultTextAttributes[RCTAttributedStringEventEmitterKey];
+#endif
     _backedTextInputView.defaultTextAttributes = defaultAttributes;
   }
 
@@ -473,10 +478,15 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 
 - (void)textInputDidChangeSelection
 {
-  [self _updateTypingAttributes];
   if (_comingFromJS) {
     return;
   }
+
+  // T207198334: Setting a new AttributedString (_comingFromJS) will trigger a selection change before the backing
+  // string is updated, so indicies won't point to what we want yet. Only respond to user selection change, and let
+  // `_setAttributedString` handle updating typing attributes if content changes.
+  [self _updateTypingAttributes];
+
   const auto &props = static_cast<const TextInputProps &>(*_props);
   if (props.traits.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     [self textInputDidChange];
@@ -805,18 +815,19 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 // https://github.com/facebook/react-native/blob/3102a58df38d96f3dacef0530e4dbb399037fcd2/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/text/internal/span/SetSpanOperation.kt#L30
 - (void)_updateTypingAttributes
 {
-  if (_backedTextInputView.attributedText.length > 0) {
 #if !TARGET_OS_OSX // [macOS]
+  if (_backedTextInputView.attributedText.length > 0 && _backedTextInputView.selectedTextRange != nil) {
     NSUInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
                                                            toPosition:_backedTextInputView.selectedTextRange.start];
-#else // [macOS
-    NSUInteger offsetStart = [_backedTextInputView selectedTextRange].location;
-#endif // macOS]
+
     
     NSUInteger samplePoint = offsetStart == 0 ? 0 : offsetStart - 1;
     _backedTextInputView.typingAttributes = [_backedTextInputView.attributedText attributesAtIndex:samplePoint
                                                                                     effectiveRange:NULL];
   }
+#else // [macOS
+  // TODO
+#endif // macOS]
 }
 
 - (void)_setMultiline:(BOOL)multiline

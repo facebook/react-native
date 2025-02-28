@@ -154,6 +154,7 @@ function extractLibrariesFromJSON(configFile, dependencyPath) {
     const config = configFile.codegenConfig;
     return [
       {
+        libraryName: configFile.name,
         config,
         libraryPath: dependencyPath,
       },
@@ -253,19 +254,23 @@ function findExternalLibraries(pkgJson, projectRoot) {
   });
 }
 
-function findLibrariesFromReactNativeConfig(projectRoot) {
+function readRNConfigJSFile(projectRoot) {
   const rnConfigFileName = 'react-native.config.js';
-
-  console.log(
-    `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in ${rnConfigFileName}`,
-  );
 
   const rnConfigFilePath = path.resolve(projectRoot, rnConfigFileName);
 
   if (!fs.existsSync(rnConfigFilePath)) {
     return [];
   }
-  const rnConfig = require(rnConfigFilePath);
+  return require(rnConfigFilePath);
+}
+
+function findLibrariesFromReactNativeConfig(projectRoot) {
+  console.log(
+    `\n\n[Codegen] >>>>> Searching for codegen-enabled libraries in react-native.config.js`,
+  );
+
+  const rnConfig = readRNConfigJSFile(projectRoot);
 
   if (rnConfig.dependencies == null) {
     return [];
@@ -289,6 +294,48 @@ function findLibrariesFromReactNativeConfig(projectRoot) {
 
     return extractLibrariesFromJSON(configFile, codegenConfigFileDir);
   });
+}
+
+// Function to look for libraries explicitly unlinked from the app
+// through the react-native.config.js file.
+// If this happens, it might be that the app does not need
+// to generate code for that library as it won't be used by that platform
+// @return { [libraryName: string]: [platform: string] }
+function findNotLinkedLibraries(projectRoot) {
+  const rnConfig = readRNConfigJSFile(projectRoot);
+
+  if (rnConfig.dependencies == null) {
+    return {};
+  }
+
+  let notLinkedLibraries = {};
+
+  Object.keys(rnConfig.dependencies).forEach(name => {
+    const dependency = rnConfig.dependencies[name];
+    let notLinkedPlatforms = [];
+
+    // dependency.platforms might not be defined, as the format
+    // {
+    //   "dependencies": {
+    //     "dependency-name": {
+    //       "root": "path/to/dependency",
+    //     }
+    //   }
+    // }
+    // is also supported.
+    // In this case, we assume that the library is linked to all platforms.
+    // We don't consider the case were `dependency-name.root` is equal to `null`, because that
+    // means that the library is not linked to the app at all, and in that case the dependency
+    // should be removed by the user.
+    dependency.platforms &&
+      Object.keys(dependency.platforms).forEach(platform => {
+        if (dependency.platforms[platform] == null) {
+          notLinkedPlatforms.push(platform);
+        }
+      });
+    notLinkedLibraries[name] = notLinkedPlatforms;
+  });
+  return notLinkedLibraries;
 }
 
 function findProjectRootLibraries(pkgJson, projectRoot) {
@@ -696,6 +743,8 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
     let platforms =
       targetPlatform === 'all' ? supportedPlatforms : [targetPlatform];
 
+    const notLinkedLibraries = findNotLinkedLibraries(projectRoot);
+
     for (const platform of platforms) {
       const outputPath = computeOutputPath(
         projectRoot,
@@ -704,7 +753,19 @@ function execute(projectRoot, targetPlatform, baseOutputPath) {
         platform,
       );
 
-      const schemaInfos = generateSchemaInfos(libraries);
+      const schemaInfos = generateSchemaInfos(
+        libraries.filter(library => {
+          const unlinkedPlatforms = notLinkedLibraries[library.libraryName];
+          if (unlinkedPlatforms && unlinkedPlatforms.includes(platform)) {
+            console.log(
+              `[Codegen - ${library.libraryName}] Skipping Codegen on ${platform}`,
+            );
+            return false;
+          }
+          return true;
+        }),
+      );
+
       generateNativeCode(
         outputPath,
         schemaInfos.filter(schemaInfo =>

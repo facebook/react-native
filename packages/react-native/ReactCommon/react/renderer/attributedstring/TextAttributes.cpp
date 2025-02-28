@@ -46,6 +46,9 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   allowFontScaling = textAttributes.allowFontScaling.has_value()
       ? textAttributes.allowFontScaling
       : allowFontScaling;
+  maxFontSizeMultiplier = !std::isnan(textAttributes.maxFontSizeMultiplier)
+      ? textAttributes.maxFontSizeMultiplier
+      : maxFontSizeMultiplier;
   dynamicTypeRamp = textAttributes.dynamicTypeRamp.has_value()
       ? textAttributes.dynamicTypeRamp
       : dynamicTypeRamp;
@@ -168,6 +171,7 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              rhs.accessibilityRole,
              rhs.role,
              rhs.textTransform) &&
+      floatEquality(maxFontSizeMultiplier, rhs.maxFontSizeMultiplier) &&
       floatEquality(opacity, rhs.opacity) &&
       floatEquality(fontSize, rhs.fontSize) &&
       floatEquality(fontSizeMultiplier, rhs.fontSizeMultiplier) &&
@@ -213,6 +217,7 @@ SharedDebugStringConvertibleList TextAttributes::getDebugProps() const {
       debugStringConvertibleItem("allowFontScaling", allowFontScaling),
       debugStringConvertibleItem("dynamicTypeRamp", dynamicTypeRamp),
       debugStringConvertibleItem("letterSpacing", letterSpacing),
+      debugStringConvertibleItem("maxFontSizeMultiplier", maxFontSizeMultiplier),
 
       // Paragraph Styles
       debugStringConvertibleItem("lineHeight", lineHeight),

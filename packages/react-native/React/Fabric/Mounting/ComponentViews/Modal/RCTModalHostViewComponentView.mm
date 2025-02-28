@@ -137,9 +137,7 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
                    completion:(void (^)(void))completion
 {
   UIViewController *controller = [self reactViewController];
-  [[self _topMostViewControllerFrom:controller] presentViewController:modalViewController
-                                                             animated:animated
-                                                           completion:completion];
+  [controller presentViewController:modalViewController animated:animated completion:completion];
 }
 
 - (void)dismissViewController:(UIViewController *)modalViewController
@@ -154,6 +152,8 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
 {
   BOOL shouldBePresented = !_isPresented && _shouldPresent && self.window;
   if (shouldBePresented) {
+    self.viewController.presentationController.delegate = self;
+
     _isPresented = YES;
     [self presentViewController:self.viewController
                        animated:_shouldAnimatePresentation
@@ -279,24 +279,14 @@ static ModalHostViewEventEmitter::OnOrientationChange onOrientationChangeStruct(
   [childComponentView removeFromSuperview];
 }
 
-#pragma mark - Private
+#pragma mark - UIAdaptivePresentationControllerDelegate
 
-- (UIViewController *)_topMostViewControllerFrom:(UIViewController *)rootViewController
+- (void)presentationControllerDidAttemptToDismiss:(UIPresentationController *)controller
 {
-  UIViewController *topController = rootViewController;
-  while (topController.presentedViewController) {
-    topController = topController.presentedViewController;
+  auto eventEmitter = [self modalEventEmitter];
+  if (eventEmitter) {
+    eventEmitter->onRequestClose({});
   }
-  if ([topController isKindOfClass:[UINavigationController class]]) {
-    UINavigationController *navigationController = (UINavigationController *)topController;
-    topController = navigationController.visibleViewController;
-    return [self _topMostViewControllerFrom:topController];
-  } else if ([topController isKindOfClass:[UITabBarController class]]) {
-    UITabBarController *tabBarController = (UITabBarController *)topController;
-    topController = tabBarController.selectedViewController;
-    return [self _topMostViewControllerFrom:topController];
-  }
-  return topController;
 }
 
 #endif // [macOS]

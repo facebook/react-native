@@ -449,12 +449,18 @@ public class FabricUIManager
 
   @Override
   public void markActiveTouchForTag(int surfaceId, int reactTag) {
-    mMountingManager.getSurfaceManager(surfaceId).markActiveTouchForTag(reactTag);
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    if (surfaceMountingManager != null) {
+      surfaceMountingManager.markActiveTouchForTag(reactTag);
+    }
   }
 
   @Override
   public void sweepActiveTouchForTag(int surfaceId, int reactTag) {
-    mMountingManager.getSurfaceManager(surfaceId).sweepActiveTouchForTag(reactTag);
+    SurfaceMountingManager surfaceMountingManager = mMountingManager.getSurfaceManager(surfaceId);
+    if (surfaceMountingManager != null) {
+      surfaceMountingManager.sweepActiveTouchForTag(reactTag);
+    }
   }
 
   /**

@@ -501,27 +501,25 @@ void Binding::schedulerShouldRenderTransactions(
     return;
   }
 
-  if (ReactNativeFeatureFlags::
-          allowRecursiveCommitsWithSynchronousMountOnAndroid()) {
-    std::vector<MountingTransaction> pendingTransactions;
 
-    {
-      // Retain the lock to access the pending transactions but not to execute
-      // the mount operations because that method can call into this method
-      // again.
-      std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
-      pendingTransactions_.swap(pendingTransactions);
-    }
+  std::vector<MountingTransaction> pendingTransactions;
 
-    for (auto& transaction : pendingTransactions) {
-      mountingManager->executeMount(transaction);
-    }
-  } else {
+  {
+    // Retain the lock to access the pending transactions but not to execute
+    // the mount operations because that method can call into this method
+    // again.
+    //
+    // This can be re-entrant when mounting manager triggers state updates
+    // synchronously (this can happen when committing from the UI thread).
+    // This is safe because we're already combining all the transactions for the
+    // same surface ID in a single transaction in the pending transactions list,
+    // so operations won't run out of order.
     std::unique_lock<std::mutex> lock(pendingTransactionsMutex_);
-    for (auto& transaction : pendingTransactions_) {
-      mountingManager->executeMount(transaction);
-    }
-    pendingTransactions_.clear();
+    pendingTransactions_.swap(pendingTransactions);
+  }
+
+  for (auto& transaction : pendingTransactions) {
+    mountingManager->executeMount(transaction);
   }
 }
 

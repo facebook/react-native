@@ -48,7 +48,8 @@ class ReactInstance final : private jsinspector_modern::InstanceTargetDelegate {
 
   void loadScript(
       std::unique_ptr<const JSBigString> script,
-      const std::string& sourceURL);
+      const std::string& sourceURL,
+      std::function<void(jsi::Runtime& runtime)>&& completion = nullptr);
 
   void registerSegment(uint32_t segmentId, const std::string& segmentPath);
 

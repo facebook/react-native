@@ -48,14 +48,16 @@ void RCTAppSetupPrepareApp(UIApplication *application, BOOL turboModuleEnabled)
 #endif
 }
 
-RCTUIView * // [macOS]
+RCTPlatformView * // [macOS]
 RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary *initialProperties, BOOL fabricEnabled)
 {
   if (fabricEnabled) {
     id<RCTSurfaceProtocol> surface = [[RCTFabricSurface alloc] initWithBridge:bridge
                                                                    moduleName:moduleName
                                                             initialProperties:initialProperties];
-    return [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+    RCTPlatformView *rootView = [[RCTSurfaceHostingProxyRootView alloc] initWithSurface:surface];
+    [surface start];
+    return rootView;
   }
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }

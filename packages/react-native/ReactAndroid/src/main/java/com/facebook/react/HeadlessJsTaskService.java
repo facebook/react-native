@@ -179,9 +179,18 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
   }
 
   private void createReactContextAndScheduleTask(final HeadlessJsTaskConfig taskConfig) {
-    final ReactHost reactHost = getReactHost();
-
-    if (reactHost == null) { // old arch
+    if (ReactFeatureFlags.enableBridgelessArchitecture) {
+      final ReactHost reactHost = getReactHost();
+      reactHost.addReactInstanceEventListener(
+          new ReactInstanceEventListener() {
+            @Override
+            public void onReactContextInitialized(@NonNull ReactContext reactContext) {
+              invokeStartTask(reactContext, taskConfig);
+              reactHost.removeReactInstanceEventListener(this);
+            }
+          });
+      reactHost.start();
+    } else {
       final ReactInstanceManager reactInstanceManager =
           getReactNativeHost().getReactInstanceManager();
 
@@ -194,16 +203,6 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
             }
           });
       reactInstanceManager.createReactContextInBackground();
-    } else { // new arch
-      reactHost.addReactInstanceEventListener(
-          new ReactInstanceEventListener() {
-            @Override
-            public void onReactContextInitialized(@NonNull ReactContext reactContext) {
-              invokeStartTask(reactContext, taskConfig);
-              reactHost.removeReactInstanceEventListener(this);
-            }
-          });
-      reactHost.start();
     }
   }
 }

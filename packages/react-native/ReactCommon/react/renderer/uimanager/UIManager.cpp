@@ -126,20 +126,41 @@ std::shared_ptr<ShadowNode> UIManager::cloneNode(
 
   if (!rawProps.isEmpty()) {
     if (family.nativeProps_DEPRECATED != nullptr) {
+      // 1. update the nativeProps_DEPRECATED props.
+      //
+      // In this step, we want the most recent value for the props
+      // managed by setNativeProps.
       // Values in `rawProps` patch (take precedence over)
-      // `nativeProps_DEPRECATED`. For example, if both `nativeProps_DEPRECATED`
-      // and `rawProps` contain key 'A'. Value from `rawProps` overrides what
-      // was previously in `nativeProps_DEPRECATED`.
+      // `nativeProps_DEPRECATED`. For example, if both
+      // `nativeProps_DEPRECATED` and `rawProps` contain key 'A'.
+      // Value from `rawProps` overrides what was previously in
+      // `nativeProps_DEPRECATED`. Notice that the `nativeProps_DEPRECATED`
+      // patch will not get more props from `rawProps`: if the key is not
+      // present in `nativeProps_DEPRECATED`, it will not be added.
+      //
+      // The result of this operation is the new `nativeProps_DEPRECATED`.
       family.nativeProps_DEPRECATED =
           std::make_unique<folly::dynamic>(mergeDynamicProps(
-              *family.nativeProps_DEPRECATED,
-              (folly::dynamic)rawProps,
+              *family.nativeProps_DEPRECATED, // source
+              (folly::dynamic)rawProps, // patch
               NullValueStrategy::Ignore));
 
+      // 2. Compute the final set of props.
+      //
+      // This step takes the new props handled by `setNativeProps` and
+      // merges them in the `rawProps` managed by React.
+      // The new props handled by `nativeProps` now takes precedence
+      // on the props handled by React, as we want to make sure that
+      // all the props are applied to the component.
+      // We use these finalProps as source of truth for the component.
+      auto finalProps = mergeDynamicProps(
+          (folly::dynamic)rawProps, // source
+          *family.nativeProps_DEPRECATED, // patch
+          NullValueStrategy::Override);
+
+      // 3. Clone the props by using finalProps.
       props = componentDescriptor.cloneProps(
-          propsParserContext,
-          shadowNode.getProps(),
-          RawProps(*family.nativeProps_DEPRECATED));
+          propsParserContext, shadowNode.getProps(), RawProps(finalProps));
     } else {
       props = componentDescriptor.cloneProps(
           propsParserContext, shadowNode.getProps(), std::move(rawProps));

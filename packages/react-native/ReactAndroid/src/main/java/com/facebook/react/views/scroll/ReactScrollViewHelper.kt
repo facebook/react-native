@@ -413,6 +413,31 @@ public object ReactScrollViewHelper {
   }
 
   @JvmStatic
+  public fun <T> dispatchMomentumEndOnAnimationEnd(scrollView: T) where
+  T : HasFlingAnimator?,
+  T : HasScrollEventThrottle?,
+  T : ViewGroup {
+    scrollView
+        .getFlingAnimator()
+        .addListener(
+            object : Animator.AnimatorListener {
+              override fun onAnimationStart(animator: Animator) = Unit
+
+              override fun onAnimationEnd(animator: Animator) {
+                emitScrollMomentumEndEvent(scrollView)
+                animator.removeListener(this)
+              }
+
+              override fun onAnimationCancel(animator: Animator) {
+                emitScrollMomentumEndEvent(scrollView)
+                animator.removeListener(this)
+              }
+
+              override fun onAnimationRepeat(animator: Animator) = Unit
+            })
+  }
+
+  @JvmStatic
   public fun <T> predictFinalScrollPosition(
       scrollView: T,
       velocityX: Int,

@@ -199,16 +199,18 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *scrollView, NS
   UIViewAnimationCurve curve =
       (UIViewAnimationCurve)[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] unsignedIntegerValue];
   CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  CGRect keyboardBeginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
 
   CGPoint absoluteViewOrigin = [self convertPoint:self.bounds.origin toView:nil];
   CGFloat scrollViewLowerY = isInverted ? absoluteViewOrigin.y : absoluteViewOrigin.y + self.bounds.size.height;
 
   UIEdgeInsets newEdgeInsets = _scrollView.contentInset;
   CGFloat inset = MAX(scrollViewLowerY - keyboardEndFrame.origin.y, 0);
+  const auto &props = static_cast<const ScrollViewProps &>(*_props);
   if (isInverted) {
-    newEdgeInsets.top = MAX(inset, _scrollView.contentInset.top);
+    newEdgeInsets.top = MAX(inset, props.contentInset.top);
   } else {
-    newEdgeInsets.bottom = MAX(inset, _scrollView.contentInset.bottom);
+    newEdgeInsets.bottom = MAX(inset, props.contentInset.bottom);
   }
 
   CGPoint newContentOffset = _scrollView.contentOffset;
@@ -220,21 +222,18 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *scrollView, NS
                                                from:self
                                            forEvent:nil]) {
     if (CGRectEqualToRect(_firstResponderFocus, CGRectNull)) {
-      // Text input view is outside of the scroll view.
-      return;
-    }
-
-    CGRect viewIntersection = CGRectIntersection(self.firstResponderFocus, keyboardEndFrame);
-
-    if (CGRectIsNull(viewIntersection)) {
-      return;
-    }
-
-    // Inner text field focused
-    CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
-    if (focusEnd > keyboardEndFrame.origin.y) {
-      // Text field active region is below visible area with keyboard - update diff to bring into view
-      contentDiff = keyboardEndFrame.origin.y - focusEnd;
+      UIView *inputAccessoryView = _firstResponderViewOutsideScrollView.inputAccessoryView;
+      if (inputAccessoryView) {
+        // Text input view is within the inputAccessoryView.
+        contentDiff = keyboardEndFrame.origin.y - keyboardBeginFrame.origin.y;
+      }
+    } else {
+      // Inner text field focused
+      CGFloat focusEnd = CGRectGetMaxY(self.firstResponderFocus);
+      if (focusEnd > keyboardEndFrame.origin.y) {
+        // Text field active region is below visible area with keyboard - update diff to bring into view
+        contentDiff = keyboardEndFrame.origin.y - focusEnd;
+      }
     }
   }
 
@@ -260,7 +259,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(RCTUIScrollView *scrollView, NS
                    animations:^{
                      self->_scrollView.contentInset = newEdgeInsets;
                      self->_scrollView.verticalScrollIndicatorInsets = newEdgeInsets;
-                     [self scrollToOffset:newContentOffset animated:NO];
+                     [self scrollTo:newContentOffset.x y:newContentOffset.y animated:NO];
                    }
                    completion:nil];
 }

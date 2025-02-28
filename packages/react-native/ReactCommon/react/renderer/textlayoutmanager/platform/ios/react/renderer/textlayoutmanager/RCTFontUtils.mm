@@ -7,6 +7,7 @@
 
 #import "RCTFontUtils.h"
 #import <CoreText/CoreText.h>
+#import <React/RCTFont.h>
 
 #import <algorithm>
 #import <cmath>
@@ -43,12 +44,6 @@ static RCTFontProperties RCTResolveFontProperties(
   fontProperties.variant =
       fontProperties.variant != RCTFontVariantUndefined ? fontProperties.variant : baseFontProperties.variant;
   return fontProperties;
-}
-
-static UIFontWeight RCTGetFontWeight(UIFont *font)
-{
-  NSDictionary *traits = [font.fontDescriptor objectForKey:UIFontDescriptorTraitsAttribute];
-  return [traits[UIFontWeightTrait] doubleValue];
 }
 
 static RCTFontStyle RCTGetFontStyle(UIFont *font)
@@ -151,6 +146,22 @@ static UIFont *RCTDefaultFontWithFontProperties(RCTFontProperties fontProperties
   return font;
 }
 
+#if TARGET_OS_OSX // [macOS
+NSArray<NSString *> *RCTFontNamesForFamilyName(NSString *familyName) {
+  NSArray<NSArray *> *fontMembers = [[NSFontManager sharedFontManager] availableMembersOfFontFamily:familyName];
+  NSMutableArray<NSString *> *fontNames = [NSMutableArray array];
+
+  for (NSArray *fontMember in fontMembers) {
+      // The first object is the Post-script name of the font.
+      NSString *fontName = fontMember.firstObject;
+      [fontNames addObject:fontName];
+  }
+
+  // Return an immutable array
+  return [NSArray arrayWithArray:fontNames];
+}
+#endif // macOS]
+
 UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
 {
   RCTFontProperties defaultFontProperties = RCTDefaultFontProperties();
@@ -167,19 +178,28 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
 #if !TARGET_OS_OSX // [macOS]
     NSArray<NSString *> *fontNames = [UIFont fontNamesForFamilyName:fontProperties.family];
 #else // [macOS
-    NSArray<NSString *> *fontNames = @[];
+    NSArray<NSString *> *fontNames = RCTFontNamesForFamilyName(fontProperties.family);
 #endif // macOS]
+    UIFontWeight fontWeight = fontProperties.weight;
 
     if (fontNames.count == 0) {
       // Gracefully handle being given a font name rather than font family, for
       // example: "Helvetica Light Oblique" rather than just "Helvetica".
       font = [UIFont fontWithName:fontProperties.family size:effectiveFontSize];
-
-      if (!font) {
+      if (font) {
+#if !TARGET_OS_OSX // [macOS]
+        fontNames = [UIFont fontNamesForFamilyName:font.familyName];
+#else // [macOS
+        fontNames = RCTFontNamesForFamilyName(font.familyName);
+#endif // macOS]
+        fontWeight = fontWeight ?: RCTGetFontWeight(font);
+      } else {
         // Failback to system font.
         font = [UIFont systemFontOfSize:effectiveFontSize weight:fontProperties.weight];
       }
-    } else {
+    }
+
+    if (fontNames.count > 0) {
       // Get the closest font that matches the given weight for the fontFamily
       CGFloat closestWeight = INFINITY;
       for (NSString *name in fontNames) {
@@ -190,7 +210,7 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties)
         }
 
         CGFloat testWeight = RCTGetFontWeight(fontMatch);
-        if (ABS(testWeight - fontProperties.weight) < ABS(closestWeight - fontProperties.weight)) {
+        if (ABS(testWeight - fontWeight) < ABS(closestWeight - fontWeight)) {
           font = fontMatch;
           closestWeight = testWeight;
         }
