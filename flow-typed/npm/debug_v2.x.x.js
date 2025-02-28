@@ -24,5 +24,6 @@ declare module 'debug' {
     enable(match: string): void,
     disable(): void,
     enabled: () => boolean,
+    log: (format: string, ...args: Array<mixed>) => void,
   };
 }
