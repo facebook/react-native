@@ -377,21 +377,17 @@ RCT_ENUM_CONVERTER(
 
 + (NSLineBreakStrategy)NSLineBreakStrategy:(id)json RCT_DYNAMIC
 {
-  if (@available(iOS 14.0, *)) {
-    static NSDictionary *mapping;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-      mapping = @{
-        @"none" : @(NSLineBreakStrategyNone),
-        @"standard" : @(NSLineBreakStrategyStandard),
-        @"hangul-word" : @(NSLineBreakStrategyHangulWordPriority),
-        @"push-out" : @(NSLineBreakStrategyPushOut)
-      };
-    });
-    return RCTConvertEnumValue("NSLineBreakStrategy", mapping, @(NSLineBreakStrategyNone), json).integerValue;
-  } else {
-    return NSLineBreakStrategyNone;
-  }
+  static NSDictionary *mapping;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    mapping = @{
+      @"none" : @(NSLineBreakStrategyNone),
+      @"standard" : @(NSLineBreakStrategyStandard),
+      @"hangul-word" : @(NSLineBreakStrategyHangulWordPriority),
+      @"push-out" : @(NSLineBreakStrategyPushOut)
+    };
+  });
+  return RCTConvertEnumValue("NSLineBreakStrategy", mapping, @(NSLineBreakStrategyNone), json).integerValue;
 }
 
 RCT_ENUM_CONVERTER(
