@@ -10,6 +10,7 @@
 
 'use strict';
 
+import type Performance from '../../src/private/webapis/performance/Performance';
 import type {IPerformanceLogger} from '../Utilities/createPerformanceLogger';
 
 import {type EventSubscription} from '../vendor/emitter/EventEmitter';
@@ -21,6 +22,8 @@ const GlobalPerformanceLogger =
 const RCTNetworking = require('./RCTNetworking').default;
 const base64 = require('base64-js');
 const invariant = require('invariant');
+
+declare var performance: Performance;
 
 const DEBUG_NETWORK_SEND_DELAY: false = false; // Set to a number of milliseconds when debugging
 const LABEL_FOR_MISSING_URL_FOR_PROFILING = 'Unknown URL';
