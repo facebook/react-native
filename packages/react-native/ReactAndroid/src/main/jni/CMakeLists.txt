@@ -8,6 +8,8 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 project(ReactAndroid)
 
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
+
 # Convert input paths to CMake format (with forward slashes)
 file(TO_CMAKE_PATH "${REACT_ANDROID_DIR}" REACT_ANDROID_DIR)
 file(TO_CMAKE_PATH "${REACT_BUILD_DIR}" REACT_BUILD_DIR)
@@ -242,6 +244,8 @@ target_link_libraries(reactnative
             yogacore
 )
 
+target_compile_reactnative_options(reactnative PRIVATE)
+
 target_include_directories(reactnative
         PUBLIC
         $<TARGET_PROPERTY:bridgeless,INTERFACE_INCLUDE_DIRECTORIES>
@@ -361,14 +365,9 @@ add_executable(reactnative_unittest
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ConcreteShadowNodeTest.cpp
   # ${REACT_COMMON_DIR}/react/renderer/core/tests/ComponentDescriptorTest.cpp
   )
-  target_compile_options(reactnative_unittest
-    PRIVATE
-    -Wall
-    -Werror
-    -fexceptions
-    -frtti
-    -std=c++20
-    -DHERMES_ENABLE_DEBUGGER)
+
+target_compile_reactnative_options(reactnative_unittest PRIVATE)
+target_compile_options(reactnative_unittest PRIVATE -DHERMES_ENABLE_DEBUGGER)
 
 target_link_libraries(reactnative_unittest
   fabricjni

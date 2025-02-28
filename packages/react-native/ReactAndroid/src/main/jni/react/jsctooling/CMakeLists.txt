@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 # jsctooling is a shared library where we merge all the jsc* related libraries.
 #
@@ -32,3 +33,4 @@ target_include_directories(jsctooling
         $<TARGET_PROPERTY:jscruntime,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:jscinstance,INTERFACE_INCLUDE_DIRECTORIES>
 )
+target_compile_reactnative_options(jsctooling PRIVATE)

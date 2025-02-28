@@ -6,13 +6,6 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -Wno-unused-lambda-capture
-        -std=c++20)
-
-
 #########################
 ###  cxxreactpackage  ###
 #########################
@@ -28,3 +21,7 @@ target_link_libraries(react_cxxreactpackage
         INTERFACE
         fb
         fbjni)
+
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
+target_compile_reactnative_options(react_cxxreactpackage INTERFACE)
+target_compile_options(react_cxxreactpackage INTERFACE -Wno-unused-lambda-capture)
