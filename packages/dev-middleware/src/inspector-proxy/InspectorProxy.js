@@ -27,7 +27,8 @@ import type {Timeout} from 'timers';
 import getBaseUrlFromRequest from '../utils/getBaseUrlFromRequest';
 import Device from './Device';
 import nullthrows from 'nullthrows';
-// Import these from node:timers to get the correct Flow types.
+// $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
+import {monitorEventLoopDelay, performance} from 'perf_hooks';
 // $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
 import {clearTimeout, setTimeout} from 'timers';
 import url from 'url';
@@ -43,6 +44,7 @@ const PAGES_LIST_JSON_VERSION_URL = '/json/version';
 const HEARTBEAT_TIMEOUT_MS = 60000;
 const HEARTBEAT_INTERVAL_MS = 10000;
 const PROXY_IDLE_TIMEOUT_MS = 10000;
+const EVENT_LOOP_PERF_MEASUREMENT_MS = 5000;
 
 const INTERNAL_ERROR_CODE = 1011;
 
@@ -88,6 +90,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
   #lastMessageTimestamp: number = 0;
 
+  #trackEventLoopPerf: boolean;
+
+  #eventLoopPerfMeasurementOngoing: boolean = false;
+
   constructor(
     projectRoot: string,
     serverBaseUrl: string,
@@ -95,6 +101,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     experiments: Experiments,
     logger?: Logger,
     customMessageHandler: ?CreateCustomMessageHandlerFn,
+    trackEventLoopPerf?: boolean = false,
   ) {
     this.#projectRoot = projectRoot;
     this.#serverBaseUrl = new URL(serverBaseUrl);
@@ -103,6 +110,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     this.#experiments = experiments;
     this.#logger = logger;
     this.#customMessageHandler = customMessageHandler;
+    this.#trackEventLoopPerf = trackEventLoopPerf;
   }
 
   getPageDescriptions({
@@ -247,17 +255,22 @@ export default class InspectorProxy implements InspectorProxyQueries {
     );
   }
 
-  #trackLastMessageTimestamp(socket: WS): void {
-    socket.on('message', message => {
-      // TODO: instead remove this and any other messages in idle state we find
-      // Not using JSON.parse for performance reasons. Worst case, we'll get
-      // less accurate idle state reporting, which we would easily see in data.
-      if (message.toString().includes('"event":"getPages"')) {
-        return;
-      }
+  #onMessageFromDeviceOrDebugger(
+    message: string,
+    debuggerSessionIDs: DebuggerSessionIDs,
+  ): void {
+    // TODO: instead remove this and any other messages in idle state we find
+    // Not using JSON.parse for performance reasons. Worst case, we'll get
+    // less accurate idle state reporting, which we would easily see in data.
+    if (message.includes('"event":"getPages"')) {
+      return;
+    }
 
-      this.#lastMessageTimestamp = new Date().getTime();
-    });
+    this.#lastMessageTimestamp = new Date().getTime();
+
+    if (this.#trackEventLoopPerf) {
+      this.#trackEventLoopPerfThrottled(debuggerSessionIDs);
+    }
   }
 
   // Adds websocket handler for device connections.
@@ -342,7 +355,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
           heartbeatEventName: 'device_heartbeat',
         });
 
-        this.#trackLastMessageTimestamp(socket);
+        socket.on('message', message =>
+          this.#onMessageFromDeviceOrDebugger(
+            message.toString(),
+            debuggerSessionIDs,
+          ),
+        );
 
         socket.on('close', (code: number, reason: string) => {
           this.#logger?.info(
@@ -376,6 +394,50 @@ export default class InspectorProxy implements InspectorProxyQueries {
       }
     });
     return wss;
+  }
+
+  #trackEventLoopPerfThrottled(debuggerSessionIDs: DebuggerSessionIDs): void {
+    if (this.#eventLoopPerfMeasurementOngoing) {
+      return;
+    }
+
+    this.#eventLoopPerfMeasurementOngoing = true;
+
+    // https://nodejs.org/api/perf_hooks.html#performanceeventlooputilizationutilization1-utilization2
+    const eluStart = performance.eventLoopUtilization();
+
+    // https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions
+    const h = monitorEventLoopDelay({resolution: 20});
+    h.enable();
+
+    setTimeout(() => {
+      const eluEnd = performance.eventLoopUtilization(eluStart);
+      h.disable();
+
+      // The % of time, between eluStart and eluEnd where event loop was busy
+      const eventLoopUtilization = Math.floor(eluEnd.utilization * 100);
+
+      // The max % of continious time between eluStart and eluEnd where event loop was busy
+      const maxEventLoopDelay = Math.floor(
+        (h.max / 1e6 / EVENT_LOOP_PERF_MEASUREMENT_MS) * 100,
+      );
+
+      debug(
+        "Inspector proxy perf in the last %ds- event loop utilization='%d%' max event loop delay='%d%'",
+        EVENT_LOOP_PERF_MEASUREMENT_MS / 1000,
+        eventLoopUtilization,
+        maxEventLoopDelay,
+      );
+
+      this.#eventReporter?.logEvent({
+        type: 'proxy_event_loop_performance',
+        eventLoopUtilization,
+        maxEventLoopDelay,
+        ...debuggerSessionIDs,
+      });
+
+      this.#eventLoopPerfMeasurementOngoing = false;
+    }, EVENT_LOOP_PERF_MEASUREMENT_MS).unref();
   }
 
   // Returns websocket handler for debugger connections.
@@ -433,12 +495,17 @@ export default class InspectorProxy implements InspectorProxyQueries {
           heartbeatEventName: 'debugger_heartbeat',
         });
 
+        socket.on('message', message =>
+          this.#onMessageFromDeviceOrDebugger(
+            message.toString(),
+            debuggerSessionIDs,
+          ),
+        );
+
         device.handleDebuggerConnection(socket, pageId, {
           debuggerRelativeBaseUrl,
           userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
-
-        this.#trackLastMessageTimestamp(socket);
 
         socket.on('close', (code: number, reason: string) => {
           this.#logger?.info(
@@ -552,12 +619,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
       const isIdle = this.#isIdle();
 
       debug(
-        "%s heartbeat ping-pong for app='%s' on device='%s' with idle='%s' took %dms",
-        socketName,
+        "[heartbeat ping-pong] [%s] %sms for app='%s' on device='%s' with idle='%s'",
+        socketName.padStart(7).padEnd(8),
+        String(roundtripDuration).padStart(5),
         debuggerSessionIDs.appId,
         debuggerSessionIDs.deviceName,
         isIdle ? 'true' : 'false',
-        roundtripDuration,
       );
 
       this.#eventReporter?.logEvent({

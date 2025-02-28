@@ -64,6 +64,13 @@ type Options = $ReadOnly<{
    * This is an unstable API with no semver guarantees.
    */
   unstable_customInspectorMessageHandler?: CreateCustomMessageHandlerFn,
+
+  /**
+   * Whether to measure the event loop performance of inspector proxy and log report it via the event reporter.
+   *
+   * This is an unstable API with no semver guarantees.
+   */
+  unstable_trackInspectorProxyEventLoopPerf?: boolean,
 }>;
 
 type DevMiddlewareAPI = $ReadOnly<{
@@ -79,6 +86,7 @@ export default function createDevMiddleware({
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},
   unstable_customInspectorMessageHandler,
+  unstable_trackInspectorProxyEventLoopPerf = false,
 }: Options): DevMiddlewareAPI {
   const experiments = getExperiments(experimentConfig);
   const eventReporter = createWrappedEventReporter(
@@ -93,6 +101,7 @@ export default function createDevMiddleware({
     experiments,
     logger,
     unstable_customInspectorMessageHandler,
+    unstable_trackInspectorProxyEventLoopPerf,
   );
 
   const middleware = connect()
@@ -154,13 +163,10 @@ function createWrappedEventReporter(
           break;
         case 'fusebox_console_notice':
           logger?.info(
-            '\n' +
-              '\u001B[7m' +
-              ' \u001B[1m💡 JavaScript logs have moved!\u001B[22m They can now be ' +
+            '\u001B[1m\u001B[7m💡 JavaScript logs have moved!\u001B[22m They can now be ' +
               'viewed in React Native DevTools. Tip: Type \u001B[1mj\u001B[22m in ' +
               'the terminal to open (requires Google Chrome or Microsoft Edge).' +
-              '\u001B[27m' +
-              '\n',
+              '\u001B[27m',
           );
           break;
       }
