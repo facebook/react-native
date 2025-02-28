@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-include(${REACT_ANDROID_DIR}/cmake-utils/react-native-flags.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB react_performance_timeline_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_performance_timeline OBJECT ${react_performance_timeline_SRC})

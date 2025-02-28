@@ -22,6 +22,6 @@ target_link_libraries(react_cxxreactpackage
         fb
         fbjni)
 
-include(${REACT_ANDROID_DIR}/cmake-utils/react-native-flags.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 target_compile_reactnative_options(react_cxxreactpackage INTERFACE)
 target_compile_options(react_cxxreactpackage INTERFACE -Wno-unused-lambda-capture)

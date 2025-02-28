@@ -8,7 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_compile_options(-fexceptions -fno-omit-frame-pointer)
 
-include(${REACT_ANDROID_DIR}/cmake-utils/react-native-flags.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 add_library(glog_init OBJECT glog_init.cpp)
 

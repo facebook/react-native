@@ -18,11 +18,11 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${CMAKE_CURRENT_LIST_DIR}/folly-flags.cmake)
-include(${REACT_ANDROID_DIR}/cmake-utils/react-native-flags.cmake)
 
 # We configured the REACT_COMMON_DIR variable as it's commonly used to reference
 # shared C++ code in other targets.
 set(REACT_COMMON_DIR ${REACT_ANDROID_DIR}/../ReactCommon)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 # If you have ccache installed, we're going to honor it.
 find_program(CCACHE_FOUND ccache)
