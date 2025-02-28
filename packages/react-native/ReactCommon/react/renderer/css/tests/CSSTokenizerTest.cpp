@@ -97,6 +97,16 @@ TEST(CSSTokenizer, number_values) {
       CSSToken{CSSTokenType::EndOfFile});
 
   EXPECT_TOKENS(
+      "3e-1000",
+      CSSToken{CSSTokenType::Number, 0},
+      CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
+      "3e1000",
+      CSSToken{CSSTokenType::Number, std::numeric_limits<float>::infinity()},
+      CSSToken{CSSTokenType::EndOfFile});
+
+  EXPECT_TOKENS(
       "+.9999999999",
       CSSToken{CSSTokenType::Number, +.9999999999},
       CSSToken{CSSTokenType::EndOfFile});
