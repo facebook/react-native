@@ -151,16 +151,30 @@ jobs:
       - name: Rename XCFramework
         if: steps.restore-xcframework.outputs.cache-hit != 'true'
         run: mv packages/react-native/third-party/ReactNativeDependencies.xcframework packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework
+      - name: Show Symbol folder content
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        run: ls -lR packages/react-native/third-party/Symbols
+      - name: Rename dSYM
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        run: |
+          cp -R \
+            packages/react-native/third-party/Symbols/ReactNativeDependencies.framework.dSYM \
+            packages/react-native/third-party/Symbols/ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM
+          rm -rf packages/react-native/third-party/Symbols/ReactNativeDependencies.framework.dSYM
       - name: Upload XCFramework Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ReactNativeDependencies${{ matrix.flavor }}.xcframework
+          path: packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework
+      - name: Upload dSYM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM
           path: |
-            packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework
+            packages/react-native/third-party/Symbols/ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM
       - name: Save XCFramework in Cache
         if: ${{ github.ref == 'refs/heads/main' }} # To avoid that the cache explode
         uses: actions/cache/save@v4
         with:
-          path: |
-            packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework
+          path: packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework
           key: v1-ios-dependencies-xcframework-${{ matrix.flavor }}-${{ hashfiles('scripts/releases/ios-prebuilds/configuration.js') }}

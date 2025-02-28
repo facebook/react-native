@@ -164,6 +164,7 @@ jobs:
         build_hermesc_linux,
         build_hermesc_windows,
         build_android,
+        prebuild_apple_dependencies,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest
@@ -186,7 +187,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Build and Publish NPM PAckage
+      - name: Build and Publish NPM Package
         uses: ./.github/actions/build-npm-package
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
