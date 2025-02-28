@@ -27,6 +27,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, RCTReleaseLevel) { Canary, Experimental, Stable };
+
 @protocol RCTReactNativeFactoryDelegate <
     RCTBridgeDelegate,
     RCTUIConfiguratorProtocol,
@@ -86,6 +88,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate;
 
+- (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate releaseLevel:(RCTReleaseLevel)releaseLevel;
+
 - (void)startReactNativeWithModuleName:(NSString *)moduleName inWindow:(UIWindow *_Nullable)window;
 
 - (void)startReactNativeWithModuleName:(NSString *)moduleName
@@ -103,6 +107,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) RCTSurfacePresenterBridgeAdapter *bridgeAdapter;
 
 @property (nonatomic, weak) id<RCTReactNativeFactoryDelegate> delegate;
+
+@property (nonatomic) RCTReleaseLevel releaseLevel;
 
 @end
 
