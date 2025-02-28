@@ -2,7 +2,6 @@ name: Prebuild iOS
 
 on:
   workflow_call: # this directive allow us to call this workflow from other workflows
-  pull_request: # remove this before landing
 
 jobs:
   prepare_workspace:
