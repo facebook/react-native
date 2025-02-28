@@ -9460,10 +9460,10 @@ exports[`public API should not change unintentionally src/private/webapis/inters
   entries: Array<IntersectionObserverEntry>,
   observer: IntersectionObserver
 ) => mixed;
-type IntersectionObserverInit = {
-  threshold?: number | $ReadOnlyArray<number>,
-  rnRootThreshold?: number | $ReadOnlyArray<number>,
-};
+export interface IntersectionObserverInit {
+  threshold?: number | $ReadOnlyArray<number>;
+  rnRootThreshold?: number | $ReadOnlyArray<number>;
+}
 declare export default class IntersectionObserver {
   constructor(
     callback: IntersectionObserverCallback,
@@ -9507,15 +9507,15 @@ exports[`public API should not change unintentionally src/private/webapis/mutati
   mutationRecords: $ReadOnlyArray<MutationRecord>,
   observer: MutationObserver
 ) => mixed;
-type MutationObserverInit = $ReadOnly<{
-  subtree?: boolean,
-  childList: true,
-  attributes?: boolean,
-  attributeFilter?: $ReadOnlyArray<string>,
-  attributeOldValue?: boolean,
-  characterData?: boolean,
-  characterDataOldValue?: boolean,
-}>;
+export interface MutationObserverInit {
+  +subtree?: boolean;
+  +childList: true;
+  +attributes?: boolean;
+  +attributeFilter?: $ReadOnlyArray<string>;
+  +attributeOldValue?: boolean;
+  +characterData?: boolean;
+  +characterDataOldValue?: boolean;
+}
 declare export default class MutationObserver {
   constructor(callback: MutationObserverCallback): void;
   observe(target: ReactNativeElement, options?: MutationObserverInit): void;
@@ -9687,12 +9687,12 @@ export type PerformanceObserverCallback = (
   observer: PerformanceObserver,
   options?: PerformanceObserverCallbackOptions
 ) => void;
-export type PerformanceObserverInit = {
-  entryTypes?: Array<PerformanceEntryType>,
-  type?: PerformanceEntryType,
-  buffered?: boolean,
-  durationThreshold?: DOMHighResTimeStamp,
-};
+export interface PerformanceObserverInit {
+  +entryTypes?: Array<PerformanceEntryType>;
+  +type?: PerformanceEntryType;
+  +buffered?: boolean;
+  +durationThreshold?: DOMHighResTimeStamp;
+}
 declare export class PerformanceObserver {
   constructor(callback: PerformanceObserverCallback): void;
   observe(options: PerformanceObserverInit): void;
