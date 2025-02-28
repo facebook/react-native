@@ -168,6 +168,7 @@ jobs:
         build_hermesc_linux,
         build_hermesc_windows,
         build_android,
+        prebuild_apple_dependencies,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest
@@ -186,7 +187,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Build and Publish NPM PAckage
+      - name: Build and Publish NPM Package
         uses: ./.github/actions/build-npm-package
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
