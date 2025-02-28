@@ -16,7 +16,7 @@ const fs = require('fs');
 const path = require('path');
 
 /*::
-import type { Dependency, Platform } from './types';
+import type { Dependency, Destination, Platform } from './types';
 */
 
 /**
@@ -28,15 +28,21 @@ async function buildDepenencies(
   scheme /*: string */,
   configuration /*: string */,
   dependencies /*: $ReadOnlyArray<Dependency> */,
-  platforms /*: $ReadOnlyArray<Platform> */,
+  destinations /*: $ReadOnlyArray<Destination> */,
   rootFolder /*: string */,
   buildFolder /*: string */,
 ) {
   console.log('✅ Building dependencies...');
 
   await Promise.all(
-    platforms.map(platform =>
-      buildPlatform(scheme, configuration, platform, rootFolder, buildFolder),
+    destinations.map(destination =>
+      buildPlatform(
+        scheme,
+        configuration,
+        destination,
+        rootFolder,
+        buildFolder,
+      ),
     ),
   );
 
@@ -50,13 +56,13 @@ async function buildDepenencies(
 async function buildPlatform(
   scheme /*: string */,
   configuration /*: string */,
-  platform /*: Platform */,
+  destination /*: Destination */,
   rootFolder /*: string */,
   buildFolder /*: string */,
 ) {
-  console.log(`Building ${platform}...`);
+  console.log(`Building ${destination}...`);
   const command =
-    `xcodebuild -scheme "${scheme}" -destination "generic/platform=${platform}" ` +
+    `xcodebuild -scheme "${scheme}" -destination "generic/platform=${destination}" ` +
     `-derivedDataPath "${buildFolder}" ` +
     `-configuration "${configuration}" ` +
     'SKIP_INSTALL=NO \
