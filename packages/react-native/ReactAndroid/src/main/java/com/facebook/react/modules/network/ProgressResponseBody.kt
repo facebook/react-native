@@ -5,64 +5,55 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.modules.network;
+package com.facebook.react.modules.network
 
-import androidx.annotation.Nullable;
-import java.io.IOException;
-import okhttp3.MediaType;
-import okhttp3.ResponseBody;
-import okio.Buffer;
-import okio.BufferedSource;
-import okio.ForwardingSource;
-import okio.Okio;
-import okio.Source;
+import okhttp3.MediaType
+import okhttp3.ResponseBody
+import okio.Buffer
+import okio.BufferedSource
+import okio.ForwardingSource
+import okio.Source
+import okio.buffer
+import java.io.IOException
 
-public class ProgressResponseBody extends ResponseBody {
+public class ProgressResponseBody public constructor(
+    private val responseBody: ResponseBody,
+    private val progressListener: ProgressListener
+) : ResponseBody() {
+  private lateinit var bufferedSource: BufferedSource
+  private var totalBytesRead = 0L
 
-  private final ResponseBody mResponseBody;
-  private final ProgressListener mProgressListener;
-  private @Nullable BufferedSource mBufferedSource;
-  private long mTotalBytesRead;
-
-  public ProgressResponseBody(ResponseBody responseBody, ProgressListener progressListener) {
-    mResponseBody = responseBody;
-    mProgressListener = progressListener;
-    mTotalBytesRead = 0L;
+  public override fun contentType(): MediaType? {
+    return responseBody.contentType()
   }
 
-  @Override
-  public MediaType contentType() {
-    return mResponseBody.contentType();
+  override fun contentLength(): Long {
+    return responseBody.contentLength()
   }
 
-  @Override
-  public long contentLength() {
-    return mResponseBody.contentLength();
+  public fun totalBytesRead(): Long {
+    return totalBytesRead
   }
 
-  public long totalBytesRead() {
-    return mTotalBytesRead;
-  }
-
-  @Override
-  public BufferedSource source() {
-    if (mBufferedSource == null) {
-      mBufferedSource = Okio.buffer(source(mResponseBody.source()));
+  public override fun source(): BufferedSource {
+    if (!::bufferedSource.isInitialized) {
+      bufferedSource = source(responseBody.source()).buffer()
     }
-    return mBufferedSource;
+    return bufferedSource
   }
 
-  private Source source(Source source) {
-    return new ForwardingSource(source) {
-      @Override
-      public long read(Buffer sink, long byteCount) throws IOException {
-        long bytesRead = super.read(sink, byteCount);
+  private fun source(source: Source): Source {
+    return object : ForwardingSource(source) {
+      @Throws(IOException::class)
+      override fun read(sink: Buffer, byteCount: Long): Long {
         // read() returns the number of bytes read, or -1 if this source is exhausted.
-        mTotalBytesRead += bytesRead != -1 ? bytesRead : 0;
-        mProgressListener.onProgress(
-            mTotalBytesRead, mResponseBody.contentLength(), bytesRead == -1);
-        return bytesRead;
+        return super.read(sink, byteCount).also { bytesRead ->
+          if (bytesRead != -1L) totalBytesRead += bytesRead
+          progressListener.onProgress(
+            totalBytesRead, responseBody.contentLength(), bytesRead == -1L
+          )
+        }
       }
-    };
+    }
   }
 }
