@@ -5205,15 +5205,16 @@ type OptionalProps<ItemT> = {
   fadingEdgeLength?: ?number,
   strictMode?: boolean,
 };
-type FlatListProps<ItemT> = {
+type FlatListBaseProps<ItemT> = {
   ...RequiredProps<ItemT>,
   ...OptionalProps<ItemT>,
 };
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
-export type Props<ItemT> = {
+export type FlatListProps<ItemT> = {
   ...$Diff<
     VirtualizedListProps,
     {
+      data: $PropertyType<VirtualizedListProps, \\"data\\">,
       getItem: $PropertyType<VirtualizedListProps, \\"getItem\\">,
       getItemCount: $PropertyType<VirtualizedListProps, \\"getItemCount\\">,
       getItemLayout: $PropertyType<VirtualizedListProps, \\"getItemLayout\\">,
@@ -5222,10 +5223,12 @@ export type Props<ItemT> = {
       ...
     },
   >,
-  ...FlatListProps<ItemT>,
+  ...FlatListBaseProps<ItemT>,
   ...
 };
-declare class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
+declare class FlatList<ItemT = any>
+  extends React.PureComponent<FlatListProps<ItemT>>
+{
   scrollToEnd(params?: ?{ animated?: ?boolean, ... }): void;
   scrollToIndex(params: {
     animated?: ?boolean,
@@ -5250,8 +5253,8 @@ declare class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     | ?React.ElementRef<ScrollViewNativeComponent>;
   getScrollableNode(): any;
   setNativeProps(props: { [string]: mixed, ... }): void;
-  constructor(props: Props<ItemT>): void;
-  componentDidUpdate(prevProps: Props<ItemT>): void;
+  constructor(props: FlatListProps<ItemT>): void;
+  componentDidUpdate(prevProps: FlatListProps<ItemT>): void;
   render(): React.Node;
 }
 declare export default typeof FlatList;
