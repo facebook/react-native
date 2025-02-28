@@ -1708,16 +1708,47 @@ declare export default function useAndroidRippleForView(
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroid.js 1`] = `
-"export type { ProgressBarAndroidProps } from \\"./ProgressBarAndroid.android\\";
-declare export default
-  | UnimplementedViewType
-  | ProgressBarAndroidNativeComponentType;
+"export type { ProgressBarAndroidProps };
+declare export default component(
+  ref?: React.RefSetter<
+    React.ElementRef<ProgressBarAndroidNativeComponentType>,
+  >,
+  ...props: ProgressBarAndroidProps
+);
 "
 `;
 
 exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroidNativeComponent.js 1`] = `
 "export * from \\"../../../src/private/specs_DEPRECATED/components/ProgressBarAndroidNativeComponent\\";
 declare export default typeof ProgressBarAndroidNativeComponent;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/Components/ProgressBarAndroid/ProgressBarAndroidTypes.js 1`] = `
+"type ProgressBarAndroidStyleAttrProp =
+  | {
+      styleAttr: \\"Horizontal\\",
+      indeterminate: false,
+      progress: number,
+    }
+  | {
+      styleAttr:
+        | \\"Horizontal\\"
+        | \\"Normal\\"
+        | \\"Small\\"
+        | \\"Large\\"
+        | \\"Inverse\\"
+        | \\"SmallInverse\\"
+        | \\"LargeInverse\\",
+      indeterminate: true,
+    };
+export type ProgressBarAndroidProps = $ReadOnly<{
+  ...ViewProps,
+  ...ProgressBarAndroidStyleAttrProp,
+  animating?: ?boolean,
+  color?: ?ColorValue,
+  testID?: ?string,
+}>;
 "
 `;
 
