@@ -21,18 +21,18 @@ export type MutationObserverCallback = (
   observer: MutationObserver,
 ) => mixed;
 
-type MutationObserverInit = $ReadOnly<{
-  subtree?: boolean,
+export interface MutationObserverInit {
+  +subtree?: boolean;
   // This is the only supported option so it's required to be `true`.
-  childList: true,
+  +childList: true;
 
   // Unsupported:
-  attributes?: boolean,
-  attributeFilter?: $ReadOnlyArray<string>,
-  attributeOldValue?: boolean,
-  characterData?: boolean,
-  characterDataOldValue?: boolean,
-}>;
+  +attributes?: boolean;
+  +attributeFilter?: $ReadOnlyArray<string>;
+  +attributeOldValue?: boolean;
+  +characterData?: boolean;
+  +characterDataOldValue?: boolean;
+}
 
 /**
  * This is a React Native implementation for the `MutationObserver` API
