@@ -172,6 +172,7 @@ export { default as Interpolation } from \\"./nodes/AnimatedInterpolation\\";
 export { default as Node } from \\"./nodes/AnimatedNode\\";
 export { default as Value } from \\"./nodes/AnimatedValue\\";
 export { default as ValueXY } from \\"./nodes/AnimatedValueXY\\";
+export type { AnimatedValueConfig as AnimatedConfig } from \\"./nodes/AnimatedValue\\";
 declare export const add: $FlowFixMe;
 declare export const attachNativeEvent: $FlowFixMe;
 declare export const createAnimatedComponent: $FlowFixMe;
@@ -1006,7 +1007,7 @@ exports[`public API should not change unintentionally Libraries/Animated/useAnim
 exports[`public API should not change unintentionally Libraries/Animated/useAnimatedValue.js 1`] = `
 "declare export default function useAnimatedValue(
   initialValue: number,
-  config?: ?AnimatedValueConfig
+  config?: ?Animated.AnimatedConfig
 ): Animated.Value;
 "
 `;

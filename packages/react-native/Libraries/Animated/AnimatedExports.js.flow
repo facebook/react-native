@@ -24,6 +24,8 @@ export {default as Node} from './nodes/AnimatedNode';
 export {default as Value} from './nodes/AnimatedValue';
 export {default as ValueXY} from './nodes/AnimatedValueXY';
 
+export type {AnimatedValueConfig as AnimatedConfig} from './nodes/AnimatedValue';
+
 export const add = AnimatedImplementation.add;
 export const attachNativeEvent = AnimatedImplementation.attachNativeEvent;
 export const createAnimatedComponent =
