@@ -18,6 +18,7 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${CMAKE_CURRENT_LIST_DIR}/folly-flags.cmake)
+include(${REACT_ANDROID_DIR}/cmake-utils/react-native-flags.cmake)
 
 # We configured the REACT_COMMON_DIR variable as it's commonly used to reference
 # shared C++ code in other targets.
@@ -60,16 +61,7 @@ target_include_directories(${CMAKE_PROJECT_NAME}
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${PROJECT_BUILD_DIR}/generated/autolinking/src/main/jni)
 
-target_compile_options(${CMAKE_PROJECT_NAME}
-        PRIVATE
-                -Wall
-                -Werror
-                -fexceptions
-                -frtti
-                -std=c++20
-                -DLOG_TAG=\"ReactNative\"
-                -DFOLLY_NO_CONFIG=1
-)
+target_compile_reactnative_options(${CMAKE_PROJECT_NAME} PRIVATE "ReactNative")
 
 # Prefab packages from React Native
 find_package(ReactAndroid REQUIRED CONFIG)
