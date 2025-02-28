@@ -352,7 +352,6 @@ declare class Navigator
   usb?: USB;
   maxTouchPoints: number;
   permissions: Permissions;
-  serviceWorker?: ServiceWorkerContainer;
   getGamepads?: () => Array<Gamepad | null>;
   webkitGetGamepads?: Function;
   mozGetGamepads?: Function;
@@ -927,84 +926,6 @@ declare class WebSocket extends EventTarget {
   OPEN: 1;
   CLOSING: 2;
   CLOSED: 3;
-}
-
-type WorkerOptions = {
-  type?: WorkerType,
-  credentials?: CredentialsType,
-  name?: string,
-  ...
-};
-
-declare class Worker extends EventTarget {
-  constructor(
-    stringUrl: string | TrustedScriptURL,
-    workerOptions?: WorkerOptions,
-  ): void;
-  onerror: null | ((ev: any) => mixed);
-  onmessage: null | ((ev: MessageEvent) => mixed);
-  onmessageerror: null | ((ev: MessageEvent) => mixed);
-  postMessage(message: any, ports?: any): void;
-  terminate(): void;
-}
-
-declare class SharedWorker extends EventTarget {
-  constructor(stringUrl: string | TrustedScriptURL, name?: string): void;
-  constructor(
-    stringUrl: string | TrustedScriptURL,
-    workerOptions?: WorkerOptions,
-  ): void;
-  port: MessagePort;
-  onerror: (ev: any) => mixed;
-}
-
-declare function importScripts(...urls: Array<string | TrustedScriptURL>): void;
-
-declare class WorkerGlobalScope extends EventTarget {
-  self: this;
-  location: WorkerLocation;
-  navigator: WorkerNavigator;
-  close(): void;
-  importScripts(...urls: Array<string | TrustedScriptURL>): void;
-  onerror: (ev: any) => mixed;
-  onlanguagechange: (ev: any) => mixed;
-  onoffline: (ev: any) => mixed;
-  ononline: (ev: any) => mixed;
-  onrejectionhandled: (ev: PromiseRejectionEvent) => mixed;
-  onunhandledrejection: (ev: PromiseRejectionEvent) => mixed;
-}
-
-declare class DedicatedWorkerGlobalScope extends WorkerGlobalScope {
-  onmessage: (ev: MessageEvent) => mixed;
-  onmessageerror: (ev: MessageEvent) => mixed;
-  postMessage(message: any, transfer?: Iterable<any>): void;
-}
-
-declare class SharedWorkerGlobalScope extends WorkerGlobalScope {
-  name: string;
-  onconnect: (ev: MessageEvent) => mixed;
-}
-
-declare class WorkerLocation {
-  origin: string;
-  protocol: string;
-  host: string;
-  hostname: string;
-  port: string;
-  pathname: string;
-  search: string;
-  hash: string;
-}
-
-declare class WorkerNavigator
-  mixins
-    NavigatorID,
-    NavigatorLanguage,
-    NavigatorOnLine,
-    NavigatorConcurrentHardware,
-    NavigatorStorage
-{
-  permissions: Permissions;
 }
 
 // deprecated
