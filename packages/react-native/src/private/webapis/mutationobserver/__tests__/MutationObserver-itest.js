@@ -10,6 +10,7 @@
  */
 
 import type MutationObserverType from '../MutationObserver';
+import type MutationRecordType from '../MutationRecord';
 
 import View from '../../../../../Libraries/Components/View/View';
 import setUpMutationObserver from '../../../setup/setUpMutationObserver';
@@ -22,6 +23,7 @@ import * as React from 'react';
 import '../../../../../Libraries/Core/InitializeCore.js';
 
 declare const MutationObserver: Class<MutationObserverType>;
+declare const MutationRecord: Class<MutationRecordType>;
 
 setUpMutationObserver();
 

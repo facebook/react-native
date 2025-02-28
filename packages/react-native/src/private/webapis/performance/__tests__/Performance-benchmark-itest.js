@@ -12,7 +12,11 @@
 
 import '../../../../../Libraries/Core/InitializeCore.js';
 
+import type Performance from '../Performance';
+
 import Fantom from '@react-native/fantom';
+
+declare var performance: Performance;
 
 const clearMarksAndMeasures = () => {
   performance.clearMarks();
@@ -76,7 +80,9 @@ Fantom.unstable_benchmark
       performance.clearMarks('mark');
     },
     {
-      beforeEach: () => performance.mark('mark'),
+      beforeEach: () => {
+        performance.mark('mark');
+      },
     },
   )
   .test(
@@ -85,11 +91,12 @@ Fantom.unstable_benchmark
       performance.clearMeasures('measure');
     },
     {
-      beforeEach: () =>
+      beforeEach: () => {
         performance.measure('measure', {
           start: 100,
           end: 300,
-        }),
+        });
+      },
     },
   )
   .test('mark + clearMarks', () => {

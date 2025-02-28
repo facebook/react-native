@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
  * @oncall flow
  */
@@ -109,12 +110,6 @@ declare class DataTransferItem {
    * https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem/webkitGetAsEntry
    */
   webkitGetAsEntry(): void | (() => any);
-  /*
-   * Not supported in all browsers
-   * For up to date compatibility information, please visit
-   * https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem/getAsFileSystemHandle
-   */
-  getAsFileSystemHandle?: () => Promise<?FileSystemHandle>;
 }
 
 /* DOM */
