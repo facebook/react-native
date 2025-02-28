@@ -26,6 +26,7 @@ import {
   getExamplesListWithRecentlyUsed,
   initialNavigationState,
 } from './utils/testerStateUtils';
+import ReportFullyDrawnView from '../ReportFullyDrawnView/ReportFullyDrawnView';
 import * as React from 'react';
 import {
   BackHandler,
@@ -298,6 +299,7 @@ const RNTesterApp = ({
           handleNavBarPress={handleNavBarPress}
         />
       </View>
+      <ReportFullyDrawnView />
     </RNTesterThemeContext.Provider>
   );
 };

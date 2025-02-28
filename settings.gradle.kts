@@ -18,7 +18,8 @@ include(
     ":packages:react-native:ReactAndroid",
     ":packages:react-native:ReactAndroid:hermes-engine",
     ":packages:react-native:ReactAndroid:external-artifacts",
-    ":packages:rn-tester:android:app")
+    ":packages:rn-tester:android:app",
+    ":packages:rn-tester:android:app:benchmark")
 
 includeBuild("packages/gradle-plugin/")
 
