@@ -14,19 +14,13 @@
 #include <cxxreact/JSExecutor.h>
 #include <cxxreact/ReactMarker.h>
 #include <jsi/instrumentation.h>
-#include <jsinspector-modern/tracing/CdpTracing.h>
 #include <react/performance/timeline/PerformanceEntryReporter.h>
 #include <react/performance/timeline/PerformanceObserver.h>
-#include <reactperflogger/ReactPerfettoLogger.h>
 
 #include "NativePerformance.h"
 
 #ifdef RN_DISABLE_OSS_PLUGIN_HEADER
 #include "Plugins.h"
-#endif
-
-#ifdef WITH_PERFETTO
-#include <reactperflogger/ReactPerfetto.h>
 #endif
 
 std::shared_ptr<facebook::react::TurboModule> NativePerformanceModuleProvider(
@@ -38,33 +32,6 @@ std::shared_ptr<facebook::react::TurboModule> NativePerformanceModuleProvider(
 namespace facebook::react {
 
 namespace {
-
-#if defined(__clang__)
-#define NO_DESTROY [[clang::no_destroy]]
-#else
-#define NO_DESTROY
-#endif
-
-NO_DESTROY const std::string TRACK_PREFIX = "Track:";
-
-std::tuple<std::optional<std::string>, std::string_view> parseTrackName(
-    const std::string& name) {
-  // Until there's a standard way to pass through track information, parse it
-  // manually, e.g., "Track:Foo:Event name"
-  // https://github.com/w3c/user-timing/issues/109
-  std::optional<std::string> trackName;
-  std::string_view eventName(name);
-  if (name.starts_with(TRACK_PREFIX)) {
-    const auto trackNameDelimiter = name.find(':', TRACK_PREFIX.length());
-    if (trackNameDelimiter != std::string::npos) {
-      trackName = name.substr(
-          TRACK_PREFIX.length(), trackNameDelimiter - TRACK_PREFIX.length());
-      eventName = std::string_view(name).substr(trackNameDelimiter + 1);
-    }
-  }
-
-  return std::make_tuple(trackName, eventName);
-}
 
 class PerformanceObserverWrapper : public jsi::NativeState {
  public:
@@ -103,11 +70,7 @@ std::shared_ptr<PerformanceObserver> tryGetObserver(
 } // namespace
 
 NativePerformance::NativePerformance(std::shared_ptr<CallInvoker> jsInvoker)
-    : NativePerformanceCxxSpec(std::move(jsInvoker)) {
-#ifdef WITH_PERFETTO
-  initializePerfetto();
-#endif
-}
+    : NativePerformanceCxxSpec(std::move(jsInvoker)) {}
 
 double NativePerformance::now(jsi::Runtime& /*rt*/) {
   return JSExecutor::performanceNow();
@@ -117,12 +80,8 @@ double NativePerformance::markWithResult(
     jsi::Runtime& rt,
     std::string name,
     std::optional<double> startTime) {
-  auto [trackName, eventName] = parseTrackName(name);
   auto entry =
       PerformanceEntryReporter::getInstance()->reportMark(name, startTime);
-
-  ReactPerfettoLogger::mark(eventName, entry.startTime, trackName);
-
   return entry.startTime;
 }
 
@@ -134,26 +93,8 @@ std::tuple<double, double> NativePerformance::measureWithResult(
     std::optional<double> duration,
     std::optional<std::string> startMark,
     std::optional<std::string> endMark) {
-  auto [trackName, eventName] = parseTrackName(name);
-
-  std::optional<jsinspector_modern::DevToolsTrackEntryPayload> trackMetadata;
-
-  if (trackName.has_value()) {
-    trackMetadata = {.track = trackName.value()};
-  }
-
   auto entry = PerformanceEntryReporter::getInstance()->reportMeasure(
-      eventName,
-      startTime,
-      endTime,
-      duration,
-      startMark,
-      endMark,
-      trackMetadata);
-
-  ReactPerfettoLogger::measure(
-      eventName, entry.startTime, entry.startTime + entry.duration, trackName);
-
+      name, startTime, endTime, duration, startMark, endMark);
   return std::tuple{entry.startTime, entry.duration};
 }
 

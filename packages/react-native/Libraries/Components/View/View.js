@@ -24,7 +24,7 @@ export type Props = ViewProps;
  * @see https://reactnative.dev/docs/view
  */
 const View: component(
-  ref: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
+  ref?: React.RefSetter<React.ElementRef<typeof ViewNativeComponent>>,
   ...props: ViewProps
 ) = React.forwardRef(
   (

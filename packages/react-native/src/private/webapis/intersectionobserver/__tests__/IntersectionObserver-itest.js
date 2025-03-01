@@ -7,7 +7,6 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 /* eslint-disable lint/sort-imports */

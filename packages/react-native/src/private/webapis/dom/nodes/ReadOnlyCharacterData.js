@@ -43,7 +43,7 @@ export default class ReadOnlyCharacterData extends ReadOnlyNode {
   /**
    * @override
    */
-  get textContent(): string | null {
+  get textContent(): string {
     return this.data;
   }
 

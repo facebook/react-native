@@ -7,6 +7,7 @@
 
 #include <jsinspector-modern/RuntimeTarget.h>
 
+#include "HermesRuntimeSamplingProfileSerializer.h"
 #include "HermesRuntimeTargetDelegate.h"
 
 // If HERMES_ENABLE_DEBUGGER isn't defined, we can't access any Hermes
@@ -28,6 +29,12 @@ using namespace facebook::hermes;
 namespace facebook::react::jsinspector_modern {
 
 #ifdef HERMES_ENABLE_DEBUGGER
+namespace {
+
+const uint16_t HERMES_SAMPLING_FREQUENCY_HZ = 1000;
+
+} // namespace
+
 class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
   using HermesStackTrace = debugger::StackTrace;
 
@@ -167,6 +174,20 @@ class HermesRuntimeTargetDelegate::Impl final : public RuntimeTargetDelegate {
         runtime_->getDebugger().captureStackTrace());
   }
 
+  void enableSamplingProfiler() override {
+    runtime_->enableSamplingProfiler(HERMES_SAMPLING_FREQUENCY_HZ);
+  }
+
+  void disableSamplingProfiler() override {
+    runtime_->disableSamplingProfiler();
+  }
+
+  tracing::RuntimeSamplingProfile collectSamplingProfile() override {
+    return tracing::HermesRuntimeSamplingProfileSerializer::
+        serializeToTracingSamplingProfile(
+            runtime_->dumpSampledTraceToProfile());
+  }
+
  private:
   HermesRuntimeTargetDelegate& delegate_;
   std::shared_ptr<HermesRuntime> runtime_;
@@ -226,6 +247,19 @@ std::unique_ptr<StackTrace> HermesRuntimeTargetDelegate::captureStackTrace(
     jsi::Runtime& runtime,
     size_t framesToSkip) {
   return impl_->captureStackTrace(runtime, framesToSkip);
+}
+
+void HermesRuntimeTargetDelegate::enableSamplingProfiler() {
+  impl_->enableSamplingProfiler();
+}
+
+void HermesRuntimeTargetDelegate::disableSamplingProfiler() {
+  impl_->disableSamplingProfiler();
+}
+
+tracing::RuntimeSamplingProfile
+HermesRuntimeTargetDelegate::collectSamplingProfile() {
+  return impl_->collectSamplingProfile();
 }
 
 #ifdef HERMES_ENABLE_DEBUGGER

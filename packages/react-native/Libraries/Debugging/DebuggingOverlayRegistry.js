@@ -9,13 +9,13 @@
  * @oncall react_native
  */
 
+import type {HostInstance} from '../../src/private/types/HostInstance';
 import type ReactNativeElement from '../../src/private/webapis/dom/nodes/ReactNativeElement';
 import type ReadOnlyElement from '../../src/private/webapis/dom/nodes/ReadOnlyElement';
 import type {
   AppContainerRootViewRef,
   DebuggingOverlayRef,
 } from '../ReactNative/AppContainer-dev';
-import type {NativeMethods} from '../Renderer/shims/ReactNativeTypes';
 import type {
   InstanceFromReactDevTools,
   ReactDevToolsAgent,
@@ -51,7 +51,7 @@ type ModernNodeUpdate = {
 
 type LegacyNodeUpdate = {
   id: number,
-  instance: NativeMethods,
+  instance: HostInstance,
   color: string,
 };
 
@@ -95,9 +95,11 @@ class DebuggingOverlayRegistry {
 
   #getPublicInstanceFromInstance = (
     instanceHandle: InstanceFromReactDevTools,
-  ): NativeMethods | null => {
+  ): HostInstance | null => {
     // `canonical.publicInstance` => Fabric
+    // $FlowExpectedError[prop-missing]
     if (instanceHandle.canonical?.publicInstance != null) {
+      // $FlowExpectedError[incompatible-return]
       return instanceHandle.canonical?.publicInstance;
     }
 
@@ -108,6 +110,7 @@ class DebuggingOverlayRegistry {
     }
 
     // `instanceHandle` => Legacy renderer
+    // $FlowExpectedError[method-unbinding]
     if (instanceHandle.measure != null) {
       // $FlowFixMe[incompatible-return]
       return instanceHandle;
@@ -134,7 +137,7 @@ class DebuggingOverlayRegistry {
   }
 
   #findLowestParentFromRegistryForInstanceLegacy(
-    instance: NativeMethods,
+    instance: HostInstance,
   ): ?DebuggingOverlayRegistrySubscriberProtocol {
     const candidates: Array<DebuggingOverlayRegistrySubscriberProtocol> = [];
 
@@ -374,7 +377,7 @@ class DebuggingOverlayRegistry {
       require('../../src/private/webapis/dom/nodes/ReactNativeElement').default;
 
     const reactNativeElements: Array<ReactNativeElement> = [];
-    const legacyPublicInstances: Array<NativeMethods> = [];
+    const legacyPublicInstances: Array<HostInstance> = [];
 
     for (const node of nodes) {
       const publicInstance = this.#getPublicInstanceFromInstance(node);
@@ -442,10 +445,10 @@ class DebuggingOverlayRegistry {
   }
 
   // TODO: remove once DOM Node APIs are opt-in by default and Paper is no longer supported.
-  #onHighlightElementsLegacy(elements: Array<NativeMethods>): void {
+  #onHighlightElementsLegacy(elements: Array<HostInstance>): void {
     const parentToElementsMap = new Map<
       DebuggingOverlayRegistrySubscriberProtocol,
-      Array<NativeMethods>,
+      Array<HostInstance>,
     >();
 
     for (const element of elements) {

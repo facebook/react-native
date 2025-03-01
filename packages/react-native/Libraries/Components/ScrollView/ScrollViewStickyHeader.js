@@ -18,7 +18,7 @@ import useMergeRefs from '../../Utilities/useMergeRefs';
 import * as React from 'react';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
-export type Props = $ReadOnly<{
+export type ScrollViewStickyHeaderProps = $ReadOnly<{
   children?: React.Node,
   nextHeaderLayoutY: ?number,
   onLayout: (event: LayoutChangeEvent) => void,
@@ -32,15 +32,13 @@ export type Props = $ReadOnly<{
   hiddenOnScroll?: ?boolean,
 }>;
 
-type Instance = {
-  ...React.ElementRef<typeof Animated.View>,
-  setNextHeaderY: number => void,
-  ...
-};
+interface Instance extends React.ElementRef<typeof Animated.View> {
+  +setNextHeaderY: number => void;
+}
 
 const ScrollViewStickyHeaderWithForwardedRef: component(
   ref: React.RefSetter<Instance>,
-  ...props: Props
+  ...props: ScrollViewStickyHeaderProps
 ) = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
   const {
     inverted,
@@ -62,6 +60,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
     if (ref == null) {
       return;
     }
+    // $FlowExpectedError[cannot-write]
     ref.setNextHeaderY = setNextHeaderLayoutY;
     setIsFabric(isFabricPublicInstance(ref));
   }, []);

@@ -25,11 +25,6 @@
 #endif
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
-#if USE_HERMES
-#import <ReactCommon/RCTHermesInstance.h>
-#elif USE_THIRD_PARTY_JSC != 1
-#import <ReactCommon/RCTJscInstance.h>
-#endif // USE_HERMES
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
 #import "RCTDependencyProvider.h"
@@ -39,6 +34,7 @@ using namespace facebook::react;
 @interface RCTReactNativeFactory () <
     RCTComponentViewFactoryComponentProvider,
     RCTHostDelegate,
+    RCTJSRuntimeConfiguratorProtocol,
     RCTTurboModuleManagerDelegate>
 @end
 
@@ -114,6 +110,13 @@ using namespace facebook::react;
   return _delegate.bundleURL;
 }
 
+#pragma mark - RCTJSRuntimeConfiguratorProtocol
+
+- (JSRuntimeFactoryRef)createJSRuntimeFactory
+{
+  return [_delegate createJSRuntimeFactory];
+}
+
 #pragma mark - RCTArchConfiguratorProtocol
 
 - (BOOL)newArchEnabled
@@ -165,6 +168,14 @@ using namespace facebook::react;
 #else
   return RCTCoreModulesClassProvider(name);
 #endif
+}
+
+- (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
+{
+  if ([_delegate respondsToSelector:@selector(getModuleProvider:)]) {
+    return [_delegate getModuleProvider:name];
+  }
+  return nil;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
@@ -268,6 +279,8 @@ using namespace facebook::react;
       [weakSelf.delegate loadSourceForBridge:bridge withBlock:loadCallback];
     };
   }
+
+  configuration.jsRuntimeConfiguratorDelegate = self;
 
   return [[RCTRootViewFactory alloc] initWithTurboModuleDelegate:self hostDelegate:self configuration:configuration];
 }

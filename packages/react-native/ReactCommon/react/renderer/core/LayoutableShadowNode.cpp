@@ -261,15 +261,22 @@ ShadowNode::Shared LayoutableShadowNode::findNodeAtPoint(
     return nullptr;
   }
 
+  auto layoutMetrics = layoutableShadowNode->getLayoutMetrics();
   auto transform = layoutableShadowNode->getTransform();
-  auto frame = layoutableShadowNode->getLayoutMetrics().frame;
-  auto transformedFrame = frame * transform;
+  auto transformedFrame = layoutMetrics.frame * transform;
   auto isPointInside = transformedFrame.containsPoint(point);
 
-  if (!isPointInside) {
-    return nullptr;
-  } else if (!layoutableShadowNode->canChildrenBeTouchTarget()) {
+  if (isPointInside && !layoutableShadowNode->canChildrenBeTouchTarget()) {
     return node;
+  } else if (!isPointInside) {
+    auto overflowFrame =
+        insetBy(layoutMetrics.frame, layoutMetrics.overflowInset);
+    auto transformedOverflowFrame = overflowFrame * transform;
+    // If child overflows parent, the touch may be intercepted by the child
+    // only, so we should continue recursing.
+    if (!transformedOverflowFrame.containsPoint(point)) {
+      return nullptr;
+    }
   }
 
   if (Transform::isVerticalInversion(transform) ||

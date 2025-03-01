@@ -161,8 +161,8 @@ internal object RequestBodyUtil {
   /** Creates a [ProgressRequestBody] that can be used for showing uploading progress. */
   @JvmStatic
   fun createProgressRequest(
-      requestBody: RequestBody?,
-      listener: ProgressListener?
+      requestBody: RequestBody,
+      listener: ProgressListener
   ): ProgressRequestBody {
     return ProgressRequestBody(requestBody, listener)
   }

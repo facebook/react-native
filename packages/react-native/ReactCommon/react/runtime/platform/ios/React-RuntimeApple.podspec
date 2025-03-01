@@ -75,7 +75,7 @@ Pod::Spec.new do |s|
 
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
-    s.dependency "React-RuntimeHermes"
+    add_dependency(s, "React-RuntimeHermes")
     s.exclude_files = "ReactCommon/RCTJscInstance.{mm,h}"
   elsif ENV['USE_THIRD_PARTY_JSC'] == '1'
     s.exclude_files = ["ReactCommon/RCTHermesInstance.{mm,h}", "ReactCommon/RCTJscInstance.{mm,h}"]

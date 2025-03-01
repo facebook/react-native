@@ -9,7 +9,7 @@
  */
 
 'use strict';
-import type {HostComponent} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../../src/private/types/HostComponent';
 import type {ViewProps} from '../View/ViewPropTypes';
 
 import StyleSheet, {type ColorValue} from '../../StyleSheet/StyleSheet';
@@ -26,7 +26,7 @@ const GRAY = '#999999';
 
 type IndicatorSize = number | 'small' | 'large';
 
-type IOSProps = $ReadOnly<{
+type ActivityIndicatorIOSProps = $ReadOnly<{
   /**
     Whether the indicator should hide when not animating.
 
@@ -34,9 +34,9 @@ type IOSProps = $ReadOnly<{
   */
   hidesWhenStopped?: ?boolean,
 }>;
-type Props = $ReadOnly<{
+export type ActivityIndicatorProps = $ReadOnly<{
   ...ViewProps,
-  ...IOSProps,
+  ...ActivityIndicatorIOSProps,
 
   /**
    	Whether to show the indicator (`true`) or hide it (`false`).
@@ -69,7 +69,7 @@ const ActivityIndicator = (
     size = 'small',
     style,
     ...restProps
-  }: Props,
+  }: ActivityIndicatorProps,
   forwardedRef?: any,
 ) => {
   let sizeStyle;
@@ -112,7 +112,7 @@ const ActivityIndicator = (
         // $FlowFixMe[prop-missing] Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
       ) : (
-        /* $FlowFixMe[prop-missing] (>=0.106.0 site=react_native_android_fb) This comment
+        /* $FlowFixMe[incompatible-type] (>=0.106.0 site=react_native_android_fb) This comment
          * suppresses an error found when Flow v0.106 was deployed. To see the
          * error, delete this comment and run Flow. */
         <PlatformActivityIndicator {...nativeProps} />
@@ -154,8 +154,8 @@ const ActivityIndicator = (
 */
 
 const ActivityIndicatorWithRef: component(
-  ref: React.RefSetter<HostComponent<empty>>,
-  ...props: Props
+  ref?: React.RefSetter<HostComponent<empty>>,
+  ...props: ActivityIndicatorProps
 ) = React.forwardRef(ActivityIndicator);
 ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 

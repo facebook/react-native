@@ -9,6 +9,7 @@
 #include "SchedulerPriorityUtils.h"
 
 #include <cxxreact/TraceSection.h>
+#include <jsinspector-modern/tracing/EventLoopTaskReporter.h>
 #include <react/featureflags/ReactNativeFeatureFlags.h>
 #include <react/renderer/consistency/ScopedShadowTreeRevisionLock.h>
 #include <react/timing/primitives.h>
@@ -308,6 +309,8 @@ void RuntimeScheduler_Modern::runEventLoopTick(
     Task& task,
     RuntimeSchedulerTimePoint taskStartTime) {
   TraceSection s("RuntimeScheduler::runEventLoopTick");
+  [[maybe_unused]] jsinspector_modern::tracing::EventLoopTaskReporter
+      performanceReporter;
 
   ScopedShadowTreeRevisionLock revisionLock(
       shadowTreeRevisionConsistencyManager_);

@@ -9,6 +9,7 @@
 
 #include "CdpTracing.h"
 #include "TraceEvent.h"
+#include "TraceEventProfile.h"
 
 #include <folly/dynamic.h>
 
@@ -39,6 +40,17 @@ class PerformanceTracer {
    * Mark trace session as stopped. Returns `false` if wasn't tracing.
    */
   bool stopTracing();
+
+  /**
+   * Returns whether the tracer is currently tracing. This can be useful to
+   * avoid doing expensive work (like formatting strings) if tracing is not
+   * enabled.
+   */
+  bool isTracing() const {
+    // This is not thread safe but it's only a performance optimization. The
+    // call to report marks and measures is already thread safe.
+    return tracing_;
+  }
 
   /**
    * Flush out buffered CDP Trace Events using the given callback.
@@ -77,6 +89,33 @@ class PerformanceTracer {
    */
   void reportThread(uint64_t id, const std::string& name);
 
+  /**
+   * Should only be called from the JavaScript thread, will buffer metadata
+   * Trace Event.
+   */
+  void reportJavaScriptThread();
+
+  /**
+   * Record a corresponding Profile Trace Event.
+   * \return the id of the profile, should be used to linking profile chunks.
+   */
+  uint16_t reportRuntimeProfile(uint64_t threadId, uint64_t eventUnixTimestamp);
+
+  /**
+   * Record a corresponding ProfileChunk Trace Event.
+   */
+  void reportRuntimeProfileChunk(
+      uint16_t profileId,
+      uint64_t threadId,
+      uint64_t eventUnixTimestamp,
+      const tracing::TraceEventProfileChunk& traceEventProfileChunk);
+
+  /**
+   * Record an Event Loop tick, which will be represented as an Event Loop task
+   * on a timeline view and grouped with JavaScript samples.
+   */
+  void reportEventLoopTask(uint64_t start, uint64_t end);
+
  private:
   PerformanceTracer();
   PerformanceTracer(const PerformanceTracer&) = delete;
@@ -88,6 +127,7 @@ class PerformanceTracer {
   bool tracing_{false};
   uint64_t processId_;
   uint32_t performanceMeasureCount_{0};
+  uint16_t profileCount_{0};
   std::vector<TraceEvent> buffer_;
   std::mutex mutex_;
 };

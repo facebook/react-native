@@ -592,12 +592,15 @@ void ObjCTurboModule::setInvocationArg(
     double v = arg.getNumber();
 
     /**
-     * JS type checking ensures the Objective C argument here is either a double or NSNumber*.
+     * JS type checking ensures the Objective C argument here is either a double or NSNumber* or NSInteger.
      */
     if (objCArgType == @encode(id)) {
       id objCArg = [NSNumber numberWithDouble:v];
       [inv setArgument:(void *)&objCArg atIndex:i + 2];
       [retainedObjectsForInvocation addObject:objCArg];
+    } else if (objCArgType == @encode(NSInteger)) {
+      NSInteger integer = v;
+      [inv setArgument:&integer atIndex:i + 2];
     } else {
       [inv setArgument:(void *)&v atIndex:i + 2];
     }

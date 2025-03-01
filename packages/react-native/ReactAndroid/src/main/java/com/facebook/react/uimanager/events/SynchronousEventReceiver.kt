@@ -8,8 +8,9 @@
 package com.facebook.react.uimanager.events
 
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 
-@Deprecated("Experimental")
+@UnstableReactNativeAPI
 internal interface SynchronousEventReceiver {
   fun receiveEvent(
       surfaceId: Int,
@@ -18,6 +19,6 @@ internal interface SynchronousEventReceiver {
       canCoalesceEvent: Boolean,
       params: WritableMap?,
       @EventCategoryDef eventCategory: Int,
-      experimental_isSynchronous: Boolean
+      experimentalIsSynchronous: Boolean
   ): Unit
 }

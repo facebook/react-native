@@ -414,7 +414,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         contentDescription.add(text.asString());
       }
     }
-    if (contentDescription.size() > 0) {
+    if (!contentDescription.isEmpty()) {
       view.setContentDescription(TextUtils.join(", ", contentDescription));
     }
   }

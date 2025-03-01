@@ -9,6 +9,11 @@
 #import <ReactCommon/RCTHost.h>
 #import "RCTAppSetupUtils.h"
 #import "RCTDependencyProvider.h"
+#if USE_HERMES
+#import <React/RCTHermesInstanceFactory.h>
+#elif USE_THIRD_PARTY_JSC != 1
+#import <React/RCTJscInstanceFactory.h>
+#endif
 
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
@@ -36,6 +41,15 @@
 - (void)setRootView:(UIView *)rootView toRootViewController:(UIViewController *)rootViewController
 {
   rootViewController.view = rootView;
+}
+
+- (JSRuntimeFactoryRef)createJSRuntimeFactory
+{
+#if USE_HERMES
+  return jsrt_create_hermes_factory();
+#elif USE_THIRD_PARTY_JSC != 1
+  return jsrt_create_jsc_factory();
+#endif
 }
 
 - (void)customizeRootView:(RCTRootView *)rootView
@@ -74,6 +88,12 @@
 
 - (void)hostDidStart:(RCTHost *)host
 {
+}
+
+- (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
+{
+  NSString *providerName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
+  return self.dependencyProvider ? self.dependencyProvider.moduleProviders[providerName] : nullptr;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name

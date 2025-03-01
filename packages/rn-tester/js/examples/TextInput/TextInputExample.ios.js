@@ -304,7 +304,6 @@ function KeyboardShortcutsExample() {
 const styles = StyleSheet.create({
   multiline: {
     height: 50,
-    marginBottom: 4,
   },
   multilinePlaceholderStyles: {
     letterSpacing: 10,
@@ -598,7 +597,7 @@ const textInputExamples: Array<RNTesterModuleExample> = [
     title: 'Multiline',
     render: function (): React.Node {
       return (
-        <View>
+        <View style={{gap: 4}}>
           <ExampleTextInput
             placeholder="multiline text input"
             multiline={true}
@@ -619,6 +618,11 @@ const textInputExamples: Array<RNTesterModuleExample> = [
             maxLength={5}
             multiline={true}
             style={styles.multiline}
+          />
+          <ExampleTextInput
+            placeholder="multiline text input with max 4 lines"
+            numberOfLines={4}
+            multiline={true}
           />
           <ExampleTextInput
             placeholder="uneditable multiline text input"

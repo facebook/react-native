@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<aec9501e32ed78797a6d8cbe1c989dbe>>
+ * @generated SignedSource<<91c1a65790aa5946a354ab8a1966a5f4>>
  */
 
 /**
@@ -231,6 +231,18 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool removeTurboModuleManagerDelegateMutex() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("removeTurboModuleManagerDelegateMutex");
+    return method(javaProvider_);
+  }
+
+  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS");
+    return method(javaProvider_);
+  }
+
   bool traceTurboModulePromiseRejectionsOnAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("traceTurboModulePromiseRejectionsOnAndroid");
@@ -449,6 +461,16 @@ bool JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks(
   return ReactNativeFeatureFlags::lazyAnimationCallbacks();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::removeTurboModuleManagerDelegateMutex(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::removeTurboModuleManagerDelegateMutex();
+}
+
+bool JReactNativeFeatureFlagsCxxInterop::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid();
@@ -621,6 +643,12 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "lazyAnimationCallbacks",
         JReactNativeFeatureFlagsCxxInterop::lazyAnimationCallbacks),
+      makeNativeMethod(
+        "removeTurboModuleManagerDelegateMutex",
+        JReactNativeFeatureFlagsCxxInterop::removeTurboModuleManagerDelegateMutex),
+      makeNativeMethod(
+        "throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS",
+        JReactNativeFeatureFlagsCxxInterop::throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS),
       makeNativeMethod(
         "traceTurboModulePromiseRejectionsOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::traceTurboModulePromiseRejectionsOnAndroid),
