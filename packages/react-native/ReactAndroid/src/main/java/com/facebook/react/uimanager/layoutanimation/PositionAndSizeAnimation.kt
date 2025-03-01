@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager.layoutanimation;
+package com.facebook.react.uimanager.layoutanimation
 
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
-import com.facebook.infer.annotation.Nullsafe;
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.Transformation
 
 /**
  * Animation responsible for updating size and position of a view. We can't use scaling as view
@@ -18,52 +17,58 @@ import com.facebook.infer.annotation.Nullsafe;
  * passes occurring on every frame. What we might want to try to do instead is use a combined
  * ScaleAnimation and TranslateAnimation.
  */
-/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
-class PositionAndSizeAnimation extends Animation implements LayoutHandlingAnimation {
+internal class PositionAndSizeAnimation(
+    private val view: View,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+) : Animation(), LayoutHandlingAnimation {
+  private var startX = 0f
+  private var startY = 0f
+  private var deltaX = 0f
+  private var deltaY = 0f
+  private var startWidth = 0
+  private var startHeight = 0
+  private var deltaWidth = 0
+  private var deltaHeight = 0
 
-  private final View mView;
-  private float mStartX, mStartY, mDeltaX, mDeltaY;
-  private int mStartWidth, mStartHeight, mDeltaWidth, mDeltaHeight;
-
-  public PositionAndSizeAnimation(View view, int x, int y, int width, int height) {
-    mView = view;
-    calculateAnimation(x, y, width, height);
+  init {
+    calculateAnimation(x, y, width, height)
   }
 
-  @Override
-  protected void applyTransformation(float interpolatedTime, Transformation t) {
-    float newX = mStartX + mDeltaX * interpolatedTime;
-    float newY = mStartY + mDeltaY * interpolatedTime;
-    float newWidth = mStartWidth + mDeltaWidth * interpolatedTime;
-    float newHeight = mStartHeight + mDeltaHeight * interpolatedTime;
-    mView.layout(
-        Math.round(newX),
-        Math.round(newY),
-        Math.round(newX + newWidth),
-        Math.round(newY + newHeight));
+  override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
+    val newX = startX + deltaX * interpolatedTime
+    val newY = startY + deltaY * interpolatedTime
+    val newWidth = startWidth + deltaWidth * interpolatedTime
+    val newHeight = startHeight + deltaHeight * interpolatedTime
+    view.layout(
+      Math.round(newX),
+      Math.round(newY),
+      Math.round(newX + newWidth),
+      Math.round(newY + newHeight)
+    )
   }
 
-  @Override
-  public void onLayoutUpdate(int x, int y, int width, int height) {
+  override fun onLayoutUpdate(x: Int, y: Int, width: Int, height: Int) {
     // Layout changed during the animation, we should update our values so that the final layout
     // is correct.
-    calculateAnimation(x, y, width, height);
+    calculateAnimation(x, y, width, height)
   }
 
-  @Override
-  public boolean willChangeBounds() {
-    return true;
+  override fun willChangeBounds(): Boolean {
+    return true
   }
 
-  private void calculateAnimation(int x, int y, int width, int height) {
-    mStartX = mView.getX() - mView.getTranslationX();
-    mStartY = mView.getY() - mView.getTranslationY();
-    mStartWidth = mView.getWidth();
-    mStartHeight = mView.getHeight();
+  private fun calculateAnimation(x: Int, y: Int, width: Int, height: Int) {
+    startX = view.x - view.translationX
+    startY = view.y - view.translationY
+    startWidth = view.width
+    startHeight = view.height
 
-    mDeltaX = x - mStartX;
-    mDeltaY = y - mStartY;
-    mDeltaWidth = width - mStartWidth;
-    mDeltaHeight = height - mStartHeight;
+    deltaX = x - startX
+    deltaY = y - startY
+    deltaWidth = width - startWidth
+    deltaHeight = height - startHeight
   }
 }
