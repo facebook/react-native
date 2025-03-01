@@ -25,6 +25,7 @@ module.exports = ({version} /*: {version: Version} */) /*: string */ => `/**
 package com.facebook.react.modules.systeminfo
 
 public object ReactNativeVersion {
+  @JvmField
   public val VERSION: Map<String, Any?> = mapOf(
     "major" to ${version.major},
     "minor" to ${version.minor},

@@ -10,6 +10,7 @@
 package com.facebook.react.modules.systeminfo
 
 public object ReactNativeVersion {
+  @JvmField
   public val VERSION: Map<String, Any?> = mapOf(
     "major" to 1000,
     "minor" to 0,

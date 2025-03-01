@@ -78,6 +78,7 @@ exports[`updateReactNativeArtifacts should set nightly version: packages/react-n
 package com.facebook.react.modules.systeminfo
 
 public object ReactNativeVersion {
+  @JvmField
   public val VERSION: Map<String, Any?> = mapOf(
     \\"major\\" to 0,
     \\"minor\\" to 81,
@@ -198,6 +199,7 @@ exports[`updateReactNativeArtifacts should set release version: packages/react-n
 package com.facebook.react.modules.systeminfo
 
 public object ReactNativeVersion {
+  @JvmField
   public val VERSION: Map<String, Any?> = mapOf(
     \\"major\\" to 0,
     \\"minor\\" to 81,
