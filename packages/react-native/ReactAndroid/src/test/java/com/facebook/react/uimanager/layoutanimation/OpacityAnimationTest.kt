@@ -62,7 +62,7 @@ class OpacityAnimationTest {
       on { layerType } doReturn View.LAYER_TYPE_NONE
     }
 
-    val listener = OpacityAnimation.OpacityAnimationListener(spyView)
+    val listener = OpacityAnimationListener(spyView)
     listener.onAnimationStart(mock())
 
     verify(spyView).setLayerType(View.LAYER_TYPE_HARDWARE, null)
@@ -75,7 +75,7 @@ class OpacityAnimationTest {
       on { layerType } doReturn View.LAYER_TYPE_HARDWARE
     }
 
-    val listener = OpacityAnimation.OpacityAnimationListener(spyView)
+    val listener = OpacityAnimationListener(spyView)
     listener.onAnimationStart(mock())
 
     verify(spyView, never()).setLayerType(View.LAYER_TYPE_HARDWARE, null)
@@ -88,7 +88,7 @@ class OpacityAnimationTest {
       on { layerType } doReturn View.LAYER_TYPE_NONE
     }
 
-    val listener = OpacityAnimation.OpacityAnimationListener(spyView)
+    val listener = OpacityAnimationListener(spyView)
     listener.onAnimationStart(mock())
     listener.onAnimationEnd(mock())
 
@@ -97,7 +97,7 @@ class OpacityAnimationTest {
 
   @Test
   fun onAnimationRepeat_doesNothing() {
-    val listener = OpacityAnimation.OpacityAnimationListener(mock())
+    val listener = OpacityAnimationListener(mock())
     listener.onAnimationRepeat(mock())
 
     // No assertions needed, just verifying it runs without errors

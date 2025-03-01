@@ -18,37 +18,6 @@ import com.facebook.infer.annotation.Nullsafe;
  */
 /* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
 class OpacityAnimation extends Animation {
-
-  static class OpacityAnimationListener implements Animation.AnimationListener {
-
-    private final View mView;
-    private boolean mLayerTypeChanged = false;
-
-    public OpacityAnimationListener(View view) {
-      mView = view;
-    }
-
-    @Override
-    public void onAnimationStart(Animation animation) {
-      if (mView.hasOverlappingRendering() && mView.getLayerType() == View.LAYER_TYPE_NONE) {
-        mLayerTypeChanged = true;
-        mView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-      }
-    }
-
-    @Override
-    public void onAnimationEnd(Animation animation) {
-      if (mLayerTypeChanged) {
-        mView.setLayerType(View.LAYER_TYPE_NONE, null);
-      }
-    }
-
-    @Override
-    public void onAnimationRepeat(Animation animation) {
-      // do nothing
-    }
-  }
-
   private final View mView;
   private final float mStartOpacity, mDeltaOpacity;
 
