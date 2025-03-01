@@ -30,7 +30,7 @@ class OpacityAnimationTest {
   @Before
   fun setUp() {
     view = View(RuntimeEnvironment.getApplication())
-  } 
+  }
 
   @Test
   fun applyTransformation_updatesAlphaCorrectly() {

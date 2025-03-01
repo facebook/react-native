@@ -5,37 +5,34 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager.layoutanimation;
+package com.facebook.react.uimanager.layoutanimation
 
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
-import com.facebook.infer.annotation.Nullsafe;
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.Transformation
+import com.facebook.react.common.annotations.VisibleForTesting
 
 /**
  * Animation responsible for updating opacity of a view. It should ideally use hardware texture to
  * optimize rendering performances.
  */
-/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
-class OpacityAnimation extends Animation {
-  private final View mView;
-  private final float mStartOpacity, mDeltaOpacity;
+internal class OpacityAnimation(
+    private val view: View,
+    private val startOpacity: Float,
+    endOpacity: Float
+) : Animation() {
+  private val deltaOpacity = endOpacity - startOpacity
 
-  public OpacityAnimation(View view, float startOpacity, float endOpacity) {
-    mView = view;
-    mStartOpacity = startOpacity;
-    mDeltaOpacity = endOpacity - startOpacity;
-
-    setAnimationListener(new OpacityAnimationListener(view));
+  init {
+    setAnimationListener(OpacityAnimationListener(view))
   }
 
-  @Override
-  protected void applyTransformation(float interpolatedTime, Transformation t) {
-    mView.setAlpha(mStartOpacity + mDeltaOpacity * interpolatedTime);
+  @VisibleForTesting
+  public override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
+    view.alpha = startOpacity + deltaOpacity * interpolatedTime
   }
 
-  @Override
-  public boolean willChangeBounds() {
-    return false;
+  override fun willChangeBounds(): Boolean {
+    return false
   }
 }
