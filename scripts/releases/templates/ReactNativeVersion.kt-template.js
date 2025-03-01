@@ -25,7 +25,7 @@ module.exports = ({version} /*: {version: Version} */) /*: string */ => `/**
 package com.facebook.react.modules.systeminfo
 
 public object ReactNativeVersion {
-  public val VERSION: MutableMap<String, Any?> = mutableMapOf(
+  public val VERSION: Map<String, Any?> = mapOf(
     "major" to ${version.major},
     "minor" to ${version.minor},
     "patch" to ${version.patch},
