@@ -96,6 +96,11 @@ runs:
       uses: ./.github/actions/setup-xcode-build-cache
       with:
         hermes-version: ${{ inputs.hermes-version }}
+        jsengine: ${{ inputs.jsengine }}
+        architecture: ${{ inputs.architecture }}
+        use-frameworks: ${{ inputs.use-frameworks }}
+        flavor: ${{ inputs.flavor }}
+        ruby-version: ${{ inputs.ruby-version }}
     - name: Install CocoaPods dependencies
       shell: bash
       run: |
