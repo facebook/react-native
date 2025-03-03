@@ -17,6 +17,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.common.ClassFinder;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.devsupport.LogBoxModule;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.module.annotations.ReactModuleList;
@@ -59,6 +60,7 @@ import java.util.Map;
       TimingModule.class,
       UIManagerModule.class,
     })
+@LegacyArchitecture
 class CoreModulesPackage extends BaseReactPackage implements ReactPackageLogger {
 
   private final ReactInstanceManager mReactInstanceManager;
