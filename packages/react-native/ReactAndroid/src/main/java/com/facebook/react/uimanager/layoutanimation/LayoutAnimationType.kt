@@ -7,9 +7,12 @@
 
 package com.facebook.react.uimanager.layoutanimation
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+
 /**
  * Enum representing the different animation type that can be specified in layout animation config.
  */
+@LegacyArchitecture
 internal enum class LayoutAnimationType {
   CREATE,
   UPDATE,

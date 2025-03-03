@@ -11,12 +11,14 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 
 /**
  * Animation responsible for updating opacity of a view. It should ideally use hardware texture to
  * optimize rendering performances.
  */
 /* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+@LegacyArchitecture
 class OpacityAnimation extends Animation {
 
   static class OpacityAnimationListener implements Animation.AnimationListener {
