@@ -15,6 +15,7 @@ import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import androidx.annotation.Nullable;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -29,6 +30,7 @@ import java.util.Map;
  * read and means fewer JNI calls.
  */
 @DoNotStrip
+@LegacyArchitecture
 class JavaModuleWrapper {
 
   interface NativeMethod {

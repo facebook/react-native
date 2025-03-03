@@ -7,7 +7,10 @@
 
 package com.facebook.react.bridge
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+
 /** Exception thrown when a native module method call receives unexpected arguments from JS. */
+@LegacyArchitecture
 internal class NativeArgumentsParseException : JSApplicationCausedNativeException {
 
   constructor(detailMessage: String) : super(detailMessage)
