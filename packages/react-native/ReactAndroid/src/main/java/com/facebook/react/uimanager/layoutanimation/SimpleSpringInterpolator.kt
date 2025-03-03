@@ -11,10 +11,11 @@ import android.view.animation.Interpolator
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.ReadableType.Number
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 
 /** Simple spring interpolator */
 // TODO(7613736): Improve spring interpolator with friction and damping variable support
-/* package */
+@LegacyArchitecture
 internal class SimpleSpringInterpolator : Interpolator {
   private val _springDamping: Float
 
