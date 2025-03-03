@@ -8,6 +8,7 @@
 package com.facebook.react.bridge.interop
 
 import com.facebook.react.bridge.JavaScriptModule
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.enableFabricRenderer
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useFabricInterop
 
@@ -19,6 +20,7 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useFabri
  * Currently we only support a `RCTEventEmitter` re-implementation, being `InteropEventEmitter` but
  * this class can support other re-implementation in the future.
  */
+@LegacyArchitecture
 internal class InteropModuleRegistry {
   private val supportedModules = mutableMapOf<Class<*>, Any?>()
 
