@@ -39,6 +39,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -82,6 +83,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Don't dispatch the view hierarchy at the end of a batch if no UI changes occurred
  */
 @ReactModule(name = UIManagerModule.NAME)
+@LegacyArchitecture
 public class UIManagerModule extends ReactContextBaseJavaModule
     implements OnBatchCompleteListener, LifecycleEventListener, UIManager {
   public static final String TAG = UIManagerModule.class.getSimpleName();
