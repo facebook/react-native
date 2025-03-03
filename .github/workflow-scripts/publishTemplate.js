@@ -86,7 +86,7 @@ module.exports.verifyPublishedTemplate = async (
         return;
       }
       log(
-        `🐌 ${TEMPLATE_NPM_PKG}@latest → ${pkg.version} on npm and not ${version} as expected, retrying...`,
+        `🐌 ${TEMPLATE_NPM_PKG}@latest → ${json.version} on npm and not ${version} as expected, retrying...`,
       );
     } catch (e) {
       log(`Nope, fetch failed: ${e.message}`);
