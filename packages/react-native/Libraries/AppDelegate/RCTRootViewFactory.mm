@@ -24,6 +24,7 @@
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
 #import <React/RCTFabricSurface.h>
+#import <React/RCTInitializeUIKitProxies.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
 #import <ReactCommon/RCTHost+Internal.h>
@@ -154,6 +155,8 @@
     }
     return surfaceHostingProxyRootView;
   }
+
+  RCTInitializeUIKitProxies();
 
   [self createBridgeIfNeeded:launchOptions];
   [self createBridgeAdapterIfNeeded];
