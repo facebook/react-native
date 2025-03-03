@@ -37,8 +37,6 @@ class EventEmitter {
 
   static std::mutex& DispatchMutex();
 
-  static ValueFactory defaultPayloadFactory();
-
   EventEmitter(
       SharedEventTarget eventTarget,
       EventDispatcher::Weak eventDispatcher);
@@ -79,8 +77,7 @@ class EventEmitter {
    */
   void dispatchEvent(
       std::string type,
-      const ValueFactory& payloadFactory =
-          EventEmitter::defaultPayloadFactory(),
+      const ValueFactory& payloadFactory,
       RawEvent::Category category = RawEvent::Category::Unspecified) const;
 
   void dispatchEvent(
@@ -96,10 +93,8 @@ class EventEmitter {
   void dispatchUniqueEvent(std::string type, const folly::dynamic& payload)
       const;
 
-  void dispatchUniqueEvent(
-      std::string type,
-      const ValueFactory& payloadFactory =
-          EventEmitter::defaultPayloadFactory()) const;
+  void dispatchUniqueEvent(std::string type, const ValueFactory& payloadFactory)
+      const;
 
   void dispatchUniqueEvent(std::string type, SharedEventPayload payload) const;
 
