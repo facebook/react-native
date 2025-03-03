@@ -26,6 +26,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfigurationImpl;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
 import com.facebook.react.internal.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.module.annotations.ReactModule;
@@ -44,6 +45,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * is built by XReactInstanceManager which is in a different package.
  */
 @DoNotStrip
+@LegacyArchitecture
 public class CatalystInstanceImpl implements CatalystInstance {
   static {
     ReactBridge.staticInit();
