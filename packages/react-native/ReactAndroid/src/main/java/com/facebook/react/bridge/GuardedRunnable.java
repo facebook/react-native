@@ -7,10 +7,13 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Nullsafe;
+
 /**
  * Abstract base for a Runnable that should have any RuntimeExceptions it throws handled by the
  * {@link JSExceptionHandler} registered if the app is in dev mode.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class GuardedRunnable implements Runnable {
 
   private final JSExceptionHandler mExceptionHandler;

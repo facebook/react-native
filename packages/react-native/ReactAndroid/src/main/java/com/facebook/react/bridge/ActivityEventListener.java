@@ -10,11 +10,13 @@ package com.facebook.react.bridge;
 import android.app.Activity;
 import android.content.Intent;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Listener for receiving activity events. Consider using {@link BaseActivityEventListener} if
  * you're not interested in all the events sent to this interface.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public interface ActivityEventListener {
 
   /** Called when host (activity/service) receives an {@link Activity#onActivityResult} call. */

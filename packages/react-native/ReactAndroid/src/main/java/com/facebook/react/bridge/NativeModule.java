@@ -7,6 +7,7 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
@@ -24,6 +25,7 @@ import javax.annotation.Nonnull;
  * not provide any Java code (so they can be reused on other platforms), and instead should register
  * themselves using {@link CxxModuleWrapper}.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @StableReactNativeAPI
 @DoNotStrip
 public interface NativeModule {

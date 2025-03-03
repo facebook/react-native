@@ -8,12 +8,14 @@
 package com.facebook.react.bridge;
 
 import androidx.annotation.GuardedBy;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Wrapper for JavaScriptContext native pointer. CatalystInstanceImpl creates this on demand, and
  * will call clear() before destroying the VM. People who need the raw JavaScriptContext pointer can
  * synchronize on this wrapper object to guarantee that it will not be destroyed.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class JavaScriptContextHolder {
   @GuardedBy("this")
   private long mContext;
