@@ -25,6 +25,7 @@ import com.facebook.react.bridge.UIManagerProvider;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.devsupport.DefaultDevSupportManagerFactory;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -44,6 +45,7 @@ import java.util.Map;
 
 /** Builder class for {@link ReactInstanceManager} */
 @StableReactNativeAPI
+@LegacyArchitecture
 public class ReactInstanceManagerBuilder {
 
   private static final String TAG = ReactInstanceManagerBuilder.class.getSimpleName();
