@@ -100,6 +100,8 @@ publishing {
       artifact(hermesDSYMReleaseArtifact)
       artifact(reactNativeDependenciesDebugArtifact)
       artifact(reactNativeDependenciesReleaseArtifact)
+      artifact(reactNativeDependenciesDebugDSYMArtifactFile)
+      artifact(reactNativeDependenciesReleaseDSYMArtifactFile)
     }
   }
 }
