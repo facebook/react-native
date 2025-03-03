@@ -7,11 +7,13 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+@LegacyArchitecture
 public class JSONArguments {
   /**
    * Parse JSONObject to ReadableMap
