@@ -8,10 +8,12 @@
 package com.facebook.react.bridge
 
 import android.os.SystemClock
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.soloader.SoLoader
 import com.facebook.systrace.Systrace
 import com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE
 
+@LegacyArchitecture
 internal object ReactBridge {
   @Volatile private var _loadStartTime: Long = 0
   @Volatile private var _loadEndTime: Long = 0

@@ -9,9 +9,11 @@ package com.facebook.react.bridge;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import java.lang.reflect.Method;
 
 @DoNotStrip
+@LegacyArchitecture
 public class ReactCxxErrorHandler {
 
   private static Method mHandleErrorFunc;
