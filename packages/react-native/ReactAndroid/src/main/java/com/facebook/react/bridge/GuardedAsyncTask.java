@@ -8,6 +8,7 @@
 package com.facebook.react.bridge;
 
 import android.os.AsyncTask;
+import com.facebook.infer.annotation.Nullsafe;
 
 /**
  * Abstract base for a AsyncTask that should have any RuntimeExceptions it throws handled by the
@@ -16,6 +17,7 @@ import android.os.AsyncTask;
  * <p>This class doesn't allow doInBackground to return a results. If you need this use
  * GuardedResultAsyncTask instead.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public abstract class GuardedAsyncTask<Params, Progress> extends AsyncTask<Params, Progress, Void> {
 
   private final JSExceptionHandler mExceptionHandler;

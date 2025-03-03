@@ -8,13 +8,15 @@
 package com.facebook.react.views.textinput;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** Event emitted by EditText native view when key pressed */
-/* package */ class ReactTextInputKeyPressEvent extends Event<ReactTextInputKeyPressEvent> {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class ReactTextInputKeyPressEvent extends Event<ReactTextInputKeyPressEvent> {
 
   public static final String EVENT_NAME = "topKeyPress";
 

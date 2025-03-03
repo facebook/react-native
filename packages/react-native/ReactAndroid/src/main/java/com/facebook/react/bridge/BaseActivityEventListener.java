@@ -10,8 +10,10 @@ package com.facebook.react.bridge;
 import android.app.Activity;
 import android.content.Intent;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 
 /** An empty implementation of {@link ActivityEventListener} */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class BaseActivityEventListener implements ActivityEventListener {
 
   /**

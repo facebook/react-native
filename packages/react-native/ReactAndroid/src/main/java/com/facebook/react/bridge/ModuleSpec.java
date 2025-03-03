@@ -9,6 +9,7 @@ package com.facebook.react.bridge;
 
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.module.annotations.ReactModule;
 import javax.inject.Provider;
 
@@ -16,6 +17,7 @@ import javax.inject.Provider;
  * A specification for a native module. This exists so that we don't have to pay the cost for
  * creation until/if the module is used.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ModuleSpec {
 
   private static final String TAG = "ModuleSpec";

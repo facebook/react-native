@@ -8,14 +8,15 @@
 package com.facebook.react.views.textinput;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** Event emitted by EditText native view when the user submits the text. */
-/* package */ class ReactTextInputSubmitEditingEvent
-    extends Event<ReactTextInputSubmitEditingEvent> {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class ReactTextInputSubmitEditingEvent extends Event<ReactTextInputSubmitEditingEvent> {
 
   private static final String EVENT_NAME = "topSubmitEditing";
 

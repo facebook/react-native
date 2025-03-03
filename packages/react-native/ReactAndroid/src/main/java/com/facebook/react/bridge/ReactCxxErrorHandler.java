@@ -8,9 +8,11 @@
 package com.facebook.react.bridge;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.lang.reflect.Method;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public class ReactCxxErrorHandler {
 

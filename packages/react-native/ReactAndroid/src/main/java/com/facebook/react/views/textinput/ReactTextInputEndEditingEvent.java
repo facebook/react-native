@@ -8,6 +8,7 @@
 package com.facebook.react.views.textinput;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
@@ -17,6 +18,7 @@ import com.facebook.react.uimanager.events.Event;
  * Event emitted by EditText native view when text editing ends, because of the user leaving the
  * text input.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ReactTextInputEndEditingEvent extends Event<ReactTextInputEndEditingEvent> {
 
   private static final String EVENT_NAME = "topEndEditing";

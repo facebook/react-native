@@ -8,13 +8,15 @@
 package com.facebook.react.views.textinput;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.events.Event;
 
 /** Event emitted by EditText native view when the text selection changes. */
-/* package */ class ReactTextInputSelectionEvent extends Event<ReactTextInputSelectionEvent> {
+/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
+class ReactTextInputSelectionEvent extends Event<ReactTextInputSelectionEvent> {
 
   private static final String EVENT_NAME = "topSelectionChange";
 

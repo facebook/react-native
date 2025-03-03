@@ -8,6 +8,7 @@
 package com.facebook.react.bridge;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.build.ReactBuildConfig;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -21,6 +22,7 @@ import java.util.Set;
  * dispatch method calls on JavaScriptModules to the bridge using the corresponding module and
  * method ids so the proper function is executed in JavaScript.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public final class JavaScriptModuleRegistry {
   private final HashMap<Class<? extends JavaScriptModule>, JavaScriptModule> mModuleInstances;
 
