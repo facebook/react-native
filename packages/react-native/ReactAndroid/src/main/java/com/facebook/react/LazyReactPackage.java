@@ -9,6 +9,7 @@ package com.facebook.react;
 
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /** React package supporting lazy creation of native modules. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @Deprecated(since = "This class is deprecated, please use BaseReactPackage instead.")
 public abstract class LazyReactPackage implements ReactPackage {
 
