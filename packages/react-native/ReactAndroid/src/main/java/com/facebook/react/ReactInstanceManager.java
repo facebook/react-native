@@ -78,6 +78,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.StableReactNativeAPI;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.devsupport.DevSupportManagerFactory;
 import com.facebook.react.devsupport.InspectorFlags;
 import com.facebook.react.devsupport.ReactInstanceDevHelper;
@@ -143,6 +144,7 @@ import java.util.Set;
  */
 @ThreadSafe
 @StableReactNativeAPI
+@LegacyArchitecture
 public class ReactInstanceManager {
 
   private static final String TAG = ReactInstanceManager.class.getSimpleName();

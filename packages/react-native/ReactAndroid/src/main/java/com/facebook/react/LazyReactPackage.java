@@ -15,6 +15,7 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 /** React package supporting lazy creation of native modules. */
 @Deprecated(since = "This class is deprecated, please use BaseReactPackage instead.")
+@LegacyArchitecture
 public abstract class LazyReactPackage implements ReactPackage {
 
   /**
