@@ -7,10 +7,13 @@
 
 package com.facebook.react.uimanager.layoutanimation
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+
 /**
  * Class responsible for handling layout view creation animation, applied to view whenever a valid
  * config was supplied for the layout animation of CREATE type.
  */
+@LegacyArchitecture
 internal class LayoutCreateAnimation : BaseLayoutAnimation() {
 
   override fun isReverse(): Boolean = false

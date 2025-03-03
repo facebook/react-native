@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import com.facebook.infer.annotation.Nullsafe;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 
 /**
  * Animation responsible for updating size and position of a view. We can't use scaling as view
@@ -18,6 +19,7 @@ import com.facebook.infer.annotation.Nullsafe;
  * passes occurring on every frame. What we might want to try to do instead is use a combined
  * ScaleAnimation and TranslateAnimation.
  */
+@LegacyArchitecture
 /* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
 class PositionAndSizeAnimation extends Animation implements LayoutHandlingAnimation {
 
