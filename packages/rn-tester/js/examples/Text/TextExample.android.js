@@ -151,6 +151,54 @@ class AdjustingFontSize extends React.Component<
         </RNTesterText>
 
         <RNTesterText
+          adjustsFontSizeToFit
+          numberOfLines={1}
+          style={{fontSize: 50}}>
+          {
+            'This line must be the same size as the other ones with the same text'
+          }
+        </RNTesterText>
+        <RNTesterText
+          adjustsFontSizeToFit
+          numberOfLines={1}
+          style={{fontSize: 51}}>
+          {
+            'This line must be the same size as the other ones with the same text'
+          }
+        </RNTesterText>
+        <RNTesterText
+          adjustsFontSizeToFit
+          numberOfLines={1}
+          style={{fontSize: 52}}>
+          {
+            'This line must be the same size as the other ones with the same text'
+          }
+        </RNTesterText>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginTop: 16,
+          }}>
+          <RNTesterText
+            style={{backgroundColor: '#ffaaaa'}}
+            onPress={this.reset}>
+            Reset
+          </RNTesterText>
+          <RNTesterText
+            style={{backgroundColor: '#aaaaff'}}
+            onPress={this.removeText}>
+            Remove Text
+          </RNTesterText>
+          <RNTesterText
+            style={{backgroundColor: '#aaffaa'}}
+            onPress={this.addText}>
+            Add Text
+          </RNTesterText>
+        </View>
+
+        <RNTesterText
           adjustsFontSizeToFit={true}
           numberOfLines={1}
           style={{fontSize: 30, marginVertical: 6}}>
@@ -186,30 +234,6 @@ class AdjustingFontSize extends React.Component<
             {'LARGE TEXT! ' + this.state.dynamicText}
           </RNTesterText>
         </RNTesterText>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginTop: 5,
-            marginVertical: 6,
-          }}>
-          <RNTesterText
-            style={{backgroundColor: '#ffaaaa'}}
-            onPress={this.reset}>
-            Reset
-          </RNTesterText>
-          <RNTesterText
-            style={{backgroundColor: '#aaaaff'}}
-            onPress={this.removeText}>
-            Remove Text
-          </RNTesterText>
-          <RNTesterText
-            style={{backgroundColor: '#aaffaa'}}
-            onPress={this.addText}>
-            Add Text
-          </RNTesterText>
-        </View>
       </View>
     );
   }
