@@ -49,13 +49,8 @@ RCT_EXPORT_MODULE()
     _queue.maxConcurrentOperationCount = 2;
   }
 
-  __weak NSBlockOperation *weakOp;
-  NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
-    NSBlockOperation *strongOp = weakOp; // Strong reference to avoid deallocation during execution
-    if (strongOp == nil || [strongOp isCancelled]) {
-      return;
-    }
-
+  __weak __block NSBlockOperation *weakOp;
+  __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
     // Get mime type
     NSRange firstSemicolon = [request.URL.resourceSpecifier rangeOfString:@";"];
     NSString *mimeType =
@@ -67,15 +62,15 @@ RCT_EXPORT_MODULE()
                                            expectedContentLength:-1
                                                 textEncodingName:nil];
 
-    [delegate URLRequest:strongOp didReceiveResponse:response];
+    [delegate URLRequest:weakOp didReceiveResponse:response];
 
     // Load data
     NSError *error;
     NSData *data = [NSData dataWithContentsOfURL:request.URL options:NSDataReadingMappedIfSafe error:&error];
     if (data) {
-      [delegate URLRequest:strongOp didReceiveData:data];
+      [delegate URLRequest:weakOp didReceiveData:data];
     }
-    [delegate URLRequest:strongOp didCompleteWithError:error];
+    [delegate URLRequest:weakOp didCompleteWithError:error];
   }];
 
   weakOp = op;
