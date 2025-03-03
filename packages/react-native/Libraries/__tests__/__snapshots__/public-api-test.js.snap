@@ -7922,11 +7922,12 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/split
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/Text.js 1`] = `
-"type TextForwardRef = React.ElementRef<
+"export type { TextProps } from \\"./TextProps\\";
+type TextForwardRef = React.ElementRef<
   typeof NativeText | typeof NativeVirtualText,
 >;
 declare const Text: component(
-  ref: React.RefSetter<TextForwardRef>,
+  ref?: React.RefSetter<TextForwardRef>,
   ...props: TextProps
 );
 declare export default typeof Text;
@@ -7965,8 +7966,33 @@ type PointerEventProps = $ReadOnly<{
   onPointerLeave?: (event: PointerEvent) => void,
   onPointerMove?: (event: PointerEvent) => void,
 }>;
-export type TextProps = $ReadOnly<{
-  ...PointerEventProps,
+export type TextPropsIOS = {
+  adjustsFontSizeToFit?: ?boolean,
+  dynamicTypeRamp?: ?(
+    | \\"caption2\\"
+    | \\"caption1\\"
+    | \\"footnote\\"
+    | \\"subheadline\\"
+    | \\"callout\\"
+    | \\"body\\"
+    | \\"headline\\"
+    | \\"title3\\"
+    | \\"title2\\"
+    | \\"title1\\"
+    | \\"largeTitle\\"
+  ),
+  suppressHighlighting?: ?boolean,
+  lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
+};
+export type TextPropsAndroid = {
+  disabled?: ?boolean,
+  selectionColor?: ?ColorValue,
+  dataDetectorType?: ?(\\"phoneNumber\\" | \\"link\\" | \\"email\\" | \\"none\\" | \\"all\\"),
+  textBreakStrategy?: ?(\\"balanced\\" | \\"highQuality\\" | \\"simple\\"),
+  adjustsFontSizeToFit?: ?boolean,
+  minimumFontScale?: ?number,
+};
+type TextBaseProps = $ReadOnly<{
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
@@ -7976,7 +8002,6 @@ export type TextProps = $ReadOnly<{
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
   \\"aria-label\\"?: ?string,
-  adjustsFontSizeToFit?: ?boolean,
   allowFontScaling?: ?boolean,
   android_hyphenationFrequency?: ?(\\"normal\\" | \\"none\\" | \\"full\\"),
   \\"aria-busy\\"?: ?boolean,
@@ -8009,27 +8034,12 @@ export type TextProps = $ReadOnly<{
   selectable?: ?boolean,
   style?: ?TextStyleProp,
   testID?: ?string,
-  disabled?: ?boolean,
-  selectionColor?: ?ColorValue,
-  dataDetectorType?: ?(\\"phoneNumber\\" | \\"link\\" | \\"email\\" | \\"none\\" | \\"all\\"),
-  textBreakStrategy?: ?(\\"balanced\\" | \\"highQuality\\" | \\"simple\\"),
-  adjustsFontSizeToFit?: ?boolean,
-  dynamicTypeRamp?: ?(
-    | \\"caption2\\"
-    | \\"caption1\\"
-    | \\"footnote\\"
-    | \\"subheadline\\"
-    | \\"callout\\"
-    | \\"body\\"
-    | \\"headline\\"
-    | \\"title3\\"
-    | \\"title2\\"
-    | \\"title1\\"
-    | \\"largeTitle\\"
-  ),
-  minimumFontScale?: ?number,
-  suppressHighlighting?: ?boolean,
-  lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
+}>;
+export type TextProps = $ReadOnly<{
+  ...PointerEventProps,
+  ...TextPropsIOS,
+  ...TextPropsAndroid,
+  ...TextBaseProps,
 }>;
 "
 `;

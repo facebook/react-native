@@ -349,7 +349,7 @@ const lists = StyleSheet.create({
 
 const container = StyleSheet.compose(page.container, lists.listContainer);
 <View style={container} />;
-const text = StyleSheet.compose(page.text, lists.listItem);
+const text = StyleSheet.compose(page.text, lists.listItem) as TextStyle;
 <Text style={text} />;
 
 // The following use of the compose method is invalid:
