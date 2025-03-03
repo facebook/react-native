@@ -7,7 +7,8 @@
  * @format
  */
 
-const {run, sleep, log, verifyPublishedPackage} = require('./utils.js');
+const {run, sleep, log} = require('./utils.js');
+const {verifyPublishedPackage} = require('./verifyPublishedPackage.js');
 const REACT_NATIVE_NPM_PKG = 'react-native';
 const MAX_RETRIES = 3 * 6; // 18 attempts. Waiting between attempt: 10 s. Total time: 3 mins.
 /**
