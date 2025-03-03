@@ -7,9 +7,11 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DoNotStrip
 public abstract class JavaScriptExecutor {
   private final HybridData mHybridData;

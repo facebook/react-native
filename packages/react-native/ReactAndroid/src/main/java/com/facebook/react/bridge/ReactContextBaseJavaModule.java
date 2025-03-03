@@ -9,11 +9,13 @@ package com.facebook.react.bridge;
 
 import android.app.Activity;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 
 /**
  * Base class for Catalyst native modules that require access to the {@link ReactContext} instance.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @DeprecatedInNewArchitecture(
     message =
         "ReactContextBaseJavaModule will be deprecated in new Architecture of React Native, use"

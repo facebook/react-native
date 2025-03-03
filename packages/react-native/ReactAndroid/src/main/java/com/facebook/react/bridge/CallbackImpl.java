@@ -7,9 +7,11 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 
 /** Implementation of javascript callback function that use Bridge to schedule method execution */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @LegacyArchitecture
 public final class CallbackImpl implements Callback {
 

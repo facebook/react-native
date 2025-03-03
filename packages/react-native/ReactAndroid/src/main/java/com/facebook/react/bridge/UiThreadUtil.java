@@ -10,9 +10,11 @@ package com.facebook.react.bridge;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.build.ReactBuildConfig;
 
 /** Utility for interacting with the UI thread. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class UiThreadUtil {
 
   private static volatile @Nullable Handler sMainHandler;
@@ -69,7 +71,7 @@ public class UiThreadUtil {
   }
 
   /** Removes the given {@code Runnable} on the UI thread. */
-  public static void removeOnUiThread(Runnable runnable) {
+  public static void removeOnUiThread(@Nullable Runnable runnable) {
     getUiThreadHandler().removeCallbacks(runnable);
   }
 }
