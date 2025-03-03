@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
-include(${REACT_ANDROID_DIR}/cmake-utils/react-native-flags.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB yoga_SRC CONFIGURE_DEPENDS jni/*.cpp)
 add_library(yoga OBJECT ${yoga_SRC})
