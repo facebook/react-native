@@ -1775,14 +1775,6 @@ public final class com/facebook/react/common/SingleThreadAsserter {
 	public final fun assertNow ()V
 }
 
-public final class com/facebook/react/common/StandardCharsets {
-	public static final field INSTANCE Lcom/facebook/react/common/StandardCharsets;
-	public static final field UTF_16 Ljava/nio/charset/Charset;
-	public static final field UTF_16BE Ljava/nio/charset/Charset;
-	public static final field UTF_16LE Ljava/nio/charset/Charset;
-	public static final field UTF_8 Ljava/nio/charset/Charset;
-}
-
 public abstract interface class com/facebook/react/common/SurfaceDelegate {
 	public abstract fun createContentView (Ljava/lang/String;)V
 	public abstract fun destroyContentView ()V
