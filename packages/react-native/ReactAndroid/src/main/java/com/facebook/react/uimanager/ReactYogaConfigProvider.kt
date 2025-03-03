@@ -7,10 +7,12 @@
 
 package com.facebook.react.uimanager
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.yoga.YogaConfig
 import com.facebook.yoga.YogaConfigFactory
 import com.facebook.yoga.YogaErrata
 
+@LegacyArchitecture
 internal object ReactYogaConfigProvider {
 
   val yogaConfig: YogaConfig by

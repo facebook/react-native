@@ -12,6 +12,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -34,6 +35,7 @@ import com.facebook.yoga.YogaWrap;
  * may or may not be embedded in a parent text. There are better solutions that should probably be
  * explored, namely using the VirtualText class in JS and setting the correct set of validAttributes
  */
+@LegacyArchitecture
 public class LayoutShadowNode extends ReactShadowNodeImpl {
 
   /** A Mutable version of com.facebook.yoga.YogaValue */
