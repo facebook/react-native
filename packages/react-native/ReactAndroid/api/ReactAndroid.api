@@ -700,6 +700,16 @@ public final class com/facebook/react/bridge/DefaultJSExceptionHandler : com/fac
 	public fun handleException (Ljava/lang/Exception;)V
 }
 
+public final class com/facebook/react/bridge/DimensionPropConverter {
+	public static final field Companion Lcom/facebook/react/bridge/DimensionPropConverter$Companion;
+	public fun <init> ()V
+	public static final fun getDimension (Ljava/lang/Object;)Lcom/facebook/yoga/YogaValue;
+}
+
+public final class com/facebook/react/bridge/DimensionPropConverter$Companion {
+	public final fun getDimension (Ljava/lang/Object;)Lcom/facebook/yoga/YogaValue;
+}
+
 public abstract interface class com/facebook/react/bridge/Dynamic {
 	public abstract fun asArray ()Lcom/facebook/react/bridge/ReadableArray;
 	public abstract fun asBoolean ()Z
