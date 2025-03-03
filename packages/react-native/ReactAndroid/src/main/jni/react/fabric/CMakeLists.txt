@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
-include(${REACT_ANDROID_DIR}/cmake-utils/react-native-flags.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB fabricjni_SRCS CONFIGURE_DEPENDS *.cpp)
 
