@@ -13,6 +13,7 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 
 /**
  * Class responsible for optimizing the native view hierarchy while still respecting the final UI
@@ -45,6 +46,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
  * manageChildren calls for various parent views may be issued to the native view hierarchy
  * depending on where the views being added/removed are attached in the optimized hierarchy
  */
+@LegacyArchitecture
 public class NativeViewHierarchyOptimizer {
 
   private static final String TAG = "NativeViewHierarchyOptimizer";
