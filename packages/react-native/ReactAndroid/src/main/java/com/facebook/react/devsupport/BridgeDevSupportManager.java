@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.SurfaceDelegateFactory;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
@@ -47,6 +48,7 @@ import java.util.Map;
  * is responsible for enabling/disabling dev support in case when app is backgrounded or when all
  * the views has been detached from the instance (through {@link #setDevSupportEnabled} method).
  */
+@LegacyArchitecture
 public final class BridgeDevSupportManager extends DevSupportManagerBase {
   private boolean mIsSamplingProfilerEnabled = false;
 
