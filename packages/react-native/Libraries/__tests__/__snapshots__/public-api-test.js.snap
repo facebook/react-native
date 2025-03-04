@@ -34,17 +34,6 @@ declare export default typeof NativeActionSheetManager;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/AddressSanitizerCrash/AddressSanitizerCrash.js 1`] = `
-"declare module.exports: NativeAddressSanitizerCrash;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/AddressSanitizerCrash/NativeAddressSanitizerCrash.js 1`] = `
-"export interface Spec extends TurboModule {}
-declare export default ?Spec;
-"
-`;
-
 exports[`public API should not change unintentionally Libraries/Alert/Alert.js 1`] = `
 "export type AlertType =
   | \\"default\\"
