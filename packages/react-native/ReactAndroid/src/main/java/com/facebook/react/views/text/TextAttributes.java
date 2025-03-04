@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import androidx.annotation.NonNull;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ViewDefaults;
@@ -20,6 +21,7 @@ import com.facebook.react.uimanager.ViewDefaults;
  * the rendered aka effective value. For example, to figure out the rendered/effective font size,
  * you need to take into account the fontSize, maxFontSizeMultiplier, and allowFontScaling props.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class TextAttributes {
   // Setting the default to 0 indicates that there is no max.
   public static final float DEFAULT_MAX_FONT_SIZE_MULTIPLIER = 0.0f;
