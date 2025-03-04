@@ -11,6 +11,7 @@
 
 #include <folly/json.h>
 
+#include <array>
 #include <mutex>
 
 namespace facebook::react::jsinspector_modern {
@@ -304,7 +305,9 @@ folly::dynamic PerformanceTracer::serializeTraceEvent(TraceEvent event) const {
   folly::dynamic result = folly::dynamic::object;
 
   if (event.id.has_value()) {
-    result["id"] = folly::sformat("0x{:X}", event.id.value());
+    std::array<char, 16> buffer{};
+    snprintf(buffer.data(), buffer.size(), "0x%08x", event.id.value());
+    result["id"] = buffer.data();
   }
   result["name"] = event.name;
   result["cat"] = event.cat;
