@@ -111,6 +111,12 @@ export type ReportableEvent =
       reason: string,
       isIdle: boolean,
       ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'proxy_event_loop_performance',
+      eventLoopUtilization: number,
+      maxEventLoopDelay: number,
+      ...DebuggerSessionIDs,
     };
 
 /**

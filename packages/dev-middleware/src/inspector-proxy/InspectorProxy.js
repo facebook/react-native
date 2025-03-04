@@ -255,7 +255,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
     );
   }
 
-  #onMessageFromDeviceOrDebugger(message: string): void {
+  #onMessageFromDeviceOrDebugger(
+    message: string,
+    debuggerSessionIDs: DebuggerSessionIDs,
+  ): void {
     // TODO: instead remove this and any other messages in idle state we find
     // Not using JSON.parse for performance reasons. Worst case, we'll get
     // less accurate idle state reporting, which we would easily see in data.
@@ -266,7 +269,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     this.#lastMessageTimestamp = new Date().getTime();
 
     if (this.#trackEventLoopPerf) {
-      this.#trackEventLoopPerfThrottled();
+      this.#trackEventLoopPerfThrottled(debuggerSessionIDs);
     }
   }
 
@@ -353,7 +356,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
         });
 
         socket.on('message', message =>
-          this.#onMessageFromDeviceOrDebugger(message.toString()),
+          this.#onMessageFromDeviceOrDebugger(
+            message.toString(),
+            debuggerSessionIDs,
+          ),
         );
 
         socket.on('close', (code: number, reason: string) => {
@@ -390,7 +396,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     return wss;
   }
 
-  #trackEventLoopPerfThrottled(): void {
+  #trackEventLoopPerfThrottled(debuggerSessionIDs: DebuggerSessionIDs): void {
     if (this.#eventLoopPerfMeasurementOngoing) {
       return;
     }
@@ -408,20 +414,27 @@ export default class InspectorProxy implements InspectorProxyQueries {
       const eluEnd = performance.eventLoopUtilization(eluStart);
       h.disable();
 
-      // event loop utilization is the % of time, between eluStart and eluEnd where event loop was busy
-      const elu = Math.floor(eluEnd.utilization * 100);
+      // The % of time, between eluStart and eluEnd where event loop was busy
+      const eventLoopUtilization = Math.floor(eluEnd.utilization * 100);
 
-      // max event loop delay is the max % of continious time between eluStart and eluEnd where event loop was busy
-      const meld = Math.floor(
+      // The max % of continious time between eluStart and eluEnd where event loop was busy
+      const maxEventLoopDelay = Math.floor(
         (h.max / 1e6 / EVENT_LOOP_PERF_MEASUREMENT_MS) * 100,
       );
 
       debug(
         "Inspector proxy perf in the last %ds- event loop utilization='%d%' max event loop delay='%d%'",
         EVENT_LOOP_PERF_MEASUREMENT_MS / 1000,
-        elu,
-        meld,
+        eventLoopUtilization,
+        maxEventLoopDelay,
       );
+
+      this.#eventReporter?.logEvent({
+        type: 'proxy_event_loop_performance',
+        eventLoopUtilization,
+        maxEventLoopDelay,
+        ...debuggerSessionIDs,
+      });
 
       this.#eventLoopPerfMeasurementOngoing = false;
     }, EVENT_LOOP_PERF_MEASUREMENT_MS).unref();
@@ -483,7 +496,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
         });
 
         socket.on('message', message =>
-          this.#onMessageFromDeviceOrDebugger(message.toString()),
+          this.#onMessageFromDeviceOrDebugger(
+            message.toString(),
+            debuggerSessionIDs,
+          ),
         );
 
         device.handleDebuggerConnection(socket, pageId, {
