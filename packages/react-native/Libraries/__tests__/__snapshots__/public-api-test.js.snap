@@ -7303,6 +7303,26 @@ declare export function normalizeRect(rectOrSize: ?RectOrSize): ?Rect;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js 1`] = `
+"declare const StyleSheet: StyleSheetExports;
+export type { NativeColorValue } from \\"./StyleSheetTypes\\";
+export type ColorValue = ____ColorValue_Internal;
+export type ViewStyleProp = ____ViewStyleProp_Internal;
+export type TextStyleProp = ____TextStyleProp_Internal;
+export type ImageStyleProp = ____ImageStyleProp_Internal;
+export type DangerouslyImpreciseStyleProp =
+  ____DangerouslyImpreciseStyleProp_Internal;
+export type TypeForStyleKey<
+  +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
+> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+export type ViewStyle = ____ViewStyle_Internal;
+export type TextStyle = ____TextStyle_Internal;
+export type ImageStyle = ____ImageStyle_Internal;
+export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
+declare export default typeof StyleSheet;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js.flow 1`] = `
 "export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
@@ -7317,7 +7337,12 @@ export type ViewStyle = ____ViewStyle_Internal;
 export type TextStyle = ____TextStyle_Internal;
 export type ImageStyle = ____ImageStyle_Internal;
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
-declare let hairlineWidth: number;
+declare export default typeof StyleSheet;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheetExports.js 1`] = `
+"declare let hairlineWidth: number;
 declare const absoluteFill: {
   +bottom: 0,
   +left: 0,
@@ -7337,6 +7362,26 @@ declare export default {
   ): void,
   create<+S: ____Styles_Internal>(obj: S): $ReadOnly<S>,
 };
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheetExports.js.flow 1`] = `
+"declare export const hairlineWidth: number;
+declare export const absoluteFill: any;
+declare export const absoluteFillObject: {
+  +bottom: 0,
+  +left: 0,
+  +position: \\"absolute\\",
+  +right: 0,
+  +top: 0,
+};
+declare export const compose: typeof composeStyles;
+declare export const flatten: typeof flattenStyle;
+declare export const setStyleAttributePreprocessor: (
+  property: string,
+  process: (nextProp: mixed) => mixed
+) => void;
+declare export const create: <+S: ____Styles_Internal>(obj: S) => $ReadOnly<S>;
 "
 `;
 

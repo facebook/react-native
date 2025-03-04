@@ -1,0 +1,32 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+import type {____Styles_Internal} from './StyleSheetTypes';
+
+import composeStyles from '../../src/private/styles/composeStyles';
+import flattenStyle from './flattenStyle';
+
+declare export const hairlineWidth: number;
+declare export const absoluteFill: any;
+declare export const absoluteFillObject: {
+  +bottom: 0,
+  +left: 0,
+  +position: 'absolute',
+  +right: 0,
+  +top: 0,
+};
+declare export const compose: typeof composeStyles;
+declare export const flatten: typeof flattenStyle;
+declare export const setStyleAttributePreprocessor: (
+  property: string,
+  process: (nextProp: mixed) => mixed,
+) => void;
+// $FlowFixMe[unsupported-variance-annotation]
+declare export const create: <+S: ____Styles_Internal>(obj: S) => $ReadOnly<S>;
