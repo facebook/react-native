@@ -16,14 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-folly_dep_name = folly_config[:dep_name]
-
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
-
 Pod::Spec.new do |s|
   s.name                   = "React-RuntimeHermes"
   s.version                = version
@@ -35,18 +27,18 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "hermes/*.{cpp,h}"
   s.header_dir             = "react/runtime/hermes"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"${PODS_TARGET_SRCROOT}/../..\" \"${PODS_TARGET_SRCROOT}/../../hermes/executor\" \"$(PODS_ROOT)/boost\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"${PODS_TARGET_SRCROOT}/../..\" \"${PODS_TARGET_SRCROOT}/../../hermes/executor\" \"$(PODS_ROOT)/ReactNativeDependencies\"",
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
-  s.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
 
   if ENV['USE_FRAMEWORKS']
     s.header_mappings_dir     = '../../'
     s.module_name             = 'React_RuntimeHermes'
   end
 
-  s.dependency folly_dep_name, folly_version
+  s.dependency "ReactNativeDependencies"
+
   s.dependency "React-jsitracing"
   s.dependency "React-jsi"
   s.dependency "React-utils"

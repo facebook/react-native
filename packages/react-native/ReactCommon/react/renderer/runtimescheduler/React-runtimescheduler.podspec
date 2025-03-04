@@ -16,13 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-
 header_search_paths = [
-    "\"$(PODS_ROOT)/RCT-Folly\"",
-    "\"$(PODS_ROOT)/boost\"",
+    "\"$(PODS_ROOT)/ReactNativeDependencies\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
@@ -39,7 +34,6 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "**/*.{cpp,h}"
-  s.compiler_flags         = folly_compiler_flags
   s.header_dir             = "react/renderer/runtimescheduler"
   s.exclude_files          = "tests"
   s.pod_target_xcconfig    = {
@@ -58,8 +52,7 @@ Pod::Spec.new do |s|
   s.dependency "React-utils"
   s.dependency "React-featureflags"
   s.dependency "React-timing"
-  s.dependency "glog"
-  s.dependency "RCT-Folly", folly_version
+  s.dependency "ReactNativeDependencies"
   s.dependency "React-jsi"
   s.dependency "React-performancetimeline"
   s.dependency "React-rendererconsistency"

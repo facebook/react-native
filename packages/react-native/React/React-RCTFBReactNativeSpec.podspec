@@ -22,15 +22,10 @@ end
 module_name = "FBReactNativeSpec"
 header_dir = "FBReactNativeSpec"
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
 new_arch_flags = ENV['RCT_NEW_ARCH_ENABLED'] == '1' ? ' -DRCT_NEW_ARCH_ENABLED=1' : ''
 
 header_search_paths = [
-  "\"$(PODS_ROOT)/RCT-Folly\"",
+  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
 ]
 
 Pod::Spec.new do |s|
@@ -43,18 +38,18 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "FBReactNativeSpec/**/*.{c,h,m,mm,S,cpp}"
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags + new_arch_flags
+  s.compiler_flags         = new_arch_flags
   s.header_dir             = header_dir
   s.module_name            = module_name
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
-    "OTHER_CFLAGS" => "$(inherited) " + folly_compiler_flags + new_arch_flags,
+    "OTHER_CFLAGS" => "$(inherited) " + new_arch_flags,
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
   }
 
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
-  s.dependency "RCT-Folly"
+  s.dependency "ReactNativeDependencies"
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "React-Core"

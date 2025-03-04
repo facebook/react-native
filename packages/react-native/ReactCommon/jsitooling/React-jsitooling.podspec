@@ -16,18 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
-
 header_search_paths = [
-  "\"$(PODS_ROOT)/boost\"",
-  "\"$(PODS_ROOT)/RCT-Folly\"",
-  "\"$(PODS_ROOT)/DoubleConversion\"",
-  "\"$(PODS_ROOT)/fast_float/include\"",
-  "\"$(PODS_ROOT)/fmt/include\""
+  "\"$(PODS_ROOT)/ReactNativeDependencies\""
 ]
 
 Pod::Spec.new do |s|
@@ -40,7 +30,6 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "react/runtime/*.{cpp,h}"
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "react/runtime"
 
   if ENV['USE_FRAMEWORKS']
@@ -53,11 +42,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
-  s.dependency "RCT-Folly", folly_version
-  s.dependency "DoubleConversion"
-  s.dependency "fast_float", "6.1.4"
-  s.dependency "fmt", "11.0.2"
-  s.dependency "glog"
+  s.dependency "ReactNativeDependencies"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
 end
