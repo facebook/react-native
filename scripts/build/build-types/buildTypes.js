@@ -11,7 +11,6 @@
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../../consts');
 const getRequireStack = require('./resolution/getRequireStack');
-const resolveTypeInputFile = require('./resolution/resolveTypeInputFile');
 const translatedModuleTemplate = require('./templates/translatedModule.d.ts-template');
 const translateSourceFile = require('./translateSourceFile');
 const {promises: fs} = require('fs');
@@ -103,14 +102,6 @@ async function buildTypes(): Promise<void> {
   const dependencyEdges: DependencyEdges = [];
 
   while (files.size > 0) {
-    for (const file of files) {
-      const interfaceFile = resolveTypeInputFile(file);
-      if (interfaceFile) {
-        files.delete(file);
-        translatedFiles.add(file);
-        files.add(interfaceFile);
-      }
-    }
     const dependencies = await translateSourceFiles(dependencyEdges, files);
     dependencyEdges.push(...dependencies);
 
