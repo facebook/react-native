@@ -11,11 +11,13 @@ import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import com.facebook.react.common.SingleThreadAsserter;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 
 /**
  * Simple container class to keep track of {@link ReactShadowNode}s associated with a particular
  * UIManagerModule instance.
  */
+@LegacyArchitecture
 class ShadowNodeRegistry {
 
   private final SparseArray<ReactShadowNode> mTagsToCSSNodes;

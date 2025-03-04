@@ -54,7 +54,7 @@ Pod::Spec.new do |s|
     ss.dependency "RCT-Folly", folly_version
     ss.dependency "React-logger", version
     ss.dependency "DoubleConversion"
-    ss.dependency "fast_float", "6.1.4"
+    ss.dependency "fast_float"
     ss.dependency "fmt", "11.0.2"
     ss.dependency "glog"
     if using_hermes

@@ -66,8 +66,9 @@ JSModulesUnbundle::Module RAMBundleRegistry::getModule(
   if (bundleId == MAIN_BUNDLE_ID) {
     return module;
   }
+
   return {
-      folly::to<std::string>("seg-", bundleId, '_', std::move(module.name)),
+      "seg-" + std::to_string(bundleId) + '_' + module.name,
       std::move(module.code),
   };
 }

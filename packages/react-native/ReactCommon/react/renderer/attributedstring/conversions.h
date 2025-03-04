@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <folly/Conv.h>
 #include <folly/dynamic.h>
 #include <react/debug/react_native_expect.h>
 #include <react/renderer/attributedstring/AttributedString.h>
@@ -250,7 +249,7 @@ inline void fromRawValue(
 }
 
 inline std::string toString(const FontWeight& fontWeight) {
-  return folly::to<std::string>((int)fontWeight);
+  return std::to_string((int)fontWeight);
 }
 
 inline void fromRawValue(
@@ -967,8 +966,8 @@ inline void fromRawValue(
 }
 
 inline std::string toString(const AttributedString::Range& range) {
-  return "{location: " + folly::to<std::string>(range.location) +
-      ", length: " + folly::to<std::string>(range.length) + "}";
+  return "{location: " + std::to_string(range.location) +
+      ", length: " + std::to_string(range.length) + "}";
 }
 
 #ifdef ANDROID

@@ -10,12 +10,14 @@ package com.facebook.react.uimanager.layoutanimation
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.VisibleForTesting
 
 /**
  * Animation responsible for updating opacity of a view. It should ideally use hardware texture to
  * optimize rendering performances.
  */
+@LegacyArchitecture
 internal class OpacityAnimation(
     private val view: View,
     private val startOpacity: Float,

@@ -10,8 +10,10 @@ package com.facebook.react
 import com.facebook.react.bridge.ModuleHolder
 import com.facebook.react.bridge.NativeModuleRegistry
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 
 /** Helper class to build NativeModuleRegistry. */
+@LegacyArchitecture
 public class NativeModuleRegistryBuilder(
     private val reactApplicationContext: ReactApplicationContext,
 ) {

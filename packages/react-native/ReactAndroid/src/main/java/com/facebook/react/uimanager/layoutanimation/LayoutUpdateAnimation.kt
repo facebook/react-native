@@ -10,11 +10,13 @@ package com.facebook.react.uimanager.layoutanimation
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 
 /**
  * Class responsible for handling layout update animation, applied to view whenever a valid config
  * was supplied for the layout animation of UPDATE type.
  */
+@LegacyArchitecture
 internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
 
   internal override fun isValid(): Boolean = mDurationMs > 0

@@ -6,9 +6,10 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB oscompat_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(oscompat OBJECT ${oscompat_SRC})
 
 target_include_directories(oscompat PUBLIC .)
+target_compile_reactnative_options(oscompat PRIVATE)

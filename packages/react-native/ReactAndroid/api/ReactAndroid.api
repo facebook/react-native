@@ -1775,14 +1775,6 @@ public final class com/facebook/react/common/SingleThreadAsserter {
 	public final fun assertNow ()V
 }
 
-public final class com/facebook/react/common/StandardCharsets {
-	public static final field INSTANCE Lcom/facebook/react/common/StandardCharsets;
-	public static final field UTF_16 Ljava/nio/charset/Charset;
-	public static final field UTF_16BE Ljava/nio/charset/Charset;
-	public static final field UTF_16LE Ljava/nio/charset/Charset;
-	public static final field UTF_8 Ljava/nio/charset/Charset;
-}
-
 public abstract interface class com/facebook/react/common/SurfaceDelegate {
 	public abstract fun createContentView (Ljava/lang/String;)V
 	public abstract fun destroyContentView ()V
@@ -3353,9 +3345,9 @@ public final class com/facebook/react/modules/systeminfo/AndroidInfoModule : com
 	public fun invalidate ()V
 }
 
-public class com/facebook/react/modules/systeminfo/ReactNativeVersion {
+public final class com/facebook/react/modules/systeminfo/ReactNativeVersion {
+	public static final field INSTANCE Lcom/facebook/react/modules/systeminfo/ReactNativeVersion;
 	public static final field VERSION Ljava/util/Map;
-	public fun <init> ()V
 }
 
 public final class com/facebook/react/modules/toast/ToastModule : com/facebook/fbreact/specs/NativeToastAndroidSpec {

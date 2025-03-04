@@ -165,12 +165,12 @@ jobs:
       - name: Upload XCFramework Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ReactNativeDependencies${{ matrix.flavor }}.xcframework
+          name: ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
           path: packages/react-native/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
       - name: Upload dSYM Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM
+          name: ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz
           path: |
             packages/react-native/third-party/Symbols/ReactNativeDependencies${{ matrix.flavor }}.framework.dSYM.tar.gz
       - name: Save XCFramework in Cache

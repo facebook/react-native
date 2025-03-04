@@ -10,7 +10,9 @@ package com.facebook.react.jscexecutor
 import com.facebook.react.bridge.JavaScriptExecutor
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 
+@LegacyArchitecture
 public class JSCExecutorFactory(private val appName: String, private val deviceName: String) :
     JavaScriptExecutorFactory {
 

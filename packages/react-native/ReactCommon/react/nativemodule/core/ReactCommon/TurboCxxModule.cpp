@@ -153,12 +153,10 @@ jsi::Value TurboCxxModule::invokeMethod(
     CxxModule::Callback second;
 
     if (count < method.callbacks) {
-      throw std::invalid_argument(folly::to<std::string>(
-          "Expected ",
-          method.callbacks,
-          " callbacks, but only ",
-          count,
-          " parameters provided"));
+      throw std::invalid_argument(
+          "Expected " + std::to_string(method.callbacks) +
+          " callbacks, but only " + std::to_string(count) +
+          " parameters provided");
     }
 
     if (method.callbacks == 1) {

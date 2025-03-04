@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -54,6 +55,7 @@ import java.util.Arrays;
  * NativeViewHierarchyOptimizer} for more information.
  */
 @ReactPropertyHolder
+@LegacyArchitecture
 public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl> {
 
   private static final YogaConfig sYogaConfig;

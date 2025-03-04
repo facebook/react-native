@@ -27,6 +27,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, RCTReleaseLevel) { Canary, Experimental, Stable };
+
 @protocol RCTReactNativeFactoryDelegate <
     RCTBridgeDelegate,
     RCTUIConfiguratorProtocol,
@@ -85,6 +87,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTReactNativeFactory : NSObject
 
 - (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate;
+
+- (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate releaseLevel:(RCTReleaseLevel)releaseLevel;
 
 - (void)startReactNativeWithModuleName:(NSString *)moduleName inWindow:(UIWindow *_Nullable)window;
 

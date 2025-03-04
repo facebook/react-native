@@ -20,18 +20,25 @@ const TYPEDEF_MAPPING: Record<string, $ReadOnlyArray<string>> = {
   '.js': ['.js.flow'],
 };
 
+const cached = new Map<string, ?string>();
+
 /**
  * Resolve the Flow file defining the type interface for a given source file.
  *
  * Ensures common interface file (js.flow) or base implementation (.js) exists for
  * platform-specific files (.android.js or .ios.js).
  */
-function resolveTypeInputFile(file: string): string | null {
+function resolveTypeInputFile(file: string): ?string {
+  if (cached.has(file)) {
+    return cached.get(file);
+  }
+
   const [pathWithoutExt, extension] = splitPathAndExtension(file);
 
   const extsToCheck = TYPEDEF_MAPPING[extension];
 
   if (!extsToCheck) {
+    cached.set(file, null);
     return null;
   }
 
@@ -44,12 +51,14 @@ function resolveTypeInputFile(file: string): string | null {
         path.relative(REPO_ROOT, file),
         path.relative(REPO_ROOT, interfaceFile),
       );
+      cached.set(file, interfaceFile);
       return interfaceFile;
     }
   }
 
   if (extension === '.js') {
     // .js files do not require a common interface
+    cached.set(file, null);
     return null;
   }
 
