@@ -10,10 +10,10 @@ package com.facebook.react.bridge
 import com.facebook.yoga.YogaUnit
 import com.facebook.yoga.YogaValue
 
-internal class DimensionPropConverter {
-  companion object {
+public class DimensionPropConverter {
+  public companion object {
     @JvmStatic
-    fun getDimension(value: Any?): YogaValue? {
+    public fun getDimension(value: Any?): YogaValue? {
       return when (value) {
         null -> null
         is Double -> YogaValue(value.toFloat(), YogaUnit.POINT)
