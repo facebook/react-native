@@ -8,9 +8,8 @@
  * @format
  */
 
-'use strict';
+import * as StyleSheet from './StyleSheetExports';
 
-import typeof * as StyleSheetExports from './StyleSheetExports';
 import type {
   ____ColorValue_Internal,
   ____DangerouslyImpreciseStyle_Internal,
@@ -22,9 +21,6 @@ import type {
   ____ViewStyle_Internal,
   ____ViewStyleProp_Internal,
 } from './StyleSheetTypes';
-const StyleSheet: StyleSheetExports = (
-  require('./StyleSheetExports') as $FlowFixMe
-).default;
 
 export type {NativeColorValue} from './StyleSheetTypes';
 
