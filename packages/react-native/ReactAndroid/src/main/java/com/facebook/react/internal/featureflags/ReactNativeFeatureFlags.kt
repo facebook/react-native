@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e27f8a6852293234595697743315ff8>>
+ * @generated SignedSource<<d624ddf83fd81f773c18f04225d1692f>>
  */
 
 /**
@@ -177,12 +177,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableViewRecyclingForView(): Boolean = accessor.enableViewRecyclingForView()
-
-  /**
-   * When enabled, rawProps in Props will not include Yoga specific props.
-   */
-  @JvmStatic
-  public fun excludeYogaFromRawProps(): Boolean = accessor.excludeYogaFromRawProps()
 
   /**
    * Fixes a bug in Differentiator where parent views may be referenced before they're created

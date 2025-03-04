@@ -85,8 +85,6 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode {
 
   Rect getContentBounds() const;
 
-  static void filterRawProps(RawProps& rawProps);
-
  protected:
   /*
    * Yoga config associated (only) with this particular node.

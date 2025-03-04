@@ -20,9 +20,8 @@ namespace facebook::react {
 HostPlatformViewProps::HostPlatformViewProps(
     const PropsParserContext& context,
     const HostPlatformViewProps& sourceProps,
-    const RawProps& rawProps,
-    const std::function<bool(const std::string&)>& filterObjectKeys)
-    : BaseViewProps(context, sourceProps, rawProps, filterObjectKeys),
+    const RawProps& rawProps)
+    : BaseViewProps(context, sourceProps, rawProps),
       elevation(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.elevation
