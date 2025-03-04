@@ -15,6 +15,7 @@
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
 #endif
+#import <React/RCTInitializeUIKitProxies.h>
 #import <jsinspector-modern/InspectorFlags.h>
 #import <jsinspector-modern/InspectorInterfaces.h>
 #import <jsinspector-modern/ReactCdp.h>
@@ -511,6 +512,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)init)
   _bundleURL = [RCTConvert NSURL:_bundleURL.absoluteString];
 
   RCTExecuteOnMainQueue(^{
+    RCTInitializeUIKitProxies();
     RCTRegisterReloadCommandListener(self);
     RCTReloadCommandSetBundleURL(self->_bundleURL);
   });
