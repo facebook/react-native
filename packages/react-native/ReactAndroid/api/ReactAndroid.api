@@ -3345,9 +3345,9 @@ public final class com/facebook/react/modules/systeminfo/AndroidInfoModule : com
 	public fun invalidate ()V
 }
 
-public class com/facebook/react/modules/systeminfo/ReactNativeVersion {
+public final class com/facebook/react/modules/systeminfo/ReactNativeVersion {
+	public static final field INSTANCE Lcom/facebook/react/modules/systeminfo/ReactNativeVersion;
 	public static final field VERSION Ljava/util/Map;
-	public fun <init> ()V
 }
 
 public final class com/facebook/react/modules/toast/ToastModule : com/facebook/fbreact/specs/NativeToastAndroidSpec {
