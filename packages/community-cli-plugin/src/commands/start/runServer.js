@@ -26,6 +26,7 @@ import Metro from 'metro';
 import {Terminal} from 'metro-core';
 import path from 'path';
 import url from 'url';
+import debug from 'debug';
 
 export type StartCommandArgs = {
   assetPlugins?: string[],
