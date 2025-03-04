@@ -733,6 +733,16 @@ public abstract class com/facebook/react/bridge/GuardedAsyncTask : android/os/As
 	protected abstract fun doInBackgroundGuarded ([Ljava/lang/Object;)V
 }
 
+public abstract class com/facebook/react/bridge/GuardedResultAsyncTask : android/os/AsyncTask {
+	protected fun <init> (Lcom/facebook/react/bridge/JSExceptionHandler;)V
+	protected fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
+	protected synthetic fun doInBackground ([Ljava/lang/Object;)Ljava/lang/Object;
+	protected final fun doInBackground ([Ljava/lang/Void;)Ljava/lang/Object;
+	protected abstract fun doInBackgroundGuarded ()Ljava/lang/Object;
+	protected final fun onPostExecute (Ljava/lang/Object;)V
+	protected abstract fun onPostExecuteGuarded (Ljava/lang/Object;)V
+}
+
 public abstract class com/facebook/react/bridge/GuardedRunnable : java/lang/Runnable {
 	public fun <init> (Lcom/facebook/react/bridge/JSExceptionHandler;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactContext;)V
