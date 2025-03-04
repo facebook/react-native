@@ -72,7 +72,7 @@ using namespace facebook::react;
 {
   // Prop updates are ignored by _refreshControl until after the initial layout, so just store them in _props until then
   if (_isBeforeInitialLayout) {
-    _props = std::static_pointer_cast<const BaseViewProps>(props);
+    _props = std::static_pointer_cast<const PullToRefreshViewProps>(props);
     return;
   }
 
