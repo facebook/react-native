@@ -9,7 +9,9 @@ package com.facebook.react.uimanager.layoutanimation
 
 import android.view.View
 import android.view.animation.Animation
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
 
+@LegacyArchitecture
 internal class OpacityAnimationListener(private val view: View) : Animation.AnimationListener {
   private var layerTypeChanged = false
 
