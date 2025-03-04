@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import androidx.annotation.ColorInt;
@@ -282,7 +283,40 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = ViewProps.NATIVE_ID)
   public void setNativeId(@NonNull T view, @Nullable String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
+
+    /*
+     * If we change the nativeId we need to notify the relevant accessibility parent to update the
+     * focusing order.
+     */
+    if (view.getTag(R.id.accessible_elements_parent) != null) {
+      ViewGroup accessibilityParent = (ViewGroup) view.getTag(R.id.accessible_elements_parent);
+
+      if (accessibilityParent != null) {
+        accessibilityParent.notifySubtreeAccessibilityStateChanged(
+            accessibilityParent,
+            accessibilityParent,
+            AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+      }
+    }
+
     ReactFindViewUtil.notifyViewRendered(view);
+  }
+
+  @ReactProp(name = ViewProps.ACCESSIBLE_ELEMENTS)
+  public void setAccessibleElements(@NonNull T view, @Nullable ReadableArray nativeIds) {
+    if (nativeIds == null) {
+      return;
+    }
+
+    if (view.getTag(R.id.accessible_elements) != null && nativeIds.size() == 0) {
+      ReactAccessibilityDelegate.clearFlowToTagsRecursively(view);
+    }
+
+    ((ViewGroup) view)
+        .notifySubtreeAccessibilityStateChanged(
+            view, view, AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
+
+    view.setTag(R.id.accessible_elements, nativeIds);
   }
 
   @ReactProp(name = ViewProps.ACCESSIBILITY_LABELLED_BY)

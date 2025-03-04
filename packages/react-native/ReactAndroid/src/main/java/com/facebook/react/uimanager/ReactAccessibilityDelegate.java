@@ -107,6 +107,12 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     // problems, so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null
+            || view.getTag(R.id.accessible_elements) != null
+            // For views within a ViewGroup with accessibleElements we only need to set a delegate
+            // when they have a flow_to tag since otherwise we can rely on Android's default
+            // focusing order
+            || (view.getTag(R.id.accessible_elements_parent) != null
+                && view.getTag(R.id.flow_to) != null)
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
             || view.getTag(R.id.react_test_id) != null
@@ -132,9 +138,69 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     return mView;
   }
 
+  public static void setCustomAccessibilityFocusOrder(View host, AccessibilityNodeInfoCompat info) {
+    ReadableArray nativeIds = (ReadableArray) host.getTag(R.id.accessible_elements);
+
+    if (nativeIds != null && nativeIds.size() > 1) {
+
+      // Traverse all children and add a tag pointing this view as their parent
+      addParentTagToChildren(host, host);
+
+      // Clear any existing flow_to tags on all children recursively
+      clearFlowToTagsRecursively(host);
+
+      for (int i = 0; i < nativeIds.size() - 1; i++) {
+        String currentNativeId = nativeIds.getString(i);
+        String flowToNativeId = nativeIds.getString(i + 1);
+
+        if (currentNativeId != null && flowToNativeId != null) {
+          View currentView = ReactFindViewUtil.findView(host, currentNativeId);
+          View flowToView = ReactFindViewUtil.findView(host, flowToNativeId);
+          if (currentView != null && flowToView != null) {
+            currentView.setTag(R.id.flow_to, flowToView.getId());
+          }
+        }
+      }
+    }
+
+    Integer flowTo = (Integer) host.getTag(R.id.flow_to);
+    if (flowTo != null) {
+
+      View parent = (View) host.getTag(R.id.accessible_elements_parent);
+      if (parent != null) {
+        View nextView = parent.findViewById(flowTo);
+        info.setTraversalBefore(nextView);
+      }
+    }
+  }
+
+  private static void addParentTagToChildren(View view, View parent) {
+    view.setTag(R.id.accessible_elements_parent, parent);
+
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup) view;
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        addParentTagToChildren(viewGroup.getChildAt(i), parent);
+      }
+    }
+  }
+
+  public static void clearFlowToTagsRecursively(View view) {
+    view.setTag(R.id.flow_to, null);
+
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup) view;
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        clearFlowToTagsRecursively(viewGroup.getChildAt(i));
+      }
+    }
+  }
+
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
+
+    setCustomAccessibilityFocusOrder(host, info);
     if (host.getTag(R.id.accessibility_state_expanded) != null) {
       final boolean accessibilityStateExpanded =
           (boolean) host.getTag(R.id.accessibility_state_expanded);
