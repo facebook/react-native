@@ -90,6 +90,8 @@ const ENTRY_POINTS = [
   'packages/react-native/Libraries/Components/SafeAreaView/SafeAreaView.js',
   'packages/react-native/Libraries/Components/Touchable/TouchableOpacity.js',
   'packages/react-native/Libraries/Text/Text.js',
+  'packages/react-native/Libraries/Components/TextInput/TextInput.js',
+  'packages/react-native/Libraries/Components/TextInput/InputAccessoryView.js',
 ];
 
 /**

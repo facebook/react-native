@@ -88,14 +88,29 @@ export type TextInputKeyPressEventData = $ReadOnly<{
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
 
+/**
+ * @see TextInputProps.onEndEditing
+ */
 export type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
 
-export type TextInputEditingEvent =
+export type TextInputEndEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
+
+/**
+ * @see TextInputProps.onSubmitEditing
+ */
+export type TextInputSubmitEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
+
+export type TextInputSubmitEditingEvent =
+  NativeSyntheticEvent<TextInputSubmitEditingEventData>;
 
 type DataDetectorTypesType =
   | 'phoneNumber'
@@ -389,6 +404,21 @@ export type TextInputAndroidProps = $ReadOnly<{
    */
   disableFullscreenUI?: ?boolean,
 
+  /**
+   * Determines whether the individual fields in your app should be included in a
+   * view structure for autofill purposes on Android API Level 26+. Defaults to auto.
+   * To disable auto complete, use `off`.
+   *
+   * *Android Only*
+   *
+   * The following values work on Android only:
+   *
+   * - `auto` - let Android decide
+   * - `no` - not important for autofill
+   * - `noExcludeDescendants` - this view and its children aren't important for autofill
+   * - `yes` - is important for autofill
+   * - `yesExcludeDescendants` - this view is important for autofill but its children aren't
+   */
   importantForAutofill?: ?(
     | 'auto'
     | 'no'
@@ -783,7 +813,7 @@ export type TextInputProps = $ReadOnly<{
   /**
    * Callback that is called when text input ends.
    */
-  onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
 
   /**
    * Callback that is called when the text input is focused.
@@ -840,7 +870,7 @@ export type TextInputProps = $ReadOnly<{
    * Callback that is called when the text input's submit button is pressed.
    * Invalid if `multiline={true}` is specified.
    */
-  onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
 
   /**
    * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
@@ -1109,7 +1139,7 @@ export interface TextInputInstance extends HostInstance {
  *
  */
 type InternalTextInput = component(
-  ref: React.RefSetter<TextInputInstance>,
+  ref?: React.RefSetter<TextInputInstance>,
   ...TextInputProps
 );
 

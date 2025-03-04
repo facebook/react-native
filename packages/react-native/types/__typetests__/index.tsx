@@ -1175,7 +1175,7 @@ const customEventEmitter = new CustomEventEmitter();
 customEventEmitter.addListener('event', () => {});
 
 class TextInputTest extends React.Component<{}, {username: string}> {
-  username: TextInput | null = null;
+  username: React.ElementRef<typeof TextInput> | null = null;
 
   handleUsernameChange = (text: string) => {
     console.log(`text: ${text}`);
@@ -1278,9 +1278,7 @@ class TextInputTest extends React.Component<{}, {username: string}> {
           onContentSizeChange={this.handleOnContentSizeChange}
         />
 
-        <TextInput contextMenuHidden={true} textAlignVertical="top" />
-
-        <TextInput textAlign="center" />
+        <TextInput contextMenuHidden={true} />
       </View>
     );
   }
