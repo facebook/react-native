@@ -122,8 +122,7 @@
   CGFloat textHeight = ascent + descent;
 
   // Adjust vertical offset to ensure text is vertically centered relative to the line height.
-  // Positive offset when text height exceeds line height, negative when line height exceeds text height.
-  CGFloat difference = textHeight - lineHeight;
+  CGFloat difference = MAX(0, textHeight - lineHeight);
   CGFloat verticalOffset = difference / 2.0;
 
   return CGPointMake(contentFrame.origin.x, contentFrame.origin.y + verticalOffset);
