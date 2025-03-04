@@ -16,11 +16,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-
 header_search_paths = [
-  "\"$(PODS_ROOT)/RCT-Folly\"",
+  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
@@ -41,7 +38,6 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
   s.header_dir             = header_dir
-  s.compiler_flags         = folly_compiler_flags
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
@@ -52,6 +48,6 @@ Pod::Spec.new do |s|
     s.header_mappings_dir = "../.."
   end
 
-  s.dependency "RCT-Folly"
+  s.dependency "ReactNativeDependencies"
   s.dependency "React-oscompat"
 end

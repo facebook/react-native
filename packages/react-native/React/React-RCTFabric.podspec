@@ -16,20 +16,11 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
 new_arch_flags = ENV['RCT_NEW_ARCH_ENABLED'] == '1' ? ' -DRCT_NEW_ARCH_ENABLED=1' : ''
 
 header_search_paths = [
   "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
-  "\"$(PODS_ROOT)/boost\"",
-  "\"$(PODS_ROOT)/DoubleConversion\"",
-  "\"$(PODS_ROOT)/fast_float/include\"",
-  "\"$(PODS_ROOT)/fmt/include\"",
-  "\"$(PODS_ROOT)/RCT-Folly\"",
+  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
   "\"$(PODS_ROOT)/Headers/Public/ReactCodegen\"",
@@ -55,14 +46,14 @@ Pod::Spec.new do |s|
   s.source_files           = "Fabric/**/*.{c,h,m,mm,S,cpp}"
   s.exclude_files          = "**/tests/*",
                              "**/android/*",
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags + new_arch_flags
+  s.compiler_flags         = new_arch_flags
   s.header_dir             = header_dir
   s.module_name            = module_name
   s.weak_framework         = "JavaScriptCore"
   s.framework              = "MobileCoreServices"
   s.pod_target_xcconfig    = {
     "HEADER_SEARCH_PATHS" => header_search_paths,
-    "OTHER_CFLAGS" => "$(inherited) " + folly_compiler_flags + new_arch_flags,
+    "OTHER_CFLAGS" => "$(inherited) " + new_arch_flags,
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
   }.merge!(ENV['USE_FRAMEWORKS'] != nil ? {
     "PUBLIC_HEADERS_FOLDER_PATH" => "#{module_name}.framework/Headers/#{header_dir}"
@@ -70,8 +61,7 @@ Pod::Spec.new do |s|
 
   s.dependency "React-Core"
   s.dependency "React-RCTImage"
-  s.dependency "RCT-Folly/Fabric", folly_version
-  s.dependency "glog"
+  s.dependency "ReactNativeDependencies"
   s.dependency "Yoga"
   s.dependency "React-RCTText"
   s.dependency "React-jsi"

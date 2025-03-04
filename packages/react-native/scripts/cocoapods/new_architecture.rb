@@ -44,7 +44,7 @@ class NewArchitectureHelper
 
     def self.computeFlags(is_new_arch_enabled)
         new_arch_flag = is_new_arch_enabled ? "-DRCT_NEW_ARCH_ENABLED=1 " : ""
-        return " #{new_arch_flag}#{Helpers::Constants.folly_config()[:compiler_flags]}"
+        return " #{new_arch_flag}"
     end
 
     def self.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
@@ -72,9 +72,6 @@ class NewArchitectureHelper
     def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = Helpers::Constants.folly_config[:version])
         # Pod::Specification does not have getters so, we have to read
         # the existing values from a hash representation of the object.
-        folly_config = Helpers::Constants.folly_config
-        folly_compiler_flags = folly_config[:compiler_flags]
-
         hash = spec.to_hash
 
         compiler_flags = hash["compiler_flags"] ? hash["compiler_flags"] : ""
@@ -83,9 +80,7 @@ class NewArchitectureHelper
 
         header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
         if ENV['USE_FRAMEWORKS']
-            header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
-            header_search_paths << "\"$(PODS_ROOT)/fast_float/include\""
-            header_search_paths << "\"$(PODS_ROOT)/fmt/include\""
+            header_search_paths << "\"$(PODS_ROOT)/ReactNativeDependencies\""
             ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-graphics", "React_graphics", ["react/renderer/graphics/platform/ios"])
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-FabricImage", "React_FabricImage", []))
@@ -110,8 +105,6 @@ class NewArchitectureHelper
 
 
         spec.dependency "React-Core"
-        spec.dependency "RCT-Folly", folly_version
-        spec.dependency "glog"
 
 
         ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(new_arch_enabled))
@@ -133,18 +126,12 @@ class NewArchitectureHelper
         spec.dependency "React-debug"
         spec.dependency "React-ImageManager"
         spec.dependency "React-rendererdebug"
-        # This dependency is required for the cases when the pod includes generated sources, specifically Props.cpp.
-        spec.dependency "DoubleConversion"
+        spec.dependency "ReactNativeDependencies"
         spec.dependency 'React-jsi'
 
         depend_on_js_engine(spec)
 
         spec.pod_target_xcconfig = current_config
-    end
-
-    def self.folly_compiler_flags
-        folly_config = Helpers::Constants.folly_config
-        return folly_config[:compiler_flags]
     end
 
     def self.extract_react_native_version(react_native_path, file_manager: File, json_parser: JSON)

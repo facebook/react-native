@@ -13,6 +13,5 @@ def setup_fabric!(react_native_path: "../node_modules/react-native")
     pod 'React-graphics', :path => "#{react_native_path}/ReactCommon/react/renderer/graphics"
     pod 'React-RCTFabric', :path => "#{react_native_path}/React", :modular_headers => true
     pod 'React-ImageManager', :path => "#{react_native_path}/ReactCommon/react/renderer/imagemanager/platform/ios"
-    pod 'RCT-Folly/Fabric', :podspec => "#{react_native_path}/third-party-podspecs/RCT-Folly.podspec"
     pod 'React-FabricImage', :path => "#{react_native_path}/ReactCommon"
 end
