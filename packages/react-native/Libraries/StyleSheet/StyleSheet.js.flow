@@ -8,9 +8,8 @@
  * @format
  */
 
-'use strict';
+export * as default from './StyleSheetExports';
 
-import typeof * as StyleSheetExports from './StyleSheetExports';
 import type {
   ____ColorValue_Internal,
   ____DangerouslyImpreciseStyle_Internal,
@@ -22,9 +21,13 @@ import type {
   ____ViewStyle_Internal,
   ____ViewStyleProp_Internal,
 } from './StyleSheetTypes';
-const StyleSheet: StyleSheetExports = (
-  require('./StyleSheetExports') as $FlowFixMe
-).default;
+
+export type {StyleProp} from './StyleSheetTypes';
+
+export type StyleSheetProperties = {
+  hairlineWidth: number,
+  flatten<T: string>(style: T): T,
+};
 
 export type {NativeColorValue} from './StyleSheetTypes';
 
@@ -161,5 +164,3 @@ export type ImageStyle = ____ImageStyle_Internal;
  * containing any possible style value.
  */
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
-
-export default StyleSheet;
