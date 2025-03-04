@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB logger_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(logger OBJECT ${logger_SRC})
@@ -14,3 +14,4 @@ add_library(logger OBJECT ${logger_SRC})
 target_include_directories(logger PUBLIC .)
 
 target_link_libraries(logger glog)
+target_compile_reactnative_options(logger PRIVATE)

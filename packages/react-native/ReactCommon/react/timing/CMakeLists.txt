@@ -6,13 +6,10 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 add_library(react_timing INTERFACE)
 
 target_include_directories(react_timing INTERFACE ${REACT_COMMON_DIR})
+target_compile_reactnative_options(react_timing INTERFACE)
+target_compile_options(react_timing INTERFACE -Wpedantic)
