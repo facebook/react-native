@@ -32,9 +32,7 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   Props(
       const PropsParserContext& context,
       const Props& sourceProps,
-      const RawProps& rawProps,
-      const std::function<bool(const std::string&)>& filterObjectKeys =
-          nullptr);
+      const RawProps& rawProps);
 
 #if RN_DEBUG_STRING_CONVERTIBLE
   virtual ~Props() override = default;
@@ -85,13 +83,7 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   void initialize(
       const PropsParserContext& context,
       const Props& sourceProps,
-      const RawProps& rawProps,
-      /**
-       * Filter object keys to be excluded when converting the RawProps to
-       * folly::dynamic (android only)
-       */
-      const std::function<bool(const std::string&)>& filterObjectKeys =
-          nullptr);
+      const RawProps& rawProps);
 };
 
 } // namespace facebook::react

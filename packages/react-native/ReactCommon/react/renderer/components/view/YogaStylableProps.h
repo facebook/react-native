@@ -21,9 +21,7 @@ class YogaStylableProps : public Props {
   YogaStylableProps(
       const PropsParserContext& context,
       const YogaStylableProps& sourceProps,
-      const RawProps& rawProps,
-      const std::function<bool(const std::string&)>& filterObjectKeys =
-          nullptr);
+      const RawProps& rawProps);
 
   void setProp(
       const PropsParserContext& context,

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b59cecccbe734a126dcd20f76d0ce7c7>>
+ * @generated SignedSource<<54fad07fbeb2ba1a1f0f6cf51a438113>>
  */
 
 /**
@@ -45,7 +45,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
-  private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fixDifferentiatorEmittingUpdatesWithWrongParentTagCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
@@ -285,15 +284,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecyclingForView()
       enableViewRecyclingForViewCache = cached
-    }
-    return cached
-  }
-
-  override fun excludeYogaFromRawProps(): Boolean {
-    var cached = excludeYogaFromRawPropsCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.excludeYogaFromRawProps()
-      excludeYogaFromRawPropsCache = cached
     }
     return cached
   }

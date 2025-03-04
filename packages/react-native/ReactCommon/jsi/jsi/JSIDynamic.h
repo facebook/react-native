@@ -19,8 +19,7 @@ facebook::jsi::Value valueFromDynamic(
 
 folly::dynamic dynamicFromValue(
     facebook::jsi::Runtime& runtime,
-    const facebook::jsi::Value& value,
-    const std::function<bool(const std::string&)>& filterObjectKeys = nullptr);
+    const facebook::jsi::Value& value);
 
 } // namespace jsi
 } // namespace facebook

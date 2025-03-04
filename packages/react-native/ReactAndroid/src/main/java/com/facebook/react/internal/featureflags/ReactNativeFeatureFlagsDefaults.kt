@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0041e37961e68474a6d092dc0f8a4903>>
+ * @generated SignedSource<<47c55dcfba237ab0621b3651c622623e>>
  */
 
 /**
@@ -72,8 +72,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableViewRecyclingForText(): Boolean = true
 
   override fun enableViewRecyclingForView(): Boolean = true
-
-  override fun excludeYogaFromRawProps(): Boolean = false
 
   override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = true
 
