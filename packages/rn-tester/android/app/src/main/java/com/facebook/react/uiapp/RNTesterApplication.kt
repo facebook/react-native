@@ -30,6 +30,7 @@ import com.facebook.react.shell.MainReactPackage
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.react.uiapp.component.MyLegacyViewManager
 import com.facebook.react.uiapp.component.MyNativeViewManager
+import com.facebook.react.uiapp.component.ReportFullyDrawnViewManager
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
@@ -99,12 +100,15 @@ internal class RNTesterApplication : Application(), ReactApplication {
               ): List<NativeModule> = emptyList()
 
               override fun getViewManagerNames(reactContext: ReactApplicationContext) =
-                  listOf("RNTMyNativeView", "RNTMyLegacyNativeView")
+                  listOf("RNTMyNativeView", "RNTMyLegacyNativeView", "RNTReportFullyDrawnView")
 
               override fun createViewManagers(
                   reactContext: ReactApplicationContext
               ): List<ViewManager<*, *>> =
-                  listOf(MyNativeViewManager(), MyLegacyViewManager(reactContext))
+                  listOf(
+                      MyNativeViewManager(),
+                      MyLegacyViewManager(reactContext),
+                      ReportFullyDrawnViewManager())
 
               override fun createViewManager(
                   reactContext: ReactApplicationContext,
@@ -113,6 +117,7 @@ internal class RNTesterApplication : Application(), ReactApplication {
                   when (viewManagerName) {
                     "RNTMyNativeView" -> MyNativeViewManager()
                     "RNTMyLegacyNativeView" -> MyLegacyViewManager(reactContext)
+                    "RNTReportFullyDrawnView" -> ReportFullyDrawnViewManager()
                     else -> null
                   }
             })
