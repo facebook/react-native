@@ -226,6 +226,6 @@ jobs:
           github-token: ${{ secrets.REACT_NATIVE_BOT_GITHUB_TOKEN }}
           script: |
             const {verifyReleaseOnNpm} = require('./.github/workflow-scripts/verifyReleaseOnNpm.js');
-            const {isLatest()} = require('./.github/workflow-scripts/publishTemplate.js');
+            const {isLatest} = require('./.github/workflow-scripts/publishTemplate.js');
             const version = "${{ github.ref_name }}";
             await verifyReleaseOnNpm(version, isLatest());
