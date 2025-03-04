@@ -11,15 +11,19 @@ import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Point
+import android.view.FocusFinder
 import android.view.View
 import android.view.ViewGroup
 import android.widget.OverScroller
+import androidx.core.view.ViewCompat.FocusRealDirection
 import com.facebook.common.logging.FLog
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.common.ReactConstants
+import com.facebook.react.fabric.FabricUIManager
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
+import com.facebook.react.uimanager.PixelUtil.toPixelFromDIP
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.common.UIManagerType
@@ -455,6 +459,111 @@ public object ReactScrollViewHelper {
         height / 2 // overY
         )
     return Point(scroller.finalX, scroller.finalY)
+  }
+
+  @JvmStatic
+  public fun findNextFocusableView(
+      host: ViewGroup,
+      focused: View,
+      @FocusRealDirection direction: Int,
+      horizontal: Boolean
+  ): View? {
+    val absDir = resolveAbsoluteDirection(direction, horizontal, host.getLayoutDirection())
+
+    /*
+     * Check if we can focus the next element in the absolute direction within the ScrollView,
+     * if we can't, look into the shadow tree to find the next focusable element
+     */
+    val ff = FocusFinder.getInstance()
+    val result = ff.findNextFocus(host, focused, absDir)
+
+    if (result != null) {
+      return result
+    }
+
+    /*
+     * Attempt to focus the next focusable but clipped element on the list if there is one, since
+     * the view is clipped it is not currently in the hierarchy so we scroll it into view and then
+     * focus it.
+     *
+     * With scrolling being asynchronous we need to return the currently focused element
+     * temporarily until we finish scrolling and we successfully focus the next element.
+     */
+    if (focusNextClippedElement(host, focused, absDir, host.context as ReactContext)) {
+      return focused
+    }
+
+    return null
+  }
+
+  /**
+   * Attempts to focus the next element in the specified direction within the scrollView.
+   *
+   * @return true if a new element was successfully focused, otherwise false.
+   */
+  @JvmStatic
+  public fun focusNextClippedElement(
+      scrollView: ViewGroup,
+      focused: View,
+      @FocusRealDirection direction: Int,
+      context: ReactContext,
+  ): Boolean {
+    val uimanager = UIManagerHelper.getUIManager(context, UIManagerType.FABRIC) ?: return false
+
+    val nextFocusableViewMetrics =
+        (uimanager as FabricUIManager).findNextFocusableElementMetrics(
+            scrollView.id, focused.id, direction)
+
+    if (nextFocusableViewMetrics != null) {
+
+      /*
+       * `scrollBy()` doesn't trigger the laying out of scrolled-into views until the next
+       * frame so we use `post` to delay the focusing of the next focusable view until we can actually
+       * find it in the hierarchy
+       */
+      when (direction) {
+        View.FOCUS_UP,
+        View.FOCUS_DOWN -> {
+          scrollView.post {
+            scrollView.scrollBy(
+                0, toPixelFromDIP(nextFocusableViewMetrics.deltaScroll.toFloat()).toInt())
+            val nextFocusableView: View? = scrollView.findViewById(nextFocusableViewMetrics.id)
+            nextFocusableView?.requestFocus()
+          }
+        }
+        View.FOCUS_RIGHT,
+        View.FOCUS_LEFT -> {
+          scrollView.post {
+            scrollView.scrollBy(
+                toPixelFromDIP(nextFocusableViewMetrics.deltaScroll.toFloat()).toInt(), 0)
+            val nextFocusableView: View? = scrollView.findViewById(nextFocusableViewMetrics.id)
+            nextFocusableView?.requestFocus()
+          }
+        }
+        else -> return false
+      }
+      return true
+    }
+    return false
+  }
+
+  @JvmStatic
+  public fun resolveAbsoluteDirection(
+      @FocusRealDirection direction: Int,
+      horizontal: Boolean,
+      layoutDirection: Int
+  ): Int {
+    val rtl: Boolean = layoutDirection == View.LAYOUT_DIRECTION_RTL
+
+    return if (direction == View.FOCUS_FORWARD || direction == View.FOCUS_BACKWARD) {
+      if (horizontal) {
+        if ((direction == View.FOCUS_FORWARD) != rtl) View.FOCUS_RIGHT else View.FOCUS_LEFT
+      } else {
+        if (direction == View.FOCUS_FORWARD) View.FOCUS_DOWN else View.FOCUS_UP
+      }
+    } else {
+      direction
+    }
   }
 
   public interface ScrollListener {
