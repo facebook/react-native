@@ -167,11 +167,11 @@ BackHandler.addEventListener('hardwareBackPress', () => false).remove();
 BackHandler.addEventListener('hardwareBackPress', () => undefined).remove();
 BackHandler.addEventListener('hardwareBackPress', () => null).remove();
 
-interface LocalStyles {
+type LocalStyles = {
   container: ViewStyle;
   welcome: TextStyle;
   instructions: TextStyle;
-}
+};
 
 const styles = StyleSheet.create<LocalStyles>({
   container: {
@@ -217,7 +217,7 @@ StyleSheet.setStyleAttributePreprocessor(
   (family: string) => family,
 );
 
-const welcomeFontSize = StyleSheet.flatten(styles.welcome).fontSize;
+const welcomeFontSize = StyleSheet.flatten(styles.welcome)?.fontSize;
 
 const viewStyle: StyleProp<ViewStyle> = {
   backgroundColor: '#F5FCFF',

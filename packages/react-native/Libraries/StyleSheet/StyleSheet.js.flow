@@ -8,7 +8,7 @@
  * @format
  */
 
-import * as StyleSheet from './StyleSheetExports';
+export * as default from './StyleSheetExports';
 
 import type {
   ____ColorValue_Internal,
@@ -21,6 +21,13 @@ import type {
   ____ViewStyle_Internal,
   ____ViewStyleProp_Internal,
 } from './StyleSheetTypes';
+
+export type {StyleProp} from './StyleSheetTypes';
+
+export type StyleSheetProperties = {
+  hairlineWidth: number,
+  flatten<T: string>(style: T): T,
+};
 
 export type {NativeColorValue} from './StyleSheetTypes';
 
@@ -157,5 +164,3 @@ export type ImageStyle = ____ImageStyle_Internal;
  * containing any possible style value.
  */
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
-
-export default StyleSheet;
