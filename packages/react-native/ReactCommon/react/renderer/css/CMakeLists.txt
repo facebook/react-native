@@ -22,6 +22,7 @@ if("${react_renderer_css_SRC}" STREQUAL "")
 
   target_include_directories(react_renderer_css INTERFACE ${REACT_COMMON_DIR})
   target_link_libraries(react_renderer_css INTERFACE
+        fast_float
         glog
         react_debug
         react_utils)
@@ -30,6 +31,7 @@ else()
 
   target_include_directories(react_renderer_css PUBLIC ${REACT_COMMON_DIR})
   target_link_libraries(react_renderer_css
+        fast_float
         glog
         react_debug
         react_utils)

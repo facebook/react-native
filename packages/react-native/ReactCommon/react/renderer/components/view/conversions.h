@@ -15,6 +15,7 @@
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/graphicsConversions.h>
 #include <react/renderer/css/CSSAngle.h>
+#include <react/renderer/css/CSSNumber.h>
 #include <react/renderer/css/CSSPercentage.h>
 #include <react/renderer/css/CSSValueParser.h>
 #include <react/renderer/graphics/BackgroundImage.h>
@@ -60,25 +61,6 @@ inline float yogaFloatFromFloat(Float value) {
   }
 
   return (float)value;
-}
-
-/*
- * Converts string to float only if the entire string is valid float.
- */
-inline std::optional<float> stringToFloat(const std::string& string) {
-  try {
-    size_t pos = 0;
-    auto result = std::stof(string, &pos);
-    // Check if entire string was valid
-    if (pos == string.length()) {
-      return result;
-    }
-  } catch (...) {
-    // Ignore, caller falls back to default value.
-    return std::nullopt;
-  }
-
-  return std::nullopt;
 }
 
 /*
@@ -483,19 +465,15 @@ inline void fromRawValue(
       result = yoga::StyleSizeLength::ofFitContent();
       return;
     } else {
-      if (stringValue.back() == '%') {
-        auto tryValue =
-            stringToFloat(stringValue.substr(0, stringValue.length() - 1));
-        if (tryValue.has_value()) {
-          result = yoga::StyleSizeLength::percent(tryValue.value());
-          return;
-        }
-      } else {
-        auto tryValue = stringToFloat(stringValue);
-        if (tryValue.has_value()) {
-          result = yoga::StyleSizeLength::points(tryValue.value());
-          return;
-        }
+      auto parsed = parseCSSProperty<CSSNumber, CSSPercentage>(stringValue);
+      if (std::holds_alternative<CSSPercentage>(parsed)) {
+        result = yoga::StyleSizeLength::percent(
+            std::get<CSSPercentage>(parsed).value);
+        return;
+      } else if (std::holds_alternative<CSSNumber>(parsed)) {
+        result =
+            yoga::StyleSizeLength::points(std::get<CSSNumber>(parsed).value);
+        return;
       }
     }
   }
@@ -515,19 +493,14 @@ inline void fromRawValue(
       result = yoga::StyleLength::ofAuto();
       return;
     } else {
-      if (stringValue.back() == '%') {
-        auto tryValue =
-            stringToFloat(stringValue.substr(0, stringValue.length() - 1));
-        if (tryValue.has_value()) {
-          result = yoga::StyleLength::percent(tryValue.value());
-          return;
-        }
-      } else {
-        auto tryValue = stringToFloat(stringValue);
-        if (tryValue.has_value()) {
-          result = yoga::StyleLength::points(tryValue.value());
-          return;
-        }
+      auto parsed = parseCSSProperty<CSSNumber, CSSPercentage>(stringValue);
+      if (std::holds_alternative<CSSPercentage>(parsed)) {
+        result =
+            yoga::StyleLength::percent(std::get<CSSPercentage>(parsed).value);
+        return;
+      } else if (std::holds_alternative<CSSNumber>(parsed)) {
+        result = yoga::StyleLength::points(std::get<CSSNumber>(parsed).value);
+        return;
       }
     }
   }
