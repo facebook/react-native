@@ -83,7 +83,6 @@ bool PerformanceTracer::stopTracing() {
   });
 
   performanceMeasureCount_ = 0;
-  profileCount_ = 0;
   tracing_ = false;
   return true;
 }
@@ -243,56 +242,6 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
   });
 }
 
-uint16_t PerformanceTracer::reportRuntimeProfile(
-    uint64_t threadId,
-    uint64_t eventUnixTimestamp) {
-  std::lock_guard lock(mutex_);
-  if (!tracing_) {
-    throw std::runtime_error(
-        "Runtime Profile should only be reported when Tracing is enabled");
-  }
-
-  ++profileCount_;
-  // CDT prioritizes event timestamp over startTime metadata field.
-  // https://fburl.com/lo764pf4
-  buffer_.push_back(TraceEvent{
-      .id = profileCount_,
-      .name = "Profile",
-      .cat = "disabled-by-default-v8.cpu_profiler",
-      .ph = 'P',
-      .ts = eventUnixTimestamp,
-      .pid = processId_,
-      .tid = threadId,
-      .args = folly::dynamic::object(
-          "data", folly ::dynamic::object("startTime", eventUnixTimestamp)),
-  });
-
-  return profileCount_;
-}
-
-void PerformanceTracer::reportRuntimeProfileChunk(
-    uint16_t profileId,
-    uint64_t threadId,
-    uint64_t eventUnixTimestamp,
-    const tracing::TraceEventProfileChunk& traceEventProfileChunk) {
-  std::lock_guard lock(mutex_);
-  if (!tracing_) {
-    return;
-  }
-
-  buffer_.push_back(TraceEvent{
-      .id = profileId,
-      .name = "ProfileChunk",
-      .cat = "disabled-by-default-v8.cpu_profiler",
-      .ph = 'P',
-      .ts = eventUnixTimestamp,
-      .pid = processId_,
-      .tid = threadId,
-      .args =
-          folly::dynamic::object("data", traceEventProfileChunk.asDynamic()),
-  });
-}
-
 void PerformanceTracer::reportEventLoopTask(uint64_t start, uint64_t end) {
   if (!tracing_) {
     return;
@@ -311,6 +260,43 @@ void PerformanceTracer::reportEventLoopTask(uint64_t start, uint64_t end) {
       .pid = oscompat::getCurrentProcessId(),
       .tid = oscompat::getCurrentThreadId(),
       .dur = end - start,
+  });
+}
+
+folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
+    uint64_t threadId,
+    uint16_t profileId,
+    uint64_t eventUnixTimestamp) {
+  // CDT prioritizes event timestamp over startTime metadata field.
+  // https://fburl.com/lo764pf4
+  return serializeTraceEvent(TraceEvent{
+      .id = profileId,
+      .name = "Profile",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = eventUnixTimestamp,
+      .pid = processId_,
+      .tid = threadId,
+      .args = folly::dynamic::object(
+          "data", folly ::dynamic::object("startTime", eventUnixTimestamp)),
+  });
+}
+
+folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
+    uint16_t profileId,
+    uint64_t threadId,
+    uint64_t eventUnixTimestamp,
+    const tracing::TraceEventProfileChunk& traceEventProfileChunk) {
+  return serializeTraceEvent(TraceEvent{
+      .id = profileId,
+      .name = "ProfileChunk",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = eventUnixTimestamp,
+      .pid = processId_,
+      .tid = threadId,
+      .args =
+          folly::dynamic::object("data", traceEventProfileChunk.asDynamic()),
   });
 }
 
