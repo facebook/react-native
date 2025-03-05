@@ -28,6 +28,7 @@ declare class ReadableStreamController {
   ): void;
 
   desiredSize: number;
+  // $FlowFixMe[unclear-type]
   enqueue(chunk: any): void;
   error(error: Error): void;
 }
@@ -40,6 +41,7 @@ declare class ReadableStreamReader {
   constructor(stream: ReadableStream): void;
   read(): Promise<{
     done: boolean,
+    // $FlowFixMe[unclear-type]
     value: ?any,
     ...
   }>;
@@ -74,6 +76,7 @@ type PipeToOptions = {
 
 type QueuingStrategy = {
   highWaterMark: number,
+  // $FlowFixMe[unclear-type]
   size(chunk: ?any): number,
   ...
 };
@@ -88,6 +91,7 @@ declare class ReadableStream {
 
   getReader(): ReadableStreamReader;
   locked: boolean;
+  // $FlowFixMe[unclear-type]
   pipeThrough(transform: PipeThroughTransformStream, options: ?any): void;
   pipeTo(dest: WritableStream, options: ?PipeToOptions): Promise<void>;
   tee(): [ReadableStream, ReadableStream];
@@ -104,17 +108,23 @@ declare interface UnderlyingSink {
   close?: (controller: WritableStreamController) => ?Promise<void>;
   start?: (controller: WritableStreamController) => ?Promise<void>;
   type?: string;
+  // $FlowFixMe[unclear-type]
   write?: (chunk: any, controller: WritableStreamController) => ?Promise<void>;
 }
 
 declare interface WritableStreamWriter {
+  // $FlowFixMe[unclear-type]
   abort(reason: string): ?Promise<any>;
+  // $FlowFixMe[unclear-type]
   close(): Promise<any>;
+  // $FlowFixMe[unclear-type]
   closed: Promise<any>;
 
   desiredSize?: number;
+  // $FlowFixMe[unclear-type]
   ready: Promise<any>;
   releaseLock(): void;
+  // $FlowFixMe[unclear-type]
   write(chunk: any): Promise<any>;
 }
 
