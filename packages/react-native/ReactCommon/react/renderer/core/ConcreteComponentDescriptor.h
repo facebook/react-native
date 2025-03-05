@@ -108,10 +108,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       return ShadowNodeT::defaultSharedProps();
     }
 
-    if constexpr (RawPropsFilterable<ShadowNodeT>) {
-      ShadowNodeT::filterRawProps(rawProps);
-    }
-
     rawProps.parse(rawPropsParser_);
 
     auto shadowNodeProps = ShadowNodeT::Props(context, rawProps, props);

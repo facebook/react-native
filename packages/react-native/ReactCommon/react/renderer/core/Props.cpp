@@ -18,29 +18,26 @@ namespace facebook::react {
 Props::Props(
     const PropsParserContext& context,
     const Props& sourceProps,
-    const RawProps& rawProps,
-    const std::function<bool(const std::string&)>& filterObjectKeys) {
-  initialize(context, sourceProps, rawProps, filterObjectKeys);
+    const RawProps& rawProps) {
+  initialize(context, sourceProps, rawProps);
 }
 
 void Props::initialize(
     const PropsParserContext& context,
     const Props& sourceProps,
-    const RawProps& rawProps,
-    [[maybe_unused]] const std::function<bool(const std::string&)>&
-        filterObjectKeys) {
+    const RawProps& rawProps) {
   nativeId = ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
       ? sourceProps.nativeId
       : convertRawProp(context, rawProps, "nativeID", sourceProps.nativeId, {});
 #ifdef ANDROID
   if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
     auto& oldRawProps = sourceProps.rawProps;
-    auto newRawProps = rawProps.toDynamic(filterObjectKeys);
+    auto newRawProps = rawProps.toDynamic();
     auto mergedRawProps = mergeDynamicProps(
         oldRawProps, newRawProps, NullValueStrategy::Override);
     this->rawProps = mergedRawProps;
   } else {
-    this->rawProps = rawProps.toDynamic(filterObjectKeys);
+    this->rawProps = rawProps.toDynamic();
   }
 #endif
 }

@@ -18,10 +18,9 @@ namespace facebook::react {
 YogaStylableProps::YogaStylableProps(
     const PropsParserContext& context,
     const YogaStylableProps& sourceProps,
-    const RawProps& rawProps,
-    const std::function<bool(const std::string&)>& filterObjectKeys)
+    const RawProps& rawProps)
     : Props() {
-  initialize(context, sourceProps, rawProps, filterObjectKeys);
+  initialize(context, sourceProps, rawProps);
 
   yogaStyle.setDirection(convertRawProp(
       context,

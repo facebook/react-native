@@ -78,18 +78,7 @@ class RawProps final {
    * The support for explicit conversion to `folly::dynamic` is deprecated and
    * will be removed as soon Android implementation does not need it.
    */
-  folly::dynamic toDynamic(
-      const std::function<bool(const std::string&)>& filterObjectKeys =
-          nullptr) const;
-
-  /*
-   * Once called, Yoga style props will be filtered out during conversion to
-   * folly::dynamic. folly::dynamic conversion is only used on Android and props
-   * specific to Yoga do not need to be send over JNI to Android.
-   * This is a performance optimisation to minimise traffic between C++ and
-   * Java.
-   */
-  void filterYogaStylePropsInDynamicConversion() noexcept;
+  folly::dynamic toDynamic() const;
 
   /*
    * Returns `true` if the object is empty.
@@ -135,20 +124,6 @@ class RawProps final {
    */
   mutable std::vector<RawPropsValueIndex> keyIndexToValueIndex_;
   mutable std::vector<RawValue> values_;
-
-  bool ignoreYogaStyleProps_{false};
-};
-
-/*
- * Once called, props will be filtered out during conversion to
- * folly::dynamic. folly::dynamic conversion is only used on Android and props
- * specific to Yoga do not need to be send over JNI to Android.
- * This is a performance optimisation to minimise traffic between C++ and
- * Java.
- */
-template <typename T>
-concept RawPropsFilterable = requires(RawProps& rawProps) {
-  { T::filterRawProps(rawProps) } -> std::same_as<void>;
 };
 
 } // namespace facebook::react

@@ -464,39 +464,3 @@ TEST(RawPropsTest, copyJSIRawProps) {
   EXPECT_NEAR(
       copyProps->derivedFloatValue, originalProps->derivedFloatValue, 0.00001);
 }
-
-TEST(RawPropsTest, filterYogaRawProps) {
-  auto runtime = facebook::hermes::makeHermesRuntime();
-
-  ContextContainer contextContainer{};
-  PropsParserContext parserContext{-1, contextContainer};
-
-  auto object = jsi::Object(*runtime);
-  object.setProperty(*runtime, "floatValue", 10.0);
-  object.setProperty(*runtime, "flex", 1);
-
-  auto rawProps = RawProps(*runtime, jsi::Value(*runtime, object));
-
-  EXPECT_FALSE(rawProps.isEmpty());
-
-  auto dynamicProps = (folly::dynamic)rawProps;
-
-  EXPECT_EQ(dynamicProps["floatValue"], 10.0);
-  EXPECT_EQ(dynamicProps["flex"], 1);
-
-  rawProps.filterYogaStylePropsInDynamicConversion();
-
-  dynamicProps = (folly::dynamic)rawProps;
-
-  EXPECT_EQ(dynamicProps["floatValue"], 10.0);
-  EXPECT_EQ(dynamicProps["flex"], nullptr);
-
-  // The fact that filterYogaStylePropsInDynamicConversion should
-  // must apply to a copy as well.
-  auto copy = RawProps(rawProps);
-
-  auto dynamicPropsFromCopy = (folly::dynamic)copy;
-
-  EXPECT_EQ(dynamicPropsFromCopy["floatValue"], 10.0);
-  EXPECT_EQ(dynamicPropsFromCopy["flex"], nullptr);
-}
