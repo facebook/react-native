@@ -13,6 +13,8 @@ import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
@@ -37,6 +39,10 @@ import com.facebook.yoga.YogaWrap;
  */
 @LegacyArchitecture
 public class LayoutShadowNode extends ReactShadowNodeImpl {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "LayoutShadowNode", LegacyArchitectureLogLevel.WARNING);
+  }
 
   /** A Mutable version of com.facebook.yoga.YogaValue */
   private static class MutableYogaValue {

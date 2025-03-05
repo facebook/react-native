@@ -12,12 +12,18 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 
 /** Class responsible for default layout animation, i.e animation of view creation and deletion. */
 @LegacyArchitecture
 /* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
 abstract class BaseLayoutAnimation extends AbstractLayoutAnimation {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "BaseLayoutAnimation", LegacyArchitectureLogLevel.WARNING);
+  }
 
   abstract boolean isReverse();
 
