@@ -9,6 +9,7 @@ package com.facebook.react.bridge.interop
 
 import com.facebook.react.bridge.JavaScriptModule
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.enableFabricRenderer
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useFabricInterop
 
@@ -22,6 +23,10 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useFabri
  */
 @LegacyArchitecture
 internal class InteropModuleRegistry {
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropModuleRegistry")
+  }
+
   private val supportedModules = mutableMapOf<Class<*>, Any?>()
 
   fun <T : JavaScriptModule?> shouldReturnInteropModule(requestedModule: Class<T>): Boolean {

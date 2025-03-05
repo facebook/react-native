@@ -8,6 +8,8 @@
 package com.facebook.react.bridge;
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +17,11 @@ import org.json.JSONObject;
 
 @LegacyArchitecture
 public class JSONArguments {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "JSONArguments", LegacyArchitectureLogLevel.WARNING);
+  }
+
   /**
    * Parse JSONObject to ReadableMap
    *
