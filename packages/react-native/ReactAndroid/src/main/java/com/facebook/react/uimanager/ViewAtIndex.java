@@ -8,6 +8,8 @@
 package com.facebook.react.uimanager;
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import java.util.Comparator;
 
 /**
@@ -16,6 +18,11 @@ import java.util.Comparator;
  */
 @LegacyArchitecture
 public class ViewAtIndex {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "ViewAtIndex", LegacyArchitectureLogLevel.WARNING);
+  }
+
   public static Comparator<ViewAtIndex> COMPARATOR =
       new Comparator<ViewAtIndex>() {
         @Override
