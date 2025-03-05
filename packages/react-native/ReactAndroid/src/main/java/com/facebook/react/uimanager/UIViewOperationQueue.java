@@ -26,6 +26,8 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
@@ -48,6 +50,11 @@ import java.util.Map;
  */
 @LegacyArchitecture
 public class UIViewOperationQueue {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "UIViewOperationQueue", LegacyArchitectureLogLevel.WARNING);
+  }
 
   public static final int DEFAULT_MIN_TIME_LEFT_IN_FRAME_FOR_NONBATCHED_OPERATION_MS = 8;
   private static final String TAG = UIViewOperationQueue.class.getSimpleName();
