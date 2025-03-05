@@ -19,6 +19,8 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import java.util.Map;
 
@@ -28,6 +30,11 @@ import java.util.Map;
  */
 @LegacyArchitecture
 /* package */ abstract class AbstractLayoutAnimation {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "AbstractLayoutAnimation", LegacyArchitectureLogLevel.WARNING);
+  }
 
   // Forces animation to be playing 10x slower, used for debug purposes.
   private static final boolean SLOWDOWN_ANIMATION_MODE = false;
