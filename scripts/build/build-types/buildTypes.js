@@ -29,6 +29,8 @@ const IGNORE_PATTERNS = [
   'packages/react-native/Libraries/StyleSheet/PlatformColorValueTypesIOS.js',
   'packages/react-native/Libraries/StyleSheet/processColor.js',
   'packages/react-native/Libraries/StyleSheet/StyleSheet.js',
+  'packages/react-native/Libraries/Components/TextInput/TextInput.js',
+  'packages/react-native/Libraries/Components/TextInput/InputAccessoryView.js',
 ];
 
 const ENTRY_POINTS = ['packages/react-native/index.js.flow'];
