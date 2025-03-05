@@ -6269,3 +6269,21 @@ declare class Notification extends EventTarget {
 
   close(): void;
 }
+
+/* Trusted Types
+ * https://w3c.github.io/trusted-types/dist/spec/#trusted-types
+ */
+declare class TrustedHTML {
+  toString(): string;
+  toJSON(): string;
+}
+
+declare class TrustedScript {
+  toString(): string;
+  toJSON(): string;
+}
+
+declare class TrustedScriptURL {
+  toString(): string;
+  toJSON(): string;
+}
