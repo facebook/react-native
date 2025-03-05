@@ -165,7 +165,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     name: 'folly',
     version: '0.9.0',
     prepareScript:
-      'echo "#pragma once\n\n#define FOLLY_MOBILE 1\n#define FOLLY_HAVE_PTHREAD 1\n#define FOLLY_USE_LIBCPP 1\n#define FOLLY_CFG_NO_COROUTINES 1\n#define FOLLY_HAVE_CLOCK_GETTIME 1" > ./folly/folly-config.h',
+      'echo "#pragma once\n\n#define FOLLY_MOBILE 1\n#define FOLLY_HAVE_PTHREAD 1\n#define FOLLY_USE_LIBCPP 1\n#define FOLLY_CFG_NO_COROUTINES 1\n#define FOLLY_HAVE_CLOCK_GETTIME 1 \n\n#pragma clang diagnostic ignored \\""-Wcomma\\""" > ./folly/folly-config.h',
     url: new URL(
       'https://github.com/facebook/folly/archive/refs/tags/v2024.11.18.00.tar.gz',
     ),
