@@ -23,17 +23,11 @@ public class ProgressResponseBody public constructor(
   private lateinit var bufferedSource: BufferedSource
   private var totalBytesRead = 0L
 
-  public override fun contentType(): MediaType? {
-    return responseBody.contentType()
-  }
+  public override fun contentType(): MediaType? = responseBody.contentType()
 
-  override fun contentLength(): Long {
-    return responseBody.contentLength()
-  }
+  override fun contentLength(): Long = responseBody.contentLength()
 
-  public fun totalBytesRead(): Long {
-    return totalBytesRead
-  }
+  public fun totalBytesRead(): Long = totalBytesRead
 
   public override fun source(): BufferedSource {
     if (!::bufferedSource.isInitialized) {
