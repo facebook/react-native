@@ -76,7 +76,7 @@ val reactNativeDependenciesDebugDSYMArtifact: PublishArtifact =
     artifacts.add("externalArtifacts", reactNativeDependenciesDebugDSYMArtifactFile) {
       type = "tgz"
       extension = "tar.gz"
-      classifier = "reactnative-dependencies-debug-dSYM"
+      classifier = "reactnative-dependencies-dSYM-debug"
     }
 
 val reactNativeDependenciesReleaseDSYMArtifactFile: RegularFile =
@@ -85,7 +85,7 @@ val reactNativeDependenciesReleaseDSYMArtifact: PublishArtifact =
     artifacts.add("externalArtifacts", reactNativeDependenciesReleaseDSYMArtifactFile) {
       type = "tgz"
       extension = "tar.gz"
-      classifier = "reactnative-dependencies-release-dSYM"
+      classifier = "reactnative-dependencies-dSYM-release"
     }
 
 apply(from = "../publish.gradle")
@@ -100,8 +100,8 @@ publishing {
       artifact(hermesDSYMReleaseArtifact)
       artifact(reactNativeDependenciesDebugArtifact)
       artifact(reactNativeDependenciesReleaseArtifact)
-      artifact(reactNativeDependenciesDebugDSYMArtifactFile)
-      artifact(reactNativeDependenciesReleaseDSYMArtifactFile)
+      artifact(reactNativeDependenciesDebugDSYMArtifact)
+      artifact(reactNativeDependenciesReleaseDSYMArtifact)
     }
   }
 }
