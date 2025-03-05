@@ -11,6 +11,8 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 import com.facebook.react.common.annotations.DeprecatedInNewArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 
 /**
  * Base class for Catalyst native modules that require access to the {@link ReactContext} instance.
@@ -21,6 +23,10 @@ import com.facebook.react.common.annotations.internal.LegacyArchitecture;
             + " BaseJavaModule instead")
 @LegacyArchitecture
 public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "ReactContextBaseJavaModule", LegacyArchitectureLogLevel.WARNING);
+  }
 
   public ReactContextBaseJavaModule() {
     super(null);
