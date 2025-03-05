@@ -37,6 +37,16 @@ const unusedStubWSServer: ws$WebSocketServer = {};
 // $FlowFixMe
 const unusedMiddlewareStub: Server = {};
 
+// Create a simple middleware function that just passes control to the next middleware
+const noopNextHandle = (req: any, res: any, next: () => void) => {
+  next();
+};
+
+// Create an object with a handle method to be compatible with Connect middleware
+const noopMiddlewareWithHandle = {
+  handle: noopNextHandle
+};
+
 const communityMiddlewareFallback = {
   createDevServerMiddleware: (params: {
     host?: string,
@@ -63,6 +73,7 @@ const communityMiddlewareFallback = {
       reportEvent: (event: TerminalReportableEvent) => {},
     },
   }),
+  indexPageMiddleware: noopMiddlewareWithHandle,
 };
 
 // Attempt to use the community middleware if it exists, but fallback to
@@ -76,7 +87,7 @@ try {
   // Until https://github.com/react-native-community/cli/pull/2605 lands,
   // we need to find `@react-native-community/cli-server-api` via
   // `@react-native-community/cli`. Once that lands, we can simply
-  // require('@react-native-community/cli').
+  // require('@react-native-community/cli')
   const communityCliServerApiPath = require.resolve(
     '@react-native-community/cli-server-api',
     {paths: [communityCliPath]},
@@ -85,6 +96,23 @@ try {
   communityMiddlewareFallback.createDevServerMiddleware = require(
     communityCliServerApiPath,
   ).createDevServerMiddleware as CreateDevServerMiddleware;
+
+// Import and safely use indexPageMiddleware if it exists
+try {
+  const community = require(communityCliServerApiPath);
+  // Check if the imported indexPageMiddleware exists and wrap it in an object with handle method if needed
+  if (community.indexPageMiddleware) {
+    if (typeof community.indexPageMiddleware === 'function') {
+      communityMiddlewareFallback.indexPageMiddleware = {
+        handle: community.indexPageMiddleware
+      };
+    } else {
+      communityMiddlewareFallback.indexPageMiddleware = community.indexPageMiddleware;
+    }
+  }
+} catch (e) {
+  debug('Failed to import indexPageMiddleware from community CLI, using fallback');
+}
 } catch {
   debug(`⚠️ Unable to find @react-native-community/cli-server-api
 Starting the server without the community middleware.`);
@@ -92,3 +120,6 @@ Starting the server without the community middleware.`);
 
 export const createDevServerMiddleware =
   communityMiddlewareFallback.createDevServerMiddleware;
+
+export const indexPageMiddleware = 
+  communityMiddlewareFallback.indexPageMiddleware;
