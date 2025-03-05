@@ -120,6 +120,7 @@ import {
   ToastAndroid,
   Touchable,
   LayoutAnimation,
+  processColor,
   experimental_LayoutConformance as LayoutConformance,
 } from 'react-native';
 
@@ -370,6 +371,19 @@ const combinedStyle10: StyleProp<ImageStyle> = StyleSheet.compose(
   Math.random() < 0.5 ? composeTextStyle : null,
   null,
 );
+
+type TestOpaque = symbol & {smth: string};
+
+declare function createTestOpaque(): TestOpaque;
+const testOpaque = createTestOpaque();
+// @ts-expect-error
+processColor(testOpaque);
+processColor('#000000');
+processColor(123456);
+// @ts-expect-error
+processColor(true);
+// @ts-expect-error
+processColor(Symbol('test'));
 
 const testNativeSyntheticEvent = <T extends {}>(
   e: NativeSyntheticEvent<T>,
