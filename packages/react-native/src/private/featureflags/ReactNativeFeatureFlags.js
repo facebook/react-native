@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<857c807934fc671129d3c85605de7171>>
+ * @generated SignedSource<<3fdb80ad17786b737c1ab000f6c88277>>
  * @flow strict
  */
 
@@ -64,7 +64,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLongTaskAPI: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
-  enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableReportEventPaintTime: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
@@ -231,10 +230,6 @@ export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('e
  * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
  */
 export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', false);
-/**
- * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
- */
-export const enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('enablePreciseSchedulingForPremountItemsOnAndroid', false);
 /**
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */

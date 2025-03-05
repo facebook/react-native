@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<5e27f8a6852293234595697743315ff8>>
+ * @generated SignedSource<<b733da19dbc09ab75b34dd9694ef96bb>>
  */
 
 /**
@@ -123,12 +123,6 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun enableNewBackgroundAndBorderDrawables(): Boolean = accessor.enableNewBackgroundAndBorderDrawables()
-
-  /**
-   * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
-   */
-  @JvmStatic
-  public fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean = accessor.enablePreciseSchedulingForPremountItemsOnAndroid()
 
   /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
