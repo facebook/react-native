@@ -18,6 +18,9 @@ namespace facebook::react::jsinspector_modern {
 
 namespace {
 
+uint32_t TRACE_EVENT_BUFFER_CAPACITY = 200000;
+uint32_t BUFFER_USAGE_THRESHOLD = 1000;
+
 uint64_t getUnixTimestampOfNow() {
   return std::chrono::duration_cast<std::chrono::microseconds>(
              std::chrono::steady_clock::now().time_since_epoch())
@@ -32,9 +35,13 @@ PerformanceTracer& PerformanceTracer::getInstance() {
 }
 
 PerformanceTracer::PerformanceTracer()
-    : processId_(oscompat::getCurrentProcessId()) {}
+    : processId_(oscompat::getCurrentProcessId()) {
+  buffer_.reserve(TRACE_EVENT_BUFFER_CAPACITY);
+}
 
-bool PerformanceTracer::startTracing() {
+bool PerformanceTracer::startTracing(
+    const std::function<void(uint64_t bufferSize, uint64_t bufferCapacity)>&
+        bufferUsageCallback) {
   {
     std::lock_guard lock(mutex_);
     if (tracing_) {
@@ -42,13 +49,15 @@ bool PerformanceTracer::startTracing() {
     }
 
     tracing_ = true;
+    buffer_.subscribeToUsageMetrics(
+        BUFFER_USAGE_THRESHOLD, bufferUsageCallback);
   }
 
   reportProcess(processId_, "React Native");
 
   {
     std::lock_guard lock(mutex_);
-    buffer_.push_back(TraceEvent{
+    buffer_.push(TraceEvent{
         .name = "TracingStartedInPage",
         .cat = "disabled-by-default-devtools.timeline",
         .ph = 'I',
@@ -74,7 +83,7 @@ bool PerformanceTracer::stopTracing() {
   // samples will be displayed as empty. We use this event to avoid that.
   // This could happen for non-bridgeless apps, where Performance interface is
   // not supported and no spec-compliant Event Loop implementation.
-  buffer_.push_back(TraceEvent{
+  buffer_.push(TraceEvent{
       .name = "ReactNative-TracingStopped",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
@@ -83,6 +92,7 @@ bool PerformanceTracer::stopTracing() {
       .tid = oscompat::getCurrentThreadId(),
   });
 
+  buffer_.reset();
   performanceMeasureCount_ = 0;
   tracing_ = false;
   return true;
@@ -99,7 +109,7 @@ void PerformanceTracer::collectEvents(
   }
 
   auto traceEvents = folly::dynamic::array();
-  for (auto event : buffer_) {
+  for (auto event : buffer_.getRawEvents()) {
     // Emit trace events
     traceEvents.push_back(serializeTraceEvent(event));
 
@@ -127,7 +137,7 @@ void PerformanceTracer::reportMark(
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.push(TraceEvent{
       .name = std::string(name),
       .cat = "blink.user_timing",
       .ph = 'I',
@@ -162,7 +172,7 @@ void PerformanceTracer::reportMeasure(
 
   ++performanceMeasureCount_;
   auto currentThreadId = oscompat::getCurrentThreadId();
-  buffer_.push_back(TraceEvent{
+  buffer_.push(TraceEvent{
       .id = performanceMeasureCount_,
       .name = std::string(name),
       .cat = "blink.user_timing",
@@ -172,7 +182,7 @@ void PerformanceTracer::reportMeasure(
       .tid = currentThreadId,
       .args = beginEventArgs,
   });
-  buffer_.push_back(TraceEvent{
+  buffer_.push(TraceEvent{
       .id = performanceMeasureCount_,
       .name = std::string(name),
       .cat = "blink.user_timing",
@@ -193,7 +203,7 @@ void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.push(TraceEvent{
       .name = "process_name",
       .cat = "__metadata",
       .ph = 'M',
@@ -218,7 +228,7 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.push(TraceEvent{
       .name = "thread_name",
       .cat = "__metadata",
       .ph = 'M',
@@ -233,7 +243,7 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
   // no timeline events or user timings. We use this event to avoid that.
   // This could happen for non-bridgeless apps, where Performance interface is
   // not supported and no spec-compliant Event Loop implementation.
-  buffer_.push_back(TraceEvent{
+  buffer_.push(TraceEvent{
       .name = "ReactNative-ThreadRegistered",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'I',
@@ -253,7 +263,7 @@ void PerformanceTracer::reportEventLoopTask(uint64_t start, uint64_t end) {
     return;
   }
 
-  buffer_.push_back(TraceEvent{
+  buffer_.push(TraceEvent{
       .name = "RunTask",
       .cat = "disabled-by-default-devtools.timeline",
       .ph = 'X',

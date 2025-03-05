@@ -20,6 +20,59 @@
 
 namespace facebook::react::jsinspector_modern {
 
+using BufferUsageCallback =
+    std::function<void(uint64_t bufferSize, uint64_t bufferCapacity)>;
+
+namespace {
+
+struct TraceEventBuffer {
+ public:
+  TraceEventBuffer() = default;
+
+  void subscribeToUsageMetrics(
+      uint32_t callbackThreshold,
+      BufferUsageCallback callback) {
+    callbackThreshold_ = callbackThreshold;
+    callback_ = callback;
+  }
+
+  std::vector<TraceEvent>& getRawEvents() {
+    return events_;
+  }
+
+  bool empty() const {
+    return events_.empty();
+  }
+
+  void reserve(uint64_t capacity) {
+    events_.reserve(capacity);
+  }
+
+  void push(TraceEvent event) {
+    events_.push_back(event);
+
+    if (callback_ != nullptr && events_.size() % callbackThreshold_ == 1) {
+      callback_(events_.size(), events_.capacity());
+    }
+  }
+
+  void clear() {
+    events_.clear();
+  }
+
+  void reset() {
+    callback_ = nullptr;
+    callbackThreshold_ = 1;
+  }
+
+ private:
+  uint32_t callbackThreshold_ = 1;
+  BufferUsageCallback callback_;
+  std::vector<TraceEvent> events_{};
+};
+
+} // namespace
+
 // TODO: Review how this API is integrated into jsinspector_modern (singleton
 // design is copied from earlier FuseboxTracer prototype).
 
@@ -33,8 +86,10 @@ class PerformanceTracer {
 
   /**
    * Mark trace session as started. Returns `false` if already tracing.
+   * \param bufferUsageCallback A callback that will be called to notify
+   * Frontend about the buffer usage.
    */
-  bool startTracing();
+  bool startTracing(const BufferUsageCallback& bufferUsageCallback);
 
   /**
    * Mark trace session as stopped. Returns `false` if wasn't tracing.
@@ -131,7 +186,7 @@ class PerformanceTracer {
   bool tracing_{false};
   uint64_t processId_;
   uint32_t performanceMeasureCount_{0};
-  std::vector<TraceEvent> buffer_;
+  TraceEventBuffer buffer_;
   std::mutex mutex_;
 };
 
