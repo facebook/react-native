@@ -11,6 +11,7 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /**
  * Animation responsible for updating size and position of a view. We can't use scaling as view
@@ -37,6 +38,8 @@ internal class PositionAndSizeAnimation(
 
   init {
     calculateAnimation(x, y, width, height)
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "PositionAndSizeAnimation")
   }
 
   override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
