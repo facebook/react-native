@@ -39,6 +39,16 @@ const unusedStubWSServer: ws$WebSocketServer = {};
 // $FlowFixMe
 const unusedMiddlewareStub: Server = {};
 
+// Create a simple middleware function that just passes control to the next middleware
+const noopNextHandle = (req: any, res: any, next: () => void) => {
+  next();
+};
+
+// Create an object with a handle method to be compatible with Connect middleware
+const noopMiddlewareWithHandle = {
+  handle: noopNextHandle
+};
+
 const communityMiddlewareFallback = {
   createDevServerMiddleware: (params: {
     host?: string,
@@ -59,7 +69,7 @@ const communityMiddlewareFallback = {
       reportEvent: (event: TerminalReportableEvent) => {},
     },
   }),
-  indexPageMiddleware: noopNextHandle,
+  indexPageMiddleware: noopMiddlewareWithHandle,
 };
 
 // Attempt to use the community middleware if it exists, but fallback to
@@ -70,6 +80,23 @@ try {
     community.indexPageMiddleware;
   communityMiddlewareFallback.createDevServerMiddleware =
     community.createDevServerMiddleware;
+  
+// Import and safely use indexPageMiddleware if it exists
+try {
+  const community = require(communityCliServerApiPath);
+  // Check if the imported indexPageMiddleware exists and wrap it in an object with handle method if needed
+  if (community.indexPageMiddleware) {
+    if (typeof community.indexPageMiddleware === 'function') {
+      communityMiddlewareFallback.indexPageMiddleware = {
+        handle: community.indexPageMiddleware
+      };
+    } else {
+      communityMiddlewareFallback.indexPageMiddleware = community.indexPageMiddleware;
+    }
+  }
+} catch (e) {
+  debug('Failed to import indexPageMiddleware from community CLI, using fallback');
+}
 } catch {
   debug(`⚠️ Unable to find @react-native-community/cli-server-api
 Starting the server without the community middleware.`);
