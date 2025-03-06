@@ -22,6 +22,8 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -41,6 +43,11 @@ import java.util.Map;
  */
 @LegacyArchitecture
 public class UIImplementation {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "UIImplementation", LegacyArchitectureLogLevel.WARNING);
+  }
+
   protected Object uiImplementationThreadLock = new Object();
 
   protected final EventDispatcher mEventDispatcher;
