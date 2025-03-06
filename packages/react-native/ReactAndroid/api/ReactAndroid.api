@@ -42,7 +42,7 @@ public abstract class com/facebook/react/HeadlessJsTaskService : android/app/Ser
 }
 
 public final class com/facebook/react/HeadlessJsTaskService$Companion {
-	public final fun acquireWakeLockNow (Landroid/content/Context;)V
+	public static final fun acquireWakeLockNow (Landroid/content/Context;)V
 }
 
 public final class com/facebook/react/JSEngineResolutionAlgorithm : java/lang/Enum {
