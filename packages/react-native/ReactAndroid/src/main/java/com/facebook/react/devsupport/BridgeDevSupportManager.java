@@ -19,6 +19,8 @@ import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.SurfaceDelegateFactory;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager;
 import com.facebook.react.devsupport.interfaces.DevSplitBundleCallback;
@@ -50,6 +52,12 @@ import java.util.Map;
  */
 @LegacyArchitecture
 public final class BridgeDevSupportManager extends DevSupportManagerBase {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "BridgeDevSupportManager", LegacyArchitectureLogLevel.WARNING);
+  }
+
   private boolean mIsSamplingProfilerEnabled = false;
 
   public BridgeDevSupportManager(

@@ -14,6 +14,7 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.EventDispatcher
 import com.facebook.react.uimanager.events.RCTEventEmitter
@@ -30,6 +31,10 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  */
 @LegacyArchitecture
 public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmitter {
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropEventEmitter")
+  }
+
   private var eventDispatcherOverride: EventDispatcher? = null
 
   @Deprecated("Deprecated in Java")
