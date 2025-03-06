@@ -10,15 +10,15 @@
  */
 
 declare module '@react-native-community/cli-types' {
-  declare export type CommandFunction<Args = Object> = (
+  declare type CommandFunction<Args = Object> = (
     argv: Array<string>,
     ctx: Config,
     args: Args,
   ) => Promise<void> | void;
 
-  declare export type OptionValue = string | boolean | number;
+  declare type OptionValue = string | boolean | number;
 
-  declare export type CommandOption<T = (ctx: Config) => OptionValue> = {
+  declare type CommandOption<T = (ctx: Config) => OptionValue> = {
     name: string,
     description?: string,
     parse?: (val: string) => any,

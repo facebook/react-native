@@ -42,6 +42,4 @@ declare module '@react-native-community/cli-server-api' {
     },
     ...
   };
-
-  declare export const indexPageMiddleware: NextHandleFunction;
 }
