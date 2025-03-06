@@ -2656,6 +2656,15 @@ export type TextInputEndEditingEventData = $ReadOnly<{
   eventCount: number,
   text: string,
 }>;
+export type TextInputEndEditingEvent =
+  NativeSyntheticEvent<TextInputEndEditingEventData>;
+export type TextInputSubmitEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
+export type TextInputSubmitEditingEvent =
+  NativeSyntheticEvent<TextInputSubmitEditingEventData>;
 export type TextInputEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
 type DataDetectorTypesType =
@@ -2898,7 +2907,7 @@ export type TextInputProps = $ReadOnly<{
   onChangeText?: ?(text: string) => mixed,
   unstable_onChangeTextSync?: ?(text: string) => mixed,
   onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
-  onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
   onFocus?: ?(e: TextInputFocusEvent) => mixed,
   onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
   unstable_onKeyPressSync?: ?(e: TextInputKeyPressEvent) => mixed,
@@ -2906,7 +2915,7 @@ export type TextInputProps = $ReadOnly<{
   onPressIn?: ?(event: GestureResponderEvent) => mixed,
   onPressOut?: ?(event: GestureResponderEvent) => mixed,
   onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
-  onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
@@ -2931,7 +2940,7 @@ export interface TextInputInstance extends HostInstance {
   +setSelection: (start: number, end: number) => void;
 }
 type InternalTextInput = component(
-  ref: React.RefSetter<TextInputInstance>,
+  ref?: React.RefSetter<TextInputInstance>,
   ...TextInputProps
 );
 export type TextInputComponentStatics = $ReadOnly<{
@@ -2981,6 +2990,9 @@ export type TargetEvent = $ReadOnly<{
 export type TextInputFocusEventData = TargetEvent;
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
+export type TextInputScrollEventData = {
+  contentOffset: { x: number, y: number },
+};
 type Selection = $ReadOnly<{
   start: number,
   end: number,
@@ -2991,7 +3003,7 @@ export type TextInputSelectionChangeEventData = $ReadOnly<{
 }>;
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
-type TextInputKeyPressEventData = $ReadOnly<{
+export type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
@@ -3004,6 +3016,15 @@ export type TextInputEndEditingEventData = $ReadOnly<{
   eventCount: number,
   text: string,
 }>;
+export type TextInputEndEditingEvent =
+  NativeSyntheticEvent<TextInputEndEditingEventData>;
+export type TextInputSubmitEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
+export type TextInputSubmitEditingEvent =
+  NativeSyntheticEvent<TextInputSubmitEditingEventData>;
 export type TextInputEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
 type DataDetectorTypesType =
@@ -3161,10 +3182,7 @@ export type TextInputAndroidProps = $ReadOnly<{
   textBreakStrategy?: ?(\\"simple\\" | \\"highQuality\\" | \\"balanced\\"),
   underlineColorAndroid?: ?ColorValue,
 }>;
-export type TextInputProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
-  ...TextInputIOSProps,
-  ...TextInputAndroidProps,
+type TextInputBaseProps = $ReadOnly<{
   autoCapitalize?: ?AutoCapitalize,
   autoComplete?: ?(
     | \\"additional-name\\"
@@ -3243,14 +3261,14 @@ export type TextInputProps = $ReadOnly<{
   onChange?: ?(e: TextInputChangeEvent) => mixed,
   onChangeText?: ?(text: string) => mixed,
   onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
-  onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
   onFocus?: ?(e: TextInputFocusEvent) => mixed,
   onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
   onPress?: ?(event: GestureResponderEvent) => mixed,
   onPressIn?: ?(event: GestureResponderEvent) => mixed,
   onPressOut?: ?(event: GestureResponderEvent) => mixed,
   onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
-  onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
@@ -3269,13 +3287,20 @@ export type TextInputProps = $ReadOnly<{
   style?: ?TextStyleProp,
   value?: ?Stringish,
 }>;
+export type TextInputProps = $ReadOnly<{
+  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
+  ...TextInputIOSProps,
+  ...TextInputAndroidProps,
+  ...TextInputBaseProps,
+}>;
+type TextInputStateType = $ReadOnly<{
+  currentlyFocusedField: () => ?number,
+  currentlyFocusedInput: () => ?HostInstance,
+  focusTextInput: (textField: ?HostInstance) => void,
+  blurTextInput: (textField: ?HostInstance) => void,
+}>;
 export type TextInputComponentStatics = $ReadOnly<{
-  State: $ReadOnly<{
-    currentlyFocusedInput: typeof TextInputState.currentlyFocusedInput,
-    currentlyFocusedField: typeof TextInputState.currentlyFocusedField,
-    focusTextInput: typeof TextInputState.focusTextInput,
-    blurTextInput: typeof TextInputState.blurTextInput,
-  }>,
+  State: TextInputStateType,
 }>;
 declare export default TextInputType;
 "
