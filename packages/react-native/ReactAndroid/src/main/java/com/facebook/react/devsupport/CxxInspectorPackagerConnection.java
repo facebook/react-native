@@ -50,8 +50,6 @@ import okhttp3.WebSocketListener;
 
     public native void didReceiveMessage(String message);
 
-    public native void didOpen();
-
     public native void didClose();
 
     /**
@@ -123,17 +121,6 @@ import okhttp3.WebSocketListener;
                       new Runnable() {
                         public void run() {
                           delegate.didReceiveMessage(text);
-                        }
-                      },
-                      0);
-                }
-
-                @Override
-                public void onOpen(WebSocket _webSocket, Response response) {
-                  scheduleCallback(
-                      new Runnable() {
-                        public void run() {
-                          delegate.didOpen();
                         }
                       },
                       0);
