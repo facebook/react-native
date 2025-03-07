@@ -203,15 +203,32 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                                 facebook::react::Point{usedRect.origin.x, usedRect.origin.y},
                                                 facebook::react::Size{usedRect.size.width, usedRect.size.height}};
 
-                                            CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
-                                            auto line = LineMeasurement{
-                                                std::string([renderedString UTF8String]),
-                                                rect,
-                                                overallRect.size.height - baseline,
-                                                font.capHeight,
-                                                baseline,
-                                                font.xHeight};
-                                            blockParagraphLines->push_back(line);
+                                            if (ReactNativeFeatureFlags::enableLineHeightCenteringOnIOS()) {
+                                              CGFloat ascender = font.ascender;
+                                              CGFloat descender = fabs(font.descender);
+                                              CGFloat textHeight = ascender + descender;
+                                              CGFloat leading = usedRect.size.height - textHeight;
+                                              CGFloat adjustedAscender = ascender + ceil(leading / 2.0);
+                                              CGFloat adjustedDescender = descender + floor(leading / 2.0);
+                                              auto line = LineMeasurement{
+                                                  std::string([renderedString UTF8String]),
+                                                  rect,
+                                                  adjustedDescender,
+                                                  font.capHeight,
+                                                  adjustedAscender,
+                                                  font.xHeight};
+                                              blockParagraphLines->push_back(line);
+                                            } else {
+                                              CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
+                                              auto line = LineMeasurement{
+                                                  std::string([renderedString UTF8String]),
+                                                  rect,
+                                                  overallRect.size.height - baseline,
+                                                  font.capHeight,
+                                                  baseline,
+                                                  font.xHeight};
+                                              blockParagraphLines->push_back(line);
+                                            }
                                           }];
   return paragraphLines;
 }
