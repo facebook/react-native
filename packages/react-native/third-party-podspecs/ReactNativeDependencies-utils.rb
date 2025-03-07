@@ -29,9 +29,9 @@ end
 
 def podspec_source_download_prebuild_release_tarball(react_native_path, version)
     url = release_tarball_url(version, :debug)
-    rndeps_log("Using release tarball from URL: #{url}")
-    #download_stable_rndeps(react_native_path, version, :debug)
-    #download_stable_rndeps(react_native_path, version, :release)
+    rndeps_log("Using tarball from URL: #{url}")
+    download_stable_rndeps(react_native_path, version, :debug)
+    download_stable_rndeps(react_native_path, version, :release)
     return {:http => url}
 end
 
@@ -58,6 +58,7 @@ def download_rndeps_tarball(react_native_path, tarball_url, version, configurati
       tmp_file = "#{artifacts_dir()}/rndeps-ios.download"
       `mkdir -p "#{artifacts_dir()}" && curl "#{tarball_url}" -Lo "#{tmp_file}" && mv "#{tmp_file}" "#{destination_path}"`
     end
+
     return destination_path
 end
 
