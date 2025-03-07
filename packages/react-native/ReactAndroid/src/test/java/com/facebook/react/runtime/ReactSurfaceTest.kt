@@ -20,10 +20,12 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
-import org.mockito.Mockito.mock
-import org.mockito.stubbing.Answer
+import org.mockito.ArgumentMatchers.any
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -41,19 +43,13 @@ class ReactSurfaceTest {
 
   @Before
   fun setUp() {
-    eventDispatcher = mock(EventDispatcher::class.java)
+    eventDispatcher = mock()
     context = Robolectric.buildActivity(Activity::class.java).create().get()
-    reactHost = Mockito.mock(ReactHostImpl::class.java)
-    Mockito.doAnswer(mockedStartSurface())
-        .`when`(reactHost)
-        .startSurface(ArgumentMatchers.any(ReactSurfaceImpl::class.java))
-    Mockito.doAnswer(mockedStartSurface())
-        .`when`(reactHost)
-        .prerenderSurface(ArgumentMatchers.any(ReactSurfaceImpl::class.java))
-    Mockito.doAnswer(mockedStopSurface())
-        .`when`(reactHost)
-        .stopSurface(ArgumentMatchers.any(ReactSurfaceImpl::class.java))
-    Mockito.doReturn(eventDispatcher).`when`(reactHost).eventDispatcher
+    reactHost = mock()
+    whenever(reactHost.startSurface(any())).thenAnswer(this::mockedStartSurface)
+    whenever(reactHost.prerenderSurface(any())).thenAnswer(this::mockedStartSurface)
+    whenever(reactHost.stopSurface(any())).thenAnswer(this::mockedStopSurface)
+    whenever(reactHost.eventDispatcher).doReturn(eventDispatcher)
     surfaceHandler = TestSurfaceHandler()
     reactSurface = ReactSurfaceImpl(surfaceHandler, context)
     reactSurface.attachView(ReactSurfaceView(context, reactSurface))
@@ -79,7 +75,7 @@ class ReactSurfaceTest {
     reactSurface.attach(reactHost)
     val task = reactSurface.prerender() as Task<Void>
     task.waitForCompletion()
-    Mockito.verify(reactHost).prerenderSurface(reactSurface)
+    verify(reactHost).prerenderSurface(reactSurface)
     Assertions.assertThat(surfaceHandler.isRunning).isTrue()
   }
 
@@ -90,7 +86,7 @@ class ReactSurfaceTest {
     Assertions.assertThat(reactHost.isSurfaceAttached(reactSurface)).isFalse()
     val task = reactSurface.start() as Task<Void>
     task.waitForCompletion()
-    Mockito.verify(reactHost).startSurface(reactSurface)
+    verify(reactHost).startSurface(reactSurface)
     Assertions.assertThat(surfaceHandler.isRunning).isTrue()
   }
 
@@ -102,7 +98,7 @@ class ReactSurfaceTest {
     task.waitForCompletion()
     task = reactSurface.stop() as Task<*>
     task.waitForCompletion()
-    Mockito.verify(reactHost).stopSurface(reactSurface)
+    verify(reactHost).stopSurface(reactSurface)
   }
 
   @Test
@@ -145,22 +141,14 @@ class ReactSurfaceTest {
     Assertions.assertThat(reactSurface.isRunning).isFalse()
   }
 
-  private fun mockedStartSurface(): Answer<Task<Void>> {
-    return Answer {
-      Task.call {
-        surfaceHandler.start()
-        null
-      }
-    }
+  private fun mockedStartSurface(inv: InvocationOnMock): Task<Void> {
+    surfaceHandler.start()
+    return Task.forResult(null)
   }
 
-  private fun mockedStopSurface(): Answer<Task<Boolean>> {
-    return Answer {
-      Task.call {
-        surfaceHandler.stop()
-        true
-      }
-    }
+  private fun mockedStopSurface(inv: InvocationOnMock): Task<Boolean> {
+    surfaceHandler.stop()
+    return Task.forResult(true)
   }
 
   internal class TestSurfaceHandler : SurfaceHandler {
