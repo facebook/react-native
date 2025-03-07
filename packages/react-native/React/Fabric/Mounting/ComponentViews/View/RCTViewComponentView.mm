@@ -18,6 +18,7 @@
 #import <React/RCTConversions.h>
 #import <React/RCTLinearGradient.h>
 #import <React/RCTLocalizedString.h>
+#import <React/RCTViewFinder.h>
 #import <react/featureflags/ReactNativeFeatureFlags.h>
 #import <react/renderer/components/view/ViewComponentDescriptor.h>
 #import <react/renderer/components/view/ViewEventEmitter.h>
@@ -48,6 +49,7 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   NSSet<NSString *> *_Nullable _propKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN;
   UIView *_containerView;
   BOOL _useCustomContainerView;
+  NSMutableArray<NSString *> *_accessibleElementsNativeIds;
 }
 
 #ifdef RCT_DYNAMIC_FRAMEWORKS
@@ -389,6 +391,13 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
     }
   }
 
+  if (oldViewProps.accessibilityElements != newViewProps.accessibilityElements) {
+    _accessibleElementsNativeIds = [NSMutableArray new];
+    for (const std::string &childId : newViewProps.accessibilityElements) {
+      [_accessibleElementsNativeIds addObject:RCTNSStringFromString(childId)];
+    }
+  }
+
   // `accessibilityTraits`
   if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
     self.accessibilityElement.accessibilityTraits =
@@ -593,6 +602,23 @@ const CGFloat BACKGROUND_COLOR_ZPOSITION = -1024.0f;
   _isJSResponder = NO;
   _removeClippedSubviews = NO;
   _reactSubviews = [NSMutableArray new];
+}
+
+- (NSArray<NSObject *> *)accessibilityElements
+{
+  if ([_accessibleElementsNativeIds count] <= 0) {
+    return super.accessibilityElements;
+  }
+
+  NSMutableArray<UIView *> *elements = [NSMutableArray new];
+  for (NSString *childId : _accessibleElementsNativeIds) {
+    UIView *viewWithMatchingNativeId = [RCTViewFinder findView:self withNativeId:childId];
+    if (viewWithMatchingNativeId) {
+      [elements addObject:viewWithMatchingNativeId];
+    }
+  }
+
+  return elements;
 }
 
 - (void)setPropKeysManagedByAnimated_DO_NOT_USE_THIS_IS_BROKEN:(NSSet<NSString *> *_Nullable)props

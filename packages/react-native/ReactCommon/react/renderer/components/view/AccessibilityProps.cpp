@@ -46,6 +46,15 @@ AccessibilityProps::AccessibilityProps(
                     "accessibilityLabel",
                     sourceProps.accessibilityLabel,
                     "")),
+      accessibilityElements(
+          ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
+              ? sourceProps.accessibilityElements
+              : convertRawProp(
+                    context,
+                    rawProps,
+                    "accessibilityElements",
+                    sourceProps.accessibilityElements,
+                    {})),
       accessibilityLabelledBy(
           ReactNativeFeatureFlags::enableCppPropsIteratorSetter()
               ? sourceProps.accessibilityLabelledBy
@@ -246,6 +255,7 @@ void AccessibilityProps::setProp(
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessible);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityState);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLabel);
+    RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityElements);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLabelledBy);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityHint);
     RAW_SET_PROP_SWITCH_CASE_BASIC(accessibilityLanguage);
