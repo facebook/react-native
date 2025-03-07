@@ -36,7 +36,7 @@ export type StrictAnimatedProps<Props: {...}> = $ReadOnly<{
 }>;
 
 export type AnimatedComponentType<Props: {...}, +Instance = mixed> = component(
-  ref: React.RefSetter<Instance>,
+  ref?: React.RefSetter<Instance>,
   ...AnimatedProps<Props>
 );
 
@@ -45,29 +45,41 @@ export type StrictAnimatedComponentType<
   +Instance = mixed,
 > = component(ref: React.RefSetter<Instance>, ...StrictAnimatedProps<Props>);
 
-export default function createAnimatedComponent<TProps: {...}, TInstance>(
-  Component: component(ref: React.RefSetter<TInstance>, ...TProps),
-): AnimatedComponentType<TProps, TInstance> {
+export default function createAnimatedComponent<
+  TInstance: React.ComponentType<any>,
+>(
+  Component: TInstance,
+): AnimatedComponentType<
+  $ReadOnly<React.ElementProps<TInstance>>,
+  React.ElementRef<TInstance>,
+> {
   return unstable_createAnimatedComponentWithAllowlist(Component, null);
 }
 
 export function unstable_createAnimatedComponentWithAllowlist<
   TProps: {...},
-  TInstance,
+  TInstance: React.ComponentType<TProps>,
 >(
-  Component: component(ref: React.RefSetter<TInstance>, ...TProps),
+  Component: TInstance,
   allowlist: ?AnimatedPropsAllowlist,
-): StrictAnimatedComponentType<TProps, TInstance> {
+): StrictAnimatedComponentType<TProps, React.ElementRef<TInstance>> {
   const useAnimatedProps = createAnimatedPropsHook(allowlist);
 
-  const AnimatedComponent = React.forwardRef<
+  const AnimatedComponent: StrictAnimatedComponentType<
+    TProps,
+    React.ElementRef<TInstance>,
+  > = React.forwardRef<
     StrictAnimatedProps<TProps>,
-    TInstance,
+    React.ElementRef<TInstance>,
   >((props, forwardedRef) => {
-    const [reducedProps, callbackRef] = useAnimatedProps<TProps, TInstance>(
-      props,
+    const [reducedProps, callbackRef] = useAnimatedProps<
+      TProps,
+      React.ElementRef<TInstance>,
+    >(props);
+    const ref = useMergeRefs<React.ElementRef<TInstance>>(
+      callbackRef,
+      forwardedRef,
     );
-    const ref = useMergeRefs<TInstance>(callbackRef, forwardedRef);
 
     // Some components require explicit passthrough values for animation
     // to work properly. For example, if an animated component is
