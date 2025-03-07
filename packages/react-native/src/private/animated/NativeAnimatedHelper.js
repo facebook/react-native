@@ -202,7 +202,10 @@ const API = {
           return;
         }
 
-        if (Platform.OS === 'android') {
+        if (
+          Platform.OS === 'android' ||
+          ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush()
+        ) {
           NativeAnimatedModule?.startOperationBatch?.();
         }
 
@@ -211,7 +214,10 @@ const API = {
         }
         queue.length = 0;
 
-        if (Platform.OS === 'android') {
+        if (
+          Platform.OS === 'android' ||
+          ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush()
+        ) {
           NativeAnimatedModule?.finishOperationBatch?.();
         }
       }) as () => void,
