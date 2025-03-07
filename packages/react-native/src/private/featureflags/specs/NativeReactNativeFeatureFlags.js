@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ab96527a0c628514632de35f7315f919>>
+ * @generated SignedSource<<9c4ae8e38c808158399408018fe7567b>>
  * @flow strict
  */
 
@@ -37,6 +37,7 @@ export interface Spec extends TurboModule {
   +enableJSRuntimeGCOnMemoryPressureOnIOS?: () => boolean;
   +enableLayoutAnimationsOnAndroid?: () => boolean;
   +enableLayoutAnimationsOnIOS?: () => boolean;
+  +enableLineHeightCenteringOnIOS?: () => boolean;
   +enableLongTaskAPI?: () => boolean;
   +enableNativeCSSParsing?: () => boolean;
   +enableNewBackgroundAndBorderDrawables?: () => boolean;

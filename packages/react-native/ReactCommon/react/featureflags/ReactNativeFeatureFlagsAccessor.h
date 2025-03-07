@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4e1004375c9baf18799712865c345be5>>
+ * @generated SignedSource<<b9992120e2e266f3424f71179caecac2>>
  */
 
 /**
@@ -45,6 +45,7 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableJSRuntimeGCOnMemoryPressureOnIOS();
   bool enableLayoutAnimationsOnAndroid();
   bool enableLayoutAnimationsOnIOS();
+  bool enableLineHeightCenteringOnIOS();
   bool enableLongTaskAPI();
   bool enableNativeCSSParsing();
   bool enableNewBackgroundAndBorderDrawables();
@@ -85,7 +86,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 43> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -100,6 +101,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableJSRuntimeGCOnMemoryPressureOnIOS_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnAndroid_;
   std::atomic<std::optional<bool>> enableLayoutAnimationsOnIOS_;
+  std::atomic<std::optional<bool>> enableLineHeightCenteringOnIOS_;
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableNativeCSSParsing_;
   std::atomic<std::optional<bool>> enableNewBackgroundAndBorderDrawables_;
