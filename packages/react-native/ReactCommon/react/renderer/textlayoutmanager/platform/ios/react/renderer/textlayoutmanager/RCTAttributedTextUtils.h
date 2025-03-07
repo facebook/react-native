@@ -52,8 +52,23 @@ BOOL RCTIsAttributedStringEffectivelySame(
     NSDictionary<NSAttributedStringKey, id> *insensitiveAttributes,
     const facebook::react::TextAttributes &baseTextAttributes);
 
-@interface RCTWeakEventEmitterWrapper : NSData
-@property (nonatomic, assign) facebook::react::SharedEventEmitter eventEmitter;
-@end
+static inline NSData *RCTwrapEventEmitter(const facebook::react::SharedEventEmitter &eventEmitter)
+{
+  auto eventEmitterPtr = new std::shared_ptr<const facebook::react::EventEmitter>(eventEmitter);
+  return [[NSData alloc] initWithBytesNoCopy:eventEmitterPtr
+                                      length:sizeof(eventEmitterPtr)
+                                 deallocator:^(void *ptrToDelete, NSUInteger) {
+                                   delete (std::shared_ptr<facebook::react::EventEmitter> *)ptrToDelete;
+                                 }];
+}
+
+static inline facebook::react::SharedEventEmitter RCTUnwrapEventEmitter(NSData *data)
+{
+  if (data.length == 0) {
+    return nullptr;
+  }
+
+  return *(facebook::react::SharedEventEmitter *)data.bytes;
+}
 
 NS_ASSUME_NONNULL_END
