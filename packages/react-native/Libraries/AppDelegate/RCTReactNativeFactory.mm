@@ -156,6 +156,15 @@ using namespace facebook::react;
   return RCTAppSetupDefaultModuleFromClass(moduleClass, self.delegate.dependencyProvider);
 }
 
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  if ([_delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
+    return [_delegate extraModulesForBridge:bridge];
+  }
+
+  return @[];
+}
+
 #pragma mark - RCTComponentViewFactoryComponentProvider
 
 - (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
