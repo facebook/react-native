@@ -55,6 +55,12 @@ internal class FabricUIManagerBinding : HybridClassBase() {
       isMountable: Boolean
   )
 
+  external fun findNextFocusableElementMetrics(
+      parentTag: Int,
+      focusedTag: Int,
+      direction: Int
+  ): FloatArray
+
   external fun stopSurface(surfaceId: Int)
 
   external fun stopSurfaceWithSurfaceHandler(surfaceHandler: SurfaceHandlerBinding)
