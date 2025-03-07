@@ -24,6 +24,8 @@ import {NativeText, NativeVirtualText} from './TextNativeComponent';
 import * as React from 'react';
 import {useContext, useMemo, useState} from 'react';
 
+export type {TextProps} from './TextProps';
+
 type TextForwardRef = React.ElementRef<
   typeof NativeText | typeof NativeVirtualText,
 >;
@@ -34,7 +36,7 @@ type TextForwardRef = React.ElementRef<
  * @see https://reactnative.dev/docs/text
  */
 const Text: component(
-  ref: React.RefSetter<TextForwardRef>,
+  ref?: React.RefSetter<TextForwardRef>,
   ...props: TextProps
 ) = React.forwardRef(
   (

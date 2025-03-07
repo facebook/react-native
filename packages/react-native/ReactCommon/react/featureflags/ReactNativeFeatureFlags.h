@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<55a526204b386d34058c86183d5b97ac>>
+ * @generated SignedSource<<4b900e66889d8f2effc015e24ccaf929>>
  */
 
 /**
@@ -55,7 +55,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
   /**
-   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
 
@@ -118,11 +118,6 @@ class ReactNativeFeatureFlags {
    * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
    */
   RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
-
-  /**
-   * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
-   */
-  RN_EXPORT static bool enablePreciseSchedulingForPremountItemsOnAndroid();
 
   /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
@@ -190,7 +185,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxEnabledRelease();
 
   /**
-   * Enable network inspection support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
 

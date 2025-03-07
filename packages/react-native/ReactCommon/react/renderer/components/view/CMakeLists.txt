@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB rrc_view_SRC CONFIGURE_DEPENDS
         *.cpp
@@ -38,3 +32,5 @@ target_link_libraries(rrc_view
         react_renderer_debug
         react_renderer_graphics
         yoga)
+target_compile_reactnative_options(rrc_view PRIVATE "Fabric")
+target_compile_options(rrc_view PRIVATE -Wpedantic)

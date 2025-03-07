@@ -65,6 +65,7 @@ async function main() {
       cli.dependencies,
       rootFolder,
       buildFolder,
+      cli.identity,
     );
   }
 

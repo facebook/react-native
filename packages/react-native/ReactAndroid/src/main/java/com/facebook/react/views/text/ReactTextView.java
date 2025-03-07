@@ -111,6 +111,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     // Set default field values
     initView();
 
+    // If the view is still attached to a parent, we need to remove it from the parent
+    // before we can recycle it.
+    if (getParent() != null) {
+      ((ViewGroup) getParent()).removeView(this);
+    }
+
     BackgroundStyleApplicator.reset(this);
 
     // Defaults for these fields:

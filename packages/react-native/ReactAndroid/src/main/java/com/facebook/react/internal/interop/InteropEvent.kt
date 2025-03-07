@@ -8,6 +8,8 @@
 package com.facebook.react.internal.interop
 
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.events.Event
 
 /**
@@ -15,12 +17,17 @@ import com.facebook.react.uimanager.events.Event
  * the data which is received by the `receiveEvent` method and will be passed over the the
  * [com.facebook.react.uimanager.events.EventDispatcher]
  */
+@LegacyArchitecture
 public class InteropEvent(
     @get:JvmName("eventName") public val eventName: String,
     @get:JvmName("eventData") public val eventData: WritableMap?,
     surfaceId: Int,
     viewTag: Int
 ) : Event<InteropEvent>(surfaceId, viewTag) {
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropEvent")
+  }
+
   override fun getEventName(): String = eventName
 
   override fun getEventData(): WritableMap? = eventData

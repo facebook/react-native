@@ -65,7 +65,7 @@ async function translateSourceFile(
   );
 
   // Translate to TypeScript defs
-  const tsDefResult = await translate.translateFlowToTSDef(
+  const tsDefResult = await translate.translateFlowDefToTSDef(
     flowDefResult,
     prettierOptions,
   );

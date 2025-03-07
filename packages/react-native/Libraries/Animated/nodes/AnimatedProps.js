@@ -75,7 +75,7 @@ function createAnimatedProps(
 }
 
 export default class AnimatedProps extends AnimatedNode {
-  #animatedView: any = null;
+  #animatedView: any;
   #callback: () => void;
   #nodeKeys: $ReadOnlyArray<string>;
   #nodes: $ReadOnlyArray<AnimatedNode>;
@@ -89,6 +89,7 @@ export default class AnimatedProps extends AnimatedNode {
   ) {
     super(config);
     const [nodeKeys, nodes, props] = createAnimatedProps(inputProps, allowlist);
+    this.#animatedView = null;
     this.#nodeKeys = nodeKeys;
     this.#nodes = nodes;
     this.#props = props;

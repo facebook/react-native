@@ -31,7 +31,7 @@ namespace facebook::react::jsinspector_modern {
 #ifdef HERMES_ENABLE_DEBUGGER
 namespace {
 
-const uint16_t HERMES_SAMPLING_FREQUENCY_HZ = 1000;
+const uint16_t HERMES_SAMPLING_FREQUENCY_HZ = 10000;
 
 } // namespace
 

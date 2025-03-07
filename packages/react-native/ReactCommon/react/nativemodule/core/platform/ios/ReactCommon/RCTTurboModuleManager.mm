@@ -493,21 +493,22 @@ typedef struct {
 
 - (id<RCTModuleProvider>)_moduleProviderForName:(const char *)moduleName
 {
+  id<RCTModuleProvider> moduleProvider = nil;
   if ([_delegate respondsToSelector:@selector(getModuleProvider:)]) {
-    id<RCTModuleProvider> moduleProvider = [_delegate getModuleProvider:moduleName];
-    BOOL isTurboModule = [self _isTurboModule:moduleName];
-    if (RCTTurboModuleEnabled() && !isTurboModule && !moduleProvider) {
-      return nil;
-    }
+    moduleProvider = [_delegate getModuleProvider:moduleName];
+  }
 
-    if (moduleProvider) {
-      if ([moduleProvider conformsToProtocol:@protocol(RCTTurboModule)]) {
-        // moduleProvider is also a TM, we need to initialize objectiveC properties, like the dispatch queue
-        return (id<RCTModuleProvider>)[self _provideObjCModule:moduleName moduleProvider:moduleProvider];
-      }
-      // module is Cxx module
-      return moduleProvider;
+  if (RCTTurboModuleInteropEnabled() && ![self _isTurboModule:moduleName] && !moduleProvider) {
+    return nil;
+  }
+
+  if (moduleProvider) {
+    if ([moduleProvider conformsToProtocol:@protocol(RCTTurboModule)]) {
+      // moduleProvider is also a TM, we need to initialize objectiveC properties, like the dispatch queue
+      return (id<RCTModuleProvider>)[self _provideObjCModule:moduleName moduleProvider:moduleProvider];
     }
+    // module is Cxx module
+    return moduleProvider;
   }
 
   // No module provider, the Module is registered without Codegen

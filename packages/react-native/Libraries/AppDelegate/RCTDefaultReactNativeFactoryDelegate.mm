@@ -49,6 +49,8 @@
   return jsrt_create_hermes_factory();
 #elif USE_THIRD_PARTY_JSC != 1
   return jsrt_create_jsc_factory();
+#else
+  return nullptr;
 #endif
 }
 

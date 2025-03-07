@@ -19,7 +19,6 @@ internal object ReactPackageHelper {
    *
    * @param reactPackage
    * @param reactApplicationContext
-   * @param reactInstanceManager
    * @return
    */
   fun getNativeModuleIterator(

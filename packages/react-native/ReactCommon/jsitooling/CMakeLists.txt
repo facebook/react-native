@@ -6,14 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"ReactNative\")
-
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 file(GLOB jsitooling_SRC CONFIGURE_DEPENDS react/runtime/*.cpp)
 add_library(jsitooling OBJECT ${jsitooling_SRC})
 
@@ -28,3 +21,6 @@ target_link_libraries(jsitooling
         folly_runtime
         glog
         jsi)
+
+target_compile_reactnative_options(jsitooling PRIVATE "ReactNative")
+target_compile_options(jsitooling PRIVATE -Wpedantic)

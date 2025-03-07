@@ -9,10 +9,18 @@ package com.facebook.react.bridge;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import java.lang.reflect.Method;
 
 @DoNotStrip
+@LegacyArchitecture
 public class ReactCxxErrorHandler {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "ReactCxxErrorHandler", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private static Method mHandleErrorFunc;
   private static Object mObject;
