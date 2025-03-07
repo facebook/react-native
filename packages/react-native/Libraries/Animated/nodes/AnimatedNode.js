@@ -28,7 +28,7 @@ let _assertNativeAnimatedModule: ?() => void = () => {
 };
 
 export default class AnimatedNode {
-  #listeners: Map<string, ValueListenerCallback> = new Map();
+  #listeners: Map<string, ValueListenerCallback>;
 
   _platformConfig: ?PlatformConfig = undefined;
 
@@ -38,6 +38,7 @@ export default class AnimatedNode {
       ...
     }>,
   ) {
+    this.#listeners = new Map();
     if (__DEV__) {
       this.__debugID = config?.debugID;
     }
