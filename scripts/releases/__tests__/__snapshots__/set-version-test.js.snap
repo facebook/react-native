@@ -61,7 +61,7 @@ exports[`setVersion updates monorepo for nightly: set-version/packages/react-nat
 
 exports[`setVersion updates monorepo for nightly: set-version/packages/react-native/ReactAndroid/gradle.properties 1`] = `"[omitted]"`;
 
-exports[`setVersion updates monorepo for nightly: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `"[omitted]"`;
+exports[`setVersion updates monorepo for nightly: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.kt 1`] = `"[omitted]"`;
 
 exports[`setVersion updates monorepo for nightly: set-version/packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `"[omitted]"`;
 
@@ -142,7 +142,7 @@ exports[`setVersion updates monorepo for release-candidate: set-version/packages
 
 exports[`setVersion updates monorepo for release-candidate: set-version/packages/react-native/ReactAndroid/gradle.properties 1`] = `"[omitted]"`;
 
-exports[`setVersion updates monorepo for release-candidate: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `"[omitted]"`;
+exports[`setVersion updates monorepo for release-candidate: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.kt 1`] = `"[omitted]"`;
 
 exports[`setVersion updates monorepo for release-candidate: set-version/packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `"[omitted]"`;
 
@@ -223,7 +223,7 @@ exports[`setVersion updates monorepo for stable version: set-version/packages/re
 
 exports[`setVersion updates monorepo for stable version: set-version/packages/react-native/ReactAndroid/gradle.properties 1`] = `"[omitted]"`;
 
-exports[`setVersion updates monorepo for stable version: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java 1`] = `"[omitted]"`;
+exports[`setVersion updates monorepo for stable version: set-version/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.kt 1`] = `"[omitted]"`;
 
 exports[`setVersion updates monorepo for stable version: set-version/packages/react-native/ReactCommon/cxxreact/ReactNativeVersion.h 1`] = `"[omitted]"`;
 

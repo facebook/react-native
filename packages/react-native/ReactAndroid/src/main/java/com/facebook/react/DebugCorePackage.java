@@ -8,6 +8,7 @@
 package com.facebook.react;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ModuleSpec;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -29,6 +30,7 @@ import java.util.Map;
  * require special integration with other framework parts (e.g. with the list of packages to load
  * view managers from).
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 @ReactModuleList(nativeModules = {})
 /* package */
 public class DebugCorePackage extends BaseReactPackage implements ViewManagerOnDemandReactPackage {

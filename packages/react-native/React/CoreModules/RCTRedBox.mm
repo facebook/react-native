@@ -222,7 +222,7 @@
 #if TARGET_OS_MACCATALYST
   return 0;
 #else
-  return RCTSharedApplication().delegate.window.safeAreaInsets.bottom;
+  return RCTKeyWindow().safeAreaInsets.bottom;
 #endif
 }
 

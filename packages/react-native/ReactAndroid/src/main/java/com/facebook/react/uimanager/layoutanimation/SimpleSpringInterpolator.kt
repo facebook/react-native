@@ -11,16 +11,24 @@ import android.view.animation.Interpolator
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import com.facebook.react.bridge.ReadableType.Number
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /** Simple spring interpolator */
 // TODO(7613736): Improve spring interpolator with friction and damping variable support
-/* package */
+@LegacyArchitecture
 internal class SimpleSpringInterpolator : Interpolator {
   private val _springDamping: Float
 
   @JvmOverloads
   constructor(springDamping: Float = FACTOR) {
     _springDamping = springDamping
+  }
+
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "SimpleSpringInterpolator", LegacyArchitectureLogLevel.WARNING)
   }
 
   override fun getInterpolation(input: Float): Float =

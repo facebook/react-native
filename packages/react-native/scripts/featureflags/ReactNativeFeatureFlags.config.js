@@ -224,17 +224,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enablePreciseSchedulingForPremountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-19',
-        description:
-          'Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enablePropsUpdateReconciliationAndroid: {
       defaultValue: false,
       metadata: {
@@ -569,17 +558,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables access to the host tree in Fabric using DOM-compatible APIs.',
         expectedReleaseValue: true,
         purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableAnimatedClearImmediateFix: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-09-17',
-        description:
-          'Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },

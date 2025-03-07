@@ -9,6 +9,8 @@
  * @oncall react_native
  */
 
+import type {FeatureFlagValue} from '../../../packages/react-native/scripts/featureflags/types';
+
 import ReactNativeFeatureFlags from '../../../packages/react-native/scripts/featureflags/ReactNativeFeatureFlags.config';
 import fs from 'fs';
 // $FlowExpectedError[untyped-import]
@@ -33,11 +35,16 @@ export type FantomTestConfigJsOnlyFeatureFlags = Partial<{
   [key in keyof JsOnlyFeatureFlags]: JsOnlyFeatureFlags[key]['defaultValue'],
 }>;
 
+export type FantomTestConfigReactInternalFeatureFlags = {
+  [key: string]: FeatureFlagValue,
+};
+
 export type FantomTestConfig = {
   mode: FantomTestConfigMode,
   flags: {
     common: FantomTestConfigCommonFeatureFlags,
     jsOnly: FantomTestConfigJsOnlyFeatureFlags,
+    reactInternal: FantomTestConfigReactInternalFeatureFlags,
   },
 };
 
@@ -59,6 +66,7 @@ const FANTOM_BENCHMARK_SUITE_RE = /\nFantom\.unstable_benchmark(\s*)\.suite\(/g;
  *  * @fantom_mode opt
  *  * @fantom_flags commonTestFlag:true
  *  * @fantom_flags jsOnlyTestFlag:true
+ *  * @fantom_react_fb_flags reactInternalFlag:true
  *  *
  * ```
  *
@@ -85,6 +93,7 @@ export default function getFantomTestConfig(
         enableAccessToHostTreeInFabric: true,
         enableDOMDocumentAPI: true,
       },
+      reactInternal: {},
     },
   };
 
@@ -155,6 +164,29 @@ export default function getFantomTestConfig(
           `Invalid Fantom feature flag: ${name}. Valid flags are: ${validKeys}`,
         );
       }
+    }
+  }
+
+  const maybeReactInternalRawFlagConfig = pragmas.fantom_react_fb_flags;
+
+  if (maybeReactInternalRawFlagConfig != null) {
+    const reactInternalRawFlagConfigs = (
+      Array.isArray(maybeReactInternalRawFlagConfig)
+        ? maybeReactInternalRawFlagConfig
+        : [maybeReactInternalRawFlagConfig]
+    ).flatMap(value => value.split(/\s+/g));
+
+    for (const reactInternalRawFlagConfig of reactInternalRawFlagConfigs) {
+      const matches = FANTOM_FLAG_FORMAT.exec(reactInternalRawFlagConfig);
+      if (matches == null) {
+        throw new Error(
+          `Invalid format for Fantom React fb feature flag: ${reactInternalRawFlagConfig}. Expected <flag_name>:<value>`,
+        );
+      }
+
+      const [, name, rawValue] = matches;
+      const value = parseFeatureFlagValue(false, rawValue);
+      config.flags.reactInternal[name] = value;
     }
   }
 

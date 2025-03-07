@@ -180,6 +180,8 @@ public class FabricUIManager
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
   /** Set of events sent synchronously during the current frame render. Cleared after each frame. */
+  @ThreadConfined(UI)
+  @NonNull
   private final Set<SynchronousEvent> mSynchronousEvents = new HashSet<>();
 
   /**
@@ -999,6 +1001,7 @@ public class FabricUIManager
     }
 
     if (experimentalIsSynchronous) {
+      UiThreadUtil.assertOnUiThread();
       // add() returns true only if there are no equivalent events already in the set
       boolean firstEventForFrame =
           mSynchronousEvents.add(new SynchronousEvent(surfaceId, reactTag, eventName));
@@ -1389,7 +1392,7 @@ public class FabricUIManager
       } catch (Exception ex) {
         FLog.e(TAG, "Exception thrown when executing UIFrameGuarded", ex);
         mIsMountingEnabled = false;
-        throw ex;
+        throw new RuntimeException("Exception thrown when executing UIFrameGuarded", ex);
       } finally {
         schedule();
       }

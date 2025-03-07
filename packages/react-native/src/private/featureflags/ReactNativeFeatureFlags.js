@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<dc772bc730922d7dbbc594a9b8a6e568>>
+ * @generated SignedSource<<0cd3b3d5d9d1aaf075ebbf99b5c8a77b>>
  * @flow strict
  */
 
@@ -33,7 +33,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
-  enableAnimatedClearImmediateFix: Getter<boolean>,
   enableDOMDocumentAPI: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
@@ -66,7 +65,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLongTaskAPI: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
-  enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableReportEventPaintTime: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
@@ -124,11 +122,6 @@ export const disableInteractionManager: Getter<boolean> = createJavaScriptFlagGe
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
  */
 export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', false);
-
-/**
- * Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.
- */
-export const enableAnimatedClearImmediateFix: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedClearImmediateFix', true);
 
 /**
  * Enables the DOM Document API, exposing instaces of document through `getRootNode` and `ownerDocument`, and providing access to the `documentElement` representing the root node. This flag will be short-lived, only to test the Document API specifically, and then it will be collapsed into the enableAccessToHostTreeInFabric flag.
@@ -242,10 +235,6 @@ export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('e
  * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
  */
 export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', false);
-/**
- * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
- */
-export const enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('enablePreciseSchedulingForPremountItemsOnAndroid', false);
 /**
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */

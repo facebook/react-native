@@ -10,14 +10,19 @@
  * @fantom_flags enableLongTaskAPI:true
  */
 
+import type Performance from '../Performance';
+
 import setUpPerformanceObserver from '../../../setup/setUpPerformanceObserver';
 import ensureInstance from '../../../utilities/ensureInstance';
+import {PerformanceObserver} from '../PerformanceObserver';
 import {PerformanceMark} from '../UserTiming';
 import Fantom from '@react-native/fantom';
 
 import '../../../../../Libraries/Core/InitializeCore.js';
 
 setUpPerformanceObserver();
+
+declare var performance: Performance;
 
 describe('User Timing API', () => {
   describe('performance.mark()', () => {

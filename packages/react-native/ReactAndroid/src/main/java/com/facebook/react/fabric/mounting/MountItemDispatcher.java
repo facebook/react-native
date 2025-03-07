@@ -21,7 +21,6 @@ import com.facebook.react.bridge.ReactIgnorableMountingException;
 import com.facebook.react.bridge.ReactNoCrashSoftException;
 import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.bridge.RetryableMountingLayerException;
-import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags;
@@ -55,19 +54,6 @@ public class MountItemDispatcher {
   private long mRunStartTime = 0L;
 
   private long mLastFrameTimeNanos = 0L;
-  private boolean mIsPremountScheduled = false;
-  private final Runnable mPremountRunnable =
-      () -> {
-        mIsPremountScheduled = false;
-
-        if (mPreMountItems.isEmpty()) {
-          // Avoid starting systrace if there are no pre mount items.
-          return;
-        }
-
-        long deadline = mLastFrameTimeNanos + (FRAME_TIME_NS / 2);
-        dispatchPreMountItemsImpl(deadline);
-      };
 
   public MountItemDispatcher(MountingManager mountingManager, ItemDispatchListener listener) {
     mMountingManager = mountingManager;
@@ -312,15 +298,8 @@ public class MountItemDispatcher {
       return;
     }
 
-    if (ReactNativeFeatureFlags.enablePreciseSchedulingForPremountItemsOnAndroid()) {
-      if (!mIsPremountScheduled) {
-        mIsPremountScheduled = true;
-        UiThreadUtil.getUiThreadHandler().post(mPremountRunnable);
-      }
-    } else {
-      long deadline = mLastFrameTimeNanos + FRAME_TIME_NS / 2;
-      dispatchPreMountItemsImpl(deadline);
-    }
+    long deadline = mLastFrameTimeNanos + FRAME_TIME_NS / 2;
+    dispatchPreMountItemsImpl(deadline);
   }
 
   private void dispatchPreMountItemsImpl(long deadline) {

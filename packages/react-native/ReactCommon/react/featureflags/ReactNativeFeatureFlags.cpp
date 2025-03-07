@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<ee23eb8df8d5ef0cd2a421ecb8b66312>>
+ * @generated SignedSource<<ca0576a58430b8a1f3bbc6c13680304d>>
  */
 
 /**
@@ -92,10 +92,6 @@ bool ReactNativeFeatureFlags::enableNativeCSSParsing() {
 
 bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {
   return getAccessor().enableNewBackgroundAndBorderDrawables();
-}
-
-bool ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid() {
-  return getAccessor().enablePreciseSchedulingForPremountItemsOnAndroid();
 }
 
 bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {

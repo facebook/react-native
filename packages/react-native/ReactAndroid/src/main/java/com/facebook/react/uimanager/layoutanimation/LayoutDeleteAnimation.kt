@@ -7,11 +7,21 @@
 
 package com.facebook.react.uimanager.layoutanimation
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
+
 /**
  * Class responsible for handling layout view deletion animation, applied to view whenever a valid
  * config was supplied for the layout animation of DELETE type.
  */
+@LegacyArchitecture
 internal class LayoutDeleteAnimation : BaseLayoutAnimation() {
+
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "LayoutDeleteAnimation", LegacyArchitectureLogLevel.WARNING)
+  }
 
   override fun isReverse(): Boolean = true
 }

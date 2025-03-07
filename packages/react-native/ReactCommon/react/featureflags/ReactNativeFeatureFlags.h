@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<2d0ac25a5fffe44afc0d575e8262bf63>>
+ * @generated SignedSource<<b04144a3b1f28aa982e6bc9d64d99393>>
  */
 
 /**
@@ -123,11 +123,6 @@ class ReactNativeFeatureFlags {
    * Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable
    */
   RN_EXPORT static bool enableNewBackgroundAndBorderDrawables();
-
-  /**
-   * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
-   */
-  RN_EXPORT static bool enablePreciseSchedulingForPremountItemsOnAndroid();
 
   /**
    * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.

@@ -11,10 +11,18 @@
 // https://github.com/visionmedia/debug
 // https://www.npmjs.com/package/debug
 
+interface DebugFN {
+  (...args: Array<mixed>): void;
+  enable(match: string): void;
+  disable(): void;
+  enabled: () => boolean;
+}
+
 declare module 'debug' {
   declare module.exports: {
-    (namespace: string): (...Array<mixed>) => void,
+    (namespace: string): DebugFN,
     enable(match: string): void,
     disable(): void,
+    enabled: () => boolean,
   };
 }

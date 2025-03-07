@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <ReactCommon/RuntimeExecutor.h>
-
 #include "ConsoleMessage.h"
 #include "ExecutionContext.h"
 #include "InspectorInterfaces.h"
@@ -16,6 +14,9 @@
 #include "ScopedExecutor.h"
 #include "StackTrace.h"
 #include "WeakList.h"
+
+#include <ReactCommon/RuntimeExecutor.h>
+#include <jsinspector-modern/tracing/RuntimeSamplingProfile.h>
 
 #include <memory>
 
@@ -90,6 +91,21 @@ class RuntimeTargetDelegate {
   virtual std::unique_ptr<StackTrace> captureStackTrace(
       jsi::Runtime& runtime,
       size_t framesToSkip = 0) = 0;
+
+  /**
+   * Start sampling profiler.
+   */
+  virtual void enableSamplingProfiler() = 0;
+
+  /**
+   * Stop sampling profiler.
+   */
+  virtual void disableSamplingProfiler() = 0;
+
+  /**
+   * Return recorded sampling profile for the previous sampling session.
+   */
+  virtual tracing::RuntimeSamplingProfile collectSamplingProfile() = 0;
 };
 
 /**
@@ -117,6 +133,27 @@ class RuntimeTargetController {
    * destroyed.
    */
   void notifyDebuggerSessionDestroyed();
+
+  /**
+   * Registers the corresponding RuntimeTarget for Tracing: might enable some
+   * capabilities that will be later used in Tracing Profile.
+   */
+  void registerForTracing();
+
+  /**
+   * Start sampling profiler for the corresponding RuntimeTarget.
+   */
+  void enableSamplingProfiler();
+
+  /**
+   * Stop sampling profiler for the corresponding RuntimeTarget.
+   */
+  void disableSamplingProfiler();
+
+  /**
+   * Return recorded sampling profile for the previous sampling session.
+   */
+  tracing::RuntimeSamplingProfile collectSamplingProfile();
 
  private:
   RuntimeTarget& target_;
@@ -170,6 +207,27 @@ class JSINSPECTOR_EXPORT RuntimeTarget
   std::shared_ptr<RuntimeAgent> createAgent(
       FrontendChannel channel,
       SessionState& sessionState);
+
+  /**
+   * Registers this Runtime for Tracing: might enable some
+   * capabilities that will be later used in Tracing Profile.
+   */
+  void registerForTracing();
+
+  /**
+   * Start sampling profiler for a particular JavaScript runtime.
+   */
+  void enableSamplingProfiler();
+
+  /**
+   * Stop sampling profiler for a particular JavaScript runtime.
+   */
+  void disableSamplingProfiler();
+
+  /**
+   * Return recorded sampling profile for the previous sampling session.
+   */
+  tracing::RuntimeSamplingProfile collectSamplingProfile();
 
  private:
   /**

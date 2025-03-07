@@ -7,7 +7,10 @@
 
 package com.facebook.react.uimanager.layoutanimation
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+
 /** Interface for an animation type that takes care of updating the view layout. */
+@LegacyArchitecture
 internal interface LayoutHandlingAnimation {
   /**
    * Notifies the animation of a layout update in case one occurs during the animation. This avoids

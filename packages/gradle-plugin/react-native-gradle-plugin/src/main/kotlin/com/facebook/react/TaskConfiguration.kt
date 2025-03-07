@@ -9,6 +9,7 @@ package com.facebook.react
 
 import com.android.build.api.variant.Variant
 import com.facebook.react.tasks.BundleHermesCTask
+import com.facebook.react.utils.BackwardCompatUtils.showJSCRemovalMessage
 import com.facebook.react.utils.KotlinStdlibCompatUtils.capitalizeCompat
 import com.facebook.react.utils.NdkConfiguratorUtils.configureJsEnginePackagingOptions
 import com.facebook.react.utils.NdkConfiguratorUtils.configureNewArchPackagingOptions
@@ -53,6 +54,9 @@ internal fun Project.configureReactTasks(variant: Variant, config: ReactExtensio
 
   configureNewArchPackagingOptions(project, config, variant)
   configureJsEnginePackagingOptions(config, variant, isHermesEnabledInThisVariant, useThirdPartyJSC)
+  if (!isHermesEnabledInThisVariant && !useThirdPartyJSC) {
+    showJSCRemovalMessage(project)
+  }
 
   if (!isDebuggableVariant) {
     val entryFileEnvVariable = System.getenv("ENTRY_FILE")

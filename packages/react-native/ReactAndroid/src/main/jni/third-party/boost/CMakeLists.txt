@@ -19,4 +19,5 @@ add_library(boost STATIC ${boostasm_SRC})
 set_target_properties(boost PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(boost PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/boost_1_83_0)
+target_compile_options(boost PRIVATE -fexceptions -frtti)
 

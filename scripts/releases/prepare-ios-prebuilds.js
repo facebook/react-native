@@ -52,7 +52,7 @@ async function main() {
       SCHEME,
       cli.configuration,
       cli.dependencies,
-      cli.platforms,
+      cli.destinations,
       rootFolder,
       buildFolder,
     );
@@ -65,6 +65,7 @@ async function main() {
       cli.dependencies,
       rootFolder,
       buildFolder,
+      cli.identity,
     );
   }
 

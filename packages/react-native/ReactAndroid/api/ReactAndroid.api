@@ -695,7 +695,7 @@ public class com/facebook/react/bridge/CxxModuleWrapperBase : com/facebook/react
 	protected fun resetModule (Lcom/facebook/jni/HybridData;)V
 }
 
-public class com/facebook/react/bridge/DefaultJSExceptionHandler : com/facebook/react/bridge/JSExceptionHandler {
+public final class com/facebook/react/bridge/DefaultJSExceptionHandler : com/facebook/react/bridge/JSExceptionHandler {
 	public fun <init> ()V
 	public fun handleException (Ljava/lang/Exception;)V
 }
@@ -1747,6 +1747,15 @@ public final class com/facebook/react/common/ReactConstants {
 	public static final field UNSET I
 }
 
+public final class com/facebook/react/common/ReleaseLevel : java/lang/Enum {
+	public static final field CANARY Lcom/facebook/react/common/ReleaseLevel;
+	public static final field EXPERIMENTAL Lcom/facebook/react/common/ReleaseLevel;
+	public static final field STABLE Lcom/facebook/react/common/ReleaseLevel;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/facebook/react/common/ReleaseLevel;
+	public static fun values ()[Lcom/facebook/react/common/ReleaseLevel;
+}
+
 public final class com/facebook/react/common/ShakeDetector : android/hardware/SensorEventListener {
 	public fun <init> (Lcom/facebook/react/common/ShakeDetector$ShakeListener;)V
 	public fun <init> (Lcom/facebook/react/common/ShakeDetector$ShakeListener;I)V
@@ -1764,14 +1773,6 @@ public abstract interface class com/facebook/react/common/ShakeDetector$ShakeLis
 public final class com/facebook/react/common/SingleThreadAsserter {
 	public fun <init> ()V
 	public final fun assertNow ()V
-}
-
-public final class com/facebook/react/common/StandardCharsets {
-	public static final field INSTANCE Lcom/facebook/react/common/StandardCharsets;
-	public static final field UTF_16 Ljava/nio/charset/Charset;
-	public static final field UTF_16BE Ljava/nio/charset/Charset;
-	public static final field UTF_16LE Ljava/nio/charset/Charset;
-	public static final field UTF_8 Ljava/nio/charset/Charset;
 }
 
 public abstract interface class com/facebook/react/common/SurfaceDelegate {
@@ -1940,12 +1941,14 @@ public final class com/facebook/react/defaults/DefaultNewArchitectureEntryPoint 
 	public static final fun getBridgelessEnabled ()Z
 	public static final fun getConcurrentReactEnabled ()Z
 	public static final fun getFabricEnabled ()Z
+	public final fun getReleaseLevel ()Lcom/facebook/react/common/ReleaseLevel;
 	public static final fun getTurboModulesEnabled ()Z
 	public static final fun load ()V
 	public static final fun load (Z)V
 	public static final fun load (ZZ)V
 	public static final fun load (ZZZ)V
 	public static synthetic fun load$default (ZZZILjava/lang/Object;)V
+	public final fun setReleaseLevel (Lcom/facebook/react/common/ReleaseLevel;)V
 }
 
 public class com/facebook/react/defaults/DefaultReactActivityDelegate : com/facebook/react/ReactActivityDelegate {
@@ -3342,9 +3345,9 @@ public final class com/facebook/react/modules/systeminfo/AndroidInfoModule : com
 	public fun invalidate ()V
 }
 
-public class com/facebook/react/modules/systeminfo/ReactNativeVersion {
+public final class com/facebook/react/modules/systeminfo/ReactNativeVersion {
+	public static final field INSTANCE Lcom/facebook/react/modules/systeminfo/ReactNativeVersion;
 	public static final field VERSION Ljava/util/Map;
-	public fun <init> ()V
 }
 
 public final class com/facebook/react/modules/toast/ToastModule : com/facebook/fbreact/specs/NativeToastAndroidSpec {

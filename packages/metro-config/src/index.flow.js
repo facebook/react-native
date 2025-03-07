@@ -53,7 +53,7 @@ export function getDefaultConfig(projectRoot: string): ConfigT {
     resolver: {
       resolverMainFields: ['react-native', 'browser', 'main'],
       platforms: ['android', 'ios'],
-      unstable_conditionNames: ['require', 'import', 'react-native'],
+      unstable_conditionNames: ['react-native'],
     },
     serializer: {
       // Note: This option is overridden in cli-plugin-metro (getOverrideConfig)

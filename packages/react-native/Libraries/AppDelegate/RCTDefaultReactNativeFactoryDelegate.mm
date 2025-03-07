@@ -49,6 +49,8 @@
   return jsrt_create_hermes_factory();
 #elif USE_THIRD_PARTY_JSC != 1
   return jsrt_create_jsc_factory();
+#else
+  return nullptr;
 #endif
 }
 
@@ -88,6 +90,12 @@
 
 - (void)hostDidStart:(RCTHost *)host
 {
+}
+
+- (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
+{
+  NSString *providerName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
+  return self.dependencyProvider ? self.dependencyProvider.moduleProviders[providerName] : nullptr;
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name

@@ -1,0 +1,499 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ * @oncall flow
+ */
+
+/* BOM */
+
+declare var window: typeof globalThis;
+
+declare class Navigator {
+  product: 'ReactNative';
+  appName?: ?string;
+}
+
+declare var navigator: Navigator;
+
+// https://www.w3.org/TR/hr-time-2/#dom-domhighrestimestamp
+// https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp
+declare type DOMHighResTimeStamp = number;
+
+declare class Performance {
+  now: () => DOMHighResTimeStamp;
+}
+
+declare var performance: Performance;
+
+type FormDataEntryValue = string | File;
+
+declare class FormData {
+  append(name: string, value: string): void;
+
+  append(name: string, value: Blob, filename?: string): void;
+  append(name: string, value: File, filename?: string): void;
+  constructor(form?: HTMLFormElement, submitter?: HTMLElement | null): void;
+
+  delete(name: string): void;
+  entries(): Iterator<[string, FormDataEntryValue]>;
+  get(name: string): ?FormDataEntryValue;
+
+  getAll(name: string): Array<FormDataEntryValue>;
+  has(name: string): boolean;
+  keys(): Iterator<string>;
+
+  set(name: string, value: string): void;
+
+  set(name: string, value: Blob, filename?: string): void;
+  set(name: string, value: File, filename?: string): void;
+  values(): Iterator<FormDataEntryValue>;
+}
+
+declare class DOMRectReadOnly {
+  +bottom: number;
+  constructor(x: number, y: number, width: number, height: number): void;
+  static fromRect(rectangle?: {
+    height: number,
+    width: number,
+    x: number,
+    y: number,
+    ...
+  }): DOMRectReadOnly;
+  +height: number;
+  +left: number;
+  +right: number;
+  +top: number;
+  +width: number;
+  +x: number;
+  +y: number;
+}
+
+declare class DOMRect extends DOMRectReadOnly {
+  bottom: number;
+  static fromRect(rectangle?: {
+    height: number,
+    width: number,
+    x: number,
+    y: number,
+    ...
+  }): DOMRect;
+  height: number;
+  left: number;
+  right: number;
+  top: number;
+  width: number;
+  x: number;
+  y: number;
+}
+
+declare class DOMRectList {
+  @@iterator(): Iterator<DOMRect>;
+  item(index: number): DOMRect;
+  length: number;
+  [index: number]: DOMRect;
+}
+
+declare class CloseEvent extends Event {
+  code: number;
+  reason: string;
+  wasClean: boolean;
+}
+
+declare class WebSocket extends EventTarget {
+  binaryType: 'blob' | 'arraybuffer';
+  bufferedAmount: number;
+  close(code?: number, reason?: string): void;
+  static CLOSED: 3;
+  // eslint-disable-next-line ft-flow/no-dupe-keys
+  CLOSED: 3;
+  static CLOSING: 2;
+  // eslint-disable-next-line ft-flow/no-dupe-keys
+  CLOSING: 2;
+  static CONNECTING: 0;
+  // eslint-disable-next-line ft-flow/no-dupe-keys
+  CONNECTING: 0;
+  constructor(url: string, protocols?: string | Array<string>): void;
+  extensions: string;
+  onclose: (ev: CloseEvent) => mixed;
+  onerror: (ev: $FlowFixMe) => mixed;
+  onmessage: (ev: MessageEvent) => mixed;
+  onopen: (ev: $FlowFixMe) => mixed;
+  static OPEN: 1;
+  // eslint-disable-next-line ft-flow/no-dupe-keys
+  OPEN: 1;
+  protocol: string;
+  readyState: number;
+  send(data: string): void;
+  send(data: Blob): void;
+  send(data: ArrayBuffer): void;
+  send(data: $ArrayBufferView): void;
+  url: string;
+}
+
+declare class XMLHttpRequest extends EventTarget {
+  abort(): void;
+  static DONE: number;
+  // eslint-disable-next-line ft-flow/no-dupe-keys
+  DONE: number;
+  getAllResponseHeaders(): string;
+  getResponseHeader(header: string): string;
+  static HEADERS_RECEIVED: number;
+  // eslint-disable-next-line ft-flow/no-dupe-keys
+  HEADERS_RECEIVED: number;
+  static LOADING: number;
+  // eslint-disable-next-line ft-flow/no-dupe-keys
+  LOADING: number;
+  msCaching: string;
+  msCachingEnabled(): boolean;
+  onabort: ProgressEventHandler;
+  onerror: ProgressEventHandler;
+  onload: ProgressEventHandler;
+  onloadend: ProgressEventHandler;
+  onloadstart: ProgressEventHandler;
+  onprogress: ProgressEventHandler;
+  onreadystatechange: (ev: $FlowFixMe) => mixed;
+  ontimeout: ProgressEventHandler;
+  open(
+    method: string,
+    url: string,
+    async?: boolean,
+    user?: string,
+    password?: string,
+  ): void;
+  static OPENED: number;
+  // eslint-disable-next-line ft-flow/no-dupe-keys
+  OPENED: number;
+  overrideMimeType(mime: string): void;
+  readyState: number;
+  response: $FlowFixMe;
+  responseBody: $FlowFixMe;
+  responseText: string;
+  responseType: string;
+  responseURL: string;
+  responseXML: $FlowFixMe;
+  send(data?: $FlowFixMe): void;
+  setRequestHeader(header: string, value: string): void;
+  statics: {create(): XMLHttpRequest, ...};
+  status: number;
+  statusText: string;
+  timeout: number;
+  static UNSENT: number;
+  // eslint-disable-next-line ft-flow/no-dupe-keys
+  UNSENT: number;
+  upload: XMLHttpRequestEventTarget;
+
+  withCredentials: boolean;
+}
+
+declare class XMLHttpRequestEventTarget extends EventTarget {
+  onabort: ProgressEventHandler;
+  onerror: ProgressEventHandler;
+  onload: ProgressEventHandler;
+  onloadend: ProgressEventHandler;
+  onloadstart: ProgressEventHandler;
+  onprogress: ProgressEventHandler;
+  ontimeout: ProgressEventHandler;
+}
+
+// this part of spec is not finished yet, apparently
+// https://stackoverflow.com/questions/35296664/can-fetch-get-object-as-headers
+type HeadersInit =
+  | Headers
+  | Array<[string, string]>
+  | {[key: string]: string, ...};
+
+// TODO Heades and URLSearchParams are almost the same thing.
+// Could it somehow be abstracted away?
+declare class Headers {
+  @@iterator(): Iterator<[string, string]>;
+  append(name: string, value: string): void;
+  constructor(init?: HeadersInit): void;
+  delete(name: string): void;
+  entries(): Iterator<[string, string]>;
+  forEach<This>(
+    callback: (
+      this: This,
+      value: string,
+      name: string,
+      headers: Headers,
+    ) => mixed,
+    thisArg: This,
+  ): void;
+  get(name: string): null | string;
+  has(name: string): boolean;
+  keys(): Iterator<string>;
+  set(name: string, value: string): void;
+  values(): Iterator<string>;
+}
+
+declare class URLSearchParams {
+  @@iterator(): Iterator<[string, string]>;
+
+  append(name: string, value: string): void;
+
+  constructor(
+    init?:
+      | string
+      | URLSearchParams
+      | Array<[string, string]>
+      | {[string]: string, ...},
+  ): void;
+  delete(name: string, value?: string): void;
+  entries(): Iterator<[string, string]>;
+  forEach<This>(
+    callback: (
+      this: This,
+      value: string,
+      name: string,
+      params: URLSearchParams,
+    ) => mixed,
+    thisArg: This,
+  ): void;
+  get(name: string): null | string;
+  getAll(name: string): Array<string>;
+  has(name: string, value?: string): boolean;
+  keys(): Iterator<string>;
+  set(name: string, value: string): void;
+  size: number;
+  sort(): void;
+  toString(): string;
+  values(): Iterator<string>;
+}
+
+type CacheType =
+  | 'default'
+  | 'no-store'
+  | 'reload'
+  | 'no-cache'
+  | 'force-cache'
+  | 'only-if-cached';
+type CredentialsType = 'omit' | 'same-origin' | 'include';
+type ModeType = 'cors' | 'no-cors' | 'same-origin' | 'navigate';
+type RedirectType = 'follow' | 'error' | 'manual';
+type ReferrerPolicyType =
+  | ''
+  | 'no-referrer'
+  | 'no-referrer-when-downgrade'
+  | 'same-origin'
+  | 'origin'
+  | 'strict-origin'
+  | 'origin-when-cross-origin'
+  | 'strict-origin-when-cross-origin'
+  | 'unsafe-url';
+
+type ResponseType =
+  | 'basic'
+  | 'cors'
+  | 'default'
+  | 'error'
+  | 'opaque'
+  | 'opaqueredirect';
+
+type BodyInit =
+  | string
+  | URLSearchParams
+  | FormData
+  | Blob
+  | ArrayBuffer
+  | $ArrayBufferView
+  | ReadableStream;
+
+type RequestInfo = Request | URL | string;
+
+type RequestOptions = {
+  body?: ?BodyInit,
+  cache?: CacheType,
+  credentials?: CredentialsType,
+  headers?: HeadersInit,
+  integrity?: string,
+  keepalive?: boolean,
+  method?: string,
+  mode?: ModeType,
+  redirect?: RedirectType,
+  referrer?: string,
+  referrerPolicy?: ReferrerPolicyType,
+  signal?: ?AbortSignal,
+  window?: $FlowFixMe,
+  ...
+};
+
+type ResponseOptions = {
+  headers?: HeadersInit,
+  status?: number,
+  statusText?: string,
+  ...
+};
+
+declare class Response {
+  arrayBuffer(): Promise<ArrayBuffer>;
+  blob(): Promise<Blob>;
+  body: ?ReadableStream;
+  // Body methods and attributes
+  bodyUsed: boolean;
+
+  clone(): Response;
+  constructor(input?: ?BodyInit, init?: ResponseOptions): void;
+  static error(): Response;
+  formData(): Promise<FormData>;
+  headers: Headers;
+  json(): Promise<$FlowFixMe>;
+  ok: boolean;
+  static redirect(url: string, status?: number): Response;
+
+  redirected: boolean;
+  status: number;
+
+  statusText: string;
+  text(): Promise<string>;
+  trailer: Promise<Headers>;
+  type: ResponseType;
+  url: string;
+}
+
+declare class Request {
+  arrayBuffer(): Promise<ArrayBuffer>;
+  blob(): Promise<Blob>;
+
+  // Body methods and attributes
+  bodyUsed: boolean;
+
+  cache: CacheType;
+  clone(): Request;
+  constructor(input: RequestInfo, init?: RequestOptions): void;
+  credentials: CredentialsType;
+  formData(): Promise<FormData>;
+  headers: Headers;
+  integrity: string;
+  json(): Promise<$FlowFixMe>;
+  method: string;
+  mode: ModeType;
+
+  redirect: RedirectType;
+
+  referrer: string;
+  referrerPolicy: ReferrerPolicyType;
+  +signal: AbortSignal;
+  text(): Promise<string>;
+  url: string;
+}
+
+declare class AbortController {
+  abort(reason?: $FlowFixMe): void;
+  constructor(): void;
+  +signal: AbortSignal;
+}
+
+declare class AbortSignal extends EventTarget {
+  abort(reason?: $FlowFixMe): AbortSignal;
+  +aborted: boolean;
+  onabort: (event: Event) => mixed;
+  +reason: $FlowFixMe;
+  throwIfAborted(): void;
+  timeout(time: number): AbortSignal;
+}
+
+declare function fetch(
+  input: RequestInfo,
+  init?: RequestOptions,
+): Promise<Response>;
+
+declare class Location {
+  ancestorOrigins: Array<string>;
+  assign(url: string): void;
+  hash: string;
+  host: string;
+  hostname: string;
+  href: string;
+  origin: string;
+  pathname: string;
+  port: string;
+  protocol: string;
+  reload(flag?: boolean): void;
+  replace(url: string): void;
+  search: string;
+  toString(): string;
+}
+
+declare class CanvasCaptureMediaStream extends MediaStream {
+  canvas: HTMLCanvasElement;
+  requestFrame(): void;
+}
+
+declare type FileSystemHandleKind = 'file' | 'directory';
+
+// https://wicg.github.io/file-system-access/#api-filesystemhandle
+declare class FileSystemHandle {
+  +kind: FileSystemHandleKind;
+  +name: string;
+
+  isSameEntry: (other: FileSystemHandle) => Promise<boolean>;
+  queryPermission?: (
+    descriptor: FileSystemHandlePermissionDescriptor,
+  ) => Promise<PermissionStatus>;
+  requestPermission?: (
+    descriptor: FileSystemHandlePermissionDescriptor,
+  ) => Promise<PermissionStatus>;
+}
+
+// https://fs.spec.whatwg.org/#api-filesystemfilehandle
+declare class FileSystemFileHandle extends FileSystemHandle {
+  +kind: 'file';
+
+  constructor(name: string): void;
+
+  getFile(): Promise<File>;
+  createSyncAccessHandle(): Promise<FileSystemSyncAccessHandle>;
+  createWritable(options?: {|
+    keepExistingData?: boolean,
+  |}): Promise<FileSystemWritableFileStream>;
+}
+
+// https://fs.spec.whatwg.org/#api-filesystemdirectoryhandle
+declare class FileSystemDirectoryHandle extends FileSystemHandle {
+  +kind: 'directory';
+
+  constructor(name: string): void;
+
+  getDirectoryHandle(
+    name: string,
+    options?: {|create?: boolean|},
+  ): Promise<FileSystemDirectoryHandle>;
+  getFileHandle(
+    name: string,
+    options?: {|create?: boolean|},
+  ): Promise<FileSystemFileHandle>;
+  removeEntry(name: string, options?: {|recursive?: boolean|}): Promise<void>;
+  resolve(possibleDescendant: FileSystemHandle): Promise<Array<string> | null>;
+
+  // Async iterator functions
+  @@asyncIterator(): AsyncIterator<[string, FileSystemHandle]>;
+  entries(): AsyncIterator<[string, FileSystemHandle]>;
+  keys(): AsyncIterator<string>;
+  values(): AsyncIterator<FileSystemHandle>;
+}
+
+// https://fs.spec.whatwg.org/#api-filesystemsyncaccesshandle
+declare class FileSystemSyncAccessHandle {
+  close(): void;
+  flush(): void;
+  getSize(): number;
+  read(buffer: ArrayBuffer, options?: {|at: number|}): number;
+  truncate(newSize: number): void;
+  write(buffer: ArrayBuffer, options?: {|at: number|}): number;
+}
+
+declare class MediaStream {}
+declare class USBDevice {}
+declare class PermissionStatus {}
+declare class FileSystemWritableFileStream {}
+
+type PermissionState = 'granted' | 'denied' | 'prompt';
+
+type FileSystemHandlePermissionDescriptor = {|
+  mode: 'read' | 'readwrite',
+|};

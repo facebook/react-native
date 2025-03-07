@@ -7,6 +7,7 @@
 
 #import "RCTInitializeUIKitProxies.h"
 #import "RCTInitialAccessibilityValuesProxy.h"
+#import "RCTKeyWindowValuesProxy.h"
 #import "RCTTraitCollectionProxy.h"
 #import "RCTWindowSafeAreaProxy.h"
 
@@ -17,5 +18,6 @@ void RCTInitializeUIKitProxies(void)
     [[RCTWindowSafeAreaProxy sharedInstance] startObservingSafeArea];
     [[RCTTraitCollectionProxy sharedInstance] startObservingTraitCollection];
     [[RCTInitialAccessibilityValuesProxy sharedInstance] recordAccessibilityValues];
+    [[RCTKeyWindowValuesProxy sharedInstance] startObservingWindowSizeIfNecessary];
   });
 }

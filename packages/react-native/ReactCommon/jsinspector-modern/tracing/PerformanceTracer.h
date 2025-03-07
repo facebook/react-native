@@ -9,6 +9,7 @@
 
 #include "CdpTracing.h"
 #include "TraceEvent.h"
+#include "TraceEventProfile.h"
 
 #include <folly/dynamic.h>
 
@@ -87,6 +88,37 @@ class PerformanceTracer {
    * Record a corresponding Trace Event for OS-level thread.
    */
   void reportThread(uint64_t id, const std::string& name);
+
+  /**
+   * Should only be called from the JavaScript thread, will buffer metadata
+   * Trace Event.
+   */
+  void reportJavaScriptThread();
+
+  /**
+   * Record an Event Loop tick, which will be represented as an Event Loop task
+   * on a timeline view and grouped with JavaScript samples.
+   */
+  void reportEventLoopTask(uint64_t start, uint64_t end);
+
+  /**
+   * Create and serialize Profile Trace Event.
+   * \return serialized Trace Event that represents a Profile for CDT.
+   */
+  folly::dynamic getSerializedRuntimeProfileTraceEvent(
+      uint64_t threadId,
+      uint16_t profileId,
+      uint64_t eventUnixTimestamp);
+
+  /**
+   * Create and serialize ProfileChunk Trace Event.
+   * \return serialized Trace Event that represents a Profile Chunk for CDT.
+   */
+  folly::dynamic getSerializedRuntimeProfileChunkTraceEvent(
+      uint16_t profileId,
+      uint64_t threadId,
+      uint64_t eventUnixTimestamp,
+      const tracing::TraceEventProfileChunk& traceEventProfileChunk);
 
  private:
   PerformanceTracer();

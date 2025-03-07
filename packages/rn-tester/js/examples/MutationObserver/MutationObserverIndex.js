@@ -22,6 +22,7 @@ export const description = 'API to detect mutations in React Native nodes.';
 export const showIndividualExamples = true;
 export const examples: Array<RNTesterModuleExample> = [MutationObserverExample];
 
+// $FlowExpectedError[cannot-resolve-name]
 if (typeof IntersectionObserver !== 'undefined') {
   examples.push(VisualCompletionExample);
 }

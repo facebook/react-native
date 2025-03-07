@@ -552,12 +552,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
       const isIdle = this.#isIdle();
 
       debug(
-        "%s heartbeat ping-pong for app='%s' on device='%s' with idle='%s' took %dms",
-        socketName,
+        "[heartbeat ping-pong] [%s] %sms for app='%s' on device='%s' with idle='%s'",
+        socketName.padStart(7).padEnd(8),
+        String(roundtripDuration).padStart(5),
         debuggerSessionIDs.appId,
         debuggerSessionIDs.deviceName,
         isIdle ? 'true' : 'false',
-        roundtripDuration,
       );
 
       this.#eventReporter?.logEvent({

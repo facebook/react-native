@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<75eb9cf612f4039be9bf4e0a8bc160fe>>
+ * @generated SignedSource<<b9992120e2e266f3424f71179caecac2>>
  */
 
 /**
@@ -49,7 +49,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableLongTaskAPI();
   bool enableNativeCSSParsing();
   bool enableNewBackgroundAndBorderDrawables();
-  bool enablePreciseSchedulingForPremountItemsOnAndroid();
   bool enablePropsUpdateReconciliationAndroid();
   bool enableReportEventPaintTime();
   bool enableSynchronousStateUpdates();
@@ -87,7 +86,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 44> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 43> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -106,7 +105,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableLongTaskAPI_;
   std::atomic<std::optional<bool>> enableNativeCSSParsing_;
   std::atomic<std::optional<bool>> enableNewBackgroundAndBorderDrawables_;
-  std::atomic<std::optional<bool>> enablePreciseSchedulingForPremountItemsOnAndroid_;
   std::atomic<std::optional<bool>> enablePropsUpdateReconciliationAndroid_;
   std::atomic<std::optional<bool>> enableReportEventPaintTime_;
   std::atomic<std::optional<bool>> enableSynchronousStateUpdates_;

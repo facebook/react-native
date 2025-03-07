@@ -11,7 +11,6 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
 #include <fbjni/fbjni.h>
-#include <folly/Conv.h>
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
@@ -87,11 +86,10 @@ loadScriptFromAssets(AAssetManager* manager, const std::string& assetName) {
     }
   }
 
-  throw std::runtime_error(folly::to<std::string>(
+  throw std::runtime_error(
       "Unable to load script. Make sure you're "
-      "either running Metro (run 'npx react-native start') or that your bundle '",
-      assetName,
-      "' is packaged correctly for release."));
+      "either running Metro (run 'npx react-native start') or that your bundle '" +
+      assetName + "' is packaged correctly for release.");
 }
 
 } // namespace facebook::react

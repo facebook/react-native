@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<8f79888b1f6eb246a6f4c63b7a440895>>
+ * @generated SignedSource<<550f2e5fdf3d6c4709a7e43508e4f2a4>>
  */
 
 /**
@@ -37,7 +37,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableLongTaskAPICache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
-  private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
@@ -214,15 +213,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableNewBackgroundAndBorderDrawables()
       enableNewBackgroundAndBorderDrawablesCache = cached
-    }
-    return cached
-  }
-
-  override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean {
-    var cached = enablePreciseSchedulingForPremountItemsOnAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enablePreciseSchedulingForPremountItemsOnAndroid()
-      enablePreciseSchedulingForPremountItemsOnAndroidCache = cached
     }
     return cached
   }

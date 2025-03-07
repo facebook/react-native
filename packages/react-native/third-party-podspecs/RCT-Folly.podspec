@@ -20,10 +20,10 @@ Pod::Spec.new do |spec|
                   :tag => "v#{folly_release_version}" }
   spec.module_name = 'folly'
   spec.header_mappings_dir = '.'
-  spec.dependency 'boost'
-  spec.dependency 'DoubleConversion'
-  spec.dependency 'glog'
-  spec.dependency "fast_float", "6.1.4"
+  spec.dependency "boost"
+  spec.dependency "DoubleConversion"
+  spec.dependency "glog"
+  spec.dependency "fast_float", "8.0.0"
   spec.dependency "fmt", "11.0.2"
   spec.compiler_flags = folly_compiler_flags + ' -DFOLLY_HAVE_PTHREAD=1 -Wno-documentation -faligned-new'
   spec.source_files = 'folly/String.cpp',

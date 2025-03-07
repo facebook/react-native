@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<efddc0afe649dfc44b7bc4e7e30a1d57>>
+ * @generated SignedSource<<302696e8aac85fe4549efc79ca5ae903>>
  */
 
 /**
@@ -138,12 +138,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableNewBackgroundAndBorderDrawables() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableNewBackgroundAndBorderDrawables");
-    return method(javaProvider_);
-  }
-
-  bool enablePreciseSchedulingForPremountItemsOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePreciseSchedulingForPremountItemsOnAndroid");
     return method(javaProvider_);
   }
 
@@ -392,11 +386,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableNewBackgroundAndBorderDrawables(
   return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enablePreciseSchedulingForPremountItemsOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
@@ -609,9 +598,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableNewBackgroundAndBorderDrawables",
         JReactNativeFeatureFlagsCxxInterop::enableNewBackgroundAndBorderDrawables),
-      makeNativeMethod(
-        "enablePreciseSchedulingForPremountItemsOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::enablePreciseSchedulingForPremountItemsOnAndroid),
       makeNativeMethod(
         "enablePropsUpdateReconciliationAndroid",
         JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid),

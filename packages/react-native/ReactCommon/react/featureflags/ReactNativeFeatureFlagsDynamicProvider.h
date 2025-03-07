@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3ae7cbd89a280703598345e6ffcf09e4>>
+ * @generated SignedSource<<69c30b8c7e9b4fd6ed3842f6a799cff6>>
  */
 
 /**
@@ -196,15 +196,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableNewBackgroundAndBorderDrawables();
-  }
-
-  bool enablePreciseSchedulingForPremountItemsOnAndroid() override {
-    auto value = values_["enablePreciseSchedulingForPremountItemsOnAndroid"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::enablePreciseSchedulingForPremountItemsOnAndroid();
   }
 
   bool enablePropsUpdateReconciliationAndroid() override {

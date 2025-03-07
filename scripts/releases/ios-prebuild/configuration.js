@@ -14,14 +14,14 @@ import type { Dependency, Platform } from './types';
 */
 
 const platforms /*: $ReadOnlyArray<Platform> */ = [
-  'iOS',
-  'iOS Simulator',
-  'macOS',
-  'macOS,variant=Mac Catalyst',
-  'tvOS',
-  'tvOS Simulator',
-  'visionOS',
-  'visionOS Simulator',
+  'ios',
+  'ios-simulator',
+  'macos',
+  'mac-catalyst',
+  'tvos',
+  'tvos-simulator',
+  'xros',
+  'xros-simulator',
 ];
 
 const CPP_STANDARD = 'c++20';
@@ -117,10 +117,10 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
   },
   {
     name: 'fast_float',
-    version: '6.1.4',
+    version: '8.0.0',
     prepareScript: 'touch dummy.cc',
     url: new URL(
-      'https://github.com/fastfloat/fast_float/archive/refs/tags/v6.1.4.tar.gz',
+      'https://github.com/fastfloat/fast_float/archive/refs/tags/v8.0.0.tar.gz',
     ),
     files: {
       sources: ['./include/fast_float/*.h', 'dummy.cc'],

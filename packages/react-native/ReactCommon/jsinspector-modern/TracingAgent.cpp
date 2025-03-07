@@ -8,6 +8,7 @@
 #include "TracingAgent.h"
 
 #include <jsinspector-modern/tracing/PerformanceTracer.h>
+#include <jsinspector-modern/tracing/RuntimeSamplingProfileTraceEventSerializer.h>
 
 namespace facebook::react::jsinspector_modern {
 
@@ -24,20 +25,45 @@ const uint16_t TRACE_EVENT_CHUNK_SIZE = 1000;
 bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   if (req.method == "Tracing.start") {
     // @cdp Tracing.start support is experimental.
-    if (PerformanceTracer::getInstance().startTracing()) {
-      frontendChannel_(cdp::jsonResult(req.id));
-    } else {
+    if (!instanceAgent_) {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Couldn't find instance available for Tracing"));
+
+      return true;
+    }
+
+    bool correctlyStartedPerformanceTracer =
+        PerformanceTracer::getInstance().startTracing();
+
+    if (!correctlyStartedPerformanceTracer) {
       frontendChannel_(cdp::jsonError(
           req.id,
           cdp::ErrorCode::InternalError,
           "Tracing session already started"));
+
+      return true;
     }
+
+    instanceAgent_->startTracing();
+    instanceTracingStartTimestamp_ = std::chrono::steady_clock::now();
+    frontendChannel_(cdp::jsonResult(req.id));
 
     return true;
   } else if (req.method == "Tracing.end") {
     // @cdp Tracing.end support is experimental.
-    bool correctlyStopped = PerformanceTracer::getInstance().stopTracing();
+    if (!instanceAgent_) {
+      frontendChannel_(cdp::jsonError(
+          req.id,
+          cdp::ErrorCode::InternalError,
+          "Couldn't find instance available for Tracing"));
 
+      return true;
+    }
+
+    instanceAgent_->stopTracing();
+    bool correctlyStopped = PerformanceTracer::getInstance().stopTracing();
     if (!correctlyStopped) {
       frontendChannel_(cdp::jsonError(
           req.id,
@@ -50,12 +76,19 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
     // Send response to Tracing.end request.
     frontendChannel_(cdp::jsonResult(req.id));
 
+    auto dataCollectedCallback = [this](const folly::dynamic& eventsChunk) {
+      frontendChannel_(cdp::jsonNotification(
+          "Tracing.dataCollected",
+          folly::dynamic::object("value", eventsChunk)));
+    };
     PerformanceTracer::getInstance().collectEvents(
-        [this](const folly::dynamic& eventsChunk) {
-          frontendChannel_(cdp::jsonNotification(
-              "Tracing.dataCollected",
-              folly::dynamic::object("value", eventsChunk)));
-        },
+        dataCollectedCallback, TRACE_EVENT_CHUNK_SIZE);
+
+    tracing::RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
+        PerformanceTracer::getInstance(),
+        instanceAgent_->collectTracingProfile().getRuntimeSamplingProfile(),
+        instanceTracingStartTimestamp_,
+        dataCollectedCallback,
         TRACE_EVENT_CHUNK_SIZE);
 
     frontendChannel_(cdp::jsonNotification(
@@ -66,6 +99,11 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
   }
 
   return false;
+}
+
+void TracingAgent::setCurrentInstanceAgent(
+    std::shared_ptr<InstanceAgent> instanceAgent) {
+  instanceAgent_ = std::move(instanceAgent);
 }
 
 } // namespace facebook::react::jsinspector_modern

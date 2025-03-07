@@ -146,6 +146,7 @@ def use_react_native! (
   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
   pod 'React-jsinspector', :path => "#{prefix}/ReactCommon/jsinspector-modern"
   pod 'React-jsitooling', :path => "#{prefix}/ReactCommon/jsitooling"
+  pod 'React-jsinspectornetwork', :path => "#{prefix}/ReactCommon/jsinspector-modern/network"
   pod 'React-jsinspectortracing', :path => "#{prefix}/ReactCommon/jsinspector-modern/tracing"
 
   pod 'React-callinvoker', :path => "#{prefix}/ReactCommon/callinvoker"
@@ -372,6 +373,17 @@ def rct_cxx_language_standard()
   return Helpers::Constants.cxx_language_standard
 end
 
+def print_jsc_removal_message()
+  puts ''
+  puts '=============== JavaScriptCore is being moved ==============='.yellow
+  puts 'JavaScriptCore has been extracted from react-native core'.yellow
+  puts 'and will be removed in a future release. It can now be'.yellow
+  puts 'installed from `@react-native-community/javascriptcore`'.yellow
+  puts 'See: https://github.com/react-native-community/javascriptcore'.yellow
+  puts '============================================================='.yellow
+  puts ''
+end
+
 def print_cocoapods_deprecation_message()
   if ENV["RCT_IGNORE_PODS_DEPRECATION"] == "1"
     return
@@ -408,7 +420,6 @@ def react_native_post_install(
 
   ReactNativePodsUtils.apply_mac_catalyst_patches(installer) if mac_catalyst_enabled
 
-  fabric_enabled = ENV['RCT_FABRIC_ENABLED'] == '1'
   hermes_enabled = ENV['USE_HERMES'] == '1'
   privacy_file_aggregation_enabled = ENV['RCT_AGGREGATE_PRIVACY_FILES'] == '1'
 
@@ -440,6 +451,10 @@ def react_native_post_install(
 
   NewArchitectureHelper.set_clang_cxx_language_standard_if_needed(installer)
   NewArchitectureHelper.modify_flags_for_new_architecture(installer, NewArchitectureHelper.new_arch_enabled)
+
+  if ENV['USE_HERMES'] == '0' && ENV['USE_THIRD_PARTY_JSC'] != '1'
+    print_jsc_removal_message()
+  end
 
   print_cocoapods_deprecation_message
   Pod::UI.puts "Pod install took #{Time.now.to_i - $START_TIME} [s] to run".green

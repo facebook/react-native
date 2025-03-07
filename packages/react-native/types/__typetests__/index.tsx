@@ -120,6 +120,7 @@ import {
   ToastAndroid,
   Touchable,
   LayoutAnimation,
+  processColor,
   experimental_LayoutConformance as LayoutConformance,
 } from 'react-native';
 
@@ -167,11 +168,11 @@ BackHandler.addEventListener('hardwareBackPress', () => false).remove();
 BackHandler.addEventListener('hardwareBackPress', () => undefined).remove();
 BackHandler.addEventListener('hardwareBackPress', () => null).remove();
 
-interface LocalStyles {
+type LocalStyles = {
   container: ViewStyle;
   welcome: TextStyle;
   instructions: TextStyle;
-}
+};
 
 const styles = StyleSheet.create<LocalStyles>({
   container: {
@@ -217,7 +218,7 @@ StyleSheet.setStyleAttributePreprocessor(
   (family: string) => family,
 );
 
-const welcomeFontSize = StyleSheet.flatten(styles.welcome).fontSize;
+const welcomeFontSize = StyleSheet.flatten(styles.welcome)?.fontSize;
 
 const viewStyle: StyleProp<ViewStyle> = {
   backgroundColor: '#F5FCFF',
@@ -349,7 +350,7 @@ const lists = StyleSheet.create({
 
 const container = StyleSheet.compose(page.container, lists.listContainer);
 <View style={container} />;
-const text = StyleSheet.compose(page.text, lists.listItem);
+const text = StyleSheet.compose(page.text, lists.listItem) as TextStyle;
 <Text style={text} />;
 
 // The following use of the compose method is invalid:
@@ -370,6 +371,19 @@ const combinedStyle10: StyleProp<ImageStyle> = StyleSheet.compose(
   Math.random() < 0.5 ? composeTextStyle : null,
   null,
 );
+
+type TestOpaque = symbol & {smth: string};
+
+declare function createTestOpaque(): TestOpaque;
+const testOpaque = createTestOpaque();
+// @ts-expect-error
+processColor(testOpaque);
+processColor('#000000');
+processColor(123456);
+// @ts-expect-error
+processColor(true);
+// @ts-expect-error
+processColor(Symbol('test'));
 
 const testNativeSyntheticEvent = <T extends {}>(
   e: NativeSyntheticEvent<T>,
@@ -1175,7 +1189,7 @@ const customEventEmitter = new CustomEventEmitter();
 customEventEmitter.addListener('event', () => {});
 
 class TextInputTest extends React.Component<{}, {username: string}> {
-  username: TextInput | null = null;
+  username: React.ElementRef<typeof TextInput> | null = null;
 
   handleUsernameChange = (text: string) => {
     console.log(`text: ${text}`);
@@ -1278,9 +1292,7 @@ class TextInputTest extends React.Component<{}, {username: string}> {
           onContentSizeChange={this.handleOnContentSizeChange}
         />
 
-        <TextInput contextMenuHidden={true} textAlignVertical="top" />
-
-        <TextInput textAlign="center" />
+        <TextInput contextMenuHidden={true} />
       </View>
     );
   }

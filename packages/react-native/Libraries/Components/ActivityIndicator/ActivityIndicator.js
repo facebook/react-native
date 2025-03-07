@@ -112,7 +112,7 @@ const ActivityIndicator = (
         // $FlowFixMe[prop-missing] Flow doesn't know when this is the android component
         <PlatformActivityIndicator {...nativeProps} {...androidProps} />
       ) : (
-        /* $FlowFixMe[prop-missing] (>=0.106.0 site=react_native_android_fb) This comment
+        /* $FlowFixMe[incompatible-type] (>=0.106.0 site=react_native_android_fb) This comment
          * suppresses an error found when Flow v0.106 was deployed. To see the
          * error, delete this comment and run Flow. */
         <PlatformActivityIndicator {...nativeProps} />
