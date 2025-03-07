@@ -29,6 +29,7 @@ public class com/facebook/react/DebugCorePackage$$ReactModuleInfoProvider : com/
 public abstract class com/facebook/react/HeadlessJsTaskService : android/app/Service, com/facebook/react/jstasks/HeadlessJsTaskEventListener {
 	public static final field Companion Lcom/facebook/react/HeadlessJsTaskService$Companion;
 	public fun <init> ()V
+	public static final fun acquireWakeLockNow (Landroid/content/Context;)V
 	protected final fun getReactContext ()Lcom/facebook/react/bridge/ReactContext;
 	protected final fun getReactHost ()Lcom/facebook/react/ReactHost;
 	protected final fun getReactNativeHost ()Lcom/facebook/react/ReactNativeHost;
