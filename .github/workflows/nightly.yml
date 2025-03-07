@@ -102,6 +102,7 @@ jobs:
 
   prebuild_apple_dependencies:
     uses: ./.github/workflows/prebuild-ios.yml
+    secrets: inherit
 
   build_hermesc_linux:
     runs-on: ubuntu-latest
