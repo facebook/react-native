@@ -331,26 +331,28 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/Easing.js 1`] = `
-"declare const Easing: {
+"export type EasingFunction = (t: number) => number;
+declare const EasingStatic: {
   step0(n: number): number,
   step1(n: number): number,
   linear(t: number): number,
   ease(t: number): number,
   quad(t: number): number,
   cubic(t: number): number,
-  poly(n: number): (t: number) => number,
+  poly(n: number): EasingFunction,
   sin(t: number): number,
   circle(t: number): number,
   exp(t: number): number,
-  elastic(bounciness: number): (t: number) => number,
-  back(s: number): (t: number) => number,
+  elastic(bounciness: number): EasingFunction,
+  back(s: number): EasingFunction,
   bounce(t: number): number,
-  bezier(x1: number, y1: number, x2: number, y2: number): (t: number) => number,
-  in(easing: (t: number) => number): (t: number) => number,
-  out(easing: (t: number) => number): (t: number) => number,
-  inOut(easing: (t: number) => number): (t: number) => number,
+  bezier(x1: number, y1: number, x2: number, y2: number): EasingFunction,
+  in(easing: EasingFunction): EasingFunction,
+  out(easing: EasingFunction): EasingFunction,
+  inOut(easing: EasingFunction): EasingFunction,
 };
-declare export default typeof Easing;
+export type Easing = typeof EasingStatic;
+declare export default typeof EasingStatic;
 "
 `;
 

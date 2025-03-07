@@ -25,7 +25,6 @@ const IGNORE_PATTERNS = [
 
   // TODO(T210505449): Enable remaining library entry points
   'packages/react-native/Libraries/Animated/Animated.js',
-  'packages/react-native/Libraries/Animated/Easing.js',
   'packages/react-native/Libraries/StyleSheet/PlatformColorValueTypesIOS.js',
   'packages/react-native/Libraries/StyleSheet/processColor.js',
   'packages/react-native/Libraries/StyleSheet/StyleSheet.js',
