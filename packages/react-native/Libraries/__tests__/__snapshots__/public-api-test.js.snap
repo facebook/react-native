@@ -6812,11 +6812,9 @@ declare export default typeof AppContainer;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.js 1`] = `
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.flow.js 1`] = `
 "type Task = (taskData: any) => Promise<void>;
 export type TaskProvider = () => Task;
-type TaskCanceller = () => void;
-type TaskCancelProvider = () => TaskCanceller;
 export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component_: ComponentProvider,
@@ -6829,7 +6827,7 @@ export type AppConfig = {
   section?: boolean,
   ...
 };
-type AppParameters = {
+export type AppParameters = {
   initialProps: $ReadOnly<{ [string]: mixed, ... }>,
   rootTag: RootTag,
   fabric?: boolean,
@@ -6848,46 +6846,91 @@ export type WrapperComponentProvider = (
   appParameters: Object
 ) => React.ComponentType<any>;
 export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
-declare const AppRegistry: {
-  setWrapperComponentProvider(provider: WrapperComponentProvider): void,
-  setRootViewStyleProvider(provider: RootViewStyleProvider): void,
-  registerConfig(config: Array<AppConfig>): void,
-  registerComponent(
-    appKey: string,
-    componentProvider: ComponentProvider,
-    section?: boolean
-  ): string,
-  registerRunnable(appKey: string, run: Runnable): string,
-  registerSection(appKey: string, component: ComponentProvider): void,
-  getAppKeys(): $ReadOnlyArray<string>,
-  getSectionKeys(): $ReadOnlyArray<string>,
-  getSections(): Runnables,
-  getRunnable(appKey: string): ?Runnable,
-  getRegistry(): Registry,
-  setComponentProviderInstrumentationHook(
-    hook: ComponentProviderInstrumentationHook
-  ): void,
-  runApplication(
-    appKey: string,
-    appParameters: AppParameters,
-    displayMode?: number
-  ): void,
-  setSurfaceProps(
-    appKey: string,
-    appParameters: Object,
-    displayMode?: number
-  ): void,
-  unmountApplicationComponentAtRootTag(rootTag: RootTag): void,
-  registerHeadlessTask(taskKey: string, taskProvider: TaskProvider): void,
-  registerCancellableHeadlessTask(
-    taskKey: string,
-    taskProvider: TaskProvider,
-    taskCancelProvider: TaskCancelProvider
-  ): void,
-  startHeadlessTask(taskId: number, taskKey: string, data: any): void,
-  cancelHeadlessTask(taskId: number, taskKey: string): void,
-};
-declare export default typeof AppRegistry;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.js 1`] = `
+"declare export default typeof AppRegistry;
+export { AppRegistry };
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.js.flow 1`] = `
+"export type {
+  TaskProvider,
+  ComponentProvider,
+  ComponentProviderInstrumentationHook,
+  AppConfig,
+  Runnable,
+  Runnables,
+  Registry,
+  WrapperComponentProvider,
+  RootViewStyleProvider,
+} from \\"./AppRegistry.flow\\";
+export * as default from \\"./AppRegistryImpl\\";
+export * as AppRegistry from \\"./AppRegistryImpl\\";
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistryImpl.js 1`] = `
+"type TaskCanceller = () => void;
+type TaskCancelProvider = () => TaskCanceller;
+declare export function setWrapperComponentProvider(
+  provider: WrapperComponentProvider
+): void;
+declare export function setRootViewStyleProvider(
+  provider: RootViewStyleProvider
+): void;
+declare export function registerConfig(config: Array<AppConfig>): void;
+declare export function registerComponent(
+  appKey: string,
+  componentProvider: ComponentProvider,
+  section?: boolean
+): string;
+declare export function registerRunnable(appKey: string, run: Runnable): string;
+declare export function registerSection(
+  appKey: string,
+  component: ComponentProvider
+): void;
+declare export function getAppKeys(): $ReadOnlyArray<string>;
+declare export function getSectionKeys(): $ReadOnlyArray<string>;
+declare export function getSections(): Runnables;
+declare export function getRunnable(appKey: string): ?Runnable;
+declare export function getRegistry(): Registry;
+declare export function setComponentProviderInstrumentationHook(
+  hook: ComponentProviderInstrumentationHook
+): void;
+declare export function runApplication(
+  appKey: string,
+  appParameters: AppParameters,
+  displayMode?: number
+): void;
+declare export function setSurfaceProps(
+  appKey: string,
+  appParameters: Object,
+  displayMode?: number
+): void;
+declare export function unmountApplicationComponentAtRootTag(
+  rootTag: RootTag
+): void;
+declare export function registerHeadlessTask(
+  taskKey: string,
+  taskProvider: TaskProvider
+): void;
+declare export function registerCancellableHeadlessTask(
+  taskKey: string,
+  taskProvider: TaskProvider,
+  taskCancelProvider: TaskCancelProvider
+): void;
+declare export function startHeadlessTask(
+  taskId: number,
+  taskKey: string,
+  data: any
+): void;
+declare export function cancelHeadlessTask(
+  taskId: number,
+  taskKey: string
+): void;
 "
 `;
 
@@ -9281,7 +9324,7 @@ export { default as ActionSheetIOS } from \\"./Libraries/ActionSheetIOS/ActionSh
 export { default as Alert } from \\"./Libraries/Alert/Alert\\";
 export { default as Animated } from \\"./Libraries/Animated/Animated\\";
 export * as Appearance from \\"./Libraries/Utilities/Appearance\\";
-export { default as AppRegistry } from \\"./Libraries/ReactNative/AppRegistry\\";
+export { AppRegistry } from \\"./Libraries/ReactNative/AppRegistry\\";
 export { default as AppState } from \\"./Libraries/AppState/AppState\\";
 export { default as BackHandler } from \\"./Libraries/Utilities/BackHandler\\";
 export { default as Clipboard } from \\"./Libraries/Components/Clipboard/Clipboard\\";
