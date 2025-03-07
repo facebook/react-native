@@ -6,12 +6,9 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-file(GLOB reactnativejni_SRC CONFIGURE_DEPENDS *.cpp)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
-add_compile_options(
-        -fexceptions
-        -Wno-unused-lambda-capture
-        -std=c++20)
+file(GLOB reactnativejni_SRC CONFIGURE_DEPENDS *.cpp)
 
 ######################
 ### reactnativejni ###
@@ -37,7 +34,9 @@ target_link_libraries(reactnativejni
         glog_init
         logger
         react_cxxreact
-        react_render_runtimescheduler
+        react_renderer_runtimescheduler
         runtimeexecutor
         yoga
         )
+target_compile_reactnative_options(reactnativejni PRIVATE)
+target_compile_options(reactnativejni PRIVATE -Wno-unused-lambda-capture)

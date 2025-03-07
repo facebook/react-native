@@ -7,14 +7,14 @@
 
 package com.facebook.react.uimanager.style
 
-public enum class Overflow {
+internal enum class Overflow {
   VISIBLE,
   HIDDEN,
   SCROLL;
 
-  public companion object {
+  companion object {
     @JvmStatic
-    public fun fromString(overflow: String): Overflow? {
+    fun fromString(overflow: String): Overflow? {
       return when (overflow.lowercase()) {
         "visible" -> VISIBLE
         "hidden" -> HIDDEN

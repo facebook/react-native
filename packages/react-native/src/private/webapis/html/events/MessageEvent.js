@@ -19,16 +19,15 @@ import type {EventInit} from '../../dom/events/Event';
 
 import Event from '../../dom/events/Event';
 
-export type MessageEventInit = $ReadOnly<{
-  ...EventInit,
-  data?: mixed,
-  origin?: string,
-  lastEventId?: string,
+export interface MessageEventInit extends EventInit {
+  +data?: mixed;
+  +origin?: string;
+  +lastEventId?: string;
   // Unsupported
-  // source?: MessageEventSource,
+  // +source?: MessageEventSource,
   // Unsupported
-  // ports?: Array<MessagePort>,
-}>;
+  // +ports?: Array<MessagePort>,
+}
 
 export default class MessageEvent extends Event {
   _data: mixed;
@@ -36,17 +35,11 @@ export default class MessageEvent extends Event {
   _lastEventId: string;
 
   constructor(type: string, options?: ?MessageEventInit) {
-    const {
-      data,
-      origin = '',
-      lastEventId = '',
-      ...eventOptions
-    } = options ?? {};
-    super(type, eventOptions);
+    super(type, options);
 
-    this._data = data;
-    this._origin = String(origin);
-    this._lastEventId = String(lastEventId);
+    this._data = options?.data;
+    this._origin = String(options?.origin ?? '');
+    this._lastEventId = String(options?.lastEventId ?? '');
   }
 
   get data(): mixed {

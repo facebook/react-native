@@ -322,8 +322,7 @@ void ShadowNode::transferRuntimeShadowNodeReference(
     const Shared& destinationShadowNode,
     const ShadowNodeFragment& fragment) const {
   if (useRuntimeShadowNodeReferenceUpdateOnThread &&
-      fragment.runtimeShadowNodeReference &&
-      ReactNativeFeatureFlags::useRuntimeShadowNodeReferenceUpdate()) {
+      fragment.runtimeShadowNodeReference) {
     transferRuntimeShadowNodeReference(destinationShadowNode);
   }
 }
@@ -377,8 +376,8 @@ std::string ShadowNode::getDebugName() const {
 }
 
 std::string ShadowNode::getDebugValue() const {
-  return "r" + folly::to<std::string>(revision_) + "/sr" +
-      folly::to<std::string>(state_ ? state_->getRevision() : 0) +
+  return "r" + std::to_string(revision_) + "/sr" +
+      std::to_string(state_ ? state_->getRevision() : 0) +
       (getSealed() ? "/sealed" : "") +
       (getProps()->nativeId.empty() ? "" : "/id=" + getProps()->nativeId);
 }
@@ -400,7 +399,7 @@ SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
 SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
   return props_->getDebugProps() +
       SharedDebugStringConvertibleList{
-          debugStringConvertibleItem("tag", folly::to<std::string>(getTag()))};
+          debugStringConvertibleItem("tag", std::to_string(getTag()))};
 }
 #endif
 

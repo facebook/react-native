@@ -149,19 +149,17 @@ class BaseTextInputShadowNode : public ConcreteViewShadowNode<
     const auto& stateData = BaseShadowNode::getStateData();
     const auto& reactTreeAttributedString = getAttributedString(layoutContext);
 
-    react_native_assert(textLayoutManager_);
     if (stateData.reactTreeAttributedString.isContentEqual(
             reactTreeAttributedString)) {
       return;
     }
 
     const auto& props = BaseShadowNode::getConcreteProps();
-    TextInputState newState(
+    BaseShadowNode::setStateData(TextInputState{
         AttributedStringBox{reactTreeAttributedString},
         reactTreeAttributedString,
         props.paragraphAttributes,
-        props.mostRecentEventCount);
-    BaseShadowNode::setStateData(std::move(newState));
+        props.mostRecentEventCount});
   }
 
   /*

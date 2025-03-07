@@ -313,7 +313,8 @@ bool NativeDOM::hasPointerCapture(
     jsi::Value nativeElementReference,
     double pointerId) {
   bool isCapturing = getPointerEventsProcessorFromRuntime(rt).hasPointerCapture(
-      pointerId, shadowNodeFromValue(rt, nativeElementReference).get());
+      static_cast<PointerIdentifier>(pointerId),
+      shadowNodeFromValue(rt, nativeElementReference).get());
   return isCapturing;
 }
 
@@ -322,7 +323,8 @@ void NativeDOM::releasePointerCapture(
     jsi::Value nativeElementReference,
     double pointerId) {
   getPointerEventsProcessorFromRuntime(rt).releasePointerCapture(
-      pointerId, shadowNodeFromValue(rt, nativeElementReference).get());
+      static_cast<PointerIdentifier>(pointerId),
+      shadowNodeFromValue(rt, nativeElementReference).get());
 }
 
 void NativeDOM::setPointerCapture(
@@ -330,7 +332,8 @@ void NativeDOM::setPointerCapture(
     jsi::Value nativeElementReference,
     double pointerId) {
   getPointerEventsProcessorFromRuntime(rt).setPointerCapture(
-      pointerId, shadowNodeFromValue(rt, nativeElementReference));
+      static_cast<PointerIdentifier>(pointerId),
+      shadowNodeFromValue(rt, nativeElementReference));
 }
 
 #pragma mark - Methods from the `HTMLElement` interface (for `ReactNativeElement`).

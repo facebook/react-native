@@ -70,7 +70,9 @@ export default function Ansi({
   /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
    * LTI update could not be added via codemod */
   const getText = (content, key) => {
-    if (key === 1) {
+    if (key === 0) {
+      return LRM + content;
+    } else if (key === 1) {
       // Remove the vertical bar after line numbers
       return content.replace(/\| $/, ' ');
     } else if (key === 2 && commonWhitespaceLength < Infinity) {
@@ -86,7 +88,6 @@ export default function Ansi({
       {parsedLines.map((items, i) => (
         <View style={styles.line} key={i}>
           <Text>
-            {LRM}
             {items.map((bundle, key) => {
               const textStyle =
                 bundle.fg && COLORS[bundle.fg]
@@ -98,7 +99,10 @@ export default function Ansi({
                       backgroundColor: bundle.bg && COLORS[bundle.bg],
                     };
               return (
-                <Text style={[style, textStyle]} key={key}>
+                <Text
+                  id="logbox_codeframe_contents_text"
+                  style={[style, textStyle]}
+                  key={key}>
                   {getText(bundle.content, key)}
                 </Text>
               );

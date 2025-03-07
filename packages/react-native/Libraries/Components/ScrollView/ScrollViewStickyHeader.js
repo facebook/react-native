@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {LayoutEvent} from '../../Types/CoreEventTypes';
+import type {LayoutChangeEvent} from '../../Types/CoreEventTypes';
 
 import Animated from '../../Animated/Animated';
 import {isPublicInstance as isFabricPublicInstance} from '../../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstanceUtils';
@@ -18,10 +18,10 @@ import useMergeRefs from '../../Utilities/useMergeRefs';
 import * as React from 'react';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 
-export type Props = $ReadOnly<{
+export type ScrollViewStickyHeaderProps = $ReadOnly<{
   children?: React.Node,
   nextHeaderLayoutY: ?number,
-  onLayout: (event: LayoutEvent) => void,
+  onLayout: (event: LayoutChangeEvent) => void,
   scrollAnimatedValue: Animated.Value,
   // Will cause sticky headers to stick at the bottom of the ScrollView instead
   // of the top.
@@ -32,15 +32,13 @@ export type Props = $ReadOnly<{
   hiddenOnScroll?: ?boolean,
 }>;
 
-type Instance = {
-  ...React.ElementRef<typeof Animated.View>,
-  setNextHeaderY: number => void,
-  ...
-};
+interface Instance extends React.ElementRef<typeof Animated.View> {
+  +setNextHeaderY: number => void;
+}
 
 const ScrollViewStickyHeaderWithForwardedRef: component(
   ref: React.RefSetter<Instance>,
-  ...props: Props
+  ...props: ScrollViewStickyHeaderProps
 ) = React.forwardRef(function ScrollViewStickyHeader(props, forwardedRef) {
   const {
     inverted,
@@ -62,6 +60,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
     if (ref == null) {
       return;
     }
+    // $FlowExpectedError[cannot-write]
     ref.setNextHeaderY = setNextHeaderLayoutY;
     setIsFabric(isFabricPublicInstance(ref));
   }, []);
@@ -253,7 +252,7 @@ const ScrollViewStickyHeaderWithForwardedRef: component(
     isFabric,
   ]);
 
-  const _onLayout = (event: LayoutEvent) => {
+  const _onLayout = (event: LayoutChangeEvent) => {
     setLayoutY(event.nativeEvent.layout.y);
     setLayoutHeight(event.nativeEvent.layout.height);
     setMeasured(true);

@@ -111,37 +111,39 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/devtoolsruntimesettings/",
                           "react/devtoolsruntimesettings/"),
-                      // react_render_animations
+                      // react_renderer_animations
                       Pair(
                           "../ReactCommon/react/renderer/animations/",
                           "react/renderer/animations/"),
-                      // react_render_componentregistry
+                      // react_renderer_componentregistry
                       Pair(
                           "../ReactCommon/react/renderer/componentregistry/",
                           "react/renderer/componentregistry/"),
-                      // react_render_consistency
+                      // react_renderer_consistency
                       Pair(
                           "../ReactCommon/react/renderer/consistency/",
                           "react/renderer/consistency/"),
-                      // react_render_core
+                      // react_renderer_core
                       Pair("../ReactCommon/react/renderer/core/", "react/renderer/core/"),
+                      // react_renderer_css
+                      Pair("../ReactCommon/react/renderer/css/", "react/renderer/css/"),
                       // react_debug
                       Pair("../ReactCommon/react/debug/", "react/debug/"),
-                      // react_render_debug
+                      // react_renderer_debug
                       Pair("../ReactCommon/react/renderer/debug/", "react/renderer/debug/"),
-                      // react_render_graphics
+                      // react_renderer_graphics
                       Pair("../ReactCommon/react/renderer/graphics/", "react/renderer/graphics/"),
                       Pair("../ReactCommon/react/renderer/graphics/platform/android/", ""),
-                      // react_render_imagemanager
+                      // react_renderer_imagemanager
                       Pair(
                           "../ReactCommon/react/renderer/imagemanager/",
                           "react/renderer/imagemanager/"),
                       Pair("../ReactCommon/react/renderer/imagemanager/platform/cxx/", ""),
-                      // react_render_mounting
+                      // react_renderer_mounting
                       Pair("../ReactCommon/react/renderer/mounting/", "react/renderer/mounting/"),
-                      // react_render_scheduler
+                      // react_renderer_scheduler
                       Pair("../ReactCommon/react/renderer/scheduler/", "react/renderer/scheduler/"),
-                      // react_render_uimanager
+                      // react_renderer_uimanager
                       Pair("../ReactCommon/react/renderer/uimanager/", "react/renderer/uimanager/"),
                       // react_utils
                       Pair("../ReactCommon/react/utils/", "react/utils/"),
@@ -160,7 +162,7 @@ val preparePrefab by
                           "react/renderer/components/root/"),
                       // runtimeexecutor
                       Pair("../ReactCommon/runtimeexecutor/", ""),
-                      // react_render_textlayoutmanager
+                      // react_renderer_textlayoutmanager
                       Pair(
                           "../ReactCommon/react/renderer/textlayoutmanager/",
                           "react/renderer/textlayoutmanager/"),
@@ -221,7 +223,7 @@ val preparePrefab by
                       Pair(
                           "../ReactCommon/react/performance/timeline/",
                           "react/performance/timeline/"),
-                      // react_render_observers_events
+                      // react_renderer_observers_events
                       Pair(
                           "../ReactCommon/react/renderer/observers/events/",
                           "react/renderer/observers/events/"),
@@ -291,7 +293,7 @@ val prepareDoubleConversion by
       from(dependenciesPath ?: tarTree(downloadDoubleConversionDest))
       from("src/main/jni/third-party/double-conversion/")
       include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "CMakeLists.txt")
-      filesMatching("*/src/**/*") { this.path = "double-conversion/${this.name}" }
+      filesMatching("*/src/**/*") { path = "double-conversion/${name}" }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/double-conversion")
     }
@@ -313,7 +315,7 @@ val prepareFolly by
       from(dependenciesPath ?: tarTree(downloadFollyDest))
       from("src/main/jni/third-party/folly/")
       include("folly-${FOLLY_VERSION}/folly/**/*", "CMakeLists.txt")
-      eachFile { this.path = this.path.removePrefix("folly-${FOLLY_VERSION}/") }
+      eachFile { path = path.substringAfter("/") }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/folly")
     }
@@ -336,7 +338,7 @@ val prepareFastFloat by
       from(dependenciesPath ?: tarTree(downloadFastFloatDest))
       from("src/main/jni/third-party/fast_float/")
       include("fast_float-${FAST_FLOAT_VERSION}/include/**/*", "CMakeLists.txt")
-      eachFile { this.path = this.path.removePrefix("fast_float-${FAST_FLOAT_VERSION}/") }
+      eachFile { path = path.substringAfter("/") }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/fast_float")
     }
@@ -359,7 +361,7 @@ val prepareFmt by
       from(dependenciesPath ?: tarTree(downloadFmtDest))
       from("src/main/jni/third-party/fmt/")
       include("fmt-${FMT_VERSION}/src/**/*", "fmt-${FMT_VERSION}/include/**/*", "CMakeLists.txt")
-      eachFile { this.path = this.path.removePrefix("fmt-${FMT_VERSION}/") }
+      eachFile { path = path.substringAfter("/") }
       includeEmptyDirs = false
       into("$thirdPartyNdkDir/fmt")
     }
@@ -392,7 +394,7 @@ val prepareGtest by
     tasks.registering(Copy::class) {
       dependsOn(if (dependenciesPath != null) emptyList() else listOf(downloadGtest))
       from(dependenciesPath ?: tarTree(downloadGtestDest))
-      eachFile { this.path = (this.path.removePrefix("googletest-release-${GTEST_VERSION}/")) }
+      eachFile { path = path.substringAfter("/") }
       into(File(thirdPartyNdkDir, "googletest"))
     }
 
@@ -417,10 +419,14 @@ val buildCodegenCLI by
     tasks.registering(BuildCodegenCLITask::class) {
       codegenDir.set(file("$rootDir/node_modules/@react-native/codegen"))
       bashWindowsHome.set(project.findProperty("react.internal.windowsBashPath").toString())
-      onlyIf {
-        // For build from source scenario, we don't need to build the codegen at all.
-        rootProject.name != "react-native-build-from-source"
-      }
+      logFile.set(file("$buildDir/codegen.log"))
+      inputFiles.set(fileTree(codegenDir) { include("src/**/*.js") })
+      outputFiles.set(
+          fileTree(codegenDir) {
+            include("lib/**/*.js")
+            include("lib/**/*.js.flow")
+          })
+      rootProjectName.set(rootProject.name)
     }
 
 /**
@@ -466,16 +472,6 @@ fun enableWarningsAsErrors(): Boolean {
   val value = project.properties["enableWarningsAsErrors"]
   return value?.toString()?.toBoolean() ?: false
 }
-
-val packageReactNdkLibsForBuck by
-    tasks.registering(Copy::class) {
-      dependsOn("mergeDebugNativeLibs")
-      // Shared libraries (.so) are copied from the merged_native_libs folder instead
-      from("$buildDir/intermediates/merged_native_libs/debug/out/lib/")
-      exclude("**/libjsc.so")
-      exclude("**/libhermes.so")
-      into("src/main/jni/prebuilt/lib")
-    }
 
 repositories {
   // Normally RNGP will set repositories for all modules,
@@ -523,6 +519,7 @@ android {
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
     buildConfigField("boolean", "UNSTABLE_ENABLE_FUSEBOX_RELEASE", "false")
     buildConfigField("boolean", "ENABLE_PERFETTO", "false")
+    buildConfigField("boolean", "UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE", "false")
 
     resValue("integer", "react_native_dev_server_port", reactNativeDevServerPort())
     resValue("string", "react_native_dev_server_ip", "localhost")
@@ -642,7 +639,11 @@ android {
   }
 }
 
-tasks.withType<KotlinCompile>().configureEach { exclude("com/facebook/annotationprocessors/**") }
+tasks.withType<KotlinCompile>().configureEach {
+  exclude("com/facebook/annotationprocessors/**")
+  exclude("com/facebook/react/processing/**")
+  exclude("com/facebook/react/module/processing/**")
+}
 
 dependencies {
   api(libs.androidx.appcompat)

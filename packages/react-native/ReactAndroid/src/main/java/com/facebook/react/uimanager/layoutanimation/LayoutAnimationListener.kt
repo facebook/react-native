@@ -7,7 +7,10 @@
 
 package com.facebook.react.uimanager.layoutanimation
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+
 /** Listener invoked when a layout animation has completed. */
+@LegacyArchitecture
 public fun interface LayoutAnimationListener {
   public fun onAnimationEnd()
 }

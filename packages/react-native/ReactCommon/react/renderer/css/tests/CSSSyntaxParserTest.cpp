@@ -382,88 +382,6 @@ TEST(CSSSyntaxParser, unconsumed_simple_block_args) {
   EXPECT_EQ(funcValue, std::nullopt);
 }
 
-TEST(CSSSyntaxParser, peek_does_not_consume) {
-  CSSSyntaxParser parser{"foo()"};
-  auto funcValue = parser.peekComponentValue<std::optional<std::string_view>>(
-      [&](const CSSFunctionBlock& function, CSSSyntaxParser& /*blockParser*/) {
-        EXPECT_EQ(function.name, "foo");
-        return function.name;
-      });
-
-  EXPECT_EQ(funcValue, "foo");
-
-  auto funcValue2 = parser.peekComponentValue<std::optional<std::string_view>>(
-      [&](const CSSFunctionBlock& function, CSSSyntaxParser& /*blockParser*/) {
-        EXPECT_EQ(function.name, "foo");
-        return function.name;
-      });
-
-  EXPECT_EQ(funcValue2, "foo");
-
-  auto funcValue3 =
-      parser.consumeComponentValue<std::optional<std::string_view>>(
-          [&](const CSSFunctionBlock& function,
-              CSSSyntaxParser& /*blockParser*/) {
-            EXPECT_EQ(function.name, "foo");
-            return function.name;
-          });
-
-  EXPECT_EQ(funcValue3, "foo");
-
-  auto funcValue4 = parser.peekComponentValue<std::optional<std::string_view>>(
-      [&](const CSSFunctionBlock& function, CSSSyntaxParser& /*blockParser*/) {
-        EXPECT_EQ(function.name, "foo");
-        return function.name;
-      });
-
-  EXPECT_EQ(funcValue4, std::nullopt);
-}
-
-TEST(CSSSyntaxParser, preserved_token_without_visitor_consumed) {
-  CSSSyntaxParser parser{"foo bar"};
-
-  parser.consumeComponentValue();
-
-  auto identValue = parser.consumeComponentValue<std::string_view>(
-      CSSDelimiter::Whitespace, [](const CSSPreservedToken& token) {
-        EXPECT_EQ(token.type(), CSSTokenType::Ident);
-        EXPECT_EQ(token.stringValue(), "bar");
-        return token.stringValue();
-      });
-
-  EXPECT_EQ(identValue, "bar");
-}
-
-TEST(CSSSyntaxParser, function_without_visitor_consumed) {
-  CSSSyntaxParser parser{"foo(a, b, c) bar"};
-
-  parser.consumeComponentValue();
-
-  auto identValue = parser.consumeComponentValue<std::string_view>(
-      CSSDelimiter::Whitespace, [](const CSSPreservedToken& token) {
-        EXPECT_EQ(token.type(), CSSTokenType::Ident);
-        EXPECT_EQ(token.stringValue(), "bar");
-        return token.stringValue();
-      });
-
-  EXPECT_EQ(identValue, "bar");
-}
-
-TEST(CSSSyntaxParser, simple_block_without_visitor_consumed) {
-  CSSSyntaxParser parser{"{a foo(abc)} bar"};
-
-  parser.consumeComponentValue();
-
-  auto identValue = parser.consumeComponentValue<std::string_view>(
-      CSSDelimiter::Whitespace, [](const CSSPreservedToken& token) {
-        EXPECT_EQ(token.type(), CSSTokenType::Ident);
-        EXPECT_EQ(token.stringValue(), "bar");
-        return token.stringValue();
-      });
-
-  EXPECT_EQ(identValue, "bar");
-}
-
 TEST(CSSSyntaxParser, solidus_delimiter) {
   CSSSyntaxParser parser{"foo / bar"};
 
@@ -604,6 +522,41 @@ TEST(CSSSyntaxParser, delimeter_not_consumed_when_no_component_value) {
       });
 
   EXPECT_TRUE(hasComma);
+}
+
+TEST(CSSSyntaxParser, component_value_not_consumed_on_visitor_failure) {
+  CSSSyntaxParser parser{"foo"};
+
+  bool visitor1Attempted = false;
+  bool visitor1Ret =
+      parser.consumeComponentValue<bool>([&](const CSSPreservedToken& token) {
+        EXPECT_EQ(token.stringValue(), "foo");
+        visitor1Attempted = true;
+        return false;
+      });
+
+  EXPECT_TRUE(visitor1Attempted);
+  EXPECT_FALSE(visitor1Ret);
+
+  bool visitor2Attempted = false;
+  parser.consumeComponentValue<bool>([&](const CSSPreservedToken& token) {
+    EXPECT_EQ(token.stringValue(), "foo");
+    visitor2Attempted = true;
+    return true;
+  });
+
+  EXPECT_TRUE(visitor2Attempted);
+  EXPECT_TRUE(visitor2Attempted);
+
+  bool visitor3Attempted = false;
+  bool visitor3Ret =
+      parser.consumeComponentValue<bool>([&](const CSSPreservedToken& token) {
+        visitor3Attempted = true;
+        return true;
+      });
+
+  EXPECT_FALSE(visitor3Attempted);
+  EXPECT_FALSE(visitor3Ret);
 }
 
 } // namespace facebook::react

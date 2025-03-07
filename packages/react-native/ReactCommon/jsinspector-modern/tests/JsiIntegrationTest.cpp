@@ -359,7 +359,8 @@ TYPED_TEST(JsiIntegrationPortableTest, ReactNativeApplicationEnable) {
                                           "method": "ReactNativeApplication.metadataUpdated",
                                           "params": {
                                             "integrationName": "JsiIntegrationTest",
-                                            "unstable_isProfilingBuild": false
+                                            "unstable_isProfilingBuild": false,
+                                            "unstable_networkInspectionEnabled": false
                                           }
                                         })"));
 
@@ -689,7 +690,7 @@ TYPED_TEST(JsiIntegrationHermesTest, ScriptParsedExactlyOnce) {
 
 TYPED_TEST(JsiIntegrationHermesTest, FunctionDescriptionIncludesName) {
   // See
-  // https://github.com/facebookexperimental/rn-chrome-devtools-frontend/blob/9a23d4c7c4c2d1a3d9e913af38d6965f474c4284/front_end/ui/legacy/components/object_ui/ObjectPropertiesSection.ts#L311-L391
+  // https://github.com/facebook/react-native-devtools-frontend/blob/9a23d4c7c4c2d1a3d9e913af38d6965f474c4284/front_end/ui/legacy/components/object_ui/ObjectPropertiesSection.ts#L311-L391
 
   this->connect();
 

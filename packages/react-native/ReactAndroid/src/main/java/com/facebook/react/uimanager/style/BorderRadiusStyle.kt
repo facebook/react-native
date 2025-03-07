@@ -30,7 +30,7 @@ public enum class BorderRadiusProp {
 }
 
 /** Represents all logical properties and shorthands for border radius. */
-public data class BorderRadiusStyle(
+internal data class BorderRadiusStyle(
     var uniform: LengthPercentage? = null,
     var topLeft: LengthPercentage? = null,
     var topRight: LengthPercentage? = null,
@@ -45,11 +45,11 @@ public data class BorderRadiusStyle(
     var endStart: LengthPercentage? = null,
     var endEnd: LengthPercentage? = null
 ) {
-  public constructor(properties: List<Pair<BorderRadiusProp, LengthPercentage>>) : this() {
+  constructor(properties: List<Pair<BorderRadiusProp, LengthPercentage>>) : this() {
     properties.forEach { (k, v) -> set(k, v) }
   }
 
-  public fun set(property: BorderRadiusProp, value: LengthPercentage?) {
+  fun set(property: BorderRadiusProp, value: LengthPercentage?) {
     when (property) {
       BorderRadiusProp.BORDER_RADIUS -> uniform = value
       BorderRadiusProp.BORDER_TOP_LEFT_RADIUS -> topLeft = value
@@ -67,7 +67,7 @@ public data class BorderRadiusStyle(
     }
   }
 
-  public fun get(property: BorderRadiusProp): LengthPercentage? {
+  fun get(property: BorderRadiusProp): LengthPercentage? {
     return when (property) {
       BorderRadiusProp.BORDER_RADIUS -> uniform
       BorderRadiusProp.BORDER_TOP_LEFT_RADIUS -> topLeft
@@ -85,7 +85,7 @@ public data class BorderRadiusStyle(
     }
   }
 
-  public fun hasRoundedBorders(): Boolean {
+  fun hasRoundedBorders(): Boolean {
     return uniform != null ||
         topLeft != null ||
         topRight != null ||
@@ -101,7 +101,7 @@ public data class BorderRadiusStyle(
         endEnd != null
   }
 
-  public fun resolve(
+  fun resolve(
       layoutDirection: Int,
       context: Context,
       width: Float,

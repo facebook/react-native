@@ -36,6 +36,20 @@ import typeof deepFreezeAndThrowOnMutationInDev from '../Utilities/deepFreezeAnd
 import typeof deepDiffer from '../Utilities/differ/deepDiffer';
 import typeof Platform from '../Utilities/Platform';
 
+// Expose these types to the React renderer
+export type {
+  HostInstance as PublicInstance,
+
+  // These types are only necessary for Paper
+  LegacyHostInstanceMethods as LegacyPublicInstance,
+  MeasureOnSuccessCallback,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+} from '../../src/private/types/HostInstance';
+
+export type {PublicRootInstance} from '../ReactNative/ReactFabricPublicInstance/ReactFabricPublicInstance';
+export type PublicTextInstance = ReturnType<createPublicTextInstance>;
+
 // flowlint unsafe-getters-setters:off
 module.exports = {
   get BatchedBridge(): BatchedBridge {
@@ -45,7 +59,7 @@ module.exports = {
     return require('../Core/ExceptionsManager').default;
   },
   get Platform(): Platform {
-    return require('../Utilities/Platform');
+    return require('../Utilities/Platform').default;
   },
   get RCTEventEmitter(): RCTEventEmitter {
     return require('../EventEmitter/RCTEventEmitter').default;
@@ -61,18 +75,18 @@ module.exports = {
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get deepDiffer(): deepDiffer {
-    return require('../Utilities/differ/deepDiffer');
+    return require('../Utilities/differ/deepDiffer').default;
   },
   get deepFreezeAndThrowOnMutationInDev(): deepFreezeAndThrowOnMutationInDev<
     {...} | Array<mixed>,
   > {
-    return require('../Utilities/deepFreezeAndThrowOnMutationInDev');
+    return require('../Utilities/deepFreezeAndThrowOnMutationInDev').default;
   },
   // TODO: Remove when React has migrated to `createAttributePayload` and `diffAttributePayloads`
   get flattenStyle(): flattenStyle<DangerouslyImpreciseStyleProp> {
     // $FlowFixMe[underconstrained-implicit-instantiation]
     // $FlowFixMe[incompatible-return]
-    return require('../StyleSheet/flattenStyle');
+    return require('../StyleSheet/flattenStyle').default;
   },
   get ReactFiberErrorDialog(): ReactFiberErrorDialog {
     return require('../Core/ReactFiberErrorDialog').default;

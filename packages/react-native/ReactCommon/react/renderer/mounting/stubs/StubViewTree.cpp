@@ -7,6 +7,7 @@
 
 #include "StubViewTree.h"
 
+#include <folly/json.h>
 #include <glog/logging.h>
 #include <react/debug/react_native_assert.h>
 #include <sstream>
@@ -285,13 +286,18 @@ void StubViewTree::mutate(const ShadowViewMutationList& mutations) {
 void StubViewTree::dispatchCommand(
     const ShadowView& shadowView,
     const std::string& commandName,
-    const folly::dynamic& /*args*/) {
+    const folly::dynamic& args) {
   auto stream = std::ostringstream();
 
   stream << "Command {type: " << getComponentName(shadowView)
          << ", nativeID: " << getNativeId(shadowView) << ", name: \""
-         << commandName << "\"}";
+         << commandName;
 
+  if (!args.empty()) {
+    stream << ", args: " << folly::toJson(args);
+  }
+
+  stream << "\"}";
   mountingLogs_.push_back(std::string(stream.str()));
 }
 

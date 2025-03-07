@@ -91,7 +91,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
-export type Props<SectionT> = {
+export type VirtualizedSectionListProps<SectionT: SectionBase<any>> = {
   ...RequiredProps<SectionT>,
   ...OptionalProps<SectionT>,
   ...$Diff<
@@ -120,7 +120,7 @@ type State = {childProps: VirtualizedListProps, ...};
  */
 class VirtualizedSectionList<
   SectionT: SectionBase<any>,
-> extends React.PureComponent<Props<SectionT>, State> {
+> extends React.PureComponent<VirtualizedSectionListProps<SectionT>, State> {
   scrollToLocation(params: ScrollToLocationParamsType) {
     let index = params.itemIndex;
     for (let i = 0; i < params.sectionIndex; i++) {
@@ -203,7 +203,7 @@ class VirtualizedSectionList<
   }
 
   _getItem(
-    props: Props<SectionT>,
+    props: VirtualizedSectionListProps<SectionT>,
     sections: ?$ReadOnlyArray<Item>,
     index: number,
   ): ?Item {
@@ -598,12 +598,12 @@ function ItemWithSeparator(props: ItemWithSeparatorProps): React.Node {
   );
 }
 
-module.exports = VirtualizedSectionList as component(
+export default VirtualizedSectionList as component(
   ref: React.RefSetter<
     interface {
       getListRef(): ?VirtualizedList,
       scrollToLocation(params: ScrollToLocationParamsType): void,
     },
   >,
-  ...Props<SectionBase<any>>
+  ...VirtualizedSectionListProps<SectionBase<any>>
 );

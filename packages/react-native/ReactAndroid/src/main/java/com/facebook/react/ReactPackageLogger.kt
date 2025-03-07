@@ -8,9 +8,8 @@
 package com.facebook.react
 
 /** Interface for the bridge to call for TTI start and end markers. */
-public interface ReactPackageLogger {
+internal interface ReactPackageLogger {
+  fun startProcessPackage(): Unit
 
-  public fun startProcessPackage(): Unit
-
-  public fun endProcessPackage(): Unit
+  fun endProcessPackage(): Unit
 }

@@ -19,21 +19,16 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ArrayPropsNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ArrayPropsNativeComponentView',
-
+  uiViewClassName: \\"ArrayPropsNativeComponentView\\",
   validAttributes: {
     names: true,
     disableds: true,
     progress: true,
     radii: true,
-
     colors: {
-      process: ((req) => 'default' in req ? req.default : req)(require('react-native/Libraries/StyleSheet/processColorArray')),
+      process: (req => 'default' in req ? req.default : req)(require('react-native/Libraries/StyleSheet/processColorArray'))
     },
-
     srcs: true,
     points: true,
     edgeInsets: true,
@@ -41,9 +36,9 @@ export const __INTERNAL_VIEW_CONFIG = {
     sizes: true,
     object: true,
     arrayOfObjects: true,
-  },
+    arrayOfMixed: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -68,17 +63,13 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'BooleanPropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'BooleanPropNativeComponentView',
-
+  uiViewClassName: \\"BooleanPropNativeComponentView\\",
   validAttributes: {
     disabled: true,
-    disabledNullable: true,
-  },
+    disabledNullable: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -103,18 +94,14 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ColorPropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ColorPropNativeComponentView',
-
+  uiViewClassName: \\"ColorPropNativeComponentView\\",
   validAttributes: {
     tintColor: {
-      process: require('react-native/Libraries/StyleSheet/processColor').default,
-    },
-  },
+      process: require('react-native/Libraries/StyleSheet/processColor').default
+    }
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -139,16 +126,12 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'DimensionPropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'DimensionPropNativeComponentView',
-
+  uiViewClassName: \\"DimensionPropNativeComponentView\\",
   validAttributes: {
-    marginBack: true,
-  },
+    marginBack: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -173,13 +156,10 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'EdgeInsetsPropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'EdgeInsetsPropNativeComponentView',
-  validAttributes: {},
+  uiViewClassName: \\"EdgeInsetsPropNativeComponentView\\",
+  validAttributes: {}
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -204,17 +184,13 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'EnumPropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'EnumPropNativeComponentView',
-
+  uiViewClassName: \\"EnumPropNativeComponentView\\",
   validAttributes: {
     alignment: true,
-    intervals: true,
-  },
+    intervals: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -240,29 +216,23 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'EventNestedObjectPropsNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'EventNestedObjectPropsNativeComponentView',
-
+  uiViewClassName: \\"EventNestedObjectPropsNativeComponentView\\",
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
-        captured: 'onChangeCapture',
-        bubbled: 'onChange',
-      },
-    },
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
+      }
+    }
   },
-
   validAttributes: {
     disabled: true,
-
     ...ConditionallyIgnoredEventHandlers({
-      onChange: true,
-    }),
-  },
+      onChange: true
+    })
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -288,62 +258,51 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'EventPropsNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'EventPropsNativeComponentView',
-
+  uiViewClassName: \\"EventPropsNativeComponentView\\",
   bubblingEventTypes: {
     topPaperDirectName: {
       phasedRegistrationNames: {
-        captured: 'onChangeCapture',
-        bubbled: 'onChange',
-      },
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
+      }
     },
-
     topEnd: {
       phasedRegistrationNames: {
-        captured: 'onEndCapture',
-        bubbled: 'onEnd',
-      },
+        captured: \\"onEndCapture\\",
+        bubbled: \\"onEnd\\"
+      }
     },
-
     topPaperBubblingName: {
       phasedRegistrationNames: {
-        captured: 'onEventBubblingWithPaperNameCapture',
-        bubbled: 'onEventBubblingWithPaperName',
-      },
-    },
+        captured: \\"onEventBubblingWithPaperNameCapture\\",
+        bubbled: \\"onEventBubblingWithPaperName\\"
+      }
+    }
   },
-
   directEventTypes: {
     topEventDirect: {
-      registrationName: 'onEventDirect',
+      registrationName: \\"onEventDirect\\"
     },
-
     topPaperDirectName: {
-      registrationName: 'onEventDirectWithPaperName',
+      registrationName: \\"onEventDirectWithPaperName\\"
     },
-
     topPaperBubblingName: {
-      registrationName: 'onOrientationChange',
-    },
+      registrationName: \\"onOrientationChange\\"
+    }
   },
-
   validAttributes: {
     disabled: true,
-
     ...ConditionallyIgnoredEventHandlers({
       onChange: true,
       onEventDirect: true,
       onEventDirectWithPaperName: true,
       onOrientationChange: true,
       onEnd: true,
-      onEventBubblingWithPaperName: true,
-    }),
-  },
+      onEventBubblingWithPaperName: true
+    })
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -368,11 +327,8 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'FloatPropsNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'FloatPropsNativeComponentView',
-
+  uiViewClassName: \\"FloatPropsNativeComponentView\\",
   validAttributes: {
     blurRadius: true,
     blurRadius2: true,
@@ -380,10 +336,9 @@ export const __INTERNAL_VIEW_CONFIG = {
     blurRadius4: true,
     blurRadius5: true,
     blurRadius6: true,
-    blurRadiusNullable: true,
-  },
+    blurRadiusNullable: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -408,18 +363,14 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ImagePropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ImagePropNativeComponentView',
-
+  uiViewClassName: \\"ImagePropNativeComponentView\\",
   validAttributes: {
     thumbImage: {
-      process: require('react-native/Libraries/Image/resolveAssetSource'),
-    },
-  },
+      process: require('react-native/Libraries/Image/resolveAssetSource')
+    }
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -444,18 +395,14 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'IntegerPropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'IntegerPropNativeComponentView',
-
+  uiViewClassName: \\"IntegerPropNativeComponentView\\",
   validAttributes: {
     progress1: true,
     progress2: true,
-    progress3: true,
-  },
+    progress3: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -481,29 +428,23 @@ const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/
 const {ConditionallyIgnoredEventHandlers} = require('react-native/Libraries/NativeComponent/ViewConfigIgnore');
 
 let nativeComponentName = 'RCTInterfaceOnlyComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'RCTInterfaceOnlyComponent',
-
+  uiViewClassName: \\"RCTInterfaceOnlyComponent\\",
   bubblingEventTypes: {
     topChange: {
       phasedRegistrationNames: {
-        captured: 'onChangeCapture',
-        bubbled: 'onChange',
-      },
-    },
+        captured: \\"onChangeCapture\\",
+        bubbled: \\"onChange\\"
+      }
+    }
   },
-
   validAttributes: {
     title: true,
-
     ...ConditionallyIgnoredEventHandlers({
-      onChange: true,
-    }),
-  },
+      onChange: true
+    })
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -528,16 +469,12 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'MixedPropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'MixedPropNativeComponentView',
-
+  uiViewClassName: \\"MixedPropNativeComponentView\\",
   validAttributes: {
-    mixedProp: true,
-  },
+    mixedProp: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -562,30 +499,23 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'MultiNativePropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'MultiNativePropNativeComponentView',
-
+  uiViewClassName: \\"MultiNativePropNativeComponentView\\",
   validAttributes: {
     thumbImage: {
-      process: require('react-native/Libraries/Image/resolveAssetSource'),
+      process: require('react-native/Libraries/Image/resolveAssetSource')
     },
-
     color: {
-      process: require('react-native/Libraries/StyleSheet/processColor').default,
+      process: require('react-native/Libraries/StyleSheet/processColor').default
     },
-
     thumbTintColor: {
-      process: require('react-native/Libraries/StyleSheet/processColor').default,
+      process: require('react-native/Libraries/StyleSheet/processColor').default
     },
-
     point: {
-      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
-    },
-  },
+      diff: (req => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/pointsDiffer'))
+    }
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -610,13 +540,10 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'NoPropsNoEventsNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'NoPropsNoEventsNativeComponentView',
-  validAttributes: {},
+  uiViewClassName: \\"NoPropsNoEventsNativeComponentView\\",
+  validAttributes: {}
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -641,18 +568,14 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'ObjectPropsNativeComponent';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'ObjectPropsNativeComponent',
-
+  uiViewClassName: \\"ObjectPropsNativeComponent\\",
   validAttributes: {
     objectProp: true,
     objectArrayProp: true,
-    objectPrimitiveRequiredProp: true,
-  },
+    objectPrimitiveRequiredProp: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -677,18 +600,14 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'PointPropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'PointPropNativeComponentView',
-
+  uiViewClassName: \\"PointPropNativeComponentView\\",
   validAttributes: {
     startPoint: {
-      diff: require('react-native/Libraries/Utilities/differ/pointsDiffer'),
-    },
-  },
+      diff: (req => 'default' in req ? req.default : req)(require('react-native/Libraries/Utilities/differ/pointsDiffer'))
+    }
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }
@@ -713,17 +632,13 @@ Map {
 const NativeComponentRegistry = require('react-native/Libraries/NativeComponent/NativeComponentRegistry');
 
 let nativeComponentName = 'StringPropNativeComponentView';
-
-
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'StringPropNativeComponentView',
-
+  uiViewClassName: \\"StringPropNativeComponentView\\",
   validAttributes: {
     placeholder: true,
-    defaultValue: true,
-  },
+    defaultValue: true
+  }
 };
-
 export default NativeComponentRegistry.get(nativeComponentName, () => __INTERNAL_VIEW_CONFIG);
 ",
 }

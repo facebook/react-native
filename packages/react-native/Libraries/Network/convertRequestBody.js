@@ -11,10 +11,11 @@
 'use strict';
 
 import typeof BlobT from '../Blob/Blob';
+import typeof FormDataT from './FormData';
 
 const Blob: BlobT = require('../Blob/Blob').default;
-const binaryToBase64 = require('../Utilities/binaryToBase64');
-const FormData = require('./FormData');
+const binaryToBase64 = require('../Utilities/binaryToBase64').default;
+const FormData: FormDataT = require('./FormData').default;
 
 export type RequestBody =
   | string
@@ -42,4 +43,4 @@ function convertRequestBody(body: RequestBody): Object {
   return body;
 }
 
-module.exports = convertRequestBody;
+export default convertRequestBody;

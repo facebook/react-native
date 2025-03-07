@@ -422,6 +422,11 @@ RCT_EXPORT_MODULE()
     }
   }
 
+  // Ensure the container always stays on top of newly added views
+  if ([_container.superview.subviews lastObject] != _container) {
+    [_container.superview bringSubviewToFront:_container];
+  }
+
   double mem = (double)RCTGetResidentMemorySize() / 1024 / 1024;
   self.memory.text = [NSString stringWithFormat:@"RAM\n%.2lf\nMB", mem];
   self.heap.text = [NSString stringWithFormat:@"JSC\n%.2lf\nMB", (double)_heapSize / 1024];

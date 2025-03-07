@@ -8,11 +8,19 @@
 package com.facebook.react.bridge
 
 import com.facebook.proguard.annotations.DoNotStrip
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /**
- * Exception thrown by {@link ReadableMapKeySetIterator#nextKey()} when the iterator tries to
- * iterate over elements after the end of the key set.
+ * Exception thrown by [ReadableMapKeySetIterator.nextKey] when the iterator tries to iterate over
+ * elements after the end of the key set.
  */
 @DoNotStrip
-public class InvalidIteratorException public @DoNotStrip constructor(msg: String) :
-    RuntimeException(msg) {}
+@LegacyArchitecture
+public class InvalidIteratorException @DoNotStrip public constructor(msg: String) :
+    RuntimeException(msg) {
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "InvalidIteratorException")
+  }
+}

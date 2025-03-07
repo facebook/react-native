@@ -22,6 +22,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
+ * @deprecated RCTAppDelegate is deprecated and will be removed in a future version of React Native. Use
+ `RCTReactNativeFactory` instead.
+ *
  * The RCTAppDelegate is an utility class that implements some base configurations for all the React Native apps.
  * It is not mandatory to use it, but it could simplify your AppDelegate code.
  *
@@ -58,7 +61,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                          (const facebook::react::ObjCTurboModule::InitParams &)params
  *   - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
  */
-@interface RCTAppDelegate : RCTDefaultReactNativeFactoryDelegate <UIApplicationDelegate, UISceneDelegate>
+__attribute__((deprecated(
+    "RCTAppDelegate is deprecated and will be removed in a future version of React Native. Use `RCTReactNativeFactory` instead.")))
+@interface RCTAppDelegate : RCTDefaultReactNativeFactoryDelegate<UIApplicationDelegate>
 
 /// The window object, used to render the UViewControllers
 @property (nonatomic, strong, nonnull) UIWindow *window;

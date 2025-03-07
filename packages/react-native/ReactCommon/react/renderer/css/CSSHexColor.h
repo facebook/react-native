@@ -10,6 +10,8 @@
 #include <optional>
 #include <string_view>
 
+#include <react/utils/toLower.h>
+
 namespace facebook::react {
 
 namespace detail {
@@ -17,13 +19,6 @@ enum class HexColorType {
   Long,
   Short,
 };
-
-constexpr char toLower(char c) {
-  if (c >= 'A' && c <= 'Z') {
-    return static_cast<char>(c + 32);
-  }
-  return c;
-}
 
 constexpr uint8_t hexToNumeric(std::string_view hex, HexColorType hexType) {
   int result = 0;

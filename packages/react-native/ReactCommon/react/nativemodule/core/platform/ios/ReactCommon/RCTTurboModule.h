@@ -32,6 +32,11 @@ using EventEmitterCallback = std::function<void(const std::string &, id)>;
 namespace TurboModuleConvertUtils {
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
 id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<CallInvoker> jsInvoker);
+id convertJSIValueToObjCObject(
+    jsi::Runtime &runtime,
+    const jsi::Value &value,
+    std::shared_ptr<CallInvoker> jsInvoker,
+    BOOL useNSNull);
 } // namespace TurboModuleConvertUtils
 
 template <>
@@ -171,9 +176,25 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 }
 @end
 
-@protocol RCTTurboModule <NSObject>
+/**
+ * Factory object that can create a Turbomodule. It could be either a C++ TM or any TurboModule.
+ * This needs to be an Objective-C class so we can instantiate it at runtime.
+ */
+@protocol RCTModuleProvider <NSObject>
+
+/**
+ * Create an instance of a TurboModule with the JS Invoker.
+ */
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params;
+@end
+
+/**
+ * Protocol that objects can inherit to conform to be treated as turbomodules.
+ * It inherits from RCTTurboModuleProvider, meaning that a TurboModule can create itself
+ */
+@protocol RCTTurboModule <RCTModuleProvider>
+
 @optional
 - (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper;
 @end

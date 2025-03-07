@@ -23,11 +23,6 @@
 #endif
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewProtocol.h>
-#if USE_HERMES
-#import <ReactCommon/RCTHermesInstance.h>
-#else
-#import <ReactCommon/RCTJscInstance.h>
-#endif
 #import <react/nativemodule/defaults/DefaultTurboModules.h>
 
 using namespace facebook::react;
@@ -62,19 +57,8 @@ using namespace facebook::react;
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [self createRootViewController];
   [self setRootView:rootView toRootViewController:rootViewController];
-  _window.windowScene.delegate = self;
   _window.rootViewController = rootViewController;
   [_window makeKeyAndVisible];
-}
-
-#pragma mark - UISceneDelegate
-
-- (void)windowScene:(UIWindowScene *)windowScene
-    didUpdateCoordinateSpace:(id<UICoordinateSpace>)previousCoordinateSpace
-        interfaceOrientation:(UIInterfaceOrientation)previousInterfaceOrientation
-             traitCollection:(UITraitCollection *)previousTraitCollection API_AVAILABLE(ios(13.0))
-{
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTWindowFrameDidChangeNotification object:self];
 }
 
 - (RCTRootViewFactory *)rootViewFactory

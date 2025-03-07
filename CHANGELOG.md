@@ -1,197 +1,405 @@
 # Changelog
 
-## v0.78.0-rc.3
-
-### Added
-
-#### iOS specific
-
-- Add the `source` parameter to generate-codegen-artifacts to avoid generating files not needed by libraries. ([98b8f17811](https://github.com/facebook/react-native/commit/98b8f178110472e5fed97de80766c03b0b5e988c) by [@cipolleschi](https://github.com/cipolleschi))
-
-### Fixed
-
-- Add missing `invariant` dependency ([ee8088b615](https://github.com/facebook/react-native/commit/ee8088b6157837c239db47ac5bd3a8603ceefc3c) by [@tido64](https://github.com/tido64))
-- Fix `maxFontSizeMultiplier` prop on `Text` and `TextInput` components in Fabric / New Architecture ([ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32](https://github.com/facebook/react-native/commit/ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32) by [@RickardZrinski](https://github.com/RickardZrinski))
-
-#### Android specific
-
-- Pass the bundle URL protocol when setting up HMR client on Android ([32fe244744](https://github.com/facebook/react-native/commit/32fe24474495f09f985a2c92e11103dd386f5fe3) by [@byCedric](https://github.com/byCedric))
-
-## v0.78.0-rc.2
-
-### Fixed
-
-#### iOS specific
-
-- Load images even when the extension is implicit ([b9f418e9bc](https://github.com/facebook/react-native/commit/b9f418e9bc35372438a34934254db985b7ad1840) by [@cipolleschi](https://github.com/cipolleschi))
-
-
-## v0.78.0-rc.1
-
-### Changed
-
-#### iOS specific
-
-- Pin 'concurrent-ruby' to a working version ([198adb47af](https://github.com/facebook/react-native/commit/198adb47af3676c85b35adb308c110c1d87120c8) by [@cipolleschi](https://github.com/cipolleschi))
-
-### Fixed
-
-- Buttons becoming unresponsive when transform is animated ([2204ec94d4](https://github.com/facebook/react-native/commit/2204ec94d4b67a9ba559db3f54a5a1ef91e0f233) by [@sammy-SC](https://github.com/sammy-SC))
-
-
-## v0.78.0-rc.0
+## v0.79.0-rc.0
 
 ### Breaking
 
-- Codegen: Separate component array types and command array types ([825492b199](https://github.com/facebook/react-native/commit/825492b1999b62de708e6f40d5d5de8d3d7cb8a9) by [@elicwhite](https://github.com/elicwhite))
-- The `FuseboxClient.setClientMetadata` CDP method is removed. Instead, use `ReactNativeApplication.enable`. ([1a9780f0e3](https://github.com/facebook/react-native/commit/1a9780f0e3714ac18ffae34cb67376c711b0e031) by [@huntie](https://github.com/huntie))
+- Deprecated usage of `HERMES_ENABLE_DEBUGGER` build-time flag for enabling React Native debugger in favour of `REACT_NATIVE_DEBUGGER_ENABLED` and `REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY`. ([5fcb69e8b7](https://github.com/facebook/react-native/commit/5fcb69e8b7756434ee4bcd9e3d19cc3c719920c7) by [@hoxyq](https://github.com/hoxyq))
+- Deep imports to modules inside `Libraries/DevMenu` using `require` may need to be appended with `.default` ([ce84922236](https://github.com/facebook/react-native/commit/ce849222365a5990b0127fe62739cb2794b31568) by [@j-piasecki](https://github.com/j-piasecki))
+- Remove deprecated `unstable_enableLogBox` function. LogBox is enabled by default. ([7368265107](https://github.com/facebook/react-native/commit/7368265107ba31fbfc35bb481ab7fb5626bfe072) by [@huntie](https://github.com/huntie))
+- Remove com.facebook.react.modules.network.TLSSocketFactory class ([e065411c91](https://github.com/facebook/react-native/commit/e065411c91f2592e172b1fa5e3c1348c04d513e6) by [@mateoguzmana](https://github.com/mateoguzmana))
+- Deep imports to `Utilities/dismissKeyboard.js`, `Utilities/GlobalPerformanceLogger.js` or `Utilities/SceneTracker.js` with `require` syntax need to be appended with '.default'. ([fc6ca26d3f](https://github.com/facebook/react-native/commit/fc6ca26d3f97e5a839313803635b38eb468b10b9) by [@iwoplaza](https://github.com/iwoplaza))
+- Deep imports to `Utilities/deepFreezeAndThrowOnMutationInDev`, `Utilities/defineLazyObjectProperty`, `Utilities/DeviceInfo` or `Utilities/FeatureDetection` with `require` syntax may need to be appended with '.default'. ([028c0b36f6](https://github.com/facebook/react-native/commit/028c0b36f637b31d013bab88e0c834ea8174b4e1) by [@iwoplaza](https://github.com/iwoplaza))
+- Deep imports to `Libraries/Utilities/Platform` with `require` syntax needs to be appended with '.default'. ([d98116aa44](https://github.com/facebook/react-native/commit/d98116aa44e4b90ccb19fd895433918396b0b932) by [@iwoplaza](https://github.com/iwoplaza))
+- Deep imports to `Utilities/infoLog`, `Utilities/logError`, `Utilities/mapWithSeparator` or `Utilities/warnOnce` with `require` syntax need to be appended with '.default'. ([7aef81b984](https://github.com/facebook/react-native/commit/7aef81b9840074e85ef3a2e81d808009868cbbbf) by [@iwoplaza](https://github.com/iwoplaza))
+- Deep imports to `Utilities/binaryToBase64`, `Utilities/DevSettings`, `Utilities/PolyfillFunctions` or `Utilities/RCTLog` with `require` syntax need to be appended with '.default'. ([152587cda0](https://github.com/facebook/react-native/commit/152587cda06ec3bb2274ec0182114c85c41507d3) by [@iwoplaza](https://github.com/iwoplaza))
+- Deep imports to `Libraries/Utilities/BackHandler`, `Utilities/DevLoadingView.js` or `Utilities/HMRClient*.js` with `require` syntax needs to be appended with '.default'. ([827a847791](https://github.com/facebook/react-native/commit/827a8477912f56e3d0d2b50007a4c06a6468a0bc) by [@iwoplaza](https://github.com/iwoplaza))
+- Deep imports to modules inside `Libraries/StyleSheet` using `require` may need to be appended with `.default` ([4f20362b07](https://github.com/facebook/react-native/commit/4f20362b07c0b3daa14094a4b5d0dc41e2c956ca) by [@j-piasecki](https://github.com/j-piasecki))
+- Deep imports to `Libraries/Utilities/differ/...` with `require` syntax need to be appended with '.default'. ([2b30aa5cc8](https://github.com/facebook/react-native/commit/2b30aa5cc8fef42cf8bc110b8d48a201a3dc855a) by [@iwoplaza](https://github.com/iwoplaza))
+- Deep imports into `react-native/virtualized-lists` with require syntax may need to be appended with `.default` ([1cf4c84ba0](https://github.com/facebook/react-native/commit/1cf4c84ba0f6f630d55ba0bebde122d742c419e8) by [@j-piasecki](https://github.com/j-piasecki))
+- Deep imports to modules inside `Libraries/Modal` and `Libraries/Network` with `require` syntax may need to be appended with '.default'. ([28945c68da](https://github.com/facebook/react-native/commit/28945c68da056ab2ac01de7e542a845b2bca6096) by [@iwoplaza](https://github.com/iwoplaza))
+- Deep imports to modules inside `Libraries/PermissionsAndroid` and `Libraries/PushNotificationIOS` with `require` syntax has to be appended with '.default'. ([e74246bd66](https://github.com/facebook/react-native/commit/e74246bd66fd434cefc8a5a0cc2b3ae7ea725816) by [@iwoplaza](https://github.com/iwoplaza))
+- Disallow invalid unitless lengths in filters ([b34e63539d](https://github.com/facebook/react-native/commit/b34e63539dc49b0b6586441f4df4d7d28fd47237) by [@NickGerleman](https://github.com/NickGerleman))
+- Remove legacy Libraries/JSInspector modules ([9ba4dd81db](https://github.com/facebook/react-native/commit/9ba4dd81db08c401ef04fa60800585bf39c6dab3) by [@huntie](https://github.com/huntie))
+- Deep imports to modules inside `Libraries/EventEmitter` and `Libraries/Image/*.js` with `require` syntax need to be appended with '.default'. ([8783196ee5](https://github.com/facebook/react-native/commit/8783196ee540f8f78ce60ad20800338cc7645194) by [@iwoplaza](https://github.com/iwoplaza))
+- Deep imports to modules inside `Libraries/LayoutAnimation` and `Libraries/Linking` with `require` syntax need to be appended with '.default'. ([4d6785bdb5](https://github.com/facebook/react-native/commit/4d6785bdb53a94d650364ef7b5821fab16c39ae3) by [@iwoplaza](https://github.com/iwoplaza))
+- Remove deprecated `YellowBox` and `console.ignoredYellowBox` APIs. Use `LogBox`. ([45a2d9c5a8](https://github.com/facebook/react-native/commit/45a2d9c5a80f93de907a73ee2d61518c4b528d9a) by [@huntie](https://github.com/huntie))
+- Move `XHRInterceptor` API to `src/private/` ([389779c348](https://github.com/facebook/react-native/commit/389779c3482fac98f6ab9ad50ac194cabfe38a98) by [@huntie](https://github.com/huntie))
+- Move `Libraries/Inspector/` modules to `src/private/` ([0bde08fe67](https://github.com/facebook/react-native/commit/0bde08fe67c57740118b2bda49fb1f6b427a118b) by [@huntie](https://github.com/huntie))
+- Deep imports to modules inside `Libraries/Lists` with `require` syntax may need to be appended with '.default'. ([e767dc3458](https://github.com/facebook/react-native/commit/e767dc3458c6665e9f63cf0723f12c9beab6724a) by [@iwoplaza](https://github.com/iwoplaza))
+- Disallow invalid unitless lengths in box shadows ([8e2de303e3](https://github.com/facebook/react-native/commit/8e2de303e329e29728843dce4ff81177efca0a7a) by [@NickGerleman](https://github.com/NickGerleman))
+- Deep imports to modules inside `Libraries/ReactNative` with `require` syntax need to be appended with '.default'. ([c93bd436a5](https://github.com/facebook/react-native/commit/c93bd436a57c760461a269aced681854e5dd3f13) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/Text`, `Libraries/Share` and `Libraries/Settings` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([156ee5bee7](https://github.com/facebook/react-native/commit/156ee5bee7d2588399f2b8c19fa01ce40b8335d8) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/Components` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([aac312da8e](https://github.com/facebook/react-native/commit/aac312da8e23b865027e89a93ecb9cc89bfb9860) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/Inspector` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([48d900b703](https://github.com/facebook/react-native/commit/48d900b703aa125f2bc6e7ab5a24de45572bc66b) by [@iwoplaza](https://github.com/iwoplaza))
+- Remove some web debugging remnants ([9aae84a688](https://github.com/facebook/react-native/commit/9aae84a688b5af87faf4b68676b6357de26f797f) by [@NickGerleman](https://github.com/NickGerleman))
+- Remove incorrect hwb() syntax support from normalize-color ([676359efd9](https://github.com/facebook/react-native/commit/676359efd9e478d69ad430cff213acc87b273580) by [@NickGerleman](https://github.com/NickGerleman))
+- Files inside `Libraries/Interaction` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([bdc23fa2b4](https://github.com/facebook/react-native/commit/bdc23fa2b44401c0c6e66d8cf9a0df542ee2c871) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/Utilities` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([52ffda7e55](https://github.com/facebook/react-native/commit/52ffda7e55cf8330905d57869c0bb3b5793c0e58) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/Text`, `Libraries/Share` and `Libraries/Settings` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([1be7e1a95f](https://github.com/facebook/react-native/commit/1be7e1a95fed16c46767a7907ac864d5170ba540) by [@iwoplaza](https://github.com/iwoplaza))
+- `Libraries/Core/ExceptionsManager` now exports a default `ExceptionsManager` object, and `SyntheticError` as a secondary export. ([e5818d92a8](https://github.com/facebook/react-native/commit/e5818d92a867dbfa5f60d176b847b1f2131cb6da) by [@iwoplaza](https://github.com/iwoplaza))
+- Removed a long-running loop causing the app to lag while attempting a connection to Metro ([9b977def6c](https://github.com/facebook/react-native/commit/9b977def6c228b3fdadc870ac0c34a422933560b) by [@EdmondChuiHW](https://github.com/EdmondChuiHW))
+- Removed `Libraries/Animated/AnimatedWeb.js` file. ([ecae8a2908](https://github.com/facebook/react-native/commit/ecae8a29089130e0d30ef91c69077a17e9d2b67d) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/Components` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([da695f3a20](https://github.com/facebook/react-native/commit/da695f3a2084f9742d2c75e1b6c5dfa0dba23580) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/WebSocket` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([7df73eebdc](https://github.com/facebook/react-native/commit/7df73eebdc9716819d59a27e4bc783cb853c9775) by [@iwoplaza](https://github.com/iwoplaza))
+- Removed a long-running loop causing the app to lag while attempting a connection to Metro ([0e5adb9128](https://github.com/facebook/react-native/commit/0e5adb9128537cb7401b709c78a1522a3c29aa4d) by [@EdmondChuiHW](https://github.com/EdmondChuiHW))
+- Files inside `Libraries/Components` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([ce412746b1](https://github.com/facebook/react-native/commit/ce412746b1635dce3162eb798f59f604dd1bbb03) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/Components` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([9eeef22a67](https://github.com/facebook/react-native/commit/9eeef22a67ff74ccc2d20647624bee26211a3ab5) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/BugReporting`, `Libraries/vendor`, `Libraries/Vibration` and `Libraries/YellowBox` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([09700327f7](https://github.com/facebook/react-native/commit/09700327f7294ed5242fb6af7804e124183ebc64) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/Blob` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([9a70bc0418](https://github.com/facebook/react-native/commit/9a70bc041889d961c2c5ee3f58d6a135111bc0a4) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/BatchedBridge` and `Libraries/AppState` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([135277ace1](https://github.com/facebook/react-native/commit/135277ace118b1fbc11e222624f871221d1a3b72) by [@iwoplaza](https://github.com/iwoplaza))
+- Files inside `Libraries/Alert` and `Libraries/ActionSheetIOS` use `export` syntax, which requires the addition of `.default` when imported with the CJS `require` syntax. ([c89c5d7e3d](https://github.com/facebook/react-native/commit/c89c5d7e3d981e5e11ae926bdd83567cbe61201a) by [@iwoplaza](https://github.com/iwoplaza))
+- Deep imports from some files in `StyleSheet/` can break when using the `require()` syntax, but can be easily fixed by appending `.default` ([e4d969a4ab](https://github.com/facebook/react-native/commit/e4d969a4ab71693f38837271356361a3d9df8c5d) by [@iwoplaza](https://github.com/iwoplaza))
 
 #### Android specific
 
-- Changed visibility of FrescoBasedReactTextInlineImageViewManager to internal ([d5f33c19cb](https://github.com/facebook/react-native/commit/d5f33c19cb33e2f2c7d2470cc90872c1f065f20d) by [@alanleedev](https://github.com/alanleedev))
-- Mikgrating pointerEvents API breaks compatibility for kotlin usages of this api as a val ([45e4a3afce](https://github.com/facebook/react-native/commit/45e4a3afceb4be3047cd01a60ec2c9f806ed30fe) by [@mdvacca](https://github.com/mdvacca))
-- Convert RootView to Kotlin ([21c9491926](https://github.com/facebook/react-native/commit/21c94919260a68409f82081740169d0409e78933) by [@fabriziocucci](https://github.com/fabriziocucci))
-- Delete unused abstract class GuardedResultAsyncTask ([67bff8734f](https://github.com/facebook/react-native/commit/67bff8734f4b92fe399910eecad5b67511a749c1) by [@mdvacca](https://github.com/mdvacca))
-- Delete deprecated class FabricViewStateManager ([b25b65ba19](https://github.com/facebook/react-native/commit/b25b65ba19f3c674fd2efe5c01123ccc0ae55cbf) by [@mdvacca](https://github.com/mdvacca))
-- Removed ComponentNameResolver from public API ([a4849cb3d6](https://github.com/facebook/react-native/commit/a4849cb3d6f4245d15eb3812e417a9f4248bb3a1) by [@mdvacca](https://github.com/mdvacca))
-
-#### iOS specific
-
-- Change Image load event size info from logical size to pixel ([09995fc874](https://github.com/facebook/react-native/commit/09995fc8741cfdc6095d09627262b4f6fbbaafc2) by [@zhongwuzw](https://github.com/zhongwuzw))
+- Make com.facebook.react.modules.network.ResponseUtil internal ([360cbf7433](https://github.com/facebook/react-native/commit/360cbf7433f885522e2393802af5caf2b96d4595) by [@mateoguzmana](https://github.com/mateoguzmana))
+- Removed `RuntimeConfig` class for Hermes which was unused. ([08ddc11269](https://github.com/facebook/react-native/commit/08ddc11269808da0adabb4139718d73310f2f2b7) by [@cortinico](https://github.com/cortinico))
+- Reduce visibility of  FabricUIManager.setBinding() method, unused outside of react native ([2a9a13d567](https://github.com/facebook/react-native/commit/2a9a13d567bb63dabcd698a2ad737ef3b5513a1f) by [@mdvacca](https://github.com/mdvacca))
 
 ### Added
 
-- Add support for the second parameter of `console.table` to specify a list of columns to print in the table. ([fd0894b1c7](https://github.com/facebook/react-native/commit/fd0894b1c7fcb20dd213ec1e93aafef25935d709) by [@rubennorte](https://github.com/rubennorte))
-- Added `RawValue(Runtime*, jsi::Value&)` constructor to make a `RawValue` from a `jsi::Value`. ([03d2186ace](https://github.com/facebook/react-native/commit/03d2186ace2cb17c676b7763d5a545759a658b77) by [@hannojg](https://github.com/hannojg))
-- Added `pointerEvents` to `TextProps` type. ([3efbe33ce0](https://github.com/facebook/react-native/commit/3efbe33ce03f846932406742528652eb695b957d) by [@hyochan](https://github.com/hyochan))
-- Add `jest-diff v29.7.0` to devDependencies ([b27bd00a38](https://github.com/facebook/react-native/commit/b27bd00a389295250ec003357df713ebf306374b) by [@andrewdacenko](https://github.com/andrewdacenko))
-- Add useColorScheme mock test ([24fee29f7a](https://github.com/facebook/react-native/commit/24fee29f7a8ab328bb35e66d145d6b9c2d018c1d) by [@Kudo](https://github.com/Kudo))
+- Add inspector proxy events for debugger heartbeat (sampled) and abandoned connections ([84f3cf95ea](https://github.com/facebook/react-native/commit/84f3cf95ea9ad17ba5c0014ea35d0b8e98af56fe) by [@vzaidman](https://github.com/vzaidman))
+- Add inspector proxy info logs in regards to CDP connection to device and DevTools ([29419ce8f0](https://github.com/facebook/react-native/commit/29419ce8f095e3d763adb5073140b115fecb66e2) by [@vzaidman](https://github.com/vzaidman))
+- Open Sourcing React Native's Compatibility Check ([60e3921f9c](https://github.com/facebook/react-native/commit/60e3921f9cf0a91edd54c269f3157d81d0d4467a) by [@elicwhite](https://github.com/elicwhite))
+- Add opt in for legacy Metro log streaming via `--client-logs` flag ([0d66c524cf](https://github.com/facebook/react-native/commit/0d66c524cfdf4f3abd742b3b8bc6b39f24f7c214) by [@huntie](https://github.com/huntie))
+- Open Sourcing React Native's Compatibility Check ([6590bb3e14](https://github.com/facebook/react-native/commit/6590bb3e146d074c71eaac3fc54e603db2f97265) by [@elicwhite](https://github.com/elicwhite))
+-  ([abd7259de4](https://github.com/facebook/react-native/commit/abd7259de4c11f2615788e8bb258b0459c57eeed) by [@javache](https://github.com/javache))
+- Added a new workflow to monitor new issue in repo. ([ea876054cf](https://github.com/facebook/react-native/commit/ea876054cfdcdfba1d8ded69ab359f20072aef6c) by [@shubhamguptadream11](https://github.com/shubhamguptadream11))
+- Added explicit type for Symbol.iterator in URLSearchParams ([89af3e804f](https://github.com/facebook/react-native/commit/89af3e804f2da3874bc1c20ff1e3ba892efe3ea3) by [@coado](https://github.com/coado))
+- Added explicit type for argument in _captureRef in SectionList ([e31ff4212b](https://github.com/facebook/react-native/commit/e31ff4212b62e4b7dc3ed746d790645e893fbd11) by [@coado](https://github.com/coado))
+- Added explicit type for _lastNativeRefreshing and changed React import syntax in RefreshControl ([a24f9ef825](https://github.com/facebook/react-native/commit/a24f9ef825a0291b7fec20d9ab190c67c94f3260) by [@coado](https://github.com/coado))
+- Added explicit type for _memoizedRenderer and changed React and View import in FlatList ([b634fa1edb](https://github.com/facebook/react-native/commit/b634fa1edb56bd01724d24dee4b0243c68ddc4d2) by [@coado](https://github.com/coado))
+- Added type for exported object in AssetRegistry ([44d84f2af6](https://github.com/facebook/react-native/commit/44d84f2af60392684d0ff4b4e65ae797fad5b456) by [@coado](https://github.com/coado))
+- Add owner stack code frames to LogBox ([0affa544c3](https://github.com/facebook/react-native/commit/0affa544c334aa6804cc787324decac45ba82cce) by [@rickhanlonii](https://github.com/rickhanlonii))
+- Add full owner stack support to React Native ([967ef32154](https://github.com/facebook/react-native/commit/967ef321548321c184432221e38c2f0394d4e264) by [@rickhanlonii](https://github.com/rickhanlonii))
+- Added types in TouchHistoryMath ([b9df812b67](https://github.com/facebook/react-native/commit/b9df812b67a22d459e85511962ac507a80f67f29) by [@coado](https://github.com/coado))
+- Linear gradient color transition hint syntax and `px` unit support. ([cc89ddd50b](https://github.com/facebook/react-native/commit/cc89ddd50bed869013082ad98eb0555a386cf7c9) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Adds the escape key to the key press event handler payload. ([e566c1ec06](https://github.com/facebook/react-native/commit/e566c1ec067188f36f36d7ffd087e7ac06c69617) by [@sbuggay](https://github.com/sbuggay))
+- Added explicit type to supported commands in TextInputNativeCommands ([1126bbb149](https://github.com/facebook/react-native/commit/1126bbb1493dbea04addfdcc809ace01aecab604) by [@coado](https://github.com/coado))
+- Support stylistic sets for fontVariant ([c09b71b990](https://github.com/facebook/react-native/commit/c09b71b99038bacfbc2a1dca521a9220afa3dcb4) by [@LeviWilliams](https://github.com/LeviWilliams))
 
 #### Android specific
 
-- Make the addition of JitPack repository configurable ([a98528e609](https://github.com/facebook/react-native/commit/a98528e609ff0ace4b7bc82f3aa273b7e3fa6443) by [@cortinico](https://github.com/cortinico))
-- Fixing schema types for component command params of Arrays ([25c673e357](https://github.com/facebook/react-native/commit/25c673e35784d8d8c49555af104b9b4d8d37973d) by [@elicwhite](https://github.com/elicwhite))
-- SoftException categories ([c832f94cf7](https://github.com/facebook/react-native/commit/c832f94cf713d0cb7616ef095f38583979e1cf43) by Thomas Nardone)
-- Add mockito-kotlin for Kotlin unit testing ([e393711ef8](https://github.com/facebook/react-native/commit/e393711ef88629a661b34d4aebe785855c5c5969) by Thomas Nardone)
-- ActivityIndicator: setting `resource-id` from the `testID` prop ([87b1bad45e](https://github.com/facebook/react-native/commit/87b1bad45e4eb730ea07686a2b2558253c60d3b7) by [@mateoguzmana](https://github.com/mateoguzmana))
-- Added `getState` method for `StateWrapperImpl` ([ed36e896ac](https://github.com/facebook/react-native/commit/ed36e896ac34fcbefece87456dbdfdff30d22ad5) by [@hannojg](https://github.com/hannojg))
+- On `DefaultNewArchitectureEntryPoint` class add property to specify the desired release level for an application ([19c18eb995](https://github.com/facebook/react-native/commit/19c18eb9957f711ab63a9e3a334972389162bde8) by [@jorge-cab](https://github.com/jorge-cab))
+- Add support for Gradle Configuration caching ([e41887e62f](https://github.com/facebook/react-native/commit/e41887e62fcaf5a8d6bfc2817f88298b49d1b7a5) by [@cortinico](https://github.com/cortinico))
+- Feature flags for recycling View, Text components separately ([ca5ce205f7](https://github.com/facebook/react-native/commit/ca5ce205f71f1af9cd42d4677c2b5a8dee684abb) by Thomas Nardone)
+- Set ReactSurface and ReactRootView to ReactDelegate when created via ReactNavigationActivityDelegate ([a302fbcaaf](https://github.com/facebook/react-native/commit/a302fbcaaf69c8f019a212f7b9b839fa1ddd6b2f) by Maddie Lord)
+
 
 #### iOS specific
 
-- [TextInput] Integrate a new property - `disableKeyboardShortcuts`. It can disable the keyboard shortcuts on iPads. ([0154372b93](https://github.com/facebook/react-native/commit/0154372b93eb1b02f0c62f2a75c95f4fc6a9f3e8) by [@rezkiy37](https://github.com/rezkiy37))
-- Implement ReactNativeFactory ([081be01a5d](https://github.com/facebook/react-native/commit/081be01a5dd24d0a398c6aa8297575502a17d5ec) by [@okwasniewski](https://github.com/okwasniewski))
-- Support system font families (system-ui, ui-sans-serif, ui-serif, ui-monospace, and ui-rounded) on iOS ([1763321c89](https://github.com/facebook/react-native/commit/1763321c8960d30ddc4d3464a0fffdecdd44617a) by [@cxa](https://github.com/cxa))
+- Inform users about JSC being moved to a different repo ([13177b3025](https://github.com/facebook/react-native/commit/13177b3025d06c93fb2634a19e0033b8ac4f67a7) by [@okwasniewski](https://github.com/okwasniewski))
+- Added the React-SwiftCompatibleNativeModules pod ([5d5d3708df](https://github.com/facebook/react-native/commit/5d5d3708df5b1d571459985c5f516dd2175b62ca) by [@cipolleschi](https://github.com/cipolleschi))
+- Js runtime C API for Swift ([a6607c07cd](https://github.com/facebook/react-native/commit/a6607c07cda6bb24c12b41761598b84ce8e028cd) by [@okwasniewski](https://github.com/okwasniewski))
+- Add support for `numberOfLines` prop on `TextInput` ([dcaa33e6d9](https://github.com/facebook/react-native/commit/dcaa33e6d9d59b7d32bbdc14a91b297b6d68cee1) by [@j-piasecki](https://github.com/j-piasecki))
+- Encapsulate device info listeners ([7dc85d0e97](https://github.com/facebook/react-native/commit/7dc85d0e9765e7f633285843506b8832ff13db9f) by [@okwasniewski](https://github.com/okwasniewski))
+- Added custom load js block in bridge mode ([1e9ac296a5](https://github.com/facebook/react-native/commit/1e9ac296a59f3698ca656ef0161e93ba9dc941c8) by [@zhongwuzw](https://github.com/zhongwuzw))
+- Add feature flag to enable running JS GC on iOS memory pressure with Bridgeless ([6cbdc94456](https://github.com/facebook/react-native/commit/6cbdc944564514a47ea7766eb94f952ad91bd240) by [@lyahdav](https://github.com/lyahdav))
+- Missing nonnull annotations for RCTArchConfiguratorProtocol, RCTUIConfiguratorProtocol.h ([0141a44026](https://github.com/facebook/react-native/commit/0141a44026a62074d1288963d243a55216c2e4d7) by [@okwasniewski](https://github.com/okwasniewski))
 
 ### Changed
 
-- Improved types in BoxInspector and refactored a code ([f832c450a5](https://github.com/facebook/react-native/commit/f832c450a52c4c9d61c1d6b609fcad1332613556) by [@coado](https://github.com/coado))
-- Improved types in StyleInspector and refactored a code ([49e5c58c59](https://github.com/facebook/react-native/commit/49e5c58c595265c9fffc84741aab6363d291f1f5) by [@coado](https://github.com/coado))
-- Improved types in ElementBox and refactored a code ([2959d49e8d](https://github.com/facebook/react-native/commit/2959d49e8d09663f9ac437ffcb66d1c99162c6d0) by [@coado](https://github.com/coado))
-- Improve types on BorderBox ([48a7840919](https://github.com/facebook/react-native/commit/48a784091989c695e3432cb8ba657139eb9f5e99) by [@coado](https://github.com/coado))
-- Improved formatting of values logged via `console.table` (including Markdown format). ([7154c62afb](https://github.com/facebook/react-native/commit/7154c62afb5371f3f861663826792e41229c344a) by [@rubennorte](https://github.com/rubennorte))
-- Improve types on DrawerLayoutAndroid ([b5155fba89](https://github.com/facebook/react-native/commit/b5155fba895411e290faeeea06180fce24079f78) by [@huntie](https://github.com/huntie))
-- Mark `intersectionRect` required in `NativeIntersectionObserverEntry` to reflect native logic. ([8681fc2ab2](https://github.com/facebook/react-native/commit/8681fc2ab20aa1e5937a0bf3fc58ed03c3e0ee23) by [@lunaleaps](https://github.com/lunaleaps))
-- Upgrading `typescript-config` module version to `esnext` ([5370347f54](https://github.com/facebook/react-native/commit/5370347f54719f318a4e032aba6cbf2269e7c3d7) by [@mateoguzmana](https://github.com/mateoguzmana))
-- Reverts #47503. (~~Callbacks passed to `animation.start(<callback>)` will be scheduled for execution in a microtask. Previously, there were certain scenarios in which the callback could be synchronously executed by `start`.~~) ([8793b7d89b](https://github.com/facebook/react-native/commit/8793b7d89bcafdfcca7ecb953e60882b67ffc807) by [@yungsters](https://github.com/yungsters))
--  ([9aa21b5e87](https://github.com/facebook/react-native/commit/9aa21b5e8765f14a9806eac435636b87f62178cc) by [@lunaleaps](https://github.com/lunaleaps))
-- Fix item disappearing with scroll in VirtualizedList ([df7b6ae092](https://github.com/facebook/react-native/commit/df7b6ae092d03385ebd05efd0f068c59e727f723) by [@Tom910](https://github.com/Tom910))
+- Bump Node 18 -> 20 to build React Native in OSS ([1fd3806ee9](https://github.com/facebook/react-native/commit/1fd3806ee9a8d463da9a2c29c6a8597da53a61e8) by [@cortinico](https://github.com/cortinico))
+- Improve TypeScript types for `global` objects ([094c5be42e](https://github.com/facebook/react-native/commit/094c5be42eace6eb83fabc1f46336745c6879401) by [@coado](https://github.com/coado))
+- Increase minimum typescript version in index.d.ts ([721f85adf7](https://github.com/facebook/react-native/commit/721f85adf7336cb07dafbfd98f9612f2e2b43268) by [@coado](https://github.com/coado))
+- Changed cron timings to run at fix schedule and upgraded action for better debugging ([dc02c53c16](https://github.com/facebook/react-native/commit/dc02c53c1645be7c954bdc1ecff5d7297f4ee0a9) by [@shubhamguptadream11](https://github.com/shubhamguptadream11))
+- Upgrade React DevTools to 6.1.1. ([5c88633035](https://github.com/facebook/react-native/commit/5c886330359c04b953521a08e31eacd5aa399a9b) by [@hoxyq](https://github.com/hoxyq))
+- Move view flattening props to cross platform type interface ([ecad90ad8b](https://github.com/facebook/react-native/commit/ecad90ad8b68c623d028938cf84d1dbccc45e45f) by [@okwasniewski](https://github.com/okwasniewski))
+- Introduced a feature flag to test an optimization in `Animated` to reduce memory usage. ([fb8a6a5bb0](https://github.com/facebook/react-native/commit/fb8a6a5bb08892d9d74c607ec99f4afc9c967b04) by [@yungsters](https://github.com/yungsters))
+- Removed `RawProps::operator=` ([e4d1cf8ce9](https://github.com/facebook/react-native/commit/e4d1cf8ce994d39ed67a660888cbeef2fba83b36) by [@javache](https://github.com/javache))
+- `Debugger.scriptParsed` now includes the field `sourceMapURL` as a (rewritten) remote url as opposed to base64 data url ([ff2e40371e](https://github.com/facebook/react-native/commit/ff2e40371ec13d2fef54098c5391ca20292c572f) by [@vzaidman](https://github.com/vzaidman))
+- Upgrade React DevTools to 6.1.0. ([07860545f5](https://github.com/facebook/react-native/commit/07860545f5994b1e1f395bec60012433d9abf2fe) by [@hoxyq](https://github.com/hoxyq))
+- When an Animated component is updated or unmounted, `AnimatedNode` instances will now detach in a microtask instead of synchronously in the commit phase of React. This will cause the completion callback of finished animations to execute after the commit phase instead of during it. ([50b75a74d1](https://github.com/facebook/react-native/commit/50b75a74d1d8f8f0237d044f6bf72d49ca9e5cf4) by [@yungsters](https://github.com/yungsters))
+- Improved types in WebSockertInterceptor callbacks ([d2adb976ab](https://github.com/facebook/react-native/commit/d2adb976abebcb0f38750903d98fbb5a3f50924b) by [@coado](https://github.com/coado))
+- Replaced $FlowFixMe with PressEvent in ScrollViewNativeComponentType ([8befab1760](https://github.com/facebook/react-native/commit/8befab17604c7758358bc834beb5f9c02026e9ac) by [@coado](https://github.com/coado))
+- Improved types in ScrollView ([1be2ba4597](https://github.com/facebook/react-native/commit/1be2ba4597fbe835ec461caa9dd838e4186b49eb) by [@coado](https://github.com/coado))
+- Improved Props type in UnimplementedView ([b200c7cb2f](https://github.com/facebook/react-native/commit/b200c7cb2f714e162cfc1d45b59fca4a9253233a) by [@coado](https://github.com/coado))
+- Replaced $FlowFixMe in InteractionManager to Function type ([cd7a30ce48](https://github.com/facebook/react-native/commit/cd7a30ce4842ed58775512d244b6a9ed18956d4d) by [@coado](https://github.com/coado))
+- Improve ToastAndroid jsdocs ([299a7a959d](https://github.com/facebook/react-native/commit/299a7a959d34cda9900acb7318aabf7262acc23e) by [@mateoguzmana](https://github.com/mateoguzmana))
+- Removed context from addEventListener arguments in Linking ([1536a7f196](https://github.com/facebook/react-native/commit/1536a7f1960f21e56d2e4730a5ca8524b49530df) by [@coado](https://github.com/coado))
+- Improved types for exported Types and Properties in LayoutAnimation ([3c02738ec4](https://github.com/facebook/react-native/commit/3c02738ec4c36d8414493ef8f0016a809d849d33) by [@coado](https://github.com/coado))
+- Replaced $FlowFixMe in CodegenTypes with Object type ([812c3b33cd](https://github.com/facebook/react-native/commit/812c3b33cde53b47bcc43f2dd70cc780da5a4ae0) by [@coado](https://github.com/coado))
+- Replaced $FlowFixMe in RCTDeviceEventEmitter with any ([8df6cfa56b](https://github.com/facebook/react-native/commit/8df6cfa56be1a9b38fba30cc074f8147ebc05928) by [@coado](https://github.com/coado))
+- Replaced $FlowFixMe in NativeModules with any type ([286a360d9b](https://github.com/facebook/react-native/commit/286a360d9b13d37f43fde74b66318aa73a7bc1f7) by [@coado](https://github.com/coado))
+- Refactored StaticRenderer syntax ([0e6cb590ec](https://github.com/facebook/react-native/commit/0e6cb590eca4f31c466f82c278f1f38f6273ed62) by [@coado](https://github.com/coado))
+- Improved eventInitDict type in WebSocketEvent class ([fa2fac1372](https://github.com/facebook/react-native/commit/fa2fac137287781d5b582507251af0352e654cec) by [@coado](https://github.com/coado))
+- Improved types in TextAncestor ([df9d43f02b](https://github.com/facebook/react-native/commit/df9d43f02b3605e40f068bf5ba424e978af17a8f) by [@coado](https://github.com/coado))
+- (Reapply) The `AnimatedNode` graph will not occur during the insertion effect phase, which means animations can now be reliably started during layout effects. ([e0c0476553](https://github.com/facebook/react-native/commit/e0c0476553912a864b1bf19a98678432afa57659) by [@yungsters](https://github.com/yungsters))
+- Mark intersectionRect required in NativeIntersectionObserverEntry ([e3c63cfd34](https://github.com/facebook/react-native/commit/e3c63cfd341491784f607097a9bf9393e836cd43) by [@lunaleaps](https://github.com/lunaleaps))
+- Improved types in StatusBar by adding StackProps ([48cafc0b69](https://github.com/facebook/react-native/commit/48cafc0b6971f7e1ddf3b6b37a66fdf0b3f08a88) by [@coado](https://github.com/coado))
+- Improved types in AnimatedWeb ([647ca90a30](https://github.com/facebook/react-native/commit/647ca90a3007f4c8d1f93ee9c262022e04e76ff8) by [@coado](https://github.com/coado))
 
 #### Android specific
 
-- Introduce new public API ViewManagerInterface ([40a0cdbc99](https://github.com/facebook/react-native/commit/40a0cdbc99746f18ca15c48f3d8f03cdad1635af) by [@mdvacca](https://github.com/mdvacca))
-- Bumped Android Gradle Plugin (AGP) to 8.8.0 ([4c7c836ebf](https://github.com/facebook/react-native/commit/4c7c836ebf956c13fa327170adaec43a076226e7) by [@cortinico](https://github.com/cortinico))
-- Bump Gradle to 8.12 ([5e6478954c](https://github.com/facebook/react-native/commit/5e6478954c77f64a9086757ed4a879e83a1ab404) by [@cortinico](https://github.com/cortinico))
-- Replaced custom XML decoder with Fresco's built-in decoder ([6feb90bb29](https://github.com/facebook/react-native/commit/6feb90bb290ab460df8df2f6f01531a77aac9008) by [@Abbondanzo](https://github.com/Abbondanzo))
-- Update Fresco to 3.6.0 ([819b5c2c8d](https://github.com/facebook/react-native/commit/819b5c2c8dfad620152b159838575b6c03e18ffe) by [@Abbondanzo](https://github.com/Abbondanzo))
-- Migrate jsc-android to mavenCentral ([e42a3a6b84](https://github.com/facebook/react-native/commit/e42a3a6b842d71fc25419c02f6015863fa019f05) by [@Kudo](https://github.com/Kudo))
-- Migrate ComponentNameResolver to kotlin ([385b9f4265](https://github.com/facebook/react-native/commit/385b9f4265316a1e1cf8627ea7ed3bed790cc8c5) by [@mdvacca](https://github.com/mdvacca))
-- Update Fresco to 3.5.0 ([72bb2f4089](https://github.com/facebook/react-native/commit/72bb2f4089d5e49b9e8a09f416d63db6c7d2b798) by [@Abbondanzo](https://github.com/Abbondanzo))
-- Migrate `ReactSwitchManager` to Kotlin ([b886bc4db9](https://github.com/facebook/react-native/commit/b886bc4db970d8c70de1596dc3f88bdc398de482) by [@krozniata](https://github.com/krozniata))
+- Bump AGP to 8.8.2 ([2062defb2d](https://github.com/facebook/react-native/commit/2062defb2d9ce218056f072fb7f1b00375336bcf) by [@cortinico](https://github.com/cortinico))
+- Add a build time JSC lean core warning ([90e27c2b4f](https://github.com/facebook/react-native/commit/90e27c2b4f6c831922e61b370342ced328cb705d) by [@Kudo](https://github.com/Kudo))
+- Gradle to 8.13 ([b95424d159](https://github.com/facebook/react-native/commit/b95424d1596a5b562b4fc5a0da38b7d9efab2f19) by [@cortinico](https://github.com/cortinico))
+- Update androidx app compat to 1.7.0 ([b0fd9c1556](https://github.com/facebook/react-native/commit/b0fd9c155697ebc105cee99ce79b84ca43e491a5) by [@janicduplessis](https://github.com/janicduplessis))
+- Add option to disable bundle compression to improve startup time ([778382ad3d](https://github.com/facebook/react-native/commit/778382ad3d8f5ecc4535ed44b2cd508475a97beb) by [@mrousavy](https://github.com/mrousavy))
+- Allow passing custom JSRuntimeFactory to DefaultReactHost ([cdc166709d](https://github.com/facebook/react-native/commit/cdc166709d247dbcff6b390d1f51840c9f330a69) by [@Kudo](https://github.com/Kudo))
+- Exclude `jsctooling` when `useThirdPartyJSC` gradle property is true ([66032f22b8](https://github.com/facebook/react-native/commit/66032f22b8cab9fb7ad4c26d508e2d9bba3ae308) by [@Kudo](https://github.com/Kudo))
+- Introduces BuildConfig.UNSTABLE_ENABLE_MINIFY_LEGACY_ARCHITECTURE to determine if the new architecture is fully enabled into an Android app ([b45a3e5cd8](https://github.com/facebook/react-native/commit/b45a3e5cd81997e11b763073daf0a7f5b78188f8) by [@mdvacca](https://github.com/mdvacca))
+- Avoid `ConcurrentModificationException` when iterating over `mListeners` `TextWatcher` array ([243aecc095](https://github.com/facebook/react-native/commit/243aecc095c20f8295fdefa8fc3e3ac8a7691043) by [@kirillzyusko](https://github.com/kirillzyusko))
+- Deprecated ViewManagerDelegate#setProperty and ViewManagerDelegate#receiveCommand ([5a290c4cab](https://github.com/facebook/react-native/commit/5a290c4cab6f58744a9252687feefd8b6a8d3305) by [@javache](https://github.com/javache))
 
 #### iOS specific
 
-- Reduce memory allocations when computing accessibilityLabel ([74bdab8bd8](https://github.com/facebook/react-native/commit/74bdab8bd8be2413734004145507c0688232053e) by [@sparga](https://github.com/sparga))
-- Explicitly define the source files for React-graphics ([3ff9212ce4](https://github.com/facebook/react-native/commit/3ff9212ce46314a749e65dd246e49965288d8f57) by [@cipolleschi](https://github.com/cipolleschi))
-- Use configuration type when adding ndebug flag to pods in release ([462fae4a29](https://github.com/facebook/react-native/commit/462fae4a29ba1a5249d05862d2593dca4d6758c1) by [@benhandanyan](https://github.com/benhandanyan))
-- Fix typo in utils.rb ([fa03840e68](https://github.com/facebook/react-native/commit/fa03840e688067bf16a7fb60c00efdc9a1813f92) by [@WoLewicki](https://github.com/WoLewicki))
+- Moved workaround for multiline text measurement with `maximumNumberOfLines` earlier in the pipeline ([167a1a30da](https://github.com/facebook/react-native/commit/167a1a30daab588982638dc878b434688653df47) by [@j-piasecki](https://github.com/j-piasecki))
+- Decouple JSC when `USE_THIRD_PARTY_JSC=1` ([176bed79b4](https://github.com/facebook/react-native/commit/176bed79b4c69455f16527512feb87c67e6f89de) by [@Kudo](https://github.com/Kudo))
+- Properly handle `null` values coming from NativeModules. ([d4236791e2](https://github.com/facebook/react-native/commit/d4236791e238a614d2fadf5c5659874d983ab029) by [@cipolleschi](https://github.com/cipolleschi))
+- Change prime constants to have prefix in order to avoid any potential conflicts ([2ed0ba0722](https://github.com/facebook/react-native/commit/2ed0ba0722af04d21748397bac7e6d4b32c3e332) by Nolan O'Brien)
+- Ignore deprecation warning when calling pod install through core-cli-utils ([4141560afc](https://github.com/facebook/react-native/commit/4141560afc06a38bc23cdcaa6a31e6f41e6e5408) by [@cipolleschi](https://github.com/cipolleschi))
+- Invoke Codegen as part of the Core-cli-utils package ([cc1e8d1523](https://github.com/facebook/react-native/commit/cc1e8d1523bee3880f0a038c550b8e2131d5a535) by [@cipolleschi](https://github.com/cipolleschi))
+- Fix Gemfile versions ([2527d29a96](https://github.com/facebook/react-native/commit/2527d29a96216fbaafd4f98fd7a931b9330e0570) by [@cipolleschi](https://github.com/cipolleschi))
+- Stop running codegen when running pod install ([f15094ef88](https://github.com/facebook/react-native/commit/f15094ef880218a0517863e6cf7d11247be66bfb) by [@cipolleschi](https://github.com/cipolleschi))
+- Generate the ReactCodegen.podspec as part of codegen instead of as part of pod install. ([dab9b3b440](https://github.com/facebook/react-native/commit/dab9b3b44015acd1d2e462d3d0dc2597a99b16a9) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Deprecated
+
+- Update deprecated enums in RCTTextPrimitivesConversions.h ([4121d24454](https://github.com/facebook/react-native/commit/4121d24454433ab007b664076ee00a951494fb4d) by [@joannaquu](https://github.com/joannaquu))
+
+
+#### iOS specific
+
+- Deprecate RCTAppDelegate ([74de9526ab](https://github.com/facebook/react-native/commit/74de9526ab6c1fb1f627f340653cb78d898ca698) by [@okwasniewski](https://github.com/okwasniewski))
+- Deprecate calling `pod install` directly ([e3def00d7a](https://github.com/facebook/react-native/commit/e3def00d7a9567f5879a6cd0dfed161bc1aaa176) by [@cipolleschi](https://github.com/cipolleschi))
+
+
+#### Android specific
+
+- `RuntimeExecutor` and `RuntimeScheduler` constructors are now private, `MapBufferSoLoader` was removed as no longer required. ([6c8ace9b05](https://github.com/facebook/react-native/commit/6c8ace9b05898fd3bfd3673af1f99680d0c1ebb1) by [@javache](https://github.com/javache))
+- Remove `DevSupportManagerFactory.launchJSDevtools` API ([514ec4192f](https://github.com/facebook/react-native/commit/514ec4192fbaa6922dac20a72c8902b921c5a97e) by [@huntie](https://github.com/huntie))
+- Stable API - Make `AnimatedNodeWithUpdateableConfig` internal as it was not used in OSS ([54e0b69e7e](https://github.com/facebook/react-native/commit/54e0b69e7e325b667ef4b69eab0bfa123ce8e428) by [@cortinico](https://github.com/cortinico))
+- `ViewManagerPropertyUpdater.updateProps` is deprected, use the related ViewManager APIs instead ([a18bc58645](https://github.com/facebook/react-native/commit/a18bc5864508e9073fa3190d786a68761fb45073) by [@javache](https://github.com/javache))
+
+#### iOS specific
+
+- Remove no longer needed UISceneDelegate ([a033cf9d5e](https://github.com/facebook/react-native/commit/a033cf9d5e8ffbda8b6f86cf3ce152b4ccb73187) by [@okwasniewski](https://github.com/okwasniewski))
+- Clean up RCTBridgeDelegate to remove shouldBridgeUseCustomJSC method ([c8f1506f13](https://github.com/facebook/react-native/commit/c8f1506f13310ffafe370273805684e696d72d50) by [@zhongwuzw](https://github.com/zhongwuzw))
+
+### Fixed
+
+- FindNodeAtPoint now considers overflow area of the parent node ([d8bc7c68c0](https://github.com/facebook/react-native/commit/d8bc7c68c0a6ea2dee73edc3270dbdcb3b132af9) by [@hoxyq](https://github.com/hoxyq))
+- Add explicit casts for pointerIds for PointerEvents in NativeDOM ([94ea10c693](https://github.com/facebook/react-native/commit/94ea10c6939f915251520b49aeb131917364c078) by [@jonthysell](https://github.com/jonthysell))
+- Fix registering of `start` and `bundle` commands with community CLI and isolated node_modules. ([cdaa1aa9aa](https://github.com/facebook/react-native/commit/cdaa1aa9aa330bc6c58d902a89f515d30288698f) by [@robhogan](https://github.com/robhogan))
+- Fix `react-native-community/cli` not being found in pnpm setups ([a672a4d007](https://github.com/facebook/react-native/commit/a672a4d0073a282ba9de1ca24a563833530f0d60) by [@tido64](https://github.com/tido64))
+- Disconnections of DevTools when the network is under significant strain. ([b0974135bf](https://github.com/facebook/react-native/commit/b0974135bf1c0946d4a85bdc1fd423ff7dc612c5) by [@vzaidman](https://github.com/vzaidman))
+- Fix `react-native-community/cli-platform-*` packages not being found in monorepos ([7926d656b3](https://github.com/facebook/react-native/commit/7926d656b30667a026a5bc85da61696e915893bf) by [@tido64](https://github.com/tido64))
+- Fix Turbo Module example in RNTester in bridgeless mode ([67981efa14](https://github.com/facebook/react-native/commit/67981efa14adc7c8d7957566fd4b1375247c7cb8) by [@christophpurrer](https://github.com/christophpurrer))
+- Update tests to support new `didOpen` delegate fn ([46e86dca87](https://github.com/facebook/react-native/commit/46e86dca876f82e24d2a63604801b4c356d786aa) by [@EdmondChuiHW](https://github.com/EdmondChuiHW))
+- Always patch React DevTools first so StrictMode dim chars are excluded from logs/logbox. ([e015d1b19a](https://github.com/facebook/react-native/commit/e015d1b19a2d6894badbe5525c7e53f2c2e21742) by [@rickhanlonii](https://github.com/rickhanlonii))
+- Add default case to `displayModeToInt()` function ([8c06f57860](https://github.com/facebook/react-native/commit/8c06f57860278cd4ff4a03bf182d22a27fcd0779) by [@Yajur-Grover](https://github.com/Yajur-Grover))
+
+#### Android specific
+
+- Fix text link accessibility on state update removal ([c9e6567881](https://github.com/facebook/react-native/commit/c9e6567881b2a596677b1b14d1c1d2537fec507d) by [@joevilches](https://github.com/joevilches))
+- Fix inset boxShadow when blur < spread ([a3b29e1441](https://github.com/facebook/react-native/commit/a3b29e1441f86fab624f21d977681f39f9acf549) by [@joevilches](https://github.com/joevilches))
+- GetAndroidResourceFolderName() should return raw folder for svg file ([3a4798cc30](https://github.com/facebook/react-native/commit/3a4798cc30a53ba5ca428845d56fbeca43ef4524) by [@sunnylqm](https://github.com/sunnylqm))
+- Fix issue where boxShadow crashes with small blur radius ([103f8b3885](https://github.com/facebook/react-native/commit/103f8b38856cad04e93d5b404024c28adbf52cee) by [@joevilches](https://github.com/joevilches))
+- Fixed crash with Modal when trying to call syncSystemBarsVisibility() ([141fb23bba](https://github.com/facebook/react-native/commit/141fb23bba7120e515902f7bdebd87297d7aca92) by [@alanleedev](https://github.com/alanleedev))
+- Improve input files for codegen gradle task ([e9e0d8c2f7](https://github.com/facebook/react-native/commit/e9e0d8c2f79e4077445c28e459ba0e5981da478b) by [@janicduplessis](https://github.com/janicduplessis))
+- Fix react-native/popup-menu-android not building for 3rd party developers ([e96396bd18](https://github.com/facebook/react-native/commit/e96396bd184471ff8d7a69b4775d851076231b47) by [@cortinico](https://github.com/cortinico))
+- Fix Image defaultSource runtime error ([1c51b77868](https://github.com/facebook/react-native/commit/1c51b7786860fe364a115f7a4ed29228157f0f5c) by [@mateoguzmana](https://github.com/mateoguzmana))
+- Sync Modal system bars visibility with current activity ([7016225062](https://github.com/facebook/react-native/commit/701622506248022c3a2fcea1c0066bba6e80232a) by [@mateoguzmana](https://github.com/mateoguzmana))
+- Elevation prop on android has incorrect border-radius ([f7d78f81cc](https://github.com/facebook/react-native/commit/f7d78f81cc971be2dcf5476c790556df4220b2bc) by [@jorge-cab](https://github.com/jorge-cab))
+- Pass the bundle URL protocol when setting up HMR client on Android ([ba894c908a](https://github.com/facebook/react-native/commit/ba894c908a02a84596525872b6232accc1acfaea) by [@byCedric](https://github.com/byCedric))
+- Fixed anti-aliasing not showing on older Android versions ([6c6e0a9085](https://github.com/facebook/react-native/commit/6c6e0a90855ac070742ce1923204115cbf2528f8) by [@jorge-cab](https://github.com/jorge-cab))
+- Allow text links to be navigable via keyboard by default ([98b0991128](https://github.com/facebook/react-native/commit/98b0991128c902bbe273f519ac79ac0676cef1c0) by [@joevilches](https://github.com/joevilches))
+- Make `setLayoutAnimationEnabledExperimental` a no-op in Bridgeless ([44da5d2ee0](https://github.com/facebook/react-native/commit/44da5d2ee07d06a0e11b626e2641e255f0ffde9f) by [@arushikesarwani94](https://github.com/arushikesarwani94))
+- Scroll view throttle no longer impacts events other than `onScroll` ([bc810e5115](https://github.com/facebook/react-native/commit/bc810e5115256e4fb5330b21c3a5d9ee3dd9a00c) by [@Abbondanzo](https://github.com/Abbondanzo))
+- TextInputs can now receive focus via external keyboard ([3420eb87b0](https://github.com/facebook/react-native/commit/3420eb87b01f42092c1691a1f6544f20d244cc60) by [@joevilches](https://github.com/joevilches))
+- Make DefaultReactNativeHost.clear() also invalidate DefaultReactHost ([07769d4d7e](https://github.com/facebook/react-native/commit/07769d4d7eb1d3000210c7a8dafd9a5411694444) by [@WoLewicki](https://github.com/WoLewicki))
+
+#### iOS specific
+
+- Return nullptr when USE_THIRD_PARTY_JSC is set to true ([515ff1e626](https://github.com/facebook/react-native/commit/515ff1e626110116f272428d1d182eedcff2deab) by [@okwasniewski](https://github.com/okwasniewski))
+- Avoid race condition crash in [RCTDataRequestHandler invalidate] ([6bc5ddea3e](https://github.com/facebook/react-native/commit/6bc5ddea3ea3ca20060ea0181630539931948085) by [@Saadnajmi](https://github.com/Saadnajmi))
+- Make React Native work without AppDelegate window property ([ae7bbe06c9](https://github.com/facebook/react-native/commit/ae7bbe06c9a4e47e1aa6cfa5cca7f6aa5a8ff83b) by [@okwasniewski](https://github.com/okwasniewski))
+- Add guard for custom module provider lookup in TMManager ([d0a101fbea](https://github.com/facebook/react-native/commit/d0a101fbeaec0bdace3a680078e0acc8635b5c3e) by [@shwanton](https://github.com/shwanton))
+- Fixed TextInput's `onContentSizeChange` event being dispatched multiple times with the same size ([2bb65717b7](https://github.com/facebook/react-native/commit/2bb65717b7b86d19e4d35707003df7d5be31c2fb) by [@j-piasecki](https://github.com/j-piasecki))
+- Fix new arch recycled RefreshControl was missing its title ([e3d607fc2e](https://github.com/facebook/react-native/commit/e3d607fc2ea18c7ad9474d72cf18b1328d6647f7) by [@High5Apps](https://github.com/High5Apps))
+- Fix selection makes TextInput clear its content when using children ([e3b176a598](https://github.com/facebook/react-native/commit/e3b176a598bd47338b52522f05893f781e3a7744) by Olivier Bouillet)
+- Layout direction changes are now honored on bundle reload. ([36f29beac4](https://github.com/facebook/react-native/commit/36f29beac47259768612bf56e5d9acfa4b94ab1a) by [@chrsmys](https://github.com/chrsmys))
+- App crash caused by the `[RCTFileRequestHanlder invalidate]` method ([789ed7d5ad](https://github.com/facebook/react-native/commit/789ed7d5ad75ad4c20ecd1eb19d1fc18275fc500) by [@zhouzh1](https://github.com/zhouzh1))
+- Fixed onPress for Text with nested View. ([6b2c40c64f](https://github.com/facebook/react-native/commit/6b2c40c64f8278785d7e37f908918e0344ba278f) by [@coado](https://github.com/coado))
+- RNTester: Fixes turbo module examples error in bridgeless mode ([6a3e275d14](https://github.com/facebook/react-native/commit/6a3e275d1440ad0f1ab39e546abd30a1c53ee0c7) by [@zhongwuzw](https://github.com/zhongwuzw))
+- RNTester: Fixes turbo module examples error in bridgeless mode ([62831e740c](https://github.com/facebook/react-native/commit/62831e740c28394d2a5e17051c44ebe9af11ad40) by [@zhongwuzw](https://github.com/zhongwuzw))
+- Suppressed iOS 13 deprecation warnings in RCTStatusBarManager ([fffd6d75b4](https://github.com/facebook/react-native/commit/fffd6d75b48ae1f6c78dbc0f7e9b6fe509df3394) by Ingrid Wang)
+- Fix cases where background color, filter, and background image were sized incorrectly if there was a scaling transform ([f835b824f4](https://github.com/facebook/react-native/commit/f835b824f43ae54ee6d4e4b72101638bbd5f365d) by [@joevilches](https://github.com/joevilches))
+- Fix cases where background color, filter, and background image were sized incorrectly if there was a scaling transform ([acaf94dc21](https://github.com/facebook/react-native/commit/acaf94dc214867633a50b113d9925335a0d59099) by [@joevilches](https://github.com/joevilches))
+- Issue where performance monitor would be hidden under newly presented views. ([e7556e921c](https://github.com/facebook/react-native/commit/e7556e921c07692012a4295dd7d84fe23f5838a5) by [@chrsmys](https://github.com/chrsmys))
+- Compatibility with Ruby 3.4.0 ([b1735bc593](https://github.com/facebook/react-native/commit/b1735bc5936ebe352b4ab27604a3ae85980121f1) by [@okwasniewski](https://github.com/okwasniewski))
+- Remove private symbols for non-simulator and non-catalyst builds. ([9350d6f2f5](https://github.com/facebook/react-native/commit/9350d6f2f5473cddc6ea4c13602c9f80c9c40916) by [@EvanBacon](https://github.com/EvanBacon))
+- Re-enable enableFixForViewCommandRace feature flag ([ae59702f8e](https://github.com/facebook/react-native/commit/ae59702f8ee89e7bddec971e0a041744cb91e65c) by [@okwasniewski](https://github.com/okwasniewski))
+- Implement `dataDetectorTypes` in the same way as the old architecture ([2ae45ec3ce](https://github.com/facebook/react-native/commit/2ae45ec3ce50cb9d95782173f6dfca74e8110848) by [@VidocqH](https://github.com/VidocqH))
+- Fix wrong cocoapods script on new_architecture.rb ([541e655832](https://github.com/facebook/react-native/commit/541e655832acaed7836c23326cfc62fd0ba5521f) by [@CHOIMINSEOK](https://github.com/CHOIMINSEOK))
+- Bridge: Fixes HostTarget use after free when deallocated bridge ([3e2e8ec757](https://github.com/facebook/react-native/commit/3e2e8ec7579fa72af09f016753c167952dffaf43) by [@zhongwuzw](https://github.com/zhongwuzw))
+- Data race related to read/write of RCTDeviceInfo._invalidated. ([2a18d83521](https://github.com/facebook/react-native/commit/2a18d83521b30642a7e403fd55a5afd4ef2d8cb4) by [@hakonk](https://github.com/hakonk))
+- Improve detached keyboard detection, support Stage Manager on iOS ([c499ae1192](https://github.com/facebook/react-native/commit/c499ae1192ec178e4d20f8ed4ae03ff3e077bf65) by [@mhoran](https://github.com/mhoran))
+- Workaround for a iOS build app running on Apple Silicon Mac(in Xcode Destination: "Mac(Designed for iPad)") TextInput crash due to serialization attempt of WeakEventEmitter ([0511e2e49a](https://github.com/facebook/react-native/commit/0511e2e49a51ab32aa6f40df7c6b3dde92b09031) by [@iwater](https://github.com/iwater))
+
+## v0.78.0
+
+### Breaking
+
+- **Codegen:** Separate component array types and command array types ([825492b199](https://github.com/facebook/react-native/commit/825492b1999b62de708e6f40d5d5de8d3d7cb8a9) by [@elicwhite](https://github.com/elicwhite))
+- **DevTools:** The `FuseboxClient.setClientMetadata` CDP method is removed. Instead, use `ReactNativeApplication.enable`. ([1a9780f0e3](https://github.com/facebook/react-native/commit/1a9780f0e3714ac18ffae34cb67376c711b0e031) by [@huntie](https://github.com/huntie))
+
+#### Android specific
+
+- **APIs:** Changed visibility of `FrescoBasedReactTextInlineImageViewManager` to internal ([d5f33c19cb](https://github.com/facebook/react-native/commit/d5f33c19cb33e2f2c7d2470cc90872c1f065f20d) by [@alanleedev](https://github.com/alanleedev))
+- **APIs:** Migrating pointerEvents API breaks compatibility for kotlin usages of this api as a val ([45e4a3afce](https://github.com/facebook/react-native/commit/45e4a3afceb4be3047cd01a60ec2c9f806ed30fe) by [@mdvacca](https://github.com/mdvacca))
+- **APIs:** Convert `RootView` to Kotlin ([21c9491926](https://github.com/facebook/react-native/commit/21c94919260a68409f82081740169d0409e78933) by [@fabriziocucci](https://github.com/fabriziocucci))
+- **APIs:** Delete unused abstract class `GuardedResultAsyncTask` ([67bff8734f](https://github.com/facebook/react-native/commit/67bff8734f4b92fe399910eecad5b67511a749c1) by [@mdvacca](https://github.com/mdvacca))
+- **APIs**: Delete deprecated class `FabricViewStateManager` ([b25b65ba19](https://github.com/facebook/react-native/commit/b25b65ba19f3c674fd2efe5c01123ccc0ae55cbf) by [@mdvacca](https://github.com/mdvacca))
+- **APIs:** Removed `ComponentNameResolver` from public API ([a4849cb3d6](https://github.com/facebook/react-native/commit/a4849cb3d6f4245d15eb3812e417a9f4248bb3a1) by [@mdvacca](https://github.com/mdvacca))
+
+#### iOS specific
+
+- **Image:** Change Image load event size info from logical size to pixel ([09995fc874](https://github.com/facebook/react-native/commit/09995fc8741cfdc6095d09627262b4f6fbbaafc2) by [@zhongwuzw](https://github.com/zhongwuzw))
+
+### Added
+
+- **C++:** Added `RawValue(Runtime*, jsi::Value&)` constructor to make a `RawValue` from a `jsi::Value`. ([03d2186ace](https://github.com/facebook/react-native/commit/03d2186ace2cb17c676b7763d5a545759a658b77) by [@hannojg](https://github.com/hannojg))
+- **Codegen:** Include cxx modules in codegen schema ([cf5ab03d43](https://github.com/facebook/react-native/commit/cf5ab03d4324b7e3fce38f9eacc96da82b11b68a) by [@elicwhite](https://github.com/elicwhite))
+- **Deps:** Add `jest-diff v29.7.0` to devDependencies ([b27bd00a38](https://github.com/facebook/react-native/commit/b27bd00a389295250ec003357df713ebf306374b) by [@andrewdacenko](https://github.com/andrewdacenko))
+- **Logging:** Add support for the second parameter of `console.table` to specify a list of columns to print in the table. ([fd0894b1c7](https://github.com/facebook/react-native/commit/fd0894b1c7fcb20dd213ec1e93aafef25935d709) by [@rubennorte](https://github.com/rubennorte))
+- **Logging:** Add "jsEngine: hermes" to JS runtime Error prototype ([85bdd75828](https://github.com/facebook/react-native/commit/85bdd75828f85230aaa90ed510666457c46f996c) by Maddie Lord)
+- **Metro:** Add opt in for legacy Metro log streaming via `--client-logs` flag ([86db4fa90b](https://github.com/facebook/react-native/commit/86db4fa90b90919867a9b66f6caa28f77fba3a37) by [@huntie](https://github.com/huntie))
+- **Text:** Added `pointerEvents` to `TextProps` type. ([3efbe33ce0](https://github.com/facebook/react-native/commit/3efbe33ce03f846932406742528652eb695b957d) by [@hyochan](https://github.com/hyochan))
+
+#### Android specific
+
+- **ActivityIndicator:** setting `resource-id` from the `testID` prop ([87b1bad45e](https://github.com/facebook/react-native/commit/87b1bad45e4eb730ea07686a2b2558253c60d3b7) by [@mateoguzmana](https://github.com/mateoguzmana))
+- **Codegen:** Fixing schema types for component command params of Arrays ([25c673e357](https://github.com/facebook/react-native/commit/25c673e35784d8d8c49555af104b9b4d8d37973d) by [@elicwhite](https://github.com/elicwhite))
+- **Gradle:** Make the addition of JitPack repository configurable ([a98528e609](https://github.com/facebook/react-native/commit/a98528e609ff0ace4b7bc82f3aa273b7e3fa6443) by [@cortinico](https://github.com/cortinico))
+- **Logging:** SoftException categories ([c832f94cf7](https://github.com/facebook/react-native/commit/c832f94cf713d0cb7616ef095f38583979e1cf43) by Thomas Nardone)
+- **Logging:** Add logging in ReactInstanceManager.onHostPause when activity is incorrectly null ([c2fd35a442](https://github.com/facebook/react-native/commit/c2fd35a4429c752dc2d10a789e4c5f48d22b1eeb) by Maddie Lord)
+- **Runtime:** Added `getState` method for `StateWrapperImpl` ([ed36e896ac](https://github.com/facebook/react-native/commit/ed36e896ac34fcbefece87456dbdfdff30d22ad5) by [@hannojg](https://github.com/hannojg))
+
+#### iOS specific
+
+- **Codegen:** Add the `source` parameter to generate-codegen-artifacts to avoid generating files not needed by libraries. ([98b8f17811](https://github.com/facebook/react-native/commit/98b8f178110472e5fed97de80766c03b0b5e988c) by [@cipolleschi](https://github.com/cipolleschi))
+- **Initialization:** Implement ReactNativeFactory ([081be01a5d](https://github.com/facebook/react-native/commit/081be01a5dd24d0a398c6aa8297575502a17d5ec) by [@okwasniewski](https://github.com/okwasniewski))
+- **Text:** Support system font families (system-ui, ui-sans-serif, ui-serif, ui-monospace, and ui-rounded) on iOS ([1763321c89](https://github.com/facebook/react-native/commit/1763321c8960d30ddc4d3464a0fffdecdd44617a) by [@cxa](https://github.com/cxa))
+- **TextInput:** Integrate a new property - `disableKeyboardShortcuts`. It can disable the keyboard shortcuts on iPads. ([0154372b93](https://github.com/facebook/react-native/commit/0154372b93eb1b02f0c62f2a75c95f4fc6a9f3e8) by [@rezkiy37](https://github.com/rezkiy37))
+
+### Changed
+
+- **Deps:** Bump Hermes ([0c8e15e8bb](https://github.com/facebook/react-native/commit/0c8e15e8bb16ec279290d2390caf75e83d52f518) by [@cipolleschi](https://github.com/cipolleschi))
+- **Flow:** Improved types in `BoxInspector` and refactored a code ([f832c450a5](https://github.com/facebook/react-native/commit/f832c450a52c4c9d61c1d6b609fcad1332613556) by [@coado](https://github.com/coado))
+- **Flow:** Improved types in StyleInspector and refactored a code ([49e5c58c59](https://github.com/facebook/react-native/commit/49e5c58c595265c9fffc84741aab6363d291f1f5) by [@coado](https://github.com/coado))
+- **Flow:** Improved types in ElementBox and refactored a code ([2959d49e8d](https://github.com/facebook/react-native/commit/2959d49e8d09663f9ac437ffcb66d1c99162c6d0) by [@coado](https://github.com/coado))
+- **Flow:** Improve types on BorderBox ([48a7840919](https://github.com/facebook/react-native/commit/48a784091989c695e3432cb8ba657139eb9f5e99) by [@coado](https://github.com/coado))
+- **Flow:** Improve types on DrawerLayoutAndroid ([b5155fba89](https://github.com/facebook/react-native/commit/b5155fba895411e290faeeea06180fce24079f78) by [@huntie](https://github.com/huntie))
+- **Logging:** Improved formatting of values logged via `console.table` (including Markdown format). ([7154c62afb](https://github.com/facebook/react-native/commit/7154c62afb5371f3f861663826792e41229c344a) by [@rubennorte](https://github.com/rubennorte))
+- **Runtime:** Mark `intersectionRect` required in `NativeIntersectionObserverEntry` to reflect native logic. ([8681fc2ab2](https://github.com/facebook/react-native/commit/8681fc2ab20aa1e5937a0bf3fc58ed03c3e0ee23) by [@lunaleaps](https://github.com/lunaleaps))
+- **Runtime:** ([9aa21b5e87](https://github.com/facebook/react-native/commit/9aa21b5e8765f14a9806eac435636b87f62178cc) by [@lunaleaps](https://github.com/lunaleaps))
+- **TypeScript:** Upgrading `typescript-config` module version to `esnext` ([5370347f54](https://github.com/facebook/react-native/commit/5370347f54719f318a4e032aba6cbf2269e7c3d7) by [@mateoguzmana](https://github.com/mateoguzmana))
+- **VirtualizedList:** Fix item disappearing with scroll in VirtualizedList ([df7b6ae092](https://github.com/facebook/react-native/commit/df7b6ae092d03385ebd05efd0f068c59e727f723) by [@Tom910](https://github.com/Tom910))
+- **Yoga:** Update YGNodeStyleGetGap to return YGValue ([331d99a941](https://github.com/facebook/react-native/commit/331d99a94154678848628122e8fe3373ee67fb9b) by [@heoblitz](https://github.com/heoblitz))
+
+#### Android specific
+
+- **APIs:** Introduce new public API `ViewManagerInterface` ([40a0cdbc99](https://github.com/facebook/react-native/commit/40a0cdbc99746f18ca15c48f3d8f03cdad1635af) by [@mdvacca](https://github.com/mdvacca))
+- **Deps:** Bumped Android Gradle Plugin (AGP) to 8.8.0 ([4c7c836ebf](https://github.com/facebook/react-native/commit/4c7c836ebf956c13fa327170adaec43a076226e7) by [@cortinico](https://github.com/cortinico))
+- **Deps:** Bump Gradle to 8.12 ([5e6478954c](https://github.com/facebook/react-native/commit/5e6478954c77f64a9086757ed4a879e83a1ab404) by [@cortinico](https://github.com/cortinico))
+- **Deps:** Update Fresco to 3.6.0 ([819b5c2c8d](https://github.com/facebook/react-native/commit/819b5c2c8dfad620152b159838575b6c03e18ffe) by [@Abbondanzo](https://github.com/Abbondanzo))
+- **Deps:** Migrate jsc-android to mavenCentral ([e42a3a6b84](https://github.com/facebook/react-native/commit/e42a3a6b842d71fc25419c02f6015863fa019f05) by [@Kudo](https://github.com/Kudo))
+- **Image:** Replaced custom XML decoder with Fresco's built-in decoder ([6feb90bb29](https://github.com/facebook/react-native/commit/6feb90bb290ab460df8df2f6f01531a77aac9008) by [@Abbondanzo](https://github.com/Abbondanzo))
+- **Kotlin:** Migrate `ComponentNameResolver` to kotlin ([385b9f4265](https://github.com/facebook/react-native/commit/385b9f4265316a1e1cf8627ea7ed3bed790cc8c5) by [@mdvacca](https://github.com/mdvacca))
+- **Kotlin:** Migrate `ReactSwitchManager` to Kotlin ([b886bc4db9](https://github.com/facebook/react-native/commit/b886bc4db970d8c70de1596dc3f88bdc398de482) by [@krozniata](https://github.com/krozniata))
+
+#### iOS specific
+
+- **Accessibility:** Reduce memory allocations when computing `accessibilityLabel` ([74bdab8bd8](https://github.com/facebook/react-native/commit/74bdab8bd8be2413734004145507c0688232053e) by [@sparga](https://github.com/sparga))
+- **CocoaPods:** Properly inherit OTHER_CPLUSPLUSLAGS ([fa03840e68](https://github.com/facebook/react-native/commit/fa03840e688067bf16a7fb60c00efdc9a1813f92) by [@WoLewicki](https://github.com/WoLewicki))
+- **CocoaPods:** Pin 'concurrent-ruby' to a working version ([198adb47af](https://github.com/facebook/react-native/commit/198adb47af3676c85b35adb308c110c1d87120c8) by [@cipolleschi](https://github.com/cipolleschi))
 
 ### Removed
 
 #### Android specific
 
-- Removed JSCHeapCapture module, deprecated PackagerCommandListener#onCaptureHeapCommand ([e06fa5d102](https://github.com/facebook/react-native/commit/e06fa5d1026843ec4a2ba3dd209652dc5290c0ba) by [@javache](https://github.com/javache))
-- Made ReactCookieJarContainer internal. ([18ebea533d](https://github.com/facebook/react-native/commit/18ebea533d348329926bd7782bb55469aa228a4a) by [@javache](https://github.com/javache))
+- **APIs:** Made `ReactCookieJarContainer` internal. ([18ebea533d](https://github.com/facebook/react-native/commit/18ebea533d348329926bd7782bb55469aa228a4a) by [@javache](https://github.com/javache))
+- **Config:** Remove as_const option (on by default) in fbsource ([e5a526ff44](https://github.com/facebook/react-native/commit/e5a526ff44c25afd935d117d6d4d342f210553a6) by [@panagosg7](https://github.com/panagosg7))
+- **Flow:** Remove comment syntax from ReactNativeTypes ([a80baac58e](https://github.com/facebook/react-native/commit/a80baac58e9f2fc62829ab76b929f5c8b21c05a5) by [@hoxyq](https://github.com/hoxyq))
+- **Metro:** Removed `JSCHeapCapture` module, deprecated PackagerCommandListener#onCaptureHeapCommand ([e06fa5d102](https://github.com/facebook/react-native/commit/e06fa5d1026843ec4a2ba3dd209652dc5290c0ba) by [@javache](https://github.com/javache))
+
 
 ### Fixed
 
-- Modified `console.table` to avoid mutating the received argument. ([caa77fbe2b](https://github.com/facebook/react-native/commit/caa77fbe2b03e6969ae9b542d011f926a0ede3c7) by [@rubennorte](https://github.com/rubennorte))
-- Disable `react-in-jsx-scope` rule in eslint config ([ea56c432b7](https://github.com/facebook/react-native/commit/ea56c432b7a577d3805d1a7b4b46596799dd892e) by [@matinzd](https://github.com/matinzd))
-- Fix a bug when fantom tests could not be run in parallel, e.g. in a stress-test. ([8696b79f73](https://github.com/facebook/react-native/commit/8696b79f73fec18a9e3785b9a2c150afc9965d76) by [@mijay](https://github.com/mijay))
-- Fix peer dependencies on React types ([4368368ef5](https://github.com/facebook/react-native/commit/4368368ef5c3f3d08a66ee6c13222f6d81a2d2df) by [@cipolleschi](https://github.com/cipolleschi))
-- Removed unnecessary state updates in React to reflect the current state of looping animations. ([6059660c60](https://github.com/facebook/react-native/commit/6059660c607f5b6edba08a12906f0f9d6cb15d34) by [@rubennorte](https://github.com/rubennorte))
-- `JSBigFileString` fails for non-zero offset arguments ([7d0338cb0b](https://github.com/facebook/react-native/commit/7d0338cb0b24926aff648a4c8ba5d77b052010cc) by [@jwajgelt](https://github.com/jwajgelt))
-- Animation.stop() executes when `animatedShouldUseSingleOp` is enabled. ([746d584a23](https://github.com/facebook/react-native/commit/746d584a23f303493faa4f9d857ec542257a92ae) by [@javache](https://github.com/javache))
-- Fixed `adjustsFontSizeToFit` not working for text with a single character ([47822e9048](https://github.com/facebook/react-native/commit/47822e90480d61e197a3f223e088ee88a0f38ad7) by [@j-piasecki](https://github.com/j-piasecki))
+- **Animations:** Removed unnecessary state updates in React to reflect the current state of looping animations. ([6059660c60](https://github.com/facebook/react-native/commit/6059660c607f5b6edba08a12906f0f9d6cb15d34) by [@rubennorte](https://github.com/rubennorte))
+- **Animations:** Animation.stop() executes when `animatedShouldUseSingleOp` is enabled. ([746d584a23](https://github.com/facebook/react-native/commit/746d584a23f303493faa4f9d857ec542257a92ae) by [@javache](https://github.com/javache))
+- **Animations:** Fix buttons becoming unresponsive when transform is animated ([2204ec94d4](https://github.com/facebook/react-native/commit/2204ec94d4b67a9ba559db3f54a5a1ef91e0f233) by [@sammy-SC](https://github.com/sammy-SC))
+- **C++:** `JSBigFileString` fails for non-zero offset arguments ([7d0338cb0b](https://github.com/facebook/react-native/commit/7d0338cb0b24926aff648a4c8ba5d77b052010cc) by [@jwajgelt](https://github.com/jwajgelt))
+- **Config:** Disable `react-in-jsx-scope` rule in eslint config ([ea56c432b7](https://github.com/facebook/react-native/commit/ea56c432b7a577d3805d1a7b4b46596799dd892e) by [@matinzd](https://github.com/matinzd))
+- **Deps:** Fix peer dependencies on React types to React 19 ([4368368ef5](https://github.com/facebook/react-native/commit/4368368ef5c3f3d08a66ee6c13222f6d81a2d2df) by [@cipolleschi](https://github.com/cipolleschi))
+- **Deps:** Add missing `invariant` dependency ([ee8088b615](https://github.com/facebook/react-native/commit/ee8088b6157837c239db47ac5bd3a8603ceefc3c) by [@tido64](https://github.com/tido64))
+- **Fantom:** Fix a bug when fantom tests could not be run in parallel, e.g. in a stress-test. ([8696b79f73](https://github.com/facebook/react-native/commit/8696b79f73fec18a9e3785b9a2c150afc9965d76) by [@mijay](https://github.com/mijay))
+- **Logging:** Modified `console.table` to avoid mutating the received argument. ([caa77fbe2b](https://github.com/facebook/react-native/commit/caa77fbe2b03e6969ae9b542d011f926a0ede3c7) by [@rubennorte](https://github.com/rubennorte))
+- **Text:** Fixed `adjustsFontSizeToFit` not working for text with a single character ([47822e9048](https://github.com/facebook/react-native/commit/47822e90480d61e197a3f223e088ee88a0f38ad7) by [@j-piasecki](https://github.com/j-piasecki))
+- **Text:** Fix `maxFontSizeMultiplier` prop on `Text` and `TextInput` components in Fabric / New Architecture ([ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32](https://github.com/facebook/react-native/commit/ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32) by [@RickardZrinski](https://github.com/RickardZrinski))
 
 #### Android specific
 
-- Fix crash for setEventEmitterCallback NoSuchMethodError on API lvl 26 ([7dcbc799eb](https://github.com/facebook/react-native/commit/7dcbc799eb2fb5792512b71320eafed08deec9ea) by [@cortinico](https://github.com/cortinico))
-- Fix incorrect height of single line TextInputs without definite size ([9b646c8b7b](https://github.com/facebook/react-native/commit/9b646c8b7b9a23645b1563883768a9274897a1cd) by [@NickGerleman](https://github.com/NickGerleman))
-- `FLAG_SECURE` not respected in Modal dialog ([7e029b0dcf](https://github.com/facebook/react-native/commit/7e029b0dcf6d1a6455a8a6343457b70e353d0ff6) by [@mateoguzmana](https://github.com/mateoguzmana))
-- Fix JSC Debug instacrashing ([b10491a3c4](https://github.com/facebook/react-native/commit/b10491a3c457c802608758ca1fe659a72c18576b) by [@cortinico](https://github.com/cortinico))
-- Fix BackHandle callback undefined cause crash issue ([44705fe11b](https://github.com/facebook/react-native/commit/44705fe11bd9bb12c8f71d1e50a7b48e0af6a38d) by [@BleemIs42](https://github.com/BleemIs42))
-- Modal: Setting `resource-id` from `testID` prop ([52b6592559](https://github.com/facebook/react-native/commit/52b65925595882d9b6c7f354a5ce3bfe3823738e) by [@mateoguzmana](https://github.com/mateoguzmana))
-- Handling `testID` correctly for horizontal scroll view ([81c74cd35f](https://github.com/facebook/react-native/commit/81c74cd35f9e40c8ad4663fc932d0dddeaa4bc19) by [@mateoguzmana](https://github.com/mateoguzmana))
-- Fixed build issue when including mapbuffer jni headers in library code ([ecf17666ad](https://github.com/facebook/react-native/commit/ecf17666ad84e15d31944962e2d0e846a5670977) by [@hannojg](https://github.com/hannojg))
-- Support Long values in WritableMap and WritableArray ([e7f943de2f](https://github.com/facebook/react-native/commit/e7f943de2fd71d2259ab53e7817d2dcf96559f7e) by [@WoLewicki](https://github.com/WoLewicki))
-- Re-introduce the deprecated constructor on ReactModuleInfo ([734730df75](https://github.com/facebook/react-native/commit/734730df75b3bdddeb5dbe65f4151cc92b988303) by [@cortinico](https://github.com/cortinico))
-- Fix JSC by avoiding use of unavailable `str.replaceAll()` ([b5b9e032c2](https://github.com/facebook/react-native/commit/b5b9e032c2b57aa44afb7141a879d83c8b889feb) by [@robhogan](https://github.com/robhogan))
-- Reverted removal of TurboReactPackage ([70a957452c](https://github.com/facebook/react-native/commit/70a957452c438a74787f4f752b2c274360cb2edd) by [@javache](https://github.com/javache))
-- SetColorScheme should be called on the UI thread ([2aa79979d3](https://github.com/facebook/react-native/commit/2aa79979d3e4a54008f24c81b6c04553c98ff6b6) by lihaitao)
+- **APIs** Re-introduce the deprecated constructor on ReactModuleInfo ([734730df75](https://github.com/facebook/react-native/commit/734730df75b3bdddeb5dbe65f4151cc92b988303) by [@cortinico](https://github.com/cortinico))
+- **Dialog:** `FLAG_SECURE` not respected in Modal dialog ([7e029b0dcf](https://github.com/facebook/react-native/commit/7e029b0dcf6d1a6455a8a6343457b70e353d0ff6) by [@mateoguzmana](https://github.com/mateoguzmana))
+- **Events:** Fix crash for `setEventEmitterCallback` NoSuchMethodError on API lvl 26 ([7dcbc799eb](https://github.com/facebook/react-native/commit/7dcbc799eb2fb5792512b71320eafed08deec9ea) by [@cortinico](https://github.com/cortinico))
+- **Gradle:** Fixed build issue when including mapbuffer jni headers in library code ([ecf17666ad](https://github.com/facebook/react-native/commit/ecf17666ad84e15d31944962e2d0e846a5670977) by [@hannojg](https://github.com/hannojg))
+- **InteropLayer:** Fix execution of early InteropEvents ([4ed2b35bf6](https://github.com/facebook/react-native/commit/4ed2b35bf61426c81c9f8b30a142d77b44988fdb) by [@mdvacca](https://github.com/mdvacca))
+- **JSC:** Fix JSC Debug instacrashing ([b10491a3c4](https://github.com/facebook/react-native/commit/b10491a3c457c802608758ca1fe659a72c18576b) by [@cortinico](https://github.com/cortinico))
+- **JSC:**Fix JSC by avoiding use of unavailable `str.replaceAll()` ([b5b9e032c2](https://github.com/facebook/react-native/commit/b5b9e032c2b57aa44afb7141a879d83c8b889feb) by [@robhogan](https://github.com/robhogan))
+- **Modal:** Setting `resource-id` from `testID` prop ([52b6592559](https://github.com/facebook/react-native/commit/52b65925595882d9b6c7f354a5ce3bfe3823738e) by [@mateoguzmana](https://github.com/mateoguzmana))
+- **Networking:** ReactOkHttpNetworkFetcher – cache control headers getting overwritten by the rest of the headers ([81cb166d10](https://github.com/facebook/react-native/commit/81cb166d103f7caaa5135b5a1c66d4e978f3619f) by [@mateoguzmana](https://github.com/mateoguzmana))
+- **DevTools:** Pass the bundle URL protocol when setting up HMR client on Android ([32fe244744](https://github.com/facebook/react-native/commit/32fe24474495f09f985a2c92e11103dd386f5fe3) by [@byCedric](https://github.com/byCedric))
+- **Runtime:** Fix BackHandle callback undefined cause crash issue ([44705fe11b](https://github.com/facebook/react-native/commit/44705fe11bd9bb12c8f71d1e50a7b48e0af6a38d) by [@BleemIs42](https://github.com/BleemIs42))
+- **Runtime:** Support Long values in WritableMap and WritableArray ([e7f943de2f](https://github.com/facebook/react-native/commit/e7f943de2fd71d2259ab53e7817d2dcf96559f7e) by [@WoLewicki](https://github.com/WoLewicki))
+- **Runtime:** `SetColorScheme` should be called on the UI thread ([2aa79979d3](https://github.com/facebook/react-native/commit/2aa79979d3e4a54008f24c81b6c04553c98ff6b6) by lihaitao)
+- **Style:** Fix background getting clipped when border-radius is set ([6d235853fb](https://github.com/facebook/react-native/commit/6d235853fb9e9ad4050ba5611d74921fa1b9c72d) by [@jorge-cab](https://github.com/jorge-cab))
+- **Testing:** Handling `testID` correctly for horizontal scroll view ([81c74cd35f](https://github.com/facebook/react-native/commit/81c74cd35f9e40c8ad4663fc932d0dddeaa4bc19) by [@mateoguzmana](https://github.com/mateoguzmana))
+- **TextInput:** Fix incorrect height of single line TextInputs without definite size ([9b646c8b7b](https://github.com/facebook/react-native/commit/9b646c8b7b9a23645b1563883768a9274897a1cd) by [@NickGerleman](https://github.com/NickGerleman))
 
 #### iOS specific
 
-- Fix app becoming unresponsive when RefreshControl is used inside of <Modal /> ([6cb2684b43](https://github.com/facebook/react-native/commit/6cb2684b4343bd8698b9770c0f6ef8812683c783) by [@sammy-SC](https://github.com/sammy-SC))
-- Resolve "Your project does not explicitly specify the CocoaPods master specs repo" `pod install` warning ([2f2281718a](https://github.com/facebook/react-native/commit/2f2281718a2ef905ffd15adf3b47a1b6b6fb8d95) by [@noway](https://github.com/noway))
-- Enable/disable keyboard shortcuts only on iOS ([8b0af4542e](https://github.com/facebook/react-native/commit/8b0af4542e6fd5628fefdc8e1699326c2225c3f0) by [@okwasniewski](https://github.com/okwasniewski))
-- Dashed & dotted borders now work with overflow: hidden ([1b88c5b429](https://github.com/facebook/react-native/commit/1b88c5b429888e109b7acae4808b4b6f8b3f920f) by [@joevilches](https://github.com/joevilches))
-- Emit didUpdateDimensions correctly ([920867d949](https://github.com/facebook/react-native/commit/920867d9494cbfcc9cb0e23607cb339ec1b89ca9) by TobiasH)
-- Fix applicationDidEnterBackground not being called ([adaceba546](https://github.com/facebook/react-native/commit/adaceba5462b4ad8676745f34e0be2bf5bb25166) by [@alextoudic](https://github.com/alextoudic))
-- Fixed problem with accessory view & 3rd party libs ([5fc582783d](https://github.com/facebook/react-native/commit/5fc582783d7f70ca9521e317c93624a8845bfff2) by [@kirillzyusko](https://github.com/kirillzyusko))
-- Fix Direct Debugging with JSC ([b04d17afca](https://github.com/facebook/react-native/commit/b04d17afcac82af1a47fd462a04fe4088d19b468) by [@Saadnajmi](https://github.com/Saadnajmi))
-- Fix ccache not found error exporting ccache binary path as Xcode user-defined setting to be used by ccache scripts ([d31ac832c5](https://github.com/facebook/react-native/commit/d31ac832c5b866653f7179fd517427f7be11ad45) by [@ste7en](https://github.com/ste7en))
-- Properly escape paths in Xcode build script used when bundling an app. ([2fee13094b](https://github.com/facebook/react-native/commit/2fee13094b3d384c071978776fd8b7cff0b6530f) by [@kraenhansen](https://github.com/kraenhansen))
-- Exclude Android HorizontalScrollContentView cxx component code ([4adaacb4f7](https://github.com/facebook/react-native/commit/4adaacb4f7cd136d5534c81fb9b8f5f2a0312d7f) by [@zhongwuzw](https://github.com/zhongwuzw))
-- Fixed centerContent losing taps and causing jitter ([fe7e97a2fd](https://github.com/facebook/react-native/commit/fe7e97a2fd272db0d9d9aa7d0561337a7c8e2c30) by [@gaearon](https://github.com/gaearon))
+- **C++:** Exclude Android HorizontalScrollContentView cxx component code ([4adaacb4f7](https://github.com/facebook/react-native/commit/4adaacb4f7cd136d5534c81fb9b8f5f2a0312d7f) by [@zhongwuzw](https://github.com/zhongwuzw))
+- **Ccache:** Fix ccache not found error exporting ccache binary path as Xcode user-defined setting to be used by ccache scripts ([d31ac832c5](https://github.com/facebook/react-native/commit/d31ac832c5b866653f7179fd517427f7be11ad45) by [@ste7en](https://github.com/ste7en))
+- **CocoaPods:** Resolve "Your project does not explicitly specify the CocoaPods master specs repo" `pod install` warning ([2f2281718a](https://github.com/facebook/react-native/commit/2f2281718a2ef905ffd15adf3b47a1b6b6fb8d95) by [@noway](https://github.com/noway))
+- **Image:** Load images even when the extension is implicit ([b9f418e9bc](https://github.com/facebook/react-native/commit/b9f418e9bc35372438a34934254db985b7ad1840) by [@cipolleschi](https://github.com/cipolleschi))
+- **Initialization:** Allow multiple RN instances to run at the same time ([444c7d4eff](https://github.com/facebook/react-native/commit/444c7d4eff3d4fbe25452c94cba7ffacb3c366cc) by [@cipolleschi](https://github.com/cipolleschi))
+- **InteropLayer:** Avoid crashing the app when the InteropLayer can't find some methods in the native implementation ([3bd3f101b9](https://github.com/facebook/react-native/commit/3bd3f101b9dcff8551a2f8259ddeed9843fd69b8) by [@cipolleschi](https://github.com/cipolleschi))
+- **InteropLayer:** Properly handle `null` value in TurboModule Interop layer ([ebfd7057af](https://github.com/facebook/react-native/commit/ebfd7057af049ebfbc593448918c70db37e39d48) by [@cipolleschi](https://github.com/cipolleschi))
+- **JSC:** Fix Direct Debugging with JSC ([b04d17afca](https://github.com/facebook/react-native/commit/b04d17afcac82af1a47fd462a04fe4088d19b468) by [@Saadnajmi](https://github.com/Saadnajmi))
+- **Keyboard:** Enable/disable keyboard shortcuts only on iOS ([8b0af4542e](https://github.com/facebook/react-native/commit/8b0af4542e6fd5628fefdc8e1699326c2225c3f0) by [@okwasniewski](https://github.com/okwasniewski))
+- **RefreshControl:** Fix app becoming unresponsive when `RefreshControl` is used inside of <Modal /> ([6cb2684b43](https://github.com/facebook/react-native/commit/6cb2684b4343bd8698b9770c0f6ef8812683c783) by [@sammy-SC](https://github.com/sammy-SC))
+- **DevTools:** Restore "Paused in debugger" overlay icon ([f30c46efbd](https://github.com/facebook/react-native/commit/f30c46efbd964d367f678181589865a3faa931cd) by [@robhogan](https://github.com/robhogan))
+- **Runtime:** Emit `didUpdateDimensions` correctly ([920867d949](https://github.com/facebook/react-native/commit/920867d9494cbfcc9cb0e23607cb339ec1b89ca9) by TobiasH)
+- **Runtime:** Fix `applicationDidEnterBackground` not being called ([adaceba546](https://github.com/facebook/react-native/commit/adaceba5462b4ad8676745f34e0be2bf5bb25166) by [@alextoudic](https://github.com/alextoudic))
+- **Runtime:** Fixed problem with accessory view & 3rd party libs ([5fc582783d](https://github.com/facebook/react-native/commit/5fc582783d7f70ca9521e317c93624a8845bfff2) by [@kirillzyusko](https://github.com/kirillzyusko))
+- **Style:** Dashed & dotted borders now work with overflow: hidden ([1b88c5b429](https://github.com/facebook/react-native/commit/1b88c5b429888e109b7acae4808b4b6f8b3f920f) by [@joevilches](https://github.com/joevilches))
+- **Style:** Fixed `centerContent` losing taps and causing jitter ([fe7e97a2fd](https://github.com/facebook/react-native/commit/fe7e97a2fd272db0d9d9aa7d0561337a7c8e2c30) by [@gaearon](https://github.com/gaearon))
+- **Xcode:** Properly escape paths in Xcode build script used when bundling an app. ([2fee13094b](https://github.com/facebook/react-native/commit/2fee13094b3d384c071978776fd8b7cff0b6530f) by [@kraenhansen](https://github.com/kraenhansen))
 
-### Unknown
+## v0.77.1
 
-- Release 0.78.0-rc.0 ([b713f273b6](https://github.com/facebook/react-native/commit/b713f273b6df654e4274ae00a849c39d2efccedc) by [@react-native-bot](https://github.com/react-native-bot))
-- Bump Hermes ([0c8e15e8bb](https://github.com/facebook/react-native/commit/0c8e15e8bb16ec279290d2390caf75e83d52f518) by [@cipolleschi](https://github.com/cipolleschi))
-- Include cxx modules in codegen schema ([cf5ab03d43](https://github.com/facebook/react-native/commit/cf5ab03d4324b7e3fce38f9eacc96da82b11b68a) by [@elicwhite](https://github.com/elicwhite))
-- Add "jsEngine: hermes" to JS runtime Error prototype ([85bdd75828](https://github.com/facebook/react-native/commit/85bdd75828f85230aaa90ed510666457c46f996c) by Maddie Lord)
-- Translation auto-update for Apps/Wilde/scripts/intl-config.json on master ([5b6e35afda](https://github.com/facebook/react-native/commit/5b6e35afda5f0ef8cc8810ed8c6bd918777292b4) by Intl Scheduler)
-- Add logging in ReactInstanceManager.onHostPause when activity is incorrectly null ([c2fd35a442](https://github.com/facebook/react-native/commit/c2fd35a4429c752dc2d10a789e4c5f48d22b1eeb) by Maddie Lord)
-- Remove as_const option (on by default) in fbsource ([e5a526ff44](https://github.com/facebook/react-native/commit/e5a526ff44c25afd935d117d6d4d342f210553a6) by [@panagosg7](https://github.com/panagosg7))
-- Remove comment syntax from ReactNativeTypes ([a80baac58e](https://github.com/facebook/react-native/commit/a80baac58e9f2fc62829ab76b929f5c8b21c05a5) by [@hoxyq](https://github.com/hoxyq))
-- Update YGNodeStyleGetGap to return YGValue ([331d99a941](https://github.com/facebook/react-native/commit/331d99a94154678848628122e8fe3373ee67fb9b) by [@heoblitz](https://github.com/heoblitz))
-- Remove unused-variable in ../xplat/compphoto/gpuEngine/tools/ToolHelpers.cpp +3 ([071d223ee0](https://github.com/facebook/react-native/commit/071d223ee02c6f826d06c033e6c949642bd24b9a) by [@r-barnes](https://github.com/r-barnes))
+### Fixed
 
-#### Android Unknown
+ - **Dev-Middleware:** Add missing `invariant` dependency ([877e82c1a9](https://github.com/facebook/react-native/commit/877e82c1a97d6c667024a437d993e84af3b820a6) by [@tido64](https://github.com/tido64))
+ - **style:** Respect `maxFontSizeMultiplier` prop on `Text` and `TextInput` components in New Architecture ([8baa858412](https://github.com/facebook/react-native/commit/8baa85841209679936938e7759c5be149304843c) by [RickardZrinski](https://github.com/RickardZrinski))
 
-- Fix background getting clipped when border-radius is set ([6d235853fb](https://github.com/facebook/react-native/commit/6d235853fb9e9ad4050ba5611d74921fa1b9c72d) by [@jorge-cab](https://github.com/jorge-cab))
+#### Android specific
 
-#### iOS Unknown
+ - **layout:** Fix elevation prop on android has incorrect border-radius ([55d5c44976](https://github.com/facebook/react-native/commit/55d5c4497621a8dfd6545899754451fcf68dce70) by [@NickGerleman](https://github.com/NickGerleman))
+ - **Fabric:** Fix execution of early InteropEvents ([d8af0ae3f2](https://github.com/facebook/react-native/commit/d8af0ae3f22c906a9584e1f5d1aaf2dba3cc3fea) by [mdvacca](https://github.com/mdvacca))
 
-- Static Hermes for React Native ([23eb06f662](https://github.com/facebook/react-native/commit/23eb06f6623f6831ff5f6a2f12e22884de4c1326) by [@piaskowyk](https://github.com/piaskowyk))
-- Remove unused-variable in xplat/js/react-native-github/packages/react-native/React/Base/RCTModuleData.mm +3 ([72007a14af](https://github.com/facebook/react-native/commit/72007a14af3afe0e161c1144af39759807807f25) by [@r-barnes](https://github.com/r-barnes))
+#### iOS specific
 
-#### Failed to parse
+ - **Image:** Load images even when the extension is implicit ([bc35afefd5](https://github.com/facebook/react-native/commit/bc35afefd57a7d0516796dee209881120b82c0b1) by [@cipolleschi](https://github.com/cipolleschi))
+ - **Interop Layer:** Avoid crashing the app when the InteropLayer can't find some methods in the native implementation. ([83b986d370](https://github.com/facebook/react-native/commit/83b986d370139266bbbad3e2c356b871c56ae17c) by [@cipolleschi](https://github.com/cipolleschi))
+ - **Interop Layer:** Properly handle `null` values coming from NativeModules. ([475f797a51](https://github.com/facebook/react-native/commit/475f797a51237e63e4d2bb4e5718e6aa73157767) by [sammy-SC](https://github.com/sammy-SC))
 
-- Apply fixup patch to fbsource ([7948044179](https://github.com/facebook/react-native/commit/794804417990848d0fc9bb8939b9c340ced3477f) by generatedunixname499836121)
-- Test(image): [android] react okhttp network fetcher cache control tests ([37c532a063](https://github.com/facebook/react-native/commit/37c532a063c6054ea974612a40551f7c1399c147) by [@mateoguzmana](https://github.com/mateoguzmana))
-- Test(network): [android] `ResponseUtil` unit tests ([50d0157f0c](https://github.com/facebook/react-native/commit/50d0157f0c6a4e3224d8064a8b55c523bcd33269) by [@mateoguzmana](https://github.com/mateoguzmana))
-- ReactOkHttpNetworkFetcher – cache control headers getting overwritten by the rest of the headers ([81cb166d10](https://github.com/facebook/react-native/commit/81cb166d103f7caaa5135b5a1c66d4e978f3619f) by [@mateoguzmana](https://github.com/mateoguzmana))
+### Added
+ - **DevX:** Add opt in for legacy Metro log streaming via `--client-logs` flag ([969eb3f007](https://github.com/facebook/react-native/commit/969eb3f0070dc9df2e89ea52a6eb2c68b05aa2d7) by [huntie](https://github.com/huntie))
 
 ## v0.77.0
 
@@ -546,6 +754,32 @@ github.com/robhogan))
 - **TextInput:** Fixed problem with third party libraries overwriting `inputAccessoryView` ([d34032b6c0](https://github.com/facebook/react-native/commit/d34032b6c0bb3564a7b77ef270cc3289d99365f2) by [@kirillzyusko](https://github.com/kirillzyusko))
 - **TextInput:** Workaround for Mac Catalyst TextInput crash due to serialization attempt of WeakEventEmitter ([e04738b7ec](https://github.com/facebook/react-native/commit/e04738b7ecec9e7da3aab49bb24a6336b9496b94) by [@rozele](https://github.com/rozele))
 - **TextInput:** Fix `maxLength` not working in old arch ([4b3ef3b00c](https://github.com/facebook/react-native/commit/4b3ef3b00ce0026c0d1e1f2a5546fcec249255d8) by [@mateoguzmana](https://github.com/mateoguzmana))
+
+## v0.76.7
+
+### Changed
+
+#### iOS specific
+
+- **Deps:** Pin 'concurrent-ruby' to a working version ([198adb47af](https://github.com/facebook/react-native/commit/198adb47af3676c85b35adb308c110c1d87120c8) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **Text** Fix `maxFontSizeMultiplier` prop on `Text` and `TextInput` components in Fabric / New Architecture ([ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32](https://github.com/facebook/react-native/commit/ea49d4d1b01107a5ecbbbd4904f1d935e51d6b32) by [@RickardZrinski](https://github.com/RickardZrinski))
+- **Appearance:** Fix `Appearance.setColorScheme(null)` not resetting color scheme value ([7d63235086](https://github.com/facebook/react-native/commit/7d63235086352d8c424d634c7039551f0a5025dc) by [@sangonz193](https://github.com/sangonz193))
+
+#### Android specific
+
+- **Deps:** Add missing `invariant` dependency ([ee8088b615](https://github.com/facebook/react-native/commit/ee8088b6157837c239db47ac5bd3a8603ceefc3c) by [@tido64](https://github.com/tido64))
+- **Turbomodule** Fix execution of early InteropEvents ([4ed2b35bf6](https://github.com/facebook/react-native/commit/4ed2b35bf61426c81c9f8b30a142d77b44988fdb) by [@mdvacca](https://github.com/mdvacca))
+- **Deps:** Bump Kotlin to 1.9.25 to mitigate #49115 ([f8857ba3b5](https://github.com/facebook/react-native/commit/f8857ba3b51f26871d0a0b82b9581a0c35b6273d) by [@cortinico](https://github.com/cortinico))
+
+#### iOS specific
+
+- **runtime:** `RCTSurfaceHostingProxyRootView` no longer has different behavior (whether it calls `start` on the provided *surface*) depending on which initializer is used.  Call `start` yourself on the *surface* instead. ([13b93cfdda](https://github.com/facebook/react-native/commit/13b93cfddaa559697968ac1c19e55f7aaa053070) by Nolan O'Brien)
+- Be less strict with method parsing of TurboModule Interop Layer
+- **Turbomodule:** Avoid crashing the app when the InteropLayer can't find some methods in the native implementation. ([3bd3f101b9](https://github.com/facebook/react-native/commit/3bd3f101b9dcff8551a2f8259ddeed9843fd69b8) by [@cipolleschi](https://github.com/cipolleschi))
+- **Runtime:** Fix applicationDidEnterBackground not being called ([adaceba546](https://github.com/facebook/react-native/commit/adaceba5462b4ad8676745f34e0be2bf5bb25166) by [@alextoudic](https://github.com/alextoudic))
 
 ## v0.76.6
 
@@ -951,6 +1185,40 @@ created on the mqt_native thread. ([c4a6bbc8fd](https://github.com/facebook/reac
 - **infra:** Upgrade braces from 3.0.2 to 3.0.3 (CVE-2024-4068) ([d538879e08](https://github.com/facebook/react-native/commit/d538879e08360b8230410fc893a50489bad5cf60) by [@GijsWeterings](https://github.com/GijsWeterings))
 - **infra:** Update ws from 7.5.1 to 7.5.10 (CVE-2024-37890) ([13f1b9e10f](https://github.com/facebook/react-native/commit/13f1b9e10f6045421808714f7e62aa17bfb3e891) by [@GijsWeterings](https://github.com/GijsWeterings))
 - **infra:** Update ws from 6.2.2 to 6.2.3 (CVE-2024-37890) ([80cfacef78](https://github.com/facebook/react-native/commit/80cfacef78f34d3786d955084a8bf4d42ea37f1b) by [@GijsWeterings](https://github.com/GijsWeterings))
+
+## v0.75.5
+
+### Added
+
+- **Hermes:** Implement more missing methods on WithRuntimeDecorator ([80f67ca03c](https://github.com/facebook/react-native/commit/80f67ca03c99c688e2a3127e9b3dddd02625848e) by [@neildhar](https://github.com/neildhar))
+
+
+### Changed
+
+#### Android specific
+
+- **Deps:** Bump Kotlin to 1.9.25 to mitigate [#49115](https://github.com/facebook/react-native/issues/49115) ([25e76a2717](https://github.com/facebook/react-native/commit/25e76a271781b3ffe8002108d8b12aa3d47442b5) by [@riteshshukla04](https://github.com/riteshshukla04))
+
+#### iOS specific
+
+- **Deps:** Pin Xcodeproj to < 1.26.0 ([2922af2e7e](https://github.com/facebook/react-native/commit/2922af2e7e8527a93c7956b10ddb314f25c334fa) by [@cipolleschi](https://github.com/cipolleschi))
+- **Deps:** Pin concurrent-ruby to <= 1.3.4 ([794bf34e60](https://github.com/facebook/react-native/commit/794bf34e60cea8146aebad1fefe051d4140fc28b) by [@cipolleschi](https://github.com/cipolleschi))
+
+### Fixed
+
+- **FormData:** fix: FormData filename in content-disposition ([78ef1e2bc2](https://github.com/facebook/react-native/commit/78ef1e2bc2ed30321745e2505713915b9015d920) by [@foyarash](https://github.com/@foyarash))
+
+
+#### Android specific
+
+- **TextInput:** Set TextInput selection correctly when attached to window in Android ([1656394bae](https://github.com/facebook/react-native/commit/1656394bae16cc54fb38687d38bcbf85138c98a2) by [@QichenZhu](https://github.com/QichenZhu))
+
+#### iOS specific
+
+- **Animation:** Fabric: Fixes animations strict weak ordering sorted check failed ([ea0bc54115](https://github.com/facebook/react-native/commit/ea0bc541155700e0973d960c94d01918d6b28c6b) by [@zhongwuzw](https://github.com/zhongwuzw))
+- **Hermes** Exclude dSYM from the archive ([fdb2631b5e](https://github.com/facebook/react-native/commit/fdb2631b5ea27765663046b94f84956d30ebaaeb) by [@cipolleschi](https://github.com/cipolleschi))
+- **Image** Fix images not displayed when extension is implicit ([b6ed0d351e](https://github.com/facebook/react-native/commit/b6ed0d351e246c431bdc88a6c3d154ba35220c25) by [@cipolleschi](https://github.com/cipolleschi))
+- **Xcode:** Fix the generation of .xcode.env.local ([dbffbf72d7](https://github.com/facebook/react-native/commit/dbffbf72d7287e021e965b6639e455e8555bbf2e) by [@cipolleschi](https://github.com/cipolleschi))
 
 ## v0.75.4
 

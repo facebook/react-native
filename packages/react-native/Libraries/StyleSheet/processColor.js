@@ -12,8 +12,8 @@
 
 import type {ColorValue, NativeColorValue} from './StyleSheet';
 
-const Platform = require('../Utilities/Platform');
-const normalizeColor = require('./normalizeColor');
+const Platform = require('../Utilities/Platform').default;
+const normalizeColor = require('./normalizeColor').default;
 
 export type ProcessedColorValue = number | NativeColorValue;
 

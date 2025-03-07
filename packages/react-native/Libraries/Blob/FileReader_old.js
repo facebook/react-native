@@ -30,18 +30,18 @@ const READER_EVENTS = [
   'progress',
 ];
 
-const EMPTY = 0;
-const LOADING = 1;
-const DONE = 2;
+const EMPTY = 0 as const;
+const LOADING = 1 as const;
+const DONE = 2 as const;
 
 class FileReader extends (EventTarget(...READER_EVENTS): typeof EventTarget) {
-  static EMPTY: number = EMPTY;
-  static LOADING: number = LOADING;
-  static DONE: number = DONE;
+  static EMPTY: 0 = EMPTY;
+  static LOADING: 1 = LOADING;
+  static DONE: 2 = DONE;
 
-  EMPTY: number = EMPTY;
-  LOADING: number = LOADING;
-  DONE: number = DONE;
+  EMPTY: 0 = EMPTY;
+  LOADING: 1 = LOADING;
+  DONE: 2 = DONE;
 
   _readyState: ReadyState;
   _error: ?Error;

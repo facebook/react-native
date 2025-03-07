@@ -8,8 +8,8 @@
  * @format
  */
 
+import type {HostComponent} from '../../src/private/types/HostComponent';
 import type {
-  HostComponent,
   PartialViewConfig,
   ViewConfig,
 } from '../Renderer/shims/ReactNativeTypes';

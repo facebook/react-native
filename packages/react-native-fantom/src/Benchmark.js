@@ -25,12 +25,23 @@ type SuiteOptions = $ReadOnly<{
   minWarmupDuration?: number,
   minWarmupIterations?: number,
   disableOptimizedBuildCheck?: boolean,
+  testOnly?: boolean,
+}>;
+
+type TestOptions = $ReadOnly<{
+  ...FnOptions,
+  only?: boolean,
 }>;
 
 type SuiteResults = Array<$ReadOnly<TaskResult>>;
 
+interface TestFunction {
+  (name: string, fn: () => void, options?: FnOptions): SuiteAPI;
+  only: (name: string, fn: () => void, options?: FnOptions) => SuiteAPI;
+}
+
 interface SuiteAPI {
-  add(name: string, fn: () => void, options?: FnOptions): SuiteAPI;
+  +test: TestFunction;
   verify(fn: (results: SuiteResults) => void): SuiteAPI;
 }
 
@@ -41,7 +52,7 @@ export function suite(
   const tasks: Array<{
     name: string,
     fn: () => void,
-    options: FnOptions | void,
+    options: TestOptions | void,
   }> = [];
   const verifyFns = [];
 
@@ -56,12 +67,13 @@ export function suite(
     // no point in running the benchmark.
     // We still run a single iteration of each test just to make sure that the
     // logic in the benchmark doesn't break.
-    const isTestOnly = isRunningFromCI && verifyFns.length === 0;
+    const isTestOnly =
+      suiteOptions.testOnly === true ||
+      (isRunningFromCI && verifyFns.length === 0);
 
     const benchOptions: BenchOptions = isTestOnly
       ? {
-          warmupIterations: 1,
-          warmupTime: 0,
+          warmup: false,
           iterations: 1,
           time: 0,
         }
@@ -71,30 +83,39 @@ export function suite(
     benchOptions.throws = true;
     benchOptions.now = () => NativeCPUTime.getCPUTimeNanos() / 1000000;
 
-    if (suiteOptions.minIterations != null) {
-      benchOptions.iterations = suiteOptions.minIterations;
-    }
+    if (!isTestOnly) {
+      if (suiteOptions.minIterations != null) {
+        benchOptions.iterations = suiteOptions.minIterations;
+      }
 
-    if (suiteOptions.minDuration != null) {
-      benchOptions.time = suiteOptions.minDuration;
-    }
+      if (suiteOptions.minDuration != null) {
+        benchOptions.time = suiteOptions.minDuration;
+      }
 
-    if (suiteOptions.warmup != null) {
-      benchOptions.warmup = suiteOptions.warmup;
-    }
+      if (suiteOptions.warmup != null) {
+        benchOptions.warmup = suiteOptions.warmup;
+      }
 
-    if (suiteOptions.minWarmupDuration != null) {
-      benchOptions.warmupTime = suiteOptions.minWarmupDuration;
-    }
+      if (suiteOptions.minWarmupDuration != null) {
+        benchOptions.warmupTime = suiteOptions.minWarmupDuration;
+      }
 
-    if (suiteOptions.minWarmupIterations != null) {
-      benchOptions.warmupIterations = suiteOptions.minWarmupIterations;
+      if (suiteOptions.minWarmupIterations != null) {
+        benchOptions.warmupIterations = suiteOptions.minWarmupIterations;
+      }
     }
 
     const bench = new Bench(benchOptions);
 
+    const isFocused = tasks.find(task => task.options?.only === true) != null;
+
     for (const task of tasks) {
-      bench.add(task.name, task.fn, task.options);
+      if (isFocused && task.options?.only !== true) {
+        continue;
+      }
+
+      const {only, ...options} = task.options ?? {};
+      bench.add(task.name, task.fn, options);
     }
 
     bench.runSync();
@@ -116,13 +137,30 @@ export function suite(
     if (__DEV__ && suiteOptions.disableOptimizedBuildCheck !== true) {
       throw new Error('Benchmarks should not be run in development mode');
     }
+
+    if (isFocused) {
+      throw new Error(
+        'Failing focused test to prevent it from being committed',
+      );
+    }
   });
 
+  const test = (
+    name: string,
+    fn: () => void,
+    options?: FnOptions,
+  ): SuiteAPI => {
+    tasks.push({name, fn, options});
+    return suiteAPI;
+  };
+
+  test.only = (name: string, fn: () => void, options?: FnOptions): SuiteAPI => {
+    tasks.push({name, fn, options: {...options, only: true}});
+    return suiteAPI;
+  };
+
   const suiteAPI = {
-    add(name: string, fn: () => void, options?: FnOptions): SuiteAPI {
-      tasks.push({name, fn, options});
-      return suiteAPI;
-    },
+    test,
     verify(fn: (results: SuiteResults) => void): SuiteAPI {
       verifyFns.push(fn);
       return suiteAPI;

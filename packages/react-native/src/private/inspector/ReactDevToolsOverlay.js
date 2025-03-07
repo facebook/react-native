@@ -10,7 +10,7 @@
 
 import type {InspectedViewRef} from '../../../Libraries/ReactNative/AppContainer-dev';
 import type {PointerEvent} from '../../../Libraries/Types/CoreEventTypes';
-import type {PressEvent} from '../../../Libraries/Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../../Libraries/Types/CoreEventTypes';
 import type {ReactDevToolsAgent} from '../../../Libraries/Types/ReactDevToolsTypes';
 import type {InspectedElement} from './Inspector';
 
@@ -107,7 +107,7 @@ export default function ReactDevToolsOverlay({
   );
 
   const onResponderMove = useCallback(
-    (e: PressEvent) => {
+    (e: GestureResponderEvent) => {
       findViewForLocation(
         e.nativeEvent.touches[0].locationX,
         e.nativeEvent.touches[0].locationY,
@@ -117,7 +117,7 @@ export default function ReactDevToolsOverlay({
   );
 
   const shouldSetResponder = useCallback(
-    (e: PressEvent): boolean => {
+    (e: GestureResponderEvent): boolean => {
       onResponderMove(e);
       return true;
     },

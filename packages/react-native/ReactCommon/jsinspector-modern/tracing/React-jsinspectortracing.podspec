@@ -53,4 +53,5 @@ Pod::Spec.new do |s|
   end
 
   s.dependency "RCT-Folly"
+  s.dependency "React-oscompat"
 end

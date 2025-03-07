@@ -7,7 +7,6 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 import '../../../../../../Libraries/Core/InitializeCore.js';
@@ -94,14 +93,14 @@ describe('Event', () => {
 
   it('should throw an error if the given options is not an object, function, null or undefined', () => {
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       return new Event('custom', 1);
     }).toThrow(
       "Failed to construct 'Event': The provided value is not of type 'EventInit'.",
     );
 
     expect(() => {
-      // $FlowExpectedError[incompatible-call]
+      // $FlowExpectedError[incompatible-type]
       return new Event('custom', '1');
     }).toThrow(
       "Failed to construct 'Event': The provided value is not of type 'EventInit'.",

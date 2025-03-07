@@ -11,11 +11,18 @@ import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.JavaScriptExecutor
 import com.facebook.react.bridge.ReadableNativeMap
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.soloader.SoLoader
 
 @DoNotStrip
+@LegacyArchitecture
 public class JSCExecutor internal constructor(jscConfig: ReadableNativeMap) :
     JavaScriptExecutor(initHybrid(jscConfig)) {
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("JSCExecutor")
+  }
+
   override fun getName(): String {
     return "JSCExecutor"
   }

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<bf4fee68309fdc7f9270f44ab5535c14>>
+ * @generated SignedSource<<9437aa04a250507b66bee88bd09a20eb>>
  */
 
 /**
@@ -35,15 +35,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableEagerRootViewAttachment(): Boolean
 
-  @DoNotStrip public fun enableEventEmitterRetentionDuringGesturesOnAndroid(): Boolean
-
   @DoNotStrip public fun enableFabricLogs(): Boolean
 
   @DoNotStrip public fun enableFabricRenderer(): Boolean
-
-  @DoNotStrip public fun enableFixForViewCommandRace(): Boolean
-
-  @DoNotStrip public fun enableGranularShadowTreeStateReconciliation(): Boolean
 
   @DoNotStrip public fun enableIOSViewClipToPaddingBox(): Boolean
 
@@ -57,9 +51,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableLongTaskAPI(): Boolean
 
-  @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
+  @DoNotStrip public fun enableNativeCSSParsing(): Boolean
 
-  @DoNotStrip public fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean
+  @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
 
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
 
@@ -69,7 +63,13 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableUIConsistency(): Boolean
 
+  @DoNotStrip public fun enableViewCulling(): Boolean
+
   @DoNotStrip public fun enableViewRecycling(): Boolean
+
+  @DoNotStrip public fun enableViewRecyclingForText(): Boolean
+
+  @DoNotStrip public fun enableViewRecyclingForView(): Boolean
 
   @DoNotStrip public fun excludeYogaFromRawProps(): Boolean
 
@@ -85,7 +85,9 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun lazyAnimationCallbacks(): Boolean
 
-  @DoNotStrip public fun loadVectorDrawablesOnImages(): Boolean
+  @DoNotStrip public fun removeTurboModuleManagerDelegateMutex(): Boolean
+
+  @DoNotStrip public fun throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(): Boolean
 
   @DoNotStrip public fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
@@ -100,8 +102,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun useOptimizedEventBatchingOnAndroid(): Boolean
 
   @DoNotStrip public fun useRawPropsJsiValue(): Boolean
-
-  @DoNotStrip public fun useRuntimeShadowNodeReferenceUpdate(): Boolean
 
   @DoNotStrip public fun useTurboModuleInterop(): Boolean
 

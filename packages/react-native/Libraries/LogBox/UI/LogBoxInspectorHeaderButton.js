@@ -39,6 +39,7 @@ const backgroundForLevel = (level: LogLevel) =>
 
 export default function LogBoxInspectorHeaderButton(
   props: $ReadOnly<{
+    id: string,
     disabled: boolean,
     image: ImageSource,
     level: LogLevel,
@@ -47,6 +48,7 @@ export default function LogBoxInspectorHeaderButton(
 ): React.Node {
   return (
     <LogBoxButton
+      id={props.id}
       backgroundColor={backgroundForLevel(props.level)}
       onPress={props.disabled ? null : props.onPress}
       style={styles.button}>

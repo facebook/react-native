@@ -21,10 +21,10 @@ export type IntersectionObserverCallback = (
   observer: IntersectionObserver,
 ) => mixed;
 
-type IntersectionObserverInit = {
+export interface IntersectionObserverInit {
   // root?: ReactNativeElement, // This option exists on the Web but it's not currently supported in React Native.
   // rootMargin?: string, // This option exists on the Web but it's not currently supported in React Native.
-  threshold?: number | $ReadOnlyArray<number>,
+  threshold?: number | $ReadOnlyArray<number>;
 
   /**
    * This is a React Native specific option (not spec compliant) that specifies
@@ -36,8 +36,8 @@ type IntersectionObserverInit = {
    * Note: If `rnRootThreshold` is set, and `threshold` is not set,
    * `threshold` will not default to [0] (as per spec)
    */
-  rnRootThreshold?: number | $ReadOnlyArray<number>,
-};
+  rnRootThreshold?: number | $ReadOnlyArray<number>;
+}
 
 /**
  * The [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)

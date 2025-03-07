@@ -14,11 +14,19 @@ import androidx.annotation.Nullable;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.systrace.SystraceMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+@LegacyArchitecture
 class JavaMethodWrapper implements JavaModuleWrapper.NativeMethod {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "JavaMethodWrapper", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private abstract static class ArgumentExtractor<T> {
     public int getJSArgumentsNeeded() {

@@ -39,7 +39,7 @@ export default async function symbolicateStackTrace(
   }
 
   // Lazy-load `fetch` until the first symbolication call to avoid circular requires.
-  const fetch = global.fetch ?? require('../../Network/fetch');
+  const fetch = global.fetch ?? require('../../Network/fetch').fetch;
   const response = await fetch(devServer.url + 'symbolicate', {
     method: 'POST',
     headers: {

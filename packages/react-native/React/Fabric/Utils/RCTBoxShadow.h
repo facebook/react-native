@@ -16,6 +16,6 @@ RCT_EXTERN UIImage *RCTGetBoxShadowImage(
     const std::vector<facebook::react::BoxShadow> &shadows,
     RCTCornerRadii cornerRadii,
     UIEdgeInsets edgeInsets,
-    CALayer *layer);
+    CGSize layerSize);
 
 RCT_EXTERN CGRect RCTGetBoundingRect(const std::vector<facebook::react::BoxShadow> &boxShadows, CGSize layerSize);

@@ -67,11 +67,8 @@ export function createNativeFlagGetter<K: $Keys<NativeFeatureFlags>>(
   return createGetter(
     configName,
     () => {
-      const valueFromNative = NativeReactNativeFeatureFlags?.[configName]?.();
-      if (valueFromNative == null && !skipUnavailableNativeModuleError) {
-        logUnavailableNativeModuleError(configName);
-      }
-      return valueFromNative;
+      maybeLogUnavailableNativeModuleError(configName);
+      return NativeReactNativeFeatureFlags?.[configName]?.();
     },
     defaultValue,
   );
@@ -100,8 +97,8 @@ export function setOverrides(
 
 const reportedConfigNames: Set<string> = new Set();
 
-function logUnavailableNativeModuleError(configName: string): void {
-  if (!reportedConfigNames.has(configName)) {
+function maybeLogUnavailableNativeModuleError(configName: string): void {
+  if (!NativeReactNativeFeatureFlags && !reportedConfigNames.has(configName)) {
     reportedConfigNames.add(configName);
     console.error(
       `Could not access feature flag '${configName}' because native module method was not available`,

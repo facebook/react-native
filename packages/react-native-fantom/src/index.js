@@ -13,10 +13,13 @@ import type {
   RenderOutputConfig,
 } from './getFantomRenderedOutput';
 import type {MixedElement} from 'react';
+import type {RootTag} from 'react-native/Libraries/ReactNative/RootTag';
+import type ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 
 import ReactNativeElement from '../../react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 import * as Benchmark from './Benchmark';
 import getFantomRenderedOutput from './getFantomRenderedOutput';
+import {createRootTag} from 'react-native/Libraries/ReactNative/RootTag';
 import ReactFabric from 'react-native/Libraries/Renderer/shims/ReactFabric';
 import NativeFantom, {
   NativeEventCategory,
@@ -45,6 +48,7 @@ class Root {
   #viewportWidth: number;
   #viewportHeight: number;
   #devicePixelRatio: number;
+  #document: ?ReactNativeDocument;
 
   #hasRendered: boolean = false;
 
@@ -55,6 +59,17 @@ class Root {
     this.#devicePixelRatio =
       config?.devicePixelRatio ?? DEFAULT_DEVICE_PIXEL_RATIO;
     globalSurfaceIdCounter += 10;
+  }
+
+  // $FlowExpectedError[unsafe-getters-setters]
+  get document(): ReactNativeDocument {
+    if (this.#document == null) {
+      throw new Error(
+        'Cannot get `document` from root because it has not been rendered.',
+      );
+    }
+
+    return this.#document;
   }
 
   render(element: MixedElement): void {
@@ -75,6 +90,13 @@ class Root {
     }
 
     ReactFabric.render(element, this.#surfaceId, null, true);
+
+    if (this.#document == null) {
+      // $FlowExpectedError[incompatible-type] We know that `getPublicInstanceFromRootTag` returns `ReactNativeDocument | null` in Fantom.
+      this.#document = ReactFabric.getPublicInstanceFromRootTag(
+        this.#surfaceId,
+      );
+    }
   }
 
   takeMountingManagerLogs(): Array<string> {
@@ -85,10 +107,15 @@ class Root {
     // TODO: check for leaks.
     NativeFantom.stopSurface(this.#surfaceId);
     NativeFantom.flushMessageQueue();
+    this.#document = null;
   }
 
   getRenderedOutput(config: RenderOutputConfig = {}): FantomRenderedOutput {
     return getFantomRenderedOutput(this.#surfaceId, config);
+  }
+
+  getRootTag(): RootTag {
+    return createRootTag(this.#surfaceId);
   }
 
   // TODO: add an API to check if all surfaces were deallocated when tests are finished.
@@ -166,20 +193,40 @@ function createRoot(rootConfig?: RootConfig): Root {
   return new Root(rootConfig);
 }
 
-function dispatchNativeEvent(
+/**
+ * This is a low level method to enqueue a native event to a node.
+ * It does not wait for it to be flushed in the UI thread or for it to be
+ * processed by JS.
+ *
+ * For a higher level API, use `dispatchNativeEvent`.
+ */
+function enqueueNativeEvent(
   node: ReactNativeElement,
   type: string,
   payload?: {[key: string]: mixed},
   options?: {category?: NativeEventCategory, isUnique?: boolean},
 ) {
   const shadowNode = getNativeNodeReference(node);
-  NativeFantom.dispatchNativeEvent(
+  NativeFantom.enqueueNativeEvent(
     shadowNode,
     type,
     payload,
     options?.category,
     options?.isUnique,
   );
+}
+
+function dispatchNativeEvent(
+  node: ReactNativeElement,
+  type: string,
+  payload?: {[key: string]: mixed},
+  options?: {category?: NativeEventCategory, isUnique?: boolean},
+) {
+  runOnUIThread(() => {
+    enqueueNativeEvent(node, type, payload, options);
+  });
+
+  runWorkLoop();
 }
 
 function scrollTo(
@@ -287,6 +334,7 @@ export default {
   runWorkLoop,
   createRoot,
   dispatchNativeEvent,
+  enqueueNativeEvent,
   flushAllNativeEvents,
   unstable_benchmark: Benchmark,
   scrollTo,

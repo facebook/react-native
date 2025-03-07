@@ -20,7 +20,7 @@ internal object UIConstantsProviderBinding {
   }
 
   @JvmStatic
-  public external fun install(
+  external fun install(
       runtimeExecutor: RuntimeExecutor,
       defaultEventTypesProvider: DefaultEventTypesProvider,
       viewManagerConstantsProvider: ConstantsForViewManagerProvider,
@@ -28,20 +28,20 @@ internal object UIConstantsProviderBinding {
   )
 
   @DoNotStripAny
-  public interface DefaultEventTypesProvider {
+  interface DefaultEventTypesProvider {
     /* Returns UIManager's constants. */
-    public fun getDefaultEventTypes(): NativeMap
+    fun getDefaultEventTypes(): NativeMap
   }
 
   @DoNotStripAny
-  public interface ConstantsForViewManagerProvider {
+  interface ConstantsForViewManagerProvider {
     /* Returns UIManager's constants. */
-    public fun getConstantsForViewManager(viewManagerName: String): NativeMap?
+    fun getConstantsForViewManager(viewManagerName: String): NativeMap?
   }
 
   @DoNotStripAny
-  public interface ConstantsProvider {
+  interface ConstantsProvider {
     /* Returns UIManager's constants. */
-    public fun getConstants(): NativeMap
+    fun getConstants(): NativeMap
   }
 }

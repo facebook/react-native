@@ -9,7 +9,7 @@
  */
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import typeof TouchableWithoutFeedback from './TouchableWithoutFeedback';
+import type {TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
 
 import View from '../../Components/View/View';
 import Pressability, {
@@ -32,19 +32,37 @@ type IOSProps = $ReadOnly<{
   hasTVPreferredFocus?: ?boolean,
 }>;
 
-type Props = $ReadOnly<{
-  ...React.ElementConfig<TouchableWithoutFeedback>,
-  ...AndroidProps,
-  ...IOSProps,
-
+type TouchableHighlightBaseProps = $ReadOnly<{
+  /**
+   * Determines what the opacity of the wrapped view should be when touch is active.
+   */
   activeOpacity?: ?number,
+  /**
+   * The color of the underlay that will show through when the touch is active.
+   */
   underlayColor?: ?ColorValue,
+  /**
+   * @see https://reactnative.dev/docs/view#style
+   */
   style?: ?ViewStyleProp,
+  /**
+   * Called immediately after the underlay is shown
+   */
   onShowUnderlay?: ?() => void,
+  /**
+   * Called immediately after the underlay is hidden
+   */
   onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
 
   hostRef: React.RefSetter<React.ElementRef<typeof View>>,
+}>;
+
+type TouchableHighlightProps = $ReadOnly<{
+  ...TouchableWithoutFeedbackProps,
+  ...AndroidProps,
+  ...IOSProps,
+  ...TouchableHighlightBaseProps,
 }>;
 
 type ExtraStyles = $ReadOnly<{
@@ -153,7 +171,10 @@ type State = $ReadOnly<{
  * ```
  *
  */
-class TouchableHighlight extends React.Component<Props, State> {
+class TouchableHighlightImpl extends React.Component<
+  TouchableHighlightProps,
+  State,
+> {
   _hideTimeout: ?TimeoutID;
   _isMounted: boolean = false;
 
@@ -368,7 +389,7 @@ class TouchableHighlight extends React.Component<Props, State> {
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State) {
+  componentDidUpdate(prevProps: TouchableHighlightProps, prevState: State) {
     this.state.pressability.configure(this._createPressabilityConfig());
   }
 
@@ -381,13 +402,13 @@ class TouchableHighlight extends React.Component<Props, State> {
   }
 }
 
-const Touchable: component(
-  ref: React.RefSetter<React.ElementRef<typeof View>>,
-  ...props: $ReadOnly<$Diff<Props, {+hostRef: mixed}>>
+const TouchableHighlight: component(
+  ref?: React.RefSetter<React.ElementRef<typeof View>>,
+  ...props: $ReadOnly<$Diff<TouchableHighlightProps, {+hostRef: mixed}>>
 ) = React.forwardRef((props, hostRef) => (
-  <TouchableHighlight {...props} hostRef={hostRef} />
+  <TouchableHighlightImpl {...props} hostRef={hostRef} />
 ));
 
-Touchable.displayName = 'TouchableHighlight';
+TouchableHighlight.displayName = 'TouchableHighlight';
 
-export default Touchable;
+export default TouchableHighlight;

@@ -1,0 +1,30 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+enum TestEnum {
+  A = 1,
+  B = 2,
+  C = 3,
+}
+
+export interface Spec extends TurboModule {
+  +exampleFunction: (a: string, b: number) => void;
+  +getConstants: () => {
+    +exampleConstant: TestEnum,
+  };
+}
+
+export default (TurboModuleRegistry.getEnforcing<Spec>(
+  'NativeModuleTest',
+): Spec);

@@ -414,7 +414,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
         contentDescription.add(text.asString());
       }
     }
-    if (contentDescription.size() > 0) {
+    if (!contentDescription.isEmpty()) {
       view.setContentDescription(TextUtils.join(", ", contentDescription));
     }
   }
@@ -626,7 +626,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     throw new IllegalStateException("Invalid float property value: " + value);
   }
 
-  private void updateViewAccessibility(@NonNull T view) {
+  protected void updateViewAccessibility(@NonNull T view) {
     ReactAccessibilityDelegate.setDelegate(
         view, view.isFocusable(), view.getImportantForAccessibility());
   }

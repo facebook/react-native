@@ -22,7 +22,6 @@ folly_version = folly_config[:version]
 
 boost_config = get_boost_config()
 boost_compiler_flags = boost_config[:compiler_flags]
-using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
 
 header_search_paths = [
   "\"$(PODS_ROOT)/boost\"",
@@ -64,7 +63,7 @@ Pod::Spec.new do |s|
 
   s.dependency "RCT-Folly"
   s.dependency "DoubleConversion"
-  s.dependency "fast_float", "6.1.4"
+  s.dependency "fast_float"
   s.dependency "fmt", "11.0.2"
   s.dependency "React-Core"
   s.dependency "React-cxxreact"
@@ -73,9 +72,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
 
-  if using_hermes
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
 end

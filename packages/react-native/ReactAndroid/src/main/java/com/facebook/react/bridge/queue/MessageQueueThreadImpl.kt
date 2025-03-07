@@ -137,8 +137,6 @@ private constructor(
 
         ThreadType.NEW_BACKGROUND ->
             startNewBackgroundThread(spec.name, spec.stackSize, exceptionHandler)
-
-        else -> throw RuntimeException("Unknown thread type: " + spec.threadType)
       }
     }
 

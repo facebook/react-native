@@ -6,9 +6,9 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fvisibility=hidden -fexceptions -frtti)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB reactnativeblob_SRC CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_library(reactnativeblob OBJECT ${reactnativeblob_SRC})
@@ -22,3 +22,6 @@ target_link_libraries(reactnativeblob
         folly_runtime
         jsi
         reactnativejni)
+
+target_compile_reactnative_options(reactnativeblob PRIVATE)
+target_compile_options(reactnativeblob PRIVATE -fvisibility=hidden)

@@ -16,6 +16,9 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**
@@ -24,7 +27,13 @@ import javax.annotation.concurrent.NotThreadSafe;
  * performing an animation.
  */
 @NotThreadSafe
+@LegacyArchitecture
 public class LayoutAnimationController {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "LayoutAnimationController", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private final AbstractLayoutAnimation mLayoutCreateAnimation = new LayoutCreateAnimation();
   private final AbstractLayoutAnimation mLayoutUpdateAnimation = new LayoutUpdateAnimation();

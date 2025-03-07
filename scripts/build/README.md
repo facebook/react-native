@@ -72,13 +72,11 @@ packages/
       index.js       # Entry point wrapper file (calls babel-register.js) (compiled away)
       index.flow.js  # Entry point implementation in Flow
       [other files]
-    index.js.flow    # Shim for the Flow typechecker
     package.json     # Includes "exports" field, ideally only src/index.js
 ```
 
 Notes:
 
-- The additional root `index.js.flow` shim is needed due to Flow itself not supporting Package Exports.
 - To minimize complexity, prefer only a single entry of `{".": "src/index.js"}` in `"exports"` for new packages.
 
 ## Build behavior

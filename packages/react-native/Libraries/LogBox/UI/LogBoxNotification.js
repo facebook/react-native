@@ -37,8 +37,9 @@ export default function LogBoxNotification(props: Props): React.Node {
   }, [log]);
 
   return (
-    <View style={styles.container}>
+    <View id="logbox_notification" style={styles.container}>
       <LogBoxButton
+        id={`logbox_open_button_${level}`}
         onPress={props.onPressOpen}
         style={styles.press}
         backgroundColor={{
@@ -48,7 +49,10 @@ export default function LogBoxNotification(props: Props): React.Node {
         <View style={styles.content}>
           <LogBoxNotificationCountBadge count={totalLogCount} level={level} />
           <LogBoxNotificationMessage message={log.message} />
-          <LogBoxNotificationDismissButton onPress={props.onPressDismiss} />
+          <LogBoxNotificationDismissButton
+            id={`logbox_dismiss_button_${level}`}
+            onPress={props.onPressDismiss}
+          />
         </View>
       </LogBoxButton>
     </View>

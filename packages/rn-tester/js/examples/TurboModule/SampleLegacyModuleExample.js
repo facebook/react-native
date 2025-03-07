@@ -68,7 +68,7 @@ function stringify(obj: mixed): string {
 }
 
 class SampleLegacyModuleExample extends React.Component<{}, State> {
-  static contextType: React$Context<RootTag> = RootTagContext;
+  static contextType: React.Context<RootTag> = RootTagContext;
 
   state: State = {
     testResults: {},

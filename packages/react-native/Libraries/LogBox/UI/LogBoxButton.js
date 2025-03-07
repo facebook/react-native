@@ -10,7 +10,7 @@
 
 import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
 import TouchableWithoutFeedback from '../../Components/Touchable/TouchableWithoutFeedback';
 import View from '../../Components/View/View';
@@ -19,13 +19,14 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
 type Props = $ReadOnly<{
+  id?: string,
   backgroundColor: $ReadOnly<{
     default: string,
     pressed: string,
   }>,
   children?: React.Node,
   hitSlop?: ?EdgeInsetsProp,
-  onPress?: ?(event: PressEvent) => void,
+  onPress?: ?(event: GestureResponderEvent) => void,
   style?: ViewStyleProp,
 }>;
 
@@ -42,6 +43,7 @@ function LogBoxButton(props: Props): React.Node {
 
   const content = (
     <View
+      id={props.id}
       style={StyleSheet.compose(
         {
           backgroundColor: pressed

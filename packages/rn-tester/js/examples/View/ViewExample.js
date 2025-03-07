@@ -14,7 +14,13 @@ import type {RNTesterModule} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import * as React from 'react';
-import {Platform, Pressable, StyleSheet, View} from 'react-native';
+import {
+  Platform,
+  PlatformColor,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 class ViewBorderStyleExample extends React.Component<
   $ReadOnly<{}>,
@@ -411,55 +417,45 @@ class FlexGapExample extends React.Component<$ReadOnly<{testID?: ?string}>> {
 }
 
 function BoxShadowExample(): React.Node {
-  const defaultStyleSize = {width: 75, height: 75};
+  const defaultStyleSize = {width: 50, height: 50};
 
   return (
-    <View testID="view-test-box-shadow" style={{gap: 20}}>
-      <View style={{flexDirection: 'row', gap: 15}}>
-        <View
-          style={{
-            ...defaultStyleSize,
-            borderRadius: 10,
-            borderWidth: 5,
-            borderColor: 'red',
-            boxShadow: '0 0 10px 0 black',
-          }}
-        />
-        <View
-          style={{
-            ...defaultStyleSize,
-            borderRadius: 30,
-            borderWidth: 5,
-            borderColor: 'red',
-            boxShadow: 'inset 0 0 10px 0 black',
-          }}
-        />
-        <View
-          style={{
-            ...defaultStyleSize,
-            borderRadius: 30,
-            borderWidth: 5,
-            borderColor: 'red',
-            boxShadow:
-              'inset 15px -5px 5px 5px cyan, inset 15px -5px 20px 10px orange, -5px 5px 5px 0px green, 0px -10px 0px 5px black',
-          }}
-        />
-      </View>
-      <View style={{flexDirection: 'row', gap: 15}}>
-        <View
-          style={{
-            ...defaultStyleSize,
-            boxShadow: '0px 0px 5px 5px black',
-          }}>
-          <View
-            style={{
-              left: -10,
-              width: 25,
-              height: 25,
-              backgroundColor: 'cyan',
-            }}
-          />
-        </View>
+    <View
+      testID="view-test-box-shadow"
+      style={{flexDirection: 'row', flexWrap: 'wrap', gap: 30, padding: 20}}>
+      <View
+        style={{
+          ...defaultStyleSize,
+          borderRadius: 10,
+          borderWidth: 5,
+          borderColor: 'red',
+          boxShadow: '0 0 10px 0 black',
+        }}
+      />
+      <View
+        style={{
+          ...defaultStyleSize,
+          borderRadius: 30,
+          borderWidth: 5,
+          borderColor: 'red',
+          boxShadow: 'inset 0 0 10px 0 black',
+        }}
+      />
+      <View
+        style={{
+          ...defaultStyleSize,
+          borderRadius: 30,
+          borderWidth: 5,
+          borderColor: 'red',
+          boxShadow:
+            'inset 15px -5px 5px 5px cyan, inset 15px -5px 20px 10px orange, -5px 5px 5px 0px green, 0px -10px 0px 5px black',
+        }}
+      />
+      <View
+        style={{
+          ...defaultStyleSize,
+          boxShadow: '0px 0px 5px 5px black',
+        }}>
         <View
           style={{
             ...defaultStyleSize,
@@ -467,33 +463,79 @@ function BoxShadowExample(): React.Node {
             boxShadow: 'inset 0px 0px 5px 5px black',
           }}
         />
-        <View style={{...defaultStyleSize, flexDirection: 'row'}}>
-          <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
-          <View
-            style={{
-              ...defaultStyleSize,
-              boxShadow: ' 0px 0px 20px 5px black',
-            }}
-          />
-          <View style={{width: 25, height: 25, backgroundColor: 'cyan'}} />
-        </View>
-      </View>
-      <View style={{flexDirection: 'row', gap: 15}}>
         <View
           style={{
             ...defaultStyleSize,
-            backgroundColor: 'green',
-            boxShadow: '0px 10px',
-          }}
-        />
-        <View
-          style={{
-            ...defaultStyleSize,
-            backgroundColor: 'orange',
-            boxShadow: '5px 5px 5px 0px rgba(0, 0, 0, 0)',
+            boxShadow: ' 0px 0px 20px 5px black',
           }}
         />
       </View>
+      <View
+        style={{
+          ...defaultStyleSize,
+          backgroundColor: 'green',
+          boxShadow: '0px 10px',
+        }}
+      />
+      <View
+        style={{
+          ...defaultStyleSize,
+          backgroundColor: 'orange',
+          boxShadow: '5px 5px 5px 0px rgba(0, 0, 0, 0)',
+        }}
+      />
+      <View
+        style={[
+          defaultStyleSize,
+          {
+            backgroundColor: 'brown',
+            boxShadow: '5px 5px 5px 0px rgba(0, 0, 255, 1) inset',
+            transform: [{scale: 1.2}],
+          },
+        ]}
+      />
+      <View
+        style={{
+          ...defaultStyleSize,
+          backgroundColor: 'hotpink',
+          boxShadow: [
+            {
+              offsetX: 5,
+              offsetY: '5px',
+              blurRadius: 5,
+              spreadDistance: '1px',
+              color: 'green',
+            },
+            {
+              offsetX: '-5px',
+              offsetY: '0',
+              blurRadius: '5px',
+              spreadDistance: 2,
+              color: Platform.select({
+                ios: PlatformColor('systemOrange'),
+                android: PlatformColor('?attr/colorError'),
+                default: 'orange',
+              }),
+            },
+          ],
+        }}
+      />
+      {/* Invalid, should not render */}
+      <View
+        style={{
+          ...defaultStyleSize,
+          backgroundColor: 'hotpink',
+          boxShadow: [
+            {
+              offsetX: '-5px',
+              offsetY: '',
+              blurRadius: 5,
+              spreadDistance: '1px',
+              color: 'green',
+            },
+          ],
+        }}
+      />
     </View>
   );
 }

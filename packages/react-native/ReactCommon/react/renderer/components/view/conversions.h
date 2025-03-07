@@ -14,19 +14,19 @@
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
 #include <react/renderer/core/graphicsConversions.h>
+#include <react/renderer/css/CSSAngle.h>
+#include <react/renderer/css/CSSNumber.h>
+#include <react/renderer/css/CSSPercentage.h>
+#include <react/renderer/css/CSSValueParser.h>
 #include <react/renderer/graphics/BackgroundImage.h>
 #include <react/renderer/graphics/BlendMode.h>
-#include <react/renderer/graphics/BoxShadow.h>
-#include <react/renderer/graphics/Filter.h>
 #include <react/renderer/graphics/Isolation.h>
 #include <react/renderer/graphics/LinearGradient.h>
 #include <react/renderer/graphics/PlatformColorParser.h>
 #include <react/renderer/graphics/Transform.h>
 #include <react/renderer/graphics/ValueUnit.h>
-#include <stdlib.h>
 #include <yoga/YGEnums.h>
 #include <yoga/node/Node.h>
-#include <algorithm>
 #include <cmath>
 #include <optional>
 #include <string>
@@ -61,25 +61,6 @@ inline float yogaFloatFromFloat(Float value) {
   }
 
   return (float)value;
-}
-
-/*
- * Converts string to float only if the entire string is valid float.
- */
-inline std::optional<float> stringToFloat(const std::string& string) {
-  try {
-    size_t pos = 0;
-    auto result = std::stof(string, &pos);
-    // Check if entire string was valid
-    if (pos == string.length()) {
-      return result;
-    }
-  } catch (...) {
-    // Ignore, caller falls back to default value.
-    return std::nullopt;
-  }
-
-  return std::nullopt;
 }
 
 /*
@@ -484,19 +465,15 @@ inline void fromRawValue(
       result = yoga::StyleSizeLength::ofFitContent();
       return;
     } else {
-      if (stringValue.back() == '%') {
-        auto tryValue =
-            stringToFloat(stringValue.substr(0, stringValue.length() - 1));
-        if (tryValue.has_value()) {
-          result = yoga::StyleSizeLength::percent(tryValue.value());
-          return;
-        }
-      } else {
-        auto tryValue = stringToFloat(stringValue);
-        if (tryValue.has_value()) {
-          result = yoga::StyleSizeLength::points(tryValue.value());
-          return;
-        }
+      auto parsed = parseCSSProperty<CSSNumber, CSSPercentage>(stringValue);
+      if (std::holds_alternative<CSSPercentage>(parsed)) {
+        result = yoga::StyleSizeLength::percent(
+            std::get<CSSPercentage>(parsed).value);
+        return;
+      } else if (std::holds_alternative<CSSNumber>(parsed)) {
+        result =
+            yoga::StyleSizeLength::points(std::get<CSSNumber>(parsed).value);
+        return;
       }
     }
   }
@@ -516,19 +493,14 @@ inline void fromRawValue(
       result = yoga::StyleLength::ofAuto();
       return;
     } else {
-      if (stringValue.back() == '%') {
-        auto tryValue =
-            stringToFloat(stringValue.substr(0, stringValue.length() - 1));
-        if (tryValue.has_value()) {
-          result = yoga::StyleLength::percent(tryValue.value());
-          return;
-        }
-      } else {
-        auto tryValue = stringToFloat(stringValue);
-        if (tryValue.has_value()) {
-          result = yoga::StyleLength::points(tryValue.value());
-          return;
-        }
+      auto parsed = parseCSSProperty<CSSNumber, CSSPercentage>(stringValue);
+      if (std::holds_alternative<CSSPercentage>(parsed)) {
+        result =
+            yoga::StyleLength::percent(std::get<CSSPercentage>(parsed).value);
+        return;
+      } else if (std::holds_alternative<CSSNumber>(parsed)) {
+        result = yoga::StyleLength::points(std::get<CSSNumber>(parsed).value);
+        return;
       }
     }
   }
@@ -552,54 +524,43 @@ inline void fromRawValue(
                                   : yoga::FloatOptional();
 }
 
-inline Float toRadians(
-    const RawValue& value,
-    std::optional<Float> defaultValue) {
+inline std::optional<Float> toRadians(const RawValue& value) {
   if (value.hasType<Float>()) {
     return (Float)value;
   }
-  react_native_expect(value.hasType<std::string>());
-  if (!value.hasType<std::string>() && defaultValue.has_value()) {
-    return *defaultValue;
+  if (!value.hasType<std::string>()) {
+    return {};
   }
-  auto stringValue = (std::string)value;
-  char* suffixStart;
-  double num = strtod(
-      stringValue.c_str(), &suffixStart); // can't use std::stod, probably
-                                          // because of old Android NDKs
-  if (0 == strncmp(suffixStart, "deg", 3)) {
-    return static_cast<Float>(num * M_PI / 180.0f);
+
+  auto angle = parseCSSProperty<CSSAngle>((std::string)value);
+  if (std::holds_alternative<CSSAngle>(angle)) {
+    return std::get<CSSAngle>(angle).degrees * M_PI / 180.0f;
   }
-  return static_cast<Float>(num); // assume suffix is "rad"
+
+  return {};
+}
+
+inline ValueUnit toValueUnit(const RawValue& value) {
+  if (value.hasType<Float>()) {
+    return ValueUnit((Float)value, UnitType::Point);
+  }
+  if (!value.hasType<std::string>()) {
+    return {};
+  }
+
+  auto pct = parseCSSProperty<CSSPercentage>((std::string)value);
+  if (std::holds_alternative<CSSPercentage>(pct)) {
+    return ValueUnit(std::get<CSSPercentage>(pct).value, UnitType::Percent);
+  }
+
+  return {};
 }
 
 inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
     ValueUnit& result) {
-  react_native_expect(value.hasType<RawValue>());
-  ValueUnit valueUnit;
-
-  if (value.hasType<Float>()) {
-    auto valueFloat = (float)value;
-    if (std::isfinite(valueFloat)) {
-      valueUnit = ValueUnit(valueFloat, UnitType::Point);
-    } else {
-      valueUnit = ValueUnit(0.0f, UnitType::Undefined);
-    }
-  } else if (value.hasType<std::string>()) {
-    const auto stringValue = (std::string)value;
-
-    if (stringValue.back() == '%') {
-      auto tryValue =
-          stringToFloat(stringValue.substr(0, stringValue.length() - 1));
-      if (tryValue.has_value()) {
-        valueUnit = ValueUnit(tryValue.value(), UnitType::Percent);
-      }
-    }
-  }
-
-  result = valueUnit;
+  result = toValueUnit(value);
 }
 
 inline void fromRawValue(
@@ -616,13 +577,17 @@ inline void fromRawValue(
   auto configurations = static_cast<std::vector<RawValue>>(value);
   for (const auto& configuration : configurations) {
     if (!configuration.hasType<std::unordered_map<std::string, RawValue>>()) {
-      // TODO: The following checks have to be removed after codegen is shipped.
-      // See T45151459.
-      continue;
+      result = {};
+      return;
     }
 
     auto configurationPair =
         static_cast<std::unordered_map<std::string, RawValue>>(configuration);
+    if (configurationPair.size() != 1) {
+      result = {};
+      return;
+    }
+
     auto pair = configurationPair.begin();
     auto operation = pair->first;
     auto& parameters = pair->second;
@@ -630,90 +595,186 @@ inline void fromRawValue(
     auto One = ValueUnit(1, UnitType::Point);
 
     if (operation == "matrix") {
-      react_native_expect(parameters.hasType<std::vector<Float>>());
+      // T215634510: We should support matrix transforms as part of a list of
+      // transforms
+      if (configurations.size() > 1) {
+        result = {};
+        return;
+      }
+
+      if (!parameters.hasType<std::vector<Float>>()) {
+        result = {};
+        return;
+      }
+
       auto numbers = (std::vector<Float>)parameters;
-      react_native_expect(numbers.size() == transformMatrix.matrix.size());
-      auto i = 0;
+      if (numbers.size() != 9 && numbers.size() != 16) {
+        result = {};
+        return;
+      }
+
+      size_t i = 0;
       for (auto number : numbers) {
         transformMatrix.matrix[i++] = number;
       }
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Arbitrary, Zero, Zero, Zero});
     } else if (operation == "perspective") {
+      if (!parameters.hasType<Float>()) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Perspective,
           ValueUnit((Float)parameters, UnitType::Point),
           Zero,
           Zero});
     } else if (operation == "rotateX") {
+      auto radians = toRadians(parameters);
+      if (!radians.has_value()) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Rotate,
-          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          ValueUnit(*radians, UnitType::Point),
           Zero,
           Zero});
     } else if (operation == "rotateY") {
+      auto radians = toRadians(parameters);
+      if (!radians.has_value()) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Rotate,
           Zero,
-          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          ValueUnit(*radians, UnitType::Point),
           Zero});
     } else if (operation == "rotateZ" || operation == "rotate") {
+      auto radians = toRadians(parameters);
+      if (!radians.has_value()) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Rotate,
           Zero,
           Zero,
-          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point)});
+          ValueUnit(*radians, UnitType::Point)});
     } else if (operation == "scale") {
+      if (!parameters.hasType<Float>()) {
+        result = {};
+        return;
+      }
+
       auto number = ValueUnit((Float)parameters, UnitType::Point);
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Scale, number, number, number});
     } else if (operation == "scaleX") {
+      if (!parameters.hasType<Float>()) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Scale,
           ValueUnit((Float)parameters, UnitType::Point),
           One,
           One});
     } else if (operation == "scaleY") {
+      if (!parameters.hasType<Float>()) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Scale,
           One,
           ValueUnit((Float)parameters, UnitType::Point),
           One});
     } else if (operation == "scaleZ") {
+      if (!parameters.hasType<Float>()) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Scale,
           One,
           One,
           ValueUnit((Float)parameters, UnitType::Point)});
     } else if (operation == "translate") {
+      if (!parameters.hasType<std::vector<RawValue>>()) {
+        result = {};
+        return;
+      }
+
       auto numbers = (std::vector<RawValue>)parameters;
-      ValueUnit valueX;
-      fromRawValue(context, numbers.at(0), valueX);
-      ValueUnit valueY;
-      fromRawValue(context, numbers.at(1), valueY);
+      if (numbers.size() != 2) {
+        result = {};
+        return;
+      }
+
+      auto valueX = toValueUnit(numbers[0]);
+      if (!valueX) {
+        result = {};
+        return;
+      }
+
+      auto valueY = toValueUnit(numbers[1]);
+      if (!valueY) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Translate, valueX, valueY, Zero});
     } else if (operation == "translateX") {
-      ValueUnit valueX;
-      fromRawValue(context, parameters, valueX);
+      auto valueX = toValueUnit(parameters);
+      if (!valueX) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Translate, valueX, Zero, Zero});
     } else if (operation == "translateY") {
-      ValueUnit valueY;
-      fromRawValue(context, parameters, valueY);
+      auto valueY = toValueUnit(parameters);
+      if (!valueY) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Translate, Zero, valueY, Zero});
     } else if (operation == "skewX") {
+      auto radians = toRadians(parameters);
+      if (!radians.has_value()) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Skew,
-          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          ValueUnit(*radians, UnitType::Point),
           Zero,
           Zero});
     } else if (operation == "skewY") {
+      auto radians = toRadians(parameters);
+      if (!radians.has_value()) {
+        result = {};
+        return;
+      }
+
       transformMatrix.operations.push_back(TransformOperation{
           TransformOperationType::Skew,
           Zero,
-          ValueUnit(toRadians(parameters, 0.0f), UnitType::Point),
+          ValueUnit(*radians, UnitType::Point),
           Zero});
     }
   }
@@ -725,21 +786,34 @@ inline void fromRawValue(
     const PropsParserContext& context,
     const RawValue& value,
     TransformOrigin& result) {
-  react_native_expect(value.hasType<std::vector<RawValue>>());
+  if (!value.hasType<std::vector<RawValue>>()) {
+    result = {};
+    return;
+  }
+
   auto origins = (std::vector<RawValue>)value;
+  if (origins.size() != 3) {
+    result = {};
+    return;
+  }
 
   TransformOrigin transformOrigin;
 
-  const size_t maxIndex = 2;
+  for (size_t i = 0; i < 2; i++) {
+    auto origin = toValueUnit(origins[i]);
+    if (!origin) {
+      result = {};
+      return;
+    }
 
-  for (size_t i = 0; i < std::min(origins.size(), maxIndex); i++) {
-    const auto& origin = origins[i];
-    fromRawValue(context, origin, transformOrigin.xy[i]);
+    transformOrigin.xy[i] = origin;
   }
 
-  if (origins.size() >= 3 && origins[2].hasType<Float>()) {
-    transformOrigin.z = (Float)origins[2];
+  if (!origins[2].hasType<Float>()) {
+    result = {};
+    return;
   }
+  transformOrigin.z = (Float)origins[2];
 
   result = transformOrigin;
 }
@@ -1054,199 +1128,6 @@ inline void fromRawValue(
 }
 
 inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    std::vector<BoxShadow>& result) {
-  react_native_expect(value.hasType<std::vector<RawValue>>());
-  if (!value.hasType<std::vector<RawValue>>()) {
-    result = {};
-    return;
-  }
-
-  std::vector<BoxShadow> boxShadows{};
-  auto rawBoxShadows = static_cast<std::vector<RawValue>>(value);
-  for (const auto& rawBoxShadow : rawBoxShadows) {
-    bool isMap =
-        rawBoxShadow.hasType<std::unordered_map<std::string, RawValue>>();
-    react_native_expect(isMap);
-    if (!isMap) {
-      // If any box shadow is malformed then we should not apply any of them
-      // which is the web behavior.
-      result = {};
-      return;
-    }
-
-    auto rawBoxShadowMap =
-        static_cast<std::unordered_map<std::string, RawValue>>(rawBoxShadow);
-    BoxShadow boxShadow{};
-    auto offsetX = rawBoxShadowMap.find("offsetX");
-    react_native_expect(offsetX != rawBoxShadowMap.end());
-    if (offsetX == rawBoxShadowMap.end()) {
-      result = {};
-      return;
-    }
-    react_native_expect(offsetX->second.hasType<Float>());
-    if (!offsetX->second.hasType<Float>()) {
-      result = {};
-      return;
-    }
-    boxShadow.offsetX = (Float)offsetX->second;
-
-    auto offsetY = rawBoxShadowMap.find("offsetY");
-    react_native_expect(offsetY != rawBoxShadowMap.end());
-    if (offsetY == rawBoxShadowMap.end()) {
-      result = {};
-      return;
-    }
-    react_native_expect(offsetY->second.hasType<Float>());
-    if (!offsetY->second.hasType<Float>()) {
-      result = {};
-      return;
-    }
-    boxShadow.offsetY = (Float)offsetY->second;
-
-    auto blurRadius = rawBoxShadowMap.find("blurRadius");
-    if (blurRadius != rawBoxShadowMap.end()) {
-      react_native_expect(blurRadius->second.hasType<Float>());
-      if (!blurRadius->second.hasType<Float>()) {
-        result = {};
-        return;
-      }
-      boxShadow.blurRadius = (Float)blurRadius->second;
-    }
-
-    auto spreadDistance = rawBoxShadowMap.find("spreadDistance");
-    if (spreadDistance != rawBoxShadowMap.end()) {
-      react_native_expect(spreadDistance->second.hasType<Float>());
-      if (!spreadDistance->second.hasType<Float>()) {
-        result = {};
-        return;
-      }
-      boxShadow.spreadDistance = (Float)spreadDistance->second;
-    }
-
-    auto inset = rawBoxShadowMap.find("inset");
-    if (inset != rawBoxShadowMap.end()) {
-      react_native_expect(inset->second.hasType<bool>());
-      if (!inset->second.hasType<bool>()) {
-        result = {};
-        return;
-      }
-      boxShadow.inset = (bool)inset->second;
-    }
-
-    auto color = rawBoxShadowMap.find("color");
-    if (color != rawBoxShadowMap.end()) {
-      fromRawValue(
-          context.contextContainer,
-          context.surfaceId,
-          color->second,
-          boxShadow.color);
-    }
-
-    boxShadows.push_back(boxShadow);
-  }
-
-  result = boxShadows;
-}
-inline void fromRawValue(
-    const PropsParserContext& context,
-    const RawValue& value,
-    std::vector<FilterFunction>& result) {
-  react_native_expect(value.hasType<std::vector<RawValue>>());
-  if (!value.hasType<std::vector<RawValue>>()) {
-    result = {};
-    return;
-  }
-
-  std::vector<FilterFunction> filter{};
-  auto rawFilter = static_cast<std::vector<RawValue>>(value);
-  for (const auto& rawFilterPrimitive : rawFilter) {
-    bool isMap =
-        rawFilterPrimitive.hasType<std::unordered_map<std::string, RawValue>>();
-    react_native_expect(isMap);
-    if (!isMap) {
-      // If a filter is malformed then we should not apply any of them which
-      // is the web behavior.
-      result = {};
-      return;
-    }
-
-    auto rawFilterFunction =
-        static_cast<std::unordered_map<std::string, RawValue>>(
-            rawFilterPrimitive);
-    FilterFunction filterFunction{};
-    try {
-      filterFunction.type =
-          filterTypeFromString(rawFilterFunction.begin()->first);
-      if (filterFunction.type == FilterType::DropShadow) {
-        auto rawDropShadow =
-            static_cast<std::unordered_map<std::string, RawValue>>(
-                rawFilterFunction.begin()->second);
-        DropShadowParams dropShadowParams{};
-
-        auto offsetX = rawDropShadow.find("offsetX");
-        react_native_expect(offsetX != rawDropShadow.end());
-        if (offsetX == rawDropShadow.end()) {
-          result = {};
-          return;
-        }
-
-        react_native_expect(offsetX->second.hasType<Float>());
-        if (!offsetX->second.hasType<Float>()) {
-          result = {};
-          return;
-        }
-        dropShadowParams.offsetX = (Float)offsetX->second;
-
-        auto offsetY = rawDropShadow.find("offsetY");
-        react_native_expect(offsetY != rawDropShadow.end());
-        if (offsetY == rawDropShadow.end()) {
-          result = {};
-          return;
-        }
-        react_native_expect(offsetY->second.hasType<Float>());
-        if (!offsetY->second.hasType<Float>()) {
-          result = {};
-          return;
-        }
-        dropShadowParams.offsetY = (Float)offsetY->second;
-
-        auto standardDeviation = rawDropShadow.find("standardDeviation");
-        if (standardDeviation != rawDropShadow.end()) {
-          react_native_expect(standardDeviation->second.hasType<Float>());
-          if (!standardDeviation->second.hasType<Float>()) {
-            result = {};
-            return;
-          }
-          dropShadowParams.standardDeviation = (Float)standardDeviation->second;
-        }
-
-        auto color = rawDropShadow.find("color");
-        if (color != rawDropShadow.end()) {
-          fromRawValue(
-              context.contextContainer,
-              context.surfaceId,
-              color->second,
-              dropShadowParams.color);
-        }
-
-        filterFunction.parameters = dropShadowParams;
-      } else {
-        filterFunction.parameters = (float)rawFilterFunction.begin()->second;
-      }
-      filter.push_back(std::move(filterFunction));
-    } catch (const std::exception& e) {
-      LOG(ERROR) << "Could not parse FilterFunction: " << e.what();
-      result = {};
-      return;
-    }
-  }
-
-  result = filter;
-}
-
-inline void fromRawValue(
     const PropsParserContext& /*context*/,
     const RawValue& value,
     BlendMode& result) {
@@ -1348,7 +1229,12 @@ inline void fromRawValue(
             if (positionIt != stopMap.end() && colorIt != stopMap.end()) {
               ColorStop colorStop;
               if (positionIt->second.hasValue()) {
-                fromRawValue(context, positionIt->second, colorStop.position);
+                auto valueUnit = toValueUnit(positionIt->second);
+                if (!valueUnit) {
+                  result = {};
+                  return;
+                }
+                colorStop.position = valueUnit;
               }
               if (colorIt->second.hasValue()) {
                 fromRawValue(

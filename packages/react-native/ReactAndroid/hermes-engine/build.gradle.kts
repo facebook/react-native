@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import com.facebook.react.tasks.internal.*
 import de.undercouch.gradle.tasks.download.Download
-import java.io.FileOutputStream
 import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
@@ -124,14 +124,14 @@ val unzipHermes by
 // the two tasks mentioned before, so we install CMake manually to break the circular dependency.
 
 val installCMake by
-    tasks.registering(Exec::class) {
-      onlyIf { !File(cmakePath).exists() }
+    tasks.registering(CustomExecTask::class) {
+      onlyIfProvidedPathDoesNotExists.set(cmakePath)
       commandLine(
           windowsAwareCommandLine(getSDKManagerPath(), "--install", "cmake;${cmakeVersion}"))
     }
 
 val configureBuildForHermes by
-    tasks.registering(Exec::class) {
+    tasks.registering(CustomExecTask::class) {
       dependsOn(installCMake)
       workingDir(hermesDir)
       inputs.dir(hermesDir)
@@ -149,11 +149,11 @@ val configureBuildForHermes by
               hermesBuildDir.toString(),
               "-DJSI_DIR=" + jsiDir.absolutePath,
           ))
-      standardOutput = FileOutputStream("$buildDir/configure-hermesc.log")
+      standardOutputFile.set(project.file("$buildDir/configure-hermesc.log"))
     }
 
 val buildHermesC by
-    tasks.registering(Exec::class) {
+    tasks.registering(CustomExecTask::class) {
       dependsOn(configureBuildForHermes)
       workingDir(hermesDir)
       inputs.files(hermesBuildOutputFileTree)
@@ -167,8 +167,8 @@ val buildHermesC by
           "-j",
           ndkBuildJobs,
       )
-      standardOutput = FileOutputStream("$buildDir/build-hermesc.log")
-      errorOutput = FileOutputStream("$buildDir/build-hermesc.error.log")
+      standardOutputFile.set(project.file("$buildDir/build-hermesc.log"))
+      errorOutputFile.set(project.file("$buildDir/build-hermesc.error.log"))
     }
 
 val prepareHeadersForPrefab by

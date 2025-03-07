@@ -11,7 +11,6 @@
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/JSBundleType.h>
 #include <fbjni/fbjni.h>
-#include <folly/Conv.h>
 
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
@@ -87,14 +86,14 @@ loadScriptFromAssets(AAssetManager* manager, const std::string& assetName) {
     }
   }
 
-  throw std::runtime_error(folly::to<std::string>(
+  throw std::runtime_error(
       "Unable to load script.\n\n"
       "Make sure you're running Metro or that your "
       "bundle '", assetName, "' is packaged correctly for release.\n\n"
       "The device must be on the same Wi-Fi network as your computer to connect to Metro.\n\n"
       "To use USB instead, shake the device to open the Dev Menu and set "
       "the bundler location to \"localhost:8081\" and run:\n"
-      "  adb reverse tcp:8081 tcp:8081"));
+      "  adb reverse tcp:8081 tcp:8081");
 }
 
 } // namespace facebook::react

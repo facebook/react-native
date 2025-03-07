@@ -8,18 +8,25 @@
 package com.facebook.react.bridge
 
 import android.os.SystemClock
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.soloader.SoLoader
 import com.facebook.systrace.Systrace
 import com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE
 
+@LegacyArchitecture
 internal object ReactBridge {
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("ReactBridge")
+  }
+
   @Volatile private var _loadStartTime: Long = 0
   @Volatile private var _loadEndTime: Long = 0
   @Volatile private var _didInit: Boolean = false
 
   @JvmStatic
   @Synchronized
-  public fun staticInit() {
+  fun staticInit() {
     if (_didInit) {
       return
     }
@@ -35,14 +42,14 @@ internal object ReactBridge {
   }
 
   @JvmStatic
-  public val loadStartTime: Long
+  val loadStartTime: Long
     get() = _loadStartTime
 
   @JvmStatic
-  public val loadEndTime: Long
+  val loadEndTime: Long
     get() = _loadEndTime
 
   @JvmStatic
-  public val initialized: Boolean
+  val initialized: Boolean
     @JvmName("isInitialized") get() = _didInit
 }

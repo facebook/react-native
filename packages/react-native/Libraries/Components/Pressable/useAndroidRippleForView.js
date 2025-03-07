@@ -9,7 +9,7 @@
  */
 
 import type {ColorValue} from '../../StyleSheet/StyleSheet';
-import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {GestureResponderEvent} from '../../Types/CoreEventTypes';
 
 import processColor from '../../StyleSheet/processColor';
 import Platform from '../../Utilities/Platform';
@@ -26,7 +26,7 @@ type NativeBackgroundProp = $ReadOnly<{
   rippleRadius: ?number,
 }>;
 
-export type RippleConfig = {
+export type PressableAndroidRippleConfig = {
   color?: ColorValue,
   borderless?: boolean,
   radius?: number,
@@ -38,12 +38,12 @@ export type RippleConfig = {
  * supported versions of Android.
  */
 export default function useAndroidRippleForView(
-  rippleConfig: ?RippleConfig,
+  rippleConfig: ?PressableAndroidRippleConfig,
   viewRef: {current: null | React.ElementRef<typeof View>},
 ): ?$ReadOnly<{
-  onPressIn: (event: PressEvent) => void,
-  onPressMove: (event: PressEvent) => void,
-  onPressOut: (event: PressEvent) => void,
+  onPressIn: (event: GestureResponderEvent) => void,
+  onPressMove: (event: GestureResponderEvent) => void,
+  onPressOut: (event: GestureResponderEvent) => void,
   viewProps:
     | $ReadOnly<{nativeBackgroundAndroid: NativeBackgroundProp}>
     | $ReadOnly<{nativeForegroundAndroid: NativeBackgroundProp}>,
@@ -75,7 +75,7 @@ export default function useAndroidRippleForView(
               {nativeForegroundAndroid: nativeRippleValue}
             : // $FlowFixMe[incompatible-return]
               {nativeBackgroundAndroid: nativeRippleValue},
-        onPressIn(event: PressEvent): void {
+        onPressIn(event: GestureResponderEvent): void {
           const view = viewRef.current;
           if (view != null) {
             Commands.hotspotUpdate(
@@ -86,7 +86,7 @@ export default function useAndroidRippleForView(
             Commands.setPressed(view, true);
           }
         },
-        onPressMove(event: PressEvent): void {
+        onPressMove(event: GestureResponderEvent): void {
           const view = viewRef.current;
           if (view != null) {
             Commands.hotspotUpdate(
@@ -96,7 +96,7 @@ export default function useAndroidRippleForView(
             );
           }
         },
-        onPressOut(event: PressEvent): void {
+        onPressOut(event: GestureResponderEvent): void {
           const view = viewRef.current;
           if (view != null) {
             Commands.setPressed(view, false);

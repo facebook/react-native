@@ -7,7 +7,6 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 import {NativeEventCategory} from '../../../src/private/testing/fantom/specs/NativeFantom';
@@ -42,7 +41,7 @@ describe('discrete event category', () => {
         interruptRendering = false;
         const element = ensureReactNativeElement(maybeTextInputNode);
         Fantom.runOnUIThread(() => {
-          Fantom.dispatchNativeEvent(
+          Fantom.enqueueNativeEvent(
             element,
             'change',
             {
@@ -161,7 +160,7 @@ describe('continuous event category', () => {
         interruptRendering = false;
         const element = ensureReactNativeElement(maybeTextInputNode);
         Fantom.runOnUIThread(() => {
-          Fantom.dispatchNativeEvent(
+          Fantom.enqueueNativeEvent(
             element,
             'selectionChange',
             {

@@ -7,8 +7,17 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
+
 /** Implementation of javascript callback function that use Bridge to schedule method execution */
+@LegacyArchitecture
 public final class CallbackImpl implements Callback {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "CallbackImpl", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private final JSInstance mJSInstance;
   private final int mCallbackId;

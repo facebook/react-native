@@ -18,6 +18,9 @@ import com.facebook.react.bridge.UIManagerProvider
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.fabric.ComponentFactory
 import com.facebook.react.fabric.FabricUIManagerProviderImpl
+import com.facebook.react.runtime.JSCInstance
+import com.facebook.react.runtime.JSRuntimeFactory
+import com.facebook.react.runtime.hermes.HermesInstance
 import com.facebook.react.uimanager.ViewManagerRegistry
 import com.facebook.react.uimanager.ViewManagerResolver
 
@@ -108,14 +111,20 @@ protected constructor(
    * @param context the Android [Context] to use for creating the [ReactHost]
    */
   @UnstableReactNativeAPI
-  internal fun toReactHost(context: Context): ReactHost =
-      DefaultReactHost.getDefaultReactHost(
-          context,
-          packages,
-          jsMainModuleName,
-          bundleAssetName ?: "index",
-          jsBundleFile,
-          isHermesEnabled ?: true,
-          useDeveloperSupport,
-      )
+  internal fun toReactHost(
+      context: Context,
+      jsRuntimeFactory: JSRuntimeFactory? = null
+  ): ReactHost {
+    val concreteJSRuntimeFactory =
+        jsRuntimeFactory ?: if (isHermesEnabled == false) JSCInstance() else HermesInstance()
+    return DefaultReactHost.getDefaultReactHost(
+        context,
+        packages,
+        jsMainModuleName,
+        bundleAssetName ?: "index",
+        jsBundleFile,
+        concreteJSRuntimeFactory,
+        useDeveloperSupport,
+    )
+  }
 }

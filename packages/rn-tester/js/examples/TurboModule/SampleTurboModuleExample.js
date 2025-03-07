@@ -63,7 +63,7 @@ type ErrorExamples =
   | 'promiseAssert';
 
 class SampleTurboModuleExample extends React.Component<{}, State> {
-  static contextType: React$Context<RootTag> = RootTagContext;
+  static contextType: React.Context<RootTag> = RootTagContext;
   eventSubscriptions: EventSubscription[] = [];
 
   state: State = {
@@ -204,7 +204,7 @@ class SampleTurboModuleExample extends React.Component<{}, State> {
   }
 
   componentDidMount(): void {
-    if (global.__turboModuleProxy == null && global.nativeModuleProxy == null) {
+    if (global.__turboModuleProxy == null && global.RN$Bridgeless == null) {
       throw new Error(
         'Cannot load this example because TurboModule is not configured.',
       );

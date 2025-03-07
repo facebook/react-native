@@ -36,6 +36,7 @@ const IDLE_CALLBACK_FRAME_DEADLINE = 1;
 const callbacks: Array<?Function> = [];
 const types: Array<?JSTimerType> = [];
 const timerIDs: Array<?number> = [];
+const freeIdxs: Array<number> = [];
 let reactNativeMicrotasks: Array<number> = [];
 let requestIdleCallbacks: Array<number> = [];
 const requestIdleCallbackTimeouts: {[number]: number, ...} = {};
@@ -47,11 +48,11 @@ let hasEmittedTimeDriftWarning = false;
 
 // Returns a free index if one is available, and the next consecutive index otherwise.
 function _getFreeIndex(): number {
-  let freeIndex = timerIDs.indexOf(null);
-  if (freeIndex === -1) {
-    freeIndex = timerIDs.length;
+  const freeIdx = freeIdxs.pop();
+  if (freeIdx === undefined) {
+    return timerIDs.length;
   }
-  return freeIndex;
+  return freeIdx;
 }
 
 function _allocateCallback(func: Function, type: JSTimerType): number {
@@ -171,6 +172,7 @@ function _clearIndex(i: number) {
   timerIDs[i] = null;
   callbacks[i] = null;
   types[i] = null;
+  freeIdxs.push(i);
 }
 
 function _freeCallback(timerID: number) {

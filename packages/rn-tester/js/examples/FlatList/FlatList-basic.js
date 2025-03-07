@@ -13,7 +13,7 @@
 import type {Item} from '../../components/ListExampleShared';
 import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import type FlatList from 'react-native/Libraries/Lists/FlatList';
-import type {RenderItemProps} from 'react-native/Libraries/Lists/VirtualizedList';
+import type {ListRenderItemInfo} from 'react-native/Libraries/Lists/VirtualizedList';
 
 import {
   FooterComponent,
@@ -354,7 +354,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
   _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
   // $FlowFixMe[missing-local-annot]
   _renderItemComponent = () => {
-    const renderProp = ({item, separators}: RenderItemProps<Item>) => {
+    const renderProp = ({item, separators}: ListRenderItemInfo<Item>) => {
       return (
         <ItemComponent
           testID={`item_${item.key}`}

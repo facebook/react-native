@@ -76,7 +76,7 @@ Pod::Spec.new do |s|
   s.dependency "React-logger"
   s.dependency "glog"
   s.dependency "DoubleConversion"
-  s.dependency "fast_float", "6.1.4"
+  s.dependency "fast_float"
   s.dependency "fmt", "11.0.2"
   s.dependency "React-featureflags"
   s.dependency "React-utils"
@@ -94,9 +94,5 @@ Pod::Spec.new do |s|
   ])
   add_dependency(s, "React-rendererdebug")
 
-  if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
-    s.dependency "hermes-engine"
-  else
-    s.dependency "React-jsc"
-  end
+  depend_on_js_engine(s)
 end

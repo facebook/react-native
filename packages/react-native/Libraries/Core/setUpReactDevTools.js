@@ -72,7 +72,7 @@ if (__DEV__) {
 
   const ReactNativeStyleAttributes =
     require('../Components/View/ReactNativeStyleAttributes').default;
-  const resolveRNStyle = require('../StyleSheet/flattenStyle');
+  const resolveRNStyle = require('../StyleSheet/flattenStyle').default;
 
   function handleReactDevToolsSettingsUpdate(settings: Object) {
     reactDevToolsSettingsManager.setGlobalHookSettings(
@@ -152,6 +152,8 @@ if (__DEV__) {
       // Read the optional global variable for backward compatibility.
       // It was added in https://github.com/facebook/react-native/commit/bf2b435322e89d0aeee8792b1c6e04656c2719a0.
       const port =
+        // $FlowFixMe[prop-missing]
+        // $FlowFixMe[incompatible-use]
         window.__REACT_DEVTOOLS_PORT__ != null
           ? window.__REACT_DEVTOOLS_PORT__
           : 8097;

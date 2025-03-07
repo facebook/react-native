@@ -17,6 +17,7 @@ import * as LogBoxStyle from './LogBoxStyle';
 import * as React from 'react';
 
 type ButtonProps = $ReadOnly<{
+  id: string,
   onPress: () => void,
   text: string,
 }>;
@@ -27,6 +28,7 @@ export default function LogBoxInspectorFooterButton(
   return (
     <SafeAreaView style={styles.button}>
       <LogBoxButton
+        id={props.id}
         backgroundColor={{
           default: 'transparent',
           pressed: LogBoxStyle.getBackgroundDarkColor(),

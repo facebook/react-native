@@ -45,9 +45,13 @@ class ReactNativePodsUtils
 
     def self.set_gcc_preprocessor_definition_for_React_hermes(installer)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-hermes", :debug)
-        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-jsinspector", :debug)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "hermes-engine", :debug)
         self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "HERMES_ENABLE_DEBUGGER=1", "React-RuntimeHermes", :debug)
+    end
+
+    def self.set_gcc_preprocessor_definition_for_debugger(installer)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED=1", "React-jsinspector", :debug)
+        self.add_build_settings_to_pod(installer, "GCC_PREPROCESSOR_DEFINITIONS", "REACT_NATIVE_DEBUGGER_ENABLED_DEVONLY=1", "React-jsinspector", :debug)
     end
 
     def self.turn_off_resource_bundle_react_core(installer)
@@ -600,7 +604,7 @@ class ReactNativePodsUtils
     end
 
     def self.react_native_pods
-        return [
+        pods = [
             "DoubleConversion",
             "FBLazyVector",
             "RCT-Folly",
@@ -618,6 +622,7 @@ class ReactNativePodsUtils
             "React-RCTAppDelegate",
             "React-RCTBlob",
             "React-RCTFabric",
+            "React-RCTRuntime",
             "React-RCTImage",
             "React-RCTLinking",
             "React-RCTNetwork",
@@ -629,11 +634,12 @@ class ReactNativePodsUtils
             "React-callinvoker",
             "React-cxxreact",
             "React-graphics",
-            "React-jsc",
             "React-jsi",
             "React-jsiexecutor",
             "React-jsinspector",
+            "React-jsitooling",
             "React-logger",
+            "React-oscompat",
             "React-perflogger",
             "React-rncore",
             "React-runtimeexecutor",
@@ -647,6 +653,11 @@ class ReactNativePodsUtils
             "hermes-engine",
             "React-hermes",
         ]
+        if ENV['USE_THIRD_PARTY_JSC'] != '1'
+            pods << "React-jsc"
+        end
+
+        return pods
     end
 
     def self.add_search_path_to_result(result, base_path, additional_paths, include_base_path)

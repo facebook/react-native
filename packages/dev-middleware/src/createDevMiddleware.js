@@ -91,6 +91,7 @@ export default function createDevMiddleware({
     serverBaseUrl,
     eventReporter,
     experiments,
+    logger,
     unstable_customInspectorMessageHandler,
   );
 
@@ -147,7 +148,16 @@ function createWrappedEventReporter(
       switch (event.type) {
         case 'profiling_target_registered':
           logger?.info(
-            `Profiling build target "${event.appId}" registered for debugging`,
+            "Profiling build target '%s' registered for debugging",
+            event.appId ?? 'unknown',
+          );
+          break;
+        case 'fusebox_console_notice':
+          logger?.info(
+            '\u001B[1m\u001B[7m💡 JavaScript logs have moved!\u001B[22m They can now be ' +
+              'viewed in React Native DevTools. Tip: Type \u001B[1mj\u001B[22m in ' +
+              'the terminal to open (requires Google Chrome or Microsoft Edge).' +
+              '\u001B[27m',
           );
           break;
       }

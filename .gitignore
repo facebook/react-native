@@ -141,6 +141,11 @@ vendor/
 /packages/react-native/sdks/hermesc
 /packages/react-native/sdks/hermes-engine/hermes-engine-from-local-source-dir.tar.gz
 
+# iOS prebuilds
+/packages/react-native/third-party/
+fix_*.patch
+*.xcframework
+
 # Visual Studio Code (config dir - if present, this merges user defined
 # workspace settings on top of react-native.code-workspace)
 /.vscode
@@ -156,6 +161,7 @@ vendor/
 
 # Jest Integration
 /packages/react-native-fantom/build/
+/packages/react-native-fantom/tester/build/
 
 # [Experimental] Generated TS type definitions
-/packages/react-native/types_generated/
+/packages/**/types_generated/

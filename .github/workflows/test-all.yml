@@ -116,6 +116,10 @@ jobs:
           react-native-version: ${{ needs.prepare_hermes_workspace.outputs.react-native-version }}
           flavor: ${{ matrix.flavor }}
 
+  prebuild_apple_dependencies:
+    uses: ./.github/workflows/prebuild-ios.yml
+    secrets: inherit
+
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-13
     needs:
@@ -444,6 +448,7 @@ jobs:
         with:
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
           run-e2e-tests: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   test_e2e_android_rntester:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
@@ -488,6 +493,7 @@ jobs:
         build_hermesc_linux,
         build_hermesc_windows,
         build_android,
+        prebuild_apple_dependencies,
       ]
     container:
       image: reactnativecommunity/react-native-android:latest
@@ -504,6 +510,7 @@ jobs:
         with:
           hermes-ws-dir: ${{ env.HERMES_WS_DIR }}
           release-type: ${{ needs.set_release_type.outputs.RELEASE_TYPE }}
+          gradle-cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
 
   test_android_helloworld:
     runs-on: 4-core-ubuntu
@@ -542,6 +549,8 @@ jobs:
           path: /tmp/maven-local
       - name: Setup gradle
         uses: ./.github/actions/setup-gradle
+        with:
+          cache-encryption-key: ${{ secrets.GRADLE_CACHE_ENCRYPTION_KEY }}
       - name: Run yarn install
         uses: ./.github/actions/yarn-install
       - name: Prepare the Helloworld application
@@ -620,7 +629,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["20", "18"]
+        node-version: ["22", "20", "18"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

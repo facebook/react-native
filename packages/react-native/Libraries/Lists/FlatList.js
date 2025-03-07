@@ -11,8 +11,8 @@
 import typeof ScrollViewNativeComponent from '../Components/ScrollView/ScrollViewNativeComponent';
 import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
-  RenderItemProps,
-  RenderItemType,
+  ListRenderItem,
+  ListRenderItemInfo,
   ViewabilityConfigCallbackPair,
   ViewToken,
 } from '@react-native/virtualized-lists';
@@ -20,17 +20,17 @@ import type {
 import * as ReactNativeFeatureFlags from '../../src/private/featureflags/ReactNativeFeatureFlags';
 import {type ScrollResponderType} from '../Components/ScrollView/ScrollView';
 import View from '../Components/View/View';
-import {
-  VirtualizedList,
-  keyExtractor as defaultKeyExtractor,
-} from '@react-native/virtualized-lists';
+import VirtualizedLists from '@react-native/virtualized-lists';
 import memoizeOne from 'memoize-one';
 import React from 'react';
 
-const StyleSheet = require('../StyleSheet/StyleSheet');
-const deepDiffer = require('../Utilities/differ/deepDiffer');
-const Platform = require('../Utilities/Platform');
+const StyleSheet = require('../StyleSheet/StyleSheet').default;
+const deepDiffer = require('../Utilities/differ/deepDiffer').default;
+const Platform = require('../Utilities/Platform').default;
 const invariant = require('invariant');
+
+const VirtualizedList = VirtualizedLists.VirtualizedList;
+const defaultKeyExtractor = VirtualizedLists.keyExtractor;
 
 type RequiredProps<ItemT> = {
   /**
@@ -66,7 +66,7 @@ type OptionalProps<ItemT> = {
    * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
    * your use-case.
    */
-  renderItem?: ?RenderItemType<ItemT>,
+  renderItem?: ?ListRenderItem<ItemT>,
 
   /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
@@ -176,17 +176,18 @@ function isArrayLike(data: mixed): boolean {
   return typeof Object(data).length === 'number';
 }
 
-type FlatListProps<ItemT> = {
+type FlatListBaseProps<ItemT> = {
   ...RequiredProps<ItemT>,
   ...OptionalProps<ItemT>,
 };
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
-export type Props<ItemT> = {
+export type FlatListProps<ItemT> = {
   ...$Diff<
     VirtualizedListProps,
     {
+      data: $PropertyType<VirtualizedListProps, 'data'>,
       getItem: $PropertyType<VirtualizedListProps, 'getItem'>,
       getItemCount: $PropertyType<VirtualizedListProps, 'getItemCount'>,
       getItemLayout: $PropertyType<VirtualizedListProps, 'getItemLayout'>,
@@ -195,7 +196,7 @@ export type Props<ItemT> = {
       ...
     },
   >,
-  ...FlatListProps<ItemT>,
+  ...FlatListBaseProps<ItemT>,
   ...
 };
 
@@ -307,7 +308,7 @@ export type Props<ItemT> = {
  *
  * Also inherits [ScrollView Props](docs/scrollview.html#props), unless it is nested in another FlatList of same orientation.
  */
-class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
+class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
   /**
    * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
    */
@@ -422,7 +423,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
-  constructor(props: Props<ItemT>) {
+  constructor(props: FlatListProps<ItemT>) {
     super(props);
     this._checkProps(this.props);
     if (this.props.viewabilityConfigCallbackPairs) {
@@ -456,7 +457,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   // $FlowFixMe[missing-local-annot]
-  componentDidUpdate(prevProps: Props<ItemT>) {
+  componentDidUpdate(prevProps: FlatListProps<ItemT>) {
     invariant(
       prevProps.numColumns === this.props.numColumns,
       'Changing numColumns on the fly is not supported. Change the key prop on FlatList when ' +
@@ -488,7 +489,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   // $FlowFixMe[missing-local-annot]
-  _checkProps(props: Props<ItemT>) {
+  _checkProps(props: FlatListProps<ItemT>) {
     const {
       // $FlowFixMe[prop-missing] this prop doesn't exist, is only used for an invariant
       getItem,
@@ -618,7 +619,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
 
   _renderer = (
     ListItemComponent: ?(React.ComponentType<any> | React.MixedElement),
-    renderItem: ?RenderItemType<ItemT>,
+    renderItem: ?ListRenderItem<ItemT>,
     columnWrapperStyle: ?ViewStyleProp,
     numColumns: ?number,
     extraData: ?any,
@@ -626,7 +627,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   ) => {
     const cols = numColumnsOrDefault(numColumns);
 
-    const render = (props: RenderItemProps<ItemT>): React.Node => {
+    const render = (props: ListRenderItemInfo<ItemT>): React.Node => {
       if (ListItemComponent) {
         // $FlowFixMe[not-a-component] Component isn't valid
         // $FlowFixMe[incompatible-type-arg] Component isn't valid
@@ -640,7 +641,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       }
     };
 
-    const renderProp = (info: RenderItemProps<ItemT>) => {
+    const renderProp = (info: ListRenderItemInfo<ItemT>) => {
       if (cols > 1) {
         const {item, index} = info;
         invariant(

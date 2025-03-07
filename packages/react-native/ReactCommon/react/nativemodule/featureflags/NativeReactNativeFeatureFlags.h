@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<931f83bf669c9ed8490e5895df26dfb0>>
+ * @generated SignedSource<<1a82faa89018f5722a57fe5098b69324>>
  */
 
 /**
@@ -49,15 +49,9 @@ class NativeReactNativeFeatureFlags
 
   bool enableEagerRootViewAttachment(jsi::Runtime& runtime);
 
-  bool enableEventEmitterRetentionDuringGesturesOnAndroid(jsi::Runtime& runtime);
-
   bool enableFabricLogs(jsi::Runtime& runtime);
 
   bool enableFabricRenderer(jsi::Runtime& runtime);
-
-  bool enableFixForViewCommandRace(jsi::Runtime& runtime);
-
-  bool enableGranularShadowTreeStateReconciliation(jsi::Runtime& runtime);
 
   bool enableIOSViewClipToPaddingBox(jsi::Runtime& runtime);
 
@@ -71,9 +65,9 @@ class NativeReactNativeFeatureFlags
 
   bool enableLongTaskAPI(jsi::Runtime& runtime);
 
-  bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
+  bool enableNativeCSSParsing(jsi::Runtime& runtime);
 
-  bool enablePreciseSchedulingForPremountItemsOnAndroid(jsi::Runtime& runtime);
+  bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
 
@@ -83,7 +77,13 @@ class NativeReactNativeFeatureFlags
 
   bool enableUIConsistency(jsi::Runtime& runtime);
 
+  bool enableViewCulling(jsi::Runtime& runtime);
+
   bool enableViewRecycling(jsi::Runtime& runtime);
+
+  bool enableViewRecyclingForText(jsi::Runtime& runtime);
+
+  bool enableViewRecyclingForView(jsi::Runtime& runtime);
 
   bool excludeYogaFromRawProps(jsi::Runtime& runtime);
 
@@ -99,7 +99,9 @@ class NativeReactNativeFeatureFlags
 
   bool lazyAnimationCallbacks(jsi::Runtime& runtime);
 
-  bool loadVectorDrawablesOnImages(jsi::Runtime& runtime);
+  bool removeTurboModuleManagerDelegateMutex(jsi::Runtime& runtime);
+
+  bool throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS(jsi::Runtime& runtime);
 
   bool traceTurboModulePromiseRejectionsOnAndroid(jsi::Runtime& runtime);
 
@@ -114,8 +116,6 @@ class NativeReactNativeFeatureFlags
   bool useOptimizedEventBatchingOnAndroid(jsi::Runtime& runtime);
 
   bool useRawPropsJsiValue(jsi::Runtime& runtime);
-
-  bool useRuntimeShadowNodeReferenceUpdate(jsi::Runtime& runtime);
 
   bool useTurboModuleInterop(jsi::Runtime& runtime);
 

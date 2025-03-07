@@ -10,6 +10,7 @@ package com.facebook.react.tasks
 import com.facebook.react.utils.JsonUtils
 import com.facebook.react.utils.Os.cliPath
 import com.facebook.react.utils.windowsAwareCommandLine
+import java.io.File
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFile
@@ -30,6 +31,8 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   @get:Internal abstract val generatedSrcDir: DirectoryProperty
 
   @get:InputFile abstract val packageJsonFile: RegularFileProperty
+
+  @get:Input abstract val nodeWorkingDir: Property<String>
 
   @get:Input abstract val nodeExecutableAndArgs: ListProperty<String>
 
@@ -64,7 +67,7 @@ abstract class GenerateCodegenArtifactsTask : Exec() {
   }
 
   internal fun setupCommandLine(libraryName: String, codegenJavaPackageName: String) {
-    val workingDir = project.projectDir
+    val workingDir = File(nodeWorkingDir.get())
     commandLine(
         windowsAwareCommandLine(
             *nodeExecutableAndArgs.get().toTypedArray(),

@@ -17,5 +17,5 @@ internal abstract class ReactTextInlineImageShadowNode : LayoutShadowNode() {
    * Build a [TextInlineImageSpan] from this node. This will be added to the TextView in place of
    * this node.
    */
-  public abstract fun buildInlineImageSpan(): TextInlineImageSpan
+  abstract fun buildInlineImageSpan(): TextInlineImageSpan
 }

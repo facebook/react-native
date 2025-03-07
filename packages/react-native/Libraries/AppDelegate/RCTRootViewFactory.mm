@@ -26,11 +26,6 @@
 #import <React/RCTFabricSurface.h>
 #import <React/RCTSurfaceHostingProxyRootView.h>
 #import <React/RCTSurfacePresenter.h>
-#if USE_HERMES
-#import <ReactCommon/RCTHermesInstance.h>
-#else
-#import <ReactCommon/RCTJscInstance.h>
-#endif
 #import <ReactCommon/RCTHost+Internal.h>
 #import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
@@ -263,11 +258,16 @@
 
 - (std::shared_ptr<facebook::react::JSRuntimeFactory>)createJSRuntimeFactory
 {
-#if USE_HERMES
-  return std::make_shared<facebook::react::RCTHermesInstance>(nullptr, /* allocInOldGenBeforeTTI */ false);
-#else
-  return std::make_shared<facebook::react::RCTJscInstance>();
-#endif
+  if (_configuration.jsRuntimeConfiguratorDelegate == nil) {
+    [NSException raise:@"RCTReactNativeFactoryDelegate::createJSRuntimeFactory not implemented"
+                format:@"Delegate must implement a valid createJSRuntimeFactory method"];
+    return nullptr;
+  }
+
+  auto jsRuntimeFactory = [_configuration.jsRuntimeConfiguratorDelegate createJSRuntimeFactory];
+
+  return std::shared_ptr<facebook::react::JSRuntimeFactory>(
+      reinterpret_cast<facebook::react::JSRuntimeFactory *>(jsRuntimeFactory), &js_runtime_factory_destroy);
 }
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
@@ -300,6 +300,22 @@
     return _configuration.bridgeDidNotFindModule(bridge, moduleName);
   }
   return NO;
+}
+
+- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
+{
+  if (_configuration.loadSourceForBridge != nil) {
+    _configuration.loadSourceForBridge(bridge, loadCallback);
+  }
+}
+
+- (void)loadSourceForBridge:(RCTBridge *)bridge
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback
+{
+  if (_configuration.loadSourceForBridgeWithProgress != nil) {
+    _configuration.loadSourceForBridgeWithProgress(bridge, onProgress, loadCallback);
+  }
 }
 
 - (NSURL *)bundleURL

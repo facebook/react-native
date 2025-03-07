@@ -25,7 +25,7 @@ interface ILogBox {
   uninstall(): void;
   isInstalled(): boolean;
   ignoreLogs($ReadOnlyArray<IgnorePattern>): void;
-  ignoreAllLogs(?boolean): void;
+  ignoreAllLogs(value?: boolean): void;
   clearAllLogs(): void;
   addLog(log: LogData): void;
   addException(error: ExtendedExceptionData): void;
@@ -116,10 +116,18 @@ if (__DEV__) {
       return isLogBoxInstalled;
     },
 
+    /**
+     * Silence any logs that match the given strings or regexes.
+     */
     ignoreLogs(patterns: $ReadOnlyArray<IgnorePattern>): void {
       LogBoxData.addIgnorePatterns(patterns);
     },
 
+    /**
+     * Toggle error and warning notifications
+     * Note: this only disables notifications, uncaught errors will still open a full screen LogBox.
+     * @param ignore whether to ignore logs or not
+     */
     ignoreAllLogs(value?: ?boolean): void {
       LogBoxData.setDisabled(value == null ? true : value);
     },
@@ -198,7 +206,7 @@ if (__DEV__) {
       if (!hasComponentStack(args) && React.captureOwnerStack != null) {
         stack = React.captureOwnerStack();
         if (!hasComponentStack(args)) {
-          if (stack !== '') {
+          if (stack != null && stack !== '') {
             args[0] = args[0] += '%s';
             args.push(stack);
           }

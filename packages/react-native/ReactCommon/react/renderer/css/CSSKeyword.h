@@ -26,13 +26,17 @@ enum class CSSKeyword : uint8_t {
   Auto,
   Baseline,
   Block,
+  Bottom,
   Center,
   Clip,
   Column,
   ColumnReverse,
+  CommonLigatures,
   Content,
   Contents,
+  Contextual,
   Dashed,
+  DiscretionaryLigatures,
   Dotted,
   Double,
   End,
@@ -43,6 +47,7 @@ enum class CSSKeyword : uint8_t {
   Grid,
   Groove,
   Hidden,
+  HistoricalLigatures,
   Inherit,
   Initial,
   Inline,
@@ -50,20 +55,30 @@ enum class CSSKeyword : uint8_t {
   InlineFlex,
   InlineGrid,
   Inset,
+  Left,
+  LiningNums,
   Ltr,
   MaxContent,
   Medium,
   MinContent,
+  NoCommonLigatures,
+  NoContextual,
+  NoDiscretionaryLigatures,
+  NoHistoricalLigatures,
   None,
   Normal,
   NoWrap,
+  OldstyleNums,
   Outset,
+  ProportionalNums,
   Relative,
   Ridge,
+  Right,
   Row,
   RowReverse,
   Rtl,
   Scroll,
+  SmallCaps,
   Solid,
   SpaceAround,
   SpaceBetween,
@@ -72,8 +87,30 @@ enum class CSSKeyword : uint8_t {
   Static,
   Sticky,
   Stretch,
+  StylisticEight,
+  StylisticEighteen,
+  StylisticEleven,
+  StylisticFifteen,
+  StylisticFive,
+  StylisticFour,
+  StylisticFourteen,
+  StylisticNine,
+  StylisticNineteen,
+  StylisticOne,
+  StylisticSeven,
+  StylisticSeventeen,
+  StylisticSix,
+  StylisticSixteen,
+  StylisticTen,
+  StylisticThirteen,
+  StylisticThree,
+  StylisticTwelve,
+  StylisticTwenty,
+  StylisticTwo,
+  TabularNums,
   Thick,
   Thin,
+  Top,
   Unset,
   Visible,
   Wrap,
@@ -88,10 +125,6 @@ concept CSSKeywordSet = std::is_enum_v<T> &&
     std::is_same_v<std::underlying_type_t<T>,
                    std::underlying_type_t<CSSKeyword>>;
 
-constexpr bool operator==(CSSKeywordSet auto a, CSSKeyword b) {
-  return to_underlying(a) == to_underlying(b);
-}
-
 /**
  * CSS-wide keywords.
  * https://www.w3.org/TR/css-values-4/#common-keywords
@@ -102,71 +135,114 @@ enum class CSSWideKeyword : std::underlying_type_t<CSSKeyword> {
   Unset = to_underlying(CSSKeyword::Unset),
 };
 
-/**
- * Defines a concept for whether an enum has a given member.
- */
-#define CSS_DEFINE_KEYWORD_CONEPTS(name)                             \
-  namespace detail {                                                 \
-  template <typename T>                                              \
-  concept has##name = (CSSKeywordSet<T> && requires() { T::name; }); \
+#define CSS_DEFINE_KEYWORD(enumName, name)                                   \
+  namespace detail::css::keywords {                                          \
+  template <typename T>                                                      \
+  concept has##enumName = (CSSKeywordSet<T> && requires() { T::enumName; }); \
+  constexpr std::string_view enumName{name};                                 \
+  static_assert(has##enumName<CSSKeyword>);                                  \
   }
 
-CSS_DEFINE_KEYWORD_CONEPTS(Absolute)
-CSS_DEFINE_KEYWORD_CONEPTS(Auto)
-CSS_DEFINE_KEYWORD_CONEPTS(Baseline)
-CSS_DEFINE_KEYWORD_CONEPTS(Block)
-CSS_DEFINE_KEYWORD_CONEPTS(Center)
-CSS_DEFINE_KEYWORD_CONEPTS(Clip)
-CSS_DEFINE_KEYWORD_CONEPTS(Column)
-CSS_DEFINE_KEYWORD_CONEPTS(ColumnReverse)
-CSS_DEFINE_KEYWORD_CONEPTS(Content)
-CSS_DEFINE_KEYWORD_CONEPTS(Contents)
-CSS_DEFINE_KEYWORD_CONEPTS(Dashed)
-CSS_DEFINE_KEYWORD_CONEPTS(Dotted)
-CSS_DEFINE_KEYWORD_CONEPTS(Double)
-CSS_DEFINE_KEYWORD_CONEPTS(End)
-CSS_DEFINE_KEYWORD_CONEPTS(Fixed)
-CSS_DEFINE_KEYWORD_CONEPTS(Flex)
-CSS_DEFINE_KEYWORD_CONEPTS(FlexEnd)
-CSS_DEFINE_KEYWORD_CONEPTS(FlexStart)
-CSS_DEFINE_KEYWORD_CONEPTS(Grid)
-CSS_DEFINE_KEYWORD_CONEPTS(Groove)
-CSS_DEFINE_KEYWORD_CONEPTS(Hidden)
-CSS_DEFINE_KEYWORD_CONEPTS(Inherit)
-CSS_DEFINE_KEYWORD_CONEPTS(Initial)
-CSS_DEFINE_KEYWORD_CONEPTS(Inline)
-CSS_DEFINE_KEYWORD_CONEPTS(InlineBlock)
-CSS_DEFINE_KEYWORD_CONEPTS(InlineFlex)
-CSS_DEFINE_KEYWORD_CONEPTS(InlineGrid)
-CSS_DEFINE_KEYWORD_CONEPTS(Inset)
-CSS_DEFINE_KEYWORD_CONEPTS(Ltr)
-CSS_DEFINE_KEYWORD_CONEPTS(MaxContent)
-CSS_DEFINE_KEYWORD_CONEPTS(Medium)
-CSS_DEFINE_KEYWORD_CONEPTS(MinContent)
-CSS_DEFINE_KEYWORD_CONEPTS(None)
-CSS_DEFINE_KEYWORD_CONEPTS(Normal)
-CSS_DEFINE_KEYWORD_CONEPTS(NoWrap)
-CSS_DEFINE_KEYWORD_CONEPTS(Outset)
-CSS_DEFINE_KEYWORD_CONEPTS(Relative)
-CSS_DEFINE_KEYWORD_CONEPTS(Ridge)
-CSS_DEFINE_KEYWORD_CONEPTS(Row)
-CSS_DEFINE_KEYWORD_CONEPTS(RowReverse)
-CSS_DEFINE_KEYWORD_CONEPTS(Rtl)
-CSS_DEFINE_KEYWORD_CONEPTS(Scroll)
-CSS_DEFINE_KEYWORD_CONEPTS(Solid)
-CSS_DEFINE_KEYWORD_CONEPTS(SpaceAround)
-CSS_DEFINE_KEYWORD_CONEPTS(SpaceBetween)
-CSS_DEFINE_KEYWORD_CONEPTS(SpaceEvenly)
-CSS_DEFINE_KEYWORD_CONEPTS(Start)
-CSS_DEFINE_KEYWORD_CONEPTS(Static)
-CSS_DEFINE_KEYWORD_CONEPTS(Sticky)
-CSS_DEFINE_KEYWORD_CONEPTS(Stretch)
-CSS_DEFINE_KEYWORD_CONEPTS(Thick)
-CSS_DEFINE_KEYWORD_CONEPTS(Thin)
-CSS_DEFINE_KEYWORD_CONEPTS(Unset)
-CSS_DEFINE_KEYWORD_CONEPTS(Visible)
-CSS_DEFINE_KEYWORD_CONEPTS(Wrap)
-CSS_DEFINE_KEYWORD_CONEPTS(WrapReverse)
+CSS_DEFINE_KEYWORD(Absolute, "absolute")
+CSS_DEFINE_KEYWORD(Auto, "auto")
+CSS_DEFINE_KEYWORD(Baseline, "baseline")
+CSS_DEFINE_KEYWORD(Block, "block")
+CSS_DEFINE_KEYWORD(Bottom, "bottom")
+CSS_DEFINE_KEYWORD(Center, "center")
+CSS_DEFINE_KEYWORD(Clip, "clip")
+CSS_DEFINE_KEYWORD(Column, "column")
+CSS_DEFINE_KEYWORD(ColumnReverse, "column-reverse")
+CSS_DEFINE_KEYWORD(CommonLigatures, "common-ligatures")
+CSS_DEFINE_KEYWORD(Content, "content")
+CSS_DEFINE_KEYWORD(Contents, "contents")
+CSS_DEFINE_KEYWORD(Contextual, "contextual")
+CSS_DEFINE_KEYWORD(Dashed, "dashed")
+CSS_DEFINE_KEYWORD(DiscretionaryLigatures, "discretionary-ligatures")
+CSS_DEFINE_KEYWORD(Dotted, "dotted")
+CSS_DEFINE_KEYWORD(Double, "double")
+CSS_DEFINE_KEYWORD(End, "end")
+CSS_DEFINE_KEYWORD(Fixed, "fixed")
+CSS_DEFINE_KEYWORD(Flex, "flex")
+CSS_DEFINE_KEYWORD(FlexEnd, "flex-end")
+CSS_DEFINE_KEYWORD(FlexStart, "flex-start")
+CSS_DEFINE_KEYWORD(Grid, "grid")
+CSS_DEFINE_KEYWORD(Groove, "groove")
+CSS_DEFINE_KEYWORD(Hidden, "hidden")
+CSS_DEFINE_KEYWORD(HistoricalLigatures, "historical-ligatures")
+CSS_DEFINE_KEYWORD(Inherit, "inherit")
+CSS_DEFINE_KEYWORD(Initial, "initial")
+CSS_DEFINE_KEYWORD(Inline, "inline")
+CSS_DEFINE_KEYWORD(InlineBlock, "inline-block")
+CSS_DEFINE_KEYWORD(InlineFlex, "inline-flex")
+CSS_DEFINE_KEYWORD(InlineGrid, "inline-grid")
+CSS_DEFINE_KEYWORD(Inset, "inset")
+CSS_DEFINE_KEYWORD(Left, "left")
+CSS_DEFINE_KEYWORD(LiningNums, "lining-nums")
+CSS_DEFINE_KEYWORD(Ltr, "ltr")
+CSS_DEFINE_KEYWORD(MaxContent, "max-content")
+CSS_DEFINE_KEYWORD(Medium, "medium")
+CSS_DEFINE_KEYWORD(MinContent, "min-content")
+CSS_DEFINE_KEYWORD(NoCommonLigatures, "no-common-ligatures")
+CSS_DEFINE_KEYWORD(NoContextual, "no-contextual")
+CSS_DEFINE_KEYWORD(NoDiscretionaryLigatures, "no-discretionary-ligatures")
+CSS_DEFINE_KEYWORD(NoHistoricalLigatures, "no-historical-ligatures")
+CSS_DEFINE_KEYWORD(None, "none")
+CSS_DEFINE_KEYWORD(Normal, "normal")
+CSS_DEFINE_KEYWORD(NoWrap, "nowrap")
+CSS_DEFINE_KEYWORD(OldstyleNums, "oldstyle-nums")
+CSS_DEFINE_KEYWORD(Outset, "outset")
+CSS_DEFINE_KEYWORD(ProportionalNums, "proportional-nums")
+CSS_DEFINE_KEYWORD(Relative, "relative")
+CSS_DEFINE_KEYWORD(Ridge, "ridge")
+CSS_DEFINE_KEYWORD(Right, "right")
+CSS_DEFINE_KEYWORD(Row, "row")
+CSS_DEFINE_KEYWORD(RowReverse, "row-reverse")
+CSS_DEFINE_KEYWORD(Rtl, "rtl")
+CSS_DEFINE_KEYWORD(Scroll, "scroll")
+CSS_DEFINE_KEYWORD(SmallCaps, "small-caps")
+CSS_DEFINE_KEYWORD(Solid, "solid")
+CSS_DEFINE_KEYWORD(SpaceAround, "space-around")
+CSS_DEFINE_KEYWORD(SpaceBetween, "space-between")
+CSS_DEFINE_KEYWORD(SpaceEvenly, "space-evenly")
+CSS_DEFINE_KEYWORD(Start, "start")
+CSS_DEFINE_KEYWORD(Static, "static")
+CSS_DEFINE_KEYWORD(Sticky, "sticky")
+CSS_DEFINE_KEYWORD(Stretch, "stretch")
+CSS_DEFINE_KEYWORD(StylisticEight, "stylistic-eight")
+CSS_DEFINE_KEYWORD(StylisticEighteen, "stylistic-eighteen")
+CSS_DEFINE_KEYWORD(StylisticEleven, "stylistic-eleven")
+CSS_DEFINE_KEYWORD(StylisticFifteen, "stylistic-fifteen")
+CSS_DEFINE_KEYWORD(StylisticFive, "stylistic-five")
+CSS_DEFINE_KEYWORD(StylisticFour, "stylistic-four")
+CSS_DEFINE_KEYWORD(StylisticFourteen, "stylistic-fourteen")
+CSS_DEFINE_KEYWORD(StylisticNine, "stylistic-nine")
+CSS_DEFINE_KEYWORD(StylisticNineteen, "stylistic-nineteen")
+CSS_DEFINE_KEYWORD(StylisticOne, "stylistic-one")
+CSS_DEFINE_KEYWORD(StylisticSeven, "stylistic-seven")
+CSS_DEFINE_KEYWORD(StylisticSeventeen, "stylistic-seventeen")
+CSS_DEFINE_KEYWORD(StylisticSix, "stylistic-six")
+CSS_DEFINE_KEYWORD(StylisticSixteen, "stylistic-sixteen")
+CSS_DEFINE_KEYWORD(StylisticTen, "stylistic-ten")
+CSS_DEFINE_KEYWORD(StylisticThirteen, "stylistic-thirteen")
+CSS_DEFINE_KEYWORD(StylisticThree, "stylistic-three")
+CSS_DEFINE_KEYWORD(StylisticTwelve, "stylistic-twelve")
+CSS_DEFINE_KEYWORD(StylisticTwenty, "stylistic-twenty")
+CSS_DEFINE_KEYWORD(StylisticTwo, "stylistic-two")
+CSS_DEFINE_KEYWORD(TabularNums, "tabular-nums")
+CSS_DEFINE_KEYWORD(Thick, "thick")
+CSS_DEFINE_KEYWORD(Thin, "thin")
+CSS_DEFINE_KEYWORD(Top, "top")
+CSS_DEFINE_KEYWORD(Unset, "unset")
+CSS_DEFINE_KEYWORD(Visible, "visible")
+CSS_DEFINE_KEYWORD(Wrap, "wrap")
+CSS_DEFINE_KEYWORD(WrapReverse, "wrap-reverse")
+
+#define CSS_HANDLE_KEYWORD(name)                                \
+  case fnv1a(detail::css::keywords::name):                      \
+    if constexpr (detail::css::keywords::has##name<KeywordT>) { \
+      return KeywordT::name;                                    \
+    }                                                           \
+    break;
 
 /**
  * Parses an ident token, case-insensitive, into a keyword.
@@ -177,278 +253,99 @@ CSS_DEFINE_KEYWORD_CONEPTS(WrapReverse)
 template <CSSKeywordSet KeywordT>
 constexpr std::optional<KeywordT> parseCSSKeyword(std::string_view ident) {
   switch (fnv1aLowercase(ident)) {
-    case fnv1a("absolute"):
-      if constexpr (detail::hasAbsolute<KeywordT>) {
-        return KeywordT::Absolute;
-      }
-      break;
-    case fnv1a("auto"):
-      if constexpr (detail::hasAuto<KeywordT>) {
-        return KeywordT::Auto;
-      }
-      break;
-    case fnv1a("baseline"):
-      if constexpr (detail::hasBaseline<KeywordT>) {
-        return KeywordT::Baseline;
-      }
-      break;
-    case fnv1a("block"):
-      if constexpr (detail::hasBlock<KeywordT>) {
-        return KeywordT::Block;
-      }
-      break;
-    case fnv1a("center"):
-      if constexpr (detail::hasCenter<KeywordT>) {
-        return KeywordT::Center;
-      }
-      break;
-    case fnv1a("clip"):
-      if constexpr (detail::hasClip<KeywordT>) {
-        return KeywordT::Clip;
-      }
-      break;
-    case fnv1a("column"):
-      if constexpr (detail::hasColumn<KeywordT>) {
-        return KeywordT::Column;
-      }
-      break;
-    case fnv1a("column-reverse"):
-      if constexpr (detail::hasColumnReverse<KeywordT>) {
-        return KeywordT::ColumnReverse;
-      }
-      break;
-    case fnv1a("content"):
-      if constexpr (detail::hasContent<KeywordT>) {
-        return KeywordT::Content;
-      }
-      break;
-    case fnv1a("contents"):
-      if constexpr (detail::hasContents<KeywordT>) {
-        return KeywordT::Contents;
-      }
-      break;
-    case fnv1a("dashed"):
-      if constexpr (detail::hasDashed<KeywordT>) {
-        return KeywordT::Dashed;
-      }
-      break;
-    case fnv1a("dotted"):
-      if constexpr (detail::hasDotted<KeywordT>) {
-        return KeywordT::Dotted;
-      }
-      break;
-    case fnv1a("double"):
-      if constexpr (detail::hasDouble<KeywordT>) {
-        return KeywordT::Double;
-      }
-      break;
-    case fnv1a("end"):
-      if constexpr (detail::hasEnd<KeywordT>) {
-        return KeywordT::End;
-      }
-      break;
-    case fnv1a("fixed"):
-      if constexpr (detail::hasFixed<KeywordT>) {
-        return KeywordT::Fixed;
-      }
-      break;
-    case fnv1a("flex"):
-      if constexpr (detail::hasFlex<KeywordT>) {
-        return KeywordT::Flex;
-      }
-      break;
-    case fnv1a("flex-end"):
-      if constexpr (detail::hasFlexEnd<KeywordT>) {
-        return KeywordT::FlexEnd;
-      }
-      break;
-    case fnv1a("flex-start"):
-      if constexpr (detail::hasFlexStart<KeywordT>) {
-        return KeywordT::FlexStart;
-      }
-      break;
-    case fnv1a("grid"):
-      if constexpr (detail::hasGrid<KeywordT>) {
-        return KeywordT::Grid;
-      }
-      break;
-    case fnv1a("groove"):
-      if constexpr (detail::hasGroove<KeywordT>) {
-        return KeywordT::Groove;
-      }
-      break;
-    case fnv1a("hidden"):
-      if constexpr (detail::hasHidden<KeywordT>) {
-        return KeywordT::Hidden;
-      }
-      break;
-    case fnv1a("inherit"):
-      if constexpr (detail::hasInherit<KeywordT>) {
-        return KeywordT::Inherit;
-      }
-      break;
-    case fnv1a("inline"):
-      if constexpr (detail::hasInline<KeywordT>) {
-        return KeywordT::Inline;
-      }
-      break;
-    case fnv1a("inline-block"):
-      if constexpr (detail::hasInlineBlock<KeywordT>) {
-        return KeywordT::InlineBlock;
-      }
-      break;
-    case fnv1a("inline-flex"):
-      if constexpr (detail::hasInlineFlex<KeywordT>) {
-        return KeywordT::InlineFlex;
-      }
-      break;
-    case fnv1a("inline-grid"):
-      if constexpr (detail::hasInlineGrid<KeywordT>) {
-        return KeywordT::InlineGrid;
-      }
-      break;
-    case fnv1a("ltr"):
-      if constexpr (detail::hasLtr<KeywordT>) {
-        return KeywordT::Ltr;
-      }
-      break;
-    case fnv1a("max-content"):
-      if constexpr (detail::hasMaxContent<KeywordT>) {
-        return KeywordT::MaxContent;
-      }
-      break;
-    case fnv1a("medium"):
-      if constexpr (detail::hasMedium<KeywordT>) {
-        return KeywordT::Medium;
-      }
-      break;
-    case fnv1a("min-content"):
-      if constexpr (detail::hasMinContent<KeywordT>) {
-        return KeywordT::MinContent;
-      }
-      break;
-    case fnv1a("none"):
-      if constexpr (detail::hasNone<KeywordT>) {
-        return KeywordT::None;
-      }
-      break;
-    case fnv1a("normal"):
-      if constexpr (detail::hasNormal<KeywordT>) {
-        return KeywordT::Normal;
-      }
-      break;
-    case fnv1a("nowrap"):
-      if constexpr (detail::hasNoWrap<KeywordT>) {
-        return KeywordT::NoWrap;
-      }
-      break;
-    case fnv1a("outset"):
-      if constexpr (detail::hasOutset<KeywordT>) {
-        return KeywordT::Outset;
-      }
-      break;
-    case fnv1a("relative"):
-      if constexpr (detail::hasRelative<KeywordT>) {
-        return KeywordT::Relative;
-      }
-      break;
-    case fnv1a("ridge"):
-      if constexpr (detail::hasRidge<KeywordT>) {
-        return KeywordT::Ridge;
-      }
-      break;
-    case fnv1a("row"):
-      if constexpr (detail::hasRow<KeywordT>) {
-        return KeywordT::Row;
-      }
-      break;
-    case fnv1a("row-reverse"):
-      if constexpr (detail::hasRowReverse<KeywordT>) {
-        return KeywordT::RowReverse;
-      }
-      break;
-    case fnv1a("rtl"):
-      if constexpr (detail::hasRtl<KeywordT>) {
-        return KeywordT::Rtl;
-      }
-      break;
-    case fnv1a("space-between"):
-      if constexpr (detail::hasSpaceBetween<KeywordT>) {
-        return KeywordT::SpaceBetween;
-      }
-      break;
-    case fnv1a("space-around"):
-      if constexpr (detail::hasSpaceAround<KeywordT>) {
-        return KeywordT::SpaceAround;
-      }
-      break;
-    case fnv1a("space-evenly"):
-      if constexpr (detail::hasSpaceEvenly<KeywordT>) {
-        return KeywordT::SpaceEvenly;
-      }
-      break;
-    case fnv1a("scroll"):
-      if constexpr (detail::hasScroll<KeywordT>) {
-        return KeywordT::Scroll;
-      }
-      break;
-    case fnv1a("solid"):
-      if constexpr (detail::hasSolid<KeywordT>) {
-        return KeywordT::Solid;
-      }
-      break;
-    case fnv1a("start"):
-      if constexpr (detail::hasStart<KeywordT>) {
-        return KeywordT::Start;
-      }
-      break;
-    case fnv1a("static"):
-      if constexpr (detail::hasStatic<KeywordT>) {
-        return KeywordT::Static;
-      }
-      break;
-    case fnv1a("sticky"):
-      if constexpr (detail::hasSticky<KeywordT>) {
-        return KeywordT::Sticky;
-      }
-      break;
-    case fnv1a("stretch"):
-      if constexpr (detail::hasStretch<KeywordT>) {
-        return KeywordT::Stretch;
-      }
-      break;
-    case fnv1a("thick"):
-      if constexpr (detail::hasThick<KeywordT>) {
-        return KeywordT::Thick;
-      }
-      break;
-    case fnv1a("thin"):
-      if constexpr (detail::hasThin<KeywordT>) {
-        return KeywordT::Thin;
-      }
-      break;
-    case fnv1a("unset"):
-      if constexpr (detail::hasUnset<KeywordT>) {
-        return KeywordT::Unset;
-      }
-      break;
-    case fnv1a("visible"):
-      if constexpr (detail::hasVisible<KeywordT>) {
-        return KeywordT::Visible;
-      }
-      break;
-    case fnv1a("wrap"):
-      if constexpr (detail::hasWrap<KeywordT>) {
-        return KeywordT::Wrap;
-      }
-      break;
-    case fnv1a("wrap-reverse"):
-      if constexpr (detail::hasWrapReverse<KeywordT>) {
-        return KeywordT::WrapReverse;
-      }
-      break;
-    default:
-      break;
+    CSS_HANDLE_KEYWORD(Absolute)
+    CSS_HANDLE_KEYWORD(Auto)
+    CSS_HANDLE_KEYWORD(Baseline)
+    CSS_HANDLE_KEYWORD(Block)
+    CSS_HANDLE_KEYWORD(Bottom)
+    CSS_HANDLE_KEYWORD(Center)
+    CSS_HANDLE_KEYWORD(Clip)
+    CSS_HANDLE_KEYWORD(Column)
+    CSS_HANDLE_KEYWORD(ColumnReverse)
+    CSS_HANDLE_KEYWORD(CommonLigatures)
+    CSS_HANDLE_KEYWORD(Content)
+    CSS_HANDLE_KEYWORD(Contents)
+    CSS_HANDLE_KEYWORD(Contextual)
+    CSS_HANDLE_KEYWORD(Dashed)
+    CSS_HANDLE_KEYWORD(DiscretionaryLigatures)
+    CSS_HANDLE_KEYWORD(Dotted)
+    CSS_HANDLE_KEYWORD(Double)
+    CSS_HANDLE_KEYWORD(End)
+    CSS_HANDLE_KEYWORD(Fixed)
+    CSS_HANDLE_KEYWORD(Flex)
+    CSS_HANDLE_KEYWORD(FlexEnd)
+    CSS_HANDLE_KEYWORD(FlexStart)
+    CSS_HANDLE_KEYWORD(Grid)
+    CSS_HANDLE_KEYWORD(Groove)
+    CSS_HANDLE_KEYWORD(Hidden)
+    CSS_HANDLE_KEYWORD(HistoricalLigatures)
+    CSS_HANDLE_KEYWORD(Inherit)
+    CSS_HANDLE_KEYWORD(Initial)
+    CSS_HANDLE_KEYWORD(Inline)
+    CSS_HANDLE_KEYWORD(InlineBlock)
+    CSS_HANDLE_KEYWORD(InlineFlex)
+    CSS_HANDLE_KEYWORD(InlineGrid)
+    CSS_HANDLE_KEYWORD(Inset)
+    CSS_HANDLE_KEYWORD(Left)
+    CSS_HANDLE_KEYWORD(LiningNums)
+    CSS_HANDLE_KEYWORD(Ltr)
+    CSS_HANDLE_KEYWORD(MaxContent)
+    CSS_HANDLE_KEYWORD(Medium)
+    CSS_HANDLE_KEYWORD(MinContent)
+    CSS_HANDLE_KEYWORD(NoCommonLigatures)
+    CSS_HANDLE_KEYWORD(NoContextual)
+    CSS_HANDLE_KEYWORD(NoDiscretionaryLigatures)
+    CSS_HANDLE_KEYWORD(NoHistoricalLigatures)
+    CSS_HANDLE_KEYWORD(None)
+    CSS_HANDLE_KEYWORD(Normal)
+    CSS_HANDLE_KEYWORD(NoWrap)
+    CSS_HANDLE_KEYWORD(OldstyleNums)
+    CSS_HANDLE_KEYWORD(Outset)
+    CSS_HANDLE_KEYWORD(ProportionalNums)
+    CSS_HANDLE_KEYWORD(Relative)
+    CSS_HANDLE_KEYWORD(Ridge)
+    CSS_HANDLE_KEYWORD(Right)
+    CSS_HANDLE_KEYWORD(Row)
+    CSS_HANDLE_KEYWORD(RowReverse)
+    CSS_HANDLE_KEYWORD(Rtl)
+    CSS_HANDLE_KEYWORD(Scroll)
+    CSS_HANDLE_KEYWORD(SmallCaps)
+    CSS_HANDLE_KEYWORD(Solid)
+    CSS_HANDLE_KEYWORD(SpaceAround)
+    CSS_HANDLE_KEYWORD(SpaceBetween)
+    CSS_HANDLE_KEYWORD(SpaceEvenly)
+    CSS_HANDLE_KEYWORD(Start)
+    CSS_HANDLE_KEYWORD(Static)
+    CSS_HANDLE_KEYWORD(Sticky)
+    CSS_HANDLE_KEYWORD(Stretch)
+    CSS_HANDLE_KEYWORD(StylisticEight)
+    CSS_HANDLE_KEYWORD(StylisticEighteen)
+    CSS_HANDLE_KEYWORD(StylisticEleven)
+    CSS_HANDLE_KEYWORD(StylisticFifteen)
+    CSS_HANDLE_KEYWORD(StylisticFive)
+    CSS_HANDLE_KEYWORD(StylisticFour)
+    CSS_HANDLE_KEYWORD(StylisticFourteen)
+    CSS_HANDLE_KEYWORD(StylisticNine)
+    CSS_HANDLE_KEYWORD(StylisticNineteen)
+    CSS_HANDLE_KEYWORD(StylisticOne)
+    CSS_HANDLE_KEYWORD(StylisticSeven)
+    CSS_HANDLE_KEYWORD(StylisticSeventeen)
+    CSS_HANDLE_KEYWORD(StylisticSix)
+    CSS_HANDLE_KEYWORD(StylisticSixteen)
+    CSS_HANDLE_KEYWORD(StylisticTen)
+    CSS_HANDLE_KEYWORD(StylisticThirteen)
+    CSS_HANDLE_KEYWORD(StylisticThree)
+    CSS_HANDLE_KEYWORD(StylisticTwelve)
+    CSS_HANDLE_KEYWORD(StylisticTwenty)
+    CSS_HANDLE_KEYWORD(StylisticTwo)
+    CSS_HANDLE_KEYWORD(TabularNums)
+    CSS_HANDLE_KEYWORD(Thick)
+    CSS_HANDLE_KEYWORD(Thin)
+    CSS_HANDLE_KEYWORD(Top)
+    CSS_HANDLE_KEYWORD(Unset)
+    CSS_HANDLE_KEYWORD(Visible)
+    CSS_HANDLE_KEYWORD(Wrap)
+    CSS_HANDLE_KEYWORD(WrapReverse)
   }
 
   return std::nullopt;

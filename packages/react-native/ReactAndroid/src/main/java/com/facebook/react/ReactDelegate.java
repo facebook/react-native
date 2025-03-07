@@ -318,6 +318,14 @@ public class ReactDelegate {
     }
   }
 
+  public void setReactSurface(ReactSurface reactSurface) {
+    mReactSurface = reactSurface;
+  }
+
+  public void setReactRootView(ReactRootView reactRootView) {
+    mReactRootView = reactRootView;
+  }
+
   @Nullable
   public ReactRootView getReactRootView() {
     if (ReactNativeFeatureFlags.enableBridgelessArchitecture()) {

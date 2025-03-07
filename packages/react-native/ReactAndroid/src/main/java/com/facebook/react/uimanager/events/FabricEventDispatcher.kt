@@ -11,10 +11,10 @@ import android.os.Handler
 import android.view.Choreographer
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactNoCrashSoftException
 import com.facebook.react.bridge.ReactSoftExceptionLogger
 import com.facebook.react.bridge.UIManager
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags
 import com.facebook.react.modules.core.ReactChoreographer
 import com.facebook.react.uimanager.UIManagerHelper
@@ -22,6 +22,8 @@ import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.systrace.Systrace
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.concurrent.Volatile
+
+private const val TAG = "FabricEventDispatcher"
 
 /**
  * A singleton class that overrides [EventDispatcher] with no-op methods, to be used by callers that
@@ -74,9 +76,8 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
     try {
       val fabricUIManager: UIManager? =
           UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
-      @Suppress("DEPRECATION")
+      @OptIn(UnstableReactNativeAPI::class)
       if (fabricUIManager is SynchronousEventReceiver) {
-        @Suppress("DEPRECATION")
         (fabricUIManager as SynchronousEventReceiver).receiveEvent(
             event.surfaceId,
             event.viewTag,
@@ -87,8 +88,8 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
             true)
       } else {
         ReactSoftExceptionLogger.logSoftException(
-            "FabricEventDispatcher",
-            ReactNoCrashSoftException(
+            TAG,
+            IllegalStateException(
                 "Fabric UIManager expected to implement SynchronousEventReceiver."))
       }
     } finally {
@@ -201,15 +202,15 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
       }
     }
 
-    public fun stop() {
+    fun stop() {
       shouldStop = true
     }
 
-    public fun resume() {
+    fun resume() {
       shouldStop = false
     }
 
-    public fun maybeDispatchBatchedEvents() {
+    fun maybeDispatchBatchedEvents() {
       if (!isFrameCallbackDispatchScheduled) {
         isFrameCallbackDispatchScheduled = true
         dispatchBatchedEvents()
@@ -221,7 +222,7 @@ public open class FabricEventDispatcher(reactContext: ReactApplicationContext) :
           .postFrameCallback(ReactChoreographer.CallbackType.TIMERS_EVENTS, currentFrameCallback)
     }
 
-    public fun maybeScheduleDispatchOfBatchedEvents() {
+    fun maybeScheduleDispatchOfBatchedEvents() {
       if (isFrameCallbackDispatchScheduled) {
         return
       }

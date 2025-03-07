@@ -16,7 +16,7 @@ registerModule('Systrace', () => require('../Performance/Systrace'));
 if (!(global.RN$Bridgeless === true)) {
   registerModule('JSTimers', () => require('./Timers/JSTimers').default);
 }
-registerModule('RCTLog', () => require('../Utilities/RCTLog'));
+registerModule('RCTLog', () => require('../Utilities/RCTLog').default);
 registerModule(
   'RCTDeviceEventEmitter',
   () => require('../EventEmitter/RCTDeviceEventEmitter').default,
@@ -25,12 +25,16 @@ registerModule(
   'RCTNativeAppEventEmitter',
   () => require('../EventEmitter/RCTNativeAppEventEmitter').default,
 );
-registerModule('GlobalPerformanceLogger', () =>
-  require('../Utilities/GlobalPerformanceLogger'),
+registerModule(
+  'GlobalPerformanceLogger',
+  () => require('../Utilities/GlobalPerformanceLogger').default,
 );
 
 if (__DEV__) {
-  registerModule('HMRClient', () => require('../Utilities/HMRClient'));
+  registerModule('HMRClient', () => require('../Utilities/HMRClient').default);
 } else {
-  registerModule('HMRClient', () => require('../Utilities/HMRClientProdShim'));
+  registerModule(
+    'HMRClient',
+    () => require('../Utilities/HMRClientProdShim').default,
+  );
 }
