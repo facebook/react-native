@@ -18,9 +18,7 @@ public class JavaScriptContextHolder public constructor(
     @field:GuardedBy("this") private var context: Long
 ) {
   @GuardedBy("this")
-  public fun get(): Long {
-    return context
-  }
+  public fun get(): Long = context
 
   @Synchronized
   public fun clear() {
