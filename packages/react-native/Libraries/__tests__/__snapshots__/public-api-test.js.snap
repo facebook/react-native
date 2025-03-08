@@ -5943,7 +5943,8 @@ declare export function getTextColor(opacity?: number): string;
 `;
 
 exports[`public API should not change unintentionally Libraries/Modal/Modal.js 1`] = `
-"type OrientationChangeEvent = $ReadOnly<{
+"export type PublicModalInstance = HostInstance;
+type OrientationChangeEvent = $ReadOnly<{
   orientation: \\"portrait\\" | \\"landscape\\",
 }>;
 export type ModalBaseProps = {
@@ -5954,6 +5955,7 @@ export type ModalBaseProps = {
   onRequestClose?: ?DirectEventHandler<null>,
   onShow?: ?DirectEventHandler<null>,
   backdropColor?: ColorValue,
+  modalRef?: React.RefSetter<PublicModalInstance>,
 };
 export type ModalPropsIOS = {
   presentationStyle?: ?(
@@ -5983,27 +5985,11 @@ export type ModalProps = {
   ...ModalPropsAndroid,
   ...ViewProps,
 };
-type State = {
-  isRendered: boolean,
-};
-declare class Modal extends React.Component<ModalProps, State> {
-  static defaultProps: { hardwareAccelerated: boolean, visible: boolean };
-  static contextType: React.Context<RootTag>;
-  constructor(props: ModalProps): void;
-  componentDidMount(): void;
-  componentWillUnmount(): void;
-  componentDidUpdate(prevProps: ModalProps): void;
-  render(): React.Node;
-}
-declare const ExportedModal: React.ComponentType<
-  React.ElementConfig<typeof Modal>,
->;
-declare export default typeof ExportedModal;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Modal/ModalInjection.js 1`] = `
-"declare export default { unstable_Modal: ?Modal };
+declare function Wrapper({
+  ref?: React.RefSetter<PublicModalInstance>,
+  ...ModalProps,
+}): React.Node;
+declare export default typeof Wrapper;
 "
 `;
 
