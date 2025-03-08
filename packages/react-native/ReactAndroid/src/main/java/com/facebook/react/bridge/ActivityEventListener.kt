@@ -23,7 +23,7 @@ public interface ActivityEventListener {
     data: Intent?
   )
 
-  /** Called when a new intent is passed to the activity  */
+  /** Called when a new intent is passed to the activity. */
   public fun onNewIntent(intent: Intent)
 
   /** Called when host activity receives an [Activity.onUserLeaveHint] call. */
