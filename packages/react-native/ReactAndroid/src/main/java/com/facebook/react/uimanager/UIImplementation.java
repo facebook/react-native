@@ -61,6 +61,8 @@ public class UIImplementation {
   private long mLastCalculateLayoutTime = 0;
   protected @Nullable LayoutUpdateListener mLayoutUpdateListener;
 
+  private boolean isDestroy = false;
+
   /**
    * When react instance is being shutdown, there could be some pending operations queued in the JS
    * thread. This flag ensures view related operations are not triggered if the Catalyst instance
@@ -179,6 +181,10 @@ public class UIImplementation {
   public void removeRootView(int rootViewTag) {
     removeRootShadowNode(rootViewTag);
     mOperationsQueue.enqueueRemoveRootView(rootViewTag);
+    //if container is destroyed, we need make RemoveRootView Operation do in UIThread
+    if (isDestroy) {
+      dispatchViewUpdates(-1);
+    }
   }
 
   /**
@@ -769,14 +775,18 @@ public class UIImplementation {
   }
 
   public void onHostResume() {
+    isDestroy = false;
     mOperationsQueue.resumeFrameCallback();
   }
 
   public void onHostPause() {
+    isDestroy = false;
     mOperationsQueue.pauseFrameCallback();
   }
 
-  public void onHostDestroy() {}
+  public void onHostDestroy() {
+    isDestroy = true;
+  }
 
   public void onCatalystInstanceDestroyed() {
     mViewOperationsEnabled = false;
