@@ -891,21 +891,6 @@ static NSString *RCTSemanticColorNames(void)
   return names;
 }
 
-// The iOS side is kept in synch with the C++ side by using the
-// RCTAppDelegate which, at startup, sets the default color space.
-// The usage of dispatch_once and of once_flag ensoure that those are
-// set only once when the app starts and that they can't change while
-// the app is running.
-static RCTColorSpace _defaultColorSpace = RCTColorSpaceSRGB;
-RCTColorSpace RCTGetDefaultColorSpace(void)
-{
-  return _defaultColorSpace;
-}
-void RCTSetDefaultColorSpace(RCTColorSpace colorSpace)
-{
-  _defaultColorSpace = colorSpace;
-}
-
 + (UIColor *)UIColorWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha
 {
   RCTColorSpace space = RCTGetDefaultColorSpace();
