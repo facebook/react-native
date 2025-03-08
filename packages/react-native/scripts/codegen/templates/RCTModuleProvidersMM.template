@@ -15,30 +15,37 @@
 
 + (NSDictionary<NSString *, id<RCTModuleProvider>> *)moduleProviders
 {
-  NSDictionary<NSString *, NSString *> * moduleMapping = @{
-    {moduleMapping}
-  };
+  static NSDictionary<NSString *, id<RCTModuleProvider>> *providers = nil;
+  static dispatch_once_t onceToken;
 
-  NSMutableDictionary *dict = [NSMutableDictionary new];
+  dispatch_once(&onceToken, ^{
+    NSDictionary<NSString *, NSString *> * moduleMapping = @{
+      {moduleMapping}
+    };
 
-  for (NSString *key in moduleMapping) {
-    NSString * moduleProviderName = moduleMapping[key];
-    Class klass = NSClassFromString(moduleProviderName);
-    if (!klass) {
-      RCTLogError(@"Module provider %@ cannot be found in the runtime", moduleProviderName);
-      continue;
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:moduleMapping.count];
+
+    for (NSString *key in moduleMapping) {
+      NSString * moduleProviderName = moduleMapping[key];
+      Class klass = NSClassFromString(moduleProviderName);
+      if (!klass) {
+        RCTLogError(@"Module provider %@ cannot be found in the runtime", moduleProviderName);
+        continue;
+      }
+
+      id instance = [klass new];
+      if (![instance respondsToSelector:@selector(getTurboModule:)]) {
+        RCTLogError(@"Module provider %@ does not conform to RCTModuleProvider", moduleProviderName);
+        continue;
+      }
+
+      [dict setObject:instance forKey:key];
     }
 
-    id instance = [klass new];
-    if (![instance respondsToSelector:@selector(getTurboModule:)]) {
-      RCTLogError(@"Module provider %@ does not conform to RCTModuleProvider", moduleProviderName);
-      continue;
-    }
+    providers = dict;
+  });
 
-    [dict setObject:instance forKey:key];
-  }
-
-  return dict;
+  return providers;
 }
 
 @end
