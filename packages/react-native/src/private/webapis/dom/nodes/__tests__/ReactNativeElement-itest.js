@@ -10,22 +10,21 @@
  * @fantom_flags enableDOMDocumentAPI:false
  */
 
-import '../../../../../../Libraries/Core/InitializeCore.js';
+import 'react-native/Libraries/Core/InitializeCore';
 
-import ScrollView from '../../../../../../Libraries/Components/ScrollView/ScrollView';
-import View from '../../../../../../Libraries/Components/View/View';
+import Fantom from '@react-native/fantom';
+import * as React from 'react';
+import {ScrollView, View} from 'react-native';
 import {
   NativeText,
   NativeVirtualText,
-} from '../../../../../../Libraries/Text/TextNativeComponent';
-import ensureInstance from '../../../../utilities/ensureInstance';
-import HTMLCollection from '../../oldstylecollections/HTMLCollection';
-import NodeList from '../../oldstylecollections/NodeList';
-import ReactNativeElement from '../ReactNativeElement';
-import ReadOnlyElement from '../ReadOnlyElement';
-import ReadOnlyNode from '../ReadOnlyNode';
-import Fantom from '@react-native/fantom';
-import * as React from 'react';
+} from 'react-native/Libraries/Text/TextNativeComponent';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
+import ReadOnlyElement from 'react-native/src/private/webapis/dom/nodes/ReadOnlyElement';
+import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
+import HTMLCollection from 'react-native/src/private/webapis/dom/oldstylecollections/HTMLCollection';
+import NodeList from 'react-native/src/private/webapis/dom/oldstylecollections/NodeList';
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);

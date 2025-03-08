@@ -9,14 +9,15 @@
  * @oncall react_native
  */
 
-import {NativeEventCategory} from '../../../src/private/testing/fantom/specs/NativeFantom';
-import ensureInstance from '../../../src/private/utilities/ensureInstance';
-import ReactNativeElement from '../../../src/private/webapis/dom/nodes/ReactNativeElement';
-import TextInput from '../../Components/TextInput/TextInput';
-import Text from '../../Text/Text';
+import 'react-native/Libraries/Core/InitializeCore';
+
 import Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {startTransition, useDeferredValue, useEffect, useState} from 'react';
+import {Text, TextInput} from 'react-native';
+import {NativeEventCategory} from 'react-native/src/private/testing/fantom/specs/NativeFantom';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 function ensureReactNativeElement(value: mixed): ReactNativeElement {
   return ensureInstance(value, ReactNativeElement);
