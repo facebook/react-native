@@ -331,26 +331,28 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/Easing.js 1`] = `
-"declare const Easing: {
+"export type EasingFunction = (t: number) => number;
+declare const EasingStatic: {
   step0(n: number): number,
   step1(n: number): number,
   linear(t: number): number,
   ease(t: number): number,
   quad(t: number): number,
   cubic(t: number): number,
-  poly(n: number): (t: number) => number,
+  poly(n: number): EasingFunction,
   sin(t: number): number,
   circle(t: number): number,
   exp(t: number): number,
-  elastic(bounciness: number): (t: number) => number,
-  back(s: number): (t: number) => number,
+  elastic(bounciness: number): EasingFunction,
+  back(s: number): EasingFunction,
   bounce(t: number): number,
-  bezier(x1: number, y1: number, x2: number, y2: number): (t: number) => number,
-  in(easing: (t: number) => number): (t: number) => number,
-  out(easing: (t: number) => number): (t: number) => number,
-  inOut(easing: (t: number) => number): (t: number) => number,
+  bezier(x1: number, y1: number, x2: number, y2: number): EasingFunction,
+  in(easing: EasingFunction): EasingFunction,
+  out(easing: EasingFunction): EasingFunction,
+  inOut(easing: EasingFunction): EasingFunction,
 };
-declare export default typeof Easing;
+export type Easing = typeof EasingStatic;
+declare export default typeof EasingStatic;
 "
 `;
 
@@ -648,24 +650,26 @@ export type StrictAnimatedProps<Props: { ... }> = $ReadOnly<{
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
-> = component(ref: React.RefSetter<Instance>, ...AnimatedProps<Props>);
+> = component(ref?: React.RefSetter<Instance>, ...AnimatedProps<Props>);
 export type StrictAnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
 > = component(ref: React.RefSetter<Instance>, ...StrictAnimatedProps<Props>);
 declare export default function createAnimatedComponent<
-  TProps: { ... },
-  TInstance,
+  TInstance: React.ComponentType<any>,
 >(
-  Component: component(ref: React.RefSetter<TInstance>, ...TProps)
-): AnimatedComponentType<TProps, TInstance>;
+  Component: TInstance
+): AnimatedComponentType<
+  $ReadOnly<React.ElementProps<TInstance>>,
+  React.ElementRef<TInstance>,
+>;
 declare export function unstable_createAnimatedComponentWithAllowlist<
   TProps: { ... },
-  TInstance,
+  TInstance: React.ComponentType<TProps>,
 >(
-  Component: component(ref: React.RefSetter<TInstance>, ...TProps),
+  Component: TInstance,
   allowlist: ?AnimatedPropsAllowlist
-): StrictAnimatedComponentType<TProps, TInstance>;
+): StrictAnimatedComponentType<TProps, React.ElementRef<TInstance>>;
 "
 `;
 
@@ -6810,11 +6814,9 @@ declare export default typeof AppContainer;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.js 1`] = `
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.flow.js 1`] = `
 "type Task = (taskData: any) => Promise<void>;
 export type TaskProvider = () => Task;
-type TaskCanceller = () => void;
-type TaskCancelProvider = () => TaskCanceller;
 export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component_: ComponentProvider,
@@ -6827,7 +6829,7 @@ export type AppConfig = {
   section?: boolean,
   ...
 };
-type AppParameters = {
+export type AppParameters = {
   initialProps: $ReadOnly<{ [string]: mixed, ... }>,
   rootTag: RootTag,
   fabric?: boolean,
@@ -6846,46 +6848,91 @@ export type WrapperComponentProvider = (
   appParameters: Object
 ) => React.ComponentType<any>;
 export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
-declare const AppRegistry: {
-  setWrapperComponentProvider(provider: WrapperComponentProvider): void,
-  setRootViewStyleProvider(provider: RootViewStyleProvider): void,
-  registerConfig(config: Array<AppConfig>): void,
-  registerComponent(
-    appKey: string,
-    componentProvider: ComponentProvider,
-    section?: boolean
-  ): string,
-  registerRunnable(appKey: string, run: Runnable): string,
-  registerSection(appKey: string, component: ComponentProvider): void,
-  getAppKeys(): $ReadOnlyArray<string>,
-  getSectionKeys(): $ReadOnlyArray<string>,
-  getSections(): Runnables,
-  getRunnable(appKey: string): ?Runnable,
-  getRegistry(): Registry,
-  setComponentProviderInstrumentationHook(
-    hook: ComponentProviderInstrumentationHook
-  ): void,
-  runApplication(
-    appKey: string,
-    appParameters: AppParameters,
-    displayMode?: number
-  ): void,
-  setSurfaceProps(
-    appKey: string,
-    appParameters: Object,
-    displayMode?: number
-  ): void,
-  unmountApplicationComponentAtRootTag(rootTag: RootTag): void,
-  registerHeadlessTask(taskKey: string, taskProvider: TaskProvider): void,
-  registerCancellableHeadlessTask(
-    taskKey: string,
-    taskProvider: TaskProvider,
-    taskCancelProvider: TaskCancelProvider
-  ): void,
-  startHeadlessTask(taskId: number, taskKey: string, data: any): void,
-  cancelHeadlessTask(taskId: number, taskKey: string): void,
-};
-declare export default typeof AppRegistry;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.js 1`] = `
+"declare export default typeof AppRegistry;
+export { AppRegistry };
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.js.flow 1`] = `
+"export type {
+  TaskProvider,
+  ComponentProvider,
+  ComponentProviderInstrumentationHook,
+  AppConfig,
+  Runnable,
+  Runnables,
+  Registry,
+  WrapperComponentProvider,
+  RootViewStyleProvider,
+} from \\"./AppRegistry.flow\\";
+export * as default from \\"./AppRegistryImpl\\";
+export * as AppRegistry from \\"./AppRegistryImpl\\";
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistryImpl.js 1`] = `
+"type TaskCanceller = () => void;
+type TaskCancelProvider = () => TaskCanceller;
+declare export function setWrapperComponentProvider(
+  provider: WrapperComponentProvider
+): void;
+declare export function setRootViewStyleProvider(
+  provider: RootViewStyleProvider
+): void;
+declare export function registerConfig(config: Array<AppConfig>): void;
+declare export function registerComponent(
+  appKey: string,
+  componentProvider: ComponentProvider,
+  section?: boolean
+): string;
+declare export function registerRunnable(appKey: string, run: Runnable): string;
+declare export function registerSection(
+  appKey: string,
+  component: ComponentProvider
+): void;
+declare export function getAppKeys(): $ReadOnlyArray<string>;
+declare export function getSectionKeys(): $ReadOnlyArray<string>;
+declare export function getSections(): Runnables;
+declare export function getRunnable(appKey: string): ?Runnable;
+declare export function getRegistry(): Registry;
+declare export function setComponentProviderInstrumentationHook(
+  hook: ComponentProviderInstrumentationHook
+): void;
+declare export function runApplication(
+  appKey: string,
+  appParameters: AppParameters,
+  displayMode?: number
+): void;
+declare export function setSurfaceProps(
+  appKey: string,
+  appParameters: Object,
+  displayMode?: number
+): void;
+declare export function unmountApplicationComponentAtRootTag(
+  rootTag: RootTag
+): void;
+declare export function registerHeadlessTask(
+  taskKey: string,
+  taskProvider: TaskProvider
+): void;
+declare export function registerCancellableHeadlessTask(
+  taskKey: string,
+  taskProvider: TaskProvider,
+  taskCancelProvider: TaskCancelProvider
+): void;
+declare export function startHeadlessTask(
+  taskId: number,
+  taskKey: string,
+  data: any
+): void;
+declare export function cancelHeadlessTask(
+  taskId: number,
+  taskKey: string
+): void;
 "
 `;
 
@@ -9227,6 +9274,7 @@ declare export default class EventEmitter<
   > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
+  constructor(): void;
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => mixed,
@@ -9279,7 +9327,7 @@ export { default as ActionSheetIOS } from \\"./Libraries/ActionSheetIOS/ActionSh
 export { default as Alert } from \\"./Libraries/Alert/Alert\\";
 export { default as Animated } from \\"./Libraries/Animated/Animated\\";
 export * as Appearance from \\"./Libraries/Utilities/Appearance\\";
-export { default as AppRegistry } from \\"./Libraries/ReactNative/AppRegistry\\";
+export { AppRegistry } from \\"./Libraries/ReactNative/AppRegistry\\";
 export { default as AppState } from \\"./Libraries/AppState/AppState\\";
 export { default as BackHandler } from \\"./Libraries/Utilities/BackHandler\\";
 export { default as Clipboard } from \\"./Libraries/Components/Clipboard/Clipboard\\";
