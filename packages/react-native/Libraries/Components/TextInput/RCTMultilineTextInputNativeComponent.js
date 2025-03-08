@@ -8,10 +8,8 @@
  * @format
  */
 
-import type {
-  HostComponent,
-  PartialViewConfig,
-} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../../src/private/types/HostComponent';
+import type {PartialViewConfig} from '../../Renderer/shims/ReactNativeTypes';
 import type {TextInputNativeCommands} from './TextInputNativeCommands';
 
 import * as NativeComponentRegistry from '../../NativeComponent/NativeComponentRegistry';

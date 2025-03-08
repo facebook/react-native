@@ -11,6 +11,7 @@
 
 #include <folly/json.h>
 
+#include <array>
 #include <mutex>
 
 namespace facebook::react::jsinspector_modern {
@@ -67,6 +68,21 @@ bool PerformanceTracer::stopTracing() {
     return false;
   }
 
+  // This is synthetic Trace Event, which should not be represented on a
+  // timeline. CDT is not using Profile or ProfileChunk events for determining
+  // trace timeline window, this is why trace that only contains JavaScript
+  // samples will be displayed as empty. We use this event to avoid that.
+  // This could happen for non-bridgeless apps, where Performance interface is
+  // not supported and no spec-compliant Event Loop implementation.
+  buffer_.push_back(TraceEvent{
+      .name = "ReactNative-TracingStopped",
+      .cat = "disabled-by-default-devtools.timeline",
+      .ph = 'I',
+      .ts = getUnixTimestampOfNow(),
+      .pid = processId_,
+      .tid = oscompat::getCurrentThreadId(),
+  });
+
   performanceMeasureCount_ = 0;
   tracing_ = false;
   return true;
@@ -102,6 +118,10 @@ void PerformanceTracer::collectEvents(
 void PerformanceTracer::reportMark(
     const std::string_view& name,
     uint64_t start) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
@@ -122,6 +142,10 @@ void PerformanceTracer::reportMeasure(
     uint64_t start,
     uint64_t duration,
     const std::optional<DevToolsTrackEntryPayload>& trackMetadata) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
@@ -160,6 +184,10 @@ void PerformanceTracer::reportMeasure(
 }
 
 void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
@@ -176,7 +204,15 @@ void PerformanceTracer::reportProcess(uint64_t id, const std::string& name) {
   });
 }
 
+void PerformanceTracer::reportJavaScriptThread() {
+  reportThread(oscompat::getCurrentThreadId(), "JavaScript");
+}
+
 void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
+  if (!tracing_) {
+    return;
+  }
+
   std::lock_guard<std::mutex> lock(mutex_);
   if (!tracing_) {
     return;
@@ -191,13 +227,87 @@ void PerformanceTracer::reportThread(uint64_t id, const std::string& name) {
       .tid = id,
       .args = folly::dynamic::object("name", name),
   });
+
+  // This is synthetic Trace Event, which should not be represented on a
+  // timeline. CDT will filter out threads that only have JavaScript samples and
+  // no timeline events or user timings. We use this event to avoid that.
+  // This could happen for non-bridgeless apps, where Performance interface is
+  // not supported and no spec-compliant Event Loop implementation.
+  buffer_.push_back(TraceEvent{
+      .name = "ReactNative-ThreadRegistered",
+      .cat = "disabled-by-default-devtools.timeline",
+      .ph = 'I',
+      .ts = 0,
+      .pid = processId_,
+      .tid = id,
+  });
+}
+
+void PerformanceTracer::reportEventLoopTask(uint64_t start, uint64_t end) {
+  if (!tracing_) {
+    return;
+  }
+
+  std::lock_guard lock(mutex_);
+  if (!tracing_) {
+    return;
+  }
+
+  buffer_.push_back(TraceEvent{
+      .name = "RunTask",
+      .cat = "disabled-by-default-devtools.timeline",
+      .ph = 'X',
+      .ts = start,
+      .pid = oscompat::getCurrentProcessId(),
+      .tid = oscompat::getCurrentThreadId(),
+      .dur = end - start,
+  });
+}
+
+folly::dynamic PerformanceTracer::getSerializedRuntimeProfileTraceEvent(
+    uint64_t threadId,
+    uint16_t profileId,
+    uint64_t eventUnixTimestamp) {
+  // CDT prioritizes event timestamp over startTime metadata field.
+  // https://fburl.com/lo764pf4
+  return serializeTraceEvent(TraceEvent{
+      .id = profileId,
+      .name = "Profile",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = eventUnixTimestamp,
+      .pid = processId_,
+      .tid = threadId,
+      .args = folly::dynamic::object(
+          "data", folly ::dynamic::object("startTime", eventUnixTimestamp)),
+  });
+}
+
+folly::dynamic PerformanceTracer::getSerializedRuntimeProfileChunkTraceEvent(
+    uint16_t profileId,
+    uint64_t threadId,
+    uint64_t eventUnixTimestamp,
+    const tracing::TraceEventProfileChunk& traceEventProfileChunk) {
+  return serializeTraceEvent(TraceEvent{
+      .id = profileId,
+      .name = "ProfileChunk",
+      .cat = "disabled-by-default-v8.cpu_profiler",
+      .ph = 'P',
+      .ts = eventUnixTimestamp,
+      .pid = processId_,
+      .tid = threadId,
+      .args =
+          folly::dynamic::object("data", traceEventProfileChunk.asDynamic()),
+  });
 }
 
 folly::dynamic PerformanceTracer::serializeTraceEvent(TraceEvent event) const {
   folly::dynamic result = folly::dynamic::object;
 
   if (event.id.has_value()) {
-    result["id"] = folly::sformat("0x{:X}", event.id.value());
+    std::array<char, 16> buffer{};
+    snprintf(buffer.data(), buffer.size(), "0x%08x", event.id.value());
+    result["id"] = buffer.data();
   }
   result["name"] = event.name;
   result["cat"] = event.cat;

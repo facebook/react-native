@@ -27,6 +27,7 @@ import type {
   TargetCapabilityFlags,
 } from './types';
 
+import CDPMessagesLogging from './CDPMessagesLogging';
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
 import invariant from 'invariant';
@@ -129,6 +130,8 @@ export default class Device {
   // A base HTTP(S) URL to the server, relative to this server.
   #serverRelativeBaseUrl: URL;
 
+  #cdpMessagesLogging: CDPMessagesLogging;
+
   constructor(deviceOptions: DeviceOptions) {
     this.#dangerouslyConstruct(deviceOptions);
   }
@@ -145,6 +148,7 @@ export default class Device {
     deviceRelativeBaseUrl,
     isProfilingBuild,
   }: DeviceOptions) {
+    this.#cdpMessagesLogging = new CDPMessagesLogging();
     this.#id = id;
     this.#name = name;
     this.#app = app;
@@ -173,14 +177,11 @@ export default class Device {
           if (parsedMessage.event === 'getPages') {
             // There's a 'getPages' message every second, so only show them if they change
             if (message !== this.#lastGetPagesMessage) {
-              debug(
-                '(Debugger)    (Proxy) <- (Device), getPages ping has changed: ' +
-                  message,
-              );
+              debug('Device getPages ping has changed: %s', message);
               this.#lastGetPagesMessage = message;
             }
           } else {
-            debug('(Debugger)    (Proxy) <- (Device): ' + message);
+            this.#cdpMessagesLogging.log('DeviceToProxy', message);
           }
           await this.#handleMessageFromDevice(parsedMessage);
         })
@@ -343,7 +344,7 @@ export default class Device {
             sendMessage: message => {
               try {
                 const payload = JSON.stringify(message);
-                debug('(Debugger) <- (Proxy)    (Device): ' + payload);
+                this.#cdpMessagesLogging.log('ProxyToDebugger', payload);
                 socket.send(payload);
               } catch {}
             },
@@ -361,7 +362,7 @@ export default class Device {
                     wrappedEvent: JSON.stringify(message),
                   },
                 });
-                debug('(Debugger) -> (Proxy)    (Device): ' + payload);
+                this.#cdpMessagesLogging.log('DebuggerToProxy', payload);
                 this.#deviceSocket.send(payload);
               } catch {}
             },
@@ -382,7 +383,7 @@ export default class Device {
 
     // $FlowFixMe[incompatible-call]
     socket.on('message', (message: string) => {
-      debug('(Debugger) -> (Proxy)    (Device): ' + message);
+      this.#cdpMessagesLogging.log('DebuggerToProxy', message);
       const debuggerRequest = JSON.parse(message);
       this.#deviceEventReporter?.logRequest(debuggerRequest, 'debugger', {
         pageId: this.#debuggerConnection?.pageId ?? null,
@@ -427,11 +428,12 @@ export default class Device {
       }
     });
 
+    const cdpMessagesLogging = this.#cdpMessagesLogging;
     // $FlowFixMe[method-unbinding]
     const sendFunc = socket.send;
     // $FlowFixMe[cannot-write]
     socket.send = function (message: string) {
-      debug('(Debugger) <- (Proxy)    (Device): ' + message);
+      cdpMessagesLogging.log('ProxyToDebugger', message);
       return sendFunc.call(socket, message);
     };
   }
@@ -607,10 +609,11 @@ export default class Device {
   // Sends single message to device.
   #sendMessageToDevice(message: MessageToDevice) {
     try {
+      const messageToSend = JSON.stringify(message);
       if (message.event !== 'getPages') {
-        debug('(Debugger)    (Proxy) -> (Device): ' + JSON.stringify(message));
+        this.#cdpMessagesLogging.log('ProxyToDevice', messageToSend);
       }
-      this.#deviceSocket.send(JSON.stringify(message));
+      this.#deviceSocket.send(messageToSend);
     } catch (error) {}
   }
 

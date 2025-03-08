@@ -327,6 +327,8 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
 - (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
            oldLayoutMetrics:(const LayoutMetrics &)oldLayoutMetrics
 {
+  CGSize previousContentSize = _backedTextInputView.contentSize;
+
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
   _backedTextInputView.frame =
@@ -334,7 +336,7 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   _backedTextInputView.textContainerInset =
       RCTUIEdgeInsetsFromEdgeInsets(layoutMetrics.contentInsets - layoutMetrics.borderWidth);
 
-  if (_eventEmitter) {
+  if (!CGSizeEqualToSize(previousContentSize, _backedTextInputView.contentSize) && _eventEmitter) {
     static_cast<const TextInputEventEmitter &>(*_eventEmitter).onContentSizeChange([self _textInputMetrics]);
   }
 }

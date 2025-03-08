@@ -142,6 +142,7 @@ const RCTTextInputViewConfig = {
     placeholder: true,
     autoCorrect: true,
     multiline: true,
+    numberOfLines: true,
     textContentType: true,
     maxLength: true,
     autoCapitalize: true,

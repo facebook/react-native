@@ -165,6 +165,7 @@ dependencies {
   "jscImplementation"(jscFlavor)
 
   testImplementation(libs.junit)
+  implementation(libs.androidx.profileinstaller)
 }
 
 android {

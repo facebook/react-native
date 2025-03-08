@@ -17,11 +17,11 @@
 
 // TODO(T215317597): Reconsider the pre-existing grouping of these APIs
 
-export type {
-  HostComponent,
-  HostInstance,
-} from './Libraries/Renderer/shims/ReactNativeTypes';
+export type {HostInstance} from './src/private/types/HostInstance';
+export type {HostComponent} from './src/private/types/HostComponent';
 export {default as registerCallableModule} from './Libraries/Core/registerCallableModule';
+
+/// <reference path="src/types/globals.d.ts" />
 
 // #region Components
 
@@ -62,7 +62,7 @@ export {default as ActionSheetIOS} from './Libraries/ActionSheetIOS/ActionSheetI
 export {default as Alert} from './Libraries/Alert/Alert';
 export {default as Animated} from './Libraries/Animated/Animated';
 export * as Appearance from './Libraries/Utilities/Appearance';
-export {default as AppRegistry} from './Libraries/ReactNative/AppRegistry';
+export {AppRegistry} from './Libraries/ReactNative/AppRegistry';
 export {default as AppState} from './Libraries/AppState/AppState';
 export {default as BackHandler} from './Libraries/Utilities/BackHandler';
 export {default as Clipboard} from './Libraries/Components/Clipboard/Clipboard';

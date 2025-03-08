@@ -66,12 +66,12 @@ export type PerformanceObserverCallback = (
   options?: PerformanceObserverCallbackOptions,
 ) => void;
 
-export type PerformanceObserverInit = {
-  entryTypes?: Array<PerformanceEntryType>,
-  type?: PerformanceEntryType,
-  buffered?: boolean,
-  durationThreshold?: DOMHighResTimeStamp,
-};
+export interface PerformanceObserverInit {
+  +entryTypes?: Array<PerformanceEntryType>;
+  +type?: PerformanceEntryType;
+  +buffered?: boolean;
+  +durationThreshold?: DOMHighResTimeStamp;
+}
 
 function getSupportedPerformanceEntryTypes(): $ReadOnlyArray<PerformanceEntryType> {
   if (!NativePerformance) {

@@ -144,11 +144,7 @@ const API = {
       ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush() &&
       flushQueueImmediate
     ) {
-      if (ReactNativeFeatureFlags.enableAnimatedClearImmediateFix()) {
-        clearImmediate(flushQueueImmediate);
-      } else {
-        clearTimeout(flushQueueImmediate);
-      }
+      clearImmediate(flushQueueImmediate);
     }
   },
 

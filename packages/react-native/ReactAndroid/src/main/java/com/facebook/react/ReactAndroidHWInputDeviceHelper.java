@@ -9,12 +9,14 @@ package com.facebook.react;
 
 import android.view.KeyEvent;
 import android.view.View;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import java.util.Map;
 
 /** Responsible for dispatching events specific for hardware inputs. */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 class ReactAndroidHWInputDeviceHelper {
 
   /**

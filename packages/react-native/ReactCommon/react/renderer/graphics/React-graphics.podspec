@@ -64,7 +64,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
   s.dependency "DoubleConversion"
-  s.dependency "fast_float", "6.1.4"
+  s.dependency "fast_float"
   s.dependency "fmt", "11.0.2"
   
   depend_on_js_engine(s)

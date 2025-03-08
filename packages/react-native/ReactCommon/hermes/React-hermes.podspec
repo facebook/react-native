@@ -44,10 +44,11 @@ Pod::Spec.new do |s|
   s.dependency "React-cxxreact", version
   s.dependency "React-jsiexecutor", version
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
+  add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-perflogger", version
   s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"
-  s.dependency "fast_float", "6.1.4"
+  s.dependency "fast_float"
   s.dependency "fmt", "11.0.2"
   s.dependency "glog"
   s.dependency "hermes-engine"

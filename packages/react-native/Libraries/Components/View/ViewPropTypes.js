@@ -322,7 +322,7 @@ export type ViewPropsAndroid = $ReadOnly<{
    *
    * @platform android
    */
-  focusable?: boolean,
+  focusable?: ?boolean,
 
   /**
    * Indicates whether this `View` should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
@@ -356,17 +356,7 @@ export type ViewPropsIOS = $ReadOnly<{
   shouldRasterizeIOS?: ?boolean,
 }>;
 
-export type ViewProps = $ReadOnly<{
-  ...DirectEventProps,
-  ...GestureResponderHandlers,
-  ...MouseEventProps,
-  ...PointerEventProps,
-  ...FocusEventProps,
-  ...TouchEventProps,
-  ...ViewPropsAndroid,
-  ...ViewPropsIOS,
-  ...AccessibilityProps,
-
+type ViewBaseProps = $ReadOnly<{
   children?: Node,
   style?: ?ViewStyleProp,
 
@@ -453,4 +443,17 @@ export type ViewProps = $ReadOnly<{
    * See https://reactnative.dev/docs/view#removeclippedsubviews
    */
   removeClippedSubviews?: ?boolean,
+}>;
+
+export type ViewProps = $ReadOnly<{
+  ...DirectEventProps,
+  ...GestureResponderHandlers,
+  ...MouseEventProps,
+  ...PointerEventProps,
+  ...FocusEventProps,
+  ...TouchEventProps,
+  ...ViewPropsAndroid,
+  ...ViewPropsIOS,
+  ...AccessibilityProps,
+  ...ViewBaseProps,
 }>;

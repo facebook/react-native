@@ -1,0 +1,48 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
+ * @oncall react_native
+ */
+
+import AnimatedImplementation from './AnimatedImplementation';
+
+export {default as FlatList} from './components/AnimatedFlatList';
+export {default as Image} from './components/AnimatedImage';
+export {default as ScrollView} from './components/AnimatedScrollView';
+export {default as SectionList} from './components/AnimatedSectionList';
+export {default as Text} from './components/AnimatedText';
+export {default as View} from './components/AnimatedView';
+export {default as Color} from './nodes/AnimatedColor';
+export {AnimatedEvent as Event} from './AnimatedEvent';
+export {default as Interpolation} from './nodes/AnimatedInterpolation';
+export {default as Node} from './nodes/AnimatedNode';
+export {default as Value} from './nodes/AnimatedValue';
+export {default as ValueXY} from './nodes/AnimatedValueXY';
+
+export type {AnimatedValueConfig as AnimatedConfig} from './nodes/AnimatedValue';
+
+export const add = AnimatedImplementation.add;
+export const attachNativeEvent = AnimatedImplementation.attachNativeEvent;
+export const createAnimatedComponent =
+  AnimatedImplementation.createAnimatedComponent;
+export const decay = AnimatedImplementation.decay;
+export const delay = AnimatedImplementation.delay;
+export const diffClamp = AnimatedImplementation.diffClamp;
+export const divide = AnimatedImplementation.divide;
+export const event = AnimatedImplementation.event;
+export const forkEvent = AnimatedImplementation.forkEvent;
+export const loop = AnimatedImplementation.loop;
+export const modulo = AnimatedImplementation.modulo;
+export const multiply = AnimatedImplementation.multiply;
+export const parallel = AnimatedImplementation.parallel;
+export const sequence = AnimatedImplementation.sequence;
+export const spring = AnimatedImplementation.spring;
+export const stagger = AnimatedImplementation.stagger;
+export const subtract = AnimatedImplementation.subtract;
+export const timing = AnimatedImplementation.timing;
+export const unforkEvent = AnimatedImplementation.unforkEvent;

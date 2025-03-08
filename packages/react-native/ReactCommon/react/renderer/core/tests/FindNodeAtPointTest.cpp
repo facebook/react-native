@@ -415,3 +415,37 @@ TEST(FindNodeAtPointTest, invertedList) {
           ->getTag(),
       2);
 }
+
+TEST(FindNodeAtPointTest, considersOverflowAreaOfTheParent) {
+  auto builder = simpleComponentBuilder();
+
+  auto element =
+      Element<ViewShadowNode>()
+          .tag(1)
+          .finalize([](ViewShadowNode& shadowNode) {
+            auto layoutMetrics = EmptyLayoutMetrics;
+            layoutMetrics.frame.size = {100, 100};
+            shadowNode.setLayoutMetrics(layoutMetrics);
+          })
+          .children({Element<ViewShadowNode>()
+                         .tag(2)
+                         .finalize([](ViewShadowNode& shadowNode) {
+                           auto layoutMetrics = EmptyLayoutMetrics;
+                           layoutMetrics.frame.size = {100, 0};
+                           layoutMetrics.overflowInset = {0, 0, 0, -100};
+
+                           shadowNode.setLayoutMetrics(layoutMetrics);
+                         })
+                         .children({Element<ViewShadowNode>().tag(3).finalize(
+                             [](ViewShadowNode& shadowNode) {
+                               auto layoutMetrics = EmptyLayoutMetrics;
+                               layoutMetrics.frame.size = {100, 100};
+                               shadowNode.setLayoutMetrics(layoutMetrics);
+                             })})});
+
+  auto parentShadowNode = builder.build(element);
+  EXPECT_EQ(
+      LayoutableShadowNode::findNodeAtPoint(parentShadowNode, {1, 99})
+          ->getTag(),
+      3);
+}

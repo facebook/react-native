@@ -11,6 +11,7 @@ import android.annotation.SuppressLint
 import com.facebook.jni.HybridClassBase
 import com.facebook.proguard.annotations.DoNotStripAny
 import com.facebook.react.bridge.NativeMap
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.fabric.FabricSoLoader.staticInit
 import com.facebook.react.uimanager.events.EventCategoryDef
@@ -55,6 +56,7 @@ public class EventEmitterWrapper private constructor() : HybridClassBase() {
     if (!isValid) {
       return
     }
+    UiThreadUtil.assertOnUiThread()
     dispatchEventSynchronously(eventName, params as NativeMap?)
   }
 

@@ -7,7 +7,6 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 import View from '../../Components/View/View';
@@ -804,7 +803,8 @@ describe('LogBox', () => {
       expect(logBox.getNotificationUI()).toEqual({
         count: '!',
         message:
-          'There was an error during concurrent rendering ' +
+          // Error: prefix removed with D68380668
+          'Error: There was an error during concurrent rendering ' +
           'but React was able to recover by instead synchronously ' +
           'rendering the entire root.',
       });
@@ -821,7 +821,8 @@ describe('LogBox', () => {
         // This seems like a bug, should be "Render Error".
         title: 'Console Error',
         message:
-          'There was an error during concurrent rendering ' +
+          // Error: prefix removed with D68380668
+          'Error: There was an error during concurrent rendering ' +
           'but React was able to recover by instead synchronously ' +
           'rendering the entire root.',
         componentStackFrames: BUG_WITH_COMPONENT_FRAMES,
@@ -840,11 +841,10 @@ describe('LogBox', () => {
       expect(logBox.getNotificationUI()).toEqual({
         count: '!',
         message:
-          'Each child in a list should have a unique "key" prop.\n' +
-          '\n' +
-          'Check the top-level render call using <TestComponent>. ' +
-          'It was passed a child from TestComponent. ' +
-          'See https://react.dev/link/warning-keys for more information.',
+          // Interpolaton fixed by D68380668
+          'Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. ' +
+          '\n\nCheck the top-level render call using <TestComponent>.  ' +
+          'It was passed a child from TestComponent.',
       });
 
       // Open LogBox.
@@ -859,12 +859,11 @@ describe('LogBox', () => {
         // This seems like a bug, should be "Render Error".
         title: 'Console Error',
         message:
-          'Each child in a list should have a unique "key" prop.\n' +
-          '\n' +
-          'Check the top-level render call using <TestComponent>. ' +
-          'It was passed a child from TestComponent. ' +
-          'See https://react.dev/link/warning-keys for more information.',
-        componentStackFrames: ['<Text />', '<View />', '<View />'],
+          // Interpolaton fixed by D68380668
+          'Each child in a list should have a unique "key" prop.%s%s See https://react.dev/link/warning-keys for more information. ' +
+          '\n\nCheck the top-level render call using <TestComponent>.  ' +
+          'It was passed a child from TestComponent.',
+        componentStackFrames: [],
         isDismissable: true,
       });
     });
@@ -885,8 +884,8 @@ describe('LogBox', () => {
       expect(logBox.getNotificationUI()).toEqual({
         count: '!',
         message:
-          'Invalid prop `invalid` supplied to `React.Fragment`. ' +
-          'React.Fragment can only have `key` and `children` props.',
+          // Interpolaton fixed by D68380668
+          'Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props. invalid',
       });
 
       // Open LogBox.
@@ -901,9 +900,8 @@ describe('LogBox', () => {
         // This seems like a bug, should be "Render Error".
         title: 'Console Error',
         message:
-          'Invalid prop `invalid` supplied to `React.Fragment`. ' +
-          'React.Fragment can only have `key` and `children` props.',
-        componentStackFrames: ['<View />', '<View />', '<AppContainer />'],
+          'Invalid prop `%s` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props. invalid',
+        componentStackFrames: [],
         isDismissable: true,
       });
     });

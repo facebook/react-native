@@ -330,7 +330,7 @@ void ReactInstance::registerSegment(
                << segmentId;
   runtimeScheduler_->scheduleWork([=](jsi::Runtime& runtime) {
     TraceSection s("ReactInstance::registerSegment");
-    const auto tag = folly::to<std::string>(segmentId);
+    auto tag = std::to_string(segmentId);
     auto script = JSBigFileString::fromPath(segmentPath);
     if (script->size() == 0) {
       throw std::invalid_argument(

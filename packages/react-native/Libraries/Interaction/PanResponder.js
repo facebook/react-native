@@ -124,7 +124,7 @@ const currentCentroidY = TouchHistoryMath.currentCentroidY;
  * [PanResponder example in RNTester](https://github.com/facebook/react-native/blob/HEAD/packages/rn-tester/js/examples/PanResponder/PanResponderExample.js)
  */
 
-export type GestureState = {
+export type PanResponderGestureState = {
   /**
    * ID of the gestureState - persisted as long as there at least one touch on screen
    */
@@ -185,15 +185,15 @@ export type GestureState = {
 
 type ActiveCallback = (
   event: GestureResponderEvent,
-  gestureState: GestureState,
+  gestureState: PanResponderGestureState,
 ) => boolean;
 
 type PassiveCallback = (
   event: GestureResponderEvent,
-  gestureState: GestureState,
+  gestureState: PanResponderGestureState,
 ) => mixed;
 
-export type PanHandlers = {
+export type GestureResponderHandlers = {
   onMoveShouldSetResponder: (event: GestureResponderEvent) => boolean,
   onMoveShouldSetResponderCapture: (event: GestureResponderEvent) => boolean,
   onResponderEnd: (event: GestureResponderEvent) => void,
@@ -208,7 +208,7 @@ export type PanHandlers = {
   onStartShouldSetResponderCapture: (event: GestureResponderEvent) => boolean,
 };
 
-type PanResponderConfig = $ReadOnly<{
+export type PanResponderCallbacks = $ReadOnly<{
   onMoveShouldSetPanResponder?: ?ActiveCallback,
   onMoveShouldSetPanResponderCapture?: ?ActiveCallback,
   onStartShouldSetPanResponder?: ?ActiveCallback,
@@ -293,7 +293,7 @@ const PanResponder = {
    * - vx/vy: Velocity.
    */
 
-  _initializeGestureState(gestureState: GestureState) {
+  _initializeGestureState(gestureState: PanResponderGestureState) {
     gestureState.moveX = 0;
     gestureState.moveY = 0;
     gestureState.x0 = 0;
@@ -332,7 +332,7 @@ const PanResponder = {
    * avoids more dispatches than necessary.
    */
   _updateGestureStateOnMove(
-    gestureState: GestureState,
+    gestureState: PanResponderGestureState,
     touchHistory: $PropertyType<GestureResponderEvent, 'touchHistory'>,
   ) {
     gestureState.numberActiveTouches = touchHistory.numberActiveTouches;
@@ -401,14 +401,14 @@ const PanResponder = {
    *  accordingly. (numberActiveTouches) may not be totally accurate unless you
    *  are the responder.
    */
-  create(config: PanResponderConfig): {
+  create(config: PanResponderCallbacks): {
     getInteractionHandle: () => ?number,
-    panHandlers: PanHandlers,
+    panHandlers: GestureResponderHandlers,
   } {
     const interactionState = {
       handle: (null: ?number),
     };
-    const gestureState: GestureState = {
+    const gestureState: PanResponderGestureState = {
       // Useful for debugging
       stateID: Math.random(),
       moveX: 0,
@@ -566,7 +566,7 @@ function clearInteractionHandle(
   interactionState: {handle: ?number, ...},
   callback: ?(ActiveCallback | PassiveCallback),
   event: GestureResponderEvent,
-  gestureState: GestureState,
+  gestureState: PanResponderGestureState,
 ) {
   if (interactionState.handle) {
     InteractionManager.clearInteractionHandle(interactionState.handle);

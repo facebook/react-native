@@ -7,6 +7,8 @@
 
 package com.facebook.react.modules.network;
 
+import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import java.util.Collections;
 import java.util.Map;
 import okhttp3.Headers;
@@ -20,12 +22,13 @@ import okhttp3.OkHttpClient;
  * different RN platform environments, and then consider getting rid of this compat layer
  * altogether.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class OkHttpCompat {
   public static CookieJarContainer getCookieJarContainer(OkHttpClient client) {
     return (CookieJarContainer) client.cookieJar();
   }
 
-  public static Headers getHeadersFromMap(Map<String, String> headers) {
+  public static Headers getHeadersFromMap(@Nullable Map<String, String> headers) {
     if (headers == null) {
       return Headers.of(Collections.emptyMap());
     } else {

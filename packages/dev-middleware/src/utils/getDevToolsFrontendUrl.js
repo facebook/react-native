@@ -70,7 +70,7 @@ function getWsParam({
     // may actually load through a tunnel or proxy, and the WS connection
     // should therefore do the same.
     //
-    // Depends on https://github.com/facebookexperimental/rn-chrome-devtools-frontend/pull/4
+    // Depends on https://github.com/facebook/react-native-devtools-frontend/pull/4
     value = wsUrl.pathname + wsUrl.search + wsUrl.hash;
   } else {
     // Standard URL format accepted by the DevTools frontend

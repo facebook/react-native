@@ -8,11 +8,11 @@
  * @format
  */
 
-import type {HostInstance} from '../../Renderer/shims/ReactNativeTypes';
+import type {HostInstance} from '../../../src/private/types/HostInstance';
 import type {
   GestureResponderEvent,
-  ScrollEvent,
   NativeSyntheticEvent,
+  ScrollEvent,
 } from '../../Types/CoreEventTypes';
 import type {ViewProps} from '../View/ViewPropTypes';
 
@@ -22,8 +22,6 @@ import {
   type ViewStyleProp,
 } from '../../StyleSheet/StyleSheet';
 import * as React from 'react';
-
-type ReactRefSetter<T> = {current: null | T, ...} | ((ref: null | T) => mixed);
 
 export type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
@@ -90,11 +88,29 @@ export type TextInputKeyPressEventData = $ReadOnly<{
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
 
+/**
+ * @see TextInputProps.onEndEditing
+ */
 export type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
+
+export type TextInputEndEditingEvent =
+  NativeSyntheticEvent<TextInputEndEditingEventData>;
+
+/**
+ * @see TextInputProps.onSubmitEditing
+ */
+export type TextInputSubmitEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
+
+export type TextInputSubmitEditingEvent =
+  NativeSyntheticEvent<TextInputSubmitEditingEventData>;
 
 export type TextInputEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
@@ -391,6 +407,21 @@ export type TextInputAndroidProps = $ReadOnly<{
    */
   disableFullscreenUI?: ?boolean,
 
+  /**
+   * Determines whether the individual fields in your app should be included in a
+   * view structure for autofill purposes on Android API Level 26+. Defaults to auto.
+   * To disable auto complete, use `off`.
+   *
+   * *Android Only*
+   *
+   * The following values work on Android only:
+   *
+   * - `auto` - let Android decide
+   * - `no` - not important for autofill
+   * - `noExcludeDescendants` - this view and its children aren't important for autofill
+   * - `yes` - is important for autofill
+   * - `yesExcludeDescendants` - this view is important for autofill but its children aren't
+   */
   importantForAutofill?: ?(
     | 'auto'
     | 'no'
@@ -649,7 +680,7 @@ export type TextInputProps = $ReadOnly<{
    */
   editable?: ?boolean,
 
-  forwardedRef?: ?ReactRefSetter<HostInstance & ImperativeMethods>,
+  forwardedRef?: ?React.RefSetter<TextInputInstance>,
 
   /**
    * `enterKeyHint` defines what action label (or icon) to present for the enter key on virtual keyboards.
@@ -785,7 +816,7 @@ export type TextInputProps = $ReadOnly<{
   /**
    * Callback that is called when text input ends.
    */
-  onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
 
   /**
    * Callback that is called when the text input is focused.
@@ -842,7 +873,7 @@ export type TextInputProps = $ReadOnly<{
    * Callback that is called when the text input's submit button is pressed.
    * Invalid if `multiline={true}` is specified.
    */
-  onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
 
   /**
    * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
@@ -992,12 +1023,12 @@ export type TextInputProps = $ReadOnly<{
   value?: ?Stringish,
 }>;
 
-type ImperativeMethods = $ReadOnly<{
-  clear: () => void,
-  isFocused: () => boolean,
-  getNativeRef: () => ?HostInstance,
-  setSelection: (start: number, end: number) => void,
-}>;
+export interface TextInputInstance extends HostInstance {
+  +clear: () => void;
+  +isFocused: () => boolean;
+  +getNativeRef: () => ?HostInstance;
+  +setSelection: (start: number, end: number) => void;
+}
 
 /**
  * A foundational component for inputting text into the app via a
@@ -1111,7 +1142,7 @@ type ImperativeMethods = $ReadOnly<{
  *
  */
 type InternalTextInput = component(
-  ref: React.RefSetter<$ReadOnly<{...HostInstance, ...ImperativeMethods}>>,
+  ref?: React.RefSetter<TextInputInstance>,
   ...TextInputProps
 );
 

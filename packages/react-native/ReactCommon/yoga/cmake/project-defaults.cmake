@@ -19,8 +19,8 @@ add_compile_options(
     # Enable warnings and warnings as errors
     /W4
     /WX
-    # Disable RTTI
-    $<$<COMPILE_LANGUAGE:CXX>:/GR->
+    # Enable RTTI
+    $<$<COMPILE_LANGUAGE:CXX>:/GR>
     # Use /O2 (Maximize Speed)
     $<$<CONFIG:RELEASE>:/O2>)
 
@@ -34,8 +34,8 @@ add_compile_options(
     # Enable warnings and warnings as errors
     -Wall
     -Werror
-    # Disable RTTI
-    $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
+    # Enable RTTI
+    $<$<COMPILE_LANGUAGE:CXX>:-frtti>
     # Use -O2 (prioritize speed)
     $<$<CONFIG:RELEASE>:-O2>
     # Enable separate sections per function/data item

@@ -27,11 +27,10 @@
     "chrome-launcher": "^0.15.2",
     "chromium-edge-launcher": "^0.2.0",
     "connect": "^3.6.5",
-    "debug": "^2.2.0",
+    "debug": "^4.4.0",
     "invariant": "^2.2.4",
     "nullthrows": "^1.1.1",
     "open": "^7.0.3",
-    "selfsigned": "^2.4.1",
     "serve-static": "^1.16.2",
     "ws": "^6.2.3"
   },
@@ -39,7 +38,7 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "data-uri-to-buffer": "^6.0.1",
+    "selfsigned": "^2.4.1",
     "undici": "^5.28.5",
     "wait-for-expect": "^3.0.2"
   }

@@ -65,9 +65,9 @@ jint extractInteger(const folly::dynamic& value) {
   double dbl = value.getDouble();
   jint result = static_cast<jint>(dbl);
   if (dbl != result) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "Tried to convert jint argument, but got a non-integral double: ",
-        dbl));
+    throw std::invalid_argument(
+        "Tried to convert jint argument, but got a non-integral double: " +
+        std::to_string(dbl));
   }
   return result;
 }
@@ -222,8 +222,9 @@ MethodCallResult MethodInvoker::invoke(
 #endif
 
   if (params.size() != jsArgCount_) {
-    throw std::invalid_argument(folly::to<std::string>(
-        "expected ", jsArgCount_, " arguments, got ", params.size()));
+    throw std::invalid_argument(
+        "expected " + std::to_string(jsArgCount_) + " arguments, got " +
+        std::to_string(params.size()));
   }
 
   auto env = Environment::current();

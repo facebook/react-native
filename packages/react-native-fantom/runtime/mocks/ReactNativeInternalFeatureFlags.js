@@ -9,4 +9,6 @@
  * @oncall react_native
  */
 
-module.exports = {};
+module.exports = {
+  enableFabricCompleteRootInCommitPhase: true,
+};

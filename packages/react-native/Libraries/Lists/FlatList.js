@@ -176,17 +176,18 @@ function isArrayLike(data: mixed): boolean {
   return typeof Object(data).length === 'number';
 }
 
-type FlatListProps<ItemT> = {
+type FlatListBaseProps<ItemT> = {
   ...RequiredProps<ItemT>,
   ...OptionalProps<ItemT>,
 };
 
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
 
-export type Props<ItemT> = {
+export type FlatListProps<ItemT> = {
   ...$Diff<
     VirtualizedListProps,
     {
+      data: $PropertyType<VirtualizedListProps, 'data'>,
       getItem: $PropertyType<VirtualizedListProps, 'getItem'>,
       getItemCount: $PropertyType<VirtualizedListProps, 'getItemCount'>,
       getItemLayout: $PropertyType<VirtualizedListProps, 'getItemLayout'>,
@@ -195,7 +196,7 @@ export type Props<ItemT> = {
       ...
     },
   >,
-  ...FlatListProps<ItemT>,
+  ...FlatListBaseProps<ItemT>,
   ...
 };
 
@@ -307,7 +308,7 @@ export type Props<ItemT> = {
  *
  * Also inherits [ScrollView Props](docs/scrollview.html#props), unless it is nested in another FlatList of same orientation.
  */
-class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
+class FlatList<ItemT = any> extends React.PureComponent<FlatListProps<ItemT>> {
   /**
    * Scrolls to the end of the content. May be janky without `getItemLayout` prop.
    */
@@ -422,7 +423,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     }
   }
 
-  constructor(props: Props<ItemT>) {
+  constructor(props: FlatListProps<ItemT>) {
     super(props);
     this._checkProps(this.props);
     if (this.props.viewabilityConfigCallbackPairs) {
@@ -456,7 +457,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   }
 
   // $FlowFixMe[missing-local-annot]
-  componentDidUpdate(prevProps: Props<ItemT>) {
+  componentDidUpdate(prevProps: FlatListProps<ItemT>) {
     invariant(
       prevProps.numColumns === this.props.numColumns,
       'Changing numColumns on the fly is not supported. Change the key prop on FlatList when ' +
@@ -488,7 +489,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   // $FlowFixMe[missing-local-annot]
-  _checkProps(props: Props<ItemT>) {
+  _checkProps(props: FlatListProps<ItemT>) {
     const {
       // $FlowFixMe[prop-missing] this prop doesn't exist, is only used for an invariant
       getItem,

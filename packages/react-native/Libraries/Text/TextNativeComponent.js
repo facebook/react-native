@@ -8,7 +8,7 @@
  * @format
  */
 
-import type {HostComponent} from '../Renderer/shims/ReactNativeTypes';
+import type {HostComponent} from '../../src/private/types/HostComponent';
 import type {ProcessedColorValue} from '../StyleSheet/processColor';
 import type {GestureResponderEvent} from '../Types/CoreEventTypes';
 import type {TextProps} from './TextProps';

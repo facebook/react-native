@@ -72,11 +72,11 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
       view: ReactViewGroup
-  ): ReactViewGroup {
+  ): ReactViewGroup? {
     // BaseViewManager
     val preparedView = super.prepareToRecycleView(reactContext, view)
     preparedView?.recycleView()
-    return view
+    return preparedView
   }
 
   @ReactProp(name = "accessible")

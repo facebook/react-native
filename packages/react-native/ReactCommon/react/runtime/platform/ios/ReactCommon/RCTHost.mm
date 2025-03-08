@@ -12,6 +12,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
+#import <React/RCTInitializeUIKitProxies.h>
 #import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTInspectorNetworkHelper.h>
 #import <React/RCTInspectorUtils.h>
@@ -21,6 +22,7 @@
 #import <React/RCTPausedInDebuggerOverlayController.h>
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTReloadCommand.h>
+#import <React/RCTUtils.h>
 #import <jsinspector-modern/InspectorFlags.h>
 #import <jsinspector-modern/InspectorInterfaces.h>
 #import <jsinspector-modern/ReactCdp.h>
@@ -189,9 +191,10 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
                                        andSetter:bundleURLSetter
                                 andDefaultGetter:defaultBundleURLGetter];
 
-    // Listen to reload commands
-    dispatch_async(dispatch_get_main_queue(), ^{
+    RCTExecuteOnMainQueue(^{
+      // Listen to reload commands
       RCTRegisterReloadCommandListener(self);
+      RCTInitializeUIKitProxies();
     });
 
     _inspectorHostDelegate = std::make_unique<RCTHostHostTargetDelegate>(self);

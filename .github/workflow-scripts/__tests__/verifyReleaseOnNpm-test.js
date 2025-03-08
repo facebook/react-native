@@ -13,6 +13,11 @@ const mockVerifyPublishedPackage = jest.fn();
 const silence = () => {};
 
 jest.mock('../utils.js', () => ({
+  log: silence,
+  sleep: silence,
+}));
+
+jest.mock('../verifyPublishedPackage.js', () => ({
   verifyPublishedPackage: mockVerifyPublishedPackage,
 }));
 

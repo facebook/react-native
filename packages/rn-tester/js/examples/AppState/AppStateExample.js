@@ -67,33 +67,23 @@ function AppStateSubscription(props: Props) {
   };
 
   if (props.showMemoryWarnings) {
-    return (
-      <View>
-        <RNTesterText>{memoryWarnings}</RNTesterText>
-      </View>
-    );
+    return <RNTesterText>{memoryWarnings}</RNTesterText>;
   }
 
   if (props.showCurrentOnly) {
     return (
-      <View>
-        <RNTesterText>{currentAppState}</RNTesterText>
-      </View>
+      <RNTesterText testID="current-state">{currentAppState}</RNTesterText>
     );
   }
 
   if (props.detectEvents) {
-    return (
-      <View>
-        <RNTesterText>{JSON.stringify(eventsDetected)}</RNTesterText>
-      </View>
-    );
+    return <RNTesterText>{JSON.stringify(eventsDetected)}</RNTesterText>;
   }
 
   return (
-    <View>
-      <RNTesterText>{JSON.stringify(previousAppStates)}</RNTesterText>
-    </View>
+    <RNTesterText testID="previous-states">
+      {previousAppStates.join(', ')}
+    </RNTesterText>
   );
 }
 
@@ -106,7 +96,11 @@ exports.examples = [
     title: 'AppState.currentState',
     description: 'Can be null on app initialization',
     render(): React.Node {
-      return <RNTesterText>{AppState.currentState}</RNTesterText>;
+      return (
+        <RNTesterText testID="initial-state">
+          {AppState.currentState}
+        </RNTesterText>
+      );
     },
   },
   {

@@ -86,7 +86,7 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       metadata: {
         description:
-          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.',
+          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -113,17 +113,6 @@ const definitions: FeatureFlagDefinitions = {
         purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
-    },
-    enableEventEmitterRetentionDuringGesturesOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-08-08',
-        description:
-          'Enables the retention of EventEmitterWrapper on Android till the touch gesture is over to fix a bug on pressable (#44610)',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'canary',
     },
     enableFabricLogs: {
       defaultValue: false,
@@ -220,17 +209,6 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-09-24',
         description:
           'Use BackgroundDrawable and BorderDrawable instead of CSSBackgroundDrawable',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enablePreciseSchedulingForPremountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-19',
-        description:
-          'Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -381,7 +359,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-01-31',
         description:
-          'Enable network inspection support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.',
+          'Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -393,6 +371,28 @@ const definitions: FeatureFlagDefinitions = {
         dateAdded: '2024-05-01',
         description:
           'Only enqueue Choreographer calls if there is an ongoing animation, instead of enqueueing every frame.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    removeTurboModuleManagerDelegateMutex: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-02-24',
+        description:
+          'When enabled, mutex _turboModuleManagerDelegateMutex in RCTTurboModuleManager will not be used',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
+    throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-02-18',
+        description:
+          'Throw an exception instead of deadlocking when a TurboModule that requires main queue setup is initialized during a synchronous render on iOS.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -548,17 +548,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables access to the host tree in Fabric using DOM-compatible APIs.',
         expectedReleaseValue: true,
         purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableAnimatedClearImmediateFix: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-09-17',
-        description:
-          'Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },

@@ -6,9 +6,8 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(-fexceptions -frtti -std=c++20 -Wall -DLOG_TAG=\"ReactNative\")
-
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB uimanagerjni_SRC CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 add_library(uimanagerjni
@@ -36,3 +35,5 @@ target_link_libraries(uimanagerjni
         rrc_native
         yoga
 )
+
+target_compile_reactnative_options(uimanagerjni PRIVATE "ReactNative")

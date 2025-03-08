@@ -7,7 +7,6 @@
 
 #import "RCTInitializeUIKitProxies.h"
 #import "RCTInitialAccessibilityValuesProxy.h"
-#import "RCTInitialAppStateProxy.h"
 #import "RCTKeyWindowValuesProxy.h"
 #import "RCTTraitCollectionProxy.h"
 #import "RCTWindowSafeAreaProxy.h"
@@ -18,7 +17,6 @@ void RCTInitializeUIKitProxies(void)
   dispatch_once(&onceToken, ^{
     [[RCTWindowSafeAreaProxy sharedInstance] startObservingSafeArea];
     [[RCTTraitCollectionProxy sharedInstance] startObservingTraitCollection];
-    [[RCTInitialAppStateProxy sharedInstance] recordAppState];
     [[RCTInitialAccessibilityValuesProxy sharedInstance] recordAccessibilityValues];
     [[RCTKeyWindowValuesProxy sharedInstance] startObservingWindowSizeIfNecessary];
   });

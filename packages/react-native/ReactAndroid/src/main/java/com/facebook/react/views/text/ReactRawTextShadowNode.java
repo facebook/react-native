@@ -8,6 +8,7 @@
 package com.facebook.react.views.text;
 
 import androidx.annotation.Nullable;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
@@ -17,6 +18,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
  * {@link ReactShadowNode} class for pure raw text node (aka {@code textContent} in terms of DOM).
  * Raw text node can only have simple string value without any attributes, properties or state.
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class ReactRawTextShadowNode extends ReactShadowNodeImpl {
 
   @VisibleForTesting public static final String PROP_TEXT = "text";

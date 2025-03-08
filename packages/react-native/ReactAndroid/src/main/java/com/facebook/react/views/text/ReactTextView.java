@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Layout;
@@ -19,6 +20,7 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,6 +110,12 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   /* package */ void recycleView() {
     // Set default field values
     initView();
+
+    // If the view is still attached to a parent, we need to remove it from the parent
+    // before we can recycle it.
+    if (getParent() != null) {
+      ((ViewGroup) getParent()).removeView(this);
+    }
 
     BackgroundStyleApplicator.reset(this);
 
@@ -754,6 +762,30 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     }
 
     return super.dispatchHoverEvent(event);
+  }
+
+  @Override
+  public final void onFocusChanged(
+      boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+    super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    AccessibilityDelegateCompat accessibilityDelegateCompat =
+        ViewCompat.getAccessibilityDelegate(this);
+    if (accessibilityDelegateCompat != null
+        && accessibilityDelegateCompat instanceof ReactTextViewAccessibilityDelegate) {
+      ((ReactTextViewAccessibilityDelegate) accessibilityDelegateCompat)
+          .onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    }
+  }
+
+  @Override
+  public boolean dispatchKeyEvent(KeyEvent event) {
+    AccessibilityDelegateCompat accessibilityDelegateCompat =
+        ViewCompat.getAccessibilityDelegate(this);
+    return (accessibilityDelegateCompat != null
+            && accessibilityDelegateCompat instanceof ReactTextViewAccessibilityDelegate
+            && ((ReactTextViewAccessibilityDelegate) accessibilityDelegateCompat)
+                .dispatchKeyEvent(event))
+        || super.dispatchKeyEvent(event);
   }
 
   private void applyTextAttributes() {

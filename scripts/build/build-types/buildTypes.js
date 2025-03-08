@@ -11,7 +11,6 @@
 
 const {PACKAGES_DIR, REPO_ROOT} = require('../../consts');
 const getRequireStack = require('./resolution/getRequireStack');
-const resolveTypeInputFile = require('./resolution/resolveTypeInputFile');
 const translatedModuleTemplate = require('./templates/translatedModule.d.ts-template');
 const translateSourceFile = require('./translateSourceFile');
 const {promises: fs} = require('fs');
@@ -23,49 +22,17 @@ const OUTPUT_DIR = 'types_generated';
 const IGNORE_PATTERNS = [
   '**/__{tests,mocks,fixtures,flowtests}__/**',
   '**/*.{macos,windows}.js',
+
+  // TODO(T210505449): Enable remaining library entry points
+  'packages/react-native/Libraries/Animated/Animated.js',
+  'packages/react-native/Libraries/StyleSheet/PlatformColorValueTypesIOS.js',
+  'packages/react-native/Libraries/StyleSheet/processColor.js',
+  'packages/react-native/Libraries/StyleSheet/StyleSheet.js',
+  'packages/react-native/Libraries/Components/TextInput/TextInput.js',
+  'packages/react-native/Libraries/Components/TextInput/InputAccessoryView.js',
 ];
 
-const ENTRY_POINTS = [
-  'packages/react-native/Libraries/ActionSheetIOS/ActionSheetIOS.js',
-  'packages/react-native/Libraries/Alert/Alert.js',
-  'packages/react-native/Libraries/AppState/AppState.js',
-  'packages/react-native/Libraries/BatchedBridge/NativeModules.js',
-  'packages/react-native/Libraries/Blob/Blob.js',
-  'packages/react-native/Libraries/Blob/File.js',
-  'packages/react-native/Libraries/Blob/FileReader.js',
-  'packages/react-native/Libraries/Blob/URL.js',
-  'packages/react-native/Libraries/Blob/URLSearchParams.js',
-  'packages/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.js',
-  'packages/react-native/Libraries/Components/Clipboard/Clipboard.js',
-  'packages/react-native/Libraries/Components/ToastAndroid/ToastAndroid.js',
-  'packages/react-native/Libraries/EventEmitter/NativeEventEmitter.js',
-  'packages/react-native/Libraries/EventEmitter/RCTDeviceEventEmitter.js',
-  'packages/react-native/Libraries/EventEmitter/RCTNativeAppEventEmitter.js',
-  'packages/react-native/Libraries/LayoutAnimation/LayoutAnimation.js',
-  'packages/react-native/Libraries/LogBox/LogBox.js',
-  'packages/react-native/Libraries/Performance/Systrace.js',
-  'packages/react-native/Libraries/ReactNative/AppRegistry.js',
-  'packages/react-native/Libraries/ReactNative/I18nManager.js',
-  'packages/react-native/Libraries/ReactNative/RendererProxy.js',
-  'packages/react-native/Libraries/ReactNative/requireNativeComponent.js',
-  'packages/react-native/Libraries/ReactNative/RootTag.js',
-  'packages/react-native/Libraries/ReactNative/UIManager.js',
-  'packages/react-native/Libraries/Settings/Settings.js',
-  'packages/react-native/Libraries/Share/Share.js',
-  'packages/react-native/Libraries/Utilities/Appearance.js',
-  'packages/react-native/Libraries/Utilities/BackHandler.js.flow',
-  'packages/react-native/Libraries/Utilities/DevSettings.js',
-  'packages/react-native/Libraries/Utilities/Dimensions.js',
-  'packages/react-native/Libraries/Utilities/PixelRatio.js',
-  'packages/react-native/Libraries/Utilities/Platform.js.flow',
-  'packages/react-native/Libraries/Utilities/useColorScheme.js',
-  'packages/react-native/Libraries/Utilities/useWindowDimensions.js',
-  'packages/react-native/Libraries/vendor/emitter/EventEmitter.js',
-  'packages/react-native/Libraries/Vibration/Vibration.js',
-  'packages/react-native/Libraries/PermissionsAndroid/PermissionsAndroid.js',
-  'packages/react-native/Libraries/PushNotificationIOS/PushNotificationIOS.js',
-  'packages/react-native/Libraries/Modal/Modal.js',
-];
+const ENTRY_POINTS = ['packages/react-native/index.js.flow'];
 
 /**
  * [Experimental] Build generated TypeScript types for react-native.
@@ -78,14 +45,6 @@ async function buildTypes(): Promise<void> {
   const dependencyEdges: DependencyEdges = [];
 
   while (files.size > 0) {
-    for (const file of files) {
-      const interfaceFile = resolveTypeInputFile(file);
-      if (interfaceFile) {
-        files.delete(file);
-        translatedFiles.add(file);
-        files.add(interfaceFile);
-      }
-    }
     const dependencies = await translateSourceFiles(dependencyEdges, files);
     dependencyEdges.push(...dependencies);
 

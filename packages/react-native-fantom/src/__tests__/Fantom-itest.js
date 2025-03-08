@@ -7,7 +7,6 @@
  * @flow strict-local
  * @format
  * @oncall react_native
- * @fantom_flags enableAccessToHostTreeInFabric:true
  */
 
 import 'react-native/Libraries/Core/InitializeCore';
@@ -19,6 +18,7 @@ import * as React from 'react';
 import {ScrollView, Text, TextInput, View} from 'react-native';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 function getActualViewportDimensions(root: Root): {
@@ -181,6 +181,22 @@ describe('Fantom', () => {
           root.render(<View />);
         });
       }).not.toThrow();
+    });
+
+    it('provides a document node', () => {
+      const root = Fantom.createRoot();
+
+      expect(() => {
+        root.document;
+      }).toThrow(
+        'Cannot get `document` from root because it has not been rendered.',
+      );
+
+      Fantom.runTask(() => {
+        root.render(<></>);
+      });
+
+      expect(root.document).toBeInstanceOf(ReactNativeDocument);
     });
   });
 

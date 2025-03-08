@@ -34,7 +34,7 @@
   std::lock_guard<std::mutex> lock(_mutex);
   if (!_isObserving) {
     _isObserving = YES;
-    _currentSafeAreaInsets = [UIApplication sharedApplication].delegate.window.safeAreaInsets;
+    _currentSafeAreaInsets = RCTKeyWindow().safeAreaInsets;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(_interfaceFrameDidChange)
                                                  name:RCTUserInterfaceStyleDidChangeNotification
@@ -53,16 +53,18 @@
 
   // Fallback in case [startObservingSafeArea startObservingSafeArea] was not called.
   __block UIEdgeInsets insets;
+#if !TARGET_OS_MACCATALYST
   RCTUnsafeExecuteOnMainQueueSync(^{
     insets = [UIApplication sharedApplication].delegate.window.safeAreaInsets;
   });
+#endif
   return insets;
 }
 
 - (void)_interfaceFrameDidChange
 {
   std::lock_guard<std::mutex> lock(_mutex);
-  _currentSafeAreaInsets = [UIApplication sharedApplication].delegate.window.safeAreaInsets;
+  _currentSafeAreaInsets = RCTKeyWindow().safeAreaInsets;
 }
 
 @end
