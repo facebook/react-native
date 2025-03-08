@@ -129,6 +129,12 @@ export function getNativeElementReference(
   // $FlowExpectedError[incompatible-cast] We know ReadOnlyElement instances provide InternalInstanceHandle
   const instanceHandle = getInstanceHandle(node) as InternalInstanceHandle;
 
+  if (isReactNativeDocumentElementInstanceHandle(instanceHandle)) {
+    return getNativeElementReferenceFromReactNativeDocumentElementInstanceHandle(
+      instanceHandle,
+    );
+  }
+
   // $FlowExpectedError[incompatible-return]
   return getRendererProxy().getNodeFromInternalInstanceHandle(instanceHandle);
 }

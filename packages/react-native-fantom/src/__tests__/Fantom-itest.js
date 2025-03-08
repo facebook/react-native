@@ -25,22 +25,11 @@ function getActualViewportDimensions(root: Root): {
   viewportWidth: number,
   viewportHeight: number,
 } {
-  let maybeNode;
-
   Fantom.runTask(() => {
-    root.render(
-      <View
-        style={{width: '100%', height: '100%'}}
-        ref={node => {
-          maybeNode = node;
-        }}
-      />,
-    );
+    root.render(<View />);
   });
 
-  const node = ensureInstance(maybeNode, ReactNativeElement);
-
-  const rect = node.getBoundingClientRect();
+  const rect = root.document.documentElement.getBoundingClientRect();
   return {
     viewportWidth: rect.width,
     viewportHeight: rect.height,
