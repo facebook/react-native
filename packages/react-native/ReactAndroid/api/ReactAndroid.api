@@ -2584,10 +2584,6 @@ public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public fun updateState (ILcom/facebook/react/uimanager/StateWrapper;)V
 }
 
-public abstract interface class com/facebook/react/fabric/mounting/mountitems/BatchMountItem : com/facebook/react/fabric/mounting/mountitems/MountItem {
-	public abstract fun isBatchEmpty ()Z
-}
-
 public abstract interface class com/facebook/react/fabric/mounting/mountitems/MountItem {
 	public abstract fun execute (Lcom/facebook/react/fabric/mounting/MountingManager;)V
 	public abstract fun getSurfaceId ()I
