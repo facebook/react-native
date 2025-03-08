@@ -7,7 +7,7 @@
 
 package com.facebook.react.fabric.mounting.mountitems
 
-public interface BatchMountItem : MountItem {
+internal interface BatchMountItem : MountItem {
   /** @return if the BatchMountItem contains any MountItem */
-  public fun isBatchEmpty(): Boolean
+  fun isBatchEmpty(): Boolean
 }
