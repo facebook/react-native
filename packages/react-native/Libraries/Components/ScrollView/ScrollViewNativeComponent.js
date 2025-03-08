@@ -39,6 +39,9 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig =
           },
         },
         validAttributes: {
+          contentInset: {
+            diff: require('../../Utilities/differ/insetsDiffer').default,
+          },
           contentOffset: {
             diff: require('../../Utilities/differ/pointsDiffer').default,
           },
