@@ -9,16 +9,16 @@
  * @oncall react_native
  */
 
-import '../../../../../../Libraries/Core/InitializeCore.js';
+import 'react-native/Libraries/Core/InitializeCore';
 
-import {NativeText} from '../../../../../../Libraries/Text/TextNativeComponent';
-import ensureInstance from '../../../../utilities/ensureInstance';
-import ReactNativeElement from '../ReactNativeElement';
-import ReadOnlyNode from '../ReadOnlyNode';
-import ReadOnlyText from '../ReadOnlyText';
 import Fantom from '@react-native/fantom';
 import invariant from 'invariant';
 import * as React from 'react';
+import {NativeText} from 'react-native/Libraries/Text/TextNativeComponent';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
+import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
+import ReadOnlyText from 'react-native/src/private/webapis/dom/nodes/ReadOnlyText';
 
 function ensureReadOnlyText(value: mixed): ReadOnlyText {
   return ensureInstance(value, ReadOnlyText);

@@ -9,12 +9,12 @@
  * @oncall react_native
  */
 
-import '../../../../../../Libraries/Core/InitializeCore.js';
+import 'react-native/Libraries/Core/InitializeCore';
 
-import Event from '../Event';
-import EventTarget from '../EventTarget';
 import createEventTargetHierarchyWithDepth from './createEventTargetHierarchyWithDepth';
 import {unstable_benchmark} from '@react-native/fantom';
+import Event from 'react-native/src/private/webapis/dom/events/Event';
+import EventTarget from 'react-native/src/private/webapis/dom/events/EventTarget';
 
 let event: Event;
 let eventTarget: EventTarget;

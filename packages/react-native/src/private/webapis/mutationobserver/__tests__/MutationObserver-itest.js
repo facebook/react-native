@@ -9,18 +9,18 @@
  * @oncall react_native
  */
 
-import type MutationObserverType from '../MutationObserver';
-import type MutationRecordType from '../MutationRecord';
+import 'react-native/Libraries/Core/InitializeCore';
 
-import View from '../../../../../Libraries/Components/View/View';
-import setUpMutationObserver from '../../../setup/setUpMutationObserver';
-import ensureInstance from '../../../utilities/ensureInstance';
-import ReactNativeElement from '../../dom/nodes/ReactNativeElement';
+import type MutationObserverType from 'react-native/src/private/webapis/mutationobserver/MutationObserver';
+import type MutationRecordType from 'react-native/src/private/webapis/mutationobserver/MutationRecord';
+
 import Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
-
-import '../../../../../Libraries/Core/InitializeCore.js';
+import {View} from 'react-native';
+import setUpMutationObserver from 'react-native/src/private/setup/setUpMutationObserver';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 declare const MutationObserver: Class<MutationObserverType>;
 declare const MutationRecord: Class<MutationRecordType>;

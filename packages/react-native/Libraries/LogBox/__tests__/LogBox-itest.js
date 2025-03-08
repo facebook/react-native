@@ -9,13 +9,13 @@
  * @oncall react_native
  */
 
-import View from '../../Components/View/View';
-import Text from '../../Text/Text';
-import LogBox from '../LogBox';
+import 'react-native/Libraries/Core/InitializeCore';
+
 import {renderLogBox} from './fantomHelpers';
 import Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {useEffect} from 'react';
+import {LogBox, Text, View} from 'react-native';
 
 // If a test uses this, it should have a component frame.
 // This is a bug we'll fix in a followup.

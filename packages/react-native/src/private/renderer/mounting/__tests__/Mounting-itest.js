@@ -9,11 +9,11 @@
  * @oncall react_native
  */
 
-import View from '../../../../../Libraries/Components/View/View';
+import 'react-native/Libraries/Core/InitializeCore';
+
 import Fantom from '@react-native/fantom';
 import * as React from 'react';
-
-import '../../../../../Libraries/Core/InitializeCore';
+import {View} from 'react-native';
 
 describe('ViewFlattening', () => {
   /**

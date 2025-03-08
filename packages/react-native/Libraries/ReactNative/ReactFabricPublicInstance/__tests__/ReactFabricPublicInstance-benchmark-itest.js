@@ -9,16 +9,17 @@
  * @oncall react_native
  */
 
-import '../../../Core/InitializeCore.js';
-import type ReactNativeDocument from '../../../../src/private/webapis/dom/nodes/ReactNativeDocument';
+import 'react-native/Libraries/Core/InitializeCore';
+
 import type {
   InternalInstanceHandle,
   ViewConfig,
-} from '../../../Renderer/shims/ReactNativeTypes';
+} from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
+import type ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 
-import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
-import ReactFabricHostComponent from '../../../ReactNative/ReactFabricPublicInstance/ReactFabricHostComponent';
 import Fantom from '@react-native/fantom';
+import ReactFabricHostComponent from 'react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricHostComponent';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 // Create fake parameters for the class.
 const tag = 11;

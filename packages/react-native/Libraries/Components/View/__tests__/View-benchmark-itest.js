@@ -9,11 +9,11 @@
  * @oncall react_native
  */
 
-import '../../../../Libraries/Core/InitializeCore.js';
+import 'react-native/Libraries/Core/InitializeCore';
 
-import View from '../View';
 import Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {View} from 'react-native';
 
 let root;
 let thousandViews: React.MixedElement;
