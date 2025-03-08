@@ -11,8 +11,10 @@
 
 const {
   generateFBReactNativeSpecIOS,
+} = require('./codegen/generate-artifacts-executor/generators/generateFBReactNativeSpecIOS');
+const {
   generateRNCoreComponentsIOS,
-} = require('./codegen/generate-artifacts-executor');
+} = require('./codegen/generate-artifacts-executor/generators/generateRNCoreComponentsIOS');
 const fs = require('fs');
 
 function main() {

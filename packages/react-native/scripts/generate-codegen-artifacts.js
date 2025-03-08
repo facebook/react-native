@@ -9,7 +9,7 @@
 
 'use strict';
 
-const executor = require('./codegen/generate-artifacts-executor.js');
+const executor = require('./codegen/generate-artifacts-executor');
 const yargs = require('yargs');
 
 const argv = yargs
