@@ -573,10 +573,13 @@ static __weak RCTPlatformView *_pendingFocusView; // [macOS]
 
 // [macOS
 #pragma mark - Hit testing
-#if TARGET_OS_OSX  
+#if TARGET_OS_OSX
+// IMPORTANT -- point is in local coordinate space, unlike the hitTest: version from OSX which is in super's coordinate space
 - (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-  return [self hitTest:point];
+  NSView *superview = [self superview];
+  NSPoint pointInSuper = superview != nil ? [self convertPoint:point toView:superview] : point;
+  return [self hitTest:pointInSuper];
 }
 #endif // macOS]
 

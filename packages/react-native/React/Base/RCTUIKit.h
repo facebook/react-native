@@ -486,7 +486,10 @@ CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
 
 NS_INLINE RCTPlatformView *RCTUIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, __unused UIEvent *__nullable event)
 {
-  return [view hitTest:point];
+  // [macOS IMPORTANT -- point is in local coordinate space, but OSX expects super coordinate space for hitTest:
+  NSView *superview = [view superview];
+  NSPoint pointInSuperview = superview != nil ? [view convertPoint:point toView:superview] : point;
+  return [view hitTest:pointInSuperview];
 }
 
 BOOL RCTUIViewSetClipsToBounds(RCTPlatformView *view);
