@@ -2584,11 +2584,6 @@ public class com/facebook/react/fabric/mounting/SurfaceMountingManager {
 	public fun updateState (ILcom/facebook/react/uimanager/StateWrapper;)V
 }
 
-public abstract interface class com/facebook/react/fabric/mounting/mountitems/MountItem {
-	public abstract fun execute (Lcom/facebook/react/fabric/mounting/MountingManager;)V
-	public abstract fun getSurfaceId ()I
-}
-
 public abstract interface class com/facebook/react/interfaces/TaskInterface {
 	public abstract fun getError ()Ljava/lang/Exception;
 	public abstract fun getResult ()Ljava/lang/Object;
