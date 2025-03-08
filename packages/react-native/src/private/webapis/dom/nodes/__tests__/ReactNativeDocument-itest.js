@@ -125,6 +125,32 @@ describe('ReactNativeDocument', () => {
     expect(document.textContent).toBe(null);
   });
 
+  it('provides a documentElement node that behaves like a regular element', () => {
+    let lastNode;
+
+    const root = Fantom.createRoot({viewportWidth: 200, viewportHeight: 100});
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          ref={node => {
+            lastNode = node;
+          }}
+        />,
+      );
+    });
+
+    const element = ensureInstance(lastNode, ReactNativeElement);
+    const document = ensureInstance(element.ownerDocument, ReactNativeDocument);
+
+    const {x, y, width, height} =
+      document.documentElement.getBoundingClientRect();
+
+    expect(x).toBe(0);
+    expect(y).toBe(0);
+    expect(width).toBe(200);
+    expect(height).toBe(100);
+  });
+
   it('implements compareDocumentPosition correctly', () => {
     let lastNode;
 
