@@ -60,6 +60,16 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
+    animatedShouldSignalBatch: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-03-07',
+        description: 'Enables start- and finishOperationBatch on any platform.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52f682b1103d4ff9444da86525f088bb>>
+ * @generated SignedSource<<c665ad8d5872868cc7ac7e98e5106f79>>
  */
 
 /**
@@ -52,6 +52,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::commonTestFlag();
+  }
+
+  bool animatedShouldSignalBatch() override {
+    auto value = values_["animatedShouldSignalBatch"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::animatedShouldSignalBatch();
   }
 
   bool disableMountItemReorderingAndroid() override {
