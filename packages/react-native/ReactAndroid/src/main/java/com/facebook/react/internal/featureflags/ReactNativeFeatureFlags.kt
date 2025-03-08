@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7385ae14a1980ddefd036ba808459a11>>
+ * @generated SignedSource<<0265b6571210266037c40a5cb558a156>>
  */
 
 /**
@@ -33,6 +33,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun commonTestFlag(): Boolean = accessor.commonTestFlag()
+
+  /**
+   * Enables start- and finishOperationBatch on any platform.
+   */
+  @JvmStatic
+  public fun animatedShouldSignalBatch(): Boolean = accessor.animatedShouldSignalBatch()
 
   /**
    * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
