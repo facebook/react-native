@@ -11,6 +11,8 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.common.annotations.VisibleForTesting
 
 /**
@@ -27,6 +29,8 @@ internal class OpacityAnimation(
 
   init {
     setAnimationListener(OpacityAnimationListener(view))
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "OpacityAnimation", LegacyArchitectureLogLevel.WARNING)
   }
 
   @VisibleForTesting
