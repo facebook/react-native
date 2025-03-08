@@ -5,27 +5,23 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.bridge;
+package com.facebook.react.bridge
 
-import com.facebook.jni.HybridData;
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.jni.HybridData
+import com.facebook.proguard.annotations.DoNotStrip
 
 @DoNotStrip
-public abstract class JavaScriptExecutor {
-  private final HybridData mHybridData;
-
-  protected JavaScriptExecutor(HybridData hybridData) {
-    mHybridData = hybridData;
-  }
-
+public abstract class JavaScriptExecutor
+    protected constructor(private val hybridData: HybridData)
+{
   /**
    * Close this executor and cleanup any resources that it was using. No further calls are expected
    * after this. TODO mhorowitz: This may no longer be used; check and delete if possible.
    */
-  public void close() {
-    mHybridData.resetNative();
+  public fun close() {
+    hybridData.resetNative()
   }
 
   /** Returns the name of the executor, identifying the underlying runtime. */
-  public abstract String getName();
+  public abstract fun getName(): String
 }
