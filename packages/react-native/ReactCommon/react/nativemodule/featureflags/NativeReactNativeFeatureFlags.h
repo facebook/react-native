@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1a82faa89018f5722a57fe5098b69324>>
+ * @generated SignedSource<<ce94056ed35010c4feb6ce882902a508>>
  */
 
 /**
@@ -38,6 +38,8 @@ class NativeReactNativeFeatureFlags
   bool commonTestFlag(jsi::Runtime& runtime);
 
   bool commonTestFlagWithoutNativeImplementation(jsi::Runtime& runtime);
+
+  bool animatedShouldSignalBatch(jsi::Runtime& runtime);
 
   bool disableMountItemReorderingAndroid(jsi::Runtime& runtime);
 
