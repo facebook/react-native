@@ -594,11 +594,11 @@ public class ReactViewGroup extends ViewGroup
     UiThreadUtil.assertOnUiThread();
     checkViewClippingTag(child, Boolean.TRUE);
     if (!customDrawOrderDisabled()) {
+      getDrawingOrderHelper().handleRemoveView(child);
+      setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
       if (indexOfChild(child) == -1) {
         return;
       }
-      getDrawingOrderHelper().handleRemoveView(child);
-      setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
       setChildrenDrawingOrderEnabled(false);
     }
