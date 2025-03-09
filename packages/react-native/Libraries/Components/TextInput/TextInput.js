@@ -58,6 +58,9 @@ if (Platform.OS === 'android') {
     require('./RCTMultilineTextInputNativeComponent').Commands;
 }
 
+/**
+ * @see TextInputProps.onChange
+ */
 export type TextInputChangeEventData = $ReadOnly<{
   eventCount: number,
   target: number,
@@ -80,6 +83,9 @@ export type TextInputEvent = NativeSyntheticEvent<
   }>,
 >;
 
+/**
+ * @see TextInputProps.onContentSizeChange
+ */
 export type TextInputContentSizeChangeEventData = $ReadOnly<{
   target: number,
   contentSize: $ReadOnly<{
@@ -95,16 +101,29 @@ export type TargetEvent = $ReadOnly<{
   target: number,
 }>;
 
+/**
+ * @see TextInputProps.onFocus
+ */
 export type TextInputFocusEventData = TargetEvent;
 
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
+
+/**
+ * @see TextInputProps.onScroll
+ */
+export type TextInputScrollEventData = {
+  contentOffset: {x: number, y: number},
+};
 
 type Selection = $ReadOnly<{
   start: number,
   end: number,
 }>;
 
+/**
+ * @see TextInputProps.onSelectionChange
+ */
 export type TextInputSelectionChangeEventData = $ReadOnly<{
   ...TargetEvent,
   selection: Selection,
@@ -113,7 +132,10 @@ export type TextInputSelectionChangeEventData = $ReadOnly<{
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
 
-type TextInputKeyPressEventData = $ReadOnly<{
+/**
+ * @see TextInputProps.onKeyPress
+ */
+export type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
@@ -123,11 +145,29 @@ type TextInputKeyPressEventData = $ReadOnly<{
 export type TextInputKeyPressEvent =
   NativeSyntheticEvent<TextInputKeyPressEventData>;
 
+/**
+ * @see TextInputProps.onEndEditing
+ */
 export type TextInputEndEditingEventData = $ReadOnly<{
   ...TargetEvent,
   eventCount: number,
   text: string,
 }>;
+
+export type TextInputEndEditingEvent =
+  NativeSyntheticEvent<TextInputEndEditingEventData>;
+
+/**
+ * @see TextInputProps.onSubmitEditing
+ */
+export type TextInputSubmitEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
+
+export type TextInputSubmitEditingEvent =
+  NativeSyntheticEvent<TextInputSubmitEditingEventData>;
 
 export type TextInputEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
@@ -419,6 +459,21 @@ export type TextInputAndroidProps = $ReadOnly<{
    */
   disableFullscreenUI?: ?boolean,
 
+  /**
+   * Determines whether the individual fields in your app should be included in a
+   * view structure for autofill purposes on Android API Level 26+. Defaults to auto.
+   * To disable auto complete, use `off`.
+   *
+   * *Android Only*
+   *
+   * The following values work on Android only:
+   *
+   * - `auto` - let Android decide
+   * - `no` - not important for autofill
+   * - `noExcludeDescendants` - this view and its children aren't important for autofill
+   * - `yes` - is important for autofill
+   * - `yesExcludeDescendants` - this view is important for autofill but its children aren't
+   */
   importantForAutofill?: ?(
     | 'auto'
     | 'no'
@@ -486,11 +541,7 @@ export type TextInputAndroidProps = $ReadOnly<{
   underlineColorAndroid?: ?ColorValue,
 }>;
 
-export type TextInputProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
-  ...TextInputIOSProps,
-  ...TextInputAndroidProps,
-
+type TextInputBaseProps = $ReadOnly<{
   /**
    * Can tell `TextInput` to automatically capitalize certain characters.
    *
@@ -792,7 +843,7 @@ export type TextInputProps = $ReadOnly<{
   /**
    * Callback that is called when text input ends.
    */
-  onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
 
   /**
    * Callback that is called when the text input is focused.
@@ -834,7 +885,7 @@ export type TextInputProps = $ReadOnly<{
    * Callback that is called when the text input's submit button is pressed.
    * Invalid if `multiline={true}` is specified.
    */
-  onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
 
   /**
    * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
@@ -915,7 +966,9 @@ export type TextInputProps = $ReadOnly<{
   selectionColor?: ?ColorValue,
 
   /**
-   * The text selection handle color.
+   * When provided it will set the color of the selection handles when highlighting text.
+   * Unlike the behavior of `selectionColor` the handle color will be set independently
+   * from the color of the text selection box.
    * @platform android
    */
   selectionHandleColor?: ?ColorValue,
@@ -988,6 +1041,42 @@ export type TextInputProps = $ReadOnly<{
    * unwanted edits without flicker.
    */
   value?: ?Stringish,
+}>;
+
+export type TextInputProps = $ReadOnly<{
+  ...$Diff<ViewProps, $ReadOnly<{style: ?ViewStyleProp}>>,
+  ...TextInputIOSProps,
+  ...TextInputAndroidProps,
+  ...TextInputBaseProps,
+}>;
+
+type TextInputStateType = $ReadOnly<{
+  /**
+   * @deprecated Use currentlyFocusedInput
+   * Returns the ID of the currently focused text field, if one exists
+   * If no text field is focused it returns null
+   */
+  currentlyFocusedField: () => ?number,
+
+  /**
+   * Returns the ref of the currently focused text field, if one exists
+   * If no text field is focused it returns null
+   */
+  currentlyFocusedInput: () => ?HostInstance,
+
+  /**
+   * @param textField ref of the text field to focus
+   * Focuses the specified text field
+   * noop if the text field was already focused
+   */
+  focusTextInput: (textField: ?HostInstance) => void,
+
+  /**
+   * @param textField ref of the text field to focus
+   * Unfocuses the specified text field
+   * noop if it wasn't focused
+   */
+  blurTextInput: (textField: ?HostInstance) => void,
 }>;
 
 type ViewCommands = $NonMaybeType<
@@ -1806,7 +1895,7 @@ const autoCompleteWebToTextContentTypeMap = {
 };
 
 const ExportedForwardRef: component(
-  ref: React.RefSetter<TextInputInstance>,
+  ref?: React.RefSetter<TextInputInstance>,
   ...props: React.ElementConfig<typeof InternalTextInput>
 ) = React.forwardRef(function TextInput(
   {
@@ -1878,12 +1967,7 @@ ExportedForwardRef.State = {
 };
 
 export type TextInputComponentStatics = $ReadOnly<{
-  State: $ReadOnly<{
-    currentlyFocusedInput: typeof TextInputState.currentlyFocusedInput,
-    currentlyFocusedField: typeof TextInputState.currentlyFocusedField,
-    focusTextInput: typeof TextInputState.focusTextInput,
-    blurTextInput: typeof TextInputState.blurTextInput,
-  }>,
+  State: TextInputStateType,
 }>;
 
 const styles = StyleSheet.create({

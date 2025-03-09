@@ -30,18 +30,18 @@ const {
 } = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
 let nativeComponentName = 'RCTModule';
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'RCTModule',
+  uiViewClassName: \\"RCTModule\\",
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
       phasedRegistrationNames: {
-        captured: 'onBubblingEventDefinedInlineNullCapture',
-        bubbled: 'onBubblingEventDefinedInlineNull'
+        captured: \\"onBubblingEventDefinedInlineNullCapture\\",
+        bubbled: \\"onBubblingEventDefinedInlineNull\\"
       }
     }
   },
   directEventTypes: {
     topDirectEventDefinedInlineNull: {
-      registrationName: 'onDirectEventDefinedInlineNull'
+      registrationName: \\"onDirectEventDefinedInlineNull\\"
     }
   },
   validAttributes: {
@@ -93,18 +93,18 @@ const {
 } = require(\\"react-native/Libraries/ReactNative/RendererProxy\\");
 let nativeComponentName = 'RCTModule';
 export const __INTERNAL_VIEW_CONFIG = {
-  uiViewClassName: 'RCTModule',
+  uiViewClassName: \\"RCTModule\\",
   bubblingEventTypes: {
     topBubblingEventDefinedInlineNull: {
       phasedRegistrationNames: {
-        captured: 'onBubblingEventDefinedInlineNullCapture',
-        bubbled: 'onBubblingEventDefinedInlineNull'
+        captured: \\"onBubblingEventDefinedInlineNullCapture\\",
+        bubbled: \\"onBubblingEventDefinedInlineNull\\"
       }
     }
   },
   directEventTypes: {
     topDirectEventDefinedInlineNull: {
-      registrationName: 'onDirectEventDefinedInlineNull'
+      registrationName: \\"onDirectEventDefinedInlineNull\\"
     }
   },
   validAttributes: {

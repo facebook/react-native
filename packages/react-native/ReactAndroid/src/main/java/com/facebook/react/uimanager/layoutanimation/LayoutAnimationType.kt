@@ -8,6 +8,8 @@
 package com.facebook.react.uimanager.layoutanimation
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /**
  * Enum representing the different animation type that can be specified in layout animation config.
@@ -19,6 +21,11 @@ internal enum class LayoutAnimationType {
   DELETE;
 
   companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "LayoutAnimationType", LegacyArchitectureLogLevel.WARNING)
+    }
+
     @JvmStatic
     fun toString(type: LayoutAnimationType): String {
       return when (type) {

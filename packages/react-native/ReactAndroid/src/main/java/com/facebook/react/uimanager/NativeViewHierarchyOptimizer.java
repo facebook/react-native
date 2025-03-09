@@ -14,6 +14,8 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 
 /**
  * Class responsible for optimizing the native view hierarchy while still respecting the final UI
@@ -48,6 +50,11 @@ import com.facebook.react.common.annotations.internal.LegacyArchitecture;
  */
 @LegacyArchitecture
 public class NativeViewHierarchyOptimizer {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "NativeViewHierarchyOptimizer", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private static final String TAG = "NativeViewHierarchyOptimizer";
 

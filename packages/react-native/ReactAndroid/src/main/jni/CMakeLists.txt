@@ -70,6 +70,7 @@ add_react_common_subdir(jsi)
 add_react_common_subdir(callinvoker)
 add_react_common_subdir(oscompat)
 add_react_common_subdir(jsinspector-modern)
+add_react_common_subdir(jsinspector-modern/network)
 add_react_common_subdir(jsinspector-modern/tracing)
 add_react_common_subdir(hermes/executor)
 add_react_common_subdir(hermes/inspector-modern)
@@ -167,6 +168,7 @@ add_library(reactnative
           $<TARGET_OBJECTS:jserrorhandler>
           $<TARGET_OBJECTS:jsinspector>
           $<TARGET_OBJECTS:jsitooling>
+          $<TARGET_OBJECTS:jsinspector_network>
           $<TARGET_OBJECTS:jsinspector_tracing>
           $<TARGET_OBJECTS:jsireact>
           $<TARGET_OBJECTS:logger>
@@ -254,6 +256,7 @@ target_include_directories(reactnative
         $<TARGET_PROPERTY:glog_init,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:jserrorhandler,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:jsinspector,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:jsinspector_network,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:jsinspector_tracing,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:jsireact,INTERFACE_INCLUDE_DIRECTORIES>
         $<TARGET_PROPERTY:mapbufferjni,INTERFACE_INCLUDE_DIRECTORIES>
