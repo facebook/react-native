@@ -43,7 +43,6 @@
     "@babel/plugin-transform-destructuring": "^7.24.8",
     "@babel/plugin-transform-flow-strip-types": "^7.25.2",
     "@babel/plugin-transform-nullish-coalescing-operator": "^7.24.7",
-    "@babel/plugin-transform-object-rest-spread": "^7.24.7",
     "@babel/plugin-transform-optional-chaining": "^7.24.8",
     "@babel/preset-env": "^7.25.3",
     "chalk": "^4.0.0",
