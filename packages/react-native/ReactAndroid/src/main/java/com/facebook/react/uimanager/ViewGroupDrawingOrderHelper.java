@@ -90,7 +90,7 @@ public class ViewGroupDrawingOrderHelper {
           viewsToSort,
           new Comparator<View>() {
             @Override
-            public int compare(View view1, View view2) {
+            public int compare(@Nullable View view1, @Nullable View view2) {
               Integer view1ZIndex = ViewGroupManager.getViewZIndex(view1);
               if (view1ZIndex == null) {
                 view1ZIndex = 0;
