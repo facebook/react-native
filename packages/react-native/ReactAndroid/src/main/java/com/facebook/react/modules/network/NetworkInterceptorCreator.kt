@@ -13,6 +13,6 @@ import okhttp3.Interceptor
  * Classes implementing this interface return a new [Interceptor] when the [create] method is
  * called.
  */
-public fun interface NetworkInterceptorCreator {
-  public fun create(): Interceptor
+internal fun interface NetworkInterceptorCreator {
+  fun create(): Interceptor
 }

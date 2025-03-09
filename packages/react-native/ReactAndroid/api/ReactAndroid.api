@@ -3192,10 +3192,6 @@ public final class com/facebook/react/modules/network/ForwardingCookieHandler : 
 	public fun put (Ljava/net/URI;Ljava/util/Map;)V
 }
 
-public abstract interface class com/facebook/react/modules/network/NetworkInterceptorCreator {
-	public abstract fun create ()Lokhttp3/Interceptor;
-}
-
 public final class com/facebook/react/modules/network/NetworkingModule : com/facebook/fbreact/specs/NativeNetworkingAndroidSpec {
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;)V
 	public fun <init> (Lcom/facebook/react/bridge/ReactApplicationContext;Ljava/lang/String;)V
