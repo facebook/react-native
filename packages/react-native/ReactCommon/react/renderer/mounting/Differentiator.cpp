@@ -201,6 +201,11 @@ static void updateMatchedPairSubtrees(
                  << newPair << " with parent [" << parentTag << "]";
     });
 
+    auto oldCullingContextCopy =
+        oldCullingContext.adjustCullingContextIfNeeded(oldPair);
+    auto newCullingContextCopy =
+        newCullingContext.adjustCullingContextIfNeeded(newPair);
+
     // Flattening
     if (!oldPair.flattened) {
       // Flatten old tree into new list
@@ -217,8 +222,8 @@ static void updateMatchedPairSubtrees(
           oldPair.shadowView.tag,
           nullptr,
           nullptr,
-          oldCullingContext,
-          newCullingContext);
+          oldCullingContextCopy,
+          newCullingContextCopy);
     }
     // Unflattening
     else {
@@ -230,7 +235,7 @@ static void updateMatchedPairSubtrees(
       // + zIndex: the children could be listed before the parent,
       // interwoven with children from other nodes, etc.
       auto oldFlattenedNodes = sliceChildShadowNodeViewPairsFromViewNodePair(
-          oldPair, scope, true, oldCullingContext);
+          oldPair, scope, true, oldCullingContextCopy);
       for (size_t i = 0, j = 0;
            i < oldChildPairs.size() && j < oldFlattenedNodes.size();
            i++) {
@@ -252,8 +257,8 @@ static void updateMatchedPairSubtrees(
           parentTag,
           nullptr,
           nullptr,
-          oldCullingContext,
-          newCullingContext);
+          oldCullingContextCopy,
+          newCullingContextCopy);
 
       // If old nodes were not visited, we know that we can delete
       // them now. They will be removed from the hierarchy by the

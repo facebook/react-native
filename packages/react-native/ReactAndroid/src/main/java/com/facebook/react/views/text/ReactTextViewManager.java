@@ -74,7 +74,7 @@ public class ReactTextViewManager
       // Defaults from ReactTextAnchorViewManager
       setSelectionColor(preparedView, null);
     }
-    return view;
+    return preparedView;
   }
 
   @Override

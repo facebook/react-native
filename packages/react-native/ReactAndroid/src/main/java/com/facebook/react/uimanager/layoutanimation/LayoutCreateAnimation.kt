@@ -8,6 +8,8 @@
 package com.facebook.react.uimanager.layoutanimation
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 /**
  * Class responsible for handling layout view creation animation, applied to view whenever a valid
@@ -15,6 +17,11 @@ import com.facebook.react.common.annotations.internal.LegacyArchitecture
  */
 @LegacyArchitecture
 internal class LayoutCreateAnimation : BaseLayoutAnimation() {
+
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "LayoutCreateAnimation", LegacyArchitectureLogLevel.WARNING)
+  }
 
   override fun isReverse(): Boolean = false
 }

@@ -166,6 +166,7 @@ public abstract class HeadlessJsTaskService : Service(), HeadlessJsTaskEventList
      * Acquire a wake lock to ensure the device doesn't go to sleep while processing background
      * tasks.
      */
+    @JvmStatic
     @SuppressLint("WakelockTimeout")
     public fun acquireWakeLockNow(context: Context) {
       if (wakeLock == null || wakeLock?.isHeld == false) {

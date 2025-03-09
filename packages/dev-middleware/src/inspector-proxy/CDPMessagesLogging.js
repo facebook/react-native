@@ -74,9 +74,10 @@ export default class CDPMessagesLogging {
         if (timeout == null) {
           timeout = setTimeout<$ReadOnlyArray<CDPMessageDestination>>(() => {
             debug(
-              '%s %s CDP messages received in the last %ss.',
+              '%s %s CDP messages %s in the last %ss.',
               getCDPLogPrefix(destination),
               String(batchingCounters[destination]).padStart(5),
+              destination.startsWith('Proxy') ? '  sent  ' : 'received',
               CDP_MESSAGES_BATCH_DEBUGGING_THROTTLE_MS / 1000,
             );
             batchingCounters[destination] = 0;

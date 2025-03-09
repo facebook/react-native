@@ -72,8 +72,12 @@ export default class EventEmitter<
   > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
-  // $FlowFixMe[incompatible-type]
-  #registry: Registry<TEventToArgsMap> = {};
+  #registry: Registry<TEventToArgsMap>;
+
+  constructor() {
+    // $FlowFixMe[incompatible-type]
+    this.#registry = {};
+  }
 
   /**
    * Registers a listener that is called when the supplied event is emitted.

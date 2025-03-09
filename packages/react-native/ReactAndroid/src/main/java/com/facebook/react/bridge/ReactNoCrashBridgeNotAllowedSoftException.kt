@@ -8,9 +8,15 @@
 package com.facebook.react.bridge
 
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 
 @LegacyArchitecture
 public class ReactNoCrashBridgeNotAllowedSoftException : ReactNoCrashSoftException {
+
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "ReactNoCrashBridgeNotAllowedSoftException")
+  }
 
   public constructor(m: String) : super(m)
 

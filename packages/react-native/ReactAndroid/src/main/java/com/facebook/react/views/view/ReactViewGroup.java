@@ -193,6 +193,12 @@ public class ReactViewGroup extends ViewGroup
     // Remove any children
     removeAllViews();
 
+    // If the view is still attached to a parent, we need to remove it from the parent
+    // before we can recycle it.
+    if (getParent() != null) {
+      ((ViewGroup) getParent()).removeView(this);
+    }
+
     // Reset background, borders
     updateBackgroundDrawable(null);
 

@@ -9,6 +9,7 @@ package com.facebook.react.internal.interop
 
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.events.Event
 
 /**
@@ -23,6 +24,10 @@ public class InteropEvent(
     surfaceId: Int,
     viewTag: Int
 ) : Event<InteropEvent>(surfaceId, viewTag) {
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropEvent")
+  }
+
   override fun getEventName(): String = eventName
 
   override fun getEventData(): WritableMap? = eventData

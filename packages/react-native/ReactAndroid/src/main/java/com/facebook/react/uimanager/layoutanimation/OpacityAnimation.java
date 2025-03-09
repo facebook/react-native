@@ -12,6 +12,8 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 
 /**
  * Animation responsible for updating opacity of a view. It should ideally use hardware texture to
@@ -20,6 +22,11 @@ import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 /* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
 @LegacyArchitecture
 class OpacityAnimation extends Animation {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "OpacityAnimation", LegacyArchitectureLogLevel.WARNING);
+  }
 
   static class OpacityAnimationListener implements Animation.AnimationListener {
 
