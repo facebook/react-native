@@ -55,7 +55,6 @@ using namespace facebook::react;
     auto newArchEnabled = [self newArchEnabled];
     auto fabricEnabled = [self fabricEnabled];
 
-    RCTSetNewArchEnabled(newArchEnabled);
     [RCTColorSpaceUtils applyDefaultColorSpace:[self defaultColorSpace]];
     RCTEnableTurboModule([self turboModuleEnabled]);
 
@@ -130,12 +129,7 @@ using namespace facebook::react;
   if ([_delegate respondsToSelector:@selector(newArchEnabled)]) {
     return _delegate.newArchEnabled;
   }
-
-#if RCT_NEW_ARCH_ENABLED
-  return YES;
-#else
-  return NO;
-#endif
+  return RCTIsNewArchEnabled();
 }
 
 - (BOOL)fabricEnabled
