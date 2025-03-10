@@ -76,13 +76,6 @@ static NSString *kBundlePath = @"js/RNTesterApp.ios";
   return [RCTLinkingManager application:app openURL:url options:options];
 }
 
-- (void)loadSourceForBridge:(RCTBridge *)bridge
-                 onProgress:(RCTSourceLoadProgressBlock)onProgress
-                 onComplete:(RCTSourceLoadBlock)loadCallback
-{
-  [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge] onProgress:onProgress onComplete:loadCallback];
-}
-
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
