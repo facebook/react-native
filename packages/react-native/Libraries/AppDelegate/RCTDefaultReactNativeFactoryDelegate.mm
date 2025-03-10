@@ -108,11 +108,7 @@
 
 - (BOOL)newArchEnabled
 {
-#if RCT_NEW_ARCH_ENABLED
-  return YES;
-#else
-  return NO;
-#endif
+  return RCTIsNewArchEnabled();
 }
 
 - (BOOL)bridgelessEnabled
