@@ -588,9 +588,6 @@ public class ReactViewGroup extends ViewGroup
     UiThreadUtil.assertOnUiThread();
     checkViewClippingTag(child, Boolean.TRUE);
     if (!customDrawOrderDisabled()) {
-      if (indexOfChild(child) == -1) {
-        return;
-      }
       getDrawingOrderHelper().handleRemoveView(child);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {
