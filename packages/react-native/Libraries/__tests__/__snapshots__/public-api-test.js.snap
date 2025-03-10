@@ -5985,10 +5985,10 @@ export type ModalProps = {
   ...ModalPropsAndroid,
   ...ViewProps,
 };
-declare function Wrapper({
+type ModalRefProps = $ReadOnly<{
   ref?: React.RefSetter<PublicModalInstance>,
-  ...ModalProps,
-}): React.Node;
+}>;
+declare function Wrapper({ ...ModalRefProps, ...ModalProps }): React.Node;
 declare export default typeof Wrapper;
 "
 `;
