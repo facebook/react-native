@@ -94,7 +94,7 @@ export type ReportableEvent =
       ...DebuggerSessionIDs,
     }
   | {
-      type: 'debugger_heartbeat' | 'device_heartbeat',
+      type: 'debugger_high_ping' | 'device_high_ping',
       duration: number,
       isIdle: boolean,
       ...DebuggerSessionIDs,
