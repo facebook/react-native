@@ -14,6 +14,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.RippleDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.RoundRectShape
 import android.util.TypedValue
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReadableMap
@@ -108,11 +110,13 @@ public object ReactDrawableHelper {
 
     if (drawableDescriptionDict.hasKey("rippleCornerRadius")) {
       val rippleRadius = PixelUtil.toPixelFromDIP(drawableDescriptionDict.getDouble("rippleCornerRadius"))
-      return ShapeDrawable(RoundRectShape(
+      return ShapeDrawable(
+          RoundRectShape(
           FloatArray(8) { rippleRadius },
           null,
           null
-      ))
+      )
+      )
     }
 
     if (!drawableDescriptionDict.hasKey("borderless") ||

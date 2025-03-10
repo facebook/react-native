@@ -31,10 +31,10 @@ import java.util.HashMap
  * [com.facebook.react.common.assets.ReactFontManager] instead.
  */
 @Nullsafe(Nullsafe.Mode.LOCAL)
-class ReactFontManager private constructor() {
+public class ReactFontManager private constructor() {
 
-  companion object {
-    var createAssetTypefaceOverride: Function<CreateTypefaceObject, Typeface>? = null
+  public companion object {
+    public var createAssetTypefaceOverride: Function<CreateTypefaceObject, Typeface>? = null
 
     // NOTE: Indices in `EXTENSIONS` correspond to the `TypeFace` style constants.
     private val EXTENSIONS = arrayOf("", "_bold", "_italic", "_bold_italic")
@@ -44,7 +44,7 @@ class ReactFontManager private constructor() {
     private var sReactFontManagerInstance: ReactFontManager? = null
 
     @JvmStatic
-    fun getInstance(): ReactFontManager {
+    public fun getInstance(): ReactFontManager {
       return sReactFontManagerInstance ?: ReactFontManager().also { sReactFontManagerInstance = it }
     }
 
@@ -123,11 +123,11 @@ class ReactFontManager private constructor() {
   private val mFontCache = HashMap<String, AssetFontFamily>()
   private val mCustomTypefaceCache = HashMap<String, Typeface>()
 
-  fun getTypeface(fontFamilyName: String, style: Int, assetManager: AssetManager): Typeface {
+  public fun getTypeface(fontFamilyName: String, style: Int, assetManager: AssetManager): Typeface {
     return getTypeface(fontFamilyName, TypefaceStyle(style), assetManager)
   }
 
-  fun getTypeface(
+  public fun getTypeface(
       fontFamilyName: String,
       weight: Int,
       italic: Boolean,
@@ -136,7 +136,7 @@ class ReactFontManager private constructor() {
     return getTypeface(fontFamilyName, TypefaceStyle(weight, italic), assetManager)
   }
 
-  fun getTypeface(
+  public fun getTypeface(
       fontFamilyName: String,
       style: Int,
       weight: Int,
@@ -145,7 +145,7 @@ class ReactFontManager private constructor() {
     return getTypeface(fontFamilyName, TypefaceStyle(style, weight), assetManager)
   }
 
-  fun getTypeface(
+  public fun getTypeface(
       fontFamilyName: String,
       typefaceStyle: TypefaceStyle,
       assetManager: AssetManager
@@ -180,7 +180,7 @@ class ReactFontManager private constructor() {
    *
    * ReactFontManager.getInstance().addCustomFont(this, "Srisakdi", R.font.srisakdi);
    */
-  fun addCustomFont(context: Context, fontFamily: String, fontId: Int) {
+  public fun addCustomFont(context: Context, fontFamily: String, fontId: Int) {
     ResourcesCompat.getFont(context, fontId)?.let { font ->
       mCustomTypefaceCache[fontFamily] = font
     }
@@ -189,7 +189,7 @@ class ReactFontManager private constructor() {
   /**
    * Equivalent method to [addCustomFont] which accepts a Typeface object.
    */
-  fun addCustomFont(fontFamily: String, font: Typeface?) {
+  public fun addCustomFont(fontFamily: String, font: Typeface?) {
     font?.let { mCustomTypefaceCache[fontFamily] = it }
   }
 
@@ -198,7 +198,7 @@ class ReactFontManager private constructor() {
    *
    * @param style see [Typeface.DEFAULT], [Typeface.BOLD], [Typeface.ITALIC], [Typeface.BOLD_ITALIC]
    */
-  fun setTypeface(fontFamilyName: String, style: Int, typeface: Typeface?) {
+  public fun setTypeface(fontFamilyName: String, style: Int, typeface: Typeface?) {
     typeface?.let { font ->
       var assetFontFamily = mFontCache[fontFamilyName]
       if (assetFontFamily == null) {
@@ -209,23 +209,23 @@ class ReactFontManager private constructor() {
     }
   }
 
-  class TypefaceStyle {
-    companion object {
-      const val BOLD = 700
-      const val NORMAL = 400
-      private const val MIN_WEIGHT = 1
-      private const val MAX_WEIGHT = 1000
+  public class TypefaceStyle {
+    public companion object {
+      public const val BOLD: Int = 700
+      public const val NORMAL: Int = 400
+      private const val MIN_WEIGHT: Int = 1
+      private const val MAX_WEIGHT: Int = 1000
     }
 
     private val mItalic: Boolean
     private val mWeight: Int
 
-    constructor(weight: Int, italic: Boolean) {
+    public constructor(weight: Int, italic: Boolean) {
       mItalic = italic
       mWeight = if (weight == ReactConstants.UNSET) NORMAL else weight
     }
 
-    constructor(style: Int) {
+    public constructor(style: Int) {
       var styleValue = if (style == ReactConstants.UNSET) Typeface.NORMAL else style
 
       mItalic = (styleValue and Typeface.ITALIC) != 0
@@ -236,7 +236,7 @@ class ReactFontManager private constructor() {
      * If `weight` is supplied, it will be combined with the italic bit from `style`. Otherwise, any
      * existing weight bit in `style` will be used.
      */
-    constructor(style: Int, weight: Int) {
+    public constructor(style: Int, weight: Int) {
       var styleValue = if (style == ReactConstants.UNSET) Typeface.NORMAL else style
 
       mItalic = (styleValue and Typeface.ITALIC) != 0
@@ -247,7 +247,7 @@ class ReactFontManager private constructor() {
       }
     }
 
-    fun getNearestStyle(): Int {
+    public fun getNearestStyle(): Int {
       return if (mWeight < BOLD) {
         if (mItalic) Typeface.ITALIC else Typeface.NORMAL
       } else {
@@ -255,7 +255,7 @@ class ReactFontManager private constructor() {
       }
     }
 
-    fun apply(typeface: Typeface): Typeface {
+    public fun apply(typeface: Typeface): Typeface {
       return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
         Typeface.create(typeface, getNearestStyle())
       } else {
