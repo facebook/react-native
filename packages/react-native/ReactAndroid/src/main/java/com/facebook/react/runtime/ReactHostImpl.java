@@ -20,6 +20,7 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -1773,7 +1774,9 @@ public class ReactHostImpl implements ReactHost {
     return mDestroyTask;
   }
 
-  private @Nullable ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
+  @VisibleForTesting
+  /* package */ @Nullable
+  ReactHostInspectorTarget getOrCreateReactHostInspectorTarget() {
     if (mReactHostInspectorTarget == null && InspectorFlags.getFuseboxEnabled()) {
       // NOTE: ReactHostInspectorTarget only retains a weak reference to `this`.
       mReactHostInspectorTarget = new ReactHostInspectorTarget(this);
@@ -1783,7 +1786,8 @@ public class ReactHostImpl implements ReactHost {
   }
 
   @ThreadConfined(UI)
-  private void unregisterInstanceFromInspector(final @Nullable ReactInstance reactInstance) {
+  @VisibleForTesting
+  /* package */ void unregisterInstanceFromInspector(final @Nullable ReactInstance reactInstance) {
     if (reactInstance != null) {
       if (InspectorFlags.getFuseboxEnabled()) {
         Assertions.assertCondition(
