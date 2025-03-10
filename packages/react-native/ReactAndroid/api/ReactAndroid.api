@@ -892,10 +892,10 @@ public final class com/facebook/react/bridge/JavaOnlyMap$Companion {
 	public final fun of ([Ljava/lang/Object;)Lcom/facebook/react/bridge/JavaOnlyMap;
 }
 
-public class com/facebook/react/bridge/JavaScriptContextHolder {
+public final class com/facebook/react/bridge/JavaScriptContextHolder {
 	public fun <init> (J)V
-	public fun clear ()V
-	public fun get ()J
+	public final fun clear ()V
+	public final fun get ()J
 }
 
 public abstract class com/facebook/react/bridge/JavaScriptExecutor {
