@@ -25,6 +25,7 @@ import NativeEventEmitter from '../../../Libraries/EventEmitter/NativeEventEmitt
 import RCTDeviceEventEmitter from '../../../Libraries/EventEmitter/RCTDeviceEventEmitter';
 import Platform from '../../../Libraries/Utilities/Platform';
 import * as ReactNativeFeatureFlags from '../featureflags/ReactNativeFeatureFlags';
+import NativeReactNativeFeatureFlags from '../featureflags/specs/NativeReactNativeFeatureFlags';
 import invariant from 'invariant';
 import nullthrows from 'nullthrows';
 
@@ -56,6 +57,13 @@ const eventListenerAnimationFinishedCallbacks: {
 } = {};
 let globalEventEmitterGetValueListener: ?EventSubscription = null;
 let globalEventEmitterAnimationFinishedListener: ?EventSubscription = null;
+
+const shouldSignalBatch =
+  NativeReactNativeFeatureFlags != null &&
+  ReactNativeFeatureFlags.animatedShouldSignalBatch();
+const shouldDebounce =
+  ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush() ||
+  shouldSignalBatch;
 
 function createNativeOperations(): $NonMaybeType<typeof NativeAnimatedModule> {
   const methodNames = [
@@ -140,10 +148,7 @@ const API = {
   setWaitingForIdentifier(id: string): void {
     waitingForQueuedOperations.add(id);
     queueOperations = true;
-    if (
-      ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush() &&
-      flushQueueImmediate
-    ) {
+    if (shouldDebounce && flushQueueImmediate) {
       clearImmediate(flushQueueImmediate);
     }
   },
@@ -160,7 +165,7 @@ const API = {
   disableQueue(): void {
     invariant(NativeAnimatedModule, 'Native animated module is not available');
 
-    if (ReactNativeFeatureFlags.animatedShouldDebounceQueueFlush()) {
+    if (shouldDebounce) {
       const prevImmediate = flushQueueImmediate;
       clearImmediate(prevImmediate);
       flushQueueImmediate = setImmediate(API.flushQueue);
@@ -202,7 +207,7 @@ const API = {
           return;
         }
 
-        if (Platform.OS === 'android') {
+        if (Platform.OS === 'android' || shouldSignalBatch) {
           NativeAnimatedModule?.startOperationBatch?.();
         }
 
@@ -211,7 +216,7 @@ const API = {
         }
         queue.length = 0;
 
-        if (Platform.OS === 'android') {
+        if (Platform.OS === 'android' || shouldSignalBatch) {
           NativeAnimatedModule?.finishOperationBatch?.();
         }
       }) as () => void,
