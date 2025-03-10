@@ -37,14 +37,18 @@ BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
 static BOOL _newArchEnabled = false;
 BOOL RCTIsNewArchEnabled(void)
 {
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    NSNumber *rctNewArchEnabled = (NSNumber *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTNewArchEnabled"];
+    _newArchEnabled = rctNewArchEnabled == nil || rctNewArchEnabled.boolValue;
+  });
   return _newArchEnabled;
 }
 void RCTSetNewArchEnabled(BOOL enabled)
 {
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    _newArchEnabled = enabled;
-  });
+  // This function is now deprecated and will be removed in the future.
+  // This function is now no-op. You need to modify the Info.plist adding a `RCTNewArchEnabled` bool property to control
+  // whether the New Arch is enabled or not.
 }
 
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
