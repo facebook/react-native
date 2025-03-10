@@ -44,6 +44,8 @@ const HEARTBEAT_TIMEOUT_MS = 60000;
 const HEARTBEAT_INTERVAL_MS = 10000;
 const PROXY_IDLE_TIMEOUT_MS = 10000;
 
+const MIN_PING_TO_REPORT = 500;
+
 const INTERNAL_ERROR_CODE = 1011;
 
 export type GetPageDescriptionsConfig = {
@@ -339,7 +341,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           intervalMs: HEARTBEAT_INTERVAL_MS,
           debuggerSessionIDs,
           timeoutEventName: 'device_timeout',
-          heartbeatEventName: 'device_heartbeat',
+          highPingEventName: 'device_high_ping',
         });
 
         this.#trackLastMessageTimestamp(socket);
@@ -430,7 +432,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           intervalMs: HEARTBEAT_INTERVAL_MS,
           debuggerSessionIDs,
           timeoutEventName: 'debugger_timeout',
-          heartbeatEventName: 'debugger_heartbeat',
+          highPingEventName: 'debugger_high_ping',
         });
 
         device.handleDebuggerConnection(socket, pageId, {
@@ -488,14 +490,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
     intervalMs,
     debuggerSessionIDs,
     timeoutEventName,
-    heartbeatEventName,
+    highPingEventName,
   }: {
     socketName: string,
     socket: WS,
     intervalMs: number,
     debuggerSessionIDs: DebuggerSessionIDs,
     timeoutEventName: 'debugger_timeout' | 'device_timeout',
-    heartbeatEventName: 'debugger_heartbeat' | 'device_heartbeat',
+    highPingEventName: 'debugger_high_ping' | 'device_high_ping',
   }) {
     let latestPingMs = Date.now();
     let terminateTimeout: ?Timeout;
@@ -549,23 +551,25 @@ export default class InspectorProxy implements InspectorProxyQueries {
     socket.on('pong', () => {
       const roundtripDuration = Date.now() - latestPingMs;
 
-      const isIdle = this.#isIdle();
+      if (debug.enabled && roundtripDuration >= MIN_PING_TO_REPORT) {
+        const isIdle = this.#isIdle();
 
-      debug(
-        "[heartbeat ping-pong] [%s] %sms for app='%s' on device='%s' with idle='%s'",
-        socketName.padStart(7).padEnd(8),
-        String(roundtripDuration).padStart(5),
-        debuggerSessionIDs.appId,
-        debuggerSessionIDs.deviceName,
-        isIdle ? 'true' : 'false',
-      );
+        debug(
+          "[high ping] [%s] %sms for app='%s' on device='%s' with idle='%s'",
+          socketName.padStart(7).padEnd(8),
+          String(roundtripDuration).padStart(5),
+          debuggerSessionIDs.appId,
+          debuggerSessionIDs.deviceName,
+          isIdle ? 'true' : 'false',
+        );
 
-      this.#eventReporter?.logEvent({
-        type: heartbeatEventName,
-        duration: roundtripDuration,
-        isIdle,
-        ...debuggerSessionIDs,
-      });
+        this.#eventReporter?.logEvent({
+          type: highPingEventName,
+          duration: roundtripDuration,
+          isIdle,
+          ...debuggerSessionIDs,
+        });
+      }
 
       terminateTimeout?.refresh();
       pingTimeout.refresh();
