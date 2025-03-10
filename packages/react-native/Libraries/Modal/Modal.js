@@ -362,6 +362,10 @@ const styles = StyleSheet.create({
   },
 });
 
+type ModalRefProps = $ReadOnly<{
+  ref?: React.RefSetter<PublicModalInstance>,
+}>;
+
 // NOTE: This wrapper component is necessary because `Modal` is a class
 // component and we need to map `ref` to a differently named prop. This can be
 // removed when `Modal` is a functional component.
@@ -369,7 +373,7 @@ function Wrapper({
   ref,
   ...props
 }: {
-  ref?: React.RefSetter<PublicModalInstance>,
+  ...ModalRefProps,
   ...ModalProps,
 }): React.Node {
   return <Modal {...props} modalRef={ref} />;
