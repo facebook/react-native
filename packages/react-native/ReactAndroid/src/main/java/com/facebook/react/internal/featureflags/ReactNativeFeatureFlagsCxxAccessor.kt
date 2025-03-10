@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<33b79b398811a36129c3da6af16ff827>>
+ * @generated SignedSource<<9f8d1d58f6db8fb4bfce7a8c2f54456e>>
  */
 
 /**
@@ -21,6 +21,7 @@ package com.facebook.react.internal.featureflags
 
 internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
+  private var animatedShouldSignalBatchCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -68,6 +69,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.commonTestFlag()
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun animatedShouldSignalBatch(): Boolean {
+    var cached = animatedShouldSignalBatchCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.animatedShouldSignalBatch()
+      animatedShouldSignalBatchCache = cached
     }
     return cached
   }
