@@ -1303,7 +1303,11 @@ public class ReactHostImpl implements ReactHost {
        * throws an exception, the task will fault, and we'll go through the ReactHost error
        * reporting pipeline.
        */
-      return Task.call(() -> mReactHostDelegate.getJsBundleLoader());
+      try {
+        return Task.forResult(mReactHostDelegate.getJsBundleLoader());
+      } catch (Exception e) {
+        return Task.forError(e);
+      }
     }
   }
 
