@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-import Fantom from '../..';
+import Fantom from '@react-native/fantom';
 
 let runs = 0;
 

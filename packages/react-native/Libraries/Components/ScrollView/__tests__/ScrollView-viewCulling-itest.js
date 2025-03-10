@@ -11,14 +11,12 @@
  * @fantom_flags enableSynchronousStateUpdates:true
  */
 
-import '../../../Core/InitializeCore.js';
-import ensureInstance from '../../../../src/private/utilities/ensureInstance';
-import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
-import Modal from '../../../Modal/Modal';
-import View from '../../View/View';
-import ScrollView from '../ScrollView';
+import 'react-native/Libraries/Core/InitializeCore.js';
 import Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {Modal, ScrollView, View} from 'react-native';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 test('basic culling', () => {
   const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
