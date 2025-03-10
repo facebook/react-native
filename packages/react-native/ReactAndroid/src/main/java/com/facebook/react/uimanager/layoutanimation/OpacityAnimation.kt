@@ -33,6 +33,27 @@ internal class OpacityAnimation(
         "OpacityAnimation", LegacyArchitectureLogLevel.WARNING)
   }
 
+  class OpacityAnimationListener(private val view: View) : Animation.AnimationListener {
+    private var layerTypeChanged = false
+
+    override fun onAnimationStart(animation: Animation) {
+      if (view.hasOverlappingRendering() && view.layerType == View.LAYER_TYPE_NONE) {
+        layerTypeChanged = true
+        view.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+      }
+    }
+
+    override fun onAnimationEnd(animation: Animation) {
+      if (layerTypeChanged) {
+        view.setLayerType(View.LAYER_TYPE_NONE, null)
+      }
+    }
+
+    override fun onAnimationRepeat(animation: Animation) {
+      // do nothing
+    }
+  }
+
   @VisibleForTesting
   public override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
     view.alpha = startOpacity + deltaOpacity * interpolatedTime
