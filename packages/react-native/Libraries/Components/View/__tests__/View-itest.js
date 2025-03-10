@@ -9,12 +9,11 @@
  * @oncall react_native
  */
 
-import '../../../Core/InitializeCore.js';
+import 'react-native/Libraries/Core/InitializeCore';
 
 import Fantom from '@react-native/fantom';
 import * as React from 'react';
-
-const View = require('../View').default;
+import {View} from 'react-native';
 
 describe('width and height style', () => {
   it('handles correct percentage-based dimensions', () => {
