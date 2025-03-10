@@ -64,6 +64,13 @@ type Options = $ReadOnly<{
    * This is an unstable API with no semver guarantees.
    */
   unstable_customInspectorMessageHandler?: CreateCustomMessageHandlerFn,
+
+  /**
+   * Whether to measure the event loop performance of inspector proxy and log report it via the event reporter.
+   *
+   * This is an unstable API with no semver guarantees.
+   */
+  unstable_trackInspectorProxyEventLoopPerf?: boolean,
 }>;
 
 type DevMiddlewareAPI = $ReadOnly<{
@@ -79,6 +86,7 @@ export default function createDevMiddleware({
   unstable_eventReporter,
   unstable_experiments: experimentConfig = {},
   unstable_customInspectorMessageHandler,
+  unstable_trackInspectorProxyEventLoopPerf = false,
 }: Options): DevMiddlewareAPI {
   const experiments = getExperiments(experimentConfig);
   const eventReporter = createWrappedEventReporter(
@@ -93,6 +101,7 @@ export default function createDevMiddleware({
     experiments,
     logger,
     unstable_customInspectorMessageHandler,
+    unstable_trackInspectorProxyEventLoopPerf,
   );
 
   const middleware = connect()
