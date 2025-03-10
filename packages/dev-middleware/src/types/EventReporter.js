@@ -111,6 +111,13 @@ export type ReportableEvent =
       reason: string,
       isIdle: boolean,
       ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'high_event_loop_delay',
+      eventLoopUtilization: number,
+      maxEventLoopDelay: number,
+      duration: number,
+      ...DebuggerSessionIDs,
     };
 
 /**
