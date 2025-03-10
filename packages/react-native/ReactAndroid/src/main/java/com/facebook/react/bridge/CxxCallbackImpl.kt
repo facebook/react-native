@@ -16,13 +16,16 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @DoNotStrip
 @LegacyArchitecture
 public class CxxCallbackImpl @DoNotStrip private constructor() : HybridClassBase(), Callback {
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("CxxCallbackImpl")
-  }
 
   override fun invoke(vararg args: Any?) {
     nativeInvoke(Arguments.fromJavaArgs(args))
   }
 
   private external fun nativeInvoke(arguments: NativeArray)
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("CxxCallbackImpl")
+    }
+  }
 }

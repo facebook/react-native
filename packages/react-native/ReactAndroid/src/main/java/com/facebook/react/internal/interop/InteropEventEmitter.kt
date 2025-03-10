@@ -31,9 +31,6 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  */
 @LegacyArchitecture
 public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEventEmitter {
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropEventEmitter")
-  }
 
   private var eventDispatcherOverride: EventDispatcher? = null
 
@@ -59,5 +56,11 @@ public class InteropEventEmitter(private val reactContext: ReactContext) : RCTEv
   @VisibleForTesting
   public fun overrideEventDispatcher(eventDispatcherOverride: EventDispatcher?) {
     this.eventDispatcherOverride = eventDispatcherOverride
+  }
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropEventEmitter")
+    }
   }
 }

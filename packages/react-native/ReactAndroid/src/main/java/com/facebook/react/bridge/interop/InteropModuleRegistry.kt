@@ -23,9 +23,6 @@ import com.facebook.react.internal.featureflags.ReactNativeFeatureFlags.useFabri
  */
 @LegacyArchitecture
 internal class InteropModuleRegistry {
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropModuleRegistry")
-  }
 
   private val supportedModules = mutableMapOf<Class<*>, Any?>()
 
@@ -53,4 +50,10 @@ internal class InteropModuleRegistry {
 
   private fun checkReactFeatureFlagsConditions(): Boolean =
       enableFabricRenderer() && useFabricInterop()
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropModuleRegistry")
+    }
+  }
 }

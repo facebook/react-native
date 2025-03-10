@@ -26,11 +26,6 @@ internal class SimpleSpringInterpolator : Interpolator {
     _springDamping = springDamping
   }
 
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "SimpleSpringInterpolator", LegacyArchitectureLogLevel.WARNING)
-  }
-
   override fun getInterpolation(input: Float): Float =
       // Using mSpringDamping in this equation is not really the exact mathematical springDamping,
       // but a good approximation
@@ -42,6 +37,12 @@ internal class SimpleSpringInterpolator : Interpolator {
           .toFloat()
 
   companion object {
+
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "SimpleSpringInterpolator", LegacyArchitectureLogLevel.WARNING)
+    }
+
     private const val FACTOR = 0.5f
     const val PARAM_SPRING_DAMPING: String = "springDamping"
 

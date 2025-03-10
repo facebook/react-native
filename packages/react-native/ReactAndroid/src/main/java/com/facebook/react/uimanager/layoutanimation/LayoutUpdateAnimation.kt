@@ -21,11 +21,6 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture
 internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
 
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "LayoutUpdateAnimation", LegacyArchitectureLogLevel.WARNING)
-  }
-
   internal override fun isValid(): Boolean = mDurationMs > 0
 
   internal override fun createAnimationImpl(
@@ -54,5 +49,10 @@ internal class LayoutUpdateAnimation : AbstractLayoutAnimation() {
     // We are currently not enabling translation GPU-accelerated animated, as it creates odd
     // artifacts with native react scrollview. This needs to be investigated.
     private const val USE_TRANSLATE_ANIMATION = false
+
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "LayoutUpdateAnimation", LegacyArchitectureLogLevel.WARNING)
+    }
   }
 }
