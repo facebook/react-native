@@ -156,7 +156,7 @@ module.exports = {
     return require('./Libraries/Utilities/Appearance');
   },
   get AppRegistry() {
-    return require('./Libraries/ReactNative/AppRegistry').default;
+    return require('./Libraries/ReactNative/AppRegistry').AppRegistry;
   },
   get AppState() {
     return require('./Libraries/AppState/AppState').default;
