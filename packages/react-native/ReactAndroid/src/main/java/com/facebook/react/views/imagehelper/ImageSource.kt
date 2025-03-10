@@ -9,11 +9,8 @@ package com.facebook.react.views.imagehelper
 
 import android.content.Context
 import android.net.Uri
-<<<<<<< HEAD
 import com.facebook.react.modules.fresco.ImageCacheControl
-=======
 import androidx.arch.core.util.Function
->>>>>>> 946f3eaa576 (Update RNA ImageView to support forced cached property to fix GIF flicker.)
 import java.util.Objects
 
 /** Class describing an image source (network URI or resource) and size. */
