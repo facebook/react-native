@@ -54,11 +54,11 @@ BOOL RCTIsAttributedStringEffectivelySame(
 
 static inline NSData *RCTwrapEventEmitter(const facebook::react::SharedEventEmitter &eventEmitter)
 {
-  auto eventEmitterPtr = new std::shared_ptr<const facebook::react::EventEmitter>(eventEmitter);
+  auto eventEmitterPtr = new std::weak_ptr<const facebook::react::EventEmitter>(eventEmitter);
   return [[NSData alloc] initWithBytesNoCopy:eventEmitterPtr
                                       length:sizeof(eventEmitterPtr)
                                  deallocator:^(void *ptrToDelete, NSUInteger) {
-                                   delete (std::shared_ptr<facebook::react::EventEmitter> *)ptrToDelete;
+                                   delete (std::weak_ptr<facebook::react::EventEmitter> *)ptrToDelete;
                                  }];
 }
 
@@ -68,7 +68,13 @@ static inline facebook::react::SharedEventEmitter RCTUnwrapEventEmitter(NSData *
     return nullptr;
   }
 
-  return *(facebook::react::SharedEventEmitter *)data.bytes;
+  auto weakPtr = dynamic_cast<std::weak_ptr<const facebook::react::EventEmitter> *>(
+      (std::weak_ptr<const facebook::react::EventEmitter> *)data.bytes);
+  if (weakPtr) {
+    return weakPtr->lock();
+  }
+
+  return nullptr;
 }
 
 NS_ASSUME_NONNULL_END
