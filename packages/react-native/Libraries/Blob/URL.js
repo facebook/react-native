@@ -8,9 +8,9 @@
  * @flow
  */
 
-import type Blob from './Blob';
+import type Blob from 'react-native/Libraries/Blob/Blob';
 
-import NativeBlobModule from './NativeBlobModule';
+import NativeBlobModule from 'react-native/Libraries/Blob/NativeBlobModule';
 
 let BLOB_URL_PREFIX = null;
 
@@ -52,7 +52,7 @@ if (
  * ```
  */
 
-export {URLSearchParams} from './URLSearchParams';
+export {URLSearchParams} from 'react-native/Libraries/Blob/URLSearchParams';
 
 function validateBaseUrl(url: string) {
   // from this MIT-licensed gist: https://gist.github.com/dperini/729294
@@ -71,6 +71,7 @@ export class URL {
     }
     return `${BLOB_URL_PREFIX}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size}`;
   }
+
 
   static revokeObjectURL(url: string) {
     // Do nothing.
@@ -112,13 +113,14 @@ export class URL {
   }
 
   get host(): string {
-    const hostMatch = this._url.match(/^https?:\/\/([^:/?#]+)/);
+    const hostMatch = this._url.match(/^https?:\/\/(?:[^@]+@)?([^:/?#]+)/);
     const portMatch = this._url.match(/:(\d+)(?=[/?#]|$)/);
+
     return hostMatch ? hostMatch[1] + (portMatch ? `:${portMatch[1]}` : '') : '';
   }
 
   get hostname(): string {
-    const hostnameMatch = this._url.match(/^https?:\/\/([^:/?#]+)/);
+    const hostnameMatch = this._url.match(/^https?:\/\/(?:[^@]+@)?([^:/?#]+)/);
     return hostnameMatch ? hostnameMatch[1] : '';
   }
 
@@ -135,6 +137,12 @@ export class URL {
     const passwordMatch = this._url.match(/https?:\/\/.*:(.*)@/);
     return passwordMatch ? passwordMatch[1] : '';
   }
+
+  get username(): string {
+
+    const usernameMatch = this._url.match(/^https?:\/\/([^:@]+)(?::[^@]*)?@/);
+    return usernameMatch ? usernameMatch[1] : '';
+}
 
   get pathname(): string {
     const pathMatch = this._url.match(/https?:\/\/[^/]+(\/[^?#]*)?/);
@@ -177,7 +185,4 @@ export class URL {
     return this._url + separator + instanceString;
   }
 
-  get username(): string {
-    throw new Error('URL.username is not implemented');
-  }
 }
