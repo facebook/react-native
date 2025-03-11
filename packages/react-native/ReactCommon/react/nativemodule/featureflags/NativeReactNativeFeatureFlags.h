@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<1a082675338773d1a6259fabfd2f652f>>
+ * @generated SignedSource<<976dc1d9e9df5d843d796ba71fab2e27>>
  */
 
 /**
@@ -69,8 +69,6 @@ class NativeReactNativeFeatureFlags
 
   bool enableNewBackgroundAndBorderDrawables(jsi::Runtime& runtime);
 
-  bool enablePreciseSchedulingForPremountItemsOnAndroid(jsi::Runtime& runtime);
-
   bool enablePropsUpdateReconciliationAndroid(jsi::Runtime& runtime);
 
   bool enableReportEventPaintTime(jsi::Runtime& runtime);
@@ -86,8 +84,6 @@ class NativeReactNativeFeatureFlags
   bool enableViewRecyclingForText(jsi::Runtime& runtime);
 
   bool enableViewRecyclingForView(jsi::Runtime& runtime);
-
-  bool excludeYogaFromRawProps(jsi::Runtime& runtime);
 
   bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(jsi::Runtime& runtime);
 

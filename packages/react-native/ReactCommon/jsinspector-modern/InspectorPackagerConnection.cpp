@@ -198,12 +198,7 @@ void InspectorPackagerConnection::Impl::didReceiveMessage(
   handleProxyMessage(std::move(parsedJSON));
 }
 
-void InspectorPackagerConnection::Impl::didOpen() {
-  connected_ = true;
-}
-
 void InspectorPackagerConnection::Impl::didClose() {
-  connected_ = false;
   webSocket_.reset();
   closeAllConnections();
   if (!closed_) {
@@ -219,7 +214,7 @@ void InspectorPackagerConnection::Impl::onPageRemoved(int pageId) {
 }
 
 bool InspectorPackagerConnection::Impl::isConnected() const {
-  return webSocket_ != nullptr && connected_;
+  return webSocket_ != nullptr;
 }
 
 void InspectorPackagerConnection::Impl::connect() {
@@ -246,10 +241,6 @@ void InspectorPackagerConnection::Impl::reconnect() {
     suppressConnectionErrors_ = true;
   }
 
-  if (isConnected()) {
-    return;
-  }
-
   reconnectPending_ = true;
 
   delegate_->scheduleCallback(
@@ -257,11 +248,6 @@ void InspectorPackagerConnection::Impl::reconnect() {
         auto strongSelf = weakSelf.lock();
         if (strongSelf && !strongSelf->closed_) {
           strongSelf->reconnectPending_ = false;
-
-          if (strongSelf->isConnected()) {
-            return;
-          }
-
           strongSelf->connect();
 
           if (!strongSelf->isConnected()) {

@@ -27,7 +27,7 @@ const supportsColor = require('supports-color');
 const {parseArgs} = require('util');
 
 const DEVTOOLS_FRONTEND_REPO_URL =
-  'https://github.com/facebookexperimental/rn-chrome-devtools-frontend';
+  'https://github.com/facebook/react-native-devtools-frontend';
 
 const config = {
   allowPositionals: true,

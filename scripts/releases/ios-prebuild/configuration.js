@@ -117,10 +117,10 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
   },
   {
     name: 'fast_float',
-    version: '6.1.4',
+    version: '8.0.0',
     prepareScript: 'touch dummy.cc',
     url: new URL(
-      'https://github.com/fastfloat/fast_float/archive/refs/tags/v6.1.4.tar.gz',
+      'https://github.com/fastfloat/fast_float/archive/refs/tags/v8.0.0.tar.gz',
     ),
     files: {
       sources: ['./include/fast_float/*.h', 'dummy.cc'],

@@ -6,6 +6,8 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
+
 # This is the 'glue' library responsible of allowing to do so-merging in React Native
 # OSS. This library contains just a .c file that is included in every merged library.
 #
@@ -16,9 +18,9 @@ set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_library(jni_lib_merge_glue OBJECT jni_lib_merge.c)
 
-add_compile_options(-fexceptions -Wall)
 add_definitions(-DJNI_MERGE_PRINT_ONLOAD)
 
 target_include_directories(jni_lib_merge_glue PUBLIC jni-lib-merge)
 
 target_link_libraries(jni_lib_merge_glue PUBLIC log)
+target_compile_options(jni_lib_merge_glue PRIVATE -frtti -fexceptions)

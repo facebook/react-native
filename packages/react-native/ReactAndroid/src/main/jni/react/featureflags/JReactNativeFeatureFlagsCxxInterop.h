@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<610104213a5eba23b797e27377d71b52>>
+ * @generated SignedSource<<5edcb3baccc7a27525ba6ca43b2aab8a>>
  */
 
 /**
@@ -78,9 +78,6 @@ class JReactNativeFeatureFlagsCxxInterop
   static bool enableNewBackgroundAndBorderDrawables(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
-  static bool enablePreciseSchedulingForPremountItemsOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
   static bool enablePropsUpdateReconciliationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
@@ -103,9 +100,6 @@ class JReactNativeFeatureFlagsCxxInterop
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool enableViewRecyclingForView(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
-
-  static bool excludeYogaFromRawProps(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop>);
 
   static bool fixDifferentiatorEmittingUpdatesWithWrongParentTag(

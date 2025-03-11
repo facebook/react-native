@@ -21,6 +21,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
@@ -38,7 +41,13 @@ import java.util.Map;
  * A class that is used to receive React commands from JS and translate them into a shadow node
  * hierarchy that is then mapped to a native view hierarchy.
  */
+@LegacyArchitecture
 public class UIImplementation {
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "UIImplementation", LegacyArchitectureLogLevel.WARNING);
+  }
+
   protected Object uiImplementationThreadLock = new Object();
 
   protected final EventDispatcher mEventDispatcher;

@@ -26,6 +26,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.RetryableMountingLayerException;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
@@ -64,7 +67,13 @@ import javax.annotation.concurrent.NotThreadSafe;
  * <p>TODO(5483031): Only dispatch updates when shadow views have changed
  */
 @NotThreadSafe
+@LegacyArchitecture
 public class NativeViewHierarchyManager {
+
+  static {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "NativeViewHierarchyManager", LegacyArchitectureLogLevel.WARNING);
+  }
 
   private static final String TAG = NativeViewHierarchyManager.class.getSimpleName();
   private final boolean DEBUG_MODE = ReactBuildConfig.DEBUG && false;

@@ -9,6 +9,9 @@ package com.facebook.react.bridge;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.common.annotations.internal.LegacyArchitecture;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 
 /**
  * A Java Object which represents a cross-platform C++ module
@@ -17,9 +20,12 @@ import com.facebook.proguard.annotations.DoNotStrip;
  * the underlying Cxx module will be extracted by the bridge and called directly.
  */
 @DoNotStrip
+@LegacyArchitecture
 public class CxxModuleWrapperBase implements NativeModule {
   static {
     ReactBridge.staticInit();
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+        "CxxModuleWrapperBase", LegacyArchitectureLogLevel.WARNING);
   }
 
   @DoNotStrip private HybridData mHybridData;

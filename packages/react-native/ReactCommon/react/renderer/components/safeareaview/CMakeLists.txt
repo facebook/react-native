@@ -6,6 +6,8 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
+
 file(GLOB rrc_safeareaview_SRCS CONFIGURE_DEPENDS *.cpp)
 
 add_library(
@@ -34,13 +36,5 @@ target_link_libraries(
         yoga
 )
 
-target_compile_options(
-        rrc_safeareaview
-        PRIVATE
-        -DLOG_TAG=\"Fabric\"
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-)
+target_compile_reactnative_options(rrc_safeareaview PRIVATE "Fabric")
+target_compile_options(rrc_safeareaview PRIVATE -Wpedantic)

@@ -331,26 +331,28 @@ exports[`public API should not change unintentionally Libraries/Animated/Animate
 `;
 
 exports[`public API should not change unintentionally Libraries/Animated/Easing.js 1`] = `
-"declare const Easing: {
+"export type EasingFunction = (t: number) => number;
+declare const EasingStatic: {
   step0(n: number): number,
   step1(n: number): number,
   linear(t: number): number,
   ease(t: number): number,
   quad(t: number): number,
   cubic(t: number): number,
-  poly(n: number): (t: number) => number,
+  poly(n: number): EasingFunction,
   sin(t: number): number,
   circle(t: number): number,
   exp(t: number): number,
-  elastic(bounciness: number): (t: number) => number,
-  back(s: number): (t: number) => number,
+  elastic(bounciness: number): EasingFunction,
+  back(s: number): EasingFunction,
   bounce(t: number): number,
-  bezier(x1: number, y1: number, x2: number, y2: number): (t: number) => number,
-  in(easing: (t: number) => number): (t: number) => number,
-  out(easing: (t: number) => number): (t: number) => number,
-  inOut(easing: (t: number) => number): (t: number) => number,
+  bezier(x1: number, y1: number, x2: number, y2: number): EasingFunction,
+  in(easing: EasingFunction): EasingFunction,
+  out(easing: EasingFunction): EasingFunction,
+  inOut(easing: EasingFunction): EasingFunction,
 };
-declare export default typeof Easing;
+export type Easing = typeof EasingStatic;
+declare export default typeof EasingStatic;
 "
 `;
 
@@ -648,24 +650,26 @@ export type StrictAnimatedProps<Props: { ... }> = $ReadOnly<{
 export type AnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
-> = component(ref: React.RefSetter<Instance>, ...AnimatedProps<Props>);
+> = component(ref?: React.RefSetter<Instance>, ...AnimatedProps<Props>);
 export type StrictAnimatedComponentType<
   Props: { ... },
   +Instance = mixed,
 > = component(ref: React.RefSetter<Instance>, ...StrictAnimatedProps<Props>);
 declare export default function createAnimatedComponent<
-  TProps: { ... },
-  TInstance,
+  TInstance: React.ComponentType<any>,
 >(
-  Component: component(ref: React.RefSetter<TInstance>, ...TProps)
-): AnimatedComponentType<TProps, TInstance>;
+  Component: TInstance
+): AnimatedComponentType<
+  $ReadOnly<React.ElementProps<TInstance>>,
+  React.ElementRef<TInstance>,
+>;
 declare export function unstable_createAnimatedComponentWithAllowlist<
   TProps: { ... },
-  TInstance,
+  TInstance: React.ComponentType<TProps>,
 >(
-  Component: component(ref: React.RefSetter<TInstance>, ...TProps),
+  Component: TInstance,
   allowlist: ?AnimatedPropsAllowlist
-): StrictAnimatedComponentType<TProps, TInstance>;
+): StrictAnimatedComponentType<TProps, React.ElementRef<TInstance>>;
 "
 `;
 
@@ -2656,6 +2660,15 @@ export type TextInputEndEditingEventData = $ReadOnly<{
   eventCount: number,
   text: string,
 }>;
+export type TextInputEndEditingEvent =
+  NativeSyntheticEvent<TextInputEndEditingEventData>;
+export type TextInputSubmitEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
+export type TextInputSubmitEditingEvent =
+  NativeSyntheticEvent<TextInputSubmitEditingEventData>;
 export type TextInputEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
 type DataDetectorTypesType =
@@ -2898,7 +2911,7 @@ export type TextInputProps = $ReadOnly<{
   onChangeText?: ?(text: string) => mixed,
   unstable_onChangeTextSync?: ?(text: string) => mixed,
   onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
-  onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
   onFocus?: ?(e: TextInputFocusEvent) => mixed,
   onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
   unstable_onKeyPressSync?: ?(e: TextInputKeyPressEvent) => mixed,
@@ -2906,7 +2919,7 @@ export type TextInputProps = $ReadOnly<{
   onPressIn?: ?(event: GestureResponderEvent) => mixed,
   onPressOut?: ?(event: GestureResponderEvent) => mixed,
   onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
-  onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
@@ -2931,7 +2944,7 @@ export interface TextInputInstance extends HostInstance {
   +setSelection: (start: number, end: number) => void;
 }
 type InternalTextInput = component(
-  ref: React.RefSetter<TextInputInstance>,
+  ref?: React.RefSetter<TextInputInstance>,
   ...TextInputProps
 );
 export type TextInputComponentStatics = $ReadOnly<{
@@ -2981,6 +2994,9 @@ export type TargetEvent = $ReadOnly<{
 export type TextInputFocusEventData = TargetEvent;
 export type TextInputBlurEvent = NativeSyntheticEvent<TextInputFocusEventData>;
 export type TextInputFocusEvent = NativeSyntheticEvent<TextInputFocusEventData>;
+export type TextInputScrollEventData = {
+  contentOffset: { x: number, y: number },
+};
 type Selection = $ReadOnly<{
   start: number,
   end: number,
@@ -2991,7 +3007,7 @@ export type TextInputSelectionChangeEventData = $ReadOnly<{
 }>;
 export type TextInputSelectionChangeEvent =
   NativeSyntheticEvent<TextInputSelectionChangeEventData>;
-type TextInputKeyPressEventData = $ReadOnly<{
+export type TextInputKeyPressEventData = $ReadOnly<{
   ...TargetEvent,
   key: string,
   target?: ?number,
@@ -3004,6 +3020,15 @@ export type TextInputEndEditingEventData = $ReadOnly<{
   eventCount: number,
   text: string,
 }>;
+export type TextInputEndEditingEvent =
+  NativeSyntheticEvent<TextInputEndEditingEventData>;
+export type TextInputSubmitEditingEventData = $ReadOnly<{
+  ...TargetEvent,
+  eventCount: number,
+  text: string,
+}>;
+export type TextInputSubmitEditingEvent =
+  NativeSyntheticEvent<TextInputSubmitEditingEventData>;
 export type TextInputEditingEvent =
   NativeSyntheticEvent<TextInputEndEditingEventData>;
 type DataDetectorTypesType =
@@ -3161,10 +3186,7 @@ export type TextInputAndroidProps = $ReadOnly<{
   textBreakStrategy?: ?(\\"simple\\" | \\"highQuality\\" | \\"balanced\\"),
   underlineColorAndroid?: ?ColorValue,
 }>;
-export type TextInputProps = $ReadOnly<{
-  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
-  ...TextInputIOSProps,
-  ...TextInputAndroidProps,
+type TextInputBaseProps = $ReadOnly<{
   autoCapitalize?: ?AutoCapitalize,
   autoComplete?: ?(
     | \\"additional-name\\"
@@ -3243,14 +3265,14 @@ export type TextInputProps = $ReadOnly<{
   onChange?: ?(e: TextInputChangeEvent) => mixed,
   onChangeText?: ?(text: string) => mixed,
   onContentSizeChange?: ?(e: TextInputContentSizeChangeEvent) => mixed,
-  onEndEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onEndEditing?: ?(e: TextInputEndEditingEvent) => mixed,
   onFocus?: ?(e: TextInputFocusEvent) => mixed,
   onKeyPress?: ?(e: TextInputKeyPressEvent) => mixed,
   onPress?: ?(event: GestureResponderEvent) => mixed,
   onPressIn?: ?(event: GestureResponderEvent) => mixed,
   onPressOut?: ?(event: GestureResponderEvent) => mixed,
   onSelectionChange?: ?(e: TextInputSelectionChangeEvent) => mixed,
-  onSubmitEditing?: ?(e: TextInputEditingEvent) => mixed,
+  onSubmitEditing?: ?(e: TextInputSubmitEditingEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
@@ -3269,13 +3291,20 @@ export type TextInputProps = $ReadOnly<{
   style?: ?TextStyleProp,
   value?: ?Stringish,
 }>;
+export type TextInputProps = $ReadOnly<{
+  ...$Diff<ViewProps, $ReadOnly<{ style: ?ViewStyleProp }>>,
+  ...TextInputIOSProps,
+  ...TextInputAndroidProps,
+  ...TextInputBaseProps,
+}>;
+type TextInputStateType = $ReadOnly<{
+  currentlyFocusedField: () => ?number,
+  currentlyFocusedInput: () => ?HostInstance,
+  focusTextInput: (textField: ?HostInstance) => void,
+  blurTextInput: (textField: ?HostInstance) => void,
+}>;
 export type TextInputComponentStatics = $ReadOnly<{
-  State: $ReadOnly<{
-    currentlyFocusedInput: typeof TextInputState.currentlyFocusedInput,
-    currentlyFocusedField: typeof TextInputState.currentlyFocusedField,
-    focusTextInput: typeof TextInputState.focusTextInput,
-    blurTextInput: typeof TextInputState.blurTextInput,
-  }>,
+  State: TextInputStateType,
 }>;
 declare export default TextInputType;
 "
@@ -5205,15 +5234,16 @@ type OptionalProps<ItemT> = {
   fadingEdgeLength?: ?number,
   strictMode?: boolean,
 };
-type FlatListProps<ItemT> = {
+type FlatListBaseProps<ItemT> = {
   ...RequiredProps<ItemT>,
   ...OptionalProps<ItemT>,
 };
 type VirtualizedListProps = React.ElementConfig<typeof VirtualizedList>;
-export type Props<ItemT> = {
+export type FlatListProps<ItemT> = {
   ...$Diff<
     VirtualizedListProps,
     {
+      data: $PropertyType<VirtualizedListProps, \\"data\\">,
       getItem: $PropertyType<VirtualizedListProps, \\"getItem\\">,
       getItemCount: $PropertyType<VirtualizedListProps, \\"getItemCount\\">,
       getItemLayout: $PropertyType<VirtualizedListProps, \\"getItemLayout\\">,
@@ -5222,10 +5252,12 @@ export type Props<ItemT> = {
       ...
     },
   >,
-  ...FlatListProps<ItemT>,
+  ...FlatListBaseProps<ItemT>,
   ...
 };
-declare class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
+declare class FlatList<ItemT = any>
+  extends React.PureComponent<FlatListProps<ItemT>>
+{
   scrollToEnd(params?: ?{ animated?: ?boolean, ... }): void;
   scrollToIndex(params: {
     animated?: ?boolean,
@@ -5250,8 +5282,8 @@ declare class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     | ?React.ElementRef<ScrollViewNativeComponent>;
   getScrollableNode(): any;
   setNativeProps(props: { [string]: mixed, ... }): void;
-  constructor(props: Props<ItemT>): void;
-  componentDidUpdate(prevProps: Props<ItemT>): void;
+  constructor(props: FlatListProps<ItemT>): void;
+  componentDidUpdate(prevProps: FlatListProps<ItemT>): void;
   render(): React.Node;
 }
 declare export default typeof FlatList;
@@ -5911,7 +5943,8 @@ declare export function getTextColor(opacity?: number): string;
 `;
 
 exports[`public API should not change unintentionally Libraries/Modal/Modal.js 1`] = `
-"type OrientationChangeEvent = $ReadOnly<{
+"export type PublicModalInstance = HostInstance;
+type OrientationChangeEvent = $ReadOnly<{
   orientation: \\"portrait\\" | \\"landscape\\",
 }>;
 export type ModalBaseProps = {
@@ -5922,6 +5955,7 @@ export type ModalBaseProps = {
   onRequestClose?: ?DirectEventHandler<null>,
   onShow?: ?DirectEventHandler<null>,
   backdropColor?: ColorValue,
+  modalRef?: React.RefSetter<PublicModalInstance>,
 };
 export type ModalPropsIOS = {
   presentationStyle?: ?(
@@ -5951,27 +5985,11 @@ export type ModalProps = {
   ...ModalPropsAndroid,
   ...ViewProps,
 };
-type State = {
-  isRendered: boolean,
-};
-declare class Modal extends React.Component<ModalProps, State> {
-  static defaultProps: { hardwareAccelerated: boolean, visible: boolean };
-  static contextType: React.Context<RootTag>;
-  constructor(props: ModalProps): void;
-  componentDidMount(): void;
-  componentWillUnmount(): void;
-  componentDidUpdate(prevProps: ModalProps): void;
-  render(): React.Node;
-}
-declare const ExportedModal: React.ComponentType<
-  React.ElementConfig<typeof Modal>,
->;
-declare export default typeof ExportedModal;
-"
-`;
-
-exports[`public API should not change unintentionally Libraries/Modal/ModalInjection.js 1`] = `
-"declare export default { unstable_Modal: ?Modal };
+type ModalRefProps = $ReadOnly<{
+  ref?: React.RefSetter<PublicModalInstance>,
+}>;
+declare function Wrapper({ ...ModalRefProps, ...ModalProps }): React.Node;
+declare export default typeof Wrapper;
 "
 `;
 
@@ -6782,11 +6800,9 @@ declare export default typeof AppContainer;
 "
 `;
 
-exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.js 1`] = `
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.flow.js 1`] = `
 "type Task = (taskData: any) => Promise<void>;
 export type TaskProvider = () => Task;
-type TaskCanceller = () => void;
-type TaskCancelProvider = () => TaskCanceller;
 export type ComponentProvider = () => React.ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component_: ComponentProvider,
@@ -6799,7 +6815,7 @@ export type AppConfig = {
   section?: boolean,
   ...
 };
-type AppParameters = {
+export type AppParameters = {
   initialProps: $ReadOnly<{ [string]: mixed, ... }>,
   rootTag: RootTag,
   fabric?: boolean,
@@ -6818,46 +6834,91 @@ export type WrapperComponentProvider = (
   appParameters: Object
 ) => React.ComponentType<any>;
 export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
-declare const AppRegistry: {
-  setWrapperComponentProvider(provider: WrapperComponentProvider): void,
-  setRootViewStyleProvider(provider: RootViewStyleProvider): void,
-  registerConfig(config: Array<AppConfig>): void,
-  registerComponent(
-    appKey: string,
-    componentProvider: ComponentProvider,
-    section?: boolean
-  ): string,
-  registerRunnable(appKey: string, run: Runnable): string,
-  registerSection(appKey: string, component: ComponentProvider): void,
-  getAppKeys(): $ReadOnlyArray<string>,
-  getSectionKeys(): $ReadOnlyArray<string>,
-  getSections(): Runnables,
-  getRunnable(appKey: string): ?Runnable,
-  getRegistry(): Registry,
-  setComponentProviderInstrumentationHook(
-    hook: ComponentProviderInstrumentationHook
-  ): void,
-  runApplication(
-    appKey: string,
-    appParameters: AppParameters,
-    displayMode?: number
-  ): void,
-  setSurfaceProps(
-    appKey: string,
-    appParameters: Object,
-    displayMode?: number
-  ): void,
-  unmountApplicationComponentAtRootTag(rootTag: RootTag): void,
-  registerHeadlessTask(taskKey: string, taskProvider: TaskProvider): void,
-  registerCancellableHeadlessTask(
-    taskKey: string,
-    taskProvider: TaskProvider,
-    taskCancelProvider: TaskCancelProvider
-  ): void,
-  startHeadlessTask(taskId: number, taskKey: string, data: any): void,
-  cancelHeadlessTask(taskId: number, taskKey: string): void,
-};
-declare export default typeof AppRegistry;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.js 1`] = `
+"declare export default typeof AppRegistry;
+export { AppRegistry };
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.js.flow 1`] = `
+"export type {
+  TaskProvider,
+  ComponentProvider,
+  ComponentProviderInstrumentationHook,
+  AppConfig,
+  Runnable,
+  Runnables,
+  Registry,
+  WrapperComponentProvider,
+  RootViewStyleProvider,
+} from \\"./AppRegistry.flow\\";
+export * as default from \\"./AppRegistryImpl\\";
+export * as AppRegistry from \\"./AppRegistryImpl\\";
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistryImpl.js 1`] = `
+"type TaskCanceller = () => void;
+type TaskCancelProvider = () => TaskCanceller;
+declare export function setWrapperComponentProvider(
+  provider: WrapperComponentProvider
+): void;
+declare export function setRootViewStyleProvider(
+  provider: RootViewStyleProvider
+): void;
+declare export function registerConfig(config: Array<AppConfig>): void;
+declare export function registerComponent(
+  appKey: string,
+  componentProvider: ComponentProvider,
+  section?: boolean
+): string;
+declare export function registerRunnable(appKey: string, run: Runnable): string;
+declare export function registerSection(
+  appKey: string,
+  component: ComponentProvider
+): void;
+declare export function getAppKeys(): $ReadOnlyArray<string>;
+declare export function getSectionKeys(): $ReadOnlyArray<string>;
+declare export function getSections(): Runnables;
+declare export function getRunnable(appKey: string): ?Runnable;
+declare export function getRegistry(): Registry;
+declare export function setComponentProviderInstrumentationHook(
+  hook: ComponentProviderInstrumentationHook
+): void;
+declare export function runApplication(
+  appKey: string,
+  appParameters: AppParameters,
+  displayMode?: number
+): void;
+declare export function setSurfaceProps(
+  appKey: string,
+  appParameters: Object,
+  displayMode?: number
+): void;
+declare export function unmountApplicationComponentAtRootTag(
+  rootTag: RootTag
+): void;
+declare export function registerHeadlessTask(
+  taskKey: string,
+  taskProvider: TaskProvider
+): void;
+declare export function registerCancellableHeadlessTask(
+  taskKey: string,
+  taskProvider: TaskProvider,
+  taskCancelProvider: TaskCancelProvider
+): void;
+declare export function startHeadlessTask(
+  taskId: number,
+  taskKey: string,
+  data: any
+): void;
+declare export function cancelHeadlessTask(
+  taskId: number,
+  taskKey: string
+): void;
 "
 `;
 
@@ -7300,7 +7361,8 @@ declare export function normalizeRect(rectOrSize: ?RectOrSize): ?Rect;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js 1`] = `
-"export type { NativeColorValue } from \\"./StyleSheetTypes\\";
+"declare const StyleSheet: StyleSheetExports;
+export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
@@ -7314,7 +7376,36 @@ export type ViewStyle = ____ViewStyle_Internal;
 export type TextStyle = ____TextStyle_Internal;
 export type ImageStyle = ____ImageStyle_Internal;
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
-declare let hairlineWidth: number;
+declare export default typeof StyleSheet;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheet.js.flow 1`] = `
+"export * as default from \\"./StyleSheetExports\\";
+export type { StyleProp } from \\"./StyleSheetTypes\\";
+export type StyleSheetProperties = {
+  hairlineWidth: number,
+  flatten<T: string>(style: T): T,
+};
+export type { NativeColorValue } from \\"./StyleSheetTypes\\";
+export type ColorValue = ____ColorValue_Internal;
+export type ViewStyleProp = ____ViewStyleProp_Internal;
+export type TextStyleProp = ____TextStyleProp_Internal;
+export type ImageStyleProp = ____ImageStyleProp_Internal;
+export type DangerouslyImpreciseStyleProp =
+  ____DangerouslyImpreciseStyleProp_Internal;
+export type TypeForStyleKey<
+  +key: $Keys<____DangerouslyImpreciseStyle_Internal>,
+> = $ElementType<____DangerouslyImpreciseStyle_Internal, key>;
+export type ViewStyle = ____ViewStyle_Internal;
+export type TextStyle = ____TextStyle_Internal;
+export type ImageStyle = ____ImageStyle_Internal;
+export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheetExports.js 1`] = `
+"declare let hairlineWidth: number;
 declare const absoluteFill: {
   +bottom: 0,
   +left: 0,
@@ -7334,6 +7425,26 @@ declare export default {
   ): void,
   create<+S: ____Styles_Internal>(obj: S): $ReadOnly<S>,
 };
+"
+`;
+
+exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheetExports.js.flow 1`] = `
+"declare export const hairlineWidth: number;
+declare export const absoluteFill: any;
+declare export const absoluteFillObject: {
+  +bottom: 0,
+  +left: 0,
+  +position: \\"absolute\\",
+  +right: 0,
+  +top: 0,
+};
+declare export const compose: typeof composeStyles;
+declare export const flatten: typeof flattenStyle;
+declare export const setStyleAttributePreprocessor: (
+  property: string,
+  process: (nextProp: any) => any
+) => void;
+declare export const create: <+S: ____Styles_Internal>(obj: S) => $ReadOnly<S>;
 "
 `;
 
@@ -7514,10 +7625,7 @@ type ____BlendMode_Internal =
   | \\"saturation\\"
   | \\"color\\"
   | \\"luminosity\\";
-export type ____ViewStyle_InternalCore = $ReadOnly<{
-  ...$Exact<____LayoutStyle_Internal>,
-  ...$Exact<____ShadowStyle_Internal>,
-  ...$Exact<____TransformStyle_Internal>,
+export type ____ViewStyle_InternalBase = $ReadOnly<{
   backfaceVisibility?: \\"visible\\" | \\"hidden\\",
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -7565,6 +7673,12 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
   isolation?: \\"auto\\" | \\"isolate\\",
+}>;
+export type ____ViewStyle_InternalCore = $ReadOnly<{
+  ...$Exact<____LayoutStyle_Internal>,
+  ...$Exact<____ShadowStyle_Internal>,
+  ...$Exact<____TransformStyle_Internal>,
+  ...____ViewStyle_InternalBase,
 }>;
 export type ____ViewStyle_Internal = $ReadOnly<{
   ...____ViewStyle_InternalCore,
@@ -7651,8 +7765,7 @@ export type ____FontVariantArray_Internal = $ReadOnlyArray<
   | \\"stylistic-nineteen\\"
   | \\"stylistic-twenty\\",
 >;
-export type ____TextStyle_InternalCore = $ReadOnly<{
-  ...$Exact<____ViewStyle_Internal>,
+type ____TextStyle_InternalBase = $ReadOnly<{
   color?: ____ColorValue_Internal,
   fontFamily?: string,
   fontSize?: number,
@@ -7682,6 +7795,10 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   verticalAlign?: \\"auto\\" | \\"top\\" | \\"bottom\\" | \\"middle\\",
   writingDirection?: \\"auto\\" | \\"ltr\\" | \\"rtl\\",
 }>;
+export type ____TextStyle_InternalCore = $ReadOnly<{
+  ...$Exact<____ViewStyle_Internal>,
+  ...____TextStyle_InternalBase,
+}>;
 export type ____TextStyle_Internal = $ReadOnly<{
   ...____TextStyle_InternalCore,
   ...____TextStyle_InternalOverrides,
@@ -7709,36 +7826,47 @@ export type ____DangerouslyImpreciseStyle_Internal = $ReadOnly<{
   ...____DangerouslyImpreciseStyle_InternalOverrides,
   ...
 }>;
-type GenericStyleProp<+T> =
+export type StyleProp<+T> =
   | null
   | void
   | T
   | false
   | \\"\\"
-  | $ReadOnlyArray<GenericStyleProp<T>>;
-export type ____DangerouslyImpreciseStyleProp_Internal = GenericStyleProp<
+  | $ReadOnlyArray<StyleProp<T>>;
+export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
-export type ____ViewStyleProp_Internal = GenericStyleProp<
+export type ____ViewStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;
-export type ____TextStyleProp_Internal = GenericStyleProp<
+export type ____TextStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____TextStyle_Internal>>,
 >;
-export type ____ImageStyleProp_Internal = GenericStyleProp<
+export type ____ImageStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ImageStyle_Internal>>,
 >;
 export type ____Styles_Internal = {
   +[key: string]: Partial<____DangerouslyImpreciseStyle_Internal>,
   ...
 };
-export type ____FlattenStyleProp_Internal<
-  +TStyleProp: GenericStyleProp<mixed>,
-> = TStyleProp extends null | void | false | \\"\\"
+type FlattenDepthLimiter = [void, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+type ____FlattenStyleProp_Helper<
+  +TStyleProp: StyleProp<mixed>,
+  Depth: $Values<FlattenDepthLimiter> = 9,
+> = Depth extends 0
   ? empty
-  : TStyleProp extends $ReadOnlyArray<infer V>
-    ? ____FlattenStyleProp_Internal<V>
-    : TStyleProp;
+  : TStyleProp extends null | void | false | \\"\\"
+    ? empty
+    : TStyleProp extends $ReadOnlyArray<infer V>
+      ? ____FlattenStyleProp_Helper<
+          V,
+          Depth extends number ? FlattenDepthLimiter[Depth] : 0,
+        >
+      : TStyleProp;
+export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
+  ____FlattenStyleProp_Helper<TStyleProp> extends empty
+    ? any
+    : ____FlattenStyleProp_Helper<TStyleProp>;
 "
 `;
 
@@ -7922,11 +8050,12 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/split
 `;
 
 exports[`public API should not change unintentionally Libraries/Text/Text.js 1`] = `
-"type TextForwardRef = React.ElementRef<
+"export type { TextProps } from \\"./TextProps\\";
+type TextForwardRef = React.ElementRef<
   typeof NativeText | typeof NativeVirtualText,
 >;
 declare const Text: component(
-  ref: React.RefSetter<TextForwardRef>,
+  ref?: React.RefSetter<TextForwardRef>,
   ...props: TextProps
 );
 declare export default typeof Text;
@@ -7965,8 +8094,33 @@ type PointerEventProps = $ReadOnly<{
   onPointerLeave?: (event: PointerEvent) => void,
   onPointerMove?: (event: PointerEvent) => void,
 }>;
-export type TextProps = $ReadOnly<{
-  ...PointerEventProps,
+export type TextPropsIOS = {
+  adjustsFontSizeToFit?: ?boolean,
+  dynamicTypeRamp?: ?(
+    | \\"caption2\\"
+    | \\"caption1\\"
+    | \\"footnote\\"
+    | \\"subheadline\\"
+    | \\"callout\\"
+    | \\"body\\"
+    | \\"headline\\"
+    | \\"title3\\"
+    | \\"title2\\"
+    | \\"title1\\"
+    | \\"largeTitle\\"
+  ),
+  suppressHighlighting?: ?boolean,
+  lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
+};
+export type TextPropsAndroid = {
+  disabled?: ?boolean,
+  selectionColor?: ?ColorValue,
+  dataDetectorType?: ?(\\"phoneNumber\\" | \\"link\\" | \\"email\\" | \\"none\\" | \\"all\\"),
+  textBreakStrategy?: ?(\\"balanced\\" | \\"highQuality\\" | \\"simple\\"),
+  adjustsFontSizeToFit?: ?boolean,
+  minimumFontScale?: ?number,
+};
+type TextBaseProps = $ReadOnly<{
   accessible?: ?boolean,
   accessibilityActions?: ?$ReadOnlyArray<AccessibilityActionInfo>,
   onAccessibilityAction?: ?(event: AccessibilityActionEvent) => mixed,
@@ -7976,7 +8130,6 @@ export type TextProps = $ReadOnly<{
   accessibilityRole?: ?AccessibilityRole,
   accessibilityState?: ?AccessibilityState,
   \\"aria-label\\"?: ?string,
-  adjustsFontSizeToFit?: ?boolean,
   allowFontScaling?: ?boolean,
   android_hyphenationFrequency?: ?(\\"normal\\" | \\"none\\" | \\"full\\"),
   \\"aria-busy\\"?: ?boolean,
@@ -8009,27 +8162,12 @@ export type TextProps = $ReadOnly<{
   selectable?: ?boolean,
   style?: ?TextStyleProp,
   testID?: ?string,
-  disabled?: ?boolean,
-  selectionColor?: ?ColorValue,
-  dataDetectorType?: ?(\\"phoneNumber\\" | \\"link\\" | \\"email\\" | \\"none\\" | \\"all\\"),
-  textBreakStrategy?: ?(\\"balanced\\" | \\"highQuality\\" | \\"simple\\"),
-  adjustsFontSizeToFit?: ?boolean,
-  dynamicTypeRamp?: ?(
-    | \\"caption2\\"
-    | \\"caption1\\"
-    | \\"footnote\\"
-    | \\"subheadline\\"
-    | \\"callout\\"
-    | \\"body\\"
-    | \\"headline\\"
-    | \\"title3\\"
-    | \\"title2\\"
-    | \\"title1\\"
-    | \\"largeTitle\\"
-  ),
-  minimumFontScale?: ?number,
-  suppressHighlighting?: ?boolean,
-  lineBreakStrategyIOS?: ?(\\"none\\" | \\"standard\\" | \\"hangul-word\\" | \\"push-out\\"),
+}>;
+export type TextProps = $ReadOnly<{
+  ...PointerEventProps,
+  ...TextPropsIOS,
+  ...TextPropsAndroid,
+  ...TextBaseProps,
 }>;
 "
 `;
@@ -9134,6 +9272,7 @@ declare export default class EventEmitter<
   > = $ReadOnly<Record<string, $ReadOnlyArray<UnsafeObject>>>,
 > implements IEventEmitter<TEventToArgsMap>
 {
+  constructor(): void;
   addListener<TEvent: $Keys<TEventToArgsMap>>(
     eventType: TEvent,
     listener: (...args: TEventToArgsMap[TEvent]) => mixed,
@@ -9186,7 +9325,7 @@ export { default as ActionSheetIOS } from \\"./Libraries/ActionSheetIOS/ActionSh
 export { default as Alert } from \\"./Libraries/Alert/Alert\\";
 export { default as Animated } from \\"./Libraries/Animated/Animated\\";
 export * as Appearance from \\"./Libraries/Utilities/Appearance\\";
-export { default as AppRegistry } from \\"./Libraries/ReactNative/AppRegistry\\";
+export { AppRegistry } from \\"./Libraries/ReactNative/AppRegistry\\";
 export { default as AppState } from \\"./Libraries/AppState/AppState\\";
 export { default as BackHandler } from \\"./Libraries/Utilities/BackHandler\\";
 export { default as Clipboard } from \\"./Libraries/Components/Clipboard/Clipboard\\";

@@ -12,6 +12,10 @@ namespace facebook::react::jsinspector_modern::tracing {
 
 namespace {
 
+// Right now we only emit single Profile. We might revisit this decision in the
+// future, once we support multiple VMs being sampled at the same time.
+const uint16_t PROFILE_ID = 1;
+
 uint64_t formatTimePointToUnixTimestamp(
     std::chrono::steady_clock::time_point timestamp) {
   return std::chrono::duration_cast<std::chrono::microseconds>(
@@ -49,6 +53,7 @@ TraceEventProfileChunk::CPUProfile::Node convertToTraceEventProfileNode(
 
 void emitSingleProfileChunk(
     PerformanceTracer& performanceTracer,
+    std::vector<folly::dynamic>& buffer,
     uint16_t profileId,
     uint64_t threadId,
     uint64_t chunkTimestamp,
@@ -61,23 +66,26 @@ void emitSingleProfileChunk(
     traceEventNodes.push_back(convertToTraceEventProfileNode(node));
   }
 
-  performanceTracer.reportRuntimeProfileChunk(
+  buffer.push_back(performanceTracer.getSerializedRuntimeProfileChunkTraceEvent(
       profileId,
       threadId,
       chunkTimestamp,
       TraceEventProfileChunk{
           TraceEventProfileChunk::CPUProfile{traceEventNodes, samples},
           TraceEventProfileChunk::TimeDeltas{timeDeltas},
-      });
+      }));
 }
 
 } // namespace
 
 /* static */ void
-RuntimeSamplingProfileTraceEventSerializer::serializeAndBuffer(
+RuntimeSamplingProfileTraceEventSerializer::serializeAndNotify(
     PerformanceTracer& performanceTracer,
     const RuntimeSamplingProfile& profile,
     std::chrono::steady_clock::time_point tracingStartTime,
+    const std::function<void(const folly::dynamic& traceEventsChunk)>&
+        notificationCallback,
+    uint16_t traceEventChunkSize,
     uint16_t profileChunkSize) {
   std::vector<RuntimeSamplingProfile::Sample> runtimeSamples =
       profile.getSamples();
@@ -85,11 +93,13 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndBuffer(
     return;
   }
 
+  std::vector<folly::dynamic> buffer;
+
   uint64_t chunkThreadId = runtimeSamples.front().getThreadId();
   uint64_t tracingStartUnixTimestamp =
       formatTimePointToUnixTimestamp(tracingStartTime);
-  uint16_t profileId = performanceTracer.reportRuntimeProfile(
-      chunkThreadId, tracingStartUnixTimestamp);
+  buffer.push_back(performanceTracer.getSerializedRuntimeProfileTraceEvent(
+      chunkThreadId, PROFILE_ID, tracingStartUnixTimestamp));
 
   uint32_t nodeCount = 0;
   auto* rootNode = new ProfileTreeNode(
@@ -148,7 +158,8 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndBuffer(
     if (chunkThreadId != sampleThreadId) {
       emitSingleProfileChunk(
           performanceTracer,
-          profileId,
+          buffer,
+          PROFILE_ID,
           chunkThreadId,
           chunkTimestamp,
           nodesInThisChunk,
@@ -203,7 +214,8 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndBuffer(
     if (samplesInThisChunk.size() == profileChunkSize) {
       emitSingleProfileChunk(
           performanceTracer,
-          profileId,
+          buffer,
+          PROFILE_ID,
           chunkThreadId,
           chunkTimestamp,
           nodesInThisChunk,
@@ -214,17 +226,28 @@ RuntimeSamplingProfileTraceEventSerializer::serializeAndBuffer(
       samplesInThisChunk.clear();
       timeDeltasInThisChunk.clear();
     }
+
+    if (buffer.size() == traceEventChunkSize) {
+      notificationCallback(folly::dynamic::array(buffer.begin(), buffer.end()));
+      buffer.clear();
+    }
   }
 
   if (!samplesInThisChunk.empty()) {
     emitSingleProfileChunk(
         performanceTracer,
-        profileId,
+        buffer,
+        PROFILE_ID,
         chunkThreadId,
         chunkTimestamp,
         nodesInThisChunk,
         samplesInThisChunk,
         timeDeltasInThisChunk);
+  }
+
+  if (!buffer.empty()) {
+    notificationCallback(folly::dynamic::array(buffer.begin(), buffer.end()));
+    buffer.clear();
   }
 }
 

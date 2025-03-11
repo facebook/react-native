@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3d4eefc7af1e9d594ade8339c261ca01>>
+ * @generated SignedSource<<98c62bb40ef9c03af6e3e2d758cef7ec>>
  */
 
 /**
@@ -90,10 +90,6 @@ bool ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables() {
   return getAccessor().enableNewBackgroundAndBorderDrawables();
 }
 
-bool ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid() {
-  return getAccessor().enablePreciseSchedulingForPremountItemsOnAndroid();
-}
-
 bool ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid() {
   return getAccessor().enablePropsUpdateReconciliationAndroid();
 }
@@ -124,10 +120,6 @@ bool ReactNativeFeatureFlags::enableViewRecyclingForText() {
 
 bool ReactNativeFeatureFlags::enableViewRecyclingForView() {
   return getAccessor().enableViewRecyclingForView();
-}
-
-bool ReactNativeFeatureFlags::excludeYogaFromRawProps() {
-  return getAccessor().excludeYogaFromRawProps();
 }
 
 bool ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag() {

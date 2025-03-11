@@ -12,16 +12,16 @@
  * @fantom_flags enableSynchronousStateUpdates:true
  */
 
-import ScrollView from '../../../../../Libraries/Components/ScrollView/ScrollView';
-import Text from '../../../../../Libraries/Text/Text';
-import ensureInstance from '../../../utilities/ensureInstance';
-import ReactNativeElement from '../../../webapis/dom/nodes/ReactNativeElement';
+import 'react-native/Libraries/Core/InitializeCore';
+
 import Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {useLayoutEffect} from 'react';
+import {ScrollView, Text} from 'react-native';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
-import '../../../../../Libraries/Core/InitializeCore';
-
+import 'react-native/Libraries/Core/InitializeCore';
 describe('UIConsistency', () => {
   it('should provide consistent data from the tree within the same synchronous function', () => {
     const root = Fantom.createRoot();

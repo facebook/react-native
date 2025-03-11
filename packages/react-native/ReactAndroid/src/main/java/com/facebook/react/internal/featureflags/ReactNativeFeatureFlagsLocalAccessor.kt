@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e5c1e722f33148fe3aa36ccab62e2293>>
+ * @generated SignedSource<<1693dced312625bbfedce5f2dfa9816c>>
  */
 
 /**
@@ -40,7 +40,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableLongTaskAPICache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
-  private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
@@ -49,7 +48,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
-  private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fixDifferentiatorEmittingUpdatesWithWrongParentTagCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
@@ -228,16 +226,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
     return cached
   }
 
-  override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean {
-    var cached = enablePreciseSchedulingForPremountItemsOnAndroidCache
-    if (cached == null) {
-      cached = currentProvider.enablePreciseSchedulingForPremountItemsOnAndroid()
-      accessedFeatureFlags.add("enablePreciseSchedulingForPremountItemsOnAndroid")
-      enablePreciseSchedulingForPremountItemsOnAndroidCache = cached
-    }
-    return cached
-  }
-
   override fun enablePropsUpdateReconciliationAndroid(): Boolean {
     var cached = enablePropsUpdateReconciliationAndroidCache
     if (cached == null) {
@@ -314,16 +302,6 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.enableViewRecyclingForView()
       accessedFeatureFlags.add("enableViewRecyclingForView")
       enableViewRecyclingForViewCache = cached
-    }
-    return cached
-  }
-
-  override fun excludeYogaFromRawProps(): Boolean {
-    var cached = excludeYogaFromRawPropsCache
-    if (cached == null) {
-      cached = currentProvider.excludeYogaFromRawProps()
-      accessedFeatureFlags.add("excludeYogaFromRawProps")
-      excludeYogaFromRawPropsCache = cached
     }
     return cached
   }

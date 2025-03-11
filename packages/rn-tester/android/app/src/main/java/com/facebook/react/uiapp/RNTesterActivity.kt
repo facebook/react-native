@@ -45,6 +45,9 @@ internal class RNTesterActivity : ReactActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    fullyDrawnReporter.addReporter()
+
     // set background color so it will show below transparent system bars on forced edge-to-edge
     this.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
     // register insets listener to update margins on the ReactRootView to avoid overlap w/ system

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e80434127379886a001ffcbace6ba619>>
+ * @generated SignedSource<<132471a831b3041cc6cae8915de33982>>
  */
 
 /**
@@ -91,10 +91,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
     return false;
   }
 
-  bool enablePreciseSchedulingForPremountItemsOnAndroid() override {
-    return false;
-  }
-
   bool enablePropsUpdateReconciliationAndroid() override {
     return false;
   }
@@ -125,10 +121,6 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
 
   bool enableViewRecyclingForView() override {
     return true;
-  }
-
-  bool excludeYogaFromRawProps() override {
-    return false;
   }
 
   bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() override {

@@ -8,9 +8,16 @@
 package com.facebook.react.uimanager
 
 import android.view.View
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.yoga.YogaDirection
 
+@LegacyArchitecture
 internal object LayoutDirectionUtil {
+  init {
+    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("LayoutDirectionUtil")
+  }
+
   @JvmStatic
   fun toAndroidFromYoga(direction: YogaDirection): Int =
       when (direction) {

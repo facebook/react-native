@@ -4,7 +4,7 @@
   "description": "@monorepo/pkg-b",
   "dependencies": {
     "@monorepo/pkg-c": "0.0.1",
-    "metro-config": "^0.80.10",
-    "metro-runtime": "^0.80.10"
+    "third-party-dep-a": "^1.2.3",
+    "third-party-dep-b": "^1.2.3"
   }
 }
