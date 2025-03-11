@@ -833,9 +833,16 @@ public class SurfaceMountingManager {
       parent.requestLayout();
     }
 
-    ViewState parentViewState = getViewState(parentTag);
+    // TODO T212247085: Make this non-nullable again after rolling out
+    // disableMountItemReorderingAndroid
+    ViewState parentViewState = getNullableViewState(parentTag);
     IViewGroupManager<?> parentViewManager = null;
-    if (parentViewState.mViewManager != null) {
+    if (parentViewState == null) {
+      ReactSoftExceptionLogger.logSoftException(
+          ReactSoftExceptionLogger.Categories.SURFACE_MOUNTING_MANAGER_MISSING_VIEWSTATE,
+          new ReactNoCrashSoftException(
+              "Unable to find viewState for tag: " + parentTag + " for updateLayout"));
+    } else if (parentViewState.mViewManager != null) {
       parentViewManager = (IViewGroupManager) parentViewState.mViewManager;
     }
     if (parentViewManager == null || !parentViewManager.needsCustomLayoutForChildren()) {
