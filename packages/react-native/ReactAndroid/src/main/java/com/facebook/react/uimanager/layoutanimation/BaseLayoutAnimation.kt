@@ -5,82 +5,85 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.uimanager.layoutanimation;
+package com.facebook.react.uimanager.layoutanimation
 
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
-import com.facebook.infer.annotation.Nullsafe;
-import com.facebook.react.uimanager.IllegalViewOperationException;
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
+import com.facebook.react.uimanager.IllegalViewOperationException
 
 /** Class responsible for default layout animation, i.e animation of view creation and deletion. */
-/* package */ @Nullsafe(Nullsafe.Mode.LOCAL)
-abstract class BaseLayoutAnimation extends AbstractLayoutAnimation {
+internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
+  abstract fun isReverse(): Boolean
 
-  abstract boolean isReverse();
-
-  @Override
-  boolean isValid() {
-    return mDurationMs > 0 && mAnimatedProperty != null;
+  override fun isValid(): Boolean {
+    return mDurationMs > 0 && mAnimatedProperty != null
   }
 
-  @Override
-  Animation createAnimationImpl(View view, int x, int y, int width, int height) {
-    if (mAnimatedProperty != null) {
-      switch (mAnimatedProperty) {
-        case OPACITY:
-          {
-            float fromValue = isReverse() ? view.getAlpha() : 0.0f;
-            float toValue = isReverse() ? 0.0f : view.getAlpha();
-            return new OpacityAnimation(view, fromValue, toValue);
-          }
-        case SCALE_XY:
-          {
-            float fromValue = isReverse() ? 1.0f : 0.0f;
-            float toValue = isReverse() ? 0.0f : 1.0f;
-            return new ScaleAnimation(
-                fromValue,
-                toValue,
-                fromValue,
-                toValue,
-                Animation.RELATIVE_TO_SELF,
-                .5f,
-                Animation.RELATIVE_TO_SELF,
-                .5f);
-          }
-        case SCALE_X:
-          {
-            float fromValue = isReverse() ? 1.0f : 0.0f;
-            float toValue = isReverse() ? 0.0f : 1.0f;
-            return new ScaleAnimation(
-                fromValue,
-                toValue,
-                1f,
-                1f,
-                Animation.RELATIVE_TO_SELF,
-                .5f,
-                Animation.RELATIVE_TO_SELF,
-                0f);
-          }
-        case SCALE_Y:
-          {
-            float fromValue = isReverse() ? 1.0f : 0.0f;
-            float toValue = isReverse() ? 0.0f : 1.0f;
-            return new ScaleAnimation(
-                1f,
-                1f,
-                fromValue,
-                toValue,
-                Animation.RELATIVE_TO_SELF,
-                0f,
-                Animation.RELATIVE_TO_SELF,
-                .5f);
-          }
-        default:
-          throw new IllegalViewOperationException(
-              "Missing animation for property : " + mAnimatedProperty);
+  override fun createAnimationImpl(
+    view: View,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+  ): Animation {
+    mAnimatedProperty?.let {
+      return when (it) {
+        AnimatedPropertyType.OPACITY -> {
+          val fromValue = if (isReverse()) view.alpha else 0.0f
+          val toValue = if (isReverse()) 0.0f else view.alpha
+          return OpacityAnimation(view, fromValue, toValue)
+        }
+
+        AnimatedPropertyType.SCALE_XY -> {
+          val fromValue = if (isReverse()) 1.0f else 0.0f
+          val toValue = if (isReverse()) 0.0f else 1.0f
+          return ScaleAnimation(
+            fromValue,
+            toValue,
+            fromValue,
+            toValue,
+            Animation.RELATIVE_TO_SELF,
+            .5f,
+            Animation.RELATIVE_TO_SELF,
+            .5f
+          )
+        }
+
+        AnimatedPropertyType.SCALE_X -> {
+          val fromValue = if (isReverse()) 1.0f else 0.0f
+          val toValue = if (isReverse()) 0.0f else 1.0f
+          return ScaleAnimation(
+            fromValue,
+            toValue,
+            1f,
+            1f,
+            Animation.RELATIVE_TO_SELF,
+            .5f,
+            Animation.RELATIVE_TO_SELF,
+            0f
+          )
+        }
+
+        AnimatedPropertyType.SCALE_Y -> {
+          val fromValue = if (isReverse()) 1.0f else 0.0f
+          val toValue = if (isReverse()) 0.0f else 1.0f
+          return ScaleAnimation(
+            1f,
+            1f,
+            fromValue,
+            toValue,
+            Animation.RELATIVE_TO_SELF,
+            0f,
+            Animation.RELATIVE_TO_SELF,
+            .5f
+          )
+        }
+
+        else -> throw IllegalViewOperationException(
+          "Missing animation for property : $it"
+        )
       }
-    }
-    throw new IllegalViewOperationException("Missing animated property from animation config");
+    } ?: throw IllegalViewOperationException("Missing animated property from animation config")
   }
 }
