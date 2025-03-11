@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB rrc_unimplementedview_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(rrc_unimplementedview STATIC ${rrc_unimplementedview_SRC})
@@ -31,3 +25,5 @@ target_link_libraries(rrc_unimplementedview
         rrc_view
         yoga
 )
+target_compile_reactnative_options(rrc_unimplementedview PRIVATE "Fabric")
+target_compile_options(rrc_unimplementedview PRIVATE -Wpedantic)

@@ -20,10 +20,13 @@ class RuntimeSamplingProfileTraceEventSerializer {
  public:
   RuntimeSamplingProfileTraceEventSerializer() = delete;
 
-  static void serializeAndBuffer(
+  static void serializeAndNotify(
       PerformanceTracer& performanceTracer,
       const RuntimeSamplingProfile& profile,
       std::chrono::steady_clock::time_point tracingStartTime,
+      const std::function<void(const folly::dynamic& traceEventsChunk)>&
+          notificationCallback,
+      uint16_t traceEventChunkSize,
       uint16_t profileChunkSize = 100);
 };
 

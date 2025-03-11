@@ -73,19 +73,19 @@ val reactNativeDependenciesReleaseArtifact: PublishArtifact =
 val reactNativeDependenciesDebugDSYMArtifactFile: RegularFile =
     layout.projectDirectory.file("artifacts/ReactNativeDependenciesDebug.framework.dSYM.tar.gz")
 val reactNativeDependenciesDebugDSYMArtifact: PublishArtifact =
-    artifacts.add("externalArtifacts", reactNativeDependenciesDebugArtifactFile) {
+    artifacts.add("externalArtifacts", reactNativeDependenciesDebugDSYMArtifactFile) {
       type = "tgz"
       extension = "tar.gz"
-      classifier = "reactnative-dependencies-debug-dSYM"
+      classifier = "reactnative-dependencies-dSYM-debug"
     }
 
 val reactNativeDependenciesReleaseDSYMArtifactFile: RegularFile =
     layout.projectDirectory.file("artifacts/ReactNativeDependenciesRelease.framework.dSYM.tar.gz")
 val reactNativeDependenciesReleaseDSYMArtifact: PublishArtifact =
-    artifacts.add("externalArtifacts", reactNativeDependenciesReleaseArtifactFile) {
+    artifacts.add("externalArtifacts", reactNativeDependenciesReleaseDSYMArtifactFile) {
       type = "tgz"
       extension = "tar.gz"
-      classifier = "reactnative-dependencies-release-dSYM"
+      classifier = "reactnative-dependencies-dSYM-release"
     }
 
 apply(from = "../publish.gradle")
@@ -100,6 +100,8 @@ publishing {
       artifact(hermesDSYMReleaseArtifact)
       artifact(reactNativeDependenciesDebugArtifact)
       artifact(reactNativeDependenciesReleaseArtifact)
+      artifact(reactNativeDependenciesDebugDSYMArtifact)
+      artifact(reactNativeDependenciesReleaseDSYMArtifact)
     }
   }
 }

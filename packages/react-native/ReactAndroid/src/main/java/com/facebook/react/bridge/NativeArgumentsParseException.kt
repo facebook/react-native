@@ -7,10 +7,21 @@
 
 package com.facebook.react.bridge
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
+
 /** Exception thrown when a native module method call receives unexpected arguments from JS. */
+@LegacyArchitecture
 internal class NativeArgumentsParseException : JSApplicationCausedNativeException {
 
   constructor(detailMessage: String) : super(detailMessage)
 
   constructor(detailMessage: String, throwable: Throwable?) : super(detailMessage, throwable)
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "NativeArgumentsParseException")
+    }
+  }
 }

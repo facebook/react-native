@@ -12,6 +12,7 @@
 #include <libgen.h>
 #include <sys/endian.h>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <sstream>
 #include <utility>

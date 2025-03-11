@@ -7,7 +7,8 @@
  * @format
  */
 
-const {run, sleep, log, verifyPublishedPackage} = require('./utils.js');
+const {run, sleep, log} = require('./utils.js');
+const {verifyPublishedPackage} = require('./verifyPublishedPackage.js');
 
 const TAG_AS_LATEST_REGEX = /#publish-packages-to-npm&latest/;
 

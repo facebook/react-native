@@ -193,6 +193,12 @@ public class ReactViewGroup extends ViewGroup
     // Remove any children
     removeAllViews();
 
+    // If the view is still attached to a parent, we need to remove it from the parent
+    // before we can recycle it.
+    if (getParent() != null) {
+      ((ViewGroup) getParent()).removeView(this);
+    }
+
     // Reset background, borders
     updateBackgroundDrawable(null);
 
@@ -588,9 +594,6 @@ public class ReactViewGroup extends ViewGroup
     UiThreadUtil.assertOnUiThread();
     checkViewClippingTag(child, Boolean.TRUE);
     if (!customDrawOrderDisabled()) {
-      if (indexOfChild(child) == -1) {
-        return;
-      }
       getDrawingOrderHelper().handleRemoveView(child);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {

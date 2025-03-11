@@ -72,11 +72,15 @@ public open class ReactViewManager : ReactClippingViewManager<ReactViewGroup>() 
   override fun prepareToRecycleView(
       reactContext: ThemedReactContext,
       view: ReactViewGroup
-  ): ReactViewGroup {
+  ): ReactViewGroup? {
+    // We don't want to run the view clipping when the view is being prepared for recycling to avoid
+    // have size changes iterate over child view that should be removed anyway
+    view.removeClippedSubviews = false
+
     // BaseViewManager
     val preparedView = super.prepareToRecycleView(reactContext, view)
     preparedView?.recycleView()
-    return view
+    return preparedView
   }
 
   @ReactProp(name = "accessible")

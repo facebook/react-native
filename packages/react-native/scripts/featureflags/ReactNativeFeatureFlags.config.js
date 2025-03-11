@@ -86,7 +86,7 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       metadata: {
         description:
-          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.',
+          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -214,17 +214,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enablePreciseSchedulingForPremountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-19',
-        description:
-          'Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enablePropsUpdateReconciliationAndroid: {
       defaultValue: false,
       metadata: {
@@ -312,17 +301,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    excludeYogaFromRawProps: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-22',
-        description:
-          'When enabled, rawProps in Props will not include Yoga specific props.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     fixDifferentiatorEmittingUpdatesWithWrongParentTag: {
       defaultValue: true,
       metadata: {
@@ -370,7 +348,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-01-31',
         description:
-          'Enable network inspection support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.',
+          'Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -559,17 +537,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables access to the host tree in Fabric using DOM-compatible APIs.',
         expectedReleaseValue: true,
         purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableAnimatedClearImmediateFix: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-09-17',
-        description:
-          'Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },

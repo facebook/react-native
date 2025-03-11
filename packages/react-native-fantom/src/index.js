@@ -237,6 +237,14 @@ function scrollTo(
   NativeFantom.scrollTo(shadowNode, options);
 }
 
+function enqueueModalSizeUpdate(
+  node: ReactNativeElement,
+  size: {width: number, height: number},
+) {
+  const shadowNode = getNativeNodeReference(node);
+  NativeFantom.enqueueModalSizeUpdate(shadowNode, size.width, size.height);
+}
+
 export const unstable_benchmark = Benchmark;
 
 type FantomConstants = $ReadOnly<{
@@ -336,6 +344,7 @@ export default {
   dispatchNativeEvent,
   enqueueNativeEvent,
   flushAllNativeEvents,
+  enqueueModalSizeUpdate,
   unstable_benchmark: Benchmark,
   scrollTo,
   saveJSMemoryHeapSnapshot,

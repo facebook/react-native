@@ -280,11 +280,10 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   // after (fraction == 1.0) the last character, then the attribute is valid.
   if (textStorage.length > 0 && (fraction > 0 || characterIndex > 0) &&
       (fraction < 1 || characterIndex < textStorage.length - 1)) {
-    RCTWeakEventEmitterWrapper *eventEmitterWrapper =
-        (RCTWeakEventEmitterWrapper *)[textStorage attribute:RCTAttributedStringEventEmitterKey
-                                                     atIndex:characterIndex
-                                              effectiveRange:NULL];
-    return eventEmitterWrapper.eventEmitter;
+    NSData *eventEmitterWrapper = (NSData *)[textStorage attribute:RCTAttributedStringEventEmitterKey
+                                                           atIndex:characterIndex
+                                                    effectiveRange:NULL];
+    return RCTUnwrapEventEmitter(eventEmitterWrapper);
   }
 
   return nil;

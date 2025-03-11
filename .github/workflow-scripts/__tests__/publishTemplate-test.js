@@ -22,8 +22,11 @@ jest.mock('../utils.js', () => ({
   log: silence,
   run: mockRun,
   sleep: mockSleep,
-  verifyPublishedPackage: mockVerifyPublishedPackage,
   getNpmPackageInfo: mockGetNpmPackageInfo,
+}));
+
+jest.mock('../verifyPublishedPackage.js', () => ({
+  verifyPublishedPackage: mockVerifyPublishedPackage,
 }));
 
 const getMockGithub = () => ({

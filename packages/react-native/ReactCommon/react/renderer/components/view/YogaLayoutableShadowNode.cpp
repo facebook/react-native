@@ -25,8 +25,6 @@
 
 namespace facebook::react {
 
-static_assert(RawPropsFilterable<YogaLayoutableShadowNode>);
-
 static int FabricDefaultYogaLog(
     const YGConfigConstRef /*unused*/,
     const YGNodeConstRef /*unused*/,
@@ -783,13 +781,6 @@ Rect YogaLayoutableShadowNode::getContentBounds() const {
   }
 
   return contentBounds;
-}
-
-/*static*/ void YogaLayoutableShadowNode::filterRawProps(RawProps& rawProps) {
-  if (ReactNativeFeatureFlags::excludeYogaFromRawProps()) {
-    // TODO: this shouldn't live in RawProps
-    rawProps.filterYogaStylePropsInDynamicConversion();
-  }
 }
 
 #pragma mark - Yoga Connectors

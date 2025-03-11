@@ -11,11 +11,11 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import type {Root} from '..';
+import type {Root} from '@react-native/fantom';
 
-import Fantom from '..';
+import Fantom from '@react-native/fantom';
 import * as React from 'react';
-import {ScrollView, Text, TextInput, View} from 'react-native';
+import {Modal, ScrollView, Text, TextInput, View} from 'react-native';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';
 import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
@@ -25,22 +25,11 @@ function getActualViewportDimensions(root: Root): {
   viewportWidth: number,
   viewportHeight: number,
 } {
-  let maybeNode;
-
   Fantom.runTask(() => {
-    root.render(
-      <View
-        style={{width: '100%', height: '100%'}}
-        ref={node => {
-          maybeNode = node;
-        }}
-      />,
-    );
+    root.render(<View />);
   });
 
-  const node = ensureInstance(maybeNode, ReactNativeElement);
-
-  const rect = node.getBoundingClientRect();
+  const rect = root.document.documentElement.getBoundingClientRect();
   return {
     viewportWidth: rect.width,
     viewportHeight: rect.height,
@@ -669,6 +658,74 @@ describe('Fantom', () => {
       Fantom.flushAllNativeEvents();
 
       expect(onLayout).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('enqueueModalSizeUpdate', () => {
+    it('throws error if called on node that is not <Modal />', () => {
+      const root = Fantom.createRoot();
+      let maybeNode;
+
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={node => {
+              maybeNode = node;
+            }}
+          />,
+        );
+      });
+
+      const element = ensureInstance(maybeNode, ReactNativeElement);
+
+      expect(() => {
+        Fantom.runOnUIThread(() => {
+          Fantom.enqueueModalSizeUpdate(element, {
+            width: 200,
+            height: 100,
+          });
+        });
+      }).toThrow(
+        'Exception in HostFunction: enqueueModalSizeUpdate() can only be called on <Modal />',
+      );
+    });
+
+    it('change size of <Modal />', () => {
+      const root = Fantom.createRoot();
+      let maybeModalNode;
+      let maybeViewNode;
+
+      Fantom.runTask(() => {
+        root.render(
+          <Modal
+            ref={(node: ?React.ElementRef<typeof Modal>) => {
+              maybeModalNode = node;
+            }}>
+            <View
+              style={{width: '50%', height: '25%'}}
+              ref={node => {
+                maybeViewNode = node;
+              }}
+            />
+          </Modal>,
+        );
+      });
+
+      const modalElement = ensureInstance(maybeModalNode, ReactNativeElement);
+
+      Fantom.runOnUIThread(() => {
+        Fantom.enqueueModalSizeUpdate(modalElement, {
+          width: 100,
+          height: 100,
+        });
+      });
+
+      Fantom.runWorkLoop();
+
+      const viewElement = ensureInstance(maybeViewNode, ReactNativeElement);
+
+      const boundingClientRect = viewElement.getBoundingClientRect();
+      expect(boundingClientRect.height).toBe(25);
+      expect(boundingClientRect.width).toBe(50);
     });
   });
 });

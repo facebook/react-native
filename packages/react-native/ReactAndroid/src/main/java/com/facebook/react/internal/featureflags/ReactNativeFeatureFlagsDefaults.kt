@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0041e37961e68474a6d092dc0f8a4903>>
+ * @generated SignedSource<<0f22538afea52085aaf605e8608eaff8>>
  */
 
 /**
@@ -55,8 +55,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
 
   override fun enableNewBackgroundAndBorderDrawables(): Boolean = false
 
-  override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean = false
-
   override fun enablePropsUpdateReconciliationAndroid(): Boolean = false
 
   override fun enableReportEventPaintTime(): Boolean = false
@@ -72,8 +70,6 @@ public open class ReactNativeFeatureFlagsDefaults : ReactNativeFeatureFlagsProvi
   override fun enableViewRecyclingForText(): Boolean = true
 
   override fun enableViewRecyclingForView(): Boolean = true
-
-  override fun excludeYogaFromRawProps(): Boolean = false
 
   override fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean = true
 

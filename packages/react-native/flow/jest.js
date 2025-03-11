@@ -1040,10 +1040,12 @@ declare var describe: {
    * @param {table} table of Test
    */
   each(
-    ...table: Array<Array<mixed> | mixed> | [Array<string>, string]
+    ...table:
+      | $ReadOnlyArray<$ReadOnlyArray<mixed> | mixed>
+      | [$ReadOnlyArray<string>, string]
   ): (
     name: JestTestName,
-    fn?: (...args: Array<any>) => ?Promise<mixed>,
+    fn?: (...args: $ReadOnlyArray<any>) => ?Promise<mixed>,
     timeout?: number,
   ) => void,
   ...
