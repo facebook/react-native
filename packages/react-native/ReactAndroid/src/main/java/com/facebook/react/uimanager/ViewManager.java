@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -257,6 +258,16 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     if (recyclableViews != null) {
       T recyclableView = prepareToRecycleView(themedReactContext, view);
       if (recyclableView != null) {
+        Assertions.assertCondition(
+            recyclableView.getParent() == null,
+            "Recycled view ["
+                + view.getId()
+                + "] should not be attached to a parent. View: "
+                + view
+                + " Parent: "
+                + recyclableView.getParent()
+                + " ThemedReactContext: "
+                + themedReactContext);
         recyclableViews.push(recyclableView);
       }
     }
