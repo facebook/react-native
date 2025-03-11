@@ -386,19 +386,27 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                   return;
                 }
 
-                CGSize attachmentSize = attachment.bounds.size;
-                CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
+                NSRange attachmentGlyphRange = [layoutManager glyphRangeForCharacterRange:range
+                                                                     actualCharacterRange:NULL];
+                NSRange truncatedRange =
+                    [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:attachmentGlyphRange.location];
+                if (truncatedRange.location != NSNotFound && attachmentGlyphRange.location >= truncatedRange.location) {
+                  attachments.push_back(TextMeasurement::Attachment{.isClipped = true});
+                } else {
+                  CGSize attachmentSize = attachment.bounds.size;
+                  CGRect glyphRect = [layoutManager boundingRectForGlyphRange:range inTextContainer:textContainer];
 
-                CGRect frame;
-                CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
+                  CGRect frame;
+                  CGFloat baseline = [layoutManager locationForGlyphAtIndex:range.location].y;
 
-                frame = {{glyphRect.origin.x, glyphRect.origin.y + baseline - attachmentSize.height}, attachmentSize};
+                  frame = {{glyphRect.origin.x, glyphRect.origin.y + baseline - attachmentSize.height}, attachmentSize};
 
-                auto rect = facebook::react::Rect{
-                    facebook::react::Point{frame.origin.x, frame.origin.y},
-                    facebook::react::Size{frame.size.width, frame.size.height}};
+                  auto rect = facebook::react::Rect{
+                      facebook::react::Point{frame.origin.x, frame.origin.y},
+                      facebook::react::Size{frame.size.width, frame.size.height}};
 
-                attachments.push_back(TextMeasurement::Attachment{rect, false});
+                  attachments.push_back(TextMeasurement::Attachment{.frame = rect, .isClipped = false});
+                }
               }];
 
   return TextMeasurement{{size.width, size.height}, attachments};
