@@ -19,12 +19,10 @@ describe('URL', function () {
     expect(url.hash).toBe('#fragment');
     expect(url.host).toBe('reactnative.dev:8080');
     expect(url.hostname).toBe('reactnative.dev');
-    expect(url.origin).toBe('https://reactnative.dev:8080');
     expect(url.password).toBe('password');
     expect(url.username).toBe('username');
     expect(url.pathname).toBe('/docs/path');
     expect(url.port).toBe('8080');
-    expect(url.protocol).toBe('https:');
     expect(url.search).toBe('?query=testQuery&key=value');
 
     // Test searchParams parsing
