@@ -34,6 +34,7 @@ class AccessibilityProps {
   bool accessible{false};
   std::optional<AccessibilityState> accessibilityState{std::nullopt};
   std::string accessibilityLabel{""};
+  std::vector<std::string> accessibilityElements{};
   AccessibilityLabelledBy accessibilityLabelledBy{};
   AccessibilityLiveRegion accessibilityLiveRegion{
       AccessibilityLiveRegion::None};
