@@ -21,10 +21,10 @@ Pod::Spec.new do |spec|
   spec.module_name = 'folly'
   spec.prepare_command = "echo '#{folly_config_file.join("\n")}' > folly/folly-config.h"
   spec.header_mappings_dir = '.'
-  spec.dependency 'boost'
-  spec.dependency 'DoubleConversion'
-  spec.dependency 'glog'
-  spec.dependency "fast_float", "6.1.4"
+  spec.dependency "boost"
+  spec.dependency "DoubleConversion"
+  spec.dependency "glog"
+  spec.dependency "fast_float", "8.0.0"
   spec.dependency "fmt", "11.0.2"
   spec.compiler_flags = '-Wno-documentation -faligned-new'
   spec.source_files = 'folly/String.cpp',

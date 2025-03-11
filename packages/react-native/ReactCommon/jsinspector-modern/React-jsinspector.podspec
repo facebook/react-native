@@ -51,6 +51,7 @@ Pod::Spec.new do |s|
   s.dependency "React-featureflags"
   s.dependency "React-runtimeexecutor", version
   s.dependency "React-jsi"
+  add_dependency(s, "React-jsinspectornetwork", :framework_name => 'jsinspector_modernnetwork')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-perflogger", version
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"

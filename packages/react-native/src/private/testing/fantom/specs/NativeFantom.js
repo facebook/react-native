@@ -76,6 +76,11 @@ interface Spec extends TurboModule {
     shadowNode: mixed /* ShadowNode */,
     options: ScrollOptions,
   ) => void;
+  enqueueModalSizeUpdate: (
+    shadowNode: mixed /* ShadowNode */,
+    height: number,
+    width: number,
+  ) => void;
   takeMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;
   flushEventQueue: () => void;

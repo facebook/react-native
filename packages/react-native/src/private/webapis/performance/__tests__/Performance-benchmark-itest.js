@@ -10,9 +10,9 @@
  * @fantom_mode opt
  */
 
-import '../../../../../Libraries/Core/InitializeCore.js';
+import 'react-native/Libraries/Core/InitializeCore';
 
-import type Performance from '../Performance';
+import type Performance from 'react-native/src/private/webapis/performance/Performance';
 
 import Fantom from '@react-native/fantom';
 

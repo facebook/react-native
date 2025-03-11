@@ -7,8 +7,7 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
 include(${REACT_ANDROID_DIR}/src/main/jni/first-party/jni-lib-merge/SoMerging-utils.cmake)
-
-add_compile_options(-fexceptions -frtti -std=c++20 -Wall -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB mapbuffer_SRC CONFIGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/react/common/mapbuffer/*.cpp)
@@ -34,3 +33,5 @@ target_link_libraries(mapbufferjni
         react_utils
         yoga
 )
+
+target_compile_reactnative_options(mapbufferjni PRIVATE "Fabric")

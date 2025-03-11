@@ -118,6 +118,7 @@ jobs:
 
   prebuild_apple_dependencies:
     uses: ./.github/workflows/prebuild-ios.yml
+    secrets: inherit
 
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-13

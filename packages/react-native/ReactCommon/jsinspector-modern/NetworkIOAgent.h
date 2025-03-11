@@ -12,12 +12,9 @@
 #include "ScopedExecutor.h"
 
 #include <folly/dynamic.h>
-#include <mutex>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <variant>
 
 namespace facebook::react::jsinspector_modern {
 

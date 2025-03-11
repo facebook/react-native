@@ -7,6 +7,9 @@
 
 package com.facebook.react.bridge
 
+import com.facebook.react.common.annotations.internal.LegacyArchitecture
+
+@LegacyArchitecture
 public enum class MemoryPressure {
   UI_HIDDEN,
   MODERATE,

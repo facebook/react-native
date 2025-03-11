@@ -12,6 +12,7 @@ plugins {
   alias(libs.plugins.download) apply false
   alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.binary.compatibility.validator) apply true
+  alias(libs.plugins.android.test) apply false
 }
 
 val reactAndroidProperties = java.util.Properties()

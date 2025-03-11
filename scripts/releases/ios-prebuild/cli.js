@@ -75,6 +75,12 @@ const cli = yargs
     default: 'Debug',
     describe: 'Specify the configuration to build, Release or Debug (default).',
   })
+  .option('identity', {
+    alias: 'i',
+    type: 'string',
+    describe:
+      'Specify the code signing identity to use for signing the frameworks.',
+  })
   .help();
 
 /**
@@ -90,6 +96,7 @@ async function getCLIConfiguration() /*: Promise<?{|
   destinations: $ReadOnlyArray<Destination>,
   dependencies: $ReadOnlyArray<Dependency>,
   configuration: string,
+  identity: ?string,
 |}> */ {
   // Run input parsing
   const argv = await cli.argv;
@@ -143,6 +150,7 @@ async function getCLIConfiguration() /*: Promise<?{|
     destinations: resolvedPlatforms,
     dependencies: resolvedDependencies,
     configuration: argv.configuration,
+    identity: argv.identity,
   };
 }
 

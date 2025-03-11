@@ -9,6 +9,7 @@ require_relative "./utils.rb"
 require_relative "./helpers.rb"
 require_relative "./jsengine.rb"
 
+
 class NewArchitectureHelper
     @@NewArchWarningEmitted = false # Used not to spam warnings to the user.
 
@@ -143,6 +144,42 @@ class NewArchitectureHelper
     end
 
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == 0 ? false : true
+        return ENV["RCT_NEW_ARCH_ENABLED"] == '0' ? false : true
+    end
+
+    def self.set_RCTNewArchEnabled_in_info_plist(installer, new_arch_enabled)
+        projectPaths = installer.aggregate_targets
+            .map{ |t| t.user_project }
+            .uniq{ |p| p.path }
+            .map{ |p| p.path }
+
+        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle"]
+        projectPaths.each do |projectPath|
+            projectFolderPath = File.dirname(projectPath)
+            infoPlistFiles = `find #{projectFolderPath} -name "Info.plist"`
+            infoPlistFiles = infoPlistFiles.split("\n").map { |f| f.strip }
+
+            infoPlistFiles.each do |infoPlistFile|
+                # If infoPlistFile contains Pods or tests, skip it
+                should_skip = false
+                excluded_info_plist.each do |excluded|
+                    if infoPlistFile.include? excluded
+                        should_skip = true
+                    end
+                end
+                next if should_skip
+
+                # Read the file as a plist
+                info_plist = Xcodeproj::Plist.read_from_path(infoPlistFile)
+                # Check if it contains the RCTNewArchEnabled key
+                if info_plist["RCTNewArchEnabled"] and info_plist["RCTNewArchEnabled"] == new_arch_enabled
+                    next
+                end
+
+                # Add the key and value to the plist
+                info_plist["RCTNewArchEnabled"] = new_arch_enabled ? true : false
+                Xcodeproj::Plist.write_to_path(info_plist, infoPlistFile)
+            end
+        end
     end
 end

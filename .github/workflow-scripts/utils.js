@@ -9,13 +9,7 @@
 
 const {execSync} = require('child_process');
 
-function run(cmd) {
-  return execSync(cmd, 'utf8').toString().trim();
-}
-
-async function sleep(seconds) {
-  return new Promise(resolve => setTimeout(resolve, seconds * 1000));
-}
+const log = (...args) => console.log(...args);
 
 async function getNpmPackageInfo(pkg, versionOrTag) {
   return fetch(`https://registry.npmjs.org/${pkg}/${versionOrTag}`).then(resp =>
@@ -23,7 +17,13 @@ async function getNpmPackageInfo(pkg, versionOrTag) {
   );
 }
 
-const log = (...args) => console.log(...args);
+async function sleep(seconds) {
+  return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+}
+
+function run(cmd) {
+  return execSync(cmd, 'utf8').toString().trim();
+}
 
 module.exports = {
   log,

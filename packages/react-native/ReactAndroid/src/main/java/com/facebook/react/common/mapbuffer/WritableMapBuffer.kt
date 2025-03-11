@@ -23,7 +23,7 @@ import javax.annotation.concurrent.NotThreadSafe
 @StableReactNativeAPI
 @NotThreadSafe
 @DoNotStrip
-public class WritableMapBuffer : MapBuffer {
+internal class WritableMapBuffer : MapBuffer {
   private val values: SparseArray<Any> = SparseArray<Any>()
 
   /*
@@ -37,7 +37,7 @@ public class WritableMapBuffer : MapBuffer {
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
    */
-  public fun put(key: Int, value: Boolean): WritableMapBuffer = putInternal(key, value)
+  fun put(key: Int, value: Boolean): WritableMapBuffer = putInternal(key, value)
 
   /**
    * Adds an int value for given key to the MapBuffer.
@@ -46,7 +46,7 @@ public class WritableMapBuffer : MapBuffer {
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
    */
-  public fun put(key: Int, value: Int): WritableMapBuffer = putInternal(key, value)
+  fun put(key: Int, value: Int): WritableMapBuffer = putInternal(key, value)
 
   /**
    * Adds a long value for given key to the MapBuffer.
@@ -55,7 +55,7 @@ public class WritableMapBuffer : MapBuffer {
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
    */
-  public fun put(key: Int, value: Long): WritableMapBuffer = putInternal(key, value)
+  fun put(key: Int, value: Long): WritableMapBuffer = putInternal(key, value)
 
   /**
    * Adds a double value for given key to the MapBuffer.
@@ -64,7 +64,7 @@ public class WritableMapBuffer : MapBuffer {
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
    */
-  public fun put(key: Int, value: Double): WritableMapBuffer = putInternal(key, value)
+  fun put(key: Int, value: Double): WritableMapBuffer = putInternal(key, value)
 
   /**
    * Adds a string value for given key to the MapBuffer.
@@ -73,7 +73,7 @@ public class WritableMapBuffer : MapBuffer {
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
    */
-  public fun put(key: Int, value: String): WritableMapBuffer = putInternal(key, value)
+  fun put(key: Int, value: String): WritableMapBuffer = putInternal(key, value)
 
   /**
    * Adds a [MapBuffer] value for given key to the current MapBuffer.
@@ -82,7 +82,7 @@ public class WritableMapBuffer : MapBuffer {
    * @param value entry value
    * @throws IllegalArgumentException if key is out of [UShort] range
    */
-  public fun put(key: Int, value: MapBuffer): WritableMapBuffer = putInternal(key, value)
+  fun put(key: Int, value: MapBuffer): WritableMapBuffer = putInternal(key, value)
 
   private fun putInternal(key: Int, value: Any): WritableMapBuffer {
     require(key in KEY_RANGE) {

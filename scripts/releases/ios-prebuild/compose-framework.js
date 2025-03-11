@@ -27,6 +27,7 @@ async function createFramework(
   dependencies /*: $ReadOnlyArray<Dependency> */,
   rootFolder /*: string */,
   buildFolder /*: string */,
+  identity /*: ?string */,
 ) {
   console.log('✅ Composing iOS XCFramework...');
 
@@ -71,6 +72,10 @@ async function createFramework(
   const symbolOutput = path.join(rootFolder, 'Symbols');
   fs.mkdirSync(symbolOutput, {recursive: true});
   symbolPaths.forEach(symbol => execSync(`cp -r ${symbol} ${symbolOutput}`));
+
+  if (identity) {
+    signXCFramework(identity, output);
+  }
 }
 
 /**
@@ -125,6 +130,15 @@ function copyBundles(
       }
     });
   });
+}
+
+function signXCFramework(
+  identity /*: string */,
+  xcframeworkPath /*: string */,
+) {
+  console.log('Signing XCFramework...');
+  const command = `codesign --timestamp --sign "${identity}" ${xcframeworkPath}`;
+  execSync(command, {stdio: 'inherit'});
 }
 
 module.exports = {createFramework};

@@ -8,8 +8,6 @@
  * @format
  */
 
-import typeof Modal from './Modal';
+import ReportFullyDrawnViewNativeComponent from './ReportFullyDrawnViewNativeComponent';
 
-export default {
-  unstable_Modal: (null: ?Modal),
-};
+export default ReportFullyDrawnViewNativeComponent;
