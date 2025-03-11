@@ -13,14 +13,16 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture
 public class ReactNoCrashBridgeNotAllowedSoftException : ReactNoCrashSoftException {
 
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "ReactNoCrashBridgeNotAllowedSoftException")
-  }
-
   public constructor(m: String) : super(m)
 
   public constructor(e: Throwable) : super(e)
 
   public constructor(m: String, e: Throwable) : super(m, e)
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "ReactNoCrashBridgeNotAllowedSoftException")
+    }
+  }
 }

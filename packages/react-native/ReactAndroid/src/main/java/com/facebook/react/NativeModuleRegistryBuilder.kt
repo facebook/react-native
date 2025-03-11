@@ -19,10 +19,6 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 public class NativeModuleRegistryBuilder(
     private val reactApplicationContext: ReactApplicationContext,
 ) {
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "NativeModuleRegistryBuilder", LegacyArchitectureLogLevel.WARNING)
-  }
 
   private val modules = HashMap<String, ModuleHolder>()
 
@@ -66,4 +62,11 @@ by autolinking. Try removing the existing entry and rebuild.
   }
 
   public fun build(): NativeModuleRegistry = NativeModuleRegistry(reactApplicationContext, modules)
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "NativeModuleRegistryBuilder", LegacyArchitectureLogLevel.WARNING)
+    }
+  }
 }

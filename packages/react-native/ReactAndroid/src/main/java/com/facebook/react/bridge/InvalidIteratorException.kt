@@ -19,8 +19,10 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture
 public class InvalidIteratorException @DoNotStrip public constructor(msg: String) :
     RuntimeException(msg) {
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "InvalidIteratorException")
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "InvalidIteratorException")
+    }
   }
 }

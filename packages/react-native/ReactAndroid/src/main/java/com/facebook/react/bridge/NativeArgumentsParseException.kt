@@ -14,12 +14,14 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture
 internal class NativeArgumentsParseException : JSApplicationCausedNativeException {
 
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "NativeArgumentsParseException")
-  }
-
   constructor(detailMessage: String) : super(detailMessage)
 
   constructor(detailMessage: String, throwable: Throwable?) : super(detailMessage, throwable)
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "NativeArgumentsParseException")
+    }
+  }
 }

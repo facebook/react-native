@@ -18,10 +18,12 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture
 internal class LayoutDeleteAnimation : BaseLayoutAnimation() {
 
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "LayoutDeleteAnimation", LegacyArchitectureLogLevel.WARNING)
-  }
-
   override fun isReverse(): Boolean = true
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "LayoutDeleteAnimation", LegacyArchitectureLogLevel.WARNING)
+    }
+  }
 }
