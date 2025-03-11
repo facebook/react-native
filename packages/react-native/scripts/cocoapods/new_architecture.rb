@@ -78,9 +78,8 @@ class NewArchitectureHelper
         current_config = hash["pod_target_xcconfig"] != nil ? hash["pod_target_xcconfig"] : {}
         current_headers = current_config["HEADER_SEARCH_PATHS"] != nil ? current_config["HEADER_SEARCH_PATHS"] : ""
 
-        header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
+        header_search_paths = ["\"$(PODS_ROOT)/Headers/Private/Yoga\""]
         if ENV['USE_FRAMEWORKS']
-            header_search_paths << "\"$(PODS_ROOT)/ReactNativeDependencies\""
             ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-graphics", "React_graphics", ["react/renderer/graphics/platform/ios"])
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-FabricImage", "React_FabricImage", []))
@@ -126,10 +125,10 @@ class NewArchitectureHelper
         spec.dependency "React-debug"
         spec.dependency "React-ImageManager"
         spec.dependency "React-rendererdebug"
-        spec.dependency "ReactNativeDependencies"
         spec.dependency 'React-jsi'
 
         depend_on_js_engine(spec)
+        add_rn_dependencies(spec)
 
         spec.pod_target_xcconfig = current_config
     end
