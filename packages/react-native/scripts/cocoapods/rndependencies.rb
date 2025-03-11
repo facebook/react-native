@@ -91,6 +91,10 @@ class ReactNativeDependenciesUtils
             return
         end
 
+        if @@build_from_source
+            return
+        end
+
         url = release_tarball_url(@@react_native_version, :debug)
         rndeps_log("Using tarball from URL: #{url}")
         download_stable_rndeps(@@react_native_path, @@react_native_version, :debug)
