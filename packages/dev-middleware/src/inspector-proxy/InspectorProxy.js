@@ -259,7 +259,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
     );
   }
 
-  #onMessageFromDeviceOrDebugger(message: string): void {
+  #onMessageFromDeviceOrDebugger(
+    message: string,
+    debuggerSessionIDs: DebuggerSessionIDs,
+  ): void {
     // TODO: instead remove this and any other messages in idle state we find
     // Not using JSON.parse for performance reasons. Worst case, we'll get
     // less accurate idle state reporting, which we would easily see in data.
@@ -270,7 +273,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     this.#lastMessageTimestamp = new Date().getTime();
 
     if (this.#trackEventLoopPerf) {
-      this.#trackEventLoopPerfThrottled();
+      this.#trackEventLoopPerfThrottled(debuggerSessionIDs);
     }
   }
 
@@ -357,7 +360,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
         });
 
         socket.on('message', message =>
-          this.#onMessageFromDeviceOrDebugger(message.toString()),
+          this.#onMessageFromDeviceOrDebugger(
+            message.toString(),
+            debuggerSessionIDs,
+          ),
         );
 
         socket.on('close', (code: number, reason: string) => {
@@ -394,7 +400,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     return wss;
   }
 
-  #trackEventLoopPerfThrottled(): void {
+  #trackEventLoopPerfThrottled(debuggerSessionIDs: DebuggerSessionIDs): void {
     if (this.#eventLoopPerfMeasurementOngoing) {
       return;
     }
@@ -430,6 +436,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
           eventLoopUtilization,
           maxEventLoopDelay,
         );
+
+        this.#eventReporter?.logEvent({
+          type: 'high_event_loop_delay',
+          eventLoopUtilization,
+          maxEventLoopDelay,
+          duration: EVENT_LOOP_PERF_MEASUREMENT_MS,
+          ...debuggerSessionIDs,
+        });
       }
 
       this.#eventLoopPerfMeasurementOngoing = false;
@@ -492,7 +506,10 @@ export default class InspectorProxy implements InspectorProxyQueries {
         });
 
         socket.on('message', message =>
-          this.#onMessageFromDeviceOrDebugger(message.toString()),
+          this.#onMessageFromDeviceOrDebugger(
+            message.toString(),
+            debuggerSessionIDs,
+          ),
         );
 
         device.handleDebuggerConnection(socket, pageId, {
