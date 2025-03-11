@@ -40,13 +40,8 @@ describe('URL', function () {
     // Insert / between Base and Path if missing
     const k = new URL('en-US/docs', 'https://developer.mozilla.org');
     expect(k.href).toBe('https://developer.mozilla.org/en-US/docs');
-
-
-
-
-
+    //More cases
     const url = new URL('https://username:password@reactnative.dev:8080/docs/path?query=testQuery&key=value#fragment');
-
     expect(url.hash).toBe('#fragment');
     expect(url.host).toBe('reactnative.dev:8080');
     expect(url.hostname).toBe('reactnative.dev');
