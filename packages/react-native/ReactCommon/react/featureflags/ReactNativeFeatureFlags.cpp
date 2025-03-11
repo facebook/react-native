@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<d4a76af56d22ff7a1d6e9bc4626cd2fc>>
+ * @generated SignedSource<<98c62bb40ef9c03af6e3e2d758cef7ec>>
  */
 
 /**
@@ -120,10 +120,6 @@ bool ReactNativeFeatureFlags::enableViewRecyclingForText() {
 
 bool ReactNativeFeatureFlags::enableViewRecyclingForView() {
   return getAccessor().enableViewRecyclingForView();
-}
-
-bool ReactNativeFeatureFlags::excludeYogaFromRawProps() {
-  return getAccessor().excludeYogaFromRawProps();
 }
 
 bool ReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag() {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<52f682b1103d4ff9444da86525f088bb>>
+ * @generated SignedSource<<b4b4f1a34fa94b88dae41b0f14c96cc8>>
  */
 
 /**
@@ -259,15 +259,6 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableViewRecyclingForView();
-  }
-
-  bool excludeYogaFromRawProps() override {
-    auto value = values_["excludeYogaFromRawProps"];
-    if (!value.isNull()) {
-      return value.getBool();
-    }
-
-    return ReactNativeFeatureFlagsDefaults::excludeYogaFromRawProps();
   }
 
   bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() override {
