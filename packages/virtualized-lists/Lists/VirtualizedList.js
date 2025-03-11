@@ -1094,6 +1094,9 @@ class VirtualizedList extends StateSafePureComponent<
         ? [inversionStyle, this.props.style]
         : this.props.style,
       isInvertedVirtualizedList: this.props.inverted,
+      isReversedVirtualizedList: this._orientation().reversed
+        ? true
+        : undefined,
       maintainVisibleContentPosition:
         this.props.maintainVisibleContentPosition != null
           ? {
