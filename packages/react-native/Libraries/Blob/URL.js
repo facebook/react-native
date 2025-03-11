@@ -12,7 +12,6 @@ import type Blob from './Blob';
 
 import NativeBlobModule from './NativeBlobModule';
 
-
 let BLOB_URL_PREFIX = null;
 
 if (
@@ -73,7 +72,6 @@ export class URL {
     return `${BLOB_URL_PREFIX}${blob.data.blobId}?offset=${blob.data.offset}&size=${blob.size}`;
   }
 
-
   static revokeObjectURL(url: string) {
     // Do nothing.
   }
@@ -109,14 +107,12 @@ export class URL {
   }
 
   get hash(): string {
-    const hashMatch = this._url.match(/#([^/]*)/);
-    return hashMatch ? `#${hashMatch[1]}` : '';
+    throw new Error('URL.hash is not implemented');
   }
 
   get host(): string {
     const hostMatch = this._url.match(/^https?:\/\/(?:[^@]+@)?([^:/?#]+)/);
     const portMatch = this._url.match(/:(\d+)(?=[/?#]|$)/);
-
     return hostMatch ? hostMatch[1] + (portMatch ? `:${portMatch[1]}` : '') : '';
   }
 
@@ -138,12 +134,6 @@ export class URL {
     const passwordMatch = this._url.match(/https?:\/\/.*:(.*)@/);
     return passwordMatch ? passwordMatch[1] : '';
   }
-
-  get username(): string {
-
-    const usernameMatch = this._url.match(/^https?:\/\/([^:@]+)(?::[^@]*)?@/);
-    return usernameMatch ? usernameMatch[1] : '';
-}
 
   get pathname(): string {
     const pathMatch = this._url.match(/https?:\/\/[^/]+(\/[^?#]*)?/);
@@ -186,4 +176,8 @@ export class URL {
     return this._url + separator + instanceString;
   }
 
+  get username(): string {
+    const usernameMatch = this._url.match(/^https?:\/\/([^:@]+)(?::[^@]*)?@/);
+    return usernameMatch ? usernameMatch[1] : '';
+  }
 }
