@@ -18,11 +18,6 @@ import com.facebook.react.uimanager.IllegalViewOperationException
 /** Class responsible for default layout animation, i.e animation of view creation and deletion. */
 @LegacyArchitecture
 internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "BaseLayoutAnimation", LegacyArchitectureLogLevel.WARNING)
-  }
-
   abstract fun isReverse(): Boolean
 
   override fun isValid(): Boolean = mDurationMs > 0 && mAnimatedProperty != null
@@ -92,5 +87,12 @@ internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
         )
       }
     } ?: throw IllegalViewOperationException("Missing animated property from animation config")
+  }
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "BaseLayoutAnimation", LegacyArchitectureLogLevel.WARNING)
+    }
   }
 }
