@@ -107,14 +107,16 @@ export class URL {
   }
 
   get hash(): string {
-     const hashMatch = this._url.match(/#([^/]*)/);
-     return hashMatch ? `#${hashMatch[1]}` : '';
+    const hashMatch = this._url.match(/#([^/]*)/);
+    return hashMatch ? `#${hashMatch[1]}` : '';
   }
 
   get host(): string {
     const hostMatch = this._url.match(/^https?:\/\/(?:[^@]+@)?([^:/?#]+)/);
     const portMatch = this._url.match(/:(\d+)(?=[/?#]|$)/);
-    return hostMatch ? hostMatch[1] + (portMatch ? `:${portMatch[1]}` : '') : '';
+    return hostMatch
+      ? hostMatch[1] + (portMatch ? `:${portMatch[1]}` : '')
+      : '';
   }
 
   get hostname(): string {
