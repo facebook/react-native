@@ -23,5 +23,8 @@ module.exports.verifyReleaseOnNpm = async (
   retries = MAX_RETRIES,
 ) => {
   const tag = version.includes('-rc.') ? 'next' : latest ? 'latest' : null;
+  if (version.startsWith('v')) {
+    version = version.slice(1);
+  }
   await verifyPublishedPackage(REACT_NATIVE_NPM_PKG, version, tag, retries);
 };
