@@ -3214,12 +3214,12 @@ public abstract interface class com/facebook/react/modules/network/ProgressListe
 	public abstract fun onProgress (JJZ)V
 }
 
-public class com/facebook/react/modules/network/ProgressResponseBody : okhttp3/ResponseBody {
+public final class com/facebook/react/modules/network/ProgressResponseBody : okhttp3/ResponseBody {
 	public fun <init> (Lokhttp3/ResponseBody;Lcom/facebook/react/modules/network/ProgressListener;)V
 	public fun contentLength ()J
 	public fun contentType ()Lokhttp3/MediaType;
 	public fun source ()Lokio/BufferedSource;
-	public fun totalBytesRead ()J
+	public final fun totalBytesRead ()J
 }
 
 public final class com/facebook/react/modules/network/ReactCookieJarContainer : com/facebook/react/modules/network/CookieJarContainer {
