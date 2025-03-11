@@ -301,17 +301,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    excludeYogaFromRawProps: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-22',
-        description:
-          'When enabled, rawProps in Props will not include Yoga specific props.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     fixDifferentiatorEmittingUpdatesWithWrongParentTag: {
       defaultValue: true,
       metadata: {

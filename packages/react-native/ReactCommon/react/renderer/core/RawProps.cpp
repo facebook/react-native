@@ -14,96 +14,6 @@
 
 namespace facebook::react {
 
-namespace {
-inline bool isYogaStyleProp(const std::string& prop) {
-  const static std::unordered_set<std::string> yogaStylePropNames = {
-      {"direction",
-       "flexDirection",
-       "justifyContent",
-       "alignContent",
-       "alignItems",
-       "alignSelf",
-       "position",
-       "flexWrap",
-       "display",
-       "flex",
-       "flexGrow",
-       "flexShrink",
-       "flexBasis",
-       "margin",
-       "padding",
-       "rowGap",
-       "columnGap",
-       "gap",
-       // TODO: T163711275 also filter out width/height when SVG no longer read
-       // them from RawProps
-       "minWidth",
-       "maxWidth",
-       "minHeight",
-       "maxHeight",
-       "aspectRatio",
-
-       // edges
-       "left",
-       "right",
-       "top",
-       "bottom",
-       "start",
-       "end",
-
-       // variants of inset
-       "inset",
-       "insetStart",
-       "insetEnd",
-       "insetInline",
-       "insetInlineStart",
-       "insetInlineEnd",
-       "insetBlock",
-       "insetBlockEnd",
-       "insetBlockStart",
-       "insetVertical",
-       "insetHorizontal",
-       "insetTop",
-       "insetBottom",
-       "insetLeft",
-       "insetRight",
-
-       // variants of margin
-       "marginStart",
-       "marginEnd",
-       "marginInline",
-       "marginInlineStart",
-       "marginInlineEnd",
-       "marginBlock",
-       "marginBlockStart",
-       "marginBlockEnd",
-       "marginVertical",
-       "marginHorizontal",
-       "marginTop",
-       "marginBottom",
-       "marginLeft",
-       "marginRight",
-
-       // variants of padding
-       "paddingStart",
-       "paddingEnd",
-       "paddingInline",
-       "paddingInlineStart",
-       "paddingInlineEnd",
-       "paddingBlock",
-       "paddingBlockStart",
-       "paddingBlockEnd",
-       "paddingVertical",
-       "paddingHorizontal",
-       "paddingTop",
-       "paddingBottom",
-       "paddingLeft",
-       "paddingRight"}};
-
-  return yogaStylePropNames.find(prop) != yogaStylePropNames.end();
-}
-} // namespace
-
 /*
  * Creates an object with given `runtime` and `value`.
  */
@@ -142,7 +52,6 @@ RawProps::RawProps(const RawProps& other) noexcept {
   } else if (mode_ == Mode::Dynamic) {
     dynamic_ = other.dynamic_;
   }
-  ignoreYogaStyleProps_ = other.ignoreYogaStyleProps_;
 }
 
 void RawProps::parse(const RawPropsParser& parser) noexcept {
@@ -171,13 +80,10 @@ folly::dynamic RawProps::toDynamic(
     case Mode::Empty:
       return folly::dynamic::object();
     case Mode::JSI: {
-      if (ignoreYogaStyleProps_ || filterObjectKeys != nullptr) {
+      if (filterObjectKeys != nullptr) {
         // We need to filter props
         return jsi::dynamicFromValue(
             *runtime_, value_, [&](const std::string& key) {
-              if (ignoreYogaStyleProps_ && isYogaStyleProp(key)) {
-                return true;
-              }
               if (filterObjectKeys) {
                 return filterObjectKeys(key);
               }
@@ -191,10 +97,6 @@ folly::dynamic RawProps::toDynamic(
     case Mode::Dynamic:
       return dynamic_;
   }
-}
-
-void RawProps::filterYogaStylePropsInDynamicConversion() noexcept {
-  ignoreYogaStyleProps_ = true;
 }
 
 /*

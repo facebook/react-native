@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<28bf0120b44887b9cf23eeca6afdd945>>
+ * @generated SignedSource<<4f1befe0cec24eeb531d7ecca6bc451b>>
  * @flow strict
  */
 
@@ -72,7 +72,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecycling: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
-  excludeYogaFromRawProps: Getter<boolean>,
   fixDifferentiatorEmittingUpdatesWithWrongParentTag: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
@@ -262,10 +261,6 @@ export const enableViewRecyclingForText: Getter<boolean> = createNativeFlagGette
  * Enables View Recycling for <View> via ReactViewGroup/ReactViewManager.
  */
 export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForView', true);
-/**
- * When enabled, rawProps in Props will not include Yoga specific props.
- */
-export const excludeYogaFromRawProps: Getter<boolean> = createNativeFlagGetter('excludeYogaFromRawProps', false);
 /**
  * Fixes a bug in Differentiator where parent views may be referenced before they're created
  */
