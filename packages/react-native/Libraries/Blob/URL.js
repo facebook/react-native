@@ -107,7 +107,8 @@ export class URL {
   }
 
   get hash(): string {
-    throw new Error('URL.hash is not implemented');
+     const hashMatch = this._url.match(/#([^/]*)/);
+     return hashMatch ? `#${hashMatch[1]}` : '';
   }
 
   get host(): string {
