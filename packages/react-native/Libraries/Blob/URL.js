@@ -109,7 +109,7 @@ export class URL {
   }
 
   get hash(): string {
-    const hashMatch = this._url.match(/#(.*)$/);
+    const hashMatch = this._url.match(/#([^/]*)/);
     return hashMatch ? `#${hashMatch[1]}` : '';
   }
 
