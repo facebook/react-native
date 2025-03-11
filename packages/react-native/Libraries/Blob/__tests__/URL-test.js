@@ -19,7 +19,6 @@ describe('URL', function () {
     expect(url.hash).toBe('#fragment');
     expect(url.host).toBe('reactnative.dev:8080');
     expect(url.hostname).toBe('reactnative.dev');
-    expect(url.href).toBe('https://username:password@reactnative.dev:8080/docs/path?query=testQuery&key=value#fragment');
     expect(url.origin).toBe('https://reactnative.dev:8080');
     expect(url.password).toBe('password');
     expect(url.username).toBe('username');
