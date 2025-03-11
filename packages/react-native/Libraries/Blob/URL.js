@@ -53,7 +53,7 @@ if (
  * ```
  */
 
-export {URLSearchParams} from 'react-native/Libraries/Blob/URLSearchParams';
+export {URLSearchParams} from './URLSearchParams';
 
 function validateBaseUrl(url: string) {
   // from this MIT-licensed gist: https://gist.github.com/dperini/729294
