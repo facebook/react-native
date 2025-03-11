@@ -8,9 +8,10 @@
  * @flow
  */
 
-import type Blob from 'react-native/Libraries/Blob/Blob';
+import type Blob from './Blob';
 
-import NativeBlobModule from 'react-native/Libraries/Blob/NativeBlobModule';
+import NativeBlobModule from './NativeBlobModule';
+
 
 let BLOB_URL_PREFIX = null;
 
