@@ -17,7 +17,6 @@ else
 end
 
 header_search_paths = [
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
   "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
 ]
 
@@ -42,11 +41,12 @@ Pod::Spec.new do |s|
                              }
   s.frameworks             = "AudioToolbox"
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-jsi"
   s.dependency "React-Core/RCTVibrationHeaders"
 
   add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
+
+  add_rn_dependencies(s)
 end

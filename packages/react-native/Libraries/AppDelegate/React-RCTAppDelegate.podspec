@@ -27,7 +27,6 @@ other_cflags = "$(inherited) " + new_arch_enabled_flag + hermes_flag  + use_thir
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/../../ReactCommon",
   "$(PODS_ROOT)/Headers/Private/React-Core",
-  "$(PODS_ROOT)/ReactNativeDependencies",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
   "$(PODS_ROOT)/Headers/Public/React-RCTFabric",
@@ -84,4 +83,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-RCTRuntime", :framework_name => "RCTRuntime")
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 end

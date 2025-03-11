@@ -17,8 +17,7 @@ else
 end
 
 header_search_paths = [
-  "\"$(PODS_TARGET_SRCROOT)/..\"",
-  "\"$(PODS_ROOT)/ReactNativeDependencies\""
+  "\"$(PODS_TARGET_SRCROOT)/..\""
 ]
 
 Pod::Spec.new do |s|
@@ -38,5 +37,5 @@ Pod::Spec.new do |s|
     "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
   }
 
-  s.dependency "ReactNativeDependencies"
+  add_rn_dependencies(s)
 end

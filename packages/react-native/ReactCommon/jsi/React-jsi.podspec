@@ -32,12 +32,9 @@ Pod::Spec.new do |s|
 
   s.header_dir    = "jsi"
   s.pod_target_xcconfig    = {
-    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/ReactNativeDependencies\"",
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
     "DEFINES_MODULE" => "YES"
   }
-
-  s.dependency "ReactNativeDependencies"
 
   s.source_files  = "**/*.{cpp,h}"
   files_to_exclude = [
@@ -51,4 +48,6 @@ Pod::Spec.new do |s|
     s.dependency "hermes-engine"
   end
   s.exclude_files = files_to_exclude
+
+  add_rn_dependencies(s)
 end

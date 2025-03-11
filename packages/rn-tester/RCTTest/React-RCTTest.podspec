@@ -33,12 +33,12 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig    = {
                              "USE_HEADERMAP" => "YES",
                              "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
-                             "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/ReactNativeDependencies\"",
                            }
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-Core", version
   s.dependency "React-CoreModules", version
   s.dependency "ReactCommon/turbomodule/core", version
   s.dependency "React-jsi", version
+
+  add_rn_dependencies(s)
 end

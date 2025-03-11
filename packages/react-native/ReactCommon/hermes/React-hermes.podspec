@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
                              "inspector-modern/chrome/*.{cpp,h}",
   s.public_header_files    = "executor/HermesExecutorFactory.h"
   s.pod_target_xcconfig    = {
-                               "HEADER_SEARCH_PATHS" => "\"${PODS_ROOT}/hermes-engine/destroot/include\" \"$(PODS_TARGET_SRCROOT)/..\" \"$(PODS_ROOT)/ReactNativeDependencies\"",
+                               "HEADER_SEARCH_PATHS" => "\"${PODS_ROOT}/hermes-engine/destroot/include\" \"$(PODS_TARGET_SRCROOT)/..\"",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
                              }
   s.header_dir             = "reacthermes"
@@ -39,8 +39,9 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   s.dependency "React-perflogger", version
-  s.dependency "ReactNativeDependencies"
   s.dependency "hermes-engine"
   s.dependency "React-jsi"
   s.dependency "React-runtimeexecutor"
+
+  add_rn_dependencies(s)
 end

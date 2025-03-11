@@ -39,7 +39,6 @@ frameworks_search_paths << "\"$(PODS_CONFIGURATION_BUILD_DIR)/React-hermes\"" if
 
 header_search_paths = [
   "$(PODS_TARGET_SRCROOT)/ReactCommon",
-  "$(PODS_ROOT)/ReactNativeDependencies",
   "${PODS_ROOT}/Headers/Public/FlipperKit",
   "$(PODS_ROOT)/Headers/Public/ReactCommon",
 ].concat(use_hermes ? [
@@ -116,7 +115,6 @@ Pod::Spec.new do |s|
     end
   end
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-cxxreact"
   s.dependency "React-perflogger"
   s.dependency "React-jsi"
@@ -133,4 +131,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "RCTDeprecation")
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 end

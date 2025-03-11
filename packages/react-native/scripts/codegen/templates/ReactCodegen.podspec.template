@@ -69,7 +69,6 @@ Pod::Spec.new do |s|
   s.dependency "ReactCommon/turbomodule/bridging"
   s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-NativeModulesApple"
-  s.dependency "ReactNativeDependencies"
   s.dependency 'React-graphics'
   s.dependency 'React-rendererdebug'
   s.dependency 'React-Fabric'
@@ -80,6 +79,7 @@ Pod::Spec.new do |s|
   s.dependency 'React-RCTAppDelegate'
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 
   s.script_phases = {
     'name' => 'Generate Specs',

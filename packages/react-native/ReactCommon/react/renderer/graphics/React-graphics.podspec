@@ -20,7 +20,6 @@ Pod::Spec.new do |s|
   source_files = "*.{m,mm,cpp,h}", "platform/ios/**/*.{m,mm,cpp,h}"
   header_search_paths = [
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
-    "\"$(PODS_ROOT)/ReactNativeDependencies\""
   ]
 
   s.name                   = "React-graphics"
@@ -49,7 +48,7 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
   s.dependency "React-utils"
-  s.dependency "ReactNativeDependencies"
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 end

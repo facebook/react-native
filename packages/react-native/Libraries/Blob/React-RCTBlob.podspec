@@ -17,7 +17,6 @@ else
 end
 
 header_search_paths = [
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
   "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
 ]
 
@@ -40,7 +39,6 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' ')
                              }
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-jsi"
   s.dependency "React-Core/RCTBlobHeaders"
   s.dependency "React-Core/RCTWebSocket"
@@ -54,4 +52,6 @@ Pod::Spec.new do |s|
   if ENV["USE_HERMES"] == nil || ENV["USE_HERMES"] == "1"
     s.dependency "hermes-engine"
   end
+
+  add_rn_dependencies(s)
 end

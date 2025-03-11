@@ -40,7 +40,6 @@ Pod::Spec.new do |s|
                              }
   s.frameworks             = "MobileCoreServices"
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "RCTTypeSafety"
   s.dependency "React-jsi"
   s.dependency "React-Core/RCTNetworkHeaders"
@@ -48,4 +47,6 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple", :additional_framework_paths => ["build/generated/ios"])
+
+  add_rn_dependencies(s)
 end

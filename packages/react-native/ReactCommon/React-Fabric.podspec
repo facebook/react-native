@@ -43,7 +43,6 @@ Pod::Spec.new do |s|
   s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-jsi"
   s.dependency "React-logger"
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-Core"
   s.dependency "React-debug"
   s.dependency "React-featureflags"
@@ -55,6 +54,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-graphics", :additional_framework_paths => ["react/renderer/graphics/platform/ios"])
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 
   s.subspec "animations" do |ss|
     ss.source_files         = "react/renderer/animations/**/*.{m,mm,cpp,h}"
@@ -72,7 +72,6 @@ Pod::Spec.new do |s|
     header_search_path = [
       "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
       "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
-      "\"$(PODS_ROOT)/ReactNativeDependencies\"",
       "\"$(PODS_TARGET_SRCROOT)\""
     ]
 

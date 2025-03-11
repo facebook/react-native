@@ -18,10 +18,6 @@ end
 
 new_arch_flags = ENV['RCT_NEW_ARCH_ENABLED'] == '1' ? ' -DRCT_NEW_ARCH_ENABLED=1' : ''
 
-header_search_paths = [
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
-]
-
 module_name = "RCTRuntime"
 header_dir = "React"
 
@@ -44,7 +40,6 @@ Pod::Spec.new do |s|
   end
 
   s.pod_target_xcconfig    = {
-    "HEADER_SEARCH_PATHS" => header_search_paths,
     "OTHER_CFLAGS" => "$(inherited) " + new_arch_flags,
     "DEFINES_MODULE" => "YES",
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
@@ -53,7 +48,6 @@ Pod::Spec.new do |s|
   }: {})
 
   s.dependency "React-Core"
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-jsi"
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
@@ -72,4 +66,5 @@ Pod::Spec.new do |s|
     s.exclude_files = ["RCTHermesInstanceFactory.{mm,h}"]
   end
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 end

@@ -21,7 +21,6 @@ react_native_path = ".."
 header_search_path = [
   "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
 ]
 
 if ENV['USE_FRAMEWORKS']
@@ -60,7 +59,6 @@ Pod::Spec.new do |s|
   s.dependency "RCTTypeSafety", version
   s.dependency "React-jsi"
   s.dependency "React-logger"
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-featureflags"
   s.dependency "React-utils"
   s.dependency "Yoga"
@@ -78,4 +76,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-rendererdebug")
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 end

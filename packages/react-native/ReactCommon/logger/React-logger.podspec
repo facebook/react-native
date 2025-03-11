@@ -27,8 +27,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "$(PODS_ROOT)/ReactNativeDependencies" }
   s.header_dir             = "logger"
 
-  s.dependency "ReactNativeDependencies"
+  add_rn_dependencies(s)
 end

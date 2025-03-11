@@ -21,7 +21,6 @@ Pod::Spec.new do |s|
   header_search_paths = [
     "\"$(PODS_TARGET_SRCROOT)/../../../\"",
     "\"$(PODS_TARGET_SRCROOT)\"",
-    "\"$(PODS_ROOT)/ReactNativeDependencies\""
   ].join(" ")
 
   s.name                   = "React-ImageManager"
@@ -47,7 +46,6 @@ Pod::Spec.new do |s|
     "DEFINES_MODULE" => "YES",
   }
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-Core/Default"
 
   add_dependency(s, "React-Fabric")
@@ -56,4 +54,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-utils")
   add_dependency(s, "React-rendererdebug")
 
+  add_rn_dependencies(s)
 end

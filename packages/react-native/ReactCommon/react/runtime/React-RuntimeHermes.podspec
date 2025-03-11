@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
   s.source                 = source
   s.source_files           = "hermes/*.{cpp,h}"
   s.header_dir             = "react/runtime/hermes"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"${PODS_TARGET_SRCROOT}/../..\" \"${PODS_TARGET_SRCROOT}/../../hermes/executor\" \"$(PODS_ROOT)/ReactNativeDependencies\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"${PODS_TARGET_SRCROOT}/../..\" \"${PODS_TARGET_SRCROOT}/../../hermes/executor\"",
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
@@ -36,8 +36,6 @@ Pod::Spec.new do |s|
     s.header_mappings_dir     = '../../'
     s.module_name             = 'React_RuntimeHermes'
   end
-
-  s.dependency "ReactNativeDependencies"
 
   s.dependency "React-jsitracing"
   s.dependency "React-jsi"
@@ -50,4 +48,6 @@ Pod::Spec.new do |s|
   s.dependency "React-hermes"
   s.dependency "hermes-engine"
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
+
+  add_rn_dependencies(s)
 end

@@ -20,7 +20,6 @@ new_arch_flags = ENV['RCT_NEW_ARCH_ENABLED'] == '1' ? ' -DRCT_NEW_ARCH_ENABLED=1
 
 header_search_paths = [
   "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
   "\"$(PODS_ROOT)/Headers/Public/ReactCodegen\"",
@@ -61,7 +60,6 @@ Pod::Spec.new do |s|
 
   s.dependency "React-Core"
   s.dependency "React-RCTImage"
-  s.dependency "ReactNativeDependencies"
   s.dependency "Yoga"
   s.dependency "React-RCTText"
   s.dependency "React-jsi"
@@ -91,6 +89,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-renderercss")
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = "Tests/**/*.{mm}"

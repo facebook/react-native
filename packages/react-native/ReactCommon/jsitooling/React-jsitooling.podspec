@@ -16,10 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-header_search_paths = [
-  "\"$(PODS_ROOT)/ReactNativeDependencies\""
-]
-
 Pod::Spec.new do |s|
   s.name                   = "React-jsitooling"
   s.version                = version
@@ -37,12 +33,12 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "./"
   end
 
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => header_search_paths.join(" "),
-                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
 
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
-  s.dependency "ReactNativeDependencies"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
+
+  add_rn_dependencies(s)
 end

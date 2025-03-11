@@ -17,7 +17,6 @@ else
 end
 
 header_search_paths = [
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
   "$(PODS_ROOT)/Headers/Private/React-Core",
   "$(PODS_TARGET_SRCROOT)/../../../..",
   "$(PODS_TARGET_SRCROOT)/../../../../..",
@@ -44,7 +43,6 @@ Pod::Spec.new do |s|
     s.module_name             = 'React_RuntimeApple'
   end
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-jsiexecutor"
   s.dependency "React-cxxreact"
   s.dependency "React-callinvoker"
@@ -74,4 +72,6 @@ Pod::Spec.new do |s|
     s.dependency "React-jsc"
     s.exclude_files = "ReactCommon/RCTHermesInstance.{mm,h}"
   end
+
+  add_rn_dependencies(s)
 end

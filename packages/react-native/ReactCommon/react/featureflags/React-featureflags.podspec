@@ -37,10 +37,10 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(' '),
                                "DEFINES_MODULE" => "YES" }
 
-  s.dependency "ReactNativeDependencies"
-
   if ENV['USE_FRAMEWORKS']
     s.module_name            = "React_featureflags"
     s.header_mappings_dir  = "../.."
   end
+
+  add_rn_dependencies(s)
 end

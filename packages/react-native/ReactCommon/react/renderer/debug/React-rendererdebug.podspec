@@ -16,9 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-header_search_paths = [
-    "\"$(PODS_ROOT)/ReactNativeDependencies\""
-]
+header_search_paths = []
 
 if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the Renderer/Debug access its own files
@@ -47,6 +45,6 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../../.."
   end
 
-  s.dependency "ReactNativeDependencies"
   add_dependency(s, "React-debug")
+  add_rn_dependencies(s)
 end

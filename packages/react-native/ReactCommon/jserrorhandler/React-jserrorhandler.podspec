@@ -40,7 +40,6 @@ Pod::Spec.new do |s|
 
   s.dependency "React-jsi"
   s.dependency "React-cxxreact"
-  s.dependency "ReactNativeDependencies"
   s.dependency "ReactCommon/turbomodule/bridging"
   add_dependency(s, "React-featureflags")
   add_dependency(s, "React-debug")
@@ -48,5 +47,7 @@ Pod::Spec.new do |s|
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency 'hermes-engine'
   end
+
+  add_rn_dependencies(s)
 
 end

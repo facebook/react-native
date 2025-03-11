@@ -16,9 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-header_search_paths = [
-    "\"$(PODS_ROOT)/ReactNativeDependencies\"",
-]
+header_search_paths = []
 
 if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the RuntimeScheduler access its own files
@@ -52,7 +50,6 @@ Pod::Spec.new do |s|
   s.dependency "React-utils"
   s.dependency "React-featureflags"
   s.dependency "React-timing"
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-jsi"
   s.dependency "React-performancetimeline"
   s.dependency "React-rendererconsistency"
@@ -60,4 +57,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 end

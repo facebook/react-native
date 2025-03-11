@@ -17,7 +17,6 @@ else
 end
 
 header_search_paths = [
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
   "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
 ]
 
@@ -49,7 +48,6 @@ Pod::Spec.new do |s|
   s.source_files = "ReactCommon/**/*.{cpp,h}",
         "platform/ios/**/*.{mm,cpp,h}"
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-Core"
   s.dependency "React-cxxreact"
   s.dependency "React-jsi"
@@ -58,4 +56,5 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-NativeModulesApple")
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 end

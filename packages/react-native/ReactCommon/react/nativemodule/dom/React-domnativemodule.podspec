@@ -17,7 +17,6 @@ else
 end
 
 header_search_paths = [
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
   "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
 ]
 
@@ -46,11 +45,11 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../.."
   end
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 
   s.dependency "Yoga"
   s.dependency "ReactCommon/turbomodule/core"

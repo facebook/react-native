@@ -24,7 +24,6 @@ Pod::Spec.new do |s|
     "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
     "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
     "\"$(PODS_TARGET_SRCROOT)\"",
-    "\"$(PODS_ROOT)/ReactNativeDependencies\"",
   ]
 
   if ENV['USE_FRAMEWORKS']
@@ -61,7 +60,6 @@ Pod::Spec.new do |s|
   s.dependency "ReactCommon/turbomodule/core"
   s.dependency "React-jsi"
   s.dependency "React-logger"
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-Core"
   s.dependency "React-debug"
   s.dependency "React-featureflags"
@@ -78,6 +76,7 @@ Pod::Spec.new do |s|
   ])
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 
   s.subspec "components" do |ss|
 

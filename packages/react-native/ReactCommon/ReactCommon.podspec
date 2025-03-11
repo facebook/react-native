@@ -29,7 +29,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.header_dir             = "ReactCommon" # Use global header_dir for all subspecs for use_frameworks! compatibility
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/ReactNativeDependencies\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
                                "USE_HEADERMAP" => "YES",
                                "DEFINES_MODULE" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
@@ -37,6 +37,8 @@ Pod::Spec.new do |s|
   if ENV['USE_FRAMEWORKS']
     s.header_mappings_dir     = './'
   end
+
+  add_rn_dependencies(s)
 
   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
   # Note: Update this only when ready to minimize breaking changes.
@@ -46,7 +48,6 @@ Pod::Spec.new do |s|
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version
     ss.dependency "React-logger", version
-    ss.dependency "ReactNativeDependencies"
     if using_hermes
       ss.dependency "hermes-engine"
     end

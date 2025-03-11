@@ -24,10 +24,6 @@ header_dir = "FBReactNativeSpec"
 
 new_arch_flags = ENV['RCT_NEW_ARCH_ENABLED'] == '1' ? ' -DRCT_NEW_ARCH_ENABLED=1' : ''
 
-header_search_paths = [
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
-]
-
 Pod::Spec.new do |s|
   s.name                   = "React-RCTFBReactNativeSpec"
   s.version                = version
@@ -42,14 +38,12 @@ Pod::Spec.new do |s|
   s.header_dir             = header_dir
   s.module_name            = module_name
   s.pod_target_xcconfig    = {
-    "HEADER_SEARCH_PATHS" => header_search_paths,
     "OTHER_CFLAGS" => "$(inherited) " + new_arch_flags,
     "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard()
   }
 
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
-  s.dependency "ReactNativeDependencies"
   s.dependency "RCTRequired"
   s.dependency "RCTTypeSafety"
   s.dependency "React-Core"
@@ -58,6 +52,7 @@ Pod::Spec.new do |s|
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/bridging", :additional_framework_paths => ["react/nativemodule/bridging"])
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 
   s.script_phases = [
     {

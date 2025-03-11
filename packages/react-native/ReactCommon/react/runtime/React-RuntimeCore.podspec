@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.source_files           = "*.{cpp,h}", "nativeviewconfig/*.{cpp,h}"
   s.exclude_files          = "iostests/*", "tests/**/*.{cpp,h}"
   s.header_dir             = "react/runtime"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/ReactNativeDependencies\" \"$(PODS_ROOT)/Headers/Private/React-Core\" \"${PODS_TARGET_SRCROOT}/../..\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\" \"${PODS_TARGET_SRCROOT}/../..\"",
                                 "USE_HEADERMAP" => "YES",
                                 "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
                                 "GCC_WARN_PEDANTIC" => "YES" }
@@ -47,11 +47,12 @@ Pod::Spec.new do |s|
   s.dependency "React-runtimescheduler"
   s.dependency "React-utils"
   s.dependency "React-featureflags"
-  s.dependency "ReactNativeDependencies"
 
   add_dependency(s, "React-Fabric")
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
+
   s.dependency "React-jsinspector"
   add_dependency(s, "React-jsitooling", :framework_name => "JSITooling")
 end

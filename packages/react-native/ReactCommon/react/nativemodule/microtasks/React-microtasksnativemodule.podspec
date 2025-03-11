@@ -16,9 +16,7 @@ else
   source[:tag] = "v#{version}"
 end
 
-header_search_paths = [
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
-]
+header_search_paths = []
 
 if ENV['USE_FRAMEWORKS']
   header_search_paths << "\"$(PODS_TARGET_SRCROOT)/../../..\"" # this is needed to allow the microtasks module access its own files
@@ -45,11 +43,11 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../.."
   end
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-jsi"
   s.dependency "React-jsiexecutor"
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 
   s.dependency "ReactCommon/turbomodule/core"
   add_dependency(s, "React-RCTFBReactNativeSpec")

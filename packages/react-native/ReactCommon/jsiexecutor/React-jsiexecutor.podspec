@@ -26,17 +26,17 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.source_files         = "jsireact/*.{cpp,h}"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/ReactNativeDependencies\"",
-                               "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
+  s.pod_target_xcconfig    = { "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard() }
   s.header_dir             = "jsireact"
 
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
   s.dependency "React-perflogger", version
-  s.dependency "ReactNativeDependencies"
   add_dependency(s, "React-jsinspector", :framework_name => 'jsinspector_modern')
   add_dependency(s, "React-jsinspectortracing", :framework_name => 'jsinspector_moderntracing')
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
     s.dependency 'hermes-engine'
   end
+
+  add_rn_dependencies(s)
 end

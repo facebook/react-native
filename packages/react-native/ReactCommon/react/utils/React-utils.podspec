@@ -17,7 +17,6 @@ else
 end
 
 header_search_paths = [
-    "\"$(PODS_ROOT)/ReactNativeDependencies\"",
     "\"$(PODS_TARGET_SRCROOT)\"",
     "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"",
 ]
@@ -43,10 +42,10 @@ Pod::Spec.new do |s|
     s.header_mappings_dir  = "../.."
   end
 
-  s.dependency "ReactNativeDependencies"
   s.dependency "React-jsi", version
 
   depend_on_js_engine(s)
+  add_rn_dependencies(s)
 
   add_dependency(s, "React-debug")
 end

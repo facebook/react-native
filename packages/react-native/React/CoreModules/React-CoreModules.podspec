@@ -18,7 +18,6 @@ end
 
 header_search_paths = [
   "\"$(PODS_TARGET_SRCROOT)/React/CoreModules\"",
-  "\"$(PODS_ROOT)/ReactNativeDependencies\"",
   "\"${PODS_ROOT}/Headers/Public/ReactCodegen/react/renderer/components\"",
 ]
 
@@ -48,7 +47,6 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => header_search_paths.join(" ")
                              }
   s.framework = "UIKit"
-  s.dependency "ReactNativeDependencies"
   s.dependency "RCTTypeSafety", version
   s.dependency "React-Core/CoreModulesHeaders", version
   s.dependency "React-RCTImage", version
@@ -60,4 +58,6 @@ Pod::Spec.new do |s|
   add_dependency(s, "React-RCTFBReactNativeSpec")
   add_dependency(s, "ReactCommon", :subspec => "turbomodule/core", :additional_framework_paths => ["react/nativemodule/core"])
   add_dependency(s, "React-NativeModulesApple")
+
+  add_rn_dependencies(s)
 end
