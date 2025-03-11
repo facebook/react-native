@@ -10,7 +10,7 @@ require 'rexml/document'
 require_relative './utils.rb'
 
 ## There are two environment variables that is related to ReactNativeDependencies:
-## - RCT_USE_DEP_PREBUILD: If set to 1, ReactNativeDependencies will be built from source.
+## - RCT_USE_DEP_FROM_SOURCE: If set to 1, ReactNativeDependencies will be built from source.
 ## - RCT_DEPS_VERSION: If set, it will override the version of ReactNativeDependencies to be used.
 
 ### Adds ReactNativeDependencies as a dependency to the given podspec if we're not
@@ -65,13 +65,13 @@ class ReactNativeDependenciesUtils
     end
 
     ## Sets up wether react-native-dependencies should be built from source or not
-    ## This happens automatically and uses the environment variable RCT_USE_DEP_PREBUILD
+    ## This happens automatically and uses the environment variable RCT_USE_DEP_FROM_SOURCE
     ## in combination with looking for the release tarball for the current version
     def self.setup_react_native_dependencies(react_native_path, react_native_version)
         @@react_native_path = react_native_path
         @@react_native_version = ENV["RCT_DEPS_VERSION"] == nil ? react_native_version : ENV["RCT_DEPS_VERSION"]
 
-        if ENV["RCT_USE_DEP_PREBUILD"] == "1" || !release_artifact_exists(@@react_native_version)
+        if ENV["RCT_USE_DEP_FROM_SOURCE"] == "1" || !release_artifact_exists(@@react_native_version)
             @@build_from_source = true
         end
 
