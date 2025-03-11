@@ -52,7 +52,7 @@ BOOL RCTIsAttributedStringEffectivelySame(
     NSDictionary<NSAttributedStringKey, id> *insensitiveAttributes,
     const facebook::react::TextAttributes &baseTextAttributes);
 
-static inline NSData *RCTwrapEventEmitter(const facebook::react::SharedEventEmitter &eventEmitter)
+static inline NSData *RCTWrapEventEmitter(const facebook::react::SharedEventEmitter &eventEmitter)
 {
   auto eventEmitterPtr = new std::weak_ptr<const facebook::react::EventEmitter>(eventEmitter);
   return [[NSData alloc] initWithBytesNoCopy:eventEmitterPtr

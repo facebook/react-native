@@ -371,7 +371,7 @@ static NSMutableAttributedString *RCTNSAttributedStringFragmentWithAttributesFro
   auto nsAttributedStringFragment = RCTNSAttributedStringFragmentFromFragment(fragment, placeholderImage);
 
   if (fragment.parentShadowView.componentHandle) {
-    auto eventEmitterWrapper = RCTwrapEventEmitter(fragment.parentShadowView.eventEmitter);
+    auto eventEmitterWrapper = RCTWrapEventEmitter(fragment.parentShadowView.eventEmitter);
 
     NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
         @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
