@@ -10,10 +10,10 @@ package com.facebook.react.uimanager.layoutanimation
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
-import com.facebook.react.uimanager.IllegalViewOperationException
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
+import com.facebook.react.uimanager.IllegalViewOperationException
 
 /** Class responsible for default layout animation, i.e animation of view creation and deletion. */
 @LegacyArchitecture
@@ -25,9 +25,7 @@ internal abstract class BaseLayoutAnimation : AbstractLayoutAnimation() {
 
   abstract fun isReverse(): Boolean
 
-  override fun isValid(): Boolean {
-    return mDurationMs > 0 && mAnimatedProperty != null
-  }
+  override fun isValid(): Boolean = mDurationMs > 0 && mAnimatedProperty != null
 
   override fun createAnimationImpl(
     view: View,
