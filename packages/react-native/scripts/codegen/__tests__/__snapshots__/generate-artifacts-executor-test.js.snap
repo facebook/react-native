@@ -111,9 +111,15 @@ exports[`execute "RCTModuleProviders.mm" should match snapshot 1`] = `
 
   dispatch_once(&onceToken, ^{
     NSDictionary<NSString *, NSString *> * moduleMapping = @{
-      		@\\"TestAppImageURLLoader\\": @\\"RCTTestAppImageURLLoader\\", // test-app
+      		@\\"TestAppDeprecatedImageURLLoader\\": @\\"RCTTestAppDeprecatedImageURLLoader\\", // test-app
+		@\\"TestAppDeprecatedURLRequestHandler\\": @\\"RCTTestAppDeprecatedURLRequestHandler\\", // test-app
+		@\\"TestAppDeprecatedImageDataDecoder\\": @\\"RCTTestAppDeprecatedImageDataDecoder\\", // test-app
+		@\\"TestAppImageURLLoader\\": @\\"RCTTestAppImageURLLoader\\", // test-app
 		@\\"TestAppURLRequestHandler\\": @\\"RCTTestAppURLRequestHandler\\", // test-app
 		@\\"TestAppImageDataDecoder\\": @\\"RCTTestAppImageDataDecoder\\", // test-app
+		@\\"TestLibraryDeprecatedImageURLLoader\\": @\\"RCTTestLibraryDeprecatedImageURLLoader\\", // test-library
+		@\\"TestLibraryDeprecatedURLRequestHandler\\": @\\"RCTTestLibraryDeprecatedURLRequestHandler\\", // test-library
+		@\\"TestLibraryDeprecatedImageDataDecoder\\": @\\"RCTTestLibraryDeprecatedImageDataDecoder\\", // test-library
 		@\\"TestLibraryImageURLLoader\\": @\\"RCTTestLibraryImageURLLoader\\", // test-library
 		@\\"TestLibraryURLRequestHandler\\": @\\"RCTTestLibraryURLRequestHandler\\", // test-library
 		@\\"TestLibraryImageDataDecoder\\": @\\"RCTTestLibraryImageDataDecoder\\", // test-library
@@ -189,8 +195,10 @@ exports[`execute "RCTModulesConformingToProtocolsProvider.mm" should match snaps
   
   dispatch_once(&onceToken, ^{
     classNames = @[
-      @\\"RCTTestAppImageURLLoader\\",
-		@\\"RCTTestLibraryImageURLLoader\\"
+      @\\"RCTTestAppDeprecatedImageURLLoader\\",
+		@\\"RCTTestLibraryDeprecatedImageURLLoader\\",
+		@\\"TestAppImageURLLoader\\",
+		@\\"TestLibraryImageURLLoader\\"
     ];
   });
   
@@ -204,8 +212,10 @@ exports[`execute "RCTModulesConformingToProtocolsProvider.mm" should match snaps
   
   dispatch_once(&onceToken, ^{
     classNames = @[
-      @\\"RCTTestAppImageDataDecoder\\",
-		@\\"RCTTestLibraryImageDataDecoder\\"
+      @\\"RCTTestAppDeprecatedImageDataDecoder\\",
+		@\\"RCTTestLibraryDeprecatedImageDataDecoder\\",
+		@\\"TestAppImageDataDecoder\\",
+		@\\"TestLibraryImageDataDecoder\\"
     ];
   });
   
@@ -219,8 +229,10 @@ exports[`execute "RCTModulesConformingToProtocolsProvider.mm" should match snaps
   
   dispatch_once(&onceToken, ^{
     classNames = @[
-      @\\"RCTTestAppURLRequestHandler\\",
-		@\\"RCTTestLibraryURLRequestHandler\\"
+      @\\"RCTTestAppDeprecatedURLRequestHandler\\",
+		@\\"RCTTestLibraryDeprecatedURLRequestHandler\\",
+		@\\"TestAppURLRequestHandler\\",
+		@\\"TestLibraryURLRequestHandler\\"
     ];
   });
   
@@ -274,8 +286,10 @@ exports[`execute "RCTThirdPartyComponentsProvider.mm" should match snapshot 1`] 
 
   dispatch_once(&nativeComponentsToken, ^{
     thirdPartyComponents = @{
-		@\\"TestAppComponent\\": NSClassFromString(@\\"RCTTestAppComponentClass\\"), // test-app
-		@\\"TestLibraryComponent\\": NSClassFromString(@\\"RCTTestLibraryComponentClass\\"), // test-library
+		@\\"TestAppDeprecatedComponent\\": NSClassFromString(@\\"RCTTestAppDeprecatedComponentClass\\"), // test-app
+		@\\"TestAppComponent\\": NSClassFromString(@\\"RCTTestAppComponent\\"), // test-app
+		@\\"TestLibraryDeprecatedComponent\\": NSClassFromString(@\\"RCTTestLibraryDeprecatedComponentClass\\"), // test-library
+		@\\"TestLibraryComponent\\": NSClassFromString(@\\"RCTTestLibraryComponent\\"), // test-library
     };
   });
 

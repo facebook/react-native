@@ -10,9 +10,9 @@
 'use strict';
 
 const {TEMPLATES_FOLDER_PATH} = require('./constants');
+const {parseiOSAnnotations} = require('./utils');
 const fs = require('fs');
 const path = require('path');
-
 const MODULES_PROTOCOLS_H_TEMPLATE_PATH = path.join(
   TEMPLATES_FOLDER_PATH,
   'RCTModulesConformingToProtocolsProviderH.template',
@@ -24,30 +24,62 @@ const MODULES_PROTOCOLS_MM_TEMPLATE_PATH = path.join(
 );
 
 function generateCustomURLHandlers(libraries, outputDir) {
-  const customImageURLLoaderClasses = libraries
-    .flatMap(
-      library =>
-        library?.config?.ios?.modulesConformingToProtocol?.RCTImageURLLoader,
-    )
-    .filter(Boolean)
+  const iosAnnotations = parseiOSAnnotations(libraries);
+
+  const imageURLLoaderModules = new Set();
+  const imageDataDecoderModules = new Set();
+  const urlRequestHandlersModules = new Set();
+
+  // Old API
+  for (const library of libraries) {
+    const modulesConformingToProtocol =
+      library?.config?.ios?.modulesConformingToProtocol;
+    if (modulesConformingToProtocol == null) {
+      continue;
+    }
+
+    modulesConformingToProtocol.RCTImageURLLoader.forEach(moduleName => {
+      imageURLLoaderModules.add(moduleName);
+    });
+    modulesConformingToProtocol.RCTImageDataDecoder.forEach(moduleName => {
+      imageDataDecoderModules.add(moduleName);
+    });
+    modulesConformingToProtocol.RCTURLRequestHandler.forEach(moduleName => {
+      urlRequestHandlersModules.add(moduleName);
+    });
+  }
+
+  // New API
+  for (const {modules: moduleAnnotationMap} of Object.values(iosAnnotations)) {
+    for (const [moduleName, annotation] of Object.entries(
+      moduleAnnotationMap,
+    )) {
+      const conformsToProtocols = annotation.conformsToProtocols;
+      if (!conformsToProtocols) {
+        continue;
+      }
+
+      if (conformsToProtocols.includes('RCTImageURLLoader')) {
+        imageURLLoaderModules.add(moduleName);
+      }
+      if (conformsToProtocols.includes('RCTImageDataDecoder')) {
+        imageDataDecoderModules.add(moduleName);
+      }
+      if (conformsToProtocols.includes('RCTURLRequestHandler')) {
+        urlRequestHandlersModules.add(moduleName);
+      }
+    }
+  }
+
+  const customImageURLLoaderClasses = Array.from(imageURLLoaderModules)
     .map(className => `@"${className}"`)
     .join(',\n\t\t');
 
-  const customImageDataDecoderClasses = libraries
-    .flatMap(
-      library =>
-        library?.config?.ios?.modulesConformingToProtocol?.RCTImageDataDecoder,
-    )
-    .filter(Boolean)
+  const customImageDataDecoderClasses = Array.from(imageDataDecoderModules)
     .map(className => `@"${className}"`)
     .join(',\n\t\t');
 
-  const customURLHandlerClasses = libraries
-    .flatMap(
-      library =>
-        library?.config?.ios?.modulesConformingToProtocol?.RCTURLRequestHandler,
-    )
-    .filter(Boolean)
+  const customURLHandlerClasses = Array.from(urlRequestHandlersModules)
     .map(className => `@"${className}"`)
     .join(',\n\t\t');
 

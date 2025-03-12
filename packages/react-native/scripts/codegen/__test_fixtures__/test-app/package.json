@@ -18,22 +18,41 @@
     "ios": {
       "modulesConformingToProtocol": {
         "RCTImageURLLoader": [
-          "RCTTestAppImageURLLoader"
+          "RCTTestAppDeprecatedImageURLLoader"
         ],
         "RCTURLRequestHandler": [
-          "RCTTestAppURLRequestHandler"
+          "RCTTestAppDeprecatedURLRequestHandler"
         ],
         "RCTImageDataDecoder": [
-          "RCTTestAppImageDataDecoder"
+          "RCTTestAppDeprecatedImageDataDecoder"
         ]
       },
       "modulesProvider": {
-        "TestAppImageURLLoader": "RCTTestAppImageURLLoader",
-        "TestAppURLRequestHandler": "RCTTestAppURLRequestHandler",
-        "TestAppImageDataDecoder": "RCTTestAppImageDataDecoder"
+        "TestAppDeprecatedImageURLLoader": "RCTTestAppDeprecatedImageURLLoader",
+        "TestAppDeprecatedURLRequestHandler": "RCTTestAppDeprecatedURLRequestHandler",
+        "TestAppDeprecatedImageDataDecoder": "RCTTestAppDeprecatedImageDataDecoder"
       },
       "componentProvider": {
-        "TestAppComponent": "RCTTestAppComponentClass"
+        "TestAppDeprecatedComponent": "RCTTestAppDeprecatedComponentClass"
+      },
+      "modules": {
+        "TestAppImageURLLoader": {
+          "conformsToProtocols": ["RCTImageURLLoader"],
+          "className": "RCTTestAppImageURLLoader"
+        },
+        "TestAppURLRequestHandler": {
+          "conformsToProtocols": ["RCTURLRequestHandler"],
+          "className": "RCTTestAppURLRequestHandler"
+        },
+        "TestAppImageDataDecoder": {
+          "conformsToProtocols": ["RCTImageDataDecoder"],
+          "className": "RCTTestAppImageDataDecoder"
+        }
+      },
+      "components": {
+        "TestAppComponent": {
+          "className": "RCTTestAppComponent"
+        }
       }
     }
   }
