@@ -1,0 +1,40 @@
+{
+  "name": "test-app",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+  },
+  "dependencies": {
+    "test-library": "./lib/test-library"
+  },
+  "devDependencies": {
+  },
+  "codegenConfig": {
+    "name": "TestAppConfig",
+    "type": "all",
+    "android": {
+      "javaPackageName": "com.testApp"
+    },
+    "ios": {
+      "modulesConformingToProtocol": {
+        "RCTImageURLLoader": [
+          "RCTTestAppImageURLLoader"
+        ],
+        "RCTURLRequestHandler": [
+          "RCTTestAppURLRequestHandler"
+        ],
+        "RCTImageDataDecoder": [
+          "RCTTestAppImageDataDecoder"
+        ]
+      },
+      "modulesProvider": {
+        "TestAppImageURLLoader": "RCTTestAppImageURLLoader",
+        "TestAppURLRequestHandler": "RCTTestAppURLRequestHandler",
+        "TestAppImageDataDecoder": "RCTTestAppImageDataDecoder"
+      },
+      "componentProvider": {
+        "TestAppComponent": "RCTTestAppComponentClass"
+      }
+    }
+  }
+}
