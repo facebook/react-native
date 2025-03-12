@@ -93,7 +93,7 @@ export interface AccessibilityInfoStatic {
    * On iOS, this maps to the API `darkerSystemColorsEnabled`
    *
    */
-  isHighTextContrastEnabled: () => Promise<boolean>;
+  isHighContrastEnabled: () => Promise<boolean>;
 
   /**
    * Query whether reduce motion and prefer cross-fade transitions settings are currently enabled.
