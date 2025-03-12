@@ -81,7 +81,10 @@ RCT_EXPORT_MODULE()
                                              selector:@selector(darkerSystemColorsDidChange:)
                                                  name:UIAccessibilityDarkerSystemColorsStatusDidChangeNotification
                                                object:nil];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(highContrastDidChange:)
+                                                 name:UIAccessibilityDarkerSystemColorsStatusDidChangeNotification
+                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reduceTransparencyStatusDidChange:)
                                                  name:UIAccessibilityReduceTransparencyStatusDidChangeNotification
@@ -99,6 +102,7 @@ RCT_EXPORT_MODULE()
     _isInvertColorsEnabled = initialValuesProxy.isInvertColorsEnabled;
     _isReduceMotionEnabled = initialValuesProxy.isReduceMotionEnabled;
     _isDarkerSystemColorsEnabled = initialValuesProxy.isDarkerSystemColorsEnabled;
+    _isHighContrastEnabled = initialValuesProxy.isHighContrastEnabled;
     _isReduceTransparencyEnabled = initialValuesProxy.isReduceTransparencyEnabled;
     _isVoiceOverEnabled = initialValuesProxy.isVoiceOverEnabled;
   }
@@ -186,6 +190,20 @@ RCT_EXPORT_MODULE()
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"darkerSystemColorsChanged"
                                                                           body:@(_isDarkerSystemColorsEnabled)];
+
+#pragma clang diagnostic pop
+  }
+}
+
+- (void)highContrastDidChange:(__unused NSNotification *)notification
+{
+  BOOL newHighContrastEnabled = UIAccessibilityDarkerSystemColorsEnabled();
+  if (_isHighContrastEnabled != newHighContrastEnabled) {
+    _isHighContrastEnabled = newHighContrastEnabled;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[_moduleRegistry moduleForName:"EventDispatcher"] sendDeviceEventWithName:@"highContrastChanged"
+                                                                          body:@(_isHighContrastEnabled)];
 
 #pragma clang diagnostic pop
   }

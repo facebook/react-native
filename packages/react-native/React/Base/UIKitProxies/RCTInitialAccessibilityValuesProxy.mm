@@ -16,6 +16,7 @@
   BOOL _isInvertColorsEnabled;
   BOOL _isReduceMotionEnabled;
   BOOL _isDarkerSystemColorsEnabled;
+  BOOL _isHighContrastEnabled;
   BOOL _isReduceTransparencyEnabled;
   BOOL _isVoiceOverEnabled;
   UIContentSizeCategory _preferredContentSizeCategory;
@@ -115,6 +116,23 @@
   });
 
   return isDarkerSystemColorsEnabled;
+}
+
+- (BOOL)isHighContrastEnabled
+{
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    if (_hasRecordedInitialAccessibilityValues) {
+      return _isHighContrastEnabled;
+    }
+  }
+
+  __block BOOL isHighContrastEnabled;
+  RCTUnsafeExecuteOnMainQueueSync(^{
+    _isHighContrastEnabled = UIAccessibilityDarkerSystemColorsEnabled();
+  });
+
+  return _isHighContrastEnabled;
 }
 
 - (BOOL)isReduceTransparencyEnabled
