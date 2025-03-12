@@ -847,8 +847,11 @@ function findFilesWithExtension(filePath, extension) {
       return null;
     }
 
-    // Skip hidden folders, that starts with `.`
-    if (absolutePath.includes(`${path.sep}.`)) {
+    // Skip hidden folders, that starts with `.` but allow `.pnpm`
+    if (
+      absolutePath.includes(`${path.sep}.`) &&
+      !absolutePath.includes(`${path.sep}.pnpm`)
+    ) {
       return null;
     }
 
