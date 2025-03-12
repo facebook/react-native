@@ -63,19 +63,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         }
       }
   // Listener that is notified when the ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED changes.
-  private val highTextContrastObserver: ContentObserver =
-      object : ContentObserver(UiThreadUtil.getUiThreadHandler()) {
-        override fun onChange(selfChange: Boolean) {
-          this.onChange(selfChange, null)
-        }
-
-        override fun onChange(selfChange: Boolean, uri: Uri?) {
-          if (getReactApplicationContext().hasActiveReactInstance()) {
-            updateAndSendHighTextContrastChangeEvent()
-          }
-        }
-      }
-  // Listener that is notified when the ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED changes.
   private val highContrastObserver: ContentObserver =
       object : ContentObserver(UiThreadUtil.getUiThreadHandler()) {
         override fun onChange(selfChange: Boolean) {
@@ -95,7 +82,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
       ReactAccessibilityServiceChangeListener()
   private val contentResolver: ContentResolver
   private var reduceMotionEnabled = false
-  private var highTextContrastEnabled = false
   private var highContrastEnabled = false
   private var touchExplorationEnabled = false
   private var accessibilityServiceEnabled = false
@@ -111,7 +97,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     touchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
     accessibilityServiceEnabled = accessibilityManager.isEnabled
     reduceMotionEnabled = isReduceMotionEnabledValue
-    highTextContrastEnabled = isHighTextContrastEnabledValue
     highContrastEnabled = isHighContrastEnabledValue
     grayscaleModeEnabled = isGrayscaleEnabledValue
   }
@@ -156,16 +141,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
 
   @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  private val isHighTextContrastEnabledValue: Boolean
-    get() {
-      return Settings.Secure.getInt(
-          contentResolver,
-          ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT,
-          0,
-      ) != 0
-    }
-
-  @get:TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private val isHighContrastEnabledValue: Boolean
     get() {
       return Settings.Secure.getInt(
@@ -188,7 +163,7 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
   }
 
   override fun isHighTextContrastEnabled(successCallback: Callback) {
-    successCallback.invoke(highTextContrastEnabled)
+    successCallback.invoke(highContrastEnabled)
   }
 
   override fun isHighContrastEnabled(successCallback: Callback) {
@@ -225,28 +200,19 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     }
   }
 
-  private fun updateAndSendHighTextContrastChangeEvent() {
-    val isHighTextContrastEnabled = isHighTextContrastEnabledValue
-    if (highTextContrastEnabled != isHighTextContrastEnabled) {
-      highTextContrastEnabled = isHighTextContrastEnabled
-      val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
-      if (reactApplicationContext != null) {
-        reactApplicationContext.emitDeviceEvent(
-            HIGH_TEXT_CONTRAST_EVENT_NAME,
-            highTextContrastEnabled,
-        )
-      }
-    }
-  }
-
   private fun updateAndSendHighContrastChangeEvent() {
     val isHighContrastEnabled = isHighContrastEnabledValue
     if (highContrastEnabled != isHighContrastEnabled) {
       highContrastEnabled = isHighContrastEnabled
       val reactApplicationContext = getReactApplicationContextIfActiveOrWarn()
       if (reactApplicationContext != null) {
+        // TODO: Remove once `AccessibilityInfo.js` removes isHighTextContrastEnabled
         reactApplicationContext.emitDeviceEvent(
             HIGH_TEXT_CONTRAST_EVENT_NAME,
+            highContrastEnabled,
+        )
+        reactApplicationContext.emitDeviceEvent(
+            HIGH_CONTRAST_EVENT_NAME,
             highContrastEnabled,
         )
       }
@@ -293,16 +259,13 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
     accessibilityManager?.addAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     val transitionUri = Settings.Global.getUriFor(Settings.Global.TRANSITION_ANIMATION_SCALE)
     contentResolver.registerContentObserver(transitionUri, false, animationScaleObserver)
-    val highTextContrastUri =
+    val highContrastUri =
         Settings.Global.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
-      val highContrastUri =
-        Settings.Global.getUriFor(ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED_CONSTANT)
-    contentResolver.registerContentObserver(highTextContrastUri, false, highTextContrastObserver)
+    contentResolver.registerContentObserver(highContrastUri, false, highContrastObserver)
     updateAndSendTouchExplorationChangeEvent(
         accessibilityManager?.isTouchExplorationEnabled == true)
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
-    updateAndSendHighTextContrastChangeEvent()
     updateAndSendHighContrastChangeEvent()
     updateAndSendInvertColorsChangeEvent()
     updateAndSendGrayscaleModeChangeEvent()
@@ -314,7 +277,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         touchExplorationStateChangeListener)
     accessibilityManager?.removeAccessibilityStateChangeListener(accessibilityServiceChangeListener)
     contentResolver.unregisterContentObserver(animationScaleObserver)
-    contentResolver.unregisterContentObserver(highTextContrastObserver)
     contentResolver.unregisterContentObserver(highContrastObserver)
   }
 
@@ -324,7 +286,6 @@ internal class AccessibilityInfoModule(context: ReactApplicationContext) :
         accessibilityManager?.isTouchExplorationEnabled == true)
     updateAndSendAccessibilityServiceChangeEvent(accessibilityManager?.isEnabled == true)
     updateAndSendReduceMotionChangeEvent()
-    updateAndSendHighTextContrastChangeEvent()
     updateAndSendHighContrastChangeEvent()
   }
 
