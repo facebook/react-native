@@ -115,7 +115,7 @@ export type ReportableEvent =
   | {
       type: 'high_event_loop_delay',
       eventLoopUtilization: number,
-      maxEventLoopDelay: number,
+      maxEventLoopDelayPercent: number,
       duration: number,
       ...DebuggerSessionIDs,
     };
