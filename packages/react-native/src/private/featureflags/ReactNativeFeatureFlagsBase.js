@@ -96,9 +96,17 @@ export function setOverrides(
 }
 
 const reportedConfigNames: Set<string> = new Set();
+const hasTurboModules =
+  global.RN$Bridgeless === true || global.__turboModuleProxy != null;
 
 function maybeLogUnavailableNativeModuleError(configName: string): void {
-  if (!NativeReactNativeFeatureFlags && !reportedConfigNames.has(configName)) {
+  if (
+    !NativeReactNativeFeatureFlags &&
+    // Don't log more than once per config
+    !reportedConfigNames.has(configName) &&
+    // Don't log in the legacy architecture.
+    hasTurboModules
+  ) {
     reportedConfigNames.add(configName);
     console.error(
       `Could not access feature flag '${configName}' because native module method was not available`,
