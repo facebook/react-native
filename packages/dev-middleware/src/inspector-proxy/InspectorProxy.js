@@ -26,9 +26,8 @@ import type {Timeout} from 'timers';
 
 import getBaseUrlFromRequest from '../utils/getBaseUrlFromRequest';
 import Device from './Device';
+import EventLoopPerfTracker from './EventLoopPerfTracker';
 import nullthrows from 'nullthrows';
-// $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
-import {monitorEventLoopDelay, performance} from 'perf_hooks';
 // Import these from node:timers to get the correct Flow types.
 // $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
 import {clearTimeout, setTimeout} from 'timers';
@@ -42,12 +41,15 @@ const WS_DEBUGGER_URL = '/inspector/debug';
 const PAGES_LIST_JSON_URL = '/json';
 const PAGES_LIST_JSON_URL_2 = '/json/list';
 const PAGES_LIST_JSON_VERSION_URL = '/json/version';
+
+const PROXY_IDLE_TIMEOUT_MS = 10000;
+
 const HEARTBEAT_TIMEOUT_MS = 60000;
 const HEARTBEAT_INTERVAL_MS = 10000;
-const PROXY_IDLE_TIMEOUT_MS = 10000;
-const EVENT_LOOP_PERF_MEASUREMENT_MS = 5000;
 
 const MIN_PING_TO_REPORT = 500;
+
+const EVENT_LOOP_PERF_MEASUREMENT_MS = 5000;
 const MIN_EVENT_LOOP_DELAY_PERCENT_TO_REPORT = 20;
 
 const INTERNAL_ERROR_CODE = 1011;
@@ -94,9 +96,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
   #lastMessageTimestamp: number = 0;
 
-  #trackEventLoopPerf: boolean;
-
-  #eventLoopPerfMeasurementOngoing: boolean = false;
+  #eventLoopPerfTracker: EventLoopPerfTracker;
 
   constructor(
     projectRoot: string,
@@ -114,7 +114,33 @@ export default class InspectorProxy implements InspectorProxyQueries {
     this.#experiments = experiments;
     this.#logger = logger;
     this.#customMessageHandler = customMessageHandler;
-    this.#trackEventLoopPerf = trackEventLoopPerf;
+    if (trackEventLoopPerf) {
+      this.#eventLoopPerfTracker = new EventLoopPerfTracker({
+        perfMeasurementDuration: EVENT_LOOP_PERF_MEASUREMENT_MS,
+        minDelayPercentToReport: MIN_EVENT_LOOP_DELAY_PERCENT_TO_REPORT,
+        onHighDelay: ({
+          eventLoopUtilization,
+          maxEventLoopDelayPercent,
+          duration,
+          debuggerSessionIDs,
+        }) => {
+          debug(
+            "[perf] high event loop delay in the last %ds- event loop utilization='%d%' max event loop delay percent='%d%'",
+            duration / 1000,
+            eventLoopUtilization,
+            maxEventLoopDelayPercent,
+          );
+
+          this.#eventReporter?.logEvent({
+            type: 'high_event_loop_delay',
+            eventLoopUtilization,
+            maxEventLoopDelayPercent,
+            duration,
+            ...debuggerSessionIDs,
+          });
+        },
+      });
+    }
   }
 
   getPageDescriptions({
@@ -272,9 +298,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
     this.#lastMessageTimestamp = new Date().getTime();
 
-    if (this.#trackEventLoopPerf) {
-      this.#trackEventLoopPerfThrottled(debuggerSessionIDs);
-    }
+    this.#eventLoopPerfTracker?.trackPerfThrottled(debuggerSessionIDs);
   }
 
   // Adds websocket handler for device connections.
@@ -398,53 +422,6 @@ export default class InspectorProxy implements InspectorProxyQueries {
       }
     });
     return wss;
-  }
-
-  #trackEventLoopPerfThrottled(debuggerSessionIDs: DebuggerSessionIDs): void {
-    if (this.#eventLoopPerfMeasurementOngoing) {
-      return;
-    }
-
-    this.#eventLoopPerfMeasurementOngoing = true;
-
-    // https://nodejs.org/api/perf_hooks.html#performanceeventlooputilizationutilization1-utilization2
-    const eluStart = performance.eventLoopUtilization();
-
-    // https://nodejs.org/api/perf_hooks.html#perf_hooksmonitoreventloopdelayoptions
-    const h = monitorEventLoopDelay({resolution: 20});
-    h.enable();
-
-    setTimeout(() => {
-      const eluEnd = performance.eventLoopUtilization(eluStart);
-      h.disable();
-
-      // The % of time, between eluStart and eluEnd where event loop was busy
-      const eventLoopUtilization = Math.floor(eluEnd.utilization * 100);
-
-      // The max % of continious time between eluStart and eluEnd where event loop was busy
-      const maxEventLoopDelayPercent = Math.floor(
-        (h.max / 1e6 / EVENT_LOOP_PERF_MEASUREMENT_MS) * 100,
-      );
-
-      if (maxEventLoopDelayPercent >= MIN_EVENT_LOOP_DELAY_PERCENT_TO_REPORT) {
-        debug(
-          "[perf] high event loop delay in the last %ds- event loop utilization='%d%' max event loop delay percent='%d%'",
-          EVENT_LOOP_PERF_MEASUREMENT_MS / 1000,
-          eventLoopUtilization,
-          maxEventLoopDelayPercent,
-        );
-
-        this.#eventReporter?.logEvent({
-          type: 'high_event_loop_delay',
-          eventLoopUtilization,
-          maxEventLoopDelayPercent,
-          duration: EVENT_LOOP_PERF_MEASUREMENT_MS,
-          ...debuggerSessionIDs,
-        });
-      }
-
-      this.#eventLoopPerfMeasurementOngoing = false;
-    }, EVENT_LOOP_PERF_MEASUREMENT_MS).unref();
   }
 
   // Returns websocket handler for debugger connections.
