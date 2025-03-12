@@ -12,6 +12,7 @@
 
 import type {RNTesterModule} from '../../types/RNTesterTypes';
 
+import hotdog from '../../assets/hotdog.jpg';
 import RNTesterText from '../../components/RNTesterText';
 import TextLegend from '../../components/TextLegend';
 import TextInlineViewsExample from './TextInlineViewsExample';
@@ -20,6 +21,7 @@ const TextInlineView = require('../../components/TextInlineView');
 const React = require('react');
 const {
   Button,
+  Image,
   LayoutAnimation,
   Platform,
   Text,
@@ -1103,9 +1105,10 @@ const examples = [
   },
   {
     title: 'numberOfLines attribute',
+    name: 'numberOfLines',
     render: function (): React.Node {
       return (
-        <View>
+        <View testID="number-of-lines">
           <Text numberOfLines={1}>
             Maximum of one line, no matter how much I write here. If I keep
             writing, it{"'"}ll just truncate after one line.
@@ -1113,6 +1116,14 @@ const examples = [
           <Text numberOfLines={2} style={{marginTop: 20}}>
             Maximum of two lines, no matter how much I write here. If I keep
             writing, it{"'"}ll just truncate after two lines.
+          </Text>
+          <Text numberOfLines={1} style={{marginTop: 20}}>
+            The hotdog should be truncated. The hotdog should be truncated. The
+            hotdog should be truncated. The hotdog should be truncated. The
+            hotdog should be truncated. The hotdog should be truncated. The
+            hotdog should be truncated. The hotdog should be truncated. The
+            hotdog should be truncated. The hotdog should be truncated.
+            <Image source={hotdog} style={{height: 12}} />
           </Text>
           <Text style={{marginTop: 20}}>
             No maximum lines specified, no matter how much I write here. If I

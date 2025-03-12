@@ -7,6 +7,9 @@
 
 #include "TextLayoutManager.h"
 
+#include <span>
+#include <utility>
+
 #include <react/common/mapbuffer/JReadableMapBuffer.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <react/renderer/attributedstring/conversions.h>
@@ -117,33 +120,39 @@ TextMeasurement doMeasure(
       maximumSize.height,
       attachmentPositions);
 
-  jfloat* attachmentData =
-      env->GetFloatArrayElements(attachmentPositions, nullptr);
+  jfloat* attachmentDataElements =
+      env->GetFloatArrayElements(attachmentPositions, nullptr /*isCopy*/);
+  std::span<float> attachmentData{
+      attachmentDataElements, static_cast<size_t>(attachmentCount * 2)};
 
   auto attachments = TextMeasurement::Attachments{};
   if (attachmentCount > 0) {
-    int attachmentIndex = 0;
     for (const auto& fragment : attributedString.getFragments()) {
       if (fragment.isAttachment()) {
-        float top = attachmentData[attachmentIndex * 2];
-        float left = attachmentData[attachmentIndex * 2 + 1];
-        float width = fragment.parentShadowView.layoutMetrics.frame.size.width;
-        float height =
-            fragment.parentShadowView.layoutMetrics.frame.size.height;
+        float top = attachmentData[attachments.size() * 2];
+        float left = attachmentData[attachments.size() * 2 + 1];
+        if (std::isnan(top) || std::isnan(left)) {
+          attachments.push_back(
+              TextMeasurement::Attachment{.frame = Rect{}, .isClipped = true});
+        } else {
+          float width =
+              fragment.parentShadowView.layoutMetrics.frame.size.width;
+          float height =
+              fragment.parentShadowView.layoutMetrics.frame.size.height;
 
-        auto rect = facebook::react::Rect{
-            .origin = {.x = left, .y = top},
-            .size = facebook::react::Size{.width = width, .height = height}};
-        attachments.push_back(
-            TextMeasurement::Attachment{.frame = rect, .isClipped = false});
-        attachmentIndex++;
+          auto rect = facebook::react::Rect{
+              .origin = {.x = left, .y = top},
+              .size = facebook::react::Size{.width = width, .height = height}};
+          attachments.push_back(
+              TextMeasurement::Attachment{.frame = rect, .isClipped = false});
+        }
       }
     }
   }
 
   // Clean up allocated ref
   env->ReleaseFloatArrayElements(
-      attachmentPositions, attachmentData, JNI_ABORT);
+      attachmentPositions, attachmentDataElements, JNI_ABORT);
   env->DeleteLocalRef(attachmentPositions);
 
   return TextMeasurement{.size = size, .attachments = attachments};
