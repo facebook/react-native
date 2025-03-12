@@ -1014,3 +1014,207 @@ test('culling inside of Modal', () => {
     'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
   ]);
 });
+
+test('scroll view parent is unflattened and culled view becomes visible', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+  Fantom.runTask(() => {
+    root.render(
+      <View style={{width: 100, height: 100}}>
+        <ScrollView>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 150}}
+          />
+        </ScrollView>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+
+  Fantom.runTask(() => {
+    root.render(
+      <View nativeID="unflattened" style={{width: 100, height: 100}}>
+        <ScrollView>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 50}}
+          />
+        </ScrollView>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "ScrollView", nativeID: (N/A)}',
+    'Remove {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "unflattened"}',
+    'Update {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "unflattened"}',
+    'Insert {type: "ScrollView", parentNativeID: "unflattened", index: 0, nativeID: (N/A)}',
+  ]);
+});
+
+test('scroll view parent is flattened and culled view becomes visible', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+  Fantom.runTask(() => {
+    root.render(
+      <View nativeID="unflattened" style={{width: 100, height: 100}}>
+        <ScrollView>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 150}}
+          />
+        </ScrollView>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "View", nativeID: "unflattened"}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: "unflattened", index: 0, nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "unflattened"}',
+  ]);
+
+  Fantom.runTask(() => {
+    root.render(
+      <View style={{width: 100, height: 100}}>
+        <ScrollView>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 50}}
+          />
+        </ScrollView>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "ScrollView", nativeID: (N/A)}',
+    'Remove {type: "ScrollView", parentNativeID: "unflattened", index: 0, nativeID: (N/A)}',
+    'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: "unflattened"}',
+    'Delete {type: "View", nativeID: "unflattened"}',
+    'Update {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+});
+
+test('scroll view parent is flattened and view becomes culled', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+  Fantom.runTask(() => {
+    root.render(
+      <View nativeID="unflattened" style={{width: 100, height: 100}}>
+        <ScrollView>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 50}}
+          />
+        </ScrollView>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "View", nativeID: "unflattened"}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: "unflattened", index: 0, nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "unflattened"}',
+  ]);
+
+  Fantom.runTask(() => {
+    root.render(
+      <View style={{width: 100, height: 100}}>
+        <ScrollView>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 150}}
+          />
+        </ScrollView>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "ScrollView", nativeID: (N/A)}',
+    'Remove {type: "ScrollView", parentNativeID: "unflattened", index: 0, nativeID: (N/A)}',
+    'Remove {type: "View", parentNativeID: (root), index: 0, nativeID: "unflattened"}',
+    'Delete {type: "View", nativeID: "unflattened"}',
+    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Delete {type: "View", nativeID: "child"}',
+    'Update {type: "View", nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+});
+
+test('scroll view parent is unflattened and view becomes culled', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+
+  Fantom.runTask(() => {
+    root.render(
+      <View style={{width: 100, height: 100}}>
+        <ScrollView>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 50}}
+          />
+        </ScrollView>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+  ]);
+
+  Fantom.runTask(() => {
+    root.render(
+      <View nativeID="unflattened" style={{width: 100, height: 100}}>
+        <ScrollView>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 150}}
+          />
+        </ScrollView>
+      </View>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "ScrollView", nativeID: (N/A)}',
+    'Remove {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    'Create {type: "View", nativeID: "unflattened"}',
+    'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+    'Delete {type: "View", nativeID: "child"}',
+    'Update {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: "unflattened"}',
+    'Insert {type: "ScrollView", parentNativeID: "unflattened", index: 0, nativeID: (N/A)}',
+  ]);
+});
