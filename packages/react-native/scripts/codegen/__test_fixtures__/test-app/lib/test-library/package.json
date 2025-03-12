@@ -1,0 +1,39 @@
+{
+  "name": "test-library",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "codegenConfig": {
+    "name": "TestLibraryConfig",
+    "type": "all",
+    "android": {
+      "javaPackageName": "com.testLibrary"
+    },
+    "ios": {
+      "modulesConformingToProtocol": {
+        "RCTImageURLLoader": [
+          "RCTTestLibraryImageURLLoader"
+        ],
+        "RCTURLRequestHandler": [
+          "RCTTestLibraryURLRequestHandler"
+        ],
+        "RCTImageDataDecoder": [
+          "RCTTestLibraryImageDataDecoder"
+        ]
+      },
+      "modulesProvider": {
+        "TestLibraryImageURLLoader": "RCTTestLibraryImageURLLoader",
+        "TestLibraryURLRequestHandler": "RCTTestLibraryURLRequestHandler",
+        "TestLibraryImageDataDecoder": "RCTTestLibraryImageDataDecoder"
+      },
+      "componentProvider": {
+        "TestLibraryComponent": "RCTTestLibraryComponentClass"
+      }
+    }
+  }
+}

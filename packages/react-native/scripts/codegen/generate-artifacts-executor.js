@@ -1036,7 +1036,13 @@ SCRIPT`;
  * @throws If it can't find a CodeGen configuration in the file.
  * @throws If it can't find a cli for the CodeGen.
  */
-function execute(projectRoot, targetPlatform, baseOutputPath, source) {
+function execute(
+  projectRoot,
+  targetPlatform,
+  baseOutputPath,
+  source,
+  runReactNativeCodegen = true,
+) {
   try {
     codegenLog(`Analyzing ${path.join(projectRoot, 'package.json')}`);
 
@@ -1054,7 +1060,9 @@ function execute(projectRoot, targetPlatform, baseOutputPath, source) {
 
     const pkgJson = readPkgJsonInDirectory(projectRoot);
 
-    buildCodegenIfNeeded();
+    if (runReactNativeCodegen) {
+      buildCodegenIfNeeded();
+    }
 
     const libraries = findCodegenEnabledLibraries(pkgJson, projectRoot);
 
@@ -1074,15 +1082,17 @@ function execute(projectRoot, targetPlatform, baseOutputPath, source) {
         platform,
       );
 
-      const schemaInfos = generateSchemaInfos(libraries);
-      generateNativeCode(
-        outputPath,
-        schemaInfos.filter(schemaInfo =>
-          mustGenerateNativeCode(projectRoot, schemaInfo),
-        ),
-        pkgJsonIncludesGeneratedCode(pkgJson),
-        platform,
-      );
+      if (runReactNativeCodegen) {
+        const schemaInfos = generateSchemaInfos(libraries);
+        generateNativeCode(
+          outputPath,
+          schemaInfos.filter(schemaInfo =>
+            mustGenerateNativeCode(projectRoot, schemaInfo),
+          ),
+          pkgJsonIncludesGeneratedCode(pkgJson),
+          platform,
+        );
+      }
 
       if (source === 'app') {
         // These components are only required by apps, not by libraries

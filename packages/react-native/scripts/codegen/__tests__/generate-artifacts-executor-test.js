@@ -12,12 +12,46 @@
 
 const fixtures = require('../__test_fixtures__/fixtures');
 const underTest = require('../generate-artifacts-executor');
+const fs = require('fs');
 const path = require('path');
 
 const rootPath = path.join(__dirname, '../../..');
 
 const packageJson = JSON.stringify({
   name: 'react-native',
+});
+
+describe('execute', () => {
+  const appDir = path.join(__dirname, '../__test_fixtures__/test-app');
+  const outputDir = path.join(appDir, 'temp');
+
+  beforeAll(() => {
+    underTest.execute(appDir, 'ios', outputDir, 'app', false);
+  });
+
+  afterAll(() => {
+    fs.rmdirSync(outputDir, {recursive: true});
+  });
+
+  [
+    'RCTAppDependencyProvider.h',
+    'RCTAppDependencyProvider.mm',
+    'RCTModuleProviders.h',
+    'RCTModuleProviders.mm',
+    'RCTModulesConformingToProtocolsProvider.h',
+    'RCTModulesConformingToProtocolsProvider.mm',
+    'RCTThirdPartyComponentsProvider.h',
+    'RCTThirdPartyComponentsProvider.mm',
+    'ReactAppDependencyProvider.podspec',
+    'ReactCodegen.podspec',
+  ].forEach(file => {
+    it(`"${file}" should match snapshot`, () => {
+      const generatedFileDir = path.join(outputDir, 'build/generated/ios');
+      const generatedFile = path.join(generatedFileDir, file);
+      expect(fs.existsSync(generatedFile)).toBe(true);
+      expect(fs.readFileSync(generatedFile, 'utf8')).toMatchSnapshot();
+    });
+  });
 });
 
 describe('extractLibrariesFromJSON', () => {
