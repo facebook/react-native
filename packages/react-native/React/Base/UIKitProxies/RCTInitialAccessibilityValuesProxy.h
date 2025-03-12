@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) BOOL isGrayscaleEnabled;
 @property (readonly, nonatomic) BOOL isInvertColorsEnabled;
 @property (readonly, nonatomic) BOOL isReduceMotionEnabled;
-@property (readonly, nonatomic) BOOL isDarkerSystemColorsEnabled;
 @property (readonly, nonatomic) BOOL isHighContrastEnabled;
 @property (readonly, nonatomic) BOOL prefersCrossFadeTransitions;
 @property (readonly, nonatomic) BOOL isReduceTransparencyEnabled;

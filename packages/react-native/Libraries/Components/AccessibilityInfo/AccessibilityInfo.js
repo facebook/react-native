@@ -241,10 +241,10 @@ const AccessibilityInfo = {
         return Promise.resolve(false);
       } else {
         if (
-          NativeAccessibilityManagerIOS?.getCurrentDarkerSystemColorsState !=
+          NativeAccessibilityManagerIOS?.getCurrentHighContrastState !=
           null
         ) {
-          NativeAccessibilityManagerIOS.getCurrentDarkerSystemColorsState(
+          NativeAccessibilityManagerIOS.getCurrentHighContrastState(
             resolve,
             reject,
           );
@@ -273,10 +273,10 @@ const AccessibilityInfo = {
         }
       } else if (Platform.OS === 'ios') {
         if (
-          NativeAccessibilityManagerIOS?.getCurrentDarkerSystemColorsState !=
+          NativeAccessibilityManagerIOS?.getCurrentHighContrastState !=
           null
         ) {
-          NativeAccessibilityManagerIOS.getCurrentDarkerSystemColorsState(
+          NativeAccessibilityManagerIOS.getCurrentHighContrastState(
             resolve,
             reject,
           );

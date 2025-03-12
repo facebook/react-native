@@ -15,7 +15,6 @@
   BOOL _isGrayscaleEnabled;
   BOOL _isInvertColorsEnabled;
   BOOL _isReduceMotionEnabled;
-  BOOL _isDarkerSystemColorsEnabled;
   BOOL _isHighContrastEnabled;
   BOOL _isReduceTransparencyEnabled;
   BOOL _isVoiceOverEnabled;
@@ -101,23 +100,6 @@
   return isReduceMotionEnabled;
 }
 
-- (BOOL)isDarkerSystemColorsEnabled
-{
-  {
-    std::lock_guard<std::mutex> lock(_mutex);
-    if (_hasRecordedInitialAccessibilityValues) {
-      return _isDarkerSystemColorsEnabled;
-    }
-  }
-
-  __block BOOL isDarkerSystemColorsEnabled;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    isDarkerSystemColorsEnabled = UIAccessibilityDarkerSystemColorsEnabled();
-  });
-
-  return isDarkerSystemColorsEnabled;
-}
-
 - (BOOL)isHighContrastEnabled
 {
   {
@@ -194,7 +176,7 @@
   _isGrayscaleEnabled = UIAccessibilityIsGrayscaleEnabled();
   _isInvertColorsEnabled = UIAccessibilityIsInvertColorsEnabled();
   _isReduceMotionEnabled = UIAccessibilityIsReduceMotionEnabled();
-  _isDarkerSystemColorsEnabled = UIAccessibilityDarkerSystemColorsEnabled();
+  _isHighContrastEnabled = UIAccessibilityDarkerSystemColorsEnabled();
   _isReduceTransparencyEnabled = UIAccessibilityIsReduceTransparencyEnabled();
   _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   _preferredContentSizeCategory = RCTSharedApplication().preferredContentSizeCategory;
