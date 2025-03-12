@@ -210,7 +210,7 @@ const AccessibilityInfo = {
   isHighTextContrastEnabled(): Promise<boolean> {
     warnOnce(
       'isHighTextContrastEnabled-deprecated',
-      'isHighTextContrastEnabled is deprecated. Use isHighContrastEnabled instead.'
+      'isHighTextContrastEnabled is deprecated. Use isHighContrastEnabled instead.',
     );
     return new Promise((resolve, reject) => {
       if (Platform.OS === 'android') {
@@ -234,15 +234,14 @@ const AccessibilityInfo = {
   isDarkerSystemColorsEnabled(): Promise<boolean> {
     warnOnce(
       'isDarkerSystemColorsEnabled-deprecated',
-      'isDarkerSystemColorsEnabled is deprecated. Use isHighContrastEnabled instead.'
+      'isDarkerSystemColorsEnabled is deprecated. Use isHighContrastEnabled instead.',
     );
     return new Promise((resolve, reject) => {
       if (Platform.OS === 'android') {
         return Promise.resolve(false);
       } else {
         if (
-          NativeAccessibilityManagerIOS?.getCurrentHighContrastState !=
-          null
+          NativeAccessibilityManagerIOS?.getCurrentHighContrastState != null
         ) {
           NativeAccessibilityManagerIOS.getCurrentHighContrastState(
             resolve,
@@ -273,8 +272,7 @@ const AccessibilityInfo = {
         }
       } else if (Platform.OS === 'ios') {
         if (
-          NativeAccessibilityManagerIOS?.getCurrentHighContrastState !=
-          null
+          NativeAccessibilityManagerIOS?.getCurrentHighContrastState != null
         ) {
           NativeAccessibilityManagerIOS.getCurrentHighContrastState(
             resolve,
@@ -287,7 +285,6 @@ const AccessibilityInfo = {
         return Promise.resolve(false);
       }
     });
-
   },
 
   /**
