@@ -132,6 +132,20 @@
   return [self viewWithModuleName:moduleName initialProperties:nil launchOptions:nil];
 }
 
+- (void)initializeReactHostWithLaunchOptions:(NSDictionary *)launchOptions
+{
+  if (_configuration.bridgelessEnabled) {
+    // Enable TurboModule interop by default in Bridgeless mode
+    RCTEnableTurboModuleInterop(YES);
+    RCTEnableTurboModuleInteropBridgeProxy(YES);
+
+    [self createReactHostIfNeeded:launchOptions];
+}
+
+  [self createBridgeIfNeeded:launchOptions];
+  [self createBridgeAdapterIfNeeded];
+}
+
 - (UIView *)viewWithModuleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initProps
                  launchOptions:(NSDictionary *)launchOptions
