@@ -19,7 +19,8 @@ type AccessibilityChangeEventName =
   | 'highTextContrastChanged' // Android-only Event
   | 'darkerSystemColorsChanged' // iOS-only Event
   | 'screenReaderChanged'
-  | 'reduceTransparencyChanged'; // iOS-only Event
+  | 'reduceTransparencyChanged' // iOS-only Event
+  | 'highContrastChanged';
 
 type AccessibilityChangeEvent = boolean;
 
@@ -84,6 +85,15 @@ export interface AccessibilityInfoStatic {
    * @platform ios
    */
   isDarkerSystemColorsEnabled: () => Promise<boolean>;
+
+  /**
+   *
+   * Query whether high contrast is currently enabled.
+   * On Android, this maps to the API `highTextContrastEnabled`
+   * On iOS, this maps to the API `darkerSystemColorsEnabled`
+   *
+   */
+  isHighTextContrastEnabled: () => Promise<boolean>;
 
   /**
    * Query whether reduce motion and prefer cross-fade transitions settings are currently enabled.

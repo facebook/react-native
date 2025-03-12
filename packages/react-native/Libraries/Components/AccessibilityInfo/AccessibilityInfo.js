@@ -18,6 +18,8 @@ import legacySendAccessibilityEvent from './legacySendAccessibilityEvent';
 import NativeAccessibilityInfoAndroid from './NativeAccessibilityInfo';
 import NativeAccessibilityManagerIOS from './NativeAccessibilityManager';
 
+import warnOnce from '../../Utilities/warnOnce';
+
 // Events that are only supported on Android.
 type AccessibilityEventDefinitionsAndroid = {
   accessibilityServiceChanged: [boolean],
@@ -40,6 +42,7 @@ type AccessibilityEventDefinitions = {
   change: [boolean], // screenReaderChanged
   reduceMotionChanged: [boolean],
   screenReaderChanged: [boolean],
+  highContrastChanged: [boolean],
 };
 
 type AccessibilityEventTypes = 'click' | 'focus' | 'viewHoverEnter';
@@ -57,6 +60,7 @@ const EventNames: Map<
       ['accessibilityServiceChanged', 'accessibilityServiceDidChange'],
       ['invertColorsChanged', 'invertColorDidChange'],
       ['grayscaleChanged', 'grayscaleModeDidChange'],
+      ['highContrastChanged', 'highContrastChanged'],
     ])
   : new Map([
       ['announcementFinished', 'announcementFinished'],
@@ -68,6 +72,7 @@ const EventNames: Map<
       ['reduceTransparencyChanged', 'reduceTransparencyChanged'],
       ['screenReaderChanged', 'screenReaderChanged'],
       ['darkerSystemColorsChanged', 'darkerSystemColorsChanged'],
+      ['highContrastChanged', 'highContrastChanged'],
     ]);
 
 /**
@@ -203,6 +208,10 @@ const AccessibilityInfo = {
    * The result is `true` when high text contrast is enabled and `false` otherwise.
    */
   isHighTextContrastEnabled(): Promise<boolean> {
+    warnOnce(
+      'isHighTextContrastEnabled-deprecated',
+      'isHighTextContrastEnabled is deprecated. Use isHighContrastEnabled instead.'
+    );
     return new Promise((resolve, reject) => {
       if (Platform.OS === 'android') {
         if (NativeAccessibilityInfoAndroid?.isHighTextContrastEnabled != null) {
@@ -223,6 +232,10 @@ const AccessibilityInfo = {
    * The result is `true` when dark system colors is enabled and `false` otherwise.
    */
   isDarkerSystemColorsEnabled(): Promise<boolean> {
+    warnOnce(
+      'isDarkerSystemColorsEnabled-deprecated',
+      'isDarkerSystemColorsEnabled is deprecated. Use isHighContrastEnabled instead.'
+    );
     return new Promise((resolve, reject) => {
       if (Platform.OS === 'android') {
         return Promise.resolve(false);
@@ -240,6 +253,41 @@ const AccessibilityInfo = {
         }
       }
     });
+  },
+
+  /**
+   * Query whether high contrast is currently enabled.
+   * On iOS this maps to the API "darkerSystemColorsEnabled"
+   * On Android this maps to the API "highTextContrastEnabled"
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when dark system colors is enabled and `false` otherwise.
+   */
+  isHighContrastEnabled: function (): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (Platform.OS === 'android') {
+        if (NativeAccessibilityInfoAndroid?.isHighTextContrastEnabled != null) {
+          NativeAccessibilityInfoAndroid.isHighTextContrastEnabled(resolve);
+        } else {
+          reject(null);
+        }
+      } else if (Platform.OS === 'ios') {
+        if (
+          NativeAccessibilityManagerIOS?.getCurrentDarkerSystemColorsState !=
+          null
+        ) {
+          NativeAccessibilityManagerIOS.getCurrentDarkerSystemColorsState(
+            resolve,
+            reject,
+          );
+        } else {
+          reject(null);
+        }
+      } else {
+        return Promise.resolve(false);
+      }
+    });
+
   },
 
   /**
