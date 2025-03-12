@@ -289,7 +289,7 @@ CommitStatus ShadowTree::tryCommit(
 
   // Run commit hooks.
   newRootShadowNode = delegate_.shadowTreeWillCommit(
-      *this, oldRootShadowNode, newRootShadowNode);
+      *this, oldRootShadowNode, newRootShadowNode, commitOptions);
 
   if (!newRootShadowNode) {
     return CommitStatus::Cancelled;

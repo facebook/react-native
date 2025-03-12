@@ -29,7 +29,8 @@ class DummyShadowTreeDelegate : public ShadowTreeDelegate {
   RootShadowNode::Unshared shadowTreeWillCommit(
       const ShadowTree& /*shadowTree*/,
       const RootShadowNode::Shared& /*oldRootShadowNode*/,
-      const RootShadowNode::Unshared& newRootShadowNode) const override {
+      const RootShadowNode::Unshared& newRootShadowNode,
+      const ShadowTree::CommitOptions& /*commitOptions*/) const override {
     return newRootShadowNode;
   };
 

@@ -454,7 +454,9 @@ jsi::Value UIManagerBinding::get(
           uiManager->completeSurface(
               surfaceId,
               shadowNodeList,
-              {.enableStateReconciliation = true, .mountSynchronously = false});
+              {.enableStateReconciliation = true,
+               .mountSynchronously = false,
+               .source = ShadowTree::CommitSource::React});
 
           return jsi::Value::undefined();
         });

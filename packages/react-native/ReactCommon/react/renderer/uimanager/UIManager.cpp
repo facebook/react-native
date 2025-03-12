@@ -619,7 +619,8 @@ void UIManager::unregisterMountHook(UIManagerMountHook& mountHook) {
 RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
     const ShadowTree& shadowTree,
     const RootShadowNode::Shared& oldRootShadowNode,
-    const RootShadowNode::Unshared& newRootShadowNode) const {
+    const RootShadowNode::Unshared& newRootShadowNode,
+    const ShadowTree::CommitOptions& commitOptions) const {
   TraceSection s("UIManager::shadowTreeWillCommit");
 
   std::shared_lock lock(commitHookMutex_);
@@ -627,7 +628,7 @@ RootShadowNode::Unshared UIManager::shadowTreeWillCommit(
   auto resultRootShadowNode = newRootShadowNode;
   for (auto* commitHook : commitHooks_) {
     resultRootShadowNode = commitHook->shadowTreeWillCommit(
-        shadowTree, oldRootShadowNode, resultRootShadowNode);
+        shadowTree, oldRootShadowNode, resultRootShadowNode, commitOptions);
   }
 
   return resultRootShadowNode;
