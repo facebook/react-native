@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<452dc78526d49a23c5052bd1ecd130d2>>
+ * @generated SignedSource<<29cdbefbe02064df4fb65388e64f95a4>>
  */
 
 /**
@@ -43,6 +43,11 @@ class ReactNativeFeatureFlags {
    * Common flag for testing. Do NOT modify.
    */
   RN_EXPORT static bool commonTestFlag();
+
+  /**
+   * Enables start- and finishOperationBatch on any platform.
+   */
+  RN_EXPORT static bool animatedShouldSignalBatch();
 
   /**
    * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread

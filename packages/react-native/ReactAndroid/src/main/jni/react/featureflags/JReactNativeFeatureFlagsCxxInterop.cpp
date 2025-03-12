@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<14c3186a1395a23befb73fc9da972de7>>
+ * @generated SignedSource<<c866e69278d249dd79cb2fc193d1a7e2>>
  */
 
 /**
@@ -42,6 +42,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool commonTestFlag() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("commonTestFlag");
+    return method(javaProvider_);
+  }
+
+  bool animatedShouldSignalBatch() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("animatedShouldSignalBatch");
     return method(javaProvider_);
   }
 
@@ -294,6 +300,11 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::animatedShouldSignalBatch();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
@@ -528,6 +539,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
+      makeNativeMethod(
+        "animatedShouldSignalBatch",
+        JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch),
       makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),
