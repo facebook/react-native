@@ -182,6 +182,16 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    enableLineHeightCenteringOnIOS: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2024-10-11',
+        description:
+          'When enabled, custom line height calculation will be centered from top to bottom.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+    },
     enableLongTaskAPI: {
       defaultValue: false,
       metadata: {
