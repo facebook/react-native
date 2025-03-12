@@ -150,13 +150,9 @@
              initialProperties:(NSDictionary *)initProps
                  launchOptions:(NSDictionary *)launchOptions
 {
+  [self initializeReactHostWithLaunchOptions:launchOptions];
+
   if (_configuration.bridgelessEnabled) {
-    // Enable TurboModule interop by default in Bridgeless mode
-    RCTEnableTurboModuleInterop(YES);
-    RCTEnableTurboModuleInteropBridgeProxy(YES);
-
-    [self createReactHostIfNeeded:launchOptions];
-
     RCTFabricSurface *surface = [self.reactHost createSurfaceWithModuleName:moduleName initialProperties:initProps];
 
     RCTSurfaceHostingProxyRootView *surfaceHostingProxyRootView =
@@ -168,9 +164,6 @@
     }
     return surfaceHostingProxyRootView;
   }
-
-  [self createBridgeIfNeeded:launchOptions];
-  [self createBridgeAdapterIfNeeded];
 
   UIView *rootView;
   if (_configuration.createRootViewWithBridge != nil) {
