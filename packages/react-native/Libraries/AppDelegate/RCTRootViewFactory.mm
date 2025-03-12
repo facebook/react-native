@@ -140,6 +140,7 @@
     RCTEnableTurboModuleInteropBridgeProxy(YES);
 
     [self createReactHostIfNeeded:launchOptions];
+    return;
 }
 
   [self createBridgeIfNeeded:launchOptions];
