@@ -28,6 +28,7 @@ import type {
 } from './types';
 
 import CDPMessagesLogging from './CDPMessagesLogging';
+import CDPMessagesQueueLogging from './CDPMessagesQueueLogging';
 import DeviceEventReporter from './DeviceEventReporter';
 import * as fs from 'fs';
 import invariant from 'invariant';
@@ -37,6 +38,7 @@ import WS from 'ws';
 const debug = require('debug')('Metro:InspectorProxy');
 
 const PAGES_POLLING_INTERVAL = 1000;
+const MIN_MESSAGE_QUEUE_BYTES_TO_REPORT = 2 * 1024 * 1024; // 2 MiB
 
 // Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDeviceLegacy method for
 // more details.
@@ -88,6 +90,9 @@ export default class Device {
   // async fetch.
   #messageFromDeviceQueue: Promise<void> = Promise.resolve();
 
+  // Logging reporting the maximum size of cdp message coming from device in the queue for processing
+  #messageFromDeviceQueueLogging: ?CDPMessagesQueueLogging;
+
   // Stores socket connection between Inspector Proxy and device.
   #deviceSocket: WS;
 
@@ -130,6 +135,7 @@ export default class Device {
   // A base HTTP(S) URL to the server, relative to this server.
   #serverRelativeBaseUrl: URL;
 
+  // Logging reporting batches of cdp messages
   #cdpMessagesLogging: CDPMessagesLogging;
 
   constructor(deviceOptions: DeviceOptions) {
@@ -152,6 +158,35 @@ export default class Device {
     this.#id = id;
     this.#name = name;
     this.#app = app;
+
+    this.#messageFromDeviceQueueLogging = new CDPMessagesQueueLogging(
+      (maxCDPMessageQueueSize: number, maxCDPMessageQueueMemory: number) => {
+        if (maxCDPMessageQueueMemory > MIN_MESSAGE_QUEUE_BYTES_TO_REPORT) {
+          debug(
+            "CDP messages proxy queue reached='%d' messages using at least '%sMiB' coming from device='%s' for app='%s'",
+            maxCDPMessageQueueSize,
+            String(maxCDPMessageQueueMemory / 1024 / 1024).slice(0, 6),
+            name,
+            app,
+          );
+
+          const debuggerSessionIDs = {
+            appId: app,
+            deviceId: id,
+            deviceName: name,
+            pageId: null,
+          };
+
+          eventReporter?.logEvent({
+            type: 'device_high_message_queue',
+            maxCDPMessageQueueSize,
+            maxCDPMessageQueueMemory,
+            ...debuggerSessionIDs,
+          });
+        }
+      },
+    );
+
     this.#deviceSocket = socket;
     this.#projectRoot = projectRoot;
     this.#serverRelativeBaseUrl = serverRelativeBaseUrl;
@@ -171,6 +206,7 @@ export default class Device {
 
     // $FlowFixMe[incompatible-call]
     this.#deviceSocket.on('message', (message: string) => {
+      this.#messageFromDeviceQueueLogging?.messageReceived(message.length);
       this.#messageFromDeviceQueue = this.#messageFromDeviceQueue
         .then(async () => {
           const parsedMessage = JSON.parse(message);
@@ -199,6 +235,9 @@ export default class Device {
               loggingError,
             );
           }
+        })
+        .finally(() => {
+          this.#messageFromDeviceQueueLogging?.messageProcessed(message.length);
         });
     });
     // Sends 'getPages' request to device every PAGES_POLLING_INTERVAL milliseconds.

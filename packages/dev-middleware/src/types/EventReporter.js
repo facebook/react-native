@@ -118,6 +118,12 @@ export type ReportableEvent =
       maxEventLoopDelayPercent: number,
       duration: number,
       ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'device_high_message_queue',
+      maxCDPMessageQueueSize: number,
+      maxCDPMessageQueueMemory: number,
+      ...DebuggerSessionIDs,
     };
 
 /**
