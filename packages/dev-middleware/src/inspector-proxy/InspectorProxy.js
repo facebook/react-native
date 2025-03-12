@@ -48,7 +48,7 @@ const PROXY_IDLE_TIMEOUT_MS = 10000;
 const EVENT_LOOP_PERF_MEASUREMENT_MS = 5000;
 
 const MIN_PING_TO_REPORT = 500;
-const MIN_EVENT_LOOP_DELAY_TO_REPORT = 500;
+const MIN_EVENT_LOOP_DELAY_PERCENT_TO_REPORT = 20;
 
 const INTERNAL_ERROR_CODE = 1011;
 
@@ -422,25 +422,22 @@ export default class InspectorProxy implements InspectorProxyQueries {
       const eventLoopUtilization = Math.floor(eluEnd.utilization * 100);
 
       // The max % of continious time between eluStart and eluEnd where event loop was busy
-      const maxEventLoopDelay = Math.floor(
+      const maxEventLoopDelayPercent = Math.floor(
         (h.max / 1e6 / EVENT_LOOP_PERF_MEASUREMENT_MS) * 100,
       );
 
-      if (
-        debug.enabled &&
-        maxEventLoopDelay >= MIN_EVENT_LOOP_DELAY_TO_REPORT
-      ) {
+      if (maxEventLoopDelayPercent >= MIN_EVENT_LOOP_DELAY_PERCENT_TO_REPORT) {
         debug(
-          "High event loop delay in the last %ds- event loop utilization='%d%' max event loop delay='%d%'",
+          "[perf] high event loop delay in the last %ds- event loop utilization='%d%' max event loop delay percent='%d%'",
           EVENT_LOOP_PERF_MEASUREMENT_MS / 1000,
           eventLoopUtilization,
-          maxEventLoopDelay,
+          maxEventLoopDelayPercent,
         );
 
         this.#eventReporter?.logEvent({
           type: 'high_event_loop_delay',
           eventLoopUtilization,
-          maxEventLoopDelay,
+          maxEventLoopDelayPercent,
           duration: EVENT_LOOP_PERF_MEASUREMENT_MS,
           ...debuggerSessionIDs,
         });
@@ -626,7 +623,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     socket.on('pong', () => {
       const roundtripDuration = Date.now() - latestPingMs;
 
-      if (debug.enabled && roundtripDuration >= MIN_PING_TO_REPORT) {
+      if (roundtripDuration >= MIN_PING_TO_REPORT) {
         const isIdle = this.#isIdle();
 
         debug(
