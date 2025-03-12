@@ -117,6 +117,7 @@ class TaskQueue {
       } catch (e) {
         e.message =
           // $FlowFixMe[incompatible-type]
+          // $FlowFixMe[incompatible-use]
           'TaskQueue: Error with task ' + (task.name || '') + ': ' + e.message;
         throw e;
       }

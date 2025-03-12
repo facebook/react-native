@@ -119,12 +119,15 @@ class Alert {
         if (action === constants.buttonClicked) {
           if (buttonKey === constants.buttonNeutral) {
             // $FlowFixMe[incompatible-type]
+            // $FlowFixMe[incompatible-use]
             buttonNeutral.onPress && buttonNeutral.onPress();
           } else if (buttonKey === constants.buttonNegative) {
             // $FlowFixMe[incompatible-type]
+            // $FlowFixMe[incompatible-use]
             buttonNegative.onPress && buttonNegative.onPress();
           } else if (buttonKey === constants.buttonPositive) {
             // $FlowFixMe[incompatible-type]
+            // $FlowFixMe[incompatible-use]
             buttonPositive.onPress && buttonPositive.onPress();
           }
         } else if (action === constants.dismissed) {
