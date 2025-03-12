@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<98c62bb40ef9c03af6e3e2d758cef7ec>>
+ * @generated SignedSource<<4d47f61435ba3a74e84752a02def81c2>>
  */
 
 /**
@@ -28,6 +28,10 @@ std::unique_ptr<ReactNativeFeatureFlagsAccessor> accessor_;
 
 bool ReactNativeFeatureFlags::commonTestFlag() {
   return getAccessor().commonTestFlag();
+}
+
+bool ReactNativeFeatureFlags::animatedShouldSignalBatch() {
+  return getAccessor().animatedShouldSignalBatch();
 }
 
 bool ReactNativeFeatureFlags::disableMountItemReorderingAndroid() {
