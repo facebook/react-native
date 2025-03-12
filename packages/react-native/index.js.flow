@@ -102,6 +102,10 @@ export {default as Vibration} from './Libraries/Vibration/Vibration';
 // #endregion
 // #region Plugins
 
+export type * from './Libraries/Types/CodegenTypesNamespace';
+
+export {default as codegenNativeComponent} from './Libraries/Utilities/codegenNativeComponent';
+export {default as codegenNativeCommands} from './Libraries/Utilities/codegenNativeCommands';
 export {default as DeviceEventEmitter} from './Libraries/EventEmitter/RCTDeviceEventEmitter';
 export {DynamicColorIOS} from './Libraries/StyleSheet/PlatformColorValueTypesIOS';
 export {default as NativeAppEventEmitter} from './Libraries/EventEmitter/RCTNativeAppEventEmitter';

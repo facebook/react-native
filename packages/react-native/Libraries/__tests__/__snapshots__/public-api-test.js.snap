@@ -8213,6 +8213,11 @@ export type EventEmitter<T> = (
 "
 `;
 
+exports[`public API should not change unintentionally Libraries/Types/CodegenTypesNamespace.js 1`] = `
+"export type { CodegenTypes };
+"
+`;
+
 exports[`public API should not change unintentionally Libraries/Types/CoreEventTypes.js 1`] = `
 "export type NativeSyntheticEvent<+T> = $ReadOnly<{
   bubbles: ?boolean,
@@ -9361,6 +9366,9 @@ export { default as useColorScheme } from \\"./Libraries/Utilities/useColorSchem
 export { default as useWindowDimensions } from \\"./Libraries/Utilities/useWindowDimensions\\";
 export { default as UTFSequence } from \\"./Libraries/UTFSequence\\";
 export { default as Vibration } from \\"./Libraries/Vibration/Vibration\\";
+export type * from \\"./Libraries/Types/CodegenTypesNamespace\\";
+export { default as codegenNativeComponent } from \\"./Libraries/Utilities/codegenNativeComponent\\";
+export { default as codegenNativeCommands } from \\"./Libraries/Utilities/codegenNativeCommands\\";
 export { default as DeviceEventEmitter } from \\"./Libraries/EventEmitter/RCTDeviceEventEmitter\\";
 export { DynamicColorIOS } from \\"./Libraries/StyleSheet/PlatformColorValueTypesIOS\\";
 export { default as NativeAppEventEmitter } from \\"./Libraries/EventEmitter/RCTNativeAppEventEmitter\\";

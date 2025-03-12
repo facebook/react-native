@@ -280,6 +280,12 @@ module.exports = {
   },
   // #endregion
   // #region Plugins
+  get codegenNativeCommands() {
+    return require('./Libraries/Utilities/codegenNativeCommands').default;
+  },
+  get codegenNativeComponent() {
+    return require('./Libraries/Utilities/codegenNativeComponent').default;
+  },
   get DeviceEventEmitter() {
     return require('./Libraries/EventEmitter/RCTDeviceEventEmitter').default;
   },
