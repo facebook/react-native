@@ -89,6 +89,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
 
 @implementation RCTScrollViewComponentView {
   ScrollViewShadowNode::ConcreteState::Shared _state;
+  LayoutMetrics _lastContentContainerLayoutMetrics;
   CGSize _contentSize;
   NSTimeInterval _lastScrollEventDispatchTime;
   NSTimeInterval _scrollEventThrottle;
@@ -132,7 +133,7 @@ RCTSendScrollEventForNativeAnimations_DEPRECATED(UIScrollView *scrollView, NSInt
     _automaticallyAdjustKeyboardInsets = NO;
     [self addSubview:_scrollView];
 
-    _containerView = [[UIView alloc] initWithFrame:CGRectZero];
+    _containerView = [[RCTViewComponentView alloc] initWithFrame:CGRectZero];
     [_scrollView addSubview:_containerView];
 
     [self.scrollViewDelegateSplitter addDelegate:self];
@@ -468,7 +469,11 @@ static inline UIViewAnimationOptions animationOptionsWithCurve(UIViewAnimationCu
   }
 
   _contentSize = contentSize;
-  _containerView.frame = CGRect{RCTCGPointFromPoint(data.contentBoundingRect.origin), contentSize};
+  LayoutMetrics newContentContainerLayoutMetrics = LayoutMetrics{
+      .frame = {.origin = data.contentBoundingRect.origin, .size = data.getContentSize()}, .overflowInset = {.top = 1}};
+  [_containerView updateLayoutMetrics:newContentContainerLayoutMetrics
+                     oldLayoutMetrics:_lastContentContainerLayoutMetrics];
+  _lastContentContainerLayoutMetrics = newContentContainerLayoutMetrics;
 
   [self _preserveContentOffsetIfNeededWithBlock:^{
     self->_scrollView.contentSize = contentSize;
