@@ -39,15 +39,34 @@ async function simpleResolve(
     });
   }
 
-  // Resolve exact '@react-native/<package>' import
-  if (importPath in cachedProjectInfo) {
-    const packageJson = cachedProjectInfo[importPath].packageJson;
-
-    if (packageJson.main !== undefined) {
-      return path.join(cachedProjectInfo[importPath].path, packageJson.main);
+  const getCachedProjectName = (source: string): ?string => {
+    for (const projectName of Object.keys(cachedProjectInfo)) {
+      // technically, this could match multiple projects, but there is no such case
+      if (source.startsWith(projectName)) {
+        return projectName;
+      }
     }
 
-    return path.join(cachedProjectInfo[importPath].path, 'index.js');
+    return null;
+  };
+
+  // Resolve '@react-native/<package>' import
+  const projectName = getCachedProjectName(importPath);
+  if (projectName != null) {
+    const packageJson = cachedProjectInfo[projectName].packageJson;
+
+    if (packageJson.main !== undefined) {
+      return path.join(cachedProjectInfo[projectName].path, packageJson.main);
+    }
+
+    if (importPath !== projectName) {
+      return path.join(
+        cachedProjectInfo[projectName].path,
+        importPath.slice(projectName.length + 1),
+      );
+    }
+
+    return path.join(cachedProjectInfo[projectName].path, 'index.js');
   }
 
   // Resolve relative import within the project
