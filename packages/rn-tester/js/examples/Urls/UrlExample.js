@@ -14,30 +14,27 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 
 import RNTesterText from '../../components/RNTesterText';
 import React from 'react';
-import {View,StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 
 type Props = {
-    url:string;
-}
+  url: string,
+};
 
-function URLComponent(props:Props) {
-   
-
+function URLComponent(props: Props) {
   const parsedUrl = new URL(props.url);
   return (
     <View style={styles.container}>
-        <RNTesterText testID="URL-href">{`href: ${parsedUrl.href}`}</RNTesterText>
-        <RNTesterText testID="URL-hash">{`hash: ${parsedUrl.hash}`}</RNTesterText>
-        <RNTesterText testID="URL-host">{`host: ${parsedUrl.host}`}</RNTesterText>
-        <RNTesterText testID="URL-hostname">{`hostname: ${parsedUrl.hostname}`}</RNTesterText>
-        <RNTesterText testID="URL-password">{`password: ${parsedUrl.password}`}</RNTesterText>
-        <RNTesterText testID="URL-username">{`username: ${parsedUrl.username}`}</RNTesterText>
-        <RNTesterText testID="URL-pathname">{`pathname: ${parsedUrl.pathname}`}</RNTesterText>
-        <RNTesterText testID="URL-port">{`port: ${parsedUrl.port}`}</RNTesterText>
-        <RNTesterText testID="URL-search">{`search: ${parsedUrl.search}`}</RNTesterText>
+      <RNTesterText testID="URL-href">{`href: ${parsedUrl.href}`}</RNTesterText>
+      <RNTesterText testID="URL-hash">{`hash: ${parsedUrl.hash}`}</RNTesterText>
+      <RNTesterText testID="URL-host">{`host: ${parsedUrl.host}`}</RNTesterText>
+      <RNTesterText testID="URL-hostname">{`hostname: ${parsedUrl.hostname}`}</RNTesterText>
+      <RNTesterText testID="URL-password">{`password: ${parsedUrl.password}`}</RNTesterText>
+      <RNTesterText testID="URL-username">{`username: ${parsedUrl.username}`}</RNTesterText>
+      <RNTesterText testID="URL-pathname">{`pathname: ${parsedUrl.pathname}`}</RNTesterText>
+      <RNTesterText testID="URL-port">{`port: ${parsedUrl.port}`}</RNTesterText>
+      <RNTesterText testID="URL-search">{`search: ${parsedUrl.search}`}</RNTesterText>
     </View>
   );
-  
 }
 
 const styles = StyleSheet.create({
@@ -55,7 +52,11 @@ exports.examples = [
     description: 'URL with username,password,port,and queryparams',
     render(): React.Node {
       return (
-        <URLComponent url={'https://username:password@reactnative.dev:8080/docs/path?query=testQuery&key=value#fragment'}/>
+        <URLComponent
+          url={
+            'https://username:password@reactnative.dev:8080/docs/path?query=testQuery&key=value#fragment'
+          }
+        />
       );
     },
   },
@@ -63,9 +64,7 @@ exports.examples = [
     title: 'basicURL',
     description: 'Basic URL without username, password, or port',
     render(): React.Node {
-      return (
-        <URLComponent url={'https://reactnative.dev/docs/path'} />
-      );
+      return <URLComponent url={'https://reactnative.dev/docs/path'} />;
     },
   },
   {
@@ -73,7 +72,9 @@ exports.examples = [
     description: 'URL with query parameters',
     render(): React.Node {
       return (
-        <URLComponent url={'https://reactnative.dev/docs/path?query=testQuery&key=value'} />
+        <URLComponent
+          url={'https://reactnative.dev/docs/path?query=testQuery&key=value'}
+        />
       );
     },
   },
@@ -82,10 +83,10 @@ exports.examples = [
     description: 'URL with username, password, and port',
     render(): React.Node {
       return (
-        <URLComponent url={'https://username:password@reactnative.dev:8080/docs/path'} />
+        <URLComponent
+          url={'https://username:password@reactnative.dev:8080/docs/path'}
+        />
       );
     },
   },
-  
-  
 ] as Array<RNTesterModuleExample>;
