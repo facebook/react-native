@@ -111,12 +111,12 @@ exports[`execute "RCTModuleProviders.mm" should match snapshot 1`] = `
 
   dispatch_once(&onceToken, ^{
     NSDictionary<NSString *, NSString *> * moduleMapping = @{
-      			@\\"TestAppImageURLLoader\\": @\\"RCTTestAppImageURLLoader\\", // test-app
-			@\\"TestAppURLRequestHandler\\": @\\"RCTTestAppURLRequestHandler\\", // test-app
-			@\\"TestAppImageDataDecoder\\": @\\"RCTTestAppImageDataDecoder\\", // test-app
-			@\\"TestLibraryImageURLLoader\\": @\\"RCTTestLibraryImageURLLoader\\", // test-library
-			@\\"TestLibraryURLRequestHandler\\": @\\"RCTTestLibraryURLRequestHandler\\", // test-library
-			@\\"TestLibraryImageDataDecoder\\": @\\"RCTTestLibraryImageDataDecoder\\", // test-library
+      		@\\"TestAppImageURLLoader\\": @\\"RCTTestAppImageURLLoader\\", // test-app
+		@\\"TestAppURLRequestHandler\\": @\\"RCTTestAppURLRequestHandler\\", // test-app
+		@\\"TestAppImageDataDecoder\\": @\\"RCTTestAppImageDataDecoder\\", // test-app
+		@\\"TestLibraryImageURLLoader\\": @\\"RCTTestLibraryImageURLLoader\\", // test-library
+		@\\"TestLibraryURLRequestHandler\\": @\\"RCTTestLibraryURLRequestHandler\\", // test-library
+		@\\"TestLibraryImageDataDecoder\\": @\\"RCTTestLibraryImageDataDecoder\\", // test-library
     };
 
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:moduleMapping.count];
@@ -190,7 +190,7 @@ exports[`execute "RCTModulesConformingToProtocolsProvider.mm" should match snaps
   dispatch_once(&onceToken, ^{
     classNames = @[
       @\\"RCTTestAppImageURLLoader\\",
-			@\\"RCTTestLibraryImageURLLoader\\"
+		@\\"RCTTestLibraryImageURLLoader\\"
     ];
   });
   
@@ -205,7 +205,7 @@ exports[`execute "RCTModulesConformingToProtocolsProvider.mm" should match snaps
   dispatch_once(&onceToken, ^{
     classNames = @[
       @\\"RCTTestAppImageDataDecoder\\",
-			@\\"RCTTestLibraryImageDataDecoder\\"
+		@\\"RCTTestLibraryImageDataDecoder\\"
     ];
   });
   
@@ -220,7 +220,7 @@ exports[`execute "RCTModulesConformingToProtocolsProvider.mm" should match snaps
   dispatch_once(&onceToken, ^{
     classNames = @[
       @\\"RCTTestAppURLRequestHandler\\",
-			@\\"RCTTestLibraryURLRequestHandler\\"
+		@\\"RCTTestLibraryURLRequestHandler\\"
     ];
   });
   
@@ -274,8 +274,8 @@ exports[`execute "RCTThirdPartyComponentsProvider.mm" should match snapshot 1`] 
 
   dispatch_once(&nativeComponentsToken, ^{
     thirdPartyComponents = @{
-			@\\"TestAppComponent\\": NSClassFromString(@\\"RCTTestAppComponentClass\\"), // test-app
-			@\\"TestLibraryComponent\\": NSClassFromString(@\\"RCTTestLibraryComponentClass\\"), // test-library
+		@\\"TestAppComponent\\": NSClassFromString(@\\"RCTTestAppComponentClass\\"), // test-app
+		@\\"TestLibraryComponent\\": NSClassFromString(@\\"RCTTestLibraryComponentClass\\"), // test-library
     };
   });
 
