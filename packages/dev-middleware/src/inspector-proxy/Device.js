@@ -83,11 +83,6 @@ export default class Device {
   // Package name of the app.
   #app: string;
 
-  // Sequences async processing of messages from device to preserve order. Only
-  // necessary while we need to accommodate #processMessageFromDeviceLegacy's
-  // async fetch.
-  #messageFromDeviceQueue: Promise<void> = Promise.resolve();
-
   // Stores socket connection between Inspector Proxy and device.
   #deviceSocket: WS;
 
@@ -171,35 +166,33 @@ export default class Device {
 
     // $FlowFixMe[incompatible-call]
     this.#deviceSocket.on('message', (message: string) => {
-      this.#messageFromDeviceQueue = this.#messageFromDeviceQueue
-        .then(async () => {
-          const parsedMessage = JSON.parse(message);
-          if (parsedMessage.event === 'getPages') {
-            // There's a 'getPages' message every second, so only show them if they change
-            if (message !== this.#lastGetPagesMessage) {
-              debug('Device getPages ping has changed: %s', message);
-              this.#lastGetPagesMessage = message;
-            }
-          } else {
-            this.#cdpMessagesLogging.log('DeviceToProxy', message);
+      try {
+        const parsedMessage = JSON.parse(message);
+        if (parsedMessage.event === 'getPages') {
+          // There's a 'getPages' message every second, so only show them if they change
+          if (message !== this.#lastGetPagesMessage) {
+            debug('Device getPages ping has changed: %s', message);
+            this.#lastGetPagesMessage = message;
           }
-          await this.#handleMessageFromDevice(parsedMessage);
-        })
-        .catch(error => {
-          debug('%O\nHandling device message: %s', error, message);
-          try {
-            this.#deviceEventReporter?.logProxyMessageHandlingError(
-              'device',
-              error,
-              message,
-            );
-          } catch (loggingError) {
-            debug(
-              'Error logging message handling error to reporter: %O',
-              loggingError,
-            );
-          }
-        });
+        } else {
+          this.#cdpMessagesLogging.log('DeviceToProxy', message);
+        }
+        this.#handleMessageFromDevice(parsedMessage);
+      } catch (error) {
+        debug('%O\nHandling device message: %s', error, message);
+        try {
+          this.#deviceEventReporter?.logProxyMessageHandlingError(
+            'device',
+            error,
+            message,
+          );
+        } catch (loggingError) {
+          debug(
+            'Error logging message handling error to reporter: %O',
+            loggingError,
+          );
+        }
+      }
     });
     // Sends 'getPages' request to device every PAGES_POLLING_INTERVAL milliseconds.
     this.#pagesPollingIntervalId = setInterval(
@@ -487,7 +480,7 @@ export default class Device {
   // In the future more logic will be added to this method for modifying
   // some of the messages (like updating messages with source maps and file
   // locations).
-  async #handleMessageFromDevice(message: MessageFromDevice) {
+  #handleMessageFromDevice(message: MessageFromDevice) {
     if (message.event === 'getPages') {
       // Preserve ordering - getPages guarantees addition order.
       this.#pages = new Map(
@@ -593,7 +586,7 @@ export default class Device {
           return;
         }
 
-        await this.#processMessageFromDeviceLegacy(
+        this.#processMessageFromDeviceLegacy(
           parsedPayload,
           debuggerConnection,
           pageId,
@@ -716,7 +709,7 @@ export default class Device {
   }
 
   // Allows to make changes in incoming message from device.
-  async #processMessageFromDeviceLegacy(
+  #processMessageFromDeviceLegacy(
     payload: CDPServerMessage,
     debuggerInfo: DebuggerConnection,
     pageId: ?string,
