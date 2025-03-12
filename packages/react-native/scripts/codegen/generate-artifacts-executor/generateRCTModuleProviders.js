@@ -9,7 +9,11 @@
 
 'use strict';
 const {TEMPLATES_FOLDER_PATH} = require('./constants');
-const {codegenLog, isReactNativeCoreLibrary} = require('./utils');
+const {
+  codegenLog,
+  isReactNativeCoreLibrary,
+  parseiOSAnnotations,
+} = require('./utils');
 const fs = require('fs');
 const path = require('path');
 
@@ -43,31 +47,55 @@ function generateRCTModuleProviders(
   let app = pkgJson.codegenConfig
     ? {config: pkgJson.codegenConfig, libraryPath: projectRoot}
     : null;
-  libraries
+
+  const moduleLibraries = libraries
     .concat(app)
     .filter(Boolean)
-    .forEach(({config, libraryPath}) => {
+    .filter(({config, libraryPath}) => {
       if (
         isReactNativeCoreLibrary(config.name) ||
         config.type === 'components'
       ) {
-        return;
+        return false;
       }
+      return true;
+    });
 
-      const libraryName = JSON.parse(
-        fs.readFileSync(path.join(libraryPath, 'package.json')),
-      ).name;
-      if (config.ios?.modulesProvider) {
-        modulesInLibraries[libraryName] = Object.keys(
-          config.ios?.modulesProvider,
-        ).map(moduleName => {
-          return {
-            moduleName,
-            className: config.ios?.modulesProvider[moduleName],
-          };
+  // Old API
+  moduleLibraries.forEach(({config, libraryPath}) => {
+    const libraryName = JSON.parse(
+      fs.readFileSync(path.join(libraryPath, 'package.json')),
+    ).name;
+
+    if (config.ios?.modulesProvider) {
+      modulesInLibraries[libraryName] = Object.keys(
+        config.ios?.modulesProvider,
+      ).map(moduleName => {
+        return {
+          moduleName,
+          className: config.ios?.modulesProvider[moduleName],
+        };
+      });
+    }
+  });
+
+  // New API
+  const iosAnnotations = parseiOSAnnotations(moduleLibraries);
+  for (const [libraryName, {modules: moduleAnnotationMap}] of Object.entries(
+    iosAnnotations,
+  )) {
+    for (const [moduleName, annotation] of Object.entries(
+      moduleAnnotationMap,
+    )) {
+      if (annotation.className) {
+        modulesInLibraries[libraryName] = modulesInLibraries[libraryName] || [];
+        modulesInLibraries[libraryName].push({
+          moduleName,
+          className: annotation.className,
         });
       }
-    });
+    }
+  }
 
   const modulesMapping = Object.keys(modulesInLibraries)
     .flatMap(library => {

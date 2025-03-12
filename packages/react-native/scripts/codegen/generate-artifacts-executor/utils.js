@@ -276,6 +276,96 @@ function isReactNativeCoreLibrary(libraryName) {
   return libraryName in CORE_LIBRARIES_WITH_OUTPUT_FOLDER;
 }
 
+/**
+ * Returns a map of this shape:
+ * {
+ *   "libraryName": {
+ *     "library": { ... }
+ *     "modules": {
+ *       "moduleName": {
+ *         "conformsToProtocols": [ "protocol1", "protocol2" ],
+ *         "className": "RCTFooModuler",
+ *       }
+ *     },
+ *     "components": {
+ *       "componentName": {
+ *         "className": "RCTFooComponent",
+ *       }
+ *     }
+ *   }
+ * }
+ *
+ * Validates that modules are defined in at most one library.
+ * Validates that components are defined in at most one library.
+ */
+function parseiOSAnnotations(libraries) {
+  const mLibraryMap = {};
+  const cLibraryMap = {};
+  const map = {};
+
+  for (const library of libraries) {
+    const iosConfig = library?.config?.ios;
+    if (!iosConfig) {
+      continue;
+    }
+
+    const libraryName = getLibraryName(library);
+    map[libraryName] = map[libraryName] || {
+      library,
+      modules: {},
+      components: {},
+    };
+
+    const {modules, components} = iosConfig;
+    if (modules) {
+      for (const [moduleName, annotation] of Object.entries(modules)) {
+        mLibraryMap[moduleName] = mLibraryMap[moduleName] || new Set();
+        mLibraryMap[moduleName].add(libraryName);
+
+        map[libraryName].modules[moduleName] = {...annotation};
+      }
+    }
+
+    if (components) {
+      for (const [moduleName, annotation] of Object.entries(components)) {
+        cLibraryMap[moduleName] = cLibraryMap[moduleName] || new Set();
+        cLibraryMap[moduleName].add(libraryName);
+
+        map[libraryName].components[moduleName] = {...annotation};
+      }
+    }
+  }
+
+  const moduleConflicts = Object.entries(mLibraryMap)
+    .filter(([_, libraryNames]) => libraryNames.size > 1)
+    .map(([moduleName, libraryNames]) => {
+      const libraryNamesString = Array.from(libraryNames).join(', ');
+      return `  Module { "${moduleName}" } => Libraries{ ${libraryNamesString} }\n`;
+    });
+
+  const componentConflicts = Object.entries(cLibraryMap)
+    .filter(([_, libraryNames]) => libraryNames.size > 1)
+    .map(([moduleName, libraryNames]) => {
+      const libraryNamesString = Array.from(libraryNames).join(', ');
+      return `  Component { "${moduleName}" } => Libraries{ ${libraryNamesString} }\n`;
+    });
+
+  if (moduleConflicts.length > 0 || componentConflicts.legnth > 0) {
+    throw new Error(
+      'Some components or modules are declared in more than one libraries: \n' +
+        [...moduleConflicts, ...componentConflicts].join('\n'),
+    );
+  }
+
+  return map;
+}
+
+function getLibraryName(library) {
+  return JSON.parse(
+    fs.readFileSync(path.join(library.libraryPath, 'package.json')),
+  ).name;
+}
+
 module.exports = {
   buildCodegenIfNeeded,
   pkgJsonIncludesGeneratedCode,
@@ -286,4 +376,5 @@ module.exports = {
   findCodegenEnabledLibraries,
   findProjectRootLibraries,
   extractLibrariesFromJSON,
+  parseiOSAnnotations,
 };

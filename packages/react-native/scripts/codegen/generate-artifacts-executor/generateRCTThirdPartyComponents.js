@@ -10,7 +10,11 @@
 'use strict';
 
 const {TEMPLATES_FOLDER_PATH} = require('./constants');
-const {codegenLog, isReactNativeCoreLibrary} = require('./utils');
+const {
+  codegenLog,
+  isReactNativeCoreLibrary,
+  parseiOSAnnotations,
+} = require('./utils');
 const fs = require('fs');
 const path = require('path');
 
@@ -38,25 +42,64 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
 
   codegenLog('Generating RCTThirdPartyComponentsProvider.mm');
   let componentsInLibraries = {};
-  libraries.forEach(({config, libraryPath}) => {
-    if (isReactNativeCoreLibrary(config.name) || config.type === 'modules') {
-      return;
-    }
 
+  const componentLibraries = libraries.filter(({config, libraryPath}) => {
+    if (isReactNativeCoreLibrary(config.name) || config.type === 'modules') {
+      return false;
+    }
+    return true;
+  });
+
+  const librariesToCrawl = {};
+
+  // Old API
+  componentLibraries.forEach(library => {
+    const {config, libraryPath} = library;
     const libraryName = JSON.parse(
       fs.readFileSync(path.join(libraryPath, 'package.json')),
     ).name;
-    if (config.ios?.componentProvider) {
-      componentsInLibraries[libraryName] = Object.keys(
-        config.ios?.componentProvider,
-      ).map(componentName => {
-        return {
-          componentName,
-          className: config.ios?.componentProvider[componentName],
-        };
-      });
+
+    librariesToCrawl[libraryName] = library;
+
+    const componentsProvider = config.ios?.componentProvider;
+    if (!componentsProvider) {
       return;
     }
+
+    delete librariesToCrawl[libraryName];
+    componentsInLibraries[libraryName] =
+      componentsInLibraries[libraryName] || [];
+
+    Object.keys(componentsProvider).forEach(componentName => {
+      componentsInLibraries[libraryName].push({
+        componentName,
+        className: componentsProvider[componentName],
+      });
+    });
+  });
+
+  // New API
+  const iosAnnotations = parseiOSAnnotations(componentLibraries);
+  for (const [libraryName, annotationMap] of Object.entries(iosAnnotations)) {
+    const {library, components} = annotationMap;
+    librariesToCrawl[libraryName] = library;
+
+    for (const [componentName, annotation] of Object.entries(components)) {
+      if (annotation.className) {
+        delete librariesToCrawl[libraryName];
+
+        componentsInLibraries[libraryName] =
+          componentsInLibraries[libraryName] || [];
+        componentsInLibraries[libraryName].push({
+          componentName,
+          className: annotation.className,
+        });
+      }
+    }
+  }
+
+  Object.entries(librariesToCrawl).forEach(([libraryName, library]) => {
+    const {libraryPath} = library;
     codegenLog(`Crawling ${libraryName} library for components`);
     // crawl all files and subdirectories for file with the ".mm" extension
     const files = findFilesWithExtension(libraryPath, '.mm');
