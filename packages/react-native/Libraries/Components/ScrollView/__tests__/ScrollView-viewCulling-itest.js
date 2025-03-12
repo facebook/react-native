@@ -11,13 +11,12 @@
  * @fantom_flags enableSynchronousStateUpdates:true
  */
 
-import '../../../Core/InitializeCore.js';
-import ensureInstance from '../../../../src/private/utilities/ensureInstance';
-import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
-import View from '../../View/View';
-import ScrollView from '../ScrollView';
+import 'react-native/Libraries/Core/InitializeCore.js';
 import Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {Modal, ScrollView, View} from 'react-native';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 test('basic culling', () => {
   const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
@@ -946,6 +945,72 @@ test('view flattening with culling', () => {
     'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
     'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
     'Delete {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
+  ]);
+});
+
+test('culling inside of Modal', () => {
+  const root = Fantom.createRoot({viewportWidth: 100, viewportHeight: 100});
+  let maybeNode;
+
+  Fantom.runTask(() => {
+    root.render(
+      // <ScrollView /> is scrolled down and if it wasn't for the Modal,
+      // the content would be culled.
+      <ScrollView
+        contentOffset={{x: 0, y: 100}}
+        style={{height: 100, width: 100}}>
+        <Modal
+          ref={(node: ?React.ElementRef<typeof Modal>) => {
+            maybeNode = node;
+          }}
+        />
+      </ScrollView>,
+    );
+  });
+
+  const element = ensureInstance(maybeNode, ReactNativeElement);
+
+  Fantom.runOnUIThread(() => {
+    Fantom.enqueueModalSizeUpdate(element, {
+      width: 100,
+      height: 100,
+    });
+  });
+  Fantom.runWorkLoop();
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Update {type: "RootView", nativeID: (root)}',
+    'Create {type: "ScrollView", nativeID: (N/A)}',
+    'Insert {type: "ScrollView", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Create {type: "ModalHostView", nativeID: (root)}',
+    'Create {type: "View", nativeID: (N/A)}',
+    'Insert {type: "View", parentNativeID: (root), index: 0, nativeID: (N/A)}',
+    'Insert {type: "ModalHostView", parentNativeID: (N/A), index: 0, nativeID: (root)}',
+    'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: (N/A)}',
+  ]);
+
+  Fantom.runTask(() => {
+    root.render(
+      <ScrollView
+        contentOffset={{x: 0, y: 100}}
+        style={{height: 100, width: 100}}>
+        <Modal
+          ref={(node: ?React.ElementRef<typeof Modal>) => {
+            maybeNode = node;
+          }}>
+          <View
+            nativeID={'child'}
+            style={{height: 10, width: 10, marginTop: 45}}
+          />
+        </Modal>
+      </ScrollView>,
+    );
+  });
+
+  expect(root.takeMountingManagerLogs()).toEqual([
+    'Create {type: "View", nativeID: "child"}',
     'Insert {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
   ]);
 });

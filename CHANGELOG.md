@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.79.0-rc.1
+
+### Changed
+
+- Update Metro to ^0.82.0 ([8421b8a872](https://github.com/facebook/react-native/commit/8421b8a8723633da9806e2db37a43add5de8761c) by [@robhogan](https://github.com/robhogan))
+
+### Fixed
+
+#### iOS specific
+
+- Fixed: extraModulesForBridge callback not called when New Architecture enabled ([c0a5c2c3cb](https://github.com/facebook/react-native/commit/c0a5c2c3cb883dc68e98d2720b194df17d0b9ee7) by Bruno Aybar)
+- Enable back the opt-out from the New Architecture ([9abdd619da](https://github.com/facebook/react-native/commit/9abdd619da110dbe227c387179a449623395c7b2) by [@cipolleschi](https://github.com/cipolleschi))
+- Add missing loadFromSource method in the DefaultRNFactoryDelegate ([7739615e0d](https://github.com/facebook/react-native/commit/7739615e0d614a93f297b70ef0947dddf3d1ba6e) by [@cipolleschi](https://github.com/cipolleschi))
+
 ## v0.79.0-rc.0
 
 ### Breaking

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b04144a3b1f28aa982e6bc9d64d99393>>
+ * @generated SignedSource<<96f5ac8b42f7d69cd96e0310385a90f4>>
  */
 
 /**
@@ -55,7 +55,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableAccumulatedUpdatesInRawPropsAndroid();
 
   /**
-   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
+   * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
    */
   RN_EXPORT static bool enableBridgelessArchitecture();
 
@@ -165,11 +165,6 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool enableViewRecyclingForView();
 
   /**
-   * When enabled, rawProps in Props will not include Yoga specific props.
-   */
-  RN_EXPORT static bool excludeYogaFromRawProps();
-
-  /**
    * Fixes a bug in Differentiator where parent views may be referenced before they're created
    */
   RN_EXPORT static bool fixDifferentiatorEmittingUpdatesWithWrongParentTag();
@@ -190,7 +185,7 @@ class ReactNativeFeatureFlags {
   RN_EXPORT static bool fuseboxEnabledRelease();
 
   /**
-   * Enable network inspection support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.
+   * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
    */
   RN_EXPORT static bool fuseboxNetworkInspectionEnabled();
 

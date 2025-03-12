@@ -24,11 +24,14 @@ public class InteropEvent(
     surfaceId: Int,
     viewTag: Int
 ) : Event<InteropEvent>(surfaceId, viewTag) {
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropEvent")
-  }
 
   override fun getEventName(): String = eventName
 
   override fun getEventData(): WritableMap? = eventData
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("InteropEvent")
+    }
+  }
 }

@@ -80,7 +80,7 @@ function ModalPresentation() {
   const [currentOrientation, setCurrentOrientation] = useState('unknown');
 
   type OrientationChangeEvent = Parameters<
-    $NonMaybeType<React.PropsOf<Modal>['onOrientationChange']>,
+    $NonMaybeType<ModalProps['onOrientationChange']>,
   >[0];
   const onOrientationChange = (event: OrientationChangeEvent) =>
     setCurrentOrientation(event.nativeEvent.orientation);

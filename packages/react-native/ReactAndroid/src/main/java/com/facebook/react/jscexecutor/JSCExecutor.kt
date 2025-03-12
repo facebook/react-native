@@ -19,9 +19,6 @@ import com.facebook.soloader.SoLoader
 @LegacyArchitecture
 public class JSCExecutor internal constructor(jscConfig: ReadableNativeMap) :
     JavaScriptExecutor(initHybrid(jscConfig)) {
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("JSCExecutor")
-  }
 
   override fun getName(): String {
     return "JSCExecutor"
@@ -30,6 +27,7 @@ public class JSCExecutor internal constructor(jscConfig: ReadableNativeMap) :
   private companion object {
     init {
       loadLibrary()
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("JSCExecutor")
     }
 
     @JvmStatic

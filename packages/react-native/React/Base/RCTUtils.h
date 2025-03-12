@@ -18,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Whether the New Architecture is enabled or not
 RCT_EXTERN BOOL RCTIsNewArchEnabled(void);
-RCT_EXTERN void RCTSetNewArchEnabled(BOOL enabled);
+RCT_EXTERN void RCTSetNewArchEnabled(BOOL enabled) __attribute__((deprecated(
+    "This function is now no-op. You need to modify the Info.plist adding a RCTNewArchEnabled bool property to control whether the New Arch is enabled or not")));
+;
 
 // JSON serialization/deserialization
 RCT_EXTERN NSString *__nullable RCTJSONStringify(id __nullable jsonObject, NSError **error);

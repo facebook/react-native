@@ -108,11 +108,7 @@
 
 - (BOOL)newArchEnabled
 {
-#if RCT_NEW_ARCH_ENABLED
-  return YES;
-#else
-  return NO;
-#endif
+  return RCTIsNewArchEnabled();
 }
 
 - (BOOL)bridgelessEnabled
@@ -138,6 +134,13 @@
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
   return nullptr;
+}
+
+- (void)loadSourceForBridge:(RCTBridge *)bridge
+                 onProgress:(RCTSourceLoadProgressBlock)onProgress
+                 onComplete:(RCTSourceLoadBlock)loadCallback
+{
+  [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge] onProgress:onProgress onComplete:loadCallback];
 }
 
 @end

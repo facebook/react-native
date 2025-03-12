@@ -85,8 +85,8 @@ function _executeAsAnimatedBatch(id: string, operation: () => void) {
  * See https://reactnative.dev/docs/animatedvalue
  */
 export default class AnimatedValue extends AnimatedWithChildren {
-  #listenerCount: number = 0;
-  #updateSubscription: ?EventSubscription = null;
+  #listenerCount: number;
+  #updateSubscription: ?EventSubscription;
 
   _value: number;
   _startingValue: number;
@@ -99,6 +99,10 @@ export default class AnimatedValue extends AnimatedWithChildren {
     if (typeof value !== 'number') {
       throw new Error('AnimatedValue: Attempting to set value to undefined');
     }
+
+    this.#listenerCount = 0;
+    this.#updateSubscription = null;
+
     this._startingValue = this._value = value;
     this._offset = 0;
     this._animation = null;

@@ -18,10 +18,12 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture
 internal class LayoutCreateAnimation : BaseLayoutAnimation() {
 
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "LayoutCreateAnimation", LegacyArchitectureLogLevel.WARNING)
-  }
-
   override fun isReverse(): Boolean = false
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "LayoutCreateAnimation", LegacyArchitectureLogLevel.WARNING)
+    }
+  }
 }

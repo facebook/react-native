@@ -17,8 +17,11 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture
 internal class NoSuchNativeViewException(detailMessage: String) :
     IllegalViewOperationException(detailMessage) {
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "NoSuchNativeViewException")
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "NoSuchNativeViewException")
+    }
   }
 }

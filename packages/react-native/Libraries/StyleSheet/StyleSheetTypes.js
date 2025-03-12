@@ -1003,9 +1003,26 @@ export type ____Styles_Internal = {
   ...
 };
 
-export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
-  TStyleProp extends null | void | false | ''
+// A depth limiter, to avoid TS2589 in TypeScript. This and
+// ____FlattenStyleProp_Helper should be considered internal.
+type FlattenDepthLimiter = [void, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+type ____FlattenStyleProp_Helper<
+  +TStyleProp: StyleProp<mixed>,
+  Depth: $Values<FlattenDepthLimiter> = 9,
+> = Depth extends 0
+  ? empty
+  : TStyleProp extends null | void | false | ''
     ? empty
-    : TStyleProp extends $ReadOnlyArray<infer V>
-      ? ____FlattenStyleProp_Internal<V>
+    : // When TStyleProp is an array, recurse with decremented Depth
+      TStyleProp extends $ReadOnlyArray<infer V>
+      ? ____FlattenStyleProp_Helper<
+          V,
+          Depth extends number ? FlattenDepthLimiter[Depth] : 0,
+        >
       : TStyleProp;
+
+export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
+  ____FlattenStyleProp_Helper<TStyleProp> extends empty
+    ? // $FlowFixMe[unclear-type]
+      any
+    : ____FlattenStyleProp_Helper<TStyleProp>;

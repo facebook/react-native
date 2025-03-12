@@ -17,7 +17,9 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 @LegacyArchitecture
 public open class CxxModuleWrapper protected constructor(hybridData: HybridData) :
     CxxModuleWrapperBase(hybridData) {
-  init {
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("CxxModuleWrapper")
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled("CxxModuleWrapper")
+    }
   }
 }

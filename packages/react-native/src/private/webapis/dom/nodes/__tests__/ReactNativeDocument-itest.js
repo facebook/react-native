@@ -9,16 +9,16 @@
  * @oncall react_native
  */
 
-import '../../../../../../Libraries/Core/InitializeCore.js';
+import 'react-native/Libraries/Core/InitializeCore';
 
-import View from '../../../../../../Libraries/Components/View/View';
-import ensureInstance from '../../../../utilities/ensureInstance';
-import ReactNativeDocument from '../ReactNativeDocument';
-import ReactNativeElement from '../ReactNativeElement';
-import ReadOnlyNode from '../ReadOnlyNode';
 import Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
+import {View} from 'react-native';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
+import ReadOnlyNode from 'react-native/src/private/webapis/dom/nodes/ReadOnlyNode';
 
 describe('ReactNativeDocument', () => {
   it('is connected until the surface is destroyed', () => {
@@ -123,6 +123,32 @@ describe('ReactNativeDocument', () => {
     expect(document.nodeType).toBe(ReadOnlyNode.DOCUMENT_NODE);
     expect(document.nodeValue).toBe(null);
     expect(document.textContent).toBe(null);
+  });
+
+  it('provides a documentElement node that behaves like a regular element', () => {
+    let lastNode;
+
+    const root = Fantom.createRoot({viewportWidth: 200, viewportHeight: 100});
+    Fantom.runTask(() => {
+      root.render(
+        <View
+          ref={node => {
+            lastNode = node;
+          }}
+        />,
+      );
+    });
+
+    const element = ensureInstance(lastNode, ReactNativeElement);
+    const document = ensureInstance(element.ownerDocument, ReactNativeDocument);
+
+    const {x, y, width, height} =
+      document.documentElement.getBoundingClientRect();
+
+    expect(x).toBe(0);
+    expect(y).toBe(0);
+    expect(width).toBe(200);
+    expect(height).toBe(100);
   });
 
   it('implements compareDocumentPosition correctly', () => {

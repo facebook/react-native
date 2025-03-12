@@ -1137,7 +1137,8 @@ Alert.prompt(
     {
       text: 'OK',
       isPreferred: true,
-      onPress: password => console.log('OK Pressed, password: ' + password),
+      onPress: (password?: string) =>
+        console.log('OK Pressed, password: ' + password),
     },
   ],
   'secure-text',

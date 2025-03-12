@@ -55,7 +55,6 @@ using namespace facebook::react;
     auto newArchEnabled = [self newArchEnabled];
     auto fabricEnabled = [self fabricEnabled];
 
-    RCTSetNewArchEnabled(newArchEnabled);
     [RCTColorSpaceUtils applyDefaultColorSpace:[self defaultColorSpace]];
     RCTEnableTurboModule([self turboModuleEnabled]);
 
@@ -130,12 +129,7 @@ using namespace facebook::react;
   if ([_delegate respondsToSelector:@selector(newArchEnabled)]) {
     return _delegate.newArchEnabled;
   }
-
-#if RCT_NEW_ARCH_ENABLED
-  return YES;
-#else
-  return NO;
-#endif
+  return RCTIsNewArchEnabled();
 }
 
 - (BOOL)fabricEnabled
@@ -196,7 +190,23 @@ using namespace facebook::react;
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
+#if USE_OSS_CODEGEN
+  if (self.delegate.dependencyProvider == nil) {
+    [NSException raise:@"ReactNativeFactoryDelegate dependencyProvider is nil"
+                format:@"Delegate must provide a valid dependencyProvider"];
+  }
+#endif
+
   return RCTAppSetupDefaultModuleFromClass(moduleClass, self.delegate.dependencyProvider);
+}
+
+- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
+{
+  if ([_delegate respondsToSelector:@selector(extraModulesForBridge:)]) {
+    return [_delegate extraModulesForBridge:bridge];
+  }
+
+  return @[];
 }
 
 #pragma mark - RCTComponentViewFactoryComponentProvider

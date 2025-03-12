@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b9992120e2e266f3424f71179caecac2>>
+ * @generated SignedSource<<63e067d07f9636ec1acc60af5a7c3301>>
  */
 
 /**
@@ -57,7 +57,6 @@ class ReactNativeFeatureFlagsAccessor {
   bool enableViewRecycling();
   bool enableViewRecyclingForText();
   bool enableViewRecyclingForView();
-  bool excludeYogaFromRawProps();
   bool fixDifferentiatorEmittingUpdatesWithWrongParentTag();
   bool fixMappingOfEventPrioritiesBetweenFabricAndReact();
   bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid();
@@ -86,7 +85,7 @@ class ReactNativeFeatureFlagsAccessor {
   std::unique_ptr<ReactNativeFeatureFlagsProvider> currentProvider_;
   bool wasOverridden_;
 
-  std::array<std::atomic<const char*>, 43> accessedFeatureFlags_;
+  std::array<std::atomic<const char*>, 42> accessedFeatureFlags_;
 
   std::atomic<std::optional<bool>> commonTestFlag_;
   std::atomic<std::optional<bool>> disableMountItemReorderingAndroid_;
@@ -113,7 +112,6 @@ class ReactNativeFeatureFlagsAccessor {
   std::atomic<std::optional<bool>> enableViewRecycling_;
   std::atomic<std::optional<bool>> enableViewRecyclingForText_;
   std::atomic<std::optional<bool>> enableViewRecyclingForView_;
-  std::atomic<std::optional<bool>> excludeYogaFromRawProps_;
   std::atomic<std::optional<bool>> fixDifferentiatorEmittingUpdatesWithWrongParentTag_;
   std::atomic<std::optional<bool>> fixMappingOfEventPrioritiesBetweenFabricAndReact_;
   std::atomic<std::optional<bool>> fixMountingCoordinatorReportedPendingTransactionsOnAndroid_;

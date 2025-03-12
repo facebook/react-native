@@ -492,7 +492,8 @@ public class ReactViewGroup extends ViewGroup
     // it won't be size and located properly.
     Animation animation = child.getAnimation();
     boolean isAnimating = animation != null && !animation.hasEnded();
-    if (!intersects && !isViewClipped(child, idx) && !isAnimating) {
+    // We don't want to clip a view that is currently focused at that might break focus navigation
+    if (!intersects && !isViewClipped(child, idx) && !isAnimating && child != getFocusedChild()) {
       setViewClipped(child, true);
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
@@ -594,9 +595,6 @@ public class ReactViewGroup extends ViewGroup
     UiThreadUtil.assertOnUiThread();
     checkViewClippingTag(child, Boolean.TRUE);
     if (!customDrawOrderDisabled()) {
-      if (indexOfChild(child) == -1) {
-        return;
-      }
       getDrawingOrderHelper().handleRemoveView(child);
       setChildrenDrawingOrderEnabled(getDrawingOrderHelper().shouldEnableCustomDrawingOrder());
     } else {

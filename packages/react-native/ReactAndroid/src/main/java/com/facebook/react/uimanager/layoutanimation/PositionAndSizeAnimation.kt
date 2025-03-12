@@ -38,8 +38,6 @@ internal class PositionAndSizeAnimation(
 
   init {
     calculateAnimation(x, y, width, height)
-    LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
-        "PositionAndSizeAnimation")
   }
 
   override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
@@ -74,5 +72,12 @@ internal class PositionAndSizeAnimation(
     deltaY = y - startY
     deltaWidth = width - startWidth
     deltaHeight = height - startHeight
+  }
+
+  private companion object {
+    init {
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
+          "PositionAndSizeAnimation")
+    }
   }
 }

@@ -613,7 +613,7 @@ function generateCustomURLHandlers(libraries, outputDir) {
     )
     .filter(Boolean)
     .map(className => `@"${className}"`)
-    .join(',\n\t\t');
+    .join(',\n\t\t\t');
 
   const customImageDataDecoderClasses = libraries
     .flatMap(
@@ -622,7 +622,7 @@ function generateCustomURLHandlers(libraries, outputDir) {
     )
     .filter(Boolean)
     .map(className => `@"${className}"`)
-    .join(',\n\t\t');
+    .join(',\n\t\t\t');
 
   const customURLHandlerClasses = libraries
     .flatMap(
@@ -631,7 +631,7 @@ function generateCustomURLHandlers(libraries, outputDir) {
     )
     .filter(Boolean)
     .map(className => `@"${className}"`)
-    .join(',\n\t\t');
+    .join(',\n\t\t\t');
 
   const template = fs.readFileSync(MODULES_PROTOCOLS_MM_TEMPLATE_PATH, 'utf8');
   const finalMMFile = template
@@ -736,7 +736,7 @@ function generateRCTModuleProviders(
     .flatMap(library => {
       const modules = modulesInLibraries[library];
       return modules.map(({moduleName, className}) => {
-        return `\t\t@"${moduleName}": @"${className}", // ${library}`;
+        return `\t\t\t@"${moduleName}": @"${className}", // ${library}`;
       });
     })
     .join('\n');
@@ -805,7 +805,7 @@ function generateRCTThirdPartyComponents(libraries, outputDir) {
     .flatMap(library => {
       const components = componentsInLibraries[library];
       return components.map(({componentName, className}) => {
-        return `\t\t@"${componentName}": NSClassFromString(@"${className}"), // ${library}`;
+        return `\t\t\t@"${componentName}": NSClassFromString(@"${className}"), // ${library}`;
       });
     })
     .join('\n');
