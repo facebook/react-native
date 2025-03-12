@@ -1513,7 +1513,18 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
           optionChecker={AccessibilityInfo.isScreenReaderEnabled}
           notification={'screenReaderChanged'}
         />
-        {isAndroid ? null : (
+        <DisplayOptionStatusExample
+          optionName={'High Contrast'}
+          optionChecker={AccessibilityInfo.isHighContrastEnabled}
+          notification={'highContrastChanged'}
+        />
+        {isAndroid ? (
+          <DisplayOptionStatusExample
+            optionName={'High Text Contrast'}
+            optionChecker={AccessibilityInfo.isHighContrastEnabled}
+            notification={'highTextContrastChanged'}
+          />
+        ) : (
           <>
             <DisplayOptionStatusExample
               optionName={'Bold Text'}
@@ -1534,6 +1545,11 @@ class DisplayOptionsStatusExample extends React.Component<{}> {
               optionName={'Reduce Transparency'}
               optionChecker={AccessibilityInfo.isReduceTransparencyEnabled}
               notification={'reduceTransparencyChanged'}
+            />
+            <DisplayOptionStatusExample
+              optionName={'Darker System Colors'}
+              optionChecker={AccessibilityInfo.isDarkerSystemColorsEnabled}
+              notification={'darkerSystemColorsChanged'}
             />
           </>
         )}
