@@ -459,6 +459,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    usePullModelOnAndroid: {
+      defaultValue: true,
+      metadata: {
+        dateAdded: '2025-03-12',
+        description:
+          'Use a pull model for mounting on Android. This is similar to what we do on iOS where the transaction is pulled on the main thread right before mounting.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useRawPropsJsiValue: {
       defaultValue: false,
       metadata: {

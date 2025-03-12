@@ -62,7 +62,8 @@ void FabricUIManagerBinding::drainPreallocateViewsQueue() {
 }
 
 void FabricUIManagerBinding::reportMount(SurfaceId surfaceId) {
-  if (ReactNativeFeatureFlags::
+  if (!ReactNativeFeatureFlags::usePullModelOnAndroid() &&
+      ReactNativeFeatureFlags::
           fixMountingCoordinatorReportedPendingTransactionsOnAndroid()) {
     // This is a fix for `MountingCoordinator::hasPendingTransactions` on
     // Android, which otherwise would report no pending transactions
@@ -597,9 +598,10 @@ FabricUIManagerBinding::getMountingManager(const char* locationHint) {
 
 void FabricUIManagerBinding::schedulerDidFinishTransaction(
     const std::shared_ptr<const MountingCoordinator>& mountingCoordinator) {
-  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+  if (ReactNativeFeatureFlags::usePullModelOnAndroid() ||
+      ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
     // We don't do anything here. We will pull the transaction in
-    // `schedulerShouldRenderTransactions`.
+    // `scheduleMount` or `schedulerShouldRenderTransactions`.
   } else {
     // We shouldn't be pulling the transaction here (which triggers diffing of
     // the trees to determine the mutations to run on the host platform),
@@ -636,7 +638,9 @@ void FabricUIManagerBinding::schedulerShouldRenderTransactions(
   if (!mountingManager) {
     return;
   }
-  if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
+  if (ReactNativeFeatureFlags::usePullModelOnAndroid()) {
+    mountingManager->scheduleMount(mountingCoordinator);
+  } else if (ReactNativeFeatureFlags::enableAccumulatedUpdatesInRawPropsAndroid()) {
     auto mountingTransaction = mountingCoordinator->pullTransaction();
     if (mountingTransaction.has_value()) {
       auto transaction = std::move(*mountingTransaction);
