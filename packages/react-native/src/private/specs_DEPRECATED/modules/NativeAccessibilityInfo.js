@@ -22,6 +22,9 @@ export interface Spec extends TurboModule {
   +isHighTextContrastEnabled?: (
     onSuccess: (isHighTextContrastEnabled: boolean) => void,
   ) => void;
+  +isHighContrastEnabled?: (
+    onSuccess: (isHighContrastEnabled: boolean) => void,
+  ) => void;
   +isTouchExplorationEnabled: (
     onSuccess: (isScreenReaderEnabled: boolean) => void,
   ) => void;
