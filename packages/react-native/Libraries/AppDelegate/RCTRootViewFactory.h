@@ -219,7 +219,7 @@ typedef void (^RCTLoadSourceForBridgeBlock)(RCTBridge *bridge, RCTSourceLoadBloc
  * 
  * @parameter: launchOptions  - a dictionary with a set of options.
  */
-- (void)initializeReactHostWithLaunchOptions:(NSDictionary *)launchOptions
+- (void)initializeReactHostWithLaunchOptions:(NSDictionary *__nullable)launchOptions
 - (RCTHost *)createReactHost:(NSDictionary *__nullable)launchOptions;
 
 @end
