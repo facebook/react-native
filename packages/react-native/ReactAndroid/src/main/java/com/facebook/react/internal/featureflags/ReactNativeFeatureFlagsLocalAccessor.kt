@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0fb76e329360157ea9772a0d8bebc873>>
+ * @generated SignedSource<<4ba4ed702f77af3cbf13a33160213908>>
  */
 
 /**
@@ -63,6 +63,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
   private var useOptimizedEventBatchingOnAndroidCache: Boolean? = null
+  private var usePullModelOnAndroidCache: Boolean? = null
   private var useRawPropsJsiValueCache: Boolean? = null
   private var useTurboModuleInteropCache: Boolean? = null
   private var useTurboModulesCache: Boolean? = null
@@ -453,6 +454,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useOptimizedEventBatchingOnAndroid()
       accessedFeatureFlags.add("useOptimizedEventBatchingOnAndroid")
       useOptimizedEventBatchingOnAndroidCache = cached
+    }
+    return cached
+  }
+
+  override fun usePullModelOnAndroid(): Boolean {
+    var cached = usePullModelOnAndroidCache
+    if (cached == null) {
+      cached = currentProvider.usePullModelOnAndroid()
+      accessedFeatureFlags.add("usePullModelOnAndroid")
+      usePullModelOnAndroidCache = cached
     }
     return cached
   }

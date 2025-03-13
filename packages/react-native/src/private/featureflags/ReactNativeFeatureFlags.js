@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<99bbe1c87a7620b6381705db9795fd77>>
+ * @generated SignedSource<<bdf570d4c7fd4ea58cf1eae0ae73edf8>>
  * @flow strict
  */
 
@@ -87,6 +87,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
   useOptimizedEventBatchingOnAndroid: Getter<boolean>,
+  usePullModelOnAndroid: Getter<boolean>,
   useRawPropsJsiValue: Getter<boolean>,
   useTurboModuleInterop: Getter<boolean>,
   useTurboModules: Getter<boolean>,
@@ -322,6 +323,10 @@ export const useNativeViewConfigsInBridgelessMode: Getter<boolean> = createNativ
  * Uses an optimized mechanism for event batching on Android that does not need to wait for a Choreographer frame callback.
  */
 export const useOptimizedEventBatchingOnAndroid: Getter<boolean> = createNativeFlagGetter('useOptimizedEventBatchingOnAndroid', false);
+/**
+ * Use a pull model for mounting on Android. This is similar to what we do on iOS where the transaction is pulled on the main thread right before mounting.
+ */
+export const usePullModelOnAndroid: Getter<boolean> = createNativeFlagGetter('usePullModelOnAndroid', true);
 /**
  * Instead of using folly::dynamic as internal representation in RawProps and RawValue, use jsi::Value
  */

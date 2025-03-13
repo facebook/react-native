@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7493403280d2ac7ec348eb3d78d915c2>>
+ * @generated SignedSource<<b4618190c74105944c2bfd0235d8c251>>
  */
 
 /**
@@ -237,6 +237,11 @@ bool NativeReactNativeFeatureFlags::useNativeViewConfigsInBridgelessMode(
 bool NativeReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid();
+}
+
+bool NativeReactNativeFeatureFlags::usePullModelOnAndroid(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::usePullModelOnAndroid();
 }
 
 bool NativeReactNativeFeatureFlags::useRawPropsJsiValue(

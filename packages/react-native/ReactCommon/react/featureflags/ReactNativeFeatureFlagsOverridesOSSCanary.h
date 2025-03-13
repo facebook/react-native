@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<f694a97b02b01d4b56b5eac7f2a348e5>>
+ * @generated SignedSource<<40374c5dddd8b30e573b3f8cfe5afaaa>>
  */
 
 /**
@@ -110,6 +110,8 @@ class ReactNativeFeatureFlagsOverridesOSSCanary : public ReactNativeFeatureFlags
   bool useNativeViewConfigsInBridgelessMode() override {
     return true;
   }
+
+
 
 
 

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c866e69278d249dd79cb2fc193d1a7e2>>
+ * @generated SignedSource<<47e39056f75d0b634ea66adf5de6e8c8>>
  */
 
 /**
@@ -273,6 +273,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool usePullModelOnAndroid() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("usePullModelOnAndroid");
+    return method(javaProvider_);
+  }
+
   bool useRawPropsJsiValue() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useRawPropsJsiValue");
@@ -490,6 +496,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useOptimizedEventBatchingOnAndroid(
   return ReactNativeFeatureFlags::useOptimizedEventBatchingOnAndroid();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::usePullModelOnAndroid(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::usePullModelOnAndroid();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useRawPropsJsiValue();
@@ -653,6 +664,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useOptimizedEventBatchingOnAndroid",
         JReactNativeFeatureFlagsCxxInterop::useOptimizedEventBatchingOnAndroid),
+      makeNativeMethod(
+        "usePullModelOnAndroid",
+        JReactNativeFeatureFlagsCxxInterop::usePullModelOnAndroid),
       makeNativeMethod(
         "useRawPropsJsiValue",
         JReactNativeFeatureFlagsCxxInterop::useRawPropsJsiValue),

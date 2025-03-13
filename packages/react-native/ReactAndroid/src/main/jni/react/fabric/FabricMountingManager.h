@@ -14,6 +14,7 @@
 #include <fbjni/fbjni.h>
 #include <react/fabric/JFabricUIManager.h>
 #include <react/renderer/uimanager/primitives.h>
+#include <react/renderer/mounting/MountingCoordinator.h>
 
 namespace facebook::react {
 
@@ -42,6 +43,8 @@ class FabricMountingManager final {
 
   void executeMount(const MountingTransaction& transaction);
 
+  void scheduleMount(const std::shared_ptr<const MountingCoordinator>& mountingCoordinator);
+
   void dispatchCommand(
       const ShadowView& shadowView,
       const std::string& commandName,
@@ -62,6 +65,8 @@ class FabricMountingManager final {
 
  private:
   bool isOnMainThread();
+
+  void scheduleMountRunnable(std::function<void()> &&f);
 
   jni::global_ref<JFabricUIManager::javaobject> javaUIManager_;
 
