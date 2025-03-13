@@ -123,7 +123,7 @@ jobs:
   test_ios_rntester_ruby_3_2_0:
     runs-on: macos-13
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -140,7 +140,7 @@ jobs:
   test_ios_rntester_dynamic_frameworks:
     runs-on: macos-13
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -163,7 +163,7 @@ jobs:
   test_ios_rntester:
     runs-on: macos-13-large
     needs:
-      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos]
+      [build_apple_slices_hermes, prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -232,7 +232,7 @@ jobs:
   test_e2e_ios_templateapp:
     if: ${{ github.ref == 'refs/heads/main' || contains(github.ref,  'stable') || inputs.run-e2e-tests }}
     runs-on: macos-13-large
-    needs: build_npm_package
+    needs: [build_npm_package, prebuild_apple_dependencies]
     env:
       HERMES_WS_DIR: /tmp/hermes
       HERMES_TARBALL_ARTIFACTS_DIR: /tmp/hermes/hermes-runtime-darwin
@@ -268,6 +268,14 @@ jobs:
           path: /tmp/react-native-tmp
       - name: Print /tmp folder
         run: ls -lR /tmp/react-native-tmp
+      - name: Download ReactNativeDependencies
+        uses: actions/download-artifact@v4
+        with:
+          name: ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
+          path: /tmp/third-party
+      - name: Print third-party folder
+        shell: bash
+        run: ls -lR /tmp/third-party
       - name: Prepare artifacts
         run: |
           REACT_NATIVE_PKG=$(find /tmp/react-native-tmp -type f -name "*.tgz")
@@ -292,6 +300,8 @@ jobs:
             echo "Disable the New Architecture"
             NEW_ARCH_ENABLED=0
           fi
+
+          export RCT_USE_LOCAL_RN_DEP=/tmp/third-party/ReactNativeDependencies${{ matrix.flavor }}.xcframework.tar.gz
           HERMES_ENGINE_TARBALL_PATH=$HERMES_PATH RCT_NEW_ARCH_ENABLED=$NEW_ARCH_ENABLED bundle exec pod install
 
           xcodebuild \
@@ -580,7 +590,7 @@ jobs:
 
   test_ios_helloworld_with_ruby_3_2_0:
     runs-on: macos-13
-    needs: [prepare_hermes_workspace, build_hermes_macos] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
+    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
     env:
       PROJECT_NAME: iOSTemplateProject
       HERMES_WS_DIR: /tmp/hermes
@@ -598,7 +608,7 @@ jobs:
 
   test_ios_helloworld:
     runs-on: macos-13
-    needs: [prepare_hermes_workspace, build_hermes_macos] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
+    needs: [prepare_hermes_workspace, build_hermes_macos, prebuild_apple_dependencies] # prepare_hermes_workspace must be there because we need its reference to retrieve a couple of outputs
     strategy:
       matrix:
         flavor: [Debug, Release]
