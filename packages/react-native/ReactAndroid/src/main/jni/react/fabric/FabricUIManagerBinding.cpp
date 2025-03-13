@@ -226,8 +226,17 @@ jfloatArray FabricUIManagerBinding::findNextFocusableElementMetrics(
   std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
 
   parentShadowNode = uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
+
+  if (parentShadowNode == nullptr) {
+    return nullptr;
+  }
+
   focusedShadowNode = FocusOrderingHelper::findShadowNodeByTagRecursively(
       parentShadowNode, focusedTag);
+
+  if (focusedShadowNode == nullptr) {
+    return nullptr;
+  }
 
   LayoutMetrics childLayoutMetrics = uimanager->getRelativeLayoutMetrics(
       *focusedShadowNode, parentShadowNode.get(), {.includeTransform = true});
