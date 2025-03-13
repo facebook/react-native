@@ -46,6 +46,5 @@ Pod::Spec.new do |s|
     s.header_mappings_dir = "../.."
   end
 
-  s.dependency "glog"
   add_rn_dependencies(s)
 end
