@@ -94,11 +94,7 @@ BOOL RCTHasFontHandlerSet()
 // which one we actually have.
 static inline BOOL CompareFontWeights(UIFontWeight firstWeight, UIFontWeight secondWeight)
 {
-#if CGFLOAT_IS_DOUBLE
   return fabs(firstWeight - secondWeight) < 0.01;
-#else
-  return fabsf(firstWeight - secondWeight) < 0.01;
-#endif
 }
 
 static NSString *FontWeightDescriptionFromUIFontWeight(UIFontWeight fontWeight)
