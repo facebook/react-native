@@ -141,6 +141,22 @@ export default class AnimatedProps extends AnimatedNode {
     return props;
   }
 
+  __getNativeAnimatedEventTuples(): $ReadOnlyArray<[string, AnimatedEvent]> {
+    const tuples = [];
+
+    const keys = Object.keys(this.#props);
+    for (let ii = 0, length = keys.length; ii < length; ii++) {
+      const key = keys[ii];
+      const value = this.#props[key];
+
+      if (value instanceof AnimatedEvent && value.__isNative) {
+        tuples.push([key, value]);
+      }
+    }
+
+    return tuples;
+  }
+
   __getAnimatedValue(): Object {
     const props: {[string]: mixed} = {};
 
