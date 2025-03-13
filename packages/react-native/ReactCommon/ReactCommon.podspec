@@ -16,11 +16,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_config = get_folly_config()
-folly_compiler_flags = folly_config[:compiler_flags]
-folly_version = folly_config[:version]
-boost_config = get_boost_config()
-boost_compiler_flags = boost_config[:compiler_flags]
 using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == "1"
 
 Pod::Spec.new do |s|
@@ -34,8 +29,7 @@ Pod::Spec.new do |s|
   s.platforms              = min_supported_versions
   s.source                 = source
   s.header_dir             = "ReactCommon" # Use global header_dir for all subspecs for use_frameworks! compatibility
-  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/fast_float/include\" \"$(PODS_ROOT)/fmt/include\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Headers/Private/React-Core\"",
                                "USE_HEADERMAP" => "YES",
                                "DEFINES_MODULE" => "YES",
                                "CLANG_CXX_LANGUAGE_STANDARD" => rct_cxx_language_standard(),
@@ -44,6 +38,8 @@ Pod::Spec.new do |s|
     s.header_mappings_dir     = './'
   end
 
+  add_rn_third_party_dependencies(s)
+
   # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
   # Note: Update this only when ready to minimize breaking changes.
   s.subspec "turbomodule" do |ss|
@@ -51,12 +47,7 @@ Pod::Spec.new do |s|
     ss.dependency "React-perflogger", version
     ss.dependency "React-cxxreact", version
     ss.dependency "React-jsi", version
-    ss.dependency "RCT-Folly", folly_version
     ss.dependency "React-logger", version
-    ss.dependency "DoubleConversion"
-    ss.dependency "fast_float"
-    ss.dependency "fmt", "11.0.2"
-    ss.dependency "glog"
     if using_hermes
       ss.dependency "hermes-engine"
     end
@@ -66,7 +57,7 @@ Pod::Spec.new do |s|
       sss.source_files         = "react/bridging/**/*.{cpp,h}"
       sss.exclude_files        = "react/bridging/tests"
       sss.header_dir           = "react/bridging"
-      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/RCT-Folly\"" }
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
       if using_hermes
         sss.dependency "hermes-engine"
       end
