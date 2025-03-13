@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<99bbe1c87a7620b6381705db9795fd77>>
+ * @generated SignedSource<<0b8f2c2194ae626b8ecb5cbb2a1ded4b>>
  * @flow strict
  */
 
@@ -33,7 +33,6 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
-  enableDOMDocumentAPI: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   scheduleAnimatedCleanupInMicrotask: Getter<boolean>,
@@ -121,11 +120,6 @@ export const disableInteractionManager: Getter<boolean> = createJavaScriptFlagGe
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
  */
 export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', false);
-
-/**
- * Enables the DOM Document API, exposing instaces of document through `getRootNode` and `ownerDocument`, and providing access to the `documentElement` representing the root node. This flag will be short-lived, only to test the Document API specifically, and then it will be collapsed into the enableAccessToHostTreeInFabric flag.
- */
-export const enableDOMDocumentAPI: Getter<boolean> = createJavaScriptFlagGetter('enableDOMDocumentAPI', false);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements

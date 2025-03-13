@@ -91,7 +91,6 @@ export default function getFantomTestConfig(
       common: {},
       jsOnly: {
         enableAccessToHostTreeInFabric: true,
-        enableDOMDocumentAPI: true,
       },
       reactInternal: {},
     },
