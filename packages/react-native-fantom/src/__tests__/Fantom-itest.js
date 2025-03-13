@@ -553,13 +553,13 @@ describe('Fantom', () => {
 
       expect(() => {
         Fantom.runOnUIThread(() => {
-          Fantom.scrollTo(element, {
+          Fantom.enqueueScrollEvent(element, {
             x: 0,
             y: 1,
           });
         });
       }).toThrow(
-        'Exception in HostFunction: scrollTo() can only be called on <ScrollView />',
+        'Exception in HostFunction: enqueueScrollEvent() can only be called on <ScrollView />',
       );
     });
 
@@ -594,7 +594,7 @@ describe('Fantom', () => {
       );
 
       Fantom.runOnUIThread(() => {
-        Fantom.scrollTo(scrollViewElement, {
+        Fantom.enqueueScrollEvent(scrollViewElement, {
           x: 0,
           y: 1,
         });

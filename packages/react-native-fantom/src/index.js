@@ -229,12 +229,12 @@ function dispatchNativeEvent(
   runWorkLoop();
 }
 
-function scrollTo(
+function enqueueScrollEvent(
   node: ReactNativeElement,
   options: {x: number, y: number, zoomScale?: number},
 ) {
   const shadowNode = getNativeNodeReference(node);
-  NativeFantom.scrollTo(shadowNode, options);
+  NativeFantom.enqueueScrollEvent(shadowNode, options);
 }
 
 function enqueueModalSizeUpdate(
@@ -346,6 +346,6 @@ export default {
   flushAllNativeEvents,
   enqueueModalSizeUpdate,
   unstable_benchmark: Benchmark,
-  scrollTo,
+  enqueueScrollEvent,
   saveJSMemoryHeapSnapshot,
 };

@@ -50,7 +50,7 @@ test('basic culling', () => {
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 60,
     });
@@ -66,7 +66,7 @@ test('basic culling', () => {
   ]);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 0,
     });
@@ -133,7 +133,7 @@ test('recursive culling', () => {
 
   // === Scroll down to the edge of child AA ===
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 30,
     });
@@ -146,7 +146,7 @@ test('recursive culling', () => {
 
   // === Scroll down past child AA ===
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 36,
     });
@@ -161,7 +161,7 @@ test('recursive culling', () => {
 
   // === Scroll down past child AB ===
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 51,
     });
@@ -176,7 +176,7 @@ test('recursive culling', () => {
 
   // === Scroll down past element A ===
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 56,
     });
@@ -191,7 +191,7 @@ test('recursive culling', () => {
 
   // Scroll element B into viewport. Just child BA should be created.
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 155,
     });
@@ -208,7 +208,7 @@ test('recursive culling', () => {
 
   // Scroll child BA into viewport.
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 165,
     });
@@ -223,7 +223,7 @@ test('recursive culling', () => {
 
   // Scroll back to start
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 0,
     });
@@ -248,7 +248,7 @@ test('recursive culling', () => {
 
   // Scroll past element A
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 85,
     });
@@ -304,7 +304,7 @@ test('recursive culling when initial offset is negative', () => {
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 0,
     });
@@ -374,7 +374,7 @@ test('deep nesting', () => {
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 40,
     });
@@ -392,7 +392,7 @@ test('deep nesting', () => {
   ]);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 150,
     });
@@ -543,7 +543,7 @@ test('initial render', () => {
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 100,
     });
@@ -622,7 +622,7 @@ test('basic culling smaller ScrollView', () => {
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 11,
     });
@@ -692,7 +692,7 @@ test('culling with transform move', () => {
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 1,
     });
@@ -744,7 +744,7 @@ test('culling with recursive transform move', () => {
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 1,
     });
@@ -795,7 +795,7 @@ test('culling with transform scale', () => {
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 121,
     });
@@ -875,7 +875,7 @@ test('view flattening with culling', () => {
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
   Fantom.runOnUIThread(() => {
-    Fantom.scrollTo(element, {
+    Fantom.enqueueScrollEvent(element, {
       x: 0,
       y: 60,
     });
