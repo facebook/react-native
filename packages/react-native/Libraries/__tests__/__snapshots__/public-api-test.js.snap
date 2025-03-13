@@ -6838,8 +6838,7 @@ export type RootViewStyleProvider = (appParameters: Object) => ViewStyleProp;
 `;
 
 exports[`public API should not change unintentionally Libraries/ReactNative/AppRegistry.js 1`] = `
-"declare export default typeof AppRegistry;
-export { AppRegistry };
+"export { AppRegistry };
 "
 `;
 
@@ -6855,7 +6854,6 @@ exports[`public API should not change unintentionally Libraries/ReactNative/AppR
   WrapperComponentProvider,
   RootViewStyleProvider,
 } from \\"./AppRegistry.flow\\";
-export * as default from \\"./AppRegistryImpl\\";
 export * as AppRegistry from \\"./AppRegistryImpl\\";
 "
 `;
