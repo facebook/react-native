@@ -5,139 +5,98 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package com.facebook.react.packagerconnection;
+package com.facebook.react.packagerconnection
 
-import android.net.Uri;
-import androidx.annotation.Nullable;
-import com.facebook.common.logging.FLog;
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
-import java.util.Map;
-import okio.ByteString;
-import org.json.JSONObject;
+import android.net.Uri
+import com.facebook.common.logging.FLog
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers.getFriendlyDeviceName
+import com.facebook.react.packagerconnection.ReconnectingWebSocket.MessageCallback
+import okio.ByteString
+import org.json.JSONObject
 
 /** A client for packager that uses WebSocket connection. */
-public final class JSPackagerClient implements ReconnectingWebSocket.MessageCallback {
-  private static final String TAG = JSPackagerClient.class.getSimpleName();
-  private static final int PROTOCOL_VERSION = 2;
+public class JSPackagerClient @JvmOverloads public constructor(
+    clientId: String,
+    settings: PackagerConnectionSettings,
+    private val requestHandlers: Map<String, RequestHandler>,
+    connectionCallback: ReconnectingWebSocket.ConnectionCallback? = null
+) : MessageCallback {
+  private val webSocket: ReconnectingWebSocket
 
-  private class ResponderImpl implements Responder {
-    private Object mId;
-
-    public ResponderImpl(Object id) {
-      mId = id;
-    }
-
-    public void respond(Object result) {
-      try {
-        JSONObject message = new JSONObject();
-        message.put("version", PROTOCOL_VERSION);
-        message.put("id", mId);
-        message.put("result", result);
-        mWebSocket.sendMessage(message.toString());
-      } catch (Exception e) {
-        FLog.e(TAG, "Responding failed", e);
-      }
-    }
-
-    public void error(Object error) {
-      try {
-        JSONObject message = new JSONObject();
-        message.put("version", PROTOCOL_VERSION);
-        message.put("id", mId);
-        message.put("error", error);
-        mWebSocket.sendMessage(message.toString());
-      } catch (Exception e) {
-        FLog.e(TAG, "Responding with error failed", e);
-      }
-    }
-  }
-
-  private ReconnectingWebSocket mWebSocket;
-  private Map<String, RequestHandler> mRequestHandlers;
-
-  public JSPackagerClient(
-      String clientId,
-      PackagerConnectionSettings settings,
-      Map<String, RequestHandler> requestHandlers) {
-    this(clientId, settings, requestHandlers, null);
-  }
-
-  public JSPackagerClient(
-      String clientId,
-      PackagerConnectionSettings settings,
-      Map<String, RequestHandler> requestHandlers,
-      @Nullable ReconnectingWebSocket.ConnectionCallback connectionCallback) {
-    super();
-
-    Uri.Builder builder = new Uri.Builder();
+  init {
+    val builder = Uri.Builder()
     builder
-        .scheme("ws")
-        .encodedAuthority(settings.getDebugServerHost())
-        .appendPath("message")
-        .appendQueryParameter("device", AndroidInfoHelpers.getFriendlyDeviceName())
-        .appendQueryParameter("app", settings.getPackageName())
-        .appendQueryParameter("clientid", clientId);
-    String url = builder.build().toString();
+      .scheme("ws")
+      .encodedAuthority(settings.debugServerHost)
+      .appendPath("message")
+      .appendQueryParameter("device", getFriendlyDeviceName())
+      .appendQueryParameter("app", settings.packageName)
+      .appendQueryParameter("clientid", clientId)
+    val url = builder.build().toString()
 
-    mWebSocket = new ReconnectingWebSocket(url, this, connectionCallback);
-    mRequestHandlers = requestHandlers;
+    webSocket = ReconnectingWebSocket(url, this, connectionCallback)
   }
 
-  public void init() {
-    mWebSocket.connect();
+  public fun init() {
+    webSocket.connect()
   }
 
-  public void close() {
-    mWebSocket.closeQuietly();
+  public fun close() {
+    webSocket.closeQuietly()
   }
 
-  @Override
-  public void onMessage(String text) {
+  override fun onMessage(text: String) {
     try {
-      JSONObject message = new JSONObject(text);
+      val message = JSONObject(text)
 
-      int version = message.optInt("version");
-      String method = message.optString("method");
-      Object id = message.opt("id");
-      Object params = message.opt("params");
+      val version = message.optInt("version")
+      val method = message.optString("method")
+      val id = message.opt("id")
+      val params = message.opt("params")
 
       if (version != PROTOCOL_VERSION) {
         FLog.e(
-            TAG, "Message with incompatible or missing version of protocol received: " + version);
-        return;
+          TAG,
+          "Message with incompatible or missing version of protocol received: $version"
+        )
+        return
       }
 
       if (method == null) {
-        abortOnMessage(id, "No method provided");
-        return;
+        abortOnMessage(id, "No method provided")
+        return
       }
 
-      RequestHandler handler = mRequestHandlers.get(method);
+      val handler = requestHandlers[method]
       if (handler == null) {
-        abortOnMessage(id, "No request handler for method: " + method);
-        return;
+        abortOnMessage(id, "No request handler for method: $method")
+        return
       }
 
       if (id == null) {
-        handler.onNotification(params);
+        handler.onNotification(params)
       } else {
-        handler.onRequest(params, new ResponderImpl(id));
+        handler.onRequest(params, ResponderImpl(id, webSocket))
       }
-    } catch (Exception e) {
-      FLog.e(TAG, "Handling the message failed", e);
+    } catch (e: Exception) {
+      FLog.e(TAG, "Handling the message failed", e)
     }
   }
 
-  @Override
-  public void onMessage(ByteString bytes) {
-    FLog.w(TAG, "Websocket received message with payload of unexpected type binary");
+  override fun onMessage(bytes: ByteString) {
+    FLog.w(TAG, "Websocket received message with payload of unexpected type binary")
   }
 
-  private void abortOnMessage(Object id, String reason) {
+  private fun abortOnMessage(id: Any?, reason: String) {
     if (id != null) {
-      (new ResponderImpl(id)).error(reason);
+      (ResponderImpl(id, webSocket)).error(reason)
     }
 
-    FLog.e(TAG, "Handling the message failed with reason: " + reason);
+    FLog.e(TAG, "Handling the message failed with reason: $reason")
+  }
+
+  public companion object {
+    internal val TAG: String = JSPackagerClient::class.java.simpleName
+    internal const val PROTOCOL_VERSION = 2
   }
 }
