@@ -638,6 +638,106 @@ describe('Fantom', () => {
     });
   });
 
+  describe('scrollTo', () => {
+    it('throws error if called on node that is not scroll view', () => {
+      const root = Fantom.createRoot();
+      let maybeNode;
+
+      Fantom.runTask(() => {
+        root.render(
+          <View
+            ref={node => {
+              maybeNode = node;
+            }}
+          />,
+        );
+      });
+
+      const element = ensureInstance(maybeNode, ReactNativeElement);
+
+      expect(() => {
+        Fantom.runOnUIThread(() => {
+          Fantom.enqueueScrollEvent(element, {
+            x: 0,
+            y: 1,
+          });
+        });
+      }).toThrow(
+        'Exception in HostFunction: enqueueScrollEvent() can only be called on <ScrollView />',
+      );
+    });
+
+    it('delivers onScroll event and affects position of elements on screen', () => {
+      const root = Fantom.createRoot();
+      let maybeScrollViewNode;
+      let maybeNode;
+      const onScroll = jest.fn();
+
+      Fantom.runTask(() => {
+        root.render(
+          <ScrollView
+            onScroll={event => {
+              onScroll(event.nativeEvent);
+            }}
+            ref={node => {
+              maybeScrollViewNode = node;
+            }}>
+            <View
+              style={{width: 1, height: 2, top: 3}}
+              ref={node => {
+                maybeNode = node;
+              }}
+            />
+          </ScrollView>,
+        );
+      });
+
+      const scrollViewElement = ensureInstance(
+        maybeScrollViewNode,
+        ReactNativeElement,
+      );
+
+      Fantom.scrollTo(scrollViewElement, {
+        x: 0,
+        y: 1,
+      });
+
+      expect(onScroll).toHaveBeenCalledTimes(1);
+
+      const viewElement = ensureInstance(maybeNode, ReactNativeElement);
+
+      let rect;
+
+      viewElement.measure((x, y, width, height, pageX, pageY) => {
+        rect = {
+          x,
+          y,
+          width,
+          height,
+          pageX,
+          pageY,
+        };
+      });
+
+      expect(rect).toEqual({
+        x: 0,
+        y: 3,
+        width: 1,
+        height: 2,
+        pageY: 2,
+        pageX: 0,
+      });
+
+      const boundingClientRect = viewElement.getBoundingClientRect();
+      expect(boundingClientRect.x).toBe(0);
+      expect(boundingClientRect.y).toBe(2);
+      expect(boundingClientRect.width).toBe(1);
+      expect(boundingClientRect.height).toBe(2);
+
+      root.destroy();
+    });
+  });
+
   describe('flushAllNativeEvents', () => {
     it('calls events in the event queue', () => {
       const root = Fantom.createRoot();
