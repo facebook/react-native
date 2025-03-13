@@ -53,7 +53,7 @@ function shouldReplaceRnDepsConfiguration(configuration) {
 }
 
 function replaceRNDepsConfiguration(configuration, version, podsRoot) {
-  const tarballURLPath = `${podsRoot}/ReactNativeDependencies-artifacts/rndeps-ios-${version.toLowerCase()}-${configuration.toLowerCase()}.tar.gz`;
+  const tarballURLPath = `${podsRoot}/ReactNativeDependencies-artifacts/reactnative-dependencies-${version.toLowerCase()}-${configuration.toLowerCase()}.tar.gz`;
 
   const finalLocation = 'ReactNativeDependencies/framework';
   console.log('Preparing the final location', finalLocation);
