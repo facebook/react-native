@@ -106,7 +106,9 @@ async function getCLIConfiguration() /*: Promise<?{|
     rs => !platforms.includes(rs),
   );
   if (invalidPlatforms.length > 0) {
-    console.error(`Invalid platform specified: ${invalidPlatforms.join(', ')}`);
+    console.error(
+      `Invalid platform specified: ${invalidPlatforms.join(', ')}\nValid platforms are: ${platforms.join(', ')}`,
+    );
     return undefined;
   }
 
@@ -116,7 +118,9 @@ async function getCLIConfiguration() /*: Promise<?{|
   );
   if (invalidDependencies.length > 0) {
     console.error(
-      `Invalid dependency specified: ${invalidDependencies.join(', ')}`,
+      `Invalid dependency specified: ${invalidDependencies.join(', ')}.\nValid dependencies are: ${dependencies
+        .map(d => d.name)
+        .join(', ')}`,
     );
     return undefined;
   }
