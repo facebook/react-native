@@ -6,6 +6,7 @@
  */
 
 #import "RCTInitializeUIKitProxies.h"
+#import <React/RCTUtils.h>
 #import "RCTInitialAccessibilityValuesProxy.h"
 #import "RCTKeyWindowValuesProxy.h"
 #import "RCTTraitCollectionProxy.h"
@@ -19,5 +20,7 @@ void RCTInitializeUIKitProxies(void)
     [[RCTTraitCollectionProxy sharedInstance] startObservingTraitCollection];
     [[RCTInitialAccessibilityValuesProxy sharedInstance] recordAccessibilityValues];
     [[RCTKeyWindowValuesProxy sharedInstance] startObservingWindowSizeIfNecessary];
+    // Early cache size of screen to avoid main thread contention
+    RCTScreenSize();
   });
 }
