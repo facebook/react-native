@@ -614,17 +614,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    useRefsForTextInputState: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-08',
-        description:
-          'Enable a variant of TextInput that moves some state to refs to avoid unnecessary re-renders',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
   },
 };
 
