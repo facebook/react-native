@@ -6,14 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -Wno-unused-local-typedef
-        -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB react_renderer_uimanager_SRC CONFIGURE_DEPENDS *.cpp)
 add_library(react_renderer_uimanager OBJECT ${react_renderer_uimanager_SRC})
@@ -41,3 +34,6 @@ target_link_libraries(react_renderer_uimanager
         rrc_view
         runtimeexecutor
 )
+target_compile_reactnative_options(react_renderer_uimanager PRIVATE "Fabric")
+target_compile_options(react_renderer_uimanager PRIVATE -Wno-unused-local-typedef)
+target_compile_options(react_renderer_uimanager PRIVATE -Wpedantic)

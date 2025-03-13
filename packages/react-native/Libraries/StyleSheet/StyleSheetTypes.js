@@ -760,10 +760,7 @@ type ____BlendMode_Internal =
   | 'color'
   | 'luminosity';
 
-export type ____ViewStyle_InternalCore = $ReadOnly<{
-  ...$Exact<____LayoutStyle_Internal>,
-  ...$Exact<____ShadowStyle_Internal>,
-  ...$Exact<____TransformStyle_Internal>,
+export type ____ViewStyle_InternalBase = $ReadOnly<{
   backfaceVisibility?: 'visible' | 'hidden',
   backgroundColor?: ____ColorValue_Internal,
   borderColor?: ____ColorValue_Internal,
@@ -811,6 +808,13 @@ export type ____ViewStyle_InternalCore = $ReadOnly<{
   mixBlendMode?: ____BlendMode_Internal,
   experimental_backgroundImage?: $ReadOnlyArray<GradientValue> | string,
   isolation?: 'auto' | 'isolate',
+}>;
+
+export type ____ViewStyle_InternalCore = $ReadOnly<{
+  ...$Exact<____LayoutStyle_Internal>,
+  ...$Exact<____ShadowStyle_Internal>,
+  ...$Exact<____TransformStyle_Internal>,
+  ...____ViewStyle_InternalBase,
 }>;
 
 export type ____ViewStyle_Internal = $ReadOnly<{
@@ -903,8 +907,7 @@ export type ____FontVariantArray_Internal = $ReadOnlyArray<
   | 'stylistic-twenty',
 >;
 
-export type ____TextStyle_InternalCore = $ReadOnly<{
-  ...$Exact<____ViewStyle_Internal>,
+type ____TextStyle_InternalBase = $ReadOnly<{
   color?: ____ColorValue_Internal,
   fontFamily?: string,
   fontSize?: number,
@@ -933,6 +936,11 @@ export type ____TextStyle_InternalCore = $ReadOnly<{
   userSelect?: 'auto' | 'text' | 'none' | 'contain' | 'all',
   verticalAlign?: 'auto' | 'top' | 'bottom' | 'middle',
   writingDirection?: 'auto' | 'ltr' | 'rtl',
+}>;
+
+export type ____TextStyle_InternalCore = $ReadOnly<{
+  ...$Exact<____ViewStyle_Internal>,
+  ...____TextStyle_InternalBase,
 }>;
 
 export type ____TextStyle_Internal = $ReadOnly<{
@@ -967,24 +975,24 @@ export type ____DangerouslyImpreciseStyle_Internal = $ReadOnly<{
   ...
 }>;
 
-type GenericStyleProp<+T> =
+export type StyleProp<+T> =
   | null
   | void
   | T
   | false
   | ''
-  | $ReadOnlyArray<GenericStyleProp<T>>;
+  | $ReadOnlyArray<StyleProp<T>>;
 
-export type ____DangerouslyImpreciseStyleProp_Internal = GenericStyleProp<
+export type ____DangerouslyImpreciseStyleProp_Internal = StyleProp<
   Partial<____DangerouslyImpreciseStyle_Internal>,
 >;
-export type ____ViewStyleProp_Internal = GenericStyleProp<
+export type ____ViewStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ViewStyle_Internal>>,
 >;
-export type ____TextStyleProp_Internal = GenericStyleProp<
+export type ____TextStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____TextStyle_Internal>>,
 >;
-export type ____ImageStyleProp_Internal = GenericStyleProp<
+export type ____ImageStyleProp_Internal = StyleProp<
   $ReadOnly<Partial<____ImageStyle_Internal>>,
 >;
 
@@ -995,10 +1003,26 @@ export type ____Styles_Internal = {
   ...
 };
 
-export type ____FlattenStyleProp_Internal<
-  +TStyleProp: GenericStyleProp<mixed>,
-> = TStyleProp extends null | void | false | ''
+// A depth limiter, to avoid TS2589 in TypeScript. This and
+// ____FlattenStyleProp_Helper should be considered internal.
+type FlattenDepthLimiter = [void, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+type ____FlattenStyleProp_Helper<
+  +TStyleProp: StyleProp<mixed>,
+  Depth: $Values<FlattenDepthLimiter> = 9,
+> = Depth extends 0
   ? empty
-  : TStyleProp extends $ReadOnlyArray<infer V>
-    ? ____FlattenStyleProp_Internal<V>
-    : TStyleProp;
+  : TStyleProp extends null | void | false | ''
+    ? empty
+    : // When TStyleProp is an array, recurse with decremented Depth
+      TStyleProp extends $ReadOnlyArray<infer V>
+      ? ____FlattenStyleProp_Helper<
+          V,
+          Depth extends number ? FlattenDepthLimiter[Depth] : 0,
+        >
+      : TStyleProp;
+
+export type ____FlattenStyleProp_Internal<+TStyleProp: StyleProp<mixed>> =
+  ____FlattenStyleProp_Helper<TStyleProp> extends empty
+    ? // $FlowFixMe[unclear-type]
+      any
+    : ____FlattenStyleProp_Helper<TStyleProp>;

@@ -72,9 +72,14 @@ interface Spec extends TurboModule {
     category?: NativeEventCategory,
     isUnique?: boolean,
   ) => void;
-  scrollTo: (
+  enqueueScrollEvent: (
     shadowNode: mixed /* ShadowNode */,
     options: ScrollOptions,
+  ) => void;
+  enqueueModalSizeUpdate: (
+    shadowNode: mixed /* ShadowNode */,
+    height: number,
+    width: number,
   ) => void;
   takeMountingManagerLogs: (surfaceId: number) => Array<string>;
   flushMessageQueue: () => void;

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<3e68d888bf4d8ac71b63571a639d265b>>
+ * @generated SignedSource<<be58147d3915c8b37ab66a4e886f7560>>
  * @flow strict
  */
 
@@ -30,11 +30,10 @@ export type ReactNativeFeatureFlagsJsOnly = $ReadOnly<{
   jsOnlyTestFlag: Getter<boolean>,
   animatedShouldDebounceQueueFlush: Getter<boolean>,
   animatedShouldUseSingleOp: Getter<boolean>,
+  avoidAnimatedRefInvalidation: Getter<boolean>,
   avoidStateUpdateInAnimatedPropsMemo: Getter<boolean>,
   disableInteractionManager: Getter<boolean>,
   enableAccessToHostTreeInFabric: Getter<boolean>,
-  enableAnimatedClearImmediateFix: Getter<boolean>,
-  enableDOMDocumentAPI: Getter<boolean>,
   fixVirtualizeListCollapseWindowSize: Getter<boolean>,
   isLayoutAnimationEnabled: Getter<boolean>,
   scheduleAnimatedCleanupInMicrotask: Getter<boolean>,
@@ -50,6 +49,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   ...ReactNativeFeatureFlagsJsOnly,
   commonTestFlag: Getter<boolean>,
   commonTestFlagWithoutNativeImplementation: Getter<boolean>,
+  animatedShouldSignalBatch: Getter<boolean>,
   disableMountItemReorderingAndroid: Getter<boolean>,
   enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean>,
   enableBridgelessArchitecture: Getter<boolean>,
@@ -65,7 +65,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableLongTaskAPI: Getter<boolean>,
   enableNativeCSSParsing: Getter<boolean>,
   enableNewBackgroundAndBorderDrawables: Getter<boolean>,
-  enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean>,
   enablePropsUpdateReconciliationAndroid: Getter<boolean>,
   enableReportEventPaintTime: Getter<boolean>,
   enableSynchronousStateUpdates: Getter<boolean>,
@@ -74,7 +73,6 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   enableViewRecycling: Getter<boolean>,
   enableViewRecyclingForText: Getter<boolean>,
   enableViewRecyclingForView: Getter<boolean>,
-  excludeYogaFromRawProps: Getter<boolean>,
   fixDifferentiatorEmittingUpdatesWithWrongParentTag: Getter<boolean>,
   fixMappingOfEventPrioritiesBetweenFabricAndReact: Getter<boolean>,
   fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<boolean>,
@@ -110,6 +108,11 @@ export const animatedShouldDebounceQueueFlush: Getter<boolean> = createJavaScrip
 export const animatedShouldUseSingleOp: Getter<boolean> = createJavaScriptFlagGetter('animatedShouldUseSingleOp', false);
 
 /**
+ * Changes `useAnimatedProps` to avoid invalidating the callback ref whenever `props` changes.
+ */
+export const avoidAnimatedRefInvalidation: Getter<boolean> = createJavaScriptFlagGetter('avoidAnimatedRefInvalidation', false);
+
+/**
  * Changes `useAnimatedPropsMemo` to avoid state updates to invalidate the cached `AnimatedProps`.
  */
 export const avoidStateUpdateInAnimatedPropsMemo: Getter<boolean> = createJavaScriptFlagGetter('avoidStateUpdateInAnimatedPropsMemo', false);
@@ -123,16 +126,6 @@ export const disableInteractionManager: Getter<boolean> = createJavaScriptFlagGe
  * Enables access to the host tree in Fabric using DOM-compatible APIs.
  */
 export const enableAccessToHostTreeInFabric: Getter<boolean> = createJavaScriptFlagGetter('enableAccessToHostTreeInFabric', false);
-
-/**
- * Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.
- */
-export const enableAnimatedClearImmediateFix: Getter<boolean> = createJavaScriptFlagGetter('enableAnimatedClearImmediateFix', true);
-
-/**
- * Enables the DOM Document API, exposing instaces of document through `getRootNode` and `ownerDocument`, and providing access to the `documentElement` representing the root node. This flag will be short-lived, only to test the Document API specifically, and then it will be collapsed into the enableAccessToHostTreeInFabric flag.
- */
-export const enableDOMDocumentAPI: Getter<boolean> = createJavaScriptFlagGetter('enableDOMDocumentAPI', false);
 
 /**
  * Fixing an edge case where the current window size is not properly calculated with fast scrolling. Window size collapsed to 1 element even if windowSize more than the current amount of elements
@@ -178,6 +171,10 @@ export const commonTestFlag: Getter<boolean> = createNativeFlagGetter('commonTes
  */
 export const commonTestFlagWithoutNativeImplementation: Getter<boolean> = createNativeFlagGetter('commonTestFlagWithoutNativeImplementation', false);
 /**
+ * Enables start- and finishOperationBatch on any platform.
+ */
+export const animatedShouldSignalBatch: Getter<boolean> = createNativeFlagGetter('animatedShouldSignalBatch', false);
+/**
  * Prevent FabricMountingManager from reordering mountitems, which may lead to invalid state on the UI thread
  */
 export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFlagGetter('disableMountItemReorderingAndroid', false);
@@ -186,7 +183,7 @@ export const disableMountItemReorderingAndroid: Getter<boolean> = createNativeFl
  */
 export const enableAccumulatedUpdatesInRawPropsAndroid: Getter<boolean> = createNativeFlagGetter('enableAccumulatedUpdatesInRawPropsAndroid', false);
 /**
- * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.
+ * Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.
  */
 export const enableBridgelessArchitecture: Getter<boolean> = createNativeFlagGetter('enableBridgelessArchitecture', false);
 /**
@@ -238,10 +235,6 @@ export const enableNativeCSSParsing: Getter<boolean> = createNativeFlagGetter('e
  */
 export const enableNewBackgroundAndBorderDrawables: Getter<boolean> = createNativeFlagGetter('enableNewBackgroundAndBorderDrawables', false);
 /**
- * Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).
- */
-export const enablePreciseSchedulingForPremountItemsOnAndroid: Getter<boolean> = createNativeFlagGetter('enablePreciseSchedulingForPremountItemsOnAndroid', false);
-/**
  * When enabled, Android will receive prop updates based on the differences between the last rendered shadow node and the last committed shadow node.
  */
 export const enablePropsUpdateReconciliationAndroid: Getter<boolean> = createNativeFlagGetter('enablePropsUpdateReconciliationAndroid', false);
@@ -274,10 +267,6 @@ export const enableViewRecyclingForText: Getter<boolean> = createNativeFlagGette
  */
 export const enableViewRecyclingForView: Getter<boolean> = createNativeFlagGetter('enableViewRecyclingForView', true);
 /**
- * When enabled, rawProps in Props will not include Yoga specific props.
- */
-export const excludeYogaFromRawProps: Getter<boolean> = createNativeFlagGetter('excludeYogaFromRawProps', false);
-/**
  * Fixes a bug in Differentiator where parent views may be referenced before they're created
  */
 export const fixDifferentiatorEmittingUpdatesWithWrongParentTag: Getter<boolean> = createNativeFlagGetter('fixDifferentiatorEmittingUpdatesWithWrongParentTag', true);
@@ -294,7 +283,7 @@ export const fixMountingCoordinatorReportedPendingTransactionsOnAndroid: Getter<
  */
 export const fuseboxEnabledRelease: Getter<boolean> = createNativeFlagGetter('fuseboxEnabledRelease', false);
 /**
- * Enable network inspection support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.
+ * Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.
  */
 export const fuseboxNetworkInspectionEnabled: Getter<boolean> = createNativeFlagGetter('fuseboxNetworkInspectionEnabled', false);
 /**

@@ -401,3 +401,99 @@ declare function fetch(
   input: RequestInfo,
   init?: RequestOptions,
 ): Promise<Response>;
+
+declare class Location {
+  ancestorOrigins: Array<string>;
+  assign(url: string): void;
+  hash: string;
+  host: string;
+  hostname: string;
+  href: string;
+  origin: string;
+  pathname: string;
+  port: string;
+  protocol: string;
+  reload(flag?: boolean): void;
+  replace(url: string): void;
+  search: string;
+  toString(): string;
+}
+
+declare class CanvasCaptureMediaStream extends MediaStream {
+  canvas: HTMLCanvasElement;
+  requestFrame(): void;
+}
+
+declare type FileSystemHandleKind = 'file' | 'directory';
+
+// https://wicg.github.io/file-system-access/#api-filesystemhandle
+declare class FileSystemHandle {
+  +kind: FileSystemHandleKind;
+  +name: string;
+
+  isSameEntry: (other: FileSystemHandle) => Promise<boolean>;
+  queryPermission?: (
+    descriptor: FileSystemHandlePermissionDescriptor,
+  ) => Promise<PermissionStatus>;
+  requestPermission?: (
+    descriptor: FileSystemHandlePermissionDescriptor,
+  ) => Promise<PermissionStatus>;
+}
+
+// https://fs.spec.whatwg.org/#api-filesystemfilehandle
+declare class FileSystemFileHandle extends FileSystemHandle {
+  +kind: 'file';
+
+  constructor(name: string): void;
+
+  getFile(): Promise<File>;
+  createSyncAccessHandle(): Promise<FileSystemSyncAccessHandle>;
+  createWritable(options?: {|
+    keepExistingData?: boolean,
+  |}): Promise<FileSystemWritableFileStream>;
+}
+
+// https://fs.spec.whatwg.org/#api-filesystemdirectoryhandle
+declare class FileSystemDirectoryHandle extends FileSystemHandle {
+  +kind: 'directory';
+
+  constructor(name: string): void;
+
+  getDirectoryHandle(
+    name: string,
+    options?: {|create?: boolean|},
+  ): Promise<FileSystemDirectoryHandle>;
+  getFileHandle(
+    name: string,
+    options?: {|create?: boolean|},
+  ): Promise<FileSystemFileHandle>;
+  removeEntry(name: string, options?: {|recursive?: boolean|}): Promise<void>;
+  resolve(possibleDescendant: FileSystemHandle): Promise<Array<string> | null>;
+
+  // Async iterator functions
+  @@asyncIterator(): AsyncIterator<[string, FileSystemHandle]>;
+  entries(): AsyncIterator<[string, FileSystemHandle]>;
+  keys(): AsyncIterator<string>;
+  values(): AsyncIterator<FileSystemHandle>;
+}
+
+// https://fs.spec.whatwg.org/#api-filesystemsyncaccesshandle
+declare class FileSystemSyncAccessHandle {
+  close(): void;
+  flush(): void;
+  getSize(): number;
+  read(buffer: ArrayBuffer, options?: {|at: number|}): number;
+  truncate(newSize: number): void;
+  write(buffer: ArrayBuffer, options?: {|at: number|}): number;
+}
+
+declare class MediaStream {}
+declare class USBDevice {}
+declare class PermissionStatus {}
+declare class FileSystemWritableFileStream {}
+
+type PermissionState = 'granted' | 'denied' | 'prompt';
+
+type FileSystemHandlePermissionDescriptor = {|
+  mode: 'read' | 'readwrite',
+|};

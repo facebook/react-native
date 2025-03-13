@@ -206,7 +206,7 @@ const getPreset = (src, options) => {
 
   return {
     comments: false,
-    compact: true,
+    compact: options.compact !== false,
     overrides: [
       // the flow strip types plugin must go BEFORE class properties!
       // there'll be a test case that fails if you don't.

@@ -866,6 +866,7 @@ function DynamicContentWidth() {
     <View>
       <RNTesterText>Uncontrolled:</RNTesterText>
       <TextInput
+        testID="dynamic-width-uncontrolled-textinput"
         placeholder="Type..."
         style={{
           fontSize: 16,
@@ -875,6 +876,7 @@ function DynamicContentWidth() {
       />
       <RNTesterText>Controlled:</RNTesterText>
       <TextInput
+        testID="dynamic-width-controlled-textinput"
         placeholder="..."
         value={text}
         onChangeText={setText}

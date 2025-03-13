@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<08b51adfc7c09f0f26f2b3c8351cda01>>
+ * @generated SignedSource<<06c5ef75b624d953e7a8d9297feaf816>>
  */
 
 /**
@@ -29,6 +29,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   }
 
   @DoNotStrip @JvmStatic public external fun commonTestFlag(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun animatedShouldSignalBatch(): Boolean
 
   @DoNotStrip @JvmStatic public external fun disableMountItemReorderingAndroid(): Boolean
 
@@ -60,8 +62,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
 
   @DoNotStrip @JvmStatic public external fun enableNewBackgroundAndBorderDrawables(): Boolean
 
-  @DoNotStrip @JvmStatic public external fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean
-
   @DoNotStrip @JvmStatic public external fun enablePropsUpdateReconciliationAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableReportEventPaintTime(): Boolean
@@ -77,8 +77,6 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForText(): Boolean
 
   @DoNotStrip @JvmStatic public external fun enableViewRecyclingForView(): Boolean
-
-  @DoNotStrip @JvmStatic public external fun excludeYogaFromRawProps(): Boolean
 
   @DoNotStrip @JvmStatic public external fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean
 

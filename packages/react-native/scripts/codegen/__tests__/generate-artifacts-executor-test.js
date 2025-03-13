@@ -11,7 +11,15 @@
 'use strict';
 
 const fixtures = require('../__test_fixtures__/fixtures');
-const underTest = require('../generate-artifacts-executor');
+const {execute} = require('../generate-artifacts-executor');
+const {
+  extractSupportedApplePlatforms,
+} = require('../generate-artifacts-executor/generateSchemaInfos');
+const {
+  cleanupEmptyFilesAndFolders,
+  extractLibrariesFromJSON,
+} = require('../generate-artifacts-executor/utils');
+const fs = require('fs');
 const path = require('path');
 
 const rootPath = path.join(__dirname, '../../..');
@@ -20,10 +28,43 @@ const packageJson = JSON.stringify({
   name: 'react-native',
 });
 
+describe('execute', () => {
+  const appDir = path.join(__dirname, '../__test_fixtures__/test-app');
+  const outputDir = path.join(appDir, 'temp');
+
+  beforeAll(() => {
+    execute(appDir, 'ios', outputDir, 'app', false);
+  });
+
+  afterAll(() => {
+    fs.rmdirSync(outputDir, {recursive: true});
+  });
+
+  [
+    'RCTAppDependencyProvider.h',
+    'RCTAppDependencyProvider.mm',
+    'RCTModuleProviders.h',
+    'RCTModuleProviders.mm',
+    'RCTModulesConformingToProtocolsProvider.h',
+    'RCTModulesConformingToProtocolsProvider.mm',
+    'RCTThirdPartyComponentsProvider.h',
+    'RCTThirdPartyComponentsProvider.mm',
+    'ReactAppDependencyProvider.podspec',
+    'ReactCodegen.podspec',
+  ].forEach(file => {
+    it(`"${file}" should match snapshot`, () => {
+      const generatedFileDir = path.join(outputDir, 'build/generated/ios');
+      const generatedFile = path.join(generatedFileDir, file);
+      expect(fs.existsSync(generatedFile)).toBe(true);
+      expect(fs.readFileSync(generatedFile, 'utf8')).toMatchSnapshot();
+    });
+  });
+});
+
 describe('extractLibrariesFromJSON', () => {
   it('extracts a single dependency when config has no libraries', () => {
     let configFile = fixtures.noLibrariesConfigFile;
-    let libraries = underTest._extractLibrariesFromJSON(configFile, '.');
+    let libraries = extractLibrariesFromJSON(configFile, '.');
     expect(libraries.length).toBe(1);
     expect(libraries[0]).toEqual({
       config: {
@@ -37,13 +78,13 @@ describe('extractLibrariesFromJSON', () => {
 
   it("doesn't extract libraries when they are present but empty", () => {
     const configFile = {codegenConfig: {libraries: []}};
-    let libraries = underTest._extractLibrariesFromJSON(configFile, rootPath);
+    let libraries = extractLibrariesFromJSON(configFile, rootPath);
     expect(libraries.length).toBe(0);
   });
 
   it('extracts libraries when they are present and not empty', () => {
     const configFile = fixtures.singleLibraryCodegenConfig;
-    let libraries = underTest._extractLibrariesFromJSON(configFile, rootPath);
+    let libraries = extractLibrariesFromJSON(configFile, rootPath);
     expect(libraries.length).toBe(1);
     expect(libraries[0]).toEqual({
       config: {
@@ -59,10 +100,7 @@ describe('extractLibrariesFromJSON', () => {
     const configFile = fixtures.multipleLibrariesCodegenConfig;
     const myDependency = 'my-dependency';
     const myDependencyPath = path.join(__dirname, myDependency);
-    let libraries = underTest._extractLibrariesFromJSON(
-      configFile,
-      myDependencyPath,
-    );
+    let libraries = extractLibrariesFromJSON(configFile, myDependencyPath);
     expect(libraries.length).toBe(3);
     expect(libraries[0]).toEqual({
       config: {
@@ -98,7 +136,7 @@ describe('extractSupportedApplePlatforms', () => {
       __dirname,
       `../__test_fixtures__/${myDependency}`,
     );
-    let platforms = underTest._extractSupportedApplePlatforms(
+    let platforms = extractSupportedApplePlatforms(
       myDependency,
       myDependencyPath,
     );
@@ -116,7 +154,7 @@ describe('extractSupportedApplePlatforms', () => {
       __dirname,
       `../__test_fixtures__/${myDependency}`,
     );
-    let platforms = underTest._extractSupportedApplePlatforms(
+    let platforms = extractSupportedApplePlatforms(
       myDependency,
       myDependencyPath,
     );
@@ -160,7 +198,7 @@ describe('delete empty files and folders', () => {
       readFileSync: () => packageJson,
     }));
 
-    underTest._cleanupEmptyFilesAndFolders(targetFilepath);
+    cleanupEmptyFilesAndFolders(targetFilepath);
     expect(statSyncInvocationCount).toBe(1);
     expect(rmSyncInvocationCount).toBe(1);
     expect(rmdirSyncInvocationCount).toBe(0);
@@ -194,7 +232,7 @@ describe('delete empty files and folders', () => {
       readFileSync: () => packageJson,
     }));
 
-    underTest._cleanupEmptyFilesAndFolders(targetFilepath);
+    cleanupEmptyFilesAndFolders(targetFilepath);
     expect(statSyncInvocationCount).toBe(1);
     expect(rmSyncInvocationCount).toBe(0);
     expect(rmdirSyncInvocationCount).toBe(0);
@@ -233,7 +271,7 @@ describe('delete empty files and folders', () => {
       readFileSync: () => packageJson,
     }));
 
-    underTest._cleanupEmptyFilesAndFolders(targetFolder);
+    cleanupEmptyFilesAndFolders(targetFolder);
     expect(statSyncInvocationCount).toBe(1);
     expect(readdirInvocationCount).toBe(2);
     expect(rmSyncInvocationCount).toBe(0);
@@ -283,7 +321,7 @@ describe('delete empty files and folders', () => {
       readFileSync: () => packageJson,
     }));
 
-    underTest._cleanupEmptyFilesAndFolders(targetFolder);
+    cleanupEmptyFilesAndFolders(targetFolder);
     expect(statSyncInvocation).toEqual([
       path.normalize('build'),
       path.normalize('build/emptyFolder'),
@@ -338,7 +376,7 @@ describe('delete empty files and folders', () => {
       readFileSync: () => packageJson,
     }));
 
-    underTest._cleanupEmptyFilesAndFolders(targetFolder);
+    cleanupEmptyFilesAndFolders(targetFolder);
     expect(statSyncInvocation).toEqual([
       path.normalize('build'),
       path.normalize('build/emptyFolder1'),

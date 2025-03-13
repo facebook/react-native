@@ -9,12 +9,13 @@
  * @oncall react_native
  */
 
-import '../../../Core/InitializeCore.js';
-import ensureInstance from '../../../../src/private/utilities/ensureInstance';
-import ReactNativeElement from '../../../../src/private/webapis/dom/nodes/ReactNativeElement';
-import ScrollView from '../ScrollView';
+import 'react-native/Libraries/Core/InitializeCore';
+
 import Fantom from '@react-native/fantom';
 import * as React from 'react';
+import {ScrollView} from 'react-native';
+import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
+import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
 describe('onScroll', () => {
   it('delivers onScroll event', () => {

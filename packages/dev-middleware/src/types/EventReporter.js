@@ -94,7 +94,7 @@ export type ReportableEvent =
       ...DebuggerSessionIDs,
     }
   | {
-      type: 'debugger_heartbeat' | 'device_heartbeat',
+      type: 'debugger_high_ping' | 'device_high_ping',
       duration: number,
       isIdle: boolean,
       ...DebuggerSessionIDs,
@@ -110,6 +110,19 @@ export type ReportableEvent =
       code: number,
       reason: string,
       isIdle: boolean,
+      ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'high_event_loop_delay',
+      eventLoopUtilization: number,
+      maxEventLoopDelayPercent: number,
+      duration: number,
+      ...DebuggerSessionIDs,
+    }
+  | {
+      type: 'device_high_message_queue',
+      maxCDPMessageQueueSize: number,
+      maxCDPMessageQueueMemory: number,
       ...DebuggerSessionIDs,
     };
 

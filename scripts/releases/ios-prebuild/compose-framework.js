@@ -27,6 +27,7 @@ async function createFramework(
   dependencies /*: $ReadOnlyArray<Dependency> */,
   rootFolder /*: string */,
   buildFolder /*: string */,
+  identity /*: ?string */,
 ) {
   console.log('✅ Composing iOS XCFramework...');
 
@@ -71,6 +72,10 @@ async function createFramework(
   const symbolOutput = path.join(rootFolder, 'Symbols');
   fs.mkdirSync(symbolOutput, {recursive: true});
   symbolPaths.forEach(symbol => execSync(`cp -r ${symbol} ${symbolOutput}`));
+
+  if (identity) {
+    signXCFramework(identity, output);
+  }
 }
 
 /**
@@ -83,14 +88,12 @@ function copyBundles(
   frameworkPaths /*:Array<string>*/,
 ) {
   console.log('Copying bundles to the framework...');
-
   // Let's precalculate the target folder. It is the xcframework's output folder with
   // all its targets.
   const targetArchFolders = fs
     .readdirSync(outputFolder)
     .map(p => path.join(outputFolder, p))
     .filter(p => fs.statSync(p).isDirectory());
-
   // For each framework (in frameworkPaths), copy the bundles from the source folder.
   // A bundle is the name of the framework + _ + target name + .bundle. We can
   // check if the target has a bundle by checking if it defines one or more resources.
@@ -100,7 +103,6 @@ function copyBundles(
       if (!resources || resources.length === 0) {
         return;
       }
-
       // Get bundle source folder
       const bundleName = `${scheme}_${dep.name}.bundle`;
       const sourceBundlePath = path.join(frameworkPath, bundleName);
@@ -120,7 +122,6 @@ function copyBundles(
           if (!fs.existsSync(path.dirname(sourceBundlePath))) {
             console.warn("Source bundle doesn't exist", sourceBundlePath);
           }
-
           // A bundle is a directory, so we need to copy the whole directory
           execSync(`cp -r ${sourceBundlePath} ${targetBundlePath}`);
         });
@@ -129,6 +130,15 @@ function copyBundles(
       }
     });
   });
+}
+
+function signXCFramework(
+  identity /*: string */,
+  xcframeworkPath /*: string */,
+) {
+  console.log('Signing XCFramework...');
+  const command = `codesign --timestamp --sign "${identity}" ${xcframeworkPath}`;
+  execSync(command, {stdio: 'inherit'});
 }
 
 module.exports = {createFramework};

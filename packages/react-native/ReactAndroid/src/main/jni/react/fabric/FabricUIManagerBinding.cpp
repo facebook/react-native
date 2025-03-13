@@ -12,6 +12,7 @@
 #include "EventBeatManager.h"
 #include "EventEmitterWrapper.h"
 #include "FabricMountingManager.h"
+#include "FocusOrderingHelper.h"
 
 #include <cxxreact/TraceSection.h>
 #include <fbjni/fbjni.h>
@@ -193,6 +194,115 @@ void FabricUIManagerBinding::startSurface(
     std::unique_lock lock(surfaceHandlerRegistryMutex_);
     surfaceHandlerRegistry_.emplace(surfaceId, std::move(surfaceHandler));
   }
+}
+
+jfloatArray FabricUIManagerBinding::findNextFocusableElementMetrics(
+    jint parentTag,
+    jint focusedTag,
+    jint direction) {
+  /*
+   * Holds the values of the next focusable element
+   * [0] - tag
+   * [1] - delta
+   */
+  std::array<float, 2> nodeValues{-1, -1};
+
+  JNIEnv* env = jni::Environment::current();
+
+  ShadowNode::Shared nextNode;
+
+  auto nodeValuesSize = static_cast<jsize>(nodeValues.size());
+  jfloatArray result = env->NewFloatArray(nodeValuesSize);
+
+  std::optional<FocusDirection> focusDirection =
+      FocusOrderingHelper::resolveFocusDirection(direction);
+
+  if (!focusDirection.has_value()) {
+    return nullptr;
+  }
+
+  ShadowNode::Shared parentShadowNode;
+  ShadowNode::Shared focusedShadowNode;
+  std::shared_ptr<UIManager> uimanager = getScheduler()->getUIManager();
+
+  parentShadowNode = uimanager->findShadowNodeByTag_DEPRECATED(parentTag);
+
+  if (parentShadowNode == nullptr) {
+    return nullptr;
+  }
+
+  focusedShadowNode = FocusOrderingHelper::findShadowNodeByTagRecursively(
+      parentShadowNode, focusedTag);
+
+  if (focusedShadowNode == nullptr) {
+    return nullptr;
+  }
+
+  LayoutMetrics childLayoutMetrics = uimanager->getRelativeLayoutMetrics(
+      *focusedShadowNode, parentShadowNode.get(), {.includeTransform = true});
+
+  /*
+   * Set currentDelta to the origin of the focused node
+   * Set nextDelta to the max int value in the direction we want to go (down =
+   * INT_MIN, up = INT_MAX)
+   */
+  auto [currentDelta, nextDelta] = FocusOrderingHelper::initScrollDeltas(
+      focusDirection.value(), childLayoutMetrics.frame.origin);
+
+  /*
+   * Traverse the tree recursively to find the next focusable element in the
+   * given direction
+   */
+  FocusOrderingHelper::traverseAndUpdateNextFocusableElementMetrics(
+      parentShadowNode,
+      focusedShadowNode,
+      parentShadowNode,
+      focusDirection.value(),
+      *uimanager,
+      currentDelta,
+      nextDelta,
+      nextNode);
+
+  if (nextNode == nullptr) {
+    return nullptr;
+  }
+
+  LayoutMetrics nextNodeLayoutMetrics = uimanager->getRelativeLayoutMetrics(
+      *nextNode, parentShadowNode.get(), {.includeTransform = true});
+
+  LayoutMetrics parentNodeLayoutMetrics = uimanager->getRelativeLayoutMetrics(
+      *parentShadowNode, nullptr, {.includeTransform = true});
+
+  nodeValues[0] = static_cast<float>(nextNode->getTag());
+
+  /*
+   * In the end we want to scroll enough to make the next node visible
+   * When going up or right we want delta to be the origin of the next node
+   * When going down or left we want delta to be the end of the next node
+   */
+  switch (focusDirection.value()) {
+    case FocusDirection::FocusDown:
+      nextDelta = (nextNodeLayoutMetrics.frame.origin.y -
+                   parentNodeLayoutMetrics.frame.size.height) +
+          nextNodeLayoutMetrics.frame.size.height;
+      nodeValues[1] = nextDelta;
+      break;
+    case FocusDirection::FocusRight:
+      nextDelta = (nextNodeLayoutMetrics.frame.origin.x -
+                   parentNodeLayoutMetrics.frame.size.width) +
+          nextNodeLayoutMetrics.frame.size.width;
+      nodeValues[1] = nextDelta;
+      break;
+    case FocusDirection::FocusLeft:
+    case FocusDirection::FocusUp:
+      nodeValues[1] = nextDelta;
+      break;
+  }
+
+  // Build the jfloatArray with the updates nodeValues
+  env->SetFloatArrayRegion(result, 0, nodeValuesSize, nodeValues.data());
+
+  return result;
 }
 
 // Used by non-bridgeless+Fabric
@@ -656,6 +766,9 @@ void FabricUIManagerBinding::registerNatives() {
       makeNativeMethod(
           "stopSurfaceWithSurfaceHandler",
           FabricUIManagerBinding::stopSurfaceWithSurfaceHandler),
+      makeNativeMethod(
+          "findNextFocusableElementMetrics",
+          FabricUIManagerBinding::findNextFocusableElementMetrics),
   });
 }
 

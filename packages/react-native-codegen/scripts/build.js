@@ -36,7 +36,7 @@ const prettierConfig = JSON.parse(
 const SRC_DIR = 'src';
 const BUILD_DIR = 'lib';
 const JS_FILES_PATTERN = '**/*.js';
-const IGNORE_PATTERN = '**/__tests__/**';
+const IGNORE_PATTERN = '**/(__tests__|__test_fixtures__)/**';
 const PACKAGE_DIR = path.resolve(__dirname, '../');
 
 const fixedWidth = str => {

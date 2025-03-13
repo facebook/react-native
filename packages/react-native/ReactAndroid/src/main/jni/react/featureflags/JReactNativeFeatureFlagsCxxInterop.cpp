@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<91c1a65790aa5946a354ab8a1966a5f4>>
+ * @generated SignedSource<<c866e69278d249dd79cb2fc193d1a7e2>>
  */
 
 /**
@@ -42,6 +42,12 @@ class ReactNativeFeatureFlagsProviderHolder
   bool commonTestFlag() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("commonTestFlag");
+    return method(javaProvider_);
+  }
+
+  bool animatedShouldSignalBatch() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("animatedShouldSignalBatch");
     return method(javaProvider_);
   }
 
@@ -135,12 +141,6 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
-  bool enablePreciseSchedulingForPremountItemsOnAndroid() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePreciseSchedulingForPremountItemsOnAndroid");
-    return method(javaProvider_);
-  }
-
   bool enablePropsUpdateReconciliationAndroid() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enablePropsUpdateReconciliationAndroid");
@@ -186,12 +186,6 @@ class ReactNativeFeatureFlagsProviderHolder
   bool enableViewRecyclingForView() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("enableViewRecyclingForView");
-    return method(javaProvider_);
-  }
-
-  bool excludeYogaFromRawProps() override {
-    static const auto method =
-        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("excludeYogaFromRawProps");
     return method(javaProvider_);
   }
 
@@ -306,6 +300,11 @@ bool JReactNativeFeatureFlagsCxxInterop::commonTestFlag(
   return ReactNativeFeatureFlags::commonTestFlag();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::animatedShouldSignalBatch();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::disableMountItemReorderingAndroid();
@@ -381,11 +380,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableNewBackgroundAndBorderDrawables(
   return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
 }
 
-bool JReactNativeFeatureFlagsCxxInterop::enablePreciseSchedulingForPremountItemsOnAndroid(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid();
-}
-
 bool JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
@@ -424,11 +418,6 @@ bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForText(
 bool JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::enableViewRecyclingForView();
-}
-
-bool JReactNativeFeatureFlagsCxxInterop::excludeYogaFromRawProps(
-    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
-  return ReactNativeFeatureFlags::excludeYogaFromRawProps();
 }
 
 bool JReactNativeFeatureFlagsCxxInterop::fixDifferentiatorEmittingUpdatesWithWrongParentTag(
@@ -551,6 +540,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "commonTestFlag",
         JReactNativeFeatureFlagsCxxInterop::commonTestFlag),
       makeNativeMethod(
+        "animatedShouldSignalBatch",
+        JReactNativeFeatureFlagsCxxInterop::animatedShouldSignalBatch),
+      makeNativeMethod(
         "disableMountItemReorderingAndroid",
         JReactNativeFeatureFlagsCxxInterop::disableMountItemReorderingAndroid),
       makeNativeMethod(
@@ -596,9 +588,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
         "enableNewBackgroundAndBorderDrawables",
         JReactNativeFeatureFlagsCxxInterop::enableNewBackgroundAndBorderDrawables),
       makeNativeMethod(
-        "enablePreciseSchedulingForPremountItemsOnAndroid",
-        JReactNativeFeatureFlagsCxxInterop::enablePreciseSchedulingForPremountItemsOnAndroid),
-      makeNativeMethod(
         "enablePropsUpdateReconciliationAndroid",
         JReactNativeFeatureFlagsCxxInterop::enablePropsUpdateReconciliationAndroid),
       makeNativeMethod(
@@ -622,9 +611,6 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "enableViewRecyclingForView",
         JReactNativeFeatureFlagsCxxInterop::enableViewRecyclingForView),
-      makeNativeMethod(
-        "excludeYogaFromRawProps",
-        JReactNativeFeatureFlagsCxxInterop::excludeYogaFromRawProps),
       makeNativeMethod(
         "fixDifferentiatorEmittingUpdatesWithWrongParentTag",
         JReactNativeFeatureFlagsCxxInterop::fixDifferentiatorEmittingUpdatesWithWrongParentTag),

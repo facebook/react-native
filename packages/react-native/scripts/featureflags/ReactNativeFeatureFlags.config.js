@@ -60,6 +60,16 @@ const testDefinitions: FeatureFlagDefinitions = {
 const definitions: FeatureFlagDefinitions = {
   common: {
     ...testDefinitions.common,
+    animatedShouldSignalBatch: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-03-07',
+        description: 'Enables start- and finishOperationBatch on any platform.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     disableMountItemReorderingAndroid: {
       defaultValue: false,
       metadata: {
@@ -86,7 +96,7 @@ const definitions: FeatureFlagDefinitions = {
       defaultValue: false,
       metadata: {
         description:
-          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer.',
+          'Feature flag to enable the new bridgeless architecture. Note: Enabling this will force enable the following flags: `useTurboModules` & `enableFabricRenderer`.',
         expectedReleaseValue: true,
         purpose: 'release',
       },
@@ -214,17 +224,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    enablePreciseSchedulingForPremountItemsOnAndroid: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-09-19',
-        description:
-          'Moves execution of pre-mount items to outside the choregrapher in the main thread, so we can estimate idle time more precisely (Android only).',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     enablePropsUpdateReconciliationAndroid: {
       defaultValue: false,
       metadata: {
@@ -312,17 +311,6 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
-    excludeYogaFromRawProps: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2024-07-22',
-        description:
-          'When enabled, rawProps in Props will not include Yoga specific props.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
     fixDifferentiatorEmittingUpdatesWithWrongParentTag: {
       defaultValue: true,
       metadata: {
@@ -370,7 +358,7 @@ const definitions: FeatureFlagDefinitions = {
       metadata: {
         dateAdded: '2024-01-31',
         description:
-          'Enable network inspection support in the React Native DevTools CDP backend. This flag is global and should not be changed across React Host lifetimes.',
+          'Enable network inspection support in the React Native DevTools CDP backend. Requires `enableBridgelessArchitecture`. This flag is global and should not be changed across React Host lifetimes.',
         expectedReleaseValue: true,
         purpose: 'experimentation',
       },
@@ -530,6 +518,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    avoidAnimatedRefInvalidation: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-03-12',
+        description:
+          'Changes `useAnimatedProps` to avoid invalidating the callback ref whenever `props` changes.',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     avoidStateUpdateInAnimatedPropsMemo: {
       defaultValue: false,
       metadata: {
@@ -559,29 +558,6 @@ const definitions: FeatureFlagDefinitions = {
           'Enables access to the host tree in Fabric using DOM-compatible APIs.',
         expectedReleaseValue: true,
         purpose: 'release',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableAnimatedClearImmediateFix: {
-      defaultValue: true,
-      metadata: {
-        dateAdded: '2024-09-17',
-        description:
-          'Enables an experimental to use the proper clearIntermediate instead of calling the wrong clearTimeout and canceling another timer.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
-      },
-      ossReleaseStage: 'none',
-    },
-    enableDOMDocumentAPI: {
-      defaultValue: false,
-      metadata: {
-        dateAdded: '2025-01-28',
-        description:
-          'Enables the DOM Document API, exposing instaces of document through `getRootNode` and `ownerDocument`, and providing access to the `documentElement` representing the root node. ' +
-          'This flag will be short-lived, only to test the Document API specifically, and then it will be collapsed into the enableAccessToHostTreeInFabric flag.',
-        expectedReleaseValue: true,
-        purpose: 'experimentation',
       },
       ossReleaseStage: 'none',
     },

@@ -48,7 +48,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         'src/vlog_is_on.cc',
       ],
       headers: ['src/glog/*.h'],
-      resources: ['../third-party-podspecs/glog/PrivacyInfo.xcprivacy'],
+      // resources: ['../third-party-podspecs/glog/PrivacyInfo.xcprivacy'],
       headerSkipFolderNames: 'src',
     },
     settings: {
@@ -107,20 +107,20 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     files: {
       sources: ['boost/**/*.hpp', 'dummy.cc'],
       headers: ['boost/**/*.hpp'],
-      resources: ['../third-party-podspecs/boost/PrivacyInfo.xcprivacy'],
+      // resources: ['../third-party-podspecs/boost/PrivacyInfo.xcprivacy'],
     },
     settings: {
       publicHeaderFiles: './',
       headerSearchPaths: ['./'],
-      compilerFlags: ['-Wno-everything'],
+      compilerFlags: ['-Wno-everything', '-Wno-documentation'],
     },
   },
   {
     name: 'fast_float',
-    version: '6.1.4',
+    version: '8.0.0',
     prepareScript: 'touch dummy.cc',
     url: new URL(
-      'https://github.com/fastfloat/fast_float/archive/refs/tags/v6.1.4.tar.gz',
+      'https://github.com/fastfloat/fast_float/archive/refs/tags/v8.0.0.tar.gz',
     ),
     files: {
       sources: ['./include/fast_float/*.h', 'dummy.cc'],
@@ -164,7 +164,8 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
   {
     name: 'folly',
     version: '0.9.0',
-    disabled: false,
+    prepareScript:
+      'echo "#pragma once\n\n#define FOLLY_MOBILE 1\n#define FOLLY_HAVE_PTHREAD 1\n#define FOLLY_USE_LIBCPP 1\n#define FOLLY_CFG_NO_COROUTINES 1\n#define FOLLY_HAVE_CLOCK_GETTIME 1 \n\n#pragma clang diagnostic ignored \\""-Wcomma\\""" > ./folly/folly-config.h',
     url: new URL(
       'https://github.com/facebook/folly/archive/refs/tags/v2024.11.18.00.tar.gz',
     ),
@@ -268,12 +269,6 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
       defines: [
         {name: 'USE_HEADERMAP', value: 'NO'},
         {name: 'DEFINES_MODULE', value: 'YES'},
-        {name: 'FOLLY_NO_CONFIG'},
-        {name: 'FOLLY_MOBILE', value: '1'},
-        {name: 'FOLLY_HAVE_PTHREAD', value: '1'},
-        {name: 'FOLLY_USE_LIBCPP', value: '1'},
-        {name: 'FOLLY_CFG_NO_COROUTINES', value: '1'},
-        {name: 'FOLLY_HAVE_CLOCK_GETTIME', value: '1'},
       ],
       linkedLibraries: ['c++abi'],
       linkerSettings: ['-Wl,-U,_jump_fcontext', '-Wl,-U,_make_fcontext'],

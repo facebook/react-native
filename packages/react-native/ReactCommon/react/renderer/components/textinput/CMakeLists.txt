@@ -6,13 +6,7 @@
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_VERBOSE_MAKEFILE on)
 
-add_compile_options(
-        -fexceptions
-        -frtti
-        -std=c++20
-        -Wall
-        -Wpedantic
-        -DLOG_TAG=\"Fabric\")
+include(${REACT_COMMON_DIR}/cmake-utils/react-native-flags.cmake)
 
 file(GLOB rrc_textinput_SRC CONFIGURE_DEPENDS *.cpp platform/android/react/renderer/components/androidtextinput/*.cpp)
 add_library(rrc_textinput OBJECT ${rrc_textinput_SRC})
@@ -41,3 +35,5 @@ target_link_libraries(rrc_textinput
         rrc_view
         yoga
 )
+target_compile_reactnative_options(rrc_textinput PRIVATE "Fabric")
+target_compile_options(rrc_textinput PRIVATE -Wpedantic)

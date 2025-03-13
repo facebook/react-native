@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<651dc228bd4959a90c82de905a8b6c40>>
+ * @generated SignedSource<<7493403280d2ac7ec348eb3d78d915c2>>
  */
 
 /**
@@ -47,6 +47,11 @@ bool NativeReactNativeFeatureFlags::commonTestFlagWithoutNativeImplementation(
   // This flag is configured with `skipNativeAPI: true`.
   // TODO(T204838867): Implement support for optional methods in C++ TM codegen and remove the method definition altogether.
   return false;
+}
+
+bool NativeReactNativeFeatureFlags::animatedShouldSignalBatch(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::animatedShouldSignalBatch();
 }
 
 bool NativeReactNativeFeatureFlags::disableMountItemReorderingAndroid(
@@ -124,11 +129,6 @@ bool NativeReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables(
   return ReactNativeFeatureFlags::enableNewBackgroundAndBorderDrawables();
 }
 
-bool NativeReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::enablePreciseSchedulingForPremountItemsOnAndroid();
-}
-
 bool NativeReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enablePropsUpdateReconciliationAndroid();
@@ -167,11 +167,6 @@ bool NativeReactNativeFeatureFlags::enableViewRecyclingForText(
 bool NativeReactNativeFeatureFlags::enableViewRecyclingForView(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::enableViewRecyclingForView();
-}
-
-bool NativeReactNativeFeatureFlags::excludeYogaFromRawProps(
-    jsi::Runtime& /*runtime*/) {
-  return ReactNativeFeatureFlags::excludeYogaFromRawProps();
 }
 
 bool NativeReactNativeFeatureFlags::fixDifferentiatorEmittingUpdatesWithWrongParentTag(

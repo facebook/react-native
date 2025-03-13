@@ -25,8 +25,7 @@
 using namespace ::testing;
 using namespace std::literals::chrono_literals;
 using namespace std::literals::string_literals;
-using folly::dynamic, folly::parseJson, folly::toJson, folly::format,
-    folly::sformat;
+using folly::dynamic, folly::toJson, folly::sformat;
 
 namespace facebook::react::jsinspector_modern {
 

@@ -26,6 +26,7 @@ import type {Timeout} from 'timers';
 
 import getBaseUrlFromRequest from '../utils/getBaseUrlFromRequest';
 import Device from './Device';
+import EventLoopPerfTracker from './EventLoopPerfTracker';
 import nullthrows from 'nullthrows';
 // Import these from node:timers to get the correct Flow types.
 // $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
@@ -40,9 +41,16 @@ const WS_DEBUGGER_URL = '/inspector/debug';
 const PAGES_LIST_JSON_URL = '/json';
 const PAGES_LIST_JSON_URL_2 = '/json/list';
 const PAGES_LIST_JSON_VERSION_URL = '/json/version';
+
+const PROXY_IDLE_TIMEOUT_MS = 10000;
+
 const HEARTBEAT_TIMEOUT_MS = 60000;
 const HEARTBEAT_INTERVAL_MS = 10000;
-const PROXY_IDLE_TIMEOUT_MS = 10000;
+
+const MIN_PING_TO_REPORT = 500;
+
+const EVENT_LOOP_PERF_MEASUREMENT_MS = 5000;
+const MIN_EVENT_LOOP_DELAY_PERCENT_TO_REPORT = 20;
 
 const INTERNAL_ERROR_CODE = 1011;
 
@@ -88,6 +96,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
 
   #lastMessageTimestamp: number = 0;
 
+  #eventLoopPerfTracker: EventLoopPerfTracker;
+
   constructor(
     projectRoot: string,
     serverBaseUrl: string,
@@ -95,6 +105,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
     experiments: Experiments,
     logger?: Logger,
     customMessageHandler: ?CreateCustomMessageHandlerFn,
+    trackEventLoopPerf?: boolean = false,
   ) {
     this.#projectRoot = projectRoot;
     this.#serverBaseUrl = new URL(serverBaseUrl);
@@ -103,6 +114,33 @@ export default class InspectorProxy implements InspectorProxyQueries {
     this.#experiments = experiments;
     this.#logger = logger;
     this.#customMessageHandler = customMessageHandler;
+    if (trackEventLoopPerf) {
+      this.#eventLoopPerfTracker = new EventLoopPerfTracker({
+        perfMeasurementDuration: EVENT_LOOP_PERF_MEASUREMENT_MS,
+        minDelayPercentToReport: MIN_EVENT_LOOP_DELAY_PERCENT_TO_REPORT,
+        onHighDelay: ({
+          eventLoopUtilization,
+          maxEventLoopDelayPercent,
+          duration,
+          debuggerSessionIDs,
+        }) => {
+          debug(
+            "[perf] high event loop delay in the last %ds- event loop utilization='%d%' max event loop delay percent='%d%'",
+            duration / 1000,
+            eventLoopUtilization,
+            maxEventLoopDelayPercent,
+          );
+
+          this.#eventReporter?.logEvent({
+            type: 'high_event_loop_delay',
+            eventLoopUtilization,
+            maxEventLoopDelayPercent,
+            duration,
+            ...debuggerSessionIDs,
+          });
+        },
+      });
+    }
   }
 
   getPageDescriptions({
@@ -247,17 +285,20 @@ export default class InspectorProxy implements InspectorProxyQueries {
     );
   }
 
-  #trackLastMessageTimestamp(socket: WS): void {
-    socket.on('message', message => {
-      // TODO: instead remove this and any other messages in idle state we find
-      // Not using JSON.parse for performance reasons. Worst case, we'll get
-      // less accurate idle state reporting, which we would easily see in data.
-      if (message.toString().includes('"event":"getPages"')) {
-        return;
-      }
+  #onMessageFromDeviceOrDebugger(
+    message: string,
+    debuggerSessionIDs: DebuggerSessionIDs,
+  ): void {
+    // TODO: instead remove this and any other messages in idle state we find
+    // Not using JSON.parse for performance reasons. Worst case, we'll get
+    // less accurate idle state reporting, which we would easily see in data.
+    if (message.includes('"event":"getPages"')) {
+      return;
+    }
 
-      this.#lastMessageTimestamp = new Date().getTime();
-    });
+    this.#lastMessageTimestamp = new Date().getTime();
+
+    this.#eventLoopPerfTracker?.trackPerfThrottled(debuggerSessionIDs);
   }
 
   // Adds websocket handler for device connections.
@@ -339,10 +380,15 @@ export default class InspectorProxy implements InspectorProxyQueries {
           intervalMs: HEARTBEAT_INTERVAL_MS,
           debuggerSessionIDs,
           timeoutEventName: 'device_timeout',
-          heartbeatEventName: 'device_heartbeat',
+          highPingEventName: 'device_high_ping',
         });
 
-        this.#trackLastMessageTimestamp(socket);
+        socket.on('message', message =>
+          this.#onMessageFromDeviceOrDebugger(
+            message.toString(),
+            debuggerSessionIDs,
+          ),
+        );
 
         socket.on('close', (code: number, reason: string) => {
           this.#logger?.info(
@@ -430,15 +476,20 @@ export default class InspectorProxy implements InspectorProxyQueries {
           intervalMs: HEARTBEAT_INTERVAL_MS,
           debuggerSessionIDs,
           timeoutEventName: 'debugger_timeout',
-          heartbeatEventName: 'debugger_heartbeat',
+          highPingEventName: 'debugger_high_ping',
         });
+
+        socket.on('message', message =>
+          this.#onMessageFromDeviceOrDebugger(
+            message.toString(),
+            debuggerSessionIDs,
+          ),
+        );
 
         device.handleDebuggerConnection(socket, pageId, {
           debuggerRelativeBaseUrl,
           userAgent: req.headers['user-agent'] ?? query.userAgent ?? null,
         });
-
-        this.#trackLastMessageTimestamp(socket);
 
         socket.on('close', (code: number, reason: string) => {
           this.#logger?.info(
@@ -488,14 +539,14 @@ export default class InspectorProxy implements InspectorProxyQueries {
     intervalMs,
     debuggerSessionIDs,
     timeoutEventName,
-    heartbeatEventName,
+    highPingEventName,
   }: {
     socketName: string,
     socket: WS,
     intervalMs: number,
     debuggerSessionIDs: DebuggerSessionIDs,
     timeoutEventName: 'debugger_timeout' | 'device_timeout',
-    heartbeatEventName: 'debugger_heartbeat' | 'device_heartbeat',
+    highPingEventName: 'debugger_high_ping' | 'device_high_ping',
   }) {
     let latestPingMs = Date.now();
     let terminateTimeout: ?Timeout;
@@ -549,23 +600,25 @@ export default class InspectorProxy implements InspectorProxyQueries {
     socket.on('pong', () => {
       const roundtripDuration = Date.now() - latestPingMs;
 
-      const isIdle = this.#isIdle();
+      if (roundtripDuration >= MIN_PING_TO_REPORT) {
+        const isIdle = this.#isIdle();
 
-      debug(
-        "%s heartbeat ping-pong for app='%s' on device='%s' with idle='%s' took %dms",
-        socketName,
-        debuggerSessionIDs.appId,
-        debuggerSessionIDs.deviceName,
-        isIdle ? 'true' : 'false',
-        roundtripDuration,
-      );
+        debug(
+          "[high ping] [%s] %sms for app='%s' on device='%s' with idle='%s'",
+          socketName.padStart(7).padEnd(8),
+          String(roundtripDuration).padStart(5),
+          debuggerSessionIDs.appId,
+          debuggerSessionIDs.deviceName,
+          isIdle ? 'true' : 'false',
+        );
 
-      this.#eventReporter?.logEvent({
-        type: heartbeatEventName,
-        duration: roundtripDuration,
-        isIdle,
-        ...debuggerSessionIDs,
-      });
+        this.#eventReporter?.logEvent({
+          type: highPingEventName,
+          duration: roundtripDuration,
+          isIdle,
+          ...debuggerSessionIDs,
+        });
+      }
 
       terminateTimeout?.refresh();
       pingTimeout.refresh();

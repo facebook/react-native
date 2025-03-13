@@ -229,12 +229,62 @@ function dispatchNativeEvent(
   runWorkLoop();
 }
 
-function scrollTo(
+export type ScrollEventOptions = {
+  x: number,
+  y: number,
+  zoomScale?: number,
+};
+
+function enqueueScrollEvent(
   node: ReactNativeElement,
-  options: {x: number, y: number, zoomScale?: number},
+  options: ScrollEventOptions,
 ) {
   const shadowNode = getNativeNodeReference(node);
-  NativeFantom.scrollTo(shadowNode, options);
+  NativeFantom.enqueueScrollEvent(shadowNode, options);
+}
+
+/**
+ * Scrolls the specified ScrollView node to the given coordinates on the UI thread.
+ * The call is immediately observable unlike `Fantom.enqueueScrollEvent` where the
+ * event is queued and not processed.
+ *
+ * @example
+ * ```
+ * const root = Fantom.createRoot();
+ * let maybeScrollViewNode;
+ *
+ * Fantom.runTask(() => {
+ *   root.render(
+ *     <ScrollView
+ *       ref={node => {
+ *         maybeScrollViewNode = node;
+ *       }} />
+ *       <ScrollViewContent />
+ *     </ScrollView>,
+ *   );
+ * });
+ *
+ * const element = ensureInstance(maybeScrollViewNode, ReactNativeElement);
+ *
+ * Fantom.scrollTo(element, {x: 0, y: 20});
+ *
+ * // Assert that changes from Fantom.scrollTo are in effect.
+ * ```
+ */
+function scrollTo(node: ReactNativeElement, options: ScrollEventOptions) {
+  runOnUIThread(() => {
+    enqueueScrollEvent(node, options);
+  });
+
+  runWorkLoop();
+}
+
+function enqueueModalSizeUpdate(
+  node: ReactNativeElement,
+  size: {width: number, height: number},
+) {
+  const shadowNode = getNativeNodeReference(node);
+  NativeFantom.enqueueModalSizeUpdate(shadowNode, size.width, size.height);
 }
 
 export const unstable_benchmark = Benchmark;
@@ -336,7 +386,9 @@ export default {
   dispatchNativeEvent,
   enqueueNativeEvent,
   flushAllNativeEvents,
+  enqueueModalSizeUpdate,
   unstable_benchmark: Benchmark,
+  enqueueScrollEvent,
   scrollTo,
   saveJSMemoryHeapSnapshot,
 };

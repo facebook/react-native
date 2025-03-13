@@ -260,8 +260,14 @@ void ParagraphShadowNode::layout(LayoutContext layoutContext) {
 
     auto& layoutableShadowNode =
         dynamic_cast<LayoutableShadowNode&>(*clonedShadowNode);
+    const auto& attachmentMeasurement = measurement.attachments[i];
+    if (attachmentMeasurement.isClipped) {
+      layoutableShadowNode.setLayoutMetrics(
+          LayoutMetrics{.displayType = DisplayType::None});
+      continue;
+    }
 
-    auto attachmentFrame = measurement.attachments[i].frame;
+    auto attachmentFrame = attachmentMeasurement.frame;
     attachmentFrame.origin.x += layoutMetrics.contentInsets.left;
     attachmentFrame.origin.y += layoutMetrics.contentInsets.top;
 

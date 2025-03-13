@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<9a223b4f79e4612eb193036256bfebc5>>
+ * @generated SignedSource<<0c16f7af743a6c4d7aaabf010c1c7327>>
  */
 
 /**
@@ -24,6 +24,8 @@ import com.facebook.proguard.annotations.DoNotStrip
 @DoNotStrip
 public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun commonTestFlag(): Boolean
+
+  @DoNotStrip public fun animatedShouldSignalBatch(): Boolean
 
   @DoNotStrip public fun disableMountItemReorderingAndroid(): Boolean
 
@@ -55,8 +57,6 @@ public interface ReactNativeFeatureFlagsProvider {
 
   @DoNotStrip public fun enableNewBackgroundAndBorderDrawables(): Boolean
 
-  @DoNotStrip public fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean
-
   @DoNotStrip public fun enablePropsUpdateReconciliationAndroid(): Boolean
 
   @DoNotStrip public fun enableReportEventPaintTime(): Boolean
@@ -72,8 +72,6 @@ public interface ReactNativeFeatureFlagsProvider {
   @DoNotStrip public fun enableViewRecyclingForText(): Boolean
 
   @DoNotStrip public fun enableViewRecyclingForView(): Boolean
-
-  @DoNotStrip public fun excludeYogaFromRawProps(): Boolean
 
   @DoNotStrip public fun fixDifferentiatorEmittingUpdatesWithWrongParentTag(): Boolean
 

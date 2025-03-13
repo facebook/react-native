@@ -9,6 +9,7 @@ require_relative "./utils.rb"
 require_relative "./helpers.rb"
 require_relative "./jsengine.rb"
 
+
 class NewArchitectureHelper
     @@NewArchWarningEmitted = false # Used not to spam warnings to the user.
 
@@ -44,7 +45,7 @@ class NewArchitectureHelper
 
     def self.computeFlags(is_new_arch_enabled)
         new_arch_flag = is_new_arch_enabled ? "-DRCT_NEW_ARCH_ENABLED=1 " : ""
-        return " #{new_arch_flag}#{Helpers::Constants.folly_config()[:compiler_flags]}"
+        return " #{new_arch_flag}"
     end
 
     def self.modify_flags_for_new_architecture(installer, is_new_arch_enabled)
@@ -72,20 +73,14 @@ class NewArchitectureHelper
     def self.install_modules_dependencies(spec, new_arch_enabled, folly_version = Helpers::Constants.folly_config[:version])
         # Pod::Specification does not have getters so, we have to read
         # the existing values from a hash representation of the object.
-        folly_config = Helpers::Constants.folly_config
-        folly_compiler_flags = folly_config[:compiler_flags]
-
         hash = spec.to_hash
 
         compiler_flags = hash["compiler_flags"] ? hash["compiler_flags"] : ""
         current_config = hash["pod_target_xcconfig"] != nil ? hash["pod_target_xcconfig"] : {}
         current_headers = current_config["HEADER_SEARCH_PATHS"] != nil ? current_config["HEADER_SEARCH_PATHS"] : ""
 
-        header_search_paths = ["\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/Yoga\""]
+        header_search_paths = ["\"$(PODS_ROOT)/Headers/Private/Yoga\""]
         if ENV['USE_FRAMEWORKS']
-            header_search_paths << "\"$(PODS_ROOT)/DoubleConversion\""
-            header_search_paths << "\"$(PODS_ROOT)/fast_float/include\""
-            header_search_paths << "\"$(PODS_ROOT)/fmt/include\""
             ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-graphics", "React_graphics", ["react/renderer/graphics/platform/ios"])
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-Fabric", "React_Fabric", ["react/renderer/components/view/platform/cxx"]))
                 .concat(ReactNativePodsUtils.create_header_search_path_for_frameworks("PODS_CONFIGURATION_BUILD_DIR", "React-FabricImage", "React_FabricImage", []))
@@ -110,8 +105,6 @@ class NewArchitectureHelper
 
 
         spec.dependency "React-Core"
-        spec.dependency "RCT-Folly", folly_version
-        spec.dependency "glog"
 
 
         ReactNativePodsUtils.add_flag_to_map_with_inheritance(current_config, "OTHER_CPLUSPLUSFLAGS", self.computeFlags(new_arch_enabled))
@@ -133,18 +126,12 @@ class NewArchitectureHelper
         spec.dependency "React-debug"
         spec.dependency "React-ImageManager"
         spec.dependency "React-rendererdebug"
-        # This dependency is required for the cases when the pod includes generated sources, specifically Props.cpp.
-        spec.dependency "DoubleConversion"
         spec.dependency 'React-jsi'
 
         depend_on_js_engine(spec)
+        add_rn_third_party_dependencies(spec)
 
         spec.pod_target_xcconfig = current_config
-    end
-
-    def self.folly_compiler_flags
-        folly_config = Helpers::Constants.folly_config
-        return folly_config[:compiler_flags]
     end
 
     def self.extract_react_native_version(react_native_path, file_manager: File, json_parser: JSON)
@@ -157,6 +144,42 @@ class NewArchitectureHelper
     end
 
     def self.new_arch_enabled
-        return ENV["RCT_NEW_ARCH_ENABLED"] == 0 ? false : true
+        return ENV["RCT_NEW_ARCH_ENABLED"] == '0' ? false : true
+    end
+
+    def self.set_RCTNewArchEnabled_in_info_plist(installer, new_arch_enabled)
+        projectPaths = installer.aggregate_targets
+            .map{ |t| t.user_project }
+            .uniq{ |p| p.path }
+            .map{ |p| p.path }
+
+        excluded_info_plist = ["/Pods", "Tests", "metainternal", ".bundle"]
+        projectPaths.each do |projectPath|
+            projectFolderPath = File.dirname(projectPath)
+            infoPlistFiles = `find #{projectFolderPath} -name "Info.plist"`
+            infoPlistFiles = infoPlistFiles.split("\n").map { |f| f.strip }
+
+            infoPlistFiles.each do |infoPlistFile|
+                # If infoPlistFile contains Pods or tests, skip it
+                should_skip = false
+                excluded_info_plist.each do |excluded|
+                    if infoPlistFile.include? excluded
+                        should_skip = true
+                    end
+                end
+                next if should_skip
+
+                # Read the file as a plist
+                info_plist = Xcodeproj::Plist.read_from_path(infoPlistFile)
+                # Check if it contains the RCTNewArchEnabled key
+                if info_plist["RCTNewArchEnabled"] and info_plist["RCTNewArchEnabled"] == new_arch_enabled
+                    next
+                end
+
+                # Add the key and value to the plist
+                info_plist["RCTNewArchEnabled"] = new_arch_enabled ? true : false
+                Xcodeproj::Plist.write_to_path(info_plist, infoPlistFile)
+            end
+        end
     end
 end

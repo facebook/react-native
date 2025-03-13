@@ -253,16 +253,6 @@ public class Task<TResult> implements TaskInterface<TResult> {
   }
 
   /**
-   * Invokes the callable on the current thread, producing a Task.
-   *
-   * <p>If you want to cancel the resulting Task throw a {@link
-   * java.util.concurrent.CancellationException} from the callable.
-   */
-  public static <TResult> Task<TResult> call(final Callable<TResult> callable) {
-    return call(callable, IMMEDIATE_EXECUTOR);
-  }
-
-  /**
    * Adds a continuation that will be scheduled using the executor, returning a new task that
    * completes after the continuation has finished running. This allows the continuation to be
    * scheduled on different thread.

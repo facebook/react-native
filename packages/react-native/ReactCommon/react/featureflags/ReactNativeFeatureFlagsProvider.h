@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b4ba05d9dee950f242db8f3a830a75da>>
+ * @generated SignedSource<<0845c9b1618ac1e18ce4aeb5d03a70f5>>
  */
 
 /**
@@ -26,6 +26,7 @@ class ReactNativeFeatureFlagsProvider {
   virtual ~ReactNativeFeatureFlagsProvider() = default;
 
   virtual bool commonTestFlag() = 0;
+  virtual bool animatedShouldSignalBatch() = 0;
   virtual bool disableMountItemReorderingAndroid() = 0;
   virtual bool enableAccumulatedUpdatesInRawPropsAndroid() = 0;
   virtual bool enableBridgelessArchitecture() = 0;
@@ -41,7 +42,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableLongTaskAPI() = 0;
   virtual bool enableNativeCSSParsing() = 0;
   virtual bool enableNewBackgroundAndBorderDrawables() = 0;
-  virtual bool enablePreciseSchedulingForPremountItemsOnAndroid() = 0;
   virtual bool enablePropsUpdateReconciliationAndroid() = 0;
   virtual bool enableReportEventPaintTime() = 0;
   virtual bool enableSynchronousStateUpdates() = 0;
@@ -50,7 +50,6 @@ class ReactNativeFeatureFlagsProvider {
   virtual bool enableViewRecycling() = 0;
   virtual bool enableViewRecyclingForText() = 0;
   virtual bool enableViewRecyclingForView() = 0;
-  virtual bool excludeYogaFromRawProps() = 0;
   virtual bool fixDifferentiatorEmittingUpdatesWithWrongParentTag() = 0;
   virtual bool fixMappingOfEventPrioritiesBetweenFabricAndReact() = 0;
   virtual bool fixMountingCoordinatorReportedPendingTransactionsOnAndroid() = 0;

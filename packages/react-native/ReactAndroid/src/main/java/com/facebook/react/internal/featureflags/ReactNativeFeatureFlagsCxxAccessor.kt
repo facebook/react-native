@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b59cecccbe734a126dcd20f76d0ce7c7>>
+ * @generated SignedSource<<9813fd15c7f54d69d3de6084f733c3a6>>
  */
 
 /**
@@ -21,6 +21,7 @@ package com.facebook.react.internal.featureflags
 
 internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAccessor {
   private var commonTestFlagCache: Boolean? = null
+  private var animatedShouldSignalBatchCache: Boolean? = null
   private var disableMountItemReorderingAndroidCache: Boolean? = null
   private var enableAccumulatedUpdatesInRawPropsAndroidCache: Boolean? = null
   private var enableBridgelessArchitectureCache: Boolean? = null
@@ -36,7 +37,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableLongTaskAPICache: Boolean? = null
   private var enableNativeCSSParsingCache: Boolean? = null
   private var enableNewBackgroundAndBorderDrawablesCache: Boolean? = null
-  private var enablePreciseSchedulingForPremountItemsOnAndroidCache: Boolean? = null
   private var enablePropsUpdateReconciliationAndroidCache: Boolean? = null
   private var enableReportEventPaintTimeCache: Boolean? = null
   private var enableSynchronousStateUpdatesCache: Boolean? = null
@@ -45,7 +45,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
   private var enableViewRecyclingCache: Boolean? = null
   private var enableViewRecyclingForTextCache: Boolean? = null
   private var enableViewRecyclingForViewCache: Boolean? = null
-  private var excludeYogaFromRawPropsCache: Boolean? = null
   private var fixDifferentiatorEmittingUpdatesWithWrongParentTagCache: Boolean? = null
   private var fixMappingOfEventPrioritiesBetweenFabricAndReactCache: Boolean? = null
   private var fixMountingCoordinatorReportedPendingTransactionsOnAndroidCache: Boolean? = null
@@ -69,6 +68,15 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.commonTestFlag()
       commonTestFlagCache = cached
+    }
+    return cached
+  }
+
+  override fun animatedShouldSignalBatch(): Boolean {
+    var cached = animatedShouldSignalBatchCache
+    if (cached == null) {
+      cached = ReactNativeFeatureFlagsCxxInterop.animatedShouldSignalBatch()
+      animatedShouldSignalBatchCache = cached
     }
     return cached
   }
@@ -208,15 +216,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     return cached
   }
 
-  override fun enablePreciseSchedulingForPremountItemsOnAndroid(): Boolean {
-    var cached = enablePreciseSchedulingForPremountItemsOnAndroidCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.enablePreciseSchedulingForPremountItemsOnAndroid()
-      enablePreciseSchedulingForPremountItemsOnAndroidCache = cached
-    }
-    return cached
-  }
-
   override fun enablePropsUpdateReconciliationAndroid(): Boolean {
     var cached = enablePropsUpdateReconciliationAndroidCache
     if (cached == null) {
@@ -285,15 +284,6 @@ internal class ReactNativeFeatureFlagsCxxAccessor : ReactNativeFeatureFlagsAcces
     if (cached == null) {
       cached = ReactNativeFeatureFlagsCxxInterop.enableViewRecyclingForView()
       enableViewRecyclingForViewCache = cached
-    }
-    return cached
-  }
-
-  override fun excludeYogaFromRawProps(): Boolean {
-    var cached = excludeYogaFromRawPropsCache
-    if (cached == null) {
-      cached = ReactNativeFeatureFlagsCxxInterop.excludeYogaFromRawProps()
-      excludeYogaFromRawPropsCache = cached
     }
     return cached
   }

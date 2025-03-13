@@ -139,6 +139,7 @@ export * from '../Libraries/StyleSheet/processColor';
 export * from '../Libraries/Text/Text';
 export * from '../Libraries/TurboModule/RCTExport';
 export * as TurboModuleRegistry from '../Libraries/TurboModule/TurboModuleRegistry';
+export * as CodegenTypes from '../Libraries/Types/CodegenTypesNamespace';
 export * from '../Libraries/Types/CoreEventTypes';
 export * from '../Libraries/Utilities/Appearance';
 export * from '../Libraries/Utilities/BackHandler';
@@ -158,3 +159,6 @@ export * from './public/DeprecatedPropertiesAlias';
 export * from './public/Insets';
 export * from './public/ReactNativeRenderer';
 export * from './public/ReactNativeTypes';
+
+export {default as codegenNativeCommands} from '../Libraries/Utilities/codegenNativeCommands';
+export {default as codegenNativeComponent} from '../Libraries/Utilities/codegenNativeComponent';
