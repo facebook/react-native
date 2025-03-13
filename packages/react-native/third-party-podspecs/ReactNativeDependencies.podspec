@@ -21,7 +21,7 @@ end
 package = JSON.parse(File.read(File.join(react_native_path, "package.json")))
 version = package['version']
 
-source = ReactNativeDependenciesUtils.podspec_source_download_prebuild_release_tarball()
+source = ReactNativeDependenciesUtils.resolve_podspec_source()
 
 Pod::Spec.new do |spec|
   spec.name                 = 'ReactNativeDependencies'
@@ -38,15 +38,18 @@ Pod::Spec.new do |spec|
 
   spec.source             = source
   spec.preserve_paths       = '**/*.*'
-  spec.vendored_frameworks  = 'framework/packages/react-native/third-party/ReactNativeDependencies.xcframework'
+  spec.vendored_frameworks  = 'framework/packages/react-native/ReactNativeDependencies.xcframework'
   spec.header_mappings_dir  = 'Headers'
   spec.source_files         = 'Headers/**/*.{h,hpp}'
   spec.prepare_command    = <<-CMD
+    pwd
+    CURRENT_PATH=$(pwd)
     mkdir -p Headers
-    rsync -a react-native/third-party/ReactNativeDependencies.xcframework/ios-arm64/ReactNativeDependencies.framework/Headers/ Headers
+    BASE_PATH=$(find "$CURRENT_PATH" -type d -name "ios-arm64")
+    rsync -a "$BASE_PATH/ReactNativeDependencies.framework/Headers/" Headers
     mkdir -p framework/packages/react-native
-    rsync -a --remove-source-files react-native/ framework/packages/react-native/
-    find react-native/ -type d -empty -delete
+    rsync -a --remove-source-files "$BASE_PATH/../.." framework/packages/react-native/
+    find "$CURRENT_PATH" -type d -empty -delete
   CMD
 
   script_phase = {
