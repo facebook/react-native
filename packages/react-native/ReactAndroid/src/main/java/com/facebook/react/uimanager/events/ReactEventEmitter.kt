@@ -59,7 +59,7 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
     receiveEvent(surfaceId, targetTag, eventName, false, 0, params, EventCategoryDef.UNSPECIFIED)
   }
 
-  @Deprecated("Please use RCTModernEventEmitter")
+  @Deprecated("Dispatch the TouchEvent using [EventDispatcher] instead")
   override fun receiveTouches(
       eventName: String,
       touches: WritableArray,
@@ -78,7 +78,7 @@ internal class ReactEventEmitter(private val reactContext: ReactApplicationConte
     }
   }
 
-  @Deprecated("Please use RCTModernEventEmitter")
+  @Deprecated("Dispatch the TouchEvent using [EventDispatcher] instead")
   override fun receiveTouches(event: TouchEvent) {
     @UIManagerType val uiManagerType = getUIManagerType(event.viewTag, event.surfaceId)
     if (uiManagerType == UIManagerType.FABRIC) {

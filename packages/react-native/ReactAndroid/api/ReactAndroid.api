@@ -5437,13 +5437,6 @@ public final class com/facebook/react/uimanager/events/TouchEventType$Companion 
 	public final fun getJSEventName (Lcom/facebook/react/uimanager/events/TouchEventType;)Ljava/lang/String;
 }
 
-public final class com/facebook/react/uimanager/events/TouchesHelper {
-	public static final field INSTANCE Lcom/facebook/react/uimanager/events/TouchesHelper;
-	public static final field TARGET_KEY Ljava/lang/String;
-	public static final fun sendTouchEvent (Lcom/facebook/react/uimanager/events/RCTModernEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
-	public static final fun sendTouchesLegacy (Lcom/facebook/react/uimanager/events/RCTEventEmitter;Lcom/facebook/react/uimanager/events/TouchEvent;)V
-}
-
 public class com/facebook/react/uimanager/layoutanimation/LayoutAnimationController {
 	public fun <init> ()V
 	public fun applyLayoutUpdate (Landroid/view/View;IIII)V
