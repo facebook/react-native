@@ -48,7 +48,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         'src/vlog_is_on.cc',
       ],
       headers: ['src/glog/*.h'],
-      resources: ['../third-party-podspecs/glog/PrivacyInfo.xcprivacy'],
+      // resources: ['../third-party-podspecs/glog/PrivacyInfo.xcprivacy'],
       headerSkipFolderNames: 'src',
     },
     settings: {
@@ -107,7 +107,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     files: {
       sources: ['boost/**/*.hpp', 'dummy.cc'],
       headers: ['boost/**/*.hpp'],
-      resources: ['../third-party-podspecs/boost/PrivacyInfo.xcprivacy'],
+      // resources: ['../third-party-podspecs/boost/PrivacyInfo.xcprivacy'],
     },
     settings: {
       publicHeaderFiles: './',
