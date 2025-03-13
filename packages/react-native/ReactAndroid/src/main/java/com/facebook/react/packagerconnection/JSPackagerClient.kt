@@ -24,15 +24,15 @@ public class JSPackagerClient @JvmOverloads public constructor(
   private val webSocket: ReconnectingWebSocket
 
   init {
-    val builder = Uri.Builder()
-    builder
+    val url = Uri.Builder()
       .scheme("ws")
       .encodedAuthority(settings.debugServerHost)
       .appendPath("message")
       .appendQueryParameter("device", getFriendlyDeviceName())
       .appendQueryParameter("app", settings.packageName)
       .appendQueryParameter("clientid", clientId)
-    val url = builder.build().toString()
+      .build()
+      .toString()
 
     webSocket = ReconnectingWebSocket(url, this, connectionCallback)
   }
@@ -76,7 +76,7 @@ public class JSPackagerClient @JvmOverloads public constructor(
       if (id == null) {
         handler.onNotification(params)
       } else {
-        handler.onRequest(params, ResponderImpl(id, webSocket))
+        handler.onRequest(params, ResponderImpl(id))
       }
     } catch (e: Exception) {
       FLog.e(TAG, "Handling the message failed", e)
@@ -88,15 +88,41 @@ public class JSPackagerClient @JvmOverloads public constructor(
   }
 
   private fun abortOnMessage(id: Any?, reason: String) {
-    if (id != null) {
-      (ResponderImpl(id, webSocket)).error(reason)
-    }
+    id?.let { ResponderImpl(it).error(reason) }
 
     FLog.e(TAG, "Handling the message failed with reason: $reason")
   }
 
-  public companion object {
-    internal val TAG: String = JSPackagerClient::class.java.simpleName
-    internal const val PROTOCOL_VERSION = 2
+  private inner class ResponderImpl(private val id: Any) : Responder {
+    override fun respond(result: Any) {
+      try {
+        val message = JSONObject().apply {
+          put("version", PROTOCOL_VERSION)
+          put("id", id)
+          put("result", result)
+        }
+        webSocket.sendMessage(message.toString())
+      } catch (e: Exception) {
+        FLog.e(TAG, "Responding failed", e)
+      }
+    }
+
+    override fun error(error: Any) {
+      try {
+        val message = JSONObject().apply {
+          put("version", PROTOCOL_VERSION)
+          put("id", id)
+          put("error", error)
+        }
+        webSocket.sendMessage(message.toString())
+      } catch (e: Exception) {
+        FLog.e(TAG, "Responding with error failed", e)
+      }
+    }
+  }
+
+  private companion object {
+    private val TAG: String = JSPackagerClient::class.java.simpleName
+    private const val PROTOCOL_VERSION = 2
   }
 }
