@@ -64,6 +64,18 @@ class ReactNativeDependenciesUtils
         return @@build_from_source
     end
 
+    def self.resolve_podspec_source()
+        if ENV["RCT_USE_RN_DEP"] && ENV["RCT_USE_RN_DEP"] == "1"
+            rndeps_log("Using release tarball")
+            return self.podspec_source_download_prebuild_release_tarball()
+        end
+
+        if ENV["RCT_USE_LOCAL_RN_DEP"] && File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
+            rndeps_log("Using local xcframework at #{ENV["RCT_USE_LOCAL_RN_DEP"]}")
+            return {:http => "file://#{ENV["RCT_USE_LOCAL_RN_DEP"]}" }
+        end
+    end
+
     ## Sets up wether react-native-dependencies should be built from source or not.
     ## If RCT_USE_RN_DEP is set to 1 and the artifacts exists on Maven, it will
     ## not build from source. Otherwise, it will build from source.
@@ -71,9 +83,10 @@ class ReactNativeDependenciesUtils
         @@react_native_path = react_native_path
         @@react_native_version = ENV["RCT_DEPS_VERSION"] == nil ? react_native_version : ENV["RCT_DEPS_VERSION"]
 
-        if ENV["RCT_USE_RN_DEP"] == "1" && release_artifact_exists(@@react_native_version)
-            @@build_from_source = false
-        end
+        artifacts_exists = ENV["RCT_USE_RN_DEP"] == "1" && release_artifact_exists(@@react_native_version)
+        use_local_xcframework = ENV["RCT_USE_LOCAL_RN_DEP"] && File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
+
+        @@build_from_source = !use_local_xcframework && !artifacts_exists
 
         rndeps_log("Building from source: #{@@build_from_source}")
     end
