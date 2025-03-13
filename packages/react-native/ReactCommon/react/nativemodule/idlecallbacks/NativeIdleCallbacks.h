@@ -14,10 +14,13 @@
 #else
 #include <FBReactNativeSpec/FBReactNativeSpecJSI.h>
 #endif
+#include <unordered_map>
 
 namespace facebook::react {
 
-using CallbackHandle = jsi::Object;
+struct Task;
+
+using CallbackHandle = double;
 
 using NativeRequestIdleCallbackOptions =
     NativeIdleCallbacksRequestIdleCallbackOptions<std::optional<double>>;
@@ -36,7 +39,11 @@ class NativeIdleCallbacks
       jsi::Runtime& runtime,
       SyncCallback<void(jsi::Object)>&& callback,
       std::optional<NativeRequestIdleCallbackOptions> options);
-  void cancelIdleCallback(jsi::Runtime& runtime, jsi::Object handle);
+  void cancelIdleCallback(jsi::Runtime& runtime, CallbackHandle handle);
+
+ private:
+  std::unordered_map<double, std::shared_ptr<Task>> taskMap_;
+  double counter_;
 };
 
 } // namespace facebook::react
