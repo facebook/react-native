@@ -14,9 +14,11 @@ const signedsource = require('signedsource');
 function translatedModuleTemplate({
   source,
   originalFileName,
+  tripleSlashDirectives,
 }: {
   source: string,
   originalFileName: string,
+  tripleSlashDirectives: $ReadOnlyArray<string>,
 }): string {
   return signedsource.signFile(
     `/**
@@ -30,7 +32,7 @@ function translatedModuleTemplate({
  * This file was translated from Flow by scripts/build/build-types.js.
  * Original file: ${originalFileName}
  */
-${source}
+${tripleSlashDirectives.length > 0 ? '\n/// ' + tripleSlashDirectives.join('\n/// ') + '\n\n' : ''}${source}
 `,
   );
 }

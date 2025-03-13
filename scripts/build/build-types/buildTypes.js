@@ -90,6 +90,7 @@ async function translateSourceFiles(
           translatedModuleTemplate({
             originalFileName: path.relative(REPO_ROOT, file),
             source: stripDocblock(typescriptDef),
+            tripleSlashDirectives: extractTripleSlashDirectives(source),
           }),
         );
       } catch (e) {
@@ -126,6 +127,16 @@ function getBuildPath(file: string): string {
 
 function stripDocblock(source: string): string {
   return source.replace(/\/\*\*[\s\S]*?\*\/\n/, '');
+}
+
+function extractTripleSlashDirectives(source: string): Array<string> {
+  const directives = source.match(/^\/\/\/.*$/gm);
+
+  if (directives == null) {
+    return [];
+  }
+
+  return directives.map(directive => directive.replace(/^\/\/\//g, '').trim());
 }
 
 module.exports = buildTypes;
