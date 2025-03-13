@@ -23,9 +23,6 @@ describe('Native Animated', () => {
       get NativeAnimatedHelper() {
         return require('../NativeAnimatedHelper').default;
       },
-      get ReactNativeFeatureFlags() {
-        return require('../../featureflags/ReactNativeFeatureFlags');
-      },
     };
   }
 
