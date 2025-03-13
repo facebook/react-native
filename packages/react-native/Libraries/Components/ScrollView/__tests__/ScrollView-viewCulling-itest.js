@@ -49,13 +49,10 @@ test('basic culling', () => {
 
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 60,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 60,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
@@ -65,13 +62,10 @@ test('basic culling', () => {
     'Update {type: "ScrollView", nativeID: (N/A)}',
   ]);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 0,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 0,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -132,26 +126,21 @@ test('recursive culling', () => {
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
   // === Scroll down to the edge of child AA ===
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 30,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 30,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
   ]);
 
   // === Scroll down past child AA ===
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 36,
-    });
+
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 36,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -160,13 +149,10 @@ test('recursive culling', () => {
   ]);
 
   // === Scroll down past child AB ===
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 51,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 51,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -175,13 +161,10 @@ test('recursive culling', () => {
   ]);
 
   // === Scroll down past element A ===
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 56,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 56,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -190,13 +173,10 @@ test('recursive culling', () => {
   ]);
 
   // Scroll element B into viewport. Just child BA should be created.
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 155,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 155,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -207,13 +187,10 @@ test('recursive culling', () => {
   ]);
 
   // Scroll child BA into viewport.
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 165,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 165,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -222,13 +199,10 @@ test('recursive culling', () => {
   ]);
 
   // Scroll back to start
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 0,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 0,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -247,13 +221,10 @@ test('recursive culling', () => {
   ]);
 
   // Scroll past element A
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 85,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 85,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -303,13 +274,10 @@ test('recursive culling when initial offset is negative', () => {
 
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 0,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 0,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -373,13 +341,10 @@ test('deep nesting', () => {
 
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 40,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 40,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -391,13 +356,10 @@ test('deep nesting', () => {
     'Insert {type: "View", parentNativeID: (N/A), index: 1, nativeID: "element B"}',
   ]);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 150,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 150,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -542,13 +504,10 @@ test('initial render', () => {
 
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 100,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 100,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -621,13 +580,10 @@ test('basic culling smaller ScrollView', () => {
 
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 11,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 11,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "element 1"}',
@@ -691,13 +647,10 @@ test('culling with transform move', () => {
 
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 1,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 1,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -743,13 +696,10 @@ test('culling with recursive transform move', () => {
 
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 1,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 1,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
@@ -794,13 +744,10 @@ test('culling with transform scale', () => {
 
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 121,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 121,
   });
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Remove {type: "View", parentNativeID: (N/A), index: 0, nativeID: "child"}',
@@ -874,14 +821,10 @@ test('view flattening with culling', () => {
 
   const element = ensureInstance(maybeNode, ReactNativeElement);
 
-  Fantom.runOnUIThread(() => {
-    Fantom.enqueueScrollEvent(element, {
-      x: 0,
-      y: 60,
-    });
+  Fantom.scrollTo(element, {
+    x: 0,
+    y: 60,
   });
-
-  Fantom.runWorkLoop();
 
   expect(root.takeMountingManagerLogs()).toEqual([
     'Update {type: "ScrollView", nativeID: (N/A)}',
