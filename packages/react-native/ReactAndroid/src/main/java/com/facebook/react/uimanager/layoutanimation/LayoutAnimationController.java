@@ -87,6 +87,12 @@ public class LayoutAnimationController {
     mCompletionRunnable = null;
     mShouldAnimateLayout = false;
     mMaxAnimationDuration = -1;
+    for (int i = mLayoutHandlers.size() - 1; i >= 0; i--) {
+      LayoutHandlingAnimation animation = mLayoutHandlers.valueAt(i);
+      if (!animation.isValid()) {
+        mLayoutHandlers.removeAt(i);
+      }
+    }
   }
 
   public boolean shouldAnimateLayout(View viewToAnimate) {
@@ -121,8 +127,12 @@ public class LayoutAnimationController {
     // the existing animation would still animate to the old layout.
     LayoutHandlingAnimation existingAnimation = mLayoutHandlers.get(reactTag);
     if (existingAnimation != null) {
-      existingAnimation.onLayoutUpdate(x, y, width, height);
-      return;
+      if (!existingAnimation.isValid()) {
+        mLayoutHandlers.remove(reactTag);
+      } else {
+        existingAnimation.onLayoutUpdate(x, y, width, height);
+        return;
+      }
     }
 
     // Determine which animation to use : if view is initially invisible, use create animation,
