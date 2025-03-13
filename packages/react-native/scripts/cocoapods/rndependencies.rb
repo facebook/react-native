@@ -59,6 +59,7 @@ class ReactNativeDependenciesUtils
     @@build_from_source = true
     @@react_native_path = ""
     @@react_native_version = ""
+    @@use_nightly = false
 
     def self.build_react_native_deps_from_source()
         return @@build_from_source
@@ -66,6 +67,11 @@ class ReactNativeDependenciesUtils
 
     def self.resolve_podspec_source()
         if ENV["RCT_USE_RN_DEP"] && ENV["RCT_USE_RN_DEP"] == "1"
+            if @@use_nightly
+                rndeps_log("Using nightly tarball")
+                return self.podspec_source_download_prebuilt_nightly_tarball(@@react_native_version)
+            end
+
             rndeps_log("Using release tarball")
             return self.podspec_source_download_prebuild_release_tarball()
         end
@@ -83,7 +89,12 @@ class ReactNativeDependenciesUtils
         @@react_native_path = react_native_path
         @@react_native_version = ENV["RCT_DEPS_VERSION"] == nil ? react_native_version : ENV["RCT_DEPS_VERSION"]
 
-        artifacts_exists = ENV["RCT_USE_RN_DEP"] == "1" && release_artifact_exists(@@react_native_version)
+        if @@react_native_version.include? 'nightly'
+            rndeps_log("Using nightly build")
+            @@use_nightly = true
+        end
+
+        artifacts_exists = ENV["RCT_USE_RN_DEP"] == "1" && (@@use_nightly ? nightly_artifact_exists(@@react_native_version) : release_artifact_exists(@@react_native_version))
         use_local_xcframework = ENV["RCT_USE_LOCAL_RN_DEP"] && File.exist?(ENV["RCT_USE_LOCAL_RN_DEP"])
 
         if ENV["RCT_USE_LOCAL_RN_DEP"]
@@ -129,9 +140,20 @@ class ReactNativeDependenciesUtils
         return "#{maven_repo_url}/#{group}/react-native-artifacts/#{version}/react-native-artifacts-#{version}-reactnative-dependencies-#{build_type.to_s}.tar.gz"
     end
 
+    def self.nightly_tarball_url(version)
+        params = "r=snapshots\&g=com.facebook.react\&a=react-native-artifacts\&c=reactnative-dependencies-debug\&e=tar.gz\&v=#{version}-SNAPSHOT"
+        return resolve_url_redirects("http://oss.sonatype.org/service/local/artifact/maven/redirect\?#{params}")
+    end
+
     def self.download_stable_rndeps(react_native_path, version, configuration)
         tarball_url = release_tarball_url(version, configuration)
         download_rndeps_tarball(react_native_path, tarball_url, version, configuration)
+    end
+
+    def self.podspec_source_download_prebuilt_nightly_tarball(version)
+        url = nightly_tarball_url(version)
+        rndeps_log("Using nightly tarball from URL: #{url}")
+        return {:http => url}
     end
 
     def self.download_rndeps_tarball(react_native_path, tarball_url, version, configuration)
@@ -150,6 +172,10 @@ class ReactNativeDependenciesUtils
 
     def self.release_artifact_exists(version)
         return artifact_exists(release_tarball_url(version, :debug))
+    end
+
+    def self.nightly_artifact_exists(version)
+        return artifact_exists(nightly_tarball_url(version).gsub("\\", ""))
     end
 
     def self.artifacts_dir()
@@ -176,5 +202,9 @@ class ReactNativeDependenciesUtils
         else
             Pod::UI.puts log_message.yellow
         end
+    end
+
+    def self.resolve_url_redirects(url)
+        return (`curl -Ls -o /dev/null -w %{url_effective} \"#{url}\"`)
     end
 end
