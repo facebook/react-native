@@ -93,6 +93,10 @@ class FlowParser implements Parser {
   }
 
   getTypeAnnotationName(typeAnnotation: $FlowFixMe): string {
+    if (typeAnnotation?.id?.type === 'QualifiedTypeIdentifier') {
+      return typeAnnotation.id.id.name;
+    }
+
     return typeAnnotation?.id?.name;
   }
 
@@ -443,7 +447,6 @@ class FlowParser implements Parser {
       if (resolvedTypeAnnotation == null) {
         break;
       }
-
       const {typeAnnotation: typeAnnotationNode, typeResolutionStatus: status} =
         handleGenericTypeAnnotation(node, resolvedTypeAnnotation, this);
       typeResolutionStatus = status;

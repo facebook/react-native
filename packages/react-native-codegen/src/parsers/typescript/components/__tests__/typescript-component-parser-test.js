@@ -28,18 +28,29 @@ jest.mock('fs', () => ({
 const parser = new TypeScriptParser();
 
 describe('RN Codegen TypeScript Parser', () => {
-  Object.keys(fixtures)
-    .sort()
-    .forEach(fixtureName => {
-      it(`can generate fixture ${fixtureName}`, () => {
-        const schema = parser.parseFile(fixtureName);
-        const serializedSchema = JSON.stringify(schema, null, 2).replace(
-          /"/g,
-          "'",
-        );
-        expect(serializedSchema).toMatchSnapshot();
-      });
+  for (const fixtureName of Object.keys(fixtures).sort()) {
+    it(`can generate fixture ${fixtureName}`, () => {
+      const schema = parser.parseFile(fixtureName);
+      const serializedSchema = JSON.stringify(schema, null, 2).replace(
+        /"/g,
+        "'",
+      );
+      expect(serializedSchema).toMatchSnapshot();
     });
+  }
+
+  // Object.keys(fixtures)
+  //   .sort()
+  //   .forEach(fixtureName => {
+  //     it(`can generate fixture ${fixtureName}`, () => {
+  //       const schema = parser.parseFile(fixtureName);
+  //       const serializedSchema = JSON.stringify(schema, null, 2).replace(
+  //         /"/g,
+  //         "'",
+  //       );
+  //       expect(serializedSchema).toMatchSnapshot();
+  //     });
+  //   });
 
   Object.keys(failureFixtures)
     .sort()
