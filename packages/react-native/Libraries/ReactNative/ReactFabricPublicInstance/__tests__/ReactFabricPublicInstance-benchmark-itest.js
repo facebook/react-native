@@ -17,7 +17,7 @@ import type {
 } from 'react-native/Libraries/Renderer/shims/ReactNativeTypes';
 import type ReactNativeDocument from 'react-native/src/private/webapis/dom/nodes/ReactNativeDocument';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import ReactFabricHostComponent from 'react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactFabricHostComponent';
 import ReactNativeElement from 'react-native/src/private/webapis/dom/nodes/ReactNativeElement';
 
