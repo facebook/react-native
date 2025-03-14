@@ -21,16 +21,12 @@ import type {
   PageDescription,
 } from './types';
 import type {IncomingMessage, ServerResponse} from 'http';
-// $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
-import type {Timeout} from 'timers';
 
 import getBaseUrlFromRequest from '../utils/getBaseUrlFromRequest';
 import Device from './Device';
 import EventLoopPerfTracker from './EventLoopPerfTracker';
+import InspectorProxyHeartbeat from './InspectorProxyHeartbeat';
 import nullthrows from 'nullthrows';
-// Import these from node:timers to get the correct Flow types.
-// $FlowFixMe[cannot-resolve-module] libdef missing in RN OSS
-import {clearTimeout, setTimeout} from 'timers';
 import url from 'url';
 import WS from 'ws';
 
@@ -44,9 +40,8 @@ const PAGES_LIST_JSON_VERSION_URL = '/json/version';
 
 const PROXY_IDLE_TIMEOUT_MS = 10000;
 
+const HEARTBEAT_TIME_BETWEEN_PINGS_MS = 5000;
 const HEARTBEAT_TIMEOUT_MS = 60000;
-const HEARTBEAT_INTERVAL_MS = 10000;
-
 const MIN_PING_TO_REPORT = 500;
 
 const EVENT_LOOP_PERF_MEASUREMENT_MS = 5000;
@@ -374,14 +369,57 @@ export default class InspectorProxy implements InspectorProxyQueries {
           pageId: null,
         };
 
-        this.#startHeartbeat({
-          socketName: 'Device',
+        const heartbeat = new InspectorProxyHeartbeat({
           socket,
-          intervalMs: HEARTBEAT_INTERVAL_MS,
-          debuggerSessionIDs,
-          timeoutEventName: 'device_timeout',
-          highPingEventName: 'device_high_ping',
+          timeBetweenPings: HEARTBEAT_TIME_BETWEEN_PINGS_MS,
+          minHighPingToReport: MIN_PING_TO_REPORT,
+          timeoutMs: HEARTBEAT_TIMEOUT_MS,
+          onHighPing: roundtripDuration => {
+            const isIdle = this.#isIdle();
+
+            debug(
+              "[high ping] [ Device ] %sms for app='%s' on device='%s' with idle='%s'",
+              String(roundtripDuration).padStart(5),
+              debuggerSessionIDs.appId,
+              debuggerSessionIDs.deviceName,
+              isIdle ? 'true' : 'false',
+            );
+
+            this.#eventReporter?.logEvent({
+              type: 'device_high_ping',
+              duration: roundtripDuration,
+              isIdle,
+              ...debuggerSessionIDs,
+            });
+          },
+          onTimeout: roundtripDuration => {
+            // We don't use close() here because that initiates a closing handshake,
+            // which will not complete if the other end has gone away - 'close'
+            // would not be emitted.
+            // terminate() emits 'close' immediately, allowing us to handle it and
+            // inform any clients.
+            socket.terminate();
+
+            const isIdle = this.#isIdle();
+
+            this.#logger?.error(
+              "[timeout] connection terminated with Device for app='%s' on device='%s' with idle='%s' after not responding for %s seconds.",
+              debuggerSessionIDs.appId ?? 'unknown',
+              debuggerSessionIDs.deviceName ?? 'unknown',
+              isIdle ? 'true' : 'false',
+              String(roundtripDuration / 1000),
+            );
+
+            this.#eventReporter?.logEvent({
+              type: 'device_timeout',
+              duration: roundtripDuration,
+              isIdle,
+              ...debuggerSessionIDs,
+            });
+          },
         });
+
+        heartbeat.start();
 
         socket.on('message', message =>
           this.#onMessageFromDeviceOrDebugger(
@@ -470,14 +508,57 @@ export default class InspectorProxy implements InspectorProxyQueries {
           device.getName() || 'unknown',
         );
 
-        this.#startHeartbeat({
-          socketName: 'DevTools',
+        const heartbeat = new InspectorProxyHeartbeat({
           socket,
-          intervalMs: HEARTBEAT_INTERVAL_MS,
-          debuggerSessionIDs,
-          timeoutEventName: 'debugger_timeout',
-          highPingEventName: 'debugger_high_ping',
+          timeBetweenPings: HEARTBEAT_TIME_BETWEEN_PINGS_MS,
+          minHighPingToReport: MIN_PING_TO_REPORT,
+          timeoutMs: HEARTBEAT_TIMEOUT_MS,
+          onHighPing: roundtripDuration => {
+            const isIdle = this.#isIdle();
+
+            debug(
+              "[high ping] [DevTools] %sms for app='%s' on device='%s' with idle='%s'",
+              String(roundtripDuration).padStart(5),
+              debuggerSessionIDs.appId,
+              debuggerSessionIDs.deviceName,
+              isIdle ? 'true' : 'false',
+            );
+
+            this.#eventReporter?.logEvent({
+              type: 'debugger_high_ping',
+              duration: roundtripDuration,
+              isIdle,
+              ...debuggerSessionIDs,
+            });
+          },
+          onTimeout: roundtripDuration => {
+            // We don't use close() here because that initiates a closing handshake,
+            // which will not complete if the other end has gone away - 'close'
+            // would not be emitted.
+            // terminate() emits 'close' immediately, allowing us to handle it and
+            // inform any clients.
+            socket.terminate();
+
+            const isIdle = this.#isIdle();
+
+            this.#logger?.error(
+              "[timeout] connection terminated with DevTools for app='%s' on device='%s' with idle='%s' after not responding for %s seconds.",
+              debuggerSessionIDs.appId ?? 'unknown',
+              debuggerSessionIDs.deviceName ?? 'unknown',
+              isIdle ? 'true' : 'false',
+              String(roundtripDuration / 1000),
+            );
+
+            this.#eventReporter?.logEvent({
+              type: 'debugger_timeout',
+              duration: roundtripDuration,
+              isIdle,
+              ...debuggerSessionIDs,
+            });
+          },
         });
+
+        heartbeat.start();
 
         socket.on('message', message =>
           this.#onMessageFromDeviceOrDebugger(
@@ -525,112 +606,5 @@ export default class InspectorProxy implements InspectorProxyQueries {
       }
     });
     return wss;
-  }
-
-  // Starts pinging the socket at the given interval. Compliant clients will
-  // respond with pong frame. This serves both to detect when the client
-  // has gone away without sending a close frame, and as a keepalive in cases
-  // where proxies may drop idle connections (e.g., VS Code tunnels).
-  //
-  // https://datatracker.ietf.org/doc/html/rfc6455#section-5.5.2
-  #startHeartbeat({
-    socketName,
-    socket,
-    intervalMs,
-    debuggerSessionIDs,
-    timeoutEventName,
-    highPingEventName,
-  }: {
-    socketName: string,
-    socket: WS,
-    intervalMs: number,
-    debuggerSessionIDs: DebuggerSessionIDs,
-    timeoutEventName: 'debugger_timeout' | 'device_timeout',
-    highPingEventName: 'debugger_high_ping' | 'device_high_ping',
-  }) {
-    let latestPingMs = Date.now();
-    let terminateTimeout: ?Timeout;
-
-    const pingTimeout: Timeout = setTimeout(() => {
-      if (socket.readyState !== WS.OPEN) {
-        // May be connecting or closing, try again later.
-        pingTimeout.refresh();
-        return;
-      }
-
-      if (!terminateTimeout) {
-        terminateTimeout = setTimeout(() => {
-          if (socket.readyState !== WS.OPEN) {
-            // May be connecting or closing, try again later.
-            terminateTimeout?.refresh();
-            return;
-          }
-
-          // We don't use close() here because that initiates a closing handshake,
-          // which will not complete if the other end has gone away - 'close'
-          // would not be emitted.
-          // terminate() emits 'close' immediately, allowing us to handle it and
-          // inform any clients.
-          socket.terminate();
-
-          const isIdle = this.#isIdle();
-
-          this.#logger?.error(
-            "Connection terminated with %s for app='%s' on device='%s' with idle='%s' after not responding for %s seconds.",
-            socketName,
-            debuggerSessionIDs.appId ?? 'unknown',
-            debuggerSessionIDs.deviceName ?? 'unknown',
-            isIdle ? 'true' : 'false',
-            String(HEARTBEAT_TIMEOUT_MS / 1000),
-          );
-
-          this.#eventReporter?.logEvent({
-            type: timeoutEventName,
-            duration: HEARTBEAT_TIMEOUT_MS,
-            isIdle,
-            ...debuggerSessionIDs,
-          });
-        }, HEARTBEAT_TIMEOUT_MS).unref();
-      }
-
-      latestPingMs = Date.now();
-      socket.ping();
-    }, intervalMs).unref();
-
-    socket.on('pong', () => {
-      const roundtripDuration = Date.now() - latestPingMs;
-
-      if (roundtripDuration >= MIN_PING_TO_REPORT) {
-        const isIdle = this.#isIdle();
-
-        debug(
-          "[high ping] [%s] %sms for app='%s' on device='%s' with idle='%s'",
-          socketName.padStart(7).padEnd(8),
-          String(roundtripDuration).padStart(5),
-          debuggerSessionIDs.appId,
-          debuggerSessionIDs.deviceName,
-          isIdle ? 'true' : 'false',
-        );
-
-        this.#eventReporter?.logEvent({
-          type: highPingEventName,
-          duration: roundtripDuration,
-          isIdle,
-          ...debuggerSessionIDs,
-        });
-      }
-
-      terminateTimeout?.refresh();
-      pingTimeout.refresh();
-    });
-
-    socket.on('message', () => {
-      terminateTimeout?.refresh();
-    });
-
-    socket.on('close', (code: number, reason: string) => {
-      terminateTimeout && clearTimeout(terminateTimeout);
-      clearTimeout(pingTimeout);
-    });
   }
 }
