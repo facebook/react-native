@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<b8be2ef692b468cdfee6d88c091abec3>>
+ * @generated SignedSource<<28915a06a3c24b532384b481cc91d863>>
  */
 
 /**
@@ -178,6 +178,15 @@ class ReactNativeFeatureFlagsDynamicProvider : public ReactNativeFeatureFlagsDef
     }
 
     return ReactNativeFeatureFlagsDefaults::enableLongTaskAPI();
+  }
+
+  bool enableMainQueueModulesOnIOS() override {
+    auto value = values_["enableMainQueueModulesOnIOS"];
+    if (!value.isNull()) {
+      return value.getBool();
+    }
+
+    return ReactNativeFeatureFlagsDefaults::enableMainQueueModulesOnIOS();
   }
 
   bool enableNativeCSSParsing() override {
