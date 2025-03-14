@@ -48,7 +48,7 @@ export default class CDPMessagesQueueLogging {
       if (this.#loggingTimeout) {
         this.#loggingTimeout.refresh();
       } else {
-        this.#debounceStartMs = new Date().getTime();
+        this.#debounceStartMs = Date.now();
 
         this.#loggingTimeout = setTimeout(() => {
           this.#onHighMessageQueueSize(
