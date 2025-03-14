@@ -8,8 +8,6 @@
  * @format
  */
 
-import type {Node} from 'react';
-
 import TouchableOpacity from '../../Components/Touchable/TouchableOpacity';
 import View from '../../Components/View/View';
 import openURLInBrowser from '../../Core/Devtools/openURLInBrowser';
@@ -81,7 +79,7 @@ const links = [
   },
 ];
 
-const LinkList = (): Node => {
+const LinkList = (): React.Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.container}>

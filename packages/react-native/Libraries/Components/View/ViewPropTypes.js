@@ -15,17 +15,18 @@ import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 import type {
   BlurEvent,
   FocusEvent,
+  GestureResponderEvent,
   LayoutChangeEvent,
   LayoutRectangle,
   MouseEvent,
   PointerEvent,
-  GestureResponderEvent,
 } from '../../Types/CoreEventTypes';
 import type {
   AccessibilityActionEvent,
   AccessibilityProps,
 } from './ViewAccessibility';
-import type {Node} from 'react';
+
+import React from 'react';
 
 export type ViewLayout = LayoutRectangle;
 export type ViewLayoutEvent = LayoutChangeEvent;
@@ -357,7 +358,7 @@ export type ViewPropsIOS = $ReadOnly<{
 }>;
 
 type ViewBaseProps = $ReadOnly<{
-  children?: Node,
+  children?: React.Node,
   style?: ?ViewStyleProp,
 
   /**
