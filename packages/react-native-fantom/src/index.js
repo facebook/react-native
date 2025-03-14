@@ -130,7 +130,7 @@ const DEFAULT_TASK_PRIORITY = schedulerPriorityImmediate;
  * If the work loop is running, it will be executed according to its priority.
  * Otherwise, it will wait in the queue until the work loop runs.
  */
-function scheduleTask(task: () => void | Promise<void>) {
+export function scheduleTask(task: () => void | Promise<void>) {
   nativeRuntimeScheduler.unstable_scheduleCallback(DEFAULT_TASK_PRIORITY, task);
 }
 
@@ -141,7 +141,7 @@ let flushingQueue = false;
  *
  * React must run inside of event loop to ensure scheduling environment is closer to production.
  */
-function runTask(task: () => void | Promise<void>) {
+export function runTask(task: () => void | Promise<void>) {
   if (flushingQueue) {
     throw new Error(
       'Nested `runTask` calls are not allowed. If you want to schedule a task from inside another task, use `scheduleTask` instead.',
@@ -155,7 +155,7 @@ function runTask(task: () => void | Promise<void>) {
 /*
  * Simmulates running a task on the UI thread and forces side effect to drain the event queue, scheduling events to be dispatched to JavaScript.
  */
-function runOnUIThread(task: () => void) {
+export function runOnUIThread(task: () => void) {
   task();
   NativeFantom.flushEventQueue();
 }
@@ -164,7 +164,7 @@ function runOnUIThread(task: () => void) {
  * Runs a side effect to drain the event queue and dispatches events to JavaScript.
  * Useful to flash out all tasks.
  */
-function flushAllNativeEvents() {
+export function flushAllNativeEvents() {
   NativeFantom.flushEventQueue();
   runWorkLoop();
 }
@@ -172,7 +172,7 @@ function flushAllNativeEvents() {
 /**
  * Runs the event loop until all tasks are executed.
  */
-function runWorkLoop(): void {
+export function runWorkLoop(): void {
   if (flushingQueue) {
     throw new Error(
       'Cannot start the work loop because it is already running. If you want to schedule a task from inside another task, use `scheduleTask` instead.',
@@ -189,7 +189,7 @@ function runWorkLoop(): void {
 
 // TODO: Add option to define surface props and pass it to startSurface
 // Surfacep rops: concurrentRoot, surfaceWidth, surfaceHeight, layoutDirection, pointScaleFactor.
-function createRoot(rootConfig?: RootConfig): Root {
+export function createRoot(rootConfig?: RootConfig): Root {
   return new Root(rootConfig);
 }
 
@@ -200,7 +200,7 @@ function createRoot(rootConfig?: RootConfig): Root {
  *
  * For a higher level API, use `dispatchNativeEvent`.
  */
-function enqueueNativeEvent(
+export function enqueueNativeEvent(
   node: ReactNativeElement,
   type: string,
   payload?: {[key: string]: mixed},
@@ -216,7 +216,7 @@ function enqueueNativeEvent(
   );
 }
 
-function dispatchNativeEvent(
+export function dispatchNativeEvent(
   node: ReactNativeElement,
   type: string,
   payload?: {[key: string]: mixed},
@@ -235,7 +235,7 @@ export type ScrollEventOptions = {
   zoomScale?: number,
 };
 
-function enqueueScrollEvent(
+export function enqueueScrollEvent(
   node: ReactNativeElement,
   options: ScrollEventOptions,
 ) {
@@ -271,7 +271,10 @@ function enqueueScrollEvent(
  * // Assert that changes from Fantom.scrollTo are in effect.
  * ```
  */
-function scrollTo(node: ReactNativeElement, options: ScrollEventOptions) {
+export function scrollTo(
+  node: ReactNativeElement,
+  options: ScrollEventOptions,
+) {
   runOnUIThread(() => {
     enqueueScrollEvent(node, options);
   });
@@ -279,7 +282,7 @@ function scrollTo(node: ReactNativeElement, options: ScrollEventOptions) {
   runWorkLoop();
 }
 
-function enqueueModalSizeUpdate(
+export function enqueueModalSizeUpdate(
   node: ReactNativeElement,
   size: {width: number, height: number},
 ) {
@@ -369,26 +372,10 @@ if (typeof global.EventTarget === 'undefined') {
   );
 }
 
-function saveJSMemoryHeapSnapshot(filePath: string): void {
+export function saveJSMemoryHeapSnapshot(filePath: string): void {
   if (getConstants().isRunningFromCI) {
     throw new Error('Unexpected call to `saveJSMemoryHeapSnapshot` from CI');
   }
 
   NativeFantom.saveJSMemoryHeapSnapshot(filePath);
 }
-
-export default {
-  scheduleTask,
-  runTask,
-  runOnUIThread,
-  runWorkLoop,
-  createRoot,
-  dispatchNativeEvent,
-  enqueueNativeEvent,
-  flushAllNativeEvents,
-  enqueueModalSizeUpdate,
-  unstable_benchmark: Benchmark,
-  enqueueScrollEvent,
-  scrollTo,
-  saveJSMemoryHeapSnapshot,
-};

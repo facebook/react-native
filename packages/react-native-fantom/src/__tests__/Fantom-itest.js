@@ -13,7 +13,7 @@ import 'react-native/Libraries/Core/InitializeCore';
 
 import type {Root} from '@react-native/fantom';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Modal, ScrollView, Text, TextInput, View} from 'react-native';
 import NativeFantom from 'react-native/src/private/testing/fantom/specs/NativeFantom';

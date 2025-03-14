@@ -17,7 +17,7 @@ import type {
   PerformanceObserverEntryList,
 } from 'react-native/src/private/webapis/performance/PerformanceObserver';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import setUpPerformanceObserver from 'react-native/src/private/setup/setUpPerformanceObserver';
 import {PerformanceLongTaskTiming} from 'react-native/src/private/webapis/performance/LongTasks';

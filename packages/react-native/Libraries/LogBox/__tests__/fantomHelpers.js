@@ -14,7 +14,7 @@ import ReadOnlyElement from '../../../src/private/webapis/dom/nodes/ReadOnlyElem
 import View from '../../Components/View/View';
 import AppContainer from '../../ReactNative/AppContainer';
 import LogBoxInspectorContainer from '../LogBoxInspectorContainer';
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import nullthrows from 'nullthrows';
 import * as React from 'react';
 

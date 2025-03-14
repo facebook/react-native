@@ -13,7 +13,7 @@ import 'react-native/Libraries/Core/InitializeCore';
 
 import type IntersectionObserverType from 'react-native/src/private/webapis/intersectionobserver/IntersectionObserver';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {ScrollView, View} from 'react-native';
 import setUpIntersectionObserver from 'react-native/src/private/setup/setUpIntersectionObserver';

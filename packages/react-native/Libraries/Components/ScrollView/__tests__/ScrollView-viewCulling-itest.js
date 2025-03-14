@@ -12,7 +12,7 @@
  */
 
 import 'react-native/Libraries/Core/InitializeCore.js';
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {Modal, ScrollView, View} from 'react-native';
 import ensureInstance from 'react-native/src/private/utilities/ensureInstance';

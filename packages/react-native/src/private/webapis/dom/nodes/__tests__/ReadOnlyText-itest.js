@@ -11,7 +11,7 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import invariant from 'invariant';
 import * as React from 'react';
 import {NativeText} from 'react-native/Libraries/Text/TextNativeComponent';

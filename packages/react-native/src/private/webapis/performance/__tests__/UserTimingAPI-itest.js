@@ -14,7 +14,7 @@ import 'react-native/Libraries/Core/InitializeCore';
 
 import type Performance from 'react-native/src/private/webapis/performance/Performance';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import setUpPerformanceObserver from 'react-native/src/private/setup/setUpPerformanceObserver';
 import ensureInstance from 'react-native/src/private/utilities/ensureInstance';
 import {PerformanceObserver} from 'react-native/src/private/webapis/performance/PerformanceObserver';
