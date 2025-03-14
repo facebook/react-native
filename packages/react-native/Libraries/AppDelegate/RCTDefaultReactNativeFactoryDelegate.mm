@@ -92,6 +92,11 @@
 {
 }
 
+- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup
+{
+  return self.dependencyProvider ? RCTAppSetupUnstableModulesRequiringMainQueueSetup(self.dependencyProvider) : @[];
+}
+
 - (nullable id<RCTModuleProvider>)getModuleProvider:(const char *)name
 {
   NSString *providerName = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];

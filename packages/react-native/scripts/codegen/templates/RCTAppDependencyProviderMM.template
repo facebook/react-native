@@ -24,6 +24,10 @@
   return RCTModulesConformingToProtocolsProvider.imageURLLoaderClassNames;
 }
 
+- (nonnull NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup {
+  return RCTUnstableModulesRequiringMainQueueSetupProvider.modules;
+}
+
 - (nonnull NSDictionary<NSString *,Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents {
   return RCTThirdPartyComponentsProvider.thirdPartyFabricComponents;
 }
