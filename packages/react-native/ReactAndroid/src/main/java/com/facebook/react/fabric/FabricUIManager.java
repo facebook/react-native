@@ -29,7 +29,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
-import androidx.core.view.ViewCompat.FocusRealDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStripAny;
@@ -259,51 +258,6 @@ public class FabricUIManager
     }
     mBinding.startSurface(rootTag, moduleName, (NativeMap) initialProps);
     return rootTag;
-  }
-
-  /**
-   * Find the next focusable element's id and position relative to the parent from the shadow tree
-   * based on the current focusable element and the direction.
-   *
-   * @return A NextFocusableNode object where the 'id' is the reactId/Tag of the next focusable
-   *     view, and 'deltaScroll' is the scroll delta needed to make the view visible on the screen.
-   *     Returns null if no valid node is found.
-   */
-  public @Nullable NextFocusableNode findNextFocusableElementMetrics(
-      int parentTag, int focusedTag, @FocusRealDirection int direction) {
-    if (mBinding == null) {
-      return null;
-    }
-
-    int generalizedDirection;
-
-    switch (direction) {
-      case View.FOCUS_DOWN:
-        generalizedDirection = 0;
-        break;
-      case View.FOCUS_UP:
-        generalizedDirection = 1;
-        break;
-      case View.FOCUS_RIGHT:
-        generalizedDirection = 2;
-        break;
-      case View.FOCUS_LEFT:
-        generalizedDirection = 3;
-        break;
-      default:
-        return null;
-    }
-
-    @Nullable
-    float[] serializedNextFocusableNodeMetrics =
-        mBinding.findNextFocusableElementMetrics(parentTag, focusedTag, generalizedDirection);
-
-    if (serializedNextFocusableNodeMetrics == null) {
-      return null;
-    }
-
-    return new NextFocusableNode(
-        (int) serializedNextFocusableNodeMetrics[0], serializedNextFocusableNodeMetrics[1]);
   }
 
   @Override

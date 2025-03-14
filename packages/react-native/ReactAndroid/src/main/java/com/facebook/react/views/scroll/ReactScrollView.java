@@ -11,7 +11,6 @@ import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNME
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_DISABLED;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_END;
 import static com.facebook.react.views.scroll.ReactScrollViewHelper.SNAP_ALIGNMENT_START;
-import static com.facebook.react.views.scroll.ReactScrollViewHelper.findNextFocusableView;
 
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -32,7 +31,6 @@ import android.widget.ScrollView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.ViewCompat.FocusRealDirection;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.Nullsafe;
@@ -359,18 +357,6 @@ public class ReactScrollView extends ScrollView
     if (mMaintainVisibleContentPositionHelper != null) {
       mMaintainVisibleContentPositionHelper.stop();
     }
-  }
-
-  @Override
-  public @Nullable View focusSearch(View focused, @FocusRealDirection int direction) {
-
-    @Nullable View nextfocusableView = findNextFocusableView(this, focused, direction, false);
-
-    if (nextfocusableView != null) {
-      return nextfocusableView;
-    }
-
-    return super.focusSearch(focused, direction);
   }
 
   /**

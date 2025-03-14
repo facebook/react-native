@@ -128,11 +128,6 @@ class FabricUIManagerBinding : public jni::HybridClass<FabricUIManagerBinding>,
 
   void reportMount(SurfaceId surfaceId);
 
-  jfloatArray findNextFocusableElementMetrics(
-      jint parentTag,
-      jint focusedTag,
-      jint direction);
-
   void uninstallFabricUIManager();
 
   // Private member variables
