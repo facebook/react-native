@@ -6,11 +6,10 @@
  *
  * @flow strict
  * @format
+ * @oncall react_native
  */
 
-'use strict';
-
-/*:: import type {PackagerAsset} from './registry.js'; */
+import type {PackagerAsset} from './registry.flow';
 
 const androidScaleSuffix = {
   '0.75': 'ldpi',
@@ -27,7 +26,7 @@ const ANDROID_BASE_DENSITY = 160;
  * FIXME: using number to represent discrete scale numbers is fragile in essence because of
  * floating point numbers imprecision.
  */
-function getAndroidAssetSuffix(scale /*: number */) /*: string */ {
+function getAndroidAssetSuffix(scale: number): string {
   if (scale.toString() in androidScaleSuffix) {
     // $FlowFixMe[invalid-computed-prop]
     return androidScaleSuffix[scale.toString()];
@@ -51,10 +50,10 @@ const drawableFileTypes = new Set([
   'xml',
 ]);
 
-function getAndroidResourceFolderName(
-  asset /*: PackagerAsset */,
-  scale /*: number */,
-) /*: string */ {
+export function getAndroidResourceFolderName(
+  asset: PackagerAsset,
+  scale: number,
+): string {
   if (!drawableFileTypes.has(asset.type)) {
     return 'raw';
   }
@@ -72,9 +71,7 @@ function getAndroidResourceFolderName(
   return 'drawable-' + suffix;
 }
 
-function getAndroidResourceIdentifier(
-  asset /*: PackagerAsset */,
-) /*: string */ {
+export function getAndroidResourceIdentifier(asset: PackagerAsset): string {
   return (getBasePath(asset) + '/' + asset.name)
     .toLowerCase()
     .replace(/\//g, '_') // Encode folder structure in file name
@@ -82,13 +79,7 @@ function getAndroidResourceIdentifier(
     .replace(/^(?:assets|assetsunstable_path)_/, ''); // Remove "assets_" or "assetsunstable_path_" prefix
 }
 
-function getBasePath(asset /*: PackagerAsset */) /*: string */ {
+export function getBasePath(asset: PackagerAsset): string {
   const basePath = asset.httpServerLocation;
   return basePath.startsWith('/') ? basePath.slice(1) : basePath;
 }
-
-module.exports = {
-  getAndroidResourceFolderName,
-  getAndroidResourceIdentifier,
-  getBasePath,
-};

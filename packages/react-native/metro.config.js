@@ -21,6 +21,7 @@ const config = {
   // Make Metro able to resolve required packages that might be imported from /packages/react-native
   watchFolders: [
     path.resolve(__dirname, '../../node_modules'),
+    path.resolve(__dirname, '../../scripts'), // babel-register.js
     path.resolve(__dirname, '../assets'),
     path.resolve(__dirname, '../normalize-color'),
     path.resolve(__dirname, '../polyfills'),

@@ -12,9 +12,10 @@
 
 import type {PackagerAsset} from '@react-native/assets-registry/registry';
 
-const AssetRegistry = require('@react-native/assets-registry/registry') as {
-  registerAsset: (asset: PackagerAsset) => number,
-  getAssetByID: (assetId: number) => PackagerAsset,
-};
+const AssetRegistry =
+  require('@react-native/assets-registry/registry') as $FlowFixMe as {
+    registerAsset: (asset: PackagerAsset) => number,
+    getAssetByID: (assetId: number) => PackagerAsset,
+  };
 
 module.exports = AssetRegistry;
