@@ -60,6 +60,11 @@ async function buildTypes(): Promise<void> {
       }
     }
   }
+
+  await fs.copyFile(
+    path.join(__dirname, 'templates/tsconfig.json'),
+    path.join(PACKAGES_DIR, 'react-native', OUTPUT_DIR, 'tsconfig.json'),
+  );
 }
 
 type DependencyEdges = Array<[string, string]>;
