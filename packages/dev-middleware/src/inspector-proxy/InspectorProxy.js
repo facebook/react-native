@@ -118,6 +118,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           maxEventLoopDelayPercent,
           duration,
           debuggerSessionIDs,
+          connectionUptime,
         }) => {
           debug(
             "[perf] high event loop delay in the last %ds- event loop utilization='%d%' max event loop delay percent='%d%'",
@@ -131,6 +132,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
             eventLoopUtilization,
             maxEventLoopDelayPercent,
             duration,
+            connectionUptime,
             ...debuggerSessionIDs,
           });
         },
@@ -275,14 +277,13 @@ export default class InspectorProxy implements InspectorProxyQueries {
   /* returns true if proxy didn't receive any messages from
    * either the device or debugger for PROXY_IDLE_TIMEOUT_MS */
   #isIdle(): boolean {
-    return (
-      new Date().getTime() - this.#lastMessageTimestamp > PROXY_IDLE_TIMEOUT_MS
-    );
+    return Date.now() - this.#lastMessageTimestamp > PROXY_IDLE_TIMEOUT_MS;
   }
 
   #onMessageFromDeviceOrDebugger(
     message: string,
     debuggerSessionIDs: DebuggerSessionIDs,
+    connectionUptime: number,
   ): void {
     // TODO: instead remove this and any other messages in idle state we find
     // Not using JSON.parse for performance reasons. Worst case, we'll get
@@ -291,9 +292,12 @@ export default class InspectorProxy implements InspectorProxyQueries {
       return;
     }
 
-    this.#lastMessageTimestamp = new Date().getTime();
+    this.#lastMessageTimestamp = Date.now();
 
-    this.#eventLoopPerfTracker?.trackPerfThrottled(debuggerSessionIDs);
+    this.#eventLoopPerfTracker?.trackPerfThrottled(
+      debuggerSessionIDs,
+      connectionUptime,
+    );
   }
 
   // Adds websocket handler for device connections.
@@ -311,6 +315,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
+      const wssTimestamp = Date.now();
+
       const fallbackDeviceId = String(this.#deviceCounter++);
 
       const query = url.parse(req.url || '', true).query || {};
@@ -389,6 +395,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
               type: 'device_high_ping',
               duration: roundtripDuration,
               isIdle,
+              connectionUptime: Date.now() - wssTimestamp,
               ...debuggerSessionIDs,
             });
           },
@@ -414,6 +421,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
               type: 'device_timeout',
               duration: roundtripDuration,
               isIdle,
+              connectionUptime: Date.now() - wssTimestamp,
               ...debuggerSessionIDs,
             });
           },
@@ -425,6 +433,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           this.#onMessageFromDeviceOrDebugger(
             message.toString(),
             debuggerSessionIDs,
+            Date.now() - wssTimestamp,
           ),
         );
 
@@ -442,6 +451,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
             code,
             reason,
             isIdle: this.#isIdle(),
+            connectionUptime: Date.now() - wssTimestamp,
             ...debuggerSessionIDs,
           });
 
@@ -477,6 +487,8 @@ export default class InspectorProxy implements InspectorProxyQueries {
     });
     // $FlowFixMe[value-as-type]
     wss.on('connection', async (socket: WS, req) => {
+      const wssTimestamp = Date.now();
+
       const query = url.parse(req.url || '', true).query || {};
       const deviceId = query.device;
       const pageId = query.page;
@@ -528,6 +540,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
               type: 'debugger_high_ping',
               duration: roundtripDuration,
               isIdle,
+              connectionUptime: Date.now() - wssTimestamp,
               ...debuggerSessionIDs,
             });
           },
@@ -553,6 +566,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
               type: 'debugger_timeout',
               duration: roundtripDuration,
               isIdle,
+              connectionUptime: Date.now() - wssTimestamp,
               ...debuggerSessionIDs,
             });
           },
@@ -564,6 +578,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
           this.#onMessageFromDeviceOrDebugger(
             message.toString(),
             debuggerSessionIDs,
+            Date.now() - wssTimestamp,
           ),
         );
 
@@ -586,6 +601,7 @@ export default class InspectorProxy implements InspectorProxyQueries {
             code,
             reason,
             isIdle: this.#isIdle(),
+            connectionUptime: Date.now() - wssTimestamp,
             ...debuggerSessionIDs,
           });
         });

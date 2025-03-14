@@ -158,6 +158,7 @@ export default class Device {
     this.#id = id;
     this.#name = name;
     this.#app = app;
+    const deviceConnectedTimestamp = Date.now();
 
     this.#messageFromDeviceQueueLogging = new CDPMessagesQueueLogging(
       (maxCDPMessageQueueSize: number, maxCDPMessageQueueMemory: number) => {
@@ -181,6 +182,7 @@ export default class Device {
             type: 'device_high_message_queue',
             maxCDPMessageQueueSize,
             maxCDPMessageQueueMemory,
+            connectionUptime: Date.now() - deviceConnectedTimestamp,
             ...debuggerSessionIDs,
           });
         }

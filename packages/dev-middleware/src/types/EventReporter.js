@@ -33,6 +33,10 @@ export type DebuggerSessionIDs = {
   pageId: string | null,
 };
 
+export type ConnectionUptime = {
+  connectionUptime: number,
+};
+
 export type ReportableEvent =
   | {
       type: 'launch_debugger_frontend',
@@ -64,6 +68,7 @@ export type ReportableEvent =
       responseOrigin: 'proxy' | 'device',
       timeSinceStart: number | null,
       ...DebuggerSessionIDs,
+      ...ConnectionUptime,
       frontendUserAgent: string | null,
       prefersFuseboxFrontend: boolean | null,
       ...
@@ -91,18 +96,21 @@ export type ReportableEvent =
       message: string,
       error: string,
       errorStack: string,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
       type: 'debugger_high_ping' | 'device_high_ping',
       duration: number,
       isIdle: boolean,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
       type: 'debugger_timeout' | 'device_timeout',
       duration: number,
       isIdle: boolean,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
@@ -110,6 +118,7 @@ export type ReportableEvent =
       code: number,
       reason: string,
       isIdle: boolean,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
@@ -117,12 +126,14 @@ export type ReportableEvent =
       eventLoopUtilization: number,
       maxEventLoopDelayPercent: number,
       duration: number,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     }
   | {
       type: 'device_high_message_queue',
       maxCDPMessageQueueSize: number,
       maxCDPMessageQueueMemory: number,
+      ...ConnectionUptime,
       ...DebuggerSessionIDs,
     };
 

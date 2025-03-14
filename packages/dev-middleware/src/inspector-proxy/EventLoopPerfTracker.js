@@ -28,6 +28,7 @@ export type OnHighDelayArgs = {
   maxEventLoopDelayPercent: number,
   duration: number,
   debuggerSessionIDs: DebuggerSessionIDs,
+  connectionUptime: number,
 };
 
 export default class EventLoopPerfTracker {
@@ -44,7 +45,10 @@ export default class EventLoopPerfTracker {
     this.#eventLoopPerfMeasurementOngoing = false;
   }
 
-  trackPerfThrottled(debuggerSessionIDs: DebuggerSessionIDs): void {
+  trackPerfThrottled(
+    debuggerSessionIDs: DebuggerSessionIDs,
+    connectionUptime: number,
+  ): void {
     if (this.#eventLoopPerfMeasurementOngoing) {
       return;
     }
@@ -76,6 +80,7 @@ export default class EventLoopPerfTracker {
           maxEventLoopDelayPercent,
           duration: this.#perfMeasurementDuration,
           debuggerSessionIDs,
+          connectionUptime,
         });
       }
 
