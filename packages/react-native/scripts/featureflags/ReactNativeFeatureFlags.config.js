@@ -417,6 +417,17 @@ const definitions: FeatureFlagDefinitions = {
       },
       ossReleaseStage: 'none',
     },
+    useCxxNativeAnimated: {
+      defaultValue: false,
+      metadata: {
+        dateAdded: '2025-03-14',
+        description:
+          'When enabled, NativeModules will be executed by using the TurboModule system',
+        expectedReleaseValue: true,
+        purpose: 'experimentation',
+      },
+      ossReleaseStage: 'none',
+    },
     useEditTextStockAndroidFocusBehavior: {
       defaultValue: true,
       metadata: {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<df008a78acc9b0104c54e06849d5e9b9>>
+ * @generated SignedSource<<247b05b702d522ddf1c96af13fbe733c>>
  */
 
 /**
@@ -237,6 +237,12 @@ public object ReactNativeFeatureFlags {
    */
   @JvmStatic
   public fun useAlwaysAvailableJSErrorHandling(): Boolean = accessor.useAlwaysAvailableJSErrorHandling()
+
+  /**
+   * When enabled, NativeModules will be executed by using the TurboModule system
+   */
+  @JvmStatic
+  public fun useCxxNativeAnimated(): Boolean = accessor.useCxxNativeAnimated()
 
   /**
    * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<140e6580100dab5806194e780610f122>>
+ * @generated SignedSource<<9c47c399da922c19f56954deafaf86d9>>
  */
 
 /**
@@ -164,6 +164,10 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
   }
 
   bool useAlwaysAvailableJSErrorHandling() override {
+    return false;
+  }
+
+  bool useCxxNativeAnimated() override {
     return false;
   }
 
