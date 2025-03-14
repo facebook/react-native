@@ -829,3 +829,35 @@ describe('Fantom', () => {
     });
   });
 });
+
+describe('scheduleTask', () => {
+  it('does not run task immediately', () => {
+    let didRun = false;
+
+    Fantom.scheduleTask(() => {
+      didRun = true;
+    });
+
+    expect(didRun).toBe(false);
+
+    Fantom.runWorkLoop();
+
+    expect(didRun).toBe(true);
+  });
+
+  it('can be scheduled from within another task', () => {
+    let didInnerTaskRun = false;
+
+    Fantom.scheduleTask(() => {
+      Fantom.scheduleTask(() => {
+        didInnerTaskRun = true;
+      });
+    });
+
+    expect(didInnerTaskRun).toBe(false);
+
+    Fantom.runWorkLoop();
+
+    expect(didInnerTaskRun).toBe(true);
+  });
+});
