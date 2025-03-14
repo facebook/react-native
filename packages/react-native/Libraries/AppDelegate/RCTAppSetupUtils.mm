@@ -54,6 +54,12 @@ RCTAppSetupDefaultRootView(RCTBridge *bridge, NSString *moduleName, NSDictionary
   return [[RCTRootView alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
+NSArray<NSString *> *RCTAppSetupUnstableModulesRequiringMainQueueSetup(id<RCTDependencyProvider> dependencyProvider)
+{
+  // For oss, insert core main queue setup modules here
+  return dependencyProvider ? dependencyProvider.unstableModulesRequiringMainQueueSetup : @[];
+}
+
 id<RCTTurboModule> RCTAppSetupDefaultModuleFromClass(Class moduleClass, id<RCTDependencyProvider> dependencyProvider)
 {
   // private block used to filter out modules depending on protocol conformance
