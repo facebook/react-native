@@ -201,6 +201,9 @@ class UIManager final : public ShadowTreeDelegate {
 
   void reportMount(SurfaceId surfaceId) const;
 
+  void updateShadowTree(
+      const std::unordered_map<Tag, folly::dynamic>& tagToProps);
+
  private:
   friend class UIManagerBinding;
   friend class Scheduler;
