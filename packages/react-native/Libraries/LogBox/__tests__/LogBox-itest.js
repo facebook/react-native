@@ -12,7 +12,7 @@
 import 'react-native/Libraries/Core/InitializeCore';
 
 import {renderLogBox} from './fantomHelpers';
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {useEffect} from 'react';
 import {LogBox, Text, View} from 'react-native';

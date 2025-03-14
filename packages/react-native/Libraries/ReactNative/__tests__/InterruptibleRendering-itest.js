@@ -11,7 +11,7 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {startTransition, useDeferredValue, useEffect, useState} from 'react';
 import {Text, TextInput} from 'react-native';

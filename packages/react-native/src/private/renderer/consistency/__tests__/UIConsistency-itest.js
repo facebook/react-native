@@ -14,7 +14,7 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 import * as React from 'react';
 import {useLayoutEffect} from 'react';
 import {ScrollView, Text} from 'react-native';

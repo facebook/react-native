@@ -11,7 +11,7 @@
 
 import 'react-native/Libraries/Core/InitializeCore';
 
-import Fantom from '@react-native/fantom';
+import * as Fantom from '@react-native/fantom';
 
 interface IdleDeadline {
   +didTimeout: boolean;
