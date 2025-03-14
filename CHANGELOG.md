@@ -28,7 +28,6 @@
 - **DevX:** Remove deprecated `YellowBox` and `console.ignoredYellowBox` APIs. Use `LogBox`. ([45a2d9c5a8](https://github.com/facebook/react-native/commit/45a2d9c5a80f93de907a73ee2d61518c4b528d9a) by [@huntie](https://github.com/huntie))
 - **DevX:** Remove legacy Libraries/JSInspector modules ([9ba4dd81db](https://github.com/facebook/react-native/commit/9ba4dd81db08c401ef04fa60800585bf39c6dab3) by [@huntie](https://github.com/huntie))
 - **DevX:** Remove some web debugging remnants ([9aae84a688](https://github.com/facebook/react-native/commit/9aae84a688b5af87faf4b68676b6357de26f797f) by [@NickGerleman](https://github.com/NickGerleman))
-- **DevX:** Removed a long-running loop causing the app to lag while attempting a connection to Metro ([9b977def6c](https://github.com/facebook/react-native/commit/9b977def6c228b3fdadc870ac0c34a422933560b) by [@EdmondChuiHW](https://github.com/EdmondChuiHW))
 - **normalize-color:** Remove incorrect hwb() syntax support from normalize-color ([676359efd9](https://github.com/facebook/react-native/commit/676359efd9e478d69ad430cff213acc87b273580) by [@NickGerleman](https://github.com/NickGerleman))
 - **StyleSheet:** Disallow invalid unitless lengths in box shadows ([8e2de303e3](https://github.com/facebook/react-native/commit/8e2de303e329e29728843dce4ff81177efca0a7a) by [@NickGerleman](https://github.com/NickGerleman))
 - **StyleSheet:** Disallow invalid unitless lengths in filters ([b34e63539d](https://github.com/facebook/react-native/commit/b34e63539dc49b0b6586441f4df4d7d28fd47237) by [@NickGerleman](https://github.com/NickGerleman))
@@ -130,6 +129,8 @@
 - **Deps:** Upgrade React DevTools to 6.1.0. ([07860545f5](https://github.com/facebook/react-native/commit/07860545f5994b1e1f395bec60012433d9abf2fe) by [@hoxyq](https://github.com/hoxyq))
 - **Deps:** Upgrade React DevTools to 6.1.1. ([5c88633035](https://github.com/facebook/react-native/commit/5c886330359c04b953521a08e31eacd5aa399a9b) by [@hoxyq](https://github.com/hoxyq))
 - **DevX:** `Debugger.scriptParsed` now includes the field `sourceMapURL` as a (rewritten) remote url as opposed to base64 data url ([ff2e40371e](https://github.com/facebook/react-native/commit/ff2e40371ec13d2fef54098c5391ca20292c572f) by [@vzaidman](https://github.com/vzaidman))
+- **DevX:** Removed a long-running loop causing the app to lag while attempting a connection to Metro ([9b977def6c](https://github.com/facebook/react-native/commit/9b977def6c228b3fdadc870ac0c34a422933560b) by [@EdmondChuiHW](https://github.com/Edmond
+ChuiHW))
 - **FeatureFlags:** Re-enable enableFixForViewCommandRace feature flag ([ae59702f8e](https://github.com/facebook/react-native/commit/ae59702f8ee89e7bddec971e0a041744cb91e65c) by [@okwasniewski](https://github.com/okwasniewski))
 - **Flow:** Improved eventInitDict type in WebSocketEvent class ([fa2fac1372](https://github.com/facebook/react-native/commit/fa2fac137287781d5b582507251af0352e654cec) by [@coado](https://github.com/coado))
 - **Flow:** Improved Props type in UnimplementedView ([b200c7cb2f](https://github.com/facebook/react-native/commit/b200c7cb2f714e162cfc1d45b59fca4a9253233a) by [@coado](https://github.com/coado))
