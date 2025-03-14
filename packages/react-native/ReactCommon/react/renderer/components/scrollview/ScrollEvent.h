@@ -36,6 +36,9 @@ struct ScrollEvent : public EventPayload {
    */
   jsi::Value asJSIValue(jsi::Runtime& runtime) const override;
   EventPayloadType getType() const override;
+
+  std::optional<double> extractValue(
+      const std::vector<std::string>& path) const override;
 };
 
 struct ScrollEndDragEvent : public ScrollEvent {

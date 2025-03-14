@@ -72,6 +72,21 @@ folly::dynamic ScrollEvent::asDynamic() const {
   return metrics;
 };
 
+std::optional<double> ScrollEvent::extractValue(
+    const std::vector<std::string>& path) const {
+  if (path.size() == 1 && path[0] == "zoomScale") {
+    return zoomScale;
+  } else if (path.size() == 2 && path[0] == "contentOffset") {
+    if (path[1] == "x") {
+      return contentOffset.x;
+    } else if (path[1] == "y") {
+      return contentOffset.y;
+    }
+  }
+
+  return EventPayload::extractValue(path);
+}
+
 EventPayloadType ScrollEvent::getType() const {
   return EventPayloadType::ScrollEvent;
 }
