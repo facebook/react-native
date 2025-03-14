@@ -42,7 +42,9 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Utility class that handles the addition of a "role" for accessibility to either a View or
@@ -107,6 +109,8 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     // problems, so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null
+            || view.getTag(R.id.accessibility_order) != null
+            || view.getTag(R.id.accessibility_order_parent) != null
             || view.getTag(R.id.accessibility_state) != null
             || view.getTag(R.id.accessibility_actions) != null
             || view.getTag(R.id.react_test_id) != null
@@ -132,9 +136,129 @@ public class ReactAccessibilityDelegate extends ExploreByTouchHelper {
     return mView;
   }
 
+  /**
+   * Disables accessibility for views not included in the specified accessibility order.
+   *
+   * <p>This method emulates iOS's focusing order behavior to facilitate cross-platform code
+   * sharing. It disables accessibility for views that are either not part of the accessibility
+   * order or don't have a container that belongs to the accessibility order.
+   *
+   * <p>The container/element concept is borrowed from iOS, where a "container" is a non-accessible
+   * view with children, and an "element" is any accessible view.
+   */
+  private static void disableAxFromExcludedViews(View host, Set<String> nativeIdSet) {
+    Object nativeId = host.getTag(R.id.view_tag_native_id);
+    boolean isIncluded = nativeId != null && nativeIdSet.contains(nativeId);
+
+    if (!isIncluded) {
+      // Save original state before disabling
+      if (host.getImportantForAccessibility() != View.IMPORTANT_FOR_ACCESSIBILITY_NO) {
+        host.setTag(R.id.original_important_for_ax, host.getImportantForAccessibility());
+      }
+      host.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+    }
+
+    if (host instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup) host;
+      if (!isIncluded || host.isFocusable()) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+          disableAxFromExcludedViews(viewGroup.getChildAt(i), nativeIdSet);
+        }
+      }
+    }
+  }
+
+  private static void applyFlowToTraversal(View host, AccessibilityNodeInfoCompat info) {
+    Integer flowTo = (Integer) host.getTag(R.id.flow_to);
+    if (flowTo != null) {
+      View parent = (View) host.getTag(R.id.accessibility_order_parent);
+      if (parent != null) {
+        View nextView = parent.findViewById(flowTo);
+        if (nextView != null) {
+          info.setTraversalBefore(nextView);
+        }
+      }
+    }
+  }
+
+  public static void setCustomAccessibilityFocusOrder(View host, AccessibilityNodeInfoCompat info) {
+
+    ReadableArray nativeIds = (ReadableArray) host.getTag(R.id.accessibility_order);
+
+    if (nativeIds == null || nativeIds.size() == 0) {
+      return;
+    }
+
+    Set<String> nativeIdSet = new HashSet<>();
+    for (int i = 0; i < nativeIds.size(); i++) {
+      nativeIdSet.add(nativeIds.getString(i));
+    }
+
+    addParentTagToChildren(host, host);
+    resetAccessibilityOrder(host);
+
+    // Disable accessibility for views not in the order
+    if (host instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup) host;
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        disableAxFromExcludedViews(viewGroup.getChildAt(i), nativeIdSet);
+      }
+    }
+
+    // Set up traversal order between views
+    for (int i = 0; i < nativeIds.size() - 1; i++) {
+      String currentNativeId = nativeIds.getString(i);
+      String flowToNativeId = nativeIds.getString(i + 1);
+
+      if (currentNativeId != null && flowToNativeId != null) {
+        View currentView = ReactFindViewUtil.findView(host, currentNativeId);
+        View flowToView = ReactFindViewUtil.findView(host, flowToNativeId);
+        if (currentView != null && flowToView != null) {
+          currentView.setTag(R.id.flow_to, flowToView.getId());
+        }
+      }
+    }
+  }
+
+  private static void addParentTagToChildren(View view, View parent) {
+    if (view.getTag(R.id.view_tag_native_id) != null) {
+      view.setTag(R.id.accessibility_order_parent, parent);
+      ReactAccessibilityDelegate.setDelegate(
+          view, view.isFocusable(), view.getImportantForAccessibility());
+    }
+
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup) view;
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        addParentTagToChildren(viewGroup.getChildAt(i), parent);
+      }
+    }
+  }
+
+  public static void resetAccessibilityOrder(View view) {
+    view.setTag(R.id.flow_to, null);
+
+    // Restore original accessibility importance if it was saved
+    Object originalImportance = view.getTag(R.id.original_important_for_ax);
+    if (originalImportance != null) {
+      view.setImportantForAccessibility((Integer) originalImportance);
+    }
+
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = (ViewGroup) view;
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        resetAccessibilityOrder(viewGroup.getChildAt(i));
+      }
+    }
+  }
+
   @Override
   public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
     super.onInitializeAccessibilityNodeInfo(host, info);
+
+    setCustomAccessibilityFocusOrder(host, info);
+    applyFlowToTraversal(host, info);
+
     if (host.getTag(R.id.accessibility_state_expanded) != null) {
       final boolean accessibilityStateExpanded =
           (boolean) host.getTag(R.id.accessibility_state_expanded);

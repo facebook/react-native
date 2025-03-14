@@ -194,6 +194,7 @@ const validAttributesForNonEventProps = {
   renderToHardwareTextureAndroid: true,
   testID: true,
   nativeID: true,
+  accessibilityOrder: true,
   accessibilityLabelledBy: true,
   accessibilityLabel: true,
   accessibilityHint: true,
