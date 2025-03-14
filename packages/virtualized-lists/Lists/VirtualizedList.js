@@ -254,10 +254,14 @@ class VirtualizedList extends StateSafePureComponent<
       return;
     }
 
-    const {horizontal, rtl} = this._orientation();
-    if (horizontal && rtl && !this._listMetrics.hasContentLength()) {
+    const {horizontal, reversed, rtl} = this._orientation();
+    if (
+      ((horizontal && rtl) || reversed) &&
+      !this._listMetrics.hasContentLength()
+    ) {
+      const mode = horizontal && rtl ? 'RTL' : 'reversed lists';
       console.warn(
-        'scrollToOffset may not be called in RTL before content is laid out',
+        `scrollToOffset may not be called in ${mode} before content is laid out`,
       );
       return;
     }
@@ -270,8 +274,8 @@ class VirtualizedList extends StateSafePureComponent<
   }
 
   _scrollToParamsFromOffset(offset: number): {x?: number, y?: number} {
-    const {horizontal, rtl} = this._orientation();
-    if (horizontal && rtl) {
+    const {horizontal, reversed, rtl} = this._orientation();
+    if ((horizontal && rtl) || reversed) {
       // Add the visible length of the scrollview so that the offset is right-aligned
       const cartOffset = this._listMetrics.cartesianOffset(
         offset + this._scrollMetrics.visibleLength,
@@ -1491,8 +1495,17 @@ class VirtualizedList extends StateSafePureComponent<
   }
 
   _orientation(): ListOrientation {
+    const horizontal = horizontalOrDefault(this.props.horizontal);
+    const contentFlexDirection = StyleSheet.flatten(
+      this.props.contentContainerStyle,
+    )?.flexDirection;
+    const reversed =
+      (horizontal && contentFlexDirection === 'row-reverse') ||
+      contentFlexDirection === 'column-reverse';
+
     return {
-      horizontal: horizontalOrDefault(this.props.horizontal),
+      horizontal,
+      reversed,
       rtl: I18nManager.isRTL,
     };
   }
@@ -1737,8 +1750,8 @@ class VirtualizedList extends StateSafePureComponent<
 
   _offsetFromScrollEvent(e: ScrollEvent): number {
     const {contentOffset, contentSize, layoutMeasurement} = e.nativeEvent;
-    const {horizontal, rtl} = this._orientation();
-    if (horizontal && rtl) {
+    const {horizontal, reversed, rtl} = this._orientation();
+    if ((horizontal && rtl) || reversed) {
       return (
         this._selectLength(contentSize) -
         (this._selectOffset(contentOffset) +
