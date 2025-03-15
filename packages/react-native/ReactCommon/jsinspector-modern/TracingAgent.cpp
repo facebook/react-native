@@ -34,8 +34,17 @@ bool TracingAgent::handleRequest(const cdp::PreparsedRequest& req) {
       return true;
     }
 
+    auto bufferUsageCallback =
+        [this](uint64_t bufferSize, uint64_t bufferCapacity) {
+          double bufferPercentageUsed = (double)bufferSize / bufferCapacity;
+
+          frontendChannel_(cdp::jsonNotification(
+              "Tracing.bufferUsage",
+              folly::dynamic::object("percentFull", bufferPercentageUsed)(
+                  "eventCount", bufferSize)("value", bufferPercentageUsed)));
+        };
     bool correctlyStartedPerformanceTracer =
-        PerformanceTracer::getInstance().startTracing();
+        PerformanceTracer::getInstance().startTracing(bufferUsageCallback);
 
     if (!correctlyStartedPerformanceTracer) {
       frontendChannel_(cdp::jsonError(
