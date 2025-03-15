@@ -70,9 +70,7 @@ export class URLSearchParams {
   }
 
   values(name: string): Iterator<string> {
-    function* generateValues(
-      params: Map<string, string[]>,
-    ): Iterator<string> {
+    function* generateValues(params: Map<string, string[]>): Iterator<string> {
       for (const valueArray of params.values()) {
         for (const value of valueArray) {
           yield value;
