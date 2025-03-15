@@ -43,10 +43,10 @@ function buildComponentSchema(
   const options = getOptions(optionsExpression);
 
   const componentEventAsts: Array<PropsAST> = [];
-  categorizeProps(propProperties, types, componentEventAsts);
+  categorizeProps(propProperties, types, componentEventAsts, parser);
   const {props, extendsProps} = parser.getProps(propProperties, types);
   const events = getEvents(componentEventAsts, types, parser);
-  const commands = getCommands(commandProperties, types);
+  const commands = getCommands(commandProperties, types, parser);
 
   return {
     filename: componentName,
