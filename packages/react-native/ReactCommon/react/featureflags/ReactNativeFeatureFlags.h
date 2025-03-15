@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29cdbefbe02064df4fb65388e64f95a4>>
+ * @generated SignedSource<<ef74757e57be86fbc860f5fd02973885>>
  */
 
 /**
@@ -113,6 +113,11 @@ class ReactNativeFeatureFlags {
    * Enables the reporting of long tasks through `PerformanceObserver`. Only works if the event loop is enabled.
    */
   RN_EXPORT static bool enableLongTaskAPI();
+
+  /**
+   * Makes modules requiring main queue setup initialize on the main thread, during React Native init.
+   */
+  RN_EXPORT static bool enableMainQueueModulesOnIOS();
 
   /**
    * Parse CSS strings using the Fabric CSS parser instead of ViewConfig processing

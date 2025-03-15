@@ -51,6 +51,8 @@ describe('execute', () => {
     'RCTThirdPartyComponentsProvider.mm',
     'ReactAppDependencyProvider.podspec',
     'ReactCodegen.podspec',
+    'RCTUnstableModulesRequiringMainQueueSetupProvider.h',
+    'RCTUnstableModulesRequiringMainQueueSetupProvider.mm',
   ].forEach(file => {
     it(`"${file}" should match snapshot`, () => {
       const generatedFileDir = path.join(outputDir, 'build/generated/ios');
