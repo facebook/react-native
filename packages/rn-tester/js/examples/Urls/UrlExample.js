@@ -22,7 +22,6 @@ type Props = {
 
 function URLComponent(props: Props) {
   const parsedUrl = new URL(props.url);
-  console.log(parsedUrl.searchParams.keys());
   return (
     <View style={styles.container}>
       <RNTesterText testID="URL-href">{`href: ${parsedUrl.href}`}</RNTesterText>
