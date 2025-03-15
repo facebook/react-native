@@ -307,6 +307,14 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
 
 #pragma mark - RCTInstanceDelegate
 
+- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup
+{
+  if ([_hostDelegate respondsToSelector:@selector(unstableModulesRequiringMainQueueSetup)]) {
+    return [_hostDelegate unstableModulesRequiringMainQueueSetup];
+  }
+  return @[];
+}
+
 - (BOOL)instance:(RCTInstance *)instance
     didReceiveJSErrorStack:(NSArray<NSDictionary<NSString *, id> *> *)stack
                    message:(NSString *)message

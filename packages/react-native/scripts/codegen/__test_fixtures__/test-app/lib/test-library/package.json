@@ -34,18 +34,26 @@
       "componentProvider": {
         "TestLibraryDeprecatedComponent": "RCTTestLibraryDeprecatedComponentClass"
       },
+      "unstableModulesRequiringMainQueueSetup": [
+        "RCTTestLibraryDeprecatedImageURLLoader",
+        "RCTTestLibraryDeprecatedURLRequestHandler",
+        "RCTTestLibraryDeprecatedImageDataDecoder"
+      ],
       "modules": {
         "TestLibraryImageURLLoader": {
           "conformsToProtocols": ["RCTImageURLLoader"],
-          "className": "RCTTestLibraryImageURLLoader"
+          "className": "RCTTestLibraryImageURLLoader",
+          "unstableRequiresMainQueueSetup": true
         },
         "TestLibraryURLRequestHandler": {
           "conformsToProtocols": ["RCTURLRequestHandler"],
-          "className": "RCTTestLibraryURLRequestHandler"
+          "className": "RCTTestLibraryURLRequestHandler",
+          "unstableRequiresMainQueueSetup": true
         },
         "TestLibraryImageDataDecoder": {
           "conformsToProtocols": ["RCTImageDataDecoder"],
-          "className": "RCTTestLibraryImageDataDecoder"
+          "className": "RCTTestLibraryImageDataDecoder",
+          "unstableRequiresMainQueueSetup": true
         }
       },
       "components": {
