@@ -710,6 +710,7 @@ export const __INTERNAL_VIEW_CONFIG: PartialViewConfig = {
     textBreakStrategy: true,
     onScroll: true,
     onContentSizeChange: true,
+    disableDragAndDropPasting: true,
     disableFullscreenUI: true,
     includeFontPadding: true,
     fontWeight: true,
