@@ -43,6 +43,80 @@ NSArray<Class> *RCTGetModuleClasses(void)
   return result;
 }
 
+NSSet<NSString *> *getCoreModuleClasses(void);
+NSSet<NSString *> *getCoreModuleClasses(void)
+{
+  static NSSet<NSString *> *coreModuleClasses = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    coreModuleClasses = [NSSet setWithArray:@[
+      @"RCTViewManager",
+      @"RCTActivityIndicatorViewManager",
+      @"RCTDebuggingOverlayManager",
+      @"RCTModalHostViewManager",
+      @"RCTModalManager",
+      @"RCTRefreshControlManager",
+      @"RCTSafeAreaViewManager",
+      @"RCTScrollContentViewManager",
+      @"RCTScrollViewManager",
+      @"RCTSwitchManager",
+      @"RCTUIManager",
+      @"RCTAccessibilityManager",
+      @"RCTActionSheetManager",
+      @"RCTAlertManager",
+      @"RCTAppearance",
+      @"RCTAppState",
+      @"RCTClipboard",
+      @"RCTDeviceInfo",
+      @"RCTDevLoadingView",
+      @"RCTDevMenu",
+      @"RCTDevSettings",
+      @"RCTDevToolsRuntimeSettingsModule",
+      @"RCTEventDispatcher",
+      @"RCTExceptionsManager",
+      @"RCTI18nManager",
+      @"RCTKeyboardObserver",
+      @"RCTLogBox",
+      @"RCTPerfMonitor",
+      @"RCTPlatform",
+      @"RCTRedBox",
+      @"RCTSourceCode",
+      @"RCTStatusBarManager",
+      @"RCTTiming",
+      @"RCTWebSocketModule",
+      @"RCTNativeAnimatedModule",
+      @"RCTNativeAnimatedTurboModule",
+      @"RCTBlobManager",
+      @"RCTFileReaderModule",
+      @"RCTBundleAssetImageLoader",
+      @"RCTGIFImageDecoder",
+      @"RCTImageEditingManager",
+      @"RCTImageLoader",
+      @"RCTImageStoreManager",
+      @"RCTImageViewManager",
+      @"RCTLocalAssetImageLoader",
+      @"RCTLinkingManager",
+      @"RCTDataRequestHandler",
+      @"RCTFileRequestHandler",
+      @"RCTHTTPRequestHandler",
+      @"RCTNetworking",
+      @"RCTPushNotificationManager",
+      @"RCTSettingsManager",
+      @"RCTBaseTextViewManager",
+      @"RCTBaseTextInputViewManager",
+      @"RCTInputAccessoryViewManager",
+      @"RCTMultilineTextInputViewManager",
+      @"RCTRawTextViewManager",
+      @"RCTSinglelineTextInputViewManager",
+      @"RCTTextViewManager",
+      @"RCTVirtualTextViewManager",
+      @"RCTVibration",
+    ]];
+  });
+
+  return coreModuleClasses;
+}
+
 /**
  * Register the given class as a bridge module. All modules must be registered
  * prior to the first bridge initialization.
@@ -51,6 +125,11 @@ NSArray<Class> *RCTGetModuleClasses(void)
 void RCTRegisterModule(Class);
 void RCTRegisterModule(Class moduleClass)
 {
+  if (RCTIsNewArchEnabled() && ![getCoreModuleClasses() containsObject:[moduleClass description]]) {
+    RCTLogWarn(
+        @"The %@ module is registering using a RCT_EXPORT_MODULE. That's a Legacy Architecture API. Please migrate to the new approach as described in the https://reactnative.dev/docs/next/turbo-native-modules-introduction#register-the-native-module-in-your-app website",
+        moduleClass);
+  }
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     RCTModuleClasses = [NSMutableArray new];
