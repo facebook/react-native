@@ -12,6 +12,8 @@
 
 const URL = require('../URL').URL;
 
+const URLSearchParams = require('../URL').URLSearchParams;
+
 describe('URL', function () {
   it('should pass Mozilla Dev Network examples', () => {
     const a = new URL('/', 'https://developer.mozilla.org');
@@ -52,5 +54,72 @@ describe('URL', function () {
     expect(url.pathname).toBe('/docs/path');
     expect(url.port).toBe('8080');
     expect(url.search).toBe('?query=testQuery&key=value');
+
+    // Test searchParams
+    const searchParams = url.searchParams;
+    expect(searchParams.get('query')).toBe('testQuery');
+    expect(searchParams.get('key')).toBe('value');
+
+    const paramsFromString = new URLSearchParams(
+      '?param1=value1&param2=value2',
+    );
+    expect(paramsFromString.get('param1')).toBe('value1');
+    expect(paramsFromString.get('param2')).toBe('value2');
+
+    const paramsFromObject = new URLSearchParams({
+      user: 'john',
+      age: '30',
+      active: 'true',
+    });
+
+    expect(paramsFromObject.get('user')).toBe('john');
+    expect(paramsFromObject.get('age')).toBe('30');
+    expect(paramsFromObject.get('active')).toBe('true');
+
+    const valuesArray = Array.from(paramsFromObject.values());
+    expect(valuesArray).toEqual(['john', '30', 'true']);
+    const entriesArray = Array.from(paramsFromObject.entries());
+    expect(entriesArray).toEqual([
+      ['user', 'john'],
+      ['age', '30'],
+      ['active', 'true'],
+    ]);
+
+    // URLSearchParams: Empty
+    const emptyParams = new URLSearchParams('');
+    expect([...emptyParams.entries()]).toEqual([]);
+
+    // URLSearchParams: Array (for multiple values of the same key)
+    const paramsFromArray = new URLSearchParams([
+      ['key1', 'value1'],
+      ['key1', 'value2'],
+      ['key2', 'value3'],
+    ]);
+    expect(paramsFromArray.getAll('key1')).toEqual(['value1', 'value2']);
+    expect(paramsFromArray.get('key2')).toBe('value3');
+
+    // Manipulating existing search params in the URL
+    const urlParams = url.searchParams;
+    expect(urlParams.get('query')).toBe('testQuery');
+    expect(urlParams.get('key')).toBe('value');
+
+    // Adding a new param
+    urlParams.append('newKey', 'newValue');
+    expect(urlParams.get('newKey')).toBe('newValue');
+
+    // Deleting a param
+    urlParams.delete('key');
+    expect(urlParams.get('key')).toBeNull();
+
+    // Checking if a param exists
+    expect(urlParams.has('query')).toBe(true);
+    expect(urlParams.has('key')).toBe(false);
+
+    // Sorting URLSearchParams
+    const unsortedParams = new URLSearchParams(
+      '?z=last&b=second&c=third&a=first',
+    );
+    unsortedParams.sort();
+    expect(unsortedParams.toString()).toBe('a=first&b=second&c=third&z=last');
   });
 });

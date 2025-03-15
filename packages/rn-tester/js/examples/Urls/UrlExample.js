@@ -22,6 +22,7 @@ type Props = {
 
 function URLComponent(props: Props) {
   const parsedUrl = new URL(props.url);
+  console.log(parsedUrl.searchParams.keys());
   return (
     <View style={styles.container}>
       <RNTesterText testID="URL-href">{`href: ${parsedUrl.href}`}</RNTesterText>
@@ -33,6 +34,7 @@ function URLComponent(props: Props) {
       <RNTesterText testID="URL-pathname">{`pathname: ${parsedUrl.pathname}`}</RNTesterText>
       <RNTesterText testID="URL-port">{`port: ${parsedUrl.port}`}</RNTesterText>
       <RNTesterText testID="URL-search">{`search: ${parsedUrl.search}`}</RNTesterText>
+      <RNTesterText testID="URL-search-params">{`searchParams: ${parsedUrl.searchParams.t()}`}</RNTesterText>
     </View>
   );
 }
