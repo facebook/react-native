@@ -8,8 +8,6 @@
  * @format
  */
 
-import type {Node} from 'react';
-
 import View from '../../Components/View/View';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
@@ -17,7 +15,7 @@ import useColorScheme from '../../Utilities/useColorScheme';
 import Colors from './Colors';
 import React from 'react';
 
-const HermesBadge = (): Node => {
+const HermesBadge = (): React.Node => {
   const isDarkMode = useColorScheme() === 'dark';
   const version =
     global.HermesInternal?.getRuntimeProperties?.()['OSS Release Version'] ??

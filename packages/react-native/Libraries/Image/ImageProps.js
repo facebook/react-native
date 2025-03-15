@@ -24,7 +24,8 @@ import type {
 import typeof Image from './Image';
 import type {ImageResizeMode} from './ImageResizeMode';
 import type {ImageSource, ImageURISource} from './ImageSource';
-import type {ElementRef, Node, RefSetter} from 'react';
+import type React from 'react';
+import type {ElementRef, RefSetter} from 'react';
 
 export type ImageSourcePropType = ImageSource;
 
@@ -341,7 +342,7 @@ export type ImageProps = $ReadOnly<{
 
 export type ImageBackgroundProps = $ReadOnly<{
   ...ImageProps,
-  children?: Node,
+  children?: React.Node,
 
   /**
    * Style applied to the outer View component
