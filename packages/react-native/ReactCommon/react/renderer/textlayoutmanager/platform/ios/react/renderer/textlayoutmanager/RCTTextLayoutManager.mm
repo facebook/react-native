@@ -47,24 +47,11 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
   }
 
   CGSize maximumSize = CGSize{layoutConstraints.maximumSize.width, CGFLOAT_MAX};
-
-  // A workaround for the issue with empty line measurement:
-  // When maximumNumberOfLines is set to N and N+1 line is empty, the returned
-  // measurement is for N+1 lines. Adding any character to that line results
-  // in the correct measurement.
-  if (paragraphAttributes.maximumNumberOfLines > 0 && attributedString.length > 0 &&
-      [[attributedString string] characterAtIndex:attributedString.length - 1] == '\n') {
-    NSMutableAttributedString *mutableString =
-        [[NSMutableAttributedString alloc] initWithAttributedString:attributedString];
-    [mutableString replaceCharactersInRange:NSMakeRange(attributedString.length - 1, 1) withString:@"\n "];
-    attributedString = mutableString;
-  }
-
   NSTextStorage *textStorage = [self _textStorageAndLayoutManagerWithAttributesString:attributedString
                                                                   paragraphAttributes:paragraphAttributes
                                                                                  size:maximumSize];
 
-  return [self _measureTextStorage:textStorage];
+  return [self _measureTextStorage:textStorage paragraphAttributes:paragraphAttributes];
 }
 
 - (TextMeasurement)measureAttributedString:(AttributedString)attributedString
@@ -341,6 +328,7 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 }
 
 - (TextMeasurement)_measureTextStorage:(NSTextStorage *)textStorage
+                   paragraphAttributes:(ParagraphAttributes)paragraphAttributes
 {
   NSLayoutManager *layoutManager = textStorage.layoutManagers.firstObject;
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
@@ -348,6 +336,8 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
   __block BOOL textDidWrap = NO;
+  __block NSUInteger linesEnumerated = 0;
+  __block CGFloat enumeratedLinesHeight = 0;
   [layoutManager
       enumerateLineFragmentsForGlyphRange:glyphRange
                                usingBlock:^(
@@ -363,6 +353,13 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
                                      [textStorage.string characterAtIndex:lastCharacterIndex] == '\n';
                                  if (!endsWithNewLine && textStorage.string.length > lastCharacterIndex + 1) {
                                    textDidWrap = YES;
+                                 }
+                                 if (linesEnumerated++ < paragraphAttributes.maximumNumberOfLines) {
+                                   enumeratedLinesHeight = usedRect.origin.y + usedRect.size.height;
+                                 }
+                                 if (textDidWrap &&
+                                     (paragraphAttributes.maximumNumberOfLines == 0 ||
+                                      linesEnumerated >= paragraphAttributes.maximumNumberOfLines)) {
                                    *stop = YES;
                                  }
                                }];
@@ -371,6 +368,18 @@ static NSLineBreakMode RCTNSLineBreakModeFromEllipsizeMode(EllipsizeMode ellipsi
 
   if (textDidWrap) {
     size.width = textContainer.size.width;
+  }
+
+  if (paragraphAttributes.maximumNumberOfLines != 0) {
+    // If maximumNumberOfLines is set, we cannot rely on setting it on the NSTextContainer
+    // due to an edge case where it returns wrong height:
+    // When maximumNumberOfLines is set to N and the N+1 line is empty, the measured height
+    // is N+1 lines (incorrect). Adding any characted to the N+1 line, making it non-empty
+    // casuses the measured height to be N lines (correct).
+    if (linesEnumerated < paragraphAttributes.maximumNumberOfLines) {
+      enumeratedLinesHeight += layoutManager.extraLineFragmentUsedRect.size.height;
+    }
+    size.height = enumeratedLinesHeight;
   }
 
   size = (CGSize){RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height)};
