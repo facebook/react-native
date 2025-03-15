@@ -230,15 +230,37 @@ public class BlobModule extends NativeBlobModuleSpec {
     if (is == null) {
       throw new FileNotFoundException("File not found for " + contentUri);
     }
+      
+    try{
+      //Allocate a buffer upto the number of bytes that can be read without blocking
+      //available() typically returns the file size if the uri represents an underlying file (i.e. is instanceof FileInputStream)
+      byte[] buffer = new byte[Math.max(1024,is.available())];//fallback to 1024 if available returns 0 or a small size.
+      int len;
+      byte[] prevBuffer = new byte[1024];
+      int prevLen = 0;
+      
+  
+      ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+      while ((len = is.read(buffer)) != -1) {
+        //this performs a no-op on the first iteration of while. prevLen is zero
+        byteBuffer.write(prevBuffer, 0, prevLen);
+        //swap buffers. 
+        byte[] temp = prevBuffer;
+        prevBuffer = buffer;
+        buffer = temp;
+        //set prevLen = length of data in prevBuffer
+        prevLen = len;
+      }
 
-    ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-    int bufferSize = 1024;
-    byte[] buffer = new byte[bufferSize];
-    int len;
-    while ((len = is.read(buffer)) != -1) {
-      byteBuffer.write(buffer, 0, len);
+      if(byteBuffer.size() == 0 && prevBuffer.length==prevLen){
+        //If EOF AND prevBuffer contains entire stream avoid using ByteArrayOutputStream
+        return prevBuffer;
+      }
+      byteBuffer.write(prevBuffer, 0, prevLen);
+      return byteBuffer.toByteArray();
+    }finally{
+      is.close();
     }
-    return byteBuffer.toByteArray();
   }
 
   private String getNameFromUri(Uri contentUri) {
