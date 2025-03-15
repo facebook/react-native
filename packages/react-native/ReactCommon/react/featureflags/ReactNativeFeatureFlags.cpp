@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<4d47f61435ba3a74e84752a02def81c2>>
+ * @generated SignedSource<<3ba7e705620af4b02b86173f9f9fcd19>>
  */
 
 /**
@@ -164,6 +164,10 @@ bool ReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid() {
 
 bool ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling() {
   return getAccessor().useAlwaysAvailableJSErrorHandling();
+}
+
+bool ReactNativeFeatureFlags::useCxxNativeAnimated() {
+  return getAccessor().useCxxNativeAnimated();
 }
 
 bool ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior() {

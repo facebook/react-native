@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<e76d584cb67e2feae209795beb2009d6>>
+ * @generated SignedSource<<ceab160aa71a9ea555c7f582f74dc764>>
  * @flow strict
  */
 
@@ -82,6 +82,7 @@ export type ReactNativeFeatureFlags = $ReadOnly<{
   throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOS: Getter<boolean>,
   traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean>,
   useAlwaysAvailableJSErrorHandling: Getter<boolean>,
+  useCxxNativeAnimated: Getter<boolean>,
   useEditTextStockAndroidFocusBehavior: Getter<boolean>,
   useFabricInterop: Getter<boolean>,
   useNativeViewConfigsInBridgelessMode: Getter<boolean>,
@@ -300,6 +301,10 @@ export const traceTurboModulePromiseRejectionsOnAndroid: Getter<boolean> = creat
  * In Bridgeless mode, use the always available javascript error reporting pipeline.
  */
 export const useAlwaysAvailableJSErrorHandling: Getter<boolean> = createNativeFlagGetter('useAlwaysAvailableJSErrorHandling', false);
+/**
+ * When enabled, NativeModules will be executed by using the TurboModule system
+ */
+export const useCxxNativeAnimated: Getter<boolean> = createNativeFlagGetter('useCxxNativeAnimated', false);
 /**
  * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.
  */

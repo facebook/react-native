@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<0fb76e329360157ea9772a0d8bebc873>>
+ * @generated SignedSource<<8d5d24943cbe7c6e1b7ae23d3d82f604>>
  */
 
 /**
@@ -59,6 +59,7 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
   private var throwExceptionInsteadOfDeadlockOnTurboModuleSetupDuringSyncRenderIOSCache: Boolean? = null
   private var traceTurboModulePromiseRejectionsOnAndroidCache: Boolean? = null
   private var useAlwaysAvailableJSErrorHandlingCache: Boolean? = null
+  private var useCxxNativeAnimatedCache: Boolean? = null
   private var useEditTextStockAndroidFocusBehaviorCache: Boolean? = null
   private var useFabricInteropCache: Boolean? = null
   private var useNativeViewConfigsInBridgelessModeCache: Boolean? = null
@@ -413,6 +414,16 @@ internal class ReactNativeFeatureFlagsLocalAccessor : ReactNativeFeatureFlagsAcc
       cached = currentProvider.useAlwaysAvailableJSErrorHandling()
       accessedFeatureFlags.add("useAlwaysAvailableJSErrorHandling")
       useAlwaysAvailableJSErrorHandlingCache = cached
+    }
+    return cached
+  }
+
+  override fun useCxxNativeAnimated(): Boolean {
+    var cached = useCxxNativeAnimatedCache
+    if (cached == null) {
+      cached = currentProvider.useCxxNativeAnimated()
+      accessedFeatureFlags.add("useCxxNativeAnimated")
+      useCxxNativeAnimatedCache = cached
     }
     return cached
   }

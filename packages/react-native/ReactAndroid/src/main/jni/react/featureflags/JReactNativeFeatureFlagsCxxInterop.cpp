@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c866e69278d249dd79cb2fc193d1a7e2>>
+ * @generated SignedSource<<4e3cf620b4342b8d97b97396600e37dc>>
  */
 
 /**
@@ -249,6 +249,12 @@ class ReactNativeFeatureFlagsProviderHolder
     return method(javaProvider_);
   }
 
+  bool useCxxNativeAnimated() override {
+    static const auto method =
+        getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useCxxNativeAnimated");
+    return method(javaProvider_);
+  }
+
   bool useEditTextStockAndroidFocusBehavior() override {
     static const auto method =
         getReactNativeFeatureFlagsProviderJavaClass()->getMethod<jboolean()>("useEditTextStockAndroidFocusBehavior");
@@ -470,6 +476,11 @@ bool JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling(
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
 }
 
+bool JReactNativeFeatureFlagsCxxInterop::useCxxNativeAnimated(
+    facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
+  return ReactNativeFeatureFlags::useCxxNativeAnimated();
+}
+
 bool JReactNativeFeatureFlagsCxxInterop::useEditTextStockAndroidFocusBehavior(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/) {
   return ReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior();
@@ -641,6 +652,9 @@ void JReactNativeFeatureFlagsCxxInterop::registerNatives() {
       makeNativeMethod(
         "useAlwaysAvailableJSErrorHandling",
         JReactNativeFeatureFlagsCxxInterop::useAlwaysAvailableJSErrorHandling),
+      makeNativeMethod(
+        "useCxxNativeAnimated",
+        JReactNativeFeatureFlagsCxxInterop::useCxxNativeAnimated),
       makeNativeMethod(
         "useEditTextStockAndroidFocusBehavior",
         JReactNativeFeatureFlagsCxxInterop::useEditTextStockAndroidFocusBehavior),

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<29cdbefbe02064df4fb65388e64f95a4>>
+ * @generated SignedSource<<0b9e58a771dd3220f7c932b042c7255a>>
  */
 
 /**
@@ -213,6 +213,11 @@ class ReactNativeFeatureFlags {
    * In Bridgeless mode, use the always available javascript error reporting pipeline.
    */
   RN_EXPORT static bool useAlwaysAvailableJSErrorHandling();
+
+  /**
+   * When enabled, NativeModules will be executed by using the TurboModule system
+   */
+  RN_EXPORT static bool useCxxNativeAnimated();
 
   /**
    * If true, focusing in ReactEditText will mainly use stock Android requestFocus() behavior. If false it will use legacy custom focus behavior.

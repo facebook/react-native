@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<7493403280d2ac7ec348eb3d78d915c2>>
+ * @generated SignedSource<<64074829e45ab2ff1bc44437631d95e2>>
  */
 
 /**
@@ -217,6 +217,11 @@ bool NativeReactNativeFeatureFlags::traceTurboModulePromiseRejectionsOnAndroid(
 bool NativeReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling(
     jsi::Runtime& /*runtime*/) {
   return ReactNativeFeatureFlags::useAlwaysAvailableJSErrorHandling();
+}
+
+bool NativeReactNativeFeatureFlags::useCxxNativeAnimated(
+    jsi::Runtime& /*runtime*/) {
+  return ReactNativeFeatureFlags::useCxxNativeAnimated();
 }
 
 bool NativeReactNativeFeatureFlags::useEditTextStockAndroidFocusBehavior(

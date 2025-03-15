@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<06c5ef75b624d953e7a8d9297feaf816>>
+ * @generated SignedSource<<4b2848db91c6cbc347c254fe8ef2dea3>>
  */
 
 /**
@@ -97,6 +97,8 @@ public object ReactNativeFeatureFlagsCxxInterop {
   @DoNotStrip @JvmStatic public external fun traceTurboModulePromiseRejectionsOnAndroid(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useAlwaysAvailableJSErrorHandling(): Boolean
+
+  @DoNotStrip @JvmStatic public external fun useCxxNativeAnimated(): Boolean
 
   @DoNotStrip @JvmStatic public external fun useEditTextStockAndroidFocusBehavior(): Boolean
 
