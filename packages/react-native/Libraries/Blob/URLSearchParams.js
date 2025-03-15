@@ -65,14 +65,14 @@ export class URLSearchParams {
     this._searchParams.set(name, [value]);
   }
 
-  keys(name: string): IterableIterator<string> {
+  keys(name: string): Iterator<string> {
     return this._searchParams.keys();
   }
 
-  values(name: string): IterableIterator<string> {
+  values(name: string): Iterator<string> {
     function* generateValues(
       params: Map<string, string[]>,
-    ): IterableIterator<string> {
+    ): Iterator<string> {
       for (const valueArray of params.values()) {
         for (const value of valueArray) {
           yield value;
@@ -82,10 +82,10 @@ export class URLSearchParams {
     return generateValues(this._searchParams);
   }
 
-  entries(name: string): IterableIterator<[string, string]> {
+  entries(name: string): Iterator<[string, string]> {
     function* generateEntries(
       params: Map<string, string[]>,
-    ): IterableIterator<[string, string]> {
+    ): Iterator<[string, string]> {
       for (const [key, values] of params) {
         for (const value of values) {
           yield [key, value];

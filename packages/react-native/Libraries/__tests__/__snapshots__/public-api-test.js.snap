@@ -1315,9 +1315,9 @@ exports[`public API should not change unintentionally Libraries/Blob/URLSearchPa
   sort(): void;
   @@iterator(): Iterator<[string, string]>;
   toString(): string;
-  keys(): IterableIterator<string>;
-  values(): IterableIterator<string>;
-  entries(): IterableIterator<string>;
+  keys(): Iterator<string>;
+  values(): Iterator<string>;
+  entries(): Iterator<[string, string]>;
 }
 "
 `;
