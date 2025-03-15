@@ -12,6 +12,7 @@
 
 #include <folly/dynamic.h>
 #include <react/renderer/core/EventDispatcher.h>
+#include <react/renderer/core/EventListener.h>
 #include <react/renderer/core/EventPayload.h>
 #include <react/renderer/core/EventTarget.h>
 #include <react/renderer/core/ReactPrimitives.h>
@@ -103,12 +104,25 @@ class EventEmitter {
 
   void dispatchUniqueEvent(std::string type, SharedEventPayload payload) const;
 
+#pragma mark - Event listeners
+  /*
+   * Adds provided event listener to the event dispatcher.
+   */
+  void addListener(std::shared_ptr<const EventEmitterListener> listener) const;
+
+  /*
+   * Removes provided event listener to the event dispatcher.
+   */
+  void removeListener(
+      const std::shared_ptr<const EventEmitterListener>& listener) const;
+
  private:
   friend class UIManagerBinding;
 
   mutable SharedEventTarget eventTarget_;
 
   EventDispatcher::Weak eventDispatcher_;
+  mutable EventEmitterListenerContainer eventListeners_{};
   mutable int enableCounter_{0};
   mutable bool isEnabled_{false};
 };

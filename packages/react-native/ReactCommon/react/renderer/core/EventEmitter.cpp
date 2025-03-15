@@ -9,9 +9,9 @@
 
 #include <cxxreact/TraceSection.h>
 #include <folly/dynamic.h>
-#include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 
+#include "DynamicEventPayload.h"
 #include "RawEvent.h"
 
 namespace facebook::react {
@@ -61,18 +61,15 @@ void EventEmitter::dispatchEvent(
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      [payload](jsi::Runtime& runtime) {
-        return valueFromDynamic(runtime, payload);
-      },
+      std::make_shared<DynamicEventPayload>(payload),
       category);
 }
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
     const folly::dynamic& payload) const {
-  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime& runtime) {
-    return valueFromDynamic(runtime, payload);
-  });
+  dispatchUniqueEvent(
+      std::move(type), std::make_shared<DynamicEventPayload>(payload));
 }
 
 void EventEmitter::dispatchEvent(
@@ -93,6 +90,12 @@ void EventEmitter::dispatchEvent(
 
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
+    return;
+  }
+
+  // Allows the event listener to interrupt default event dispatch
+  if (eventListeners_.willDispatchEvent(
+          std::make_tuple(eventTarget_->getTag(), type, payload))) {
     return;
   }
 
@@ -118,6 +121,12 @@ void EventEmitter::dispatchUniqueEvent(
 
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
+    return;
+  }
+
+  // Allows the event listener to interrupt default event dispatch
+  if (eventListeners_.willDispatchEvent(
+          std::make_tuple(eventTarget_->getTag(), type, payload))) {
     return;
   }
 
@@ -153,6 +162,19 @@ void EventEmitter::setEnabled(bool enabled) const {
 
 const SharedEventTarget& EventEmitter::getEventTarget() const {
   return eventTarget_;
+}
+
+void EventEmitter::addListener(
+    std::shared_ptr<const EventEmitterListener> listener) const {
+  eventListeners_.addListener(std::move(listener));
+}
+
+/*
+ * Removes provided event listener to the event dispatcher.
+ */
+void EventEmitter::removeListener(
+    const std::shared_ptr<const EventEmitterListener>& listener) const {
+  eventListeners_.removeListener(listener);
 }
 
 } // namespace facebook::react
