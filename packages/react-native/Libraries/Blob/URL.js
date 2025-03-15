@@ -160,7 +160,7 @@ export class URL {
 
   get searchParams(): URLSearchParams {
     if (this._searchParamsInstance == null) {
-      this._searchParamsInstance = new URLSearchParams();
+      this._searchParamsInstance = new URLSearchParams(this.search);
     }
     return this._searchParamsInstance;
   }
