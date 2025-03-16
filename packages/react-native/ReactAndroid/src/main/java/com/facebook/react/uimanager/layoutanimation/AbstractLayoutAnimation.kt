@@ -58,16 +58,13 @@ internal abstract class AbstractLayoutAnimation {
   fun initializeFromConfig(data: ReadableMap, globalDuration: Int) {
     animatedProperty =
     if (data.hasKey("property"))
-      AnimatedPropertyType.fromString(data.getString("property")!!)
+      AnimatedPropertyType.fromString(data.getString("property") ?: "")
     else null
     durationMs = if (data.hasKey("duration")) data.getInt("duration") else globalDuration
     delayMs = if (data.hasKey("delay")) data.getInt("delay") else 0
     require(data.hasKey("type")) { "Missing interpolation type." }
-    interpolator = getInterpolator(
-      InterpolatorType.fromString(
-        data.getString("type")!!
-      ), data
-    )
+
+    interpolator = getInterpolator(InterpolatorType.fromString(data.getString("type") ?: ""), data)
 
     if (!isValid()) {
       throw IllegalViewOperationException("Invalid layout animation : $data")
