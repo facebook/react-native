@@ -42,7 +42,7 @@ internal abstract class AbstractLayoutAnimation {
     width: Int,
     height: Int
   ): Animation?
-    
+
   @VisibleForTesting var interpolator: Interpolator? = null
   @VisibleForTesting var delayMs: Int = 0
   @VisibleForTesting var animatedProperty: AnimatedPropertyType? = null
@@ -85,14 +85,13 @@ internal abstract class AbstractLayoutAnimation {
     if (!isValid()) {
       return null
     }
-    val animation = createAnimationImpl(view, x, y, width, height)
-    if (animation != null) {
+
+    return createAnimationImpl(view, x, y, width, height)?.apply {
       val slowdownFactor = if (SLOWDOWN_ANIMATION_MODE) 10 else 1
-      animation.duration = (durationMs * slowdownFactor).toLong()
-      animation.startOffset = (delayMs * slowdownFactor).toLong()
-      animation.interpolator = interpolator
+      duration = (durationMs * slowdownFactor).toLong()
+      startOffset = (delayMs * slowdownFactor).toLong()
+      interpolator = interpolator
     }
-    return animation
   }
 
   companion object {
