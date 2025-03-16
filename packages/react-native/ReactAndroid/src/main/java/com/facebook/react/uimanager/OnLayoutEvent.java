@@ -16,6 +16,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitecture;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel;
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.uimanager.events.Event;
+import com.facebook.react.common.annotations.VisibleForTesting;
 
 /** Event used to notify JS component about changes of its position or dimensions */
 @Nullsafe(Nullsafe.Mode.LOCAL)
@@ -30,7 +31,8 @@ public class OnLayoutEvent extends Event<OnLayoutEvent> {
   private static final Pools.SynchronizedPool<OnLayoutEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(20);
 
-  private int mX, mY, mWidth, mHeight;
+  @VisibleForTesting
+  public int mX, mY, mWidth, mHeight;
 
   @Deprecated
   public static OnLayoutEvent obtain(int viewTag, int x, int y, int width, int height) {
