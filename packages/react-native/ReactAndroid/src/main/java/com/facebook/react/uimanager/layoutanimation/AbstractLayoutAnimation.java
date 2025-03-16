@@ -23,6 +23,7 @@ import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import java.util.Map;
+import com.facebook.react.common.annotations.VisibleForTesting;
 
 /**
  * Class responsible for parsing and converting layout animation data into native {@link Animation}
@@ -55,8 +56,10 @@ import java.util.Map;
           InterpolatorType.EASE_OUT, new DecelerateInterpolator(),
           InterpolatorType.EASE_IN_EASE_OUT, new AccelerateDecelerateInterpolator());
 
-  private @Nullable Interpolator mInterpolator;
-  private int mDelayMs;
+  @VisibleForTesting
+  public @Nullable Interpolator mInterpolator;
+  @VisibleForTesting
+  public int mDelayMs;
 
   protected @Nullable AnimatedPropertyType mAnimatedProperty;
   protected int mDurationMs;
@@ -109,7 +112,8 @@ import java.util.Map;
     return animation;
   }
 
-  private static Interpolator getInterpolator(InterpolatorType type, ReadableMap params) {
+  @VisibleForTesting
+  public static Interpolator getInterpolator(InterpolatorType type, ReadableMap params) {
     Interpolator interpolator;
     if (type.equals(InterpolatorType.SPRING)) {
       interpolator =
