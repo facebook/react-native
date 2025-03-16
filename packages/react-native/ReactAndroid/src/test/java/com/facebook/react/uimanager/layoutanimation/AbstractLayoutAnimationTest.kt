@@ -43,10 +43,10 @@ class AbstractLayoutAnimationTest {
   @Test
   fun reset_clearsAnimationProperties() {
     animation.reset()
-    assertThat(animation.mAnimatedProperty).isNull()
-    assertThat(animation.mDurationMs).isEqualTo(0)
-    assertThat(animation.mDelayMs).isEqualTo(0)
-    assertThat(animation.mInterpolator).isNull()
+    assertThat(animation.animatedProperty).isNull()
+    assertThat(animation.durationMs).isEqualTo(0)
+    assertThat(animation.delayMs).isEqualTo(0)
+    assertThat(animation.interpolator).isNull()
   }
 
   @Test

@@ -27,7 +27,6 @@ import com.facebook.react.uimanager.IllegalViewOperationException
  * in order to animate layout when a valid configuration has been supplied by the application.
  */
 @LegacyArchitecture
-/* package */
 internal abstract class AbstractLayoutAnimation {
   internal abstract fun isValid(): Boolean
 
@@ -44,27 +43,27 @@ internal abstract class AbstractLayoutAnimation {
     height: Int
   ): Animation?
     
-  @VisibleForTesting var mInterpolator: Interpolator? = null
-  @VisibleForTesting var mDelayMs: Int = 0
-  @VisibleForTesting var mAnimatedProperty: AnimatedPropertyType? = null
-  @VisibleForTesting var mDurationMs: Int = 0
+  @VisibleForTesting var interpolator: Interpolator? = null
+  @VisibleForTesting var delayMs: Int = 0
+  @VisibleForTesting var animatedProperty: AnimatedPropertyType? = null
+  @VisibleForTesting var durationMs: Int = 0
 
   fun reset() {
-    mAnimatedProperty = null
-    mDurationMs = 0
-    mDelayMs = 0
-    mInterpolator = null
+    animatedProperty = null
+    durationMs = 0
+    delayMs = 0
+    interpolator = null
   }
 
   fun initializeFromConfig(data: ReadableMap, globalDuration: Int) {
-    mAnimatedProperty =
+    animatedProperty =
     if (data.hasKey("property"))
       AnimatedPropertyType.fromString(data.getString("property")!!)
     else null
-    mDurationMs = if (data.hasKey("duration")) data.getInt("duration") else globalDuration
-    mDelayMs = if (data.hasKey("delay")) data.getInt("delay") else 0
+    durationMs = if (data.hasKey("duration")) data.getInt("duration") else globalDuration
+    delayMs = if (data.hasKey("delay")) data.getInt("delay") else 0
     require(data.hasKey("type")) { "Missing interpolation type." }
-    mInterpolator = getInterpolator(
+    interpolator = getInterpolator(
       InterpolatorType.fromString(
         data.getString("type")!!
       ), data
@@ -92,9 +91,9 @@ internal abstract class AbstractLayoutAnimation {
     val animation = createAnimationImpl(view, x, y, width, height)
     if (animation != null) {
       val slowdownFactor = if (SLOWDOWN_ANIMATION_MODE) 10 else 1
-      animation.duration = (mDurationMs * slowdownFactor).toLong()
-      animation.startOffset = (mDelayMs * slowdownFactor).toLong()
-      animation.interpolator = mInterpolator
+      animation.duration = (durationMs * slowdownFactor).toLong()
+      animation.startOffset = (delayMs * slowdownFactor).toLong()
+      animation.interpolator = interpolator
     }
     return animation
   }
