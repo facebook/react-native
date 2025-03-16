@@ -47,6 +47,9 @@ using namespace facebook::react;
 {
   [super prepareForRecycle];
   _isInitialValueSet = NO;
+
+  const auto &switchProps = static_cast<const SwitchProps &>(*_props);
+  _switchView.on = switchProps.value;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
