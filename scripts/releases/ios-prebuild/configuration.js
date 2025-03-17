@@ -54,8 +54,8 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './headers',
       headerSearchPaths: ['src'],
-      cCompilerFlags: ['-Wno-shorten-64-to-32', '-Wno-everything'],
-      cxxCompilerFlags: ['-Wno-shorten-64-to-32', '-Wno-everything'],
+      cCompilerFlags: ['-Wno-shorten-64-to-32'],
+      cxxCompilerFlags: ['-Wno-shorten-64-to-32', `-std=${CPP_STANDARD}`],
       defines: [
         {name: 'DEFINES_MODULE', value: 'YES'},
         {name: 'USE_HEADERMAP', value: 'NO'},
@@ -77,8 +77,6 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './headers',
       headerSearchPaths: ['src'],
-      cCompilerFlags: ['-Wno-everything'],
-      cxxCompilerFlags: ['-Wno-everything'],
     },
   },
   {
@@ -96,8 +94,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
       publicHeaderFiles: './include',
       headerSearchPaths: ['include'],
       linkedLibraries: ['c++'],
-      cCompilerFlags: ['-Wno-everything'],
-      cxxCompilerFlags: ['-Wno-everything', `-std=${CPP_STANDARD}`],
+      cxxCompilerFlags: [`-std=${CPP_STANDARD}`],
     },
   },
   {
@@ -115,8 +112,8 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './',
       headerSearchPaths: ['./'],
-      cCompilerFlags: ['-Wno-everything', '-Wno-documentation'],
-      cxxCompilerFlags: ['-Wno-everything', '-Wno-documentation'],
+      cCompilerFlags: ['-Wno-documentation'],
+      cxxCompilerFlags: ['-Wno-documentation', `-std=${CPP_STANDARD}`],
     },
   },
   {
@@ -134,8 +131,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './include',
       headerSearchPaths: ['include'],
-      cCompilerFlags: ['-Wno-everything'],
-      cxxCompilerFlags: ['-Wno-everything', `-std=${CPP_STANDARD}`],
+      cxxCompilerFlags: [`-std=${CPP_STANDARD}`],
       linkedLibraries: ['c++'],
     },
   },
@@ -163,8 +159,6 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         'SocketRocket/Internal/Security',
         'SocketRocket/Internal/Utilities',
       ],
-      cCompilerFlags: ['-Wno-everything'],
-      cxxCompilerFlags: ['-Wno-everything'],
     },
   },
   {
@@ -264,14 +258,8 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
     settings: {
       publicHeaderFiles: './',
       headerSearchPaths: ['./'],
-      cCompilerFlags: [
-        '-Wno-everything',
-        '-faligned-new',
-        '-Wno-shorten-64-to-32',
-        '-Wno-comma',
-      ],
+      cCompilerFlags: ['-faligned-new', '-Wno-shorten-64-to-32', '-Wno-comma'],
       cxxCompilerFlags: [
-        '-Wno-everything',
         '-faligned-new',
         '-Wno-shorten-64-to-32',
         '-Wno-comma',
