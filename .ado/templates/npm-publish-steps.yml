@@ -21,8 +21,10 @@ steps:
 
   - script: |
       git switch $(Build.SourceBranchName)
+      echo "//registry.npmjs.org/:_authToken=$(NODE_AUTH_TOKEN)" > ~/.npmrc
       yarn nx release --skip-publish --verbose
       yarn nx release publish --excludeTaskDependencies
+      rm ~/.npmrc
     env:
       GITHUB_TOKEN: $(githubAuthToken)
       NODE_AUTH_TOKEN: $(npmAuthToken)
