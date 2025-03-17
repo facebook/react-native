@@ -42,7 +42,8 @@ class DefaultTurboModuleManagerDelegate : public jni::HybridClass<
 
   std::shared_ptr<TurboModule> getTurboModule(
       const std::string& name,
-      const std::shared_ptr<CallInvoker>& jsInvoker) override;
+      const std::shared_ptr<CallInvoker>& jsInvoker,
+      jsi::Runtime& runtime) override;
   std::shared_ptr<TurboModule> getTurboModule(
       const std::string& name,
       const JavaTurboModule::InitParams& params) override;

@@ -26,7 +26,8 @@ class TurboModuleManagerDelegate
       const JavaTurboModule::InitParams& params) = 0;
   virtual std::shared_ptr<TurboModule> getTurboModule(
       const std::string& name,
-      const std::shared_ptr<CallInvoker>& jsInvoker) = 0;
+      const std::shared_ptr<CallInvoker>& jsInvoker,
+      jsi::Runtime& runtime) = 0;
 
  private:
   friend HybridBase;

@@ -163,7 +163,7 @@ std::shared_ptr<TurboModule> TurboModuleManager::getTurboModule(
 
   auto cxxDelegate = delegate_->cthis();
 
-  auto cxxModule = cxxDelegate->getTurboModule(name, jsCallInvoker_);
+  auto cxxModule = cxxDelegate->getTurboModule(name, jsCallInvoker_, runtime);
   if (cxxModule) {
     turboModuleCache_.insert({name, cxxModule});
     return cxxModule;

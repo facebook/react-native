@@ -54,11 +54,12 @@ void DefaultTurboModuleManagerDelegate::registerNatives() {
 
 std::shared_ptr<TurboModule> DefaultTurboModuleManagerDelegate::getTurboModule(
     const std::string& name,
-    const std::shared_ptr<CallInvoker>& jsInvoker) {
+    const std::shared_ptr<CallInvoker>& jsInvoker,
+    jsi::Runtime& runtime) {
   for (const auto& cxxReactPackage : cxxReactPackages_) {
     auto cppPart = cxxReactPackage->cthis();
     if (cppPart) {
-      auto module = cppPart->getModule(name, jsInvoker);
+      auto module = cppPart->getModule(name, jsInvoker, runtime);
       if (module) {
         return module;
       }

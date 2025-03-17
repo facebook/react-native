@@ -8,6 +8,7 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
+#include <jsi/jsi.h>
 #include <memory>
 
 namespace facebook::react {
@@ -22,7 +23,8 @@ class CxxReactPackage : public jni::HybridClass<CxxReactPackage> {
 
   virtual std::shared_ptr<TurboModule> getModule(
       const std::string& name,
-      const std::shared_ptr<CallInvoker>& jsInvoker) = 0;
+      const std::shared_ptr<CallInvoker>& jsInvoker,
+      jsi::Runtime& runtime) = 0;
 
  private:
   friend HybridBase;
