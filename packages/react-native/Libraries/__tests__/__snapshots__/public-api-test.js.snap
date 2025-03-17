@@ -4035,7 +4035,7 @@ export type ViewPropsIOS = $ReadOnly<{
   shouldRasterizeIOS?: ?boolean,
 }>;
 type ViewBaseProps = $ReadOnly<{
-  children?: Node,
+  children?: React.Node,
   style?: ?ViewStyleProp,
   collapsable?: ?boolean,
   collapsableChildren?: ?boolean,
@@ -4679,7 +4679,7 @@ export type ImageProps = $ReadOnly<{
 }>;
 export type ImageBackgroundProps = $ReadOnly<{
   ...ImageProps,
-  children?: Node,
+  children?: React.Node,
   style?: ?ViewStyleProp,
   imageStyle?: ?ImageStyleProp,
   imageRef?: RefSetter<ElementRef<Image>>,
@@ -8136,7 +8136,7 @@ type TextBaseProps = $ReadOnly<{
   \\"aria-expanded\\"?: ?boolean,
   \\"aria-selected\\"?: ?boolean,
   \\"aria-labelledby\\"?: ?string,
-  children?: ?Node,
+  children?: ?React.Node,
   ellipsizeMode?: ?(\\"clip\\" | \\"head\\" | \\"middle\\" | \\"tail\\"),
   id?: string,
   maxFontSizeMultiplier?: ?number,
