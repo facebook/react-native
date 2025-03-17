@@ -57,6 +57,7 @@ import com.facebook.react.common.ReactConstants;
       PackageInfo info =
           context
               .getPackageManager()
+              // NULLSAFE_FIXME[Nullable Dereference]
               .getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
       if (info.requestedPermissions != null) {
         for (String p : info.requestedPermissions) {
@@ -73,6 +74,7 @@ import com.facebook.react.common.ReactConstants;
 
   private static boolean canHandleIntent(Context context, Intent intent) {
     PackageManager packageManager = context.getPackageManager();
+    // NULLSAFE_FIXME[Parameter Not Nullable]
     return intent.resolveActivity(packageManager) != null;
   }
 
