@@ -39,6 +39,7 @@ import okhttp3.WebSocketListener;
 
   public native void closeQuietly();
 
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public native void sendEventToAllConnections(String event);
 
   /** Java wrapper around a C++ IWebSocketDelegate, allowing us to call the interface from Java. */
