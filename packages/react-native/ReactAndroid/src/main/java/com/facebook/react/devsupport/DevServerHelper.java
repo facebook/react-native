@@ -208,6 +208,7 @@ public class DevServerHelper {
 
         mInspectorPackagerConnection =
             new CxxInspectorPackagerConnection(
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 getInspectorDeviceUrl(), metadata.get("deviceName"), mPackageName);
         mInspectorPackagerConnection.connect();
         return null;
@@ -457,6 +458,7 @@ public class DevServerHelper {
       }
 
       try (Sink output = Okio.sink(outputFile)) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         Okio.buffer(response.body().source()).readAll(output);
       }
 
