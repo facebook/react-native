@@ -32,6 +32,7 @@ export type Settings = $ReadOnly<{
   headerSearchPaths?: $ReadOnlyArray<string>,
   defines?: $ReadOnlyArray<Define>,
   compilerFlags?: $ReadOnlyArray<string>,
+  cppVersion?: string,
   linkedLibraries?: $ReadOnlyArray<string>,
   publicHeaderFiles: string,
   linkerSettings?: $ReadOnlyArray<string>
