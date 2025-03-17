@@ -13,53 +13,47 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.common.annotations.internal.LegacyArchitecture
 import com.facebook.react.common.annotations.internal.LegacyArchitectureLogLevel
-import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled
+import com.facebook.react.common.annotations.internal.LegacyArchitectureLogger
 import com.facebook.react.uimanager.PixelUtil.toDIPFromPixel
 import com.facebook.react.uimanager.events.Event
 
 /** Event used to notify JS component about changes of its position or dimensions. */
 @LegacyArchitecture
 public class OnLayoutEvent private constructor() :
-  Event<OnLayoutEvent?>() {
-  @VisibleForTesting
-  public var mX: Int = 0
-
-  @VisibleForTesting
-  public var mY: Int = 0
-
-  @VisibleForTesting
-  public var mWidth: Int = 0
-
-  @VisibleForTesting
-  public var mHeight: Int = 0
+  Event<OnLayoutEvent>() {
+  @VisibleForTesting public var x: Int = 0
+  @VisibleForTesting public var y: Int = 0
+  @VisibleForTesting public var width: Int = 0
+  @VisibleForTesting public var height: Int = 0
 
   override fun onDispose() {
     EVENTS_POOL.release(this)
   }
 
-  @Deprecated("")
+  @Deprecated(
+    "Use `init(surfaceId, viewTag, x, y, width, height)` instead.",
+    ReplaceWith("init(surfaceId, viewTag, x, y, width, height)")
+  )
   protected fun init(viewTag: Int, x: Int, y: Int, width: Int, height: Int) {
     init(-1, viewTag, x, y, width, height)
   }
 
   protected fun init(surfaceId: Int, viewTag: Int, x: Int, y: Int, width: Int, height: Int) {
     super.init(surfaceId, viewTag)
-    mX = x
-    mY = y
-    mWidth = width
-    mHeight = height
+    this.x = x
+    this.y = y
+    this.width = width
+    this.height = height
   }
 
-  override fun getEventName(): String {
-    return "topLayout"
-  }
+  override fun getEventName(): String = "topLayout"
 
   override fun getEventData(): WritableMap? {
     val layout = Arguments.createMap().apply {
-      putDouble("x", toDIPFromPixel(mX.toFloat()).toDouble())
-      putDouble("y", toDIPFromPixel(mY.toFloat()).toDouble())
-      putDouble("width", toDIPFromPixel(mWidth.toFloat()).toDouble())
-      putDouble("height", toDIPFromPixel(mHeight.toFloat()).toDouble())
+      putDouble("x", toDIPFromPixel(x.toFloat()).toDouble())
+      putDouble("y", toDIPFromPixel(y.toFloat()).toDouble())
+      putDouble("width", toDIPFromPixel(width.toFloat()).toDouble())
+      putDouble("height", toDIPFromPixel(height.toFloat()).toDouble())
     }
 
     val event = Arguments.createMap().apply {
@@ -72,14 +66,18 @@ public class OnLayoutEvent private constructor() :
 
   public companion object {
     init {
-      assertWhenLegacyArchitectureMinifyingEnabled(
+      LegacyArchitectureLogger.assertWhenLegacyArchitectureMinifyingEnabled(
         "OnLayoutEvent", LegacyArchitectureLogLevel.WARNING
       )
     }
 
     private val EVENTS_POOL: SynchronizedPool<OnLayoutEvent> = SynchronizedPool<OnLayoutEvent>(20)
 
-    @Deprecated("")
+    @Deprecated(
+      "Use `obtain(surfaceId, viewTag, x, y, width, height)` instead.",
+      ReplaceWith("obtain(surfaceId, viewTag, x, y, width, height)")
+    )
+    @JvmStatic
     public fun obtain(viewTag: Int, x: Int, y: Int, width: Int, height: Int): OnLayoutEvent {
       return obtain(-1, viewTag, x, y, width, height)
     }

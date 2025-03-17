@@ -50,10 +50,10 @@ class OnLayoutEventTest {
 
     assertThat(event).isNotNull
     assertThat(event.viewTag).isEqualTo(viewTag)
-    assertThat(event.mX).isEqualTo(x)
-    assertThat(event.mY).isEqualTo(y)
-    assertThat(event.mWidth).isEqualTo(width)
-    assertThat(event.mHeight).isEqualTo(height)
+    assertThat(event.x).isEqualTo(x)
+    assertThat(event.y).isEqualTo(y)
+    assertThat(event.width).isEqualTo(width)
+    assertThat(event.height).isEqualTo(height)
   }
 
   @Test
@@ -69,9 +69,9 @@ class OnLayoutEventTest {
 
     assertThat(event.surfaceId).isEqualTo(1)
     assertThat(event.viewTag).isEqualTo(1)
-    assertThat(event.mX).isEqualTo(10)
-    assertThat(event.mY).isEqualTo(20)
-    assertThat(event.mWidth).isEqualTo(100)
-    assertThat(event.mHeight).isEqualTo(200)
+    assertThat(event.x).isEqualTo(10)
+    assertThat(event.y).isEqualTo(20)
+    assertThat(event.width).isEqualTo(100)
+    assertThat(event.height).isEqualTo(200)
   }
 }
