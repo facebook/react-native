@@ -9321,6 +9321,14 @@ export { default as View } from \\"./Libraries/Components/View/View\\";
 export { default as VirtualizedList } from \\"./Libraries/Lists/VirtualizedList\\";
 export { default as VirtualizedSectionList } from \\"./Libraries/Lists/VirtualizedSectionList\\";
 export type * from \\"./Libraries/Types/CodegenTypesNamespace\\";
+export type { ViewProps } from \\"./Libraries/Components/View/ViewPropTypes\\";
+export type { ImageSource } from \\"react-native/Libraries/Image/ImageSource\\";
+export type { ColorValue } from \\"react-native/Libraries/StyleSheet/StyleSheet\\";
+export type {
+  DimensionValue,
+  EdgeInsetsValue,
+  PointValue,
+} from \\"react-native/Libraries/StyleSheet/StyleSheetTypes\\";
 export { default as AccessibilityInfo } from \\"./Libraries/Components/AccessibilityInfo/AccessibilityInfo\\";
 export { default as ActionSheetIOS } from \\"./Libraries/ActionSheetIOS/ActionSheetIOS\\";
 export { default as Alert } from \\"./Libraries/Alert/Alert\\";
