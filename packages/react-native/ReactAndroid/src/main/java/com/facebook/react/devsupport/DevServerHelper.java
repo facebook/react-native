@@ -327,7 +327,7 @@ public class DevServerHelper {
       DevBundleDownloadListener callback,
       File outputFile,
       String bundleURL,
-      BundleDownloader.BundleInfo bundleInfo) {
+      @Nullable BundleDownloader.BundleInfo bundleInfo) {
     mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
   }
 
@@ -335,7 +335,7 @@ public class DevServerHelper {
       DevBundleDownloadListener callback,
       File outputFile,
       String bundleURL,
-      BundleDownloader.BundleInfo bundleInfo,
+      @Nullable BundleDownloader.BundleInfo bundleInfo,
       Request.Builder requestBuilder) {
     mBundleDownloader.downloadBundleFromURL(
         callback, outputFile, bundleURL, bundleInfo, requestBuilder);
