@@ -213,7 +213,7 @@ static jsi::Value createJSRuntimeError(jsi::Runtime &runtime, const std::string 
 /**
  * Creates JSError with current JS runtime and NSException stack trace.
  */
-static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSException *exception)
+static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSException *exception, const std::string& message)
 {
   std::string reason = [exception.reason UTF8String];
 
@@ -223,6 +223,8 @@ static jsi::JSError convertNSExceptionToJSError(jsi::Runtime &runtime, NSExcepti
   cause.setProperty(runtime, "stackSymbols", convertNSArrayToJSIArray(runtime, exception.callStackSymbols));
   cause.setProperty(
       runtime, "stackReturnAddresses", convertNSArrayToJSIArray(runtime, exception.callStackReturnAddresses));
+  cause.setProperty(
+      runtime, "invokedFunction", message);
 
   jsi::Value error = createJSRuntimeError(runtime, "Exception in HostFunction: " + reason);
   error.asObject(runtime).setProperty(runtime, "cause", std::move(cause));
@@ -327,6 +329,20 @@ jsi::Value ObjCTurboModule::createPromise(jsi::Runtime &runtime, std::string met
           }));
 }
 
+std::function<void(jsi::Runtime&, NSException*, const std::string&)> ObjCTurboModule::nsExceptionHandler =
+  [](jsi::Runtime& runtime, NSException* ex, const std::string& message) {
+    // throwing custom std::exception causes untrecable crash reporting issue such as __pthread_kill
+    // and random crashes in hermes engine at this line.
+    // Approach can be to create JSError and invoke global.ErrorUtils.reportException on JS.
+    // Then rethrow caught NSException instead of throwing JSError.
+    throw convertNSExceptionToJSError(runtime, ex, message);
+};
+
+void ObjCTurboModule::setCustomNSExceptionHandler(
+  std::function<void(jsi::Runtime&, NSException*, const std::string&)> handler) {
+    ObjCTurboModule::nsExceptionHandler = handler;
+}
+
 /**
  * Perform method invocation on a specific queue as configured by the module class.
  * This serves as a backward-compatible support for RCTBridgeModule's methodQueue API.
@@ -364,7 +380,9 @@ id ObjCTurboModule::performMethodInvocation(
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      throw convertNSExceptionToJSError(runtime, exception);
+      std::stringstream message;
+      message << moduleName << "::" << methodNameStr << " failed.";
+      nsExceptionHandler(runtime, exception, message.str());
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }
@@ -427,7 +445,9 @@ void ObjCTurboModule::performVoidMethodInvocation(
     @try {
       [inv invokeWithTarget:strongModule];
     } @catch (NSException *exception) {
-      throw convertNSExceptionToJSError(runtime, exception);
+      std::stringstream message;
+      message << "Failed TurboModule call: " << moduleName << " :: " << methodNameStr;
+      nsExceptionHandler(runtime, exception, message.str());
     } @finally {
       [retainedObjectsForInvocation removeAllObjects];
     }

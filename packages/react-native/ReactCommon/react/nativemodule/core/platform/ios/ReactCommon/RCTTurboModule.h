@@ -74,6 +74,13 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
   id<RCTBridgeModule> instance_;
   std::shared_ptr<NativeMethodCallInvoker> nativeMethodCallInvoker_;
+    
+  /**
+   * Sets custom exception handler to be called when NSException is caught through TurboModule method invocation.
+   * This method allows app owner to handle the exception on their side.
+   */
+  static void setCustomNSExceptionHandler(
+      std::function<void(jsi::Runtime&, NSException*, const std::string&)> handler);
 
  protected:
   void setMethodArgConversionSelector(NSString *methodName, size_t argIndex, NSString *fnName);
@@ -166,6 +173,7 @@ class JSI_EXPORT ObjCTurboModule : public TurboModule {
 
   using PromiseInvocationBlock = void (^)(RCTPromiseResolveBlock resolveWrapper, RCTPromiseRejectBlock rejectWrapper);
   jsi::Value createPromise(jsi::Runtime &runtime, std::string methodName, PromiseInvocationBlock invoke);
+  static std::function<void(jsi::Runtime&, NSException*, const std::string&)> nsExceptionHandler;
 };
 
 } // namespace facebook::react
