@@ -265,6 +265,7 @@ const dependencies /*: $ReadOnlyArray<Dependency> */ = [
         '-Wno-comma',
         `-std=${CPP_STANDARD}`,
       ],
+      cppVersion: CPP_STANDARD,
       defines: [
         {name: 'USE_HEADERMAP', value: 'NO'},
         {name: 'DEFINES_MODULE', value: 'YES'},

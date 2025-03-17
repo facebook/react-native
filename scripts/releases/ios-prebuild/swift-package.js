@@ -79,6 +79,12 @@ function createSwiftTarget(dependency /*  :Dependency */) {
     unsafeCxxSettings = `.unsafeFlags([${dependency.settings.cxxCompilerFlags.map(flag => `"${flag}"`).join(', ')}]),`;
   }
 
+  // Add c++ version to c++ settings if provided
+  let unsafeCxxSettings = '';
+  if (dependency.settings.cppVersion != null) {
+    unsafeCxxSettings = `.unsafeFlags(["-std=${dependency.settings.cppVersion}"]),`;
+  }
+
   // Setup defines
   let defines = '';
   if (dependency.settings.defines != null) {
@@ -133,6 +139,7 @@ function createSwiftTarget(dependency /*  :Dependency */) {
                 ${headerSearchPaths}
                 ${unsafeCxxSettings}
                 ${defines}
+                ${unsafeCxxSettings}
               ],
               linkerSettings: [
                 ${linkedLibraries}
