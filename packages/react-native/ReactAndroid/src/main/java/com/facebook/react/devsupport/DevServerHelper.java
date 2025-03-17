@@ -404,6 +404,11 @@ public class DevServerHelper {
   }
 
   private static String createResourceURL(String host, String resourcePath) {
+    // This is what we get for not using a proper URI library.
+    if (resourcePath.startsWith("/")) {
+      FLog.w(ReactConstants.TAG, "Resource path should not begin with `/`, removing it.");
+      resourcePath = resourcePath.substring(1);
+    }
     return String.format(Locale.US, "http://%s/%s", host, resourcePath);
   }
 
