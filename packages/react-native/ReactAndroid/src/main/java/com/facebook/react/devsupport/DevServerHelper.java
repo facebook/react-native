@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.Nullsafe;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
@@ -59,6 +60,7 @@ import okio.Sink;
  *   <li>Genymotion emulator with default settings: 10.0.3.2
  * </ul>
  */
+@Nullsafe(Nullsafe.Mode.LOCAL)
 public class DevServerHelper {
   private static final int HTTP_CONNECT_TIMEOUT_MS = 5000;
 
@@ -205,11 +207,13 @@ public class DevServerHelper {
       protected Void doInBackground(Void... params) {
         Map<String, String> metadata =
             AndroidInfoHelpers.getInspectorHostMetadata(mApplicationContext);
-
+        String deviceName = metadata.get("deviceName");
+        if (deviceName == null) {
+          FLog.w(ReactConstants.TAG, "Could not get device name from Inspector Host Metadata.");
+          return null;
+        }
         mInspectorPackagerConnection =
-            new CxxInspectorPackagerConnection(
-                // NULLSAFE_FIXME[Parameter Not Nullable]
-                getInspectorDeviceUrl(), metadata.get("deviceName"), mPackageName);
+            new CxxInspectorPackagerConnection(getInspectorDeviceUrl(), deviceName, mPackageName);
         mInspectorPackagerConnection.connect();
         return null;
       }
@@ -448,12 +452,11 @@ public class DevServerHelper {
     final Request request = new Request.Builder().url(resourceURL).build();
 
     try (Response response = mClient.newCall(request).execute()) {
-      if (!response.isSuccessful()) {
+      if (!response.isSuccessful() || response.body() == null) {
         return null;
       }
 
       try (Sink output = Okio.sink(outputFile)) {
-        // NULLSAFE_FIXME[Nullable Dereference]
         Okio.buffer(response.body().source()).readAll(output);
       }
 
