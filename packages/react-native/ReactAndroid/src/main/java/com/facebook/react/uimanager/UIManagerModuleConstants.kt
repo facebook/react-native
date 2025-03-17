@@ -18,7 +18,7 @@ internal object UIManagerModuleConstants {
   const val ACTION_ITEM_SELECTED: String = "itemSelected"
 
   @JvmStatic
-  fun getBubblingEventTypeConstants(): Map<String, Any> = mapOf(
+  val bubblingEventTypeConstants: Map<String, Any> = mapOf(
     "topChange" to mapOf(
       "phasedRegistrationNames" to mapOf(
         "bubbled" to "onChange",
@@ -58,9 +58,9 @@ internal object UIManagerModuleConstants {
   )
 
   @JvmStatic
-  fun getDirectEventTypeConstants(): Map<String, Any> {
+  val directEventTypeConstants: Map<String, Any> = run {
     val rn = "registrationName"
-    return mapOf(
+    mapOf(
       "topContentSizeChange" to mapOf(rn to "onContentSizeChange"),
       "topLayout" to mapOf(rn to "onLayout"),
       "topLoadingError" to mapOf(rn to "onLoadingError"),
@@ -80,7 +80,7 @@ internal object UIManagerModuleConstants {
   }
 
   @JvmStatic
-  fun getConstants(): Map<String, Any> = mapOf(
+  val constants: Map<String, Any> = mapOf(
     "UIView" to mapOf(
       "ContentMode" to mapOf(
         "ScaleAspectFit" to ImageView.ScaleType.FIT_CENTER.ordinal,
