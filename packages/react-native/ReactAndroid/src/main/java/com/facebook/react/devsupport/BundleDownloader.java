@@ -141,8 +141,10 @@ public class BundleDownloader {
               // Make sure the result is a multipart response and parse the boundary.
               String contentType = response.header("content-type");
               Pattern regex = Pattern.compile("multipart/mixed;.*boundary=\"([^\"]+)\"");
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               Matcher match = regex.matcher(contentType);
               if (match.find()) {
+                // NULLSAFE_FIXME[Parameter Not Nullable]
                 processMultipartResponse(url, r, match.group(1), outputFile, bundleInfo, callback);
               } else {
                 // In case the server doesn't support multipart/mixed responses, fallback to normal
@@ -152,8 +154,10 @@ public class BundleDownloader {
                       url,
                       r.code(),
                       r.headers(),
+                      // NULLSAFE_FIXME[Nullable Dereference]
                       r.body().source(),
                       outputFile,
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       bundleInfo,
                       callback);
                 }
@@ -173,6 +177,7 @@ public class BundleDownloader {
       throws IOException {
 
     MultipartStreamReader bodyReader =
+        // NULLSAFE_FIXME[Nullable Dereference]
         new MultipartStreamReader(response.body().source(), boundary);
     boolean completed =
         bodyReader.readAllParts(
@@ -192,6 +197,7 @@ public class BundleDownloader {
                     status = Integer.parseInt(headers.get("X-Http-Status"));
                   }
                   processBundleResult(
+                      // NULLSAFE_FIXME[Parameter Not Nullable]
                       url, status, Headers.of(headers), body, outputFile, bundleInfo, callback);
                 } else {
                   if (!headers.containsKey("Content-Type")
