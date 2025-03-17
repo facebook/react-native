@@ -63,14 +63,14 @@ public abstract class com/facebook/react/LazyReactPackage : com/facebook/react/R
 	public fun getViewManagers (Lcom/facebook/react/bridge/ReactApplicationContext;)Ljava/util/List;
 }
 
-public class com/facebook/react/MemoryPressureRouter : android/content/ComponentCallbacks2 {
+public final class com/facebook/react/MemoryPressureRouter : android/content/ComponentCallbacks2 {
 	public fun <init> (Landroid/content/Context;)V
-	public fun addMemoryPressureListener (Lcom/facebook/react/bridge/MemoryPressureListener;)V
-	public fun destroy (Landroid/content/Context;)V
+	public final fun addMemoryPressureListener (Lcom/facebook/react/bridge/MemoryPressureListener;)V
+	public final fun destroy (Landroid/content/Context;)V
 	public fun onConfigurationChanged (Landroid/content/res/Configuration;)V
 	public fun onLowMemory ()V
 	public fun onTrimMemory (I)V
-	public fun removeMemoryPressureListener (Lcom/facebook/react/bridge/MemoryPressureListener;)V
+	public final fun removeMemoryPressureListener (Lcom/facebook/react/bridge/MemoryPressureListener;)V
 }
 
 public final class com/facebook/react/NativeModuleRegistryBuilder {
