@@ -8,8 +8,6 @@
  * @format
  */
 
-import type {Node} from 'react';
-
 import ImageBackground from '../../Image/ImageBackground';
 import StyleSheet from '../../StyleSheet/StyleSheet';
 import Text from '../../Text/Text';
@@ -18,7 +16,7 @@ import Colors from './Colors';
 import HermesBadge from './HermesBadge';
 import React from 'react';
 
-const Header = (): Node => {
+const Header = (): React.Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <ImageBackground
