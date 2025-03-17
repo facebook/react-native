@@ -1,0 +1,7 @@
+{
+  "extends": "@rnx-kit/tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["index.js"]
+}

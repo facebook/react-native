@@ -23,6 +23,7 @@
     "projectsRelationship": "independent",
     "versionPlans": true,
     "version": {
+      "generator": "@react-native-mac/nx-release-version:release-version",
       "generatorOptions": {
         "currentVersionResolver": "registry",
         "currentVersionResolverMetadata": {
