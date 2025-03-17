@@ -68,15 +68,15 @@ ${dependencies.map(d => createSwiftTarget(d)).join('')}
  */
 function createSwiftTarget(dependency /*  :Dependency */) {
   // Setup unsafe flags
-  let unsafeCAndCxxSettings = '';
-  if (dependency.settings.compilerFlags != null) {
-    unsafeCAndCxxSettings = `.unsafeFlags([${dependency.settings.compilerFlags.map(flag => `"${flag}"`).join(', ')}]),`;
+  let unsafeCSettings = '';
+  if (dependency.settings.cCompilerFlags != null) {
+    unsafeCSettings = `.unsafeFlags([${dependency.settings.cCompilerFlags.map(flag => `"${flag}"`).join(', ')}]),`;
   }
 
   // Add c++ version to c++ settings if provided
   let unsafeCxxSettings = '';
-  if (dependency.settings.cppVersion != null) {
-    unsafeCxxSettings = `.unsafeFlags(["-std=${dependency.settings.cppVersion}"]),`;
+  if (dependency.settings.cxxCompilerFlags != null) {
+    unsafeCxxSettings = `.unsafeFlags([${dependency.settings.cxxCompilerFlags.map(flag => `"${flag}"`).join(', ')}]),`;
   }
 
   // Setup defines
@@ -126,14 +126,13 @@ function createSwiftTarget(dependency /*  :Dependency */) {
               publicHeadersPath: "${dependency.settings.publicHeaderFiles}",
               cSettings: [
                 ${headerSearchPaths}
-                ${unsafeCAndCxxSettings}
+                ${unsafeCSettings}
                 ${defines}
               ],
               cxxSettings: [
                 ${headerSearchPaths}
-                ${unsafeCAndCxxSettings}
-                ${defines}
                 ${unsafeCxxSettings}
+                ${defines}
               ],
               linkerSettings: [
                 ${linkedLibraries}
