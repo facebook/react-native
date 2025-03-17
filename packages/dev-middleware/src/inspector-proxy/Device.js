@@ -40,6 +40,18 @@ const debug = require('debug')('Metro:InspectorProxy');
 const PAGES_POLLING_INTERVAL = 1000;
 const MIN_MESSAGE_QUEUE_BYTES_TO_REPORT = 2 * 1024 * 1024; // 2 MiB
 
+const WS_CLOSURE_CODE = {
+  NORMAL: 1000,
+  INTERNAL_ERROR: 1011,
+};
+
+export const WS_CLOSE_REASON = {
+  PAGE_NOT_FOUND: 'Debugger Page Not Found',
+  DEVICE_DISCONNECTED: 'Corresponding Device Disconnected',
+  RECREATING_DEVICE: 'Recreating Device Connection',
+  RECREATING_DEBUGGER: 'Recreating Debugger Connection',
+};
+
 // Prefix for script URLs that are alphanumeric IDs. See comment in #processMessageFromDeviceLegacy method for
 // more details.
 const FILE_PREFIX = 'file://';
@@ -251,19 +263,22 @@ export default class Device {
       if (socket === this.#deviceSocket) {
         this.#deviceEventReporter?.logDisconnection('device');
         // Device disconnected - close debugger connection.
-        this.#terminateDebuggerConnection();
+        this.#terminateDebuggerConnection(
+          WS_CLOSURE_CODE.NORMAL,
+          WS_CLOSE_REASON.DEVICE_DISCONNECTED,
+        );
         clearInterval(this.#pagesPollingIntervalId);
       }
     });
   }
 
-  #terminateDebuggerConnection() {
+  #terminateDebuggerConnection(code?: number, reason?: string) {
     const debuggerConnection = this.#debuggerConnection;
     if (debuggerConnection) {
       this.#sendDisconnectEventToDevice(
         this.#mapToDevicePageId(debuggerConnection.pageId),
       );
-      debuggerConnection.socket.close();
+      debuggerConnection.socket.close(code, reason);
       this.#debuggerConnection = null;
     }
   }
@@ -286,15 +301,24 @@ export default class Device {
     const oldDebugger = this.#debuggerConnection;
 
     if (this.#app !== deviceOptions.app || this.#name !== deviceOptions.name) {
-      this.#deviceSocket.close();
-      this.#terminateDebuggerConnection();
+      this.#deviceSocket.close(
+        WS_CLOSURE_CODE.NORMAL,
+        WS_CLOSE_REASON.RECREATING_DEVICE,
+      );
+      this.#terminateDebuggerConnection(
+        WS_CLOSURE_CODE.NORMAL,
+        WS_CLOSE_REASON.RECREATING_DEVICE,
+      );
     }
 
     this.#debuggerConnection = null;
 
     if (oldDebugger) {
       oldDebugger.socket.removeAllListeners();
-      this.#deviceSocket.close();
+      this.#deviceSocket.close(
+        WS_CLOSURE_CODE.NORMAL,
+        WS_CLOSE_REASON.RECREATING_DEVICE,
+      );
       this.handleDebuggerConnection(oldDebugger.socket, oldDebugger.pageId, {
         debuggerRelativeBaseUrl: oldDebugger.debuggerRelativeBaseUrl,
         userAgent: oldDebugger.userAgent,
@@ -345,7 +369,10 @@ export default class Device {
         `Got new debugger connection via ${debuggerRelativeBaseUrl.href} for ` +
           `page ${pageId} of ${this.#name}, but no such page exists`,
       );
-      socket.close();
+      socket.close(
+        WS_CLOSURE_CODE.INTERNAL_ERROR,
+        WS_CLOSE_REASON.PAGE_NOT_FOUND,
+      );
       return;
     }
 
@@ -353,7 +380,10 @@ export default class Device {
     this.#deviceEventReporter?.logDisconnection('debugger');
 
     // Disconnect current debugger if we already have debugger connected.
-    this.#terminateDebuggerConnection();
+    this.#terminateDebuggerConnection(
+      WS_CLOSURE_CODE.NORMAL,
+      WS_CLOSE_REASON.RECREATING_DEBUGGER,
+    );
 
     this.#deviceEventReporter?.logConnection('debugger', {
       pageId,
@@ -461,11 +491,11 @@ export default class Device {
         });
       }
     });
-    socket.on('close', () => {
+    socket.on('close', (code, reason) => {
       debug(`Debugger for page ${pageId} and ${this.#name} disconnected.`);
       this.#deviceEventReporter?.logDisconnection('debugger');
       if (this.#debuggerConnection?.socket === socket) {
-        this.#terminateDebuggerConnection();
+        this.#terminateDebuggerConnection(code, reason);
       }
     });
 
