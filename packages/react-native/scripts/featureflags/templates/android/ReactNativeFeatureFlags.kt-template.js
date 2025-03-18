@@ -37,6 +37,8 @@ ${DO_NOT_MODIFY_COMMENT}
 
 package com.facebook.react.internal.featureflags
 
+import androidx.annotation.VisibleForTesting
+
 /**
  * This object provides access to internal React Native feature flags.
  *
@@ -123,6 +125,7 @@ ${Object.entries(definitions.common)
    * This is just used to replace the default ReactNativeFeatureFlagsCxxAccessor
    * that uses JNI with a version that doesn't, to simplify testing.
    */
+  @VisibleForTesting
   internal fun setAccessorProvider(newAccessorProvider: () -> ReactNativeFeatureFlagsAccessor) {
     accessorProvider = newAccessorProvider
     accessor = accessorProvider()
