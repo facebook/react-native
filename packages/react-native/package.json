@@ -169,6 +169,9 @@
         "AppState": {
           "unstableRequiresMainQueueSetup": true
         },
+        "Appearance": {
+          "unstableRequiresMainQueueSetup": true
+        },
         "DeviceInfo": {
           "unstableRequiresMainQueueSetup": true
         },
