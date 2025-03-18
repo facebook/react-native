@@ -137,23 +137,34 @@ public class StackTraceHelper {
     int size = stack != null ? stack.size() : 0;
     StackFrame[] result = new StackFrame[size];
     for (int i = 0; i < size; i++) {
+      // NULLSAFE_FIXME[Nullable Dereference]
       ReadableType type = stack.getType(i);
       if (type == ReadableType.Map) {
+        // NULLSAFE_FIXME[Nullable Dereference]
         ReadableMap frame = stack.getMap(i);
+        // NULLSAFE_FIXME[Nullable Dereference]
         String methodName = frame.getString("methodName");
+        // NULLSAFE_FIXME[Nullable Dereference]
         String fileName = frame.getString("file");
         boolean collapse =
+            // NULLSAFE_FIXME[Nullable Dereference]
             frame.hasKey("collapse") && !frame.isNull("collapse") && frame.getBoolean("collapse");
         int lineNumber = -1;
+        // NULLSAFE_FIXME[Nullable Dereference]
         if (frame.hasKey(LINE_NUMBER_KEY) && !frame.isNull(LINE_NUMBER_KEY)) {
+          // NULLSAFE_FIXME[Nullable Dereference]
           lineNumber = frame.getInt(LINE_NUMBER_KEY);
         }
         int columnNumber = -1;
+        // NULLSAFE_FIXME[Nullable Dereference]
         if (frame.hasKey(COLUMN_KEY) && !frame.isNull(COLUMN_KEY)) {
+          // NULLSAFE_FIXME[Nullable Dereference]
           columnNumber = frame.getInt(COLUMN_KEY);
         }
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         result[i] = new StackFrameImpl(fileName, methodName, lineNumber, columnNumber, collapse);
       } else if (type == ReadableType.String) {
+        // NULLSAFE_FIXME[Parameter Not Nullable, Nullable Dereference]
         result[i] = new StackFrameImpl(null, stack.getString(i), -1, -1);
       }
     }
@@ -203,14 +214,18 @@ public class StackTraceHelper {
       } else if (matcher1.find()) {
         matcher = matcher1;
       } else {
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         result[i] = new StackFrameImpl(null, stackTrace[i], -1, -1);
         continue;
       }
       result[i] =
           new StackFrameImpl(
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               matcher.group(2),
               matcher.group(1) == null ? "(unknown)" : matcher.group(1),
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               Integer.parseInt(matcher.group(3)),
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               Integer.parseInt(matcher.group(4)));
     }
     return result;
@@ -224,6 +239,7 @@ public class StackTraceHelper {
       result[i] =
           new StackFrameImpl(
               stackTrace[i].getClassName(),
+              // NULLSAFE_FIXME[Parameter Not Nullable]
               stackTrace[i].getFileName(),
               stackTrace[i].getMethodName(),
               stackTrace[i].getLineNumber(),
