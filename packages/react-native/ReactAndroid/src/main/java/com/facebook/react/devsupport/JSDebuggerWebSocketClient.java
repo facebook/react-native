@@ -210,6 +210,7 @@ class JSDebuggerWebSocketClient extends WebSocketListener {
   }
 
   @Override
+  // NULLSAFE_FIXME[Inconsistent Subclass Parameter Annotation]
   public void onFailure(WebSocket webSocket, Throwable t, Response response) {
     abort("Websocket exception", t);
   }
