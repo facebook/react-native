@@ -9,6 +9,7 @@
  * @oncall react_native
  */
 
+import typeof * as CLIServerAPI from '@react-native-community/cli-server-api';
 import type {NextHandleFunction, Server} from 'connect';
 import type {TerminalReportableEvent} from 'metro/src/lib/TerminalReporter';
 
@@ -65,11 +66,26 @@ const communityMiddlewareFallback = {
 // Attempt to use the community middleware if it exists, but fallback to
 // the stubs if it doesn't.
 try {
-  const community = require('@react-native-community/cli-server-api');
-  communityMiddlewareFallback.indexPageMiddleware =
-    community.indexPageMiddleware;
+  // `@react-native-community/cli` is an optional peer dependency of this
+  // package, and should be a dev dependency of the host project (via the
+  // community template's package.json).
+  const communityCliPath = require.resolve('@react-native-community/cli');
+
+  // `@react-native-community/cli-server-api` is a dependency of
+  // `@react-native-community/cli`, but is not re-exported by it, so we need
+  // to resolve the former through the latter.
+  const communityCliServerApiPath = require.resolve(
+    '@react-native-community/cli-server-api',
+    {paths: [communityCliPath]},
+  );
+  // $FlowIgnore[unsupported-syntax] dynamic import
+  const communityCliServerApi: CLIServerAPI = require(
+    communityCliServerApiPath,
+  );
   communityMiddlewareFallback.createDevServerMiddleware =
-    community.createDevServerMiddleware;
+    communityCliServerApi.createDevServerMiddleware;
+  communityMiddlewareFallback.indexPageMiddleware =
+    communityCliServerApi.indexPageMiddleware;
 } catch {
   debug(`⚠️ Unable to find @react-native-community/cli-server-api
 Starting the server without the community middleware.`);
