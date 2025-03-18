@@ -9,9 +9,9 @@
 
 #include <cxxreact/TraceSection.h>
 #include <folly/dynamic.h>
-#include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
 
+#include "DynamicEventPayload.h"
 #include "RawEvent.h"
 
 namespace facebook::react {
@@ -61,18 +61,16 @@ void EventEmitter::dispatchEvent(
     RawEvent::Category category) const {
   dispatchEvent(
       std::move(type),
-      [payload](jsi::Runtime& runtime) {
-        return valueFromDynamic(runtime, payload);
-      },
+      std::make_shared<DynamicEventPayload>(folly::dynamic(payload)),
       category);
 }
 
 void EventEmitter::dispatchUniqueEvent(
     std::string type,
     const folly::dynamic& payload) const {
-  dispatchUniqueEvent(std::move(type), [payload](jsi::Runtime& runtime) {
-    return valueFromDynamic(runtime, payload);
-  });
+  dispatchUniqueEvent(
+      std::move(type),
+      std::make_shared<DynamicEventPayload>(folly::dynamic(payload)));
 }
 
 void EventEmitter::dispatchEvent(
