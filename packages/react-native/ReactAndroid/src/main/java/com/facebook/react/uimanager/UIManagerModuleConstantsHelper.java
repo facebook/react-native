@@ -39,7 +39,7 @@ public class UIManagerModuleConstantsHelper {
    * registered on the JS side with the help of {@code UIManagerModule.getConstantsForViewManager}.
    */
   /* package */ static Map<String, Object> createConstants(ViewManagerResolver resolver) {
-    Map<String, Object> constants = UIManagerModuleConstants.getConstants();
+    Map<String, Object> constants = UIManagerModuleConstants.constants;
     constants.put("ViewManagerNames", new ArrayList<>(resolver.getViewManagerNames()));
     constants.put("LazyViewManagersEnabled", true);
     return constants;
@@ -47,8 +47,8 @@ public class UIManagerModuleConstantsHelper {
 
   public static Map<String, Object> getDefaultExportableEventTypes() {
     return MapBuilder.<String, Object>of(
-        BUBBLING_EVENTS_KEY, UIManagerModuleConstants.getBubblingEventTypeConstants(),
-        DIRECT_EVENTS_KEY, UIManagerModuleConstants.getDirectEventTypeConstants());
+        BUBBLING_EVENTS_KEY, UIManagerModuleConstants.bubblingEventTypeConstants,
+        DIRECT_EVENTS_KEY, UIManagerModuleConstants.directEventTypeConstants);
   }
 
   private static void validateDirectEventNames(
@@ -90,13 +90,13 @@ public class UIManagerModuleConstantsHelper {
       List<ViewManager> viewManagers,
       @Nullable Map<String, Object> allBubblingEventTypes,
       @Nullable Map<String, Object> allDirectEventTypes) {
-    Map<String, Object> constants = UIManagerModuleConstants.getConstants();
+    Map<String, Object> constants = UIManagerModuleConstants.constants;
 
     // Generic/default event types:
     // All view managers are capable of dispatching these events.
     // They will be automatically registered with React Fiber.
-    Map genericBubblingEventTypes = UIManagerModuleConstants.getBubblingEventTypeConstants();
-    Map genericDirectEventTypes = UIManagerModuleConstants.getDirectEventTypeConstants();
+    Map genericBubblingEventTypes = UIManagerModuleConstants.bubblingEventTypeConstants;
+    Map genericDirectEventTypes = UIManagerModuleConstants.directEventTypeConstants;
 
     // Cumulative event types:
     // View manager specific event types are collected as views are loaded.
