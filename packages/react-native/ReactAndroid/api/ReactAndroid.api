@@ -3970,14 +3970,17 @@ public class com/facebook/react/uimanager/NativeViewHierarchyOptimizer {
 	public fun onBatchComplete ()V
 }
 
-public class com/facebook/react/uimanager/OnLayoutEvent : com/facebook/react/uimanager/events/Event {
-	protected fun getEventData ()Lcom/facebook/react/bridge/WritableMap;
+public final class com/facebook/react/uimanager/OnLayoutEvent : com/facebook/react/uimanager/events/Event {
+	public static final field Companion Lcom/facebook/react/uimanager/OnLayoutEvent$Companion;
 	public fun getEventName ()Ljava/lang/String;
-	protected fun init (IIIII)V
-	protected fun init (IIIIII)V
-	public static fun obtain (IIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
-	public static fun obtain (IIIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
+	public static final fun obtain (IIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
+	public static final fun obtain (IIIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
 	public fun onDispose ()V
+}
+
+public final class com/facebook/react/uimanager/OnLayoutEvent$Companion {
+	public final fun obtain (IIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
+	public final fun obtain (IIIIII)Lcom/facebook/react/uimanager/OnLayoutEvent;
 }
 
 public final class com/facebook/react/uimanager/PixelUtil {
