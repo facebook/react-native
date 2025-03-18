@@ -160,6 +160,13 @@
         "android": {},
         "jsSrcsDir": "src"
       }
-    ]
+    ],
+    "ios": {
+      "modules": {
+        "PlatformConstants": {
+          "unstableRequiresMainQueueSetup": true
+        }
+      }
+    }
   }
 }
