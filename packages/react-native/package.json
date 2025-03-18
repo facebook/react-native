@@ -166,6 +166,9 @@
         "AccessibilityManager": {
           "unstableRequiresMainQueueSetup": true
         },
+        "AppState": {
+          "unstableRequiresMainQueueSetup": true
+        },
         "DeviceInfo": {
           "unstableRequiresMainQueueSetup": true
         },
