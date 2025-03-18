@@ -12,7 +12,6 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 #import <React/RCTFabricSurface.h>
-#import <React/RCTInitializeUIKitProxies.h>
 #import <React/RCTInspectorDevServerHelper.h>
 #import <React/RCTInspectorNetworkHelper.h>
 #import <React/RCTInspectorUtils.h>
@@ -194,7 +193,6 @@ class RCTHostHostTargetDelegate : public facebook::react::jsinspector_modern::Ho
     RCTExecuteOnMainQueue(^{
       // Listen to reload commands
       RCTRegisterReloadCommandListener(self);
-      RCTInitializeUIKitProxies();
     });
 
     _inspectorHostDelegate = std::make_unique<RCTHostHostTargetDelegate>(self);
