@@ -171,6 +171,9 @@
         },
         "PlatformConstants": {
           "unstableRequiresMainQueueSetup": true
+        },
+        "StatusBarManager": {
+          "unstableRequiresMainQueueSetup": true
         }
       }
     }

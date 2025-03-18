@@ -9,6 +9,7 @@
 #import "CoreModulesPlugins.h"
 
 #import <React/RCTEventDispatcherProtocol.h>
+#import <React/RCTInitializing.h>
 #import <React/RCTLog.h>
 #import <React/RCTUtils.h>
 
@@ -47,10 +48,12 @@ RCT_ENUM_CONVERTER(
 
 @end
 
-@interface RCTStatusBarManager () <NativeStatusBarManagerIOSSpec>
+@interface RCTStatusBarManager () <NativeStatusBarManagerIOSSpec, RCTInitializing>
 @end
 
-@implementation RCTStatusBarManager
+@implementation RCTStatusBarManager {
+  facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants> _constants;
+}
 
 static BOOL RCTViewControllerBasedStatusBarAppearance()
 {
@@ -70,6 +73,14 @@ RCT_EXPORT_MODULE()
 + (BOOL)requiresMainQueueSetup
 {
   return YES;
+}
+
+- (void)initialize
+{
+  _constants = facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
+      .HEIGHT = RCTUIStatusBarManager().statusBarFrame.size.height,
+      .DEFAULT_BACKGROUND_COLOR = std::nullopt,
+  });
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -177,15 +188,7 @@ RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
 
 - (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)getConstants
 {
-  __block facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants> constants;
-  RCTUnsafeExecuteOnMainQueueSync(^{
-    constants = facebook::react::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
-        .HEIGHT = RCTUIStatusBarManager().statusBarFrame.size.height,
-        .DEFAULT_BACKGROUND_COLOR = std::nullopt,
-    });
-  });
-
-  return constants;
+  return _constants;
 }
 
 - (facebook::react::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)constantsToExport
