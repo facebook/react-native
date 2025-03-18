@@ -53,7 +53,7 @@ Pod::Spec.new do |spec|
     mkdir -p framework/packages/react-native
     rsync -a --remove-source-files "$XCFRAMEWORK_PATH/.." framework/packages/react-native/
     find "$CURRENT_PATH" -type d -empty -delete
-    CMD
+  CMD
 
   # If we are passing a local tarball, we don't want to switch between Debug and Release
   if !ENV["RCT_USE_LOCAL_RN_DEP"]
