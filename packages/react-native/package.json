@@ -163,6 +163,9 @@
     ],
     "ios": {
       "modules": {
+        "DeviceInfo": {
+          "unstableRequiresMainQueueSetup": true
+        },
         "PlatformConstants": {
           "unstableRequiresMainQueueSetup": true
         }
