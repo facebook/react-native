@@ -11,6 +11,7 @@ require_relative './utils.rb'
 
 ## There are two environment variables that is related to ReactNativeDependencies:
 ## - RCT_USE_RN_DEP: If set to 1, it will use the release tarball from Maven instead of building from source.
+## - RCT_USE_LOCAL_RN_DEP: **TEST ONLY** If set, it will use a local tarball of ReactNativeDependencies if it exists.
 ## - RCT_DEPS_VERSION: **TEST ONLY** If set, it will override the version of ReactNativeDependencies to be used.
 
 ### Adds ReactNativeDependencies as a dependency to the given podspec if we're not
