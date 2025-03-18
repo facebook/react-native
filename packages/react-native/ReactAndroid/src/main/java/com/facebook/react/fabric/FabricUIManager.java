@@ -1260,6 +1260,8 @@ public class FabricUIManager
       }
 
       if (!mMountNotificationScheduled && !mMountedSurfaceIds.isEmpty()) {
+        mMountNotificationScheduled = true;
+
         // Notify mount when the effects are visible and prevent mount hooks to
         // delay paint.
         UiThreadUtil.getUiThreadHandler()
