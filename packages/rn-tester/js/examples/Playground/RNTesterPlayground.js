@@ -14,10 +14,12 @@ import type {RNTesterModuleExample} from '../../types/RNTesterTypes';
 import * as React from 'react';
 import {
   PixelRatio,
+  Pressable,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  Touchable,
   View,
   useWindowDimensions,
 } from 'react-native';
@@ -107,6 +109,8 @@ function InlineCodeBlock({children}: InlineCodeBlockProps) {
 }
 
 function Playground() {
+  const [isVisible, setIsVisible] = React.useState(false);
+
   return (
     <View style={styles.rootContainer}>
       <StatusBar
@@ -116,7 +120,7 @@ function Playground() {
       <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.scrollContentContainer}>
-        <Text style={[styles.text, styles.greenOverlay]}>
+        {/* <Text style={[styles.text, styles.greenOverlay]}>
           Text without nested text.
         </Text>
 
@@ -143,14 +147,22 @@ function Playground() {
           .
         </Text>
 
-        <View style={styles.spacing} />
+        <View style={styles.spacing} /> */}
 
-        <Text style={[styles.text, styles.greenOverlay]}>
-          Text with nested empty view{' '}
-          <View style={[styles.emptyView, styles.redOverlay]} />.
-        </Text>
+        <Pressable
+          onPress={() => {
+            setIsVisible(!isVisible);
+          }}>
+          <View style={[styles.spacing, styles.blueOverlay]} />
+        </Pressable>
+        {isVisible && (
+          <Text style={[styles.text, styles.greenOverlay]}>
+            Text with nested empty view{' '}
+            <View style={[styles.emptyView, styles.redOverlay]} />.
+          </Text>
+        )}
 
-        <View style={styles.spacing} />
+        {/* <View style={styles.spacing} />
 
         <Text style={[styles.text, styles.greenOverlay]}>
           Text with{' '}
@@ -210,7 +222,7 @@ function Playground() {
           <InlineCodeBlock>qui officia</InlineCodeBlock>{' '}
           <InlineCodeBlock>deserunt mollit</InlineCodeBlock> anim id est
           laborum.
-        </Text>
+        </Text> */}
       </ScrollView>
     </View>
   );
@@ -279,7 +291,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 0, 0, 0.2)',
   },
   blueOverlay: {
-    backgroundColor: 'rgba(255, 0, 0, 0.2)',
+    backgroundColor: 'rgba(0, 0, 255, 0.2)',
   },
 });
 

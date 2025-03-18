@@ -807,7 +807,8 @@ public class TextLayoutManager {
             }
           }
           // Vertically align the inline view to the baseline of the line of text.
-          float placeholderTopPosition = layout.getLineBaseline(line) - placeholderHeight;
+          float ascentPortion = 0.78f; // Same default as in TextInlineViewPlaceholderSpan
+          float placeholderTopPosition = layout.getLineBaseline(line) - (placeholderHeight * ascentPortion);
 
           // The attachment array returns the positions of each of the attachments as
           attachmentsPositions[attachmentPosition] =

@@ -30,10 +30,36 @@ public class TextInlineViewPlaceholderSpan(
   ): Int {
     // NOTE: This getSize code is copied from DynamicDrawableSpan and modified to not use a Drawable
     if (fm != null) {
-      fm.ascent = -height
-      fm.descent = 0
+      // Normal text has both ascent (above baseline) and descent (below baseline)
+      // We need to divide our height to account for this natural text behavior
+      
+      // Get existing text metrics if available
+      val originalAscent = fm.ascent
+      val originalDescent = fm.descent
+      
+      // If we have valid metrics, use them as a guide
+      if (originalAscent < 0 && originalDescent > 0) {
+        // Calculate what portion of our height should be above vs below baseline
+        // using the text's own metrics as a guide
+        val totalTextHeight = -originalAscent + originalDescent
+        val ratio = if (totalTextHeight > 0) {
+          -originalAscent.toFloat() / totalTextHeight
+        } else {
+          0.8f // Default to 80% above baseline if we can't determine from text
+        }
+        
+        // Apply this ratio to our height
+        fm.ascent = (-height * ratio).toInt()
+        fm.descent = (height * (1 - ratio)).toInt()
+      } else {
+        // Fallback if we don't have good metrics
+        // Position 80% above baseline, 20% below - this matches typical text proportions
+        fm.ascent = (-height * 0.8f).toInt()
+        fm.descent = (height * 0.2f).toInt()
+      }
+      
       fm.top = fm.ascent
-      fm.bottom = 0
+      fm.bottom = fm.descent
     }
     return width
   }
