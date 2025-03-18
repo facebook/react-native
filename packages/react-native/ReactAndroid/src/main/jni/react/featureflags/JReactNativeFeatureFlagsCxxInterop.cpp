@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @generated SignedSource<<c866e69278d249dd79cb2fc193d1a7e2>>
+ * @generated SignedSource<<9dedcd0160e4271cd3bf373a2c044cb4>>
  */
 
 /**
@@ -32,10 +32,10 @@ static jni::alias_ref<jni::JClass> getReactNativeFeatureFlagsProviderJavaClass()
  * Implementation of ReactNativeFeatureFlagsProvider that wraps a
  * ReactNativeFeatureFlagsProvider Java object.
  */
-class ReactNativeFeatureFlagsProviderHolder
+class ReactNativeFeatureFlagsJavaProvider
     : public ReactNativeFeatureFlagsProvider {
  public:
-  explicit ReactNativeFeatureFlagsProviderHolder(
+  explicit ReactNativeFeatureFlagsJavaProvider(
       jni::alias_ref<jobject> javaProvider)
       : javaProvider_(make_global(javaProvider)){};
 
@@ -509,7 +509,7 @@ void JReactNativeFeatureFlagsCxxInterop::override(
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
   ReactNativeFeatureFlags::override(
-      std::make_unique<ReactNativeFeatureFlagsProviderHolder>(provider));
+      std::make_unique<ReactNativeFeatureFlagsJavaProvider>(provider));
 }
 
 void JReactNativeFeatureFlagsCxxInterop::dangerouslyReset(
@@ -521,7 +521,7 @@ jni::local_ref<jstring> JReactNativeFeatureFlagsCxxInterop::dangerouslyForceOver
     facebook::jni::alias_ref<JReactNativeFeatureFlagsCxxInterop> /*unused*/,
     jni::alias_ref<jobject> provider) {
   auto accessedFlags = ReactNativeFeatureFlags::dangerouslyForceOverride(
-             std::make_unique<ReactNativeFeatureFlagsProviderHolder>(provider));
+             std::make_unique<ReactNativeFeatureFlagsJavaProvider>(provider));
   if (accessedFlags.has_value()) {
     return jni::make_jstring(accessedFlags.value());
   }
