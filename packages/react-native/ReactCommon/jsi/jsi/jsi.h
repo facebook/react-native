@@ -31,6 +31,106 @@ class FBJSRuntime;
 namespace facebook {
 namespace jsi {
 
+/// UUID version 1 implementation, used to identify a specific interface.
+class JSI_EXPORT UUID {
+ public:
+  // Construct from raw parts
+  constexpr UUID(
+      uint32_t timeLow,
+      uint16_t timeMid,
+      uint16_t timeHighAndVersion,
+      uint16_t variantAndClockSeq,
+      uint64_t node)
+      : high(
+            ((uint64_t)(timeLow) << 32) | ((uint64_t)(timeMid) << 16) |
+            ((uint64_t)(timeHighAndVersion))),
+        low(((uint64_t)(variantAndClockSeq) << 48) | node) {}
+
+  // Default constructor (zero UUID)
+  constexpr UUID() : high(0), low(0) {}
+
+  constexpr UUID(const UUID&) = default;
+  constexpr UUID& operator=(const UUID&) = default;
+
+  constexpr bool operator==(const UUID& other) const {
+    return high == other.high && low == other.low;
+  }
+  constexpr bool operator!=(const UUID& other) const {
+    return !(*this == other);
+  }
+
+  // Ordering (for std::map, sorting, etc.)
+  constexpr bool operator<(const UUID& other) const {
+    return (high < other.high) || (high == other.high && low < other.low);
+  }
+
+  // Hash support for UUID (for unordered_map compatibility)
+  struct Hash {
+    std::size_t operator()(const UUID& uuid) const noexcept {
+      return std::hash<uint64_t>{}(uuid.high) ^
+          (std::hash<uint64_t>{}(uuid.low) << 1);
+    }
+  };
+
+  // UUID format: 8-4-4-4-12
+  std::string toString() const {
+    std::string buffer(36, ' ');
+    std::snprintf(
+        buffer.data(),
+        buffer.size() + 1,
+        "%08x-%04x-%04x-%04x-%012llx",
+        getTimeLow(),
+        getTimeMid(),
+        getTimeHighAndVersion(),
+        getVariantAndClockSeq(),
+        (unsigned long long)getNode());
+    return buffer;
+  }
+
+  constexpr uint32_t getTimeLow() const {
+    return (uint32_t)(high >> 32);
+  }
+
+  constexpr uint16_t getTimeMid() const {
+    return (uint16_t)(high >> 16);
+  }
+
+  constexpr uint16_t getTimeHighAndVersion() const {
+    return (uint16_t)high;
+  }
+
+  constexpr uint16_t getVariantAndClockSeq() const {
+    return (uint16_t)(low >> 48);
+  }
+
+  constexpr uint64_t getNode() const {
+    return low & 0xFFFFFFFFFFFF;
+  }
+
+ private:
+  uint64_t high;
+  uint64_t low;
+};
+
+/// Base interface that all JSI interfaces inherit from. Users should not try to
+/// manipulate this base type directly, and should use castInterface to get the
+/// appropriate subtype.
+struct JSI_EXPORT ICast {
+  /// If the current object can be cast into the interface specified by \p
+  /// interfaceUUID, return a pointer to the object. Otherwise, return a null
+  /// pointer.
+  /// The returned interface has the same lifetime as the underlying object. It
+  /// does not need to be released when not needed.
+  virtual ICast* castInterface(const UUID& interfaceUUID) = 0;
+
+ protected:
+  /// Interfaces are not destructible, thus the destructor is intentionally
+  /// protected to prevent delete calls on the interface.
+  /// Additionally, the destructor is non-virtual to reduce the vtable
+  /// complexity from inheritance.
+  ~ICast() = default;
+};
+
 /// Base class for buffers of data or bytecode that need to be passed to the
 /// runtime. The buffer is expected to be fully immutable, so the result of
 /// size(), data(), and the contents of the pointer returned by data() must not
@@ -169,9 +269,18 @@ class JSI_EXPORT NativeState {
 /// in a non-Runtime-managed object, and not clean it up before the Runtime
 /// is shut down.  If your lifecycle is such that avoiding this is hard,
 /// you will probably need to do use your own locks.
-class JSI_EXPORT Runtime {
+class JSI_EXPORT Runtime : public ICast {
  public:
   virtual ~Runtime();
+
+  static constexpr UUID uuid{
+      0x6e30ad96,
+      0xdfab,
+      0x11ef,
+      0xbef7,
+      0x325096b39f47};
+
+  ICast* castInterface(const UUID& interfaceUuid) override;
 
   /// Evaluates the given JavaScript \c buffer.  \c sourceURL is used
   /// to annotate the stack trace if there is an exception.  The
@@ -1657,6 +1766,24 @@ class JSI_EXPORT JSError : public JSIException {
   std::string message_;
   std::string stack_;
 };
+
+template <typename U, typename T>
+U* castInterface(T* ptr) {
+  if (!ptr) {
+    return nullptr;
+  }
+  return static_cast<U*>(ptr->castInterface(U::uuid));
+};
+
+template <class U, class T>
+std::shared_ptr<U> dynamic_interface_cast(std::shared_ptr<T>& ptr) {
+  auto p = ptr->castInterface(U::uuid);
+  U* res = static_cast<U*>(p);
+  if (!res) {
+    return nullptr;
+  }
+  return std::shared_ptr<U>(ptr, res);
+}
 
 } // namespace jsi
 } // namespace facebook
