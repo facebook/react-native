@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.79.0-rc.2
+
+### Fixed
+
+#### iOS specific
+
+- **Codegen:** Enable use of multiple `RCTAppDependencyProvider` instances ([0cc1ac18cf](https://github.com/facebook/react-native/commit/0cc1ac18cf7f2a99500ef6f315c4dccda7736ea0) by [@vonovak](https://github.com/vonovak))
+- **TextInput:** Fixes TextInput crashes when any text is entered while running as iOS app on apple silicon mac ([8d7aca30e7](https://github.com/facebook/react-native/commit/8d7aca30e7fb50c9c069931a7ed67d8d4a745a2a) by [@zhongwuzw](https://github.com/zhongwuzw))
+- **Runtime:** Call RCTInitializeUIKitProxies before bridge create ([a51fa6c002](https://github.com/facebook/react-native/commit/a51fa6c0028a5bc9afb89656f1aeb41847b7fe8e) by [@zhongwuzw](https://github.com/zhongwuzw))
+
 ## v0.79.0-rc.1
 
 ### Changed
