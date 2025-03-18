@@ -3369,6 +3369,7 @@ public class com/facebook/react/packagerconnection/PackagerConnectionSettings {
 	public final fun getAdditionalOptionsForPackager ()Ljava/util/Map;
 	public fun getDebugServerHost ()Ljava/lang/String;
 	public final fun getPackageName ()Ljava/lang/String;
+	public fun resetDebugServerHost ()V
 	public final fun setAdditionalOptionForPackager (Ljava/lang/String;Ljava/lang/String;)V
 	public fun setDebugServerHost (Ljava/lang/String;)V
 }
