@@ -163,6 +163,9 @@
     ],
     "ios": {
       "modules": {
+        "AccessibilityManager": {
+          "unstableRequiresMainQueueSetup": true
+        },
         "DeviceInfo": {
           "unstableRequiresMainQueueSetup": true
         },
