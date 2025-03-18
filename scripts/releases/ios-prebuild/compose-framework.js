@@ -149,19 +149,10 @@ function copyBundles(
           const targetBundlePath = path.join(
             targetArchFolder,
             `${scheme}.framework`,
-            'Resources',
             bundleName,
           );
-          if (
-            !fs.existsSync(path.join(targetArchFolder, `${scheme}.framework`))
-          ) {
-            console.warn("Target Bundle path doesn't exist", targetBundlePath);
-          }
-          if (!fs.existsSync(path.dirname(sourceBundlePath))) {
-            console.warn("Source bundle doesn't exist", sourceBundlePath);
-          }
+
           // A bundle is a directory, so we need to copy the whole directory
-          execSync(`mkdir -p "${targetBundlePath}"`);
           execSync(`cp -r "${sourceBundlePath}/" "${targetBundlePath}"`);
         });
       } else {
