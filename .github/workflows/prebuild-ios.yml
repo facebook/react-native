@@ -143,6 +143,12 @@ jobs:
       - name: Yarn Install
         if: steps.restore-xcframework.outputs.cache-hit != 'true'
         uses: ./.github/actions/yarn-install
+      - name: Restore workspace
+        if: steps.restore-xcframework.outputs.cache-hit != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-prebuilds-workspace
+          path: packages/react-native/third-party/
       - name: Download slices
         if: steps.restore-xcframework.outputs.cache-hit != 'true'
         uses: actions/download-artifact@v4
