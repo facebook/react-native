@@ -44,27 +44,11 @@ try {
 
 const commands = [];
 
-try {
-  const {
-    bundleCommand,
-    startCommand,
-  } = require('@react-native/community-cli-plugin');
-  commands.push(bundleCommand, startCommand);
-} catch (e) {
-  const known =
-    e.code === 'MODULE_NOT_FOUND' &&
-    e.message.includes('@react-native-community/cli-server-api');
-
-  if (!known) {
-    throw e;
-  }
-
-  if (verbose) {
-    console.warn(
-      '@react-native-community/cli-server-api not found, the react-native.config.js may be unusable.',
-    );
-  }
-}
+const {
+  bundleCommand,
+  startCommand,
+} = require('@react-native/community-cli-plugin');
+commands.push(bundleCommand, startCommand);
 
 const codegenCommand = {
   name: 'codegen',

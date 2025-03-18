@@ -37,10 +37,10 @@
     "metro-resolver": "^0.81.0-alpha.2"
   },
   "peerDependencies": {
-    "@react-native-community/cli-server-api": "*"
+    "@react-native-community/cli": "*"
   },
   "peerDependenciesMeta": {
-    "@react-native-community/cli-server-api": {
+    "@react-native-community/cli": {
       "optional": true
     }
   },
