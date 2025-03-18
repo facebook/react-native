@@ -33,7 +33,7 @@ class MultipartStreamReaderTest {
 
     val callback: CallCountTrackingChunkCallback =
         object : CallCountTrackingChunkCallback() {
-          override fun onChunkComplete(headers: Map<String, String>?, body: Buffer, done: Boolean) {
+          override fun onChunkComplete(headers: Map<String, String>, body: Buffer, done: Boolean) {
             super.onChunkComplete(headers, body, done)
 
             assertThat(done).isTrue
@@ -68,7 +68,7 @@ class MultipartStreamReaderTest {
 
     val callback: CallCountTrackingChunkCallback =
         object : CallCountTrackingChunkCallback() {
-          override fun onChunkComplete(headers: Map<String, String>?, body: Buffer, done: Boolean) {
+          override fun onChunkComplete(headers: Map<String, String>, body: Buffer, done: Boolean) {
             super.onChunkComplete(headers, body, done)
 
             assertThat(done).isEqualTo(callCount == 3)
@@ -125,7 +125,7 @@ class MultipartStreamReaderTest {
     var callCount = 0
       private set
 
-    override fun onChunkComplete(headers: Map<String, String>?, body: Buffer, done: Boolean) {
+    override fun onChunkComplete(headers: Map<String, String>, body: Buffer, done: Boolean) {
       callCount++
     }
 
