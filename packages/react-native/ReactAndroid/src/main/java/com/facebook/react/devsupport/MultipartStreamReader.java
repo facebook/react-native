@@ -60,6 +60,7 @@ class MultipartStreamReader {
     ByteString marker = ByteString.encodeUtf8(CRLF + CRLF);
     long indexOfMarker = chunk.indexOf(marker);
     if (indexOfMarker == -1) {
+      // NULLSAFE_FIXME[Parameter Not Nullable]
       listener.onChunkComplete(null, chunk, done);
     } else {
       Buffer headers = new Buffer();
@@ -148,6 +149,7 @@ class MultipartStreamReader {
         Buffer chunk = new Buffer();
         content.skip(chunkStart);
         content.read(chunk, length);
+        // NULLSAFE_FIXME[Parameter Not Nullable]
         emitProgress(currentHeaders, chunk.size() - currentHeadersLength, true, listener);
         emitChunk(chunk, isCloseDelimiter, listener);
         currentHeaders = null;
