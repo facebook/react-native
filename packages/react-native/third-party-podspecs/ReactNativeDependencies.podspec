@@ -41,16 +41,19 @@ Pod::Spec.new do |spec|
   spec.vendored_frameworks  = 'framework/packages/react-native/ReactNativeDependencies.xcframework'
   spec.header_mappings_dir  = 'Headers'
   spec.source_files         = 'Headers/**/*.{h,hpp}'
+
+  # We need to make sure that the headers are copied to the right place - local tar.gz has a different structure
+  # than the one from the maven repo
   spec.prepare_command    = <<-CMD
-    pwd
     CURRENT_PATH=$(pwd)
     mkdir -p Headers
-    BASE_PATH=$(find "$CURRENT_PATH" -type d -name "ios-arm64")
-    rsync -a "$BASE_PATH/ReactNativeDependencies.framework/Headers/" Headers
+    XCFRAMEWORK_PATH=$(find "$CURRENT_PATH" -type d -name "ReactNativeDependencies.xcframework")
+    HEADERS_PATH=$(find "$XCFRAMEWORK_PATH" -type d -name "Headers" | head -n 1)
+    rsync -a "$HEADERS_PATH/" Headers
     mkdir -p framework/packages/react-native
-    rsync -a --remove-source-files "$BASE_PATH/../.." framework/packages/react-native/
+    rsync -a --remove-source-files "$XCFRAMEWORK_PATH/.." framework/packages/react-native/
     find "$CURRENT_PATH" -type d -empty -delete
-  CMD
+    CMD
 
   # If we are passing a local tarball, we don't want to switch between Debug and Release
   if !ENV["RCT_USE_LOCAL_RN_DEP"]
