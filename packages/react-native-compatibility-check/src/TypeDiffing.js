@@ -12,6 +12,7 @@ import type {
   ComparisonResult,
   FunctionComparisonResult,
   MembersComparisonResult,
+  PositionalComparisonResult,
   PropertiesComparisonResult,
   TypeComparisonError,
 } from './ComparisonResult';
@@ -905,7 +906,7 @@ export function compareStringLiteralUnionTypes(
   olderType: StringLiteralUnionTypeAnnotation,
 ): ComparisonResult {
   const results = compareArrayOfTypes(
-    true, // Fixed order
+    false, // Fixed order
     false, // Can grow/shrink at the end
     newerType.types,
     olderType.types,
@@ -928,28 +929,30 @@ export function compareStringLiteralUnionTypes(
           'Unexpected inline objects/functions in string literal union',
         );
       }
+      if (
+        results.addedElements.length <= 0 &&
+        results.removedElements.length <= 0
+      ) {
+        throw new Error('string union returned unexpected set of changes');
+      }
+
+      const changeLog: PositionalComparisonResult = {
+        typeKind: 'stringUnion',
+        nestedChanges: [],
+      };
+
       if (results.addedElements.length > 0) {
-        return {
-          status: 'positionalTypeChange',
-          changeLog: {
-            typeKind: 'stringUnion',
-            nestedChanges: [],
-            addedElements: results.addedElements,
-          },
-        };
+        changeLog.addedElements = results.addedElements;
       }
+
       if (results.removedElements.length > 0) {
-        return {
-          status: 'positionalTypeChange',
-          changeLog: {
-            typeKind: 'stringUnion',
-            nestedChanges: [],
-            removedElements: results.removedElements,
-          },
-        };
+        changeLog.removedElements = results.removedElements;
       }
-      console.log(JSON.stringify(results));
-      throw new Error('string union returned unexpected set of changes');
+
+      return {
+        status: 'positionalTypeChange',
+        changeLog,
+      };
     case 'matching':
       return {status: 'matching'};
     default:
