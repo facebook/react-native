@@ -547,6 +547,10 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   if (startPosition && endPosition) {
     UITextRange *range = [_backedTextInputView textRangeFromPosition:startPosition toPosition:endPosition];
     [_backedTextInputView setSelectedTextRange:range notifyDelegate:NO];
+    // ensure we scroll to the selected position
+    NSInteger offsetEnd = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                                  toPosition:range.end];
+    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetEnd, 0)];
   }
   _comingFromJS = NO;
 }
@@ -721,18 +725,17 @@ static NSSet<NSNumber *> *returnKeyTypesSet;
   // Updating the UITextView attributedText, for example changing the lineHeight, the color or adding
   // a new paragraph with \n, causes the cursor to move to the end of the Text and scroll.
   // This is fixed by restoring the cursor position and scrolling to that position (iOS issue 652653).
-  if (selectedRange.empty) {
-    // Maintaining a cursor position relative to the end of the old text.
-    NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
-                                                          toPosition:selectedRange.start];
-    NSInteger offsetFromEnd = oldTextLength - offsetStart;
-    NSInteger newOffset = attributedString.string.length - offsetFromEnd;
-    UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
-                                                                   offset:newOffset];
-    [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
-                                notifyDelegate:YES];
-    [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
-  }
+  // Maintaining a cursor position relative to the end of the old text.
+  NSInteger offsetStart = [_backedTextInputView offsetFromPosition:_backedTextInputView.beginningOfDocument
+                                                        toPosition:selectedRange.start];
+  NSInteger offsetFromEnd = oldTextLength - offsetStart;
+  NSInteger newOffset = attributedString.string.length - offsetFromEnd;
+  UITextPosition *position = [_backedTextInputView positionFromPosition:_backedTextInputView.beginningOfDocument
+                                                                  offset:newOffset];
+  [_backedTextInputView setSelectedTextRange:[_backedTextInputView textRangeFromPosition:position toPosition:position]
+                              notifyDelegate:YES];
+  [_backedTextInputView scrollRangeToVisible:NSMakeRange(offsetStart, 0)];
+
   [self _restoreTextSelection];
   [self _updateTypingAttributes];
   _lastStringStateWasUpdatedWith = attributedString;
