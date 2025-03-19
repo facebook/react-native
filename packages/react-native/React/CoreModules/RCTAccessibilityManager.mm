@@ -12,7 +12,6 @@
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcherProtocol.h>
-#import <React/RCTInitialAccessibilityValuesProxy.h>
 #import <React/RCTLog.h>
 #import <React/RCTUIManager.h>
 
@@ -38,7 +37,7 @@ RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup
 {
-  return NO;
+  return YES;
 }
 
 - (instancetype)init
@@ -92,15 +91,14 @@ RCT_EXPORT_MODULE()
                                                  name:UIAccessibilityVoiceOverStatusDidChangeNotification
                                                object:nil];
 
-    RCTInitialAccessibilityValuesProxy *initialValuesProxy = [RCTInitialAccessibilityValuesProxy sharedInstance];
-    self.contentSizeCategory = initialValuesProxy.preferredContentSizeCategory;
-    _isBoldTextEnabled = initialValuesProxy.isBoldTextEnabled;
-    _isGrayscaleEnabled = initialValuesProxy.isGrayscaleEnabled;
-    _isInvertColorsEnabled = initialValuesProxy.isInvertColorsEnabled;
-    _isReduceMotionEnabled = initialValuesProxy.isReduceMotionEnabled;
-    _isDarkerSystemColorsEnabled = initialValuesProxy.isDarkerSystemColorsEnabled;
-    _isReduceTransparencyEnabled = initialValuesProxy.isReduceTransparencyEnabled;
-    _isVoiceOverEnabled = initialValuesProxy.isVoiceOverEnabled;
+    self.contentSizeCategory = RCTSharedApplication().preferredContentSizeCategory;
+    _isBoldTextEnabled = UIAccessibilityIsBoldTextEnabled();
+    _isGrayscaleEnabled = UIAccessibilityIsGrayscaleEnabled();
+    _isInvertColorsEnabled = UIAccessibilityIsInvertColorsEnabled();
+    _isReduceMotionEnabled = UIAccessibilityIsReduceMotionEnabled();
+    _isDarkerSystemColorsEnabled = UIAccessibilityDarkerSystemColorsEnabled();
+    _isReduceTransparencyEnabled = UIAccessibilityIsReduceTransparencyEnabled();
+    _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   }
   return self;
 }
