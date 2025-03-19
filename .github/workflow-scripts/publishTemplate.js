@@ -68,6 +68,10 @@ module.exports.verifyPublishedTemplate = async (
   latest = false,
   retries = MAX_RETRIES,
 ) => {
+  if (version.startsWith('v')) {
+    version = version.slice(1);
+  }
+
   log(`🔍 Is ${TEMPLATE_NPM_PKG}@${version} on npm?`);
 
   let count = retries;
