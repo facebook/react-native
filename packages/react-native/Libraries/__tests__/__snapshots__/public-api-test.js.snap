@@ -7362,6 +7362,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/Style
 "declare const StyleSheet: StyleSheetExports;
 export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
+export type TransformStyle = ____TransformStyle_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
@@ -7387,6 +7388,7 @@ export type StyleSheetProperties = {
 };
 export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
+export type TransformStyle = ____TransformStyle_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
@@ -7447,7 +7449,8 @@ declare export const create: <+S: ____Styles_Internal>(obj: S) => $ReadOnly<S>;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheetTypes.js 1`] = `
-"declare export opaque type NativeColorValue;
+"export type { ____TransformStyle_Internal };
+declare export opaque type NativeColorValue;
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {

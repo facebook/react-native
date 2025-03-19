@@ -19,6 +19,7 @@ import type {
   ____ImageStyleProp_Internal,
   ____TextStyle_Internal,
   ____TextStyleProp_Internal,
+  ____TransformStyle_Internal,
   ____ViewStyle_Internal,
   ____ViewStyleProp_Internal,
 } from './StyleSheetTypes';
@@ -36,6 +37,11 @@ export type {NativeColorValue} from './StyleSheetTypes';
  * type props = {backgroundColor: ColorValue};
  */
 export type ColorValue = ____ColorValue_Internal;
+
+/**
+ * This type is an object of the properties related to transforms.
+ */
+export type TransformStyle = ____TransformStyle_Internal;
 
 /**
  * This type should be used as the type for a prop that is passed through
