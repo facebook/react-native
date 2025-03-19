@@ -9,6 +9,7 @@ package com.facebook.react.uimanager.layoutanimation
 
 import android.view.View
 import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.IllegalViewOperationException
 import org.assertj.core.api.Assertions.assertThat
@@ -99,7 +100,7 @@ class AbstractLayoutAnimationTest {
   }
 
   @Test
-  fun getInterpolator_returnsSpringInterpolator() {
+  fun getInterpolator_returnsSimpleSpringInterpolator() {
     val type = InterpolatorType.SPRING
     val params = mock<ReadableMap>()
     whenever(params.hasKey("damping")).thenReturn(true)
@@ -115,6 +116,6 @@ class AbstractLayoutAnimationTest {
     val params = mock<ReadableMap>()
 
     val interpolator = AbstractLayoutAnimation.getInterpolator(type, params)
-    assertThat(interpolator).isNotNull
+    assertThat(interpolator).isInstanceOf(LinearInterpolator::class.java)
   }
 }

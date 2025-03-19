@@ -28,6 +28,11 @@ import com.facebook.react.uimanager.IllegalViewOperationException
  */
 @LegacyArchitecture
 internal abstract class AbstractLayoutAnimation {
+  @VisibleForTesting var interpolator: Interpolator? = null
+  @VisibleForTesting var delayMs: Int = 0
+  @VisibleForTesting var animatedProperty: AnimatedPropertyType? = null
+  @VisibleForTesting var durationMs: Int = 0
+
   internal abstract fun isValid(): Boolean
 
   /**
@@ -42,11 +47,6 @@ internal abstract class AbstractLayoutAnimation {
     width: Int,
     height: Int
   ): Animation?
-
-  @VisibleForTesting var interpolator: Interpolator? = null
-  @VisibleForTesting var delayMs: Int = 0
-  @VisibleForTesting var animatedProperty: AnimatedPropertyType? = null
-  @VisibleForTesting var durationMs: Int = 0
 
   fun reset() {
     animatedProperty = null
