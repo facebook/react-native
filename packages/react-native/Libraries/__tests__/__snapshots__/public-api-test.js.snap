@@ -613,7 +613,7 @@ declare export default typeof AnimatedScrollView;
 exports[`public API should not change unintentionally Libraries/Animated/components/AnimatedSectionList.js 1`] = `
 "declare export default AnimatedComponentType<
   React.ElementConfig<typeof SectionList>,
-  SectionList<SectionBase<any>>,
+  SectionList<any, SectionBase<any>>,
 >;
 "
 `;
@@ -5292,16 +5292,22 @@ declare export default typeof FlatList;
 
 exports[`public API should not change unintentionally Libraries/Lists/SectionList.js 1`] = `
 "declare const VirtualizedSectionList: $FlowFixMe;
-type Item = any;
-export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
-type RequiredProps<SectionT: SectionBase<any>> = {
-  sections: $ReadOnlyArray<SectionT>,
+type DefaultSectionT = {
+  [key: string]: any,
 };
-type OptionalProps<SectionT: SectionBase<any>> = {
+export type SectionBase<
+  SectionItemT,
+  SectionT = DefaultSectionT,
+> = _SectionBase<SectionItemT, SectionT>;
+export type { SectionData };
+type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
+  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
+};
+type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
   renderItem?: (info: {
-    item: Item,
+    item: ItemT,
     index: number,
-    section: SectionT,
+    section: SectionData<ItemT, SectionT>,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
@@ -5313,37 +5319,40 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   extraData?: any,
   initialNumToRender?: ?number,
   inverted?: ?boolean,
-  keyExtractor?: ?(item: Item, index: number) => string,
+  keyExtractor?: ?(item: ItemT, index: number) => string,
   onEndReached?: ?(info: { distanceFromEnd: number, ... }) => void,
   removeClippedSubviews?: boolean,
 };
-export type Props<SectionT> = {
+export type SectionListProps<ItemT, SectionT = DefaultSectionT> = {
   ...$Diff<
-    VirtualizedSectionListProps<SectionT>,
+    VirtualizedSectionListProps<ItemT, SectionT>,
     {
-      getItem: $PropertyType<VirtualizedSectionListProps<SectionT>, \\"getItem\\">,
+      getItem: $PropertyType<
+        VirtualizedSectionListProps<ItemT, SectionT>,
+        \\"getItem\\",
+      >,
       getItemCount: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
+        VirtualizedSectionListProps<ItemT, SectionT>,
         \\"getItemCount\\",
       >,
       renderItem: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
+        VirtualizedSectionListProps<ItemT, SectionT>,
         \\"renderItem\\",
       >,
       keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
+        VirtualizedSectionListProps<ItemT, SectionT>,
         \\"keyExtractor\\",
       >,
       ...
     },
   >,
-  ...RequiredProps<SectionT>,
-  ...OptionalProps<SectionT>,
+  ...RequiredProps<ItemT, SectionT>,
+  ...OptionalProps<ItemT, SectionT>,
 };
-declare export default class SectionList<SectionT: SectionBase<any>>
-  extends React.PureComponent<Props<SectionT>, void>
+declare export default class SectionList<ItemT, SectionT = DefaultSectionT>
+  extends React.PureComponent<SectionListProps<ItemT, SectionT>>
 {
-  props: Props<SectionT>;
+  props: SectionListProps<ItemT, SectionT>;
   scrollToLocation(params: ScrollToLocationParamsType): void;
   recordInteraction(): void;
   flashScrollIndicators(): void;
@@ -5356,16 +5365,21 @@ declare export default class SectionList<SectionT: SectionBase<any>>
 `;
 
 exports[`public API should not change unintentionally Libraries/Lists/SectionListModern.js 1`] = `
-"type Item = any;
-export type SectionBase<SectionItemT> = _SectionBase<SectionItemT>;
-type RequiredProps<SectionT: SectionBase<any>> = {
-  sections: $ReadOnlyArray<SectionT>,
+"type DefaultSectionT = {
+  [key: string]: any,
 };
-type OptionalProps<SectionT: SectionBase<any>> = {
+export type SectionBase<
+  SectionItemT,
+  SectionT = DefaultSectionT,
+> = _SectionBase<SectionItemT, SectionT>;
+type RequiredProps<ItemT, SectionT = DefaultSectionT> = {
+  sections: $ReadOnlyArray<SectionData<ItemT, SectionT>>,
+};
+type OptionalProps<ItemT, SectionT = DefaultSectionT> = {
   renderItem?: (info: {
-    item: Item,
+    item: ItemT,
     index: number,
-    section: SectionT,
+    section: SectionData<ItemT, SectionT>,
     separators: {
       highlight: () => void,
       unhighlight: () => void,
@@ -5377,36 +5391,39 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   extraData?: any,
   initialNumToRender?: ?number,
   inverted?: ?boolean,
-  keyExtractor?: ?(item: Item, index: number) => string,
+  keyExtractor?: ?(item: ItemT, index: number) => string,
   onEndReached?: ?(info: { distanceFromEnd: number, ... }) => void,
   removeClippedSubviews?: boolean,
 };
-export type Props<SectionT: SectionBase<any>> = $ReadOnly<{
+export type Props<ItemT, SectionT = DefaultSectionT> = $ReadOnly<{
   ...$Diff<
-    VirtualizedSectionListProps<SectionT>,
+    VirtualizedSectionListProps<ItemT, SectionT>,
     {
-      getItem: $PropertyType<VirtualizedSectionListProps<SectionT>, \\"getItem\\">,
+      getItem: $PropertyType<
+        VirtualizedSectionListProps<ItemT, SectionT>,
+        \\"getItem\\",
+      >,
       getItemCount: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
+        VirtualizedSectionListProps<ItemT, SectionT>,
         \\"getItemCount\\",
       >,
       renderItem: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
+        VirtualizedSectionListProps<ItemT, SectionT>,
         \\"renderItem\\",
       >,
       keyExtractor: $PropertyType<
-        VirtualizedSectionListProps<SectionT>,
+        VirtualizedSectionListProps<ItemT, SectionT>,
         \\"keyExtractor\\",
       >,
       ...
     },
   >,
-  ...RequiredProps<SectionT>,
-  ...OptionalProps<SectionT>,
+  ...RequiredProps<ItemT, SectionT>,
+  ...OptionalProps<ItemT, SectionT>,
 }>;
 declare const SectionList: component(
   ref?: React.RefSetter<any>,
-  ...Props<SectionBase<any>>
+  ...Props<any, DefaultSectionT>
 );
 declare export default typeof SectionList;
 "
