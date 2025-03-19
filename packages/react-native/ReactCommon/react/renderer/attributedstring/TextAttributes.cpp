@@ -146,7 +146,8 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              layoutDirection,
              accessibilityRole,
              role,
-             textTransform) ==
+             textTransform,
+             textAlignVertical) ==
       std::tie(
              rhs.foregroundColor,
              rhs.backgroundColor,
@@ -170,7 +171,8 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
              rhs.layoutDirection,
              rhs.accessibilityRole,
              rhs.role,
-             rhs.textTransform) &&
+             rhs.textTransform,
+             rhs.textAlignVertical) &&
       floatEquality(maxFontSizeMultiplier, rhs.maxFontSizeMultiplier) &&
       floatEquality(opacity, rhs.opacity) &&
       floatEquality(fontSize, rhs.fontSize) &&
@@ -178,10 +180,6 @@ bool TextAttributes::operator==(const TextAttributes& rhs) const {
       floatEquality(letterSpacing, rhs.letterSpacing) &&
       floatEquality(lineHeight, rhs.lineHeight) &&
       floatEquality(textShadowRadius, rhs.textShadowRadius);
-}
-
-bool TextAttributes::operator!=(const TextAttributes& rhs) const {
-  return !(*this == rhs);
 }
 
 TextAttributes TextAttributes::defaultTextAttributes() {
