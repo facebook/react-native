@@ -63,7 +63,7 @@ void ViewShadowNode::initialize() noexcept {
       viewProps.mixBlendMode != BlendMode::Normal ||
       viewProps.isolation == Isolation::Isolate ||
       HostPlatformViewTraitsInitializer::formsStackingContext(viewProps) ||
-      !viewProps.accessibilityElements.empty();
+      !viewProps.accessibilityOrder.empty();
 
   bool formsView = formsStackingContext ||
       isColorMeaningful(viewProps.backgroundColor) || hasBorder() ||
