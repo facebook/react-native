@@ -127,7 +127,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
     mEventDispatcher = new EventDispatcherImpl(reactContext);
     mModuleConstants = createConstants(viewManagerResolver);
-    mCustomDirectEvents = UIManagerModuleConstants.getDirectEventTypeConstants();
+    mCustomDirectEvents = UIManagerModuleConstants.directEventTypeConstants;
     mViewManagerRegistry = new ViewManagerRegistry(viewManagerResolver);
     mUIImplementation =
         new UIImplementation(

@@ -15,7 +15,7 @@
 // updating React Native's public API.
 // ----------------------------------------------------------------------------
 
-/// <reference path="src/types/globals.d.ts" />
+/// <reference path="../src/types/globals.d.ts" />
 
 // #region Components
 
@@ -52,6 +52,14 @@ export {default as VirtualizedSectionList} from './Libraries/Lists/VirtualizedSe
 // #region APIs
 
 export type * from './Libraries/Types/CodegenTypesNamespace';
+export type {ViewProps} from './Libraries/Components/View/ViewPropTypes';
+export type {ImageSource} from 'react-native/Libraries/Image/ImageSource';
+export type {ColorValue} from 'react-native/Libraries/StyleSheet/StyleSheet';
+export type {
+  DimensionValue,
+  EdgeInsetsValue,
+  PointValue,
+} from 'react-native/Libraries/StyleSheet/StyleSheetTypes';
 
 export {default as AccessibilityInfo} from './Libraries/Components/AccessibilityInfo/AccessibilityInfo';
 export {default as ActionSheetIOS} from './Libraries/ActionSheetIOS/ActionSheetIOS';

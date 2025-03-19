@@ -782,7 +782,7 @@ export enum Quality {
 }
 
 export enum Resolution {
-  Corrupted = -1, 
+  Corrupted = -1,
   Low = 720,
   High = 1080,
 }
@@ -864,6 +864,95 @@ export interface Spec extends TurboModule {
 export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
 `;
 
+const NAMESPACED_NATIVE_MODULE_WITH_FLOAT_AND_INT32 = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {CodegenTypes} from 'react-native';
+
+export interface Spec extends TurboModule {
+  +getInt: (arg: CodegenTypes.Int32) => CodegenTypes.Int32;
+  +getFloat: (arg: CodegenTypes.Float) => CodegenTypes.Float;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
+const NAMESPACED_NATIVE_MODULE_WITH_UNSAFE_OBJECT = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+import type {CodegenTypes} from 'react-native';
+
+export interface Spec extends TurboModule {
+  +getUnsafeObject: (o: CodegenTypes.UnsafeObject) => CodegenTypes.UnsafeObject,
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
+const NAMESPACED_NATIVE_MODULE_WITH_EVENT_EMITTERS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow strict-local
+ * @format
+ */
+
+'use strict';
+
+import type {TurboModule} from '../RCTExport';
+import type {CodegenTypes} from 'react-native';
+import * as TurboModuleRegistry from '../TurboModuleRegistry';
+
+export type ObjectStruct = {
+  a: number,
+  b: string,
+  c?: ?string,
+};
+
+export type MappedObject = {[string]: string};
+
+export interface Spec extends TurboModule {
+  +onEvent1: EventEmitter<void>;
+  +onEvent2: EventEmitter<string>;
+  +onEvent3: EventEmitter<number>;
+  +onEvent4: EventEmitter<boolean>;
+  +onEvent5: EventEmitter<ObjectStruct>;
+  +onEvent6: EventEmitter<ObjectStruct[]>;
+  +onEvent7: EventEmitter<MappedObject>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 module.exports = {
   NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY,
   NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE,
@@ -892,4 +981,8 @@ module.exports = {
   IOS_ONLY_NATIVE_MODULE,
   CXX_ONLY_NATIVE_MODULE,
   PROMISE_WITH_COMMONLY_USED_TYPES,
+
+  NAMESPACED_NATIVE_MODULE_WITH_FLOAT_AND_INT32,
+  NAMESPACED_NATIVE_MODULE_WITH_UNSAFE_OBJECT,
+  NAMESPACED_NATIVE_MODULE_WITH_EVENT_EMITTERS,
 };

@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.79.0-rc.2
+
+### Changed
+
+- **Codegen:** Replace jscodeshift with @babel/core ([8f19201](https://github.com/facebook/react-native/commit/8f19201c5edd7fd18ab1ada8d4df2a8c31be8d4d) by [@kitten](https://github.com/kitten))
+
+### Fixed
+
+#### iOS specific
+
+- **Codegen:** Enable use of multiple `RCTAppDependencyProvider` instances ([0cc1ac18cf](https://github.com/facebook/react-native/commit/0cc1ac18cf7f2a99500ef6f315c4dccda7736ea0) by [@vonovak](https://github.com/vonovak))
+- **Runtime:** Call RCTInitializeUIKitProxies before bridge create ([a51fa6c002](https://github.com/facebook/react-native/commit/a51fa6c0028a5bc9afb89656f1aeb41847b7fe8e) by [@zhongwuzw](https://github.com/zhongwuzw))
+- **TextInput:** Fixes TextInput crashes when any text is entered while running as iOS app on apple silicon mac ([8d7aca30e7](https://github.com/facebook/react-native/commit/8d7aca30e7fb50c9c069931a7ed67d8d4a745a2a) by [@zhongwuzw](https://github.com/zhongwuzw))
+
 ## v0.79.0-rc.1
 
 ### Changed
@@ -247,6 +261,26 @@ ChuiHW))
 - **TextInput:** Fix selection makes TextInput clear its content when using children ([e3b176a598](https://github.com/facebook/react-native/commit/e3b176a598bd47338b52522f05893f781e3a7744) by Olivier Bouillet)
 - **TextInput:** Fixed TextInput's `onContentSizeChange` event being dispatched multiple times with the same size ([2bb65717b7](https://github.com/facebook/react-native/commit/2bb65717b7b86d19e4d35707003df7d5be31c2fb) by [@j-piasecki](https://github.com/j-piasecki))
 - **TextInput:** Implement `dataDetectorTypes` in the same way as the old architecture ([2ae45ec3ce](https://github.com/facebook/react-native/commit/2ae45ec3ce50cb9d95782173f6dfca74e8110848) by [@VidocqH](https://github.com/VidocqH))
+
+## v0.78.1
+
+### Fixed
+
+- **Deps:** community-cli-plugin: resolve cli-server-api via peer dependency on cli ([9ffbeadf8a](https://github.com/facebook/react-native/commit/9ffbeadf8a1ecfef1c0ac08bc39157ac6e17796e) by [@robhogan](https://github.com/robhogan))
+- **DevTools:** Fix disconnections of DevTools when the network is under significant strain ([9e47ed9a20](https://github.com/facebook/react-native/commit/9e47ed9a205184abf1d7eb422fb22ef27f18cae5) by [@vzaidman](https://github.com/vzaidman))
+
+#### Android specific
+
+- **Image:** Fix Android Image defaultSource runtime error ([665212e22c](https://github.com/facebook/react-native/commit/665212e22c310b1f0f9d1f1795d88622c711219a) by [@mateoguzmana](https://github.com/mateoguzmana))
+- **style:** Fix elevation with border-radius set (#48982) ([68dc582305](https://github.com/facebook/react-native/commit/68dc582305e2568245380ddca2ceaee3b5ec752f) by [@polovi](https://github.com/polovi))
+
+#### iOS specific
+
+- **Initialization:** Call `extraModulesForBridge` callback in the New Architecture. ([97adbd897f](https://github.com/facebook/react-native/commit/97adbd897f88d108f0be21a5895dadc74189b6fc) by [@Bruno125](https://github.com/Bruno125))
+- **Initialization:** Added custom load js block in bridge mode ([bdc83cb129](https://github.com/facebook/react-native/commit/bdc83cb129757d6adc373c11535d78055727e3fa) by [@zhongwuzw](https://github.com/zhongwuzw))
+- **Interop Layer:** Properly pass `nil` for nullable parameters instead of `NSNull` for legacy modules ([619d5dfbb2](https://github.com/facebook/react-native/commit/619d5dfbb280892fcc2a9f78d630eb88fb32960f) by [@cipolleschi](https://github.com/cipolleschi))
+- **TextInput:** Fixes TextInput crashes when any text is entered while running as iOS app on apple silicon mac ([282cdc9fb4](https://github.com/facebook/react-native/commit/282cdc9fb4a1ceac17b63584f9988d3192235885) by [@zhongwuzw](https://github.com/zhongwuzw))
+
 ## v0.78.0
 
 ### Breaking

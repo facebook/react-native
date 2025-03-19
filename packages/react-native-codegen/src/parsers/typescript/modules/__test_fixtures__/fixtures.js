@@ -915,6 +915,85 @@ export default TurboModuleRegistry.getEnforcing<Spec>(
 );
 `;
 
+const NAMESPACED_NATIVE_MODULE_WITH_FLOAT_AND_INT32 = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import type {CodegenTypes} from 'react-native';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export interface Spec extends TurboModule {
+  readonly getInt: (arg: CodegenTypes.Int32) => CodegenTypes.Int32;
+  readonly getFloat: (arg: CodegenTypes.Float) => CodegenTypes.Float;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
+const NAMESPACED_NATIVE_MODULE_WITH_UNSAFE_OBJECT = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import type {CodegenTypes} from 'react-native';
+
+export interface Spec extends TurboModule {
+  readonly getUnsafeObject: (o: CodegenTypes.UnsafeObject) => CodegenTypes.UnsafeObject;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+`;
+
+const NAMESPACED_NATIVE_MODULE_WITH_EVENT_EMITTERS = `
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+import type {TurboModule} from 'react-native/Libraries/TurboModule/RCTExport';
+import type {CodegenTypes} from 'react-native';
+import * as TurboModuleRegistry from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+export type ObjectStruct = {
+  a: number;
+  b: string;
+  c?: string | null;
+};
+
+export type MappedObject = {[key: string]: string};
+
+export interface Spec extends TurboModule {
+  readonly onEvent1: CodegenTypes.EventEmitter<void>;
+  readonly onEvent2: CodegenTypes.EventEmitter<string>;
+  readonly onEvent3: CodegenTypes.EventEmitter<number>;
+  readonly onEvent4: CodegenTypes.EventEmitter<boolean>;
+  readonly onEvent5: CodegenTypes.EventEmitter<ObjectStruct>;
+  readonly onEvent6: CodegenTypes.EventEmitter<ObjectStruct[]>;
+  readonly onEvent7: CodegenTypes.EventEmitter<MappedObject>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('SampleTurboModule');
+
+`;
+
 module.exports = {
   NATIVE_MODULE_WITH_OBJECT_WITH_OBJECT_DEFINED_IN_FILE_AS_PROPERTY,
   NATIVE_MODULE_WITH_ARRAY_WITH_UNION_AND_TOUPLE,
@@ -948,4 +1027,8 @@ module.exports = {
   ANDROID_ONLY_NATIVE_MODULE,
   IOS_ONLY_NATIVE_MODULE,
   CXX_ONLY_NATIVE_MODULE,
+
+  NAMESPACED_NATIVE_MODULE_WITH_FLOAT_AND_INT32,
+  NAMESPACED_NATIVE_MODULE_WITH_UNSAFE_OBJECT,
+  NAMESPACED_NATIVE_MODULE_WITH_EVENT_EMITTERS,
 };

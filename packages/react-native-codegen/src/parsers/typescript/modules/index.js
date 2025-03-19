@@ -291,7 +291,7 @@ function translateTypeAnnotation(
         typeScriptTypeAnnotation,
         nullable,
         flattenProperties(
-          flattenIntersectionType(typeAnnotation, types),
+          flattenIntersectionType(typeAnnotation, parser, types),
           types,
           parser,
         ),

@@ -24,7 +24,19 @@ export {default as Node} from './nodes/AnimatedNode';
 export {default as Value} from './nodes/AnimatedValue';
 export {default as ValueXY} from './nodes/AnimatedValueXY';
 
+/** @deprecated Use Animated.Interpolation instead */
+export type {default as AnimatedInterpolation} from './nodes/AnimatedInterpolation';
+/** @deprecated Use Animated.Color instead */
+export type {default as AnimatedColor} from './nodes/AnimatedColor';
+
 export type {AnimatedValueConfig as AnimatedConfig} from './nodes/AnimatedValue';
+export type {default as AnimatedNode} from './nodes/AnimatedNode';
+export type {default as AnimatedAddition} from './nodes/AnimatedAddition';
+export type {default as AnimatedDiffClamp} from './nodes/AnimatedDiffClamp';
+export type {default as AnimatedDivision} from './nodes/AnimatedDivision';
+export type {default as AnimatedModulo} from './nodes/AnimatedModulo';
+export type {default as AnimatedMultiplication} from './nodes/AnimatedMultiplication';
+export type {default as AnimatedSubtraction} from './nodes/AnimatedSubtraction';
 
 export const add = AnimatedImplementation.add;
 export const attachNativeEvent = AnimatedImplementation.attachNativeEvent;

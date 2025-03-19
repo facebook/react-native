@@ -16,6 +16,7 @@ import type {
   ComponentCommandArrayTypeAnnotation,
   NamedShape,
 } from '../../../CodegenSchema.js';
+import type {Parser} from '../../parser';
 import type {TypeDeclarationMap} from '../../utils';
 
 const {getValueFromTypes} = require('../utils.js');
@@ -26,6 +27,7 @@ type EventTypeAST = Object;
 function buildCommandSchema(
   property: EventTypeAST,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnly<{
   name: string,
   optional: boolean,
@@ -65,7 +67,7 @@ function buildCommandSchema(
     const paramValue = getValueFromTypes(param.typeAnnotation, types);
     const type =
       paramValue.type === 'GenericTypeAnnotation'
-        ? paramValue.id.name
+        ? parser.getTypeAnnotationName(paramValue)
         : paramValue.type;
     let returnType: CommandParamTypeAnnotation;
 
@@ -112,17 +114,21 @@ function buildCommandSchema(
           type: 'ArrayTypeAnnotation',
           elementType: getCommandArrayElementTypeType(
             paramValue.typeParameters.params[0],
+            parser,
           ),
         };
         break;
       case 'ArrayTypeAnnotation':
         returnType = {
           type: 'ArrayTypeAnnotation',
-          elementType: getCommandArrayElementTypeType(paramValue.elementType),
+          elementType: getCommandArrayElementTypeType(
+            paramValue.elementType,
+            parser,
+          ),
         };
         break;
       default:
-        (type: empty);
+        (type: mixed);
         throw new Error(
           `Unsupported param type for method "${name}", param "${paramName}". Found ${type}`,
         );
@@ -150,7 +156,10 @@ function buildCommandSchema(
 
 type Allowed = ComponentCommandArrayTypeAnnotation['elementType'];
 
-function getCommandArrayElementTypeType(inputType: mixed): Allowed {
+function getCommandArrayElementTypeType(
+  inputType: mixed,
+  parser: Parser,
+): Allowed {
   // TODO: T172453752 support more complex type annotation for array element
   if (typeof inputType !== 'object') {
     throw new Error('Expected an object');
@@ -172,7 +181,10 @@ function getCommandArrayElementTypeType(inputType: mixed): Allowed {
         type: 'StringTypeAnnotation',
       };
     case 'GenericTypeAnnotation':
-      const name = typeof inputType.id === 'object' ? inputType.id?.name : null;
+      const name =
+        typeof inputType.id === 'object'
+          ? parser.getTypeAnnotationName(inputType)
+          : null;
 
       if (typeof name !== 'string') {
         throw new Error(
@@ -211,10 +223,11 @@ function getCommandArrayElementTypeType(inputType: mixed): Allowed {
 function getCommands(
   commandTypeAST: $ReadOnlyArray<EventTypeAST>,
   types: TypeDeclarationMap,
+  parser: Parser,
 ): $ReadOnlyArray<NamedShape<CommandTypeAnnotation>> {
   return commandTypeAST
     .filter(property => property.type === 'ObjectTypeProperty')
-    .map(property => buildCommandSchema(property, types))
+    .map(property => buildCommandSchema(property, types, parser))
     .filter(Boolean);
 }
 

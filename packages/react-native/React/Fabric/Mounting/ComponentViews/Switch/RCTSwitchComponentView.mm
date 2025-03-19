@@ -60,7 +60,7 @@ using namespace facebook::react;
   const auto &newSwitchProps = static_cast<const SwitchProps &>(*props);
 
   // `value`
-  if (oldSwitchProps.value != newSwitchProps.value) {
+  if (!_isInitialValueSet || oldSwitchProps.value != newSwitchProps.value) {
     BOOL shouldAnimate = _isInitialValueSet == YES;
     [_switchView setOn:newSwitchProps.value animated:shouldAnimate];
   }

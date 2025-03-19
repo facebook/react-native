@@ -172,7 +172,16 @@ export { default as Interpolation } from \\"./nodes/AnimatedInterpolation\\";
 export { default as Node } from \\"./nodes/AnimatedNode\\";
 export { default as Value } from \\"./nodes/AnimatedValue\\";
 export { default as ValueXY } from \\"./nodes/AnimatedValueXY\\";
+export type { default as AnimatedInterpolation } from \\"./nodes/AnimatedInterpolation\\";
+export type { default as AnimatedColor } from \\"./nodes/AnimatedColor\\";
 export type { AnimatedValueConfig as AnimatedConfig } from \\"./nodes/AnimatedValue\\";
+export type { default as AnimatedNode } from \\"./nodes/AnimatedNode\\";
+export type { default as AnimatedAddition } from \\"./nodes/AnimatedAddition\\";
+export type { default as AnimatedDiffClamp } from \\"./nodes/AnimatedDiffClamp\\";
+export type { default as AnimatedDivision } from \\"./nodes/AnimatedDivision\\";
+export type { default as AnimatedModulo } from \\"./nodes/AnimatedModulo\\";
+export type { default as AnimatedMultiplication } from \\"./nodes/AnimatedMultiplication\\";
+export type { default as AnimatedSubtraction } from \\"./nodes/AnimatedSubtraction\\";
 declare export const add: $FlowFixMe;
 declare export const attachNativeEvent: $FlowFixMe;
 declare export const createAnimatedComponent: $FlowFixMe;
@@ -4035,7 +4044,7 @@ export type ViewPropsIOS = $ReadOnly<{
   shouldRasterizeIOS?: ?boolean,
 }>;
 type ViewBaseProps = $ReadOnly<{
-  children?: Node,
+  children?: React.Node,
   style?: ?ViewStyleProp,
   collapsable?: ?boolean,
   collapsableChildren?: ?boolean,
@@ -4679,7 +4688,7 @@ export type ImageProps = $ReadOnly<{
 }>;
 export type ImageBackgroundProps = $ReadOnly<{
   ...ImageProps,
-  children?: Node,
+  children?: React.Node,
   style?: ?ViewStyleProp,
   imageStyle?: ?ImageStyleProp,
   imageRef?: RefSetter<ElementRef<Image>>,
@@ -7362,6 +7371,7 @@ exports[`public API should not change unintentionally Libraries/StyleSheet/Style
 "declare const StyleSheet: StyleSheetExports;
 export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
+export type TransformStyle = ____TransformStyle_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
@@ -7387,6 +7397,7 @@ export type StyleSheetProperties = {
 };
 export type { NativeColorValue } from \\"./StyleSheetTypes\\";
 export type ColorValue = ____ColorValue_Internal;
+export type TransformStyle = ____TransformStyle_Internal;
 export type ViewStyleProp = ____ViewStyleProp_Internal;
 export type TextStyleProp = ____TextStyleProp_Internal;
 export type ImageStyleProp = ____ImageStyleProp_Internal;
@@ -7447,7 +7458,8 @@ declare export const create: <+S: ____Styles_Internal>(obj: S) => $ReadOnly<S>;
 `;
 
 exports[`public API should not change unintentionally Libraries/StyleSheet/StyleSheetTypes.js 1`] = `
-"declare export opaque type NativeColorValue;
+"export type { ____TransformStyle_Internal };
+declare export opaque type NativeColorValue;
 export type ____ColorValue_Internal = null | string | number | NativeColorValue;
 export type ColorArrayValue = null | $ReadOnlyArray<____ColorValue_Internal>;
 export type PointValue = {
@@ -8136,7 +8148,7 @@ type TextBaseProps = $ReadOnly<{
   \\"aria-expanded\\"?: ?boolean,
   \\"aria-selected\\"?: ?boolean,
   \\"aria-labelledby\\"?: ?string,
-  children?: ?Node,
+  children?: ?React.Node,
   ellipsizeMode?: ?(\\"clip\\" | \\"head\\" | \\"middle\\" | \\"tail\\"),
   id?: string,
   maxFontSizeMultiplier?: ?number,
@@ -9321,6 +9333,14 @@ export { default as View } from \\"./Libraries/Components/View/View\\";
 export { default as VirtualizedList } from \\"./Libraries/Lists/VirtualizedList\\";
 export { default as VirtualizedSectionList } from \\"./Libraries/Lists/VirtualizedSectionList\\";
 export type * from \\"./Libraries/Types/CodegenTypesNamespace\\";
+export type { ViewProps } from \\"./Libraries/Components/View/ViewPropTypes\\";
+export type { ImageSource } from \\"react-native/Libraries/Image/ImageSource\\";
+export type { ColorValue } from \\"react-native/Libraries/StyleSheet/StyleSheet\\";
+export type {
+  DimensionValue,
+  EdgeInsetsValue,
+  PointValue,
+} from \\"react-native/Libraries/StyleSheet/StyleSheetTypes\\";
 export { default as AccessibilityInfo } from \\"./Libraries/Components/AccessibilityInfo/AccessibilityInfo\\";
 export { default as ActionSheetIOS } from \\"./Libraries/ActionSheetIOS/ActionSheetIOS\\";
 export { default as Alert } from \\"./Libraries/Alert/Alert\\";
